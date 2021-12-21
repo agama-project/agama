@@ -1,0 +1,18 @@
+# use the shared YaST defaults
+inherit_from:
+  /usr/share/YaST2/data/devtools/data/rubocop-0.71.0_yast_style.yml
+
+# Don't enforce any particular name for block params
+SingleLineBlockParams:
+  Enabled: false
+
+# The general YaST agreement is 100 characters, so it fits into standard
+# resolutions and Github's pull request view. But let's open the threshold a
+# little bit
+Metrics/LineLength:
+  Max: 105
+
+Metrics/BlockLength:
+  # rspec is known as DSL with big blocks
+  Exclude:
+    - lib/yast2/dbus/installer.rb
