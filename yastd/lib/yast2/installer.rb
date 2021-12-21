@@ -31,16 +31,22 @@ module Yast2
     # @return [InstallerStatus]
     attr_accessor :status
 
-    def initialize
+    # Returns a new instance of the Installer class
+    #
+    # @note DBus::InstallerClient could be replaced with a generic notifier
+    #   in the future which abstracts whether we are using DBus or not.
+    #
+    # @param dbus_client [DBus::InstallerClient] Installer client
+    # @param logger      [Logger,nil] Logger to write messages to
+    def initialize(dbus_client:, logger: nil)
       Yast::Mode.SetUI("commandline")
       Yast::Mode.SetMode("installation")
       @disks = []
       @languages = []
       @products = []
-      @status = InstallerStatus::IDLE.id
-      @status_handler = nil
-      @dbus_client = Yast2::DBus::InstallerClient.new
-      @logger = Logger.new(STDOUT)
+      @status = InstallerStatus::IDLE
+      @dbus_client = dbus_client
+      @logger = logger || Logger.new(STDOUT)
     end
 
     def options
