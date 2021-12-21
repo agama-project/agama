@@ -6,6 +6,7 @@ require "y2storage"
 require "yast2/installer_status"
 require "yast2/dbus/installer_client"
 Yast.import "CommandLine"
+require "dbus"
 
 # YaST specific code lives under this namespace
 module Yast2
@@ -116,8 +117,13 @@ module Yast2
 
     attr_reader :dbus_client
 
-    def change_status(status)
-      dbus_client.status = status.id
+    def change_status(new_status)
+      @status = new_status
+      begin
+        dbus_client.status = status.id
+      rescue ::DBus::Error
+        # DBus object is not available yet
+      end
     end
 
     def probe_software

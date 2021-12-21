@@ -64,6 +64,7 @@ module Yast2
           dbus_client: Yast2::DBus::InstallerClient.new,
           logger:      logger
         )
+        installer.probe
         installer
       end
     end
