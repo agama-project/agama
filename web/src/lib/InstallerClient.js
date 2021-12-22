@@ -24,27 +24,32 @@ import axios from 'axios';
 export default class InstallerClient {
   constructor(url) {
     this.url = url;
-    const wsUrl = url.replace("http", "ws") + "/ws";
-    this.socket = new WebSocket(`${wsUrl}`);
-    this.socket.onclose = () => console.log("The socket was closed");
+    // const wsUrl = url.replace("http", "ws") + "/ws";
+    // this.socket = new WebSocket(`${wsUrl}`);
+    // this.socket.onclose = () => console.log("The socket was closed");
   }
 
   onMessage(handler) {
-    this.socket.addEventListener("message", handler);
+    // this.socket.addEventListener("message", handler);
   }
 
   async getInstallation() {
-    const { data } = await axios.get(`${this.url}/installation.json`);
+    const { data } = await axios.post(`${this.url}/properties.json`);
     return data;
   }
 
   async getProducts() {
-    const { data } = await axios.get(`${this.url}/products.json`);
+    const { data } = await axios.post(
+      `${this.url}/calls.json`, { meth: "GetProducts" }
+    );
     return data;
   }
 
   async getLanguages() {
-    const { data } = await axios.get(`${this.url}/languages.json`);
+    debugger;
+    const { data } = await axios.post(
+      `${this.url}/calls.json`, { meth: "GetLanguages" }
+    );
     return data;
   }
 
@@ -54,7 +59,9 @@ export default class InstallerClient {
   }
 
   async getDisks() {
-    const { data } = await axios.get(`${this.url}/disks.json`);
+    const { data } = await axios.post(
+      `${this.url}/calls.json`, { meth: "GetDisks" }
+    );
     return data;
   }
 
