@@ -124,6 +124,7 @@ GEM
     rake (13.0.6)
     reline (0.2.7)
       io-console (~> 0.5)
+    ruby-dbus (0.16.0)
     thor (1.1.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
@@ -140,6 +141,7 @@ DEPENDENCIES
   debug
   puma (~> 5.0)
   rails (~> 7.0.0)
+  ruby-dbus
   tzinfo-data
 
 RUBY VERSION

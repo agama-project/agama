@@ -15,4 +15,4 @@ Metrics/LineLength:
 Metrics/BlockLength:
   # rspec is known as DSL with big blocks
   Exclude:
-    - lib/yast2/dbus/installer.rb
+    - yastd/lib/yast2/dbus/installer.rb
