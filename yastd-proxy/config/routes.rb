@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   get "properties/:name", to: "properties#show"
   put "properties/:name", to: "properties#update"
