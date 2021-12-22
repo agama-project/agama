@@ -50,8 +50,11 @@ module Yast2
       Yast::FunRef.new(method, signature)
     end
 
-    def package_installed
+    # TODO: error handling
+    def package_installed(_error, _reason)
       progress.package_installed
+
+      ""
     end
   end
 end
