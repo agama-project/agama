@@ -40,4 +40,8 @@ group :development do
   # gem "spring"
 end
 
+# Interact with D-Bus services
 gem "ruby-dbus"
+
+# Add CORS support
+gem "rack-cors"
