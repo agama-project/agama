@@ -36,6 +36,39 @@ If you want to get the properties, just type:
     $ busctl call org.opensuse.YaST /org/opensuse/YaST/Installer \
       org.freedesktop.DBus.Properties GetAll s org.opensuse.YaST.Installer
 
+## yastd-proxy
+
+The `yastd-proxy` allows accessing the D-Bus interface through HTTP. Additionally, it uses
+a websocket to forward `PropertiesChanged` signals (not implemented yet).
+
+Note: at this point in time, it is a minimal Rails application (it does not include a database,
+JavaScript, etc.). In the future, we could replace it with anything even smaller.
+
+To start the proxy, just type:
+
+  $ cd yastd-proxy
+  $ bundle install
+  $ rails s -e production
+
+Now you can try to access the D-Bus service using cURL:
+
+  $ curl http://localhost:3000/properties
+    [{"Disk":"/dev/sda","Product":"openSUSE-Addon-NonOss","Language":"en_US","Status":0}]
+  $ curl -X PUT -d value=/dev/sda http://localhost:3000/properties/Disk
+  $ curl -X POST -d meth=GetStorage http://localhost:3000/calls
+    [{"mount":"/boot/efi","device":"/dev/sda1","type":"vfat","size":"536870912"},...
+
+
+## Web UI
+
+The current UI is a small web application built with [React](https://reactjs.org/). It allows to set a few installation parameters and start the installation (not implemented yet).
+
+  $ cd we
+  $ npm install
+  $ npm start
+
+Point your browser to http://localhost:3001 and enjoy!
+
 # References
 
 * https://etherpad.opensuse.org/p/H_bqkqApbfKB5RwNIYSm
