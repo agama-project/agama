@@ -1,11 +1,10 @@
 class PropertiesController < ApplicationController
   def index
-    render json: client.get_properties[0]
+    render json: client.get_properties
   end
 
   def show
-    prop = client.get_property(params[:name])
-    render json: prop[0]
+    render json: client.get_property(params[:name])
   end
 
   def update

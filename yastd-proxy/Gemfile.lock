@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    abstract_method (1.2.1)
     actioncable (7.0.0)
       actionpack (= 7.0.0)
       activesupport (= 7.0.0)
@@ -63,6 +64,8 @@ GEM
     bootsnap (1.9.3)
       msgpack (~> 1.0)
     builder (3.2.4)
+    cheetah (1.0.0)
+      abstract_method (~> 1.2)
     concurrent-ruby (1.1.9)
     crass (1.0.6)
     debug (1.4.0)
@@ -126,7 +129,6 @@ GEM
     rake (13.0.6)
     reline (0.2.7)
       io-console (~> 0.5)
-    ruby-dbus (0.16.0)
     thor (1.1.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
@@ -140,11 +142,11 @@ PLATFORMS
 
 DEPENDENCIES
   bootsnap
+  cheetah
   debug
   puma (~> 5.0)
   rack-cors
   rails (~> 7.0.0)
-  ruby-dbus
   tzinfo-data
 
 RUBY VERSION

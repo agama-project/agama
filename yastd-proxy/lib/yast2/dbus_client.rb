@@ -17,7 +17,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "dbus"
+require "cheetah"
 
 module Yast2
   class DBusClient
@@ -26,32 +26,85 @@ module Yast2
     IFACE = "org.opensuse.YaST.Installer"
     PROPERTIES_IFACE = "org.freedesktop.DBus.Properties"
 
+    class CouldNotSetProperty < StandardError; end
+
+    # Returns the installer properties
+    #
+    # @return [Array<Hash<String,Object>>] Returns the installer properties
     def get_properties
-      dbus_object[PROPERTIES_IFACE].GetAll(IFACE)
+      output = Cheetah.run(
+        "busctl", "call", "--json=short", SERVICE_NAME, OBJECT_PATH, PROPERTIES_IFACE,
+        "GetAll", "s", IFACE, stdout: :capture
+      )
+      data_from_output(output)
     end
 
+    # Returns a property value
+    #
+    # @param name [String] Property name
+    # @return [Object] Property value
     def get_property(name)
-      dbus_object[PROPERTIES_IFACE].Get(IFACE, name)
+      output = Cheetah.run(
+        "busctl", "get-property", "--json=short", SERVICE_NAME, OBJECT_PATH, IFACE, name,
+        stdout: :capture
+      )
+      data_from_output(output)
     end
 
+    # Sets a property value
+    #
+    # @param name [String] Property name
+    # @param value [String] Property value
+    # @raise CouldNotSetProperty
     def set_property(name, value)
-      dbus_object[PROPERTIES_IFACE].Set(IFACE, name, value)
+      Cheetah.run(
+        "busctl", "set-property", SERVICE_NAME, OBJECT_PATH, IFACE, name, "s", value
+      )
+    rescue Cheetah::ExecutionFailed => e
+      raise CouldNotSetProperty, e.stderr
     end
 
+    # Calls a method from the installer D-Bus interface
+    #
+    # @param meth [String] Method name
+    # @param args [Array<String>] Method arguments
     def call(meth, args = [])
-      dbus_object.send(meth, *args)
+      output = Cheetah.run(
+        "busctl", "call", "--json=short", SERVICE_NAME, OBJECT_PATH, IFACE, meth, *args, stdout: :capture
+      )
+      data_from_output(output)
     end
 
   private
 
-    def dbus_object
-      return @dbus_obj if @dbus_obj
+    # FIXME: Improve the code to handle nested structures
+    def data_from_output(output)
+      json = JSON.parse(output)
+      extract_data_from_node(json)
+    end
 
-      bus = ::DBus::SystemBus.instance
-      service = bus.service(SERVICE_NAME)
-      @dbus_obj = service.object(OBJECT_PATH)
-      @dbus_obj.default_iface = IFACE
-      @dbus_obj
+    # FIXME: simplify the algorithm
+    def extract_data_from_node(node)
+      return node unless node.is_a?(Enumerable)
+
+      return extract_data_from_array(node) if node.is_a?(Array)
+
+      case node["data"]
+      when Array
+        extract_data_from_array(node["data"])
+      when Hash
+        extract_data_from_node(node["data"])
+      when String, Integer
+        node["data"]
+      else
+        node.reduce({}) do |all, (key, value)|
+          all.merge(key => extract_data_from_node(value))
+        end
+      end
+    end
+
+    def extract_data_from_array(array)
+      array.map { |e| extract_data_from_node(e) }
     end
   end
 end
