@@ -13,6 +13,6 @@ Metrics/LineLength:
   Max: 105
 
 Metrics/BlockLength:
-  # rspec is known as DSL with big blocks
+  # ruby-dbus DSL can have long blocks
   Exclude:
-    - lib/yast2/dbus/installer.rb
+    - yastd/lib/yast2/dbus/installer.rb
