@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require "yast"
-require "y2packager/product"
 require "y2storage"
 require "yast2/installer_status"
+require "yast2/software"
+require "yast2/progress"
 require "yast2/dbus/installer_client"
 Yast.import "CommandLine"
 require "dbus"
+require "forwardable"
 
 # YaST specific code lives under this namespace
 module Yast2
@@ -22,12 +24,16 @@ module Yast2
   class Installer
     class InvalidValue < StandardError; end
 
+    extend Forwardable
+
     DEFAULT_LANGUAGE = "en_US"
 
-    attr_reader :disks, :languages, :products
-    attr_reader :disk, :product
+    attr_reader :disks, :languages
+    attr_reader :disk
     attr_reader :logger
     attr_reader :language
+
+    def_delegators :@software, :products, :product
 
     # @return [InstallerStatus]
     attr_accessor :status
@@ -48,6 +54,8 @@ module Yast2
       @status = InstallerStatus::IDLE
       @dbus_client = dbus_client
       @logger = logger || Logger.new(STDOUT)
+      @software = Software.new(@logger)
+      @progress = Progress.new(dbus_client)
     end
 
     def options
@@ -67,7 +75,8 @@ module Yast2
     def probe
       change_status(InstallerStatus::PROBING)
       probe_languages
-      probe_software
+      @software.probe
+      @software.propose
       probe_storage
       true
     rescue StandardError => e
@@ -84,9 +93,9 @@ module Yast2
     end
 
     def product=(name)
-      raise InvalidValue unless products.map(&:name).include?(name)
-
-      @product = name
+      @software.select_product(name)
+    rescue
+      raise InvalidValue
     end
 
     def language=(name)
@@ -103,12 +112,12 @@ module Yast2
       Yast::Installation.destdir = "/mnt"
       logger.info "Installing(partitioning)"
       change_status(InstallerStatus::PARTITIONING)
-      # Yast::WFM.CallFunction(["inst_prepdisk"], [])
+      Yast::WFM.CallFunction(["inst_prepdisk"], [])
       sleep 5
       # Install software
       logger.info "Installing(installing software)"
       change_status(InstallerStatus::INSTALLING)
-      sleep 5
+      @software.install(@progress)
       logger.info "Installing(finished)"
       change_status(InstallerStatus::IDLE)
     end
@@ -124,18 +133,6 @@ module Yast2
       rescue ::DBus::Error
         # DBus object is not available yet
       end
-    end
-
-    def probe_software
-      logger.info "Probing software"
-      Yast.import "Pkg"
-      Yast.import "PackageLock"
-      Yast::Pkg.TargetInitialize("/")
-      Yast::Pkg.TargetLoad
-      Yast::Pkg.SourceRestore
-      Yast::Pkg.SourceLoad
-      @products = Y2Packager::Product.all
-      @product = @products.first&.name
     end
 
     # Returns the list of known languages
