@@ -146,7 +146,7 @@ module Yast2
               "Interface '#{interface}' not found on object '#{@path}'"
           end
 
-          props = installer.options.merge("status" => installer.status.to_s)
+          props = installer.options.merge("status" => installer.status.id)
           normalized_props = props.reduce({}) { |h, (k, v)| h.merge(k.capitalize => v) }
           [normalized_props]
         end
