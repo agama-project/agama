@@ -34,8 +34,7 @@ export default class InstallerClient {
   }
 
   async getInstallation() {
-    const { data } = await axios.post(`${this.url}/properties.json`);
-    return data;
+    return { status: 0 };
   }
 
   async getProducts() {
@@ -46,15 +45,18 @@ export default class InstallerClient {
   }
 
   async getLanguages() {
-    debugger;
     const { data } = await axios.post(
       `${this.url}/calls.json`, { meth: "GetLanguages" }
     );
-    return data;
+    return Object.keys(data).map(key => {
+      return { id: key, name: data[key][1] }
+    });
   }
 
   async getStorage() {
-    const { data } = await axios.get(`${this.url}/storage.json`);
+    const { data } = await axios.post(
+      `${this.url}/calls.json`, { meth: "GetStorage" }
+    );
     return data;
   }
 
@@ -66,12 +68,19 @@ export default class InstallerClient {
   }
 
   async getOptions() {
-    const { data } = await axios.get(`${this.url}/options.json`);
-    return data;
+    const { data } = await axios.get(`${this.url}/properties.json`);
+    return Object.fromEntries(
+      Object.entries(data[0]).map(([k, v]) => [k.toLowerCase(), v])
+    )
   }
 
   async setOptions(opts) {
-    return await axios.put(`${this.url}/options.json`, opts);
+    const promises = Object.keys(opts).map(name => {
+      const key = name.charAt(0).toUpperCase() + name.slice(1);
+      return axios.put(`${this.url}/properties/${key}`, { value: opts[name] })
+    });
+    const value = await Promise.all(promises);
+    return value;
   }
 
   async startInstallation() {
