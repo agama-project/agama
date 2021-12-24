@@ -4,6 +4,8 @@ source "https://rubygems.org"
 
 gem "rake"
 gem "ruby-dbus"
+gem "eventmachine"
+gem "nokogiri"
 
 # Required by YaST
 gem "cheetah"

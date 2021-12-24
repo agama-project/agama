@@ -23,7 +23,8 @@ installs the software and so on. So you need to tell dbus about the service by c
 To run the service, type:
 
     $ cd yastd
-    $ sudo ruby bin/yastd
+    $ bundle install
+    $ sudo bunle exec bin/yastd
 
 You can use a tool like [busctl](https://www.freedesktop.org/wiki/Software/dbus/) (or
 [D-Feet](https://wiki.gnome.org/Apps/DFeet) if you prefer a graphical one:
@@ -46,26 +47,25 @@ JavaScript, etc.). In the future, we could replace it with anything even smaller
 
 To start the proxy, just type:
 
-  $ cd yastd-proxy
-  $ bundle install
-  $ rails s -e production
+    $ cd yastd-proxy
+    $ bundle install
+    $ bundle exec bin/yastd-proxy
 
 Now you can try to access the D-Bus service using cURL:
 
-  $ curl http://localhost:3000/properties
-    [{"Disk":"/dev/sda","Product":"openSUSE-Addon-NonOss","Language":"en_US","Status":0}]
-  $ curl -X PUT -d value=/dev/sda http://localhost:3000/properties/Disk
-  $ curl -X POST -d meth=GetStorage http://localhost:3000/calls
-    [{"mount":"/boot/efi","device":"/dev/sda1","type":"vfat","size":"536870912"},...
-
+    $ curl http://localhost:3000/properties
+      [{"Disk":"/dev/sda","Product":"openSUSE-Addon-NonOss","Language":"en_US","Status":0}]
+    $ curl -X PUT -d value=/dev/sda http://localhost:3000/properties/Disk
+    $ curl -X POST -d meth=GetStorage http://localhost:3000/calls
+      [{"mount":"/boot/efi","device":"/dev/sda1","type":"vfat","size":"536870912"},...
 
 ## Web UI
 
 The current UI is a small web application built with [React](https://reactjs.org/). It allows to set a few installation parameters and start the installation (not implemented yet).
 
-  $ cd we
-  $ npm install
-  $ npm start
+    $ cd web
+    $ npm install
+    $ npm start
 
 Point your browser to http://localhost:3000 and enjoy!
 
