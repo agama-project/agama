@@ -40,19 +40,25 @@ module Yast2
       # @return [String] D-Bus object path
       OBJECT_PATH = "/org/opensuse/YaST/Installer"
 
+      attr_reader :bus
+
       def initialize(logger = nil)
         @logger = logger || Logger.new(STDOUT)
+        @bus = ::DBus::SystemBus.instance
       end
 
-      def run
-        bus = ::DBus.system_bus
+      # Exports the installer object through the D-Bus service
+      def export
         service = bus.request_service(SERVICE_NAME)
-        installer_obj = Yast2::DBus::Installer.new(build_installer, logger, OBJECT_PATH)
+        installer_obj = Yast2::DBus::Installer.new(
+          build_installer, logger, OBJECT_PATH
+        )
         service.export(installer_obj)
-        dbus_loop = ::DBus::Main.new
-        dbus_loop << bus
-        logger.info "Listening on #{OBJECT_PATH}"
-        dbus_loop.run
+        logger.info "Exported #{OBJECT_PATH} object"
+      end
+
+      def dispatch
+        bus.dispatch_message_queue
       end
 
     private

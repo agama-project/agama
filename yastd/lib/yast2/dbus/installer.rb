@@ -87,17 +87,17 @@ module Yast2
 
         dbus_method :Probe, "out result:b" do
           logger.info "Probe"
-
-          installer.probe
+          Thread.new { installer.probe }
           true
         end
 
         dbus_method :Start, "out result:b" do
           logger.info "Start"
-
-          installer.install
+          Thread.new { installer.install }
           true
         end
+
+        dbus_signal :StatusChanged, "status:n"
       end
 
       dbus_interface PROPERTY_INTERFACE do
