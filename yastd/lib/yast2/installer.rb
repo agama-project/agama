@@ -44,6 +44,7 @@ module Yast2
     #     log.info "Status changed: #{status}"
     #   end
     #
+    # @param dbus_client [DBus::InstallerClient] Installer client
     # @param logger      [Logger,nil] Logger to write messages to
     def initialize(logger: nil)
       Yast::Mode.SetUI("commandline")
@@ -109,7 +110,7 @@ module Yast2
       Yast::Installation.destdir = "/mnt"
       logger.info "Installing(partitioning)"
       change_status(InstallerStatus::PARTITIONING)
-      # Yast::WFM.CallFunction(["inst_prepdisk"], [])
+      # Yast::WFM.CallFunction("inst_prepdisk", [])
       sleep 5
       # Install software
       logger.info "Installing(installing software)"
