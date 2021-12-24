@@ -22,10 +22,16 @@
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
+require "rubygems"
+require "bundler/setup"
+
 require "thin"
 require "eventmachine"
 require "em-websocket"
+require "json"
+
 require "yastd-proxy/webservice"
+require "yastd-proxy/dbus_listener"
 
 def shutdown
   puts "Shutting down..."
@@ -37,4 +43,16 @@ EM.run do
   Signal.trap("TERM") { shutdown }
 
   Thin::Server.start(WebService, '0.0.0.0', 3000, signals: false)
+
+  EM::WebSocket.run(host: '0.0.0.0', port: 3002) do |ws|
+    listener = Yast2::DBusListener.new
+
+    ws.onopen do |handsake|
+      listener.on_property_change do |changes|
+        ws.send changes.to_json
+      end
+
+      timer = EventMachine::PeriodicTimer.new(0.5) { listener.dispatch }
+    end
+  end
 end
