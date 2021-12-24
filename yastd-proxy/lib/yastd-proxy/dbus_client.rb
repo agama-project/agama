@@ -17,7 +17,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "cheetah"
+require "dbus"
 
 module Yast2
   class DBusClient
@@ -28,15 +28,18 @@ module Yast2
 
     class CouldNotSetProperty < StandardError; end
 
+    attr_reader :bus
+
+    # Constructor
+    def initialize
+      @bus = DBus::SystemBus.instance
+    end
+
     # Returns the installer properties
     #
     # @return [Array<Hash<String,Object>>] Returns the installer properties
     def get_properties
-      output = Cheetah.run(
-        "busctl", "call", "--json=short", SERVICE_NAME, OBJECT_PATH, PROPERTIES_IFACE,
-        "GetAll", "s", IFACE, stdout: :capture
-      )
-      data_from_output(output)
+      installer_obj[PROPERTIES_IFACE].GetAll(IFACE)
     end
 
     # Returns a property value
@@ -44,11 +47,7 @@ module Yast2
     # @param name [String] Property name
     # @return [Object] Property value
     def get_property(name)
-      output = Cheetah.run(
-        "busctl", "get-property", "--json=short", SERVICE_NAME, OBJECT_PATH, IFACE, name,
-        stdout: :capture
-      )
-      data_from_output(output)
+      installer_obj[PROPERTIES_IFACE].Get(IFACE, name)
     end
 
     # Sets a property value
@@ -57,10 +56,8 @@ module Yast2
     # @param value [String] Property value
     # @raise CouldNotSetProperty
     def set_property(name, value)
-      Cheetah.run(
-        "busctl", "set-property", SERVICE_NAME, OBJECT_PATH, IFACE, name, "s", value
-      )
-    rescue Cheetah::ExecutionFailed => e
+      installer_obj[PROPERTIES_IFACE].Set(IFACE, name, value)
+    rescue DBus::Error => e
       raise CouldNotSetProperty, e.stderr
     end
 
@@ -69,42 +66,42 @@ module Yast2
     # @param meth [String] Method name
     # @param args [Array<String>] Method arguments
     def call(meth, args = [])
-      output = Cheetah.run(
-        "busctl", "call", "--json=short", SERVICE_NAME, OBJECT_PATH, IFACE, meth, *args, stdout: :capture
-      )
-      data_from_output(output)
+      installer_obj.send(meth, *args)
+    end
+
+    # Runs a block when a relevant property changes
+    #
+    # @param block [Proc] Block to run
+    def on_property_change(&block)
+      service = bus.service(SERVICE_NAME)
+      installer_obj = service.object(OBJECT_PATH)
+      installer_obj[PROPERTIES_IFACE].on_signal("PropertiesChanged") do |iface, changes|
+        return unless iface == IFACE
+
+        block.call(changes)
+      end
+    end
+
+    # Dispatch the message queue in a non-blocking fashion
+    #
+    # This method runs any callback defined using the #on_property_change for
+    # each change.
+    #
+    # @see #on_property_change
+    def dispatch
+      bus.dispatch_message_queue
     end
 
   private
 
-    # FIXME: Improve the code to handle nested structures
-    def data_from_output(output)
-      json = JSON.parse(output)
-      extract_data_from_node(json)
-    end
+    def installer_obj
+      return @installer_obj if @installer_obj
 
-    # FIXME: simplify the algorithm
-    def extract_data_from_node(node)
-      return node unless node.is_a?(Enumerable)
-
-      return extract_data_from_array(node) if node.is_a?(Array)
-
-      case node["data"]
-      when Array
-        extract_data_from_array(node["data"])
-      when Hash
-        extract_data_from_node(node["data"])
-      when String, Integer
-        node["data"]
-      else
-        node.reduce({}) do |all, (key, value)|
-          all.merge(key => extract_data_from_node(value))
-        end
-      end
-    end
-
-    def extract_data_from_array(array)
-      array.map { |e| extract_data_from_node(e) }
+      bus = DBus::SystemBus.instance
+      service = bus.service(SERVICE_NAME)
+      @installer_obj = service.object(OBJECT_PATH)
+      @installer_obj.default_iface = IFACE
+      @installer_obj
     end
   end
 end

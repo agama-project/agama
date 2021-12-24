@@ -2,7 +2,6 @@
 
 source "https://rubygems.org"
 
-gem "cheetah"
 gem "eventmachine"
 gem "em-websocket"
 gem "rack-contrib", require: "rack/contrib"

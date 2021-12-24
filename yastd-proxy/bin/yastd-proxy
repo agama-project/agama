@@ -31,7 +31,7 @@ require "em-websocket"
 require "json"
 
 require "yastd-proxy/webservice"
-require "yastd-proxy/dbus_listener"
+require "yastd-proxy/dbus_client"
 
 HTTP_PORT = 3001
 WS_PORT = 3002
@@ -48,14 +48,14 @@ EM.run do
   Thin::Server.start(WebService, '0.0.0.0', HTTP_PORT, signals: false)
 
   EM::WebSocket.run(host: '0.0.0.0', port: WS_PORT) do |ws|
-    listener = Yast2::DBusListener.new
+    client = Yast2::DBusClient.new
 
     ws.onopen do |handsake|
-      listener.on_property_change do |changes|
+      client.on_property_change do |changes|
         ws.send changes.to_json
       end
 
-      timer = EventMachine::PeriodicTimer.new(0.5) { listener.dispatch }
+      EventMachine::PeriodicTimer.new(0.5) { client.dispatch }
     end
   end
 end
