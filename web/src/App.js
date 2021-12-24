@@ -51,11 +51,11 @@ function App() {
       console.log("WebSocket Event", event);
       const { data } = event;
       const changedKeys = Object.keys(JSON.parse(data));
-      if (changedKeys.includes("disk")) {
+      if (changedKeys.includes("Disk")) {
         loadStorage(dispatch);
       }
 
-      if (changedKeys.includes("status")) {
+      if (changedKeys.includes("Status")) {
         loadInstallation(dispatch);
       }
     });
