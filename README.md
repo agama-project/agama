@@ -11,6 +11,13 @@ service. At first sight, we have identified these components:
 * A user interface. For this experiment, we have decided to use a
   [Cockpit](https://cockpit-project.org/) module.
 
+## Requirements
+
+To build and run this software you need a few tools. To install them on openSUSE
+Tumbleweed just type:
+
+    $ sudo zypper in gcc gcc-c++ make openssl-devel ruby-devel npm
+
 ## yastd
 
 `yastd` is a YaST-based service that is able to install a system. You can interact with such a
