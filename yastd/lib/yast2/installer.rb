@@ -4,7 +4,6 @@ require "yast"
 require "y2packager/product"
 require "y2storage"
 require "yast2/installer_status"
-require "yast2/dbus/installer_client"
 Yast.import "CommandLine"
 require "dbus"
 
@@ -30,16 +29,23 @@ module Yast2
     attr_reader :language
 
     # @return [InstallerStatus]
-    attr_accessor :status
+    attr_reader :status
 
     # Returns a new instance of the Installer class
     #
-    # @note DBus::InstallerClient could be replaced with a generic notifier
-    #   in the future which abstracts whether we are using DBus or not.
+    # @example Probe and run the installation
+    #   installer = Installer.new
+    #   installer.probe
+    #   installer.install
     #
-    # @param dbus_client [DBus::InstallerClient] Installer client
+    # @example Reacting on status change
+    #   installer = Installer.new
+    #   installer.on_status_change do |status|
+    #     log.info "Status changed: #{status}"
+    #   end
+    #
     # @param logger      [Logger,nil] Logger to write messages to
-    def initialize(dbus_client:, logger: nil)
+    def initialize(logger: nil)
       Yast::Mode.SetUI("commandline")
       Yast::Mode.SetMode("installation")
       @disks = []
@@ -113,6 +119,15 @@ module Yast2
       change_status(InstallerStatus::IDLE)
     end
 
+    # Callback to run when the status changes
+    #
+    # This callback receives the new InstallerStatus instance.
+    #
+    # @return block [Proc] Code to run when the status changes
+    def on_status_change(&block)
+      @on_status_change = block
+    end
+
   private
 
     attr_reader :dbus_client
@@ -120,7 +135,7 @@ module Yast2
     def change_status(new_status)
       @status = new_status
       begin
-        dbus_client.status = status.id
+        @on_status_change.call(new_status) if @on_status_change
       rescue ::DBus::Error
         # DBus object is not available yet
       end
