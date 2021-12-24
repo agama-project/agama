@@ -67,7 +67,7 @@ The current UI is a small web application built with [React](https://reactjs.org
   $ npm install
   $ npm start
 
-Point your browser to http://localhost:3001 and enjoy!
+Point your browser to http://localhost:3000 and enjoy!
 
 # References
 

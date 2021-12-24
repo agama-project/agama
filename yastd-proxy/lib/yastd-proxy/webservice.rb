@@ -26,7 +26,7 @@ class WebService < Sinatra::Base
   register Sinatra::Cors
   use Rack::JSONBodyParser
 
-  set :allow_origin, "http://localhost:3001"
+  set :allow_origin, "http://localhost:3000"
   set :allow_methods, "GET,HEAD,POST,PUT"
   set :allow_headers, "content-type,if-modified-since"
   set :expose_headers, "location,link"

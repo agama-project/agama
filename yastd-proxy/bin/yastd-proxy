@@ -33,6 +33,9 @@ require "json"
 require "yastd-proxy/webservice"
 require "yastd-proxy/dbus_listener"
 
+HTTP_PORT = 3001
+WS_PORT = 3002
+
 def shutdown
   puts "Shutting down..."
   EventMachine.stop
@@ -42,9 +45,9 @@ EM.run do
   Signal.trap("INT") { shutdown }
   Signal.trap("TERM") { shutdown }
 
-  Thin::Server.start(WebService, '0.0.0.0', 3000, signals: false)
+  Thin::Server.start(WebService, '0.0.0.0', HTTP_PORT, signals: false)
 
-  EM::WebSocket.run(host: '0.0.0.0', port: 3002) do |ws|
+  EM::WebSocket.run(host: '0.0.0.0', port: WS_PORT) do |ws|
     listener = Yast2::DBusListener.new
 
     ws.onopen do |handsake|

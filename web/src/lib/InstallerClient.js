@@ -22,15 +22,14 @@
 import axios from 'axios';
 
 export default class InstallerClient {
-  constructor(url) {
+  constructor({ url, ws }) {
     this.url = url;
-    // const wsUrl = url.replace("http", "ws") + "/ws";
-    // this.socket = new WebSocket(`${wsUrl}`);
-    // this.socket.onclose = () => console.log("The socket was closed");
+    this.socket = new WebSocket(`${ws}`);
+    this.socket.onclose = () => console.log("The socket was closed");
   }
 
   onMessage(handler) {
-    // this.socket.addEventListener("message", handler);
+    this.socket.addEventListener("message", handler);
   }
 
   async getInstallation() {
