@@ -121,7 +121,9 @@ let _installerClient;
 const installerClient = () => {
     if (_installerClient) return _installerClient;
 
-    _installerClient = new InstallerClient('http://localhost:3000');
+    _installerClient = new InstallerClient({
+      url: 'http://localhost:3001', ws: 'ws://localhost:3002'
+    });
     return _installerClient;
 };
 

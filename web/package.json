@@ -21,7 +21,7 @@
     "web-vitals": "^0.2.2"
   },
   "scripts": {
-    "start": "HOST=localhost PORT=3001 react-scripts start",
+    "start": "HOST=localhost PORT=3000 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+#
+# Copyright (c) [2021] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
+
+require "rubygems"
+require "bundler/setup"
+
+require "thin"
+require "eventmachine"
+require "em-websocket"
+require "json"
+
+require "yastd-proxy/webservice"
+require "yastd-proxy/dbus_client"
+
+HTTP_PORT = 3001
+WS_PORT = 3002
+
+def shutdown
+  puts "Shutting down..."
+  EventMachine.stop
+end
+
+EM.run do
+  Signal.trap("INT") { shutdown }
+  Signal.trap("TERM") { shutdown }
+
+  Thin::Server.start(WebService, '0.0.0.0', HTTP_PORT, signals: false)
+
+  EM::WebSocket.run(host: '0.0.0.0', port: WS_PORT) do |ws|
+    client = Yast2::DBusClient.new
+
+    ws.onopen do |handsake|
+      client.on_property_change do |changes|
+        ws.send changes.to_json
+      end
+
+      EventMachine::PeriodicTimer.new(0.5) { client.dispatch }
+    end
+  end
+end
