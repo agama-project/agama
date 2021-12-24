@@ -83,6 +83,8 @@ export default class InstallerClient {
   }
 
   async startInstallation() {
-    return await axios.put(`${this.url}/installation.json`, { action: 'start' });
+    return await axios.post(
+      `${this.url}/calls`, { meth: "Start" }
+    );
   }
 }
