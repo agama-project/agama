@@ -8,3 +8,4 @@ gem "ruby-dbus"
 # Required by YaST
 gem "cheetah"
 gem "fast_gettext"
+gem "nokogiri"

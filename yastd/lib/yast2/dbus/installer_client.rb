@@ -46,6 +46,16 @@ module Yast2
         )
       end
 
+      # Callback that triggers when installer make progress
+      #
+      # @param id [Integer] Installer status
+      # @see InstallerStatus
+      def report_progress(msg, total_steps, step, total_substeps, substep)
+        installer_obj["org.freedesktop.DBus.Properties"].Progress(
+          msg, total_steps, step, total_substeps, substep
+        )
+      end
+
     private
 
       # @return [DBus::ProxyObject] Returns a proxy object for
