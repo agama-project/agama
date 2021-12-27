@@ -49,7 +49,6 @@ module Yast2
     #     log.info "Status changed: #{status}"
     #   end
     #
-    # @param dbus_client [DBus::InstallerClient] Installer client
     # @param logger      [Logger,nil] Logger to write messages to
     def initialize(logger: nil)
       Yast::Mode.SetUI("commandline")
@@ -58,10 +57,9 @@ module Yast2
       @languages = []
       @products = []
       @status = InstallerStatus::IDLE
-      @dbus_client = dbus_client
       @logger = logger || Logger.new(STDOUT)
       @software = Software.new(@logger)
-      @progress = Progress.new(dbus_client)
+      @progress = Progress.new(nil) # TODO: fix passing progress
     end
 
     def options
@@ -138,8 +136,6 @@ module Yast2
     end
 
   private
-
-    attr_reader :dbus_client
 
     def change_status(new_status)
       @status = new_status
