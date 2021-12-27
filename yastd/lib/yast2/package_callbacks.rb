@@ -40,7 +40,7 @@ module Yast2
     end
 
     def setup
-      Pkg.CallbackDonePackage(
+      Yast::Pkg.CallbackDonePackage(
         fun_ref(method(:package_installed), "string (integer, string)")
       )
     end
