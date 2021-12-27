@@ -33,6 +33,7 @@ module Yast2
       def setup(progress)
         new(progress).setup
       end
+    end
 
     def initialize(progress)
       @progress = progress
@@ -41,7 +42,7 @@ module Yast2
     def setup
       Pkg.CallbackDonePackage(
         fun_ref(method(:package_installed), "string (integer, string)")
-
+      )
     end
 
   private
