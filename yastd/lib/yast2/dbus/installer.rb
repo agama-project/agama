@@ -159,6 +159,18 @@ module Yast2
 
         dbus_signal :PropertiesChanged,
           "interface:s, changed_properties:a{sv}, invalidated_properties:as"
+
+        # signal for installation progress
+        #
+        # parameters:
+        #
+        # - message: localized string describing current step
+        # - total_steps: how many steps will be done
+        # - current_step: current step. Always in range of 0..total_steps
+        # - total_substeps: total count of smaller steps done as part of big step. Can be 0, which means no substeps defined
+        # - current_substep: current substep. Always in range of 0..total_substeps
+        dbus_signal :Progress,
+          "message:s, total_steps:t, current_step: t, total_substeps: t, current_substep: t"
       end
     end
   end
