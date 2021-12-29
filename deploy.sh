@@ -6,7 +6,7 @@ cd the-installer
 sudo cp yastd/share/dbus-yastd.conf /etc/dbus-1/system.d/yastd.conf
 cd yastd; bundle install; cd -
 cd yastd-proxy; bundle install; cd -
-cd web; npm install
+cd web; npm install; cd -
 cd yastd; sudo bundle exec bin/yastd&; cd -
 cd yastd-proxy; sudo bundle exec bin/yastd-proxy&; cd -
 cd web; npm start&; cd -
