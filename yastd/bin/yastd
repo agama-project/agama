@@ -3,5 +3,14 @@
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
+require "rubygems"
+require "bundler/setup"
+
+require "eventmachine"
 require "yast2/dbus/service"
-Yast2::DBus::Service.new.run
+
+EM.run do
+  service = Yast2::DBus::Service.new
+  service.export
+  EventMachine::PeriodicTimer.new(0.1) { service.dispatch }
+end

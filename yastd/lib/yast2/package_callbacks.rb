@@ -28,19 +28,19 @@ module Yast2
   # This class represents the installer status
   class PackageCallbacks
     class << self
-      attr_reader :progress
-
       def setup(progress)
         new(progress).setup
       end
     end
+
+    attr_reader :progress
 
     def initialize(progress)
       @progress = progress
     end
 
     def setup
-      Pkg.CallbackDonePackage(
+      Yast::Pkg.CallbackDonePackage(
         fun_ref(method(:package_installed), "string (integer, string)")
       )
     end

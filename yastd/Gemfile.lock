@@ -1,0 +1,27 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    abstract_method (1.2.1)
+    cheetah (1.0.0)
+      abstract_method (~> 1.2)
+    eventmachine (1.2.7)
+    fast_gettext (2.1.0)
+    nokogiri (1.12.5-x86_64-linux)
+      racc (~> 1.4)
+    racc (1.6.0)
+    rake (13.0.6)
+    ruby-dbus (0.16.0)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  cheetah
+  eventmachine
+  fast_gettext
+  nokogiri
+  rake
+  ruby-dbus
+
+BUNDLED WITH
+   2.2.27

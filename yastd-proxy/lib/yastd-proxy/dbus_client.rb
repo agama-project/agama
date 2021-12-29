@@ -82,12 +82,22 @@ module Yast2
       end
     end
 
+    # Runs a block when the status changes
+    #
+    # @param block [Proc] Block to run
+    def on_status_change(&block)
+      installer_obj[IFACE].on_signal("StatusChanged") do |status|
+        block.call(status)
+      end
+    end
+
     # Dispatch the message queue in a non-blocking fashion
     #
     # This method runs any callback defined using the #on_property_change for
     # each change.
     #
     # @see #on_property_change
+    # @see #on_status_change
     def dispatch
       bus.dispatch_message_queue
     end

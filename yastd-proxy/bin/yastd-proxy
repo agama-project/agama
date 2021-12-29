@@ -55,6 +55,10 @@ EM.run do
         ws.send changes.to_json
       end
 
+      client.on_status_change do |status_id|
+        ws.send({ event: "StatusChanged", status: status_id }.to_json)
+      end
+
       EventMachine::PeriodicTimer.new(0.5) { client.dispatch }
     end
   end

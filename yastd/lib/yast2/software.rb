@@ -69,7 +69,7 @@ module Yast2
       PackageCallbacks.setup(progress)
 
       # TODO: error handling
-      Yast::Pkg.TargetInitialize(Installation.destdir)
+      Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
       commit_result = Yast::PackageInstallation.Commit({})
 
       if commit_result.nil? || commit_result.empty?

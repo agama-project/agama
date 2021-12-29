@@ -35,7 +35,7 @@ module Yast2
 
     def package_installed
       @remaining_pkgs -= 1
-      @dbus_obj.report_progress(
+      @dbus_obj&.report_progress(
         # TODO: localization
         "Installing packages (#{@remaining_pkgs} remains)",
         1, 0, @total_pkgs, @total_pkgs - @remaining_pkgs

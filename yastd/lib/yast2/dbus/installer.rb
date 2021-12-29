@@ -37,6 +37,11 @@ module Yast2
       def initialize(installer, logger, *args)
         @installer = installer
         @logger = logger
+
+        installer.on_status_change do |status|
+          self.StatusChanged(status.id)
+        end
+
         super(*args)
       end
 
@@ -87,17 +92,17 @@ module Yast2
 
         dbus_method :Probe, "out result:b" do
           logger.info "Probe"
-
-          installer.probe
+          Thread.new { installer.probe }
           true
         end
 
         dbus_method :Start, "out result:b" do
           logger.info "Start"
-
-          installer.install
+          Thread.new { installer.install }
           true
         end
+
+        dbus_signal :StatusChanged, "status:n"
       end
 
       dbus_interface PROPERTY_INTERFACE do
@@ -110,7 +115,8 @@ module Yast2
           end
 
           begin
-            installer.send(propname.downcase.to_s).to_s
+            value = installer.send(propname.downcase.to_s)
+            value.respond_to?(:id) ? value.id : value.to_s
           rescue NoMethodError
             raise ::DBus.error("org.freedesktop.DBus.Error.InvalidArgs"),
               "Property '#{interface}.#{propname}' not found on object '#{@path}'"

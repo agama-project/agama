@@ -48,6 +48,7 @@ function App() {
     loadOptions(dispatch);
     loadInstallation(dispatch);
     registerWebSocketHandler(event => {
+      // TODO: handle other events
       console.log("WebSocket Event", event);
       const { data } = event;
       const changedKeys = Object.keys(JSON.parse(data));
