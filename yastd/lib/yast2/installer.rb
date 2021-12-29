@@ -5,8 +5,12 @@ require "y2storage"
 require "yast2/installer_status"
 require "yast2/software"
 require "yast2/progress"
+require "bootloader/proposal_client"
+require "bootloader/finish_client"
 require "dbus"
 require "forwardable"
+
+Yast.import "Stage"
 
 # YaST specific code lives under this namespace
 module Yast2
@@ -60,6 +64,9 @@ module Yast2
       @logger = logger || Logger.new(STDOUT)
       @software = Software.new(@logger)
       @progress = Progress.new(nil) # TODO: fix passing progress
+      # Set stage to initial, so it will act as installer for some cases like
+      # proposing installer instead of reading current one
+      Yast::Stage.Set("initial")
     end
 
     def options
@@ -117,11 +124,15 @@ module Yast2
       logger.info "Installing(partitioning)"
       change_status(InstallerStatus::PARTITIONING)
       Yast::WFM.CallFunction("inst_prepdisk", [])
-      sleep 5
       # Install software
       logger.info "Installing(installing software)"
       change_status(InstallerStatus::INSTALLING)
       @software.install(@progress)
+      # Install bootloader
+      logger.info "Installing(bootloader)"
+      proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+      logger.info "Bootloader proposal #{proposal.inspect}"
+      ::Bootloader::FinishClient.new.write
       logger.info "Installing(finished)"
       change_status(InstallerStatus::IDLE)
     end
