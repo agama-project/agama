@@ -11,6 +11,17 @@ service. At first sight, we have identified these components:
 * A user interface. For this experiment, we have decided to use a
   [Cockpit](https://cockpit-project.org/) module.
 
+## Trying it
+
+To quickly see what it can do always use VM as it is still experimental. Boot to any OpenSUSE Tumbleweed
+!Live! image. And in that image open console and run
+
+    $ wget https://raw.githubusercontent.com/yast/the-installer/master/deploy.sh
+    $ # inspect content to ensure that nothing malicious is done there
+    $ sh deploy.sh
+
+TODO: use a url shortener
+
 ## Requirements
 
 To build and run this software you need a few tools. To install them on openSUSE
