@@ -86,6 +86,9 @@ module Yast2
       change_status(InstallerStatus::PROBING)
       probe_languages
       @software.probe
+      # first make bootloader proposal to be sure that required packages is installed
+      proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+      logger.info "Bootloader proposal #{proposal.inspect}"
       @software.propose
       probe_storage
       true
@@ -126,11 +129,12 @@ module Yast2
         Yast::WFM.CallFunction("inst_prepdisk", [])
       end
       progress.package_installation do |progr|
+        # call inst bootloader to get properly initialized bootloader
+        # sysconfig before package installation
+        Yast::WFM.CallFunction("inst_bootloader", [])
         @software.install(progr)
       end
       progress.bootloader_installation do |_|
-        proposal = ::Bootloader::ProposalClient.new.make_proposal({})
-        logger.info "Bootloader proposal #{proposal.inspect}"
         ::Bootloader::FinishClient.new.write
       end
       change_status(InstallerStatus::IDLE)
