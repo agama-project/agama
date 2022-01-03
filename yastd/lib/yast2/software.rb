@@ -52,6 +52,8 @@ module Yast2
       Yast::Pkg.SourceLoad
       @products = Y2Packager::Product.all
       @product = @products.first&.name
+      proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
+      @logger.info "proposal #{proposal["raw_proposal"]}"
 
       raise "No Product Available" unless @product
     end
