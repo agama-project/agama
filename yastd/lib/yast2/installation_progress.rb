@@ -84,7 +84,7 @@ module Yast2
 
     def report(title, step, substeps: 0, current_substep: 0)
       @logger&.info title
-      @dbus_obj&.report_progress(
+      @dbus_obj&.Progress(
         title, KNOWN_STEPS, step, substeps, current_substep
       )
     end
