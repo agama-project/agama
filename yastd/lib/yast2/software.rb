@@ -25,6 +25,7 @@ require "y2packager/product"
 
 Yast.import "Pkg"
 Yast.import "PackageInstallation"
+Yast.import "Stage"
 
 # YaST specific code lives under this namespace
 module Yast2
@@ -46,6 +47,8 @@ module Yast2
 
     def probe
       logger.info "Probing software"
+      # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
+      Yast::Stage.Set("normal")
       Yast::Pkg.TargetInitialize("/")
       Yast::Pkg.TargetLoad
       Yast::Pkg.SourceRestore
@@ -54,6 +57,7 @@ module Yast2
       @product = @products.first&.name
       proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
       @logger.info "proposal #{proposal["raw_proposal"]}"
+      Yast::Stage.Set("initial")
 
       raise "No Product Available" unless @product
     end
@@ -61,8 +65,11 @@ module Yast2
     def propose
       @products.find { |p| p.name == @product }.select
 
+      # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
+      Yast::Stage.Set("normal")
       proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
       @logger.info "proposal #{proposal["raw_proposal"]}"
+      Yast::Stage.Set("initial")
       # do not return proposal hash, so intentional nil here
       nil
     end
