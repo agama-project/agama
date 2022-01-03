@@ -59,7 +59,7 @@ module Yast2
     def propose
       @products.find { |p| p.name == @product }.select
 
-      proposal = Yast::Packages.Proposal(force_reset = true, reinit = true, _simple = true)
+      proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
       @logger.info "proposal #{proposal["raw_proposal"]}"
       # do not return proposal hash, so intentional nil here
       nil
