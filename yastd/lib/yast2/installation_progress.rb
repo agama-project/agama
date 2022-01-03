@@ -22,7 +22,7 @@
 # YaST specific code lives under this namespace
 module Yast2
   # This class represents the installer status
-  class InstallProgress
+  class InstallationProgress
     KNOWN_STEPS = 3 # keep it in sync with installer.rb
     def initialize(dbus_obj, logger: nil)
       @dbus_obj = dbus_obj
