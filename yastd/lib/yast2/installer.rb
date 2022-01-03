@@ -4,7 +4,7 @@ require "yast"
 require "y2storage"
 require "yast2/installer_status"
 require "yast2/software"
-require "yast2/progress"
+require "yast2/installation_progress"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
 require "dbus"
@@ -63,7 +63,6 @@ module Yast2
       @status = InstallerStatus::IDLE
       @logger = logger || Logger.new(STDOUT)
       @software = Software.new(@logger)
-      @progress = Progress.new(nil) # TODO: fix passing progress
       # Set stage to initial, so it will act as installer for some cases like
       # proposing installer instead of reading current one
       Yast::Stage.Set("initial")
@@ -120,20 +119,20 @@ module Yast2
     end
 
     def install
-      Yast::Installation.destdir = "/mnt"
-      logger.info "Installing(partitioning)"
-      change_status(InstallerStatus::PARTITIONING)
-      Yast::WFM.CallFunction("inst_prepdisk", [])
-      # Install software
-      logger.info "Installing(installing software)"
       change_status(InstallerStatus::INSTALLING)
-      @software.install(@progress)
-      # Install bootloader
-      logger.info "Installing(bootloader)"
-      proposal = ::Bootloader::ProposalClient.new.make_proposal({})
-      logger.info "Bootloader proposal #{proposal.inspect}"
-      ::Bootloader::FinishClient.new.write
-      logger.info "Installing(finished)"
+      progress = InstallationProgress.new(@dbus_obj, logger: logger)
+      Yast::Installation.destdir = "/mnt"
+      progress.partitioning do |_|
+        Yast::WFM.CallFunction("inst_prepdisk", [])
+      end
+      progress.package_installation do |progr|
+        @software.install(progr)
+      end
+      progress.bootloader_installation do |_|
+        proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+        logger.info "Bootloader proposal #{proposal.inspect}"
+        ::Bootloader::FinishClient.new.write
+      end
       change_status(InstallerStatus::IDLE)
     end
 
@@ -144,6 +143,10 @@ module Yast2
     # @return block [Proc] Code to run when the status changes
     def on_status_change(&block)
       @on_status_change = block
+    end
+
+    def dbus_obj=(obj)
+      @dbus_obj = obj
     end
 
   private

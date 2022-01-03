@@ -42,6 +42,8 @@ module Yast2
           self.StatusChanged(status.id)
         end
 
+        installer.dbus_obj = self
+
         super(*args)
       end
 

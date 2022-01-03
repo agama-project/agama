@@ -22,11 +22,49 @@
 # YaST specific code lives under this namespace
 module Yast2
   # This class represents the installer status
-  class Progress
-    def initialize(dbus_obj)
+  class InstallProgress
+    KNOWN_STEPS = 3 # keep it in sync with installer.rb
+    def initialize(dbus_obj, logger: nil)
       @dbus_obj = dbus_obj
+      @logger = logger
       @total_pkgs = 0
       @remaining_pkgs = 0
+    end
+
+    def partitioning(&block)
+      report(
+        # TODO: localization
+        "Partitioning target disk", 0
+      )
+      block.call(self)
+      report(
+        # TODO: localization
+        "Partitioning finished", 1
+      )
+    end
+
+    def package_installation(&block)
+      report(
+        # TODO: localization
+        "Starting to install packages", 1
+      )
+      block.call(self)
+      report(
+        # TODO: localization
+        "Package installation finished", 2
+      )
+    end
+
+    def bootloader_installation(&block)
+      report(
+        # TODO: localization
+        "Starting to deploy bootloader", 2
+      )
+      block.call(self)
+      report(
+        # TODO: localization
+        "Installation finished", 3
+      )
     end
 
     def packages_to_install=(value)
@@ -35,10 +73,19 @@ module Yast2
 
     def package_installed
       @remaining_pkgs -= 1
-      @dbus_obj&.report_progress(
+      report(
         # TODO: localization
         "Installing packages (#{@remaining_pkgs} remains)",
-        1, 0, @total_pkgs, @total_pkgs - @remaining_pkgs
+        1, substeps: @total_pkgs, current_substep: @total_pkgs - @remaining_pkgs
+      )
+    end
+
+  private
+
+    def report(title, step, substeps: 0, current_substep: 0)
+      @logger&.info title
+      @dbus_obj&.report_progress(
+        title, KNOWN_STEPS, step, substeps, current_substep
       )
     end
   end
