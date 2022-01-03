@@ -87,10 +87,6 @@ module Yast2
       probe_languages
       probe_storage
       @software.probe
-      # first make bootloader proposal to be sure that required packages is installed
-      proposal = ::Bootloader::ProposalClient.new.make_proposal({})
-      logger.info "Bootloader proposal #{proposal.inspect}"
-      @software.propose
       true
     rescue StandardError => e
       logger.error "Probing error: #{e.inspect}"
@@ -123,6 +119,13 @@ module Yast2
 
     def install
       change_status(InstallerStatus::INSTALLING)
+      # lets propose it here to be sure that software proposal reflects product selection
+      # FIXME: maybe repropose after product selection change?
+      # first make bootloader proposal to be sure that required packages is installed
+      proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+      logger.info "Bootloader proposal #{proposal.inspect}"
+      @software.propose
+
       progress = InstallationProgress.new(@dbus_obj, logger: logger)
       Yast::Installation.destdir = "/mnt"
       progress.partitioning do |_|

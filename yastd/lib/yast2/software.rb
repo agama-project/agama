@@ -51,12 +51,13 @@ module Yast2
       Yast::Pkg.SourceRestore
       Yast::Pkg.SourceLoad
       @products = Y2Packager::Product.all
-    end
-
-    def propose
       @product = @products.first&.name
 
       raise "No Product Available" unless @product
+    end
+
+    def propose
+      @products.find { |p| p.name == @product }.select
 
       Yast::Packages.Proposal(force_reset = true, reinit = true, _simple = true)
       # do not return proposal hash, so intentional nil here
