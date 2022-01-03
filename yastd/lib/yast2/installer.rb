@@ -85,12 +85,12 @@ module Yast2
     def probe
       change_status(InstallerStatus::PROBING)
       probe_languages
+      probe_storage
       @software.probe
       # first make bootloader proposal to be sure that required packages is installed
       proposal = ::Bootloader::ProposalClient.new.make_proposal({})
       logger.info "Bootloader proposal #{proposal.inspect}"
       @software.propose
-      probe_storage
       true
     rescue StandardError => e
       logger.error "Probing error: #{e.inspect}"
