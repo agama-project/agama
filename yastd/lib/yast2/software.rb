@@ -63,6 +63,7 @@ module Yast2
     end
 
     def propose
+      Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
       selected_product = @products.find { |p| p.name == @product }
       selected_product.select
       @logger.info "selected product #{selected_product.inspect}"
@@ -87,7 +88,6 @@ module Yast2
       PackageCallbacks.setup(progress)
 
       # TODO: error handling
-      Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
       commit_result = Yast::PackageInstallation.Commit({})
 
       if commit_result.nil? || commit_result.empty?
