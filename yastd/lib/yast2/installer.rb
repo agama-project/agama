@@ -119,6 +119,7 @@ module Yast2
 
     def install
       change_status(InstallerStatus::INSTALLING)
+      Yast::Installation.destdir = "/mnt"
       # lets propose it here to be sure that software proposal reflects product selection
       # FIXME: maybe repropose after product selection change?
       # first make bootloader proposal to be sure that required packages is installed
@@ -127,7 +128,6 @@ module Yast2
       @software.propose
 
       progress = InstallationProgress.new(@dbus_obj, logger: logger)
-      Yast::Installation.destdir = "/mnt"
       progress.partitioning do |_|
         Yast::WFM.CallFunction("inst_prepdisk", [])
       end
