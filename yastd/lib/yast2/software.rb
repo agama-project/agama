@@ -69,6 +69,8 @@ module Yast2
 
       # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
       Yast::Stage.Set("normal")
+      # FIXME: workaround to have at least reasonable proposal
+      Yast::PackagesProposal.AddResolvables("the-installer", :pattern, ["base", "enhanced_base"])
       proposal = Yast::Packages.Proposal(force_reset = false, reinit = false, _simple = true)
       @logger.info "proposal #{proposal["raw_proposal"]}"
       res = Yast::Pkg.PkgSolve(unused = true)
