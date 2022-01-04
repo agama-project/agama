@@ -71,6 +71,9 @@ module Yast2
       Yast::Stage.Set("normal")
       proposal = Yast::Packages.Proposal(force_reset = false, reinit = false, _simple = true)
       @logger.info "proposal #{proposal["raw_proposal"]}"
+      res = Yast::Pkg.PkgSolve(unused = true)
+      @logger.info "solver run #{res.inspect}"
+
       Yast::Stage.Set("initial")
       # do not return proposal hash, so intentional nil here
       nil
