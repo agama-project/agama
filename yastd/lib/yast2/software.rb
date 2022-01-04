@@ -63,11 +63,13 @@ module Yast2
     end
 
     def propose
-      @products.find { |p| p.name == @product }.select
+      selected_product = @products.find { |p| p.name == @product }
+      selected_product.select
+      @logger.info "selected product #{selected_product.inspect}"
 
       # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
       Yast::Stage.Set("normal")
-      proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
+      proposal = Yast::Packages.Proposal(force_reset = false, reinit = false, _simple = true)
       @logger.info "proposal #{proposal["raw_proposal"]}"
       Yast::Stage.Set("initial")
       # do not return proposal hash, so intentional nil here
