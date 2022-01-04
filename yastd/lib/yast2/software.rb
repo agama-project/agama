@@ -94,6 +94,8 @@ module Yast2
         log.error("Commit failed")
         raise Yast::Pkg.LastError
       end
+
+      @logger.info "Commit result #{commit_result}"
     end
 
   private
