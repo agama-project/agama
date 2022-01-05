@@ -91,7 +91,7 @@ module Yast2
       commit_result = Yast::PackageInstallation.Commit({})
 
       if commit_result.nil? || commit_result.empty?
-        log.error("Commit failed")
+        @logger.error("Commit failed")
         raise Yast::Pkg.LastError
       end
 
