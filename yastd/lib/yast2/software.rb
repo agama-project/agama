@@ -64,6 +64,7 @@ module Yast2
 
     def propose
       Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
+      Yast::Pkg.TargetLoad
       selected_product = @products.find { |p| p.name == @product }
       selected_product.select
       @logger.info "selected product #{selected_product.inspect}"
