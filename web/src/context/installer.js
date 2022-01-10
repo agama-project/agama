@@ -48,7 +48,7 @@ function useInstallerDispatch() {
 
 function InstallerProvider({ children }) {
   const [state, dispatch] = useRootReducer({
-    installation: React.useReducer(installationReducer, { status: "0" }),
+    installation: React.useReducer(installationReducer, { status: 0 }),
     storage: React.useReducer(storageReducer, { proposal: [], disks: [], disk: null }),
     l10n: React.useReducer(l10nReducer, { languages: [], language: null }),
     software: React.useReducer(softwareReducer, { products: [], product: null }),
@@ -105,6 +105,10 @@ function loadOptions(dispatch) {
   }).catch(console.error);
 }
 
+function updateProgress(dispatch, progress)  {
+  dispatch({ type: actionTypes.SET_PROGRESS, payload: progress });
+}
+
 function registerWebSocketHandler(handler) {
   installerClient().onMessage(handler);
 }
@@ -137,6 +141,7 @@ export {
   loadSoftware,
   loadDisks,
   loadOptions,
+  updateProgress,
   setOptions,
   startInstallation,
   registerWebSocketHandler

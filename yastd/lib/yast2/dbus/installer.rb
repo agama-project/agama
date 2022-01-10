@@ -104,6 +104,12 @@ module Yast2
           true
         end
 
+        # FIXME: should we merge progress and status?
+        # TODO: return the id and the name
+        dbus_method :GetStatus, "out status:n" do
+          installer.status.id
+        end
+
         dbus_signal :StatusChanged, "status:n"
       end
 
