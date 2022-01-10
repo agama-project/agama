@@ -33,7 +33,10 @@ export default class InstallerClient {
   }
 
   async getInstallation() {
-    return { status: 0 };
+    const { data }  = await axios.post(
+      `${this.url}/calls`, { meth: "GetStatus" }
+    );
+    return { status: data };
   }
 
   async getProducts() {
@@ -71,6 +74,13 @@ export default class InstallerClient {
     return Object.fromEntries(
       Object.entries(data[0]).map(([k, v]) => [k.toLowerCase(), v])
     )
+  }
+
+  async getStatus() {
+    const { data } = await axios.post(
+      `${this.url}/calls`, { meth: "GetStatus" }
+    );
+    return data;
   }
 
   async setOptions(opts) {

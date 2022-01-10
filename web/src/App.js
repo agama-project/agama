@@ -31,7 +31,8 @@ import {
 
 import {
   useInstallerState, useInstallerDispatch, loadInstallation, loadStorage, loadL10n, loadSoftware,
-  loadDisks, setOptions, loadOptions, registerWebSocketHandler, startInstallation
+  loadDisks, setOptions, loadOptions, updateProgress, registerWebSocketHandler,
+  startInstallation
 } from './context/installer';
 
 const STEPS = 3; // fake number of installation steps
@@ -49,9 +50,11 @@ function App() {
     loadInstallation(dispatch);
     registerWebSocketHandler(event => {
       // TODO: handle other events
-      console.log("WebSocket Event", event);
+      console.debug("WebSocket Event", event);
       const { data } = event;
-      const changedKeys = Object.keys(JSON.parse(data));
+      const payload = JSON.parse(data);
+
+      const changedKeys = Object.keys(payload);
       if (changedKeys.includes("Disk")) {
         loadStorage(dispatch);
       }
@@ -59,10 +62,15 @@ function App() {
       if (changedKeys.includes("Status")) {
         loadInstallation(dispatch);
       }
+
+      if (payload.event == "Progress") {
+        updateProgress(dispatch, payload.progress);
+      }
     });
   }, []);
 
-  const isInstalling = installation.status != "0";
+  const isInstalling = installation.status != 0;
+  const { progress } = installation;
 
   return (
     <ChakraProvider theme={theme}>
@@ -99,9 +107,12 @@ function App() {
               />
             </Category>
 
-            { isInstalling &&
+            { isInstalling && progress &&
               <Category title="Progress" icon={Clock} >
-                <Progress hasStripe value={Math.round(parseInt(installation.status) / STEPS * 100)} />
+                <Text>Installing</Text>
+                <Progress hasStripe value={Math.round(progress.step / progress.steps * 100)} />
+                <Text>{ progress.title }</Text>
+                <Progress hasStripe value={Math.round(progress.substep / progress.substeps * 100)} />
               </Category> }
           </VStack>
 

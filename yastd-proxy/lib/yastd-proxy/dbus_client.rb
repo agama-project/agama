@@ -91,6 +91,12 @@ module Yast2
       end
     end
 
+    def on_progress(&block)
+      installer_obj[PROPERTIES_IFACE].on_signal("Progress") do |*args|
+        block.call(*args)
+      end
+    end
+
     # Dispatch the message queue in a non-blocking fashion
     #
     # This method runs any callback defined using the #on_property_change for
