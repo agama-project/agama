@@ -42,6 +42,8 @@ module Yast2
           self.StatusChanged(status.id)
         end
 
+        installer.dbus_obj = self
+
         super(*args)
       end
 
@@ -170,7 +172,7 @@ module Yast2
         # - total_substeps: total count of smaller steps done as part of big step. Can be 0, which means no substeps defined
         # - current_substep: current substep. Always in range of 0..total_substeps
         dbus_signal :Progress,
-          "message:s, total_steps:t, current_step: t, total_substeps: t, current_substep: t"
+          "message:s, total_steps:t, current_step:t, total_substeps:t, current_substep:t"
       end
     end
   end

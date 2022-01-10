@@ -27,7 +27,7 @@ TODO: use a url shortener
 To build and run this software you need a few tools. To install them on openSUSE
 Tumbleweed just type:
 
-    $ sudo zypper in gcc gcc-c++ make openssl-devel ruby-devel npm
+    $ sudo zypper in gcc gcc-c++ make openssl-devel ruby-devel augeas-devel npm
 
 ## yastd
 

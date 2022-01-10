@@ -4,8 +4,8 @@ source "https://rubygems.org"
 
 gem "rake"
 gem "ruby-dbus"
+gem "rexml" # dependency of dbus
 gem "eventmachine"
-gem "nokogiri"
 
 # Required by YaST
 gem "cheetah"
