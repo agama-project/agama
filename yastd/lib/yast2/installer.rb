@@ -138,6 +138,7 @@ module Yast2
         @software.install(progr)
       end
       progress.bootloader_installation do |_|
+        Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr"), false)
         ::Bootloader::FinishClient.new.write
       end
       change_status(InstallerStatus::IDLE)
