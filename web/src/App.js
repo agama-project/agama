@@ -59,7 +59,8 @@ function App() {
         loadStorage(dispatch);
       }
 
-      if (changedKeys.includes("Status")) {
+      // FIXME: use the status_id from the event
+      if (payload.event == "StatusChanged") {
         loadInstallation(dispatch);
       }
 
