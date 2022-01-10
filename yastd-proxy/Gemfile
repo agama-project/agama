@@ -10,3 +10,4 @@ gem "sinatra"
 gem "sinatra-cors"
 gem "ruby-dbus", require: "dbus"
 gem "thin"
+gem "rexml" # ruby3 has it as separate gem
