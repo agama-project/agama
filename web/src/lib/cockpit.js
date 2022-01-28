@@ -17,15 +17,6 @@
  * along with Cockpit; If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * WARNING: This is a legacy part of cockpit retained for backwards compatibility
- * Newer code should not include cockpit.css, but let's not break API on RHEL 8
- */
-import "../lib/patternfly/patternfly-cockpit.scss";
-import "../lib/page.scss";
-import "@patternfly/patternfly/components/Button/button.css";
-import "../lib/table.css";
-
 /* eslint-disable indent,no-empty */
 
 let url_root;
