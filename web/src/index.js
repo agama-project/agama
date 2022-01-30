@@ -1,4 +1,3 @@
-import { ColorModeScript } from '@chakra-ui/react';
 import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
@@ -6,12 +5,15 @@ import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
 import { InstallerProvider } from './context/installer';
 
+// Import PatternFly CSS
+import "@patternfly/react-core/dist/styles/base.css";
+import "@patternfly/patternfly/patternfly.css";
+
 ReactDOM.render(
   <StrictMode>
-    <ColorModeScript />
-      <InstallerProvider>
-        <App />
-      </InstallerProvider>
+    <InstallerProvider>
+      <App />
+    </InstallerProvider>
   </StrictMode>,
   document.getElementById('root')
 );

@@ -1,17 +1,16 @@
 import {
-  Box,
-  Text,
-  Table,
+  TableComposable,
   Thead,
-  Tbody,
   Tr,
   Th,
+  Tbody,
   Td
-} from '@chakra-ui/react';
+} from '@patternfly/react-table';
 
 import filesize from 'filesize';
 
 const Proposal = ({data = []}) => {
+  // FIXME: use better key for tr, mount can be empty
   const renderProposal = () => {
     return data.map(p => {
       return (
@@ -19,18 +18,18 @@ const Proposal = ({data = []}) => {
           <Td>{p.mount}</Td>
           <Td>{p.type}</Td>
           <Td>{p.device}</Td>
-          <Td isNumeric>{filesize(p.size)}</Td>
+          <Td>{filesize(p.size)}</Td>
         </Tr>
       );
     })
   }
 
-  if (data.length == 0) {
+  if (data.length === 0) {
     return null;
   };
 
   return (
-    <Table variant="simple" size="sm" minW="100%" colorScheme="blackAlpha">
+    <TableComposable variant="compact">
       <Thead>
         <Tr>
           <Th>Mount point</Th>
@@ -42,7 +41,7 @@ const Proposal = ({data = []}) => {
       <Tbody>
         { renderProposal() }
       </Tbody>
-    </Table>
+    </TableComposable>
   );
 }
 
