@@ -5,9 +5,7 @@ import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
 import { InstallerProvider } from './context/installer';
 
-// Import PatternFly CSS
-import "@patternfly/react-core/dist/styles/base.css";
-import "@patternfly/patternfly/patternfly.css";
+import "./app.scss";
 
 ReactDOM.render(
   <StrictMode>
