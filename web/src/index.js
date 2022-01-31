@@ -4,14 +4,17 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
 import { InstallerProvider } from './context/installer';
+import { AuthProvider } from './context/auth';
 
 import "./app.scss";
 
 ReactDOM.render(
   <StrictMode>
-    <InstallerProvider>
-      <App />
-    </InstallerProvider>
+    <AuthProvider>
+      <InstallerProvider>
+        <App />
+      </InstallerProvider>
+    </AuthProvider>
   </StrictMode>,
   document.getElementById('root')
 );

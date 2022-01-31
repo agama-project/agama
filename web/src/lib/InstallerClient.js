@@ -22,14 +22,31 @@
 import axios from 'axios';
 
 export default class InstallerClient {
-  constructor({ url, ws }) {
-    this.url = url;
-    this.socket = new WebSocket(`${ws}`);
-    this.socket.onclose = () => console.log("The socket was closed");
+  constructor() {
+    // this.socket = new WebSocket(`${ws}`);
+    // this.socket.onclose = () => console.log("The socket was closed");
   }
 
   onMessage(handler) {
     this.socket.addEventListener("message", handler);
+  }
+
+  authorize(username, password) {
+    const auth = window.btoa(`${username}:${password}`);
+
+    return new Promise((resolve, reject) => {
+      return fetch(
+        "/cockpit/login", { headers: {
+          Authorization: `Basic ${auth}`,
+          "X-Superuser": "any"
+        }}).then(resp => {
+          if (resp.status == 200) {
+            resolve();
+          } else {
+            reject(resp.statusText);
+          }
+        });
+    });
   }
 
   async getInstallation() {
