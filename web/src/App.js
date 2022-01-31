@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import {
   Button,
@@ -29,8 +29,6 @@ import {
   startInstallation
 } from './context/installer';
 
-const STEPS = 3; // fake number of installation steps
-
 function App() {
   const dispatch = useInstallerDispatch();
   const { installation, storage, l10n, software } = useInstallerState();
@@ -54,17 +52,17 @@ function App() {
       }
 
       // FIXME: use the status_id from the event
-      if (payload.event == "StatusChanged") {
+      if (payload.event === "StatusChanged") {
         loadInstallation(dispatch);
       }
 
-      if (payload.event == "Progress") {
+      if (payload.event === "Progress") {
         updateProgress(dispatch, payload.progress);
       }
     });
   }, []);
 
-  const isInstalling = installation.status != 0;
+  const isInstalling = installation.status !== 0;
   const { progress } = installation;
 
   return (
