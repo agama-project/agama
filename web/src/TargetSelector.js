@@ -2,33 +2,26 @@ import { useState } from 'react';
 
 import {
   Button,
-  FormControl,
-  FormLabel,
-  FormHelperText,
-  Link,
+  Form,
+  FormGroup,
+  FormSelect,
+  FormSelectOption,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Select,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react"
+  ModalVariant
+} from "@patternfly/react-core"
 
 export default function TargetSelector({ value, options = {}, onChange = () => {} }) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isFormOpen, setFormOpen] = useState(false);
   const [target, setTarget] = useState(value);
   const targets = Object.values(options);
 
-  // FIXME: find other way to keep installer option in sync while using the
-  // controlled React select#value=
-  // (https://reactjs.org/docs/forms.html#the-select-tag)
-  const open = () => {
+  const onOpen = () => {
     setTarget(value);
-    onOpen();
+    setFormOpen(true);
+  }
+
+  const onClose = () => {
+    setFormOpen(false);
   }
 
   const applyChanges = () => {
@@ -40,48 +33,49 @@ export default function TargetSelector({ value, options = {}, onChange = () => {
     const selectorOptions = targets.map(target => {
       const { name } = target
 
-      return <option key={name} value={name}>
-        {name}
-      </option>
+      return <FormSelectOption key={name} value={name} label={name} />
     });
 
     return (
-      <Select
+      <FormSelect
         value={target}
-        onChange={(e) => setTarget(e.target.value)}>
+        onChange={(value) => setTarget(value)}
+        aria-label="target"
+      >
         {selectorOptions}
-      </Select>
+      </FormSelect>
     );
   };
 
   return (
     <>
-      <Link color="teal" onClick={open}>
-        <Text fontSize="lg">{value}</Text>
-      </Link>
+      <Button variant="link" onClick={onOpen}>
+        {value}
+      </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Target Selector</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl id="target">
-              <FormLabel>Select desired target</FormLabel>
-              { buildSelector() }
-              <FormHelperText>
-                Product will be installed in selected target
-              </FormHelperText>
-            </FormControl>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="teal" mr={3} onClick={applyChanges}>
-              Save
-            </Button>
-            <Button variant="ghost" onClick={onClose}>Cancel</Button>
-          </ModalFooter>
-        </ModalContent>
+      <Modal
+        isOpen={isFormOpen}
+        showClose={false}
+        variant={ModalVariant.small}
+        title="Target Selector"
+        actions={[
+          <Button key="confirm" variant="primary" onClick={applyChanges}>
+            Confirm
+          </Button>,
+          <Button key="cancel" variant="link" onClick={onClose}>
+            Cancel
+          </Button>
+        ]}
+      >
+        <Form>
+          <FormGroup
+            fieldId="target"
+            label="Select target"
+            helperText="Product will be installed in selected target"
+          >
+            { buildSelector() }
+          </FormGroup>
+        </Form>
       </Modal>
     </>
   )
