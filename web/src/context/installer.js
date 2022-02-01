@@ -20,7 +20,7 @@
  */
 
 import React from 'react';
-import { installationReducer, storageReducer, l10nReducer, softwareReducer } from './reducers';
+import { installationReducer, storageReducer, softwareReducer } from './reducers';
 import useRootReducer from 'use-root-reducer';
 import InstallerClient from '../lib/InstallerClient';
 import actionTypes from './actionTypes';
@@ -59,9 +59,8 @@ function useInstallerClient() {
 function InstallerProvider({ client, children }) {
   const installerClient = client || new InstallerClient();
   const [state, dispatch] = useRootReducer({
-    installation: React.useReducer(installationReducer, { status: 0 }),
+    installation: React.useReducer(installationReducer, { status: 0, options: {} }),
     storage: React.useReducer(storageReducer, { proposal: [], disks: [], disk: null }),
-    l10n: React.useReducer(l10nReducer, { languages: [], language: null }),
     software: React.useReducer(softwareReducer, { products: [], product: null }),
   });
 
@@ -85,12 +84,6 @@ function setStatus(dispatch) {
 function loadSoftware(dispatch) {
   installerClient().getProducts().then(products => {
     dispatch({ type: actionTypes.LOAD_PRODUCTS, payload: products })
-  }).catch(console.error);
-}
-
-function loadL10n(dispatch) {
-  installerClient().getLanguages().then(languages => {
-    dispatch({ type: actionTypes.LOAD_LANGUAGES, payload: languages })
   }).catch(console.error);
 }
 
@@ -153,7 +146,6 @@ export {
   useInstallerClient,
   setStatus,
   loadStorage,
-  loadL10n,
   loadSoftware,
   loadDisks,
   loadOptions,

@@ -24,19 +24,19 @@ import {
 } from 'eos-icons-react'
 
 import {
-  useInstallerState, useInstallerDispatch, setStatus, loadStorage, loadL10n, loadSoftware,
+  useInstallerState, useInstallerDispatch, setStatus, loadStorage, loadSoftware,
   loadDisks, setOptions, loadOptions, updateProgress, registerPropertyChangedHandler,
   registerSignalHandler, startInstallation
 } from './context/installer';
 
 function Overview() {
   const dispatch = useInstallerDispatch();
-  const { installation, storage, l10n, software } = useInstallerState();
+  const { installation, storage, software } = useInstallerState();
+  const { language } = installation.options;
 
   useEffect(() => {
     loadStorage(dispatch);
     loadDisks(dispatch);
-    loadL10n(dispatch);
     loadSoftware(dispatch);
     loadOptions(dispatch);
     setStatus(dispatch);
@@ -77,8 +77,7 @@ function Overview() {
         <StackItem>
           <Category title="Language" icon={LanguagesSelectionIcon}>
             <LanguageSelector
-              value={l10n.language || "Select language"}
-              options={l10n.languages}
+              value={language || "Select language"}
               onChange={(language) => setOptions({ language }, dispatch)}
             />
           </Category>

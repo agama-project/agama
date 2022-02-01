@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useInstallerClient } from './context/installer';
 
 import {
   Button,
@@ -10,9 +11,15 @@ import {
   ModalVariant
 } from "@patternfly/react-core"
 
-export default function LanguageSelector({ value, options = [], onChange = () => {} }) {
+export default function LanguageSelector({ value, onChange = () => {} }) {
   const [isFormOpen, setFormOpen] = useState(false);
   const [language, setLanguage] = useState(value);
+  const [options, setOptions] = useState([]);
+  const client = useInstallerClient();
+
+  useEffect(() => {
+    client.getLanguages().then(setOptions);
+  }, []);
 
   const onOpen = () => {
     setLanguage(value);

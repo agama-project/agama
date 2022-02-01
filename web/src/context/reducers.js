@@ -32,6 +32,11 @@ export function installationReducer(state, action) {
       return { ...state, progress: { title, steps, step, substeps, substep } };
     }
 
+    case actionTypes.SET_OPTIONS: {
+      const { options } = state;
+      return { ...state, options: { ...options, ...action.payload } };
+    }
+
     default: {
       return state;
     }
@@ -46,22 +51,6 @@ export function softwareReducer(state, action) {
 
     case actionTypes.SET_OPTIONS: {
       return { ...state, product: (action.payload.product || state.product) }
-    }
-
-    default: {
-      return state;
-    }
-  }
-}
-
-export function l10nReducer(state, action) {
-  switch (action.type) {
-    case actionTypes.LOAD_LANGUAGES: {
-      return { ...state, languages: action.payload }
-    }
-
-    case actionTypes.SET_OPTIONS: {
-      return { ...state, language: (action.payload.language || state.language) }
     }
 
     default: {
