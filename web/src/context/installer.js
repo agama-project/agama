@@ -27,6 +27,7 @@ import actionTypes from './actionTypes';
 
 const InstallerStateContext = React.createContext();
 const InstallerDispatchContext = React.createContext();
+const InstallerContext = React.createContext();
 
 function useInstallerState() {
   const context = React.useContext(InstallerStateContext);
@@ -46,7 +47,17 @@ function useInstallerDispatch() {
   return context;
 }
 
-function InstallerProvider({ children }) {
+function useInstallerClient() {
+  const context = React.useContext(InstallerContext);
+  if (!context) {
+    throw new Error('useInstallerDispatch must be used within a InstallerProvider');
+  }
+
+  return context;
+}
+
+function InstallerProvider({ client, children }) {
+  const installerClient = client || new InstallerClient();
   const [state, dispatch] = useRootReducer({
     installation: React.useReducer(installationReducer, { status: 0 }),
     storage: React.useReducer(storageReducer, { proposal: [], disks: [], disk: null }),
@@ -55,11 +66,13 @@ function InstallerProvider({ children }) {
   });
 
   return (
-    <InstallerStateContext.Provider value={state}>
-      <InstallerDispatchContext.Provider value={dispatch}>
+    <InstallerContext.Provider value={installerClient}>
+      <InstallerStateContext.Provider value={state}>
+        <InstallerDispatchContext.Provider value={dispatch}>
         {children}
-      </InstallerDispatchContext.Provider>
-    </InstallerStateContext.Provider>
+        </InstallerDispatchContext.Provider>
+      </InstallerStateContext.Provider>
+    </InstallerContext.Provider>
   );
 }
 
@@ -137,6 +150,7 @@ export {
   InstallerProvider,
   useInstallerState,
   useInstallerDispatch,
+  useInstallerClient,
   setStatus,
   loadStorage,
   loadL10n,
