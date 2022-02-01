@@ -20,7 +20,7 @@
  */
 
 import React from 'react';
-import { installationReducer, storageReducer, softwareReducer } from './reducers';
+import { installationReducer } from './reducers';
 import useRootReducer from 'use-root-reducer';
 import InstallerClient from '../lib/InstallerClient';
 import actionTypes from './actionTypes';
@@ -60,7 +60,6 @@ function InstallerProvider({ client, children }) {
   const installerClient = client || new InstallerClient();
   const [state, dispatch] = useRootReducer({
     installation: React.useReducer(installationReducer, { status: 0, options: {} }),
-    storage: React.useReducer(storageReducer, { proposal: [], disks: [], disk: null }),
   });
 
   return (
@@ -77,18 +76,6 @@ function InstallerProvider({ client, children }) {
 function setStatus(dispatch) {
   installerClient().getStatus().then(installation => {
     dispatch({ type: actionTypes.SET_STATUS, payload: installation })
-  }).catch(console.error);
-}
-
-function loadStorage(dispatch) {
-  installerClient().getStorage().then(storage => {
-    dispatch({ type: actionTypes.LOAD_STORAGE, payload: storage })
-  }).catch(console.error);
-}
-
-function loadDisks(dispatch) {
-  installerClient().getDisks().then(disks => {
-    dispatch({ type: actionTypes.LOAD_DISKS, payload: disks })
   }).catch(console.error);
 }
 
@@ -138,8 +125,6 @@ export {
   useInstallerDispatch,
   useInstallerClient,
   setStatus,
-  loadStorage,
-  loadDisks,
   loadOptions,
   updateProgress,
   setOptions,

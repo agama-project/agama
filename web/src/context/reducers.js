@@ -42,23 +42,3 @@ export function installationReducer(state, action) {
     }
   }
 }
-
-export function storageReducer(state, action) {
-  switch (action.type) {
-    case actionTypes.LOAD_STORAGE: {
-      return { ...state, proposal: action.payload }
-    }
-
-    case actionTypes.LOAD_DISKS: {
-      return { ...state, disks: action.payload }
-    }
-
-    case actionTypes.SET_OPTIONS: {
-      return { ...state, disk: (action.payload.disk || state.disk) }
-    }
-
-    default: {
-      return state;
-    }
-  }
-}

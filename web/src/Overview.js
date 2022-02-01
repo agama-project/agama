@@ -12,9 +12,8 @@ import {
 
 import Category from './Category';
 import LanguageSelector from './LanguageSelector';
-import TargetSelector from './TargetSelector';
 import ProductSelector from './ProductSelector';
-import Proposal from './Proposal';
+import Storage from './Storage';
 
 import {
   EOS_TRANSLATE as LanguagesSelectionIcon,
@@ -24,29 +23,18 @@ import {
 } from 'eos-icons-react'
 
 import {
-  useInstallerState, useInstallerDispatch, setStatus, loadStorage, 
-  loadDisks, setOptions, loadOptions, updateProgress, registerPropertyChangedHandler,
-  registerSignalHandler, startInstallation
+  useInstallerState, useInstallerDispatch, setStatus, setOptions, loadOptions,
+  updateProgress, registerSignalHandler, startInstallation
 } from './context/installer';
 
 function Overview() {
   const dispatch = useInstallerDispatch();
-  const { installation, storage } = useInstallerState();
-  const { language, product } = installation.options;
+  const { installation } = useInstallerState();
+  const { language, product, disk } = installation.options;
 
   useEffect(() => {
-    loadStorage(dispatch);
-    loadDisks(dispatch);
     loadOptions(dispatch);
     setStatus(dispatch);
-
-    // TODO: abstract D-Bus details
-    registerPropertyChangedHandler((_path, iface, _signal, args) => {
-      const [_, changes] = args;
-      if (Object.keys(changes).includes("Disk")) {
-        loadStorage(dispatch);
-      }
-    });
 
     registerSignalHandler('StatusChanged', () => {
       // FIXME: use the status_id from the event
@@ -84,12 +72,7 @@ function Overview() {
 
         <StackItem>
           <Category title="Target" icon={HardDriveIcon}>
-            <TargetSelector
-              value={storage.disk || "Select target"}
-              options={storage.disks}
-              onChange={disk => setOptions({ disk }, dispatch)}
-            />
-            <Proposal data={storage.proposal}/>
+            <Storage value={disk} onChange={disk => setOptions({ disk }, dispatch)} />
           </Category>
         </StackItem>
 
