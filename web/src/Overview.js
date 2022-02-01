@@ -24,20 +24,19 @@ import {
 } from 'eos-icons-react'
 
 import {
-  useInstallerState, useInstallerDispatch, setStatus, loadStorage, loadSoftware,
+  useInstallerState, useInstallerDispatch, setStatus, loadStorage, 
   loadDisks, setOptions, loadOptions, updateProgress, registerPropertyChangedHandler,
   registerSignalHandler, startInstallation
 } from './context/installer';
 
 function Overview() {
   const dispatch = useInstallerDispatch();
-  const { installation, storage, software } = useInstallerState();
-  const { language } = installation.options;
+  const { installation, storage } = useInstallerState();
+  const { language, product } = installation.options;
 
   useEffect(() => {
     loadStorage(dispatch);
     loadDisks(dispatch);
-    loadSoftware(dispatch);
     loadOptions(dispatch);
     setStatus(dispatch);
 
@@ -97,8 +96,7 @@ function Overview() {
         <StackItem>
           <Category title="Product" icon={ProductsIcon}>
             <ProductSelector
-              value={software.product || "Select a product"}
-              options={software.products}
+              value={product || "Select a product"}
               onChange={(product) => setOptions({ product }, dispatch)}
             />
           </Category>

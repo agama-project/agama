@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useInstallerClient } from './context/installer';
 
 import {
   Button,
@@ -10,10 +11,15 @@ import {
   ModalVariant
 } from "@patternfly/react-core"
 
-export default function ProductSelector({ value, options = {}, onChange = () => {} }) {
+export default function ProductSelector({ value, onChange = () => {} }) {
   const [isFormOpen, setFormOpen] = useState(false);
   const [product, setProduct] = useState(value);
-  const products = Object.values(options);
+  const [products, setProducts] = useState([]);
+  const client = useInstallerClient();
+
+  useEffect(() => {
+    client.getProducts().then(setProducts);
+  }, []);
 
   const onOpen = () => {
     setProduct(value);

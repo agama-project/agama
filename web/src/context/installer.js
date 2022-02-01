@@ -61,7 +61,6 @@ function InstallerProvider({ client, children }) {
   const [state, dispatch] = useRootReducer({
     installation: React.useReducer(installationReducer, { status: 0, options: {} }),
     storage: React.useReducer(storageReducer, { proposal: [], disks: [], disk: null }),
-    software: React.useReducer(softwareReducer, { products: [], product: null }),
   });
 
   return (
@@ -78,12 +77,6 @@ function InstallerProvider({ client, children }) {
 function setStatus(dispatch) {
   installerClient().getStatus().then(installation => {
     dispatch({ type: actionTypes.SET_STATUS, payload: installation })
-  }).catch(console.error);
-}
-
-function loadSoftware(dispatch) {
-  installerClient().getProducts().then(products => {
-    dispatch({ type: actionTypes.LOAD_PRODUCTS, payload: products })
   }).catch(console.error);
 }
 
@@ -146,7 +139,6 @@ export {
   useInstallerClient,
   setStatus,
   loadStorage,
-  loadSoftware,
   loadDisks,
   loadOptions,
   updateProgress,

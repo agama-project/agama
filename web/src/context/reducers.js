@@ -43,22 +43,6 @@ export function installationReducer(state, action) {
   }
 }
 
-export function softwareReducer(state, action) {
-  switch (action.type) {
-    case actionTypes.LOAD_PRODUCTS: {
-      return { ...state, products: action.payload }
-    }
-
-    case actionTypes.SET_OPTIONS: {
-      return { ...state, product: (action.payload.product || state.product) }
-    }
-
-    default: {
-      return state;
-    }
-  }
-}
-
 export function storageReducer(state, action) {
   switch (action.type) {
     case actionTypes.LOAD_STORAGE: {
