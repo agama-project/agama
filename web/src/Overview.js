@@ -24,9 +24,9 @@ import {
 } from 'eos-icons-react'
 
 import {
-  useInstallerState, useInstallerDispatch, loadInstallation, loadStorage, loadL10n, loadSoftware,
-  loadDisks, setOptions, loadOptions, updateProgress, registerWebSocketHandler,
-  startInstallation
+  useInstallerState, useInstallerDispatch, setStatus, loadStorage, loadL10n, loadSoftware,
+  loadDisks, setOptions, loadOptions, updateProgress, registerPropertyChangedHandler,
+  registerSignalHandler, startInstallation
 } from './context/installer';
 
 function Overview() {
@@ -39,27 +39,27 @@ function Overview() {
     loadL10n(dispatch);
     loadSoftware(dispatch);
     loadOptions(dispatch);
-    loadInstallation(dispatch);
-    registerWebSocketHandler(event => {
-      // TODO: handle other events
-      console.debug("WebSocket Event", event);
-      const { data } = event;
-      const payload = JSON.parse(data);
+    setStatus(dispatch);
 
-      const changedKeys = Object.keys(payload);
-      if (changedKeys.includes("Disk")) {
+    // TODO: abstract D-Bus details
+    registerPropertyChangedHandler((_path, iface, _signal, args) => {
+      const [_, changes] = args;
+      if (Object.keys(changes).includes("Disk")) {
         loadStorage(dispatch);
       }
-
-      // FIXME: use the status_id from the event
-      if (payload.event === "StatusChanged") {
-        loadInstallation(dispatch);
-      }
-
-      if (payload.event === "Progress") {
-        updateProgress(dispatch, payload.progress);
-      }
     });
+
+    registerSignalHandler('StatusChanged', () => {
+      // FIXME: use the status_id from the event
+      setStatus(dispatch);
+    });
+
+    registerSignalHandler('Progress', (_path, _iface, _signal, args) => {
+      const [title, steps, step, substeps, substep] = args;
+      const progress = { title, steps, step, substeps, substep };
+      updateProgress(dispatch, progress);
+    });
+
   }, []);
 
   const isInstalling = installation.status !== 0;

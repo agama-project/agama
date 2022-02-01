@@ -7,6 +7,10 @@ module.exports = function(app) {
       target: 'http://localhost:9090',
     })
   );
+  app.use(
+    createProxyMiddleware('/cockpit/socket', {
+      target: 'ws://localhost:9090',
+      ws: true
     })
   );
 };

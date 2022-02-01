@@ -63,9 +63,9 @@ function InstallerProvider({ children }) {
   );
 }
 
-function loadInstallation(dispatch) {
-  installerClient().getInstallation().then(installation => {
-    dispatch({ type: actionTypes.LOAD_INSTALLATION, payload: installation })
+function setStatus(dispatch) {
+  installerClient().getStatus().then(installation => {
+    dispatch({ type: actionTypes.SET_STATUS, payload: installation })
   }).catch(console.error);
 }
 
@@ -109,8 +109,12 @@ function updateProgress(dispatch, progress)  {
   dispatch({ type: actionTypes.SET_PROGRESS, payload: progress });
 }
 
-function registerWebSocketHandler(handler) {
-  installerClient().onMessage(handler);
+function registerPropertyChangedHandler(handler) {
+  installerClient().onPropertyChanged(handler);
+}
+
+function registerSignalHandler(signal, handler) {
+  installerClient().onSignal(signal, handler);
 }
 
 function startInstallation(_dispatch) {
@@ -125,9 +129,7 @@ let _installerClient;
 const installerClient = () => {
     if (_installerClient) return _installerClient;
 
-    _installerClient = new InstallerClient({
-      url: 'http://localhost:3001', ws: 'ws://localhost:3002'
-    });
+    _installerClient = new InstallerClient();
     return _installerClient;
 };
 
@@ -135,7 +137,7 @@ export {
   InstallerProvider,
   useInstallerState,
   useInstallerDispatch,
-  loadInstallation,
+  setStatus,
   loadStorage,
   loadL10n,
   loadSoftware,
@@ -144,5 +146,6 @@ export {
   updateProgress,
   setOptions,
   startInstallation,
-  registerWebSocketHandler
+  registerPropertyChangedHandler,
+  registerSignalHandler
 };
