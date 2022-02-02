@@ -51,7 +51,7 @@ To run the service, type:
     $ bundle install
     $ sudo bunle exec bin/yastd
 
-To check that everything `yastd` is working, you can use a tool like
+To check that `yastd` is working, you can use a tool like
 [busctl](https://www.freedesktop.org/wiki/Software/dbus/) (or
 [D-Feet](https://wiki.gnome.org/Apps/DFeet) if you prefer a graphical one:
 
