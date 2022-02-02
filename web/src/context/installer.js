@@ -21,7 +21,6 @@
 
 import React from 'react';
 import { installationReducer } from './reducers';
-import useRootReducer from 'use-root-reducer';
 import InstallerClient from '../lib/InstallerClient';
 import actionTypes from './actionTypes';
 
@@ -58,9 +57,9 @@ function useInstallerClient() {
 
 function InstallerProvider({ client, children }) {
   const installerClient = client || new InstallerClient();
-  const [state, dispatch] = useRootReducer({
-    installation: React.useReducer(installationReducer, { status: 0, options: {} }),
-  });
+  const [state, dispatch] = React.useReducer(
+    installationReducer, { status: 0, options: {} }
+  );
 
   return (
     <InstallerContext.Provider value={installerClient}>

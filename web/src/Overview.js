@@ -29,7 +29,7 @@ import {
 
 function Overview() {
   const dispatch = useInstallerDispatch();
-  const { installation } = useInstallerState();
+  const installation = useInstallerState();
   const { language, product, disk } = installation.options;
 
   useEffect(() => {
