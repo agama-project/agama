@@ -23,8 +23,7 @@ image](https://get.opensuse.org/tumbleweed) and, in the console, type:
     $ # inspect content to ensure that nothing malicious is done there
     $ sh deploy.sh
 
-Now point your browser to http://localhost:9090/cockpit/static/installer/index.html
-and log in with `linux`/`linux`.
+This process may take a while. Use `linux`/`linux` when the browser opens the log in form.
 
 The *Setup* section explains how to set-up the installer manually.
 
@@ -95,7 +94,7 @@ Point your browser to http://localhost:3000 and happy hacking!
     $ sudo mkdir /usr/share/cockpit/static/installer
     $ sudo mount -o bind build /usr/share/cockpit/static/installer
 
-Point your browser to http://localhost:9090/cockpit/static/installer and enjoy!
+Point your browser to http://localhost:9090/cockpit/static/installer/index.html and enjoy!
 
 ## References
 
