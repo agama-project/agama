@@ -6,7 +6,7 @@ function App() {
   const { state: { loggedIn } } = useAuthContext();
 
   const Component = loggedIn ? Overview : LoginForm;
-  return <Component/>;
+  return <Component />;
 }
 
 export default App;

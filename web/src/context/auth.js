@@ -80,7 +80,6 @@ function useAuthContext() {
 
   return {
     state,
-    dispatch,
     login,
     logout
   }
