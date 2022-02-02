@@ -20,13 +20,13 @@
  */
 
 import React from 'react';
-import { installationReducer, storageReducer, l10nReducer, softwareReducer } from './reducers';
-import useRootReducer from 'use-root-reducer';
+import { installationReducer } from './reducers';
 import InstallerClient from '../lib/InstallerClient';
 import actionTypes from './actionTypes';
 
 const InstallerStateContext = React.createContext();
 const InstallerDispatchContext = React.createContext();
+const InstallerContext = React.createContext();
 
 function useInstallerState() {
   const context = React.useContext(InstallerStateContext);
@@ -46,50 +46,35 @@ function useInstallerDispatch() {
   return context;
 }
 
-function InstallerProvider({ children }) {
-  const [state, dispatch] = useRootReducer({
-    installation: React.useReducer(installationReducer, { status: 0 }),
-    storage: React.useReducer(storageReducer, { proposal: [], disks: [], disk: null }),
-    l10n: React.useReducer(l10nReducer, { languages: [], language: null }),
-    software: React.useReducer(softwareReducer, { products: [], product: null }),
-  });
+function useInstallerClient() {
+  const context = React.useContext(InstallerContext);
+  if (!context) {
+    throw new Error('useInstallerDispatch must be used within a InstallerProvider');
+  }
+
+  return context;
+}
+
+function InstallerProvider({ client, children }) {
+  const installerClient = client || new InstallerClient();
+  const [state, dispatch] = React.useReducer(
+    installationReducer, { status: 0, options: {} }
+  );
 
   return (
-    <InstallerStateContext.Provider value={state}>
-      <InstallerDispatchContext.Provider value={dispatch}>
+    <InstallerContext.Provider value={installerClient}>
+      <InstallerStateContext.Provider value={state}>
+        <InstallerDispatchContext.Provider value={dispatch}>
         {children}
-      </InstallerDispatchContext.Provider>
-    </InstallerStateContext.Provider>
+        </InstallerDispatchContext.Provider>
+      </InstallerStateContext.Provider>
+    </InstallerContext.Provider>
   );
 }
 
-function loadInstallation(dispatch) {
-  installerClient().getInstallation().then(installation => {
-    dispatch({ type: actionTypes.LOAD_INSTALLATION, payload: installation })
-  }).catch(console.error);
-}
-
-function loadSoftware(dispatch) {
-  installerClient().getProducts().then(products => {
-    dispatch({ type: actionTypes.LOAD_PRODUCTS, payload: products })
-  }).catch(console.error);
-}
-
-function loadL10n(dispatch) {
-  installerClient().getLanguages().then(languages => {
-    dispatch({ type: actionTypes.LOAD_LANGUAGES, payload: languages })
-  }).catch(console.error);
-}
-
-function loadStorage(dispatch) {
-  installerClient().getStorage().then(storage => {
-    dispatch({ type: actionTypes.LOAD_STORAGE, payload: storage })
-  }).catch(console.error);
-}
-
-function loadDisks(dispatch) {
-  installerClient().getDisks().then(disks => {
-    dispatch({ type: actionTypes.LOAD_DISKS, payload: disks })
+function setStatus(dispatch) {
+  installerClient().getStatus().then(installation => {
+    dispatch({ type: actionTypes.SET_STATUS, payload: installation })
   }).catch(console.error);
 }
 
@@ -109,8 +94,12 @@ function updateProgress(dispatch, progress)  {
   dispatch({ type: actionTypes.SET_PROGRESS, payload: progress });
 }
 
-function registerWebSocketHandler(handler) {
-  installerClient().onMessage(handler);
+function registerPropertyChangedHandler(handler) {
+  installerClient().onPropertyChanged(handler);
+}
+
+function registerSignalHandler(signal, handler) {
+  installerClient().onSignal(signal, handler);
 }
 
 function startInstallation(_dispatch) {
@@ -125,9 +114,7 @@ let _installerClient;
 const installerClient = () => {
     if (_installerClient) return _installerClient;
 
-    _installerClient = new InstallerClient({
-      url: 'http://localhost:3001', ws: 'ws://localhost:3002'
-    });
+    _installerClient = new InstallerClient();
     return _installerClient;
 };
 
@@ -135,14 +122,12 @@ export {
   InstallerProvider,
   useInstallerState,
   useInstallerDispatch,
-  loadInstallation,
-  loadStorage,
-  loadL10n,
-  loadSoftware,
-  loadDisks,
+  useInstallerClient,
+  setStatus,
   loadOptions,
   updateProgress,
   setOptions,
   startInstallation,
-  registerWebSocketHandler
+  registerPropertyChangedHandler,
+  registerSignalHandler
 };

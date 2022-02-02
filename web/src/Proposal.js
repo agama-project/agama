@@ -35,7 +35,7 @@ const Proposal = ({data = []}) => {
           <Th>Mount point</Th>
           <Th>Type</Th>
           <Th>Device</Th>
-          <Th isNumeric>Size</Th>
+          <Th>Size</Th>
         </Tr>
       </Thead>
       <Tbody>

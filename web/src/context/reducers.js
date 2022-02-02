@@ -23,10 +23,6 @@ import actionTypes from './actionTypes';
 
 export function installationReducer(state, action) {
   switch (action.type) {
-    case actionTypes.LOAD_INSTALLATION: {
-      return { ...state, ...action.payload }
-    }
-
     case actionTypes.SET_STATUS: {
       return { ...state, status: action.payload }
     }
@@ -36,56 +32,9 @@ export function installationReducer(state, action) {
       return { ...state, progress: { title, steps, step, substeps, substep } };
     }
 
-    default: {
-      return state;
-    }
-  }
-}
-
-export function softwareReducer(state, action) {
-  switch (action.type) {
-    case actionTypes.LOAD_PRODUCTS: {
-      return { ...state, products: action.payload }
-    }
-
     case actionTypes.SET_OPTIONS: {
-      return { ...state, product: (action.payload.product || state.product) }
-    }
-
-    default: {
-      return state;
-    }
-  }
-}
-
-export function l10nReducer(state, action) {
-  switch (action.type) {
-    case actionTypes.LOAD_LANGUAGES: {
-      return { ...state, languages: action.payload }
-    }
-
-    case actionTypes.SET_OPTIONS: {
-      return { ...state, language: (action.payload.language || state.language) }
-    }
-
-    default: {
-      return state;
-    }
-  }
-}
-
-export function storageReducer(state, action) {
-  switch (action.type) {
-    case actionTypes.LOAD_STORAGE: {
-      return { ...state, proposal: action.payload }
-    }
-
-    case actionTypes.LOAD_DISKS: {
-      return { ...state, disks: action.payload }
-    }
-
-    case actionTypes.SET_OPTIONS: {
-      return { ...state, disk: (action.payload.disk || state.disk) }
+      const { options } = state;
+      return { ...state, options: { ...options, ...action.payload } };
     }
 
     default: {
