@@ -14,7 +14,7 @@ service. At first sight, we have identified these components:
 
 ## Quickstart
 
-**This is a proof-of-concept so, please, use a virtual machine to give it a try.**
+:warning: :warning: **This is a proof-of-concept so, PLEASE, use a virtual machine to give it a try.** :warning: :warning: 
 
 Boot to any [openSUSE Tumbleweed Live
 image](https://get.opensuse.org/tumbleweed) and, in the console, type:
