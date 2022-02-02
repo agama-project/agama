@@ -1,4 +1,4 @@
-# Service-based Experimental Installer
+# Service-Based Experimental Installer
 
 The idea of this repository is to build a proof-of-concept of a Linux installer that runs as a
 service. At first sight, we have identified these components:
@@ -8,26 +8,34 @@ service. At first sight, we have identified these components:
   disk, etc.).
 * A [D-Bus](https://www.freedesktop.org/wiki/Software/dbus/) service which exposes the installer's
   API.
-* A user interface. For this experiment, we have decided to use a
-  [Cockpit](https://cockpit-project.org/) module.
+* A user interface. For this experiment, we have decided to base on
+  [Cockpit](https://cockpit-project.org/), although it does not run as a
+  regular mode (it only uses Cockpit's infrastructure).
 
-## Trying it
+## Quickstart
 
-To quickly see what it can do always use VM as it is still experimental. Boot to any OpenSUSE Tumbleweed
-!Live! image. And in that image open console and run
+**This is a proof-of-concept so, please, use a virtual machine to give it a try.**
+
+Boot to any [openSUSE Tumbleweed Live
+image](https://get.opensuse.org/tumbleweed) and, in the console, type:
 
     $ wget https://raw.githubusercontent.com/yast/the-installer/master/deploy.sh
     $ # inspect content to ensure that nothing malicious is done there
     $ sh deploy.sh
 
+Now point your browser to http://localhost:9090/cockpit/static/installer/index.html
+and log in with `linux`/`linux`.
+
+The *Setup* section explains how to set-up the installer manually.
+
 TODO: use a url shortener
 
-## Requirements
+## Setup
 
 To build and run this software you need a few tools. To install them on openSUSE
 Tumbleweed just type:
 
-    $ sudo zypper in gcc gcc-c++ make openssl-devel ruby-devel augeas-devel npm
+    $ sudo zypper in gcc gcc-c++ make openssl-devel ruby-devel augeas-devel npm cockpit
 
 ## yastd
 
@@ -44,7 +52,8 @@ To run the service, type:
     $ bundle install
     $ sudo bunle exec bin/yastd
 
-You can use a tool like [busctl](https://www.freedesktop.org/wiki/Software/dbus/) (or
+To check that everything `yastd` is working, you can use a tool like
+[busctl](https://www.freedesktop.org/wiki/Software/dbus/) (or
 [D-Feet](https://wiki.gnome.org/Apps/DFeet) if you prefer a graphical one:
 
     $ busctl call org.opensuse.YaST /org/opensuse/YaST/Installer \
@@ -55,38 +64,39 @@ If you want to get the properties, just type:
     $ busctl call org.opensuse.YaST /org/opensuse/YaST/Installer \
       org.freedesktop.DBus.Properties GetAll s org.opensuse.YaST.Installer
 
-## yastd-proxy
+## Cockpit
 
-The `yastd-proxy` allows accessing the D-Bus interface through HTTP. Additionally, it uses
-a websocket to forward `PropertiesChanged` signals (not implemented yet).
+The user interface uses Cockpit infrastructure to interact with the D-Bus interface, so you
+need to make sure that `cockpit` is running:
 
-Note: at this point in time, it is a minimal Rails application (it does not include a database,
-JavaScript, etc.). In the future, we could replace it with anything even smaller.
+    $ sudo systemctl start cockpit
 
-To start the proxy, just type:
+## Web-Based User Interface
 
-    $ cd yastd-proxy
-    $ bundle install
-    $ bundle exec bin/yastd-proxy
+The current UI is a small web application built with [React](https://reactjs.org/). On production it
+is meant to be served by `cockpit-ws` from an directory in `XDG_DATA_DIRS` (e.g.,
+`/usr/share/cockpit/static/installer`). Building the code might time some time, so there is a
+*development mode* available that reloads the code everytime it changes.
 
-Now you can try to access the D-Bus service using cURL:
+### Development Mode
 
-    $ curl http://localhost:3000/properties
-      [{"Disk":"/dev/sda","Product":"openSUSE-Addon-NonOss","Language":"en_US","Status":0}]
-    $ curl -X PUT -d value=/dev/sda http://localhost:3000/properties/Disk
-    $ curl -X POST -d meth=GetStorage http://localhost:3000/calls
-      [{"mount":"/boot/efi","device":"/dev/sda1","type":"vfat","size":"536870912"},...
-
-## Web UI
-
-The current UI is a small web application built with [React](https://reactjs.org/). It allows to set a few installation parameters and start the installation (not implemented yet).
+It allows to set a few installation parameters and start the installation (not implemented yet).
 
     $ cd web
     $ npm install
     $ npm start
 
-Point your browser to http://localhost:3000 and enjoy!
+Point your browser to http://localhost:3000 and happy hacking!
 
-# References
+### Production-like Mode
 
-* https://etherpad.opensuse.org/p/H_bqkqApbfKB5RwNIYSm
+    $ cd web
+    $ npm run build
+    $ sudo mkdir /usr/share/cockpit/static/installer
+    $ sudo mount -o bind build /usr/share/cockpit/static/installer
+
+Point your browser to http://localhost:9090/cockpit/static/installer and enjoy!
+
+## References
+
+* [Development Notes](./DEVELOPMENT.md)
