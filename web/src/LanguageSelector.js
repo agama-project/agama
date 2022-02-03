@@ -11,49 +11,49 @@ import {
   ModalVariant
 } from "@patternfly/react-core"
 
-export default function LanguageSelector({ value, onChange = () => {} }) {
+export default function LanguageSelector() {
   const [isFormOpen, setFormOpen] = useState(false);
-  const [language, setLanguage] = useState(value);
-  const [options, setOptions] = useState([]);
+  const [languages, setLanguages] = useState([]);
+  const [language, setLanguage] = useState("");
+  const [initialLanguage, setInitialLanguage] = useState("");
   const client = useInstallerClient();
 
-  useEffect(() => {
-    client.getLanguages().then(setOptions);
+  useEffect(async () => {
+    const languages = await client.getLanguages();
+    const language = await client.getOption("Language");
+    setLanguages(languages);
+    setLanguage(language);
+    setInitialLanguage(language);
   }, []);
 
-  const onOpen = () => {
-    setLanguage(value);
-    setFormOpen(true);
+  const open = () => setFormOpen(true);
+  const close = () => setFormOpen(false);
+
+  const onCancel = () => {
+    setLanguage(initialLanguage);
+    close();
   }
 
-  const onClose = () => {
-    setFormOpen(false);
-  }
-
-  const applyChanges = () => {
-    onChange(language);
-    onClose();
+  const applyChanges = async () => {
+    // TODO: handle errors
+    await client.setOption("Language", language);
+    close();
   }
 
   const label = () => {
-    if (options.length === 0) {
-      return value;
-    }
-
-    const selectedLanguage = options.find(lang => lang.id === value)
-
-    return selectedLanguage ? selectedLanguage.name : value;
+    const selectedLanguage = languages.find(lang => lang.id === language);
+    return selectedLanguage ? selectedLanguage.name : "Select language";
   }
 
   const buildSelector = () => {
-    const selectorOptions = options.map(lang => (
+    const selectorOptions = languages.map(lang => (
       <FormSelectOption key={lang.id} value={lang.id} label={lang.name} />
     ));
 
     return (
       <FormSelect
         value={language}
-        onChange={(value) => setLanguage(value)}
+        onChange={setLanguage}
         aria-label="language"
       >
         {selectorOptions}
@@ -63,7 +63,7 @@ export default function LanguageSelector({ value, onChange = () => {} }) {
 
   return (
     <>
-      <Button variant="link" onClick={onOpen}>
+      <Button variant="link" onClick={open}>
         {label()}
       </Button>
 
@@ -76,7 +76,7 @@ export default function LanguageSelector({ value, onChange = () => {} }) {
           <Button key="confirm" variant="primary" onClick={applyChanges}>
             Confirm
           </Button>,
-          <Button key="cancel" variant="link" onClick={onClose}>
+          <Button key="cancel" variant="link" onClick={onCancel}>
             Cancel
           </Button>
         ]}

@@ -87,10 +87,7 @@ function Overview() {
 
         <StackItem>
           <Category title="Language" icon={LanguagesSelectionIcon}>
-            <LanguageSelector
-              value={language || "Select language"}
-              onChange={(language) => setOptions({ language })}
-            />
+            <LanguageSelector />
           </Category>
         </StackItem>
 
