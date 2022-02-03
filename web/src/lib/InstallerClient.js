@@ -24,9 +24,11 @@ import cockpit from './cockpit';
 export default class InstallerClient {
   // Initializing the client in the constructor does not work for some reason.
   client() {
-    this._client = window.cockpit.dbus(
-      "org.opensuse.YaST", { bus: "system", superuser: "try" }
-    );
+    if (!this._client) {
+      this._client = window.cockpit.dbus(
+        "org.opensuse.YaST", { bus: "system", superuser: "try" }
+      );
+    }
     return this._client;
   }
 
