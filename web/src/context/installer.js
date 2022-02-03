@@ -78,18 +78,6 @@ function setStatus(dispatch) {
   }).catch(console.error);
 }
 
-function setOptions(options, dispatch) {
-  installerClient().setOptions(options).then(() => {
-    dispatch({ type: actionTypes.SET_OPTIONS, payload: options });
-  });
-}
-
-function loadOptions(dispatch) {
-  installerClient().getOptions().then(options => {
-    dispatch({ type: actionTypes.SET_OPTIONS, payload: options });
-  }).catch(console.error);
-}
-
 function updateProgress(dispatch, progress)  {
   dispatch({ type: actionTypes.SET_PROGRESS, payload: progress });
 }
@@ -124,9 +112,7 @@ export {
   useInstallerDispatch,
   useInstallerClient,
   setStatus,
-  loadOptions,
   updateProgress,
-  setOptions,
   startInstallation,
   registerPropertyChangedHandler,
   registerSignalHandler
