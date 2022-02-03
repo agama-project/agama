@@ -44,7 +44,6 @@ const initialState = {
 
 export default function LanguageSelector() {
   const client = useInstallerClient();
-
   const [state, dispatch] = useReducer(reducer, initialState);
   const { current: language, languages, isFormOpen } = state;
 
@@ -79,7 +78,7 @@ export default function LanguageSelector() {
     return (
       <FormSelect
         value={language}
-        onChange={v => dispatch({ type: "CHANGE", payload: v})}
+        onChange={v => dispatch({ type: "CHANGE", payload: v })}
         aria-label="language"
       >
         {selectorOptions}
