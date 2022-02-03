@@ -31,17 +31,19 @@ export default class InstallerClient {
   }
 
   onPropertyChanged(handler) {
-    this.client().subscribe(
+    const { remove } = this.client().subscribe(
       { interface: 'org.freedesktop.DBus.Properties', member: 'PropertiesChanged' },
       handler
     );
+    return remove;
   }
 
   onSignal(signal, handler) {
-    this.client().subscribe(
+    const { remove } = this.client().subscribe(
       { interface: 'org.opensuse.YaST.Installer', member: signal },
       handler
     )
+    return remove;
   }
 
   authorize(username, password) {

@@ -16,7 +16,7 @@ export default function Storage({ value, onChange = () => {} }) {
     client.getDisks().then(setDisks);
 
     // TODO: abstract D-Bus details
-    client.onPropertyChanged((_path, iface, _signal, args) => {
+    return client.onPropertyChanged((_path, iface, _signal, args) => {
       const [_, changes] = args;
       if (Object.keys(changes).includes("Disk")) {
         loadStorage();

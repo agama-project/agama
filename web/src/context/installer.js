@@ -20,83 +20,28 @@
  */
 
 import React from 'react';
-import { installationReducer } from './reducers';
 import InstallerClient from '../lib/InstallerClient';
-import actionTypes from './actionTypes';
 
-const InstallerStateContext = React.createContext();
-const InstallerDispatchContext = React.createContext();
-const InstallerContext = React.createContext();
-
-function useInstallerState() {
-  const context = React.useContext(InstallerStateContext);
-  if (!context) {
-    throw new Error('useInstallerState must be used within a InstallerProvider');
-  }
-
-  return context;
-}
-
-function useInstallerDispatch() {
-  const context = React.useContext(InstallerDispatchContext);
-  if (!context) {
-    throw new Error('useInstallerDispatch must be used within a InstallerProvider');
-  }
-
-  return context;
-}
+const InstallerClientContext = React.createContext();
 
 function useInstallerClient() {
-  const context = React.useContext(InstallerContext);
+  const context = React.useContext(InstallerClientContext);
   if (!context) {
-    throw new Error('useInstallerDispatch must be used within a InstallerProvider');
+    throw new Error('useInstallerDispatch must be used within a InstallerClientProvider');
   }
 
   return context;
 }
 
-function InstallerProvider({ client, children }) {
-  const installerClient = client || new InstallerClient();
-  const [state, dispatch] = React.useReducer(
-    installationReducer, { status: 0, options: {} }
-  );
-
+function InstallerClientProvider({ client, children }) {
   return (
-    <InstallerContext.Provider value={installerClient}>
-      <InstallerStateContext.Provider value={state}>
-        <InstallerDispatchContext.Provider value={dispatch}>
-        {children}
-        </InstallerDispatchContext.Provider>
-      </InstallerStateContext.Provider>
-    </InstallerContext.Provider>
+    <InstallerClientContext.Provider value={client}>
+      {children}
+    </InstallerClientContext.Provider>
   );
 }
-
-function registerPropertyChangedHandler(handler) {
-  installerClient().onPropertyChanged(handler);
-}
-
-function startInstallation(_dispatch) {
-  installerClient().startInstallation();
-}
-
-/**
- * FIXME: needed to use a function in order to delay building the object and
- * make the tests to work
- */
-let _installerClient;
-const installerClient = () => {
-    if (_installerClient) return _installerClient;
-
-    _installerClient = new InstallerClient();
-    return _installerClient;
-};
 
 export {
-  InstallerProvider,
-  useInstallerState,
-  useInstallerDispatch,
+  InstallerClientProvider,
   useInstallerClient,
-  startInstallation,
-  registerPropertyChangedHandler,
 };

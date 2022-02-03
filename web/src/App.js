@@ -37,8 +37,8 @@ function App() {
   useEffect(() => {
     if (loggedIn === true) return;
 
-    client.onSignal('StatusChanged', (_path, _iface, _signal, args) => {
-      setIsInstalling(args !== 0);
+    return client.onSignal('StatusChanged', (_path, _iface, _signal, args) => {
+      setIsInstalling(args[0] !== 0);
     });
   }, []);
 

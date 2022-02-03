@@ -35,7 +35,7 @@ function InstallationProgress() {
   const [progress, setProgress] = useState({})
 
   useEffect(() => {
-    client.onSignal('Progress', (_path, _iface, _signal, args) => {
+    return client.onSignal('Progress', (_path, _iface, _signal, args) => {
       const [title, steps, step, substeps, substep] = args;
       const progress = { title, steps, step, substeps, substep };
       setProgress(progress);
