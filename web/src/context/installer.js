@@ -20,7 +20,6 @@
  */
 
 import React from 'react';
-import InstallerClient from '../lib/InstallerClient';
 
 const InstallerClientContext = React.createContext();
 
