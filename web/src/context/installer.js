@@ -72,18 +72,8 @@ function InstallerProvider({ client, children }) {
   );
 }
 
-function setStatus(dispatch) {
-  installerClient().getStatus().then(installation => {
-    dispatch({ type: actionTypes.SET_STATUS, payload: installation })
-  }).catch(console.error);
-}
-
 function registerPropertyChangedHandler(handler) {
   installerClient().onPropertyChanged(handler);
-}
-
-function registerSignalHandler(signal, handler) {
-  installerClient().onSignal(signal, handler);
 }
 
 function startInstallation(_dispatch) {
@@ -107,8 +97,6 @@ export {
   useInstallerState,
   useInstallerDispatch,
   useInstallerClient,
-  setStatus,
   startInstallation,
   registerPropertyChangedHandler,
-  registerSignalHandler
 };
