@@ -114,10 +114,22 @@ export default class InstallerClient {
     )
   }
 
+  async getOption(name) {
+    try {
+      const [{ v: option }] = await this.client().call(
+        "/org/opensuse/YaST/Installer", "org.freedesktop.DBus.Properties",
+        "Get", ["org.opensuse.YaST.Installer", name]
+      );
+      return option;
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
   async setOptions(opts) {
     const promises = Object.keys(opts).map(name => {
       const key = name.charAt(0).toUpperCase() + name.slice(1);
-      return this._setOption(key, opts[name]);
+      return this.setOption(key, opts[name]);
     });
     const value = await Promise.all(promises);
     return value;
@@ -136,7 +148,7 @@ export default class InstallerClient {
     return result[0];
   }
 
-  async _setOption(name, value) {
+  async setOption(name, value) {
     return await this.client().call(
       "/org/opensuse/YaST/Installer",
       "org.freedesktop.DBus.Properties",
