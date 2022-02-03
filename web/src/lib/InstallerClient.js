@@ -61,6 +61,20 @@ export default class InstallerClient {
     });
   }
 
+  isLoggedIn() {
+    return new Promise((resolve, reject) => {
+      return fetch(
+        "/cockpit/login",
+      ).then(resp => {
+          resolve(resp.status === 200);
+        });
+    });
+  }
+
+  currentUser() {
+    return window.cockpit.user();
+  }
+
   async getStatus() {
     return await this._callInstallerMethod("GetStatus");
   }

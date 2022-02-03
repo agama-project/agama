@@ -20,8 +20,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useAuthContext } from './context/auth';
 import { useInstallerClient } from './context/installer';
+import { useAuthContext } from './context/auth';
 
 import LoginForm from './LoginForm';
 import Overview from './Overview';
@@ -29,14 +29,17 @@ import InstallationProgress from './InstallationProgress';
 
 function App() {
   const client = useInstallerClient();
-  const { state: { loggedIn } } = useAuthContext();
+  const { state: { loggedIn }, autoLogin } = useAuthContext();
   const [isInstalling, setIsInstalling] = useState(false);
 
+  useEffect(autoLogin, []);
+
   useEffect(() => {
+    if (loggedIn === true) return;
+
     client.onSignal('StatusChanged', (_path, _iface, _signal, args) => {
       setIsInstalling(args !== 0);
     });
-
   }, []);
 
   if (!loggedIn) {

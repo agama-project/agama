@@ -44,10 +44,6 @@ import {
   EOS_PACKAGES as ProductsIcon,
 } from 'eos-icons-react'
 
-import {
-  useInstallerState, startInstallation
-} from './context/installer';
-
 const reducer = (state, action) => {
   switch (action.type) {
     case actionTypes.SET_OPTIONS: {
@@ -117,7 +113,7 @@ function Overview() {
           <Button
             isLarge
             variant="primary"
-            onClick={() => startInstallation(dispatch)}>
+            onClick={() => client.startInstallation()}>
             Install
           </Button>
         </StackItem>

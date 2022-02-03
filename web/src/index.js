@@ -24,18 +24,21 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import * as serviceWorker from './serviceWorker';
-import { InstallerProvider } from './context/installer';
+import { InstallerClientProvider } from './context/installer';
 import { AuthProvider } from './context/auth';
+import InstallerClient from './lib/InstallerClient';
 
 import "./app.scss";
 
+const client = new InstallerClient();
+
 ReactDOM.render(
   <StrictMode>
-    <AuthProvider>
-      <InstallerProvider>
+    <InstallerClientProvider client={client}>
+      <AuthProvider>
         <App />
-      </InstallerProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </InstallerClientProvider>
   </StrictMode>,
   document.getElementById('root')
 );
