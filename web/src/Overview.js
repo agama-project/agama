@@ -21,11 +21,10 @@ import {
   EOS_TRANSLATE as LanguagesSelectionIcon,
   EOS_VOLUME as HardDriveIcon,
   EOS_PACKAGES as ProductsIcon,
-  EOS_DOWNLOADING as ProgressIcon
 } from 'eos-icons-react'
 
 import {
-  useInstallerState, setStatus, updateProgress, registerSignalHandler, startInstallation
+  useInstallerState, setStatus, registerSignalHandler, startInstallation
 } from './context/installer';
 
 const reducer = (state, action) => {
@@ -65,13 +64,6 @@ function Overview() {
       // FIXME: use the status_id from the event
       setStatus(dispatch);
     });
-
-    registerSignalHandler('Progress', (_path, _iface, _signal, args) => {
-      const [title, steps, step, substeps, substep] = args;
-      const progress = { title, steps, step, substeps, substep };
-      updateProgress(dispatch, progress);
-    });
-
   }, []);
 
   const isInstalling = installation.status !== 0;
@@ -109,14 +101,6 @@ function Overview() {
             />
           </Category>
         </StackItem>
-
-        { isInstalling && progress &&
-          <StackItem>
-            <Category title="Progress" icon={ProgressIcon} >
-              <Progress title="Installing" value={Math.round(progress.step / progress.steps * 100)} />
-              <Progress title={progress.title} value={Math.round(progress.substep / progress.substeps * 100)} />
-            </Category>
-          </StackItem> }
 
         <StackItem>
           <Button

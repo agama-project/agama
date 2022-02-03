@@ -27,11 +27,6 @@ export function installationReducer(state, action) {
       return { ...state, status: action.payload }
     }
 
-    case actionTypes.SET_PROGRESS: {
-      const { title, steps, step, substeps, substep } = action.payload;
-      return { ...state, progress: { title, steps, step, substeps, substep } };
-    }
-
     default: {
       return state;
     }

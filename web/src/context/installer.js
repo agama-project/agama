@@ -78,10 +78,6 @@ function setStatus(dispatch) {
   }).catch(console.error);
 }
 
-function updateProgress(dispatch, progress)  {
-  dispatch({ type: actionTypes.SET_PROGRESS, payload: progress });
-}
-
 function registerPropertyChangedHandler(handler) {
   installerClient().onPropertyChanged(handler);
 }
@@ -112,7 +108,6 @@ export {
   useInstallerDispatch,
   useInstallerClient,
   setStatus,
-  updateProgress,
   startInstallation,
   registerPropertyChangedHandler,
   registerSignalHandler
