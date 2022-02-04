@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useReducer, useEffect } from 'react';
+import { useInstallerClient } from './context/installer';
 
 import {
   Button,
@@ -10,23 +11,58 @@ import {
   ModalVariant
 } from "@patternfly/react-core"
 
-export default function TargetSelector({ value, options = {}, onChange = () => {} }) {
-  const [isFormOpen, setFormOpen] = useState(false);
-  const [target, setTarget] = useState(value);
-  const targets = Object.values(options);
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "LOAD": {
+      return { ...state, ...action.payload };
+    }
+    case "ACCEPT": {
+      return { ...state, isFormOpen: false };
+    }
 
-  const onOpen = () => {
-    setTarget(value);
-    setFormOpen(true);
+    case "CANCEL": {
+      return { ...state, isFormOpen: false, current: state.initial };
+    }
+
+    case "CHANGE": {
+      return { ...state, current: action.payload };
+    }
+
+    case "OPEN": {
+      return { ...state, isFormOpen: true };
+    }
+
+    default: {
+        return state;
+    }
+  }
+}
+
+const initialState = {
+  targets: [], initial: null, current: null, isFormOpen: false
+};
+
+export default function TargetSelector() {
+  const client = useInstallerClient();
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { current: target, targets, isFormOpen } = state;
+
+  useEffect(async () => {
+    const targets = await client.getDisks();
+    const current = await client.getOption("Disk");
+    dispatch({ type: "LOAD", payload: { targets, current, initial: current }});
+  }, []);
+
+  const open = () => dispatch({ type: "OPEN" });
+
+  const cancel = () => {
+    dispatch({ type: "CANCEL" });
   }
 
-  const onClose = () => {
-    setFormOpen(false);
-  }
-
-  const applyChanges = () => {
-    onChange(target);
-    onClose();
+  const accept = async () => {
+    // TODO: handle errors
+    await client.setOption("Disk", target);
+    dispatch({ type: "ACCEPT" });
   }
 
   const buildSelector = () => {
@@ -39,7 +75,7 @@ export default function TargetSelector({ value, options = {}, onChange = () => {
     return (
       <FormSelect
         value={target}
-        onChange={(value) => setTarget(value)}
+        onChange={v => dispatch({ type: "CHANGE", payload: v })}
         aria-label="target"
       >
         {selectorOptions}
@@ -49,8 +85,8 @@ export default function TargetSelector({ value, options = {}, onChange = () => {
 
   return (
     <>
-      <Button variant="link" onClick={onOpen}>
-        {value}
+      <Button variant="link" onClick={open}>
+        {target}
       </Button>
 
       <Modal
@@ -59,10 +95,10 @@ export default function TargetSelector({ value, options = {}, onChange = () => {
         variant={ModalVariant.small}
         title="Target Selector"
         actions={[
-          <Button key="confirm" variant="primary" onClick={applyChanges}>
+          <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
           </Button>,
-          <Button key="cancel" variant="link" onClick={onClose}>
+          <Button key="cancel" variant="link" onClick={cancel}>
             Cancel
           </Button>
         ]}
