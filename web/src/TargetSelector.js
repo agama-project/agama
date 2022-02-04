@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useInstallerClient } from './context/installer';
 
 import {
   Button,
@@ -12,10 +11,13 @@ import {
 } from "@patternfly/react-core"
 
 export default function TargetSelector({ target, targets, onAccept }) {
-  const [value, setValue] = useState(target);
+  const [value, setValue] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const open = () => setIsFormOpen(true);
+  const open = () => {
+    setIsFormOpen(true);
+    setValue(target);
+  }
 
   const accept = () => {
     // TODO: handle errors
