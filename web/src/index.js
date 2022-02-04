@@ -19,14 +19,14 @@
  * find current contact information at www.suse.com.
  */
 
-import { StrictMode } from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import * as serviceWorker from './serviceWorker';
-import { InstallerClientProvider } from './context/installer';
-import { AuthProvider } from './context/auth';
-import InstallerClient from './lib/InstallerClient';
+import { StrictMode } from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import * as serviceWorker from "./serviceWorker";
+import { InstallerClientProvider } from "./context/installer";
+import { AuthProvider } from "./context/auth";
+import InstallerClient from "./lib/InstallerClient";
 
 import "./app.scss";
 
@@ -40,7 +40,7 @@ ReactDOM.render(
       </AuthProvider>
     </InstallerClientProvider>
   </StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change

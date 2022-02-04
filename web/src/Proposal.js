@@ -5,11 +5,11 @@ import {
   Th,
   Tbody,
   Td
-} from '@patternfly/react-table';
+} from "@patternfly/react-table";
 
-import filesize from 'filesize';
+import filesize from "filesize";
 
-const Proposal = ({data = []}) => {
+const Proposal = ({ data = [] }) => {
   // FIXME: use better key for tr, mount can be empty
   const renderProposal = () => {
     return data.map(p => {
@@ -21,12 +21,12 @@ const Proposal = ({data = []}) => {
           <Td>{filesize(p.size)}</Td>
         </Tr>
       );
-    })
-  }
+    });
+  };
 
   if (data.length === 0) {
     return null;
-  };
+  }
 
   return (
     <TableComposable variant="compact">
@@ -38,11 +38,9 @@ const Proposal = ({data = []}) => {
           <Th>Size</Th>
         </Tr>
       </Thead>
-      <Tbody>
-        { renderProposal() }
-      </Tbody>
+      <Tbody>{renderProposal()}</Tbody>
     </TableComposable>
   );
-}
+};
 
 export default Proposal;

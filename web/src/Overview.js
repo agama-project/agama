@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useInstallerClient } from './context/installer';
+import { useInstallerClient } from "./context/installer";
 
 import {
   Button,
@@ -28,18 +28,18 @@ import {
   Text,
   TextContent,
   TextVariants
-} from '@patternfly/react-core';
+} from "@patternfly/react-core";
 
-import Category from './Category';
-import LanguageSelector from './LanguageSelector';
-import ProductSelector from './ProductSelector';
-import Storage from './Storage';
+import Category from "./Category";
+import LanguageSelector from "./LanguageSelector";
+import ProductSelector from "./ProductSelector";
+import Storage from "./Storage";
 
 import {
   EOS_TRANSLATE as LanguagesSelectionIcon,
   EOS_VOLUME as HardDriveIcon,
-  EOS_PACKAGES as ProductsIcon,
-} from 'eos-icons-react'
+  EOS_PACKAGES as ProductsIcon
+} from "eos-icons-react";
 
 function Overview() {
   const client = useInstallerClient();
@@ -75,7 +75,8 @@ function Overview() {
           <Button
             isLarge
             variant="primary"
-            onClick={() => client.startInstallation()}>
+            onClick={() => client.startInstallation()}
+          >
             Install
           </Button>
         </StackItem>

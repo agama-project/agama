@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 import {
   Button,
@@ -8,7 +8,7 @@ import {
   FormSelectOption,
   Modal,
   ModalVariant
-} from "@patternfly/react-core"
+} from "@patternfly/react-core";
 
 export default function TargetSelector({ target, targets, onAccept }) {
   const [value, setValue] = useState("");
@@ -17,7 +17,7 @@ export default function TargetSelector({ target, targets, onAccept }) {
   const open = () => {
     setIsFormOpen(true);
     setValue(target);
-  }
+  };
 
   const accept = () => {
     // TODO: handle errors
@@ -29,17 +29,13 @@ export default function TargetSelector({ target, targets, onAccept }) {
 
   const buildSelector = () => {
     const selectorOptions = targets.map(target => {
-      const { name } = target
+      const { name } = target;
 
-      return <FormSelectOption key={name} value={name} label={name} />
+      return <FormSelectOption key={name} value={name} label={name} />;
     });
 
     return (
-      <FormSelect
-        value={value}
-        onChange={setValue}
-        aria-label="target"
-      >
+      <FormSelect value={value} onChange={setValue} aria-label="target">
         {selectorOptions}
       </FormSelect>
     );
@@ -71,10 +67,10 @@ export default function TargetSelector({ target, targets, onAccept }) {
             label="Select target"
             helperText="Product will be installed in selected target"
           >
-            { buildSelector() }
+            {buildSelector()}
           </FormGroup>
         </Form>
       </Modal>
     </>
-  )
+  );
 }

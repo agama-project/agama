@@ -1,5 +1,5 @@
-import { useReducer, useEffect } from 'react';
-import { useInstallerClient } from './context/installer';
+import { useReducer, useEffect } from "react";
+import { useInstallerClient } from "./context/installer";
 
 import {
   Button,
@@ -9,7 +9,7 @@ import {
   FormSelectOption,
   Modal,
   ModalVariant
-} from "@patternfly/react-core"
+} from "@patternfly/react-core";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -33,13 +33,16 @@ const reducer = (state, action) => {
     }
 
     default: {
-        return state;
+      return state;
     }
   }
-}
+};
 
 const initialState = {
-  products: [], initial: null, current: null, isFormOpen: false
+  products: [],
+  initial: null,
+  current: null,
+  isFormOpen: false
 };
 
 export default function ProductSelector() {
@@ -50,7 +53,10 @@ export default function ProductSelector() {
   useEffect(async () => {
     const products = await client.getProducts();
     const current = await client.getOption("Product");
-    dispatch({ type: "LOAD", payload: { products, current, initial: current} });
+    dispatch({
+      type: "LOAD",
+      payload: { products, current, initial: current }
+    });
   }, []);
 
   const open = () => dispatch({ type: "OPEN" });
@@ -61,12 +67,12 @@ export default function ProductSelector() {
     // TODO: handle errors
     await client.setOption("Product", product);
     dispatch({ type: "ACCEPT" });
-  }
+  };
 
   const label = () => {
-    const selectedProduct = products.find(p => p.name === product)
+    const selectedProduct = products.find(p => p.name === product);
     return selectedProduct ? selectedProduct.display_name : "Select product";
-  }
+  };
 
   const buildSelector = () => {
     const selectorOptions = products.map(p => (
@@ -109,10 +115,10 @@ export default function ProductSelector() {
             fieldId="product"
             label="Select the product to be installed"
           >
-            { buildSelector() }
+            {buildSelector()}
           </FormGroup>
         </Form>
       </Modal>
     </>
-  )
+  );
 }

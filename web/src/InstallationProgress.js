@@ -19,23 +19,19 @@
  * find current contact information at www.suse.com.
  */
 
-import { useState, useEffect } from 'react';
-import { useInstallerClient } from './context/installer';
+import { useState, useEffect } from "react";
+import { useInstallerClient } from "./context/installer";
 
-import { EOS_DOWNLOADING as ProgressIcon } from 'eos-icons-react';
-import Category from './Category';
-import {
-  Progress,
-  Stack,
-  StackItem,
-} from '@patternfly/react-core';
+import { EOS_DOWNLOADING as ProgressIcon } from "eos-icons-react";
+import Category from "./Category";
+import { Progress, Stack, StackItem } from "@patternfly/react-core";
 
 function InstallationProgress() {
   const client = useInstallerClient();
-  const [progress, setProgress] = useState({})
+  const [progress, setProgress] = useState({});
 
   useEffect(() => {
-    return client.onSignal('Progress', (_path, _iface, _signal, args) => {
+    return client.onSignal("Progress", (_path, _iface, _signal, args) => {
       const [title, steps, step, substeps, substep] = args;
       const progress = { title, steps, step, substeps, substep };
       setProgress(progress);
@@ -46,10 +42,17 @@ function InstallationProgress() {
   return (
     <Stack hasGutter>
       <StackItem>
-        <Category title="Progress" icon={ProgressIcon} >
-          <Progress title="Installing" value={Math.round(progress.step / progress.steps * 100)} />
-          { progress.substeps && progress.substeps >= 0 &&
-            <Progress title={progress.title} value={Math.round(progress.substep / progress.substeps * 100)} /> }
+        <Category title="Progress" icon={ProgressIcon}>
+          <Progress
+            title="Installing"
+            value={Math.round((progress.step / progress.steps) * 100)}
+          />
+          {progress.substeps && progress.substeps >= 0 && (
+            <Progress
+              title={progress.title}
+              value={Math.round((progress.substep / progress.substeps) * 100)}
+            />
+          )}
         </Category>
       </StackItem>
     </Stack>

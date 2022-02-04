@@ -19,17 +19,20 @@
  * find current contact information at www.suse.com.
  */
 
-import { useState, useEffect } from 'react';
-import { useInstallerClient } from './context/installer';
-import { useAuthContext } from './context/auth';
+import { useState, useEffect } from "react";
+import { useInstallerClient } from "./context/installer";
+import { useAuthContext } from "./context/auth";
 
-import LoginForm from './LoginForm';
-import Overview from './Overview';
-import InstallationProgress from './InstallationProgress';
+import LoginForm from "./LoginForm";
+import Overview from "./Overview";
+import InstallationProgress from "./InstallationProgress";
 
 function App() {
   const client = useInstallerClient();
-  const { state: { loggedIn }, autoLogin } = useAuthContext();
+  const {
+    state: { loggedIn },
+    autoLogin
+  } = useAuthContext();
   const [isInstalling, setIsInstalling] = useState(false);
 
   useEffect(autoLogin, []);
@@ -37,7 +40,7 @@ function App() {
   useEffect(() => {
     if (loggedIn === true) return;
 
-    return client.onSignal('StatusChanged', (_path, _iface, _signal, args) => {
+    return client.onSignal("StatusChanged", (_path, _iface, _signal, args) => {
       setIsInstalling(args[0] !== 0);
     });
   }, []);
