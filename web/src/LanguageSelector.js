@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useInstallerClient } from './context/installer';
+import { useReducer, useEffect } from "react";
+import { useInstallerClient } from "./context/installer";
 
 import {
   Button,
@@ -11,49 +11,72 @@ import {
   ModalVariant
 } from "@patternfly/react-core"
 
-export default function LanguageSelector({ value, onChange = () => {} }) {
-  const [isFormOpen, setFormOpen] = useState(false);
-  const [language, setLanguage] = useState(value);
-  const [options, setOptions] = useState([]);
-  const client = useInstallerClient();
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "LOAD": {
+      return { ...state, ...action.payload };
+    }
+    case "ACCEPT": {
+      return { ...state, isFormOpen: false };
+    }
 
-  useEffect(() => {
-    client.getLanguages().then(setOptions);
+    case "CANCEL": {
+      return { ...state, isFormOpen: false, current: state.initial };
+    }
+
+    case "CHANGE": {
+      return { ...state, current: action.payload };
+    }
+
+    case "OPEN": {
+      return { ...state, isFormOpen: true };
+    }
+
+    default: {
+        return state;
+    }
+  }
+}
+
+const initialState = {
+  languages: [], initial: null, current: null, isFormOpen: false
+};
+
+export default function LanguageSelector() {
+  const client = useInstallerClient();
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { current: language, languages, isFormOpen } = state;
+
+  useEffect(async () => {
+    const languages = await client.getLanguages();
+    const current = await client.getOption("Language");
+    dispatch({ type: "LOAD", payload: { languages, current, initial: current } });
   }, []);
 
-  const onOpen = () => {
-    setLanguage(value);
-    setFormOpen(true);
-  }
+  const open = () => dispatch({ type: "OPEN" });
 
-  const onClose = () => {
-    setFormOpen(false);
-  }
+  const cancel = () => dispatch({ type: "CANCEL" });
 
-  const applyChanges = () => {
-    onChange(language);
-    onClose();
+  const accept = async () => {
+    // TODO: handle errors
+    await client.setOption("Language", language);
+    dispatch({ type: "ACCEPT" });
   }
 
   const label = () => {
-    if (options.length === 0) {
-      return value;
-    }
-
-    const selectedLanguage = options.find(lang => lang.id === value)
-
-    return selectedLanguage ? selectedLanguage.name : value;
+    const selectedLanguage = languages.find(lang => lang.id === language);
+    return selectedLanguage ? selectedLanguage.name : "Select language";
   }
 
   const buildSelector = () => {
-    const selectorOptions = options.map(lang => (
+    const selectorOptions = languages.map(lang => (
       <FormSelectOption key={lang.id} value={lang.id} label={lang.name} />
     ));
 
     return (
       <FormSelect
         value={language}
-        onChange={(value) => setLanguage(value)}
+        onChange={v => dispatch({ type: "CHANGE", payload: v })}
         aria-label="language"
       >
         {selectorOptions}
@@ -63,7 +86,7 @@ export default function LanguageSelector({ value, onChange = () => {} }) {
 
   return (
     <>
-      <Button variant="link" onClick={onOpen}>
+      <Button variant="link" onClick={open}>
         {label()}
       </Button>
 
@@ -73,10 +96,10 @@ export default function LanguageSelector({ value, onChange = () => {} }) {
         variant={ModalVariant.small}
         title="Language Selector"
         actions={[
-          <Button key="confirm" variant="primary" onClick={applyChanges}>
+          <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
           </Button>,
-          <Button key="cancel" variant="link" onClick={onClose}>
+          <Button key="cancel" variant="link" onClick={cancel}>
             Cancel
           </Button>
         ]}

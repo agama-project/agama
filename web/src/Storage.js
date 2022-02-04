@@ -1,32 +1,65 @@
-import { useState, useEffect } from 'react';
+import { useReducer, useEffect } from 'react';
 import { useInstallerClient } from './context/installer';
 
 import TargetSelector from './TargetSelector';
 import Proposal from './Proposal';
 
-export default function Storage({ value, onChange = () => {} }) {
-  const [proposal, setProposal] = useState([]);
-  const [disks, setDisks] = useState(value);
-  const client = useInstallerClient();
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'LOAD': {
+      const { targets, target, proposal } = action.payload;
+      return { ...state, targets, target, proposal };
+    }
 
-  const loadStorage = () => client.getStorage().then(setProposal);
+    case 'CHANGE_TARGET': {
+      return { ...state, target: action.payload };
+    }
+
+    case 'UPDATE_PROPOSAL': {
+      return { ...state, proposal: action.payload };
+    }
+
+    default: {
+      return state;
+    }
+  }
+}
+
+export default function Storage() {
+  const client = useInstallerClient();
+  const [state, dispatch] = useReducer(reducer, { targets: [], target: "", proposal: [] });
+  const { target, targets, proposal } = state;
+
+  const onAccept = (selected) =>
+    client.setOption("Disk", selected).then(() =>
+      dispatch({type: "CHANGE_TARGET", payload: selected})
+    );
+
+  useEffect(async () => {
+    const proposal = await client.getStorage();
+    const disk = await client.getOption("Disk");
+    const disks = await client.getDisks();
+    dispatch({ type: "LOAD", payload: { target: disk, targets: disks, proposal } });
+  }, []);
 
   useEffect(() => {
-    loadStorage();
-    client.getDisks().then(setDisks);
-
     // TODO: abstract D-Bus details
-    client.onPropertyChanged((_path, iface, _signal, args) => {
+    return client.onPropertyChanged((_path, _iface, _signal, args) => {
       const [_, changes] = args;
       if (Object.keys(changes).includes("Disk")) {
-        loadStorage();
+        client.getStorage().then(proposal => 
+          dispatch({ type: 'UPDATE_PROPOSAL', payload: proposal })
+        );
       }
     });
   }, []);
 
   return (
     <div>
-      <TargetSelector value={value || "Select target"} options={disks} onChange={onChange} />
+      <TargetSelector
+        target={target || "Select target"}
+        targets={targets}
+        onAccept={onAccept} />
       <Proposal data={proposal}/>
     </div>
   );

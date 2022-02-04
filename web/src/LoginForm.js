@@ -19,22 +19,48 @@
  * find current contact information at www.suse.com.
  */
 
-import { Bullseye, Form, FormGroup, TextInput, Button } from '@patternfly/react-core';
-import { useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useAuthContext } from './context/auth';
+import { 
+  Alert,
+  Bullseye,
+  Button,
+  Form,
+  FormAlert,
+  FormGroup,
+  TextInput } from '@patternfly/react-core';
+
+const formError = (error) => (
+  <FormAlert>
+    <Alert
+      variant="danger"
+      title={error}
+      aria-live="polite"
+      isInline
+    />
+  </FormAlert>
+);
 
 function LoginForm() {
+  const [error, setError] = useState();
   const { login } = useAuthContext();
   const usernameRef = useRef();
   const passwordRef = useRef();
 
-  const submitLogin = async () => {
-    login(usernameRef.current.value, passwordRef.current.value);
+  const submitLogin = () => {
+    setError(undefined);
+    login(usernameRef.current.value, passwordRef.current.value)
+      .then(() => window.location.reload())
+      .catch(() => {
+        setError("Authentication failed.");
+      });
   }
+
 
   return (
     <Bullseye>
       <Form>
+        { error && formError(error) }
         <FormGroup label="Username" fieldId="username">
           <TextInput isRequired type="text" id="username" ref={usernameRef} />
         </FormGroup>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useReducer, useEffect } from 'react';
 import { useInstallerClient } from './context/installer';
 
 import {
@@ -11,38 +11,61 @@ import {
   ModalVariant
 } from "@patternfly/react-core"
 
-export default function ProductSelector({ value, onChange = () => {} }) {
-  const [isFormOpen, setFormOpen] = useState(false);
-  const [product, setProduct] = useState(value);
-  const [products, setProducts] = useState([]);
-  const client = useInstallerClient();
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "LOAD": {
+      return { ...state, ...action.payload };
+    }
+    case "ACCEPT": {
+      return { ...state, isFormOpen: false };
+    }
 
-  useEffect(() => {
-    client.getProducts().then(setProducts);
+    case "CANCEL": {
+      return { ...state, isFormOpen: false, current: state.initial };
+    }
+
+    case "CHANGE": {
+      return { ...state, current: action.payload };
+    }
+
+    case "OPEN": {
+      return { ...state, isFormOpen: true };
+    }
+
+    default: {
+        return state;
+    }
+  }
+}
+
+const initialState = {
+  products: [], initial: null, current: null, isFormOpen: false
+};
+
+export default function ProductSelector() {
+  const client = useInstallerClient();
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { current: product, products, isFormOpen } = state;
+
+  useEffect(async () => {
+    const products = await client.getProducts();
+    const current = await client.getOption("Product");
+    dispatch({ type: "LOAD", payload: { products, current, initial: current} });
   }, []);
 
-  const onOpen = () => {
-    setProduct(value);
-    setFormOpen(true);
-  }
+  const open = () => dispatch({ type: "OPEN" });
 
-  const onClose = () => {
-    setFormOpen(false);
-  }
+  const cancel = () => dispatch({ type: "CANCEL" });
 
-  const applyChanges = () => {
-    onChange(product);
-    onClose();
+  const accept = async () => {
+    // TODO: handle errors
+    await client.setOption("Product", product);
+    dispatch({ type: "ACCEPT" });
   }
 
   const label = () => {
-    if (products.length === 0) {
-      return value;
-    }
-
-    const selectedProduct = products.find(p => p.name === value)
-
-    return selectedProduct ? selectedProduct.display_name : value;
+    const selectedProduct = products.find(p => p.name === product)
+    return selectedProduct ? selectedProduct.display_name : "Select product";
   }
 
   const buildSelector = () => {
@@ -53,7 +76,7 @@ export default function ProductSelector({ value, onChange = () => {} }) {
     return (
       <FormSelect
         value={product}
-        onChange={(value) => setProduct(value)}
+        onChange={v => dispatch({ type: "CHANGE", payload: v })}
         aria-label="product"
       >
         {selectorOptions}
@@ -63,7 +86,7 @@ export default function ProductSelector({ value, onChange = () => {} }) {
 
   return (
     <>
-      <Button variant="link" onClick={onOpen}>
+      <Button variant="link" onClick={open}>
         {label()}
       </Button>
 
@@ -73,10 +96,10 @@ export default function ProductSelector({ value, onChange = () => {} }) {
         variant={ModalVariant.small}
         title="Product Selector"
         actions={[
-          <Button key="confirm" variant="primary" onClick={applyChanges}>
+          <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
           </Button>,
-          <Button key="cancel" variant="link" onClick={onClose}>
+          <Button key="cancel" variant="link" onClick={cancel}>
             Cancel
           </Button>
         ]}

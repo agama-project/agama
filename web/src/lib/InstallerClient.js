@@ -24,24 +24,28 @@ import cockpit from './cockpit';
 export default class InstallerClient {
   // Initializing the client in the constructor does not work for some reason.
   client() {
-    this._client = window.cockpit.dbus(
-      "org.opensuse.YaST", { bus: "system", superuser: "try" }
-    );
+    if (!this._client) {
+      this._client = window.cockpit.dbus(
+        "org.opensuse.YaST", { bus: "system", superuser: "try" }
+      );
+    }
     return this._client;
   }
 
   onPropertyChanged(handler) {
-    this.client().subscribe(
+    const { remove } = this.client().subscribe(
       { interface: 'org.freedesktop.DBus.Properties', member: 'PropertiesChanged' },
       handler
     );
+    return remove;
   }
 
   onSignal(signal, handler) {
-    this.client().subscribe(
+    const { remove } = this.client().subscribe(
       { interface: 'org.opensuse.YaST.Installer', member: signal },
       handler
     )
+    return remove;
   }
 
   authorize(username, password) {
@@ -59,6 +63,20 @@ export default class InstallerClient {
           }
         });
     });
+  }
+
+  isLoggedIn() {
+    return new Promise((resolve, reject) => {
+      return fetch(
+        "/cockpit/login",
+      ).then(resp => {
+          resolve(resp.status === 200);
+        });
+    });
+  }
+
+  currentUser() {
+    return window.cockpit.user();
   }
 
   async getStatus() {
@@ -96,10 +114,22 @@ export default class InstallerClient {
     )
   }
 
+  async getOption(name) {
+    try {
+      const [{ v: option }] = await this.client().call(
+        "/org/opensuse/YaST/Installer", "org.freedesktop.DBus.Properties",
+        "Get", ["org.opensuse.YaST.Installer", name]
+      );
+      return option;
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
   async setOptions(opts) {
     const promises = Object.keys(opts).map(name => {
       const key = name.charAt(0).toUpperCase() + name.slice(1);
-      return this._setOption(key, opts[name]);
+      return this.setOption(key, opts[name]);
     });
     const value = await Promise.all(promises);
     return value;
@@ -118,7 +148,7 @@ export default class InstallerClient {
     return result[0];
   }
 
-  async _setOption(name, value) {
+  async setOption(name, value) {
     return await this.client().call(
       "/org/opensuse/YaST/Installer",
       "org.freedesktop.DBus.Properties",

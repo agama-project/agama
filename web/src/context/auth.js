@@ -63,24 +63,28 @@ function useAuthContext() {
   }
 
   const [state, dispatch] = context;
+  const client = new InstallerClient();
 
   const login = (username, password) => {
     dispatch({ type: 'LOGIN', payload: { request: true } });
-
-    const client = new InstallerClient();
-    client.authorize(username, password)
-      .then(() => {
-        dispatch({ type: 'LOGIN', payload: { username, success: true } })
-      })
-      .catch(error => {
-        dispatch({ type: 'LOGIN', payload: { username, success: false, error } }) 
-      });
-  };
+    return client.authorize(username, password);
+  }
   const logout = () => dispatch({ type: 'LOGOUT' });
+
+  const autoLogin = async () => {
+    const isLoggedIn = await client.isLoggedIn();
+    if (isLoggedIn) {
+      const username = await client.currentUser();
+      dispatch({ type: 'LOGIN', payload: { username, success: true } })
+    } else {
+      logout();
+    }
+  }
 
   return {
     state,
     login,
+    autoLogin,
     logout
   }
 }

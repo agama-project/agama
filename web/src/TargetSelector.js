@@ -10,24 +10,22 @@ import {
   ModalVariant
 } from "@patternfly/react-core"
 
-export default function TargetSelector({ value, options = {}, onChange = () => {} }) {
-  const [isFormOpen, setFormOpen] = useState(false);
-  const [target, setTarget] = useState(value);
-  const targets = Object.values(options);
+export default function TargetSelector({ target, targets, onAccept }) {
+  const [value, setValue] = useState("");
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const onOpen = () => {
-    setTarget(value);
-    setFormOpen(true);
+  const open = () => {
+    setIsFormOpen(true);
+    setValue(target);
   }
 
-  const onClose = () => {
-    setFormOpen(false);
-  }
+  const accept = () => {
+    // TODO: handle errors
+    onAccept(value);
+    setIsFormOpen(false);
+  };
 
-  const applyChanges = () => {
-    onChange(target);
-    onClose();
-  }
+  const cancel = () => setIsFormOpen(false);
 
   const buildSelector = () => {
     const selectorOptions = targets.map(target => {
@@ -38,8 +36,8 @@ export default function TargetSelector({ value, options = {}, onChange = () => {
 
     return (
       <FormSelect
-        value={target}
-        onChange={(value) => setTarget(value)}
+        value={value}
+        onChange={setValue}
         aria-label="target"
       >
         {selectorOptions}
@@ -49,8 +47,8 @@ export default function TargetSelector({ value, options = {}, onChange = () => {
 
   return (
     <>
-      <Button variant="link" onClick={onOpen}>
-        {value}
+      <Button variant="link" onClick={open}>
+        {target}
       </Button>
 
       <Modal
@@ -59,10 +57,10 @@ export default function TargetSelector({ value, options = {}, onChange = () => {
         variant={ModalVariant.small}
         title="Target Selector"
         actions={[
-          <Button key="confirm" variant="primary" onClick={applyChanges}>
+          <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
           </Button>,
-          <Button key="cancel" variant="link" onClick={onClose}>
+          <Button key="cancel" variant="link" onClick={cancel}>
             Cancel
           </Button>
         ]}

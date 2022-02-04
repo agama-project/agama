@@ -1,8 +1,28 @@
-import { useEffect } from 'react';
+/*
+ * Copyright (c) [2022] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as published
+ * by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
+import { useInstallerClient } from './context/installer';
 
 import {
   Button,
-  Progress,
   Stack,
   StackItem,
   Text,
@@ -19,38 +39,10 @@ import {
   EOS_TRANSLATE as LanguagesSelectionIcon,
   EOS_VOLUME as HardDriveIcon,
   EOS_PACKAGES as ProductsIcon,
-  EOS_DOWNLOADING as ProgressIcon
 } from 'eos-icons-react'
 
-import {
-  useInstallerState, useInstallerDispatch, setStatus, setOptions, loadOptions,
-  updateProgress, registerSignalHandler, startInstallation
-} from './context/installer';
-
 function Overview() {
-  const dispatch = useInstallerDispatch();
-  const installation = useInstallerState();
-  const { language, product, disk } = installation.options;
-
-  useEffect(() => {
-    loadOptions(dispatch);
-    setStatus(dispatch);
-
-    registerSignalHandler('StatusChanged', () => {
-      // FIXME: use the status_id from the event
-      setStatus(dispatch);
-    });
-
-    registerSignalHandler('Progress', (_path, _iface, _signal, args) => {
-      const [title, steps, step, substeps, substep] = args;
-      const progress = { title, steps, step, substeps, substep };
-      updateProgress(dispatch, progress);
-    });
-
-  }, []);
-
-  const isInstalling = installation.status !== 0;
-  const { progress } = installation;
+  const client = useInstallerClient();
 
   return (
     <>
@@ -63,45 +55,29 @@ function Overview() {
 
         <StackItem>
           <Category title="Language" icon={LanguagesSelectionIcon}>
-            <LanguageSelector
-              value={language || "Select language"}
-              onChange={(language) => setOptions({ language }, dispatch)}
-            />
+            <LanguageSelector />
           </Category>
         </StackItem>
 
         <StackItem>
           <Category title="Target" icon={HardDriveIcon}>
-            <Storage value={disk} onChange={disk => setOptions({ disk }, dispatch)} />
+            <Storage />
           </Category>
         </StackItem>
 
         <StackItem>
           <Category title="Product" icon={ProductsIcon}>
-            <ProductSelector
-              value={product || "Select a product"}
-              onChange={(product) => setOptions({ product }, dispatch)}
-            />
+            <ProductSelector />
           </Category>
         </StackItem>
-
-        { isInstalling && progress &&
-          <StackItem>
-            <Category title="Progress" icon={ProgressIcon} >
-              <Progress title="Installing" value={Math.round(progress.step / progress.steps * 100)} />
-              <Progress title={progress.title} value={Math.round(progress.substep / progress.substeps * 100)} />
-            </Category>
-          </StackItem> }
 
         <StackItem>
           <Button
             isLarge
             variant="primary"
-            isDisabled={isInstalling}
-            onClick={() => startInstallation(dispatch)}>
+            onClick={() => client.startInstallation()}>
             Install
           </Button>
-          { isInstalling }
         </StackItem>
       </Stack>
     </>
