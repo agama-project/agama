@@ -42,12 +42,14 @@ function InstallationProgress() {
     });
   }, []);
 
+  console.log(progress.substeps);
   return (
     <Stack hasGutter>
       <StackItem>
         <Category title="Progress" icon={ProgressIcon} >
           <Progress title="Installing" value={Math.round(progress.step / progress.steps * 100)} />
-          <Progress title={progress.title} value={Math.round(progress.substep / progress.substeps * 100)} />
+          { progress.substeps && progress.substeps >= 0 &&
+            <Progress title={progress.title} value={Math.round(progress.substep / progress.substeps * 100)} /> }
         </Category>
       </StackItem>
     </Stack>
