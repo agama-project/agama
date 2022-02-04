@@ -38,15 +38,18 @@ function InstallationProgress() {
     });
   }, []);
 
+  const showSubsteps = !!progress.substeps && progress.substeps >= 0;
+  const percentage =
+    progress.steps === 0
+      ? 0
+      : Math.round((progress.step / progress.steps) * 100);
+
   return (
     <Stack hasGutter>
       <StackItem>
         <Category title="Progress" icon={ProgressIcon}>
-          <Progress
-            title="Installing"
-            value={Math.round((progress.step / progress.steps) * 100)}
-          />
-          {progress.substeps && progress.substeps >= 0 && (
+          <Progress title="Installing" value={percentage} />
+          {showSubsteps && (
             <Progress
               title={progress.title}
               value={Math.round((progress.substep / progress.substeps) * 100)}
