@@ -55,9 +55,7 @@ export default function LanguageSelector() {
 
   const open = () => dispatch({ type: "OPEN" });
 
-  const cancel = () => {
-    dispatch({ type: "CANCEL" });
-  }
+  const cancel = () => dispatch({ type: "CANCEL" });
 
   const accept = async () => {
     // TODO: handle errors

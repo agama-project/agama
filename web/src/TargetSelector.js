@@ -25,9 +25,7 @@ export default function TargetSelector({ target, targets, onAccept }) {
     setIsFormOpen(false);
   };
 
-  const cancel = () => {
-    setIsFormOpen(false);
-  };
+  const cancel = () => setIsFormOpen(false);
 
   const buildSelector = () => {
     const selectorOptions = targets.map(target => {
