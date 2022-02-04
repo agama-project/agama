@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from 'react';
+import { useState } from 'react';
 import { useInstallerClient } from './context/installer';
 
 import {
@@ -11,59 +11,21 @@ import {
   ModalVariant
 } from "@patternfly/react-core"
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "LOAD": {
-      return { ...state, ...action.payload };
-    }
-    case "ACCEPT": {
-      return { ...state, isFormOpen: false };
-    }
+export default function TargetSelector({ target, targets, onAccept }) {
+  const [value, setValue] = useState(target);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
-    case "CANCEL": {
-      return { ...state, isFormOpen: false, current: state.initial };
-    }
+  const open = () => setIsFormOpen(true);
 
-    case "CHANGE": {
-      return { ...state, current: action.payload };
-    }
-
-    case "OPEN": {
-      return { ...state, isFormOpen: true };
-    }
-
-    default: {
-        return state;
-    }
-  }
-}
-
-const initialState = {
-  targets: [], initial: null, current: null, isFormOpen: false
-};
-
-export default function TargetSelector() {
-  const client = useInstallerClient();
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { current: target, targets, isFormOpen } = state;
-
-  useEffect(async () => {
-    const targets = await client.getDisks();
-    const current = await client.getOption("Disk");
-    dispatch({ type: "LOAD", payload: { targets, current, initial: current }});
-  }, []);
-
-  const open = () => dispatch({ type: "OPEN" });
+  const accept = () => {
+    // TODO: handle errors
+    onAccept(value);
+    setIsFormOpen(false);
+  };
 
   const cancel = () => {
-    dispatch({ type: "CANCEL" });
-  }
-
-  const accept = async () => {
-    // TODO: handle errors
-    await client.setOption("Disk", target);
-    dispatch({ type: "ACCEPT" });
-  }
+    setIsFormOpen(false);
+  };
 
   const buildSelector = () => {
     const selectorOptions = targets.map(target => {
@@ -74,8 +36,8 @@ export default function TargetSelector() {
 
     return (
       <FormSelect
-        value={target}
-        onChange={v => dispatch({ type: "CHANGE", payload: v })}
+        value={value}
+        onChange={setValue}
         aria-label="target"
       >
         {selectorOptions}
