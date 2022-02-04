@@ -9,7 +9,7 @@ import {
   FormSelectOption,
   Modal,
   ModalVariant
-} from "@patternfly/react-core"
+} from "@patternfly/react-core";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -33,13 +33,16 @@ const reducer = (state, action) => {
     }
 
     default: {
-        return state;
+      return state;
     }
   }
-}
+};
 
 const initialState = {
-  languages: [], initial: null, current: null, isFormOpen: false
+  languages: [],
+  initial: null,
+  current: null,
+  isFormOpen: false
 };
 
 export default function LanguageSelector() {
@@ -50,7 +53,10 @@ export default function LanguageSelector() {
   useEffect(async () => {
     const languages = await client.getLanguages();
     const current = await client.getOption("Language");
-    dispatch({ type: "LOAD", payload: { languages, current, initial: current } });
+    dispatch({
+      type: "LOAD",
+      payload: { languages, current, initial: current }
+    });
   }, []);
 
   const open = () => dispatch({ type: "OPEN" });
@@ -61,12 +67,12 @@ export default function LanguageSelector() {
     // TODO: handle errors
     await client.setOption("Language", language);
     dispatch({ type: "ACCEPT" });
-  }
+  };
 
   const label = () => {
     const selectedLanguage = languages.find(lang => lang.id === language);
     return selectedLanguage ? selectedLanguage.name : "Select language";
-  }
+  };
 
   const buildSelector = () => {
     const selectorOptions = languages.map(lang => (
@@ -90,8 +96,8 @@ export default function LanguageSelector() {
         {label()}
       </Button>
 
-      <Modal 
-        isOpen={isFormOpen} 
+      <Modal
+        isOpen={isFormOpen}
         showClose={false}
         variant={ModalVariant.small}
         title="Language Selector"
@@ -110,10 +116,10 @@ export default function LanguageSelector() {
             label="Select language"
             helperText="The selected language will be used for both, the installer and the installed system"
           >
-            { buildSelector() }
+            {buildSelector()}
           </FormGroup>
         </Form>
       </Modal>
     </>
-  )
+  );
 }

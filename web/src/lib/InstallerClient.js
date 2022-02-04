@@ -19,22 +19,26 @@
  * find current contact information at www.suse.com.
  */
 
-import cockpit from './cockpit';
+import cockpit from "./cockpit";
 
 export default class InstallerClient {
   // Initializing the client in the constructor does not work for some reason.
   client() {
     if (!this._client) {
-      this._client = window.cockpit.dbus(
-        "org.opensuse.YaST", { bus: "system", superuser: "try" }
-      );
+      this._client = window.cockpit.dbus("org.opensuse.YaST", {
+        bus: "system",
+        superuser: "try"
+      });
     }
     return this._client;
   }
 
   onPropertyChanged(handler) {
     const { remove } = this.client().subscribe(
-      { interface: 'org.freedesktop.DBus.Properties', member: 'PropertiesChanged' },
+      {
+        interface: "org.freedesktop.DBus.Properties",
+        member: "PropertiesChanged"
+      },
       handler
     );
     return remove;
@@ -42,9 +46,9 @@ export default class InstallerClient {
 
   onSignal(signal, handler) {
     const { remove } = this.client().subscribe(
-      { interface: 'org.opensuse.YaST.Installer', member: signal },
+      { interface: "org.opensuse.YaST.Installer", member: signal },
       handler
-    )
+    );
     return remove;
   }
 
@@ -52,26 +56,23 @@ export default class InstallerClient {
     const auth = window.btoa(`${username}:${password}`);
 
     return new Promise((resolve, reject) => {
-      return fetch(
-        "/cockpit/login",
-        { headers: { Authorization: `Basic ${auth}`, "X-Superuser": "any" } }
-      ).then(resp => {
-          if (resp.status == 200) {
-            resolve();
-          } else {
-            reject(resp.statusText);
-          }
-        });
+      return fetch("/cockpit/login", {
+        headers: { Authorization: `Basic ${auth}`, "X-Superuser": "any" }
+      }).then(resp => {
+        if (resp.status == 200) {
+          resolve();
+        } else {
+          reject(resp.statusText);
+        }
+      });
     });
   }
 
   isLoggedIn() {
     return new Promise((resolve, reject) => {
-      return fetch(
-        "/cockpit/login",
-      ).then(resp => {
-          resolve(resp.status === 200);
-        });
+      return fetch("/cockpit/login").then(resp => {
+        resolve(resp.status === 200);
+      });
     });
   }
 
@@ -90,7 +91,7 @@ export default class InstallerClient {
   async getLanguages() {
     const languages = await this._callInstallerMethod("GetLanguages");
     return Object.keys(languages).map(key => {
-      return { id: key, name: languages[key][1] }
+      return { id: key, name: languages[key][1] };
     });
   }
 
@@ -104,24 +105,31 @@ export default class InstallerClient {
 
   async getOptions() {
     const data = await this.client().call(
-      "/org/opensuse/YaST/Installer", "org.freedesktop.DBus.Properties",
-      "GetAll", ["org.opensuse.YaST.Installer"]
-    )
+      "/org/opensuse/YaST/Installer",
+      "org.freedesktop.DBus.Properties",
+      "GetAll",
+      ["org.opensuse.YaST.Installer"]
+    );
     // FIXME: remove the "Status" (it can wait until we defined the new D-Bus
     // API).
     return Object.fromEntries(
-      Object.entries(data[0]).map(([name, variant]) => [name.toLowerCase(), variant.v])
-    )
+      Object.entries(data[0]).map(([name, variant]) => [
+        name.toLowerCase(),
+        variant.v
+      ])
+    );
   }
 
   async getOption(name) {
     try {
       const [{ v: option }] = await this.client().call(
-        "/org/opensuse/YaST/Installer", "org.freedesktop.DBus.Properties",
-        "Get", ["org.opensuse.YaST.Installer", name]
+        "/org/opensuse/YaST/Installer",
+        "org.freedesktop.DBus.Properties",
+        "Get",
+        ["org.opensuse.YaST.Installer", name]
       );
       return option;
-    } catch(e) {
+    } catch (e) {
       console.error(e);
     }
   }
@@ -144,7 +152,7 @@ export default class InstallerClient {
       "/org/opensuse/YaST/Installer",
       "org.opensuse.YaST.Installer",
       meth
-    )
+    );
     return result[0];
   }
 
@@ -153,7 +161,7 @@ export default class InstallerClient {
       "/org/opensuse/YaST/Installer",
       "org.freedesktop.DBus.Properties",
       "Set",
-      ["org.opensuse.YaST.Installer", name, window.cockpit.variant('s', value)]
-    )
+      ["org.opensuse.YaST.Installer", name, window.cockpit.variant("s", value)]
+    );
   }
 }

@@ -1,5 +1,5 @@
-import { render } from '@testing-library/react';
-import { InstallerProvider } from './context/installer';
+import { render } from "@testing-library/react";
+import { InstallerProvider } from "./context/installer";
 
 const AllProviders = ({ children }) => (
   <InstallerProvider>{children}</InstallerProvider>

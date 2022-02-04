@@ -19,14 +19,14 @@
  * find current contact information at www.suse.com.
  */
 
-import React from 'react';
-import InstallerClient from '../lib/InstallerClient';
+import React from "react";
+import InstallerClient from "../lib/InstallerClient";
 
 const AuthContext = React.createContext();
 
 function authReducer(state = initialState, action) {
   switch (action.type) {
-    case 'LOGIN': {
+    case "LOGIN": {
       const { username, success, error, request } = action.payload;
       if (request) {
         return { loggedIn: false, request: true };
@@ -34,11 +34,11 @@ function authReducer(state = initialState, action) {
         return { loggedIn: success, request: false, username, error };
       }
     }
-    case 'LOGOUT': {
+    case "LOGOUT": {
       return { loggedIn: false };
     }
     default: {
-      throw new Error(`Unsupported action type: ${action.type}`)
+      throw new Error(`Unsupported action type: ${action.type}`);
     }
   }
 }
@@ -59,37 +59,34 @@ function AuthProvider({ props, children }) {
 function useAuthContext() {
   const context = React.useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuthContext must be used within a AuthProvider');
+    throw new Error("useAuthContext must be used within a AuthProvider");
   }
 
   const [state, dispatch] = context;
   const client = new InstallerClient();
 
   const login = (username, password) => {
-    dispatch({ type: 'LOGIN', payload: { request: true } });
+    dispatch({ type: "LOGIN", payload: { request: true } });
     return client.authorize(username, password);
-  }
-  const logout = () => dispatch({ type: 'LOGOUT' });
+  };
+  const logout = () => dispatch({ type: "LOGOUT" });
 
   const autoLogin = async () => {
     const isLoggedIn = await client.isLoggedIn();
     if (isLoggedIn) {
       const username = await client.currentUser();
-      dispatch({ type: 'LOGIN', payload: { username, success: true } })
+      dispatch({ type: "LOGIN", payload: { username, success: true } });
     } else {
       logout();
     }
-  }
+  };
 
   return {
     state,
     login,
     autoLogin,
     logout
-  }
+  };
 }
 
-export {
-  AuthProvider,
-  useAuthContext,
-}
+export { AuthProvider, useAuthContext };

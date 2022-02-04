@@ -19,10 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-const LOAD_OPTIONS = 'load_options';
-const SET_OPTIONS = 'set_options';
-const SET_PROGRESS = 'set_progress'
-const SET_STATUS = 'set_status';
+const LOAD_OPTIONS = "load_options";
+const SET_OPTIONS = "set_options";
+const SET_PROGRESS = "set_progress";
+const SET_STATUS = "set_status";
 
 export default {
   LOAD_OPTIONS,
