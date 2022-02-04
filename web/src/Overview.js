@@ -19,12 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { useEffect, useReducer } from 'react';
 import { useInstallerClient } from './context/installer';
 
 import {
   Button,
-  Progress,
   Stack,
   StackItem,
   Text,
@@ -36,7 +34,6 @@ import Category from './Category';
 import LanguageSelector from './LanguageSelector';
 import ProductSelector from './ProductSelector';
 import Storage from './Storage';
-import actionTypes from './context/actionTypes';
 
 import {
   EOS_TRANSLATE as LanguagesSelectionIcon,
@@ -44,37 +41,8 @@ import {
   EOS_PACKAGES as ProductsIcon,
 } from 'eos-icons-react'
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case actionTypes.SET_OPTIONS: {
-      return { ...state, ...action.payload };
-    }
-    default: {
-      return state;
-    }
-  }
-}
-
 function Overview() {
-  const [state, dispatch] = useReducer(reducer, {});
-  const { language, product, disk } = state;
   const client = useInstallerClient();
-
-  const loadOptions = () => {
-    client.getOptions().then(options => {
-      dispatch({ type: actionTypes.SET_OPTIONS, payload: options });
-    }).catch(console.error);
-  };
-
-  const setOptions = (options) => {
-    client.setOptions(options).then(() => {
-      dispatch({ type: actionTypes.SET_OPTIONS, payload: options });
-    });
-  };
-
-  useEffect(() => {
-    loadOptions();
-  }, []);
 
   return (
     <>
@@ -93,16 +61,13 @@ function Overview() {
 
         <StackItem>
           <Category title="Target" icon={HardDriveIcon}>
-            <Storage value={disk} onChange={disk => setOptions({ disk })} />
+            <Storage />
           </Category>
         </StackItem>
 
         <StackItem>
           <Category title="Product" icon={ProductsIcon}>
-            <ProductSelector
-              value={product || "Select a product"}
-              onChange={(product) => setOptions({ product })}
-            />
+            <ProductSelector />
           </Category>
         </StackItem>
 
