@@ -38,7 +38,6 @@ function InstallationProgress() {
     });
   }, []);
 
-  console.log(progress.substeps);
   return (
     <Stack hasGutter>
       <StackItem>

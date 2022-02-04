@@ -37,9 +37,12 @@ function App() {
 
   useEffect(autoLogin, []);
 
-  useEffect(() => {
-    if (loggedIn === true) return;
+  useEffect(async () => {
+    const status = await client.getStatus();
+    setIsInstalling(status !== 0);
+  }, []);
 
+  useEffect(() => {
     return client.onSignal("StatusChanged", (_path, _iface, _signal, args) => {
       setIsInstalling(args[0] !== 0);
     });
