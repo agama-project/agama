@@ -26,7 +26,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "npx prettier --check \"src/**/*.js\"",
+    "lint": "npx eslint src",
     "prettier": "npx prettier --write \"src/**/*.js\""
   },
   "eslintConfig": {
