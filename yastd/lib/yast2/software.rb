@@ -53,7 +53,7 @@ module Yast2
       Yast::Pkg.TargetLoad
       Yast::Pkg.SourceRestore
       Yast::Pkg.SourceLoad
-      @products = Y2Packager::Product.all
+      @products = Y2Packager::Product.available_base_products
       @product = @products.first&.name
       proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
       @logger.info "proposal #{proposal["raw_proposal"]}"
