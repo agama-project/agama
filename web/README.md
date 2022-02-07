@@ -9,7 +9,7 @@ and it was bootstrapped with [Create React App](https://github.com/facebook/crea
 
 Most of the tasks you can run through `npm` are provided by Create React App (see the
 [documentation](https://create-react-app.dev/docs/available-scripts/) for further details). However,
-we have added a few more tasks on our own. So let's recap all the available task (they are defined
+we have added a few more tasks on our own. So let's recap all the available tasks (they are defined
 under the `scripts` key in the [package.json file](./package.json).
 
 * `npm start`: runs the application in development mode on `http://localhost:3000`. If possible, it
@@ -21,7 +21,7 @@ under the `scripts` key in the [package.json file](./package.json).
 * `npm run prettier`: runs [Prettier](https://prettier.io/) and modifies the code to stick to the
   [rules](./.prettierrc).
 
-Additionally, there a special [`npm run
-eject`](https://create-react-app.dev/docs/available-scripts/#npm-run-eject) exists. It removes the
-dependency on Create React App, but it is a one-way operation that should not use unless it is
+Additionally, an special [`npm run
+eject`](https://create-react-app.dev/docs/available-scripts/#npm-run-eject) task exists. It removes
+the dependency on Create React App, but it is a one-way operation that should not use unless it is
 strictly necessary.
