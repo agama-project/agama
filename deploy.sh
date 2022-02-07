@@ -17,7 +17,7 @@ sudo mount -o bind web/build /usr/share/cockpit/static/installer
 sudo systemctl start cockpit
 
 # set 'linux' as password
-echo "linux:Nk1RhI1GqlxdA | sudo chpasswd -e linux
+echo "linux:Nk1RhI1GqlxdA" | sudo chpasswd -e linux
 
 # open the installer
 xdg-open http://localhost:9090/cockpit/static/installer/index.html
