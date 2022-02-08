@@ -130,7 +130,7 @@ export default class InstallerClient {
       );
       return option;
     } catch (e) {
-      console.error(e);
+      console.error(`Error getting option "${name}":`, e);
     }
   }
 
