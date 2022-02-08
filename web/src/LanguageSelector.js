@@ -1,94 +1,125 @@
-import { useState } from 'react';
+import { useReducer, useEffect } from "react";
+import { useInstallerClient } from "./context/installer";
 
 import {
   Button,
-  FormControl,
-  FormLabel,
-  FormHelperText,
-  Link,
+  Form,
+  FormGroup,
+  FormSelect,
+  FormSelectOption,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Select,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react"
+  ModalVariant
+} from "@patternfly/react-core";
 
-export default function LanguageSelector({ value, options = [], onChange = () => {} }) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [language, setLanguage] = useState(value);
-
-  // FIXME: find other way to keep installer option in sync while using the
-  // controlled React select#value=
-  // (https://reactjs.org/docs/forms.html#the-select-tag)
-  const open = () => {
-    setLanguage(value);
-    onOpen();
-  }
-
-  const applyChanges = () => {
-    onChange(language);
-    onClose();
-  }
-
-  const label = () => {
-    if (options.length == 0) {
-      return value;
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "LOAD": {
+      return { ...state, ...action.payload };
+    }
+    case "ACCEPT": {
+      return { ...state, isFormOpen: false };
     }
 
-    const selectedLanguage = options.find(lang => lang.id === value)
+    case "CANCEL": {
+      return { ...state, isFormOpen: false, current: state.initial };
+    }
 
-    return selectedLanguage ? selectedLanguage.name : value;
+    case "CHANGE": {
+      return { ...state, current: action.payload };
+    }
+
+    case "OPEN": {
+      return { ...state, isFormOpen: true };
+    }
+
+    default: {
+      return state;
+    }
   }
+};
+
+const initialState = {
+  languages: [],
+  initial: null,
+  current: null,
+  isFormOpen: false
+};
+
+export default function LanguageSelector() {
+  const client = useInstallerClient();
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { current: language, languages, isFormOpen } = state;
+
+  useEffect(async () => {
+    const languages = await client.getLanguages();
+    const current = await client.getOption("Language");
+    dispatch({
+      type: "LOAD",
+      payload: { languages, current, initial: current }
+    });
+  }, []);
+
+  const open = () => dispatch({ type: "OPEN" });
+
+  const cancel = () => dispatch({ type: "CANCEL" });
+
+  const accept = async () => {
+    // TODO: handle errors
+    await client.setOption("Language", language);
+    dispatch({ type: "ACCEPT" });
+  };
+
+  const label = () => {
+    const selectedLanguage = languages.find(lang => lang.id === language);
+    return selectedLanguage ? selectedLanguage.name : "Select language";
+  };
 
   const buildSelector = () => {
-    const selectorOptions = options.map(lang => (
-      <option key={lang.id} value={lang.id}>
-        {lang.name}
-      </option>
+    const selectorOptions = languages.map(lang => (
+      <FormSelectOption key={lang.id} value={lang.id} label={lang.name} />
     ));
 
     return (
-      <Select
+      <FormSelect
         value={language}
-        onChange={(e) => setLanguage(e.target.value)}>
+        onChange={v => dispatch({ type: "CHANGE", payload: v })}
+        aria-label="language"
+      >
         {selectorOptions}
-      </Select>
+      </FormSelect>
     );
   };
 
   return (
     <>
-      <Link color="teal" onClick={open}>
-        <Text fontSize="lg">{label()}</Text>
-      </Link>
+      <Button variant="link" onClick={open}>
+        {label()}
+      </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Language Selector</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl id="language">
-              <FormLabel>Select desired language</FormLabel>
-              { buildSelector() }
-              <FormHelperText>The selected language will be used for both, the installer
-      and the installed system</FormHelperText>
-            </FormControl>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="teal" mr={3} onClick={applyChanges}>
-              Save
-            </Button>
-            <Button variant="ghost" onClick={onClose}>Cancel</Button>
-          </ModalFooter>
-        </ModalContent>
+      <Modal
+        isOpen={isFormOpen}
+        showClose={false}
+        variant={ModalVariant.small}
+        title="Language Selector"
+        actions={[
+          <Button key="confirm" variant="primary" onClick={accept}>
+            Confirm
+          </Button>,
+          <Button key="cancel" variant="link" onClick={cancel}>
+            Cancel
+          </Button>
+        ]}
+      >
+        <Form>
+          <FormGroup
+            fieldId="language"
+            label="Select language"
+            helperText="The selected language will be used for both, the installer and the installed system"
+          >
+            {buildSelector()}
+          </FormGroup>
+        </Form>
       </Modal>
     </>
-  )
+  );
 }

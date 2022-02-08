@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2021] SUSE LLC
+ * Copyright (c) [2022] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,14 +19,28 @@
  * find current contact information at www.suse.com.
  */
 
-const LOAD_OPTIONS = "load_options";
-const SET_OPTIONS = "set_options";
-const SET_PROGRESS = "set_progress";
-const SET_STATUS = "set_status";
+import { useState, useEffect } from "react";
+import { useInstallerClient } from "./context/installer";
 
-export default {
-  LOAD_OPTIONS,
-  SET_OPTIONS,
-  SET_PROGRESS,
-  SET_STATUS
-};
+import Overview from "./Overview";
+import InstallationProgress from "./InstallationProgress";
+
+function Installer() {
+  const client = useInstallerClient();
+  const [isInstalling, setIsInstalling] = useState(false);
+
+  useEffect(async () => {
+    const status = await client.getStatus();
+    setIsInstalling(status !== 0);
+  }, []);
+
+  useEffect(() => {
+    return client.onSignal("StatusChanged", (_path, _iface, _signal, args) => {
+      setIsInstalling(args[0] !== 0);
+    });
+  }, []);
+
+  return isInstalling ? <InstallationProgress /> : <Overview />;
+}
+
+export default Installer;

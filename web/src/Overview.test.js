@@ -1,9 +1,9 @@
 import { screen } from "@testing-library/react";
 import { render } from "./test-utils";
-import App from "./App";
+import Overview from "./Overview";
 
-test("renders the App", () => {
-  render(<App />);
+test("renders the Overview", () => {
+  render(<Overview />);
   const title = screen.getByText(/Welcome to D-Installer/i);
   expect(title).toBeInTheDocument();
 });

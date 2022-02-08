@@ -19,82 +19,149 @@
  * find current contact information at www.suse.com.
  */
 
-import axios from 'axios';
+import cockpit from "./cockpit";
 
 export default class InstallerClient {
-  constructor({ url, ws }) {
-    this.url = url;
-    this.socket = new WebSocket(`${ws}`);
-    this.socket.onclose = () => console.log("The socket was closed");
+  // Initializing the client in the constructor does not work for some reason.
+  client() {
+    if (!this._client) {
+      this._client = window.cockpit.dbus("org.opensuse.YaST", {
+        bus: "system",
+        superuser: "try"
+      });
+    }
+    return this._client;
   }
 
-  onMessage(handler) {
-    this.socket.addEventListener("message", handler);
-  }
-
-  async getInstallation() {
-    const { data }  = await axios.post(
-      `${this.url}/calls`, { meth: "GetStatus" }
+  onPropertyChanged(handler) {
+    const { remove } = this.client().subscribe(
+      {
+        interface: "org.freedesktop.DBus.Properties",
+        member: "PropertiesChanged"
+      },
+      handler
     );
-    return { status: data };
+    return remove;
+  }
+
+  onSignal(signal, handler) {
+    const { remove } = this.client().subscribe(
+      { interface: "org.opensuse.YaST.Installer", member: signal },
+      handler
+    );
+    return remove;
+  }
+
+  authorize(username, password) {
+    const auth = window.btoa(`${username}:${password}`);
+
+    return new Promise((resolve, reject) => {
+      return fetch("/cockpit/login", {
+        headers: { Authorization: `Basic ${auth}`, "X-Superuser": "any" }
+      }).then(resp => {
+        if (resp.status == 200) {
+          resolve();
+        } else {
+          reject(resp.statusText);
+        }
+      });
+    });
+  }
+
+  isLoggedIn() {
+    return new Promise((resolve, reject) => {
+      return fetch("/cockpit/login").then(resp => {
+        resolve(resp.status === 200);
+      });
+    });
+  }
+
+  currentUser() {
+    return window.cockpit.user();
+  }
+
+  async getStatus() {
+    return await this._callInstallerMethod("GetStatus");
   }
 
   async getProducts() {
-    const { data } = await axios.post(
-      `${this.url}/calls`, { meth: "GetProducts" }
-    );
-    return data;
+    return await this._callInstallerMethod("GetProducts");
   }
 
   async getLanguages() {
-    const { data } = await axios.post(
-      `${this.url}/calls`, { meth: "GetLanguages" }
-    );
-    return Object.keys(data).map(key => {
-      return { id: key, name: data[key][1] }
+    const languages = await this._callInstallerMethod("GetLanguages");
+    return Object.keys(languages).map(key => {
+      return { id: key, name: languages[key][1] };
     });
   }
 
   async getStorage() {
-    const { data } = await axios.post(
-      `${this.url}/calls`, { meth: "GetStorage" }
-    );
-    return data;
+    return await this._callInstallerMethod("GetStorage");
   }
 
   async getDisks() {
-    const { data } = await axios.post(
-      `${this.url}/calls`, { meth: "GetDisks" }
-    );
-    return data;
+    return await this._callInstallerMethod("GetDisks");
   }
 
   async getOptions() {
-    const { data } = await axios.get(`${this.url}/properties`);
+    const data = await this.client().call(
+      "/org/opensuse/YaST/Installer",
+      "org.freedesktop.DBus.Properties",
+      "GetAll",
+      ["org.opensuse.YaST.Installer"]
+    );
+    // FIXME: remove the "Status" (it can wait until we defined the new D-Bus
+    // API).
     return Object.fromEntries(
-      Object.entries(data[0]).map(([k, v]) => [k.toLowerCase(), v])
-    )
+      Object.entries(data[0]).map(([name, variant]) => [
+        name.toLowerCase(),
+        variant.v
+      ])
+    );
   }
 
-  async getStatus() {
-    const { data } = await axios.post(
-      `${this.url}/calls`, { meth: "GetStatus" }
-    );
-    return data;
+  async getOption(name) {
+    try {
+      const [{ v: option }] = await this.client().call(
+        "/org/opensuse/YaST/Installer",
+        "org.freedesktop.DBus.Properties",
+        "Get",
+        ["org.opensuse.YaST.Installer", name]
+      );
+      return option;
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   async setOptions(opts) {
     const promises = Object.keys(opts).map(name => {
       const key = name.charAt(0).toUpperCase() + name.slice(1);
-      return axios.put(`${this.url}/properties/${key}`, { value: opts[name] })
+      return this.setOption(key, opts[name]);
     });
     const value = await Promise.all(promises);
     return value;
   }
 
   async startInstallation() {
-    return await axios.post(
-      `${this.url}/calls`, { meth: "Start" }
+    return await this._callInstallerMethod("Start");
+  }
+
+  async _callInstallerMethod(meth) {
+    const result = await this.client().call(
+      "/org/opensuse/YaST/Installer",
+      "org.opensuse.YaST.Installer",
+      meth
+    );
+    return result[0];
+  }
+
+  async setOption(name, value) {
+    return await this.client().call(
+      "/org/opensuse/YaST/Installer",
+      "org.freedesktop.DBus.Properties",
+      "Set",
+      ["org.opensuse.YaST.Installer", name, window.cockpit.variant("s", value)]
     );
   }
 }

@@ -1,93 +1,124 @@
-import { useState } from 'react';
+import { useReducer, useEffect } from "react";
+import { useInstallerClient } from "./context/installer";
 
 import {
   Button,
-  FormControl,
-  FormLabel,
-  FormHelperText,
-  Link,
+  Form,
+  FormGroup,
+  FormSelect,
+  FormSelectOption,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Select,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react"
+  ModalVariant
+} from "@patternfly/react-core";
 
-export default function ProductSelector({ value, options = {}, onChange = () => {} }) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [product, setProduct] = useState(value);
-  const products = Object.values(options);
-
-  // FIXME: find other way to keep installer option in sync while using the
-  // controlled React select#value=
-  // (https://reactjs.org/docs/forms.html#the-select-tag)
-  const open = () => {
-    setProduct(value);
-    onOpen();
-  }
-
-  const applyChanges = () => {
-    onChange(product);
-    onClose();
-  }
-
-  const label = () => {
-    if (products.length == 0) {
-      return value;
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "LOAD": {
+      return { ...state, ...action.payload };
+    }
+    case "ACCEPT": {
+      return { ...state, isFormOpen: false };
     }
 
-    const selectedProduct = products.find(p => p.name == value)
+    case "CANCEL": {
+      return { ...state, isFormOpen: false, current: state.initial };
+    }
 
-    return selectedProduct ? selectedProduct.display_name : value;
+    case "CHANGE": {
+      return { ...state, current: action.payload };
+    }
+
+    case "OPEN": {
+      return { ...state, isFormOpen: true };
+    }
+
+    default: {
+      return state;
+    }
   }
+};
+
+const initialState = {
+  products: [],
+  initial: null,
+  current: null,
+  isFormOpen: false
+};
+
+export default function ProductSelector() {
+  const client = useInstallerClient();
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { current: product, products, isFormOpen } = state;
+
+  useEffect(async () => {
+    const products = await client.getProducts();
+    const current = await client.getOption("Product");
+    dispatch({
+      type: "LOAD",
+      payload: { products, current, initial: current }
+    });
+  }, []);
+
+  const open = () => dispatch({ type: "OPEN" });
+
+  const cancel = () => dispatch({ type: "CANCEL" });
+
+  const accept = async () => {
+    // TODO: handle errors
+    await client.setOption("Product", product);
+    dispatch({ type: "ACCEPT" });
+  };
+
+  const label = () => {
+    const selectedProduct = products.find(p => p.name === product);
+    return selectedProduct ? selectedProduct.display_name : "Select product";
+  };
 
   const buildSelector = () => {
     const selectorOptions = products.map(p => (
-      <option key={p.name} value={p.name}>
-        {p.display_name}
-      </option>
+      <FormSelectOption key={p.name} value={p.name} label={p.display_name} />
     ));
 
     return (
-      <Select
+      <FormSelect
         value={product}
-        onChange={(e) => setProduct(e.target.value)}>
+        onChange={v => dispatch({ type: "CHANGE", payload: v })}
+        aria-label="product"
+      >
         {selectorOptions}
-      </Select>
+      </FormSelect>
     );
   };
 
   return (
     <>
-      <Link color="teal" onClick={open}>
-        <Text fontSize="lg">{label()}</Text>
-      </Link>
+      <Button variant="link" onClick={open}>
+        {label()}
+      </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Product Selector</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl id="product">
-              <FormLabel>Select the product to be installed</FormLabel>
-              { buildSelector() }
-            </FormControl>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="teal" mr={3} onClick={applyChanges}>
-              Save
-            </Button>
-            <Button variant="ghost" onClick={onClose}>Cancel</Button>
-          </ModalFooter>
-        </ModalContent>
+      <Modal
+        isOpen={isFormOpen}
+        showClose={false}
+        variant={ModalVariant.small}
+        title="Product Selector"
+        actions={[
+          <Button key="confirm" variant="primary" onClick={accept}>
+            Confirm
+          </Button>,
+          <Button key="cancel" variant="link" onClick={cancel}>
+            Cancel
+          </Button>
+        ]}
+      >
+        <Form>
+          <FormGroup
+            fieldId="product"
+            label="Select the product to be installed"
+          >
+            {buildSelector()}
+          </FormGroup>
+        </Form>
       </Modal>
     </>
-  )
+  );
 }
