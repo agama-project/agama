@@ -27,7 +27,7 @@ function useInstallerClient() {
   const context = React.useContext(InstallerClientContext);
   if (!context) {
     throw new Error(
-      "useInstallerDispatch must be used within a InstallerClientProvider"
+      "useInstallerClient must be used within a InstallerClientProvider"
     );
   }
 
