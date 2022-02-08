@@ -1,11 +1,20 @@
 import { render } from "@testing-library/react";
-import { InstallerProvider } from "./context/installer";
 
-const AllProviders = ({ children }) => (
-  <InstallerProvider>{children}</InstallerProvider>
-);
+import { InstallerClientProvider } from "./context/installer";
+import InstallerClient from "./lib/InstallerClient";
 
-const customRender = (ui, options) =>
-  render(ui, { wrapper: AllProviders, ...options });
+const InstallerProvider =
+  client =>
+  ({ children }) =>
+    (
+      <InstallerClientProvider client={client}>
+        {children}
+      </InstallerClientProvider>
+    );
+
+const customRender = (ui, options = {}) => {
+  let client = options.installerClient || new InstallerClient();
+  return render(ui, { wrapper: InstallerProvider(client), ...options });
+};
 
 export { customRender as render };
