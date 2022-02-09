@@ -81,6 +81,7 @@ export default function LanguageSelector() {
 
     return (
       <FormSelect
+        id="language"
         value={language}
         onChange={v => dispatch({ type: "CHANGE", payload: v })}
         aria-label="language"
