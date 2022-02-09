@@ -28,7 +28,10 @@ import {
   Form,
   FormAlert,
   FormGroup,
-  TextInput
+  TextInput,
+  TextContent,
+  Text,
+  TextVariants
 } from "@patternfly/react-core";
 
 const formError = error => (
@@ -55,6 +58,9 @@ function LoginForm() {
   return (
     <Bullseye>
       <Form>
+        <TextContent>
+          <Text component={TextVariants.h1}>Welcome to D-Installer</Text>
+        </TextContent>
         {error && formError(error)}
         <FormGroup label="Username" fieldId="username">
           <TextInput isRequired type="text" id="username" ref={usernameRef} />

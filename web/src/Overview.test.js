@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { render } from "./test-utils";
+import { installerRender } from "./test-utils";
 import Overview from "./Overview";
 import InstallerClient from "./lib/InstallerClient";
 
@@ -35,9 +35,8 @@ beforeEach(() => {
 });
 
 test("renders the Overview", async () => {
-  const client = new InstallerClient();
-  render(<Overview />, { installerClient: client });
-  const title = screen.getByText(/Welcome to D-Installer/i);
+  installerRender(<Overview />);
+  const title = screen.getByText(/Installation Overview/i);
   expect(title).toBeInTheDocument();
 
   await screen.findByText("English");
@@ -46,8 +45,7 @@ test("renders the Overview", async () => {
 });
 
 test("starts the installation when the user clicks 'Install'", async () => {
-  const client = new InstallerClient();
-  render(<Overview />, { installerClient: client });
+  installerRender(<Overview />);
 
   // TODO: we should have some UI element to tell the user we have finished
   // with loading data.

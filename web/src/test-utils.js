@@ -1,20 +1,32 @@
 import { render } from "@testing-library/react";
 
 import { InstallerClientProvider } from "./context/installer";
+import { AuthProvider } from "./context/auth";
 import InstallerClient from "./lib/InstallerClient";
 
-const InstallerProvider =
-  client =>
-  ({ children }) =>
-    (
-      <InstallerClientProvider client={client}>
-        {children}
-      </InstallerClientProvider>
-    );
-
-const customRender = (ui, options = {}) => {
-  let client = options.installerClient || new InstallerClient();
-  return render(ui, { wrapper: InstallerProvider(client), ...options });
+const InstallerProvider = ({ children }) => {
+  const client = new InstallerClient();
+  return (
+    <InstallerClientProvider client={client}>
+      {children}
+    </InstallerClientProvider>
+  );
 };
 
-export { customRender as render };
+const AllProviders = ({ children }) => {
+  return (
+    <InstallerProvider>
+      <AuthProvider>{children}</AuthProvider>
+    </InstallerProvider>
+  );
+};
+
+const installerRender = (ui, options = {}) => {
+  return render(ui, { wrapper: InstallerProvider, ...options });
+};
+
+const authRender = (ui, options = {}) => {
+  return render(ui, { wrapper: AllProviders, ...options });
+};
+
+export { installerRender, authRender };
