@@ -22,10 +22,13 @@
 import cockpit from "./cockpit";
 
 export default class InstallerClient {
+  constructor(cockpit) {
+    this._cockpit = cockpit ||= window.cockpit;
+  }
   // Initializing the client in the constructor does not work for some reason.
   client() {
     if (!this._client) {
-      this._client = window.cockpit.dbus("org.opensuse.YaST", {
+      this._client = this._cockpit.dbus("org.opensuse.YaST", {
         bus: "system",
         superuser: "try"
       });
@@ -77,7 +80,7 @@ export default class InstallerClient {
   }
 
   currentUser() {
-    return window.cockpit.user();
+    return this._cockpit.user();
   }
 
   async getStatus() {
@@ -161,7 +164,7 @@ export default class InstallerClient {
       "/org/opensuse/YaST/Installer",
       "org.freedesktop.DBus.Properties",
       "Set",
-      ["org.opensuse.YaST.Installer", name, window.cockpit.variant("s", value)]
+      ["org.opensuse.YaST.Installer", name, this._cockpit.variant("s", value)]
     );
   }
 }
