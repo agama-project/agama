@@ -35,7 +35,12 @@ export default function TargetSelector({ target, targets, onAccept }) {
     });
 
     return (
-      <FormSelect value={value} onChange={setValue} aria-label="target">
+      <FormSelect
+        id="target"
+        value={value}
+        onChange={setValue}
+        aria-label="target"
+      >
         {selectorOptions}
       </FormSelect>
     );
