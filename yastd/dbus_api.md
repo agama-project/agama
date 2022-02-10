@@ -12,7 +12,7 @@ methods:
 
 Properties (all read only):
 
-  AvailableLanguages -> array(array(string, string, dict(string, variant)))
+  AvailableLanguages -> array(struct(string, string, dict(string, variant)))
     List of all available languages to install on target system.
     Example:
       AvailableLanguages -> [["cs_CZ", "Czech", {}]] # it is lang code, human readable lang name and dict for future extensions to provide more data
@@ -47,7 +47,7 @@ methods:
 
 Properties (all read only):
 
-  AvailableBaseProducts -> array(array(string, string, dict(string, variant)))
+  AvailableBaseProducts -> array(struct(string, string, dict(string, variant)))
     List of all available base product to install on target system.
     Note: List is sorted according to defined display order
     Example:
@@ -74,29 +74,29 @@ methods:
     example:
       MarkForUse([disk1,disk2partition2]) -> ()
 
-  MarkForShrink(array(object)) -> void
+  MarkForShrinking(array(object)) -> void
     set objects to allow shrink of them. it means keep content and reduce its free space.
     example:
       MarkForShrink([disk1,disk2partition2]) -> ()
 
 Properties (all read only):
 
-  Disks -> array(object)
+  Disks -> array(o.o.YaST.Installer1.Storage.Drive)  # an object_path whose object implements this interface
     List of all disks.
     Example:
       Disks -> [disk1, disk2]
 
-  Partitions -> array(object)
+  Partitions -> array(o.o.YaST.Installer1.Storage.Partition)
     List of all partitions.
     Example:
       Disks -> [disk1partition1, disk1partition2, disk2partition1]
 
-  DevicesToUse -> array(object)
+  DevicesToUse -> array(o.o.YaST.Installer1.Storage.BlockDevice)
     Devices that will be fully used by installation
     Example:
       DevicesToUse -> [disk1,disk2partition2]
 
-  DevicesToShrink -> array(object)
+  DevicesToShrink -> array(o.o.YaST.Installer1.Storage.BlockDevice)
     Devices that will be shrinked to make space for installation
     Example:
       DevicesToShrink -> [disk1,disk2partition2]
@@ -150,7 +150,7 @@ Properties (all read only):
   Removable -> boolean
     if device is removable like usb sticks
 
-  Partitions -> array(object)
+  Partitions -> array(o.o.YaST.Installer1.Storage.Partition)
     partitions on given drive
 
 Iface: o.o.YaST.Installer1.Storage.Partition
@@ -159,7 +159,7 @@ Inspired by Udisks2.Partition
 
 Properties (all read only):
 
-  Drive -> object
+  Drive -> o.o.YaST.Installer1.Storage.Drive
     where partitions live
 
 
