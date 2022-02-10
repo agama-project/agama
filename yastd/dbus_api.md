@@ -23,6 +23,16 @@ So we decided for now to have properties in english and when locale is needed th
 localized strings together with locale should be used. Methods that can return localized error states
 should be able to get as option requested locale.
 
+### Resources
+
+We use these resources to get more familiar with DBUS API designing.
+
+- DBUS API design guidelines https://dbus.freedesktop.org/doc/dbus-api-design.html
+- PackageKit design https://www.freedesktop.org/software/PackageKit/gtk-doc/api-reference.html
+- udisks design http://storaged.org/doc/udisks2-api/2.6.4/ch02.html
+- network manager design https://people.freedesktop.org/~lkundrak/nm-docs/spec.html
+- anakonda dbus API ( spread in `*_interface.py` files https://github.com/rhinstaller/anaconda/tree/master/pyanaconda/modules
+
 ## get the list of available languages
 
 Iface: o.o.YaST.Installer1.Language
