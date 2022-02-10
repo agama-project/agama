@@ -81,6 +81,7 @@ export default function ProductSelector() {
 
     return (
       <FormSelect
+        id="product"
         value={product}
         onChange={v => dispatch({ type: "CHANGE", payload: v })}
         aria-label="product"

@@ -49,7 +49,7 @@ function Overview() {
       <Stack hasGutter>
         <StackItem>
           <TextContent>
-            <Text component={TextVariants.h1}>Welcome to D-Installer</Text>
+            <Text component={TextVariants.h1}>Installation Overview</Text>
           </TextContent>
         </StackItem>
 

@@ -64,13 +64,13 @@ export default function Storage() {
   }, []);
 
   return (
-    <div>
+    <>
       <TargetSelector
         target={target || "Select target"}
         targets={targets}
         onAccept={onAccept}
       />
       <Proposal data={proposal} />
-    </div>
+    </>
   );
 }
