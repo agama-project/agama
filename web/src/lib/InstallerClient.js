@@ -106,23 +106,6 @@ export default class InstallerClient {
     return await this._callInstallerMethod("GetDisks");
   }
 
-  async getOptions() {
-    const data = await this.client().call(
-      "/org/opensuse/YaST/Installer",
-      "org.freedesktop.DBus.Properties",
-      "GetAll",
-      ["org.opensuse.YaST.Installer"]
-    );
-    // FIXME: remove the "Status" (it can wait until we defined the new D-Bus
-    // API).
-    return Object.fromEntries(
-      Object.entries(data[0]).map(([name, variant]) => [
-        name.toLowerCase(),
-        variant.v
-      ])
-    );
-  }
-
   async getOption(name) {
     try {
       const [{ v: option }] = await this.client().call(
@@ -137,13 +120,6 @@ export default class InstallerClient {
     }
   }
 
-  async setOptions(opts) {
-    const promises = Object.keys(opts).map(name => {
-      const key = name.charAt(0).toUpperCase() + name.slice(1);
-      return this.setOption(key, opts[name]);
-    });
-    const value = await Promise.all(promises);
-    return value;
   }
 
   async startInstallation() {
