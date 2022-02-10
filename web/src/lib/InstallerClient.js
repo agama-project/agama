@@ -85,7 +85,7 @@ export default class InstallerClient {
         headers: { Authorization: `Basic ${auth}`, "X-Superuser": "any" }
       }).then(resp => {
         if (resp.status == 200) {
-          resolve();
+          resolve(true);
         } else {
           reject(resp.statusText);
         }
