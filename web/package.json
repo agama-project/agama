@@ -48,5 +48,15 @@
   "devDependencies": {
     "http-proxy-middleware": "^2.0.2",
     "prettier": "^2.5.1"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!src/lib/cockpit.js",
+      "!src/reportWebVitals.js",
+      "!src/serviceWorker.js",
+      "!src/setupProxy.js",
+      "!<rootDir>/node_modules/"
+    ] 
   }
 }
