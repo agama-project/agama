@@ -59,4 +59,3 @@ module Yast2
     end
   end
 end
-

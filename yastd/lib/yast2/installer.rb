@@ -103,7 +103,7 @@ module Yast2
 
     def product=(name)
       @software.select_product(name)
-    rescue
+    rescue StandardError
       raise InvalidValue
     end
 
@@ -154,9 +154,7 @@ module Yast2
       @on_status_change = block
     end
 
-    def dbus_obj=(obj)
-      @dbus_obj = obj
-    end
+    attr_writer :dbus_obj
 
   private
 

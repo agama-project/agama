@@ -2,14 +2,14 @@
 
 source "https://rubygems.org"
 
-gem "rake"
-gem "ruby-dbus"
-gem "rexml" # dependency of dbus
 gem "eventmachine"
+gem "rake"
+gem "rexml" # dependency of dbus
+gem "ruby-dbus"
 
 # Required by YaST
+gem "cfa"
+gem "cfa_grub2"
 gem "cheetah"
 gem "fast_gettext"
 gem "nokogiri"
-gem "cfa"
-gem "cfa_grub2"
