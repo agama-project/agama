@@ -131,11 +131,11 @@ Iface: o.o.YaST.Installer1.Software
 
 #### Properties (all read only):
 
--  Disks -> array(o.o.YaST.Installer1.Storage.Drive)  # an object\_path whose object implements this interface
+-  Drives -> array(o.o.YaST.Installer1.Storage.Drive)  # an object\_path whose object implements this interface
     List of all disks.
     Example:
 
-      Disks -> [disk1, disk2]
+      Drives -> [disk1, disk2]
 
 -  Partitions -> array(o.o.YaST.Installer1.Storage.Partition)
     List of all partitions.
