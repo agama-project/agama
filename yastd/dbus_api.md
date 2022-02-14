@@ -117,13 +117,13 @@ Iface: o.o.YaST.Installer1.Software
 
 #### methods:
 
--  MarkForUse(array(o.o.YaST.Installer1.StorageBlockDevice Device)) -> void
+-  MarkForUse(array(o.o.YaST.Installer1.Storage.BlockDevice Device)) -> void
     set objects for use of installation. it means erase content of that devices
     example:
 
       MarkForUse([disk1,disk2partition2]) -> ()
 
--  MarkForShrinking(array(o.o.YaST.Installer1.StorageBlockDevice Device)) -> void
+-  MarkForShrinking(array(o.o.YaST.Installer1.Storage.BlockDevice Device)) -> void
     set objects to allow shrink of them. it means keep content and reduce its free space.
     example:
 
