@@ -2,13 +2,4 @@
 
 source "https://rubygems.org"
 
-gem "eventmachine"
-gem "rake"
-gem "ruby-dbus"
-
-# Required by YaST
-gem "cfa"
-gem "cfa_grub2"
-gem "cheetah"
-gem "fast_gettext"
-gem "nokogiri"
+gemspec
