@@ -7,10 +7,14 @@
 There was discussion if it is better to use in API basic types enclosed in data structures
 or if we should enclose as much as possible data to own objects that have
 own properties and methods. We see advantages and disadvantages for both approaches.
-So we decide to use simple data for simple data like list of languages and for more complex data
-like storage configuratio use objects. We can revisit decision in future.
+So we decide to:
+
+- use simple data for simple data (like list of languages)
+- for more complex data (like storage configuration) use objects.
+
+We can revisit decision in future.
 For decision if it is simple or complex we decide for rule, that data should
-contain only one level of nesting of dict/struct. So struct of structs or dictionary with dictionaries or structs
+contain *only one level of nesting of dict/struct*. So struct of structs or dictionary with dictionaries or structs
 should be prevented and instead use for that struct or dictionary object.
 
 ### Localization
@@ -19,8 +23,13 @@ We also discuss aproach how to solve localization of some strings like language 
 error messages from some scripts or strings from libraries.
 Setting locale for whole service is basically discouraged as there can be multiple clients
 working with given service, e.g. some log collector beside user doing setup.
-So we decided for now to have properties in english and when locale is needed then dedicated call to get
-localized strings together with locale should be used. Methods that can return localized error states
+So we decided for now to
+
+- have properties in English
+- when locale is needed then a dedicated call to get
+localized strings together with locale should be used.
+
+Methods that can return localized error states
 should be able to get as option requested locale.
 
 ### Resources
