@@ -1,4 +1,4 @@
-# DBUS API Document
+# D-Bus API Document
 
 ## General Principles
 
@@ -25,13 +25,13 @@ should be able to get as option requested locale.
 
 ### Resources
 
-We use these resources to get more familiar with DBUS API designing.
+We use these resources to get more familiar with D-Bus API designing.
 
-- DBUS API design guidelines https://dbus.freedesktop.org/doc/dbus-api-design.html
+- D-Bus API design guidelines https://dbus.freedesktop.org/doc/dbus-api-design.html
 - PackageKit design https://www.freedesktop.org/software/PackageKit/gtk-doc/api-reference.html
 - udisks design http://storaged.org/doc/udisks2-api/2.6.4/ch02.html
 - network manager design https://people.freedesktop.org/~lkundrak/nm-docs/spec.html
-- anakonda dbus API ( spread in `*_interface.py` files https://github.com/rhinstaller/anaconda/tree/master/pyanaconda/modules
+- anakonda D-Bus API ( spread in `*_interface.py` files https://github.com/rhinstaller/anaconda/tree/master/pyanaconda/modules
 
 ## get the list of available languages
 
