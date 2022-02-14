@@ -4,7 +4,6 @@ source "https://rubygems.org"
 
 gem "eventmachine"
 gem "rake"
-gem "rexml" # dependency of dbus
 gem "ruby-dbus"
 
 # Required by YaST
