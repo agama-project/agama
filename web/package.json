@@ -22,8 +22,8 @@
     "web-vitals": "^0.2.2"
   },
   "scripts": {
-    "start": "HOST=localhost PORT=3000 react-scripts start",
-    "build": "react-scripts build",
+    "start": "HOST=localhost PORT=3000 react-scripts --max_old_space_size=2048 start",
+    "build": "react-scripts --max_old_space_size=2048 build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "npx eslint src",
