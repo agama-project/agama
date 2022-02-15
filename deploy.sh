@@ -7,7 +7,7 @@ cd the-installer
 
 # set up yastd
 sudo cp yastd/share/dbus-yastd.conf /etc/dbus-1/system.d/yastd.conf
-cd yastd; bundle config --set local path vendor/bundle; bundle install; cd -
+cd yastd; bundle config set --local path 'vendor/bundle'; bundle install; cd -
 cd yastd; sudo bundle.ruby3.1 exec bin/yastd& cd -
 
 # set up the web UI
