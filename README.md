@@ -36,22 +36,22 @@ Tumbleweed just type:
 
     $ sudo zypper in gcc gcc-c++ make openssl-devel ruby-devel augeas-devel npm cockpit
 
-## yastd
+## d-installer
 
-`yastd` is a YaST-based service that is able to install a system. You can interact with such a
+`d-installer` is a YaST-based service that is able to install a system. You can interact with such a
 service using the D-Bus interface it provides.
 
-Beware that `yastd` must run as root (like YaST does) to do hardware probing, partition the disks,
-installs the software and so on. So you need to tell dbus about the service by copying
-`yastd/share/dbus-yastd.conf` to `/etc/dbus-1/system.d/yastd.conf`.
+Beware that `d-installer` must run as root (like YaST does) to do hardware probing, partition the
+disks, installs the software and so on. So you need to tell dbus about the service by copying
+`yastd/share/dbus.conf` to `/etc/dbus-1/system.d/d-installer.conf`.
 
 To run the service, type:
 
     $ cd yastd
     $ bundle install
-    $ sudo bundle exec bin/yastd
+    $ sudo bundle exec bin/d-installer
 
-To check that `yastd` is working, you can use a tool like
+To check that `d-installer` is working, you can use a tool like
 [busctl](https://www.freedesktop.org/wiki/Software/dbus/) (or
 [D-Feet](https://wiki.gnome.org/Apps/DFeet) if you prefer a graphical one:
 

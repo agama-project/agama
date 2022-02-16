@@ -23,16 +23,16 @@
 require "rake"
 
 Gem::Specification.new do |spec|
-  spec.name = "yastd"
+  spec.name = "d-installer"
   spec.version = File.read(File.expand_path("VERSION", File.join(__dir__, ".."))).chomp
   spec.summary = "D-Installer Service"
-  spec.description = "Installation service for the experimental YaST D-Installer."
+  spec.description = "System service for D-Installer, an experimental YaST-based installer."
   spec.author = "YaST Team"
   spec.email = "yast-devel@opensuse.org"
   spec.homepage = "https://yast.opensuse.org/"
   spec.license = "GPL-2.0-only"
   spec.files = FileList["lib/**/*.rb", "bin/*", "share/*", "[A-Z]*"].to_a
-  spec.executables << "yastd"
+  spec.executables << "d-installer"
   spec.metadata = { "rubygems_mfa_required" => "true" }
 
   spec.required_ruby_version = ">= 2.5.0"
