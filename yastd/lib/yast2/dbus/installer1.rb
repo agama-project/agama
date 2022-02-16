@@ -34,7 +34,9 @@ module Yast2
       def initialize(installer, logger, *args)
         @installer = installer
         @logger = logger
-        @available_languages = installer.languages
+        @available_languages = installer.languages.map { |k,v| [k, v.first, {}] }
+        @logger.info "Available languages #{@available_languages.inspect}"
+        @available_base_products = installer.products
 
         installer.dbus_obj = self
 
