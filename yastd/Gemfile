@@ -3,8 +3,7 @@
 source "https://rubygems.org"
 
 gem "rake"
-gem "ruby-dbus"
-gem "rexml" # dependency of dbus
+gem "ruby-dbus", "~> 0.17"
 gem "eventmachine"
 
 # Required by YaST

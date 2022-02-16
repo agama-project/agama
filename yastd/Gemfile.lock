@@ -20,7 +20,8 @@ GEM
     rake (13.0.6)
     rexml (3.2.5)
     ruby-augeas (0.5.0)
-    ruby-dbus (0.16.0)
+    ruby-dbus (0.17.0)
+      rexml
 
 PLATFORMS
   ruby
@@ -34,5 +35,7 @@ DEPENDENCIES
   fast_gettext
   nokogiri
   rake
-  rexml
-  ruby-dbus
+  ruby-dbus (~> 0.17)
+
+BUNDLED WITH
+   2.3.0.dev
