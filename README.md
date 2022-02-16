@@ -49,7 +49,7 @@ To run the service, type:
 
     $ cd yastd
     $ bundle install
-    $ sudo bunle exec bin/yastd
+    $ sudo bundle exec bin/yastd
 
 To check that `yastd` is working, you can use a tool like
 [busctl](https://www.freedesktop.org/wiki/Software/dbus/) (or
