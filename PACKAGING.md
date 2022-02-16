@@ -1,0 +1,41 @@
+# Packaging
+
+D-Installer packages are available in the [YaST:Head project in
+OBS](https://build.opensuse.org/project/show/YaST:Head). This document summarizes the process we
+follow to build those packages.
+
+## Service
+
+You can check the current package in
+[YaST:Head/rubygem-d-installer](https://build.opensuse.org/package/show/YaST:Head/rubygem-d-installer).
+At this point, D-Installer has not been released as a Rubygem yet, so you need to do an extra step.
+
+The process to release a new version can be summarized in these steps:
+
+1. Bump the version in the `d-installer.gemspec` file.
+2. Build the `gem` by running `gem build d-installer.gemspec`
+3. Add an entry in the changes file.
+4. Branch the OBS package and copy the `gem` and the `changes` files.
+5. Commit the changes.
+
+If you need to modify the `spec` file, please, use the `gem2rpm` tool. The configuration is [included
+in the repository](./yastd/package/gem2rpm.yml). To regenerate the spec, just type:
+
+    gem2rpm --config gem2rpm.yml d-installer-0.1.gem > rubygem-d-installer.spec
+
+## Web Interface
+
+The current package is
+[YaST:Head/d-installer-web](https://build.opensuse.org/package/show/YaST:Head/rubygem-d-installer).
+You can figure out most of the details by checking the [_service](_./web/package/_service) file. It
+might happen that you get out of RAM when building the package, so in this case it is better to
+branch the package and try to build it remotely.
+
+The process to update the package is:
+
+1. Bump the version in the `package/_service` file.
+2. Add an entry in the changes file.
+3. Branch the OBS package and copy `package/*` and `package-lock.json` files.
+4. In your package checkout, run `osc service manualrun`. It will update D-Installer sources and its
+   dependencies (`node_modules`).
+5. Commit the changes.
