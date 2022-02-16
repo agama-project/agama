@@ -23,10 +23,10 @@ require "dbus"
 
 module Yast2
   module DBus
-    # YaST D-Bus object (/org/opensuse/YaST/Installer)
+    # YaST D-Bus object (/org/opensuse/YaST/Installer1)
     #
     # @see https://rubygems.org/gems/ruby-dbus
-    class Installer < ::DBus::Object
+    class Installer1 < ::DBus::Object
       attr_reader :installer, :logger
 
       # @param installer [Yast2::Installer] YaST installer instance
@@ -43,7 +43,7 @@ module Yast2
 
       LANGUAGE_INTERFACE = "org.opensuse.YaST.Installer1.Language"
       dbus_interface LANGUAGE_INTERFACE do
-        dbus_attr_reader :available_languages, "a(ss{sv})"
+        dbus_attr_reader :available_languages, "a(ssa{sv})"
         attr_writer :available_languages
         dbus_watcher :available_languages
 
@@ -65,7 +65,7 @@ module Yast2
 
       SOFTWARE_INTERFACE = "org.opensuse.YaST.Installer1.Software"
       dbus_interface SOFTWARE_INTERFACE do
-        dbus_attr_reader :available_base_products, "a(ss{sv})"
+        dbus_attr_reader :available_base_products, "a(ssa{sv})"
         attr_writer :available_base_products
         dbus_watcher :available_base_products
 
