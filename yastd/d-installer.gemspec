@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
   spec.description = "System service for D-Installer, an experimental YaST-based installer."
   spec.author = "YaST Team"
   spec.email = "yast-devel@opensuse.org"
-  spec.homepage = "https://yast.opensuse.org/"
+  spec.homepage = "https://github.com/yast/d-installer"
   spec.license = "GPL-2.0-only"
   spec.files = FileList["lib/**/*.rb", "bin/*", "share/*", "[A-Z]*"].to_a
   spec.executables << "d-installer"
