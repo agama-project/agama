@@ -16,64 +16,78 @@ service. At first sight, we have identified these components:
 
 :warning: :warning: **This is a proof-of-concept so, PLEASE, use a virtual machine to give it a try.** :warning: :warning: 
 
-Boot to any [openSUSE Tumbleweed Live
-image](https://get.opensuse.org/tumbleweed) and, in the console, type:
+The easiest way to give D-Installer a try is to install the
+[rubygem-d-installer](https://build.opensuse.org/package/show/YaST:Head/rubygem-d-installer) and
+[d-installer-web](https://build.opensuse.org/package/show/YaST:Head/d-installer-web) packages in an
+[openSUSE Tumbleweed Live image](https://get.opensuse.org/tumbleweed).
 
-    $ wget https://raw.githubusercontent.com/yast/the-installer/master/deploy.sh
-    $ # inspect content to ensure that nothing malicious is done there
-    $ sh deploy.sh
+You need to do some additional steps, like starting the Cockpit service or setting a password for
+the "linux" user. To make things easier, the repository already contains [a script](./deploy.sh)
+that takes care of everything. So after booting the image, just type:
+
+    wget https://raw.githubusercontent.com/yast/the-installer/master/deploy.sh
+    # inspect content to ensure that nothing malicious is done there
+    sh deploy.sh
 
 This process may take a while. Use `linux`/`linux` when the browser opens the log in form.
 
-The *Setup* section explains how to set-up the installer manually.
-
-TODO: use a url shortener
+If you want to contribute to the project or just have a closer look, check the *Setup* section.
 
 ## Setup
 
-To build and run this software you need a few tools. To install them on openSUSE
-Tumbleweed just type:
+If you want to contribute to the project, you can run D-Installer from sources. The first step
+should be to install Git (if it is not already installed) and clone the repository:
 
-    $ sudo zypper in gcc gcc-c++ make openssl-devel ruby-devel augeas-devel npm cockpit
+    sudo zypper --non-interactive in git
+    git clone https://github.com/yast/d-installer
+    cd d-installer
 
-## d-installer
+If you want to save some time, run the [setup.sh script](./setup.sh) and follow the instructions at
+the end. If you want to do it manually, just go through the following process.
 
-`d-installer` is a YaST-based service that is able to install a system. You can interact with such a
-service using the D-Bus interface it provides.
+### Dependencies
 
-Beware that `d-installer` must run as root (like YaST does) to do hardware probing, partition the
-disks, installs the software and so on. So you need to tell dbus about the service by copying
-`yastd/share/dbus.conf` to `/etc/dbus-1/system.d/d-installer.conf`.
+To build and run this software you need a few tools. To install them on openSUSE Tumbleweed just
+type:
 
-To run the service, type:
-
-    $ cd yastd
-    $ bundle install
-    $ sudo bundle exec bin/d-installer
-
-To check that `d-installer` is working, you can use a tool like
-[busctl](https://www.freedesktop.org/wiki/Software/dbus/) (or
-[D-Feet](https://wiki.gnome.org/Apps/DFeet) if you prefer a graphical one:
-
-    $ busctl call org.opensuse.YaST /org/opensuse/YaST/Installer \
-      org.opensuse.YaST.Installer GetDisks
-
-If you want to get the properties, just type:
-
-    $ busctl call org.opensuse.YaST /org/opensuse/YaST/Installer \
-      org.freedesktop.DBus.Properties GetAll s org.opensuse.YaST.Installer
-
-## Cockpit
+    sudo zypper in gcc gcc-c++ make openssl-devel ruby-devel augeas-devel npm cockpit
 
 The user interface uses Cockpit infrastructure to interact with the D-Bus interface, so you
 need to make sure that `cockpit` is running:
 
-    $ sudo systemctl start cockpit
+    sudo systemctl start cockpit
 
-## Web-Based User Interface
+### The `d-installer` Service
+
+`d-installer` is a YaST-based service that is able to install a system. You can interact with that
+service using the D-Bus interface it provides.
+
+Beware that `d-installer` must run as root (like YaST does) to do hardware probing, partition the
+disks, install the software and so on. So you need to tell dbus about the service by copying
+`yastd/share/dbus.conf` to `/etc/dbus-1/system.d/d-installer.conf`.
+
+To run the service, type:
+
+    cd yastd
+    bundle install
+    sudo bundle exec bin/d-installer
+
+To check that `d-installer` is working, you can use a tool like
+[busctl](https://www.freedesktop.org/wiki/Software/dbus/) (or
+[D-Feet](https://wiki.gnome.org/Apps/DFeet)) if you prefer a graphical one:
+
+    busctl call org.opensuse.YaST /org/opensuse/YaST/Installer \
+      org.opensuse.YaST.Installer GetDisks
+
+If you want to get the properties, just type:
+
+    busctl call org.opensuse.YaST /org/opensuse/YaST/Installer \
+      org.freedesktop.DBus.Properties GetAll s org.opensuse.YaST.Installer
+
+### Web-Based User Interface
 
 The current UI is a small web application built with [React](https://reactjs.org/). On production it
-is meant to be served by `cockpit-ws` from an directory in `XDG_DATA_DIRS` (e.g.,
+is meant to be served by `cockpit-ws` from a directory in `XDG_DATA_DIRS` (e.g.,
 `/usr/share/cockpit/static/installer`). Building the code might time some time, so there is a
 *development mode* available that reloads the code everytime it changes.
 
@@ -81,18 +95,18 @@ is meant to be served by `cockpit-ws` from an directory in `XDG_DATA_DIRS` (e.g.
 
 It allows to set a few installation parameters and start the installation (not implemented yet).
 
-    $ cd web
-    $ npm install
-    $ npm start
+    cd web
+    npm install
+    npm start
 
 Point your browser to http://localhost:3000 and happy hacking!
 
 ### Production-like Mode
 
-    $ cd web
-    $ npm run build
-    $ sudo mkdir /usr/share/cockpit/static/installer
-    $ sudo mount -o bind build /usr/share/cockpit/static/installer
+    cd web
+    npm run build
+    sudo mkdir /usr/share/cockpit/static/installer
+    sudo mount -o bind build /usr/share/cockpit/static/installer
 
 Point your browser to http://localhost:9090/cockpit/static/installer/index.html and enjoy!
 
