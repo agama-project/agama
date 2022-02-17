@@ -50,7 +50,7 @@ module Yast2
       # Exports the installer object through the D-Bus service
       def export
         service = bus.request_service(SERVICE_NAME)
-        installer_obj = Yast2::DBus::Installer1.new(
+        installer_obj = Yast2::DBus::Installer.new(
           build_installer, logger, OBJECT_PATH
         )
         service.export(installer_obj)
