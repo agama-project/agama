@@ -23,12 +23,13 @@ in the repository](./yastd/package/gem2rpm.yml). To regenerate the spec, just ty
 
     gem2rpm --config gem2rpm.yml d-installer-0.1.gem > rubygem-d-installer.spec
 
-## Web Interface
+## Web interface
 
 The current package is
 [YaST:Head/d-installer-web](https://build.opensuse.org/package/show/YaST:Head/rubygem-d-installer).
-You can figure out most of the details by checking the [_service](_./web/package/_service) file. It
-might happen that you get out of RAM when building the package, so in this case it is better to
+You can figure out most details by checking the
+[_service](_./web/package/_service) file. It might happen that you get
+out of RAM when building the package, so in this case, it is better to
 branch the package and try to build it remotely.
 
 The process to update the package is:
