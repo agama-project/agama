@@ -35,7 +35,7 @@ module Yast2
         @installer = installer
         @logger = logger
         @available_languages = installer.languages.map { |k,v| [k, v.first, {}] }
-        @logger.info "Available languages #{@available_languages.inspect}"
+        @logger.debug "Available languages #{@available_languages.inspect}"
         @available_base_products = installer.products
 
         installer.dbus_obj = self
