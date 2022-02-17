@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021] SUSE LLC
+# Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -38,7 +38,7 @@ module Yast2
       SERVICE_NAME = "org.opensuse.YaST"
 
       # @return [String] D-Bus object path
-      OBJECT_PATH = "/org/opensuse/YaST/Installer"
+      OBJECT_PATH = "/org/opensuse/YaST/Installer1"
 
       attr_reader :bus
 
