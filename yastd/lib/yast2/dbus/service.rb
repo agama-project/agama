@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021] SUSE LLC
+# Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -38,7 +38,7 @@ module Yast2
       SERVICE_NAME = "org.opensuse.YaST"
 
       # @return [String] D-Bus object path
-      OBJECT_PATH = "/org/opensuse/YaST/Installer"
+      OBJECT_PATH = "/org/opensuse/YaST/Installer1"
 
       attr_reader :bus
 
@@ -50,7 +50,7 @@ module Yast2
       # Exports the installer object through the D-Bus service
       def export
         service = bus.request_service(SERVICE_NAME)
-        installer_obj = Yast2::DBus::Installer.new(
+        installer_obj = Yast2::DBus::Installer1.new(
           build_installer, logger, OBJECT_PATH
         )
         service.export(installer_obj)

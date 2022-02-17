@@ -1,6 +1,8 @@
+#!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Copyright (c) [2021] SUSE LLC
+#
+# Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,43 +21,16 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
-Yast.import "Pkg"
+require "rubygems"
+require "bundler/setup"
 
-# YaST specific code lives under this namespace
-module Yast2
-  # This class represents the installer status
-  class PackageCallbacks
-    class << self
-      def setup(progress)
-        new(progress).setup
-      end
-    end
+require "eventmachine"
+require "yast2/dbus/service"
 
-    attr_reader :progress
-
-    def initialize(progress)
-      @progress = progress
-    end
-
-    def setup
-      Yast::Pkg.CallbackDonePackage(
-        fun_ref(method(:package_installed), "string (integer, string)")
-      )
-    end
-
-  private
-
-    def fun_ref(method, signature)
-      Yast::FunRef.new(method, signature)
-    end
-
-    # TODO: error handling
-    def package_installed(_error, _reason)
-      progress.package_installed
-
-      ""
-    end
-  end
+EM.run do
+  service = Yast2::DBus::Service.new
+  service.export
+  EventMachine::PeriodicTimer.new(0.1) { service.dispatch }
 end

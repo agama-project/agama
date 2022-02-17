@@ -1,25 +1,19 @@
-#! /bin/sh
-sudo zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel \
-  npm git augeas-devel cockpit || exit 1
+#!/bin/sh
 
-git clone https://github.com/yast/the-installer || exit 1
-cd the-installer
+# This script is supposed to be used in an openSUSE Tumbleweed Live DVD.
 
-# set up yastd
-sudo cp yastd/share/dbus-yastd.conf /etc/dbus-1/system.d/yastd.conf
-cd yastd; bundle config set --local path 'vendor/bundle'; bundle install; cd -
-cd yastd; sudo bundle.ruby3.1 exec bin/yastd& cd -
+sudo rpm --import https://build.opensuse.org/projects/YaST/public_key
+sudo zypper ar -f https://download.opensuse.org/repositories/YaST:/Head/openSUSE_Tumbleweed/YaST:Head.repo
+RUBY_VERSION=ruby:`rpm --eval '%{rb_ver}'`
+sudo zypper --non-interactive in --no-recommends \
+  "rubygem($RUBY_VERSION:d-installer)" \
+  d-installer-web \
+  cockpit
 
-# set up the web UI
-cd web; npm install; npm run build; cd -
-sudo mkdir /usr/share/cockpit/static/installer
-sudo mount -o bind web/build /usr/share/cockpit/static/installer
 sudo systemctl start cockpit
+sudo systemctl start d-installer
 
 # set 'linux' as password
 echo "linux:Nk1RhI1GqlxdA" | sudo chpasswd -e linux
 
-# open the installer
-xdg-open http://localhost:9090/cockpit/static/installer/index.html
-
-wait
+xdg-open http://localhost:9090/cockpit/static/installer/index.html 
