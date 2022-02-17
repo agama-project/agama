@@ -20,7 +20,7 @@ Name:           d-installer-web
 Version:        0
 Release:        0
 Summary:        Web-based user interface for D-Installer
-License:        LGPL-2.1-or-later AND MIT
+License:        GPL-2.0-only
 URL:            https://github.com/yast/d-installer
 # source_validator insists that if obscpio has no version then
 # tarball must neither
