@@ -1,0 +1,8 @@
+-------------------------------------------------------------------
+Wed Feb 16 19:20:16 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- First release:
+  * Small D-Bus interface to get some basic information, set a few options and
+    start the installation.
+  * Limited support for partitioning and software installation.
+- 0.1

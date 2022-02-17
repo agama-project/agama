@@ -143,7 +143,8 @@ module Yast2
           end
         end
 
-        dbus_method :Set, "in interface:s, in propname:s, in value:v" do |interface, propname, value|
+        dbus_method :Set,
+          "in interface:s, in propname:s, in value:v" do |interface, propname, value|
           logger.info "Set(#{interface}, #{propname}, #{value})"
 
           unless interface == INSTALLER_INTERFACE

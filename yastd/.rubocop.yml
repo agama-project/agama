@@ -1,0 +1,12 @@
+# use the shared Yast defaults
+inherit_from:
+  /usr/share/YaST2/data/devtools/data/rubocop-1.24.1_yast_style.yml
+
+AllCops:
+  Exclude:
+    - vendor/**/*
+
+Metrics/BlockLength:
+  # ruby-dbus DSL can have long blocks
+  Exclude:
+    - lib/yast2/dbus/installer.rb
