@@ -1,14 +1,14 @@
 PATH
   remote: .
   specs:
-    yastd (0.1)
+    d-installer (0.1)
       cfa (~> 1.0.2)
       cfa_grub2 (~> 2.0.0)
       cheetah (~> 1.0.0)
       eventmachine (~> 1.2.7)
       fast_gettext (~> 2.2.0)
       nokogiri (~> 1.13.1)
-      ruby-dbus (~> 0.17.0)
+      ruby-dbus (~> 0.16.0)
 
 GEM
   remote: https://rubygems.org/
@@ -32,19 +32,17 @@ GEM
       rake
     racc (1.6.0)
     rake (13.0.6)
-    rexml (3.2.5)
     ruby-augeas (0.5.0)
-    ruby-dbus (0.17.0)
-      rexml
+    ruby-dbus (0.16.0)
 
 PLATFORMS
   ruby
   x86_64-linux
 
 DEPENDENCIES
+  d-installer!
   packaging_rake_tasks (~> 1.5.1)
   rake (~> 13.0.6)
-  yastd!
 
 BUNDLED WITH
    2.3.3
