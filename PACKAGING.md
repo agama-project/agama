@@ -40,3 +40,6 @@ The process to update the package is:
 4. In your package checkout, run `osc service manualrun`. It will update D-Installer sources and its
    dependencies (`node_modules`).
 5. Commit the changes.
+
+You can read more about the overall approach of this package in the following article: [Git work
+flows in the upcoming 2.7 release](https://openbuildservice.org/2016/04/08/new_git_in_27/).
