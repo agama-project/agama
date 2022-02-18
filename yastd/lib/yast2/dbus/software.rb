@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021] SUSE LLC
+# Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -26,7 +26,7 @@ module Yast2
     # YaST D-Bus object (/org/opensuse/YaST/Installer1)
     #
     # @see https://rubygems.org/gems/ruby-dbus
-    class Installer < ::DBus::Object
+    class Software < ::DBus::Object
       attr_reader :installer, :logger
 
       # @param installer [Yast2::Installer] YaST installer instance
@@ -35,30 +35,43 @@ module Yast2
         @installer = installer
         @logger = logger
 
-        # @available_base_products = installer.products
-
         super(PATH)
       end
 
-      dbus_interface YAST_INSTALLER_INTERFACE do
-        dbus_method :probe, "out result:u" do
-          # TODO
-          0
-        end
+      dbus_interface SOFTWARE_INTERFACE do
+        dbus_reader :available_base_products, "a(ssa{sv})"
+        attr_writer :available_base_products
+        dbus_watcher :available_base_products
 
-        dbus_method :commit, "out result:u" do
-          # TODO
-          0
+        dbus_reader :selected_base_product, "s"
+
+        dbus_method :SelectProduct, "in ProductID:s" do |product_id|
+          logger.info "SelectProduct #{product_id}"
+
+          select_product(product_id)
+          self[DBus::PROPERTY_INTERFACE].PropertiesChanged(SOFTWARE_INTERFACE, {"SelectedBaseProduct" => product_id}, [])
         end
       end
 
       private
 
-      PATH = "/org/opensuse/YaST/Installer1".freeze
+      PATH = "/org/opensuse/YaST/Software1".freeze
       private_constant :PATH
 
-      YAST_INSTALLER_INTERFACE = "org.opensuse.YaST.Installer1"
-      private_constant :YAST_INSTALLER_INTERFACE
+      YAST_SOFTWARE_INTERFACE = "org.opensuse.YaST.Software1"
+      private_constant :YAST_SOFTWARE_INTERFACE
+
+      def available_base_products
+        @available_base_products ||= installer.products
+      end
+
+      def selected_base_product
+        installer.product
+      end
+
+      def select_product(product_id)
+        installer.product = product_id
+      end
     end
   end
 end
