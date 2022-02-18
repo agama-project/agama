@@ -21,6 +21,8 @@
 
 require "dbus"
 require "yast2/dbus/installer"
+require "yast2/dbus/language"
+require "yast2/dbus/software"
 require "yast2/installer"
 
 module Yast2
@@ -49,12 +51,10 @@ module Yast2
 
       # Exports the installer object through the D-Bus service
       def export
-        service = bus.request_service(SERVICE_NAME)
-        installer_obj = Yast2::DBus::Installer.new(
-          build_installer, logger, OBJECT_PATH
-        )
-        service.export(installer_obj)
-        logger.info "Exported #{OBJECT_PATH} object"
+        dbus_objects.each { |o| service.export(o) }
+
+        paths = dbus_objects.map(&:path).join(", ")
+        logger.info "Exported #{paths} objects"
       end
 
       def dispatch
@@ -65,10 +65,32 @@ module Yast2
 
       attr_reader :logger
 
-      def build_installer
-        installer = Yast2::Installer.new(logger: logger)
-        installer.probe
-        installer
+      def service
+        @service ||= bus.request_service(SERVICE_NAME)
+      end
+
+      def dbus_objects
+        @dbus_objects ||= [installer_dbus, language_dbus, software_dbus]
+      end
+
+      def installer_dbus
+        @installer_dbus ||= Yast2::DBus::Installer.new(yast_installer, logger)
+      end
+
+      def language_bus
+        @language_dbus ||= Yast2::DBus::Language.new(yast_installer, logger)
+      end
+
+      def software_bus
+        @software_dbus ||= Yast2::DBus::Software.new(yast_installer, logger)
+      end
+
+      def installer
+        @yast_installer ||= Yast2::Installer.new(logger: logger).tap do |installer|
+          # FIXME: do not probe by default
+          installer.probe
+          installer.dbus_objects = dbus_objects
+        end
       end
     end
   end
