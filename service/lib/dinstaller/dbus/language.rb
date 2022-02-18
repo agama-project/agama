@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
@@ -21,22 +19,19 @@
 
 require "dbus"
 
-module Yast2
+module DInstaller
   module DBus
     # YaST D-Bus object (/org/opensuse/YaST/Installer1)
     #
     # @see https://rubygems.org/gems/ruby-dbus
-    class Software < ::DBus::Object
-      PATH = "/org/opensuse/YaST/Software1".freeze
+    class Language < ::DBus::Object
+      PATH = "/org/opensuse/DInstaller/Language1".freeze
       private_constant :PATH
 
-      YAST_SOFTWARE_INTERFACE = "org.opensuse.YaST.Software1"
-      private_constant :YAST_SOFTWARE_INTERFACE
-
-      attr_reader :installer, :logger
+      LANGUAGE_INTERFACE = "org.opensuse.DInstaller.Language1".freeze
+      private_constant :LANGUAGE_INTERFACE
 
       # @param installer [Yast2::Installer] YaST installer instance
-      # @param args [Array<Object>] ::DBus::Object arguments
       def initialize(installer, logger)
         @installer = installer
         @logger = logger
@@ -44,33 +39,37 @@ module Yast2
         super(PATH)
       end
 
-      dbus_interface YAST_SOFTWARE_INTERFACE do
-        dbus_reader :available_base_products, "a(ssa{sv})"
-        attr_writer :available_base_products
-        dbus_watcher :available_base_products
+      dbus_interface LANGUAGE_INTERFACE do
+        dbus_reader :available_languages, "a(ssa{sv})"
+        attr_writer :available_languages
+        dbus_watcher :available_languages
 
-        dbus_reader :selected_base_product, "s"
+        dbus_reader :marked_for_install, "as"
 
-        dbus_method :SelectProduct, "in ProductID:s" do |product_id|
-          logger.info "SelectProduct #{product_id}"
+        dbus_method :ToInstall, "in LangIDs:as" do |lang_ids|
+          logger.info "ToInstall #{lang_ids.inspect}"
+          select_to_install(lang_ids)
 
-          select_product(product_id)
-          self[DBus::PROPERTY_INTERFACE].PropertiesChanged(SOFTWARE_INTERFACE, {"SelectedBaseProduct" => product_id}, [])
+          self[DBus::PROPERTY_INTERFACE].PropertiesChanged(LANGUAGE_INTERFACE, {"MarkedForInstall" => lang_ids}, [])
         end
       end
 
       private
 
-      def available_base_products
-        @available_base_products ||= installer.products
+      attr_reader :installer, :logger
+
+      def available_languages
+        @available_languages ||= installer.languages.map { |k,v| [k, v.first, {}] }
       end
 
-      def selected_base_product
-        installer.product
+      def marked_for_install
+        # TODO: change when installer support multiple target languages
+        [installer.language]
       end
 
-      def select_product(product_id)
-        installer.product = product_id
+      def select_to_install(lang_ids)
+        # TODO: adapt installer API to allow more languages to install
+        installer.language = lang_ids.first
       end
     end
   end

@@ -27,10 +27,10 @@ require "rubygems"
 require "bundler/setup"
 
 require "eventmachine"
-require "yast2/dbus/service"
+require "dinstaller/dbus/service"
 
 EM.run do
-  service = Yast2::DBus::Service.new
+  service = DInstaller::DBus::Service.new
   service.export
   EventMachine::PeriodicTimer.new(0.1) { service.dispatch }
 end

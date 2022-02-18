@@ -28,7 +28,7 @@ Yast.import "PackageInstallation"
 Yast.import "Stage"
 
 # YaST specific code lives under this namespace
-module Yast2
+module DInstaller
   # This class is responsible for software handling
   class Software
     attr_reader :product, :products

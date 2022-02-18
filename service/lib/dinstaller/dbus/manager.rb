@@ -21,17 +21,18 @@
 
 require "dbus"
 
-module Yast2
+module DInstaller
   module DBus
-    # YaST D-Bus object (/org/opensuse/YaST/Installer1)
+    # YaST D-Bus object (/org/opensuse/DInstaller/Manager1)
     #
     # @see https://rubygems.org/gems/ruby-dbus
-    class Installer < ::DBus::Object
-      PATH = "/org/opensuse/YaST/Installer1".freeze
+    class Manager < ::DBus::Object
+      PATH = "/org/opensuse/DInstaller/Manager1".freeze
       private_constant :PATH
 
-      YAST_INSTALLER_INTERFACE = "org.opensuse.YaST.Installer1"
-      private_constant :YAST_INSTALLER_INTERFACE
+      MANAGER_INTERFACE = "org.opensuse.DInstaler.Manager1".freeze
+      private_constant :MANAGER_INTERFACE
+
       attr_reader :installer, :logger
 
       # @param installer [Yast2::Installer] YaST installer instance
@@ -45,7 +46,7 @@ module Yast2
         super(PATH)
       end
 
-      dbus_interface YAST_INSTALLER_INTERFACE do
+      dbus_interface MANAGER_INTERFACE do
         dbus_method :probe, "out result:u" do
           # TODO
           0

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
@@ -24,14 +26,17 @@ module Yast2
     # YaST D-Bus object (/org/opensuse/YaST/Installer1)
     #
     # @see https://rubygems.org/gems/ruby-dbus
-    class Language < ::DBus::Object
-      PATH = "/org/opensuse/Yast/Language1".freeze
+    class Software < ::DBus::Object
+      PATH = "/org/opensuse/DInstaller/Software1".freeze
       private_constant :PATH
 
-      YAST_LANGUAGE_INTERFACE = "org.opensuse.YaST.Language1".freeze
-      private_constant :YAST_LANGUAGE_INTERFACE
+      SOFTWARE_INTERFACE = "org.opensuse.DInstaller.Software1"
+      private_constant :SOFTWARE_INTERFACE
+
+      attr_reader :installer, :logger
 
       # @param installer [Yast2::Installer] YaST installer instance
+      # @param args [Array<Object>] ::DBus::Object arguments
       def initialize(installer, logger)
         @installer = installer
         @logger = logger
@@ -39,37 +44,33 @@ module Yast2
         super(PATH)
       end
 
-      dbus_interface YAST_LANGUAGE_INTERFACE do
-        dbus_reader :available_languages, "a(ssa{sv})"
-        attr_writer :available_languages
-        dbus_watcher :available_languages
+      dbus_interface SOFTWARE_INTERFACE do
+        dbus_reader :available_base_products, "a(ssa{sv})"
+        attr_writer :available_base_products
+        dbus_watcher :available_base_products
 
-        dbus_reader :marked_for_install, "as"
+        dbus_reader :selected_base_product, "s"
 
-        dbus_method :ToInstall, "in LangIDs:as" do |lang_ids|
-          logger.info "ToInstall #{lang_ids.inspect}"
-          select_to_install(lang_ids)
+        dbus_method :SelectProduct, "in ProductID:s" do |product_id|
+          logger.info "SelectProduct #{product_id}"
 
-          self[DBus::PROPERTY_INTERFACE].PropertiesChanged(LANGUAGE_INTERFACE, {"MarkedForInstall" => lang_ids}, [])
+          select_product(product_id)
+          self[DBus::PROPERTY_INTERFACE].PropertiesChanged(SOFTWARE_INTERFACE, {"SelectedBaseProduct" => product_id}, [])
         end
       end
 
       private
 
-      attr_reader :installer, :logger
-
-      def available_languages
-        @available_languages ||= installer.languages.map { |k,v| [k, v.first, {}] }
+      def available_base_products
+        @available_base_products ||= installer.products
       end
 
-      def marked_for_install
-        # TODO: change when installer support multiple target languages
-        [installer.language]
+      def selected_base_product
+        installer.product
       end
 
-      def select_to_install(lang_ids)
-        # TODO: adapt installer API to allow more languages to install
-        installer.language = lang_ids.first
+      def select_product(product_id)
+        installer.product = product_id
       end
     end
   end

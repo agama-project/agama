@@ -20,12 +20,12 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "yast2/dbus/installer"
-require "yast2/dbus/language"
-require "yast2/dbus/software"
-require "yast2/installer"
+require "dinstaller/dbus/manager"
+require "dinstaller/dbus/language"
+require "dinstaller/dbus/software"
+# require "dinstaller/installer"
 
-module Yast2
+module DInstaller
   module DBus
     # YaST D-Bus service (org.opensuse.YaST)
     #
@@ -37,13 +37,13 @@ module Yast2
     # @see Yast2::DBus::Installer
     class Service
       # @return [String] service name
-      SERVICE_NAME = "org.opensuse.YaST".freeze
+      SERVICE_NAME = "org.opensuse.DInstaller".freeze
 
       # @return [String] D-Bus object path
       attr_reader :bus
 
       def initialize(logger = nil)
-        @logger = logger || Logger.new(STDOUT)
+        @logger = logger || Yast2::Logger.new(STDOUT)
         @bus = ::DBus::SystemBus.instance
       end
 
@@ -68,27 +68,27 @@ module Yast2
       end
 
       def dbus_objects
-        @dbus_objects ||= [installer_dbus, language_dbus, software_dbus]
+        @dbus_objects ||= [manager_bus, language_dbus, software_dbus]
       end
 
-      def installer_dbus
-        @installer_dbus ||= Yast2::DBus::Installer.new(yast_installer, logger)
+      def manager_bus
+        @manager_bus ||= DInstaller::DBus::Manager.new
       end
 
       def language_dbus
-        @language_dbus ||= Yast2::DBus::Language.new(yast_installer, logger)
+        @language_dbus ||= DInstaller::DBus::Language.new
       end
 
       def software_dbus
-        @software_dbus ||= Yast2::DBus::Software.new(yast_installer, logger)
+        @software_dbus ||= DInstaller::DBus::Software.new
       end
 
-      def yast_installer
-        @yast_installer ||= Yast2::Installer.new(logger: logger).tap do |installer|
-          # FIXME: do not probe by default
-          installer.probe
-          #installer.dbus_objects = dbus_objects
-        end
+      # def installer
+      #   @installer ||= DInstaller::Installer.new(logger: logger).tap do |installer|
+      #     # FIXME: do not probe by default
+      #     installer.probe
+      #     #installer.dbus_objects = dbus_objects
+      #   end
       end
     end
   end
