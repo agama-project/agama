@@ -37,11 +37,9 @@ module Yast2
     # @see Yast2::DBus::Installer
     class Service
       # @return [String] service name
-      SERVICE_NAME = "org.opensuse.YaST"
+      SERVICE_NAME = "org.opensuse.YaST".freeze
 
       # @return [String] D-Bus object path
-      OBJECT_PATH = "/org/opensuse/YaST/Installer1"
-
       attr_reader :bus
 
       def initialize(logger = nil)
@@ -77,19 +75,19 @@ module Yast2
         @installer_dbus ||= Yast2::DBus::Installer.new(yast_installer, logger)
       end
 
-      def language_bus
+      def language_dbus
         @language_dbus ||= Yast2::DBus::Language.new(yast_installer, logger)
       end
 
-      def software_bus
+      def software_dbus
         @software_dbus ||= Yast2::DBus::Software.new(yast_installer, logger)
       end
 
-      def installer
+      def yast_installer
         @yast_installer ||= Yast2::Installer.new(logger: logger).tap do |installer|
           # FIXME: do not probe by default
           installer.probe
-          installer.dbus_objects = dbus_objects
+          #installer.dbus_objects = dbus_objects
         end
       end
     end

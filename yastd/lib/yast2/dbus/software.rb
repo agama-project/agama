@@ -27,6 +27,12 @@ module Yast2
     #
     # @see https://rubygems.org/gems/ruby-dbus
     class Software < ::DBus::Object
+      PATH = "/org/opensuse/YaST/Software1".freeze
+      private_constant :PATH
+
+      YAST_SOFTWARE_INTERFACE = "org.opensuse.YaST.Software1"
+      private_constant :YAST_SOFTWARE_INTERFACE
+
       attr_reader :installer, :logger
 
       # @param installer [Yast2::Installer] YaST installer instance
@@ -38,7 +44,7 @@ module Yast2
         super(PATH)
       end
 
-      dbus_interface SOFTWARE_INTERFACE do
+      dbus_interface YAST_SOFTWARE_INTERFACE do
         dbus_reader :available_base_products, "a(ssa{sv})"
         attr_writer :available_base_products
         dbus_watcher :available_base_products
@@ -54,12 +60,6 @@ module Yast2
       end
 
       private
-
-      PATH = "/org/opensuse/YaST/Software1".freeze
-      private_constant :PATH
-
-      YAST_SOFTWARE_INTERFACE = "org.opensuse.YaST.Software1"
-      private_constant :YAST_SOFTWARE_INTERFACE
 
       def available_base_products
         @available_base_products ||= installer.products

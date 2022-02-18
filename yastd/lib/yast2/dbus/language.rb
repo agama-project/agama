@@ -25,6 +25,12 @@ module Yast2
     #
     # @see https://rubygems.org/gems/ruby-dbus
     class Language < ::DBus::Object
+      PATH = "/org/opensuse/Yast/Language1".freeze
+      private_constant :PATH
+
+      YAST_LANGUAGE_INTERFACE = "org.opensuse.YaST.Language1".freeze
+      private_constant :YAST_LANGUAGE_INTERFACE
+
       # @param installer [Yast2::Installer] YaST installer instance
       def initialize(installer, logger)
         @installer = installer
@@ -49,12 +55,6 @@ module Yast2
       end
 
       private
-
-      PATH = "/org/opensuse/Yast/Language1".freeze
-      private_constant :PATH
-
-      YAST_LANGUAGE_INTERFACE = "org.opensuse.YaST.Language1".freeze
-      private_constant :LANGUAGE_INTERFACE
 
       attr_reader :installer, :logger
 

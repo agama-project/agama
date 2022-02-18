@@ -27,6 +27,11 @@ module Yast2
     #
     # @see https://rubygems.org/gems/ruby-dbus
     class Installer < ::DBus::Object
+      PATH = "/org/opensuse/YaST/Installer1".freeze
+      private_constant :PATH
+
+      YAST_INSTALLER_INTERFACE = "org.opensuse.YaST.Installer1"
+      private_constant :YAST_INSTALLER_INTERFACE
       attr_reader :installer, :logger
 
       # @param installer [Yast2::Installer] YaST installer instance
@@ -51,14 +56,6 @@ module Yast2
           0
         end
       end
-
-      private
-
-      PATH = "/org/opensuse/YaST/Installer1".freeze
-      private_constant :PATH
-
-      YAST_INSTALLER_INTERFACE = "org.opensuse.YaST.Installer1"
-      private_constant :YAST_INSTALLER_INTERFACE
     end
   end
 end
