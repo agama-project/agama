@@ -42,7 +42,7 @@ We use these resources to get more familiar with D-Bus API designing.
 - network manager design https://people.freedesktop.org/~lkundrak/nm-docs/spec.html
 - anakonda D-Bus API ( spread in `*_interface.py` files https://github.com/rhinstaller/anaconda/tree/master/pyanaconda/modules
 
-## get the list of available languages
+## Language
 
 Iface: o.o.YaST.Installer1.Language
 
@@ -78,7 +78,7 @@ identifiers: maybe LanguageTag https://www.rubydoc.info/github/yast/yast-package
 - see https://tools.ietf.org/html/rfc4647 Matching of Language Tags
 - see https://lists.opensuse.org/archives/list/yast-devel@lists.opensuse.org/message/D52PSZ7TRID2RVM6CE6K2C2RUNNGOS6Z/
 
-## get the list of base products
+## Base Product
 
 Iface: o.o.YaST.Installer1.Software
 
@@ -111,7 +111,7 @@ Iface: o.o.YaST.Installer1.Software
 -  PropertiesChanged ( only standard one from org.freedesktop.DBus.Properties interface )
 
 
-## interact with the storage proposal
+## Storage
 
 ### Iface: o.o.YaST.Installer1.Storage
 
@@ -200,3 +200,41 @@ Inspired by Udisks2.Partition
 
 -  Drive -> o.o.YaST.Installer1.Storage.Drive
     where partitions live
+
+## Users
+
+### iface o.o.Installer1.Users
+
+#### methods:
+
+-  SetRootPassword(string value, boolean encrypted) -> void
+    sets root password. If encrypted is set to true, it means that already encrypted password
+    is send.
+    example:
+
+      SetRootPassword("test", false) -> ()
+
+-  SetRootSSHKey(string value) -> void
+    set root ssh public keys. Use empty string to unset it.
+    example:
+
+      SetRootSSHKey("idrsa long key") -> ()
+
+- SetFirstUser(string FullName, string UserName, string Password, boolean AutoLogin, map AdditionalData) -> void
+    sets one non root user after installation. FullName and UserName has to follow restrictions
+    for respective passwd entry. To unset it use empty UserName.
+    example:
+
+      SetRootSSHKey("idrsa long key") -> ()
+
+#### Properties (all read only):
+
+- RootPasswordSet -> boolean
+  whenever root password will be set by installer
+
+- RootSSHKey -> string
+  root public ssh key that can be used to login to machine
+  Can be empty which means not set
+
+- FirstUser -> struct( string FullName, string UserName, boolean AutoLogin, map AdditionalData)
+  info about first user to set. if Username is empty, it means not set and other values can be ignored
