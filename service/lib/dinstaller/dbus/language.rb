@@ -54,23 +54,26 @@ module DInstaller
         end
       end
 
-      private
-
-      attr_reader :installer, :logger
-
       def available_languages
         @available_languages ||= installer.languages.map { |k,v| [k, v.first, {}] }
       end
 
       def marked_for_install
         # TODO: change when installer support multiple target languages
-        [installer.language]
+        res = [installer.language]
+        logger.info "MarkedForInstall #{res}"
+        res
       end
 
       def select_to_install(lang_ids)
         # TODO: adapt installer API to allow more languages to install
         installer.language = lang_ids.first
       end
+
+    private
+
+      attr_reader :installer, :logger
+
     end
   end
 end

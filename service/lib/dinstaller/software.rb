@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "yast2/package_callbacks"
+require "dinstaller/package_callbacks"
 require "y2packager/product"
 
 Yast.import "Pkg"
@@ -108,5 +108,6 @@ module DInstaller
 
       progress.packages_to_install = count
     end
+
   end
 end

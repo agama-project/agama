@@ -23,7 +23,7 @@ require "dbus"
 require "dinstaller/dbus/manager"
 require "dinstaller/dbus/language"
 require "dinstaller/dbus/software"
-# require "dinstaller/installer"
+require "dinstaller/installer"
 
 module DInstaller
   module DBus
@@ -43,7 +43,7 @@ module DInstaller
       attr_reader :bus
 
       def initialize(logger = nil)
-        @logger = logger || Yast2::Logger.new(STDOUT)
+        @logger = logger || Logger.new(STDOUT)
         @bus = ::DBus::SystemBus.instance
       end
 
@@ -72,23 +72,22 @@ module DInstaller
       end
 
       def manager_bus
-        @manager_bus ||= DInstaller::DBus::Manager.new
+        @manager_bus ||= DInstaller::DBus::Manager.new(installer, @logger)
       end
 
       def language_dbus
-        @language_dbus ||= DInstaller::DBus::Language.new
+        @language_dbus ||= DInstaller::DBus::Language.new(installer, @logger)
       end
 
       def software_dbus
-        @software_dbus ||= DInstaller::DBus::Software.new
+        @software_dbus ||= DInstaller::DBus::Software.new(installer, @logger)
       end
 
-      # def installer
-      #   @installer ||= DInstaller::Installer.new(logger: logger).tap do |installer|
-      #     # FIXME: do not probe by default
-      #     installer.probe
-      #     #installer.dbus_objects = dbus_objects
-      #   end
+      def installer
+        @installer ||= DInstaller::Installer.new(logger: @logger).tap do |installer|
+          # FIXME: do not probe by default
+          installer.probe
+        end
       end
     end
   end

@@ -21,7 +21,7 @@
 
 require "dbus"
 
-module Yast2
+module DInstaller
   module DBus
     # YaST D-Bus object (/org/opensuse/YaST/Installer1)
     #
