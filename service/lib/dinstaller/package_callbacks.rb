@@ -19,33 +19,43 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
+
+Yast.import "Pkg"
+
 # YaST specific code lives under this namespace
-module Yast2
+module DInstaller
   # This class represents the installer status
-  class InstallerStatus
+  class PackageCallbacks
     class << self
-      # Returns all the possible installer statuses
-      #
-      # @return [Array<InstallerStatus>] Installer status
-      def all
-        @all ||= constants
-          .map { |c| InstallerStatus.const_get(c) }
-          .select { |c| c.is_a?(InstallerStatus) }
+      def setup(progress)
+        new(progress).setup
       end
     end
 
-    attr_reader :id, :name
+    attr_reader :progress
 
-    def initialize(id, name)
-      @id = id
-      @name = name
+    def initialize(progress)
+      @progress = progress
     end
 
-    IDLE = new(0, "Idle")
-    PROBING = new(1, "Probing")
-    PARTITIONING = new(2, "Partitioning")
-    INSTALLING = new(3, "Installing")
-    FINISHED = new(4, "Finished")
-    ERROR = new(5, "Error")
+    def setup
+      Yast::Pkg.CallbackDonePackage(
+        fun_ref(method(:package_installed), "string (integer, string)")
+      )
+    end
+
+  private
+
+    def fun_ref(method, signature)
+      Yast::FunRef.new(method, signature)
+    end
+
+    # TODO: error handling
+    def package_installed(_error, _reason)
+      progress.package_installed
+
+      ""
+    end
   end
 end

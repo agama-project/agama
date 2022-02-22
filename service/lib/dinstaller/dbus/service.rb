@@ -20,10 +20,12 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "yast2/dbus/installer"
-require "yast2/installer"
+require "dinstaller/dbus/manager"
+require "dinstaller/dbus/language"
+require "dinstaller/dbus/software"
+require "dinstaller/installer"
 
-module Yast2
+module DInstaller
   module DBus
     # YaST D-Bus service (org.opensuse.YaST)
     #
@@ -35,11 +37,9 @@ module Yast2
     # @see Yast2::DBus::Installer
     class Service
       # @return [String] service name
-      SERVICE_NAME = "org.opensuse.YaST"
+      SERVICE_NAME = "org.opensuse.DInstaller".freeze
 
       # @return [String] D-Bus object path
-      OBJECT_PATH = "/org/opensuse/YaST/Installer1"
-
       attr_reader :bus
 
       def initialize(logger = nil)
@@ -49,12 +49,10 @@ module Yast2
 
       # Exports the installer object through the D-Bus service
       def export
-        service = bus.request_service(SERVICE_NAME)
-        installer_obj = Yast2::DBus::Installer.new(
-          build_installer, logger, OBJECT_PATH
-        )
-        service.export(installer_obj)
-        logger.info "Exported #{OBJECT_PATH} object"
+        dbus_objects.each { |o| service.export(o) }
+
+        paths = dbus_objects.map(&:path).join(", ")
+        logger.info "Exported #{paths} objects"
       end
 
       def dispatch
@@ -65,10 +63,31 @@ module Yast2
 
       attr_reader :logger
 
-      def build_installer
-        installer = Yast2::Installer.new(logger: logger)
-        installer.probe
-        installer
+      def service
+        @service ||= bus.request_service(SERVICE_NAME)
+      end
+
+      def dbus_objects
+        @dbus_objects ||= [manager_bus, language_dbus, software_dbus]
+      end
+
+      def manager_bus
+        @manager_bus ||= DInstaller::DBus::Manager.new(installer, @logger)
+      end
+
+      def language_dbus
+        @language_dbus ||= DInstaller::DBus::Language.new(installer, @logger)
+      end
+
+      def software_dbus
+        @software_dbus ||= DInstaller::DBus::Software.new(installer, @logger)
+      end
+
+      def installer
+        @installer ||= DInstaller::Installer.new(logger: @logger).tap do |installer|
+          # FIXME: do not probe by default
+          installer.probe
+        end
       end
     end
   end

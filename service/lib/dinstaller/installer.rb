@@ -22,9 +22,9 @@
 
 require "yast"
 require "y2storage"
-require "yast2/installer_status"
-require "yast2/software"
-require "yast2/installation_progress"
+require "dinstaller/installer_status"
+require "dinstaller/software"
+require "dinstaller/installation_progress"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
 require "dbus"
@@ -33,7 +33,7 @@ require "forwardable"
 Yast.import "Stage"
 
 # YaST specific code lives under this namespace
-module Yast2
+module DInstaller
   # This class represents the installer itself
   #
   # It is responsible for orchestrating the installation process. Additionally,

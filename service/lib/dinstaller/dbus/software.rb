@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021] SUSE LLC
+# Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,69 +21,56 @@
 
 require "dbus"
 
-module Yast2
+module DInstaller
   module DBus
     # YaST D-Bus object (/org/opensuse/YaST/Installer1)
     #
     # @see https://rubygems.org/gems/ruby-dbus
-    class Installer < ::DBus::Object
+    class Software < ::DBus::Object
+      PATH = "/org/opensuse/DInstaller/Software1".freeze
+      private_constant :PATH
+
+      SOFTWARE_INTERFACE = "org.opensuse.DInstaller.Software1"
+      private_constant :SOFTWARE_INTERFACE
+
       attr_reader :installer, :logger
 
       # @param installer [Yast2::Installer] YaST installer instance
       # @param args [Array<Object>] ::DBus::Object arguments
-      def initialize(installer, logger, *args)
+      def initialize(installer, logger)
         @installer = installer
         @logger = logger
-        @available_languages = installer.languages.map { |k,v| [k, v.first, {}] }
-        @logger.debug "Available languages #{@available_languages.inspect}"
-        @available_base_products = installer.products
 
-        installer.dbus_obj = self
-
-        super(*args)
+        super(PATH)
       end
 
-      LANGUAGE_INTERFACE = "org.opensuse.YaST.Installer1.Language"
-      dbus_interface LANGUAGE_INTERFACE do
-        dbus_attr_reader :available_languages, "a(ssa{sv})"
-        attr_writer :available_languages
-        dbus_watcher :available_languages
-
-        def marked_for_install
-          # TODO: change when installer support multiple target languages
-          [installer.language]
-        end
-
-        dbus_reader :marked_for_install, "as"
-
-        dbus_method :ToInstall, "in LangIDs:as" do |lang_ids|
-          logger.info "ToInstall #{lang_ids.inspect}"
-
-          # TODO: adapt installer API to allow more languages to install
-          installer.language = lang_ids.first
-          self[DBus::PROPERTY_INTERFACE].PropertiesChanged(LANGUAGE_INTERFACE, {"MarkedForInstall" => lang_ids}, [])
-        end
-      end
-
-      SOFTWARE_INTERFACE = "org.opensuse.YaST.Installer1.Software"
       dbus_interface SOFTWARE_INTERFACE do
-        dbus_attr_reader :available_base_products, "a(ssa{sv})"
+        dbus_reader :available_base_products, "a(ssa{sv})"
         attr_writer :available_base_products
         dbus_watcher :available_base_products
 
-        def selected_base_product
-          installer.product
-        end
-
         dbus_reader :selected_base_product, "s"
-
 
         dbus_method :SelectProduct, "in ProductID:s" do |product_id|
           logger.info "SelectProduct #{product_id}"
 
-          installer.product = product_id
+          select_product(product_id)
           self[DBus::PROPERTY_INTERFACE].PropertiesChanged(SOFTWARE_INTERFACE, {"SelectedBaseProduct" => product_id}, [])
         end
+      end
+
+      private
+
+      def available_base_products
+        @available_base_products ||= installer.products
+      end
+
+      def selected_base_product
+        installer.product
+      end
+
+      def select_product(product_id)
+        installer.product = product_id
       end
     end
   end

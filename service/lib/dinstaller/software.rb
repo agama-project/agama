@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "yast2/package_callbacks"
+require "dinstaller/package_callbacks"
 require "y2packager/product"
 
 Yast.import "Pkg"
@@ -28,7 +28,7 @@ Yast.import "PackageInstallation"
 Yast.import "Stage"
 
 # YaST specific code lives under this namespace
-module Yast2
+module DInstaller
   # This class is responsible for software handling
   class Software
     attr_reader :product, :products
@@ -108,5 +108,6 @@ module Yast2
 
       progress.packages_to_install = count
     end
+
   end
 end

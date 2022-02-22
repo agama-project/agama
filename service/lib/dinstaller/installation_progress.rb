@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 # YaST specific code lives under this namespace
-module Yast2
+module DInstaller
   # This class represents the installer status
   class InstallationProgress
     KNOWN_STEPS = 3 # keep it in sync with installer.rb
