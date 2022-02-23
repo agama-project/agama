@@ -88,7 +88,7 @@ module DInstaller
       attr_reader :logger
 
       def backend
-        @backend = ::DInstaller::Users.instance.tap { |i| i.logger = @logger }
+        @backend ||= ::DInstaller::Users.instance.tap { |i| i.logger = @logger }
       end
 
     end
