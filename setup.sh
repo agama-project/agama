@@ -17,4 +17,4 @@ cd web; npm install; cd -
 
 # Start the installer
 echo -e "Start the d-installer service:\n  cd yastd; sudo bundle exec bin/d-installer\n"
-echo -e "Start the web UI:\n  cd web; npm start"
+echo -e "Start the web UI:\n  cd web; npm run dev"
