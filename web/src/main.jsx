@@ -27,10 +27,11 @@ import * as serviceWorker from "./serviceWorker";
 import { InstallerClientProvider } from "./context/installer";
 import { AuthProvider } from "./context/auth";
 import InstallerClient from "./lib/InstallerClient";
+import cockpit from "./lib/cockpit";
 
 import "./app.scss";
 
-const client = new InstallerClient();
+const client = new InstallerClient(cockpit);
 
 ReactDOM.render(
   <StrictMode>
