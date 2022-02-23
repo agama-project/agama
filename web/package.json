@@ -9,8 +9,6 @@
     "@patternfly/react-table": "^4.61.15",
     "eos-ds": "^5.0.0",
     "eos-icons-react": "^2.2.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
     "filesize": "^6.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -21,15 +19,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "jest",
-    "lint": "npx eslint src",
-    "prettier": "npx prettier --write \"src/**/*.js\""
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "plugin:prettier/recommended"
-    ],
-    "rules": {}
+    "lint": "npx eslint src \".*.js\"",
+    "format": "npx prettier --write \"src/**/*.js{,x}\" \".*.js\""
   },
   "browserslist": {
     "production": [
@@ -53,6 +44,10 @@
     "@testing-library/user-event": "^13.5.0",
     "@vitejs/plugin-react": "^1.2.0",
     "babel-jest": "^27.5.1",
+    "eslint": "^8.9.0",
+    "eslint-config-prettier": "^8.4.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.28.0",
     "http-proxy-middleware": "^2.0.2",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.5.1",
