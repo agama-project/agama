@@ -7,5 +7,14 @@ export default defineConfig({
   plugins: [react(), viteCommonjs()],
   optimizeDeps: {
     include: ['attr-accept']
+  },
+  server: {
+    proxy: {
+      '/cockpit/login': 'http://localhost:9090',
+      '/cockpit/socket': {
+        target: 'ws://localhost:9090',
+        ws: true
+      }
+    }
   }
 })
