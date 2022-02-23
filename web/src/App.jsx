@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useAuthContext } from "./context/auth";
 
 import LoginForm from "./LoginForm";
