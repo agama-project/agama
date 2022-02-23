@@ -34,6 +34,12 @@ beforeEach(() => {
   });
 });
 
+// at this time, it is undefined; but let's be prepared in case it changes
+const unmockedFetch = window.fetch;
+afterAll(() => {
+  window.fetch = unmockedFetch;
+});
+
 describe("#authenticate", () => {
   beforeEach(() => {
     jest.spyOn(window, "fetch");
@@ -41,7 +47,9 @@ describe("#authenticate", () => {
 
   it("resolves to true if the user was successfully authenticated", async () => {
     const client = new InstallerClient(cockpit);
-    window.fetch.mockImplementation(() => Promise.resolve({ status: 200 }));
+    window.fetch = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve({ status: 200 }));
     client.authorize("linux", "password");
     expect(window.fetch).toHaveBeenCalledWith("/cockpit/login", {
       headers: {
@@ -53,7 +61,7 @@ describe("#authenticate", () => {
 
   it("resolves to false if the user was not authenticated", async () => {
     const client = new InstallerClient(cockpit);
-    window.fetch.mockImplementation(() =>
+    window.fetch = jest.fn().mockImplementation(() =>
       Promise.resolve({
         status: 401,
         statusText: "Password does not match"
@@ -72,7 +80,9 @@ describe("#isLoggedIn", () => {
 
   it("resolves to true if a user is logged in", async () => {
     const client = new InstallerClient(cockpit);
-    window.fetch.mockImplementation(() => Promise.resolve({ status: 200 }));
+    window.fetch = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve({ status: 200 }));
     const logged = await client.isLoggedIn();
     expect(logged).toEqual(true);
     expect(window.fetch).toHaveBeenCalledWith("/cockpit/login");
@@ -80,7 +90,7 @@ describe("#isLoggedIn", () => {
 
   it("resolves to false if a user was not logged in", async () => {
     const client = new InstallerClient(cockpit);
-    window.fetch.mockImplementation(() =>
+    window.fetch = jest.fn().mockImplementation(() =>
       Promise.resolve({
         status: 401,
         statusText: "Password does not match"
