@@ -202,11 +202,7 @@ describe("#setOption", () => {
       "/org/opensuse/YaST/Installer",
       "org.freedesktop.DBus.Properties",
       "Set",
-      [
-        "org.opensuse.YaST.Installer",
-        "Disk",
-        cockpit.variant("s", "/dev/sda")
-      ]
+      ["org.opensuse.YaST.Installer", "Disk", cockpit.variant("s", "/dev/sda")]
     );
   });
 });
