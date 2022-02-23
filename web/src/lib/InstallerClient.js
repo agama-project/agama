@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-import cockpit from "./cockpit";
-
 export default class InstallerClient {
   /**
    * @constructor
