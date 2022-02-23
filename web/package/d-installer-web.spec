@@ -52,7 +52,6 @@ cp -R --no-dereference --preserve=mode,links -v dist/* %{buildroot}/%{_datadir}/
 
 %files
 %doc README.md
-#%license LICENSE dist/index.js.LICENSE.txt.gz
 %{_datadir}/cockpit/static/installer
 
 %changelog
