@@ -20,8 +20,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "rake"
-
 Gem::Specification.new do |spec|
   spec.name = "d-installer"
   spec.version = File.read(File.expand_path("VERSION", File.join(__dir__, ".."))).chomp
@@ -31,7 +29,7 @@ Gem::Specification.new do |spec|
   spec.email = "yast-devel@opensuse.org"
   spec.homepage = "https://github.com/yast/d-installer"
   spec.license = "GPL-2.0-only"
-  spec.files = FileList["lib/**/*.rb", "bin/*", "share/*", "[A-Z]*"].to_a
+  spec.files = Dir["lib/**/*.rb", "bin/*", "share/*", "[A-Z]*"]
   spec.executables << "d-installer"
   spec.metadata = { "rubygems_mfa_required" => "true" }
 
