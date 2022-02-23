@@ -18,6 +18,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/users"
 
 module DInstaller
   module DBus
@@ -39,7 +40,7 @@ module DInstaller
       end
 
       dbus_interface USERS_INTERFACE do
-        dbus_attr_reader :root_password_set, "b"
+        dbus_reader :root_password_set, "b"
 
         dbus_reader :root_ssh_key, "s", dbus_name: "RootSSHKey"
 
@@ -47,14 +48,14 @@ module DInstaller
 
         dbus_method :SetRootPassword, "in Value:s, in Encrypted:b" do |value, encrypted|
           logger.info "Setting Root Password"
-          assign_root_password(value, encrypted)
+          backend.assign_root_password(value, encrypted)
 
           self[DBus::PROPERTY_INTERFACE].PropertiesChanged(USERS_INTERFACE, {"RootPasswordSet" => !value.empty?}, [])
         end
 
         dbus_method :SetRootSSHKey, "in Value:s" do |value|
           logger.info "Setting Root ssh key"
-          assign_root_ssh_key(value)
+          backend.root_ssh_key=(value)
 
           self[DBus::PROPERTY_INTERFACE].PropertiesChanged(USERS_INTERFACE, {"RootSSHKey" => value}, [])
         end
@@ -62,7 +63,7 @@ module DInstaller
         FUSER_SIG = "in FullName:s, in UserName:s, in Password:s, in AutoLogin:b, in data:a{sv}"
         dbus_method :SetFirstUser, FUSER_SIG do |full_name, user_name, password, auto_login, data|
           logger.info "Setting first user #{full_name}"
-          assign_first_user(full_name, user_name, password, auto_login, data)
+          backend.assign_first_user(full_name, user_name, password, auto_login, data)
 
           self[DBus::PROPERTY_INTERFACE].PropertiesChanged(USERS_INTERFACE, {"FirstUser" => first_user}, [])
         end
@@ -71,30 +72,24 @@ module DInstaller
       end
 
       def root_ssh_key
-        # TODO: write it
-        ""
+        backend.root_ssh_key
       end
 
       def first_user
-        # TODO: write it
-        ["", "", false, {}]
+        backend.first_user
       end
 
-      def assign_root_password(value, encrypted)
-        # TODO: write it
-      end
-
-      def assign_root_ssh_key(value)
-        # TODO: write it
-      end
-
-      def assign_first_user(full_name, user_name, password, auto_login, data)
-        # TODO: write it
+      def root_password_set
+        backend.root_password?
       end
 
     private
 
       attr_reader :logger
+
+      def backend
+        @backend = ::DInstaller::Users.instance.tap { |i| i.logger = @logger }
+      end
 
     end
   end
