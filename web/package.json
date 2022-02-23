@@ -47,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "@originjs/vite-plugin-commonjs": "^1.0.3",
     "@vitejs/plugin-react": "^1.2.0",
     "http-proxy-middleware": "^2.0.2",
     "prettier": "^2.5.1",
