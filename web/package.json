@@ -2,7 +2,6 @@
   "name": "web",
   "version": "0.1.0",
   "private": true,
-  "homepage": "./",
   "dependencies": {
     "@patternfly/patternfly": "^4.164.2",
     "@patternfly/react-core": "^4.181.1",

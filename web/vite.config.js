@@ -4,6 +4,7 @@ import { viteCommonjs } from '@originjs/vite-plugin-commonjs';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "./",
   plugins: [react(), viteCommonjs()],
   optimizeDeps: {
     include: ['attr-accept']
