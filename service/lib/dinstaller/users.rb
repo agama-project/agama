@@ -18,6 +18,7 @@
 # find current contact information at www.suse.com.
 
 require "singleton"
+require "yast"
 require "y2users"
 
 module DInstaller
@@ -88,7 +89,7 @@ module DInstaller
     end
 
     def root_user
-      @root_user ||= config.users.root || User.create_root
+      @root_user ||= config.users.root || Y2Users::User.create_root
     end
   end
 end

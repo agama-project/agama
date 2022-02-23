@@ -29,7 +29,7 @@ module DInstaller
       PATH = "/org/opensuse/DInstaller/Users1".freeze
       private_constant :PATH
 
-      LANGUAGE_INTERFACE = "org.opensuse.DInstaller.Users1".freeze
+      USERS_INTERFACE = "org.opensuse.DInstaller.Users1".freeze
       private_constant :USERS_INTERFACE
 
       def initialize(logger)
@@ -50,14 +50,14 @@ module DInstaller
           logger.info "Setting Root Password"
           backend.assign_root_password(value, encrypted)
 
-          self[DBus::PROPERTY_INTERFACE].PropertiesChanged(USERS_INTERFACE, {"RootPasswordSet" => !value.empty?}, [])
+          PropertiesChanged(USERS_INTERFACE, {"RootPasswordSet" => !value.empty?}, [])
         end
 
         dbus_method :SetRootSSHKey, "in Value:s" do |value|
           logger.info "Setting Root ssh key"
           backend.root_ssh_key=(value)
 
-          self[DBus::PROPERTY_INTERFACE].PropertiesChanged(USERS_INTERFACE, {"RootSSHKey" => value}, [])
+          PropertiesChanged(USERS_INTERFACE, {"RootSSHKey" => value}, [])
         end
 
         FUSER_SIG = "in FullName:s, in UserName:s, in Password:s, in AutoLogin:b, in data:a{sv}"
@@ -65,7 +65,7 @@ module DInstaller
           logger.info "Setting first user #{full_name}"
           backend.assign_first_user(full_name, user_name, password, auto_login, data)
 
-          self[DBus::PROPERTY_INTERFACE].PropertiesChanged(USERS_INTERFACE, {"FirstUser" => first_user}, [])
+          PropertiesChanged(USERS_INTERFACE, {"FirstUser" => first_user}, [])
         end
 
 
