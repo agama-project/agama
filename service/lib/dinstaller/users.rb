@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
@@ -22,13 +24,14 @@ require "yast"
 require "y2users"
 
 module DInstaller
+  # Backend class between dbus service and yast code
   class Users
     include Singleton
 
     attr_writer :logger
 
     def logger
-      @logger || Logger.new($STDERR)
+      @logger || Logger.new($stdout)
     end
 
     def root_ssh_key

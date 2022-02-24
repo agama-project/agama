@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
@@ -25,10 +27,10 @@ module DInstaller
     #
     # @see https://rubygems.org/gems/ruby-dbus
     class Language < ::DBus::Object
-      PATH = "/org/opensuse/DInstaller/Language1".freeze
+      PATH = "/org/opensuse/DInstaller/Language1"
       private_constant :PATH
 
-      LANGUAGE_INTERFACE = "org.opensuse.DInstaller.Language1".freeze
+      LANGUAGE_INTERFACE = "org.opensuse.DInstaller.Language1"
       private_constant :LANGUAGE_INTERFACE
 
       # @param installer [Yast2::Installer] YaST installer instance
@@ -42,6 +44,7 @@ module DInstaller
       dbus_interface LANGUAGE_INTERFACE do
         dbus_reader :available_languages, "a(ssa{sv})"
         attr_writer :available_languages
+
         dbus_watcher :available_languages
 
         dbus_reader :marked_for_install, "as"
@@ -50,12 +53,12 @@ module DInstaller
           logger.info "ToInstall #{lang_ids.inspect}"
           select_to_install(lang_ids)
 
-          PropertiesChanged(LANGUAGE_INTERFACE, {"MarkedForInstall" => lang_ids}, [])
+          PropertiesChanged(LANGUAGE_INTERFACE, { "MarkedForInstall" => lang_ids }, [])
         end
       end
 
       def available_languages
-        @available_languages ||= installer.languages.map { |k,v| [k, v.first, {}] }
+        @available_languages ||= installer.languages.map { |k, v| [k, v.first, {}] }
       end
 
       def marked_for_install
@@ -73,7 +76,6 @@ module DInstaller
     private
 
       attr_reader :installer, :logger
-
     end
   end
 end

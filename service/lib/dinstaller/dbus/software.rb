@@ -27,7 +27,7 @@ module DInstaller
     #
     # @see https://rubygems.org/gems/ruby-dbus
     class Software < ::DBus::Object
-      PATH = "/org/opensuse/DInstaller/Software1".freeze
+      PATH = "/org/opensuse/DInstaller/Software1"
       private_constant :PATH
 
       SOFTWARE_INTERFACE = "org.opensuse.DInstaller.Software1"
@@ -47,6 +47,7 @@ module DInstaller
       dbus_interface SOFTWARE_INTERFACE do
         dbus_reader :available_base_products, "a(ssa{sv})"
         attr_writer :available_base_products
+
         dbus_watcher :available_base_products
 
         dbus_reader :selected_base_product, "s"
@@ -55,11 +56,11 @@ module DInstaller
           logger.info "SelectProduct #{product_id}"
 
           select_product(product_id)
-          PropertiesChanged(SOFTWARE_INTERFACE, {"SelectedBaseProduct" => product_id}, [])
+          PropertiesChanged(SOFTWARE_INTERFACE, { "SelectedBaseProduct" => product_id }, [])
         end
       end
 
-      private
+    private
 
       def available_base_products
         @available_base_products ||= installer.products

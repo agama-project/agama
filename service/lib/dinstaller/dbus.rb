@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# Namespace for DBus API
 module DInstaller
+  # Namespace for DBus API
   module DBus
   end
 end
