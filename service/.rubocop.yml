@@ -5,8 +5,3 @@ inherit_from:
 AllCops:
   Exclude:
     - vendor/**/*
-
-Metrics/BlockLength:
-  # ruby-dbus DSL can have long blocks
-  Exclude:
-    - lib/yast2/dbus/installer.rb
