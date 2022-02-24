@@ -50,7 +50,7 @@ module DInstaller
           logger.info "ToInstall #{lang_ids.inspect}"
           select_to_install(lang_ids)
 
-          self[DBus::PROPERTY_INTERFACE].PropertiesChanged(LANGUAGE_INTERFACE, {"MarkedForInstall" => lang_ids}, [])
+          PropertiesChanged(LANGUAGE_INTERFACE, {"MarkedForInstall" => lang_ids}, [])
         end
       end
 

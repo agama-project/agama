@@ -23,6 +23,7 @@ require "dbus"
 require "dinstaller/dbus/manager"
 require "dinstaller/dbus/language"
 require "dinstaller/dbus/software"
+require "dinstaller/dbus/users"
 require "dinstaller/installer"
 
 module DInstaller
@@ -68,7 +69,7 @@ module DInstaller
       end
 
       def dbus_objects
-        @dbus_objects ||= [manager_bus, language_dbus, software_dbus]
+        @dbus_objects ||= [manager_bus, language_dbus, software_dbus, users_dbus]
       end
 
       def manager_bus
@@ -81,6 +82,10 @@ module DInstaller
 
       def software_dbus
         @software_dbus ||= DInstaller::DBus::Software.new(installer, @logger)
+      end
+
+      def users_dbus
+        @users_dbus ||= DInstaller::DBus::Users.new(@logger)
       end
 
       def installer

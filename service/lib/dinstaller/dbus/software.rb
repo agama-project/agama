@@ -55,7 +55,7 @@ module DInstaller
           logger.info "SelectProduct #{product_id}"
 
           select_product(product_id)
-          self[DBus::PROPERTY_INTERFACE].PropertiesChanged(SOFTWARE_INTERFACE, {"SelectedBaseProduct" => product_id}, [])
+          PropertiesChanged(SOFTWARE_INTERFACE, {"SelectedBaseProduct" => product_id}, [])
         end
       end
 
