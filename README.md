@@ -94,7 +94,7 @@ It allows to set a few installation parameters and start the installation (not i
 
     cd web
     npm install
-    npm start
+    npm run dev
 
 Point your browser to http://localhost:3000 and happy hacking!
 

@@ -19,6 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
+import React from "react";
 import { useInstallerClient } from "./context/installer";
 
 import {

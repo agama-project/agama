@@ -4518,3 +4518,5 @@ function factory() {
 
 window.cockpit = factory();
 })();
+
+export default window.cockpit;
