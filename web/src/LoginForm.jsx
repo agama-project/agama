@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { useAuthContext } from "./context/auth";
 import {
   Alert,

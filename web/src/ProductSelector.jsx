@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -39,23 +39,23 @@ const reducer = (state, action) => {
 };
 
 const initialState = {
-  languages: [],
+  products: [],
   initial: null,
   current: null,
   isFormOpen: false
 };
 
-export default function LanguageSelector() {
+export default function ProductSelector() {
   const client = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { current: language, languages, isFormOpen } = state;
+  const { current: product, products, isFormOpen } = state;
 
   useEffect(async () => {
-    const languages = await client.getLanguages();
-    const current = await client.getOption("Language");
+    const products = await client.getProducts();
+    const current = await client.getOption("Product");
     dispatch({
       type: "LOAD",
-      payload: { languages, current, initial: current }
+      payload: { products, current, initial: current }
     });
   }, []);
 
@@ -65,26 +65,26 @@ export default function LanguageSelector() {
 
   const accept = async () => {
     // TODO: handle errors
-    await client.setOption("Language", language);
+    await client.setOption("Product", product);
     dispatch({ type: "ACCEPT" });
   };
 
   const label = () => {
-    const selectedLanguage = languages.find(lang => lang.id === language);
-    return selectedLanguage ? selectedLanguage.name : "Select language";
+    const selectedProduct = products.find(p => p.name === product);
+    return selectedProduct ? selectedProduct.display_name : "Select product";
   };
 
   const buildSelector = () => {
-    const selectorOptions = languages.map(lang => (
-      <FormSelectOption key={lang.id} value={lang.id} label={lang.name} />
+    const selectorOptions = products.map(p => (
+      <FormSelectOption key={p.name} value={p.name} label={p.display_name} />
     ));
 
     return (
       <FormSelect
-        id="language"
-        value={language}
+        id="product"
+        value={product}
         onChange={v => dispatch({ type: "CHANGE", payload: v })}
-        aria-label="language"
+        aria-label="product"
       >
         {selectorOptions}
       </FormSelect>
@@ -101,7 +101,7 @@ export default function LanguageSelector() {
         isOpen={isFormOpen}
         showClose={false}
         variant={ModalVariant.small}
-        title="Language Selector"
+        title="Product Selector"
         actions={[
           <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
@@ -113,9 +113,8 @@ export default function LanguageSelector() {
       >
         <Form>
           <FormGroup
-            fieldId="language"
-            label="Select language"
-            helperText="The selected language will be used for both, the installer and the installed system"
+            fieldId="product"
+            label="Select the product to be installed"
           >
             {buildSelector()}
           </FormGroup>
