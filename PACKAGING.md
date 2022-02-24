@@ -1,13 +1,13 @@
 # Packaging
 
 D-Installer packages are available in the [YaST:Head project in
-OBS](https://build.opensuse.org/project/show/YaST:Head). This document summarizes the process we
-follow to build those packages.
+OBS](https://build.opensuse.org/project/show/YaST:Head:D-Installer). This document summarizes the
+process we follow to build those packages.
 
 ## Service
 
 You can check the current package in
-[YaST:Head/rubygem-d-installer](https://build.opensuse.org/package/show/YaST:Head/rubygem-d-installer).
+[YaST:Head/rubygem-d-installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/rubygem-d-installer).
 At this point, D-Installer has not been released as a Rubygem yet, so you need to do an extra step.
 
 The process to release a new version can be summarized in these steps:
@@ -26,7 +26,7 @@ in the repository](./yastd/package/gem2rpm.yml). To regenerate the spec, just ty
 ## Web interface
 
 The current package is
-[YaST:Head/d-installer-web](https://build.opensuse.org/package/show/YaST:Head/rubygem-d-installer).
+[YaST:Head/d-installer-web](https://build.opensuse.org/package/show/YaST:Head:D-Installer/rubygem-d-installer).
 You can figure out most details by checking the
 [_service](_./web/package/_service) file. It might happen that you get
 out of RAM when building the package, so in this case, it is better to

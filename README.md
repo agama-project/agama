@@ -15,9 +15,11 @@ service. At first sight, we have identified these components:
 :warning: :warning: **This is a proof-of-concept so use a virtual machine to give it a try.** :warning: :warning: 
 
 The easiest way to give D-Installer a try is to install the
-[rubygem-d-installer](https://build.opensuse.org/package/show/YaST:Head/rubygem-d-installer) and
-[d-installer-web](https://build.opensuse.org/package/show/YaST:Head/d-installer-web) packages in an
-[openSUSE Tumbleweed Live image](https://get.opensuse.org/tumbleweed).
+[rubygem-d-installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/rubygem-d-installer)
+and
+[d-installer-web](https://build.opensuse.org/package/show/YaST:Head:D-Installer/d-installer-web)
+packages in an [openSUSE Tumbleweed Live
+image](https://get.opensuse.org/tumbleweed).
 
 You need to perform some additional steps, like starting the Cockpit service or setting a password
 for the "linux" user. However, the repository contains [a script](./deploy.sh) that takes care of
