@@ -44,15 +44,14 @@ rm -f package-lock.json
 local-npm-registry %{_sourcedir} install --with=dev --legacy-peer-deps || ( find ~/.npm/_logs -name '*-debug.log' -print0 | xargs -0 cat; false)
 
 %build
-NODE_ENV=production npm run build
+npm run build
 
 %install
 mkdir -p %{buildroot}/%{_datadir}/cockpit/static/installer
-cp -R --no-dereference --preserve=mode,links -v build/* %{buildroot}/%{_datadir}/cockpit/static/installer
+cp -R --no-dereference --preserve=mode,links -v dist/* %{buildroot}/%{_datadir}/cockpit/static/installer
 
 %files
 %doc README.md
-#%license LICENSE dist/index.js.LICENSE.txt.gz
 %{_datadir}/cockpit/static/installer
 
 %changelog
