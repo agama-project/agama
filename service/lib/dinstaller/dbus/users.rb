@@ -34,7 +34,6 @@ module DInstaller
 
       def initialize(logger)
         @logger = logger
-        @root_password_set = false
 
         super(PATH)
       end
