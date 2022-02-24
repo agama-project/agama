@@ -3,7 +3,8 @@
 This application offers a web-based UI which connects to [yastd](file:../yastd) through D-bus, using
 [Cockpit's infrastructure](https://cockpit-project.org/guide/latest/api-base1.html), and drives the
 installation process. It is built with the popular [React JavaScript library](https://reactjs.org/)
-and it was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+and it uses [Vite](https://vitejs.dev) as build tool, although it was bootstrapped with [Create
+React App](https://github.com/facebook/create-react-app).
 
 ## Available Tasks
 
