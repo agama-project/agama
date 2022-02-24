@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
 import { EOS_DOWNLOADING as ProgressIcon } from "eos-icons-react";

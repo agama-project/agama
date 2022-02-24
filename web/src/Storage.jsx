@@ -1,3 +1,4 @@
+import React from "react";
 import { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 

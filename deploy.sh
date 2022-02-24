@@ -3,7 +3,8 @@
 # This script is supposed to be used in an openSUSE Tumbleweed Live DVD.
 
 sudo rpm --import https://build.opensuse.org/projects/YaST/public_key
-sudo zypper ar -f https://download.opensuse.org/repositories/YaST:/Head/openSUSE_Tumbleweed/YaST:Head.repo
+sudo zypper ar -f \
+  https://download.opensuse.org/repositories/YaST:/Head:/D-Installer/openSUSE_Tumbleweed/YaST:Head:D-Installer.repo
 RUBY_VERSION=ruby:`rpm --eval '%{rb_ver}'`
 sudo zypper --non-interactive in --no-recommends \
   "rubygem($RUBY_VERSION:d-installer)" \

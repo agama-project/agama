@@ -1,8 +1,9 @@
 import InstallerClient from "./InstallerClient";
+import cockpit from "./cockpit";
 
-const cockpit = {
+const cockpitModule = {
   dbus: () => dbusClient,
-  variant: window.cockpit.variant
+  variant: cockpit.variant
 };
 
 const DBUS_PATH = "/org/opensuse/YaST/Installer";
@@ -34,14 +35,18 @@ beforeEach(() => {
   });
 });
 
-describe("#authenticate", () => {
-  beforeEach(() => {
-    jest.spyOn(window, "fetch");
-  });
+// at this time, it is undefined; but let's be prepared in case it changes
+const unmockedFetch = window.fetch;
+afterAll(() => {
+  window.fetch = unmockedFetch;
+});
 
+describe("#authenticate", () => {
   it("resolves to true if the user was successfully authenticated", async () => {
-    const client = new InstallerClient(cockpit);
-    window.fetch.mockImplementation(() => Promise.resolve({ status: 200 }));
+    const client = new InstallerClient(cockpitModule);
+    window.fetch = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve({ status: 200 }));
     client.authorize("linux", "password");
     expect(window.fetch).toHaveBeenCalledWith("/cockpit/login", {
       headers: {
@@ -52,8 +57,8 @@ describe("#authenticate", () => {
   });
 
   it("resolves to false if the user was not authenticated", async () => {
-    const client = new InstallerClient(cockpit);
-    window.fetch.mockImplementation(() =>
+    const client = new InstallerClient(cockpitModule);
+    window.fetch = jest.fn().mockImplementation(() =>
       Promise.resolve({
         status: 401,
         statusText: "Password does not match"
@@ -71,16 +76,18 @@ describe("#isLoggedIn", () => {
   });
 
   it("resolves to true if a user is logged in", async () => {
-    const client = new InstallerClient(cockpit);
-    window.fetch.mockImplementation(() => Promise.resolve({ status: 200 }));
+    const client = new InstallerClient(cockpitModule);
+    window.fetch = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve({ status: 200 }));
     const logged = await client.isLoggedIn();
     expect(logged).toEqual(true);
     expect(window.fetch).toHaveBeenCalledWith("/cockpit/login");
   });
 
   it("resolves to false if a user was not logged in", async () => {
-    const client = new InstallerClient(cockpit);
-    window.fetch.mockImplementation(() =>
+    const client = new InstallerClient(cockpitModule);
+    window.fetch = jest.fn().mockImplementation(() =>
       Promise.resolve({
         status: 401,
         statusText: "Password does not match"
@@ -93,8 +100,8 @@ describe("#isLoggedIn", () => {
 
 describe("#currentUser", () => {
   it("returns the user name from cockpit", async () => {
-    cockpit.user = jest.fn().mockResolvedValue("linux");
-    const client = new InstallerClient(cockpit);
+    cockpitModule.user = jest.fn().mockResolvedValue("linux");
+    const client = new InstallerClient(cockpitModule);
     const username = await client.currentUser();
     expect(username).toEqual("linux");
   });
@@ -102,7 +109,7 @@ describe("#currentUser", () => {
 
 describe("#getStatus", () => {
   it("returns the installer status", async () => {
-    const client = new InstallerClient(cockpit);
+    const client = new InstallerClient(cockpitModule);
     const status = await client.getStatus();
     expect(status).toEqual(0);
   });
@@ -110,7 +117,7 @@ describe("#getStatus", () => {
 
 describe("#getProducts", () => {
   it("returns the list of available products", async () => {
-    const client = new InstallerClient(cockpit);
+    const client = new InstallerClient(cockpitModule);
     const availableProducts = await client.getProducts();
     expect(availableProducts).toEqual(products);
   });
@@ -118,7 +125,7 @@ describe("#getProducts", () => {
 
 describe("#getLanguages", () => {
   it("returns the list of available languages", async () => {
-    const client = new InstallerClient(cockpit);
+    const client = new InstallerClient(cockpitModule);
     const availableLanguages = await client.getLanguages();
     expect(availableLanguages).toEqual([{ id: "cs_CZ", name: "Cestina" }]);
   });
@@ -126,7 +133,7 @@ describe("#getLanguages", () => {
 
 describe("#getDisks", () => {
   it("returns the list of available disks", async () => {
-    const client = new InstallerClient(cockpit);
+    const client = new InstallerClient(cockpitModule);
     const availableDisks = await client.getDisks();
     expect(availableDisks).toEqual(disks);
   });
@@ -134,7 +141,7 @@ describe("#getDisks", () => {
 
 describe("#getStorage", () => {
   it("returns the storage proposal", async () => {
-    const client = new InstallerClient(cockpit);
+    const client = new InstallerClient(cockpitModule);
     const currentProposal = await client.getStorage();
     expect(currentProposal).toEqual(proposal);
   });
@@ -142,7 +149,7 @@ describe("#getStorage", () => {
 
 describe("#startInstallation", () => {
   it("returns the storage proposal", async () => {
-    const client = new InstallerClient(cockpit);
+    const client = new InstallerClient(cockpitModule);
     await client.startInstallation();
     expect(dbusClient.call).toHaveBeenCalledWith(
       DBUS_PATH,
@@ -156,7 +163,7 @@ describe("#getOption", () => {
   it("returns the value for the given option", async () => {
     dbusClient.call = jest.fn().mockResolvedValue([{ v: "/dev/sda", t: "s" }]);
 
-    const client = new InstallerClient(cockpit);
+    const client = new InstallerClient(cockpitModule);
     const value = await client.getOption("Disk");
     expect(value).toEqual("/dev/sda");
 
@@ -174,7 +181,7 @@ describe("#getOption", () => {
       throw new Error("it does not exist");
     });
 
-    const client = new InstallerClient(cockpit);
+    const client = new InstallerClient(cockpitModule);
     const value = await client.getOption("Disk");
     expect(value).toBeUndefined();
     expect(console.error).toHaveBeenCalledWith(
@@ -188,18 +195,14 @@ describe("#setOption", () => {
   it("sets the value for the given option", async () => {
     dbusClient.call = jest.fn().mockResolvedValue();
 
-    const client = new InstallerClient(cockpit);
+    const client = new InstallerClient(cockpitModule);
     await client.setOption("Disk", "/dev/sda");
 
     expect(dbusClient.call).toHaveBeenCalledWith(
       "/org/opensuse/YaST/Installer",
       "org.freedesktop.DBus.Properties",
       "Set",
-      [
-        "org.opensuse.YaST.Installer",
-        "Disk",
-        window.cockpit.variant("s", "/dev/sda")
-      ]
+      ["org.opensuse.YaST.Installer", "Disk", cockpit.variant("s", "/dev/sda")]
     );
   });
 });
