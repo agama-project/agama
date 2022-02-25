@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/language"
 
 module DInstaller
   module DBus
@@ -34,8 +35,7 @@ module DInstaller
       private_constant :LANGUAGE_INTERFACE
 
       # @param installer [Yast2::Installer] YaST installer instance
-      def initialize(installer, logger)
-        @installer = installer
+      def initialize(logger)
         @logger = logger
 
         super(PATH)
@@ -58,24 +58,28 @@ module DInstaller
       end
 
       def available_languages
-        @available_languages ||= installer.languages.map { |k, v| [k, v.first, {}] }
+        @available_languages ||= backend.languages.map { |k, v| [k, v.first, {}] }
       end
 
       def marked_for_install
         # TODO: change when installer support multiple target languages
-        res = [installer.language]
+        res = [backend.language]
         logger.info "MarkedForInstall #{res}"
         res
       end
 
       def select_to_install(lang_ids)
         # TODO: adapt installer API to allow more languages to install
-        installer.language = lang_ids.first
+        backend.language = lang_ids.first
       end
 
     private
 
-      attr_reader :installer, :logger
+      attr_reader :logger
+
+      def backend
+        @backend ||= ::DInstaller::Language.instance.tap { |i| i.logger = @logger }
+      end
     end
   end
 end
