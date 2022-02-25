@@ -98,6 +98,7 @@ module Yast2
     #
     # * Software management
     # * Simplified storage probing
+    # * Network configuration
     #
     # The initialization of these subsystems should probably live in a different place.
     #
@@ -106,6 +107,7 @@ module Yast2
       change_status(InstallerStatus::PROBING)
       probe_languages
       probe_storage
+      probe_network
       @software.probe
       true
     rescue StandardError => e
@@ -207,6 +209,12 @@ module Yast2
       storage_manager.probe
       @disks = storage_manager.probed.disks
       self.disk = @disks.first&.name
+    end
+
+    def probe_network
+      logger.info "Probing network"
+      Yast.import "Lan"
+      Yast::Lan.read_config
     end
 
     # @return [Boolean] true if success; false if failed
