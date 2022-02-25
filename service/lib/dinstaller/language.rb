@@ -42,6 +42,7 @@ module DInstaller
       raise Errors::InvalidValue unless languages.include?(name)
 
       Yast::Language.Set(name)
+      Yast::Language.PackagesInit([name])
     end
 
     def language
