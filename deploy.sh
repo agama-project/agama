@@ -17,4 +17,4 @@ sudo systemctl start d-installer
 # set 'linux' as password
 echo "linux:Nk1RhI1GqlxdA" | sudo chpasswd -e linux
 
-xdg-open http://localhost:9090/cockpit/static/installer/index.html 
+xdg-open http://localhost:9090/cockpit/static/installer/index.html
