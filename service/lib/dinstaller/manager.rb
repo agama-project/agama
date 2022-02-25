@@ -60,6 +60,7 @@ module DInstaller
     #
     # * Software management
     # * Simplified storage probing
+    # * Network configuration
     #
     # The initialization of these subsystems should probably live in a different place.
     def probe
@@ -69,6 +70,8 @@ module DInstaller
         progress.init_progress(3, "Probing Languages")
         progress.next_step("Probing Storage")
         probe_storage
+        progress.next_step("Probing Network")
+        probe_network
         progress.next_step("Probing Software")
         software.probe(progress)
         progress.next_step("Probing Finished")
@@ -142,6 +145,13 @@ module DInstaller
       Y2Storage::StorageManager.instance.probe
       progress.next_minor_step("Calculating Storage Proposal")
       Storage::Proposal.instance.calculate
+    end
+
+    # Probes the network configuration
+    def probe_network
+      logger.info "Probing network"
+      Yast.import "Lan"
+      Yast::Lan.read_config
     end
   end
 end
