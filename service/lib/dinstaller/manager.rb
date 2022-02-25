@@ -96,6 +96,8 @@ module DInstaller
         # call inst bootloader to get properly initialized bootloader
         # sysconfig before package installation
         Yast::WFM.CallFunction("inst_bootloader", [])
+        progress.next_step("Writing Network Configuration")
+        Yast::WFM.CallFunction("save_network", [])
         software.install(progress)
         progress.next_step("Installing Bootloader")
         handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
