@@ -41,21 +41,34 @@ module DInstaller
         @installer = installer
         @logger = logger
 
-        # @available_base_products = installer.products
-
         super(PATH)
       end
 
       dbus_interface MANAGER_INTERFACE do
-        dbus_method :probe, "out result:u" do
-          # TODO
-          0
+        dbus_method :probe, "" do
+          # TODO: do it assynchronous. How? ractors will have problem with sharing yast data.
+          # For threads there are problem with race conditions. Like what yast will do if some variable change during installation?
         end
 
-        dbus_method :commit, "out result:u" do
-          # TODO
-          0
+        dbus_method :commit, "" do
+          # TODO: do it assynchronous
         end
+
+        # Enum list for statuses. Possible values:
+        # 0 : error ( it can be read from progress message )
+        # 1 : probing
+        # 2 : probed
+        # 3 : installing
+        # 4 : installed
+        dbus_reader :status, "u"
+
+        # Progress has struct with values:
+        # s message
+        # t total major steps to do
+        # t current major step
+        # t total minor steps. Can be zero which means no minor steps
+        # t current minor step
+        dbus_reader :progress, "(stttt)"
       end
     end
   end
