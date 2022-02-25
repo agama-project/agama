@@ -38,13 +38,13 @@ module DInstaller
     # @see Yast2::DBus::Installer
     class Service
       # @return [String] service name
-      SERVICE_NAME = "org.opensuse.DInstaller".freeze
+      SERVICE_NAME = "org.opensuse.DInstaller"
 
       # @return [String] D-Bus object path
       attr_reader :bus
 
       def initialize(logger = nil)
-        @logger = logger || Logger.new(STDOUT)
+        @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
       end
 
@@ -89,10 +89,7 @@ module DInstaller
       end
 
       def installer
-        @installer ||= DInstaller::Installer.new(logger: @logger).tap do |installer|
-          # FIXME: do not probe by default
-          installer.probe
-        end
+        @installer ||= DInstaller::Installer.new(logger: @logger).tap(&:probe)
       end
     end
   end

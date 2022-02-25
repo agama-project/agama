@@ -27,10 +27,10 @@ module DInstaller
     #
     # @see https://rubygems.org/gems/ruby-dbus
     class Manager < ::DBus::Object
-      PATH = "/org/opensuse/DInstaller/Manager1".freeze
+      PATH = "/org/opensuse/DInstaller/Manager1"
       private_constant :PATH
 
-      MANAGER_INTERFACE = "org.opensuse.DInstaler.Manager1".freeze
+      MANAGER_INTERFACE = "org.opensuse.DInstaler.Manager1"
       private_constant :MANAGER_INTERFACE
 
       attr_reader :installer, :logger

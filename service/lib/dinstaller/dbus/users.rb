@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
@@ -26,11 +28,13 @@ module DInstaller
     #
     # @see https://rubygems.org/gems/ruby-dbus
     class Users < ::DBus::Object
-      PATH = "/org/opensuse/DInstaller/Users1".freeze
+      PATH = "/org/opensuse/DInstaller/Users1"
       private_constant :PATH
 
-      USERS_INTERFACE = "org.opensuse.DInstaller.Users1".freeze
+      USERS_INTERFACE = "org.opensuse.DInstaller.Users1"
       private_constant :USERS_INTERFACE
+      FUSER_SIG = "in FullName:s, in UserName:s, in Password:s, in AutoLogin:b, in data:a{sv}"
+      private_constant :FUSER_SIG
 
       def initialize(logger)
         @logger = logger
@@ -49,24 +53,22 @@ module DInstaller
           logger.info "Setting Root Password"
           backend.assign_root_password(value, encrypted)
 
-          PropertiesChanged(USERS_INTERFACE, {"RootPasswordSet" => !value.empty?}, [])
+          PropertiesChanged(USERS_INTERFACE, { "RootPasswordSet" => !value.empty? }, [])
         end
 
         dbus_method :SetRootSSHKey, "in Value:s" do |value|
           logger.info "Setting Root ssh key"
-          backend.root_ssh_key=(value)
+          backend.root_ssh_key = (value)
 
-          PropertiesChanged(USERS_INTERFACE, {"RootSSHKey" => value}, [])
+          PropertiesChanged(USERS_INTERFACE, { "RootSSHKey" => value }, [])
         end
 
-        FUSER_SIG = "in FullName:s, in UserName:s, in Password:s, in AutoLogin:b, in data:a{sv}"
         dbus_method :SetFirstUser, FUSER_SIG do |full_name, user_name, password, auto_login, data|
           logger.info "Setting first user #{full_name}"
           backend.assign_first_user(full_name, user_name, password, auto_login, data)
 
-          PropertiesChanged(USERS_INTERFACE, {"FirstUser" => first_user}, [])
+          PropertiesChanged(USERS_INTERFACE, { "FirstUser" => first_user }, [])
         end
-
 
       end
 
@@ -89,7 +91,6 @@ module DInstaller
       def backend
         @backend ||= ::DInstaller::Users.instance.tap { |i| i.logger = @logger }
       end
-
     end
   end
 end

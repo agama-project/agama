@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #
 # Copyright (c) [2022] SUSE LLC
 #
@@ -18,7 +19,6 @@
 #
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
-
 
 require "yast"
 require "y2storage"
@@ -81,7 +81,7 @@ module DInstaller
       @languages = []
       @products = []
       @status = InstallerStatus::IDLE
-      @logger = logger || Logger.new(STDOUT)
+      @logger = logger || Logger.new($stdout)
       @software = Software.new(@logger)
       # Set stage to initial, so it will act as installer for some cases like
       # proposing installer instead of reading current one
@@ -181,7 +181,7 @@ module DInstaller
     def change_status(new_status)
       @status = new_status
       begin
-        @on_status_change.call(new_status) if @on_status_change
+        @on_status_change&.call(new_status)
       rescue ::DBus::Error
         # DBus object is not available yet
       end
