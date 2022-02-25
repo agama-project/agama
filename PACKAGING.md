@@ -19,7 +19,7 @@ The process to release a new version can be summarized in these steps:
 5. Commit the changes.
 
 If you need to modify the `spec` file, please, use the `gem2rpm` tool. The configuration is [included
-in the repository](./yastd/package/gem2rpm.yml). To regenerate the spec, just type:
+in the repository](./service/package/gem2rpm.yml). To regenerate the spec, just type:
 
     gem2rpm --config gem2rpm.yml d-installer-0.1.gem > rubygem-d-installer.spec
 

@@ -1,12 +1,12 @@
-
 [Unit]
 Description=D-Installer Service
 Requires=dbus.socket
 
 [Service]
 Type=dbus
-BusName=org.opensuse.YaST
+BusName=org.opensuse.DInstaller
 ExecStart=/usr/bin/d-installer
+User=root
 TimeoutStopSec=5
 
 [Install]
