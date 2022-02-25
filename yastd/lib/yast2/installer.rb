@@ -157,6 +157,11 @@ module Yast2
         Yast::WFM.CallFunction("inst_bootloader", [])
         @software.install(progr)
       end
+
+      progress.network_installation do |progr|
+        Yast::WFM.CallFunction("save_network", [])
+      end
+
       progress.bootloader_installation do |_|
         handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
         Yast::WFM.SCRSetDefault(handle)

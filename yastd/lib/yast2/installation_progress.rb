@@ -23,7 +23,7 @@
 module Yast2
   # This class represents the installer status
   class InstallationProgress
-    KNOWN_STEPS = 3 # keep it in sync with installer.rb
+    KNOWN_STEPS = 4 # keep it in sync with installer.rb
     def initialize(dbus_obj, logger: nil)
       @dbus_obj = dbus_obj
       @logger = logger
@@ -55,15 +55,27 @@ module Yast2
       )
     end
 
-    def bootloader_installation(&block)
+    def network_installation(&block)
       report(
         # TODO: localization
-        "Starting to deploy bootloader", 2
+        "Writing network configuration", 2
       )
       block.call(self)
       report(
         # TODO: localization
-        "Installation finished", 3
+        "Writing network configuration finished", 3
+      )
+    end
+
+    def bootloader_installation(&block)
+      report(
+        # TODO: localization
+        "Starting to deploy bootloader", 3
+      )
+      block.call(self)
+      report(
+        # TODO: localization
+        "Installation finished", 4
       )
     end
 
