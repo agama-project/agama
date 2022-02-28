@@ -90,6 +90,10 @@ module DInstaller
       trigger_callbacks
     end
 
+    def assign_error(message)
+      @message = message
+      trigger_callbacks
+    end
 
   private
 
@@ -100,7 +104,5 @@ module DInstaller
     def reset_minor_steps
       @total_minor_steps = @current_minor_step = 0
     end
-
   end
 end
-

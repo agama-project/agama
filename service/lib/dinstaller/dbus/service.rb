@@ -73,7 +73,7 @@ module DInstaller
       end
 
       def manager_bus
-        @manager_bus ||= DInstaller::DBus::Manager.new(installer, @logger)
+        @manager_bus ||= DInstaller::DBus::Manager.new(@logger)
       end
 
       def language_dbus
@@ -89,7 +89,9 @@ module DInstaller
       end
 
       def installer
-        @installer ||= DInstaller::Installer.new(logger: @logger).tap(&:probe)
+        # TODO: this god object should not be needed anymore when all dbus API is adapted
+        # just that probe should  be kept to get installer probed ASAP
+        @installer ||= DInstaller::Manager.instance.tap(&:probe)
       end
     end
   end

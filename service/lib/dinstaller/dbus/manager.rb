@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/manager"
 
 module DInstaller
   module DBus
@@ -33,25 +34,30 @@ module DInstaller
       MANAGER_INTERFACE = "org.opensuse.DInstaler.Manager1"
       private_constant :MANAGER_INTERFACE
 
-      attr_reader :installer, :logger
+      attr_reader :logger
 
       # @param installer [Yast2::Installer] YaST installer instance
       # @param args [Array<Object>] ::DBus::Object arguments
-      def initialize(installer, logger)
-        @installer = installer
+      def initialize(logger)
         @logger = logger
+        @backend = DInstaler::Manager.instance
+        @backend.progress.add_on_change_callback do
+          PropertiesChanged(MANAGER_INTERFACE, {}, ["Progress"])
+        end
+        @backend.add_status_callback do
+          PropertiesChanged(MANAGER_INTERFACE, { "Status" => @backend.status.id }, [])
+        end
 
         super(PATH)
       end
 
       dbus_interface MANAGER_INTERFACE do
         dbus_method :probe, "" do
-          # TODO: do it assynchronous. How? ractors will have problem with sharing yast data.
-          # For threads there are problem with race conditions. Like what yast will do if some variable change during installation?
+          @backend.probe
         end
 
         dbus_method :commit, "" do
-          # TODO: do it assynchronous
+          @backend.commit
         end
 
         # Enum list for statuses. Possible values:
@@ -69,6 +75,21 @@ module DInstaller
         # t total minor steps. Can be zero which means no minor steps
         # t current minor step
         dbus_reader :progress, "(stttt)"
+      end
+
+      def status
+        @backend.status.id
+      end
+
+      def progress
+        prg = @backend.progress
+        [
+          prg.message,
+          prg.total_steps,
+          prg.current_step,
+          prg.total_minor_steps,
+          prg.current_minor_step
+        ].freeze
       end
     end
   end
