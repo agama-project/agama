@@ -27,43 +27,80 @@ module DInstaller
   # The class contain major and minor steps. Intention is that
   # top level manager knows about major steps and sets total and current step.
   # On other hand each step called by manager class sets minor steps and messages if needed.
-  # If steps do not set it, it is manager responsibility to set defaults for minor steps and
-  # good message for given step.
   #
   # @example manager interaction
   #
   #   progress = Progress.new
-  #   progress.total_steps = 3
-  #   progress.current_step = 0
-  #   progress.reset_minor_steps
-  #   progress.message = "Doing step1"
+  #   progress.init_progress(3, "Doing step1")
   #   step1(progress)
-  #   progress.current_step = 1
-  #   progress.reset_minor_steps
-  #   progress.message = "Doing step2"
+  #   progress.next_step("Doing step2")
   #   step2(progress)
-  #   progress.current_step = 2
-  #   progress.reset_minor_steps
-  #   progress.message = "Doing step3"
+  #   progress.next_step("Doing step3")
   #   step3(progress)
-  #   progress.current_step = 3
-  #   progress.message = "Finished with steps"
+  #   progress.next_step("Finished with step3")
   #
+  # @example module interaction
+  #
+  #   def step2(progress)
+  #     progress.init_minor_steps(2, "Doing subtask1")
+  #     subtask1
+  #     progress.next_minor_step("Doing subtask2")
+  #     subtask2
+  #     progress.next_minor_step("Finished subtask2")
   class Progress
     def initialize
       @message = ""
       @total_steps = @current_step = @total_minor_steps = @current_minor_step = 0
+      @callbacks = []
     end
 
-    attr_accessor :message
-    attr_accessor :total_steps
-    attr_accessor :current_step
-    attr_accessor :total_minor_steps
-    attr_accessor :current_minor_step
+    attr_reader :message
+    attr_reader :total_steps
+    attr_reader :current_step
+    attr_reader :total_minor_steps
+    attr_reader :current_minor_step
+
+    # Adds callback that is called when progress changed
+    def add_on_change_callback(&block)
+      @callbacks << block
+    end
+
+    def init_progress(amount_of_major_steps, message)
+      @total_steps = amount_of_major_steps
+      @message = message
+      trigger_callbacks
+    end
+
+    def next_step(message)
+      reset_minor_steps
+      @message = message
+      @current_step += 1
+      trigger_callbacks
+    end
+
+    def init_minor_steps(amount_of_minor_steps, message)
+      @total_minor_steps = amount_of_minor_steps
+      @message = message
+      trigger_callbacks
+    end
+
+    def next_minor_step(message)
+      @message = message
+      @current_minor_step += 1
+      trigger_callbacks
+    end
+
+
+  private
+
+    def trigger_callbacks
+      @callbacks.each(&:call)
+    end
 
     def reset_minor_steps
       @total_minor_steps = @current_minor_step = 0
     end
+
   end
 end
 
