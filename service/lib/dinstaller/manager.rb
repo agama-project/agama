@@ -76,6 +76,7 @@ module DInstaller
     # The initialization of these subsystems should probably live in a different place.
     def probe
       Thread.new do
+        sleep(1) # do sleep to ensure that dbus service is already attached
         change_status(InstallerStatus::PROBING)
         progress.init_progress(3, "Probing Languages")
         probe_languages
