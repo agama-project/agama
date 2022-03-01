@@ -40,7 +40,7 @@ module DInstaller
       # @param args [Array<Object>] ::DBus::Object arguments
       def initialize(logger)
         @logger = logger
-        @backend = DInstaler::Manager.instance
+        @backend = ::DInstaller::Manager.instance
         @backend.progress.add_on_change_callback do
           PropertiesChanged(MANAGER_INTERFACE, {}, ["Progress"])
         end

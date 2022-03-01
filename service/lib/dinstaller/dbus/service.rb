@@ -24,7 +24,7 @@ require "dinstaller/dbus/manager"
 require "dinstaller/dbus/language"
 require "dinstaller/dbus/software"
 require "dinstaller/dbus/users"
-require "dinstaller/installer"
+require "dinstaller/manager"
 
 module DInstaller
   module DBus

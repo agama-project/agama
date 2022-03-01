@@ -202,7 +202,7 @@ module DInstaller
       @languages = []
       @products = []
       @status_callbacks = []
-      @status = InstallerStatus::IDLE
+      @status = InstallerStatus::ERROR # it should start with probing, so just temporary status
       @logger = logger || Logger.new($stdout)
       @progress = Progress.new
       @software = Software.new(@logger)
