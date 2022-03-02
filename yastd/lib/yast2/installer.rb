@@ -108,8 +108,8 @@ module Yast2
       change_status(InstallerStatus::PROBING)
       probe_languages
       probe_storage
-      probe_network
       @software.probe
+      probe_network
       true
     rescue StandardError => e
       logger.error "Probing error: #{e.inspect}"
