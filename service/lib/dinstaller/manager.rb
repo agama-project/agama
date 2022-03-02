@@ -71,10 +71,10 @@ module DInstaller
         progress.init_progress(3, "Probing Languages")
         progress.next_step("Probing Storage")
         probe_storage
-        progress.next_step("Probing Network")
-        probe_network
         progress.next_step("Probing Software")
         software.probe(progress)
+        progress.next_step("Probing Network")
+        probe_network
         progress.next_step("Probing Finished")
         change_status(InstallerStatus::PROBED)
       rescue StandardError => e
