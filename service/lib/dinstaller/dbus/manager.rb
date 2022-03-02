@@ -71,7 +71,7 @@ module DInstaller
         # Progress has struct with values:
         # s message
         # t total major steps to do
-        # t current major step
+        # t current major step (0-based)
         # t total minor steps. Can be zero which means no minor steps
         # t current minor step
         dbus_reader :progress, "(stttt)"
