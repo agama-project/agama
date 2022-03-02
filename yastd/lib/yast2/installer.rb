@@ -25,6 +25,7 @@ require "y2storage"
 require "yast2/installer_status"
 require "yast2/software"
 require "yast2/installation_progress"
+require "y2network/proposal_settings"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
 require "dbus"
@@ -215,6 +216,9 @@ module Yast2
       logger.info "Probing network"
       Yast.import "Lan"
       Yast::Lan.read_config
+      settings = Y2Network::ProposalSettings.instance
+      settings.refresh_packages
+      settings.apply_defaults
     end
 
     # @return [Boolean] true if success; false if failed
