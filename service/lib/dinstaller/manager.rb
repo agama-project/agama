@@ -59,7 +59,12 @@ module DInstaller
     # TODO: software should use directly software module for getting and settings products
     def_delegators :@software, :products, :product
 
+    # Global status of installation
+    # @return [InstallationStatus]
     attr_reader :status
+    # Progress for reporting long running tasks.
+    # Can be also used to get failure message if such task failed.
+    # @return [Progress]
     attr_reader :progress
 
     def options
@@ -126,7 +131,7 @@ module DInstaller
         Yast::Installation.destdir = "/mnt"
         # lets propose it here to be sure that software proposal reflects product selection
         # FIXME: maybe repropose after product selection change?
-        # first make bootloader proposal to be sure that required packages is installed
+        # first make bootloader proposal to be sure that required packages are installed
         proposal = ::Bootloader::ProposalClient.new.make_proposal({})
         logger.info "Bootloader proposal #{proposal.inspect}"
         @software.propose
