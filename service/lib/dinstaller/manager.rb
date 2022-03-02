@@ -30,6 +30,7 @@ require "bootloader/proposal_client"
 require "bootloader/finish_client"
 require "dinstaller/storage/proposal"
 require "y2storage/storage_manager"
+require "y2network/proposal_settings"
 
 Yast.import "Stage"
 
@@ -152,6 +153,9 @@ module DInstaller
       logger.info "Probing network"
       Yast.import "Lan"
       Yast::Lan.read_config
+      settings = Y2Network::ProposalSettings.instance
+      settings.refresh_packages
+      settings.apply_defaults
     end
   end
 end
