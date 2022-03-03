@@ -161,13 +161,15 @@ module Yast2
         @software.install(progr)
       end
 
+      # Network & Bootloader needs to be chrooted
+      handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
+      Yast::WFM.SCRSetDefault(handle)
+
       progress.network_installation do |progr|
         Yast::WFM.CallFunction("save_network", [])
       end
 
       progress.bootloader_installation do |_|
-        handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
-        Yast::WFM.SCRSetDefault(handle)
         ::Bootloader::FinishClient.new.write
       end
       change_status(InstallerStatus::IDLE)
