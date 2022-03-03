@@ -65,7 +65,7 @@ module DInstaller
     attr_reader :progress
 
     def options
-      { "disk" => disk, "product" => product, "language" => language }
+      { "disk" => disk, "language" => language }
     end
 
     # Starts the probing process
@@ -201,7 +201,6 @@ module DInstaller
       Yast::Mode.SetMode("installation")
       @disks = []
       @languages = []
-      @products = []
       @status_callbacks = []
       @status = InstallerStatus::ERROR # it should start with probing, so just temporary status
       @logger = logger || Logger.new($stdout)

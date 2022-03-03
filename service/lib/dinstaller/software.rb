@@ -64,7 +64,7 @@ module DInstaller
       @product = @products.first&.name
       proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
       logger.info "proposal #{proposal["raw_proposal"]}"
-      progress.next_minor_step("Sfotware probing finished")
+      progress.next_minor_step("Software probing finished")
       Yast::Stage.Set("initial")
 
       raise "No Product Available" unless @product
