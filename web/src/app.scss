@@ -2,6 +2,9 @@
 @use "@patternfly/react-core/dist/styles/base.css";
 @use "@patternfly/patternfly/patternfly.css";
 
+// See https://github.com/patternfly/patternfly/pull/4297
+@use "@patternfly/react-styles/css/utilities/Sizing/sizing.css";
+
 // NOTE: eos-base/index imports a lot of styles not needed by now. Hence, let's
 // start importing them granularly until we have time to investigate how to purge
 // or "tree-shake" CSS while building (although it might not help while working
@@ -18,8 +21,20 @@
   --pf-global--primary-color--200: #{branding.$eos-bc-green-900};
   --pf-global--link--Color: var(--pf-global--primary-color--100);
   --pf-global--link--Color--hover: var(--pf-global--primary-color--200);
+  --pf-global--BackgroundColor--dark-100: #{branding.$eos-bc-pine-500};
 }
 
 #root {
-  padding: $eos-xxl;
+  min-height: 100vh;
+  background: branding.$eos-bc-gray-50;
+}
+
+.installation-overview-section {
+  border-bottom: 1px solid branding.$eos-bc-gray-100;
+  padding-bottom: 1rem;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
 }
