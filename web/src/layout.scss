@@ -5,54 +5,56 @@
 @use "eos-ds/dist/scss/eos-base/variables/branding";
 
 .layout {
+  --header-height: 8ex;
+  --footer-height: calc(2 * var(--header-height));
+
   @extend .pf-u-box-shadow-md;
 
   background-color: white;
   margin-left: auto;
   margin-right: auto;
-  --header-height: 8ex;
-  --footer-height: calc(2 * var(--header-height));
 }
 
 .layout__header {
   @extend .pf-u-box-shadow-md-bottom;
 
-  background-color: branding.$eos-bc-pine-500;
-  color: white;
-
-  height: var(--header-height);
   // Note: "position: fixed" + "width: inherit" does not work here. Sticky is enough for the header
   position: sticky;
   z-index: 100;
   top: 0;
 
+  background-color: branding.$eos-bc-pine-500;
+  color: white;
+
+  height: var(--header-height);
+  padding: 0.5rem;
+
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem;
 }
 
-.layout__header__left-action {
+.layout__header-left-action {
 }
 
-.layout__header__action-icon {
+.layout__header-action-icon {
   fill: white;
-  width: 1.5rem;
   height: 1.5rem;
+  width: 1.5rem;
   vertical-align: middle;
 }
 
-.layout__header__section-title {
+.layout__header-section-title {
   font-size: 1.5rem;
 }
 
-.layout__header__section-title-icon {
+.layout__header-section-title-icon {
   fill: white;
   // Sadly, we can't use font-size with EOS Icons
-  width: 1em;
   height: 1em;
+  width: 1em;
   vertical-align: sub;
-  margin: 0;
+  margin-right: 0.5em;
 }
 
 .layout__content {
@@ -63,17 +65,19 @@
 
 .layout__footer {
   @extend .pf-u-box-shadow-sm-top;
-  background-color: white;
 
   position: fixed;
   bottom: 0;
+
+  background-color: white;
+
   height: var(--footer-height);
   width: inherit;
+  padding: 1rem;
+
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 1rem 1rem;
-  padding: 1rem;
-  
 }
 
 .layout__footer-info-area {

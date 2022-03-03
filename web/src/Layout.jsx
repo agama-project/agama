@@ -58,8 +58,8 @@ function Layout({ sectionTitle, SectionIcon, FooterMessages, FooterActions, chil
     if (!MenuIcon) return null;
 
     return (
-      <div className="layout__header__left-action">
-        <MenuIcon className="layout__header__action-icon" />
+      <div className="layout__header-left-action">
+        <MenuIcon className="layout__header-action-icon" />
       </div>
     );
   }
@@ -69,9 +69,9 @@ function Layout({ sectionTitle, SectionIcon, FooterMessages, FooterActions, chil
       <div className="layout__header">
         { renderHeaderLeftAction () }
 
-        <div className="layout__header__section-title">
+        <div className="layout__header-section-title">
           <h1>
-            { SectionIcon && <SectionIcon className="layout__header__section-title-icon" /> }
+            { SectionIcon && <SectionIcon className="layout__header-section-title-icon" /> }
             { sectionTitle }
           </h1>
         </div>
