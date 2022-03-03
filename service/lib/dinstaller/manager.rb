@@ -56,9 +56,6 @@ module DInstaller
     # TODO: move to own module classes
     attr_reader :language
 
-    # TODO: software should use directly software module for getting and settings products
-    def_delegators :@software, :products, :product
-
     # Global status of installation
     # @return [InstallationStatus]
     attr_reader :status
@@ -88,7 +85,7 @@ module DInstaller
         progress.next_step("Probing Storage")
         probe_storage
         progress.next_step("Probing Software")
-        @software.probe
+        software.probe(progress)
         progress.next_step("Probing Finished")
         change_status(InstallerStatus::PROBED)
       rescue StandardError => e
@@ -106,12 +103,6 @@ module DInstaller
       raise InvalidValue unless propose_storage(name)
 
       @disk = name
-    end
-
-    def product=(name)
-      @software.select_product(name)
-    rescue StandardError
-      raise InvalidValue
     end
 
     def language=(name)
@@ -134,13 +125,13 @@ module DInstaller
         # first make bootloader proposal to be sure that required packages are installed
         proposal = ::Bootloader::ProposalClient.new.make_proposal({})
         logger.info "Bootloader proposal #{proposal.inspect}"
-        @software.propose
+        software.propose
         Yast::WFM.CallFunction("inst_prepdisk", [])
         progress.next_step("Installing Software")
         # call inst bootloader to get properly initialized bootloader
         # sysconfig before package installation
         Yast::WFM.CallFunction("inst_bootloader", [])
-        @software.install(progr)
+        software.install(progress)
         progress.next_step("Installing Bootloader")
         handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
         Yast::WFM.SCRSetDefault(handle)
@@ -201,6 +192,10 @@ module DInstaller
       @storage_manager ||= Y2Storage::StorageManager.instance
     end
 
+    def software
+      @software ||= Software.instance.tap { |s| s.logger = @logger }
+    end
+
     def initialize
       Yast::Mode.SetUI("commandline")
       Yast::Mode.SetMode("installation")
@@ -211,7 +206,6 @@ module DInstaller
       @status = InstallerStatus::ERROR # it should start with probing, so just temporary status
       @logger = logger || Logger.new($stdout)
       @progress = Progress.new
-      @software = Software.new(@logger)
       # Set stage to initial, so it will act as installer for some cases like
       # proposing installer instead of reading current one
       Yast::Stage.Set("initial")
