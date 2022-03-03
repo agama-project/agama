@@ -7,8 +7,9 @@
 .layout {
   @extend .pf-u-box-shadow-md;
 
-  background: white;
-  margin: 0 auto;
+  background-color: white;
+  margin-left: auto;
+  margin-right: auto;
   --header-height: 8ex;
   --footer-height: calc(2 * var(--header-height));
 }
@@ -62,7 +63,7 @@
 
 .layout__footer {
   @extend .pf-u-box-shadow-sm-top;
-  background: white;
+  background-color: white;
 
   position: fixed;
   bottom: 0;
