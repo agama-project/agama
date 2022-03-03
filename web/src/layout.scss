@@ -1,0 +1,91 @@
+// See https://github.com/patternfly/patternfly/pull/4297
+@use "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow.css";
+@use "@patternfly/react-styles/css/utilities/Text/text.css";
+
+@use "eos-ds/dist/scss/eos-base/variables/branding";
+
+.layout {
+  @extend .pf-u-box-shadow-md;
+
+  background: white;
+  margin: 0 auto;
+  --header-height: 48px;
+  --footer-height: 96px;
+}
+
+.layout__header {
+  @extend .pf-u-box-shadow-md-bottom;
+
+  background-color: branding.$eos-bc-pine-500;
+  color: white;
+
+  height: var(--header-height);
+  // Note: "position: fixed" + "width: inherit" does not work here. Sticky is enough for the header
+  position: sticky;
+  z-index: 100;
+  top: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.layout__header__left-action {
+}
+
+.layout__header__action-icon {
+  fill: white;
+  width: 1.5rem;
+  height: 1.5rem;
+  vertical-align: middle;
+}
+
+.layout__header__section-title {
+  font-size: 1.5rem;
+}
+
+.layout__header__section-title-icon {
+  fill: white;
+  // Sadly, we can't use font-size with EOS Icons
+  width: 1em;
+  height: 1em;
+  vertical-align: sub;
+  margin: 0;
+}
+
+.layout__content {
+  padding: 1rem;
+  padding-bottom: calc(2rem + var(--footer-height));
+  min-height: calc(100vh - var(--header-height));
+}
+
+.layout__footer {
+  @extend .pf-u-box-shadow-sm-top;
+  background: white;
+
+  position: fixed;
+  bottom: 0;
+  height: var(--footer-height);
+  width: inherit;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem 1rem;
+  padding: 1rem;
+  
+}
+
+.layout__footer-info-area {
+  align-self: center;
+  overflow-y: auto;
+}
+
+// TODO: Keep alert icons vetically centered here?
+// .layout__footer-info-area .pf-c-alert__icon {
+//   align-self: center;
+// }
+
+.layout__footer-actions-area {
+  align-self: center;
+  text-align: center;
+}
