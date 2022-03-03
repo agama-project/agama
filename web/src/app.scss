@@ -2,8 +2,13 @@
 @import "@patternfly/react-core/dist/styles/base.css";
 @import "@patternfly/patternfly/patternfly.css";
 
-// Import EOS Base
-@import "eos-ds/dist/scss/eos-base/index.scss";
+// NOTE: eos-base/index imports a lot of styles not needed by now. Hence, let's
+// start importing them granularly until we have time to investigate how to purge
+// or "tree-shake" CSS while building (although it might not help while working
+// in development mode)
+
+// @import "eos-ds/dist/scss/eos-base/index.scss";
+@import "eos-ds/dist/scss/eos-base/variables/branding.scss";
 
 // Overrides some PatternFly variables using EOS Design System colors
 // See more at https://github.com/mcoker/patternfly/blob/main/src/patternfly/base/_variables.scss and
