@@ -48,33 +48,48 @@ import {
  * @param {React.ReactNode} [props.children] - the section content
  *
  */
-function Layout({ sectionTitle, SectionIcon, FooterMessages, FooterActions, children }) {
+function Layout({ sectionTitle, SectionIcon, FooterMessages, FooterActions, children: sectionContent }) {
   const responsiveWidthRules = "pf-u-w-75-on-md pf-u-w-66-on-lg pf-u-w-50-on-xl pf-u-w-33-on-2xl"
   const className = `layout ${responsiveWidthRules}`
 
   // FIXME: by now, it is here only for illustrating a possible app/section menu
-  const renderHeaderLeftAction = () => <MenuIcon className="layout__header__action-icon" />
+  const renderHeaderLeftAction = () => {
+    // if (!SectionAction)
+    if (!MenuIcon) return null;
 
-  const renderSectionTitle = () => {
     return (
-      <h1>
-        <SectionIcon className="layout__header__section-title-icon" />
-        { sectionTitle }
-      </h1>
+      <div className="layout__header__left-action">
+        <MenuIcon className="layout__header__action-icon" />
+      </div>
+    );
+  }
+
+  const renderHeader = () => {
+    return (
+      <div className="layout__header">
+        { renderHeaderLeftAction () }
+
+        <div className="layout__header__section-title">
+          <h1>
+            { SectionIcon && <SectionIcon className="layout__header__section-title-icon" /> }
+            { sectionTitle }
+          </h1>
+        </div>
+      </div>
     );
   }
 
   const renderFooter = () => {
-    if(!FooterActions) return null;
+    if (!FooterActions && !FooterMessages) return null;
 
     return (
       <div className="layout__footer">
         <div className="layout__footer-info-area">
-          <FooterMessages />
+          { FooterMessages && <FooterMessages /> }
         </div>
 
         <div className="layout__footer-actions-area">
-          <FooterActions />
+          { FooterActions && <FooterActions /> }
         </div>
       </div>
     );
@@ -82,18 +97,10 @@ function Layout({ sectionTitle, SectionIcon, FooterMessages, FooterActions, chil
 
   return (
     <div className={className}>
-      <div className="layout__header">
-        <div className="layout__header__left-action">
-          { renderHeaderLeftAction () }
-        </div>
-
-        <div className="layout__header__section-title">
-          { renderSectionTitle() }
-        </div>
-      </div>
+      { renderHeader() }
 
       <main className="layout__content">
-        { children }
+        { sectionContent }
       </main>
 
       { renderFooter() }
