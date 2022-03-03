@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/manager"
 
 module DInstaller
   module DBus
@@ -33,29 +34,62 @@ module DInstaller
       MANAGER_INTERFACE = "org.opensuse.DInstaler.Manager1"
       private_constant :MANAGER_INTERFACE
 
-      attr_reader :installer, :logger
+      attr_reader :logger
 
       # @param installer [Yast2::Installer] YaST installer instance
       # @param args [Array<Object>] ::DBus::Object arguments
-      def initialize(installer, logger)
-        @installer = installer
+      def initialize(logger)
         @logger = logger
-
-        # @available_base_products = installer.products
+        @backend = ::DInstaller::Manager.instance
+        @backend.progress.add_on_change_callback do
+          PropertiesChanged(MANAGER_INTERFACE, {}, ["Progress"])
+        end
+        @backend.add_status_callback do
+          PropertiesChanged(MANAGER_INTERFACE, { "Status" => @backend.status.id }, [])
+        end
 
         super(PATH)
       end
 
       dbus_interface MANAGER_INTERFACE do
-        dbus_method :probe, "out result:u" do
-          # TODO
-          0
+        dbus_method :probe, "" do
+          @backend.probe
         end
 
-        dbus_method :commit, "out result:u" do
-          # TODO
-          0
+        dbus_method :commit, "" do
+          @backend.commit
         end
+
+        # Enum list for statuses. Possible values:
+        # 0 : error ( it can be read from progress message )
+        # 1 : probing
+        # 2 : probed
+        # 3 : installing
+        # 4 : installed
+        dbus_reader :status, "u"
+
+        # Progress has struct with values:
+        # s message
+        # t total major steps to do
+        # t current major step (0-based)
+        # t total minor steps. Can be zero which means no minor steps
+        # t current minor step
+        dbus_reader :progress, "(stttt)"
+      end
+
+      def status
+        @backend.status.id
+      end
+
+      def progress
+        prg = @backend.progress
+        [
+          prg.message,
+          prg.total_steps,
+          prg.current_step,
+          prg.total_minor_steps,
+          prg.current_minor_step
+        ].freeze
       end
     end
   end

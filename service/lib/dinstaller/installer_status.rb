@@ -23,29 +23,16 @@
 module DInstaller
   # This class represents the installer status
   class InstallerStatus
-    class << self
-      # Returns all the possible installer statuses
-      #
-      # @return [Array<InstallerStatus>] Installer status
-      def all
-        @all ||= constants
-          .map { |c| InstallerStatus.const_get(c) }
-          .select { |c| c.is_a?(InstallerStatus) }
-      end
-    end
+    attr_reader :id
 
-    attr_reader :id, :name
-
-    def initialize(id, name)
+    def initialize(id)
       @id = id
-      @name = name
     end
 
-    IDLE = new(0, "Idle")
-    PROBING = new(1, "Probing")
-    PARTITIONING = new(2, "Partitioning")
-    INSTALLING = new(3, "Installing")
-    FINISHED = new(4, "Finished")
-    ERROR = new(5, "Error")
+    ERROR = new(0)
+    PROBING = new(1)
+    PROBED = new(2)
+    INSTALLING = new(3)
+    INSTALLED = new(4)
   end
 end

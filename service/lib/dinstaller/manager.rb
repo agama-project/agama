@@ -23,70 +23,49 @@
 require "yast"
 require "y2storage"
 require "dinstaller/installer_status"
+require "dinstaller/progress"
 require "dinstaller/software"
-require "dinstaller/installation_progress"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
-require "dbus"
 require "forwardable"
+require "singleton"
 
 Yast.import "Stage"
 
 # YaST specific code lives under this namespace
 module DInstaller
-  # This class represents the installer itself
+  # This class represents top level installer manager.
   #
-  # It is responsible for orchestrating the installation process. Additionally,
-  # it serves as an entry point to other APIs.
-  #
-  # @example Get the current storage proposal
-  #   installer = Installer.new
-  #   installer.probe
-  #   installer.storage_proposal #=> #<Y2Storage::Devicegraph>
-  class Installer
+  # It is responsible for orchestrating the installation process. For module specific
+  # stuff it delegates it to module itself.
+  class Manager
     class InvalidValue < StandardError; end
+
+    include Singleton
 
     extend Forwardable
 
+    # TODO: move to own module classes
     DEFAULT_LANGUAGE = "en_US"
 
+    # TODO: move to own module classes
     attr_reader :disks, :languages
+    # TODO: move to own module classes
     attr_reader :disk
     attr_reader :logger
+    # TODO: move to own module classes
     attr_reader :language
 
+    # TODO: software should use directly software module for getting and settings products
     def_delegators :@software, :products, :product
 
-    # @return [InstallerStatus]
+    # Global status of installation
+    # @return [InstallationStatus]
     attr_reader :status
-
-    # Returns a new instance of the Installer class
-    #
-    # @example Probe and run the installation
-    #   installer = Installer.new
-    #   installer.probe
-    #   installer.install
-    #
-    # @example Reacting on status change
-    #   installer = Installer.new
-    #   installer.on_status_change do |status|
-    #     log.info "Status changed: #{status}"
-    #   end
-    #
-    # @param logger      [Logger,nil] Logger to write messages to
-    def initialize(logger: nil)
-      Yast::Mode.SetUI("commandline")
-      Yast::Mode.SetMode("installation")
-      @disks = []
-      @languages = []
-      @products = []
-      @status = InstallerStatus::IDLE
-      @logger = logger || Logger.new($stdout)
-      @software = Software.new(@logger)
-      # Set stage to initial, so it will act as installer for some cases like
-      # proposing installer instead of reading current one
-      Yast::Stage.Set("initial")
-    end
+    # Progress for reporting long running tasks.
+    # Can be also used to get failure message if such task failed.
+    # @return [Progress]
+    attr_reader :progress
 
     def options
       { "disk" => disk, "product" => product, "language" => language }
@@ -100,19 +79,27 @@ module DInstaller
     # * Simplified storage probing
     #
     # The initialization of these subsystems should probably live in a different place.
-    #
-    # @return [Boolean] true if the probing process ended successfully; false otherwise.
     def probe
-      change_status(InstallerStatus::PROBING)
-      probe_languages
-      probe_storage
-      @software.probe
-      true
-    rescue StandardError => e
-      logger.error "Probing error: #{e.inspect}"
-      false
-    ensure
-      change_status(InstallerStatus::IDLE)
+      Thread.new do
+        sleep(1) # do sleep to ensure that dbus service is already attached
+        change_status(InstallerStatus::PROBING)
+        progress.init_progress(3, "Probing Languages")
+        probe_languages
+        progress.next_step("Probing Storage")
+        probe_storage
+        progress.next_step("Probing Software")
+        @software.probe
+        progress.next_step("Probing Finished")
+        change_status(InstallerStatus::PROBED)
+      rescue StandardError => e
+        change_status(InstallerStatus::ERROR)
+        progress.assign_error(e.message)
+        logger.error "Probing error: #{e.inspect}"
+      end
+    end
+
+    def add_status_callback(&block)
+      @status_callbacks << block
     end
 
     def disk=(name)
@@ -138,53 +125,36 @@ module DInstaller
     end
 
     def install
-      change_status(InstallerStatus::INSTALLING)
-      Yast::Installation.destdir = "/mnt"
-      # lets propose it here to be sure that software proposal reflects product selection
-      # FIXME: maybe repropose after product selection change?
-      # first make bootloader proposal to be sure that required packages is installed
-      proposal = ::Bootloader::ProposalClient.new.make_proposal({})
-      logger.info "Bootloader proposal #{proposal.inspect}"
-      @software.propose
-
-      progress = InstallationProgress.new(@dbus_obj, logger: logger)
-      progress.partitioning do |_|
+      Thread.new do
+        change_status(InstallerStatus::INSTALLING)
+        progress.init_progress(3, "Partitioning")
+        Yast::Installation.destdir = "/mnt"
+        # lets propose it here to be sure that software proposal reflects product selection
+        # FIXME: maybe repropose after product selection change?
+        # first make bootloader proposal to be sure that required packages are installed
+        proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+        logger.info "Bootloader proposal #{proposal.inspect}"
+        @software.propose
         Yast::WFM.CallFunction("inst_prepdisk", [])
-      end
-      progress.package_installation do |progr|
+        progress.next_step("Installing Software")
         # call inst bootloader to get properly initialized bootloader
         # sysconfig before package installation
         Yast::WFM.CallFunction("inst_bootloader", [])
         @software.install(progr)
-      end
-      progress.bootloader_installation do |_|
+        progress.next_step("Installing Bootloader")
         handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
         Yast::WFM.SCRSetDefault(handle)
         ::Bootloader::FinishClient.new.write
+        progress.next_step("Installation Finished")
+        change_status(InstallerStatus::INSTALLED)
       end
-      change_status(InstallerStatus::IDLE)
     end
-
-    # Callback to run when the status changes
-    #
-    # This callback receives the new InstallerStatus instance.
-    #
-    # @return block [Proc] Code to run when the status changes
-    def on_status_change(&block)
-      @on_status_change = block
-    end
-
-    attr_writer :dbus_obj
 
   private
 
     def change_status(new_status)
       @status = new_status
-      begin
-        @on_status_change&.call(new_status)
-      rescue ::DBus::Error
-        # DBus object is not available yet
-      end
+      @status_callbacks.each(&:call)
     end
 
     # Returns the list of known languages
@@ -229,6 +199,22 @@ module DInstaller
 
     def storage_manager
       @storage_manager ||= Y2Storage::StorageManager.instance
+    end
+
+    def initialize
+      Yast::Mode.SetUI("commandline")
+      Yast::Mode.SetMode("installation")
+      @disks = []
+      @languages = []
+      @products = []
+      @status_callbacks = []
+      @status = InstallerStatus::ERROR # it should start with probing, so just temporary status
+      @logger = logger || Logger.new($stdout)
+      @progress = Progress.new
+      @software = Software.new(@logger)
+      # Set stage to initial, so it will act as installer for some cases like
+      # proposing installer instead of reading current one
+      Yast::Stage.Set("initial")
     end
   end
 end
