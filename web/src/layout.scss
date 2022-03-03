@@ -9,8 +9,8 @@
 
   background: white;
   margin: 0 auto;
-  --header-height: 48px;
-  --footer-height: 96px;
+  --header-height: 8ex;
+  --footer-height: calc(2 * var(--header-height));
 }
 
 .layout__header {
