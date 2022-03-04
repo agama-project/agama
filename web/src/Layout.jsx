@@ -49,7 +49,7 @@ import {
  *
  */
 function Layout({ sectionTitle, SectionIcon, FooterMessages, FooterActions, children: sectionContent }) {
-  const responsiveWidthRules = "pf-u-w-75-on-md pf-u-w-66-on-lg pf-u-w-50-on-xl pf-u-w-33-on-2xl"
+  const responsiveWidthRules = "pf-u-w-66-on-lg pf-u-w-50-on-xl pf-u-w-33-on-2xl"
   const className = `layout ${responsiveWidthRules}`
 
   // FIXME: by now, it is here only for illustrating a possible app/section menu
