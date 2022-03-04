@@ -20,7 +20,7 @@ export default function Category({ icon, title, children }) {
       <SplitItem>
         <Icon size="32" />
       </SplitItem>
-      <SplitItem>
+      <SplitItem isFilled>
         <Stack>
           <StackItem>
             <TextContent>
