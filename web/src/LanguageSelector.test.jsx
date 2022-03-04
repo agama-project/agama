@@ -14,7 +14,7 @@ const languages = [
 
 const clientMock = {
   getLanguages: () => Promise.resolve(languages),
-  getOption: () => Promise.resolve("en_US")
+  getSelectedLanguages: () => Promise.resolve(["en_US"])
 };
 
 beforeEach(() => {
@@ -27,15 +27,15 @@ it("displays the proposal", async () => {
 });
 
 describe("when the user changes the language", () => {
-  let setOptionFn;
+  let setLanguagesFn;
 
   beforeEach(() => {
     // if defined outside, the mock is cleared automatically
-    setOptionFn = jest.fn().mockResolvedValue();
+    setLanguagesFn = jest.fn().mockResolvedValue();
     InstallerClient.mockImplementation(() => {
       return {
         ...clientMock,
-        setOption: setOptionFn
+        setLanguages: setLanguagesFn
       };
     });
   });
@@ -50,6 +50,6 @@ describe("when the user changes the language", () => {
     userEvent.click(screen.getByRole("button", { name: "Confirm" }));
 
     await screen.findByRole("button", { name: "German" });
-    expect(setOptionFn).toHaveBeenCalledWith("Language", "de_DE");
+    expect(setLanguagesFn).toHaveBeenCalledWith(["de_DE"]);
   });
 });

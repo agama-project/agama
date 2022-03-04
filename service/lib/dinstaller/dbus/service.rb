@@ -77,7 +77,7 @@ module DInstaller
       end
 
       def language_dbus
-        @language_dbus ||= DInstaller::DBus::Language.new(installer, @logger)
+        @language_dbus ||= DInstaller::DBus::Language.new(@logger)
       end
 
       def software_dbus

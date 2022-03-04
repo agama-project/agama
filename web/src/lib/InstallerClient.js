@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
+
 export default class InstallerClient {
   /**
    * @constructor
@@ -26,16 +28,28 @@ export default class InstallerClient {
    */
   constructor(cockpit) {
     this._cockpit = cockpit ||= window.cockpit;
+    this._proxies = {};
   }
   // Initializing the client in the constructor does not work for some reason.
   client() {
     if (!this._client) {
-      this._client = this._cockpit.dbus("org.opensuse.YaST", {
+      this._client = this._cockpit.dbus("org.opensuse.DInstaller", {
         bus: "system",
         superuser: "try"
       });
     }
     return this._client;
+  }
+
+  async proxy(iface) {
+    if (this._proxies[iface]) {
+      return this._proxies[iface];
+    }
+
+    const proxy = this.client().proxy(iface, undefined, { watch: true });
+    await proxy.wait();
+    this._proxies[iface] = proxy;
+    return proxy;
   }
 
   /**
@@ -139,10 +153,32 @@ export default class InstallerClient {
    * @return {Promise.<Array>}
    */
   async getLanguages() {
-    const languages = await this._callInstallerMethod("GetLanguages");
-    return Object.keys(languages).map(key => {
-      return { id: key, name: languages[key][1] };
+    const proxy = await this.proxy(LANGUAGE_IFACE);
+    return proxy.AvailableLanguages.map((lang) => {
+      let [ { v: id }, { v: name } ] = lang.v;
+      return { id, name };
     });
+  }
+
+  /**
+   * Return the languages selected for installation
+   * 
+   * @return {Promise.<String|undefined>} 
+   */
+  async getSelectedLanguages() {
+    const proxy = await this.proxy(LANGUAGE_IFACE);
+    return proxy.MarkedForInstall.map(lang => lang.v);
+  }
+
+  /**
+   * Set the languages to install
+   * 
+   * @param {string} langIDs - Identifier of languages to install
+   * @return {Promise.<String|undefined>} 
+   */
+  async setLanguages(langIDs) {
+    const proxy = await this.proxy(LANGUAGE_IFACE);
+    return proxy.ToInstall(langIDs)
   }
 
   /**
