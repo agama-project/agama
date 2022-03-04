@@ -52,7 +52,7 @@ export default function ProductSelector() {
 
   useEffect(async () => {
     const products = await client.getProducts();
-    const current = await client.getOption("Product");
+    const current = await client.getSelectedProduct();
     dispatch({
       type: "LOAD",
       payload: { products, current, initial: current }
@@ -65,18 +65,18 @@ export default function ProductSelector() {
 
   const accept = async () => {
     // TODO: handle errors
-    await client.setOption("Product", product);
+    await client.selectProduct(product);
     dispatch({ type: "ACCEPT" });
   };
 
   const label = () => {
-    const selectedProduct = products.find(p => p.name === product);
-    return selectedProduct ? selectedProduct.display_name : "Select product";
+    const selectedProduct = products.find(p => p.id === product);
+    return selectedProduct ? selectedProduct.name : "Select product";
   };
 
   const buildSelector = () => {
-    const selectorOptions = products.map(p => (
-      <FormSelectOption key={p.name} value={p.name} label={p.display_name} />
+    const selectorOptions = products.map((p, idx) => (
+      <FormSelectOption key={idx} value={p.id} label={p.name} />
     ));
 
     return (

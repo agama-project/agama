@@ -9,8 +9,8 @@ const cockpitModule = {
 const DBUS_PATH = "/org/opensuse/YaST/Installer";
 const DBUS_IFACE = "org.opensuse.YaST.Installer";
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
+const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
 
-const products = [{ name: "MicroOS", display_name: "openSUSE MicroOS" }];
 const disks = [{ name: "/dev/sda", model: "Some Brand", size: "0.5TiB" }];
 const proposal = [
   { mount: "/", device: "/dev/sdb2", type: "btrfs", size: "117354528768" }
@@ -18,7 +18,6 @@ const proposal = [
 
 const methodResponses = {
   GetStatus: 0,
-  GetProducts: products,
   GetDisks: disks,
   GetStorage: proposal
 };
@@ -33,9 +32,20 @@ let langProxy = {
     }
   ]
 };
+let softProxy = {
+  wait: jest.fn(),
+  AvailableBaseProducts: [
+    { 
+      t: "av",
+      v: [ { t: "s", v: "MicroOS" }, { t: "s", v: "openSUSE MicroOS" }, { t: "a{sv}", v: {} } ]
+    },
+  ],
+  SelectedBaseProduct: "microos"
+}
 
 const proxies = {
-  [LANGUAGE_IFACE]: langProxy
+  [LANGUAGE_IFACE]: langProxy,
+  [SOFTWARE_IFACE]: softProxy
 }
 
 beforeEach(() => {
@@ -134,7 +144,17 @@ describe("#getProducts", () => {
   it("returns the list of available products", async () => {
     const client = new InstallerClient(cockpitModule);
     const availableProducts = await client.getProducts();
-    expect(availableProducts).toEqual(products);
+    expect(availableProducts).toEqual([
+      { id: "MicroOS", name: "openSUSE MicroOS" }
+    ]);
+  });
+});
+
+describe("#getSelectedProduct", () => {
+  it("returns the ID of the selected product", async () => {
+    const client = new InstallerClient(cockpitModule);
+    const selected = await client.getSelectedProduct();
+    expect(selected).toEqual("microos");
   });
 });
 

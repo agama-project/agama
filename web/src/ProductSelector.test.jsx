@@ -8,13 +8,13 @@ import InstallerClient from "./lib/InstallerClient";
 jest.mock("./lib/InstallerClient");
 
 const products = [
-  { name: "openSUSE", display_name: "openSUSE Tumbleweed" },
-  { name: "micro", display_name: "openSUSE MicroOS" }
+  { id: "openSUSE", name: "openSUSE Tumbleweed" },
+  { id: "micro", name: "openSUSE MicroOS" }
 ];
 
 const clientMock = {
   getProducts: () => Promise.resolve(products),
-  getOption: () => Promise.resolve("micro")
+  getSelectedProduct: () => Promise.resolve("micro")
 };
 
 beforeEach(() => {
@@ -27,15 +27,15 @@ it("displays the proposal", async () => {
 });
 
 describe("when the user changes the product", () => {
-  let setOptionFn;
+  let selectProductFn;
 
   beforeEach(() => {
     // if defined outside, the mock is cleared automatically
-    setOptionFn = jest.fn().mockResolvedValue();
+    selectProductFn = jest.fn().mockResolvedValue();
     InstallerClient.mockImplementation(() => {
       return {
         ...clientMock,
-        setOption: setOptionFn
+        selectProduct: selectProductFn
       };
     });
   });
@@ -52,6 +52,6 @@ describe("when the user changes the product", () => {
     userEvent.click(screen.getByRole("button", { name: "Confirm" }));
 
     await screen.findByRole("button", { name: "openSUSE Tumbleweed" });
-    expect(setOptionFn).toHaveBeenCalledWith("Product", "openSUSE");
+    expect(selectProductFn).toHaveBeenCalledWith("openSUSE");
   });
 });

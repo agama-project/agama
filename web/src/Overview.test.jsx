@@ -13,9 +13,8 @@ const proposal = [
 ];
 const disks = [{ name: "/dev/sda" }, { name: "/dev/sdb" }];
 const languages = [{ id: "en_US", name: "English" }];
-const products = [{ name: "openSUSE", display_name: "openSUSE Tumbleweed" }];
+const products = [{ id: "openSUSE", name: "openSUSE Tumbleweed" }];
 const options = {
-  Product: "openSUSE",
   Disk: "/dev/sda"
 };
 const startInstallationFn = jest.fn();
@@ -28,6 +27,7 @@ beforeEach(() => {
       getLanguages: () => Promise.resolve(languages),
       getSelectedLanguages: () => Promise.resolve(["en_US"]),
       getProducts: () => Promise.resolve(products),
+      getSelectedProduct: () => Promise.resolve("openSUSE"),
       getOption: name => Promise.resolve(options[name]),
       onPropertyChanged: jest.fn(),
       startInstallation: startInstallationFn
