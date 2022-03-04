@@ -24,7 +24,7 @@ require "dinstaller/language"
 
 module DInstaller
   module DBus
-    # YaST D-Bus object (/org/opensuse/YaST/Installer1)
+    # YaST D-Bus object (/org/opensuse/DInstaller/Language1)
     #
     # @see https://rubygems.org/gems/ruby-dbus
     class Language < ::DBus::Object

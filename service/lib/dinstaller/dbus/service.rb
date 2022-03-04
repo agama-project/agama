@@ -28,12 +28,14 @@ require "dinstaller/manager"
 
 module DInstaller
   module DBus
-    # YaST D-Bus service (org.opensuse.YaST)
+    # YaST D-Bus service (org.opensuse.DInstaller)
     #
-    # It connects to the system D-Bus and answers requests on `/org/opensuse/YaST/Installer`.
+    # It connects to the system D-Bus and answers requests on `/org/opensuse/DInstaller/*`.
     #
     # @example Running the server
-    #   Yast2::DBus::Service.new.run
+    #   s = DInstaller::DBus::Service.new
+    #   s.export
+    #   some_main_loop { s.dispatch }
     #
     # @see Yast2::DBus::Installer
     class Service
