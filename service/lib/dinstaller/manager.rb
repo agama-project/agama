@@ -46,15 +46,10 @@ module DInstaller
     extend Forwardable
 
     # TODO: move to own module classes
-    DEFAULT_LANGUAGE = "en_US"
-
-    # TODO: move to own module classes
     attr_reader :disks, :languages
     # TODO: move to own module classes
     attr_reader :disk
     attr_reader :logger
-    # TODO: move to own module classes
-    attr_reader :language
 
     # TODO: software should use directly software module for getting and settings products
     def_delegators :@software, :products, :product
@@ -68,7 +63,7 @@ module DInstaller
     attr_reader :progress
 
     def options
-      { "disk" => disk, "product" => product, "language" => language }
+      { "disk" => disk, "product" => product }
     end
 
     # Starts the probing process
@@ -84,7 +79,6 @@ module DInstaller
         sleep(1) # do sleep to ensure that dbus service is already attached
         change_status(InstallerStatus::PROBING)
         progress.init_progress(3, "Probing Languages")
-        probe_languages
         progress.next_step("Probing Storage")
         probe_storage
         progress.next_step("Probing Software")
@@ -112,12 +106,6 @@ module DInstaller
       @software.select_product(name)
     rescue StandardError
       raise InvalidValue
-    end
-
-    def language=(name)
-      raise InvalidValue unless languages.include?(name)
-
-      @language = name
     end
 
     def storage_proposal
@@ -155,16 +143,6 @@ module DInstaller
     def change_status(new_status)
       @status = new_status
       @status_callbacks.each(&:call)
-    end
-
-    # Returns the list of known languages
-    #
-    # @return [Hash]
-    def probe_languages
-      logger.info "Probing languages"
-      Yast.import "Language"
-      @languages = Yast::Language.GetLanguagesMap(true)
-      self.language = DEFAULT_LANGUAGE
     end
 
     def probe_storage

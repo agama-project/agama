@@ -8,9 +8,9 @@ const cockpitModule = {
 
 const DBUS_PATH = "/org/opensuse/YaST/Installer";
 const DBUS_IFACE = "org.opensuse.YaST.Installer";
+const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 
 const products = [{ name: "MicroOS", display_name: "openSUSE MicroOS" }];
-const languages = { cs_CZ: ["Cestina", "Cestina", ".UTF-8", "", "Checo"] };
 const disks = [{ name: "/dev/sda", model: "Some Brand", size: "0.5TiB" }];
 const proposal = [
   { mount: "/", device: "/dev/sdb2", type: "btrfs", size: "117354528768" }
@@ -19,14 +19,29 @@ const proposal = [
 const methodResponses = {
   GetStatus: 0,
   GetProducts: products,
-  GetLanguages: languages,
   GetDisks: disks,
   GetStorage: proposal
 };
 
 let dbusClient = {};
+let langProxy = {
+  wait: jest.fn(),
+  AvailableLanguages: [
+    { 
+      t: "av",
+      v: [ { t: "s", v: "cs_CZ" }, { t: "s", v: "Cestina" }, { t: "a{sv}", v: {} } ]
+    }
+  ]
+};
+
+const proxies = {
+  [LANGUAGE_IFACE]: langProxy
+}
 
 beforeEach(() => {
+  dbusClient.proxy = jest.fn().mockImplementation((iface, _path, _opts) => {
+    return proxies[iface];
+  });
   dbusClient.call = jest.fn().mockImplementation((path, iface, method) => {
     if (path !== DBUS_PATH || iface !== DBUS_IFACE) {
       return Promise.reject();
