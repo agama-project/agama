@@ -16,10 +16,10 @@ const Proposal = ({ data = [] }) => {
     return data.map(p => {
       return (
         <Tr key={p.mount}>
-          <Td>{p.mount}</Td>
-          <Td>{p.type}</Td>
-          <Td>{p.device}</Td>
-          <Td>{filesize(p.size)}</Td>
+          <Td dataLabel="Mount Point">{p.mount}</Td>
+          <Td dataLabel="Type">{p.type}</Td>
+          <Td dataLabel="Device">{p.device}</Td>
+          <Td dataLabel="Size">{filesize(p.size)}</Td>
         </Tr>
       );
     });
