@@ -35,7 +35,7 @@ module DInstaller
 
       attr_reader :logger
 
-      # @param args [Array<Object>] ::DBus::Object arguments
+      # @param logger [Logger]
       def initialize(logger)
         @logger = logger
 

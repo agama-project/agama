@@ -34,7 +34,7 @@ module DInstaller
       LANGUAGE_INTERFACE = "org.opensuse.DInstaller.Language1"
       private_constant :LANGUAGE_INTERFACE
 
-      # @param installer [Yast2::Installer] YaST installer instance
+      # @param logger [Logger]
       def initialize(logger)
         @logger = logger
 
