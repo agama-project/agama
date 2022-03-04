@@ -42,9 +42,10 @@ module DInstaller
       # @return [String] service name
       SERVICE_NAME = "org.opensuse.DInstaller"
 
-      # @return [String] D-Bus object path
+      # @return [::DBus::Connection]
       attr_reader :bus
 
+      # @param logger [Logger]
       def initialize(logger = nil)
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
@@ -58,6 +59,7 @@ module DInstaller
         logger.info "Exported #{paths} objects"
       end
 
+      # Call this from some main loop to dispatch the D-Bus messages
       def dispatch
         bus.dispatch_message_queue
       end
@@ -66,10 +68,12 @@ module DInstaller
 
       attr_reader :logger
 
+      # @return [::DBus::Service]
       def service
         @service ||= bus.request_service(SERVICE_NAME)
       end
 
+      # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [manager_bus, language_dbus, software_dbus, users_dbus]
       end
