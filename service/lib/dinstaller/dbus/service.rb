@@ -24,20 +24,19 @@ require "dinstaller/dbus/manager"
 require "dinstaller/dbus/language"
 require "dinstaller/dbus/software"
 require "dinstaller/dbus/users"
+require "dinstaller/dbus/storage/proposal"
+require "dinstaller/dbus/storage/actions"
 require "dinstaller/manager"
 
 module DInstaller
   module DBus
-    # YaST D-Bus service (org.opensuse.DInstaller)
+    # D-Bus service (org.opensuse.DInstaller)
     #
-    # It connects to the system D-Bus and answers requests on `/org/opensuse/DInstaller/*`.
+    # It connects to the system D-Bus and answers requests on objets below
+    # `/org/opensuse/DInstaller`.
     #
     # @example Running the server
-    #   s = DInstaller::DBus::Service.new
-    #   s.export
-    #   some_main_loop { s.dispatch }
-    #
-    # @see Yast2::DBus::Installer
+    #   DInstaller::DBus::Service.new.run
     class Service
       # @return [String] service name
       SERVICE_NAME = "org.opensuse.DInstaller"
@@ -75,11 +74,18 @@ module DInstaller
 
       # @return [Array<::DBus::Object>]
       def dbus_objects
-        @dbus_objects ||= [manager_bus, language_dbus, software_dbus, users_dbus]
+        @dbus_objects ||= [
+          manager_dbus,
+          language_dbus,
+          software_dbus,
+          users_dbus,
+          storage_proposal_dbus,
+          storage_actions_dbus
+        ]
       end
 
-      def manager_bus
-        @manager_bus ||= DInstaller::DBus::Manager.new(@logger)
+      def manager_dbus
+        @manager_dbus ||= DInstaller::DBus::Manager.new(@logger)
       end
 
       def language_dbus
@@ -92,6 +98,20 @@ module DInstaller
 
       def users_dbus
         @users_dbus ||= DInstaller::DBus::Users.new(@logger)
+      end
+
+      def storage_proposal_dbus
+        @storage_proposal_dbus ||= DInstaller::DBus::Storage::Proposal.new(@logger)
+      end
+
+      def storage_actions_dbus
+        @storage_actions_dbus ||= DInstaller::DBus::Storage::Actions.new(@logger)
+      end
+
+      def installer
+        # TODO: this god object should not be needed anymore when all dbus API is adapted
+        # just that probe should  be kept to get installer probed ASAP
+        @installer ||= DInstaller::Manager.instance.tap(&:probe)
       end
     end
   end
