@@ -5,14 +5,16 @@
 @use "eos-ds/dist/scss/eos-base/variables/branding";
 
 .layout {
-  --header-height: 8ex;
-  --footer-height: calc(2 * var(--header-height));
+  --header-block-size: 8ex;
+  --footer-block-size: calc(2 * var(--header-block-size));
 
   @extend .pf-u-box-shadow-md;
 
   background-color: white;
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline: auto;
+
+  // Needed for "telling" the fixed footer its (inherited) inline-size.
+  inline-size: 100%;
 }
 
 .layout__header {
@@ -21,12 +23,12 @@
   // Note: "position: fixed" + "width: inherit" does not work here. Sticky is enough for the header
   position: sticky;
   z-index: 100;
-  top: 0;
+  inset-block-start: 0;
 
   background-color: branding.$eos-bc-pine-500;
   color: white;
 
-  height: var(--header-height);
+  block-size: var(--header-block-size);
   padding: 0.5rem;
 
   display: flex;
@@ -39,8 +41,8 @@
 
 .layout__header-action-icon {
   fill: white;
-  height: 1.5rem;
-  width: 1.5rem;
+  block-size: 1.5rem;
+  inline-size: 1.5rem;
   vertical-align: middle;
 }
 
@@ -51,28 +53,28 @@
 .layout__header-section-title-icon {
   fill: white;
   // Sadly, we can't use font-size with EOS Icons
-  height: 1em;
-  width: 1em;
+  block-size: 1em;
+  inline-size: 1em;
   vertical-align: sub;
-  margin-right: 0.5em;
+  margin-inline-end: 0.5em;
 }
 
 .layout__content {
   padding: 1rem;
-  padding-bottom: calc(2rem + var(--footer-height));
-  min-height: calc(100vh - var(--header-height));
+  padding-block-end: calc(1rem + var(--footer-block-size));
+  min-block-size: calc(100vh - var(--header-block-size));
 }
 
 .layout__footer {
   @extend .pf-u-box-shadow-sm-top;
 
   position: fixed;
-  bottom: 0;
+  inset-block-end: 0;
 
   background-color: white;
 
-  height: var(--footer-height);
-  width: inherit;
+  block-size: var(--footer-block-size);
+  inline-size: inherit;
   padding: 1rem;
 
   display: grid;

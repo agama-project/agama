@@ -24,17 +24,47 @@
   --pf-global--BackgroundColor--dark-100: #{branding.$eos-bc-pine-500};
 }
 
+body {
+  text-align: start;
+}
+
 #root {
-  min-height: 100vh;
+  min-block-size: 100vh;
   background-color: branding.$eos-bc-gray-50;
 }
 
 .installation-overview-section {
-  border-bottom: 1px solid branding.$eos-bc-gray-100;
-  padding-bottom: 1rem;
+  border-block-end: 1px solid branding.$eos-bc-gray-100;
+  padding-block-end: 1rem;
 
   &:last-child {
-    border-bottom: none;
+    border-block-end: none;
+  }
+
+  // FIXME: look for a better approach about this.
+  // It overrides inline paddings for "button links" since using "isInline" prop
+  // is not an option becaue it removes block margins too.
+  .pf-m-link {
+    padding-inline: 0;
   }
 }
+
+// PatternFly overrides for using CSS Logical Properties
+
+.pf-l-split.pf-m-gutter > :not(:last-child) {
+  margin-inline-end: var(--pf-l-split--m-gutter--MarginRight);
+}
+
+.pf-l-flex.pf-m-column > * {
+  margin: 0;
+  margin-block-end: var(--pf-l-flex--spacer);
+}
+
+.pf-c-alert__icon {
+  margin-block-start: var(--pf-c-alert__icon--MarginTop);
+  margin-inline-end: var(--pf-c-alert__icon--MarginRight);
+}
+
+.pf-m-grid-md.pf-c-table [data-label]::before {
+  text-align: start;
 }
