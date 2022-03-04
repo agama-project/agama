@@ -15,7 +15,6 @@ const disks = [{ name: "/dev/sda" }, { name: "/dev/sdb" }];
 const languages = [{ id: "en_US", name: "English" }];
 const products = [{ name: "openSUSE", display_name: "openSUSE Tumbleweed" }];
 const options = {
-  Language: "en_US",
   Product: "openSUSE",
   Disk: "/dev/sda"
 };
@@ -27,6 +26,7 @@ beforeEach(() => {
       getStorage: () => Promise.resolve(proposal),
       getDisks: () => Promise.resolve(disks),
       getLanguages: () => Promise.resolve(languages),
+      getSelectedLanguages: () => Promise.resolve(["en_US"]),
       getProducts: () => Promise.resolve(products),
       getOption: name => Promise.resolve(options[name]),
       onPropertyChanged: jest.fn(),
