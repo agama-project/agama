@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-#
 # Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
@@ -20,16 +19,17 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "singleton"
+require "forwardable"
 require "yast"
-require "y2storage"
 require "dinstaller/errors"
 require "dinstaller/installer_status"
 require "dinstaller/progress"
 require "dinstaller/software"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
-require "forwardable"
-require "singleton"
+require "dinstaller/storage/proposal"
+require "y2storage/storage_manager"
 
 Yast.import "Stage"
 
@@ -45,9 +45,7 @@ module DInstaller
     extend Forwardable
 
     # TODO: move to own module classes
-    attr_reader :disks, :languages
-    # TODO: move to own module classes
-    attr_reader :disk
+    attr_reader :languages
     attr_reader :logger
 
     # Global status of installation
@@ -58,8 +56,8 @@ module DInstaller
     # @return [Progress]
     attr_reader :progress
 
-    def options
-      { "disk" => disk }
+    def add_status_callback(&block)
+      @status_callbacks << block
     end
 
     # Starts the probing process
@@ -88,20 +86,6 @@ module DInstaller
       end
     end
 
-    def add_status_callback(&block)
-      @status_callbacks << block
-    end
-
-    def disk=(name)
-      raise Errors::InvalidValue unless propose_storage(name)
-
-      @disk = name
-    end
-
-    def storage_proposal
-      storage_manager.proposal&.devices
-    end
-
     def install
       Thread.new do
         change_status(InstallerStatus::INSTALLING)
@@ -128,55 +112,15 @@ module DInstaller
       end
     end
 
+    def add_status_callback(&block)
+      @status_callbacks << block
+    end
+
   private
-
-    def change_status(new_status)
-      @status = new_status
-      @status_callbacks.each(&:call)
-    end
-
-    def probe_storage
-      logger.info "Probing storage"
-      storage_manager.probe
-      @disks = storage_manager.probed.disks
-      self.disk = @disks.first&.name
-    end
-
-    # @return [Boolean] true if success; false if failed
-    def propose_storage(disk_name)
-      settings = Y2Storage::ProposalSettings.new_for_current_product
-      settings.candidate_devices = [disk_name]
-
-      # FIXME: clean up the disks
-      clean_probed = storage_probed.clone
-      clean_probed.disks.each(&:remove_descendants)
-
-      proposal = Y2Storage::GuidedProposal.initial(
-        devicegraph: clean_probed,
-        settings:    settings
-      )
-      return false if proposal.failed?
-
-      storage_manager.proposal = proposal
-      true
-    end
-
-    def storage_probed
-      storage_manager.probed
-    end
-
-    def storage_manager
-      @storage_manager ||= Y2Storage::StorageManager.instance
-    end
-
-    def software
-      @software ||= Software.instance.tap { |s| s.logger = @logger }
-    end
 
     def initialize
       Yast::Mode.SetUI("commandline")
       Yast::Mode.SetMode("installation")
-      @disks = []
       @languages = []
       @status_callbacks = []
       @status = InstallerStatus::ERROR # it should start with probing, so just temporary status
@@ -185,6 +129,24 @@ module DInstaller
       # Set stage to initial, so it will act as installer for some cases like
       # proposing installer instead of reading current one
       Yast::Stage.Set("initial")
+    end
+
+    def change_status(new_status)
+      @status = new_status
+      @status_callbacks.each(&:call)
+    end
+
+    def software
+      @software ||= Software.instance.tap { |s| s.logger = @logger }
+    end
+
+    # Probes storage devices and performs an initial proposal
+    def probe_storage
+      logger.info "Probing storage and performing proposal"
+      progress.init_minor_steps(2, "Probing Storage Devices")
+      Y2Storage::StorageManager.instance.probe
+      progress.next_minor_step("Calculating Storage Proposal")
+      Storage::Proposal.instance.calculate
     end
   end
 end
