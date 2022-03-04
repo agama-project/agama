@@ -31,7 +31,7 @@ module DInstaller
       PATH = "/org/opensuse/DInstaller/Manager1"
       private_constant :PATH
 
-      MANAGER_INTERFACE = "org.opensuse.DInstaler.Manager1"
+      MANAGER_INTERFACE = "org.opensuse.DInstaller.Manager1"
       private_constant :MANAGER_INTERFACE
 
       attr_reader :logger
@@ -51,11 +51,11 @@ module DInstaller
       end
 
       dbus_interface MANAGER_INTERFACE do
-        dbus_method :probe, "" do
+        dbus_method :Probe, "" do
           @backend.probe
         end
 
-        dbus_method :commit, "" do
+        dbus_method :Commit, "" do
           @backend.commit
         end
 
