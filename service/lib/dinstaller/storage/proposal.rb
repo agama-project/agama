@@ -73,11 +73,7 @@ module DInstaller
       def generate_proposal_settings(settings)
         proposal_settings = Y2Storage::ProposalSettings.new_for_current_product
 
-        proposal_settings.use_lvm = settings["LVM"] if settings.keys.include?("LVM")
-
-        if settings.keys.include?("CandidateDevices")
-          proposal_settings.candidate_devices = settings["CandidateDevices"]
-        end
+        settings.each { |k, v| proposal_settings.send("#{k}=", v) }
 
         proposal_settings
       end

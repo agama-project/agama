@@ -50,7 +50,7 @@ module DInstaller
 
           # result: 0 success; 1 error
           dbus_method :Calculate, "in settings:a{sv}, out result:u" do |settings|
-            backend.calculate(settings)
+            backend.calculate(to_proposal_properties(settings))
 
             PropertiesChanged(INTERFACE, settings, [])
 
@@ -67,6 +67,19 @@ module DInstaller
         end
 
       private
+
+        PROPOSAL_PROPERTIES = {
+          "LVM"              => "use_lvm",
+          "CandidateDevices" => "candidate_devices"
+        }.freeze
+
+        private_constant :PROPOSAL_PROPERTIES
+
+        def to_proposal_properties(settings)
+          settings.each_with_object({}) do |e, h|
+            h[PROPOSAL_PROPERTIES[e.first]] = e.last
+          end
+        end
 
         def backend
           @backend ||= ::DInstaller::Storage::Proposal.instance
