@@ -87,12 +87,6 @@ module DInstaller
       def users_dbus
         @users_dbus ||= DInstaller::DBus::Users.new(@logger)
       end
-
-      def installer
-        # TODO: this god object should not be needed anymore when all dbus API is adapted
-        # just that probe should  be kept to get installer probed ASAP
-        @installer ||= DInstaller::Manager.instance.tap(&:probe)
-      end
     end
   end
 end
