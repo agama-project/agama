@@ -38,7 +38,7 @@ module DInstaller
     attr_accessor :logger
 
     def initialize
-      @logger = Logger.new(STDOUT)
+      @logger = Logger.new($stdout)
       @products = []
       @product = nil
     end

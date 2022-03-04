@@ -99,8 +99,6 @@ module DInstaller
       @disk = name
     end
 
-    end
-
     def storage_proposal
       storage_manager.proposal&.devices
     end

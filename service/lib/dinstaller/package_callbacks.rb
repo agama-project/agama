@@ -28,7 +28,7 @@ module DInstaller
   # This class represents the installer status
   class PackageCallbacks
     class << self
-      def setup(progress, pkg_count)
+      def setup(progress, _pkg_count)
         new(progress).setup
       end
     end
