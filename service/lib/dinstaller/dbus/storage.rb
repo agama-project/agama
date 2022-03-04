@@ -28,3 +28,4 @@ module DInstaller
 end
 
 require "dinstaller/dbus/storage/proposal"
+require "dinstaller/dbus/storage/actions"
