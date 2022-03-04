@@ -107,12 +107,6 @@ module DInstaller
       def storage_actions_dbus
         @storage_actions_dbus ||= DInstaller::DBus::Storage::Actions.new(@logger)
       end
-
-      def installer
-        # TODO: this god object should not be needed anymore when all dbus API is adapted
-        # just that probe should  be kept to get installer probed ASAP
-        @installer ||= DInstaller::Manager.instance.tap(&:probe)
-      end
     end
   end
 end
