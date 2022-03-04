@@ -81,7 +81,7 @@ module DInstaller
       end
 
       def software_dbus
-        @software_dbus ||= DInstaller::DBus::Software.new(installer, @logger)
+        @software_dbus ||= DInstaller::DBus::Software.new(@logger)
       end
 
       def users_dbus

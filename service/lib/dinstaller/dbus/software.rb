@@ -33,12 +33,10 @@ module DInstaller
       SOFTWARE_INTERFACE = "org.opensuse.DInstaller.Software1"
       private_constant :SOFTWARE_INTERFACE
 
-      attr_reader :installer, :logger
+      attr_reader :logger
 
-      # @param installer [Yast2::Installer] YaST installer instance
       # @param args [Array<Object>] ::DBus::Object arguments
-      def initialize(installer, logger)
-        @installer = installer
+      def initialize(logger)
         @logger = logger
 
         super(PATH)
@@ -63,7 +61,7 @@ module DInstaller
     private
 
       def available_base_products
-        @available_base_products ||= installer.products
+        backend.products
       end
 
       def selected_base_product
@@ -71,7 +69,11 @@ module DInstaller
       end
 
       def select_product(product_id)
-        installer.product = product_id
+        backend.select_product(product_id)
+      end
+
+      def backend
+        ::DInstaller::Software.instance
       end
     end
   end
