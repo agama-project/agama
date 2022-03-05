@@ -37,7 +37,7 @@ beforeEach(() => {
 
 test("renders the Overview", async () => {
   installerRender(<Overview />);
-  const title = screen.getByText(/Installation Overview/i);
+  const title = screen.getByText(/Installation Summary/i);
   expect(title).toBeInTheDocument();
 
   await screen.findByText("English");
