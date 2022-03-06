@@ -24,6 +24,7 @@ import { useInstallerClient } from "./context/installer";
 
 import {
   Alert,
+  Bullseye,
   Button,
   Progress,
   Stack,
@@ -96,13 +97,15 @@ function InstallationProgress() {
       FooterMessages={Messages}
       FooterActions={Actions}
     >
-      <Stack hasGutter>
-        <StackItem>
-          <Progress title="Overall progress" value={percentage} />
-        </StackItem>
+      <Bullseye className="layout__content-child--filling-block-size">
+        <Stack hasGutter className="pf-u-w-100">
+          <StackItem>
+            <Progress title="Overall progress" value={percentage} />
+          </StackItem>
 
-        { renderSubprogress() }
-      </Stack>
+          { renderSubprogress() }
+        </Stack>
+      </Bullseye>
     </Layout>
   );
 }

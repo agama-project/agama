@@ -7,6 +7,12 @@
 .layout {
   --header-block-size: 8ex;
   --footer-block-size: calc(2 * var(--header-block-size));
+  --min-layout-content-block-size: calc(100vh - var(--header-block-size));
+  --layout-content-padding: 1rem;
+  --layout-content-padding-block-end: calc(
+    var(--layout-content-padding)
+    + var(--footer-block-size)
+  );
 
   @extend .pf-u-box-shadow-md;
 
@@ -60,9 +66,23 @@
 }
 
 .layout__content {
-  padding: 1rem;
-  padding-block-end: calc(1rem + var(--footer-block-size));
-  min-block-size: calc(100vh - var(--header-block-size));
+  padding: var(--layout-content-padding);
+  padding-block-end: var(--layout-content-padding-block-end);
+  min-block-size: var(--min-layout-content-block-size);
+}
+
+// Needed because a block-size: 100% is not an option when the parent does not
+// have an explicit block-size (it has a min-block-size instead).
+// See https://stackoverflow.com/a/8468131 and https://www.w3.org/TR/CSS22/visudet.html#the-height-property
+.layout__content-child--filling-block-size {
+  // NOTE: "min-block-size: inherit;" does not work for us. It produces padding
+  // that we do not want unless necessary. Moreover, the .layout__content
+  // container element already produce needed padding.
+  min-block-size: calc(
+    var(--min-layout-content-block-size)
+    - var(--layout-content-padding)
+    - var(--layout-content-padding-block-end)
+  );
 }
 
 .layout__footer {
