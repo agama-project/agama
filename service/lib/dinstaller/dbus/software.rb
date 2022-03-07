@@ -58,19 +58,21 @@ module DInstaller
         end
       end
 
-    private
-
       def available_base_products
-        backend.products
+        backend.products.map do |product|
+          [product.name, product.display_name, {}].freeze
+        end
       end
 
       def selected_base_product
-        installer.product
+        backend.product
       end
 
       def select_product(product_id)
         backend.select_product(product_id)
       end
+
+    private
 
       def backend
         ::DInstaller::Software.instance

@@ -20,6 +20,7 @@
  */
 
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
+const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
 
 export default class InstallerClient {
   /**
@@ -143,8 +144,22 @@ export default class InstallerClient {
    *
    * @return {Promise.<Array>}
    */
-  getProducts() {
-    return this._callInstallerMethod("GetProducts");
+  async getProducts() {
+    const proxy = await this.proxy(SOFTWARE_IFACE);
+    return proxy.AvailableBaseProducts.map((product) => {
+      const [ { v: id }, { v: name } ] = product.v;
+      return { id, name };
+    });
+  }
+
+  async getSelectedProduct() {
+    const proxy = await this.proxy(SOFTWARE_IFACE);
+    return proxy.SelectedBaseProduct;
+  }
+
+  async selectProduct(id) {
+    const proxy = await this.proxy(SOFTWARE_IFACE);
+    return proxy.SelectProduct(id);
   }
 
   /**
@@ -155,7 +170,7 @@ export default class InstallerClient {
   async getLanguages() {
     const proxy = await this.proxy(LANGUAGE_IFACE);
     return proxy.AvailableLanguages.map((lang) => {
-      let [ { v: id }, { v: name } ] = lang.v;
+      const [ { v: id }, { v: name } ] = lang.v;
       return { id, name };
     });
   }
