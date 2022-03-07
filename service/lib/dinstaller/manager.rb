@@ -68,7 +68,7 @@ module DInstaller
       Thread.new do
         sleep(1) # do sleep to ensure that dbus service is already attached
         change_status(InstallerStatus::PROBING)
-        progress.init_progress(3, "Probing Languages")
+        progress.init_progress(4, "Probing Languages")
         progress.next_step("Probing Storage")
         probe_storage
         progress.next_step("Probing Software")
@@ -88,7 +88,7 @@ module DInstaller
     def install
       Thread.new do
         change_status(InstallerStatus::INSTALLING)
-        progress.init_progress(3, "Partitioning")
+        progress.init_progress(4, "Partitioning")
         Yast::Installation.destdir = "/mnt"
         # lets propose it here to be sure that software proposal reflects product selection
         # FIXME: maybe repropose after product selection change?
