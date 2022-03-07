@@ -56,10 +56,6 @@ module DInstaller
     # @return [Progress]
     attr_reader :progress
 
-    def add_status_callback(&block)
-      @status_callbacks << block
-    end
-
     # Starts the probing process
     #
     # At this point, it just initializes some YaST modules/subsystems:
