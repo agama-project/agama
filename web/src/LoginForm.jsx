@@ -61,7 +61,7 @@ function LoginForm() {
 
   return (
     <Layout>
-      <Bullseye>
+      <Bullseye className="layout__content-child--filling-block-size">
         <Form>
           <TextContent>
             <Text component={TextVariants.h1}>Welcome to D-Installer</Text>
