@@ -28,6 +28,7 @@ import InstallerClient from "./lib/InstallerClient";
 import cockpit from "./lib/cockpit";
 
 import "./app.scss";
+import "./layout.scss";
 
 const client = new InstallerClient(cockpit);
 
