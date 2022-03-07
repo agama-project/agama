@@ -84,6 +84,7 @@ module DInstaller
       end
     end
 
+    # rubocop:disable Metrics/AbcSize
     def install
       Thread.new do
         change_status(InstallerStatus::INSTALLING)
@@ -111,6 +112,7 @@ module DInstaller
         change_status(InstallerStatus::INSTALLED)
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def add_status_callback(&block)
       @status_callbacks << block
