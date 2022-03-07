@@ -25,15 +25,12 @@ import {
   Alert,
   Bullseye,
   Button,
+  Flex,
+  FlexItem,
   Form,
   FormAlert,
   FormGroup,
-  TextInput,
-  TextContent,
-  Text,
-  TextVariants,
-  Flex,
-  FlexItem
+  TextInput
 } from "@patternfly/react-core";
 
 import Layout from "./Layout";
@@ -59,13 +56,29 @@ function LoginForm() {
       });
   };
 
+  const SubmitButton = () => {
+    return (
+    <Flex justifyContent={{ default: 'justifyContentFlexEnd' }}>
+      <FlexItem>
+        <Button
+          isLarge
+          variant="primary"
+          onClick={submitLogin}
+        >
+          Login
+        </Button>
+      </FlexItem>
+    </Flex>
+    );
+  };
+
   return (
-    <Layout>
+    <Layout
+      sectionTitle="Welcome to D-Installer"
+      FooterActions={SubmitButton}
+    >
       <Bullseye className="layout__content-child--filling-block-size">
         <Form>
-          <TextContent>
-            <Text component={TextVariants.h1}>Welcome to D-Installer</Text>
-          </TextContent>
           {error && formError(error)}
           <FormGroup label="Username" fieldId="username">
             <TextInput isRequired type="text" id="username" ref={usernameRef} />
@@ -78,9 +91,6 @@ function LoginForm() {
               ref={passwordRef}
             />
           </FormGroup>
-          <Button variant="primary" onClick={submitLogin}>
-            Login
-          </Button>
         </Form>
       </Bullseye>
     </Layout>
