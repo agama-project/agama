@@ -30,6 +30,7 @@ require "bootloader/proposal_client"
 require "bootloader/finish_client"
 require "dinstaller/storage/proposal"
 require "y2storage/storage_manager"
+require "y2network/proposal_settings"
 
 Yast.import "Stage"
 
@@ -60,17 +61,20 @@ module DInstaller
     #
     # * Software management
     # * Simplified storage probing
+    # * Network configuration
     #
     # The initialization of these subsystems should probably live in a different place.
     def probe
       Thread.new do
         sleep(1) # do sleep to ensure that dbus service is already attached
         change_status(InstallerStatus::PROBING)
-        progress.init_progress(3, "Probing Languages")
+        progress.init_progress(4, "Probing Languages")
         progress.next_step("Probing Storage")
         probe_storage
         progress.next_step("Probing Software")
         software.probe(progress)
+        progress.next_step("Probing Network")
+        probe_network
         progress.next_step("Probing Finished")
         change_status(InstallerStatus::PROBED)
       rescue StandardError => e
@@ -80,10 +84,11 @@ module DInstaller
       end
     end
 
+    # rubocop:disable Metrics/AbcSize
     def install
       Thread.new do
         change_status(InstallerStatus::INSTALLING)
-        progress.init_progress(3, "Partitioning")
+        progress.init_progress(4, "Partitioning")
         Yast::Installation.destdir = "/mnt"
         # lets propose it here to be sure that software proposal reflects product selection
         # FIXME: maybe repropose after product selection change?
@@ -97,14 +102,17 @@ module DInstaller
         # sysconfig before package installation
         Yast::WFM.CallFunction("inst_bootloader", [])
         software.install(progress)
-        progress.next_step("Installing Bootloader")
         handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
         Yast::WFM.SCRSetDefault(handle)
+        progress.next_step("Writing Network Configuration")
+        Yast::WFM.CallFunction("save_network", [])
+        progress.next_step("Installing Bootloader")
         ::Bootloader::FinishClient.new.write
         progress.next_step("Installation Finished")
         change_status(InstallerStatus::INSTALLED)
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def add_status_callback(&block)
       @status_callbacks << block
@@ -140,6 +148,16 @@ module DInstaller
       Y2Storage::StorageManager.instance.probe
       progress.next_minor_step("Calculating Storage Proposal")
       Storage::Proposal.instance.calculate
+    end
+
+    # Probes the network configuration
+    def probe_network
+      logger.info "Probing network"
+      Yast.import "Lan"
+      Yast::Lan.read_config
+      settings = Y2Network::ProposalSettings.instance
+      settings.refresh_packages
+      settings.apply_defaults
     end
   end
 end
