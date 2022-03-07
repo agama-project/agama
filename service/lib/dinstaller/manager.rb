@@ -44,8 +44,6 @@ module DInstaller
 
     extend Forwardable
 
-    # TODO: move to own module classes
-    attr_reader :languages
     attr_reader :logger
 
     # Global status of installation
@@ -117,7 +115,6 @@ module DInstaller
     def initialize
       Yast::Mode.SetUI("commandline")
       Yast::Mode.SetMode("installation")
-      @languages = []
       @status_callbacks = []
       @status = InstallerStatus::ERROR # it should start with probing, so just temporary status
       @logger = logger || Logger.new($stdout)
