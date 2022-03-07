@@ -22,6 +22,7 @@
 
 require "yast"
 require "y2storage"
+require "dinstaller/errors"
 require "dinstaller/installer_status"
 require "dinstaller/progress"
 require "dinstaller/software"
@@ -39,8 +40,6 @@ module DInstaller
   # It is responsible for orchestrating the installation process. For module specific
   # stuff it delegates it to module itself.
   class Manager
-    class InvalidValue < StandardError; end
-
     include Singleton
 
     extend Forwardable
@@ -94,7 +93,7 @@ module DInstaller
     end
 
     def disk=(name)
-      raise InvalidValue unless propose_storage(name)
+      raise Errors::InvalidValue unless propose_storage(name)
 
       @disk = name
     end

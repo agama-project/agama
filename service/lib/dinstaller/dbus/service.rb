@@ -28,21 +28,24 @@ require "dinstaller/manager"
 
 module DInstaller
   module DBus
-    # YaST D-Bus service (org.opensuse.YaST)
+    # YaST D-Bus service (org.opensuse.DInstaller)
     #
-    # It connects to the system D-Bus and answers requests on `/org/opensuse/YaST/Installer`.
+    # It connects to the system D-Bus and answers requests on `/org/opensuse/DInstaller/*`.
     #
     # @example Running the server
-    #   Yast2::DBus::Service.new.run
+    #   s = DInstaller::DBus::Service.new
+    #   s.export
+    #   some_main_loop { s.dispatch }
     #
     # @see Yast2::DBus::Installer
     class Service
       # @return [String] service name
       SERVICE_NAME = "org.opensuse.DInstaller"
 
-      # @return [String] D-Bus object path
+      # @return [::DBus::Connection]
       attr_reader :bus
 
+      # @param logger [Logger]
       def initialize(logger = nil)
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
@@ -56,6 +59,7 @@ module DInstaller
         logger.info "Exported #{paths} objects"
       end
 
+      # Call this from some main loop to dispatch the D-Bus messages
       def dispatch
         bus.dispatch_message_queue
       end
@@ -64,10 +68,12 @@ module DInstaller
 
       attr_reader :logger
 
+      # @return [::DBus::Service]
       def service
         @service ||= bus.request_service(SERVICE_NAME)
       end
 
+      # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [manager_bus, language_dbus, software_dbus, users_dbus]
       end

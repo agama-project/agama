@@ -24,7 +24,7 @@ require "dinstaller/language"
 
 module DInstaller
   module DBus
-    # YaST D-Bus object (/org/opensuse/YaST/Installer1)
+    # YaST D-Bus object (/org/opensuse/DInstaller/Language1)
     #
     # @see https://rubygems.org/gems/ruby-dbus
     class Language < ::DBus::Object
@@ -34,7 +34,7 @@ module DInstaller
       LANGUAGE_INTERFACE = "org.opensuse.DInstaller.Language1"
       private_constant :LANGUAGE_INTERFACE
 
-      # @param installer [Yast2::Installer] YaST installer instance
+      # @param logger [Logger]
       def initialize(logger)
         @logger = logger
 

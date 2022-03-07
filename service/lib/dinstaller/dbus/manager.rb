@@ -36,8 +36,7 @@ module DInstaller
 
       attr_reader :logger
 
-      # @param installer [Yast2::Installer] YaST installer instance
-      # @param args [Array<Object>] ::DBus::Object arguments
+      # @param logger [Logger]
       def initialize(logger)
         @logger = logger
         @backend = ::DInstaller::Manager.instance
