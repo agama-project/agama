@@ -31,8 +31,12 @@ import {
   TextInput,
   TextContent,
   Text,
-  TextVariants
+  TextVariants,
+  Flex,
+  FlexItem
 } from "@patternfly/react-core";
+
+import Layout from "./Layout";
 
 const formError = error => (
   <FormAlert>
@@ -56,28 +60,30 @@ function LoginForm() {
   };
 
   return (
-    <Bullseye>
-      <Form>
-        <TextContent>
-          <Text component={TextVariants.h1}>Welcome to D-Installer</Text>
-        </TextContent>
-        {error && formError(error)}
-        <FormGroup label="Username" fieldId="username">
-          <TextInput isRequired type="text" id="username" ref={usernameRef} />
-        </FormGroup>
-        <FormGroup label="Password" fieldId="password">
-          <TextInput
-            isRequired
-            type="password"
-            id="password"
-            ref={passwordRef}
-          />
-        </FormGroup>
-        <Button variant="primary" onClick={submitLogin}>
-          Login
-        </Button>
-      </Form>
-    </Bullseye>
+    <Layout>
+      <Bullseye>
+        <Form>
+          <TextContent>
+            <Text component={TextVariants.h1}>Welcome to D-Installer</Text>
+          </TextContent>
+          {error && formError(error)}
+          <FormGroup label="Username" fieldId="username">
+            <TextInput isRequired type="text" id="username" ref={usernameRef} />
+          </FormGroup>
+          <FormGroup label="Password" fieldId="password">
+            <TextInput
+              isRequired
+              type="password"
+              id="password"
+              ref={passwordRef}
+            />
+          </FormGroup>
+          <Button variant="primary" onClick={submitLogin}>
+            Login
+          </Button>
+        </Form>
+      </Bullseye>
+    </Layout>
   );
 }
 
