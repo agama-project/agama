@@ -47,7 +47,9 @@ function LoginForm() {
   const usernameRef = useRef();
   const passwordRef = useRef();
 
-  const submitLogin = () => {
+  const submitLogin = (e) => {
+    e.preventDefault();
+
     setError(undefined);
     login(usernameRef.current.value, passwordRef.current.value)
       .then(() => window.location.reload())
@@ -63,6 +65,8 @@ function LoginForm() {
         <Button
           isLarge
           variant="primary"
+          type="submit"
+          form="d-installer-login"
           onClick={submitLogin}
         >
           Login
@@ -78,7 +82,7 @@ function LoginForm() {
       FooterActions={SubmitButton}
     >
       <Bullseye className="layout__content-child--filling-block-size">
-        <Form>
+        <Form id="d-installer-login">
           {error && formError(error)}
           <FormGroup label="Username" fieldId="username">
             <TextInput isRequired type="text" id="username" ref={usernameRef} />
