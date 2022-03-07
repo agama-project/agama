@@ -25,6 +25,7 @@ require "y2storage"
 require "yast2/installer_status"
 require "yast2/software"
 require "yast2/installation_progress"
+require "y2network/proposal_settings"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
 require "dbus"
@@ -98,6 +99,7 @@ module Yast2
     #
     # * Software management
     # * Simplified storage probing
+    # * Network configuration
     #
     # The initialization of these subsystems should probably live in a different place.
     #
@@ -107,6 +109,7 @@ module Yast2
       probe_languages
       probe_storage
       @software.probe
+      probe_network
       true
     rescue StandardError => e
       logger.error "Probing error: #{e.inspect}"
@@ -157,9 +160,16 @@ module Yast2
         Yast::WFM.CallFunction("inst_bootloader", [])
         @software.install(progr)
       end
+
+      # Network & Bootloader needs to be chrooted
+      handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
+      Yast::WFM.SCRSetDefault(handle)
+
+      progress.network_installation do |progr|
+        Yast::WFM.CallFunction("save_network", [])
+      end
+
       progress.bootloader_installation do |_|
-        handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
-        Yast::WFM.SCRSetDefault(handle)
         ::Bootloader::FinishClient.new.write
       end
       change_status(InstallerStatus::IDLE)
@@ -202,6 +212,15 @@ module Yast2
       storage_manager.probe
       @disks = storage_manager.probed.disks
       self.disk = @disks.first&.name
+    end
+
+    def probe_network
+      logger.info "Probing network"
+      Yast.import "Lan"
+      Yast::Lan.read_config
+      settings = Y2Network::ProposalSettings.instance
+      settings.refresh_packages
+      settings.apply_defaults
     end
 
     # @return [Boolean] true if success; false if failed
