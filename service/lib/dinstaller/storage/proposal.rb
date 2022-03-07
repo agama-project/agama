@@ -73,7 +73,7 @@ module DInstaller
       def generate_proposal_settings(settings)
         proposal_settings = Y2Storage::ProposalSettings.new_for_current_product
 
-        settings.each { |k, v| proposal_settings.send("#{k}=", v) }
+        settings.each { |k, v| proposal_settings.public_send("#{k}=", v) }
 
         proposal_settings
       end
