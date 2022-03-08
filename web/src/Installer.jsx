@@ -35,11 +35,15 @@ function Installer() {
   }, []);
 
   useEffect(() => {
-    return client.onSignal("StatusChanged", (_path, _iface, _signal, args) => {
-      setIsInstalling(args[0] !== 0);
+    return client.onPropertyChanged((_path, input_iface, _signal, args) => {
+      const iface = "org.opensuse.DInstaller.Manager1";
+      const [, changed] = args;
+      if (input_iface === iface && changed.hasOwnProperty("Status")) {
+        setIsInstalling(changed.Status === 3);
+      }
     });
   }, []);
-
+  // TODO: add suppport for probing progress and also installation complete ui
   return isInstalling ? <InstallationProgress /> : <Overview />;
 }
 
