@@ -23,20 +23,20 @@ import React from "react";
 import { useInstallerClient } from "./context/installer";
 
 import {
+  Alert,
   Button,
-  Stack,
-  StackItem,
-  Text,
-  TextContent,
-  TextVariants
+  Flex,
+  FlexItem,
 } from "@patternfly/react-core";
 
+import Layout from "./Layout";
 import Category from "./Category";
 import LanguageSelector from "./LanguageSelector";
 import ProductSelector from "./ProductSelector";
 import Storage from "./Storage";
 
 import {
+  EOS_FACT_CHECK as OverviewIcon,
   EOS_TRANSLATE as LanguagesSelectionIcon,
   EOS_VOLUME as HardDriveIcon,
   EOS_PACKAGES as ProductsIcon
@@ -45,34 +45,22 @@ import {
 function Overview() {
   const client = useInstallerClient();
 
-  return (
-    <>
-      <Stack hasGutter>
-        <StackItem>
-          <TextContent>
-            <Text component={TextVariants.h1}>Installation Overview</Text>
-          </TextContent>
-        </StackItem>
+  const categories = [
+    <Category title="Language" icon={LanguagesSelectionIcon}>
+      <LanguageSelector />
+    </Category>,
+    <Category title="Product" icon={ProductsIcon}>
+      <ProductSelector />
+    </Category>,
+    <Category title="Target" icon={HardDriveIcon}>
+      <Storage />
+    </Category>
+  ];
 
-        <StackItem>
-          <Category title="Language" icon={LanguagesSelectionIcon}>
-            <LanguageSelector />
-          </Category>
-        </StackItem>
-
-        <StackItem>
-          <Category title="Target" icon={HardDriveIcon}>
-            <Storage />
-          </Category>
-        </StackItem>
-
-        <StackItem>
-          <Category title="Product" icon={ProductsIcon}>
-            <ProductSelector />
-          </Category>
-        </StackItem>
-
-        <StackItem>
+  const InstallButton = () => {
+    return (
+      <Flex justifyContent={{ default: 'justifyContentFlexEnd' }}>
+        <FlexItem>
           <Button
             isLarge
             variant="primary"
@@ -80,9 +68,37 @@ function Overview() {
           >
             Install
           </Button>
-        </StackItem>
-      </Stack>
-    </>
+        </FlexItem>
+      </Flex>
+    );
+  }
+
+  const OverviewWarnings = () => {
+    // FIXME: this is just an example... drop it or use real messaages/warnings if needed
+    const text = "This area is always on top, some important information or even warnings can be shown here."
+
+    return <Alert isInline isPlain title={text} />;
+  }
+
+  const renderCategories = () => {
+    return categories.map(category => (
+      <FlexItem key={category.props.title} className="installation-overview-section" >
+        {category}
+      </FlexItem>
+    ));
+  };
+
+  return (
+    <Layout
+      sectionTitle="Installation Summary"
+      SectionIcon={OverviewIcon}
+      FooterActions={InstallButton}
+      FooterMessages={OverviewWarnings}
+    >
+      <Flex direction={{ default: "column" }}>
+        { renderCategories() }
+      </Flex>
+    </Layout>
   );
 }
 
