@@ -76,6 +76,7 @@ module DInstaller
         sleep(1) # do sleep to ensure that dbus service is already attached
         change_status(InstallerStatus::PROBING)
         progress.init_progress(4, "Probing Languages")
+        language.probe(progress)
         progress.next_step("Probing Storage")
         probe_storage
         progress.next_step("Probing Software")
@@ -129,7 +130,14 @@ module DInstaller
     #
     # @return [Software] Software manager module
     def software
-      @software ||= Software.new(@logger)
+      @software ||= Software.new(logger)
+    end
+
+    # Returns the instance of the language manager module
+    #
+    # @return [Language] Language manager module
+    def language
+      @language ||= Language.new(logger)
     end
 
   private

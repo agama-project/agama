@@ -34,8 +34,10 @@ module DInstaller
       LANGUAGE_INTERFACE = "org.opensuse.DInstaller.Language1"
       private_constant :LANGUAGE_INTERFACE
 
+      # @param backend [DInstaller::Languge] Language manager
       # @param logger [Logger]
-      def initialize(logger)
+      def initialize(backend, logger)
+        @backend = backend
         @logger = logger
 
         super(PATH)
@@ -76,10 +78,7 @@ module DInstaller
     private
 
       attr_reader :logger
-
-      def backend
-        @backend ||= ::DInstaller::Language.instance.tap { |i| i.logger = @logger }
-      end
+      attr_reader :backend
     end
   end
 end
