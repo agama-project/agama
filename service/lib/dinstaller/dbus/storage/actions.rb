@@ -50,6 +50,10 @@ module DInstaller
           backend.all.map { |a| to_dbus(a) }
         end
 
+        def refresh
+          PropertiesChanged(INTERFACE, { "All" => all }, [])
+        end
+
       private
 
         def to_dbus(action)

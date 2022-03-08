@@ -17,7 +17,7 @@ const reducer = (state, action) => {
       return { ...state, target: action.payload, error: false };
     }
 
-    case "UPDATE_PROPOSAL": {
+    case "UPDATE_ACTIONS": {
       return { ...state, actions: action.payload };
     }
 
@@ -64,14 +64,18 @@ export default function Storage() {
   useEffect(() => {
     // TODO: abstract D-Bus details
     return client.onPropertyChanged((_path, _iface, _signal, args) => {
-      const [_, changes] = args;
-      if (Object.keys(changes).includes("Disk")) {
-        client
-          .getStorage()
-          .then(proposal =>
-            dispatch({ type: "UPDATE_PROPOSAL", payload: proposal })
-          );
+      const [iface, properties] = args;
+
+      if (iface !== "org.opensuse.DInstaller.Storage.Actions1") {
+        return;
       }
+
+      const newActions = properties.All.v.map(action => {
+        const { Text: textVar, Subvol: subvolVar } = action.v;
+        return { text: textVar.v, subvol: subvolVar.v };
+      });
+
+      dispatch({ type: "UPDATE_ACTIONS", payload: newActions })
     });
   }, []);
 

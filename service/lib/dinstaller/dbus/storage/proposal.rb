@@ -33,8 +33,9 @@ module DInstaller
         INTERFACE = "org.opensuse.DInstaller.Storage.Proposal1"
         private_constant :INTERFACE
 
-        def initialize(logger)
+        def initialize(logger, actions)
           @logger = logger
+          @actions = actions
 
           super(PATH)
         end
@@ -50,6 +51,7 @@ module DInstaller
             backend.calculate(to_proposal_properties(settings))
 
             PropertiesChanged(INTERFACE, settings, [])
+            @actions.refresh
 
             backend.success? ? 0 : 1
           end
