@@ -37,13 +37,11 @@ export default function Storage() {
 
   const onAccept = selected =>
     client
-      .setOption("Disk", selected)
+      .calculateStorageProposal({candidateDevices: [selected]})
       .then(() => dispatch({ type: "CHANGE_TARGET", payload: selected }));
 
   useEffect(async () => {
-    const proposal = await client.getStorage();
-    const disk = await client.getOption("Disk");
-    const disks = await client.getDisks();
+    const { availableDevices: disks, candidateDevices: [disk] } = await client.getStorageProposal();
     dispatch({
       type: "LOAD",
       payload: { target: disk, targets: disks, proposal }

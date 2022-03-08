@@ -21,6 +21,7 @@
 
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
+const STORAGE_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 
 export default class InstallerClient {
   /**
@@ -206,12 +207,24 @@ export default class InstallerClient {
   }
 
   /**
-   * Return the list of available disks
+   * Return storage proposal settings
    *
-   * @return {Promise.<Array>}
+   * @return {Promise.<Object>}
    */
-  async getDisks() {
-    return this._callInstallerMethod("GetDisks");
+  async getStorageProposal() {
+    const proxy = await this.proxy(STORAGE_IFACE);
+    return {
+      availableDevices: proxy.AvailableDevices.map(d => d.v),
+      candidateDevices: proxy.CandidateDevices.map(d => d.v),
+      lvm: proxy.LVM
+    };
+  }
+
+  async calculateStorageProposal({ candidateDevices }) {
+    const proxy = await this.proxy(STORAGE_IFACE);
+    return proxy.Calculate({
+      CandidateDevices: cockpit.variant("as", candidateDevices)
+    });
   }
 
   /**

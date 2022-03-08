@@ -11,12 +11,15 @@ const initialProposal = [
   { mount: "/", type: "Btrfs", device: "/dev/sda1", size: 100000000 }
 ];
 
-const disks = [{ name: "/dev/sda" }, { name: "/dev/sdb" }];
+const proposalSettings = {
+  availableDevices: ["/dev/sda", "/dev/sdb"],
+  candidateDevices: ["/dev/sda"],
+  lvm: false
+}
 
 const clientMock = {
   getStorage: () => Promise.resolve(initialProposal),
-  getDisks: () => Promise.resolve(disks),
-  getOption: () => Promise.resolve("/dev/sda"),
+  getStorageProposal: () => Promise.resolve(proposalSettings),
   onPropertyChanged: jest.fn()
 };
 
@@ -30,20 +33,20 @@ it("displays the proposal", async () => {
 });
 
 describe("when the user selects another disk", () => {
-  let setOptionFn;
+  let calculateStorageProposalFn;
 
   beforeEach(() => {
     // if defined outside, the mock is cleared automatically
-    setOptionFn = jest.fn().mockResolvedValue();
+    calculateStorageProposalFn = jest.fn().mockResolvedValue();
     InstallerClient.mockImplementation(() => {
       return {
         ...clientMock,
-        setOption: setOptionFn
+        calculateStorageProposal: calculateStorageProposalFn,
       };
     });
   });
 
-  it("changes the selected disk", async () => {
+  it.only("changes the selected disk", async () => {
     installerRender(<Storage />);
     const button = await screen.findByRole("button", { name: "/dev/sda" });
     userEvent.click(button);
@@ -53,7 +56,9 @@ describe("when the user selects another disk", () => {
     userEvent.click(screen.getByRole("button", { name: "Confirm" }));
 
     await screen.findByRole("button", { name: "/dev/sdb" });
-    expect(setOptionFn).toHaveBeenCalledWith("Disk", "/dev/sdb");
+    expect(calculateStorageProposalFn).toHaveBeenCalledWith({
+      candidateDevices: ["/dev/sdb"]
+    });
   });
 });
 
