@@ -63,7 +63,7 @@ module DInstaller
           disk_analyzer: disk_analyzer
         )
 
-        save unless proposal.failed?
+        save
       end
 
     private
@@ -79,15 +79,23 @@ module DInstaller
       end
 
       def save
-        Y2Storage::StorageManager.instance.proposal = proposal
+        if proposal.failed?
+          storage_manager.staging = probed_devicegraph.dup
+        else
+          storage_manager.proposal = proposal
+        end
       end
 
       def disk_analyzer
-        Y2Storage::StorageManager.instance.probed_disk_analyzer
+        storage_manager.probed_disk_analyzer
       end
 
       def probed_devicegraph
-        Y2Storage::StorageManager.instance.probed
+        storage_manager.probed
+      end
+
+      def storage_manager
+        Y2Storage::StorageManager.instance
       end
     end
   end
