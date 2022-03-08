@@ -44,10 +44,14 @@ module DInstaller
       # @return [::DBus::Connection]
       attr_reader :bus
 
+      attr_reader :manager
+
+      # @param manager [Manager] Installation manager
       # @param logger [Logger]
-      def initialize(logger = nil)
+      def initialize(manager, logger = nil)
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
+        @manager = manager
       end
 
       # Exports the installer object through the D-Bus service
@@ -85,7 +89,7 @@ module DInstaller
       end
 
       def manager_dbus
-        @manager_dbus ||= DInstaller::DBus::Manager.new(@logger)
+        @manager_dbus ||= DInstaller::DBus::Manager.new(manager, logger)
       end
 
       def language_dbus
@@ -93,7 +97,7 @@ module DInstaller
       end
 
       def software_dbus
-        @software_dbus ||= DInstaller::DBus::Software.new(@logger)
+        @software_dbus ||= DInstaller::DBus::Software.new(manager.software, logger)
       end
 
       def users_dbus
