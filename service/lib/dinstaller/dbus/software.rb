@@ -35,8 +35,11 @@ module DInstaller
 
       attr_reader :logger
 
+      attr_reader :backend
+
       # @param logger [Logger]
-      def initialize(logger)
+      def initialize(backend, logger)
+        @backend = backend
         @logger = logger
 
         super(PATH)
@@ -70,12 +73,6 @@ module DInstaller
 
       def select_product(product_id)
         backend.select_product(product_id)
-      end
-
-    private
-
-      def backend
-        ::DInstaller::Software.instance
       end
     end
   end
