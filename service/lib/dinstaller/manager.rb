@@ -19,8 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "singleton"
-require "forwardable"
 require "yast"
 require "dinstaller/errors"
 require "dinstaller/installer_status"
@@ -38,13 +36,10 @@ Yast.import "Stage"
 module DInstaller
   # This class represents top level installer manager.
   #
-  # It is responsible for orchestrating the installation process. For module specific
-  # stuff it delegates it to module itself.
+  # It is responsible for orchestrating the installation process. For module
+  # specific stuff it delegates it to the corresponding module class (e.g.,
+  # {DInstaller::Software}, {DInstaller::Storage}, etc.).
   class Manager
-    include Singleton
-
-    extend Forwardable
-
     attr_reader :logger
 
     # Global status of installation
@@ -54,6 +49,18 @@ module DInstaller
     # Can be also used to get failure message if such task failed.
     # @return [Progress]
     attr_reader :progress
+
+    def initialize(logger)
+      Yast::Mode.SetUI("commandline")
+      Yast::Mode.SetMode("installation")
+      @status_callbacks = []
+      @status = InstallerStatus::ERROR # it should start with probing, so just temporary status
+      @logger = logger || Logger.new($stdout)
+      @progress = Progress.new
+      # Set stage to initial, so it will act as installer for some cases like
+      # proposing installer instead of reading current one
+      Yast::Stage.Set("initial")
+    end
 
     # Starts the probing process
     #
@@ -119,18 +126,6 @@ module DInstaller
     end
 
   private
-
-    def initialize
-      Yast::Mode.SetUI("commandline")
-      Yast::Mode.SetMode("installation")
-      @status_callbacks = []
-      @status = InstallerStatus::ERROR # it should start with probing, so just temporary status
-      @logger = logger || Logger.new($stdout)
-      @progress = Progress.new
-      # Set stage to initial, so it will act as installer for some cases like
-      # proposing installer instead of reading current one
-      Yast::Stage.Set("initial")
-    end
 
     def change_status(new_status)
       @status = new_status

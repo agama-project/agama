@@ -36,10 +36,11 @@ module DInstaller
 
       attr_reader :logger
 
+      # @param backend [Manager] Installation manager
       # @param logger [Logger]
-      def initialize(logger)
+      def initialize(backend, logger)
         @logger = logger
-        @backend = ::DInstaller::Manager.instance.tap(&:probe)
+        @backend = backend
         @backend.progress.add_on_change_callback do
           PropertiesChanged(MANAGER_INTERFACE, { "Progress" => progress }, [])
         end
