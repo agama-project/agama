@@ -125,15 +125,18 @@ module DInstaller
       @status_callbacks << block
     end
 
+    # Returns the instance of the software manager module
+    #
+    # @return [Software] Software manager module
+    def software
+      @software ||= Software.new(@logger)
+    end
+
   private
 
     def change_status(new_status)
       @status = new_status
       @status_callbacks.each(&:call)
-    end
-
-    def software
-      @software ||= Software.instance.tap { |s| s.logger = @logger }
     end
 
     # Probes storage devices and performs an initial proposal
