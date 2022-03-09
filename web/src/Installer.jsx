@@ -31,7 +31,7 @@ function Installer() {
 
   useEffect(async () => {
     const status = await client.getStatus();
-    setIsInstalling(status !== 0);
+    setIsInstalling(status === 3);
   }, []);
 
   useEffect(() => {
