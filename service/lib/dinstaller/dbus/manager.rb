@@ -56,7 +56,7 @@ module DInstaller
         end
 
         dbus_method :Commit, "" do
-          @backend.commit
+          @backend.install
         end
 
         # Enum list for statuses. Possible values:
