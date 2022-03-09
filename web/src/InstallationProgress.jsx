@@ -43,12 +43,11 @@ function InstallationProgress() {
   const [progress, setProgress] = useState({});
 
   useEffect(() => {
-    return client.onPropertyChanged((_path, input_iface, signal, args) => {
+    return client.onPropertyChanged((_path, _iface, signal, args) => {
       const iface = "org.opensuse.DInstaller.Manager1";
-      const [, , invalidated] = args;
-      if (input_iface === iface && invalidated.includes("Progress")) {
-        const proxy = client.proxy(iface);
-        const [msg, steps, step, substeps, substep] = proxy.Progress.map(
+      const [input_iface, changed] = args;
+      if (input_iface === iface && "Progress" in changed) {
+        const [msg, steps, step, substeps, substep] = changed.Progress.map(
           pr => pr.v
         );
         setProgress({ msg, steps, step, substeps, substep });

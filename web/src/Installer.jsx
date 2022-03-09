@@ -35,11 +35,11 @@ function Installer() {
   }, []);
 
   useEffect(() => {
-    return client.onPropertyChanged((_path, input_iface, _signal, args) => {
+    return client.onPropertyChanged((_path, _iface, _signal, args) => {
       const iface = "org.opensuse.DInstaller.Manager1";
-      const [, changed] = args;
-      if (input_iface === iface && changed.hasOwnProperty("Status")) {
-        setIsInstalling(changed.Status === 3);
+      const [input_iface, changed] = args;
+      if (input_iface === iface && "Status" in changed) {
+        setIsInstalling(changed.Status.v === 3);
       }
     });
   }, []);
