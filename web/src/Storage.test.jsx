@@ -7,10 +7,6 @@ import InstallerClient from "./lib/InstallerClient";
 
 jest.mock("./lib/InstallerClient");
 
-const initialProposal = [
-  { mount: "/", type: "Btrfs", device: "/dev/sda1", size: 100000000 }
-];
-
 const proposalSettings = {
   availableDevices: ["/dev/sda", "/dev/sdb"],
   candidateDevices: ["/dev/sda"],
@@ -18,7 +14,6 @@ const proposalSettings = {
 }
 
 const clientMock = {
-  getStorage: () => Promise.resolve(initialProposal),
   getStorageProposal: () => Promise.resolve(proposalSettings),
   getStorageActions: () => Promise.resolve(
     [{ text: "Mount /dev/sda1 as root", subvol: false }]
