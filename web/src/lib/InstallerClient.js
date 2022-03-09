@@ -21,6 +21,7 @@
 
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
+const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
 
@@ -137,8 +138,9 @@ export default class InstallerClient {
    *
    * @return {Promise.<number>}
    */
-  getStatus() {
-    return this._callInstallerMethod("GetStatus");
+  async getStatus() {
+    const proxy = await this.proxy(MANAGER_IFACE);
+    return proxy.Status;
   }
 
   /**
@@ -281,15 +283,7 @@ export default class InstallerClient {
    * @return {Promise}
    */
   async startInstallation() {
-    return await this._callInstallerMethod("Start");
-  }
-
-  async _callInstallerMethod(meth) {
-    const result = await this.client().call(
-      "/org/opensuse/YaST/Installer",
-      "org.opensuse.YaST.Installer",
-      meth
-    );
-    return result[0];
+    const proxy = await this.proxy(MANAGER_IFACE);
+    return proxy.Commit();
   }
 }

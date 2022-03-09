@@ -41,7 +41,7 @@ module DInstaller
         @logger = logger
         @backend = ::DInstaller::Manager.instance.tap(&:probe)
         @backend.progress.add_on_change_callback do
-          PropertiesChanged(MANAGER_INTERFACE, {}, ["Progress"])
+          PropertiesChanged(MANAGER_INTERFACE, { "Progress" => progress }, [])
         end
         @backend.add_status_callback do
           PropertiesChanged(MANAGER_INTERFACE, { "Status" => @backend.status.id }, [])
@@ -56,7 +56,7 @@ module DInstaller
         end
 
         dbus_method :Commit, "" do
-          @backend.commit
+          @backend.install
         end
 
         # Enum list for statuses. Possible values:

@@ -67,6 +67,7 @@ module DInstaller
 
     def init_progress(amount_of_major_steps, message)
       @total_steps = amount_of_major_steps
+      @current_step = 0
       @message = message
       trigger_callbacks
     end

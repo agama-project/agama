@@ -31,15 +31,19 @@ function Installer() {
 
   useEffect(async () => {
     const status = await client.getStatus();
-    setIsInstalling(status !== 0);
+    setIsInstalling(status === 3);
   }, []);
 
   useEffect(() => {
-    return client.onSignal("StatusChanged", (_path, _iface, _signal, args) => {
-      setIsInstalling(args[0] !== 0);
+    return client.onPropertyChanged((_path, _iface, _signal, args) => {
+      const iface = "org.opensuse.DInstaller.Manager1";
+      const [input_iface, changed] = args;
+      if (input_iface === iface && "Status" in changed) {
+        setIsInstalling(changed.Status.v === 3);
+      }
     });
   }, []);
-
+  // TODO: add suppport for probing progress and also installation complete ui
   return isInstalling ? <InstallationProgress /> : <Overview />;
 }
 

@@ -10,15 +10,9 @@ const DBUS_PATH = "/org/opensuse/YaST/Installer";
 const DBUS_IFACE = "org.opensuse.YaST.Installer";
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
+const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
-
-const disks = [{ name: "/dev/sda", model: "Some Brand", size: "0.5TiB" }];
-
-const methodResponses = {
-  GetStatus: 0,
-  GetDisks: disks
-};
 
 let dbusClient = {};
 let langProxy = {
@@ -50,6 +44,12 @@ let softProxy = {
   SelectedBaseProduct: "microos"
 };
 
+let managerProxy = {
+  wait: jest.fn(),
+  Commit: jest.fn(),
+  Status: 2
+};
+
 let storageProposalProxy = {
   wait: jest.fn(),
   AvailableDevices: [
@@ -72,6 +72,7 @@ let storageActionsProxy = {
 
 const proxies = {
   [LANGUAGE_IFACE]: langProxy,
+  [MANAGER_IFACE]: managerProxy,
   [SOFTWARE_IFACE]: softProxy,
   [STORAGE_PROPOSAL_IFACE]: storageProposalProxy,
   [STORAGE_ACTIONS_IFACE]: storageActionsProxy
@@ -80,12 +81,6 @@ const proxies = {
 beforeEach(() => {
   dbusClient.proxy = jest.fn().mockImplementation((iface, _path, _opts) => {
     return proxies[iface];
-  });
-  dbusClient.call = jest.fn().mockImplementation((path, iface, method) => {
-    if (path !== DBUS_PATH || iface !== DBUS_IFACE) {
-      return Promise.reject();
-    }
-    return Promise.resolve([methodResponses[method]]);
   });
 });
 
@@ -159,7 +154,7 @@ describe("#getStatus", () => {
   it("returns the installer status", async () => {
     const client = new InstallerClient(cockpitModule);
     const status = await client.getStatus();
-    expect(status).toEqual(0);
+    expect(status).toEqual(2);
   });
 });
 
@@ -211,54 +206,6 @@ describe("#startInstallation", () => {
   it("starts the installation", async () => {
     const client = new InstallerClient(cockpitModule);
     await client.startInstallation();
-    expect(dbusClient.call).toHaveBeenCalledWith(DBUS_PATH, DBUS_IFACE, "Start");
-  });
-});
-
-describe("#getOption", () => {
-  it("returns the value for the given option", async () => {
-    dbusClient.call = jest.fn().mockResolvedValue([{ v: "/dev/sda", t: "s" }]);
-
-    const client = new InstallerClient(cockpitModule);
-    const value = await client.getOption("Disk");
-    expect(value).toEqual("/dev/sda");
-
-    expect(dbusClient.call).toHaveBeenCalledWith(
-      "/org/opensuse/YaST/Installer",
-      "org.freedesktop.DBus.Properties",
-      "Get",
-      ["org.opensuse.YaST.Installer", "Disk"]
-    );
-  });
-
-  it("logs an error when the option does not exist", async () => {
-    console.error = jest.fn();
-    dbusClient.call = jest.fn().mockImplementation(() => {
-      throw new Error("it does not exist");
-    });
-
-    const client = new InstallerClient(cockpitModule);
-    const value = await client.getOption("Disk");
-    expect(value).toBeUndefined();
-    expect(console.error).toHaveBeenCalledWith(
-      expect.stringContaining('Error getting option "Disk"'),
-      expect.anything()
-    );
-  });
-});
-
-describe("#setOption", () => {
-  it("sets the value for the given option", async () => {
-    dbusClient.call = jest.fn().mockResolvedValue();
-
-    const client = new InstallerClient(cockpitModule);
-    await client.setOption("Disk", "/dev/sda");
-
-    expect(dbusClient.call).toHaveBeenCalledWith(
-      "/org/opensuse/YaST/Installer",
-      "org.freedesktop.DBus.Properties",
-      "Set",
-      ["org.opensuse.YaST.Installer", "Disk", cockpit.variant("s", "/dev/sda")]
-    );
+    expect(managerProxy.Commit).toHaveBeenCalledWith();
   });
 });
