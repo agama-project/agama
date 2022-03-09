@@ -3,9 +3,9 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { authRender } from "./test-utils";
 import App from "./App";
-import InstallerClient from "./lib/InstallerClient";
+import InstallerClient from "./lib/client";
 
-jest.mock("./lib/InstallerClient");
+jest.mock("./lib/client");
 jest.mock("./Installer", () => {
   return {
     __esModule: true,

@@ -3,9 +3,9 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Overview from "./Overview";
-import InstallerClient from "./lib/InstallerClient";
+import InstallerClient from "./lib/client";
 
-jest.mock("./lib/InstallerClient");
+jest.mock("./lib/client");
 
 const proposal = {
   candidateDevices: ["/dev/sda"],
@@ -15,21 +15,23 @@ const proposal = {
 const actions = [{ text: "Mount /dev/sda1 as root", subvol: false }];
 const languages = [{ id: "en_US", name: "English" }];
 const products = [{ id: "openSUSE", name: "openSUSE Tumbleweed" }];
-const options = {
-  Disk: "/dev/sda"
-};
 const startInstallationFn = jest.fn();
 
 beforeEach(() => {
   InstallerClient.mockImplementation(() => {
     return {
-      getStorageProposal: () => Promise.resolve(proposal),
-      getStorageActions: () => Promise.resolve(actions),
-      getLanguages: () => Promise.resolve(languages),
-      getSelectedLanguages: () => Promise.resolve(["en_US"]),
-      getProducts: () => Promise.resolve(products),
-      getSelectedProduct: () => Promise.resolve("openSUSE"),
-      getOption: name => Promise.resolve(options[name]),
+      storage: {
+        getStorageProposal: () => Promise.resolve(proposal),
+        getStorageActions: () => Promise.resolve(actions),
+      },
+      language: {
+        getLanguages: () => Promise.resolve(languages),
+        getSelectedLanguages: () => Promise.resolve(["en_US"]),
+      },
+      software: {
+        getProducts: () => Promise.resolve(products),
+        getSelectedProduct: () => Promise.resolve("openSUSE"),
+      },
       onPropertyChanged: jest.fn(),
       startInstallation: startInstallationFn
     };

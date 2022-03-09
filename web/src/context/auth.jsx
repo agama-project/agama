@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import InstallerClient from "../lib/InstallerClient";
+import InstallerClient from "../lib/client";
 
 const AuthContext = React.createContext();
 

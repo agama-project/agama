@@ -46,13 +46,13 @@ const initialState = {
 };
 
 export default function ProductSelector() {
-  const client = useInstallerClient();
+  const { software } = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { current: product, products, isFormOpen } = state;
 
   useEffect(async () => {
-    const products = await client.getProducts();
-    const current = await client.getSelectedProduct();
+    const products = await software.getProducts();
+    const current = await software.getSelectedProduct();
     dispatch({
       type: "LOAD",
       payload: { products, current, initial: current }
@@ -65,7 +65,7 @@ export default function ProductSelector() {
 
   const accept = async () => {
     // TODO: handle errors
-    await client.selectProduct(product);
+    await software.selectProduct(product);
     dispatch({ type: "ACCEPT" });
   };
 

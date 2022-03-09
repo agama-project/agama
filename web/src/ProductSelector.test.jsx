@@ -3,22 +3,32 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import ProductSelector from "./ProductSelector";
-import InstallerClient from "./lib/InstallerClient";
+import InstallerClient from "./lib/client";
 
-jest.mock("./lib/InstallerClient");
+jest.mock("./lib/client");
 
 const products = [
   { id: "openSUSE", name: "openSUSE Tumbleweed" },
   { id: "micro", name: "openSUSE MicroOS" }
 ];
 
-const clientMock = {
+const softwareMock = {
   getProducts: () => Promise.resolve(products),
   getSelectedProduct: () => Promise.resolve("micro")
 };
 
+const selectProductFn = jest.fn().mockResolvedValue();
+
 beforeEach(() => {
-  InstallerClient.mockImplementation(() => clientMock);
+  // if defined outside, the mock is cleared automatically
+  InstallerClient.mockImplementation(() => {
+    return {
+      software: {
+        ...softwareMock,
+        selectProduct: selectProductFn
+      }
+    };
+  });
 });
 
 it("displays the proposal", async () => {
@@ -27,19 +37,6 @@ it("displays the proposal", async () => {
 });
 
 describe("when the user changes the product", () => {
-  let selectProductFn;
-
-  beforeEach(() => {
-    // if defined outside, the mock is cleared automatically
-    selectProductFn = jest.fn().mockResolvedValue();
-    InstallerClient.mockImplementation(() => {
-      return {
-        ...clientMock,
-        selectProduct: selectProductFn
-      };
-    });
-  });
-
   it("changes the selected product", async () => {
     installerRender(<ProductSelector />);
     const button = await screen.findByRole("button", {
@@ -53,5 +50,6 @@ describe("when the user changes the product", () => {
 
     await screen.findByRole("button", { name: "openSUSE Tumbleweed" });
     expect(selectProductFn).toHaveBeenCalledWith("openSUSE");
+    expect(selectProductFn).toHaveBeenCalledTimes(1);
   });
 });
