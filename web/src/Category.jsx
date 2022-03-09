@@ -27,9 +27,7 @@ export default function Category({ icon, title, children }) {
               <Text component={TextVariants.h2}>{title}</Text>
             </TextContent>
           </StackItem>
-          <StackItem>
-            {children}
-          </StackItem>
+          <StackItem>{children}</StackItem>
         </Stack>
       </SplitItem>
     </Split>

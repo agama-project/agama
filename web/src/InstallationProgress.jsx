@@ -22,21 +22,12 @@
 import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import {
-  Alert,
-  Bullseye,
-  Button,
-  Progress,
-  Stack,
-  StackItem
-} from "@patternfly/react-core";
+import { Alert, Bullseye, Button, Progress, Stack, StackItem } from "@patternfly/react-core";
 
 import Layout from "./Layout";
 import Category from "./Category";
 
-import {
-  EOS_DOWNLOADING as ProgressIcon
-} from "eos-icons-react";
+import { EOS_DOWNLOADING as ProgressIcon } from "eos-icons-react";
 
 function InstallationProgress() {
   const client = useInstallerClient();
@@ -56,31 +47,25 @@ function InstallationProgress() {
   }, []);
 
   const showSubsteps = !!progress.substeps && progress.substeps >= 0;
-  const percentage =
-    progress.steps === 0
-      ? 0
-      : Math.round((progress.step / progress.steps) * 100);
+  const percentage = progress.steps === 0 ? 0 : Math.round((progress.step / progress.steps) * 100);
 
   // FIXME: this is an example. Update or drop it.
   const Messages = () => {
     return (
       <Alert variant="info" isInline isPlain title="Did you know?">
-        You can <a href='#'>read the release notes</a> while the system is being installed.
+        You can <a href="#">read the release notes</a> while the system is being installed.
       </Alert>
     );
-  }
+  };
 
   // FIXME: this is an example. Update or drop it.
   const Actions = () => {
     return (
-      <Button
-        isDisabled
-        onClick={() => console.log("User want to see the summary!") }
-      >
+      <Button isDisabled onClick={() => console.log("User want to see the summary!")}>
         Reboot system
       </Button>
     );
-  }
+  };
 
   const renderSubprogress = () => {
     if (!showSubsteps) return;
@@ -93,7 +78,7 @@ function InstallationProgress() {
         />
       </StackItem>
     );
-  }
+  };
 
   return (
     <Layout
@@ -108,7 +93,7 @@ function InstallationProgress() {
             <Progress title="Overall progress" value={percentage} />
           </StackItem>
 
-          { renderSubprogress() }
+          {renderSubprogress()}
         </Stack>
       </Bullseye>
     </Layout>

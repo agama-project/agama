@@ -26,9 +26,7 @@ const InstallerClientContext = React.createContext();
 function useInstallerClient() {
   const context = React.useContext(InstallerClientContext);
   if (!context) {
-    throw new Error(
-      "useInstallerClient must be used within a InstallerClientProvider"
-    );
+    throw new Error("useInstallerClient must be used within a InstallerClientProvider");
   }
 
   return context;
@@ -36,9 +34,7 @@ function useInstallerClient() {
 
 function InstallerClientProvider({ client, children }) {
   return (
-    <InstallerClientContext.Provider value={client}>
-      {children}
-    </InstallerClientContext.Provider>
+    <InstallerClientContext.Provider value={client}>{children}</InstallerClientContext.Provider>
   );
 }
 
