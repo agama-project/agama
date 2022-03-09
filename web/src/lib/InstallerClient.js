@@ -148,8 +148,8 @@ export default class InstallerClient {
    */
   async getProducts() {
     const proxy = await this.proxy(SOFTWARE_IFACE);
-    return proxy.AvailableBaseProducts.map((product) => {
-      const [ { v: id }, { v: name } ] = product.v;
+    return proxy.AvailableBaseProducts.map(product => {
+      const [{ v: id }, { v: name }] = product.v;
       return { id, name };
     });
   }
@@ -171,16 +171,16 @@ export default class InstallerClient {
    */
   async getLanguages() {
     const proxy = await this.proxy(LANGUAGE_IFACE);
-    return proxy.AvailableLanguages.map((lang) => {
-      const [ { v: id }, { v: name } ] = lang.v;
+    return proxy.AvailableLanguages.map(lang => {
+      const [{ v: id }, { v: name }] = lang.v;
       return { id, name };
     });
   }
 
   /**
    * Return the languages selected for installation
-   * 
-   * @return {Promise.<String|undefined>} 
+   *
+   * @return {Promise.<String|undefined>}
    */
   async getSelectedLanguages() {
     const proxy = await this.proxy(LANGUAGE_IFACE);
@@ -189,13 +189,13 @@ export default class InstallerClient {
 
   /**
    * Set the languages to install
-   * 
+   *
    * @param {string} langIDs - Identifier of languages to install
-   * @return {Promise.<String|undefined>} 
+   * @return {Promise.<String|undefined>}
    */
   async setLanguages(langIDs) {
     const proxy = await this.proxy(LANGUAGE_IFACE);
-    return proxy.ToInstall(langIDs)
+    return proxy.ToInstall(langIDs);
   }
 
   /**
@@ -228,7 +228,7 @@ export default class InstallerClient {
   async calculateStorageProposal({ candidateDevices }) {
     const proxy = await this.proxy(STORAGE_PROPOSAL_IFACE);
     return proxy.Calculate({
-      CandidateDevices: cockpit.variant("as", candidateDevices)
+      CandidateDevices: this._cockpit.variant("as", candidateDevices)
     });
   }
 

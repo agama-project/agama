@@ -11,13 +11,11 @@ const proposalSettings = {
   availableDevices: ["/dev/sda", "/dev/sdb"],
   candidateDevices: ["/dev/sda"],
   lvm: false
-}
+};
 
 const clientMock = {
   getStorageProposal: () => Promise.resolve(proposalSettings),
-  getStorageActions: () => Promise.resolve(
-    [{ text: "Mount /dev/sda1 as root", subvol: false }]
-  ),
+  getStorageActions: () => Promise.resolve([{ text: "Mount /dev/sda1 as root", subvol: false }]),
   onPropertyChanged: jest.fn()
 };
 
@@ -38,7 +36,7 @@ describe("when the user selects another disk", () => {
     InstallerClient.mockImplementation(() => {
       return {
         ...clientMock,
-        calculateStorageProposal: calculateStorageProposalFn,
+        calculateStorageProposal: calculateStorageProposalFn
       };
     });
   });
@@ -93,8 +91,10 @@ describe("when the proposal changes", () => {
     await screen.findByText("Mount /dev/sda1 as root");
 
     const actions = [
-      { t: "a{sv}", v: { Text: { t: "s", v: "Mount /dev/sdb1 as root" },
-        Subvol: { t: "b", v: false } } }
+      {
+        t: "a{sv}",
+        v: { Text: { t: "s", v: "Mount /dev/sdb1 as root" }, Subvol: { t: "b", v: false } }
+      }
     ];
     const [cb] = callbacks;
     act(() => {

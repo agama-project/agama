@@ -7,11 +7,7 @@ import InstallerClient from "./lib/InstallerClient";
 
 const InstallerProvider = ({ children }) => {
   const client = new InstallerClient();
-  return (
-    <InstallerClientProvider client={client}>
-      {children}
-    </InstallerClientProvider>
-  );
+  return <InstallerClientProvider client={client}>{children}</InstallerClientProvider>;
 };
 
 const AllProviders = ({ children }) => {
