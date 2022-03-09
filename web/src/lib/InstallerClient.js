@@ -228,7 +228,7 @@ export default class InstallerClient {
   async calculateStorageProposal({ candidateDevices }) {
     const proxy = await this.proxy(STORAGE_PROPOSAL_IFACE);
     return proxy.Calculate({
-      CandidateDevices: cockpit.variant("as", candidateDevices)
+      CandidateDevices: this._cockpit.variant("as", candidateDevices)
     });
   }
 
