@@ -39,15 +39,16 @@ export default function Storage() {
   const { target, targets, actions, error } = state;
 
   const onAccept = selected =>
-    client
-      .calculateStorageProposal({ candidateDevices: [selected] })
-      .then(result => {
-        const payload = { selected, error: (result !== 0) };
-        dispatch({ type: "CHANGE_TARGET", payload });
-      });
+    client.calculateStorageProposal({ candidateDevices: [selected] }).then(result => {
+      const payload = { selected, error: result !== 0 };
+      dispatch({ type: "CHANGE_TARGET", payload });
+    });
 
   useEffect(async () => {
-    const { availableDevices: disks, candidateDevices: [disk] } = await client.getStorageProposal();
+    const {
+      availableDevices: disks,
+      candidateDevices: [disk]
+    } = await client.getStorageProposal();
     const actions = await client.getStorageActions();
     dispatch({
       type: "LOAD",
@@ -69,7 +70,7 @@ export default function Storage() {
         return { text: textVar.v, subvol: subvolVar.v };
       });
 
-      dispatch({ type: "UPDATE_ACTIONS", payload: newActions })
+      dispatch({ type: "UPDATE_ACTIONS", payload: newActions });
     });
   }, []);
 
@@ -77,11 +78,7 @@ export default function Storage() {
 
   return (
     <>
-      <TargetSelector
-        target={target || "Select target"}
-        targets={targets}
-        onAccept={onAccept}
-      />
+      <TargetSelector target={target || "Select target"} targets={targets} onAccept={onAccept} />
       {error && <Alert variant="danger" isPlain isInline title={errorMessage} />}
       <Proposal data={actions} />
     </>

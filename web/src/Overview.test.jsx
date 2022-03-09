@@ -12,9 +12,7 @@ const proposal = {
   availableDevices: ["/dev/sda", "/dev/sdb"],
   lvm: false
 };
-const actions = [
-  { text: "Mount /dev/sda1 as root", subvol: false }
-];
+const actions = [{ text: "Mount /dev/sda1 as root", subvol: false }];
 const languages = [{ id: "en_US", name: "English" }];
 const products = [{ id: "openSUSE", name: "openSUSE Tumbleweed" }];
 const options = {

@@ -21,9 +21,7 @@
 
 import React from "react";
 
-import {
-  EOS_MENU as MenuIcon
-} from "eos-icons-react";
+import { EOS_MENU as MenuIcon } from "eos-icons-react";
 
 /**
  * D-Installer main layout component.
@@ -48,9 +46,15 @@ import {
  * @param {React.ReactNode} [props.children] - the section content
  *
  */
-function Layout({ sectionTitle, SectionIcon, FooterMessages, FooterActions, children: sectionContent }) {
-  const responsiveWidthRules = "pf-u-w-66-on-lg pf-u-w-50-on-xl pf-u-w-33-on-2xl"
-  const className = `layout ${responsiveWidthRules}`
+function Layout({
+  sectionTitle,
+  SectionIcon,
+  FooterMessages,
+  FooterActions,
+  children: sectionContent
+}) {
+  const responsiveWidthRules = "pf-u-w-66-on-lg pf-u-w-50-on-xl pf-u-w-33-on-2xl";
+  const className = `layout ${responsiveWidthRules}`;
 
   // FIXME: by now, it is here only for illustrating a possible app/section menu
   const renderHeaderLeftAction = () => {
@@ -62,48 +66,42 @@ function Layout({ sectionTitle, SectionIcon, FooterMessages, FooterActions, chil
         <MenuIcon className="layout__header-action-icon" />
       </div>
     );
-  }
+  };
 
   const renderHeader = () => {
     return (
       <div className="layout__header">
-        { renderHeaderLeftAction () }
+        {renderHeaderLeftAction()}
 
         <div className="layout__header-section-title">
           <h1>
-            { SectionIcon && <SectionIcon className="layout__header-section-title-icon" /> }
-            { sectionTitle }
+            {SectionIcon && <SectionIcon className="layout__header-section-title-icon" />}
+            {sectionTitle}
           </h1>
         </div>
       </div>
     );
-  }
+  };
 
   const renderFooter = () => {
     if (!FooterActions && !FooterMessages) return null;
 
     return (
       <div className="layout__footer">
-        <div className="layout__footer-info-area">
-          { FooterMessages && <FooterMessages /> }
-        </div>
+        <div className="layout__footer-info-area">{FooterMessages && <FooterMessages />}</div>
 
-        <div className="layout__footer-actions-area">
-          { FooterActions && <FooterActions /> }
-        </div>
+        <div className="layout__footer-actions-area">{FooterActions && <FooterActions />}</div>
       </div>
     );
-  }
+  };
 
   return (
     <div className={className}>
-      { renderHeader() }
+      {renderHeader()}
 
-      <main className="layout__content">
-        { sectionContent }
-      </main>
+      <main className="layout__content">{sectionContent}</main>
 
-      { renderFooter() }
+      {renderFooter()}
     </div>
   );
 }
