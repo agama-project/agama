@@ -2,22 +2,24 @@ import React from "react";
 import { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
+import { Alert } from "@patternfly/react-core";
 import TargetSelector from "./TargetSelector";
 import Proposal from "./Proposal";
 
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOAD": {
-      const { targets, target, proposal } = action.payload;
-      return { ...state, targets, target, proposal };
+      const { targets, target, actions } = action.payload;
+      return { ...state, targets, target, actions };
     }
 
     case "CHANGE_TARGET": {
-      return { ...state, target: action.payload };
+      const { selected: target, error } = action.payload;
+      return { ...state, target, error };
     }
 
-    case "UPDATE_PROPOSAL": {
-      return { ...state, proposal: action.payload };
+    case "UPDATE_ACTIONS": {
+      return { ...state, actions: action.payload };
     }
 
     default: {
@@ -31,38 +33,47 @@ export default function Storage() {
   const [state, dispatch] = useReducer(reducer, {
     targets: [],
     target: "",
-    proposal: []
+    actions: [],
+    error: false
   });
-  const { target, targets, proposal } = state;
+  const { target, targets, actions, error } = state;
 
   const onAccept = selected =>
     client
-      .setOption("Disk", selected)
-      .then(() => dispatch({ type: "CHANGE_TARGET", payload: selected }));
+      .calculateStorageProposal({ candidateDevices: [selected] })
+      .then(result => {
+        const payload = { selected, error: (result !== 0) };
+        dispatch({ type: "CHANGE_TARGET", payload });
+      });
 
   useEffect(async () => {
-    const proposal = await client.getStorage();
-    const disk = await client.getOption("Disk");
-    const disks = await client.getDisks();
+    const { availableDevices: disks, candidateDevices: [disk] } = await client.getStorageProposal();
+    const actions = await client.getStorageActions();
     dispatch({
       type: "LOAD",
-      payload: { target: disk, targets: disks, proposal }
+      payload: { target: disk, targets: disks, actions }
     });
   }, []);
 
   useEffect(() => {
     // TODO: abstract D-Bus details
     return client.onPropertyChanged((_path, _iface, _signal, args) => {
-      const [_, changes] = args;
-      if (Object.keys(changes).includes("Disk")) {
-        client
-          .getStorage()
-          .then(proposal =>
-            dispatch({ type: "UPDATE_PROPOSAL", payload: proposal })
-          );
+      const [iface, properties] = args;
+
+      if (iface !== "org.opensuse.DInstaller.Storage.Actions1") {
+        return;
       }
+
+      const newActions = properties.All.v.map(action => {
+        const { Text: textVar, Subvol: subvolVar } = action.v;
+        return { text: textVar.v, subvol: subvolVar.v };
+      });
+
+      dispatch({ type: "UPDATE_ACTIONS", payload: newActions })
     });
   }, []);
+
+  const errorMessage = `Cannot make a proposal for ${target}`;
 
   return (
     <>
@@ -71,7 +82,8 @@ export default function Storage() {
         targets={targets}
         onAccept={onAccept}
       />
-      <Proposal data={proposal} />
+      {error && <Alert variant="danger" isPlain isInline title={errorMessage} />}
+      <Proposal data={actions} />
     </>
   );
 }

@@ -21,6 +21,8 @@
 
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
+const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
+const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
 
 export default class InstallerClient {
   /**
@@ -197,21 +199,37 @@ export default class InstallerClient {
   }
 
   /**
-   * Return the current storage proposal
+   * Return the actions for the current proposal
    *
-   * @return {Promise.<Array>}
+   * @return {Promise.<Array.<Object>>}
    */
-  getStorage() {
-    return this._callInstallerMethod("GetStorage");
+  async getStorageActions() {
+    const proxy = await this.proxy(STORAGE_ACTIONS_IFACE);
+    return proxy.All.map(action => {
+      const { Text: textVar, Subvol: subvolVar } = action.v;
+      return { text: textVar.v, subvol: subvolVar.v };
+    });
   }
 
   /**
-   * Return the list of available disks
+   * Return storage proposal settings
    *
-   * @return {Promise.<Array>}
+   * @return {Promise.<Object>}
    */
-  async getDisks() {
-    return this._callInstallerMethod("GetDisks");
+  async getStorageProposal() {
+    const proxy = await this.proxy(STORAGE_PROPOSAL_IFACE);
+    return {
+      availableDevices: proxy.AvailableDevices.map(d => d.v),
+      candidateDevices: proxy.CandidateDevices.map(d => d.v),
+      lvm: proxy.LVM
+    };
+  }
+
+  async calculateStorageProposal({ candidateDevices }) {
+    const proxy = await this.proxy(STORAGE_PROPOSAL_IFACE);
+    return proxy.Calculate({
+      CandidateDevices: cockpit.variant("as", candidateDevices)
+    });
   }
 
   /**
