@@ -67,14 +67,14 @@ function useAuthContext() {
 
   const login = (username, password) => {
     dispatch({ type: "LOGIN", payload: { request: true } });
-    return client.authorize(username, password);
+    return client.auth.authorize(username, password);
   };
   const logout = () => dispatch({ type: "LOGOUT" });
 
   const autoLogin = async () => {
-    const isLoggedIn = await client.isLoggedIn();
+    const isLoggedIn = await client.auth.isLoggedIn();
     if (isLoggedIn) {
-      const username = await client.currentUser();
+      const username = await client.auth.currentUser();
       dispatch({ type: "LOGIN", payload: { username, success: true } });
     } else {
       logout();

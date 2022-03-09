@@ -19,6 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
+import AuthClient from "./auth";
 import LanguageClient from "./language";
 import ManagerClient from "./manager";
 import SoftwareClient from "./software";
@@ -37,21 +38,11 @@ export default class InstallerClient {
       superuser: "try"
     });
 
+    this.auth = new AuthClient(this._client)
     this.language = new LanguageClient(this._client);
     this.manager = new ManagerClient(this._client);
     this.software = new SoftwareClient(this._client);
     this.storage = new StorageClient(this._client);
-  }
-
-  async proxy(iface) {
-    if (this._proxies[iface]) {
-      return this._proxies[iface];
-    }
-
-    const proxy = this._client.proxy(iface, undefined, { watch: true });
-    await proxy.wait();
-    this._proxies[iface] = proxy;
-    return proxy;
   }
 
   /**
@@ -81,53 +72,5 @@ export default class InstallerClient {
       handler
     );
     return remove;
-  }
-
-  /**
-   * Authorize using username and password
-   *
-   * @param {string} username - username
-   * @param {string} password - password
-   * @returns {Promise} resolves if the authencation was successful; rejects
-   *   otherwise with an error message
-   */
-  authorize(username, password) {
-    const auth = window.btoa(`${username}:${password}`);
-
-    return new Promise((resolve, reject) => {
-      return fetch("/cockpit/login", {
-        headers: { Authorization: `Basic ${auth}`, "X-Superuser": "any" }
-      }).then(resp => {
-        if (resp.status == 200) {
-          resolve(true);
-        } else {
-          reject(resp.statusText);
-        }
-      });
-    });
-  }
-
-  /**
-   * Determine whether a user is logged in
-   *
-   * @return {Promise.<boolean>} true if the user is logged in; false otherwise
-   */
-  isLoggedIn() {
-    return new Promise((resolve, reject) => {
-      return fetch("/cockpit/login")
-        .then(resp => {
-          resolve(resp.status === 200);
-        })
-        .catch(reject);
-    });
-  }
-
-  /**
-   * Return the current username
-   *
-   * @return {Promise.<string>}
-   */
-  currentUser() {
-    return this._cockpit.user();
   }
 }
