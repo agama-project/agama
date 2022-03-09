@@ -286,13 +286,4 @@ export default class InstallerClient {
     const proxy = await this.proxy(MANAGER_IFACE);
     return proxy.Commit();
   }
-
-  async _callInstallerMethod(meth) {
-    const result = await this.client().call(
-      "/org/opensuse/YaST/Installer",
-      "org.opensuse.YaST.Installer",
-      meth
-    );
-    return result[0];
-  }
 }
