@@ -14,15 +14,12 @@ const reducer = (state, action) => {
     }
 
     case "CHANGE_TARGET": {
-      return { ...state, target: action.payload, error: false };
+      const { selected: target, error } = action.payload;
+      return { ...state, target, error };
     }
 
     case "UPDATE_ACTIONS": {
       return { ...state, actions: action.payload };
-    }
-
-    case "REPORT_ERROR": {
-      return { ...state, error: true };
     }
 
     default: {
@@ -37,7 +34,7 @@ export default function Storage() {
     targets: [],
     target: "",
     actions: [],
-    error: undefined
+    error: false
   });
   const { target, targets, actions, error } = state;
 
@@ -45,11 +42,8 @@ export default function Storage() {
     client
       .calculateStorageProposal({ candidateDevices: [selected] })
       .then(result => {
-        if (result === 0) {
-          dispatch({ type: "CHANGE_TARGET", payload: selected });
-        } else {
-          dispatch({ type: "REPORT_ERROR" });
-        }
+        const payload = { selected, error: (result !== 0) };
+        dispatch({ type: "CHANGE_TARGET", payload });
       });
 
   useEffect(async () => {
@@ -79,6 +73,8 @@ export default function Storage() {
     });
   }, []);
 
+  const errorMessage = `Cannot make a proposal for ${target}`;
+
   return (
     <>
       <TargetSelector
@@ -86,7 +82,7 @@ export default function Storage() {
         targets={targets}
         onAccept={onAccept}
       />
-      {error && <Alert variant="danger" isPlain isInline title="It failed, sorry :-)" />}
+      {error && <Alert variant="danger" isPlain isInline title={errorMessage} />}
       <Proposal data={actions} />
     </>
   );
