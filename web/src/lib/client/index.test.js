@@ -1,5 +1,5 @@
-import InstallerClient from "./InstallerClient";
-import cockpit from "./cockpit";
+import InstallerClient from "./index";
+import cockpit from "../cockpit";
 
 const cockpitModule = {
   dbus: () => dbusClient,
@@ -149,56 +149,14 @@ describe("#currentUser", () => {
     expect(username).toEqual("linux");
   });
 });
+<<<<<<< HEAD
+=======
 
 describe("#getStatus", () => {
   it("returns the installer status", async () => {
     const client = new InstallerClient(cockpitModule);
     const status = await client.getStatus();
-    expect(status).toEqual(2);
-  });
-});
-
-describe("#getProducts", () => {
-  it("returns the list of available products", async () => {
-    const client = new InstallerClient(cockpitModule);
-    const availableProducts = await client.getProducts();
-    expect(availableProducts).toEqual([{ id: "MicroOS", name: "openSUSE MicroOS" }]);
-  });
-});
-
-describe("#getSelectedProduct", () => {
-  it("returns the ID of the selected product", async () => {
-    const client = new InstallerClient(cockpitModule);
-    const selected = await client.getSelectedProduct();
-    expect(selected).toEqual("microos");
-  });
-});
-
-describe("#getLanguages", () => {
-  it("returns the list of available languages", async () => {
-    const client = new InstallerClient(cockpitModule);
-    const availableLanguages = await client.getLanguages();
-    expect(availableLanguages).toEqual([{ id: "cs_CZ", name: "Cestina" }]);
-  });
-});
-
-describe("#getStorageProposal", () => {
-  it("returns the storage proposal settings", async () => {
-    const client = new InstallerClient(cockpitModule);
-    const proposal = await client.getStorageProposal();
-    expect(proposal).toEqual({
-      availableDevices: ["/dev/sda", "/dev/sdb"],
-      candidateDevices: ["/dev/sda"],
-      lvm: true
-    });
-  });
-});
-
-describe("#getStorageActions", () => {
-  it("returns the storage actions", async () => {
-    const client = new InstallerClient(cockpitModule);
-    const actions = await client.getStorageActions();
-    expect(actions).toEqual([{ text: "Mount /dev/sdb1 as root", subvol: false }]);
+    expect(status).toEqual(0);
   });
 });
 
@@ -206,6 +164,7 @@ describe("#startInstallation", () => {
   it("starts the installation", async () => {
     const client = new InstallerClient(cockpitModule);
     await client.startInstallation();
-    expect(managerProxy.Commit).toHaveBeenCalledWith();
+    expect(dbusClient.call).toHaveBeenCalledWith(DBUS_PATH, DBUS_IFACE, "Start");
   });
 });
+>>>>>>> f30c6e5 (Drop unneeded getOption and setOption methods)
