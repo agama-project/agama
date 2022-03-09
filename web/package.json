@@ -8,7 +8,6 @@
     "@patternfly/react-table": "^4.61.15",
     "eos-ds": "^5.0.0",
     "eos-icons-react": "^2.2.0",
-    "filesize": "^6.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },

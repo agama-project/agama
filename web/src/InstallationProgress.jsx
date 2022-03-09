@@ -22,9 +22,21 @@
 import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { EOS_DOWNLOADING as ProgressIcon } from "eos-icons-react";
+import {
+  Alert,
+  Bullseye,
+  Button,
+  Progress,
+  Stack,
+  StackItem
+} from "@patternfly/react-core";
+
+import Layout from "./Layout";
 import Category from "./Category";
-import { Progress, Stack, StackItem } from "@patternfly/react-core";
+
+import {
+  EOS_DOWNLOADING as ProgressIcon
+} from "eos-icons-react";
 
 function InstallationProgress() {
   const client = useInstallerClient();
@@ -50,20 +62,57 @@ function InstallationProgress() {
       ? 0
       : Math.round((progress.step / progress.steps) * 100);
 
-  return (
-    <Stack hasGutter>
+  // FIXME: this is an example. Update or drop it.
+  const Messages = () => {
+    return (
+      <Alert variant="info" isInline isPlain title="Did you know?">
+        You can <a href='#'>read the release notes</a> while the system is being installed.
+      </Alert>
+    );
+  }
+
+  // FIXME: this is an example. Update or drop it.
+  const Actions = () => {
+    return (
+      <Button
+        isDisabled
+        onClick={() => console.log("User want to see the summary!") }
+      >
+        Reboot system
+      </Button>
+    );
+  }
+
+  const renderSubprogress = () => {
+    if (!showSubsteps) return;
+
+    return (
       <StackItem>
-        <Category title="Progress" icon={ProgressIcon}>
-          <Progress title="Installing" value={percentage} />
-          {showSubsteps && (
-            <Progress
-              title={progress.title}
-              value={Math.round((progress.substep / progress.substeps) * 100)}
-            />
-          )}
-        </Category>
+        <Progress
+          title={progress.title}
+          value={Math.round((progress.substep / progress.substeps) * 100)}
+        />
       </StackItem>
-    </Stack>
+    );
+  }
+
+  return (
+    <Layout
+      sectionTitle="Installing"
+      SectionIcon={ProgressIcon}
+      FooterMessages={Messages}
+      FooterActions={Actions}
+    >
+      <Bullseye className="layout__content-child--filling-block-size">
+        <Stack hasGutter className="pf-u-w-100">
+          <StackItem>
+            <Progress title="Overall progress" value={percentage} />
+          </StackItem>
+
+          { renderSubprogress() }
+        </Stack>
+      </Bullseye>
+    </Layout>
   );
 }
 

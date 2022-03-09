@@ -105,7 +105,7 @@ Point your browser to http://localhost:3000 and happy hacking!
     cd web
     npm run build
     sudo mkdir /usr/share/cockpit/static/installer
-    sudo mount -o bind build /usr/share/cockpit/static/installer
+    sudo mount -o bind dist /usr/share/cockpit/static/installer
 
 Point your browser to http://localhost:9090/cockpit/static/installer/index.html and enjoy!
 

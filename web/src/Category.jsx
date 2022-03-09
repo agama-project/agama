@@ -4,30 +4,34 @@ import {
   CardBody,
   Split,
   SplitItem,
+  Stack,
+  StackItem,
   Text,
   TextContent,
   TextVariants
 } from "@patternfly/react-core";
 
-export default function Category({ icon, title, children, ...rest }) {
+export default function Category({ icon, title, children }) {
   // FIXME: improve how icons are managed
   const Icon = icon;
 
   return (
-    <Card {...rest}>
-      <CardBody>
-        <Split>
-          <SplitItem>
-            <Icon size="48" />
-          </SplitItem>
-          <SplitItem>
+    <Split hasGutter>
+      <SplitItem>
+        <Icon size="32" />
+      </SplitItem>
+      <SplitItem isFilled>
+        <Stack>
+          <StackItem>
             <TextContent>
               <Text component={TextVariants.h2}>{title}</Text>
             </TextContent>
+          </StackItem>
+          <StackItem>
             {children}
-          </SplitItem>
-        </Split>
-      </CardBody>
-    </Card>
+          </StackItem>
+        </Stack>
+      </SplitItem>
+    </Split>
   );
 }

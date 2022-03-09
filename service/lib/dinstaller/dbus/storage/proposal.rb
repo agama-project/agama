@@ -33,8 +33,9 @@ module DInstaller
         INTERFACE = "org.opensuse.DInstaller.Storage.Proposal1"
         private_constant :INTERFACE
 
-        def initialize(logger)
+        def initialize(logger, actions)
           @logger = logger
+          @actions = actions
 
           super(PATH)
         end
@@ -44,18 +45,20 @@ module DInstaller
 
           dbus_reader :candidate_devices, "as"
 
-          dbus_method :AvailableDevices, "out devices:as" do
-            backend.available_devices
-          end
-
+          dbus_reader :available_devices, "as"
           # result: 0 success; 1 error
           dbus_method :Calculate, "in settings:a{sv}, out result:u" do |settings|
             backend.calculate(to_proposal_properties(settings))
 
             PropertiesChanged(INTERFACE, settings, [])
+            @actions.refresh
 
             backend.success? ? 0 : 1
           end
+        end
+
+        def available_devices
+          backend.available_devices.map(&:name)
         end
 
         def lvm

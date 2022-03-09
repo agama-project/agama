@@ -10,16 +10,14 @@ const DBUS_PATH = "/org/opensuse/YaST/Installer";
 const DBUS_IFACE = "org.opensuse.YaST.Installer";
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
+const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
+const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
 
 const disks = [{ name: "/dev/sda", model: "Some Brand", size: "0.5TiB" }];
-const proposal = [
-  { mount: "/", device: "/dev/sdb2", type: "btrfs", size: "117354528768" }
-];
 
 const methodResponses = {
   GetStatus: 0,
   GetDisks: disks,
-  GetStorage: proposal
 };
 
 let dbusClient = {};
@@ -32,6 +30,7 @@ let langProxy = {
     }
   ]
 };
+
 let softProxy = {
   wait: jest.fn(),
   AvailableBaseProducts: [
@@ -41,11 +40,28 @@ let softProxy = {
     },
   ],
   SelectedBaseProduct: "microos"
-}
+};
+
+let storageProposalProxy = {
+  wait: jest.fn(),
+  AvailableDevices: [{ t: "s", v: "/dev/sda" }, { t: "s", v: "/dev/sdb" }],
+  CandidateDevices: [{ t: "s", v: "/dev/sda" }],
+  LVM: true
+};
+
+let storageActionsProxy = {
+  wait: jest.fn(),
+  All: [
+    { t: "a{sv}", v: { Text: { t: "s", v: "Mount /dev/sdb1 as root" },
+      Subvol: { t: "b", v: false } } } 
+  ] 
+};
 
 const proxies = {
   [LANGUAGE_IFACE]: langProxy,
-  [SOFTWARE_IFACE]: softProxy
+  [SOFTWARE_IFACE]: softProxy,
+  [STORAGE_PROPOSAL_IFACE]: storageProposalProxy,
+  [STORAGE_ACTIONS_IFACE]: storageActionsProxy
 }
 
 beforeEach(() => {
@@ -166,24 +182,30 @@ describe("#getLanguages", () => {
   });
 });
 
-describe("#getDisks", () => {
-  it("returns the list of available disks", async () => {
+describe("#getStorageProposal", () => {
+  it("returns the storage proposal settings", async () => {
     const client = new InstallerClient(cockpitModule);
-    const availableDisks = await client.getDisks();
-    expect(availableDisks).toEqual(disks);
+    const proposal = await client.getStorageProposal();
+    expect(proposal).toEqual({
+      availableDevices: ["/dev/sda", "/dev/sdb"],
+      candidateDevices: ["/dev/sda"],
+      lvm: true
+    });
   });
 });
 
-describe("#getStorage", () => {
-  it("returns the storage proposal", async () => {
+describe("#getStorageActions", () => {
+  it("returns the storage actions", async () => {
     const client = new InstallerClient(cockpitModule);
-    const currentProposal = await client.getStorage();
-    expect(currentProposal).toEqual(proposal);
+    const actions = await client.getStorageActions();
+    expect(actions).toEqual([
+      { text: "Mount /dev/sdb1 as root", subvol: false }
+    ]);
   });
 });
 
 describe("#startInstallation", () => {
-  it("returns the storage proposal", async () => {
+  it("starts the installation", async () => {
     const client = new InstallerClient(cockpitModule);
     await client.startInstallation();
     expect(dbusClient.call).toHaveBeenCalledWith(
