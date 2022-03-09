@@ -1,5 +1,5 @@
 import React from "react";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Storage from "./Storage";
@@ -20,6 +20,9 @@ const proposalSettings = {
 const clientMock = {
   getStorage: () => Promise.resolve(initialProposal),
   getStorageProposal: () => Promise.resolve(proposalSettings),
+  getStorageActions: () => Promise.resolve(
+    [{ text: "Mount /dev/sda1 as root", subvol: false }]
+  ),
   onPropertyChanged: jest.fn()
 };
 
@@ -29,7 +32,7 @@ beforeEach(() => {
 
 it("displays the proposal", async () => {
   installerRender(<Storage />);
-  await screen.findByText("/dev/sda1");
+  await screen.findByText("Mount /dev/sda1 as root");
 });
 
 describe("when the user selects another disk", () => {
@@ -37,7 +40,6 @@ describe("when the user selects another disk", () => {
 
   beforeEach(() => {
     // if defined outside, the mock is cleared automatically
-    calculateStorageProposalFn = jest.fn().mockResolvedValue();
     InstallerClient.mockImplementation(() => {
       return {
         ...clientMock,
@@ -46,7 +48,9 @@ describe("when the user selects another disk", () => {
     });
   });
 
-  it.only("changes the selected disk", async () => {
+  it("changes the selected disk", async () => {
+    calculateStorageProposalFn = jest.fn().mockResolvedValue(0);
+
     installerRender(<Storage />);
     const button = await screen.findByRole("button", { name: "/dev/sda" });
     userEvent.click(button);
@@ -60,26 +64,30 @@ describe("when the user selects another disk", () => {
       candidateDevices: ["/dev/sdb"]
     });
   });
+
+  it("reports an error when the proposal is not possible", async () => {
+    calculateStorageProposalFn = jest.fn().mockResolvedValue(1);
+
+    installerRender(<Storage />);
+    const button = await screen.findByRole("button", { name: "/dev/sda" });
+    userEvent.click(button);
+
+    const targetSelector = await screen.findByLabelText("Select target");
+    userEvent.selectOptions(targetSelector, ["/dev/sdb"]);
+    userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+
+    await screen.findByRole("button", { name: "/dev/sdb" });
+    await screen.findByText("Cannot make a proposal for /dev/sdb");
+  });
 });
 
 describe("when the proposal changes", () => {
   const callbacks = [];
 
   beforeEach(() => {
-    const finalProposal = [
-      { mount: "/", type: "Btrfs", device: "/dev/sdb1", size: 100000000 },
-      { mount: "/home", type: "Ext4", device: "/dev/sdb2", size: 10000000000 }
-    ];
-
-    const getStorageFn = jest
-      .fn()
-      .mockResolvedValue(finalProposal) // default return value
-      .mockResolvedValueOnce(initialProposal); // first call
-
     InstallerClient.mockImplementation(() => {
       return {
         ...clientMock,
-        getStorage: getStorageFn,
         onPropertyChanged: cb => callbacks.push(cb)
       };
     });
@@ -87,15 +95,21 @@ describe("when the proposal changes", () => {
 
   it("updates the proposal", async () => {
     installerRender(<Storage />);
-    await screen.findByText("/dev/sda1");
+    await screen.findByText("Mount /dev/sda1 as root");
 
+    const actions = [
+      { t: "a{sv}", v: { Text: { t: "s", v: "Mount /dev/sdb1 as root" },
+        Subvol: { t: "b", v: false } } }
+    ];
     const [cb] = callbacks;
-    cb(
-      "/org/openSUSE/YaST/Installer",
-      "org.freedesktop.DBus.Properties",
-      "PropertiesChanged",
-      ["org.opensuse.YaST.Installer", { Disk: "/dev/sdb" }]
-    );
-    await screen.findByText("/dev/sdb1");
+    act(() => {
+      cb(
+        "/org/openSUSE/DInstaller/Storage/Actions1",
+        "org.freedesktop.DBus.Properties",
+        "PropertiesChanged",
+        ["org.opensuse.DInstaller.Storage.Actions1", { All: { t: "av", v: actions } }]
+      );
+    });
+    await screen.findByText("Mount /dev/sdb1 as root");
   });
 });
