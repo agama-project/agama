@@ -39,7 +39,7 @@ module DInstaller
       # @param logger [Logger]
       def initialize(logger)
         @logger = logger
-        @backend = ::DInstaller::Manager.instance.tap(&:probe)
+        @backend = ::DInstaller::Manager.instance
         @backend.progress.add_on_change_callback do
           PropertiesChanged(MANAGER_INTERFACE, { "Progress" => progress }, [])
         end

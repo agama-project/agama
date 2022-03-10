@@ -65,52 +65,48 @@ module DInstaller
     #
     # The initialization of these subsystems should probably live in a different place.
     def probe
-      Thread.new do
-        sleep(1) # do sleep to ensure that dbus service is already attached
-        change_status(InstallerStatus::PROBING)
-        progress.init_progress(4, "Probing Languages")
-        progress.next_step("Probing Storage")
-        probe_storage
-        progress.next_step("Probing Software")
-        software.probe(progress)
-        progress.next_step("Probing Network")
-        probe_network
-        progress.next_step("Probing Finished")
-        change_status(InstallerStatus::PROBED)
-      rescue StandardError => e
-        change_status(InstallerStatus::ERROR)
-        progress.assign_error(e.message)
-        logger.error "Probing error: #{e.inspect}"
-      end
+      sleep(1) # do sleep to ensure that dbus service is already attached
+      change_status(InstallerStatus::PROBING)
+      progress.init_progress(4, "Probing Languages")
+      progress.next_step("Probing Storage")
+      probe_storage
+      progress.next_step("Probing Software")
+      software.probe(progress)
+      progress.next_step("Probing Network")
+      probe_network
+      progress.next_step("Probing Finished")
+      change_status(InstallerStatus::PROBED)
+    rescue StandardError => e
+      change_status(InstallerStatus::ERROR)
+      progress.assign_error(e.message)
+      logger.error "Probing error: #{e.inspect}"
     end
 
     # rubocop:disable Metrics/AbcSize
     def install
-      Thread.new do
-        change_status(InstallerStatus::INSTALLING)
-        progress.init_progress(4, "Partitioning")
-        Yast::Installation.destdir = "/mnt"
-        # lets propose it here to be sure that software proposal reflects product selection
-        # FIXME: maybe repropose after product selection change?
-        # first make bootloader proposal to be sure that required packages are installed
-        proposal = ::Bootloader::ProposalClient.new.make_proposal({})
-        logger.info "Bootloader proposal #{proposal.inspect}"
-        software.propose
-        Yast::WFM.CallFunction("inst_prepdisk", [])
-        progress.next_step("Installing Software")
-        # call inst bootloader to get properly initialized bootloader
-        # sysconfig before package installation
-        Yast::WFM.CallFunction("inst_bootloader", [])
-        software.install(progress)
-        handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
-        Yast::WFM.SCRSetDefault(handle)
-        progress.next_step("Writing Network Configuration")
-        Yast::WFM.CallFunction("save_network", [])
-        progress.next_step("Installing Bootloader")
-        ::Bootloader::FinishClient.new.write
-        progress.next_step("Installation Finished")
-        change_status(InstallerStatus::INSTALLED)
-      end
+      change_status(InstallerStatus::INSTALLING)
+      progress.init_progress(4, "Partitioning")
+      Yast::Installation.destdir = "/mnt"
+      # lets propose it here to be sure that software proposal reflects product selection
+      # FIXME: maybe repropose after product selection change?
+      # first make bootloader proposal to be sure that required packages are installed
+      proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+      logger.info "Bootloader proposal #{proposal.inspect}"
+      software.propose
+      Yast::WFM.CallFunction("inst_prepdisk", [])
+      progress.next_step("Installing Software")
+      # call inst bootloader to get properly initialized bootloader
+      # sysconfig before package installation
+      Yast::WFM.CallFunction("inst_bootloader", [])
+      software.install(progress)
+      handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
+      Yast::WFM.SCRSetDefault(handle)
+      progress.next_step("Writing Network Configuration")
+      Yast::WFM.CallFunction("save_network", [])
+      progress.next_step("Installing Bootloader")
+      ::Bootloader::FinishClient.new.write
+      progress.next_step("Installation Finished")
+      change_status(InstallerStatus::INSTALLED)
     end
     # rubocop:enable Metrics/AbcSize
 

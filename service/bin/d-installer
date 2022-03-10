@@ -28,9 +28,18 @@ require "bundler/setup"
 
 require "eventmachine"
 require "dinstaller/dbus/service"
+require "dinstaller/manager"
 
 EM.run do
   service = DInstaller::DBus::Service.new
   service.export
+  # has to do dispatching also during long term processes if client
+  # is connection between it, otherwise it cannot get any response
+  # for now the easiest way is to hook progress
+  DInstaller::Manager.instance.progress.add_on_change_callback do
+    service.dispatch
+  end
+  # Do initial probing
+  DInstaller::Manager.instance.probe
   EventMachine::PeriodicTimer.new(0.1) { service.dispatch }
 end
