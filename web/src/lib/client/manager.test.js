@@ -10,7 +10,7 @@ let managerProxy = {
 };
 
 beforeEach(() => {
-  dbusClient.proxy = jest.fn().mockImplementation((iface, _path, _opts) => {
+  dbusClient.proxy = jest.fn().mockImplementation(iface => {
     if (iface == MANAGER_IFACE) return managerProxy;
   });
 });

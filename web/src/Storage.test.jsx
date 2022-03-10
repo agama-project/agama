@@ -28,7 +28,7 @@ beforeEach(() => {
         ...storageMock,
         calculateStorageProposal: calculateStorageProposalFn,
         onActionsChanged: onActionsChangedFn
-      },
+      }
     };
   });
 });
@@ -92,9 +92,7 @@ describe("when the proposal changes", () => {
     ];
     const [cb] = callbacks;
     act(() => {
-      cb(
-        { All: [ { text: "Mount /dev/sdb1 as root", subvol: false } ] }
-      );
+      cb({ All: [{ text: "Mount /dev/sdb1 as root", subvol: false }] });
     });
     await screen.findByText("Mount /dev/sdb1 as root");
   });

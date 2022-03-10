@@ -34,7 +34,7 @@ const withDBus = {
   },
 
   proxies() {
-    return this._proxies ||= {};
+    return (this._proxies ||= {});
   },
 
   onObjectChanged(path, handler) {
@@ -45,17 +45,14 @@ const withDBus = {
         member: "PropertiesChanged"
       },
       (_path, _iface, _signal, args) => {
-        const [_, changes, invalid] = args;
+        const [, changes, invalid] = args;
         handler(changes, invalid);
       }
     );
     return remove;
   }
-}
+};
 
 const applyMixin = (klass, ...fn) => Object.assign(klass.prototype, ...fn);
 
-export {
-  applyMixin,
-  withDBus
-};
+export { applyMixin, withDBus };

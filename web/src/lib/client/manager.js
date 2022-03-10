@@ -71,9 +71,6 @@ export default class ManagerClient {
 
       handler(data, invalid);
     });
-
-    const removeFn = () => proxy.removeEventListener("changed");
-    return removeFn;
   }
 }
 

@@ -32,7 +32,6 @@ function Installer() {
   // TODO: use reducer for states
   const [isDBusError, setIsDBusError] = useState(false);
 
-
   useEffect(async () => {
     try {
       const status = await client.manager.getStatus();
@@ -41,7 +40,6 @@ function Installer() {
       console.error(err);
       setIsDBusError(true);
     }
-
   }, []);
 
   useEffect(() => {
@@ -54,8 +52,8 @@ function Installer() {
   }, []);
 
   // TODO: add suppport for installation complete ui
-  if (isDBusError){
-    return <h2>Cannot Connect to DBus</h2>
+  if (isDBusError) {
+    return <h2>Cannot Connect to DBus</h2>;
   } else {
     return isProgress ? <InstallationProgress /> : <Overview />;
   }

@@ -71,7 +71,7 @@ export default class StorageClient {
    * @param {function} handler - callback function
    */
   onActionsChanged(handler) {
-    return this.onObjectChanged(ACTIONS_PATH, (changes, invalid) => {
+    return this.onObjectChanged(ACTIONS_PATH, changes => {
       const newActions = changes.All.v.map(action => {
         const { Text: textVar, Subvol: subvolVar } = action.v;
         return { text: textVar.v, subvol: subvolVar.v };

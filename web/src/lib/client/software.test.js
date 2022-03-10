@@ -19,7 +19,7 @@ const softProxy = {
 };
 
 beforeEach(() => {
-  dbusClient.proxy = jest.fn().mockImplementation((iface, _path, _opts) => {
+  dbusClient.proxy = jest.fn().mockImplementation(iface => {
     if (iface === SOFTWARE_IFACE) return softProxy;
   });
 });
