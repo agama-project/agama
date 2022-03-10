@@ -39,7 +39,7 @@ export default function Storage() {
   const { target, targets, actions, error } = state;
 
   const onAccept = selected =>
-    client.calculateStorageProposal({ candidateDevices: [selected] }).then(result => {
+    client.storage.calculateStorageProposal({ candidateDevices: [selected] }).then(result => {
       const payload = { selected, error: result !== 0 };
       dispatch({ type: "CHANGE_TARGET", payload });
     });
@@ -48,8 +48,8 @@ export default function Storage() {
     const {
       availableDevices: disks,
       candidateDevices: [disk]
-    } = await client.getStorageProposal();
-    const actions = await client.getStorageActions();
+    } = await client.storage.getStorageProposal();
+    const actions = await client.storage.getStorageActions();
     dispatch({
       type: "LOAD",
       payload: { target: disk, targets: disks, actions }

@@ -19,21 +19,20 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { List, ListItem } from "@patternfly/react-core";
-
-const Proposal = ({ data = [] }) => {
-  const renderActions = () => {
-    return data.map((p, i) => {
-      return <ListItem key={i}>{p.text}</ListItem>;
-    });
-  };
-
-  if (data.length === 0) {
-    return null;
+export default class Client {
+  constructor(dbusClient) {
+    this._client = dbusClient;
+    this._proxies = [];
   }
 
-  return <List>{renderActions()}</List>;
-};
+  async proxy(iface) {
+    if (this._proxies[iface]) {
+      return this._proxies[iface];
+    }
 
-export default Proposal;
+    const proxy = this._client.proxy(iface, undefined, { watch: true });
+    await proxy.wait();
+    this._proxies[iface] = proxy;
+    return proxy;
+  }
+}

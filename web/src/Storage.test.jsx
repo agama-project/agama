@@ -3,9 +3,9 @@ import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Storage from "./Storage";
-import InstallerClient from "./lib/InstallerClient";
+import InstallerClient from "./lib/client";
 
-jest.mock("./lib/InstallerClient");
+jest.mock("./lib/client");
 
 const proposalSettings = {
   availableDevices: ["/dev/sda", "/dev/sdb"],
@@ -13,14 +13,24 @@ const proposalSettings = {
   lvm: false
 };
 
-const clientMock = {
+let onPropertyChangedFn = jest.fn();
+let calculateStorageProposalFn;
+
+const storageMock = {
   getStorageProposal: () => Promise.resolve(proposalSettings),
-  getStorageActions: () => Promise.resolve([{ text: "Mount /dev/sda1 as root", subvol: false }]),
-  onPropertyChanged: jest.fn()
+  getStorageActions: () => Promise.resolve([{ text: "Mount /dev/sda1 as root", subvol: false }])
 };
 
 beforeEach(() => {
-  InstallerClient.mockImplementation(() => clientMock);
+  InstallerClient.mockImplementation(() => {
+    return {
+      storage: {
+        ...storageMock,
+        calculateStorageProposal: calculateStorageProposalFn
+      },
+      onPropertyChanged: onPropertyChangedFn
+    };
+  });
 });
 
 it("displays the proposal", async () => {
@@ -29,18 +39,6 @@ it("displays the proposal", async () => {
 });
 
 describe("when the user selects another disk", () => {
-  let calculateStorageProposalFn;
-
-  beforeEach(() => {
-    // if defined outside, the mock is cleared automatically
-    InstallerClient.mockImplementation(() => {
-      return {
-        ...clientMock,
-        calculateStorageProposal: calculateStorageProposalFn
-      };
-    });
-  });
-
   it("changes the selected disk", async () => {
     calculateStorageProposalFn = jest.fn().mockResolvedValue(0);
 
@@ -75,15 +73,11 @@ describe("when the user selects another disk", () => {
 });
 
 describe("when the proposal changes", () => {
-  const callbacks = [];
+  let callbacks;
 
   beforeEach(() => {
-    InstallerClient.mockImplementation(() => {
-      return {
-        ...clientMock,
-        onPropertyChanged: cb => callbacks.push(cb)
-      };
-    });
+    callbacks = [];
+    onPropertyChangedFn = cb => callbacks.push(cb);
   });
 
   it("updates the proposal", async () => {

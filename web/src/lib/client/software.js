@@ -19,21 +19,31 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { List, ListItem } from "@patternfly/react-core";
+import Client from "./client";
 
-const Proposal = ({ data = [] }) => {
-  const renderActions = () => {
-    return data.map((p, i) => {
-      return <ListItem key={i}>{p.text}</ListItem>;
+const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
+
+export default class SoftwareClient extends Client {
+  /**
+   * Return the list of available products
+   *
+   * @return {Promise.<Array>}
+   */
+  async getProducts() {
+    const proxy = await this.proxy(SOFTWARE_IFACE);
+    return proxy.AvailableBaseProducts.map(product => {
+      const [{ v: id }, { v: name }] = product.v;
+      return { id, name };
     });
-  };
-
-  if (data.length === 0) {
-    return null;
   }
 
-  return <List>{renderActions()}</List>;
-};
+  async getSelectedProduct() {
+    const proxy = await this.proxy(SOFTWARE_IFACE);
+    return proxy.SelectedBaseProduct;
+  }
 
-export default Proposal;
+  async selectProduct(id) {
+    const proxy = await this.proxy(SOFTWARE_IFACE);
+    return proxy.SelectProduct(id);
+  }
+}

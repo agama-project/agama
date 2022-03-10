@@ -38,9 +38,7 @@ function InstallationProgress() {
       const iface = "org.opensuse.DInstaller.Manager1";
       const [input_iface, changed] = args;
       if (input_iface === iface && "Progress" in changed) {
-        const [title, steps, step, substeps, substep] = changed.Progress.v.map(
-          pr => pr.v
-        );
+        const [title, steps, step, substeps, substep] = changed.Progress.v.map(pr => pr.v);
         setProgress({ title, steps, step, substeps, substep });
       }
     });

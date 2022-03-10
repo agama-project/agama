@@ -51,8 +51,8 @@ export default function ProductSelector() {
   const { current: product, products, isFormOpen } = state;
 
   useEffect(async () => {
-    const products = await client.getProducts();
-    const current = await client.getSelectedProduct();
+    const products = await client.software.getProducts();
+    const current = await client.software.getSelectedProduct();
     dispatch({
       type: "LOAD",
       payload: { products, current, initial: current }
@@ -65,7 +65,7 @@ export default function ProductSelector() {
 
   const accept = async () => {
     // TODO: handle errors
-    await client.selectProduct(product);
+    await client.software.selectProduct(product);
     dispatch({ type: "ACCEPT" });
   };
 

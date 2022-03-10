@@ -19,21 +19,31 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { List, ListItem } from "@patternfly/react-core";
+import Client from "./client";
 
-const Proposal = ({ data = [] }) => {
-  const renderActions = () => {
-    return data.map((p, i) => {
-      return <ListItem key={i}>{p.text}</ListItem>;
-    });
-  };
+const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 
-  if (data.length === 0) {
-    return null;
+export default class ManagerClient extends Client {
+  /**
+   * Start the installation process
+   *
+   * The progress of the installation process can be tracked through installer
+   * signals (see {onSignal}).
+   *
+   * @return {Promise}
+   */
+  async startInstallation() {
+    const proxy = await this.proxy(MANAGER_IFACE);
+    return proxy.Commit();
   }
 
-  return <List>{renderActions()}</List>;
-};
-
-export default Proposal;
+  /**
+   * Return the installer status
+   *
+   * @return {Promise.<number>}
+   */
+  async getStatus() {
+    const proxy = await this.proxy(MANAGER_IFACE);
+    return proxy.Status;
+  }
+}

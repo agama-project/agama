@@ -56,7 +56,7 @@ function Overview() {
     return (
       <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
         <FlexItem>
-          <Button isLarge variant="primary" onClick={() => client.startInstallation()}>
+          <Button isLarge variant="primary" onClick={() => client.manager.startInstallation()}>
             Install
           </Button>
         </FlexItem>
