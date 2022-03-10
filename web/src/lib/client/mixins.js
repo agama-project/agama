@@ -50,6 +50,19 @@ const withDBus = {
       }
     );
     return remove;
+  },
+
+  /**
+   * Register a callback to run when some D-Bus signal is emitted
+   *
+   * @param {function} handler - callback function
+   */
+  onSignal(signal, handler) {
+    const { remove } = this._client.subscribe(
+      { interface: "org.opensuse.YaST.Installer", member: signal },
+      handler
+    );
+    return remove;
   }
 };
 
