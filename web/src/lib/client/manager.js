@@ -23,7 +23,7 @@ import Client from "./client";
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 
-export default class SoftwareClient extends Client {
+export default class ManagerClient extends Client {
   /**
    * Start the installation process
    *
