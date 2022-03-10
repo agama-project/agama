@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "dinstaller/storage/proposal"
 
 module DInstaller
   module DBus
@@ -33,7 +32,8 @@ module DInstaller
         INTERFACE = "org.opensuse.DInstaller.Storage.Proposal1"
         private_constant :INTERFACE
 
-        def initialize(logger, actions)
+        def initialize(backend, logger, actions)
+          @backend = backend
           @logger = logger
           @actions = actions
 
@@ -71,6 +71,8 @@ module DInstaller
 
       private
 
+        attr_reader :backend
+
         PROPOSAL_PROPERTIES = {
           "LVM"              => "use_lvm",
           "CandidateDevices" => "candidate_devices"
@@ -82,10 +84,6 @@ module DInstaller
           settings.each_with_object({}) do |e, h|
             h[PROPOSAL_PROPERTIES[e.first]] = e.last
           end
-        end
-
-        def backend
-          @backend ||= ::DInstaller::Storage::Proposal.instance
         end
       end
     end

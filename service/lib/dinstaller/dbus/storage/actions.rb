@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "dinstaller/storage/actions"
 
 module DInstaller
   module DBus
@@ -33,8 +32,9 @@ module DInstaller
         INTERFACE = "org.opensuse.DInstaller.Storage.Actions1"
         private_constant :INTERFACE
 
-        def initialize(logger)
+        def initialize(backend, logger)
           @logger = logger
+          @backend = backend
 
           super(PATH)
         end
@@ -56,12 +56,10 @@ module DInstaller
 
       private
 
+        attr_reader :backend
+
         def to_dbus(action)
           { "Text" => backend.text_for(action), "Subvol" => backend.subvol_action?(action) }
-        end
-
-        def backend
-          @backend ||= ::DInstaller::Storage::Actions.instance
         end
       end
     end
