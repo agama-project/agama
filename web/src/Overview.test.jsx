@@ -32,8 +32,10 @@ beforeEach(() => {
         getProducts: () => Promise.resolve(products),
         getSelectedProduct: () => Promise.resolve("openSUSE"),
       },
-      onPropertyChanged: jest.fn(),
-      startInstallation: startInstallationFn
+      manager: {
+        startInstallation: startInstallationFn
+      },
+      onPropertyChanged: jest.fn()
     };
   });
 });

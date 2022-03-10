@@ -19,9 +19,11 @@ describe("when the user is already logged in", () => {
   beforeEach(() => {
     InstallerClient.mockImplementation(() => {
       return {
-        authorize: (_username, _password) => Promise.resolve(false),
-        isLoggedIn: () => Promise.resolve(true),
-        currentUser: () => Promise.resolve("jane")
+        auth: {
+          authorize: (_username, _password) => Promise.resolve(false),
+          isLoggedIn: () => Promise.resolve(true),
+          currentUser: () => Promise.resolve("jane")
+        }
       };
     });
   });
@@ -36,9 +38,11 @@ describe("when username and password are wrong", () => {
   beforeEach(() => {
     InstallerClient.mockImplementation(() => {
       return {
-        authorize: () => Promise.reject("password does not match"),
-        isLoggedIn: () => Promise.resolve(false),
-        onSignal: jest.fn()
+        auth: {
+          authorize: () => Promise.reject("password does not match"),
+          isLoggedIn: () => Promise.resolve(false),
+          onSignal: jest.fn()
+        }
       };
     });
   });
