@@ -38,7 +38,7 @@ export default class InstallerClient {
       superuser: "try"
     });
 
-    this.auth = new AuthClient(this._client)
+    this.auth = new AuthClient(this._client);
     this.language = new LanguageClient(this._client);
     this.manager = new ManagerClient(this._client);
     this.software = new SoftwareClient(this._client);

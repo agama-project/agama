@@ -73,5 +73,3 @@ describe("#currentUser", () => {
     expect(username).toEqual("linux");
   });
 });
-
-

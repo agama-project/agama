@@ -46,5 +46,4 @@ export default class SoftwareClient extends Client {
     const proxy = await this.proxy(SOFTWARE_IFACE);
     return proxy.SelectProduct(id);
   }
-
 }

@@ -26,7 +26,6 @@ const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
 
 export default class StorageClient extends Client {
-
   /**
    * Return the actions for the current proposal
    *

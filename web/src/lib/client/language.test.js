@@ -30,5 +30,3 @@ describe("#getLanguages", () => {
     expect(availableLanguages).toEqual([{ id: "cs_CZ", name: "Cestina" }]);
   });
 });
-
-

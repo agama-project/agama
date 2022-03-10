@@ -22,15 +22,15 @@ beforeEach(() => {
     return {
       storage: {
         getStorageProposal: () => Promise.resolve(proposal),
-        getStorageActions: () => Promise.resolve(actions),
+        getStorageActions: () => Promise.resolve(actions)
       },
       language: {
         getLanguages: () => Promise.resolve(languages),
-        getSelectedLanguages: () => Promise.resolve(["en_US"]),
+        getSelectedLanguages: () => Promise.resolve(["en_US"])
       },
       software: {
         getProducts: () => Promise.resolve(products),
-        getSelectedProduct: () => Promise.resolve("openSUSE"),
+        getSelectedProduct: () => Promise.resolve("openSUSE")
       },
       manager: {
         startInstallation: startInstallationFn

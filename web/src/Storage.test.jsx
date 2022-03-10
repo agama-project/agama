@@ -17,10 +17,8 @@ let onPropertyChangedFn = jest.fn();
 let calculateStorageProposalFn;
 
 const storageMock = {
-    getStorageProposal: () => Promise.resolve(proposalSettings),
-    getStorageActions: () => Promise.resolve([
-      { text: "Mount /dev/sda1 as root", subvol: false }
-    ]),
+  getStorageProposal: () => Promise.resolve(proposalSettings),
+  getStorageActions: () => Promise.resolve([{ text: "Mount /dev/sda1 as root", subvol: false }])
 };
 
 beforeEach(() => {

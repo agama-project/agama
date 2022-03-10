@@ -30,4 +30,3 @@ describe("#startInstallation", () => {
     expect(managerProxy.Commit).toHaveBeenCalledWith();
   });
 });
-
