@@ -13,7 +13,7 @@ const proposalSettings = {
   lvm: false
 };
 
-let onPropertyChangedFn = jest.fn();
+let onActionsChangedFn = jest.fn();
 let calculateStorageProposalFn;
 
 const storageMock = {
@@ -26,9 +26,9 @@ beforeEach(() => {
     return {
       storage: {
         ...storageMock,
-        calculateStorageProposal: calculateStorageProposalFn
+        calculateStorageProposal: calculateStorageProposalFn,
+        onActionsChanged: onActionsChangedFn
       },
-      onPropertyChanged: onPropertyChangedFn
     };
   });
 });
@@ -77,7 +77,7 @@ describe("when the proposal changes", () => {
 
   beforeEach(() => {
     callbacks = [];
-    onPropertyChangedFn = cb => callbacks.push(cb);
+    onActionsChangedFn = cb => callbacks.push(cb);
   });
 
   it("updates the proposal", async () => {
@@ -93,10 +93,7 @@ describe("when the proposal changes", () => {
     const [cb] = callbacks;
     act(() => {
       cb(
-        "/org/openSUSE/DInstaller/Storage/Actions1",
-        "org.freedesktop.DBus.Properties",
-        "PropertiesChanged",
-        ["org.opensuse.DInstaller.Storage.Actions1", { All: { t: "av", v: actions } }]
+        { All: [ { text: "Mount /dev/sdb1 as root", subvol: false } ] }
       );
     });
     await screen.findByText("Mount /dev/sdb1 as root");

@@ -22,7 +22,8 @@ beforeEach(() => {
     return {
       storage: {
         getStorageProposal: () => Promise.resolve(proposal),
-        getStorageActions: () => Promise.resolve(actions)
+        getStorageActions: () => Promise.resolve(actions),
+        onActionsChanged: jest.fn()
       },
       language: {
         getLanguages: () => Promise.resolve(languages),
@@ -34,8 +35,7 @@ beforeEach(() => {
       },
       manager: {
         startInstallation: startInstallationFn
-      },
-      onPropertyChanged: jest.fn()
+      }
     };
   });
 });
