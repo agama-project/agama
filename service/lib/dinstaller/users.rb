@@ -19,19 +19,14 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "singleton"
 require "yast"
 require "y2users"
 
 module DInstaller
   # Backend class between dbus service and yast code
   class Users
-    include Singleton
-
-    attr_writer :logger
-
-    def logger
-      @logger || Logger.new($stdout)
+    def initialize(logger)
+      @logger = logger
     end
 
     def root_ssh_key
@@ -78,6 +73,8 @@ module DInstaller
     end
 
   private
+
+    attr_reader :logger
 
     def config
       return @config if @config

@@ -24,6 +24,7 @@ require "dinstaller/errors"
 require "dinstaller/installer_status"
 require "dinstaller/progress"
 require "dinstaller/software"
+require "dinstaller/users"
 require "dinstaller/storage/proposal"
 require "dinstaller/storage/actions"
 require "bootloader/proposal_client"
@@ -141,6 +142,10 @@ module DInstaller
     # @return [Language] Language manager module
     def language
       @language ||= Language.new(logger)
+    end
+
+    def users
+      @users ||= Users.new(logger)
     end
 
     def storage_proposal

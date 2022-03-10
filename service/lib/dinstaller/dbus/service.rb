@@ -101,7 +101,7 @@ module DInstaller
       end
 
       def users_dbus
-        @users_dbus ||= DInstaller::DBus::Users.new(logger)
+        @users_dbus ||= DInstaller::DBus::Users.new(manager.users, logger)
       end
 
       def storage_proposal_dbus
