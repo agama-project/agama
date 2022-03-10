@@ -19,11 +19,15 @@
  * find current contact information at www.suse.com.
  */
 
-import Client from "./client";
+import { withProxy, applyMixin } from "./mixins";
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 
-export default class ManagerClient extends Client {
+export default class ManagerClient {
+  constructor(dbusClient) {
+    this._client = dbusClient;
+  }
+
   /**
    * Start the installation process
    *
@@ -47,3 +51,5 @@ export default class ManagerClient extends Client {
     return proxy.Status;
   }
 }
+
+applyMixin(ManagerClient, withProxy);

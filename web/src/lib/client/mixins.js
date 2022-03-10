@@ -19,20 +19,28 @@
  * find current contact information at www.suse.com.
  */
 
-export default class Client {
-  constructor(dbusClient) {
-    this._client = dbusClient;
-    this._proxies = [];
-  }
-
+const withProxy = {
   async proxy(iface) {
-    if (this._proxies[iface]) {
-      return this._proxies[iface];
+    const _proxies = this.proxies();
+
+    if (_proxies[iface]) {
+      return _proxies[iface];
     }
 
     const proxy = this._client.proxy(iface, undefined, { watch: true });
     await proxy.wait();
-    this._proxies[iface] = proxy;
+    _proxies[iface] = proxy;
     return proxy;
+  },
+
+  proxies() {
+    return this._proxies ||= {};
   }
-}
+};
+
+const applyMixin = (klass, ...fn) => Object.assign(klass.prototype, ...fn);
+
+export {
+  applyMixin,
+  withProxy
+};

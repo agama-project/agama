@@ -19,11 +19,15 @@
  * find current contact information at www.suse.com.
  */
 
-import Client from "./client";
+import { applyMixin, withProxy } from "./mixins";
 
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 
-export default class LanguageClient extends Client {
+export default class LanguageClient {
+  constructor(dbusClient) {
+    this._client = dbusClient;
+  }
+
   /**
    * Return the list of available languages
    *
@@ -58,3 +62,5 @@ export default class LanguageClient extends Client {
     return proxy.ToInstall(langIDs);
   }
 }
+
+applyMixin(LanguageClient, withProxy);

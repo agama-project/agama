@@ -19,13 +19,17 @@
  * find current contact information at www.suse.com.
  */
 
-import Client from "./client";
 import cockpit from "../cockpit";
+import { withProxy, applyMixin } from "./mixins";
 
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
 
-export default class StorageClient extends Client {
+export default class StorageClient {
+  constructor(dbusClient) {
+    this._client = dbusClient;
+  }
+
   /**
    * Return the actions for the current proposal
    *
@@ -60,3 +64,5 @@ export default class StorageClient extends Client {
     });
   }
 }
+
+applyMixin(StorageClient, withProxy);
