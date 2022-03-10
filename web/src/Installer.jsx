@@ -27,11 +27,21 @@ import InstallationProgress from "./InstallationProgress";
 
 function Installer() {
   const client = useInstallerClient();
-  const [isInstalling, setIsInstalling] = useState(false);
+  // set initial state to true to avoid async calls to dbus
+  const [isProgress, setIsProgress] = useState(true);
+  // TODO: use reducer for states
+  const [isDBusError, setIsDBusError] = useState(false);
+
 
   useEffect(async () => {
-    const status = await client.manager.getStatus();
-    setIsInstalling(status === 3);
+    try {
+      const status = await client.manager.getStatus();
+      setIsProgress(status === 3 || status == 1);
+    } catch (err) {
+      console.error(err);
+      setIsDBusError(true);
+    }
+
   }, []);
 
   useEffect(() => {
@@ -39,12 +49,17 @@ function Installer() {
       const iface = "org.opensuse.DInstaller.Manager1";
       const [input_iface, changed] = args;
       if (input_iface === iface && "Status" in changed) {
-        setIsInstalling(changed.Status.v === 3);
+        setIsProgress(changed.Status.v === 3 || changed.Status.v === 1);
+        setIsDBusError(false); // rescue when dbus start acting
       }
     });
   }, []);
-  // TODO: add suppport for probing progress and also installation complete ui
-  return isInstalling ? <InstallationProgress /> : <Overview />;
+  // TODO: add suppport for installation complete ui
+  if (isDBusError){
+    return <h2>Cannot Connect to DBus</h2>
+  } else {
+    return isProgress ? <InstallationProgress /> : <Overview />;
+  }
 }
 
 export default Installer;

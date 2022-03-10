@@ -46,6 +46,8 @@ function InstallationProgress() {
 
   const showSubsteps = !!progress.substeps && progress.substeps >= 0;
   const percentage = progress.steps === 0 ? 0 : Math.round((progress.step / progress.steps) * 100);
+  const status = client.manager.getStatus();
+  const mainTitle = status === 3 ? "Instaling" : "Probing"; // so far only two actions need progress
 
   // FIXME: this is an example. Update or drop it.
   const Messages = () => {
@@ -70,17 +72,14 @@ function InstallationProgress() {
 
     return (
       <StackItem>
-        <Progress
-          title={progress.title}
-          value={Math.round((progress.substep / progress.substeps) * 100)}
-        />
+        <Progress value={Math.round((progress.substep / progress.substeps) * 100)} />
       </StackItem>
     );
   };
 
   return (
     <Layout
-      sectionTitle="Installing"
+      sectionTitle={mainTitle}
       SectionIcon={ProgressIcon}
       FooterMessages={Messages}
       FooterActions={Actions}
@@ -88,7 +87,7 @@ function InstallationProgress() {
       <Bullseye className="layout__content-child--filling-block-size">
         <Stack hasGutter className="pf-u-w-100">
           <StackItem>
-            <Progress title="Overall progress" value={percentage} />
+            <Progress title={progress.title} value={percentage} />
           </StackItem>
 
           {renderSubprogress()}
