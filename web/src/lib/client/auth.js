@@ -20,6 +20,7 @@
  */
 
 import Client from "./client";
+import cockpit from "../cockpit";
 
 export default class AuthClient extends Client {
   /**
@@ -67,6 +68,6 @@ export default class AuthClient extends Client {
    * @return {Promise.<string>}
    */
   currentUser() {
-    return this._cockpit.user();
+    return cockpit.user();
   }
 }

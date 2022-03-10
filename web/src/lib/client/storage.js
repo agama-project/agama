@@ -20,6 +20,7 @@
  */
 
 import Client from "./client";
+import cockpit from "../cockpit";
 
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
@@ -56,7 +57,7 @@ export default class StorageClient extends Client {
   async calculateStorageProposal({ candidateDevices }) {
     const proxy = await this.proxy(STORAGE_PROPOSAL_IFACE);
     return proxy.Calculate({
-      CandidateDevices: this._cockpit.variant("as", candidateDevices)
+      CandidateDevices: cockpit.variant("as", candidateDevices)
     });
   }
 }

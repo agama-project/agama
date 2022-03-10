@@ -25,15 +25,15 @@ import ManagerClient from "./manager";
 import SoftwareClient from "./software";
 import StorageClient from "./storage";
 
+import cockpit from "../cockpit";
+
 export default class InstallerClient {
   /**
    * @constructor
-   * @param {object} cockpit - Cockpit-like module
    */
-  constructor(cockpit) {
-    this._cockpit = cockpit ||= window.cockpit;
+  constructor() {
     this._proxies = {};
-    this._client = this._cockpit.dbus("org.opensuse.DInstaller", {
+    this._client = cockpit.dbus("org.opensuse.DInstaller", {
       bus: "system",
       superuser: "try"
     });

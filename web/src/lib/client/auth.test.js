@@ -1,10 +1,9 @@
 import AuthClient from "./auth";
 import cockpit from "../cockpit";
 
-const cockpitModule = {
-  dbus: () => dbusClient,
-  variant: cockpit.variant
-};
+jest.mock("../cockpit");
+
+const dbusClient = {};
 
 // at this time, it is undefined; but let's be prepared in case it changes
 const unmockedFetch = window.fetch;
@@ -14,7 +13,7 @@ afterAll(() => {
 
 describe("#authenticate", () => {
   it("resolves to true if the user was successfully authenticated", async () => {
-    const client = new AuthClient(cockpitModule);
+    const client = new AuthClient(dbusClient);
     window.fetch = jest.fn().mockImplementation(() => Promise.resolve({ status: 200 }));
     client.authorize("linux", "password");
     expect(window.fetch).toHaveBeenCalledWith("/cockpit/login", {
@@ -26,7 +25,7 @@ describe("#authenticate", () => {
   });
 
   it("resolves to false if the user was not authenticated", async () => {
-    const client = new AuthClient(cockpitModule);
+    const client = new AuthClient(dbusClient);
     window.fetch = jest.fn().mockImplementation(() =>
       Promise.resolve({
         status: 401,
@@ -43,7 +42,7 @@ describe("#isLoggedIn", () => {
   });
 
   it("resolves to true if a user is logged in", async () => {
-    const client = new AuthClient(cockpitModule);
+    const client = new AuthClient(dbusClient);
     window.fetch = jest.fn().mockImplementation(() => Promise.resolve({ status: 200 }));
     const logged = await client.isLoggedIn();
     expect(logged).toEqual(true);
@@ -51,7 +50,7 @@ describe("#isLoggedIn", () => {
   });
 
   it("resolves to false if a user was not logged in", async () => {
-    const client = new AuthClient(cockpitModule);
+    const client = new AuthClient(dbusClient);
     window.fetch = jest.fn().mockImplementation(() =>
       Promise.resolve({
         status: 401,
@@ -64,9 +63,12 @@ describe("#isLoggedIn", () => {
 });
 
 describe("#currentUser", () => {
+  beforeEach(() => {
+    cockpit.user.mockResolvedValue("linux");
+  });
+
   it("returns the user name from cockpit", async () => {
-    cockpitModule.user = jest.fn().mockResolvedValue("linux");
-    const client = new AuthClient(cockpitModule);
+    const client = new AuthClient(dbusClient);
     const username = await client.currentUser();
     expect(username).toEqual("linux");
   });

@@ -20,9 +20,8 @@
  */
 
 export default class Client {
-  constructor(dbusClient, cockpit) {
+  constructor(dbusClient) {
     this._client = dbusClient;
-    this._cockpit = cockpit ||= window.cockpit;
     this._proxies = [];
   }
 
