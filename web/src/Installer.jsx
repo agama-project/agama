@@ -38,8 +38,7 @@ function Installer() {
       const status = await client.manager.getStatus();
       setIsProgress(status === 3 || status == 1);
     } catch (err) {
-      console.log("Error");
-      console.log(err);
+      console.error(err);
       setIsDBusError(true);
     }
 
