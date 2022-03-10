@@ -3,7 +3,7 @@ import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Storage from "./Storage";
-import InstallerClient from "./lib/client";
+import { createClient } from "./lib/client";
 
 jest.mock("./lib/client");
 
@@ -22,7 +22,7 @@ const storageMock = {
 };
 
 beforeEach(() => {
-  InstallerClient.mockImplementation(() => {
+  createClient.mockImplementation(() => {
     return {
       storage: {
         ...storageMock,

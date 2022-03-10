@@ -3,7 +3,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import LanguageSelector from "./LanguageSelector";
-import InstallerClient from "./lib/client";
+import { createClient } from "./lib/client";
 
 jest.mock("./lib/client");
 
@@ -22,7 +22,7 @@ const languageMock = {
 
 beforeEach(() => {
   // if defined outside, the mock is cleared automatically
-  InstallerClient.mockImplementation(() => {
+  createClient.mockImplementation(() => {
     return { language: languageMock };
   });
 });
