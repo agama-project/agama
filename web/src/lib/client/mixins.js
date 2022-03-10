@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-const withProxy = {
+const withDBus = {
   async proxy(iface) {
     const _proxies = this.proxies();
 
@@ -35,11 +35,9 @@ const withProxy = {
 
   proxies() {
     return this._proxies ||= {};
-  }
-};
+  },
 
-const onPropertyChanged = {
-  onPropertyChanged(path, handler) {
+  onObjectChanged(path, handler) {
     const { remove } = this._client.subscribe(
       {
         path,
@@ -59,6 +57,5 @@ const applyMixin = (klass, ...fn) => Object.assign(klass.prototype, ...fn);
 
 export {
   applyMixin,
-  withProxy,
-  onPropertyChanged
+  withDBus
 };

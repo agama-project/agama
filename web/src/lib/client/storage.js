@@ -20,7 +20,7 @@
  */
 
 import cockpit from "../cockpit";
-import { withProxy, applyMixin, onPropertyChanged } from "./mixins";
+import { applyMixin, withDBus } from "./mixins";
 
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
@@ -71,7 +71,7 @@ export default class StorageClient {
    * @param {function} handler - callback function
    */
   onActionsChanged(handler) {
-    return this.onPropertyChanged(ACTIONS_PATH, (changes, invalid) => {
+    return this.onObjectChanged(ACTIONS_PATH, (changes, invalid) => {
       const newActions = changes.All.v.map(action => {
         const { Text: textVar, Subvol: subvolVar } = action.v;
         return { text: textVar.v, subvol: subvolVar.v };
@@ -81,4 +81,4 @@ export default class StorageClient {
   }
 }
 
-applyMixin(StorageClient, withProxy, onPropertyChanged);
+applyMixin(StorageClient, withDBus);

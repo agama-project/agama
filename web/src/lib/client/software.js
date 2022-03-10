@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { applyMixin, withProxy } from "./mixins";
+import { applyMixin, withDBus } from "./mixins";
 
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
 
@@ -52,4 +52,4 @@ export default class SoftwareClient {
   }
 }
 
-applyMixin(SoftwareClient, withProxy);
+applyMixin(SoftwareClient, withDBus);

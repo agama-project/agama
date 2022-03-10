@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { withProxy, applyMixin } from "./mixins";
+import { applyMixin, withDBus } from "./mixins";
 
 import cockpit from "../cockpit";
 
@@ -73,4 +73,4 @@ export default class AuthClient {
   }
 }
 
-applyMixin(AuthClient, withProxy);
+applyMixin(AuthClient, withDBus);

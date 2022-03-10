@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { applyMixin, withProxy } from "./mixins";
+import { applyMixin, withDBus } from "./mixins";
 
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 
@@ -63,4 +63,4 @@ export default class LanguageClient {
   }
 }
 
-applyMixin(LanguageClient, withProxy);
+applyMixin(LanguageClient, withDBus);

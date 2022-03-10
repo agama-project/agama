@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { withProxy, onPropertyChanged, applyMixin } from "./mixins";
+import { applyMixin, withDBus } from "./mixins";
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 const MANAGER_PATH = "/org/opensuse/DInstaller/Manager1";
@@ -58,7 +58,7 @@ export default class ManagerClient {
    * @param {function} handler - callback function
    */
   async onChange(handler) {
-    return this.onPropertyChanged(MANAGER_PATH, (changes, invalid) => {
+    return this.onObjectChanged(MANAGER_PATH, (changes, invalid) => {
       const data = {};
 
       if ("Status" in changes) {
@@ -77,4 +77,4 @@ export default class ManagerClient {
   }
 }
 
-applyMixin(ManagerClient, withProxy, onPropertyChanged);
+applyMixin(ManagerClient, withDBus);
