@@ -57,7 +57,7 @@ export default class ManagerClient {
    *
    * @param {function} handler - callback function
    */
-  async onChange(handler) {
+  onChange(handler) {
     return this.onObjectChanged(MANAGER_PATH, (changes, invalid) => {
       const data = {};
 
