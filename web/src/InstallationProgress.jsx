@@ -46,7 +46,7 @@ function InstallationProgress() {
 
   const showSubsteps = !!progress.substeps && progress.substeps >= 0;
   const percentage = progress.steps === 0 ? 0 : Math.round((progress.step / progress.steps) * 100);
-  const status = client.getStatus();
+  const status = client.manager.getStatus();
   const mainTitle = status === 3 ? "Instaling" : "Probing"; // so far only two actions need progress
 
   // FIXME: this is an example. Update or drop it.
