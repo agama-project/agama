@@ -38,9 +38,27 @@ const withProxy = {
   }
 };
 
+const onPropertyChanged = {
+  onPropertyChanged(path, handler) {
+    const { remove } = this._client.subscribe(
+      {
+        path,
+        interface: "org.freedesktop.DBus.Properties",
+        member: "PropertiesChanged"
+      },
+      (_path, _iface, _signal, args) => {
+        const [_, changes, invalid] = args;
+        handler(changes, invalid);
+      }
+    );
+    return remove;
+  }
+}
+
 const applyMixin = (klass, ...fn) => Object.assign(klass.prototype, ...fn);
 
 export {
   applyMixin,
-  withProxy
+  withProxy,
+  onPropertyChanged
 };

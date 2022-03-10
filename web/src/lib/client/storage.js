@@ -20,10 +20,11 @@
  */
 
 import cockpit from "../cockpit";
-import { withProxy, applyMixin } from "./mixins";
+import { withProxy, applyMixin, onPropertyChanged } from "./mixins";
 
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
+const ACTIONS_PATH = "/org/opensuse/DInstaller/Storage/Actions1";
 
 export default class StorageClient {
   constructor(dbusClient) {
@@ -63,6 +64,21 @@ export default class StorageClient {
       CandidateDevices: cockpit.variant("as", candidateDevices)
     });
   }
+
+  /**
+   * Register a callback to run when properties in the Actions object change
+   *
+   * @param {function} handler - callback function
+   */
+  onActionsChanged(handler) {
+    return this.onPropertyChanged(ACTIONS_PATH, (changes, invalid) => {
+      const newActions = changes.All.v.map(action => {
+        const { Text: textVar, Subvol: subvolVar } = action.v;
+        return { text: textVar.v, subvol: subvolVar.v };
+      });
+      handler({ All: newActions });
+    });
+  }
 }
 
-applyMixin(StorageClient, withProxy);
+applyMixin(StorageClient, withProxy, onPropertyChanged);
