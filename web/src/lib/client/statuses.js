@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2021] SUSE LLC
+ * Copyright (c) [2022] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,31 +19,16 @@
  * find current contact information at www.suse.com.
  */
 
-import AuthClient from "./auth";
-import LanguageClient from "./language";
-import ManagerClient from "./manager";
-import SoftwareClient from "./software";
-import StorageClient from "./storage";
-import statuses from "./statuses";
+const ERROR      = 0;
+const PROBING    = 1;
+const PROBED     = 2;
+const INSTALLING = 3;
+const INSTALLED  = 4;
 
-import cockpit from "../cockpit";
-
-const createClient = () => {
-  const client = cockpit.dbus("org.opensuse.DInstaller", {
-    bus: "system",
-    superuser: "try"
-  });
-
-  return {
-    auth: new AuthClient(),
-    language: new LanguageClient(client),
-    manager: new ManagerClient(client),
-    software: new SoftwareClient(client),
-    storage: new StorageClient(client)
-  }
-}
-
-export {
-  createClient,
-  statuses
+export default {
+  ERROR,
+  PROBING,
+  PROBED,
+  INSTALLING,
+  INSTALLED
 }
