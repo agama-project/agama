@@ -19,9 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { withProxy, applyMixin } from "./mixins";
+import { withProxy, onPropertyChanged, applyMixin } from "./mixins";
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
+const MANAGER_PATH = "/org/opensuse/DInstaller/Manager1";
 
 export default class ManagerClient {
   constructor(dbusClient) {
@@ -50,6 +51,30 @@ export default class ManagerClient {
     const proxy = await this.proxy(MANAGER_IFACE);
     return proxy.Status;
   }
+
+  /**
+   * Register a callback to run when properties in the Actions object change
+   *
+   * @param {function} handler - callback function
+   */
+  async onChange(handler) {
+    return this.onPropertyChanged(MANAGER_PATH, (changes, invalid) => {
+      const data = {};
+
+      if ("Status" in changes) {
+        data.Status = changes.Status.v;
+      }
+
+      if ("Progress" in changes) {
+        data.Progress = changes.Progress.v.map(p => p.v);
+      }
+
+      handler(data, invalid);
+    });
+
+    const removeFn = () => proxy.removeEventListener("changed");
+    return removeFn;
+  }
 }
 
-applyMixin(ManagerClient, withProxy);
+applyMixin(ManagerClient, withProxy, onPropertyChanged);
