@@ -19,7 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "singleton"
 require "y2storage/storage_manager"
 require "y2storage/guided_proposal"
 require "y2storage/proposal_settings"
@@ -28,9 +27,11 @@ module DInstaller
   module Storage
     # Backend class to calculate a storage proposal
     class Proposal
-      include Singleton
-
       class NoProposalError < StandardError; end
+
+      def initialize(logger)
+        @logger = logger
+      end
 
       def available_devices
         disk_analyzer.candidate_disks

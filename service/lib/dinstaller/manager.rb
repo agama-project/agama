@@ -24,6 +24,8 @@ require "dinstaller/errors"
 require "dinstaller/installer_status"
 require "dinstaller/progress"
 require "dinstaller/software"
+require "dinstaller/storage/proposal"
+require "dinstaller/storage/actions"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
 require "dinstaller/storage/proposal"
@@ -45,6 +47,7 @@ module DInstaller
     # Global status of installation
     # @return [InstallationStatus]
     attr_reader :status
+
     # Progress for reporting long running tasks.
     # Can be also used to get failure message if such task failed.
     # @return [Progress]
@@ -140,6 +143,14 @@ module DInstaller
       @language ||= Language.new(logger)
     end
 
+    def storage_proposal
+      @storage_proposal ||= Storage::Proposal.new(logger)
+    end
+
+    def storage_actions
+      @storage_actions ||= Storage::Actions.new(logger)
+    end
+
   private
 
     def change_status(new_status)
@@ -153,7 +164,7 @@ module DInstaller
       progress.init_minor_steps(2, "Probing Storage Devices")
       Y2Storage::StorageManager.instance.probe
       progress.next_minor_step("Calculating Storage Proposal")
-      Storage::Proposal.instance.calculate
+      storage_proposal.calculate
     end
 
     # Probes the network configuration

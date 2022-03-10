@@ -19,14 +19,15 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "singleton"
 require "y2storage/storage_manager"
 
 module DInstaller
   module Storage
     # Backend class to get the list of actions
     class Actions
-      include Singleton
+      def initialize(logger)
+        @logger = logger
+      end
 
       def all
         main_actions + subvolume_actions
