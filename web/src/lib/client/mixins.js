@@ -20,6 +20,12 @@
  */
 
 const withDBus = {
+  /**
+   * Registers a proxy for given iface
+   *
+   * @param {string} iface - D-Bus iface
+   * @return {Object} a cockpit DBusProxy
+   */
   async proxy(iface) {
     const _proxies = this.proxies();
 
@@ -33,10 +39,21 @@ const withDBus = {
     return proxy;
   },
 
+  /**
+   * Returns known proxies
+   *
+   * @return {Object.<string, Object>} a collection of cockpit DBusProxy indexed by their D-Bus iface
+   */
   proxies() {
     return (this._proxies ||= {});
   },
 
+  /**
+   * Register a callback to run when properties change for given D-Bus path
+   *
+   * @param {string} path - D-Bus path
+   * @param {function} handler - callback function
+   */
   onObjectChanged(path, handler) {
     const { remove } = this._client.subscribe(
       {
@@ -66,6 +83,12 @@ const withDBus = {
   }
 };
 
+/**
+ * Utility method for applying mixins to given object
+ *
+ * @param {Object} klass - target object
+ * @param {...function} fn - function(s) to be copied to given object prototype
+ */
 const applyMixin = (klass, ...fn) => Object.assign(klass.prototype, ...fn);
 
 export { applyMixin, withDBus };
