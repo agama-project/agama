@@ -20,49 +20,67 @@
 # find current contact information at www.suse.com.
 
 module DInstaller
-  # Class to pass around to get progress info. Intention is to allow
-  # in long run methods like probe or commit to pass its progress report
-  # when UI asks for it.
+  # Class to manage progress
   #
-  # The class contain major and minor steps. Intention is that
-  # top level manager knows about major steps and sets total and current step.
-  # On other hand each step called by manager class sets minor steps and messages if needed.
+  # It uses callbacks to report the progress, specially useful for long run actions like probing or
+  # committing. The progress supports major and minor steps.
   #
-  # @example manager interaction
+  # @example
+  #   def long_action
+  #     progress = Progress.new
+  #     progress.on_chage { puts progress.message }
   #
-  #   progress = Progress.new
-  #   progress.init_progress(3, "Doing step1")
-  #   step1(progress)
-  #   progress.next_step("Doing step2")
-  #   step2(progress)
-  #   progress.next_step("Doing step3")
-  #   step3(progress)
-  #   progress.next_step("Finished with step3")
-  #
-  # @example module interaction
+  #     progress.init_progress(3, "Doing step1")    # steps 0/3
+  #     step1(progress)
+  #     progress.next_step("Doing step2")           # steps 1/3
+  #     step2(progress)
+  #     progress.next_step("Doing step3")           # steps 2/3
+  #     step3(progress)
+  #     progress.next_step("Finished action")       # steps 3/3, progress is done
+  #   end
   #
   #   def step2(progress)
-  #     progress.init_minor_steps(2, "Doing subtask1")
+  #     progress.init_minor_steps(2, "Doing subtask1")  # sub-steps 0/2
   #     subtask1
-  #     progress.next_minor_step("Doing subtask2")
+  #     progress.next_minor_step("Doing subtask2")      # sub-steps 1/2
   #     subtask2
-  #     progress.next_minor_step("Finished subtask2")
+  #     progress.next_minor_step("Finished step")       # sub-steps 2/2
+  #   end
   class Progress
+    # Message of the current progress step (or sub-step)
+    #
+    # @return [String]
+    attr_reader :message
+
+    # Total number of steps
+    #
+    # @return [Integer]
+    attr_reader :total_steps
+
+    # Number of the current step (first step is 0)
+    #
+    # @return [Integer]
+    attr_reader :current_step
+
+    # Total number of sub-steps
+    #
+    # @return [Integer]
+    attr_reader :total_minor_steps
+
+    # Number of the current sub-step
+    #
+    # @return [Integer]
+    attr_reader :current_minor_step
+
     def initialize
       @message = ""
       @total_steps = @current_step = @total_minor_steps = @current_minor_step = 0
-      @callbacks = []
+      @on_change_callbacks = []
     end
 
-    attr_reader :message
-    attr_reader :total_steps
-    attr_reader :current_step
-    attr_reader :total_minor_steps
-    attr_reader :current_minor_step
-
     # Adds callback that is called when progress changed
-    def add_on_change_callback(&block)
-      @callbacks << block
+    def on_change(&block)
+      @on_change_callbacks << block
     end
 
     def init_progress(amount_of_major_steps, message)
@@ -91,6 +109,8 @@ module DInstaller
       trigger_callbacks
     end
 
+    # FIXME: holding the error in the progress does not seem a good solution. Find a better way to
+    #   store it and how to expose the error details in dbus (use something like issues?).
     def assign_error(message)
       @message = message
       trigger_callbacks
@@ -99,7 +119,7 @@ module DInstaller
   private
 
     def trigger_callbacks
-      @callbacks.each(&:call)
+      @on_change_callbacks.each(&:call)
     end
 
     def reset_minor_steps
