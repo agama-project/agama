@@ -57,7 +57,7 @@ export default function Storage() {
   }, []);
 
   useEffect(() => {
-    return client.storage.onActionsChanged(changes => {
+    return client.storage.onActionsChange(changes => {
       const { All: newActions } = changes;
       dispatch({ type: "UPDATE_ACTIONS", payload: newActions });
     });

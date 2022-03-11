@@ -13,7 +13,7 @@ const proposalSettings = {
   lvm: false
 };
 
-let onActionsChangedFn = jest.fn();
+let onActionsChangeFn = jest.fn();
 let calculateStorageProposalFn;
 
 const storageMock = {
@@ -27,7 +27,7 @@ beforeEach(() => {
       storage: {
         ...storageMock,
         calculateStorageProposal: calculateStorageProposalFn,
-        onActionsChanged: onActionsChangedFn
+        onActionsChange: onActionsChangeFn
       }
     };
   });
@@ -77,7 +77,7 @@ describe("when the proposal changes", () => {
 
   beforeEach(() => {
     callbacks = [];
-    onActionsChangedFn = cb => callbacks.push(cb);
+    onActionsChangeFn = cb => callbacks.push(cb);
   });
 
   it("updates the proposal", async () => {

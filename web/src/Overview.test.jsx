@@ -23,7 +23,7 @@ beforeEach(() => {
       storage: {
         getStorageProposal: () => Promise.resolve(proposal),
         getStorageActions: () => Promise.resolve(actions),
-        onActionsChanged: jest.fn()
+        onActionsChange: jest.fn()
       },
       language: {
         getLanguages: () => Promise.resolve(languages),
