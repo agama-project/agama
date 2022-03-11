@@ -23,9 +23,7 @@ require "dbus"
 
 module DInstaller
   module DBus
-    # YaST D-Bus object (/org/opensuse/DInstaller/Software1)
-    #
-    # @see https://rubygems.org/gems/ruby-dbus
+    # D-Bus object to manage software installation
     class Software < ::DBus::Object
       PATH = "/org/opensuse/DInstaller/Software1"
       private_constant :PATH
@@ -33,10 +31,9 @@ module DInstaller
       SOFTWARE_INTERFACE = "org.opensuse.DInstaller.Software1"
       private_constant :SOFTWARE_INTERFACE
 
-      attr_reader :logger
-
-      attr_reader :backend
-
+      # Constructor
+      #
+      # @param backend [DInstaller::Software]
       # @param logger [Logger]
       def initialize(backend, logger)
         @backend = backend
@@ -74,6 +71,14 @@ module DInstaller
       def select_product(product_id)
         backend.select_product(product_id)
       end
+
+    private
+
+      # @return [Logger]
+      attr_reader :logger
+
+      # @return [DInstaller::Software]
+      attr_reader :backend
     end
   end
 end

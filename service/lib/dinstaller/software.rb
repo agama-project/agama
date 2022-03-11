@@ -32,7 +32,6 @@ module DInstaller
   # This class is responsible for software handling
   class Software
     attr_reader :product, :products
-    attr_accessor :logger
 
     def initialize(logger)
       @logger = logger
@@ -103,6 +102,9 @@ module DInstaller
     end
 
   private
+
+    # @return [Logger]
+    attr_reader :logger
 
     def count_packages
       Yast::Pkg.PkgMediaCount.reduce(0) { |sum, res| sum + res.reduce(0, :+) }

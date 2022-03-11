@@ -34,7 +34,7 @@ module DInstaller
       LANGUAGE_INTERFACE = "org.opensuse.DInstaller.Language1"
       private_constant :LANGUAGE_INTERFACE
 
-      # @param backend [DInstaller::Languge] Language manager
+      # @param backend [DInstaller::Language]
       # @param logger [Logger]
       def initialize(backend, logger)
         @backend = backend

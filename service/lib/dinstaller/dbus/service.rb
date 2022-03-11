@@ -26,7 +26,6 @@ require "dinstaller/dbus/software"
 require "dinstaller/dbus/users"
 require "dinstaller/dbus/storage/proposal"
 require "dinstaller/dbus/storage/actions"
-require "dinstaller/manager"
 
 module DInstaller
   module DBus
@@ -34,16 +33,21 @@ module DInstaller
     #
     # It connects to the system D-Bus and answers requests on objets below
     # `/org/opensuse/DInstaller`.
-    #
-    # @example Running the server
-    #   DInstaller::DBus::Service.new.run
     class Service
-      # @return [String] service name
+      # Service name
+      #
+      # @return [String]
       SERVICE_NAME = "org.opensuse.DInstaller"
+      private_constant :SERVICE_NAME
 
+      # System D-Bus
+      #
       # @return [::DBus::Connection]
       attr_reader :bus
 
+      # Installation manager
+      #
+      # @return [DInstaller::Manager]
       attr_reader :manager
 
       # @param manager [Manager] Installation manager
@@ -69,6 +73,7 @@ module DInstaller
 
     private
 
+      # @return [Logger]
       attr_reader :logger
 
       # @return [::DBus::Service]
