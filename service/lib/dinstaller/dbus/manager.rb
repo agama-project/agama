@@ -54,12 +54,15 @@ module DInstaller
         # Current status
         #
         # Possible values:
-        #   0 : error ( it can be read from progress message )
+        #   0 : error
         #   1 : probing
         #   2 : probed
         #   3 : installing
         #   4 : installed
         dbus_reader :status, "u"
+
+        # Error messages when the status is 0
+        dbus_reader :error_messages, "as"
 
         # Progress has struct with values:
         #   s message
@@ -70,9 +73,20 @@ module DInstaller
         dbus_reader :progress, "(stttt)"
       end
 
-      # @see DInstaller::Manager#status
+      # Id of the current status
+      #
+      # @return [Integer]
       def status
-        backend.status.id
+        backend.status_manager.status.id
+      end
+
+      # Error messages from the error status
+      #
+      # @return [Array<String>]
+      def error_messages
+        return [] unless backend.status_manager.error?
+
+        backend.status_manager.status.messages
       end
 
       # @see DInstaller::Manager#progress
@@ -100,8 +114,8 @@ module DInstaller
       #
       # The callback will emit a signal
       def add_status_callback
-        backend.status.on_change do
-          PropertiesChanged(MANAGER_INTERFACE, { "Status" => backend.status.id }, [])
+        backend.status_manager.on_change do
+          PropertiesChanged(MANAGER_INTERFACE, { "Status" => status }, ["ErrorMessages"])
         end
       end
 
@@ -109,7 +123,7 @@ module DInstaller
       #
       # The callback will emit a signal
       def add_progress_callback
-        backend.progress.add_on_change_callback do
+        backend.progress.on_change do
           PropertiesChanged(MANAGER_INTERFACE, { "Progress" => progress }, [])
         end
       end

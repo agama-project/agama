@@ -109,13 +109,6 @@ module DInstaller
       trigger_callbacks
     end
 
-    # FIXME: holding the error in the progress does not seem a good solution. Find a better way to
-    #   store it and how to expose the error details in dbus (use something like issues?).
-    def assign_error(message)
-      @message = message
-      trigger_callbacks
-    end
-
   private
 
     def trigger_callbacks

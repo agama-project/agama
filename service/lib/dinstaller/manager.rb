@@ -24,7 +24,7 @@ require "bootloader/proposal_client"
 require "bootloader/finish_client"
 require "y2storage/storage_manager"
 require "y2network/proposal_settings"
-require "dinstaller/status"
+require "dinstaller/status_manager"
 require "dinstaller/progress"
 require "dinstaller/software"
 require "dinstaller/users"
@@ -43,15 +43,9 @@ module DInstaller
     # @return [Logger]
     attr_reader :logger
 
-    # Installation status
-    #
-    # @return [Status]
-    attr_reader :status
+    # @return [StatusManager]
+    attr_reader :status_manager
 
-    # Progress for reporting long running tasks.
-    #
-    # Can be also used to get failure message if such task failed.
-    #
     # @return [Progress]
     attr_reader :progress
 
@@ -60,38 +54,20 @@ module DInstaller
     # @param logger [Logger]
     def initialize(logger)
       @logger = logger
-      @status = Status.new(Status::ERROR) # temporary status until probing starts
+      @status_manager = StatusManager.new(Status::Error.new) # temporary status until probing starts
       @progress = Progress.new
 
       initialize_yast
     end
 
     # Probes the system
-    #
-    # Status and progress are properly updated during the process.
     def probe
       Thread.new do
         sleep(1) # do sleep to ensure that dbus service is already attached
-        status.change(Status::PROBING)
-
-        progress.init_progress(4, "Probing Languages")
-        language.probe(progress)
-
-        progress.next_step("Probing Storage")
-        probe_storage
-
-        progress.next_step("Probing Software")
-        software.probe(progress)
-
-        progress.next_step("Probing Network")
-        probe_network
-
-        progress.next_step("Probing Finished")
-
-        status.change(Status::PROBED)
+        probe_steps
       rescue StandardError => e
-        status.change(Status::ERROR)
-        progress.assign_error(e.message)
+        status = Status::Error.new.tap { |s| s.messages << e.message }
+        status_manager.change(status)
         logger.error "Probing error: #{e.inspect}"
       end
     end
@@ -99,7 +75,7 @@ module DInstaller
     # rubocop:disable Metrics/AbcSize
     def install
       Thread.new do
-        status.change(Status::INSTALLING)
+        status_manager.change(Status::Installing.new)
         progress.init_progress(4, "Partitioning")
         Yast::Installation.destdir = "/mnt"
         # lets propose it here to be sure that software proposal reflects product selection
@@ -121,7 +97,7 @@ module DInstaller
         progress.next_step("Installing Bootloader")
         ::Bootloader::FinishClient.new.write
         progress.next_step("Installation Finished")
-        status.change(Status::INSTALLED)
+        status_manager.change(Status::Installed.new)
       end
     end
     # rubocop:enable Metrics/AbcSize
@@ -170,6 +146,29 @@ module DInstaller
       # Set stage to initial, so it will act as installer for some cases like
       # proposing installer instead of reading current one
       Yast::Stage.Set("initial")
+    end
+
+    # Performs probe steps
+    #
+    # Status and progress are properly updated during the process.
+    def probe_steps
+      status_manager.change(Status::Probing.new)
+
+      progress.init_progress(4, "Probing Languages")
+      language.probe(progress)
+
+      progress.next_step("Probing Storage")
+      probe_storage
+
+      progress.next_step("Probing Software")
+      software.probe(progress)
+
+      progress.next_step("Probing Network")
+      probe_network
+
+      progress.next_step("Probing Finished")
+
+      status_manager.change(Status::Probed.new)
     end
 
     # Probes storage devices and performs an initial proposal
