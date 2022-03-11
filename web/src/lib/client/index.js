@@ -40,10 +40,7 @@ const createClient = () => {
     manager: new ManagerClient(client),
     software: new SoftwareClient(client),
     storage: new StorageClient(client)
-  }
-}
+  };
+};
 
-export {
-  createClient,
-  statuses
-}
+export { createClient, statuses };
