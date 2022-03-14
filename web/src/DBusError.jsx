@@ -39,16 +39,15 @@ const ReloadAction = () => (
 
 function DBusError() {
   return (
-    <Layout sectionTitle="DBus Error" SectionIcon={SectionIcon} FooterActions={ReloadAction}>
+    <Layout sectionTitle="D-Bus Error" SectionIcon={SectionIcon} FooterActions={ReloadAction}>
       <Center>
         <EmptyState>
           <EmptyStateIcon icon={DisconnectionIcon} />
           <Title headingLevel="h4" size="lg">
-            Cannot connect to DBus
+            Cannot connect to D-Bus
           </Title>
           <EmptyStateBody>
-            D-Installer UI cannot connect with D-Installer DBus service. Please check if it is
-            running.
+            Could not connect to the D-Bus service. Please, check whether it is running.
           </EmptyStateBody>
         </EmptyState>
       </Center>

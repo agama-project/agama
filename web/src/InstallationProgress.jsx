@@ -21,6 +21,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
+import { PROBING, INSTALLING } from "./lib/client/statuses";
 
 import { Alert, Button, Progress, Stack, StackItem } from "@patternfly/react-core";
 
@@ -46,11 +47,11 @@ function InstallationProgress() {
   const showSubsteps = !!progress.substeps && progress.substeps >= 0;
   const percentage = progress.steps === 0 ? 0 : Math.round((progress.step / progress.steps) * 100);
   const status = client.manager.getStatus();
-  const mainTitle = status === 3 ? "Instaling" : "Probing"; // so far only two actions need progress
+  const mainTitle = status === INSTALLING ? "Instaling" : "Probing"; // so far only two actions need progress
 
   // FIXME: this is an example. Update or drop it.
   const Messages = () => {
-    if (status !== 3)
+    if (status === PROBING)
       return <Alert isInline isPlain title="Please, wait unitl system probing is done" />;
 
     return (
@@ -62,7 +63,7 @@ function InstallationProgress() {
 
   // FIXME: this is an example. Update or drop it.
   const Actions = () => {
-    if (status !== 3) return null;
+    if (status === PROBING) return null;
 
     return (
       <Button isDisabled onClick={() => console.log("User want to see the summary!")}>

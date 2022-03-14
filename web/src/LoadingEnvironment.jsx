@@ -25,9 +25,7 @@ import { Button, Title, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patt
 import Layout from "./Layout";
 import Center from "./Center";
 
-import {
-  EOS_THREE_DOTS_LOADING_ANIMATED as LoadingIcon
-} from "eos-icons-react";
+import { EOS_THREE_DOTS_LOADING_ANIMATED as LoadingIcon } from "eos-icons-react";
 
 function LoadingEnvironment() {
   return (
@@ -36,7 +34,7 @@ function LoadingEnvironment() {
         <EmptyState>
           <EmptyStateIcon icon={LoadingIcon} />
           <Title headingLevel="h4" size="lg">
-            Loading environment, please wait.
+            Loading installation environment, please wait.
           </Title>
         </EmptyState>
       </Center>
