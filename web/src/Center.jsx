@@ -19,23 +19,11 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect } from "react";
-import { useAuthContext } from "./context/auth";
+import React from "react";
+import { Bullseye } from "@patternfly/react-core";
 
-import LoadingEnvironment from "./LoadingEnvironment";
-import LoginForm from "./LoginForm";
-import Installer from "./Installer";
+const Center = ({ children }) => (
+  <Bullseye className="layout__content-child--filling-block-size">{children}</Bullseye>
+);
 
-function App() {
-  const {
-    state: { loggedIn },
-    autoLogin
-  } = useAuthContext();
-
-  useEffect(autoLogin, []);
-
-  if (loggedIn == null) return <LoadingEnvironment />;
-  return loggedIn ? <Installer /> : <LoginForm />;
-}
-
-export default App;
+export default Center;

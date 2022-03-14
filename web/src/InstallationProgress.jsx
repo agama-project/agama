@@ -21,13 +21,17 @@
 
 import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
+import statuses from "./lib/client/statuses";
 
-import { Alert, Bullseye, Button, Progress, Stack, StackItem } from "@patternfly/react-core";
+import { Alert, Button, Progress, Stack, StackItem } from "@patternfly/react-core";
 
+import Center from "./Center";
 import Layout from "./Layout";
 import Category from "./Category";
 
 import { EOS_DOWNLOADING as ProgressIcon } from "eos-icons-react";
+
+const { PROBING, INSTALLING } = statuses;
 
 function InstallationProgress() {
   const client = useInstallerClient();
@@ -45,10 +49,13 @@ function InstallationProgress() {
   const showSubsteps = !!progress.substeps && progress.substeps >= 0;
   const percentage = progress.steps === 0 ? 0 : Math.round((progress.step / progress.steps) * 100);
   const status = client.manager.getStatus();
-  const mainTitle = status === 3 ? "Instaling" : "Probing"; // so far only two actions need progress
+  const mainTitle = status === INSTALLING ? "Instaling" : "Probing"; // so far only two actions need progress
 
   // FIXME: this is an example. Update or drop it.
   const Messages = () => {
+    if (status === PROBING)
+      return <Alert isInline isPlain title="Please, wait unitl system probing is done" />;
+
     return (
       <Alert variant="info" isInline isPlain title="Did you know?">
         You can <a href="#">read the release notes</a> while the system is being installed.
@@ -58,6 +65,8 @@ function InstallationProgress() {
 
   // FIXME: this is an example. Update or drop it.
   const Actions = () => {
+    if (status === PROBING) return null;
+
     return (
       <Button isDisabled onClick={() => console.log("User want to see the summary!")}>
         Reboot system
@@ -70,7 +79,11 @@ function InstallationProgress() {
 
     return (
       <StackItem>
-        <Progress value={Math.round((progress.substep / progress.substeps) * 100)} />
+        <Progress
+          size="sm"
+          measureLocation="none"
+          value={Math.round((progress.substep / progress.substeps) * 100)}
+        />
       </StackItem>
     );
   };
@@ -82,7 +95,7 @@ function InstallationProgress() {
       FooterMessages={Messages}
       FooterActions={Actions}
     >
-      <Bullseye className="layout__content-child--filling-block-size">
+      <Center>
         <Stack hasGutter className="pf-u-w-100">
           <StackItem>
             <Progress title={progress.title} value={percentage} />
@@ -90,7 +103,7 @@ function InstallationProgress() {
 
           {renderSubprogress()}
         </Stack>
-      </Bullseye>
+      </Center>
     </Layout>
   );
 }
