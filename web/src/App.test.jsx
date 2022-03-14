@@ -49,9 +49,11 @@ describe("when username and password are wrong", () => {
 
   it("shows an error", async () => {
     authRender(<App />);
+    const button = await screen.findByRole("button", { name: /Login/ });
+
     userEvent.type(screen.getByLabelText(/Username/i), "john");
     userEvent.type(screen.getByLabelText(/Password/i), "something");
-    userEvent.click(screen.getByRole("button", { name: /Login/ }));
+    userEvent.click(button);
     await screen.findByText(/Authentication failed/i);
   });
 });

@@ -19,23 +19,29 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect } from "react";
-import { useAuthContext } from "./context/auth";
+import React from "react";
+import { Button, Title, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
 
-import LoadingEnvironment from "./LoadingEnvironment";
-import LoginForm from "./LoginForm";
-import Installer from "./Installer";
+import Layout from "./Layout";
+import Center from "./Center";
 
-function App() {
-  const {
-    state: { loggedIn },
-    autoLogin
-  } = useAuthContext();
+import {
+  EOS_THREE_DOTS_LOADING_ANIMATED as LoadingIcon
+} from "eos-icons-react";
 
-  useEffect(autoLogin, []);
-
-  if (loggedIn == null) return <LoadingEnvironment />
-  return loggedIn ? <Installer /> : <LoginForm />;
+function LoadingEnvironment() {
+  return (
+    <Layout sectionTitle="D-Installer">
+      <Center>
+        <EmptyState>
+          <EmptyStateIcon icon={LoadingIcon} />
+          <Title headingLevel="h4" size="lg">
+            Loading environment, please wait.
+          </Title>
+        </EmptyState>
+      </Center>
+    </Layout>
+  );
 }
 
-export default App;
+export default LoadingEnvironment;

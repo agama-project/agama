@@ -43,7 +43,7 @@ function authReducer(state = initialState, action) {
   }
 }
 
-const initialState = { loggedIn: false };
+const initialState = { loggedIn: null };
 
 function AuthProvider({ props, children }) {
   const [state, dispatch] = React.useReducer(authReducer, initialState);
