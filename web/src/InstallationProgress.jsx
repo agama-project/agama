@@ -28,10 +28,11 @@ import { Alert, Button, Progress, Stack, StackItem } from "@patternfly/react-cor
 import Center from "./Center";
 import Layout from "./Layout";
 import Category from "./Category";
+import InstallationFinished from "./InstallationFinished";
 
 import { EOS_DOWNLOADING as ProgressIcon } from "eos-icons-react";
 
-const { PROBING, INSTALLING } = statuses;
+const { PROBING, INSTALLING, FINISHED } = statuses;
 
 function InstallationProgress() {
   const client = useInstallerClient();
@@ -87,6 +88,8 @@ function InstallationProgress() {
       </StackItem>
     );
   };
+
+  if (status === FINISHED) return <InstallationFinished />;
 
   return (
     <Layout
