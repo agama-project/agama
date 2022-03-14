@@ -71,7 +71,11 @@ function InstallationProgress() {
 
     return (
       <StackItem>
-        <Progress value={Math.round((progress.substep / progress.substeps) * 100)} />
+        <Progress
+          size="sm"
+          measureLocation="none"
+          value={Math.round((progress.substep / progress.substeps) * 100)}
+        />
       </StackItem>
     );
   };
