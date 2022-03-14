@@ -53,7 +53,10 @@ export default class ManagerClient {
   }
 
   /**
-   * Register a callback to run when properties in the Actions object change
+   * Register a callback to run when properties in the Manager object change
+   *
+   * Additionally, this method handles the conversion of the values coming
+   * from the {cockpit} module.
    *
    * @param {function} handler - callback function
    */
