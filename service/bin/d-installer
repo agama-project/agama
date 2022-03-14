@@ -27,10 +27,15 @@ require "rubygems"
 require "bundler/setup"
 
 require "eventmachine"
+require "dinstaller/manager"
 require "dinstaller/dbus/service"
 
+logger = Logger.new($stdout)
+manager = DInstaller::Manager.new(logger)
+manager.probe # we can do it within the service, in a different thread, or...
+
 EM.run do
-  service = DInstaller::DBus::Service.new
+  service = DInstaller::DBus::Service.new(manager, logger)
   service.export
   EventMachine::PeriodicTimer.new(0.1) { service.dispatch }
 end

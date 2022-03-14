@@ -19,67 +19,55 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "singleton"
-require "forwardable"
 require "yast"
-require "dinstaller/errors"
-require "dinstaller/installer_status"
-require "dinstaller/progress"
-require "dinstaller/software"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
-require "dinstaller/storage/proposal"
 require "y2storage/storage_manager"
 require "y2network/proposal_settings"
+require "dinstaller/status_manager"
+require "dinstaller/progress"
+require "dinstaller/software"
+require "dinstaller/users"
+require "dinstaller/storage/proposal"
+require "dinstaller/storage/actions"
 
 Yast.import "Stage"
 
-# YaST specific code lives under this namespace
 module DInstaller
-  # This class represents top level installer manager.
+  # This class represents the top level installer manager.
   #
-  # It is responsible for orchestrating the installation process. For module specific
-  # stuff it delegates it to module itself.
+  # It is responsible for orchestrating the installation process. For module
+  # specific stuff it delegates it to the corresponding module class (e.g.,
+  # {DInstaller::Software}, {DInstaller::Storage::Proposal}, etc.).
   class Manager
-    include Singleton
-
-    extend Forwardable
-
+    # @return [Logger]
     attr_reader :logger
 
-    # Global status of installation
-    # @return [InstallationStatus]
-    attr_reader :status
-    # Progress for reporting long running tasks.
-    # Can be also used to get failure message if such task failed.
+    # @return [StatusManager]
+    attr_reader :status_manager
+
     # @return [Progress]
     attr_reader :progress
 
-    # Starts the probing process
+    # Constructor
     #
-    # At this point, it just initializes some YaST modules/subsystems:
-    #
-    # * Software management
-    # * Simplified storage probing
-    # * Network configuration
-    #
-    # The initialization of these subsystems should probably live in a different place.
+    # @param logger [Logger]
+    def initialize(logger)
+      @logger = logger
+      @status_manager = StatusManager.new(Status::Error.new) # temporary status until probing starts
+      @progress = Progress.new
+
+      initialize_yast
+    end
+
+    # Probes the system
     def probe
       Thread.new do
         sleep(1) # do sleep to ensure that dbus service is already attached
-        change_status(InstallerStatus::PROBING)
-        progress.init_progress(4, "Probing Languages")
-        progress.next_step("Probing Storage")
-        probe_storage
-        progress.next_step("Probing Software")
-        software.probe(progress)
-        progress.next_step("Probing Network")
-        probe_network
-        progress.next_step("Probing Finished")
-        change_status(InstallerStatus::PROBED)
+        probe_steps
       rescue StandardError => e
-        change_status(InstallerStatus::ERROR)
-        progress.assign_error(e.message)
+        status = Status::Error.new.tap { |s| s.messages << e.message }
+        status_manager.change(status)
         logger.error "Probing error: #{e.inspect}"
       end
     end
@@ -87,7 +75,7 @@ module DInstaller
     # rubocop:disable Metrics/AbcSize
     def install
       Thread.new do
-        change_status(InstallerStatus::INSTALLING)
+        status_manager.change(Status::Installing.new)
         progress.init_progress(4, "Partitioning")
         Yast::Installation.destdir = "/mnt"
         # lets propose it here to be sure that software proposal reflects product selection
@@ -109,48 +97,94 @@ module DInstaller
         progress.next_step("Installing Bootloader")
         ::Bootloader::FinishClient.new.write
         progress.next_step("Installation Finished")
-        change_status(InstallerStatus::INSTALLED)
+        status_manager.change(Status::Installed.new)
       end
     end
     # rubocop:enable Metrics/AbcSize
 
-    def add_status_callback(&block)
-      @status_callbacks << block
+    # Software manager
+    #
+    # @return [Software]
+    def software
+      @software ||= Software.new(logger)
+    end
+
+    # Language manager
+    #
+    # @return [Language]
+    def language
+      @language ||= Language.new(logger)
+    end
+
+    # Users manager
+    #
+    # @return [Users]
+    def users
+      @users ||= Users.new(logger)
+    end
+
+    # Storage proposal manager
+    #
+    # @return [Storage::Proposal]
+    def storage_proposal
+      @storage_proposal ||= Storage::Proposal.new(logger)
+    end
+
+    # Storage actions manager
+    #
+    # @return [Storage::Actions]
+    def storage_actions
+      @storage_actions ||= Storage::Actions.new(logger)
     end
 
   private
 
-    def initialize
+    # Initializes YaST
+    def initialize_yast
       Yast::Mode.SetUI("commandline")
       Yast::Mode.SetMode("installation")
-      @status_callbacks = []
-      @status = InstallerStatus::ERROR # it should start with probing, so just temporary status
-      @logger = logger || Logger.new($stdout)
-      @progress = Progress.new
       # Set stage to initial, so it will act as installer for some cases like
       # proposing installer instead of reading current one
       Yast::Stage.Set("initial")
     end
 
-    def change_status(new_status)
-      @status = new_status
-      @status_callbacks.each(&:call)
-    end
+    # Performs probe steps
+    #
+    # Status and progress are properly updated during the process.
+    def probe_steps
+      status_manager.change(Status::Probing.new)
 
-    def software
-      @software ||= Software.instance.tap { |s| s.logger = @logger }
+      progress.init_progress(4, "Probing Languages")
+      language.probe(progress)
+
+      progress.next_step("Probing Storage")
+      probe_storage
+
+      progress.next_step("Probing Software")
+      software.probe(progress)
+
+      progress.next_step("Probing Network")
+      probe_network
+
+      progress.next_step("Probing Finished")
+
+      status_manager.change(Status::Probed.new)
     end
 
     # Probes storage devices and performs an initial proposal
+    #
+    # TODO: move to Storage::Manager ?
     def probe_storage
       logger.info "Probing storage and performing proposal"
       progress.init_minor_steps(2, "Probing Storage Devices")
       Y2Storage::StorageManager.instance.probe
       progress.next_minor_step("Calculating Storage Proposal")
-      Storage::Proposal.instance.calculate
+      storage_proposal.calculate
     end
 
     # Probes the network configuration
+    #
+    # TODO: move to Network ?
     def probe_network
       logger.info "Probing network"
       Yast.import "Lan"

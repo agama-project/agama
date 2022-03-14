@@ -19,7 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "singleton"
 require "yast"
 require "dinstaller/package_callbacks"
 require "y2packager/product"
@@ -32,13 +31,10 @@ Yast.import "Stage"
 module DInstaller
   # This class is responsible for software handling
   class Software
-    include Singleton
-
     attr_reader :product, :products
-    attr_accessor :logger
 
-    def initialize
-      @logger = Logger.new($stdout)
+    def initialize(logger)
+      @logger = logger
       @products = []
       @product = nil
     end
@@ -106,6 +102,9 @@ module DInstaller
     end
 
   private
+
+    # @return [Logger]
+    attr_reader :logger
 
     def count_packages
       Yast::Pkg.PkgMediaCount.reduce(0) { |sum, res| sum + res.reduce(0, :+) }

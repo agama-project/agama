@@ -19,7 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "singleton"
 require "y2storage/storage_manager"
 require "y2storage/guided_proposal"
 require "y2storage/proposal_settings"
@@ -28,32 +27,51 @@ module DInstaller
   module Storage
     # Backend class to calculate a storage proposal
     class Proposal
-      include Singleton
-
       class NoProposalError < StandardError; end
 
+      # Constructor
+      #
+      # @param logger [Logger]
+      def initialize(logger)
+        @logger = logger
+      end
+
+      # Available devices for installation
+      #
+      # @return [Array<Y2Storage::Device>]
       def available_devices
         disk_analyzer.candidate_disks
       end
 
+      # Name of devices where to perform the installation
+      #
+      # @raise [NoProposalError] if no proposal yet
+      #
+      # @return [Array<String>]
       def candidate_devices
         raise NoProposalError unless proposal
 
         proposal.settings.candidate_devices
       end
 
+      # Whether the proposal should create LVM devices
+      #
+      # @raise [NoProposalError] if no proposal yet
+      #
+      # @return [Boolean]
       def lvm?
         raise NoProposalError unless proposal
 
         proposal.settings.use_lvm
       end
 
-      def success?
-        raise NoProposalError unless proposal
-
-        !proposal.failed?
-      end
-
+      # Calculates a new proposal
+      #
+      # @param settings [Hash] settings to calculate the proposal
+      #   (e.g., { "use_lvm" => true, "candidate_devices" => ["/dev/sda"]}). Note that keys should
+      #   match with a public setter.
+      #
+      # @return [Boolean] whether the proposal was correctly calculated
       def calculate(settings = {})
         proposal_settings = generate_proposal_settings(settings)
 
@@ -64,12 +82,22 @@ module DInstaller
         )
 
         save
+
+        !proposal.failed?
       end
 
     private
 
+      # @return [Logger]
+      attr_reader :logger
+
+      # @return [Y2Storage::InitialGuidedProposal]
       attr_reader :proposal
 
+      # Generates proposal settings from the given values
+      #
+      # @param settings [Hash]
+      # @return [Y2Storage::ProposalSettings]
       def generate_proposal_settings(settings)
         proposal_settings = Y2Storage::ProposalSettings.new_for_current_product
 
@@ -78,6 +106,7 @@ module DInstaller
         proposal_settings
       end
 
+      # Saves the proposal or restores initial devices if a proposal was not calculated
       def save
         if proposal.failed?
           storage_manager.staging = probed_devicegraph.dup
@@ -86,10 +115,14 @@ module DInstaller
         end
       end
 
+      # @return [Y2Storage::DiskAnalyzer]
       def disk_analyzer
         storage_manager.probed_disk_analyzer
       end
 
+      # Devicegraph representing the system
+      #
+      # @return [Y2Storage::Devicegraph]
       def probed_devicegraph
         storage_manager.probed
       end

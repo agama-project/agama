@@ -20,12 +20,11 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "dinstaller/storage/actions"
 
 module DInstaller
   module DBus
     module Storage
-      # D-Bus object to get the list of actions to perform in the system
+      # D-Bus object to get the list of storage actions to perform in the system
       class Actions < ::DBus::Object
         PATH = "/org/opensuse/DInstaller/Storage/Actions1"
         private_constant :PATH
@@ -33,35 +32,48 @@ module DInstaller
         INTERFACE = "org.opensuse.DInstaller.Storage.Actions1"
         private_constant :INTERFACE
 
-        def initialize(logger)
+        # Constructor
+        #
+        # @param backend [DInstaller::Storage::Actions]
+        # @param logger [Logger]
+        def initialize(backend, logger)
           @logger = logger
+          @backend = backend
 
           super(PATH)
         end
 
         dbus_interface INTERFACE do
-          # TODO: emit a signal when actions change (e.g., when a proposal is calculated). Right
-          #   now, actions changes can only be detected by subcribing to PropertiesChange signal
-          #   from Storage::Proposal dbus object.
+          # All actions
           dbus_reader :all, "aa{sv}"
         end
 
+        # List of sorted actions in D-Bus format
+        #
+        # @see #to_dbus
+        #
+        # @return [Array<Hash>]
         def all
           backend.all.map { |a| to_dbus(a) }
         end
 
+        # This method is called from other D-Bus object in order to emit a signal when the list of
+        # actions changes (e.g., after calculating a proposal).
         def refresh
           PropertiesChanged(INTERFACE, { "All" => all }, [])
         end
 
       private
 
+        # @return [DInstaller::Storage::Actions]
+        attr_reader :backend
+
+        # Converts an action to D-Bus format
+        #
+        # @param action [Y2Storage::CompoundAction]
+        # @return [Hash]
         def to_dbus(action)
           { "Text" => backend.text_for(action), "Subvol" => backend.subvol_action?(action) }
-        end
-
-        def backend
-          @backend ||= ::DInstaller::Storage::Actions.instance
         end
       end
     end

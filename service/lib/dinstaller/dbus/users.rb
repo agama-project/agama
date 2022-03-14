@@ -36,7 +36,8 @@ module DInstaller
       FUSER_SIG = "in FullName:s, in UserName:s, in Password:s, in AutoLogin:b, in data:a{sv}"
       private_constant :FUSER_SIG
 
-      def initialize(logger)
+      def initialize(backend, logger)
+        @backend = backend
         @logger = logger
 
         super(PATH)
@@ -88,9 +89,7 @@ module DInstaller
 
       attr_reader :logger
 
-      def backend
-        @backend ||= ::DInstaller::Users.instance.tap { |i| i.logger = @logger }
-      end
+      attr_reader :backend
     end
   end
 end

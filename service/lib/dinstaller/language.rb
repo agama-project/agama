@@ -19,7 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "singleton"
 require "yast"
 require "dinstaller/errors"
 
@@ -28,16 +27,19 @@ Yast.import "Language"
 module DInstaller
   # Backend for handling language settings
   class Language
-    include Singleton
+    # @return [Hash<Array<String,Array<String>>>] Known languages, where the key
+    #   is the language code and value is an array containing the translated name,
+    #   the english name, etc.
+    attr_reader :languages
 
-    attr_writer :logger
-
-    def logger
-      @logger || Logger.new($stdout)
+    def initialize(logger)
+      @logger = logger
+      @languages = []
     end
 
-    def languages
-      Yast::Language.GetLanguagesMap(true)
+    def probe(_progress)
+      logger.info "Probing languages"
+      @languages = Yast::Language.GetLanguagesMap(true)
     end
 
     def language=(name)
@@ -50,5 +52,9 @@ module DInstaller
     def language
       Yast::Language.language
     end
+
+  private
+
+    attr_reader :logger
   end
 end
