@@ -76,7 +76,7 @@ const withDBus = {
    */
   onSignal(signal, handler) {
     const { remove } = this._client.subscribe(
-      { interface: "org.opensuse.YaST.Installer", member: signal },
+      { interface: "org.opensuse.DInstaller", member: signal },
       handler
     );
     return remove;
