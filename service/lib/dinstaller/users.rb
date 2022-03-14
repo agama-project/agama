@@ -72,6 +72,16 @@ module DInstaller
       config.login.autologin_user = auto_login ? user : nil
     end
 
+    def write(_progress)
+      system_config = Y2Users::ConfigManager.instance.system(force_read: true)
+      target_config = system_config.copy
+      Y2Users::ConfigMerger.new(target_config, config).merge
+
+      writer = Y2Users::Linux::Writer.new(target_config, system_config)
+      issues = writer.write
+      logger.error(issues.inspect) unless issues.empty?
+    end
+
   private
 
     attr_reader :logger

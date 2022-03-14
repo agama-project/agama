@@ -76,7 +76,7 @@ module DInstaller
     def install
       Thread.new do
         status_manager.change(Status::Installing.new)
-        progress.init_progress(4, "Partitioning")
+        progress.init_progress(5, "Partitioning")
         Yast::Installation.destdir = "/mnt"
         # lets propose it here to be sure that software proposal reflects product selection
         # FIXME: maybe repropose after product selection change?
@@ -92,6 +92,8 @@ module DInstaller
         software.install(progress)
         handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
         Yast::WFM.SCRSetDefault(handle)
+        progress.next_step("Writting Users")
+        users.write(progress)
         progress.next_step("Writing Network Configuration")
         Yast::WFM.CallFunction("save_network", [])
         progress.next_step("Installing Bootloader")
