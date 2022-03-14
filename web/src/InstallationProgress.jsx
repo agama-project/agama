@@ -21,7 +21,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
-import { PROBING, INSTALLING } from "./lib/client/statuses";
+import statuses from "./lib/client/statuses";
 
 import { Alert, Button, Progress, Stack, StackItem } from "@patternfly/react-core";
 
@@ -30,6 +30,8 @@ import Layout from "./Layout";
 import Category from "./Category";
 
 import { EOS_DOWNLOADING as ProgressIcon } from "eos-icons-react";
+
+const { PROBING, INSTALLING } = statuses;
 
 function InstallationProgress() {
   const client = useInstallerClient();
