@@ -56,12 +56,12 @@ module DInstaller
 
           # result: 0 success; 1 error
           dbus_method :Calculate, "in settings:a{sv}, out result:u" do |settings|
-            backend.calculate(to_proposal_properties(settings))
+            success = backend.calculate(to_proposal_properties(settings))
 
             PropertiesChanged(INTERFACE, settings, [])
             actions.refresh
 
-            backend.success? ? 0 : 1
+            success ? 0 : 1
           end
         end
 

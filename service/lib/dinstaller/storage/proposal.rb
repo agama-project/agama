@@ -65,22 +65,13 @@ module DInstaller
         proposal.settings.use_lvm
       end
 
-      # Whether the proposal was successfully calculated
-      #
-      # @raise [NoProposalError] if no proposal yet
-      #
-      # @return [Boolean]
-      def success?
-        raise NoProposalError unless proposal
-
-        !proposal.failed?
-      end
-
       # Calculates a new proposal
       #
       # @param settings [Hash] settings to calculate the proposal
       #   (e.g., { "use_lvm" => true, "candidate_devices" => ["/dev/sda"]}). Note that keys should
       #   match with a public setter.
+      #
+      # @return [Boolean] whether the proposal was correctly calculated
       def calculate(settings = {})
         proposal_settings = generate_proposal_settings(settings)
 
@@ -91,6 +82,8 @@ module DInstaller
         )
 
         save
+
+        !proposal.failed?
       end
 
     private
