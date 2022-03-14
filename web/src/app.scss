@@ -68,3 +68,8 @@ body {
 .pf-m-grid-md.pf-c-table [data-label]::before {
   text-align: start;
 }
+
+.pf-c-empty-state__icon {
+  inline-size: 10rem;
+  block-size: 10rem;
+}

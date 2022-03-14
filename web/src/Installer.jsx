@@ -22,6 +22,7 @@
 import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
+import DBusError from "./DBusError";
 import Overview from "./Overview";
 import InstallationProgress from "./InstallationProgress";
 
@@ -52,11 +53,9 @@ function Installer() {
   }, []);
 
   // TODO: add suppport for installation complete ui
-  if (isDBusError) {
-    return <h2>Cannot Connect to DBus</h2>;
-  } else {
-    return isProgress ? <InstallationProgress /> : <Overview />;
-  }
+  if (isDBusError) return <DBusError />;
+
+  return isProgress ? <InstallationProgress /> : <Overview />;
 }
 
 export default Installer;
