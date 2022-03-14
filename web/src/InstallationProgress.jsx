@@ -50,6 +50,9 @@ function InstallationProgress() {
 
   // FIXME: this is an example. Update or drop it.
   const Messages = () => {
+    if (status !== 3)
+      return <Alert isInline isPlain title="Please, wait unitl system probing is done" />;
+
     return (
       <Alert variant="info" isInline isPlain title="Did you know?">
         You can <a href="#">read the release notes</a> while the system is being installed.
@@ -59,6 +62,8 @@ function InstallationProgress() {
 
   // FIXME: this is an example. Update or drop it.
   const Actions = () => {
+    if (status !== 3) return null;
+
     return (
       <Button isDisabled onClick={() => console.log("User want to see the summary!")}>
         Reboot system
