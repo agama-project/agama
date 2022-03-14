@@ -79,7 +79,8 @@ module DInstaller
       # Calculates a new proposal
       #
       # @param settings [Hash] settings to calculate the proposal
-      #   (e.g., { "LVM" => true, "CandidateDevices" => ["/dev/sda"]})
+      #   (e.g., { "use_lvm" => true, "candidate_devices" => ["/dev/sda"]}). Note that keys should
+      #   match with a public setter.
       def calculate(settings = {})
         proposal_settings = generate_proposal_settings(settings)
 
@@ -100,7 +101,7 @@ module DInstaller
       # @return [Y2Storage::InitialGuidedProposal]
       attr_reader :proposal
 
-      # Generate proposal settings from the given values
+      # Generates proposal settings from the given values
       #
       # @param settings [Hash]
       # @return [Y2Storage::ProposalSettings]

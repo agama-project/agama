@@ -35,14 +35,14 @@ module DInstaller
         # Constructor
         #
         # @param backend [DInstaller::Storage::Proposal]
-        # @param logger [Logger]
         # @param actions [DInstaller::DBus::Storage::Actions] D-Bus object representing the storage
         #   actions to perform in the system. It is needed to raise signals when a new proposal is
         #   calculated.
-        def initialize(backend, logger, actions)
+        # @param logger [Logger]
+        def initialize(backend, actions, logger)
           @backend = backend
-          @logger = logger
           @actions = actions
+          @logger = logger
 
           super(PATH)
         end

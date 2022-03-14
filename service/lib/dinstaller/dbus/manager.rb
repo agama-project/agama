@@ -39,9 +39,8 @@ module DInstaller
         @logger = logger
         @backend = backend
 
-        add_status_callback
-
-        add_progress_callback
+        register_status_callback
+        register_progress_callback
 
         super(PATH)
       end
@@ -52,6 +51,10 @@ module DInstaller
         dbus_method(:Commit, "") { backend.install }
 
         # Current status
+        #
+        # TODO: these values come from the id of statuses, see {DInstaller::Status::Base}. This
+        #   D-Bus class should explicitly convert statuses to integer instead of relying on the id
+        #   value, which could change.
         #
         # Possible values:
         #   0 : error
@@ -110,19 +113,19 @@ module DInstaller
       # @return [DInstaller::Manager]
       attr_reader :backend
 
-      # Adds callback to be called when the status changes
+      # Registers callback to be called when the status changes
       #
       # The callback will emit a signal
-      def add_status_callback
+      def register_status_callback
         backend.status_manager.on_change do
           PropertiesChanged(MANAGER_INTERFACE, { "Status" => status }, ["ErrorMessages"])
         end
       end
 
-      # Adds callback to be called when the progress changes
+      # Registers callback to be called when the progress changes
       #
       # The callback will emit a signal
-      def add_progress_callback
+      def register_progress_callback
         backend.progress.on_change do
           PropertiesChanged(MANAGER_INTERFACE, { "Progress" => progress }, [])
         end
