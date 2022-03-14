@@ -22,8 +22,9 @@
 import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { Alert, Bullseye, Button, Progress, Stack, StackItem } from "@patternfly/react-core";
+import { Alert, Button, Progress, Stack, StackItem } from "@patternfly/react-core";
 
+import Center from "./Center";
 import Layout from "./Layout";
 import Category from "./Category";
 
@@ -82,7 +83,7 @@ function InstallationProgress() {
       FooterMessages={Messages}
       FooterActions={Actions}
     >
-      <Bullseye className="layout__content-child--filling-block-size">
+      <Center>
         <Stack hasGutter className="pf-u-w-100">
           <StackItem>
             <Progress title={progress.title} value={percentage} />
@@ -90,7 +91,7 @@ function InstallationProgress() {
 
           {renderSubprogress()}
         </Stack>
-      </Bullseye>
+      </Center>
     </Layout>
   );
 }

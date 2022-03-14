@@ -23,7 +23,6 @@ import React, { useState, useRef } from "react";
 import { useAuthContext } from "./context/auth";
 import {
   Alert,
-  Bullseye,
   Button,
   Flex,
   FlexItem,
@@ -33,6 +32,7 @@ import {
   TextInput
 } from "@patternfly/react-core";
 
+import Center from "./Center";
 import Layout from "./Layout";
 
 const formError = error => (
@@ -78,7 +78,7 @@ function LoginForm() {
 
   return (
     <Layout sectionTitle="Welcome to D-Installer" FooterActions={SubmitButton}>
-      <Bullseye className="layout__content-child--filling-block-size">
+      <Center>
         <Form id="d-installer-login">
           {error && formError(error)}
           <FormGroup label="Username" fieldId="username">
@@ -88,7 +88,7 @@ function LoginForm() {
             <TextInput isRequired type="password" id="password" ref={passwordRef} />
           </FormGroup>
         </Form>
-      </Bullseye>
+      </Center>
     </Layout>
   );
 }

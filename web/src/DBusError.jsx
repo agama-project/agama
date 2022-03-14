@@ -20,16 +20,10 @@
  */
 
 import React from "react";
-import {
-  Button,
-  Bullseye,
-  Title,
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateBody
-} from "@patternfly/react-core";
+import { Button, Title, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
 
 import Layout from "./Layout";
+import Center from "./Center";
 
 import {
   EOS_ANNOUNCEMENT as SectionIcon,
@@ -46,7 +40,7 @@ const ReloadAction = () => (
 function DBusError() {
   return (
     <Layout sectionTitle="DBus Error" SectionIcon={SectionIcon} FooterActions={ReloadAction}>
-      <Bullseye className="layout__content-child--filling-block-size">
+      <Center>
         <EmptyState>
           <EmptyStateIcon icon={DisconnectionIcon} />
           <Title headingLevel="h4" size="lg">
@@ -57,7 +51,7 @@ function DBusError() {
             running.
           </EmptyStateBody>
         </EmptyState>
-      </Bullseye>
+      </Center>
     </Layout>
   );
 }
