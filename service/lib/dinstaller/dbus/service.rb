@@ -111,7 +111,7 @@ module DInstaller
 
       def storage_proposal_dbus
         @storage_proposal_dbus ||= DInstaller::DBus::Storage::Proposal.new(
-          manager.storage_proposal, logger, storage_actions_dbus
+          manager.storage_proposal, storage_actions_dbus, logger
         )
       end
 
