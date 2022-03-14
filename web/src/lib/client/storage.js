@@ -19,13 +19,18 @@
  * find current contact information at www.suse.com.
  */
 
-import Client from "./client";
 import cockpit from "../cockpit";
+import { applyMixin, withDBus } from "./mixins";
 
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
+const ACTIONS_PATH = "/org/opensuse/DInstaller/Storage/Actions1";
 
-export default class StorageClient extends Client {
+export default class StorageClient {
+  constructor(dbusClient) {
+    this._client = dbusClient;
+  }
+
   /**
    * Return the actions for the current proposal
    *
@@ -59,4 +64,21 @@ export default class StorageClient extends Client {
       CandidateDevices: cockpit.variant("as", candidateDevices)
     });
   }
+
+  /**
+   * Register a callback to run when properties in the Actions object change
+   *
+   * @param {function} handler - callback function
+   */
+  onActionsChange(handler) {
+    return this.onObjectChanged(ACTIONS_PATH, changes => {
+      const newActions = changes.All.v.map(action => {
+        const { Text: textVar, Subvol: subvolVar } = action.v;
+        return { text: textVar.v, subvol: subvolVar.v };
+      });
+      handler({ All: newActions });
+    });
+  }
 }
+
+applyMixin(StorageClient, withDBus);

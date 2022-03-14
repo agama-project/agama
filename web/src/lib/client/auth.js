@@ -19,10 +19,11 @@
  * find current contact information at www.suse.com.
  */
 
-import Client from "./client";
+import { applyMixin, withDBus } from "./mixins";
+
 import cockpit from "../cockpit";
 
-export default class AuthClient extends Client {
+export default class AuthClient {
   /**
    * Authorize using username and password
    *
@@ -71,3 +72,5 @@ export default class AuthClient extends Client {
     return cockpit.user();
   }
 }
+
+applyMixin(AuthClient, withDBus);

@@ -31,7 +31,7 @@ const proxies = {
 };
 
 beforeEach(() => {
-  dbusClient.proxy = jest.fn().mockImplementation((iface, _path, _opts) => {
+  dbusClient.proxy = jest.fn().mockImplementation(iface => {
     return proxies[iface];
   });
 });

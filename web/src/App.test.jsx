@@ -3,7 +3,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { authRender } from "./test-utils";
 import App from "./App";
-import InstallerClient from "./lib/client";
+import { createClient } from "./lib/client";
 
 jest.mock("./lib/client");
 jest.mock("./Installer", () => {
@@ -17,7 +17,7 @@ jest.mock("./Installer", () => {
 
 describe("when the user is already logged in", () => {
   beforeEach(() => {
-    InstallerClient.mockImplementation(() => {
+    createClient.mockImplementation(() => {
       return {
         auth: {
           authorize: (_username, _password) => Promise.resolve(false),
@@ -36,7 +36,7 @@ describe("when the user is already logged in", () => {
 
 describe("when username and password are wrong", () => {
   beforeEach(() => {
-    InstallerClient.mockImplementation(() => {
+    createClient.mockImplementation(() => {
       return {
         auth: {
           authorize: () => Promise.reject("password does not match"),

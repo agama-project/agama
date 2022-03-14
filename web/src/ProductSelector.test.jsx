@@ -3,7 +3,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import ProductSelector from "./ProductSelector";
-import InstallerClient from "./lib/client";
+import { createClient } from "./lib/client";
 
 jest.mock("./lib/client");
 
@@ -21,7 +21,7 @@ const selectProductFn = jest.fn().mockResolvedValue();
 
 beforeEach(() => {
   // if defined outside, the mock is cleared automatically
-  InstallerClient.mockImplementation(() => {
+  createClient.mockImplementation(() => {
     return {
       software: {
         ...softwareMock,

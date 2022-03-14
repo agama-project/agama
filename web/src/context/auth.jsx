@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import InstallerClient from "../lib/client";
+import { createClient } from "../lib/client";
 
 const AuthContext = React.createContext();
 
@@ -63,7 +63,7 @@ function useAuthContext() {
   }
 
   const [state, dispatch] = context;
-  const client = new InstallerClient();
+  const client = createClient();
 
   const login = (username, password) => {
     dispatch({ type: "LOGIN", payload: { request: true } });

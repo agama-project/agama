@@ -24,53 +24,23 @@ import LanguageClient from "./language";
 import ManagerClient from "./manager";
 import SoftwareClient from "./software";
 import StorageClient from "./storage";
+import statuses from "./statuses";
 
 import cockpit from "../cockpit";
 
-export default class InstallerClient {
-  /**
-   * @constructor
-   */
-  constructor() {
-    this._proxies = {};
-    this._client = cockpit.dbus("org.opensuse.DInstaller", {
-      bus: "system",
-      superuser: "try"
-    });
+const createClient = () => {
+  const client = cockpit.dbus("org.opensuse.DInstaller", {
+    bus: "system",
+    superuser: "try"
+  });
 
-    this.auth = new AuthClient(this._client);
-    this.language = new LanguageClient(this._client);
-    this.manager = new ManagerClient(this._client);
-    this.software = new SoftwareClient(this._client);
-    this.storage = new StorageClient(this._client);
-  }
+  return {
+    auth: new AuthClient(),
+    language: new LanguageClient(client),
+    manager: new ManagerClient(client),
+    software: new SoftwareClient(client),
+    storage: new StorageClient(client)
+  };
+};
 
-  /**
-   * Register a callback to run when some D-Bus property changes
-   *
-   * @param {function} handler - callback function
-   */
-  onPropertyChanged(handler) {
-    const { remove } = this._client.subscribe(
-      {
-        interface: "org.freedesktop.DBus.Properties",
-        member: "PropertiesChanged"
-      },
-      handler
-    );
-    return remove;
-  }
-
-  /**
-   * Register a callback to run when some D-Bus signal is emitted
-   *
-   * @param {function} handler - callback function
-   */
-  onSignal(signal, handler) {
-    const { remove } = this._client.subscribe(
-      { interface: "org.opensuse.YaST.Installer", member: signal },
-      handler
-    );
-    return remove;
-  }
-}
+export { createClient, statuses };

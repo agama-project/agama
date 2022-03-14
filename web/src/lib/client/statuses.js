@@ -19,20 +19,16 @@
  * find current contact information at www.suse.com.
  */
 
-export default class Client {
-  constructor(dbusClient) {
-    this._client = dbusClient;
-    this._proxies = [];
-  }
+const ERROR = 0;
+const PROBING = 1;
+const PROBED = 2;
+const INSTALLING = 3;
+const INSTALLED = 4;
 
-  async proxy(iface) {
-    if (this._proxies[iface]) {
-      return this._proxies[iface];
-    }
-
-    const proxy = this._client.proxy(iface, undefined, { watch: true });
-    await proxy.wait();
-    this._proxies[iface] = proxy;
-    return proxy;
-  }
-}
+export default {
+  ERROR,
+  PROBING,
+  PROBED,
+  INSTALLING,
+  INSTALLED
+};

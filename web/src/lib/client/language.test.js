@@ -18,7 +18,7 @@ const langProxy = {
 };
 
 beforeEach(() => {
-  dbusClient.proxy = jest.fn().mockImplementation((iface, _path, _opts) => {
+  dbusClient.proxy = jest.fn().mockImplementation(iface => {
     if (iface === LANGUAGE_IFACE) return langProxy;
   });
 });

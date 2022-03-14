@@ -19,11 +19,15 @@
  * find current contact information at www.suse.com.
  */
 
-import Client from "./client";
+import { applyMixin, withDBus } from "./mixins";
 
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
 
-export default class SoftwareClient extends Client {
+export default class SoftwareClient {
+  constructor(dbusClient) {
+    this._client = dbusClient;
+  }
+
   /**
    * Return the list of available products
    *
@@ -47,3 +51,5 @@ export default class SoftwareClient extends Client {
     return proxy.SelectProduct(id);
   }
 }
+
+applyMixin(SoftwareClient, withDBus);

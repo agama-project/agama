@@ -19,11 +19,16 @@
  * find current contact information at www.suse.com.
  */
 
-import Client from "./client";
+import { applyMixin, withDBus } from "./mixins";
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
+const MANAGER_PATH = "/org/opensuse/DInstaller/Manager1";
 
-export default class ManagerClient extends Client {
+export default class ManagerClient {
+  constructor(dbusClient) {
+    this._client = dbusClient;
+  }
+
   /**
    * Start the installation process
    *
@@ -46,4 +51,30 @@ export default class ManagerClient extends Client {
     const proxy = await this.proxy(MANAGER_IFACE);
     return proxy.Status;
   }
+
+  /**
+   * Register a callback to run when properties in the Manager object change
+   *
+   * Additionally, this method handles the conversion of the values coming
+   * from the {cockpit} module.
+   *
+   * @param {function} handler - callback function
+   */
+  onChange(handler) {
+    return this.onObjectChanged(MANAGER_PATH, (changes, invalid) => {
+      const data = {};
+
+      if ("Status" in changes) {
+        data.Status = changes.Status.v;
+      }
+
+      if ("Progress" in changes) {
+        data.Progress = changes.Progress.v.map(p => p.v);
+      }
+
+      handler(data, invalid);
+    });
+  }
 }
+
+applyMixin(ManagerClient, withDBus);

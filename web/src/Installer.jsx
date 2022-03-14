@@ -32,31 +32,28 @@ function Installer() {
   // TODO: use reducer for states
   const [isDBusError, setIsDBusError] = useState(false);
 
-
   useEffect(async () => {
     try {
       const status = await client.manager.getStatus();
-      setIsProgress(status === 3 || status == 1);
+      setIsProgress(status === 3 || status === 1);
     } catch (err) {
       console.error(err);
       setIsDBusError(true);
     }
-
   }, []);
 
   useEffect(() => {
-    return client.onPropertyChanged((_path, _iface, _signal, args) => {
-      const iface = "org.opensuse.DInstaller.Manager1";
-      const [input_iface, changed] = args;
-      if (input_iface === iface && "Status" in changed) {
-        setIsProgress(changed.Status.v === 3 || changed.Status.v === 1);
+    return client.manager.onChange(changes => {
+      if ("Status" in changes) {
+        setIsProgress(changes.Status === 3 || changes.Status === 1);
         setIsDBusError(false); // rescue when dbus start acting
       }
     });
   }, []);
+
   // TODO: add suppport for installation complete ui
-  if (isDBusError){
-    return <h2>Cannot Connect to DBus</h2>
+  if (isDBusError) {
+    return <h2>Cannot Connect to DBus</h2>;
   } else {
     return isProgress ? <InstallationProgress /> : <Overview />;
   }

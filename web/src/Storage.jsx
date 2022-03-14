@@ -57,19 +57,8 @@ export default function Storage() {
   }, []);
 
   useEffect(() => {
-    // TODO: abstract D-Bus details
-    return client.onPropertyChanged((_path, _iface, _signal, args) => {
-      const [iface, properties] = args;
-
-      if (iface !== "org.opensuse.DInstaller.Storage.Actions1") {
-        return;
-      }
-
-      const newActions = properties.All.v.map(action => {
-        const { Text: textVar, Subvol: subvolVar } = action.v;
-        return { text: textVar.v, subvol: subvolVar.v };
-      });
-
+    return client.storage.onActionsChange(changes => {
+      const { All: newActions } = changes;
       dispatch({ type: "UPDATE_ACTIONS", payload: newActions });
     });
   }, []);

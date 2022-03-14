@@ -3,7 +3,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Overview from "./Overview";
-import InstallerClient from "./lib/client";
+import { createClient } from "./lib/client";
 
 jest.mock("./lib/client");
 
@@ -18,11 +18,12 @@ const products = [{ id: "openSUSE", name: "openSUSE Tumbleweed" }];
 const startInstallationFn = jest.fn();
 
 beforeEach(() => {
-  InstallerClient.mockImplementation(() => {
+  createClient.mockImplementation(() => {
     return {
       storage: {
         getStorageProposal: () => Promise.resolve(proposal),
-        getStorageActions: () => Promise.resolve(actions)
+        getStorageActions: () => Promise.resolve(actions),
+        onActionsChange: jest.fn()
       },
       language: {
         getLanguages: () => Promise.resolve(languages),
@@ -34,8 +35,7 @@ beforeEach(() => {
       },
       manager: {
         startInstallation: startInstallationFn
-      },
-      onPropertyChanged: jest.fn()
+      }
     };
   });
 });

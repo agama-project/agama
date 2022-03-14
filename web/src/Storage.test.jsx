@@ -3,7 +3,7 @@ import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Storage from "./Storage";
-import InstallerClient from "./lib/client";
+import { createClient } from "./lib/client";
 
 jest.mock("./lib/client");
 
@@ -13,7 +13,7 @@ const proposalSettings = {
   lvm: false
 };
 
-let onPropertyChangedFn = jest.fn();
+let onActionsChangeFn = jest.fn();
 let calculateStorageProposalFn;
 
 const storageMock = {
@@ -22,13 +22,13 @@ const storageMock = {
 };
 
 beforeEach(() => {
-  InstallerClient.mockImplementation(() => {
+  createClient.mockImplementation(() => {
     return {
       storage: {
         ...storageMock,
-        calculateStorageProposal: calculateStorageProposalFn
-      },
-      onPropertyChanged: onPropertyChangedFn
+        calculateStorageProposal: calculateStorageProposalFn,
+        onActionsChange: onActionsChangeFn
+      }
     };
   });
 });
@@ -77,7 +77,7 @@ describe("when the proposal changes", () => {
 
   beforeEach(() => {
     callbacks = [];
-    onPropertyChangedFn = cb => callbacks.push(cb);
+    onActionsChangeFn = cb => callbacks.push(cb);
   });
 
   it("updates the proposal", async () => {
@@ -92,12 +92,7 @@ describe("when the proposal changes", () => {
     ];
     const [cb] = callbacks;
     act(() => {
-      cb(
-        "/org/openSUSE/DInstaller/Storage/Actions1",
-        "org.freedesktop.DBus.Properties",
-        "PropertiesChanged",
-        ["org.opensuse.DInstaller.Storage.Actions1", { All: { t: "av", v: actions } }]
-      );
+      cb({ All: [{ text: "Mount /dev/sdb1 as root", subvol: false }] });
     });
     await screen.findByText("Mount /dev/sdb1 as root");
   });
