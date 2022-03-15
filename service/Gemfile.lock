@@ -22,6 +22,8 @@ GEM
       cfa (~> 1.0)
     cheetah (1.0.0)
       abstract_method (~> 1.2)
+    diff-lcs (1.5.0)
+    docile (1.4.0)
     eventmachine (1.2.7)
     fast_gettext (2.2.0)
     mini_portile2 (2.7.1)
@@ -35,9 +37,29 @@ GEM
     racc (1.6.0)
     rake (13.0.6)
     rexml (3.2.5)
+    rspec (3.11.0)
+      rspec-core (~> 3.11.0)
+      rspec-expectations (~> 3.11.0)
+      rspec-mocks (~> 3.11.0)
+    rspec-core (3.11.0)
+      rspec-support (~> 3.11.0)
+    rspec-expectations (3.11.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.11.0)
+    rspec-mocks (3.11.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.11.0)
+    rspec-support (3.11.0)
     ruby-augeas (0.5.0)
     ruby-dbus (0.17.0)
       rexml
+    simplecov (0.21.2)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+      simplecov_json_formatter (~> 0.1)
+    simplecov-html (0.12.3)
+    simplecov-lcov (0.8.0)
+    simplecov_json_formatter (0.1.4)
 
 PLATFORMS
   ruby
@@ -48,6 +70,9 @@ DEPENDENCIES
   d-installer!
   packaging_rake_tasks (~> 1.5.1)
   rake (~> 13.0.6)
+  rspec (~> 3.11.0)
+  simplecov (~> 0.21.2)
+  simplecov-lcov (~> 0.8.0)
 
 BUNDLED WITH
    2.3.3

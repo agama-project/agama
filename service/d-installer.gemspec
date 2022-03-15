@@ -37,6 +37,9 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "packaging_rake_tasks", "~> 1.5.1"
   spec.add_development_dependency "rake", "~> 13.0.6"
+  spec.add_development_dependency "rspec", "~> 3.11.0"
+  spec.add_development_dependency "simplecov", "~> 0.21.2"
+  spec.add_development_dependency "simplecov-lcov", "~> 0.8.0"
   spec.add_dependency "cfa", "~> 1.0.2"
   spec.add_dependency "cfa_grub2", "~> 2.0.0"
   spec.add_dependency "cheetah", "~> 1.0.0"
