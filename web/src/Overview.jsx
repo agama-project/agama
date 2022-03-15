@@ -29,6 +29,7 @@ import Category from "./Category";
 import LanguageSelector from "./LanguageSelector";
 import ProductSelector from "./ProductSelector";
 import Storage from "./Storage";
+import Users from "./Users";
 
 import {
   EOS_FACT_CHECK as OverviewIcon,

@@ -1,16 +1,7 @@
 import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import {
-  Button,
-  Form,
-  FormGroup,
-  FormSelect,
-  FormSelectOption,
-  Modal,
-  ModalVariant,
-  TextInput
-} from "@patternfly/react-core";
+import { Button, Checkbox, Form, FormGroup, TextInput } from "@patternfly/react-core";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -90,18 +81,22 @@ export default function Users() {
     dispatch({ type: "ACCEPT" });
   };
 
-  const label = () => {
-    var res = "";
+  const rootLabel = () => {
     if (rootPassword === hiddenPassword) {
-      res.concat("Root Password Set.");
+      return "Root Password Set.";
     } else {
-      res.concat("Root Password Not Set.");
+      return "Root Password Not Set. ";
     }
+  }
+
+const userLabel = () => {
     if (user !== undefined && user.userName != "") {
-      res.concat("First User Set.");
-    } else {
-      res.concat("First User Not Set.");
-    }
+        return "User " + user.userName + " Set.";
+      } else {
+        return "First User Not Set.";
+      }
+}
+    
     return res;
   };
 
@@ -113,7 +108,7 @@ export default function Users() {
           type="password"
           aria-label="root"
           value={rootPassword}
-          onChange={v => dispatch({ type: "CHANGE", payload: v })}
+          onChange={v => dispatch({ type: "CHANGE", payload: { rootPassword: v } })}
         />
       </FormGroup>
     );
@@ -127,29 +122,29 @@ export default function Users() {
           aria-label="user fullname"
           value={user.fullName}
           label="User Full Name"
-          onChange={v => dispatch({ type: "CHANGE", payload: v })}
+          onChange={v => dispatch({ type: "CHANGE", payload: { userFullName: v } })}
         />
         <TextInput
           id="userName"
           aria-label="user name"
           value={user.userName}
           label="User ID"
-          isRequired="true"
-          onChange={v => dispatch({ type: "CHANGE", payload: v })}
+          required={true}
+          onChange={v => dispatch({ type: "CHANGE", payload: { userName: v } })}
         />
         <TextInput
           id="userPassword"
           type="password"
-          aria-label="user password"
+  s        aria-label="user password"
           value={user.password}
-          onChange={v => dispatch({ type: "CHANGE", payload: v })}
+          onChange={v => dispatch({ type: "CHANGE", payload: { userPassword: v } })}
         />
         <Checkbox
           label="Auto Login"
           aria-label="user autologin"
           id="autologin"
           checked={user.autologin}
-          onChange={v => dispatch({ type: "CHANGE", payload: v })}
+          onChange={v => dispatch({ type: "CHANGE", payload: { autologin: v } })}
         />
       </FormGroup>
     );
