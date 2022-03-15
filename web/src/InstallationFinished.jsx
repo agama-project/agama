@@ -32,28 +32,34 @@ import {
 
 import Layout from "./Layout";
 import Center from "./Center";
+import { useInstallerClient } from "./context/installer";
 
 import {
   EOS_TASK_ALT as InstallationFinishedIcon,
   EOS_CHECK_CIRCLE as SectionIcon
 } from "eos-icons-react";
 
-const FinishAction = () => (
-  <Button
-    isLarge
-    variant="primary"
-    onClick={() => console.log("FIXME: trigger a reboot machine action here!")}
-  >
-    Finish
-  </Button>
+const Actions = ({ onRestart, onFinish }) => (
+  <>
+    <Button isLarge variant="secondary" onClick={onRestart}>
+      Restart Installation
+    </Button>
+    <Button isLarge variant="primary" onClick={onFinish}>
+      Finish
+    </Button>
+  </>
 );
 
 function InstallationFinished() {
+  const client = useInstallerClient();
+  const onRestartAction = () => client.manager.startProbing();
+  const onFinishAction = () => console.log("FIXME: trigger a reboot machine action here!");
+
   return (
     <Layout
       sectionTitle="Installation Finished"
       SectionIcon={SectionIcon}
-      FooterActions={FinishAction}
+      FooterActions={() => <Actions onRestart={onRestartAction} onFinish={onFinishAction} />}
     >
       <Center>
         <EmptyState>
@@ -64,7 +70,7 @@ function InstallationFinished() {
           <EmptyStateBody className="pf-c-content">
             <div>
               <Text>The installation on your machine is complete.</Text>
-              <Text>After clicking on "Finish" you can log in to the sytem.</Text>
+              <Text>After clicking on "Finish" you can log in to the system.</Text>
               <Text>Have a lot of fun! Your openSUSE Development Team.</Text>
             </div>
             <EmptyStateSecondaryActions>
