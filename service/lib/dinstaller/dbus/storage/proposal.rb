@@ -67,7 +67,7 @@ module DInstaller
 
         # @see DInstaller::Storage::Proposal
         def available_devices
-          backend.available_devices
+          backend.available_devices.map(&:name)
         end
 
         # @see DInstaller::Storage::Proposal

@@ -23,7 +23,7 @@ require "yast"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
 require "y2storage/storage_manager"
-require "y2network/proposal_settings"
+require "dinstaller/network"
 require "dinstaller/status_manager"
 require "dinstaller/progress"
 require "dinstaller/software"
@@ -95,7 +95,7 @@ module DInstaller
         progress.next_step("Writting Users")
         users.write(progress)
         progress.next_step("Writing Network Configuration")
-        Yast::WFM.CallFunction("save_network", [])
+        network.install(progress)
         progress.next_step("Installing Bootloader")
         ::Bootloader::FinishClient.new.write
         progress.next_step("Installation Finished")
@@ -139,6 +139,13 @@ module DInstaller
       @storage_actions ||= Storage::Actions.new(logger)
     end
 
+    # Network manager
+    #
+    # @return [Network]
+    def network
+      @network ||= Network.new(logger)
+    end
+
   private
 
     # Initializes YaST
@@ -166,7 +173,7 @@ module DInstaller
       software.probe(progress)
 
       progress.next_step("Probing Network")
-      probe_network
+      network.probe(progress)
 
       progress.next_step("Probing Finished")
 
@@ -182,18 +189,6 @@ module DInstaller
       Y2Storage::StorageManager.instance.probe
       progress.next_minor_step("Calculating Storage Proposal")
       storage_proposal.calculate
-    end
-
-    # Probes the network configuration
-    #
-    # TODO: move to Network ?
-    def probe_network
-      logger.info "Probing network"
-      Yast.import "Lan"
-      Yast::Lan.read_config
-      settings = Y2Network::ProposalSettings.instance
-      settings.refresh_packages
-      settings.apply_defaults
     end
   end
 end
