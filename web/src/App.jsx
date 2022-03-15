@@ -22,6 +22,7 @@
 import React, { useEffect } from "react";
 import { useAuthContext } from "./context/auth";
 
+import LoadingEnvironment from "./LoadingEnvironment";
 import LoginForm from "./LoginForm";
 import Installer from "./Installer";
 
@@ -33,6 +34,7 @@ function App() {
 
   useEffect(autoLogin, []);
 
+  if (loggedIn == null) return <LoadingEnvironment />;
   return loggedIn ? <Installer /> : <LoginForm />;
 }
 

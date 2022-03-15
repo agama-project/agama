@@ -24,13 +24,12 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import { InstallerClientProvider } from "./context/installer";
 import { AuthProvider } from "./context/auth";
-import InstallerClient from "./lib/InstallerClient";
-import cockpit from "./lib/cockpit";
+import { createClient } from "./lib/client";
 
 import "./app.scss";
 import "./layout.scss";
 
-const client = new InstallerClient(cockpit);
+const client = createClient();
 
 ReactDOM.render(
   <StrictMode>

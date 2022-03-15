@@ -9,12 +9,12 @@ sudo zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel 
 sudo systemctl start cockpit
 
 # set up the d-installer service
-sudo cp yastd/share/dbus.conf /etc/dbus-1/system.d/d-installer.conf
-cd yastd; bundle config set --local path 'vendor/bundle'; bundle install; cd -
+sudo cp service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf
+cd service; bundle config set --local path 'vendor/bundle'; bundle install; cd -
 
 # set up the web UI
 cd web; npm install; cd -
 
 # Start the installer
-echo -e "Start the d-installer service:\n  cd yastd; sudo bundle exec bin/d-installer\n"
+echo -e "Start the d-installer service:\n  cd service; sudo bundle exec bin/d-installer\n"
 echo -e "Start the web UI:\n  cd web; npm run dev"

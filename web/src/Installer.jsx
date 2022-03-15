@@ -22,25 +22,40 @@
 import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
+import DBusError from "./DBusError";
 import Overview from "./Overview";
 import InstallationProgress from "./InstallationProgress";
 
 function Installer() {
   const client = useInstallerClient();
-  const [isInstalling, setIsInstalling] = useState(false);
+  // set initial state to true to avoid async calls to dbus
+  const [isProgress, setIsProgress] = useState(true);
+  // TODO: use reducer for states
+  const [isDBusError, setIsDBusError] = useState(false);
 
   useEffect(async () => {
-    const status = await client.getStatus();
-    setIsInstalling(status !== 0);
+    try {
+      const status = await client.manager.getStatus();
+      setIsProgress(status === 3 || status === 1);
+    } catch (err) {
+      console.error(err);
+      setIsDBusError(true);
+    }
   }, []);
 
   useEffect(() => {
-    return client.onSignal("StatusChanged", (_path, _iface, _signal, args) => {
-      setIsInstalling(args[0] !== 0);
+    return client.manager.onChange(changes => {
+      if ("Status" in changes) {
+        setIsProgress(changes.Status === 3 || changes.Status === 1);
+        setIsDBusError(false); // rescue when dbus start acting
+      }
     });
   }, []);
 
-  return isInstalling ? <InstallationProgress /> : <Overview />;
+  // TODO: add suppport for installation complete ui
+  if (isDBusError) return <DBusError />;
+
+  return isProgress ? <InstallationProgress /> : <Overview />;
 }
 
 export default Installer;

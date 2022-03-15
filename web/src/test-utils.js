@@ -3,15 +3,11 @@ import { render } from "@testing-library/react";
 
 import { InstallerClientProvider } from "./context/installer";
 import { AuthProvider } from "./context/auth";
-import InstallerClient from "./lib/InstallerClient";
+import { createClient } from "./lib/client";
 
 const InstallerProvider = ({ children }) => {
-  const client = new InstallerClient();
-  return (
-    <InstallerClientProvider client={client}>
-      {children}
-    </InstallerClientProvider>
-  );
+  const client = createClient();
+  return <InstallerClientProvider client={client}>{children}</InstallerClientProvider>;
 };
 
 const AllProviders = ({ children }) => {

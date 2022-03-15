@@ -12,7 +12,7 @@ service. At first sight, we have identified these components:
 
 ## Quickstart
 
-:warning: :warning: **This is a proof-of-concept so use a virtual machine to give it a try.** :warning: :warning: 
+:warning: :warning: **This is a proof-of-concept so use a virtual machine to give it a try.** :warning: :warning:
 
 The easiest way to give D-Installer a try is to install the
 [rubygem-d-installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/rubygem-d-installer)
@@ -63,11 +63,11 @@ service using the D-Bus interface it provides.
 
 Beware that `d-installer` must run as root (like YaST does) to do hardware probing, partition the
 disks, install the software and so on. So you need to tell dbus about the service by copying
-`yastd/share/dbus.conf` to `/etc/dbus-1/system.d/d-installer.conf`.
+`service/share/dbus.conf` to `/usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf`.
 
 To run the service, type:
 
-    cd yastd
+    cd service
     bundle install
     sudo bundle exec bin/d-installer
 
@@ -75,13 +75,13 @@ To check that `d-installer` is working, you can use a tool like
 [busctl](https://www.freedesktop.org/wiki/Software/dbus/) (or
 [D-Feet](https://wiki.gnome.org/Apps/DFeet)) if you prefer a graphical one:
 
-    busctl call org.opensuse.YaST /org/opensuse/YaST/Installer \
-      org.opensuse.YaST.Installer GetDisks
+    busctl call org.opensuse.DInstaller /org/opensuse/DInstaller/Language1 \
+      org.opensuse.DInstaller.Language1 AvailableLanguages
 
 If you want to get the properties, just type:
 
-    busctl call org.opensuse.YaST /org/opensuse/YaST/Installer \
-      org.freedesktop.DBus.Properties GetAll s org.opensuse.YaST.Installer
+    busctl call org.opensuse.DInstaller /org/opensuse/DInstaller/Language1 \
+      org.freedesktop.DBus.Properties GetAll s org.opensuse.DInstaller.Language1
 
 ### Starting the web-based user interface
 

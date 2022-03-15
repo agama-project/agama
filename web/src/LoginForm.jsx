@@ -23,7 +23,6 @@ import React, { useState, useRef } from "react";
 import { useAuthContext } from "./context/auth";
 import {
   Alert,
-  Bullseye,
   Button,
   Flex,
   FlexItem,
@@ -33,6 +32,7 @@ import {
   TextInput
 } from "@patternfly/react-core";
 
+import Center from "./Center";
 import Layout from "./Layout";
 
 const formError = error => (
@@ -47,7 +47,7 @@ function LoginForm() {
   const usernameRef = useRef();
   const passwordRef = useRef();
 
-  const submitLogin = (e) => {
+  const submitLogin = e => {
     e.preventDefault();
 
     setError(undefined);
@@ -60,43 +60,35 @@ function LoginForm() {
 
   const SubmitButton = () => {
     return (
-    <Flex justifyContent={{ default: 'justifyContentFlexEnd' }}>
-      <FlexItem>
-        <Button
-          isLarge
-          variant="primary"
-          type="submit"
-          form="d-installer-login"
-          onClick={submitLogin}
-        >
-          Login
-        </Button>
-      </FlexItem>
-    </Flex>
+      <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
+        <FlexItem>
+          <Button
+            isLarge
+            variant="primary"
+            type="submit"
+            form="d-installer-login"
+            onClick={submitLogin}
+          >
+            Login
+          </Button>
+        </FlexItem>
+      </Flex>
     );
   };
 
   return (
-    <Layout
-      sectionTitle="Welcome to D-Installer"
-      FooterActions={SubmitButton}
-    >
-      <Bullseye className="layout__content-child--filling-block-size">
+    <Layout sectionTitle="Welcome to D-Installer" FooterActions={SubmitButton}>
+      <Center>
         <Form id="d-installer-login">
           {error && formError(error)}
           <FormGroup label="Username" fieldId="username">
             <TextInput isRequired type="text" id="username" ref={usernameRef} />
           </FormGroup>
           <FormGroup label="Password" fieldId="password">
-            <TextInput
-              isRequired
-              type="password"
-              id="password"
-              ref={passwordRef}
-            />
+            <TextInput isRequired type="password" id="password" ref={passwordRef} />
           </FormGroup>
         </Form>
-      </Bullseye>
+      </Center>
     </Layout>
   );
 }

@@ -21,61 +21,58 @@
 
 import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
+import statuses from "./lib/client/statuses";
 
-import {
-  Alert,
-  Bullseye,
-  Button,
-  Progress,
-  Stack,
-  StackItem
-} from "@patternfly/react-core";
+import { Alert, Button, Progress, Stack, StackItem } from "@patternfly/react-core";
 
+import Center from "./Center";
 import Layout from "./Layout";
 import Category from "./Category";
 
-import {
-  EOS_DOWNLOADING as ProgressIcon
-} from "eos-icons-react";
+import { EOS_DOWNLOADING as ProgressIcon } from "eos-icons-react";
+
+const { PROBING, INSTALLING } = statuses;
 
 function InstallationProgress() {
   const client = useInstallerClient();
   const [progress, setProgress] = useState({});
 
   useEffect(() => {
-    return client.onSignal("Progress", (_path, _iface, _signal, args) => {
-      const [title, steps, step, substeps, substep] = args;
-      const progress = { title, steps, step, substeps, substep };
-      setProgress(progress);
+    return client.manager.onChange(changes => {
+      if ("Progress" in changes) {
+        const [title, steps, step, substeps, substep] = changes.Progress;
+        setProgress({ title, steps, step, substeps, substep });
+      }
     });
   }, []);
 
   const showSubsteps = !!progress.substeps && progress.substeps >= 0;
-  const percentage =
-    progress.steps === 0
-      ? 0
-      : Math.round((progress.step / progress.steps) * 100);
+  const percentage = progress.steps === 0 ? 0 : Math.round((progress.step / progress.steps) * 100);
+  const status = client.manager.getStatus();
+  const mainTitle = status === INSTALLING ? "Instaling" : "Probing"; // so far only two actions need progress
 
   // FIXME: this is an example. Update or drop it.
   const Messages = () => {
+    if (status === PROBING)
+      return <Alert isInline isPlain title="Please, wait unitl system probing is done" />;
+
     return (
       <Alert variant="info" isInline isPlain title="Did you know?">
-        You can <a href='#'>read the release notes</a> while the system is being installed.
+        You can <a href="#">read the release notes</a> while the system is being installed.
       </Alert>
     );
-  }
+  };
 
   // FIXME: this is an example. Update or drop it.
   const Actions = () => {
+    if (status === PROBING) return null;
+
     return (
-      <Button
-        isDisabled
-        onClick={() => console.log("User want to see the summary!") }
-      >
+      <Button isDisabled onClick={() => console.log("User want to see the summary!")}>
         Reboot system
       </Button>
     );
-  }
+  };
 
   const renderSubprogress = () => {
     if (!showSubsteps) return;
@@ -83,29 +80,30 @@ function InstallationProgress() {
     return (
       <StackItem>
         <Progress
-          title={progress.title}
+          size="sm"
+          measureLocation="none"
           value={Math.round((progress.substep / progress.substeps) * 100)}
         />
       </StackItem>
     );
-  }
+  };
 
   return (
     <Layout
-      sectionTitle="Installing"
+      sectionTitle={mainTitle}
       SectionIcon={ProgressIcon}
       FooterMessages={Messages}
       FooterActions={Actions}
     >
-      <Bullseye className="layout__content-child--filling-block-size">
+      <Center>
         <Stack hasGutter className="pf-u-w-100">
           <StackItem>
-            <Progress title="Overall progress" value={percentage} />
+            <Progress title={progress.title} value={percentage} />
           </StackItem>
 
-          { renderSubprogress() }
+          {renderSubprogress()}
         </Stack>
-      </Bullseye>
+      </Center>
     </Layout>
   );
 }

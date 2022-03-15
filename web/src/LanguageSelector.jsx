@@ -51,8 +51,8 @@ export default function LanguageSelector() {
   const { current: language, languages, isFormOpen } = state;
 
   useEffect(async () => {
-    const languages = await client.getLanguages();
-    const current = await client.getOption("Language");
+    const languages = await client.language.getLanguages();
+    const [current] = await client.language.getSelectedLanguages();
     dispatch({
       type: "LOAD",
       payload: { languages, current, initial: current }
@@ -65,7 +65,7 @@ export default function LanguageSelector() {
 
   const accept = async () => {
     // TODO: handle errors
-    await client.setOption("Language", language);
+    await client.language.setLanguages([language]);
     dispatch({ type: "ACCEPT" });
   };
 

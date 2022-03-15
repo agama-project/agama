@@ -3,22 +3,28 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import LanguageSelector from "./LanguageSelector";
-import InstallerClient from "./lib/InstallerClient";
+import { createClient } from "./lib/client";
 
-jest.mock("./lib/InstallerClient");
+jest.mock("./lib/client");
 
 const languages = [
   { id: "en_US", name: "English" },
   { id: "de_DE", name: "German" }
 ];
 
-const clientMock = {
+const setLanguagesFn = jest.fn().mockResolvedValue();
+
+const languageMock = {
   getLanguages: () => Promise.resolve(languages),
-  getOption: () => Promise.resolve("en_US")
+  getSelectedLanguages: () => Promise.resolve(["en_US"]),
+  setLanguages: setLanguagesFn
 };
 
 beforeEach(() => {
-  InstallerClient.mockImplementation(() => clientMock);
+  // if defined outside, the mock is cleared automatically
+  createClient.mockImplementation(() => {
+    return { language: languageMock };
+  });
 });
 
 it("displays the proposal", async () => {
@@ -27,19 +33,6 @@ it("displays the proposal", async () => {
 });
 
 describe("when the user changes the language", () => {
-  let setOptionFn;
-
-  beforeEach(() => {
-    // if defined outside, the mock is cleared automatically
-    setOptionFn = jest.fn().mockResolvedValue();
-    InstallerClient.mockImplementation(() => {
-      return {
-        ...clientMock,
-        setOption: setOptionFn
-      };
-    });
-  });
-
   it("changes the selected language", async () => {
     installerRender(<LanguageSelector />);
     const button = await screen.findByRole("button", { name: "English" });
@@ -50,6 +43,6 @@ describe("when the user changes the language", () => {
     userEvent.click(screen.getByRole("button", { name: "Confirm" }));
 
     await screen.findByRole("button", { name: "German" });
-    expect(setOptionFn).toHaveBeenCalledWith("Language", "de_DE");
+    expect(setLanguagesFn).toHaveBeenCalledWith(["de_DE"]);
   });
 });

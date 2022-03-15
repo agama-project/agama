@@ -3,34 +3,39 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Overview from "./Overview";
-import InstallerClient from "./lib/InstallerClient";
+import { createClient } from "./lib/client";
 
-jest.mock("./lib/InstallerClient");
+jest.mock("./lib/client");
 
-const proposal = [
-  { mount: "/", type: "Btrfs", device: "/dev/sda1", size: 100000000 },
-  { mount: "/home", type: "Ext4", device: "/dev/sda2", size: 10000000000 }
-];
-const disks = [{ name: "/dev/sda" }, { name: "/dev/sdb" }];
-const languages = [{ id: "en_US", name: "English" }];
-const products = [{ name: "openSUSE", display_name: "openSUSE Tumbleweed" }];
-const options = {
-  Language: "en_US",
-  Product: "openSUSE",
-  Disk: "/dev/sda"
+const proposal = {
+  candidateDevices: ["/dev/sda"],
+  availableDevices: ["/dev/sda", "/dev/sdb"],
+  lvm: false
 };
+const actions = [{ text: "Mount /dev/sda1 as root", subvol: false }];
+const languages = [{ id: "en_US", name: "English" }];
+const products = [{ id: "openSUSE", name: "openSUSE Tumbleweed" }];
 const startInstallationFn = jest.fn();
 
 beforeEach(() => {
-  InstallerClient.mockImplementation(() => {
+  createClient.mockImplementation(() => {
     return {
-      getStorage: () => Promise.resolve(proposal),
-      getDisks: () => Promise.resolve(disks),
-      getLanguages: () => Promise.resolve(languages),
-      getProducts: () => Promise.resolve(products),
-      getOption: name => Promise.resolve(options[name]),
-      onPropertyChanged: jest.fn(),
-      startInstallation: startInstallationFn
+      storage: {
+        getStorageProposal: () => Promise.resolve(proposal),
+        getStorageActions: () => Promise.resolve(actions),
+        onActionsChange: jest.fn()
+      },
+      language: {
+        getLanguages: () => Promise.resolve(languages),
+        getSelectedLanguages: () => Promise.resolve(["en_US"])
+      },
+      software: {
+        getProducts: () => Promise.resolve(products),
+        getSelectedProduct: () => Promise.resolve("openSUSE")
+      },
+      manager: {
+        startInstallation: startInstallationFn
+      }
     };
   });
 });
@@ -41,7 +46,7 @@ test("renders the Overview", async () => {
   expect(title).toBeInTheDocument();
 
   await screen.findByText("English");
-  await screen.findByText("/home");
+  await screen.findByText("/dev/sda");
   await screen.findByText("openSUSE Tumbleweed");
 });
 

@@ -3,22 +3,32 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import ProductSelector from "./ProductSelector";
-import InstallerClient from "./lib/InstallerClient";
+import { createClient } from "./lib/client";
 
-jest.mock("./lib/InstallerClient");
+jest.mock("./lib/client");
 
 const products = [
-  { name: "openSUSE", display_name: "openSUSE Tumbleweed" },
-  { name: "micro", display_name: "openSUSE MicroOS" }
+  { id: "openSUSE", name: "openSUSE Tumbleweed" },
+  { id: "micro", name: "openSUSE MicroOS" }
 ];
 
-const clientMock = {
+const softwareMock = {
   getProducts: () => Promise.resolve(products),
-  getOption: () => Promise.resolve("micro")
+  getSelectedProduct: () => Promise.resolve("micro")
 };
 
+const selectProductFn = jest.fn().mockResolvedValue();
+
 beforeEach(() => {
-  InstallerClient.mockImplementation(() => clientMock);
+  // if defined outside, the mock is cleared automatically
+  createClient.mockImplementation(() => {
+    return {
+      software: {
+        ...softwareMock,
+        selectProduct: selectProductFn
+      }
+    };
+  });
 });
 
 it("displays the proposal", async () => {
@@ -27,19 +37,6 @@ it("displays the proposal", async () => {
 });
 
 describe("when the user changes the product", () => {
-  let setOptionFn;
-
-  beforeEach(() => {
-    // if defined outside, the mock is cleared automatically
-    setOptionFn = jest.fn().mockResolvedValue();
-    InstallerClient.mockImplementation(() => {
-      return {
-        ...clientMock,
-        setOption: setOptionFn
-      };
-    });
-  });
-
   it("changes the selected product", async () => {
     installerRender(<ProductSelector />);
     const button = await screen.findByRole("button", {
@@ -52,6 +49,7 @@ describe("when the user changes the product", () => {
     userEvent.click(screen.getByRole("button", { name: "Confirm" }));
 
     await screen.findByRole("button", { name: "openSUSE Tumbleweed" });
-    expect(setOptionFn).toHaveBeenCalledWith("Product", "openSUSE");
+    expect(selectProductFn).toHaveBeenCalledWith("openSUSE");
+    expect(selectProductFn).toHaveBeenCalledTimes(1);
   });
 });
