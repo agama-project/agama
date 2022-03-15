@@ -34,7 +34,8 @@ import {
   EOS_FACT_CHECK as OverviewIcon,
   EOS_TRANSLATE as LanguagesSelectionIcon,
   EOS_VOLUME as HardDriveIcon,
-  EOS_PACKAGES as ProductsIcon
+  EOS_PACKAGES as ProductsIcon,
+  EOS_MANAGE_ACCOUNTS as UsersIcon
 } from "eos-icons-react";
 
 function Overview() {
@@ -44,7 +45,7 @@ function Overview() {
     <Category title="Language" icon={LanguagesSelectionIcon}>
       <LanguageSelector />
     </Category>,
-    <Category title="Users" icon={ProductsIcon}>
+    <Category title="Users" icon={UsersIcon}>
       <Users />
     </Category>,
     <Category title="Product" icon={ProductsIcon}>
