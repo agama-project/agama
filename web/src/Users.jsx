@@ -87,17 +87,14 @@ export default function Users() {
     } else {
       return "Root Password Not Set. ";
     }
-  }
+  };
 
-const userLabel = () => {
+  const userLabel = () => {
     if (user !== undefined && user.userName != "") {
-        return "User " + user.userName + " Set.";
-      } else {
-        return "First User Not Set.";
-      }
-}
-    
-    return res;
+      return "User " + user.userName + " Set.";
+    } else {
+      return "First User Not Set.";
+    }
   };
 
   const rootUser = () => {
@@ -135,7 +132,7 @@ const userLabel = () => {
         <TextInput
           id="userPassword"
           type="password"
-  s        aria-label="user password"
+          aria-label="user password"
           value={user.password}
           onChange={v => dispatch({ type: "CHANGE", payload: { userPassword: v } })}
         />
