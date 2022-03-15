@@ -22,6 +22,7 @@
 require "singleton"
 require "yast"
 require "y2network/proposal_settings"
+Yast.import "Lan"
 
 module DInstaller
   # Backend class to handle network configuration
@@ -35,7 +36,6 @@ module DInstaller
     # @param _progress [Progress] Progress reporting class
     def probe(_progress)
       logger.info "Probing network"
-      Yast.import "Lan"
       Yast::Lan.read_config
       settings = Y2Network::ProposalSettings.instance
       settings.refresh_packages
