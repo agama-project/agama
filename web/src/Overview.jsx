@@ -50,8 +50,8 @@ function Overview() {
       <Users />
     </Category>,
     <Category title="Product" icon={ProductsIcon}>
-    <ProductSelector />
-  </Category>,
+      <ProductSelector />
+    </Category>,
     <Category title="Target" icon={HardDriveIcon}>
       <Storage />
     </Category>

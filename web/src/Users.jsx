@@ -1,7 +1,15 @@
 import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { Button, Checkbox, Form, FormGroup, TextInput } from "@patternfly/react-core";
+import {
+  Button,
+  Checkbox,
+  Form,
+  FormGroup,
+  Modal,
+  ModalVariant,
+  TextInput
+} from "@patternfly/react-core";
 
 const reducer = (state, action) => {
   switch (action.type) {
