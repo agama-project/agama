@@ -64,24 +64,4 @@ describe("InstallationProgress", () => {
       expect(button).toHaveAttribute("disabled");
     });
   });
-
-  describe("when installation finished", () => {
-    beforeEach(() => {
-      getStatusFn = () => statuses.INSTALLED;
-    });
-
-    it("shows the finished installation screen", async () => {
-      authRender(<InstallationProgress />);
-
-      await screen.findByText("Congratulations!");
-      await screen.findByRole("button", { name: /Finish/ });
-    });
-
-    it("shows enabled 'Finish' action", async () => {
-      authRender(<InstallationProgress />);
-
-      const button = await screen.findByRole("button", { name: /Finish/ });
-      expect(button).not.toHaveAttribute("disabled");
-    });
-  });
 });

@@ -28,7 +28,6 @@ import { Alert, Button, Progress, Stack, StackItem, Text } from "@patternfly/rea
 import Center from "./Center";
 import Layout from "./Layout";
 import Category from "./Category";
-import InstallationFinished from "./InstallationFinished";
 
 import {
   EOS_DOWNLOADING as ProgressIcon,
@@ -102,8 +101,6 @@ function InstallationProgress() {
       </Button>
     );
   };
-
-  if (status === INSTALLED) return <InstallationFinished />;
 
   return (
     <Layout sectionTitle={mainTitle} SectionIcon={ProgressIcon} FooterActions={Actions}>
