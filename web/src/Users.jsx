@@ -153,7 +153,10 @@ const userLabel = () => {
   return (
     <>
       <Button variant="link" onClick={open}>
-        {label()}
+        {rootLabel()}
+      </Button>
+      <Button variant="link" onClick={open}>
+        {userLabel()}
       </Button>
 
       <Modal
