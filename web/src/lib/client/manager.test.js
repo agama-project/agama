@@ -6,6 +6,7 @@ const dbusClient = {};
 let managerProxy = {
   wait: jest.fn(),
   Commit: jest.fn(),
+  Probe: jest.fn(),
   Status: 2
 };
 
@@ -20,6 +21,14 @@ describe("#getStatus", () => {
     const client = new ManagerClient(dbusClient);
     const status = await client.getStatus();
     expect(status).toEqual(2);
+  });
+});
+
+describe("#startProbing", () => {
+  it("(re)starts the probing process", async () => {
+    const client = new ManagerClient(dbusClient);
+    await client.startProbing();
+    expect(managerProxy.Probe).toHaveBeenCalledWith();
   });
 });
 
