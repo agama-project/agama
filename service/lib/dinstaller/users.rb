@@ -70,7 +70,7 @@ module DInstaller
       user.password = Y2Users::Password.create_plain(password)
       config.attach_element(user)
       config.login.autologin_user = auto_login ? user : nil
-    end
+    endInstalling Software
 
     def write(_progress)
       system_config = Y2Users::ConfigManager.instance.system(force_read: true)

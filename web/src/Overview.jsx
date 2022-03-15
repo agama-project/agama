@@ -44,9 +44,12 @@ function Overview() {
     <Category title="Language" icon={LanguagesSelectionIcon}>
       <LanguageSelector />
     </Category>,
-    <Category title="Product" icon={ProductsIcon}>
-      <ProductSelector />
+    <Category title="Users" icon={ProductsIcon}>
+      <Users />
     </Category>,
+    <Category title="Product" icon={ProductsIcon}>
+    <ProductSelector />
+  </Category>,
     <Category title="Target" icon={HardDriveIcon}>
       <Storage />
     </Category>
