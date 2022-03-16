@@ -74,7 +74,7 @@ export default function Users() {
 
   const open = () => dispatch({ type: "OPEN" });
 
-  const cancel = () => dispatch({ type: "CANCEL" });FormGroup
+  const cancel = () => dispatch({ type: "CANCEL" });
 
   const accept = async () => {
     // TODO: handle errors

@@ -73,7 +73,7 @@ export default function RootUser() {
 
   const rootForm = () => {
     return (
-      <FormGroup fieldId="rootPassword" label="Root User">
+      <FormGroup fieldId="rootPassword" label="Root Password">
         <TextInput
           id="rootPassword"
           type="password"
