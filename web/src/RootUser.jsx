@@ -9,7 +9,7 @@ const reducer = (state, action) => {
       return { ...state, ...action.payload };
     }
     case "ACCEPT": {
-      return { ...state, isFormOpen: false };
+      return { ...state, isFormOpen: false, ...action.payload };
     }
 
     case "CANCEL": {
@@ -60,7 +60,8 @@ export default function RootUser() {
     if (rootPassword !== hiddenPassword && rootPassword !== "") {
       await client.users.setRootPassword(rootPassword);
     }
-    dispatch({ type: "ACCEPT" });
+    // TODO use signals instead
+    dispatch({ type: "ACCEPT", payload: { rootPassword: hiddenPassword } });
   };
 
   const rootLabel = () => {
