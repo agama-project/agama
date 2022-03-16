@@ -29,7 +29,8 @@ import Category from "./Category";
 import LanguageSelector from "./LanguageSelector";
 import ProductSelector from "./ProductSelector";
 import Storage from "./Storage";
-import Users from "./Users";
+import FirstUser from "./FirstUser";
+import RootUser from "./RootUser";
 
 import {
   EOS_FACT_CHECK as OverviewIcon,
@@ -47,7 +48,8 @@ function Overview() {
       <LanguageSelector />
     </Category>,
     <Category title="Users" icon={UsersIcon}>
-      <Users />
+      <RootUser />
+      <FirstUser />
     </Category>,
     <Category title="Product" icon={ProductsIcon}>
       <ProductSelector />
@@ -77,7 +79,7 @@ function Overview() {
     return <Alert isInline isPlain title={text} />;
   };
 
-  const renderCategories = () => {
+  const renderCategories = () => {Root
     return categories.map(category => (
       <FlexItem key={category.props.title} className="installation-overview-section">
         {category}
