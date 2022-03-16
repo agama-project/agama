@@ -22,6 +22,7 @@
 require "y2storage/storage_manager"
 require "y2storage/guided_proposal"
 require "y2storage/proposal_settings"
+require "y2storage/dialogs/guided_setup/helpers/disk"
 
 module DInstaller
   module Storage
@@ -41,6 +42,21 @@ module DInstaller
       # @return [Array<Y2Storage::Device>]
       def available_devices
         disk_analyzer.candidate_disks
+      end
+
+      # Label that should be used to represent the given disk in the UI
+      #
+      # The label has the form: "NAME, SIZE, [USB], INSTALLED_SYSTEMS".
+      #
+      # Examples:
+      #
+      #   "/dev/sda, 250.00 GiB, Windows, OpenSUSE"
+      #   "/dev/sdb, 8.00 GiB, USB"
+      #
+      # @param device [Y2Storage::Device]
+      # @return [String]
+      def available_device_label(device)
+        disk_helper.label(device)
       end
 
       # Name of devices where to perform the installation
@@ -118,6 +134,13 @@ module DInstaller
       # @return [Y2Storage::DiskAnalyzer]
       def disk_analyzer
         storage_manager.probed_disk_analyzer
+      end
+
+      # Helper to generate a disk label
+      #
+      # @return [Helpers::Disk]
+      def disk_helper
+        @disk_helper ||= Y2Storage::Dialogs::GuidedSetup::Helpers::Disk.new(disk_analyzer)
       end
 
       # Devicegraph representing the system

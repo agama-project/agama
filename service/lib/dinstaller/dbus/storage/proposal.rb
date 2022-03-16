@@ -52,7 +52,7 @@ module DInstaller
 
           dbus_reader :candidate_devices, "as"
 
-          dbus_reader :available_devices, "as"
+          dbus_reader :available_devices, "a(ssa{sv})"
 
           # result: 0 success; 1 error
           dbus_method :Calculate, "in settings:a{sv}, out result:u" do |settings|
@@ -67,7 +67,9 @@ module DInstaller
 
         # @see DInstaller::Storage::Proposal
         def available_devices
-          backend.available_devices.map(&:name)
+          backend.available_devices.map do |dev|
+            [dev.name, backend.available_device_label(dev), {}]
+          end
         end
 
         # @see DInstaller::Storage::Proposal

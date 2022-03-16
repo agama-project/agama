@@ -50,7 +50,7 @@ export default function TargetSelector({ target, targets, onAccept }) {
 
   const buildSelector = () => {
     const selectorOptions = targets.map(target => {
-      return <FormSelectOption key={target} value={target} label={target} />;
+      return <FormSelectOption key={target.id} value={target.id} label={target.label} />;
     });
 
     return (

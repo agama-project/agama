@@ -52,7 +52,10 @@ export default class StorageClient {
   async getStorageProposal() {
     const proxy = await this.proxy(STORAGE_PROPOSAL_IFACE);
     return {
-      availableDevices: proxy.AvailableDevices.map(d => d.v),
+      availableDevices: proxy.AvailableDevices.map(dev => {
+        const [{ v: id }, { v: label }] = dev.v;
+        return { id, label };
+      }),
       candidateDevices: proxy.CandidateDevices.map(d => d.v),
       lvm: proxy.LVM
     };

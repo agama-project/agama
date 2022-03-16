@@ -9,7 +9,9 @@ jest.mock("./lib/client");
 
 const proposal = {
   candidateDevices: ["/dev/sda"],
-  availableDevices: ["/dev/sda", "/dev/sdb"],
+  availableDevices: [
+    {id: "/dev/sda", label: "/dev/sda, 500 GiB"}, {id: "/dev/sdb", label: "/dev/sdb, 650 GiB"}
+  ],
   lvm: false
 };
 const actions = [{ text: "Mount /dev/sda1 as root", subvol: false }];
