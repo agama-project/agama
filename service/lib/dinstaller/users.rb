@@ -68,7 +68,7 @@ module DInstaller
       user = Y2Users::User.new(user_name)
       user.gecos = [full_name]
       user.password = Y2Users::Password.create_plain(password)
-      config.attach_element(user)
+      config.attach(user)
       config.login.autologin_user = auto_login ? user : nil
     end
     

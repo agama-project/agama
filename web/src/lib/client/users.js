@@ -57,7 +57,7 @@ export default class UsersClient {
    */
   async setUser(user) {
     const proxy = await this.proxy(USERS_IFACE);
-    return proxy.SetFirstUser(user.fullName, user.userName, user.password, user.autologin);
+    return proxy.SetFirstUser(user.fullName, user.userName, user.password, user.autologin, {});
   }
 
   /**
