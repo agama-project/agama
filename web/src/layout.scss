@@ -98,7 +98,8 @@
   padding: 1rem;
 
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  // We haven't decided yet the "final" distribution for the footer.
+  // grid-template-columns: 2fr 1fr;
   gap: 1rem 1rem;
 }
 
@@ -115,4 +116,8 @@
 .layout__footer-actions-area {
   align-self: center;
   text-align: center;
+
+  display: flex;
+  justify-content: end;
+  gap: 1rem;
 }

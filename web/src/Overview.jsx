@@ -22,7 +22,7 @@
 import React from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { Alert, Button, Flex, FlexItem } from "@patternfly/react-core";
+import { Button, Flex, FlexItem } from "@patternfly/react-core";
 
 import Layout from "./Layout";
 import Category from "./Category";
@@ -54,13 +54,11 @@ function Overview() {
 
   const InstallButton = () => {
     return (
-      <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-        <FlexItem>
-          <Button isLarge variant="primary" onClick={() => client.manager.startInstallation()}>
-            Install
-          </Button>
-        </FlexItem>
-      </Flex>
+      <>
+        <Button isLarge variant="primary" onClick={() => client.manager.startInstallation()}>
+          Install
+        </Button>
+      </>
     );
   };
 
