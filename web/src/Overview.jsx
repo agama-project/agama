@@ -79,7 +79,7 @@ function Overview() {
     return <Alert isInline isPlain title={text} />;
   };
 
-  const renderCategories = () => {Root
+  const renderCategories = () => {
     return categories.map(category => (
       <FlexItem key={category.props.title} className="installation-overview-section">
         {category}
