@@ -62,14 +62,6 @@ function Overview() {
     );
   };
 
-  const OverviewWarnings = () => {
-    // FIXME: this is just an example... drop it or use real messaages/warnings if needed
-    const text =
-      "This area is always on top, some important information or even warnings can be shown here.";
-
-    return <Alert isInline isPlain title={text} />;
-  };
-
   const renderCategories = () => {
     return categories.map(category => (
       <FlexItem key={category.props.title} className="installation-overview-section">
@@ -83,7 +75,6 @@ function Overview() {
       sectionTitle="Installation Summary"
       SectionIcon={OverviewIcon}
       FooterActions={InstallButton}
-      FooterMessages={OverviewWarnings}
     >
       <Flex direction={{ default: "column" }}>{renderCategories()}</Flex>
     </Layout>
