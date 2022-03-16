@@ -19,54 +19,68 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useReducer } from "react";
 import { useInstallerClient } from "./context/installer";
 
 import DBusError from "./DBusError";
 import Overview from "./Overview";
+import ProbingProgress from "./ProbingProgress";
 import InstallationProgress from "./InstallationProgress";
 import InstallationFinished from "./InstallationFinished";
+
 import statuses from "./lib/client/statuses";
 
 const { PROBING, INSTALLING, INSTALLED } = statuses;
-const inProgress = [PROBING, INSTALLING];
+
+const init = status => ({
+  probing: status === PROBING,
+  installing: status === INSTALLING,
+  finished: status === INSTALLED,
+  dbusError: null
+});
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "CHANGE_STATUS": {
+      return init(action.payload.status);
+    }
+    case "SET_DBUS_ERROR": {
+      return { ...state, dbusError: action.payload.error };
+    }
+    default: {
+      throw new Error(`Unsupported action type: ${action.type}`);
+    }
+  }
+};
 
 function Installer() {
   const client = useInstallerClient();
-  // TODO: use reducer for states
-  // set initial state to true to avoid async calls to dbus
-  const [isProgress, setIsProgress] = useState(true);
-  const [isFinished, setIsFinished] = useState(false);
-  const [isDBusError, setIsDBusError] = useState(false);
+  const [state, dispatch] = useReducer(reducer, PROBING, init);
 
   useEffect(async () => {
     try {
       const status = await client.manager.getStatus();
-      setIsProgress(inProgress.includes(status));
-      setIsFinished(status === INSTALLED);
-    } catch (err) {
-      console.error(err);
-      setIsDBusError(false);
+      dispatch({ type: "CHANGE_STATUS", payload: { status } });
+    } catch (error) {
+      console.error(error);
+      dispatch({ type: "SET_DBUS_ERROR", payload: { error } });
     }
   }, []);
 
   useEffect(() => {
     return client.manager.onChange(changes => {
-      console.log("Problem is here!");
       if ("Status" in changes) {
-        setIsProgress(inProgress.includes(changes.Status));
-        setIsFinished(changes.Status == INSTALLED);
-        setIsDBusError(false); // rescue when dbus start acting
+        dispatch({ type: "CHANGE_STATUS", payload: { status: changes.Status } });
       }
     });
   }, []);
 
-  // TODO: add suppport for installation complete ui
-  if (isDBusError) return <DBusError />;
+  if (state.dbusError) return <DBusError />;
+  if (state.probing) return <ProbingProgress />;
+  if (state.installing) return <InstallationProgress />;
+  if (state.finished) return <InstallationFinished />;
 
-  if (isFinished) return <InstallationFinished />;
-
-  return isProgress ? <InstallationProgress /> : <Overview />;
+  return <Overview />;
 }
 
 export default Installer;
