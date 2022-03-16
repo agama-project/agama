@@ -27,13 +27,16 @@ import Overview from "./Overview";
 import ProbingProgress from "./ProbingProgress";
 import InstallationProgress from "./InstallationProgress";
 import InstallationFinished from "./InstallationFinished";
+import LoadingEnvironment from "./LoadingEnvironment";
 
 import statuses from "./lib/client/statuses";
 
-const { PROBING, INSTALLING, INSTALLED } = statuses;
+const { PROBING, PROBED, INSTALLING, INSTALLED } = statuses;
 
 const init = status => ({
+  loading: status === null,
   probing: status === PROBING,
+  probed: status === PROBED,
   installing: status === INSTALLING,
   finished: status === INSTALLED,
   dbusError: null
@@ -55,14 +58,13 @@ const reducer = (state, action) => {
 
 function Installer() {
   const client = useInstallerClient();
-  const [state, dispatch] = useReducer(reducer, PROBING, init);
+  const [state, dispatch] = useReducer(reducer, null, init);
 
   useEffect(async () => {
     try {
       const status = await client.manager.getStatus();
       dispatch({ type: "CHANGE_STATUS", payload: { status } });
     } catch (error) {
-      console.error(error);
       dispatch({ type: "SET_DBUS_ERROR", payload: { error } });
     }
   }, []);
@@ -76,6 +78,7 @@ function Installer() {
   }, []);
 
   if (state.dbusError) return <DBusError />;
+  if (state.loading) return <LoadingEnvironment />;
   if (state.probing) return <ProbingProgress />;
   if (state.installing) return <InstallationProgress />;
   if (state.finished) return <InstallationFinished />;
