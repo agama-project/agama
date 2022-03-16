@@ -52,7 +52,14 @@ module DInstaller
 
           dbus_reader :candidate_devices, "as"
 
-          dbus_reader :available_devices, "as"
+          # The first string is the name of the device (as expected by #Calculate for
+          # the setting CandidateDevices), the second one is the label to represent that device in
+          # the UI when further information is needed.
+          #
+          # TODO: this representation is a temporary solution. In the future we should likely
+          # return more complex structures, probably with an interface similar to
+          # com.redhat.Blivet0.Device or org.freedesktop.UDisks2.Block.
+          dbus_reader :available_devices, "a(ssa{sv})"
 
           # result: 0 success; 1 error
           dbus_method :Calculate, "in settings:a{sv}, out result:u" do |settings|
@@ -65,9 +72,18 @@ module DInstaller
           end
         end
 
+        # List of disks available for installation
+        #
+        # Each device is represented by an array containing id and UI label. See the documentation
+        # of the available_devices DBus reader.
+        #
         # @see DInstaller::Storage::Proposal
+        #
+        # @return [Array<Array>]
         def available_devices
-          backend.available_devices.map(&:name)
+          backend.available_devices.map do |dev|
+            [dev.name, backend.device_label(dev), {}]
+          end
         end
 
         # @see DInstaller::Storage::Proposal

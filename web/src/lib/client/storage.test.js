@@ -8,8 +8,22 @@ const dbusClient = {};
 const storageProposalProxy = {
   wait: jest.fn(),
   AvailableDevices: [
-    { t: "s", v: "/dev/sda" },
-    { t: "s", v: "/dev/sdb" }
+    {
+      t: "av",
+      v: [
+        { t: "s", v: "/dev/sda" },
+        { t: "s", v: "/dev/sda, 950 GiB, Windows" },
+        { t: "a{sv}", v: {} }
+      ]
+    },
+    {
+      t: "av",
+      v: [
+        { t: "s", v: "/dev/sdb" },
+        { t: "s", v: "/dev/sdb, 500 GiB" },
+        { t: "a{sv}", v: {} }
+      ]
+    }
   ],
   CandidateDevices: [{ t: "s", v: "/dev/sda" }],
   LVM: true
@@ -41,7 +55,10 @@ describe("#getStorageProposal", () => {
     const client = new StorageClient(dbusClient);
     const proposal = await client.getStorageProposal();
     expect(proposal).toEqual({
-      availableDevices: ["/dev/sda", "/dev/sdb"],
+      availableDevices: [
+        { id: "/dev/sda", label: "/dev/sda, 950 GiB, Windows" },
+        { id: "/dev/sdb", label: "/dev/sdb, 500 GiB" }
+      ],
       candidateDevices: ["/dev/sda"],
       lvm: true
     });

@@ -8,7 +8,9 @@ import { createClient } from "./lib/client";
 jest.mock("./lib/client");
 
 const proposalSettings = {
-  availableDevices: ["/dev/sda", "/dev/sdb"],
+  availableDevices: [
+    {id: "/dev/sda", label: "/dev/sda, 500 GiB"}, {id: "/dev/sdb", label: "/dev/sdb, 650 GiB"}
+  ],
   candidateDevices: ["/dev/sda"],
   lvm: false
 };
