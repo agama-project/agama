@@ -46,6 +46,9 @@ module DInstaller
 
       # Label that should be used to represent the given disk in the UI
       #
+      # NOTE: this is likely a temporary solution. The label should not be calculated in the backend
+      # in the future. See the note about available_devices at {DBus::Storage::Proposal}.
+      #
       # The label has the form: "NAME, SIZE, [USB], INSTALLED_SYSTEMS".
       #
       # Examples:
@@ -55,7 +58,7 @@ module DInstaller
       #
       # @param device [Y2Storage::Device]
       # @return [String]
-      def available_device_label(device)
+      def device_label(device)
         disk_helper.label(device)
       end
 
@@ -138,7 +141,7 @@ module DInstaller
 
       # Helper to generate a disk label
       #
-      # @return [Helpers::Disk]
+      # @return [Y2Storage::Dialogs::GuidedSetup::Helpers::Disk]
       def disk_helper
         @disk_helper ||= Y2Storage::Dialogs::GuidedSetup::Helpers::Disk.new(disk_analyzer)
       end
