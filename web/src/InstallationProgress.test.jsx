@@ -1,67 +1,27 @@
 import React from "react";
+
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { authRender } from "./test-utils";
+
 import InstallationProgress from "./InstallationProgress";
-import { createClient } from "./lib/client";
-import statuses from "./lib/client/statuses";
-
-jest.mock("./lib/client");
-
-let getStatusFn = jest.fn();
 
 describe("InstallationProgress", () => {
-  beforeEach(() => {
-    createClient.mockImplementation(() => {
-      return {
-        manager: {
-          onChange: _changes => Promise.resolve({}),
-          getStatus: getStatusFn
-        }
-      };
-    });
+  it("uses 'Installing' as title", async () => {
+    authRender(<InstallationProgress />);
+
+    await screen.findByText("Installing");
   });
 
-  describe("when probing the system", () => {
-    beforeEach(() => {
-      getStatusFn = () => statuses.PROBING;
-    });
+  it("shows progress bars", async () => {
+    authRender(<InstallationProgress />);
 
-    it("uses 'Probing' as title", async () => {
-      authRender(<InstallationProgress />);
-
-      await screen.findByText("Probing");
-    });
-
-    it("shows none actions", async () => {
-      authRender(<InstallationProgress />);
-
-      await screen.findByText("Probing");
-
-      const button = screen.queryByRole("button", { name: /Finish/ });
-      expect(button).toBeNull();
-    });
+    await screen.findByLabelText("Main progress bar");
   });
 
-  describe("when installing", () => {
-    beforeEach(() => {
-      getStatusFn = () => statuses.INSTALLING;
-    });
+  it("shows disabled 'Finish' action", async () => {
+    authRender(<InstallationProgress />);
 
-    it("uses 'Installing' as title", async () => {
-      authRender(<InstallationProgress />);
-
-      await screen.findByText("Installing");
-
-      const button = await screen.findByRole("button", { name: /Finish/ });
-      expect(button).toHaveAttribute("disabled");
-    });
-
-    it("shows disabled 'Finish' action", async () => {
-      authRender(<InstallationProgress />);
-
-      const button = await screen.findByRole("button", { name: /Finish/ });
-      expect(button).toHaveAttribute("disabled");
-    });
+    const button = await screen.findByRole("button", { name: /Finish/i });
+    expect(button).toHaveAttribute("disabled");
   });
 });

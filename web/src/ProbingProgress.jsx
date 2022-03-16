@@ -21,37 +21,18 @@
 
 import React, { useState, useEffect } from "react";
 
-import { Button } from "@patternfly/react-core";
-
 import Center from "./Center";
 import Layout from "./Layout";
 import ProgressReport from "./ProgressReport";
 
-import { EOS_DOWNLOADING as SectionIcon } from "eos-icons-react";
+import { EOS_MULTISTATE as SectionIcon } from "eos-icons-react";
 
-function InstallationProgress() {
-  // FIXME: this is an example. Update or drop it.
-  const Actions = () => {
-    return (
-      <Button
-        isLarge
-        isDisabled
-        onClick={() =>
-          console.log("FIXME: use the button for triggering useful action while installing?")
-        }
-      >
-        Finish
-      </Button>
-    );
-  };
+const ProbingProgress = () => (
+  <Layout sectionTitle="Probing" SectionIcon={SectionIcon}>
+    <Center>
+      <ProgressReport />
+    </Center>
+  </Layout>
+);
 
-  return (
-    <Layout sectionTitle="Installing" SectionIcon={SectionIcon} FooterActions={Actions}>
-      <Center>
-        <ProgressReport />
-      </Center>
-    </Layout>
-  );
-}
-
-export default InstallationProgress;
+export default ProbingProgress;

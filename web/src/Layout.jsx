@@ -90,7 +90,13 @@ function Layout({
       <div className="layout__footer">
         <div className="layout__footer-info-area">{FooterMessages && <FooterMessages />}</div>
 
-        <div className="layout__footer-actions-area">{FooterActions && <FooterActions />}</div>
+        <div
+          className="layout__footer-actions-area"
+          role="navigation"
+          aria-label="Installer Actions"
+        >
+          {FooterActions && <FooterActions />}
+        </div>
       </div>
     );
   };
