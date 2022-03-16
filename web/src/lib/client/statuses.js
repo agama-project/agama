@@ -19,11 +19,11 @@
  * find current contact information at www.suse.com.
  */
 
-const ERROR = 0;
-const PROBING = 1;
-const PROBED = 2;
-const INSTALLING = 3;
-const INSTALLED = 4;
+export const ERROR = 0;
+export const PROBING = 1;
+export const PROBED = 2;
+export const INSTALLING = 3;
+export const INSTALLED = 4;
 
 export default {
   ERROR,

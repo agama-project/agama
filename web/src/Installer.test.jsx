@@ -4,7 +4,7 @@ import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { authRender } from "./test-utils";
 import { createClient } from "./lib/client";
-import statuses from "./lib/client/statuses";
+import { PROBING, PROBED, INSTALLING, INSTALLED } from "./lib/client/statuses";
 
 import Installer from "./Installer";
 
@@ -66,7 +66,7 @@ describe("Installer", () => {
       // manager#onChange. We're insterested in the latest one here.
       const cb = callbacks[callbacks.length - 1];
       act(() => {
-        cb({ Status: statuses.PROBING });
+        cb({ Status: PROBING });
       });
 
       await screen.findByText("ProbingProgress Mock");
@@ -81,7 +81,7 @@ describe("Installer", () => {
       // manager#onChange. We're insterested in the latest one here.
       const cb = callbacks[callbacks.length - 1];
       act(() => {
-        cb({ Status: statuses.INSTALLING });
+        cb({ Status: INSTALLING });
       });
 
       await screen.findByText("InstallationProgress Mock");
@@ -96,7 +96,7 @@ describe("Installer", () => {
       // manager#onChange. We're insterested in the latest one here.
       const cb = callbacks[callbacks.length - 1];
       act(() => {
-        cb({ Status: statuses.INSTALLED });
+        cb({ Status: INSTALLED });
       });
 
       await screen.findByText("InstallationFinished Mock");
@@ -111,7 +111,7 @@ describe("Installer", () => {
       // manager#onChange. We're insterested in the latest one here.
       const cb = callbacks[callbacks.length - 1];
       act(() => {
-        cb({ Status: statuses.PROBED });
+        cb({ Status: PROBED });
       });
 
       await screen.findByText("Overview Mock");

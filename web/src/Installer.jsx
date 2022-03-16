@@ -22,16 +22,14 @@
 import React, { useEffect, useReducer } from "react";
 import { useInstallerClient } from "./context/installer";
 
+import { PROBING, PROBED, INSTALLING, INSTALLED } from "./lib/client/statuses";
+
 import DBusError from "./DBusError";
 import Overview from "./Overview";
 import ProbingProgress from "./ProbingProgress";
 import InstallationProgress from "./InstallationProgress";
 import InstallationFinished from "./InstallationFinished";
 import LoadingEnvironment from "./LoadingEnvironment";
-
-import statuses from "./lib/client/statuses";
-
-const { PROBING, PROBED, INSTALLING, INSTALLED } = statuses;
 
 const init = status => ({
   loading: status === null,
