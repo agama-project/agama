@@ -22,7 +22,7 @@
 import React from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { Alert, Button, Flex, FlexItem } from "@patternfly/react-core";
+import { Alert, Button, Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
 
 import Layout from "./Layout";
 import Category from "./Category";
@@ -48,8 +48,14 @@ function Overview() {
       <LanguageSelector />
     </Category>,
     <Category title="Users" icon={UsersIcon}>
-      <RootUser />
-      <FirstUser />
+      <Stack>
+        <StackItem>
+          <RootUser />
+        </StackItem>
+        <StackItem>
+          <FirstUser />
+        </StackItem>
+      </Stack>
     </Category>,
     <Category title="Product" icon={ProductsIcon}>
       <ProductSelector />
