@@ -60,7 +60,7 @@ module DInstaller
       [user.full_name, user.name, config.login.autologin_user == user, {}]
     end
 
-    def assign_first_user(full_name, user_name, password, auto_login)
+    def assign_first_user(full_name, user_name, password, auto_login, _data)
       # at first remove previous first user
       config.users.reject(&:root?).map(&:id).each { |id| config.users.delete(id) }
       return if user_name.empty? # empty is used to remove first user
