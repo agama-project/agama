@@ -100,6 +100,10 @@ module DInstaller
         ::Bootloader::FinishClient.new.write
         progress.next_step("Installation Finished")
         status_manager.change(Status::Installed.new)
+      rescue StandardError => e
+        status = Status::Error.new.tap { |s| s.messages << e.message }
+        status_manager.change(status)
+        logger.error "Installation error: #{e.inspect}"
       end
     end
     # rubocop:enable Metrics/AbcSize
