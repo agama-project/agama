@@ -19,21 +19,46 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { List, ListItem } from "@patternfly/react-core";
+import React, { useState } from "react";
+import { List, ListItem, ExpandableSection } from "@patternfly/react-core";
+
+const renderActionsList = actions => {
+  const items = actions.map((a, i) => {
+    return (
+      <ListItem key={i} className={a.delete ? "delete-action" : ""}>
+        {a.text}
+      </ListItem>
+    );
+  });
+  return <List>{items}</List>;
+};
 
 const Proposal = ({ data = [] }) => {
-  const renderActions = () => {
-    return data.map((p, i) => {
-      return <ListItem key={i}>{p.text}</ListItem>;
-    });
-  };
+  const [isExpanded, setIsExpanded] = useState(false);
 
   if (data.length === 0) {
     return null;
   }
 
-  return <List>{renderActions()}</List>;
+  const generalActions = data.filter(a => !a.subvol);
+  const subvolActions = data.filter(a => a.subvol);
+  const detailsText = isExpanded ? "hide details" : "see details";
+  const toggleText = `${subvolActions.length} subvolumes actions (${detailsText})`;
+
+  return (
+    <>
+      {renderActionsList(generalActions)}
+      {subvolActions.length > 0 && (
+        <ExpandableSection
+          isExpanded={isExpanded}
+          onToggle={() => setIsExpanded(!isExpanded)}
+          toggleText={toggleText}
+        >
+          {renderActionsList(subvolActions)}
+        </ExpandableSection>
+      )}
+    </>
+  );
 };
 
 export default Proposal;
