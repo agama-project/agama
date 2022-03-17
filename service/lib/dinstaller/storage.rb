@@ -25,5 +25,6 @@ module DInstaller
   end
 end
 
+require "dinstaller/storage/manager"
 require "dinstaller/storage/proposal"
 require "dinstaller/storage/actions"

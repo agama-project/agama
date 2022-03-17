@@ -36,7 +36,7 @@ module DInstaller
     def initialize(logger)
       @logger = logger
       @products = []
-      @product = nil
+      @product = "" # do not use nil here, otherwise dbus crash
     end
 
     def select_product(name)
@@ -47,6 +47,9 @@ module DInstaller
 
     def probe(progress)
       logger.info "Probing software"
+      Yast::Pkg.SetSolverFlags(
+        "ignoreAlreadyRecommended" => false, "onlyRequires" => true
+      )
       # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
       Yast::Stage.Set("normal")
       progress.init_minor_steps(3, "Initialiaze target repositories")
@@ -57,7 +60,7 @@ module DInstaller
       Yast::Pkg.SourceLoad
       progress.next_minor_step("Making initial proposal")
       @products = Y2Packager::Product.available_base_products
-      @product = @products.first&.name
+      @product = @products.first&.name || ""
       proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
       logger.info "proposal #{proposal["raw_proposal"]}"
       progress.next_minor_step("Software probing finished")

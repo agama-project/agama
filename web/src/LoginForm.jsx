@@ -21,16 +21,7 @@
 
 import React, { useState, useRef } from "react";
 import { useAuthContext } from "./context/auth";
-import {
-  Alert,
-  Button,
-  Flex,
-  FlexItem,
-  Form,
-  FormAlert,
-  FormGroup,
-  TextInput
-} from "@patternfly/react-core";
+import { Alert, Button, Form, FormAlert, FormGroup, TextInput } from "@patternfly/react-core";
 
 import Center from "./Center";
 import Layout from "./Layout";
@@ -60,19 +51,15 @@ function LoginForm() {
 
   const SubmitButton = () => {
     return (
-      <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-        <FlexItem>
-          <Button
-            isLarge
-            variant="primary"
-            type="submit"
-            form="d-installer-login"
-            onClick={submitLogin}
-          >
-            Login
-          </Button>
-        </FlexItem>
-      </Flex>
+      <Button
+        isLarge
+        variant="primary"
+        type="submit"
+        form="d-installer-login"
+        onClick={submitLogin}
+      >
+        Login
+      </Button>
     );
   };
 

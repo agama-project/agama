@@ -22,7 +22,7 @@
 import React from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { Alert, Button, Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
+import { Button, Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
 
 import Layout from "./Layout";
 import Category from "./Category";
@@ -67,22 +67,12 @@ function Overview() {
 
   const InstallButton = () => {
     return (
-      <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-        <FlexItem>
-          <Button isLarge variant="primary" onClick={() => client.manager.startInstallation()}>
-            Install
-          </Button>
-        </FlexItem>
-      </Flex>
+      <>
+        <Button isLarge variant="primary" onClick={() => client.manager.startInstallation()}>
+          Install
+        </Button>
+      </>
     );
-  };
-
-  const OverviewWarnings = () => {
-    // FIXME: this is just an example... drop it or use real messaages/warnings if needed
-    const text =
-      "This area is always on top, some important information or even warnings can be shown here.";
-
-    return <Alert isInline isPlain title={text} />;
   };
 
   const renderCategories = () => {
@@ -98,7 +88,6 @@ function Overview() {
       sectionTitle="Installation Summary"
       SectionIcon={OverviewIcon}
       FooterActions={InstallButton}
-      FooterMessages={OverviewWarnings}
     >
       <Flex direction={{ default: "column" }}>{renderCategories()}</Flex>
     </Layout>

@@ -49,6 +49,14 @@ body {
   }
 }
 
+.component--centered {
+  text-align: center;
+}
+
+.success-icon {
+  fill: branding.$eos-bc-green-500;
+}
+
 // PatternFly overrides for using CSS Logical Properties
 
 .pf-l-split.pf-m-gutter > :not(:last-child) {
@@ -79,4 +87,8 @@ body {
 .pf-c-progress.pf-m-singleline .pf-c-progress__bar {
   grid-row: 1/3;
   grid-column: 1/3;
+}
+
+.delete-action {
+  font-weight: bold
 }

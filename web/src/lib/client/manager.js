@@ -28,6 +28,18 @@ export default class ManagerClient {
   constructor(dbusClient) {
     this._client = dbusClient;
   }
+  /**
+   * Run probing process
+   *
+   * The progress of the probing process can be tracked through installer
+   * signals (see {onSignal}).
+   *
+   * @return {Promise}
+   */
+  async startProbing() {
+    const proxy = await this.proxy(MANAGER_IFACE);
+    return proxy.Probe();
+  }
 
   /**
    * Start the installation process

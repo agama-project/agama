@@ -73,7 +73,11 @@ module DInstaller
         # @param action [Y2Storage::CompoundAction]
         # @return [Hash]
         def to_dbus(action)
-          { "Text" => backend.text_for(action), "Subvol" => backend.subvol_action?(action) }
+          {
+            "Text"   => action.sentence,
+            "Subvol" => action.device_is?(:btrfs_subvolume),
+            "Delete" => action.delete?
+          }
         end
       end
     end

@@ -20,31 +20,16 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
 
-import { InstallerClientProvider } from "./context/installer";
-import { AuthProvider } from "./context/auth";
-import { createClient } from "./lib/client";
+import { screen } from "@testing-library/react";
+import { authRender } from "./test-utils";
 
-const InstallerProvider = ({ children }) => {
-  const client = createClient();
-  return <InstallerClientProvider client={client}>{children}</InstallerClientProvider>;
-};
+import LoadingEnvironment from "./LoadingEnvironment";
 
-const AllProviders = ({ children }) => {
-  return (
-    <InstallerProvider>
-      <AuthProvider>{children}</AuthProvider>
-    </InstallerProvider>
-  );
-};
+describe("LoadingEnvironment", () => {
+  it("shows a loading messagen", async () => {
+    authRender(<LoadingEnvironment />);
 
-const installerRender = (ui, options = {}) => {
-  return render(ui, { wrapper: InstallerProvider, ...options });
-};
-
-const authRender = (ui, options = {}) => {
-  return render(ui, { wrapper: AllProviders, ...options });
-};
-
-export { installerRender, authRender };
+    await screen.findByText(/Loading installation environment/i);
+  });
+});

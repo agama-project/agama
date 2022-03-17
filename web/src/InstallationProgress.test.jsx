@@ -20,31 +20,31 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
 
-import { InstallerClientProvider } from "./context/installer";
-import { AuthProvider } from "./context/auth";
-import { createClient } from "./lib/client";
+import { screen } from "@testing-library/react";
+import { authRender } from "./test-utils";
 
-const InstallerProvider = ({ children }) => {
-  const client = createClient();
-  return <InstallerClientProvider client={client}>{children}</InstallerClientProvider>;
-};
+import InstallationProgress from "./InstallationProgress";
 
-const AllProviders = ({ children }) => {
-  return (
-    <InstallerProvider>
-      <AuthProvider>{children}</AuthProvider>
-    </InstallerProvider>
-  );
-};
+jest.mock("./ProgressReport", () => () => "ProgressReport Mock");
 
-const installerRender = (ui, options = {}) => {
-  return render(ui, { wrapper: InstallerProvider, ...options });
-};
+describe("InstallationProgress", () => {
+  it("uses 'Installing' as title", async () => {
+    authRender(<InstallationProgress />);
 
-const authRender = (ui, options = {}) => {
-  return render(ui, { wrapper: AllProviders, ...options });
-};
+    await screen.findByText("Installing");
+  });
 
-export { installerRender, authRender };
+  it("renders progress report", async () => {
+    authRender(<InstallationProgress />);
+
+    await screen.findByText("ProgressReport Mock");
+  });
+
+  it("does not show actions", async () => {
+    authRender(<InstallationProgress />);
+
+    const button = screen.queryByRole("navigation", { name: /Installer Actions/i });
+    expect(button).toBeNull();
+  });
+});

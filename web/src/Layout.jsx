@@ -21,8 +21,6 @@
 
 import React from "react";
 
-import { EOS_MENU as MenuIcon } from "eos-icons-react";
-
 /**
  * D-Installer main layout component.
  *
@@ -39,6 +37,7 @@ import { EOS_MENU as MenuIcon } from "eos-icons-react";
  *   </Layout>
  *
  * @param {object} props - component props
+ * @param {React.ReactNode} [props.MenuIcon] - the icon for the application menu
  * @param {string} [props.sectionTitle] - the section title in the header
  * @param {React.ReactNode} [props.SectionIcon] - the section icon in the header
  * @param {React.ReactNode} [props.FooterMessages] - messages to be  shown in the footer
@@ -47,6 +46,7 @@ import { EOS_MENU as MenuIcon } from "eos-icons-react";
  *
  */
 function Layout({
+  MenuIcon,
   sectionTitle,
   SectionIcon,
   FooterMessages,
@@ -90,7 +90,13 @@ function Layout({
       <div className="layout__footer">
         <div className="layout__footer-info-area">{FooterMessages && <FooterMessages />}</div>
 
-        <div className="layout__footer-actions-area">{FooterActions && <FooterActions />}</div>
+        <div
+          className="layout__footer-actions-area"
+          role="navigation"
+          aria-label="Installer Actions"
+        >
+          {FooterActions && <FooterActions />}
+        </div>
       </div>
     );
   };

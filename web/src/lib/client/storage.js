@@ -26,6 +26,11 @@ const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
 const ACTIONS_PATH = "/org/opensuse/DInstaller/Storage/Actions1";
 
+const buildAction = action => {
+  const { Text: textVar, Subvol: subvolVar, Delete: deleteVar } = action.v;
+  return { text: textVar.v, subvol: subvolVar.v, delete: deleteVar.v };
+};
+
 export default class StorageClient {
   constructor(dbusClient) {
     this._client = dbusClient;
@@ -38,10 +43,7 @@ export default class StorageClient {
    */
   async getStorageActions() {
     const proxy = await this.proxy(STORAGE_ACTIONS_IFACE);
-    return proxy.All.map(action => {
-      const { Text: textVar, Subvol: subvolVar } = action.v;
-      return { text: textVar.v, subvol: subvolVar.v };
-    });
+    return proxy.All.map(buildAction);
   }
 
   /**
@@ -52,7 +54,10 @@ export default class StorageClient {
   async getStorageProposal() {
     const proxy = await this.proxy(STORAGE_PROPOSAL_IFACE);
     return {
-      availableDevices: proxy.AvailableDevices.map(d => d.v),
+      availableDevices: proxy.AvailableDevices.map(dev => {
+        const [{ v: id }, { v: label }] = dev.v;
+        return { id, label };
+      }),
       candidateDevices: proxy.CandidateDevices.map(d => d.v),
       lvm: proxy.LVM
     };
@@ -72,10 +77,7 @@ export default class StorageClient {
    */
   onActionsChange(handler) {
     return this.onObjectChanged(ACTIONS_PATH, changes => {
-      const newActions = changes.All.v.map(action => {
-        const { Text: textVar, Subvol: subvolVar } = action.v;
-        return { text: textVar.v, subvol: subvolVar.v };
-      });
+      const newActions = changes.All.v.map(buildAction);
       handler({ All: newActions });
     });
   }
