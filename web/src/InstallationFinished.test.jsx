@@ -20,11 +20,13 @@
  */
 
 import React from "react";
+
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { authRender } from "./test-utils";
-import InstallationFinished from "./InstallationFinished";
 import { createClient } from "./lib/client";
+
+import InstallationFinished from "./InstallationFinished";
 
 jest.mock("./lib/client");
 
@@ -45,12 +47,6 @@ describe("InstallationFinished", () => {
     authRender(<InstallationFinished />);
 
     await screen.findByText("Congratulations!");
-  });
-
-  it("shows a 'Finish' button", async () => {
-    authRender(<InstallationFinished />);
-
-    await screen.findByRole("button", { name: /Finish/i });
   });
 
   it("shows a 'Restart Installation' button", async () => {
