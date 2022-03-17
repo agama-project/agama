@@ -37,22 +37,6 @@ module DInstaller
         main_actions + subvolume_actions
       end
 
-      # Text for the given action
-      #
-      # @param action [Y2Storage::CompoundAction]
-      # @return [String]
-      def text_for(action)
-        action.sentence
-      end
-
-      # Whether the action acts over a Btrfs subvolume
-      #
-      # @param action [Y2Storage::CompoundAction]
-      # @return [Boolean]
-      def subvol_action?(action)
-        action.device_is?(:btrfs_subvolume)
-      end
-
     private
 
       # @param [Logger]
@@ -92,6 +76,14 @@ module DInstaller
       def sort_actions(actions)
         delete, other = actions.partition(&:delete?)
         delete.concat(other)
+      end
+
+      # Whether the action acts over a Btrfs subvolume
+      #
+      # @param action [Y2Storage::CompoundAction]
+      # @return [Boolean]
+      def subvol_action?(action)
+        action.device_is?(:btrfs_subvolume)
       end
     end
   end

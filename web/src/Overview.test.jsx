@@ -10,7 +10,8 @@ jest.mock("./lib/client");
 const proposal = {
   candidateDevices: ["/dev/sda"],
   availableDevices: [
-    {id: "/dev/sda", label: "/dev/sda, 500 GiB"}, {id: "/dev/sdb", label: "/dev/sdb, 650 GiB"}
+    { id: "/dev/sda", label: "/dev/sda, 500 GiB" },
+    { id: "/dev/sdb", label: "/dev/sdb, 650 GiB" }
   ],
   lvm: false
 };

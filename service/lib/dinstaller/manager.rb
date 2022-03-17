@@ -22,14 +22,12 @@
 require "yast"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
-require "y2storage/storage_manager"
 require "dinstaller/network"
 require "dinstaller/status_manager"
 require "dinstaller/progress"
 require "dinstaller/software"
 require "dinstaller/users"
-require "dinstaller/storage/proposal"
-require "dinstaller/storage/actions"
+require "dinstaller/storage"
 
 Yast.import "Stage"
 
@@ -84,7 +82,7 @@ module DInstaller
         proposal = ::Bootloader::ProposalClient.new.make_proposal({})
         logger.info "Bootloader proposal #{proposal.inspect}"
         software.propose
-        Yast::WFM.CallFunction("inst_prepdisk", [])
+        storage.install(progress)
         progress.next_step("Installing Software")
         # call inst bootloader to get properly initialized bootloader
         # sysconfig before package installation
@@ -123,25 +121,18 @@ module DInstaller
       @users ||= Users.new(logger)
     end
 
-    # Storage proposal manager
-    #
-    # @return [Storage::Proposal]
-    def storage_proposal
-      @storage_proposal ||= Storage::Proposal.new(logger)
-    end
-
-    # Storage actions manager
-    #
-    # @return [Storage::Actions]
-    def storage_actions
-      @storage_actions ||= Storage::Actions.new(logger)
-    end
-
     # Network manager
     #
     # @return [Network]
     def network
       @network ||= Network.new(logger)
+    end
+
+    # Storage manager
+    #
+    # @return [Storage::Manager]
+    def storage
+      @storage ||= Storage::Manager.new(logger)
     end
 
   private
@@ -165,7 +156,7 @@ module DInstaller
       language.probe(progress)
 
       progress.next_step("Probing Storage")
-      probe_storage
+      storage.probe(progress)
 
       progress.next_step("Probing Software")
       software.probe(progress)
@@ -176,17 +167,6 @@ module DInstaller
       progress.next_step("Probing Finished")
 
       status_manager.change(Status::Probed.new)
-    end
-
-    # Probes storage devices and performs an initial proposal
-    #
-    # TODO: move to Storage::Manager ?
-    def probe_storage
-      logger.info "Probing storage and performing proposal"
-      progress.init_minor_steps(2, "Probing Storage Devices")
-      Y2Storage::StorageManager.instance.probe
-      progress.next_minor_step("Calculating Storage Proposal")
-      storage_proposal.calculate
     end
   end
 end

@@ -9,7 +9,8 @@ jest.mock("./lib/client");
 
 const proposalSettings = {
   availableDevices: [
-    {id: "/dev/sda", label: "/dev/sda, 500 GiB"}, {id: "/dev/sdb", label: "/dev/sdb, 650 GiB"}
+    { id: "/dev/sda", label: "/dev/sda, 500 GiB" },
+    { id: "/dev/sdb", label: "/dev/sdb, 650 GiB" }
   ],
   candidateDevices: ["/dev/sda"],
   lvm: false
@@ -20,7 +21,8 @@ let calculateStorageProposalFn;
 
 const storageMock = {
   getStorageProposal: () => Promise.resolve(proposalSettings),
-  getStorageActions: () => Promise.resolve([{ text: "Mount /dev/sda1 as root", subvol: false }])
+  getStorageActions: () =>
+    Promise.resolve([{ text: "Mount /dev/sda1 as root", subvol: false, delete: false }])
 };
 
 beforeEach(() => {
