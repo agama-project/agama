@@ -21,6 +21,7 @@
 
 require "yast"
 require "y2users"
+require "y2users/linux" # FIXME: linux is not in y2users file
 
 module DInstaller
   # Backend class between dbus service and yast code
