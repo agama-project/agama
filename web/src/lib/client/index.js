@@ -22,14 +22,17 @@
 import AuthClient from "./auth";
 import LanguageClient from "./language";
 import ManagerClient from "./manager";
+import Monitor from "./monitor";
 import SoftwareClient from "./software";
 import StorageClient from "./storage";
 import status from "./status";
 
 import cockpit from "../cockpit";
 
+const SERVICE_NAME = "org.opensuse.DInstaller";
+
 const createClient = () => {
-  const client = cockpit.dbus("org.opensuse.DInstaller", {
+  const client = cockpit.dbus(SERVICE_NAME, {
     bus: "system",
     superuser: "try"
   });
@@ -39,7 +42,8 @@ const createClient = () => {
     language: new LanguageClient(client),
     manager: new ManagerClient(client),
     software: new SoftwareClient(client),
-    storage: new StorageClient(client)
+    storage: new StorageClient(client),
+    monitor: new Monitor(SERVICE_NAME)
   };
 };
 

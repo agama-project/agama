@@ -50,6 +50,9 @@ beforeEach(() => {
       manager: {
         getStatus: getStatusFn,
         onChange: onChangeFn
+      },
+      monitor: {
+        onDisconnect: jest.fn()
       }
     };
   });
