@@ -19,16 +19,32 @@
  * find current contact information at www.suse.com.
  */
 
-const ERROR = 0;
-const PROBING = 1;
-const PROBED = 2;
-const INSTALLING = 3;
-const INSTALLED = 4;
+import React from "react";
 
-export default {
-  ERROR,
-  PROBING,
-  PROBED,
-  INSTALLING,
-  INSTALLED
-};
+import { screen } from "@testing-library/react";
+import { authRender } from "./test-utils";
+
+import ProbingProgress from "./ProbingProgress";
+
+jest.mock("./ProgressReport", () => () => "ProgressReport Mock");
+
+describe("ProbingProgress", () => {
+  it("uses 'Probing' as title", async () => {
+    authRender(<ProbingProgress />);
+
+    await screen.findByText("Probing");
+  });
+
+  it("renders progress report", async () => {
+    authRender(<ProbingProgress />);
+
+    await screen.findByText("ProgressReport Mock");
+  });
+
+  it("does not show actions", async () => {
+    authRender(<ProbingProgress />);
+
+    const button = screen.queryByRole("navigation", { name: /Installer Actions/i });
+    expect(button).toBeNull();
+  });
+});

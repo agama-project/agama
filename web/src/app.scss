@@ -49,6 +49,14 @@ body {
   }
 }
 
+.component--centered {
+  text-align: center;
+}
+
+.success-icon {
+  fill: branding.$eos-bc-green-500;
+}
+
 // PatternFly overrides for using CSS Logical Properties
 
 .pf-l-split.pf-m-gutter > :not(:last-child) {

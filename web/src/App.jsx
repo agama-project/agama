@@ -34,7 +34,7 @@ function App() {
 
   useEffect(autoLogin, []);
 
-  if (loggedIn == null) return <LoadingEnvironment />;
+  if (loggedIn === null) return <LoadingEnvironment />;
   return loggedIn ? <Installer /> : <LoginForm />;
 }
 

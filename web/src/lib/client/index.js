@@ -24,7 +24,7 @@ import LanguageClient from "./language";
 import ManagerClient from "./manager";
 import SoftwareClient from "./software";
 import StorageClient from "./storage";
-import statuses from "./statuses";
+import status from "./status";
 
 import cockpit from "../cockpit";
 
@@ -43,4 +43,4 @@ const createClient = () => {
   };
 };
 
-export { createClient, statuses };
+export { createClient, status };

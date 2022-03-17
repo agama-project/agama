@@ -20,31 +20,19 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
 
-import { InstallerClientProvider } from "./context/installer";
-import { AuthProvider } from "./context/auth";
-import { createClient } from "./lib/client";
+import Center from "./Center";
+import Layout from "./Layout";
+import ProgressReport from "./ProgressReport";
 
-const InstallerProvider = ({ children }) => {
-  const client = createClient();
-  return <InstallerClientProvider client={client}>{children}</InstallerClientProvider>;
-};
+import { EOS_MULTISTATE as SectionIcon } from "eos-icons-react";
 
-const AllProviders = ({ children }) => {
-  return (
-    <InstallerProvider>
-      <AuthProvider>{children}</AuthProvider>
-    </InstallerProvider>
-  );
-};
+const ProbingProgress = () => (
+  <Layout sectionTitle="Probing" SectionIcon={SectionIcon}>
+    <Center>
+      <ProgressReport />
+    </Center>
+  </Layout>
+);
 
-const installerRender = (ui, options = {}) => {
-  return render(ui, { wrapper: InstallerProvider, ...options });
-};
-
-const authRender = (ui, options = {}) => {
-  return render(ui, { wrapper: AllProviders, ...options });
-};
-
-export { installerRender, authRender };
+export default ProbingProgress;

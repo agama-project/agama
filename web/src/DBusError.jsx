@@ -32,7 +32,7 @@ import {
 
 // TODO: an example
 const ReloadAction = () => (
-  <Button isLarge isPrimary>
+  <Button isLarge variant="primary" onClick={() => location.reload()}>
     Reload
   </Button>
 );

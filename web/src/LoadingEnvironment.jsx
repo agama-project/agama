@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { Button, Title, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
+import { Title, EmptyState, EmptyStateIcon } from "@patternfly/react-core";
 
 import Layout from "./Layout";
 import Center from "./Center";

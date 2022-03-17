@@ -19,26 +19,16 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { StrictMode } from "react";
-import ReactDOM from "react-dom";
+export const ERROR = 0;
+export const PROBING = 1;
+export const PROBED = 2;
+export const INSTALLING = 3;
+export const INSTALLED = 4;
 
-import App from "./App";
-import { InstallerClientProvider } from "./context/installer";
-import { AuthProvider } from "./context/auth";
-import { createClient } from "./lib/client";
-
-import "./app.scss";
-import "./layout.scss";
-
-const client = createClient();
-
-ReactDOM.render(
-  <StrictMode>
-    <InstallerClientProvider client={client}>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </InstallerClientProvider>
-  </StrictMode>,
-  document.getElementById("root")
-);
+export default {
+  ERROR,
+  PROBING,
+  PROBED,
+  INSTALLING,
+  INSTALLED
+};
