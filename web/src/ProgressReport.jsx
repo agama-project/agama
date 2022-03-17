@@ -22,7 +22,7 @@
 import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { Progress, Stack, StackItem } from "@patternfly/react-core";
+import { Progress, Stack, StackItem, Text } from "@patternfly/react-core";
 
 const renderSubprogress = progress => (
   <Progress
@@ -45,6 +45,8 @@ const ProgressReport = () => {
       }
     });
   }, []);
+
+  if (!progress.steps) return <Text>Waiting for progress status...</Text>;
 
   const showSubsteps = !!progress.substeps && progress.substeps >= 0;
   const percentage = progress.steps === 0 ? 0 : Math.round((progress.step / progress.steps) * 100);
