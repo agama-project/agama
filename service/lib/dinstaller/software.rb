@@ -47,6 +47,9 @@ module DInstaller
 
     def probe(progress)
       logger.info "Probing software"
+      Yast::Pkg.SetSolverFlags(
+        "ignoreAlreadyRecommended" => false, "onlyRequires" => true
+      )
       # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
       Yast::Stage.Set("normal")
       progress.init_minor_steps(3, "Initialiaze target repositories")
