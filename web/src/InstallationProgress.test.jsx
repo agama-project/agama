@@ -39,10 +39,10 @@ describe("InstallationProgress", () => {
     await screen.findByLabelText("Main progress bar");
   });
 
-  it("shows disabled 'Finish' action", async () => {
+  it("does not show actions", async () => {
     authRender(<InstallationProgress />);
 
-    const button = await screen.findByRole("button", { name: /Finish/i });
-    expect(button).toHaveAttribute("disabled");
+    const button = screen.queryByRole("navigation", { name: /Installer Actions/i });
+    expect(button).toBeNull();
   });
 });
