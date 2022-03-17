@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import Center from "./Center";
 import Layout from "./Layout";
