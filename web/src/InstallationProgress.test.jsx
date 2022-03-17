@@ -26,6 +26,8 @@ import { authRender } from "./test-utils";
 
 import InstallationProgress from "./InstallationProgress";
 
+jest.mock("./ProgressReport", () => () => "ProgressReport Mock");
+
 describe("InstallationProgress", () => {
   it("uses 'Installing' as title", async () => {
     authRender(<InstallationProgress />);
@@ -33,10 +35,10 @@ describe("InstallationProgress", () => {
     await screen.findByText("Installing");
   });
 
-  it("shows progress bars", async () => {
+  it("renders progress report", async () => {
     authRender(<InstallationProgress />);
 
-    await screen.findByLabelText("Main progress bar");
+    await screen.findByText("ProgressReport Mock");
   });
 
   it("does not show actions", async () => {
