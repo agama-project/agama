@@ -4,7 +4,7 @@ import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { authRender } from "./test-utils";
 import { createClient } from "./lib/client";
-import { PROBING, PROBED, INSTALLING, INSTALLED } from "./lib/client/statuses";
+import { PROBING, PROBED, INSTALLING, INSTALLED } from "./lib/client/status";
 
 import Installer from "./Installer";
 
