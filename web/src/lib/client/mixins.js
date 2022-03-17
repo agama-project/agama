@@ -74,11 +74,8 @@ const withDBus = {
    *
    * @param {function} handler - callback function
    */
-  onSignal(signal, handler) {
-    const { remove } = this._client.subscribe(
-      { interface: "org.opensuse.DInstaller", member: signal },
-      handler
-    );
+  onSignal(match, handler) {
+    const { remove } = this._client.subscribe(match, handler);
     return remove;
   }
 };
