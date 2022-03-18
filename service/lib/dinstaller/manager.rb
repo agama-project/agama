@@ -91,21 +91,16 @@ module DInstaller
         progress.next_step("Installing Software")
         software.install(progress)
 
-        old_handle = Yast::WFM.SCRGetDefault
-        handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
-        Yast::WFM.SCRSetDefault(handle)
+        on_target do
+          progress.next_step("Writing Network Configuration")
+          network.install(progress)
 
-        progress.next_step("Writing Network Configuration")
-        network.install(progress)
+          progress.next_step("Installing Bootloader")
+          ::Bootloader::FinishClient.new.write
 
-        progress.next_step("Installing Bootloader")
-        ::Bootloader::FinishClient.new.write
-
-        progress.next_step("Saving Language Settings")
-        language.install(progress)
-
-        Yast::WFM.SCRSetDefault(old_handle)
-        Yast::WFM.SCRClose(handle)
+          progress.next_step("Saving Language Settings")
+          language.install(progress)
+        end
 
         progress.next_step("Installation Finished")
         status_manager.change(Status::Installed.new)
@@ -180,6 +175,22 @@ module DInstaller
       progress.next_step("Probing Finished")
 
       status_manager.change(Status::Probed.new)
+    end
+
+    # Run a block in the target system
+    def on_target(&block)
+      old_handle = Yast::WFM.SCRGetDefault
+      handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
+      Yast::WFM.SCRSetDefault(handle)
+
+      begin
+        block.call
+      rescue StandardError => e
+        logger.error "Error while running on target tasks: #{e.inspect}"
+      ensure
+        Yast::WFM.SCRSetDefault(old_handle)
+        Yast::WFM.SCRClose(handle)
+      end
     end
   end
 end
