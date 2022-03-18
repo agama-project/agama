@@ -74,7 +74,7 @@ module DInstaller
     def install
       Thread.new do
         status_manager.change(Status::Installing.new)
-        progress.init_progress(4, "Partitioning")
+        progress.init_progress(5, "Partitioning")
         Yast::Installation.destdir = "/mnt"
         # lets propose it here to be sure that software proposal reflects product selection
         # FIXME: maybe repropose after product selection change?
@@ -94,6 +94,8 @@ module DInstaller
         network.install(progress)
         progress.next_step("Installing Bootloader")
         ::Bootloader::FinishClient.new.write
+        progress.next_step("Saving Language Settings")
+        language.install(progress)
         progress.next_step("Installation Finished")
         status_manager.change(Status::Installed.new)
       end
