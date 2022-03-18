@@ -73,7 +73,7 @@ module DInstaller
       config.login ||= Y2Users::LoginConfig.new
       config.login.autologin_user = auto_login ? user : nil
     end
-    
+
     def write(_progress)
       system_config = Y2Users::ConfigManager.instance.system(force_read: true)
       target_config = system_config.copy
