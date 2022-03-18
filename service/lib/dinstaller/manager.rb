@@ -83,19 +83,30 @@ module DInstaller
         logger.info "Bootloader proposal #{proposal.inspect}"
         software.propose
         storage.install(progress)
-        progress.next_step("Installing Software")
+
         # call inst bootloader to get properly initialized bootloader
         # sysconfig before package installation
         Yast::WFM.CallFunction("inst_bootloader", [])
+
+        progress.next_step("Installing Software")
         software.install(progress)
+
+        old_handle = Yast::WFM.SCRGetDefault
         handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
         Yast::WFM.SCRSetDefault(handle)
+
         progress.next_step("Writing Network Configuration")
         network.install(progress)
+
         progress.next_step("Installing Bootloader")
         ::Bootloader::FinishClient.new.write
+
         progress.next_step("Saving Language Settings")
         language.install(progress)
+
+        Yast::WFM.SCRSetDefault(old_handle)
+        Yast::WFM.SCRClose(handle)
+
         progress.next_step("Installation Finished")
         status_manager.change(Status::Installed.new)
       end
