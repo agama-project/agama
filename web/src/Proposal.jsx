@@ -50,6 +50,7 @@ const Proposal = ({ data = [] }) => {
       {renderActionsList(generalActions)}
       {subvolActions.length > 0 && (
         <ExpandableSection
+          isIndented
           isExpanded={isExpanded}
           onToggle={() => setIsExpanded(!isExpanded)}
           toggleText={toggleText}
