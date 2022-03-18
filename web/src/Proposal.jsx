@@ -25,7 +25,7 @@ import { List, ListItem, ExpandableSection } from "@patternfly/react-core";
 const renderActionsList = actions => {
   const items = actions.map((a, i) => {
     return (
-      <ListItem key={i} className={a.delete ? "delete-action" : null}>
+      <ListItem key={i} className={a.delete ? "proposal-action--delete" : null}>
         {a.text}
       </ListItem>
     );

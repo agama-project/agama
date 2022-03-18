@@ -60,6 +60,10 @@ body {
   margin-block-start: 0;
 }
 
+.proposal-action--delete {
+  font-weight: bold
+}
+
 // Aling the expandable-actions with the actions list
 // See https://www.patternfly.org/v4/components/list#css-variables
 .expandable-actions {
@@ -72,8 +76,4 @@ body {
 
 .expandable-actions > div {
   margin-block-start: 0;
-}
-
-.delete-action {
-  font-weight: bold
 }
