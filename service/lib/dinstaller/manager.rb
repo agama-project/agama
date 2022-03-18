@@ -60,19 +60,15 @@ module DInstaller
 
     # Probes the system
     def probe
-      Thread.new do
-        sleep(1) # do sleep to ensure that dbus service is already attached
         probe_steps
       rescue StandardError => e
         status = Status::Error.new.tap { |s| s.messages << e.message }
         status_manager.change(status)
         logger.error "Probing error: #{e.inspect}"
-      end
     end
 
     # rubocop:disable Metrics/AbcSize
     def install
-      Thread.new do
         status_manager.change(Status::Installing.new)
         progress.init_progress(5, "Partitioning")
         Yast::Installation.destdir = "/mnt"
@@ -102,7 +98,6 @@ module DInstaller
         status = Status::Error.new.tap { |s| s.messages << e.message }
         status_manager.change(status)
         logger.error "Installation error: #{e.inspect}"
-      end
     end
     # rubocop:enable Metrics/AbcSize
 
