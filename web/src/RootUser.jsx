@@ -31,7 +31,7 @@ const reducer = (state, action) => {
 };
 
 const initialState = {
-  rootPassword: "",
+  rootPassword: null,
   isFormOpen: false
 };
 
@@ -85,6 +85,9 @@ export default function RootUser() {
       </FormGroup>
     );
   };
+
+  // Renders nothing until know about the status of password
+  if (rootPassword === null) return null;
 
   return (
     <>
