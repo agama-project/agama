@@ -1,10 +1,3 @@
-// Import PatternFly CSS
-@use "@patternfly/react-core/dist/styles/base.css";
-@use "@patternfly/patternfly/patternfly.css";
-
-// See https://github.com/patternfly/patternfly/pull/4297
-@use "@patternfly/react-styles/css/utilities/Sizing/sizing.css";
-
 // NOTE: eos-base/index imports a lot of styles not needed by now. Hence, let's
 // start importing them granularly until we have time to investigate how to purge
 // or "tree-shake" CSS while building (although it might not help while working
@@ -49,50 +42,24 @@ body {
   }
 }
 
-.component--centered {
+.loading-screen-icon {
   text-align: center;
+
+  svg {
+    block-size: 10rem;
+    inline-size: 10rem;
+  }
 }
 
 .success-icon {
   fill: branding.$eos-bc-green-500;
 }
 
-// PatternFly overrides for using CSS Logical Properties
-
-.pf-l-split.pf-m-gutter > :not(:last-child) {
-  margin-inline-end: var(--pf-l-split--m-gutter--MarginRight);
-}
-
-.pf-l-flex.pf-m-column > * {
-  margin: 0;
-  margin-block-end: var(--pf-l-flex--spacer);
-}
-
-.pf-c-alert__icon {
-  margin-block-start: var(--pf-c-alert__icon--MarginTop);
-  margin-inline-end: var(--pf-c-alert__icon--MarginRight);
-}
-
-.pf-m-grid-md.pf-c-table [data-label]::before {
-  text-align: start;
-}
-
-// EOS icons does not obey font-size
-.pf-c-empty-state__icon {
-  inline-size: 10rem;
-  block-size: 10rem;
-}
-
-// Fix single-line subprogress missaligment
-.pf-c-progress.pf-m-singleline .pf-c-progress__bar {
-  grid-row: 1/3;
-  grid-column: 1/3;
-}
-
 // Make proposal actiosn compact
 .proposal-actions li + li {
   margin-block-start: 0;
 }
+
 // Aling the expandable-actions with the actions list
 // See https://www.patternfly.org/v4/components/list#css-variables
 .expandable-actions {
@@ -102,6 +69,7 @@ body {
     - var(--pf-global--icon--FontSize--sm) // --pf-c-list--m-icon-lg__item-icon-MinWidth
   );
 }
+
 .expandable-actions > div {
   margin-block-start: 0;
 }
