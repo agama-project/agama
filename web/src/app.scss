@@ -89,6 +89,15 @@ body {
   grid-column: 1/3;
 }
 
+// Make proposal actiosn compact
+.proposal-actions li + li {
+  margin-block-start: 0;
+}
+
+.expandable-actions > div {
+  margin-block-start: 0;
+}
+
 .delete-action {
   font-weight: bold
 }

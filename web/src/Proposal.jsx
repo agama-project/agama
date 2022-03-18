@@ -30,7 +30,7 @@ const renderActionsList = actions => {
       </ListItem>
     );
   });
-  return <List>{items}</List>;
+  return <List className="proposal-actions">{items}</List>;
 };
 
 const Proposal = ({ data = [] }) => {
@@ -53,6 +53,7 @@ const Proposal = ({ data = [] }) => {
           isExpanded={isExpanded}
           onToggle={() => setIsExpanded(!isExpanded)}
           toggleText={toggleText}
+          className="expandable-actions"
         >
           {renderActionsList(subvolActions)}
         </ExpandableSection>
