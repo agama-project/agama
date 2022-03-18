@@ -27,7 +27,7 @@ import { authRender } from "./test-utils";
 import LoadingEnvironment from "./LoadingEnvironment";
 
 describe("LoadingEnvironment", () => {
-  it("shows a loading messagen", async () => {
+  it("shows a loading message", async () => {
     authRender(<LoadingEnvironment />);
 
     await screen.findByText(/Loading installation environment/i);
