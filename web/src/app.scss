@@ -93,7 +93,15 @@ body {
 .proposal-actions li + li {
   margin-block-start: 0;
 }
-
+// Aling the expandable-actions with the actions list
+// See https://www.patternfly.org/v4/components/list#css-variables
+.expandable-actions {
+  margin-inline-start: calc(
+    var(--pf-global--spacer--lg) // --pf-c-list--PaddingLeft
+    - var(--pf-global--spacer--sm) // --pf-c-list--nested--MarginLeft
+    - var(--pf-global--icon--FontSize--sm) // --pf-c-list--m-icon-lg__item-icon-MinWidth
+  );
+}
 .expandable-actions > div {
   margin-block-start: 0;
 }
