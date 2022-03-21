@@ -1,0 +1,37 @@
+// Import PatternFly CSS
+@use "@patternfly/react-core/dist/styles/base.css";
+@use "@patternfly/patternfly/patternfly.css";
+
+// See https://github.com/patternfly/patternfly/pull/4297
+@use "@patternfly/react-styles/css/utilities/Sizing/sizing.css";
+
+// PatternFly overrides for using CSS Logical Properties
+.pf-l-split.pf-m-gutter > :not(:last-child) {
+  margin-inline-end: var(--pf-l-split--m-gutter--MarginRight);
+}
+
+.pf-l-flex.pf-m-column > * {
+  margin: 0;
+  margin-block-end: var(--pf-l-flex--spacer);
+}
+
+.pf-c-alert__icon {
+  margin-block-start: var(--pf-c-alert__icon--MarginTop);
+  margin-inline-end: var(--pf-c-alert__icon--MarginRight);
+}
+
+.pf-m-grid-md.pf-c-table [data-label]::before {
+  text-align: start;
+}
+
+// EOS icons does not obey font-size
+.pf-c-empty-state__icon {
+  inline-size: 10rem;
+  block-size: 10rem;
+}
+
+// Fix single-line subprogress missaligment
+.pf-c-progress.pf-m-singleline .pf-c-progress__bar {
+  grid-row: 1/3;
+  grid-column: 1/3;
+}

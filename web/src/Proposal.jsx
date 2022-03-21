@@ -25,12 +25,12 @@ import { List, ListItem, ExpandableSection } from "@patternfly/react-core";
 const renderActionsList = actions => {
   const items = actions.map((a, i) => {
     return (
-      <ListItem key={i} className={a.delete ? "delete-action" : ""}>
+      <ListItem key={i} className={a.delete ? "proposal-action--delete" : null}>
         {a.text}
       </ListItem>
     );
   });
-  return <List>{items}</List>;
+  return <List className="proposal-actions">{items}</List>;
 };
 
 const Proposal = ({ data = [] }) => {
@@ -50,9 +50,11 @@ const Proposal = ({ data = [] }) => {
       {renderActionsList(generalActions)}
       {subvolActions.length > 0 && (
         <ExpandableSection
+          isIndented
           isExpanded={isExpanded}
           onToggle={() => setIsExpanded(!isExpanded)}
           toggleText={toggleText}
+          className="expandable-actions"
         >
           {renderActionsList(subvolActions)}
         </ExpandableSection>

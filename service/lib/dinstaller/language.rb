@@ -42,10 +42,15 @@ module DInstaller
       @languages = Yast::Language.GetLanguagesMap(true)
     end
 
+    def install(_progress)
+      Yast::Language.Save
+    end
+
     def language=(name)
       raise Errors::InvalidValue unless languages.include?(name)
 
       Yast::Language.Set(name)
+      Yast::Language.languages = Yast::Language.RemoveSuffix(name)
       Yast::Language.PackagesInit([name])
     end
 
