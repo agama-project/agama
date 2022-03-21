@@ -103,7 +103,14 @@ module DInstaller
     end
 
     def root_user
-      @root_user ||= config.users.root || Y2Users::User.create_root
+      return @root_user if @root_user
+
+      @root_user = config.users.root
+      return @root_user if @root_user
+
+      @root_user = Y2Users::User.create_root
+      config.attach(@root_user)
+      @root_user
     end
   end
 end
