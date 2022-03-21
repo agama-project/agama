@@ -63,7 +63,9 @@ module DInstaller
 
     def assign_first_user(full_name, user_name, password, auto_login, _data)
       # at first remove previous first user
-      config.users.reject(&:root?).map(&:id).each { |id| config.users.delete(id) }
+      old_users = config.users.reject(&:root?)
+      config.detach(old_users) unless old_users.empty?
+
       return if user_name.empty? # empty is used to remove first user
 
       user = Y2Users::User.new(user_name)
@@ -101,7 +103,14 @@ module DInstaller
     end
 
     def root_user
-      @root_user ||= config.users.root || Y2Users::User.create_root
+      return @root_user if @root_user
+
+      @root_user = config.users.root
+      return @root_user if @root_user
+
+      @root_user = Y2Users::User.create_root
+      config.attach(@root_user)
+      @root_user
     end
   end
 end
