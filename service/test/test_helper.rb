@@ -23,6 +23,7 @@ require "yast"
 require "yast/rspec"
 
 SRC_PATH = File.expand_path("../lib", __dir__)
+$LOAD_PATH.unshift(SRC_PATH)
 
 # make sure we run the tests in English locale
 # (some tests check the output which is marked for translation)

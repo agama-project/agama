@@ -114,6 +114,7 @@ describe DInstaller::Users do
       allow(Y2Users::ConfigManager.instance).to receive(:system)
         .with(force_read: true).and_return(system_config)
       allow(Y2Users::Linux::Writer).to receive(:new).and_return(writer)
+      allow(Yast::Execute).to receive(:locally!)
     end
 
     it "writes system and installer defined users" do
@@ -136,6 +137,12 @@ describe DInstaller::Users do
         expect(logger).to receive(:error).with(/issue/)
         subject.write(progress)
       end
+    end
+
+    it "do write without /run bind mounted" do
+      expect(Yast::Execute).to receive(:locally!).with(/umount/, anything)
+
+      subject.write(progress)
     end
   end
 end
