@@ -24,11 +24,11 @@ import { useInstallerClient } from "./context/installer";
 
 import { Button, Flex, FlexItem } from "@patternfly/react-core";
 
-import Layout from "./Layout";
 import Category from "./Category";
 import LanguageSelector from "./LanguageSelector";
 import ProductSelector from "./ProductSelector";
 import Storage from "./Storage";
+import { SectionTitle } from "./layout/SectionTitle";
 
 import {
   EOS_FACT_CHECK as OverviewIcon,
@@ -71,13 +71,10 @@ function Overview() {
   };
 
   return (
-    <Layout
-      sectionTitle="Installation Summary"
-      SectionIcon={OverviewIcon}
-      FooterActions={InstallButton}
-    >
+    <>
+      <SectionTitle>Installation Summary</SectionTitle>
       <Flex direction={{ default: "column" }}>{renderCategories()}</Flex>
-    </Layout>
+    </>
   );
 }
 

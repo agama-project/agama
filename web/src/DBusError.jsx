@@ -22,13 +22,13 @@
 import React from "react";
 import { Button, Title, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
 
-import Layout from "./Layout";
-import Center from "./Center";
-
 import {
   EOS_ANNOUNCEMENT as SectionIcon,
   EOS_ENDPOINTS_DISCONNECTED as DisconnectionIcon
 } from "eos-icons-react";
+
+import Center from "./Center";
+import { SectionTitle } from "./layout/SectionTitle";
 
 // TODO: an example
 const ReloadAction = () => (
@@ -39,19 +39,18 @@ const ReloadAction = () => (
 
 function DBusError() {
   return (
-    <Layout sectionTitle="D-Bus Error" SectionIcon={SectionIcon} FooterActions={ReloadAction}>
-      <Center>
-        <EmptyState>
-          <EmptyStateIcon icon={DisconnectionIcon} />
-          <Title headingLevel="h4" size="lg">
-            Cannot connect to D-Bus
-          </Title>
-          <EmptyStateBody>
-            Could not connect to the D-Bus service. Please, check whether it is running.
-          </EmptyStateBody>
-        </EmptyState>
-      </Center>
-    </Layout>
+    <Center>
+      <SectionTitle>D-Bus error</SectionTitle>
+      <EmptyState>
+        <EmptyStateIcon icon={DisconnectionIcon} />
+        <Title headingLevel="h4" size="lg">
+          Cannot connect to D-Bus
+        </Title>
+        <EmptyStateBody>
+          Could not connect to the D-Bus service. Please, check whether it is running.
+        </EmptyStateBody>
+      </EmptyState>
+    </Center>
   );
 }
 

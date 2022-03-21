@@ -24,7 +24,7 @@ import { useAuthContext } from "./context/auth";
 import { Alert, Button, Form, FormAlert, FormGroup, TextInput } from "@patternfly/react-core";
 
 import Center from "./Center";
-import Layout from "./Layout";
+import { SectionTitle } from "./layout/SectionTitle";
 
 const formError = error => (
   <FormAlert>
@@ -64,19 +64,19 @@ function LoginForm() {
   };
 
   return (
-    <Layout sectionTitle="Welcome to D-Installer" FooterActions={SubmitButton}>
-      <Center>
-        <Form id="d-installer-login">
-          {error && formError(error)}
-          <FormGroup label="Username" fieldId="username">
-            <TextInput isRequired type="text" id="username" ref={usernameRef} />
-          </FormGroup>
-          <FormGroup label="Password" fieldId="password">
-            <TextInput isRequired type="password" id="password" ref={passwordRef} />
-          </FormGroup>
-        </Form>
-      </Center>
-    </Layout>
+    <Center>
+      <SectionTitle>Please, log in</SectionTitle>
+      <Form id="d-installer-login">
+        {error && formError(error)}
+        <FormGroup label="Username" fieldId="username">
+          <TextInput isRequired type="text" id="username" ref={usernameRef} />
+        </FormGroup>
+        <FormGroup label="Password" fieldId="password">
+          <TextInput isRequired type="password" id="password" ref={passwordRef} />
+        </FormGroup>
+        <SubmitButton />
+      </Form>
+    </Center>
   );
 }
 

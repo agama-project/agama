@@ -21,6 +21,8 @@
 
 import React from "react";
 
+import { SectionTitlePlaceholder } from "./SectionTitle";
+
 /**
  * D-Installer main layout component.
  *
@@ -76,7 +78,7 @@ function Layout({
         <div className="layout__header-section-title">
           <h1>
             {SectionIcon && <SectionIcon className="layout__header-section-title-icon" />}
-            {sectionTitle}
+            <SectionTitlePlaceholder>D-Installer</SectionTitlePlaceholder>
           </h1>
         </div>
       </div>

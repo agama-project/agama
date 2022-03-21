@@ -27,6 +27,8 @@ import { InstallerClientProvider } from "./context/installer";
 import { AuthProvider } from "./context/auth";
 import { createClient } from "./lib/client";
 
+import Layout from "./layout/Layout";
+
 import "./patternfly.scss";
 import "./app.scss";
 import "./layout.scss";
@@ -37,7 +39,9 @@ ReactDOM.render(
   <StrictMode>
     <InstallerClientProvider client={client}>
       <AuthProvider>
-        <App />
+        <Layout>
+          <App />
+        </Layout>
       </AuthProvider>
     </InstallerClientProvider>
   </StrictMode>,

@@ -32,6 +32,8 @@ import {
   ModalVariant
 } from "@patternfly/react-core";
 
+import { SectionTitle } from "./layout/SectionTitle";
+
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOAD": {
@@ -132,6 +134,7 @@ export default function LanguageSelector() {
           </Button>
         ]}
       >
+        <SectionTitle>Select the language</SectionTitle>
         <Form>
           <FormGroup
             fieldId="language"
