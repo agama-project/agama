@@ -15,7 +15,7 @@ The process to release a new version can be summarized in these steps:
 1. Bump the version in the `d-installer.gemspec` file.
 2. Build the `gem` by running `gem build d-installer.gemspec`
 3. Add an entry in the changes file.
-4. Branch the OBS package and copy the `gem` and the `changes` files.
+4. Checkout the OBS package and copy the `gem` and the `changes` files.
 5. Commit the changes.
 
 If you need to modify the `spec` file, please, use the `gem2rpm` tool. The configuration is [included
@@ -36,7 +36,7 @@ The process to update the package is:
 
 1. Bump the version in the `package/_service` file.
 2. Add an entry in the changes file.
-3. Branch the OBS package and copy `package/*` and `package-lock.json` files.
+3. Checkout the OBS package and copy `package/*` and `package-lock.json` files.
 4. In your package checkout, run `osc service manualrun`. It will update D-Installer sources and its
    dependencies (`node_modules`).
 5. Commit the changes.

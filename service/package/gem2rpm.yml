@@ -6,10 +6,10 @@
 # ## used by gem2rpm
 :post_install: |-
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/dbus.conf %{buildroot}%{_sysconfdir}/dbus-1/system.d/org.opensuse.DInstaller.conf
-  install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/dbus.service %{buildroot}%{_sysconfdir}/dbus-1/system-services/org.opensuse.DInstaller.service
+  install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/dbus.service %{buildroot}%{_datadir}/dbus-1/system-services/org.opensuse.DInstaller.service
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/systemd.service %{buildroot}%{_unitdir}/d-installer.service
 # ## used by gem_packages
 :main:
   :filelist: "%{_sysconfdir}/dbus-1/system.d/org.opensuse.DInstaller.conf\n
-    %{_sysconfdir}/dbus-1/system-services/org.opensuse.DInstaller.service\n
+    %{_datadir}/dbus-1/system-services/org.opensuse.DInstaller.service\n
     %{_unitdir}/d-installer.service\n"
