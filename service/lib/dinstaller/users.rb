@@ -22,6 +22,7 @@
 require "yast"
 require "y2users"
 require "y2users/linux" # FIXME: linux is not in y2users file
+require "yast2/execute"
 
 module DInstaller
   # Backend class between dbus service and yast code
@@ -77,18 +78,27 @@ module DInstaller
     end
 
     def write(_progress)
-      system_config = Y2Users::ConfigManager.instance.system(force_read: true)
-      target_config = system_config.copy
-      Y2Users::ConfigMerger.new(target_config, config).merge
+      without_run do
+        system_config = Y2Users::ConfigManager.instance.system(force_read: true)
+        target_config = system_config.copy
+        Y2Users::ConfigMerger.new(target_config, config).merge
 
-      writer = Y2Users::Linux::Writer.new(target_config, system_config)
-      issues = writer.write
-      logger.error(issues.inspect) unless issues.empty?
+        writer = Y2Users::Linux::Writer.new(target_config, system_config)
+        issues = writer.write
+        logger.error(issues.inspect) unless issues.empty?
+      end
     end
 
   private
 
     attr_reader :logger
+
+    def without_run(&block)
+      Yast::Execute.locally!("/usr/bin/umount", "/mnt/run")
+      block.call
+    ensure
+      Yast::Execute.locally!("/usr/bin/mount", "-o", "bind", "/run", "/mnt/run")
+    end
 
     def config
       return @config if @config
