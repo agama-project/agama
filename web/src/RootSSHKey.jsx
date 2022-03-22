@@ -18,7 +18,7 @@ export default function RootSSHKey(props) {
       }}
       onReadStarted={() => setLoading(true)}
       onReadFinished={() => setLoading(false)}
-      onClearClick={props.valueChanged("")}
+      onClearClick={() => props.valueChanged("")}
       isLoading={loading}
       browseButtonText="Upload"
     />
