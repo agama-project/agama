@@ -60,51 +60,49 @@ module DInstaller
 
     # Probes the system
     def probe
-      Thread.new do
-        sleep(1) # do sleep to ensure that dbus service is already attached
-        probe_steps
-      rescue StandardError => e
-        status = Status::Error.new.tap { |s| s.messages << e.message }
-        status_manager.change(status)
-        logger.error "Probing error: #{e.inspect}"
-      end
+      probe_steps
+    rescue StandardError => e
+      status = Status::Error.new.tap { |s| s.messages << e.message }
+      status_manager.change(status)
+      logger.error "Probing error: #{e.inspect}"
     end
 
     # rubocop:disable Metrics/AbcSize
     def install
-      Thread.new do
-        status_manager.change(Status::Installing.new)
-        progress.init_progress(5, "Partitioning")
-        Yast::Installation.destdir = "/mnt"
-        # lets propose it here to be sure that software proposal reflects product selection
-        # FIXME: maybe repropose after product selection change?
-        # first make bootloader proposal to be sure that required packages are installed
-        proposal = ::Bootloader::ProposalClient.new.make_proposal({})
-        logger.info "Bootloader proposal #{proposal.inspect}"
-        software.propose
-        storage.install(progress)
+      status_manager.change(Status::Installing.new)
+      progress.init_progress(6, "Partitioning")
+      Yast::Installation.destdir = "/mnt"
+      # lets propose it here to be sure that software proposal reflects product selection
+      # FIXME: maybe repropose after product selection change?
+      # first make bootloader proposal to be sure that required packages are installed
+      proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+      logger.info "Bootloader proposal #{proposal.inspect}"
+      software.propose
+      storage.install(progress)
 
-        # call inst bootloader to get properly initialized bootloader
-        # sysconfig before package installation
-        Yast::WFM.CallFunction("inst_bootloader", [])
+      # call inst bootloader to get properly initialized bootloader
+      # sysconfig before package installation
+      Yast::WFM.CallFunction("inst_bootloader", [])
 
-        progress.next_step("Installing Software")
-        software.install(progress)
+      progress.next_step("Installing Software")
+      software.install(progress)
 
-        on_target do
-          progress.next_step("Writing Network Configuration")
-          network.install(progress)
+      on_target do
+        progress.next_step("Writting Users")
+        users.write(progress)
 
-          progress.next_step("Installing Bootloader")
-          ::Bootloader::FinishClient.new.write
+        progress.next_step("Writing Network Configuration")
+        network.install(progress)
 
-          progress.next_step("Saving Language Settings")
-          language.install(progress)
-        end
+        progress.next_step("Installing Bootloader")
+        ::Bootloader::FinishClient.new.write
 
-        progress.next_step("Installation Finished")
-        status_manager.change(Status::Installed.new)
+        progress.next_step("Saving Language Settings")
+        language.install(progress)
       end
+
+      progress.next_step("Installation Finished")
+      status_manager.change(Status::Installed.new)
     end
     # rubocop:enable Metrics/AbcSize
 

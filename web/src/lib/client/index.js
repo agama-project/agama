@@ -25,6 +25,7 @@ import ManagerClient from "./manager";
 import Monitor from "./monitor";
 import SoftwareClient from "./software";
 import StorageClient from "./storage";
+import UsersClient from "./users";
 import status from "./status";
 
 import cockpit from "../cockpit";
@@ -41,9 +42,10 @@ const createClient = () => {
     auth: new AuthClient(),
     language: new LanguageClient(client),
     manager: new ManagerClient(client),
+    monitor: new Monitor(SERVICE_NAME),
     software: new SoftwareClient(client),
     storage: new StorageClient(client),
-    monitor: new Monitor(SERVICE_NAME)
+    users: new UsersClient(client)
   };
 };
 

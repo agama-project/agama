@@ -40,6 +40,7 @@ const actions = [{ text: "Mount /dev/sda1 as root", subvol: false }];
 const languages = [{ id: "en_US", name: "English" }];
 const products = [{ id: "openSUSE", name: "openSUSE Tumbleweed" }];
 const startInstallationFn = jest.fn();
+const fakeUser = { fullName: "Fake User", userName: "fake_user", autologin: true };
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
@@ -59,6 +60,10 @@ beforeEach(() => {
       },
       manager: {
         startInstallation: startInstallationFn
+      },
+      users: {
+        getUser: () => Promise.resolve(fakeUser),
+        isRootPassword: jest.fn()
       }
     };
   });

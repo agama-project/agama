@@ -21,6 +21,8 @@
 
 require "yast"
 require "y2users"
+require "y2users/linux" # FIXME: linux is not in y2users file
+require "yast2/execute"
 
 module DInstaller
   # Backend class between dbus service and yast code
@@ -60,21 +62,43 @@ module DInstaller
       [user.full_name, user.name, config.login.autologin_user == user, {}]
     end
 
-    def assign_first_user(full_name, user_name, password, auto_login)
+    def assign_first_user(full_name, user_name, password, auto_login, _data)
       # at first remove previous first user
-      config.users.reject(&:root?).map(&:id).each { |id| config.users.delete(id) }
+      old_users = config.users.reject(&:root?)
+      config.detach(old_users) unless old_users.empty?
+
       return if user_name.empty? # empty is used to remove first user
 
       user = Y2Users::User.new(user_name)
       user.gecos = [full_name]
       user.password = Y2Users::Password.create_plain(password)
-      config.attach_element(user)
+      config.attach(user)
+      config.login ||= Y2Users::LoginConfig.new
       config.login.autologin_user = auto_login ? user : nil
+    end
+
+    def write(_progress)
+      without_run_mount do
+        system_config = Y2Users::ConfigManager.instance.system(force_read: true)
+        target_config = system_config.copy
+        Y2Users::ConfigMerger.new(target_config, config).merge
+
+        writer = Y2Users::Linux::Writer.new(target_config, system_config)
+        issues = writer.write
+        logger.error(issues.inspect) unless issues.empty?
+      end
     end
 
   private
 
     attr_reader :logger
+
+    def without_run_mount(&block)
+      Yast::Execute.locally!("/usr/bin/umount", "/mnt/run")
+      block.call
+    ensure
+      Yast::Execute.locally!("/usr/bin/mount", "-o", "bind", "/run", "/mnt/run")
+    end
 
     def config
       return @config if @config
@@ -89,7 +113,14 @@ module DInstaller
     end
 
     def root_user
-      @root_user ||= config.users.root || Y2Users::User.create_root
+      return @root_user if @root_user
+
+      @root_user = config.users.root
+      return @root_user if @root_user
+
+      @root_user = Y2Users::User.create_root
+      config.attach(@root_user)
+      @root_user
     end
   end
 end

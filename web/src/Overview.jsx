@@ -22,19 +22,22 @@
 import React from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { Button, Flex, FlexItem } from "@patternfly/react-core";
+import { Button, Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
 
 import Layout from "./Layout";
 import Category from "./Category";
 import LanguageSelector from "./LanguageSelector";
 import ProductSelector from "./ProductSelector";
 import Storage from "./Storage";
+import FirstUser from "./FirstUser";
+import RootUser from "./RootUser";
 
 import {
   EOS_FACT_CHECK as OverviewIcon,
   EOS_TRANSLATE as LanguagesSelectionIcon,
   EOS_VOLUME as HardDriveIcon,
-  EOS_PACKAGES as ProductsIcon
+  EOS_PACKAGES as ProductsIcon,
+  EOS_MANAGE_ACCOUNTS as UsersIcon
 } from "eos-icons-react";
 
 function Overview() {
@@ -43,6 +46,16 @@ function Overview() {
   const categories = [
     <Category title="Language" icon={LanguagesSelectionIcon}>
       <LanguageSelector />
+    </Category>,
+    <Category title="Users" icon={UsersIcon}>
+      <Stack>
+        <StackItem>
+          <RootUser />
+        </StackItem>
+        <StackItem>
+          <FirstUser />
+        </StackItem>
+      </Stack>
     </Category>,
     <Category title="Product" icon={ProductsIcon}>
       <ProductSelector />

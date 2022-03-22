@@ -32,10 +32,11 @@ require "dinstaller/dbus/service"
 
 logger = Logger.new($stdout)
 manager = DInstaller::Manager.new(logger)
-manager.probe # we can do it within the service, in a different thread, or...
 
 EM.run do
   service = DInstaller::DBus::Service.new(manager, logger)
   service.export
+  manager.probe # probe after export, so we can report on DBus
+  manager.progress.on_change { service.dispatch } # make single thread more responsive
   EventMachine::PeriodicTimer.new(0.1) { service.dispatch }
 end
