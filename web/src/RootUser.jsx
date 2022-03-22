@@ -33,21 +33,24 @@ const reducer = (state, action) => {
 
 const initialState = {
   rootPassword: null,
-  isFormOpen: false
+  isFormOpen: false,
+  SSHKey: ""
 };
 
 export default function RootUser() {
   const client = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { rootPassword, isFormOpen } = state;
+  const { rootPassword, isFormOpen, SSHKey } = state;
   const hiddenPassword = "_____DINSTALLALER_PASSWORD_SET";
 
   useEffect(async () => {
     const rootPassword = (await client.users.isRootPassword()) ? hiddenPassword : "";
+    const SSHKey = await client.users.RootSSHKey();
     dispatch({
       type: "LOAD",
       payload: {
-        rootPassword
+        rootPassword,
+        SSHKey
       }
     });
   }, []);
@@ -61,16 +64,24 @@ export default function RootUser() {
     if (rootPassword !== hiddenPassword && rootPassword !== "") {
       await client.users.setRootPassword(rootPassword);
     }
-    // TODO send accept also to ssh key somehow?
+    client.users.SetSSHKey(SSHKey);
     // TODO use signals instead
     dispatch({ type: "ACCEPT", payload: { rootPassword: hiddenPassword } });
   };
 
   const rootLabel = () => {
     if (rootPassword === hiddenPassword) {
-      return "Root Password Set.";
+      return "Root Password Set. ";
     } else {
       return "Root Password Not Set. ";
+    }
+  };
+
+  const SSHKeyLabel = () => {
+    if (SSHKey === "") {
+      return "SSH Key Not Set. ";
+    } else {
+      return "SSH Key Set. ";
     }
   };
 
@@ -86,8 +97,11 @@ export default function RootUser() {
             onChange={v => dispatch({ type: "CHANGE", payload: { rootPassword: v } })}
           />
         </FormGroup>
-        <FormGroup fieldId="rootSSHKey" label="Root SSH key">
-          <RootSSHKey accept="???" />
+        <FormGroup fieldId="SSHKey" label="Root SSH key">
+          <RootSSHKey
+            value={SSHKey}
+            valueChanged={v => dispatch({ type: "CHANGE", payload: { SSHKey: v } })}
+          />
         </FormGroup>
       </>
     );
@@ -99,7 +113,7 @@ export default function RootUser() {
   return (
     <>
       <Button variant="link" onClick={open}>
-        {rootLabel()}
+        {rootLabel().append(SSHKeyLabel())}
       </Button>
 
       <Modal

@@ -87,7 +87,7 @@ export default class UsersClient {
    * @param {String} key - plain text root ssh key. Empty string means disabled
    * @return {Promise.<String|undefined>}
    */
-   async setRootSSHKey(key) {
+  async setRootSSHKey(key) {
     const proxy = await this.proxy(USERS_IFACE);
     return proxy.SetRootSSHKey(key);
   }
