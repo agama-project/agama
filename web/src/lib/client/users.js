@@ -50,6 +50,16 @@ export default class UsersClient {
   }
 
   /**
+   * Return string with ssh key or empty string
+   *
+   * @return {Promise.<String>}
+   */
+  async rootSSHKey() {
+    const proxy = await this.proxy(USERS_IFACE);
+    return proxy.RootSSHKey;
+  }
+
+  /**
    * Set the languages to install
    *
    * @param {object} user - object with full name, user name, password and boolean for autologin
@@ -71,7 +81,16 @@ export default class UsersClient {
     return proxy.SetRootPassword(password, false);
   }
 
-  // TODO: ssh key for root
+  /**
+   * Set the root SSH Key
+   *
+   * @param {String} key - plain text root ssh key. Empty string means disabled
+   * @return {Promise.<String|undefined>}
+   */
+   async setRootSSHKey(key) {
+    const proxy = await this.proxy(USERS_IFACE);
+    return proxy.SetRootSSHKey(key);
+  }
 }
 
 applyMixin(UsersClient, withDBus);
