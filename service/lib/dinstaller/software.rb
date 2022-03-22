@@ -33,6 +33,8 @@ module DInstaller
   class Software
     attr_reader :product, :products
 
+    SUPPORTED_PRODUCTS = ["openSUSE"].freeze
+
     def initialize(logger)
       @logger = logger
       @products = []
@@ -59,14 +61,16 @@ module DInstaller
       Yast::Pkg.SourceRestore
       Yast::Pkg.SourceLoad
       progress.next_minor_step("Making initial proposal")
-      @products = Y2Packager::Product.available_base_products
+      @products = Y2Packager::Product.available_base_products.select do |product|
+        SUPPORTED_PRODUCTS.include?(product.name)
+      end
       @product = @products.first&.name || ""
       proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
       logger.info "proposal #{proposal["raw_proposal"]}"
       progress.next_minor_step("Software probing finished")
       Yast::Stage.Set("initial")
 
-      raise "No Product Available" unless @product
+      raise "No Product Available" if @product.empty?
     end
 
     def propose
