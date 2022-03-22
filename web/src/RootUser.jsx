@@ -1,5 +1,6 @@
 import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
+import { RootSSHKey } from "./RootSSHKey";
 
 import { Button, Form, FormGroup, Modal, ModalVariant, TextInput } from "@patternfly/react-core";
 
@@ -60,6 +61,7 @@ export default function RootUser() {
     if (rootPassword !== hiddenPassword && rootPassword !== "") {
       await client.users.setRootPassword(rootPassword);
     }
+    // TODO send accept also to ssh key somehow?
     // TODO use signals instead
     dispatch({ type: "ACCEPT", payload: { rootPassword: hiddenPassword } });
   };
@@ -74,15 +76,20 @@ export default function RootUser() {
 
   const rootForm = () => {
     return (
-      <FormGroup fieldId="rootPassword" label="Root Password">
-        <TextInput
-          id="rootPassword"
-          type="password"
-          aria-label="root password"
-          value={rootPassword}
-          onChange={v => dispatch({ type: "CHANGE", payload: { rootPassword: v } })}
-        />
-      </FormGroup>
+      <>
+        <FormGroup fieldId="rootPassword" label="Root Password">
+          <TextInput
+            id="rootPassword"
+            type="password"
+            aria-label="root password"
+            value={rootPassword}
+            onChange={v => dispatch({ type: "CHANGE", payload: { rootPassword: v } })}
+          />
+        </FormGroup>
+        <FormGroup fieldId="rootSSHKey" label="Root SSH key">
+          <RootSSHKey accept="???" />
+        </FormGroup>
+      </>
     );
   };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FileUpload } from '@patternfly/react-core';
 
-export default function RootSSHKey {
+export default function RootSSHKey(props) {
     const (value, setValue) = useState("");
     const (fileame, setFilename) = useState("");
     const (loading, setLoading) = useState(false);
@@ -10,6 +10,11 @@ export default function RootSSHKey {
         const key = await client.users.RootSSHKey();
         setValue(key);
       }, []);
+
+    // call accept when form is send
+    props.accept = async () => {
+        client.users.setRootSSHKey(value);
+    }
 
     return (
         <FileUpload
