@@ -64,7 +64,7 @@ export default function RootUser() {
     if (rootPassword !== hiddenPassword && rootPassword !== "") {
       await client.users.setRootPassword(rootPassword);
     }
-    client.users.SetSSHKey(SSHKey);
+    client.users.setRootSSHKey(SSHKey);
     // TODO use signals instead
     dispatch({ type: "ACCEPT", payload: { rootPassword: hiddenPassword } });
   };
