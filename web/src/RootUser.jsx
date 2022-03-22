@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
-import { RootSSHKey } from "./RootSSHKey";
+import RootSSHKey from "./RootSSHKey";
 
 import { Button, Form, FormGroup, Modal, ModalVariant, TextInput } from "@patternfly/react-core";
 
