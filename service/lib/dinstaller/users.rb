@@ -78,7 +78,7 @@ module DInstaller
     end
 
     def write(_progress)
-      without_run do
+      without_run_mount do
         system_config = Y2Users::ConfigManager.instance.system(force_read: true)
         target_config = system_config.copy
         Y2Users::ConfigMerger.new(target_config, config).merge
@@ -93,7 +93,7 @@ module DInstaller
 
     attr_reader :logger
 
-    def without_run(&block)
+    def without_run_mount(&block)
       Yast::Execute.locally!("/usr/bin/umount", "/mnt/run")
       block.call
     ensure

@@ -139,7 +139,7 @@ describe DInstaller::Users do
       end
     end
 
-    it "do write without /run bind mounted" do
+    it "writes without /run bind mounted" do
       expect(Yast::Execute).to receive(:locally!).with(/umount/, anything)
 
       subject.write(progress)

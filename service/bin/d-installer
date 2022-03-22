@@ -36,7 +36,7 @@ manager = DInstaller::Manager.new(logger)
 EM.run do
   service = DInstaller::DBus::Service.new(manager, logger)
   service.export
-  manager.probe # probeb after export, so we can report on DBus
-  manager.progress.on_change { service.dispatch } # make single thread more responsible
+  manager.probe # probe after export, so we can report on DBus
+  manager.progress.on_change { service.dispatch } # make single thread more responsive
   EventMachine::PeriodicTimer.new(0.1) { service.dispatch }
 end
