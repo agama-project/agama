@@ -44,7 +44,7 @@ export default class UsersClient {
    *
    * @return {Promise.<Boolean>}
    */
-  async isRootPassword() {
+  async isRootPasswordSet() {
     const proxy = await this.proxy(USERS_IFACE);
     return proxy.RootPasswordSet;
   }

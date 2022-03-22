@@ -1,27 +1,52 @@
 import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { Button, Form, FormGroup, Modal, ModalVariant, TextInput } from "@patternfly/react-core";
+import {
+  Alert,
+  Button,
+  Form,
+  FormAlert,
+  FormGroup,
+  Text,
+  TextInput,
+  Skeleton
+} from "@patternfly/react-core";
+
+import Modal from "./Modal";
+
+const initialState = {
+  password: "",
+  isPasswordSet: null,
+  isFormOpen: false,
+  error: null
+};
 
 const reducer = (state, action) => {
-  switch (action.type) {
-    case "LOAD": {
-      return { ...state, ...action.payload };
-    }
-    case "ACCEPT": {
-      return { ...state, isFormOpen: false, ...action.payload };
+  const { type, payload } = action;
+
+  switch (type) {
+    case "SET_PASSWORD_STATUS": {
+      return { ...state, ...payload };
     }
 
-    case "CANCEL": {
-      return { ...state, isFormOpen: false };
+    case "PASSWORD_CHANGED": {
+      return { ...state, ...payload };
     }
 
-    case "CHANGE": {
-      return { ...state, ...action.payload };
-    }
-
-    case "OPEN": {
+    case "OPEN_DIALOG": {
       return { ...state, isFormOpen: true };
+    }
+
+    case "CLOSE_DIALOG": {
+      return { ...initialState, isPasswordSet: state.isPasswordSet };
+    }
+
+    case "CONFIRM_ACTION": {
+      return { ...state, error: null };
+    }
+
+    case "ERROR_FOUND": {
+      return { ...state, ...payload };
     }
 
     default: {
@@ -30,86 +55,85 @@ const reducer = (state, action) => {
   }
 };
 
-const initialState = {
-  rootPassword: null,
-  isFormOpen: false
-};
-
 export default function RootUser() {
   const client = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { rootPassword, isFormOpen } = state;
-  const hiddenPassword = "_____DINSTALLALER_PASSWORD_SET";
 
   useEffect(async () => {
-    const rootPassword = (await client.users.isRootPassword()) ? hiddenPassword : "";
-    dispatch({
-      type: "LOAD",
-      payload: {
-        rootPassword
-      }
-    });
+    const isPasswordSet = await client.users.isRootPasswordSet();
+    dispatch({ type: "SET_PASSWORD_STATUS", payload: { isPasswordSet } });
   }, []);
 
-  const open = () => dispatch({ type: "OPEN" });
+  const open = () => dispatch({ type: "OPEN_DIALOG" });
 
-  const cancel = () => dispatch({ type: "CANCEL" });
+  const cancel = () => dispatch({ type: "CLOSE_DIALOG" });
 
   const accept = async () => {
-    // TODO: handle errors
-    if (rootPassword !== hiddenPassword && rootPassword !== "") {
-      await client.users.setRootPassword(rootPassword);
+    // Extra check. The confirm action is already disabled when password is empty
+    if (state.password !== "") {
+      try {
+        dispatch({ type: "CONFIRM_ACTION" });
+        await client.users.setRootPassword(state.password);
+        dispatch({ type: "CLOSE_DIALOG" });
+      } catch (error) {
+        dispatch({ type: "ERROR_FOUND", payload: { error } });
+      }
     }
-    // TODO use signals instead
-    dispatch({ type: "ACCEPT", payload: { rootPassword: hiddenPassword } });
-  };
-
-  const rootLabel = () => {
-    if (rootPassword === hiddenPassword) {
-      return "Root Password Set.";
-    } else {
-      return "Root Password Not Set. ";
-    }
-  };
-
-  const rootForm = () => {
-    return (
-      <FormGroup fieldId="rootPassword" label="Root Password">
-        <TextInput
-          id="rootPassword"
-          type="password"
-          aria-label="root password"
-          value={rootPassword}
-          onChange={v => dispatch({ type: "CHANGE", payload: { rootPassword: v } })}
-        />
-      </FormGroup>
-    );
   };
 
   // Renders nothing until know about the status of password
-  if (rootPassword === null) return null;
+  if (state.isPasswordSet === null) {
+    return <Skeleton width="50%" fontSize="sm" screenreaderText="Loading root password status" />;
+  }
+
+  const status = state.isPasswordSet ? "already set" : "not set yet";
+  const dialogTitle = state.isPasswordSet ? "Change root password" : "Set root password";
+  const dialogLink = (
+    <Text>
+      Root Password: <span className="text--bold">{status}</span>.
+    </Text>
+  );
+
+  const renderError = () => {
+    if (!state.error) return null;
+
+    return (
+      <FormAlert>
+        <Alert
+          isPlain
+          isInline
+          variant="danger"
+          aria-label="polite"
+          title="Something went wrong, try it again"
+        />
+      </FormAlert>
+    );
+  };
 
   return (
     <>
       <Button variant="link" onClick={open}>
-        {rootLabel()}
+        {dialogLink}
       </Button>
 
       <Modal
-        isOpen={isFormOpen}
-        showClose={false}
-        variant={ModalVariant.small}
-        title="Root Configuration"
-        actions={[
-          <Button key="confirm" variant="primary" onClick={accept}>
-            Confirm
-          </Button>,
-          <Button key="cancel" variant="link" onClick={cancel}>
-            Cancel
-          </Button>
-        ]}
+        title={dialogTitle}
+        isOpen={state.isFormOpen}
+        onConfirm={accept}
+        onCancel={cancel}
+        confirmDisabled={state.password === ""}
       >
-        <Form>{rootForm()}</Form>
+        <Form>
+          <FormGroup fieldId="root-password" label="New password for root">
+            <TextInput
+              id="root-password"
+              type="password"
+              data-testid="root-password-input"
+              onChange={v => dispatch({ type: "PASSWORD_CHANGED", payload: { password: v } })}
+            />
+          </FormGroup>
+          {renderError()}
+        </Form>
       </Modal>
     </>
   );
