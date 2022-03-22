@@ -31,19 +31,21 @@ import RootUser from "./RootUser";
 jest.mock("./lib/client");
 
 let isRootPasswordFn = () => false;
+let rootSSHKeyFn = () => "";
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       users: {
-        isRootPassword: isRootPasswordFn
+        isRootPassword: isRootPasswordFn,
+        rootSSHKey: rootSSHKeyFn
       }
     };
   });
 });
 
 describe("RootUser", () => {
-    it("displays a form set or change root password when user clicks the link", async () => {
+  it("displays a form set or change root password when user clicks the link", async () => {
     authRender(<RootUser />);
 
     const passwordLink = await screen.findByRole("button", { name: /Root Password/i });

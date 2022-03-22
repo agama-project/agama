@@ -45,7 +45,7 @@ export default function RootUser() {
 
   useEffect(async () => {
     const rootPassword = (await client.users.isRootPassword()) ? hiddenPassword : "";
-    const SSHKey = await client.users.RootSSHKey();
+    const SSHKey = await client.users.rootSSHKey();
     dispatch({
       type: "LOAD",
       payload: {
@@ -113,7 +113,7 @@ export default function RootUser() {
   return (
     <>
       <Button variant="link" onClick={open}>
-        {rootLabel().append(SSHKeyLabel())}
+        {rootLabel().concat(SSHKeyLabel())}
       </Button>
 
       <Modal
