@@ -61,10 +61,10 @@ export default function RootUser() {
 
   const accept = async () => {
     // TODO: handle errors
-    if (rootPassword !== hiddenPassword && rootPassword !== "") {
+    if (rootPassword !== hiddenPassword) {
       await client.users.setRootPassword(rootPassword);
     }
-    const remembered_password = rootPassword === "" ? "" : hiddenPassword
+    const remembered_password = rootPassword === "" ? "" : hiddenPassword;
     client.users.setRootSSHKey(SSHKey);
     // TODO use signals instead
     dispatch({ type: "ACCEPT", payload: { rootPassword: remembered_password } });
