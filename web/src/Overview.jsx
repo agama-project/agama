@@ -22,7 +22,7 @@
 import React from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { Button, Flex, FlexItem, Stack, StackItem } from "@patternfly/react-core";
+import { Button, Flex, FlexItem } from "@patternfly/react-core";
 
 import Layout from "./Layout";
 import Category from "./Category";

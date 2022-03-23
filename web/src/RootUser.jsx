@@ -7,8 +7,6 @@ import {
   FormGroup,
   Modal,
   ModalVariant,
-  Split,
-  SplitItem,
   Text,
   TextInput
 } from "@patternfly/react-core";

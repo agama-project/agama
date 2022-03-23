@@ -28,23 +28,14 @@ import {
   Modal,
   ModalVariant,
   Text,
-  TextInput
 } from "@patternfly/react-core";
 import { FileUpload } from "@patternfly/react-core";
 
-export default function RootSSHKey({ value, onValueChange }) {
+export default function RootSSHKey() {
   const client = useInstallerClient();
   const [loading, setLoading] = useState(false);
   const [sshKey, setSSHKey] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-
-  const sshKeyLabel = () => {
-    if (sshKey === "") {
-      return "SSH public key is not set ";
-    } else {
-      return "SSH public key is set";
-    }
-  };
 
   useEffect(async () => {
     const key = await client.users.getRootSSHKey();
