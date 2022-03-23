@@ -22,12 +22,13 @@
 require "yast"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
+require "dinstaller/language"
 require "dinstaller/network"
-require "dinstaller/status_manager"
 require "dinstaller/progress"
 require "dinstaller/software"
-require "dinstaller/users"
+require "dinstaller/status_manager"
 require "dinstaller/storage"
+require "dinstaller/users"
 
 Yast.import "Stage"
 
