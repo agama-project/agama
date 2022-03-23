@@ -23,14 +23,14 @@ import React from "react";
 import { Stack, StackItem } from "@patternfly/react-core";
 
 import FirstUser from "./FirstUser";
-import RootUser from "./RootUser";
+import RootPassword from "./RootPassword";
 import RootSSHKey from "./RootSSHKey";
 
 export default function Users() {
   return (
     <Stack>
       <StackItem>
-        <RootUser />
+        <RootPassword />
       </StackItem>
       <StackItem>
         <RootSSHKey />

@@ -26,7 +26,7 @@ import userEvent from "@testing-library/user-event";
 import { authRender } from "./test-utils";
 import { createClient } from "./lib/client";
 
-import RootUser from "./RootUser";
+import RootPassword from "./RootPassword";
 
 jest.mock("./lib/client");
 
@@ -44,9 +44,9 @@ beforeEach(() => {
   });
 });
 
-describe("RootUser", () => {
+describe("RootPassword", () => {
   it("displays a form set or change root password when user clicks the link", async () => {
-    authRender(<RootUser />);
+    authRender(<RootPassword />);
 
     const rootPassword = await screen.findByText(/Root password/i);
     const passwordLink = within(rootPassword).getByRole("button", { name: "is not set" });
@@ -61,7 +61,7 @@ describe("RootUser", () => {
     });
 
     it("displays a link to set the root password", async () => {
-      authRender(<RootUser />);
+      authRender(<RootPassword />);
       const rootPassword = await screen.findByText(/Root password/i);
       const button = within(rootPassword).getByRole("button", { name: "is not set" });
       expect(button).toBeInTheDocument();
@@ -74,7 +74,7 @@ describe("RootUser", () => {
     });
 
     it("displays a link to change the root password", async () => {
-      authRender(<RootUser />);
+      authRender(<RootPassword />);
       const rootPassword = await screen.findByText(/Root password/i);
       const button = within(rootPassword).getByRole("button", { name: "is set" });
       expect(button).toBeInTheDocument();
