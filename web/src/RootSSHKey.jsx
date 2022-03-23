@@ -1,24 +1,20 @@
 import React, { useState } from "react";
 import { FileUpload } from "@patternfly/react-core";
 
-export default function RootSSHKey(props) {
+export default function RootSSHKey({ value, onValueChange }) {
   const [loading, setLoading] = useState(false);
 
   return (
     <FileUpload
       id="SSHKey"
       type="text"
-      value={props.value}
-      filenamePlaceholder="Drag and drop an SSH public key or upload one"
-      onDataChange={value => {
-        props.valueChanged(value);
-      }}
-      onTextChange={value => {
-        props.valueChanged(value);
-      }}
+      value={value}
+      filenamePlaceholder="Drag and drop a SSH public key or upload one"
+      onDataChange={onValueChange}
+      onTextChange={onValueChange}
       onReadStarted={() => setLoading(true)}
       onReadFinished={() => setLoading(false)}
-      onClearClick={() => props.valueChanged("")}
+      onClearClick={() => onValueChange("")}
       isLoading={loading}
       browseButtonText="Upload"
     />

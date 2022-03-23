@@ -31,14 +31,14 @@ import RootUser from "./RootUser";
 jest.mock("./lib/client");
 
 let isRootPasswordFn = () => false;
-let rootSSHKeyFn = () => "";
+let getRootSSHKeyFn = () => "";
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       users: {
         isRootPassword: isRootPasswordFn,
-        rootSSHKey: rootSSHKeyFn
+        getRootSSHKey: getRootSSHKeyFn
       }
     };
   });

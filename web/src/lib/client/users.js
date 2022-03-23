@@ -54,7 +54,7 @@ export default class UsersClient {
    *
    * @return {Promise.<String>}
    */
-  async rootSSHKey() {
+  async getRootSSHKey() {
     const proxy = await this.proxy(USERS_IFACE);
     return proxy.RootSSHKey;
   }

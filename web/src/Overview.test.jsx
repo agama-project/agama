@@ -64,7 +64,7 @@ beforeEach(() => {
       users: {
         getUser: () => Promise.resolve(fakeUser),
         isRootPassword: jest.fn(),
-        rootSSHKey: jest.fn()
+        getRootSSHKey: jest.fn()
       }
     };
   });

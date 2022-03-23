@@ -45,7 +45,7 @@ export default function RootUser() {
 
   useEffect(async () => {
     const rootPassword = (await client.users.isRootPassword()) ? hiddenPassword : "";
-    const SSHKey = await client.users.rootSSHKey();
+    const SSHKey = await client.users.getRootSSHKey();
     dispatch({
       type: "LOAD",
       payload: {
@@ -72,9 +72,9 @@ export default function RootUser() {
 
   const rootLabel = () => {
     if (rootPassword === hiddenPassword) {
-      return "Root Password Set. ";
+      return "Root Password Set.";
     } else {
-      return "Root Password Not Set. ";
+      return "Root Password Not Set.";
     }
   };
 
@@ -114,7 +114,7 @@ export default function RootUser() {
   return (
     <>
       <Button variant="link" onClick={open}>
-        {rootLabel().concat(SSHKeyLabel())}
+        `${rootLabel()} ${SSHKeyLabel()}`
       </Button>
 
       <Modal
