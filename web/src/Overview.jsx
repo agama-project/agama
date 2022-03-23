@@ -29,9 +29,7 @@ import Category from "./Category";
 import LanguageSelector from "./LanguageSelector";
 import ProductSelector from "./ProductSelector";
 import Storage from "./Storage";
-import FirstUser from "./FirstUser";
-import RootUser from "./RootUser";
-import RootSSHKey from "./RootSSHKey";
+import Users from "./Users";
 
 import {
   EOS_FACT_CHECK as OverviewIcon,
@@ -49,17 +47,7 @@ function Overview() {
       <LanguageSelector />
     </Category>,
     <Category title="Users" icon={UsersIcon}>
-      <Stack>
-        <StackItem>
-          <RootUser />
-        </StackItem>
-        <StackItem>
-          <RootSSHKey />
-        </StackItem>
-        <StackItem>
-          <FirstUser />
-        </StackItem>
-      </Stack>
+      <Users />
     </Category>,
     <Category title="Product" icon={ProductsIcon}>
       <ProductSelector />
