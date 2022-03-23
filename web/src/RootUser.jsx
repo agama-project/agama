@@ -1,7 +1,17 @@
 import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { Button, Form, FormGroup, Modal, ModalVariant, TextInput } from "@patternfly/react-core";
+import {
+  Button,
+  Form,
+  FormGroup,
+  Modal,
+  ModalVariant,
+  Split,
+  SplitItem,
+  Text,
+  TextInput
+} from "@patternfly/react-core";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -65,14 +75,6 @@ export default function RootUser() {
     dispatch({ type: "ACCEPT", payload: { rootPassword: remembered_password } });
   };
 
-  const rootLabel = () => {
-    if (rootPassword === hiddenPassword) {
-      return "Root Password Set.";
-    } else {
-      return "Root Password Not Set.";
-    }
-  };
-
   const rootForm = () => {
     return (
       <>
@@ -92,11 +94,20 @@ export default function RootUser() {
   // Renders nothing until know about the status of password
   if (rootPassword === null) return null;
 
+  const renderLink = () => {
+    const label = rootPassword === hiddenPassword ? "is set" : "is not set";
+    const link = <Button variant="link" isInline onClick={open}>
+      {label}
+    </Button>
+
+    return (
+      <Text>Root password {link}</Text>
+    );
+  };
+
   return (
     <>
-      <Button variant="link" onClick={open}>
-        {rootLabel()}
-      </Button>
+      {renderLink()}
 
       <Modal
         isOpen={isFormOpen}

@@ -21,7 +21,15 @@
 
 import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
-import { Button, Form, FormGroup, Modal, ModalVariant, TextInput } from "@patternfly/react-core";
+import {
+  Button,
+  Form,
+  FormGroup,
+  Modal, 
+  ModalVariant,
+  Text,
+  TextInput
+} from "@patternfly/react-core";
 import { FileUpload } from "@patternfly/react-core";
 
 export default function RootSSHKey({ value, onValueChange }) {
@@ -32,9 +40,9 @@ export default function RootSSHKey({ value, onValueChange }) {
 
   const sshKeyLabel = () => {
     if (sshKey === "") {
-      return "SSH Key Not Set. ";
+      return "SSH public key is not set ";
     } else {
-      return "SSH Key Set. ";
+      return "SSH public key is set";
     }
   };
 
@@ -53,12 +61,20 @@ export default function RootSSHKey({ value, onValueChange }) {
 
   if (sshKey === null) return null;
 
+  const renderLink = () => {
+    const label = sshKey !== "" ? "is set" : "is not set";
+    const link = <Button variant="link" isInline onClick={open}>
+      {label}
+    </Button>
+
+    return (
+      <Text>SSH public key {link}</Text>
+    );
+  };
+
   return (
     <>
-      <Button variant="link" onClick={open}>
-        {sshKeyLabel()}
-      </Button>
-
+      {renderLink()}
       <Modal
         isOpen={isFormOpen}
         showClose={false}
