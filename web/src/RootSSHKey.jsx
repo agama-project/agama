@@ -56,7 +56,7 @@ export default function RootSSHKey({ value, onValueChange }) {
     setIsFormOpen(false);
   };
 
-  const cancel = () => {};
+  const cancel = () => setIsFormOpen(false);
   const open = () => setIsFormOpen(true);
 
   if (sshKey === null) return null;
