@@ -21,6 +21,7 @@
 
 require "dbus"
 require "dinstaller/language"
+require "dinstaller/errors"
 
 module DInstaller
   module DBus
@@ -53,9 +54,10 @@ module DInstaller
 
         dbus_method :ToInstall, "in LangIDs:as" do |lang_ids|
           logger.info "ToInstall #{lang_ids.inspect}"
-          select_to_install(lang_ids)
+          result = select_to_install(lang_ids)
 
           PropertiesChanged(LANGUAGE_INTERFACE, { "MarkedForInstall" => lang_ids }, [])
+          result ? 0 : 1
         end
       end
 
@@ -65,14 +67,16 @@ module DInstaller
 
       def marked_for_install
         # TODO: change when installer support multiple target languages
-        res = [backend.language]
-        logger.info "MarkedForInstall #{res}"
-        res
+        result = [backend.language]
+        logger.info "MarkedForInstall #{result}"
+        result
       end
 
       def select_to_install(lang_ids)
-        # TODO: adapt installer API to allow more languages to install
         backend.language = lang_ids.first
+        true
+      rescue Errors::InvalidValue
+        false
       end
 
     private
