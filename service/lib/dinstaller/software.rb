@@ -47,6 +47,7 @@ module DInstaller
       @product = name
     end
 
+    # rubocop:disable Metrics/AbcSize
     def probe(progress)
       logger.info "Probing software"
       Yast::Pkg.SetSolverFlags(
@@ -73,6 +74,7 @@ module DInstaller
       progress.next_minor_step("Software probing finished")
       Yast::Stage.Set("initial")
     end
+    # rubocop:enable Metrics/AbcSize
 
     def propose
       Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
