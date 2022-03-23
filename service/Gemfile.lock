@@ -9,7 +9,7 @@ PATH
       fast_gettext (~> 2.2.0)
       nokogiri (~> 1.13.1)
       rexml (~> 3.2.5)
-      ruby-dbus (~> 0.17.0)
+      ruby-dbus (>= 0.17.0)
 
 GEM
   remote: https://rubygems.org/
