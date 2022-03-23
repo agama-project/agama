@@ -74,7 +74,7 @@ export default class UsersClient {
    * Set the root password
    *
    * @param {String} password - plain text root password ( maybe allow client side encryption?)
-   * @return {Promise.<String|undefined>}
+   * @return {Promise.<Number>}
    */
   async setRootPassword(password) {
     const proxy = await this.proxy(USERS_IFACE);
@@ -82,10 +82,20 @@ export default class UsersClient {
   }
 
   /**
+   * Clear the root password
+   *
+   * @return {Promise.<Number>}
+   */
+  async removeRootPassword() {
+    const proxy = await this.proxy(USERS_IFACE);
+    return proxy.RemoveRootPassword();
+  }
+
+  /**
    * Set the root SSH Key
    *
    * @param {String} key - plain text root ssh key. Empty string means disabled
-   * @return {Promise.<String|undefined>}
+   * @return {Promise.<Number>}
    */
   async setRootSSHKey(key) {
     const proxy = await this.proxy(USERS_IFACE);

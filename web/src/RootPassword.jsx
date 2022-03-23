@@ -94,6 +94,11 @@ export default function RootPassword() {
     dispatch({ type: "ACCEPT", payload: { rootPassword: remembered_password } });
   };
 
+  const remove = async () => {
+    await client.users.removeRootPassword();
+    dispatch({ type: "ACCEPT", payload: { rootPassword: "" }});
+  }
+
   const rootForm = () => {
     return (
       <>
@@ -139,6 +144,9 @@ export default function RootPassword() {
           </Button>,
           <Button key="cancel" variant="link" onClick={cancel}>
             Cancel
+          </Button>,
+          <Button key="remove" variant="link" onClick={remove} isDisabled={rootPassword === ""}>
+            Remove
           </Button>
         ]}
       >

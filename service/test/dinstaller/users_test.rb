@@ -56,6 +56,14 @@ describe DInstaller::Users do
     end
   end
 
+  describe "#remove_root_password" do
+    it "removes the password" do
+      subject.assign_root_password("12345", false)
+      expect { subject.remove_root_password }.to change { subject.root_password? }
+        .from(true).to(false)
+    end
+  end
+
   describe "#root_password?" do
     it "returns true if the root password is set" do
       subject.assign_root_password("12345", false)
@@ -63,6 +71,11 @@ describe DInstaller::Users do
     end
 
     it "returns false if the root password is not set" do
+      expect(subject.root_password?).to eq(false)
+    end
+
+    it "returns true if the root password is set to nil" do
+      subject.assign_root_password("", false)
       expect(subject.root_password?).to eq(false)
     end
   end
@@ -89,14 +102,18 @@ describe DInstaller::Users do
         user = users_config.users.by_name("john")
         expect(user.full_name).to eq("John Doe")
       end
+    end
+  end
 
-      context "and the given user name is empty" do
-        it "removes the already defined first user" do
-          expect { subject.assign_first_user("", "", "", false, {}) }
-            .to change { users_config.users.by_name("jane") }
-            .from(Y2Users::User).to(nil)
-        end
-      end
+  describe "#remove_first_user" do
+    before do
+      subject.assign_first_user("Jane Doe", "jane", "12345", false, {})
+    end
+
+    it "removes the already defined first user" do
+      expect { subject.remove_first_user }
+        .to change { users_config.users.by_name("jane") }
+        .from(Y2Users::User).to(nil)
     end
   end
 

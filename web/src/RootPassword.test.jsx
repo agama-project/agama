@@ -30,16 +30,19 @@ import RootPassword from "./RootPassword";
 
 jest.mock("./lib/client");
 
-let isRootPasswordSetFn = () => Promise.resolve(false);
+let isRootPasswordSetFn;
 let setRootPasswordFn = jest.fn();
 let getRootSSHKeyFn = () => "";
+let removeRootPasswordFn = jest.fn();
 
 beforeEach(() => {
+  isRootPasswordSetFn = () => Promise.resolve(false);
   createClient.mockImplementation(() => {
     return {
       users: {
         isRootPasswordSet: isRootPasswordSetFn,
         setRootPassword: setRootPasswordFn,
+        removeRootPassword: removeRootPasswordFn,
         getRootSSHKey: getRootSSHKeyFn
       }
     };
@@ -78,6 +81,39 @@ it("allows changing the password ", async () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });
+
+describe("when the password is not set", () => {
+  it("displays a disabled remove button", async () => {
+    authRender(<RootPassword />);
+    const rootPassword = await screen.findByText(/Root password/i);
+    const button = within(rootPassword).getByRole("button", { name: "is not set" });
+    userEvent.click(button);
+
+    const removeButton = await screen.findByRole("button", { name: "Remove" });
+    expect(removeButton).toBeDisabled()
+  });
+});
+
+describe("when the password is set", () => {
+  beforeEach(() => {
+    isRootPasswordSetFn = () => Promise.resolve(true);
+  });
+
+  it("allows removing the password", async () => {
+    authRender(<RootPassword />);
+    const rootPassword = await screen.findByText(/Root password/i);
+    const button = within(rootPassword).getByRole("button", { name: "is set" });
+    userEvent.click(button);
+
+    const removeButton = await screen.findByRole("button", { name: "Remove" });
+    userEvent.click(removeButton);
+
+    expect(removeRootPasswordFn).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+  });
+})
 
 it("does not change the password if the user cancels", async () => {
   authRender(<RootPassword />);

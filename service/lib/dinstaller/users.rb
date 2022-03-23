@@ -40,7 +40,7 @@ module DInstaller
     end
 
     def root_password?
-      !!root_user.password&.value
+      !!root_user.password_content
     end
 
     def assign_root_password(value, encrypted)
@@ -62,12 +62,13 @@ module DInstaller
       [user.full_name, user.name, config.login.autologin_user == user, {}]
     end
 
-    def assign_first_user(full_name, user_name, password, auto_login, _data)
-      # at first remove previous first user
-      old_users = config.users.reject(&:root?)
-      config.detach(old_users) unless old_users.empty?
+    # Clears the root password
+    def remove_root_password
+      root_user.password = nil
+    end
 
-      return if user_name.empty? # empty is used to remove first user
+    def assign_first_user(full_name, user_name, password, auto_login, _data)
+      remove_first_user
 
       user = Y2Users::User.new(user_name)
       user.gecos = [full_name]
@@ -75,6 +76,12 @@ module DInstaller
       config.attach(user)
       config.login ||= Y2Users::LoginConfig.new
       config.login.autologin_user = auto_login ? user : nil
+    end
+
+    # Removes the first user
+    def remove_first_user
+      old_users = config.users.reject(&:root?)
+      config.detach(old_users) unless old_users.empty?
     end
 
     def write(_progress)

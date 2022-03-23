@@ -43,6 +43,7 @@ module DInstaller
         super(PATH)
       end
 
+      # rubocop:disable Metrics/BlockLength
       dbus_interface USERS_INTERFACE do
         dbus_reader :root_password_set, "b"
 
@@ -50,28 +51,49 @@ module DInstaller
 
         dbus_reader :first_user, "(ssba{sv})"
 
-        dbus_method :SetRootPassword, "in Value:s, in Encrypted:b" do |value, encrypted|
+        dbus_method :SetRootPassword,
+          "in Value:s, in Encrypted:b, out result:u" do |value, encrypted|
           logger.info "Setting Root Password"
           backend.assign_root_password(value, encrypted)
 
           PropertiesChanged(USERS_INTERFACE, { "RootPasswordSet" => !value.empty? }, [])
+          0
         end
 
-        dbus_method :SetRootSSHKey, "in Value:s" do |value|
+        dbus_method :RemoveRootPassword, "out result:u" do
+          logger.info "Clearing the root password"
+          backend.remove_root_password
+
+          PropertiesChanged(USERS_INTERFACE, { "RootPasswordSet" => backend.root_password? }, [])
+          0
+        end
+
+        dbus_method :SetRootSSHKey, "in Value:s, out result:u" do |value|
           logger.info "Setting Root ssh key"
           backend.root_ssh_key = (value)
 
           PropertiesChanged(USERS_INTERFACE, { "RootSSHKey" => value }, [])
+          0
         end
 
-        dbus_method :SetFirstUser, FUSER_SIG do |full_name, user_name, password, auto_login, data|
+        dbus_method :SetFirstUser,
+          FUSER_SIG + ", out result:u" do |full_name, user_name, password, auto_login, data|
           logger.info "Setting first user #{full_name}"
           backend.assign_first_user(full_name, user_name, password, auto_login, data)
 
           PropertiesChanged(USERS_INTERFACE, { "FirstUser" => first_user }, [])
+          0
         end
 
+        dbus_method :RemoveFirstUser, "out result:u" do
+          logger.info "Removing the first user"
+          backend.remove_first_user
+
+          PropertiesChanged(USERS_INTERFACE, { "FirstUser" => {} }, [])
+          0
+        end
       end
+      # rubocop:enable Metrics/BlockLength
 
       def root_ssh_key
         backend.root_ssh_key
