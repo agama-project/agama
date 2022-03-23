@@ -25,7 +25,7 @@ import {
   Button,
   Form,
   FormGroup,
-  Modal, 
+  Modal,
   ModalVariant,
   Text,
   TextInput
@@ -63,13 +63,13 @@ export default function RootSSHKey({ value, onValueChange }) {
 
   const renderLink = () => {
     const label = sshKey !== "" ? "is set" : "is not set";
-    const link = <Button variant="link" isInline onClick={open}>
-      {label}
-    </Button>
-
-    return (
-      <Text>SSH public key {link}</Text>
+    const link = (
+      <Button variant="link" isInline onClick={open}>
+        {label}
+      </Button>
     );
+
+    return <Text>SSH public key {link}</Text>;
   };
 
   return (
@@ -103,7 +103,7 @@ export default function RootSSHKey({ value, onValueChange }) {
               onClearClick={() => setSSHKey("")}
               isLoading={loading}
               browseButtonText="Upload"
-              />
+            />
           </FormGroup>
         </Form>
       </Modal>

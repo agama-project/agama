@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) [2022] SUSE LLC
  *
@@ -27,7 +26,7 @@ import FirstUser from "./FirstUser";
 import RootUser from "./RootUser";
 import RootSSHKey from "./RootSSHKey";
 
-export default function Users () {
+export default function Users() {
   return (
     <Stack>
       <StackItem>

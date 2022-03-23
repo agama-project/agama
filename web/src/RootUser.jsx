@@ -42,7 +42,7 @@ const reducer = (state, action) => {
 
 const initialState = {
   rootPassword: null,
-  isFormOpen: false,
+  isFormOpen: false
 };
 
 export default function RootUser() {
@@ -56,7 +56,7 @@ export default function RootUser() {
     dispatch({
       type: "LOAD",
       payload: {
-        rootPassword,
+        rootPassword
       }
     });
   }, []);
@@ -96,13 +96,13 @@ export default function RootUser() {
 
   const renderLink = () => {
     const label = rootPassword === hiddenPassword ? "is set" : "is not set";
-    const link = <Button variant="link" isInline onClick={open}>
-      {label}
-    </Button>
-
-    return (
-      <Text>Root password {link}</Text>
+    const link = (
+      <Button variant="link" isInline onClick={open}>
+        {label}
+      </Button>
     );
+
+    return <Text>Root password {link}</Text>;
   };
 
   return (

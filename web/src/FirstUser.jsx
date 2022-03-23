@@ -126,7 +126,7 @@ export default function Users() {
     );
   };
 
-  const link = (content) => (
+  const link = content => (
     <Button variant="link" isInline onClick={open}>
       {content}
     </Button>
