@@ -31,6 +31,7 @@ import ProductSelector from "./ProductSelector";
 import Storage from "./Storage";
 import FirstUser from "./FirstUser";
 import RootUser from "./RootUser";
+import RootSSHKey from "./RootSSHKey";
 
 import {
   EOS_FACT_CHECK as OverviewIcon,
@@ -51,6 +52,9 @@ function Overview() {
       <Stack>
         <StackItem>
           <RootUser />
+        </StackItem>
+        <StackItem>
+          <RootSSHKey />
         </StackItem>
         <StackItem>
           <FirstUser />
