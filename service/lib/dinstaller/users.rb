@@ -50,7 +50,7 @@ module DInstaller
         Y2Users::Password.create_plain(value)
       end
 
-      root_user.password = pwd
+      root_user.password = value.empty? ? nil : pwd
     end
 
     def first_user

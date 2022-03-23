@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { authRender } from "./test-utils";
 import { createClient } from "./lib/client";
@@ -31,22 +31,25 @@ import RootUser from "./RootUser";
 jest.mock("./lib/client");
 
 let isRootPasswordFn = () => false;
+let getRootSSHKeyFn = () => "";
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       users: {
-        isRootPassword: isRootPasswordFn
+        isRootPassword: isRootPasswordFn,
+        getRootSSHKey: getRootSSHKeyFn
       }
     };
   });
 });
 
 describe("RootUser", () => {
-    it("displays a form set or change root password when user clicks the link", async () => {
+  it("displays a form set or change root password when user clicks the link", async () => {
     authRender(<RootUser />);
 
-    const passwordLink = await screen.findByRole("button", { name: /Root Password/i });
+    const rootPassword = await screen.findByText(/Root password/i);
+    const passwordLink = within(rootPassword).getByRole("button", { name: "is not set" });
     userEvent.click(passwordLink);
     await screen.findByRole("dialog");
     await screen.findByText(/Root Configuration/i);
@@ -59,7 +62,9 @@ describe("RootUser", () => {
 
     it("displays a link to set the root password", async () => {
       authRender(<RootUser />);
-      await screen.findByRole("button", { name: /Root Password Not Set/i });
+      const rootPassword = await screen.findByText(/Root password/i);
+      const button = within(rootPassword).getByRole("button", { name: "is not set" });
+      expect(button).toBeInTheDocument();
     });
   });
 
@@ -70,7 +75,9 @@ describe("RootUser", () => {
 
     it("displays a link to change the root password", async () => {
       authRender(<RootUser />);
-      await screen.findByRole("button", { name: /Root Password Set/i });
+      const rootPassword = await screen.findByText(/Root password/i);
+      const button = within(rootPassword).getByRole("button", { name: "is set" });
+      expect(button).toBeInTheDocument();
     });
   });
 });

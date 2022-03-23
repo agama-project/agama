@@ -1,7 +1,15 @@
 import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { Button, Form, FormGroup, Modal, ModalVariant, TextInput } from "@patternfly/react-core";
+import {
+  Button,
+  Form,
+  FormGroup,
+  Modal,
+  ModalVariant,
+  Text,
+  TextInput
+} from "@patternfly/react-core";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -57,43 +65,47 @@ export default function RootUser() {
 
   const accept = async () => {
     // TODO: handle errors
-    if (rootPassword !== hiddenPassword && rootPassword !== "") {
+    if (rootPassword !== hiddenPassword) {
       await client.users.setRootPassword(rootPassword);
     }
+    const remembered_password = rootPassword === "" ? "" : hiddenPassword;
     // TODO use signals instead
-    dispatch({ type: "ACCEPT", payload: { rootPassword: hiddenPassword } });
-  };
-
-  const rootLabel = () => {
-    if (rootPassword === hiddenPassword) {
-      return "Root Password Set.";
-    } else {
-      return "Root Password Not Set. ";
-    }
+    dispatch({ type: "ACCEPT", payload: { rootPassword: remembered_password } });
   };
 
   const rootForm = () => {
     return (
-      <FormGroup fieldId="rootPassword" label="Root Password">
-        <TextInput
-          id="rootPassword"
-          type="password"
-          aria-label="root password"
-          value={rootPassword}
-          onChange={v => dispatch({ type: "CHANGE", payload: { rootPassword: v } })}
-        />
-      </FormGroup>
+      <>
+        <FormGroup fieldId="rootPassword" label="Root Password">
+          <TextInput
+            id="rootPassword"
+            type="password"
+            aria-label="root password"
+            value={rootPassword}
+            onChange={v => dispatch({ type: "CHANGE", payload: { rootPassword: v } })}
+          />
+        </FormGroup>
+      </>
     );
   };
 
   // Renders nothing until know about the status of password
   if (rootPassword === null) return null;
 
+  const renderLink = () => {
+    const label = rootPassword === hiddenPassword ? "is set" : "is not set";
+    const link = (
+      <Button variant="link" isInline onClick={open}>
+        {label}
+      </Button>
+    );
+
+    return <Text>Root password {link}</Text>;
+  };
+
   return (
     <>
-      <Button variant="link" onClick={open}>
-        {rootLabel()}
-      </Button>
+      {renderLink()}
 
       <Modal
         isOpen={isFormOpen}
