@@ -37,15 +37,25 @@ module DInstaller
       @languages = []
     end
 
+    # Probes the available system languages
+    #
+    # @param _progress [Progress] Progress reporting object
     def probe(_progress)
       logger.info "Probing languages"
       @languages = Yast::Language.GetLanguagesMap(true)
     end
 
+    # Writes the language settings
+    #
+    # @param _progress [Progress] Progress reporting object
     def install(_progress)
       Yast::Language.Save
     end
 
+    # Sets the language
+    #
+    # @param name [String] Language code
+    # @raise Errors::InvalidValue
     def language=(name)
       raise Errors::InvalidValue unless languages.include?(name)
 
@@ -54,6 +64,9 @@ module DInstaller
       Yast::Language.PackagesInit([name])
     end
 
+    # Returns the selected language
+    #
+    # @return [String] Language code
     def language
       Yast::Language.language
     end
