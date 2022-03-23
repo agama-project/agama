@@ -71,7 +71,7 @@ export default function RootPassword() {
   const hiddenPassword = "_____DINSTALLALER_PASSWORD_SET";
 
   useEffect(async () => {
-    const rootPassword = (await client.users.isRootPassword()) ? hiddenPassword : "";
+    const rootPassword = (await client.users.isRootPasswordSet()) ? hiddenPassword : "";
     dispatch({
       type: "LOAD",
       payload: {
@@ -97,7 +97,7 @@ export default function RootPassword() {
   const rootForm = () => {
     return (
       <>
-        <FormGroup fieldId="rootPassword" label="Root Password">
+        <FormGroup fieldId="rootPassword" label="New root password">
           <TextInput
             id="rootPassword"
             type="password"
@@ -132,7 +132,7 @@ export default function RootPassword() {
         isOpen={isFormOpen}
         showClose={false}
         variant={ModalVariant.small}
-        title="Root Configuration"
+        aria-label="Set new root password"
         actions={[
           <Button key="confirm" variant="primary" onClick={accept}>
             Confirm

@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import { screen, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { authRender } from "./test-utils";
 import { createClient } from "./lib/client";
@@ -30,54 +30,88 @@ import RootPassword from "./RootPassword";
 
 jest.mock("./lib/client");
 
-let isRootPasswordFn = () => false;
+let isRootPasswordSetFn = () => Promise.resolve(false);
+let setRootPasswordFn = jest.fn();
 let getRootSSHKeyFn = () => "";
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       users: {
-        isRootPassword: isRootPasswordFn,
+        isRootPasswordSet: isRootPasswordSetFn,
+        setRootPassword: setRootPasswordFn,
         getRootSSHKey: getRootSSHKeyFn
       }
     };
   });
 });
 
-describe("RootPassword", () => {
-  it("displays a form set or change root password when user clicks the link", async () => {
+describe("while waiting for the root password status", () => {
+  it.skip("displays a loading component", async () => {
     authRender(<RootPassword />);
+    await screen.findByText("Loading root password status");
+  });
+});
 
+it("allows changing the password ", async () => {
+  const password = "nots3cr3t";
+  authRender(<RootPassword />);
+  const rootPassword = await screen.findByText(/Root password/i);
+  const button = within(rootPassword).getByRole("button", { name: "is not set" });
+  userEvent.click(button);
+
+  await screen.findByRole("dialog");
+
+  const passwordInput = await screen.findByLabelText("New root password");
+  userEvent.type(passwordInput, password);
+
+  const confirmButton = await screen.findByRole("button", { name: /Confirm/i });
+  expect(confirmButton).toBeEnabled();
+
+  act(() => {
+    userEvent.click(confirmButton);
+  });
+
+  expect(setRootPasswordFn).toHaveBeenCalledWith(password);
+
+  await waitFor(() => {
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+});
+
+it("does not change the password if the user cancels", async () => {
+  authRender(<RootPassword />);
+  const rootPassword = await screen.findByText(/Root password/i);
+  const button = within(rootPassword).getByRole("button", { name: "is not set" });
+  userEvent.click(button);
+
+  await screen.findByRole("dialog");
+  const cancelButton = await screen.findByRole("button", { name: /Cancel/i });
+  userEvent.click(cancelButton);
+
+  expect(setRootPasswordFn).not.toHaveBeenCalled();
+  await waitFor(() => {
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+});
+
+describe("when an error happens while changing the password", () => {
+  beforeEach(() => {
+    setRootPasswordFn = jest.fn().mockImplementation(() => {
+      throw new Error("Error while setting the root password");
+    });
+  });
+
+  it.skip("displays an error", async () => {
+    authRender(<RootPassword />);
     const rootPassword = await screen.findByText(/Root password/i);
-    const passwordLink = within(rootPassword).getByRole("button", { name: "is not set" });
-    userEvent.click(passwordLink);
+    const button = within(rootPassword).getByRole("button", { name: "is not set" });
+    userEvent.click(button);
+
     await screen.findByRole("dialog");
-    await screen.findByText(/Root Configuration/i);
-  });
+    const cancelButton = await screen.findByRole("button", { name: /Cancel/i });
+    userEvent.click(cancelButton);
 
-  describe("when the root password is not set", () => {
-    beforeEach(() => {
-      isRootPasswordFn = () => false;
-    });
-
-    it("displays a link to set the root password", async () => {
-      authRender(<RootPassword />);
-      const rootPassword = await screen.findByText(/Root password/i);
-      const button = within(rootPassword).getByRole("button", { name: "is not set" });
-      expect(button).toBeInTheDocument();
-    });
-  });
-
-  describe("when the root password is set", () => {
-    beforeEach(() => {
-      isRootPasswordFn = () => true;
-    });
-
-    it("displays a link to change the root password", async () => {
-      authRender(<RootPassword />);
-      const rootPassword = await screen.findByText(/Root password/i);
-      const button = within(rootPassword).getByRole("button", { name: "is set" });
-      expect(button).toBeInTheDocument();
-    });
+    await screen.findByText(/Something went wrong/i);
   });
 });
