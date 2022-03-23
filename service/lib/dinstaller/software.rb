@@ -33,6 +33,8 @@ module DInstaller
   class Software
     attr_reader :product, :products
 
+    SUPPORTED_PRODUCTS = ["openSUSE"].freeze
+
     def initialize(logger)
       @logger = logger
       @products = []
@@ -45,6 +47,7 @@ module DInstaller
       @product = name
     end
 
+    # rubocop:disable Metrics/AbcSize
     def probe(progress)
       logger.info "Probing software"
       Yast::Pkg.SetSolverFlags(
@@ -58,16 +61,20 @@ module DInstaller
       progress.next_minor_step("Initialize sources")
       Yast::Pkg.SourceRestore
       Yast::Pkg.SourceLoad
-      progress.next_minor_step("Making initial proposal")
-      @products = Y2Packager::Product.available_base_products
+      @products = Y2Packager::Product.available_base_products.select do |product|
+        SUPPORTED_PRODUCTS.include?(product.name)
+      end
       @product = @products.first&.name || ""
+      raise "No product available" if @product.empty?
+
+      logger.info "Found supported products: #{@products.map(&:name).join(",")}"
+      progress.next_minor_step("Making initial proposal")
       proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
       logger.info "proposal #{proposal["raw_proposal"]}"
       progress.next_minor_step("Software probing finished")
       Yast::Stage.Set("initial")
-
-      raise "No Product Available" unless @product
     end
+    # rubocop:enable Metrics/AbcSize
 
     def propose
       Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
