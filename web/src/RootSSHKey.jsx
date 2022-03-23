@@ -60,7 +60,7 @@ export default function RootSSHKey() {
       </Button>
     );
 
-    return <Text>SSH public key {link}</Text>;
+    return <Text>Root SSH public key {link}</Text>;
   };
 
   return (
