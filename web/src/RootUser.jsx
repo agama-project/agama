@@ -1,8 +1,15 @@
 import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
-import RootSSHKey from "./RootSSHKey";
 
-import { Button, Form, FormGroup, Modal, ModalVariant, TextInput } from "@patternfly/react-core";
+import {
+  Button,
+  Form,
+  FormGroup,
+  Modal,
+  ModalVariant,
+  Text,
+  TextInput
+} from "@patternfly/react-core";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -33,24 +40,21 @@ const reducer = (state, action) => {
 
 const initialState = {
   rootPassword: null,
-  isFormOpen: false,
-  SSHKey: ""
+  isFormOpen: false
 };
 
 export default function RootUser() {
   const client = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { rootPassword, isFormOpen, SSHKey } = state;
+  const { rootPassword, isFormOpen } = state;
   const hiddenPassword = "_____DINSTALLALER_PASSWORD_SET";
 
   useEffect(async () => {
     const rootPassword = (await client.users.isRootPassword()) ? hiddenPassword : "";
-    const SSHKey = await client.users.getRootSSHKey();
     dispatch({
       type: "LOAD",
       payload: {
-        rootPassword,
-        SSHKey
+        rootPassword
       }
     });
   }, []);
@@ -65,25 +69,8 @@ export default function RootUser() {
       await client.users.setRootPassword(rootPassword);
     }
     const remembered_password = rootPassword === "" ? "" : hiddenPassword;
-    client.users.setRootSSHKey(SSHKey);
     // TODO use signals instead
     dispatch({ type: "ACCEPT", payload: { rootPassword: remembered_password } });
-  };
-
-  const rootLabel = () => {
-    if (rootPassword === hiddenPassword) {
-      return "Root Password Set.";
-    } else {
-      return "Root Password Not Set.";
-    }
-  };
-
-  const SSHKeyLabel = () => {
-    if (SSHKey === "") {
-      return "SSH Key Not Set. ";
-    } else {
-      return "SSH Key Set. ";
-    }
   };
 
   const rootForm = () => {
@@ -98,12 +85,6 @@ export default function RootUser() {
             onChange={v => dispatch({ type: "CHANGE", payload: { rootPassword: v } })}
           />
         </FormGroup>
-        <FormGroup fieldId="SSHKey" label="Root SSH key">
-          <RootSSHKey
-            value={SSHKey}
-            valueChanged={v => dispatch({ type: "CHANGE", payload: { SSHKey: v } })}
-          />
-        </FormGroup>
       </>
     );
   };
@@ -111,11 +92,20 @@ export default function RootUser() {
   // Renders nothing until know about the status of password
   if (rootPassword === null) return null;
 
+  const renderLink = () => {
+    const label = rootPassword === hiddenPassword ? "is set" : "is not set";
+    const link = (
+      <Button variant="link" isInline onClick={open}>
+        {label}
+      </Button>
+    );
+
+    return <Text>Root password {link}</Text>;
+  };
+
   return (
     <>
-      <Button variant="link" onClick={open}>
-        `${rootLabel()} ${SSHKeyLabel()}`
-      </Button>
+      {renderLink()}
 
       <Modal
         isOpen={isFormOpen}

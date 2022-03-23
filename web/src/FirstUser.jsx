@@ -8,6 +8,7 @@ import {
   FormGroup,
   Modal,
   ModalVariant,
+  Text,
   TextInput
 } from "@patternfly/react-core";
 
@@ -82,14 +83,6 @@ export default function Users() {
     dispatch({ type: "ACCEPT" });
   };
 
-  const userLabel = () => {
-    if (user !== undefined && user.userName != "") {
-      return "User " + user.userName + " Set.";
-    } else {
-      return "First User Not Set.";
-    }
-  };
-
   const userForm = () => {
     return (
       <Form>
@@ -133,11 +126,23 @@ export default function Users() {
     );
   };
 
+  const link = content => (
+    <Button variant="link" isInline onClick={open}>
+      {content}
+    </Button>
+  );
+
+  const renderLink = () => {
+    if (user?.userName !== "") {
+      return <Text>User {link(user.userName)} is defined</Text>;
+    } else {
+      return <Text>A user {link("is not defined")}</Text>;
+    }
+  };
+
   return (
     <>
-      <Button variant="link" onClick={open}>
-        {userLabel()}
-      </Button>
+      {renderLink()}
 
       <Modal
         isOpen={isFormOpen}
