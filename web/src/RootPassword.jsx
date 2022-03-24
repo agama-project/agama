@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -32,71 +32,37 @@ import {
   TextInput
 } from "@patternfly/react-core";
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "LOAD": {
-      return { ...state, ...action.payload };
-    }
-    case "ACCEPT": {
-      return { ...state, isFormOpen: false, ...action.payload };
-    }
-
-    case "CANCEL": {
-      return { ...state, isFormOpen: false };
-    }
-
-    case "CHANGE": {
-      return { ...state, ...action.payload };
-    }
-
-    case "OPEN": {
-      return { ...state, isFormOpen: true };
-    }
-
-    default: {
-      return state;
-    }
-  }
-};
-
-const initialState = {
-  rootPassword: null,
-  isFormOpen: false
-};
-
 export default function RootPassword() {
   const client = useInstallerClient();
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { rootPassword, isFormOpen } = state;
-  const hiddenPassword = "_____DINSTALLALER_PASSWORD_SET";
+  const [isRootPasswordSet, setIsRootPasswordSet] = useState(null);
+  const [rootPassword, setRootPassword] = useState("");
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(async () => {
-    const rootPassword = (await client.users.isRootPasswordSet()) ? hiddenPassword : "";
-    dispatch({
-      type: "LOAD",
-      payload: {
-        rootPassword
-      }
-    });
+    const rootPasswordSet = await client.users.isRootPasswordSet();
+    setIsRootPasswordSet(rootPasswordSet);
   }, []);
 
-  const open = () => dispatch({ type: "OPEN" });
+  const open = () => setIsFormOpen(true);
 
-  const cancel = () => dispatch({ type: "CANCEL" });
+  const close = () => {
+    setRootPassword("");
+    setIsFormOpen(false);
+  }
 
   const accept = async () => {
     // TODO: handle errors
-    if (rootPassword !== hiddenPassword) {
-      await client.users.setRootPassword(rootPassword);
+    if (rootPassword !== "") {
+      const result = await client.users.setRootPassword(rootPassword);
+      setIsRootPasswordSet(result === 0);
     }
-    const remembered_password = rootPassword === "" ? "" : hiddenPassword;
-    // TODO use signals instead
-    dispatch({ type: "ACCEPT", payload: { rootPassword: remembered_password } });
+    close();
   };
 
   const remove = async () => {
     await client.users.removeRootPassword();
-    dispatch({ type: "ACCEPT", payload: { rootPassword: "" }});
+    setIsRootPasswordSet(false);
+    close();
   }
 
   const rootForm = () => {
@@ -108,7 +74,7 @@ export default function RootPassword() {
             type="password"
             aria-label="root password"
             value={rootPassword}
-            onChange={v => dispatch({ type: "CHANGE", payload: { rootPassword: v } })}
+            onChange={setRootPassword}
           />
         </FormGroup>
       </>
@@ -116,10 +82,10 @@ export default function RootPassword() {
   };
 
   // Renders nothing until know about the status of password
-  if (rootPassword === null) return null;
+  if (isRootPasswordSet === null) return null;
 
   const renderLink = () => {
-    const label = rootPassword === hiddenPassword ? "is set" : "is not set";
+    const label = isRootPasswordSet ? "is set" : "is not set";
     const link = (
       <Button variant="link" isInline onClick={open}>
         {label}
@@ -142,10 +108,10 @@ export default function RootPassword() {
           <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
           </Button>,
-          <Button key="cancel" variant="link" onClick={cancel}>
+          <Button key="cancel" variant="link" onClick={close}>
             Cancel
           </Button>,
-          <Button key="remove" variant="link" onClick={remove} isDisabled={rootPassword === ""}>
+          <Button key="remove" variant="link" onClick={remove} isDisabled={!isRootPasswordSet}>
             Remove
           </Button>
         ]}
