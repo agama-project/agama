@@ -90,7 +90,7 @@ describe("when the password is not set", () => {
     userEvent.click(button);
 
     const removeButton = await screen.findByRole("button", { name: "Remove" });
-    expect(removeButton).toBeDisabled()
+    expect(removeButton).toBeDisabled();
   });
 });
 
@@ -113,7 +113,7 @@ describe("when the password is set", () => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
   });
-})
+});
 
 it("does not change the password if the user cancels", async () => {
   authRender(<RootPassword />);

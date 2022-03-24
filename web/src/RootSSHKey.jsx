@@ -21,14 +21,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
-import {
-  Button,
-  Form,
-  FormGroup,
-  Modal,
-  ModalVariant,
-  Text,
-} from "@patternfly/react-core";
+import { Button, Form, FormGroup, Modal, ModalVariant, Text } from "@patternfly/react-core";
 import { FileUpload } from "@patternfly/react-core";
 
 export default function RootSSHKey() {

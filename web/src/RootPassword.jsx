@@ -28,6 +28,7 @@ import {
   FormGroup,
   Modal,
   ModalVariant,
+  Skeleton,
   Text,
   TextInput
 } from "@patternfly/react-core";
@@ -48,7 +49,7 @@ export default function RootPassword() {
   const close = () => {
     setRootPassword("");
     setIsFormOpen(false);
-  }
+  };
 
   const accept = async () => {
     // TODO: handle errors
@@ -63,26 +64,10 @@ export default function RootPassword() {
     await client.users.removeRootPassword();
     setIsRootPasswordSet(false);
     close();
-  }
-
-  const rootForm = () => {
-    return (
-      <>
-        <FormGroup fieldId="rootPassword" label="New root password">
-          <TextInput
-            id="rootPassword"
-            type="password"
-            aria-label="root password"
-            value={rootPassword}
-            onChange={setRootPassword}
-          />
-        </FormGroup>
-      </>
-    );
   };
 
   // Renders nothing until know about the status of password
-  if (isRootPasswordSet === null) return null;
+  if (isRootPasswordSet === null) return <Skeleton />;
 
   const renderLink = () => {
     const label = isRootPasswordSet ? "is set" : "is not set";
@@ -116,7 +101,17 @@ export default function RootPassword() {
           </Button>
         ]}
       >
-        <Form>{rootForm()}</Form>
+        <Form>
+          <FormGroup fieldId="rootPassword" label="New root password">
+            <TextInput
+              id="rootPassword"
+              type="password"
+              aria-label="root password"
+              value={rootPassword}
+              onChange={setRootPassword}
+            />
+          </FormGroup>
+        </Form>
       </Modal>
     </>
   );
