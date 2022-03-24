@@ -29,6 +29,10 @@ const reducer = (state, action) => {
       return { ...state, ...action.payload };
     }
 
+    case "REMOVE": {
+      return initialState;
+    }
+
     case "OPEN": {
       return { ...state, isFormOpen: true };
     }
@@ -82,6 +86,13 @@ export default function Users() {
     await client.users.setUser(user);
     dispatch({ type: "ACCEPT" });
   };
+
+  const remove = async () => {
+    const result = await client.users.removeFirstUser();
+    if (result) {
+      dispatch({ type: "REMOVE" });
+    }
+  }
 
   const userForm = () => {
     return (
@@ -155,6 +166,9 @@ export default function Users() {
           </Button>,
           <Button key="cancel" variant="link" onClick={cancel}>
             Cancel
+          </Button>,
+          <Button key="remove" variant="link" onClick={remove}>
+            Do not create a user
           </Button>
         ]}
       >

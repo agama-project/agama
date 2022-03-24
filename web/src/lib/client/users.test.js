@@ -33,6 +33,7 @@ const usersProxy = {
     { t: "b", v: false }
   ],
   SetFirstUser: jest.fn().mockResolvedValue(0),
+  RemoveFirstUser: jest.fn().mockResolvedValue(0),
   SetRootPassword: jest.fn().mockResolvedValue(0),
   RemoveRootPassword: jest.fn().mockResolvedValue(0),
   RootPasswordSet: false,
@@ -117,6 +118,25 @@ describe("#setUser", () => {
   });
 });
 
+describe("#removeUser", () => {
+  it("sets the values of the first user and returns true", async () => {
+    const client = new UsersClient(dbusClient);
+    const result = await client.removeUser();
+    expect(usersProxy.RemoveFirstUser).toHaveBeenCalled();
+    expect(result).toEqual(true);
+  });
+
+  describe("when removing the user fails", () => {
+    beforeEach(() => (usersProxy.RemoveFirstUser = jest.fn().mockResolvedValue(1)));
+
+    it("returns false", async () => {
+      const client = new UsersClient(dbusClient);
+      const result = await client.removeUser();
+      expect(result).toEqual(false);
+    });
+  });
+});
+
 describe("#setRootPassword", () => {
   it("sets the root password and returns true", async () => {
     const client = new UsersClient(dbusClient);
@@ -125,7 +145,7 @@ describe("#setRootPassword", () => {
     expect(result).toEqual(true);
   });
 
-  describe("when setting the user fails", () => {
+  describe("when setting the password fails", () => {
     beforeEach(() => (usersProxy.SetRootPassword = jest.fn().mockResolvedValue(1)));
 
     it("returns false", async () => {

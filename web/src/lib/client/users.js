@@ -78,6 +78,17 @@ export default class UsersClient {
   }
 
   /**
+   * Remove the first user
+   *
+   * @return {Promise.<boolean>}
+   */
+  async removeUser() {
+    const proxy = await this.proxy(USERS_IFACE);
+    const result = await proxy.RemoveFirstUser();
+    return result === 0;
+  }
+
+  /**
    * Set the root password
    *
    * @param {String} password - plain text root password ( maybe allow client side encryption?)
