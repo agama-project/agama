@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -8,129 +8,105 @@ import {
   FormGroup,
   Modal,
   ModalVariant,
+  Skeleton,
   Text,
   TextInput
 } from "@patternfly/react-core";
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "LOAD": {
-      return { ...state, ...action.payload };
-    }
-    case "ACCEPT": {
-      return { ...state, isFormOpen: false };
-    }
-
-    case "CANCEL": {
-      return { ...state, isFormOpen: false, current: state.initial };
-    }
-
-    case "CHANGE": {
-      return { ...state, ...action.payload };
-    }
-
-    case "REMOVE": {
-      return initialState;
-    }
-
-    case "OPEN": {
-      return { ...state, isFormOpen: true };
-    }
-
-    default: {
-      return state;
-    }
-  }
-};
-
-const initialState = {
-  initial: null,
-  userID: "",
+const initialUser = {
+  userName: "",
   fullName: "",
   autologin: false,
-  password: "",
-  isFormOpen: false
+  password: ""
 };
-
 export default function Users() {
   const client = useInstallerClient();
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { isFormOpen } = state;
-  const user = {
-    userName: state.userID,
-    fullName: state.fullName,
-    autologin: state.autologin,
-    password: state.password
-  };
+  const [user, setUser] = useState(null);
+  const [formValues, setFormValues] = useState(initialUser);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(async () => {
-    const user = await client.users.getUser();
-    dispatch({
-      type: "LOAD",
-      payload: {
-        userID: user.userName,
-        fullName: user.fullName,
-        password: "",
-        autologin: user.autologin,
-        initial: user
-      }
-    });
+    const userValues = await client.users.getUser();
+    setUser(userValues);
+    setFormValues({ ...formValues, ...userValues });
   }, []);
 
-  const open = () => dispatch({ type: "OPEN" });
+  if (user === null) return <Skeleton width="60%" fontSize="sm" />;
 
-  const cancel = () => dispatch({ type: "CANCEL" });
+  const open = () => {
+    setFormValues({ ...initialUser, ...user, password: "" });
+    setIsFormOpen(true);
+  };
+
+  const cancel = () => {
+    setIsFormOpen(false);
+  };
 
   const accept = async () => {
-    // TODO: handle errors
-    await client.users.setUser(user);
-    dispatch({ type: "ACCEPT" });
+    const result = await client.users.setUser(formValues);
+
+    if (result) {
+      setUser(formValues);
+    }
+    setIsFormOpen(false);
   };
 
   const remove = async () => {
-    const result = await client.users.removeFirstUser();
+    const result = await client.users.removeUser();
+
     if (result) {
-      dispatch({ type: "REMOVE" });
+      setUser(initialUser);
+      setFormValues(initialUser);
     }
-  }
+    setIsFormOpen(false);
+  };
+
+  const handleInputChange = (value, { target }) => {
+    const { name } = target;
+    setFormValues({ ...formValues, [name]: value });
+  };
 
   const userForm = () => {
     return (
       <Form>
-        <FormGroup fieldId="userFullName" label="Full Name">
+        <FormGroup fieldId="userFullName" label="Full name">
           <TextInput
             id="userFullName"
+            name="fullName"
             aria-label="user fullname"
-            value={user.fullName}
-            label="User Full Name"
-            onChange={v => dispatch({ type: "CHANGE", payload: { fullName: v } })}
+            value={formValues.fullName}
+            label="User full Name"
+            onChange={handleInputChange}
           />
         </FormGroup>
-        <FormGroup fieldId="userName" label="User ID">
+        <FormGroup fieldId="userName" label="Username">
           <TextInput
             id="userName"
+            name="userName"
             aria-label="user name"
-            value={user.userName}
-            label="User ID"
+            value={formValues.userName}
+            label="Username"
             required={true}
-            onChange={v => dispatch({ type: "CHANGE", payload: { userID: v } })}
+            onChange={handleInputChange}
           />
         </FormGroup>
         <FormGroup fieldId="userPassword" label="Password">
           <TextInput
             id="userPassword"
+            name="password"
             type="password"
             aria-label="user password"
-            value={user.password}
-            onChange={v => dispatch({ type: "CHANGE", payload: { password: v } })}
+            value={formValues.password}
+            onChange={handleInputChange}
           />
         </FormGroup>
-        <FormGroup fieldId="autologin" label="Autologin">
+        <FormGroup fieldId="autologin" label="Auto-login">
           <Checkbox
             aria-label="user autologin"
             id="autologin"
-            checked={user.autologin}
-            onChange={v => dispatch({ type: "CHANGE", payload: { autologin: v } })}
+            name="autologin"
+            isChecked={formValues.autologin}
+            onChange={handleInputChange}
           />
         </FormGroup>
       </Form>
@@ -159,9 +135,14 @@ export default function Users() {
         isOpen={isFormOpen}
         showClose={false}
         variant={ModalVariant.small}
-        title="First User Configuration"
+        aria-label="First User"
         actions={[
-          <Button key="confirm" variant="primary" onClick={accept}>
+          <Button
+            key="confirm"
+            variant="primary"
+            onClick={accept}
+            isDisabled={formValues.userName === ""}
+          >
             Confirm
           </Button>,
           <Button key="cancel" variant="link" onClick={cancel}>
