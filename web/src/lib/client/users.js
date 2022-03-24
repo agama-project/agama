@@ -67,7 +67,14 @@ export default class UsersClient {
    */
   async setUser(user) {
     const proxy = await this.proxy(USERS_IFACE);
-    return proxy.SetFirstUser(user.fullName, user.userName, user.password, user.autologin, {});
+    const result = await proxy.SetFirstUser(
+      user.fullName,
+      user.userName,
+      user.password,
+      user.autologin,
+      {}
+    );
+    return result === 0;
   }
 
   /**
@@ -78,7 +85,8 @@ export default class UsersClient {
    */
   async setRootPassword(password) {
     const proxy = await this.proxy(USERS_IFACE);
-    return proxy.SetRootPassword(password, false);
+    const result = await proxy.SetRootPassword(password, false);
+    return result === 0;
   }
 
   /**
@@ -88,7 +96,8 @@ export default class UsersClient {
    */
   async removeRootPassword() {
     const proxy = await this.proxy(USERS_IFACE);
-    return proxy.RemoveRootPassword();
+    const result = await proxy.RemoveRootPassword();
+    return result === 0;
   }
 
   /**
@@ -99,7 +108,8 @@ export default class UsersClient {
    */
   async setRootSSHKey(key) {
     const proxy = await this.proxy(USERS_IFACE);
-    return proxy.SetRootSSHKey(key);
+    const result = await proxy.SetRootSSHKey(key);
+    return result === 0;
   }
 }
 

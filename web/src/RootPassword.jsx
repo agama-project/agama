@@ -55,14 +55,16 @@ export default function RootPassword() {
     // TODO: handle errors
     if (rootPassword !== "") {
       const result = await client.users.setRootPassword(rootPassword);
-      setIsRootPasswordSet(result === 0);
+      setIsRootPasswordSet(result);
     }
     close();
   };
 
   const remove = async () => {
-    await client.users.removeRootPassword();
-    setIsRootPasswordSet(false);
+    const result = await client.users.removeRootPassword();
+    if (result) {
+      setIsRootPasswordSet(false);
+    }
     close();
   };
 
