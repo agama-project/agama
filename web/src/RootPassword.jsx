@@ -99,7 +99,7 @@ export default function RootPassword() {
             Cancel
           </Button>,
           <Button key="remove" variant="link" onClick={remove} isDisabled={!isRootPasswordSet}>
-            Remove
+            Do not use a password
           </Button>
         ]}
       >

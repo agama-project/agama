@@ -89,7 +89,7 @@ describe("when the password is not set", () => {
     const button = within(rootPassword).getByRole("button", { name: "is not set" });
     userEvent.click(button);
 
-    const removeButton = await screen.findByRole("button", { name: "Remove" });
+    const removeButton = await screen.findByRole("button", { name: "Do not use a password" });
     expect(removeButton).toBeDisabled();
   });
 });
@@ -105,7 +105,7 @@ describe("when the password is set", () => {
     const button = within(rootPassword).getByRole("button", { name: "is set" });
     userEvent.click(button);
 
-    const removeButton = await screen.findByRole("button", { name: "Remove" });
+    const removeButton = await screen.findByRole("button", { name: "Do not use a password" });
     userEvent.click(removeButton);
 
     expect(removeRootPasswordFn).toHaveBeenCalled();
