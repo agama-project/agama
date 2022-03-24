@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import { act, screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { authRender } from "./test-utils";
 import { createClient } from "./lib/client";
@@ -70,10 +70,7 @@ it("allows changing the password ", async () => {
 
   const confirmButton = await screen.findByRole("button", { name: /Confirm/i });
   expect(confirmButton).toBeEnabled();
-
-  act(() => {
-    userEvent.click(confirmButton);
-  });
+  userEvent.click(confirmButton);
 
   expect(setRootPasswordFn).toHaveBeenCalledWith(password);
 
