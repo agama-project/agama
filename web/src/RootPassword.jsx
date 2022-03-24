@@ -44,6 +44,8 @@ export default function RootPassword() {
     setIsRootPasswordSet(rootPasswordSet);
   }, []);
 
+  if (isRootPasswordSet === null) return <Skeleton width="60%" fontSize="sm" />;
+
   const open = () => setIsFormOpen(true);
 
   const close = () => {
@@ -67,9 +69,6 @@ export default function RootPassword() {
     }
     close();
   };
-
-  // Renders nothing until know about the status of password
-  if (isRootPasswordSet === null) return <Skeleton width="60%" fontSize="sm" />;
 
   const renderLink = () => {
     const label = isRootPasswordSet ? "is set" : "is not set";
