@@ -92,7 +92,7 @@ export default function RootPassword() {
         variant={ModalVariant.small}
         aria-label="Set new root password"
         actions={[
-          <Button key="confirm" variant="primary" onClick={accept}>
+          <Button key="confirm" variant="primary" onClick={accept} isDisabled={rootPassword === ""}>
             Confirm
           </Button>,
           <Button key="cancel" variant="link" onClick={close}>
