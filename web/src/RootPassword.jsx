@@ -69,7 +69,7 @@ export default function RootPassword() {
   };
 
   // Renders nothing until know about the status of password
-  if (isRootPasswordSet === null) return <Skeleton />;
+  if (isRootPasswordSet === null) return <Skeleton width="60%" fontSize="sm" />;
 
   const renderLink = () => {
     const label = isRootPasswordSet ? "is set" : "is not set";
