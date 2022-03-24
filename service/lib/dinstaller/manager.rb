@@ -71,7 +71,7 @@ module DInstaller
     # rubocop:disable Metrics/AbcSize
     def install
       status_manager.change(Status::Installing.new)
-      progress.init_progress(6, "Partitioning")
+      progress.init_progress(7, "Partitioning")
       Yast::Installation.destdir = "/mnt"
       # lets propose it here to be sure that software proposal reflects product selection
       # FIXME: maybe repropose after product selection change?
@@ -101,6 +101,9 @@ module DInstaller
         progress.next_step("Saving Language Settings")
         language.install(progress)
       end
+
+      progress.next_step("Finishing installation")
+      finish_installation
 
       progress.next_step("Installation Finished")
       status_manager.change(Status::Installed.new)
@@ -174,6 +177,21 @@ module DInstaller
       progress.next_step("Probing Finished")
 
       status_manager.change(Status::Probed.new)
+    end
+
+    # Performs required steps after installing the system
+    #
+    # For now, this only unmounts the installed system and copies installation logs. Note that YaST
+    # performs many more steps like copying configuration files, creating snapshots, etc. Adding
+    # more features to D-Installer could require to recover some of that YaST logic.
+    def finish_installation
+      progress.init_minor_steps(2, "Copying logs")
+      Yast::WFM.CallFunction("copy_logs_finish", ["Write"])
+
+      progress.next_minor_step("Unmounting target system")
+      Yast::WFM.CallFunction("pre_umount_finish", ["Write"])
+      Yast::WFM.CallFunction("umount_finish", ["Write"])
+      progress.next_minor_step("Target system correctly unmounted")
     end
 
     # Run a block in the target system
