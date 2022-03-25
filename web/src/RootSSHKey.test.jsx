@@ -108,11 +108,8 @@ describe("when the SSH public key is set", () => {
 
     await screen.findByRole("dialog");
 
-    const clearButton = await screen.findByRole("button", { name: /Clear/i });
-    userEvent.click(clearButton);
-
-    const confirmButton = await screen.findByRole("button", { name: /Confirm/i });
-    userEvent.click(confirmButton);
+    const removeButton = await screen.findByRole("button", { name: /Do not use/i });
+    userEvent.click(removeButton);
 
     expect(setRootSSHKeyFn).toHaveBeenCalledWith("");
 

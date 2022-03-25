@@ -59,6 +59,11 @@ export default function RootSSHKey() {
     setIsFormOpen(false);
   };
 
+  const remove = async () => {
+    await client.users.setRootSSHKey("");
+    setSSHKey("");
+    setIsFormOpen(false);
+  };
 
   const renderLink = () => {
     const label = sshKey !== "" ? "is set" : "is not set";
