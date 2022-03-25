@@ -69,12 +69,18 @@ it("allows defining a new root SSH public key", async () => {
 });
 
 it("does not change anything if the user cancels", async () => {
+  let openButton;
+
   authRender(<RootSSHKey />);
+
   const rootSSHKey = await screen.findByText(/Root SSH public key/i);
-  const button = within(rootSSHKey).getByRole("button", { name: "is not set" });
-  userEvent.click(button);
+  openButton = within(rootSSHKey).getByRole("button", { name: "is not set" });
+  userEvent.click(openButton);
 
   await screen.findByRole("dialog");
+
+  const sshKeyInput = screen.getByLabelText("Root SSH key");
+  userEvent.type(sshKeyInput, testKey);
 
   const cancelButton = screen.getByRole("button", { name: /Cancel/i });
   userEvent.click(cancelButton);
@@ -83,6 +89,10 @@ it("does not change anything if the user cancels", async () => {
   await waitFor(() => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
+
+  // Extra check to ensure the component is aware that nothing changed.
+  openButton = within(rootSSHKey).getByRole("button", { name: "is not set" });
+  expect(openButton).toBeInTheDocument();
 });
 
 describe("when the SSH public key is set", () => {

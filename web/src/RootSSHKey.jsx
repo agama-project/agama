@@ -36,6 +36,7 @@ export default function RootSSHKey() {
   const client = useInstallerClient();
   const [loading, setLoading] = useState(false);
   const [sshKey, setSSHKey] = useState(null);
+  const [nextSSHKey, setNextSSHKey] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(async () => {
@@ -45,13 +46,19 @@ export default function RootSSHKey() {
 
   if (sshKey === null) return <Skeleton width="55%" fontSize="sm" />;
 
-  const accept = async () => {
-    await client.users.setRootSSHKey(sshKey);
-    setIsFormOpen(false);
+  const open = () => {
+    setNextSSHKey(sshKey);
+    setIsFormOpen(true);
   };
 
   const cancel = () => setIsFormOpen(false);
-  const open = () => setIsFormOpen(true);
+
+  const accept = async () => {
+    await client.users.setRootSSHKey(nextSSHKey);
+    setSSHKey(nextSSHKey);
+    setIsFormOpen(false);
+  };
+
 
   const renderLink = () => {
     const label = sshKey !== "" ? "is set" : "is not set";
@@ -78,6 +85,9 @@ export default function RootSSHKey() {
           </Button>,
           <Button key="cancel" variant="link" onClick={cancel}>
             Cancel
+          </Button>,
+          <Button key="remove" variant="link" onClick={remove} isDisabled={sshKey === ""}>
+            Do not use SSH public key
           </Button>
         ]}
       >
@@ -86,15 +96,15 @@ export default function RootSSHKey() {
             <FileUpload
               id="sshKey"
               type="text"
-              value={sshKey}
+              value={nextSSHKey}
               filenamePlaceholder="Upload, paste, or drop a SSH public key"
               isLoading={loading}
               browseButtonText="Upload"
-              onDataChange={setSSHKey}
-              onTextChange={setSSHKey}
+              onDataChange={setNextSSHKey}
+              onTextChange={setNextSSHKey}
               onReadStarted={() => setLoading(true)}
               onReadFinished={() => setLoading(false)}
-              onClearClick={() => setSSHKey("")}
+              onClearClick={() => setNextSSHKey("")}
             />
           </FormGroup>
         </Form>
