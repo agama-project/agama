@@ -43,7 +43,7 @@ export default function RootSSHKey() {
     setSSHKey(key);
   }, []);
 
-  if (sshKey === null) return <Skeleton width="60%" fontSize="sm" />;
+  if (sshKey === null) return <Skeleton width="55%" fontSize="sm" />;
 
   const accept = async () => {
     await client.users.setRootSSHKey(sshKey);
