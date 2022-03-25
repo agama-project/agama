@@ -21,13 +21,22 @@
 
 import React, { useState, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
-import { Button, Form, FormGroup, Modal, ModalVariant, Text } from "@patternfly/react-core";
+import {
+  Button,
+  Form,
+  FormGroup,
+  Modal,
+  ModalVariant,
+  Skeleton,
+  Text
+} from "@patternfly/react-core";
 import { FileUpload } from "@patternfly/react-core";
 
 export default function RootSSHKey() {
   const client = useInstallerClient();
   const [loading, setLoading] = useState(false);
   const [sshKey, setSSHKey] = useState(null);
+  const [nextSSHKey, setNextSSHKey] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(async () => {
@@ -35,15 +44,26 @@ export default function RootSSHKey() {
     setSSHKey(key);
   }, []);
 
-  const accept = async () => {
-    await client.users.setRootSSHKey(sshKey);
-    setIsFormOpen(false);
+  if (sshKey === null) return <Skeleton width="55%" fontSize="sm" />;
+
+  const open = () => {
+    setNextSSHKey(sshKey);
+    setIsFormOpen(true);
   };
 
   const cancel = () => setIsFormOpen(false);
-  const open = () => setIsFormOpen(true);
 
-  if (sshKey === null) return null;
+  const accept = async () => {
+    await client.users.setRootSSHKey(nextSSHKey);
+    setSSHKey(nextSSHKey);
+    setIsFormOpen(false);
+  };
+
+  const remove = async () => {
+    await client.users.setRootSSHKey("");
+    setSSHKey("");
+    setIsFormOpen(false);
+  };
 
   const renderLink = () => {
     const label = sshKey !== "" ? "is set" : "is not set";
@@ -63,30 +83,33 @@ export default function RootSSHKey() {
         isOpen={isFormOpen}
         showClose={false}
         variant={ModalVariant.small}
-        title="Root Configuration"
+        aria-label="Set root SSH public key"
         actions={[
           <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
           </Button>,
           <Button key="cancel" variant="link" onClick={cancel}>
             Cancel
+          </Button>,
+          <Button key="remove" variant="link" onClick={remove} isDisabled={sshKey === ""}>
+            Do not use SSH public key
           </Button>
         ]}
       >
         <Form>
-          <FormGroup fieldId="sshKey" label="Root SSH key">
+          <FormGroup fieldId="sshKey" label="Root SSH public key">
             <FileUpload
               id="sshKey"
               type="text"
-              value={sshKey}
-              filenamePlaceholder="Drag and drop a SSH public key or upload one"
-              onDataChange={setSSHKey}
-              onTextChange={setSSHKey}
-              onReadStarted={() => setLoading(true)}
-              onReadFinished={() => setLoading(false)}
-              onClearClick={() => setSSHKey("")}
+              value={nextSSHKey}
+              filenamePlaceholder="Upload, paste, or drop a SSH public key"
               isLoading={loading}
               browseButtonText="Upload"
+              onDataChange={setNextSSHKey}
+              onTextChange={setNextSSHKey}
+              onReadStarted={() => setLoading(true)}
+              onReadFinished={() => setLoading(false)}
+              onClearClick={() => setNextSSHKey("")}
             />
           </FormGroup>
         </Form>

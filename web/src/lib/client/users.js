@@ -50,16 +50,6 @@ export default class UsersClient {
   }
 
   /**
-   * Return string with ssh key or empty string
-   *
-   * @return {Promise.<String>}
-   */
-  async getRootSSHKey() {
-    const proxy = await this.proxy(USERS_IFACE);
-    return proxy.RootSSHKey;
-  }
-
-  /**
    * Set the languages to install
    *
    * @param {object} user - object with full name, user name, password and boolean for autologin
@@ -109,6 +99,16 @@ export default class UsersClient {
     const proxy = await this.proxy(USERS_IFACE);
     const result = await proxy.RemoveRootPassword();
     return result === 0;
+  }
+
+  /**
+   * Return string with ssh key or empty string
+   *
+   * @return {Promise.<String>}
+   */
+  async getRootSSHKey() {
+    const proxy = await this.proxy(USERS_IFACE);
+    return proxy.RootSSHKey;
   }
 
   /**

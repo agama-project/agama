@@ -31,7 +31,7 @@ export default function Users() {
     setFormValues({ ...formValues, ...userValues });
   }, []);
 
-  if (user === null) return <Skeleton width="60%" fontSize="sm" />;
+  if (user === null) return <Skeleton width="50%" fontSize="sm" />;
 
   const open = () => {
     setFormValues({ ...initialUser, ...user, password: "" });

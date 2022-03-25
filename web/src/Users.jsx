@@ -28,7 +28,7 @@ import RootSSHKey from "./RootSSHKey";
 
 export default function Users() {
   return (
-    <Stack>
+    <Stack className="overview-users">
       <StackItem>
         <RootPassword />
       </StackItem>
