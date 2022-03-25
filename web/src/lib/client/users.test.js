@@ -119,7 +119,7 @@ describe("#setUser", () => {
 });
 
 describe("#removeUser", () => {
-  it("sets the values of the first user and returns true", async () => {
+  it("removes the first user and returns true", async () => {
     const client = new UsersClient(dbusClient);
     const result = await client.removeUser();
     expect(usersProxy.RemoveFirstUser).toHaveBeenCalled();
