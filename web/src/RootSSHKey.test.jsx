@@ -54,7 +54,7 @@ it("allows defining a new root SSH public key", async () => {
 
   await screen.findByRole("dialog");
 
-  const sshKeyInput = screen.getByLabelText("Root SSH key");
+  const sshKeyInput = screen.getByLabelText("Root SSH public key");
   userEvent.type(sshKeyInput, testKey);
 
   const confirmButton = screen.getByRole("button", { name: /Confirm/i });
@@ -79,7 +79,7 @@ it("does not change anything if the user cancels", async () => {
 
   await screen.findByRole("dialog");
 
-  const sshKeyInput = screen.getByLabelText("Root SSH key");
+  const sshKeyInput = screen.getByLabelText("Root SSH public key");
   userEvent.type(sshKeyInput, testKey);
 
   const cancelButton = screen.getByRole("button", { name: /Cancel/i });

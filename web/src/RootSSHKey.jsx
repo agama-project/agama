@@ -92,7 +92,7 @@ export default function RootSSHKey() {
         ]}
       >
         <Form>
-          <FormGroup fieldId="sshKey" label="Root SSH key">
+          <FormGroup fieldId="sshKey" label="Root SSH public key">
             <FileUpload
               id="sshKey"
               type="text"
