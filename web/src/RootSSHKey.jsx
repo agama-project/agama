@@ -71,7 +71,7 @@ export default function RootSSHKey() {
         isOpen={isFormOpen}
         showClose={false}
         variant={ModalVariant.small}
-        title="Root Configuration"
+        aria-label="Set root SSH public key"
         actions={[
           <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
@@ -87,14 +87,14 @@ export default function RootSSHKey() {
               id="sshKey"
               type="text"
               value={sshKey}
-              filenamePlaceholder="Drag and drop a SSH public key or upload one"
+              filenamePlaceholder="Upload, paste, or drop a SSH public key"
+              isLoading={loading}
+              browseButtonText="Upload"
               onDataChange={setSSHKey}
               onTextChange={setSSHKey}
               onReadStarted={() => setLoading(true)}
               onReadFinished={() => setLoading(false)}
               onClearClick={() => setSSHKey("")}
-              isLoading={loading}
-              browseButtonText="Upload"
             />
           </FormGroup>
         </Form>
