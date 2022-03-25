@@ -19,21 +19,30 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "pathname"
 require "yast"
 require "dinstaller/package_callbacks"
 require "y2packager/product"
 
-Yast.import "Pkg"
+Yast.import "InstURL"
 Yast.import "PackageInstallation"
+Yast.import "Pkg"
 Yast.import "Stage"
 
 # YaST specific code lives under this namespace
 module DInstaller
   # This class is responsible for software handling
   class Software
-    attr_reader :product, :products
+    GPG_KEYS_PATH = "/"
+    private_constant :GPG_KEYS_PATH
 
-    SUPPORTED_PRODUCTS = ["openSUSE"].freeze
+    FALLBACK_REPO = "https://download.opensuse.org/tumbleweed/repo/oss/"
+    private_constant :FALLBACK_REPO
+
+    SUPPORTED_PRODUCTS = ["Leap", "openSUSE"].freeze
+    private_constant :SUPPORTED_PRODUCTS
+
+    attr_reader :product, :products
 
     def initialize(logger)
       @logger = logger
@@ -47,34 +56,32 @@ module DInstaller
       @product = name
     end
 
-    # rubocop:disable Metrics/AbcSize
     def probe(progress)
       logger.info "Probing software"
       Yast::Pkg.SetSolverFlags(
         "ignoreAlreadyRecommended" => false, "onlyRequires" => true
       )
+
       # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
       Yast::Stage.Set("normal")
       progress.init_minor_steps(3, "Initialiaze target repositories")
       Yast::Pkg.TargetInitialize("/")
-      Yast::Pkg.TargetLoad
+      import_gpg_keys
+
       progress.next_minor_step("Initialize sources")
-      Yast::Pkg.SourceRestore
-      Yast::Pkg.SourceLoad
-      @products = Y2Packager::Product.available_base_products.select do |product|
-        SUPPORTED_PRODUCTS.include?(product.name)
-      end
+      add_base_repo
+
+      progress.next_minor_step("Searching for supported products")
+      @products = find_products
       @product = @products.first&.name || ""
       raise "No product available" if @product.empty?
 
-      logger.info "Found supported products: #{@products.map(&:name).join(",")}"
       progress.next_minor_step("Making initial proposal")
       proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
       logger.info "proposal #{proposal["raw_proposal"]}"
       progress.next_minor_step("Software probing finished")
       Yast::Stage.Set("initial")
     end
-    # rubocop:enable Metrics/AbcSize
 
     def propose
       Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
@@ -111,6 +118,15 @@ module DInstaller
       logger.info "Commit result #{commit_result}"
     end
 
+    # Writes the repositories information to the installed system
+    #
+    # @param _progress [Progress] Progress reporting object
+    def finish(_progress)
+      Yast::Pkg.SourceSaveAll
+      Yast::Pkg.TargetFinish
+      Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
+    end
+
   private
 
     # @return [Logger]
@@ -118,6 +134,29 @@ module DInstaller
 
     def count_packages
       Yast::Pkg.PkgMediaCount.reduce(0) { |sum, res| sum + res.reduce(0, :+) }
+    end
+
+    def import_gpg_keys
+      gpg_keys = Pathname.new(GPG_KEYS_PATH).glob("*.gpg").map(&:to_s)
+      logger.info "Importing GPG keys: #{gpg_keys}"
+      gpg_keys.each do |path|
+        Yast::Pkg.ImportGPGKey(path.to_s, true)
+      end
+    end
+
+    def add_base_repo
+      base_url = Yast::InstURL.installInf2Url("")
+      base_url = FALLBACK_REPO if base_url.empty?
+      Yast::Pkg.SourceCreateBase(base_url, "/")
+      Yast::Pkg.SourceSaveAll
+    end
+
+    def find_products
+      supported_products = Y2Packager::Product.available_base_products.select do |product|
+        SUPPORTED_PRODUCTS.include?(product.name)
+      end
+      logger.info "Supported products found: #{supported_products.map(&:name).join(",")}"
+      supported_products
     end
   end
 end

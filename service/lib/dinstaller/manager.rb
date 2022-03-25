@@ -71,7 +71,7 @@ module DInstaller
     # rubocop:disable Metrics/AbcSize
     def install
       status_manager.change(Status::Installing.new)
-      progress.init_progress(7, "Partitioning")
+      progress.init_progress(8, "Partitioning")
       Yast::Installation.destdir = "/mnt"
       # lets propose it here to be sure that software proposal reflects product selection
       # FIXME: maybe repropose after product selection change?
@@ -101,6 +101,9 @@ module DInstaller
         progress.next_step("Saving Language Settings")
         language.install(progress)
       end
+
+      progress.next_step("Writing repositories information")
+      software.finish(progress)
 
       progress.next_step("Finishing installation")
       finish_installation

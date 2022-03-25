@@ -28,7 +28,7 @@ describe DInstaller::Manager do
   let(:logger) { Logger.new($stdout) }
 
   let(:software) do
-    instance_double(DInstaller::Software, probe: nil, install: nil, propose: nil)
+    instance_double(DInstaller::Software, probe: nil, install: nil, propose: nil, finish: nil)
   end
   let(:language) { instance_double(DInstaller::Language, probe: nil, install: nil) }
   let(:users) { instance_double(DInstaller::Users, write: nil) }
