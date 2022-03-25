@@ -73,7 +73,7 @@ describe DInstaller::Software do
     context "when a base URL is defined via the InstURL module" do
       let(:base_url) { "dvd://" }
 
-      it "register the repository" do
+      it "registers the repository" do
         expect(Yast::Pkg).to receive(:SourceCreateBase).with(base_url, "/")
         expect(Yast::Pkg).to receive(:SourceSaveAll)
         subject.probe(progress)
@@ -83,7 +83,7 @@ describe DInstaller::Software do
     context "when no base URL is defined" do
       let(:base_url) { "" }
 
-      it "register the repository" do
+      it "registers the repository" do
         expect(Yast::Pkg).to receive(:SourceCreateBase).with(/download.opensuse.org/, "/")
         expect(Yast::Pkg).to receive(:SourceSaveAll)
         subject.probe(progress)
