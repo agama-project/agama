@@ -75,7 +75,7 @@ export default function TargetSelector({ target, targets, onAccept }) {
           <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
           </Button>,
-          <Button key="cancel" variant="link" onClick={cancel}>
+          <Button key="cancel" variant="secondary" onClick={cancel}>
             Cancel
           </Button>
         ]}

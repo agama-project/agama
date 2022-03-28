@@ -94,7 +94,7 @@ export default function RootPassword() {
           <Button key="confirm" variant="primary" onClick={accept} isDisabled={rootPassword === ""}>
             Confirm
           </Button>,
-          <Button key="cancel" variant="link" onClick={close}>
+          <Button key="cancel" variant="secondary" onClick={close}>
             Cancel
           </Button>,
           <Button key="remove" variant="link" onClick={remove} isDisabled={!isRootPasswordSet}>
