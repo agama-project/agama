@@ -37,16 +37,16 @@ const generalAction = {
   delete: false
 };
 
-it("displays the actions showing/hiding the subvolume ones on user request", () => {
+it("displays the actions showing/hiding the subvolume actions on user request", () => {
   installerRender(<Proposal data={[generalAction, subvolAction]} />);
   expect(screen.getByText(generalAction.text)).toBeVisible();
   expect(screen.getByText(subvolAction.text)).not.toBeVisible();
 
-  const showButton = screen.getByRole("button", { name: /see details/ });
+  const showButton = screen.getByRole("button", { name: /Show/ });
   userEvent.click(showButton);
   expect(screen.getByText(subvolAction.text)).toBeVisible();
 
-  const hideButton = screen.getByRole("button", { name: /hide details/ });
+  const hideButton = screen.getByRole("button", { name: /Hide/ });
   userEvent.click(hideButton);
   expect(screen.getByText(subvolAction.text)).not.toBeVisible();
 });
