@@ -5,8 +5,8 @@
 // This block us from importing them granularly as needed because some
 // SCSS EOS modules contains variables from others, making the tools
 // fail. For example, it's the case of titles.scss, which uses a variable
-// from branding.scss. Although we @use it here, the titles.scss
-// cant find the variable because it is namespaced with "branding.".
+// from branding.scss. Although we use @use here, the titles.scss
+// can't find the variable because it is namespaced with "branding.".
 //
 // So, by now we will do our best, and maybe send a fix to mainstream.
 //

@@ -58,7 +58,7 @@ it("displays the proposal", async () => {
 });
 
 describe("when the user changes the product", () => {
-  it.only("changes the selected product", async () => {
+  it("changes the selected product", async () => {
     installerRender(<ProductSelector />);
     const button = await screen.findByRole("button", {
       name: "openSUSE MicroOS"
