@@ -51,6 +51,7 @@ const ProgressReport = () => {
   if (!progress.steps) return <Text>Waiting for progress status...</Text>;
 
   const showSubsteps = !!progress.substeps && progress.substeps >= 0;
+  const label = `Step ${progress.step + 1} of ${progress.steps + 1}`;
 
   return (
     <Stack hasGutter className="pf-u-w-100">
@@ -59,6 +60,8 @@ const ProgressReport = () => {
           min={0}
           max={progress.steps}
           value={progress.step}
+          label={label}
+          valueText={label}
           title={progress.title}
           aria-label="Main progress bar"
         />
