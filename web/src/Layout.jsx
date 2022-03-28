@@ -40,19 +40,11 @@ import React from "react";
  * @param {React.ReactNode} [props.MenuIcon] - the icon for the application menu
  * @param {string} [props.sectionTitle] - the section title in the header
  * @param {React.ReactNode} [props.SectionIcon] - the section icon in the header
- * @param {React.ReactNode} [props.FooterMessages] - messages to be  shown in the footer
  * @param {React.ReactNode} [props.FooterActions] - actions shown in the footer
  * @param {React.ReactNode} [props.children] - the section content
  *
  */
-function Layout({
-  MenuIcon,
-  sectionTitle,
-  SectionIcon,
-  FooterMessages,
-  FooterActions,
-  children: sectionContent
-}) {
+function Layout({ MenuIcon, sectionTitle, SectionIcon, FooterActions, children: sectionContent }) {
   const responsiveWidthRules = "pf-u-w-66-on-lg pf-u-w-50-on-xl pf-u-w-33-on-2xl";
   const className = `layout ${responsiveWidthRules}`;
 
@@ -84,12 +76,10 @@ function Layout({
   };
 
   const renderFooter = () => {
-    if (!FooterActions && !FooterMessages) return null;
+    if (!FooterActions) return null;
 
     return (
       <div className="layout__footer">
-        <div className="layout__footer-info-area">{FooterMessages && <FooterMessages />}</div>
-
         <div
           className="layout__footer-actions-area"
           role="navigation"

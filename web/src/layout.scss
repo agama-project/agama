@@ -98,20 +98,9 @@
   padding: 1rem;
 
   display: grid;
-  // We haven't decided yet the "final" distribution for the footer.
-  // grid-template-columns: 2fr 1fr;
+
   gap: 1rem 1rem;
 }
-
-.layout__footer-info-area {
-  align-self: center;
-  overflow-y: auto;
-}
-
-// TODO: Keep alert icons vertically centered here?
-// .layout__footer-info-area .pf-c-alert__icon {
-//   align-self: center;
-// }
 
 .layout__footer-actions-area {
   align-self: center;
