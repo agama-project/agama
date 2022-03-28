@@ -122,7 +122,7 @@ export default function ProductSelector() {
         isOpen={isFormOpen}
         showClose={false}
         variant={ModalVariant.small}
-        title="Product Selector"
+        aria-label="Product Selector"
         actions={[
           <Button key="confirm" variant="primary" onClick={accept}>
             Confirm

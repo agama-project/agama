@@ -122,7 +122,7 @@ export default function LanguageSelector() {
         isOpen={isFormOpen}
         showClose={false}
         variant={ModalVariant.small}
-        title="Language Selector"
+        aria-label="Language Selector"
         actions={[
           <Button key="confirm" variant="primary" onClick={accept}>
             Confirm

@@ -70,7 +70,7 @@ export default function TargetSelector({ target, targets, onAccept }) {
         isOpen={isFormOpen}
         showClose={false}
         variant={ModalVariant.small}
-        title="Target Selector"
+        aria-label="Target Selector"
         actions={[
           <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
