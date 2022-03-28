@@ -40,6 +40,17 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+
+  // Centers the section title.
+  // In a certain way it contradicts recommendations for headings given at
+  // https://eosdesignsystem.herokuapp.com/typography#headline-margins
+  // but it's more inline with the "branding" alignment at
+  // https://eosdesignsystem.herokuapp.com/layout
+  //
+  // See global heading styles at src/app.scss
+  h1 {
+    margin-block-start: 10px;
+  }
 }
 
 .layout__header-left-action {
