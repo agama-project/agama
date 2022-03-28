@@ -133,7 +133,7 @@ export default function ProductSelector() {
         ]}
       >
         <Form>
-          <FormGroup fieldId="product" label="Select the product to be installed">
+          <FormGroup fieldId="product" label="Product">
             {buildSelector()}
           </FormGroup>
         </Form>

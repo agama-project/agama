@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import ProductSelector from "./ProductSelector";
@@ -58,14 +58,16 @@ it("displays the proposal", async () => {
 });
 
 describe("when the user changes the product", () => {
-  it("changes the selected product", async () => {
+  it.only("changes the selected product", async () => {
     installerRender(<ProductSelector />);
     const button = await screen.findByRole("button", {
       name: "openSUSE MicroOS"
     });
     userEvent.click(button);
 
-    const productSelector = await screen.findByLabelText(/Select the product/);
+    const dialog = await screen.findByRole("dialog");
+
+    const productSelector = await within(dialog).findByLabelText(/Product/i);
     userEvent.selectOptions(productSelector, ["openSUSE Tumbleweed"]);
     userEvent.click(screen.getByRole("button", { name: "Confirm" }));
 

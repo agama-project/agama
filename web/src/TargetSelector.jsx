@@ -81,11 +81,7 @@ export default function TargetSelector({ target, targets, onAccept }) {
         ]}
       >
         <Form>
-          <FormGroup
-            fieldId="target"
-            label="Select target"
-            helperText="Product will be installed in selected target"
-          >
+          <FormGroup fieldId="target" label="Device to install into">
             {buildSelector()}
           </FormGroup>
         </Form>

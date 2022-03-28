@@ -59,7 +59,7 @@ describe("when the user changes the language", () => {
     const button = await screen.findByRole("button", { name: "English" });
     userEvent.click(button);
 
-    const languageSelector = await screen.findByLabelText("Select language");
+    const languageSelector = await screen.findByLabelText("Language");
     userEvent.selectOptions(languageSelector, ["German"]);
     userEvent.click(screen.getByRole("button", { name: "Confirm" }));
 
