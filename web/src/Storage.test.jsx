@@ -71,7 +71,7 @@ describe("when the user selects another disk", () => {
     const button = await screen.findByRole("button", { name: "/dev/sda" });
     userEvent.click(button);
 
-    const targetSelector = await screen.findByLabelText("Select target");
+    const targetSelector = await screen.findByLabelText("Device to install into");
     userEvent.selectOptions(targetSelector, ["/dev/sdb"]);
     userEvent.click(screen.getByRole("button", { name: "Confirm" }));
 
@@ -88,7 +88,7 @@ describe("when the user selects another disk", () => {
     const button = await screen.findByRole("button", { name: "/dev/sda" });
     userEvent.click(button);
 
-    const targetSelector = await screen.findByLabelText("Select target");
+    const targetSelector = await screen.findByLabelText("Device to install into");
     userEvent.selectOptions(targetSelector, ["/dev/sdb"]);
     userEvent.click(screen.getByRole("button", { name: "Confirm" }));
 

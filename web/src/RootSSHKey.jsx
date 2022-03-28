@@ -88,7 +88,7 @@ export default function RootSSHKey() {
           <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
           </Button>,
-          <Button key="cancel" variant="link" onClick={cancel}>
+          <Button key="cancel" variant="secondary" onClick={cancel}>
             Cancel
           </Button>,
           <Button key="remove" variant="link" onClick={remove} isDisabled={sshKey === ""}>

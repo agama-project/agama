@@ -122,18 +122,18 @@ export default function ProductSelector() {
         isOpen={isFormOpen}
         showClose={false}
         variant={ModalVariant.small}
-        title="Product Selector"
+        aria-label="Product Selector"
         actions={[
           <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
           </Button>,
-          <Button key="cancel" variant="link" onClick={cancel}>
+          <Button key="cancel" variant="secondary" onClick={cancel}>
             Cancel
           </Button>
         ]}
       >
         <Form>
-          <FormGroup fieldId="product" label="Select the product to be installed">
+          <FormGroup fieldId="product" label="Product">
             {buildSelector()}
           </FormGroup>
         </Form>

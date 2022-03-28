@@ -42,8 +42,8 @@ const Proposal = ({ data = [] }) => {
 
   const generalActions = data.filter(a => !a.subvol);
   const subvolActions = data.filter(a => a.subvol);
-  const detailsText = isExpanded ? "hide details" : "see details";
-  const toggleText = `${subvolActions.length} subvolumes actions (${detailsText})`;
+  const userAction = isExpanded ? "Hide" : "Show";
+  const toggleText = `${userAction} ${subvolActions.length} subvolumes actions`;
 
   return (
     <>

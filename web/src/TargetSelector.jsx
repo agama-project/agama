@@ -70,22 +70,18 @@ export default function TargetSelector({ target, targets, onAccept }) {
         isOpen={isFormOpen}
         showClose={false}
         variant={ModalVariant.small}
-        title="Target Selector"
+        aria-label="Target Selector"
         actions={[
           <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
           </Button>,
-          <Button key="cancel" variant="link" onClick={cancel}>
+          <Button key="cancel" variant="secondary" onClick={cancel}>
             Cancel
           </Button>
         ]}
       >
         <Form>
-          <FormGroup
-            fieldId="target"
-            label="Select target"
-            helperText="Product will be installed in selected target"
-          >
+          <FormGroup fieldId="target" label="Device to install into">
             {buildSelector()}
           </FormGroup>
         </Form>

@@ -88,7 +88,11 @@ export default function Storage() {
 
   return (
     <>
-      <TargetSelector target={target || "Select target"} targets={targets} onAccept={onAccept} />
+      <TargetSelector
+        target={target || "Select device to install into"}
+        targets={targets}
+        onAccept={onAccept}
+      />
       {error && <Alert variant="danger" isPlain isInline title={errorMessage} />}
       <Proposal data={actions} />
     </>

@@ -103,9 +103,9 @@ export default function LanguageSelector() {
     return (
       <FormSelect
         id="language"
+        aria-label="language"
         value={language}
         onChange={v => dispatch({ type: "CHANGE", payload: v })}
-        aria-label="language"
       >
         {selectorOptions}
       </FormSelect>
@@ -122,22 +122,18 @@ export default function LanguageSelector() {
         isOpen={isFormOpen}
         showClose={false}
         variant={ModalVariant.small}
-        title="Language Selector"
+        aria-label="Language Selector"
         actions={[
           <Button key="confirm" variant="primary" onClick={accept}>
             Confirm
           </Button>,
-          <Button key="cancel" variant="link" onClick={cancel}>
+          <Button key="cancel" variant="secondary" onClick={cancel}>
             Cancel
           </Button>
         ]}
       >
         <Form>
-          <FormGroup
-            fieldId="language"
-            label="Select language"
-            helperText="The selected language will be used for both, the installer and the installed system"
-          >
+          <FormGroup fieldId="language" label="Language">
             {buildSelector()}
           </FormGroup>
         </Form>
