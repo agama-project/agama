@@ -1,5 +1,7 @@
 # Service-based experimental installer
 
+[![Coverage Status](https://coveralls.io/repos/github/yast/d-installer/badge.svg?branch=master)](https://coveralls.io/github/yast/d-installer?branch=master)
+
 The idea of this repository is to build a proof-of-concept of a Linux installer that runs as a
 service. At first sight, we have identified these components:
 
