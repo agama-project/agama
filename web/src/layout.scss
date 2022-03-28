@@ -6,7 +6,7 @@
 
 .layout {
   --header-block-size: 8ex;
-  --footer-block-size: calc(2 * var(--header-block-size));
+  --footer-block-size: calc(1.5 * var(--header-block-size));
   --min-layout-content-block-size: calc(100vh - var(--header-block-size));
   --layout-content-padding: 1rem;
   --layout-content-padding-block-end: calc(
