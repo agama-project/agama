@@ -21,6 +21,8 @@
 
 import React from "react";
 
+import "./layout.scss";
+
 /**
  * D-Installer main layout component.
  *

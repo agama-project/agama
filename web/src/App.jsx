@@ -26,6 +26,14 @@ import LoadingEnvironment from "./LoadingEnvironment";
 import LoginForm from "./LoginForm";
 import Installer from "./Installer";
 
+import "@fontsource/lato/400.css";
+import "@fontsource/lato/400-italic.css";
+import "@fontsource/lato/700.css";
+import "@fontsource/poppins/300.css";
+import "@fontsource/poppins/500.css";
+import "@fontsource/roboto-mono/400.css";
+import "./app.scss";
+
 function App() {
   const {
     state: { loggedIn },
