@@ -80,23 +80,22 @@ function Layout({ MenuIcon, sectionTitle, SectionIcon, FooterActions, children }
     );
   };
 
-  const renderFooter = () => {
-    return (
-      <div className="layout__footer">
-        <div className="layout__footer-info-area">
-          <img src={logo} alt="Logo of SUSE" className="company-logo" />
-          <About />
-        </div>
-        <div
-          className="layout__footer-actions-area"
-          role="navigation"
-          aria-label="Installer Actions"
-        >
-          {FooterActions && <FooterActions />}
-        </div>
+  const renderFooter = () => (
+    <div className="layout__footer">
+      <div className="layout__footer-info-area">
+        <img src={logo} alt="Logo of SUSE" className="company-logo" />
+        <About />
       </div>
-    );
-  };
+      { FooterActions &&
+      <div
+        className="layout__footer-actions-area"
+        role="navigation"
+        aria-label="Installer Actions"
+      >
+        <FooterActions />
+      </div> }
+    </div>
+  );
 
   return (
     <div className={className}>
