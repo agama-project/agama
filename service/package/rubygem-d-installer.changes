@@ -1,8 +1,12 @@
 -------------------------------------------------------------------
-Wed Feb 16 19:20:16 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Wed Mar 30 07:06:18 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - First release:
-  * Small D-Bus interface to get some basic information, set a few options and
-    start the installation.
-  * Limited support for partitioning and software installation.
+  * Minimal installation of openSUSE Leap or Tumbleweed.
+  * Allow setting the language, selecting a product, choosing a disk to
+    install into, setting the root authentication mechanism and creating
+    a first user.
+  * Automatic boot loader installation.
+  * Automatic network set up based on the configuration of the
+    underlying system.
 - 0.1
