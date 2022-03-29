@@ -22,6 +22,7 @@
 import React from "react";
 
 import "./layout.scss";
+import logo from "./assets/suse-horizontal-logo.svg";
 
 /**
  * D-Installer main layout component.
@@ -78,10 +79,11 @@ function Layout({ MenuIcon, sectionTitle, SectionIcon, FooterActions, children: 
   };
 
   const renderFooter = () => {
-    if (!FooterActions) return null;
-
     return (
       <div className="layout__footer">
+        <div className="layout__footer-info-area">
+          <img src={logo} alt="Logo of SUSE" className="company-logo" />
+        </div>
         <div
           className="layout__footer-actions-area"
           role="navigation"

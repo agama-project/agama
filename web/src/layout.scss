@@ -108,9 +108,21 @@
   inline-size: inherit;
   padding: 1rem;
 
-  display: grid;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   gap: 1rem 1rem;
+}
+
+.layout__footer-info-area {
+  display: flex;
+  align-items: center;
+
+  .company-logo {
+    width: 120px;
+    margin-inline-start: -1rem;
+  }
 }
 
 .layout__footer-actions-area {
