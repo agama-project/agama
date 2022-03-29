@@ -47,7 +47,7 @@ import logo from "./assets/suse-horizontal-logo.svg";
  * @param {React.ReactNode} [props.children] - the section content
  *
  */
-function Layout({ MenuIcon, sectionTitle, SectionIcon, FooterActions, children: sectionContent }) {
+function Layout({ MenuIcon, sectionTitle, SectionIcon, FooterActions, children }) {
   const responsiveWidthRules = "pf-u-w-66-on-lg pf-u-w-50-on-xl pf-u-w-33-on-2xl";
   const className = `layout ${responsiveWidthRules}`;
 
@@ -99,7 +99,7 @@ function Layout({ MenuIcon, sectionTitle, SectionIcon, FooterActions, children: 
     <div className={className}>
       {renderHeader()}
 
-      <main className="layout__content">{sectionContent}</main>
+      <main className="layout__content">{children}</main>
 
       {renderFooter()}
     </div>
