@@ -22,21 +22,12 @@
 import React, { StrictMode } from "react";
 import ReactDOM from "react-dom";
 
+import "./patternfly.scss";
+
 import App from "./App";
 import { InstallerClientProvider } from "./context/installer";
 import { AuthProvider } from "./context/auth";
 import { createClient } from "./lib/client";
-
-import "@fontsource/lato/400.css";
-import "@fontsource/lato/400-italic.css";
-import "@fontsource/lato/700.css";
-import "@fontsource/poppins/300.css";
-import "@fontsource/poppins/500.css";
-import "@fontsource/roboto-mono/400.css";
-
-import "./patternfly.scss";
-import "./app.scss";
-import "./layout.scss";
 
 const client = createClient();
 

@@ -19,31 +19,30 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect } from "react";
-import { useAuthContext } from "./context/auth";
+import React from "react";
 
-import LoadingEnvironment from "./LoadingEnvironment";
-import LoginForm from "./LoginForm";
-import Installer from "./Installer";
+import { screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { authRender } from "./test-utils";
 
-import "@fontsource/lato/400.css";
-import "@fontsource/lato/400-italic.css";
-import "@fontsource/lato/700.css";
-import "@fontsource/poppins/300.css";
-import "@fontsource/poppins/500.css";
-import "@fontsource/roboto-mono/400.css";
-import "./app.scss";
+import About from "./About";
 
-function App() {
-  const {
-    state: { loggedIn },
-    autoLogin
-  } = useAuthContext();
+describe("About", () => {
+  it("allows user to read 'About D-Installer'", async () => {
+    authRender(<About />);
 
-  useEffect(autoLogin, []);
+    const button = screen.getByRole("button", { name: /About/i });
+    userEvent.click(button);
 
-  if (loggedIn === null) return <LoadingEnvironment />;
-  return loggedIn ? <Installer /> : <LoginForm />;
-}
+    const dialog = await screen.findByRole("dialog");
 
-export default App;
+    within(dialog).getByText("About D-Installer");
+
+    const closeButton = within(dialog).getByRole("button", { name: /Close/i });
+    userEvent.click(closeButton);
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+  });
+});

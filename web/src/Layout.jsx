@@ -21,6 +21,11 @@
 
 import React from "react";
 
+import "./layout.scss";
+import logo from "./assets/suse-horizontal-logo.svg";
+
+import About from "./About";
+
 /**
  * D-Installer main layout component.
  *
@@ -44,7 +49,7 @@ import React from "react";
  * @param {React.ReactNode} [props.children] - the section content
  *
  */
-function Layout({ MenuIcon, sectionTitle, SectionIcon, FooterActions, children: sectionContent }) {
+function Layout({ MenuIcon, sectionTitle, SectionIcon, FooterActions, children }) {
   const responsiveWidthRules = "pf-u-w-66-on-lg pf-u-w-50-on-xl pf-u-w-33-on-2xl";
   const className = `layout ${responsiveWidthRules}`;
 
@@ -75,27 +80,28 @@ function Layout({ MenuIcon, sectionTitle, SectionIcon, FooterActions, children: 
     );
   };
 
-  const renderFooter = () => {
-    if (!FooterActions) return null;
-
-    return (
-      <div className="layout__footer">
-        <div
-          className="layout__footer-actions-area"
-          role="navigation"
-          aria-label="Installer Actions"
-        >
-          {FooterActions && <FooterActions />}
-        </div>
+  const renderFooter = () => (
+    <div className="layout__footer">
+      <div className="layout__footer-info-area">
+        <img src={logo} alt="Logo of SUSE" className="company-logo" />
+        <About />
       </div>
-    );
-  };
+      { FooterActions &&
+      <div
+        className="layout__footer-actions-area"
+        role="navigation"
+        aria-label="Installer Actions"
+      >
+        <FooterActions />
+      </div> }
+    </div>
+  );
 
   return (
     <div className={className}>
       {renderHeader()}
 
-      <main className="layout__content">{sectionContent}</main>
+      <main className="layout__content">{children}</main>
 
       {renderFooter()}
     </div>
