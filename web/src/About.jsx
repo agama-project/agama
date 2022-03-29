@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { Button, Modal, ModalVariant } from "@patternfly/react-core";
+import { Button, Modal, ModalVariant, Text } from "@patternfly/react-core";
 
 export default function About() {
   const [isOpen, setIsOpen] = useState(false);
@@ -45,7 +45,15 @@ export default function About() {
           </Button>
         ]}
       >
-        Lorem ipsum
+        <Text>
+          D-Installer is an <strong>experimental installer</strong> for (open)SUSE systems. It is
+          still under development so, please, do not use it in production environments. If you want
+          to give it a try, we recommend to use a virtual machine to prevent any possible data loss.
+        </Text>
+        <Text>
+          For more information, check{" "}
+          <a href="https://github.com/yast/d-installer">the project's repository</a>.
+        </Text>
       </Modal>
     </>
   );
