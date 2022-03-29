@@ -68,53 +68,6 @@ export default function Users() {
 
   const userIsDefined = user?.userName !== "";
 
-  const userForm = () => {
-    return (
-      <Form>
-        <FormGroup fieldId="userFullName" label="Full name">
-          <TextInput
-            id="userFullName"
-            name="fullName"
-            aria-label="user fullname"
-            value={formValues.fullName}
-            label="User full Name"
-            onChange={handleInputChange}
-          />
-        </FormGroup>
-        <FormGroup fieldId="userName" label="Username">
-          <TextInput
-            id="userName"
-            name="userName"
-            aria-label="user name"
-            value={formValues.userName}
-            label="Username"
-            required={true}
-            onChange={handleInputChange}
-          />
-        </FormGroup>
-        <FormGroup fieldId="userPassword" label="Password">
-          <TextInput
-            id="userPassword"
-            name="password"
-            type="password"
-            aria-label="user password"
-            value={formValues.password}
-            onChange={handleInputChange}
-          />
-        </FormGroup>
-        <FormGroup fieldId="autologin" label="Auto-login">
-          <Checkbox
-            aria-label="user autologin"
-            id="autologin"
-            name="autologin"
-            isChecked={formValues.autologin}
-            onChange={handleInputChange}
-          />
-        </FormGroup>
-      </Form>
-    );
-  };
-
   const link = content => (
     <Button variant="link" isInline onClick={open}>
       {content}
@@ -137,7 +90,7 @@ export default function Users() {
         isOpen={isFormOpen}
         showClose={false}
         variant={ModalVariant.small}
-        aria-label="First User"
+        title="User account"
         actions={[
           <Button
             key="confirm"
@@ -155,7 +108,50 @@ export default function Users() {
           </Button>
         ]}
       >
-        {userForm()}
+        <Form>
+          <FormGroup fieldId="userFullName" label="Full name">
+            <TextInput
+              id="userFullName"
+              name="fullName"
+              aria-label="User fullname"
+              value={formValues.fullName}
+              label="User full Name"
+              onChange={handleInputChange}
+            />
+          </FormGroup>
+
+          <FormGroup fieldId="userName" label="Username">
+            <TextInput
+              id="userName"
+              name="userName"
+              aria-label="Username"
+              value={formValues.userName}
+              label="Username"
+              required={true}
+              onChange={handleInputChange}
+            />
+          </FormGroup>
+
+          <FormGroup fieldId="userPassword" label="Password">
+            <TextInput
+              id="userPassword"
+              name="password"
+              type="password"
+              aria-label="User password"
+              value={formValues.password}
+              onChange={handleInputChange}
+            />
+          </FormGroup>
+
+          <Checkbox
+            aria-label="user autologin"
+            id="autologin"
+            name="autologin"
+            label="Auto-login"
+            isChecked={formValues.autologin}
+            onChange={handleInputChange}
+          />
+        </Form>
       </Modal>
     </>
   );
