@@ -66,6 +66,8 @@ export default function Users() {
     setFormValues({ ...formValues, [name]: value });
   };
 
+  const userIsDefined = user?.userName !== "";
+
   const userForm = () => {
     return (
       <Form>
@@ -120,7 +122,7 @@ export default function Users() {
   );
 
   const renderLink = () => {
-    if (user?.userName !== "") {
+    if (userIsDefined) {
       return <Text>User {link(user.userName)} is defined</Text>;
     } else {
       return <Text>A user {link("is not defined")}</Text>;
@@ -148,7 +150,7 @@ export default function Users() {
           <Button key="cancel" variant="secondary" onClick={cancel}>
             Cancel
           </Button>,
-          <Button key="remove" variant="link" onClick={remove}>
+          <Button key="remove" variant="link" onClick={remove} isDisabled={!userIsDefined}>
             Do not create a user
           </Button>
         ]}

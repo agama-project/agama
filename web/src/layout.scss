@@ -6,7 +6,7 @@
 
 .layout {
   --header-block-size: 8ex;
-  --footer-block-size: calc(2 * var(--header-block-size));
+  --footer-block-size: calc(1.5 * var(--header-block-size));
   --min-layout-content-block-size: calc(100vh - var(--header-block-size));
   --layout-content-padding: 1rem;
   --layout-content-padding-block-end: calc(
@@ -40,6 +40,17 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+
+  // Centers the section title.
+  // In a certain way it contradicts recommendations for headings given at
+  // https://eosdesignsystem.herokuapp.com/typography#headline-margins
+  // but it's more inline with the "branding" alignment at
+  // https://eosdesignsystem.herokuapp.com/layout
+  //
+  // See global heading styles at src/app.scss
+  h1 {
+    margin-block-start: 10px;
+  }
 }
 
 .layout__header-left-action {
@@ -98,20 +109,9 @@
   padding: 1rem;
 
   display: grid;
-  // We haven't decided yet the "final" distribution for the footer.
-  // grid-template-columns: 2fr 1fr;
+
   gap: 1rem 1rem;
 }
-
-.layout__footer-info-area {
-  align-self: center;
-  overflow-y: auto;
-}
-
-// TODO: Keep alert icons vertically centered here?
-// .layout__footer-info-area .pf-c-alert__icon {
-//   align-self: center;
-// }
 
 .layout__footer-actions-area {
   align-self: center;

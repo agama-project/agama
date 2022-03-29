@@ -27,9 +27,11 @@ import { Progress, Stack, StackItem, Text } from "@patternfly/react-core";
 const renderSubprogress = progress => (
   <Progress
     size="sm"
+    min={0}
+    max={progress.substeps}
+    value={progress.substep}
     measureLocation="none"
     aria-label="Secondary progress bar"
-    value={Math.round((progress.substep / progress.substeps) * 100)}
   />
 );
 
@@ -49,12 +51,20 @@ const ProgressReport = () => {
   if (!progress.steps) return <Text>Waiting for progress status...</Text>;
 
   const showSubsteps = !!progress.substeps && progress.substeps >= 0;
-  const percentage = progress.steps === 0 ? 0 : Math.round((progress.step / progress.steps) * 100);
+  const label = `Step ${progress.step + 1} of ${progress.steps + 1}`;
 
   return (
     <Stack hasGutter className="pf-u-w-100">
       <StackItem>
-        <Progress aria-label="Main progress bar" title={progress.title} value={percentage} />
+        <Progress
+          min={0}
+          max={progress.steps}
+          value={progress.step}
+          label={label}
+          valueText={label}
+          title={progress.title}
+          aria-label="Main progress bar"
+        />
       </StackItem>
 
       <StackItem>{showSubsteps && renderSubprogress(progress)}</StackItem>
