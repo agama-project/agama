@@ -19,7 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "pathname"
 require "yast"
 require "dinstaller/package_callbacks"
 require "y2packager/product"
@@ -33,8 +32,8 @@ Yast.import "Stage"
 module DInstaller
   # This class is responsible for software handling
   class Software
-    GPG_KEYS_PATH = "/"
-    private_constant :GPG_KEYS_PATH
+    GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
+    private_constant :GPG_KEYS_GLOB
 
     FALLBACK_REPO = "https://download.opensuse.org/tumbleweed/repo/oss/"
     private_constant :FALLBACK_REPO
@@ -137,10 +136,10 @@ module DInstaller
     end
 
     def import_gpg_keys
-      gpg_keys = Pathname.new(GPG_KEYS_PATH).glob("*.gpg").map(&:to_s)
+      gpg_keys = Dir.glob(GPG_KEYS_GLOB).map(&:to_s)
       logger.info "Importing GPG keys: #{gpg_keys}"
       gpg_keys.each do |path|
-        Yast::Pkg.ImportGPGKey(path.to_s, true)
+        Yast::Pkg.ImportGPGKey(path, true)
       end
     end
 
