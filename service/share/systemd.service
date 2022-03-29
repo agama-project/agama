@@ -1,6 +1,6 @@
 [Unit]
 Description=D-Installer Service
-Requires=dbus.socket
+Requires=dbus.socket cockpit.socket
 
 [Service]
 Type=dbus
