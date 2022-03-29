@@ -33,12 +33,12 @@ describe DInstaller::Software do
   let(:other_prod) { instance_double(Y2Packager::Product, name: "another") }
   let(:base_url) { "" }
   let(:destdir) { "/mnt" }
-  let(:gpg_path) { instance_double(Pathname, glob: []) }
+  let(:gpg_keys) { [] }
 
   before do
     allow(Yast::Pkg).to receive(:TargetInitialize)
     allow(Yast::Pkg).to receive(:ImportGPGKey)
-    allow(Pathname).to receive(:new).with("/").and_return(gpg_path)
+    allow(Dir).to receive(:glob).with(/keys/).and_return(gpg_keys)
     allow(Y2Packager::Product).to receive(:available_base_products)
       .and_return(products)
     allow(Yast::Packages).to receive(:Proposal).and_return({})
@@ -55,12 +55,12 @@ describe DInstaller::Software do
     end
 
     context "when GPG keys are available at /" do
-      before do
-        allow(gpg_path).to receive(:glob).with("*.gpg").and_return(["/installkey.gpg"])
+      let(:gpg_keys) do
+        ["/usr/lib/gnupg/keys/gpg-key.asc"]
       end
 
       it "imports the GPG keys" do
-        expect(Yast::Pkg).to receive(:ImportGPGKey).with("/installkey.gpg", true)
+        expect(Yast::Pkg).to receive(:ImportGPGKey).with(gpg_keys.first, true)
         subject.probe(progress)
       end
     end
