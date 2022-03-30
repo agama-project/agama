@@ -14,7 +14,7 @@ service. At first sight, we have identified these components:
 
 ## Quickstart
 
-:warning: :warning: **This is a proof-of-concept so use a virtual machine to give it a try.** :warning: :warning:
+:warning: **This is a proof-of-concept. Please, use a virtual machine to give it a try.** :warning:
 
 The easiest way to give D-Installer a try is to install the
 [rubygem-d-installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/rubygem-d-installer)
