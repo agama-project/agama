@@ -1,7 +1,10 @@
 -------------------------------------------------------------------
-Wed Feb 16 20:13:08 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Wed Mar 30 07:06:23 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - First release:
-  * Support to set some basic settings and start the installation.
-  * Inform the user about the installation progress.
+  * Allow setting the language, selecting a product, choosing a disk to
+    install into, setting the root authentication mechanism and creating
+    a first user.
+  * Report installation progress.
+  * Communication with D-Bus through Cockpit's infrastructure.
 - 0.1
