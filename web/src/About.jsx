@@ -40,7 +40,7 @@ export default function About() {
         variant={ModalVariant.small}
         title="About D-Installer"
         actions={[
-          <Button key="confirm" variant="primary" onClick={close}>
+          <Button key="confirm" variant="primary" onClick={close} autoFocus>
             Close
           </Button>
         ]}
