@@ -21,7 +21,7 @@
 // Note: for this particular case, we are not using
 // @use "eos-ds/dist/scss/eos-base/variables/typography.scss"
 // because it imports fonts from googleapis, external source.
-// Instead, we use @fontsource to import them from local sources in main.jsx
+// Instead, we use @fontsource to import them from local sources in App.jsx
 $base: Lato, arial, helvetica, sans-serif;
 $headlines: Poppins, san-serif;
 $code: 'Roboto Mono', monospace;
