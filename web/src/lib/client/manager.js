@@ -20,6 +20,7 @@
  */
 
 import { applyMixin, withDBus } from "./mixins";
+import cockpit from "../cockpit";
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 const MANAGER_PATH = "/org/opensuse/DInstaller/Manager1";
@@ -86,6 +87,16 @@ export default class ManagerClient {
 
       handler(data, invalid);
     });
+  }
+
+  /**
+   * Returns whether calling the system reboot suceeded or not.
+   *
+   * @return {Promise.<boolean>}
+   */
+  rebootSystem() {
+    console.log("Rebooting the system");
+    return cockpit.spawn([ "/usr/sbin/shutdown", "-r", "now" ]); 
   }
 }
 

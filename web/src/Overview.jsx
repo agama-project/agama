@@ -59,11 +59,9 @@ function Overview() {
 
   const InstallButton = () => {
     return (
-      <>
-        <Button isLarge variant="primary" onClick={() => client.manager.startInstallation()}>
-          Install
-        </Button>
-      </>
+      <Button isLarge variant="primary" onClick={() => client.manager.startInstallation()}>
+        Install
+      </Button>
     );
   };
 

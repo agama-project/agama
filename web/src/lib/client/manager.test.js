@@ -20,6 +20,9 @@
  */
 
 import ManagerClient from "./manager";
+import cockpit from "../cockpit";
+
+jest.mock("../cockpit");
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 
@@ -58,5 +61,18 @@ describe("#startInstallation", () => {
     const client = new ManagerClient(dbusClient);
     await client.startInstallation();
     expect(managerProxy.Commit).toHaveBeenCalledWith();
+  });
+});
+
+describe("#rebootSystem", () => {
+  beforeEach(() => {
+      cockpit.spawn = jest.fn().mockResolvedValue("");
+  });
+
+  it("returns whether the system reboot command was called or not", async () => {
+    const client = new ManagerClient(dbusClient);
+    const reboot = await client.rebootSystem();
+    expect(cockpit.spawn).toHaveBeenCalledWith(["/usr/sbin/shutdown", "-r", "now"])
+    expect(reboot).toEqual("");
   });
 });

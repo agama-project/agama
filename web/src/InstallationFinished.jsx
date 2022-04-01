@@ -39,21 +39,27 @@ import {
   EOS_CHECK_CIRCLE as SectionIcon
 } from "eos-icons-react";
 
-const Actions = ({ onRestart }) => (
-  <Button isLarge variant="secondary" onClick={onRestart}>
-    Restart Installation
-  </Button>
+const Actions = ({ onRestart, onReboot }) => (
+  <>
+    <Button isLarge variant="secondary" onClick={onRestart}>
+      Restart Installation
+    </Button>
+    <Button isLarge variant="primary" onClick={onReboot}>
+      Reboot
+    </Button>
+  </>
 );
 
 function InstallationFinished() {
   const client = useInstallerClient();
   const onRestartAction = () => client.manager.startProbing();
+  const onRebootAction = () => client.manager.rebootSystem();
 
   return (
     <Layout
       sectionTitle="Installation Finished"
       SectionIcon={SectionIcon}
-      FooterActions={() => <Actions onRestart={onRestartAction} />}
+      FooterActions={() => <Actions onRestart={onRestartAction} onReboot={onRebootAction} />}
     >
       <Center>
         <EmptyState>
@@ -66,7 +72,7 @@ function InstallationFinished() {
               <Text>The installation on your machine is complete.</Text>
               <Text>
                 At this point you can 'Restart installation' to continue playing with D-Installer or
-                manually reboot the machine to log in to the new system.
+                'Reboot' the machine to log in to the new system.
               </Text>
               <Text>Have a lot of fun! Your openSUSE Development Team.</Text>
             </div>
