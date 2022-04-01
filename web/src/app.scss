@@ -134,12 +134,7 @@ h4, h5, h6 {
 }
 
 .installation-overview-section {
-  border-block-end: 1px solid branding.$eos-bc-gray-100;
   padding-block-end: 1rem;
-
-  &:last-child {
-    border-block-end: none;
-  }
 
   // FIXME: look for a better approach about this.
   // It overrides inline paddings for "button links" since using "isInline" prop
