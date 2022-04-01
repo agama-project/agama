@@ -66,13 +66,13 @@ describe("#startInstallation", () => {
 
 describe("#rebootSystem", () => {
   beforeEach(() => {
-      cockpit.spawn = jest.fn().mockResolvedValue("");
+    cockpit.spawn = jest.fn().mockResolvedValue(true);
   });
 
   it("returns whether the system reboot command was called or not", async () => {
     const client = new ManagerClient(dbusClient);
     const reboot = await client.rebootSystem();
-    expect(cockpit.spawn).toHaveBeenCalledWith(["/usr/sbin/shutdown", "-r", "now"])
-    expect(reboot).toEqual("");
+    expect(cockpit.spawn).toHaveBeenCalledWith(["/usr/sbin/shutdown", "-r", "now"]);
+    expect(reboot).toEqual(true);
   });
 });

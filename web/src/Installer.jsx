@@ -81,8 +81,6 @@ function Installer() {
     });
   }, []);
   
-  return <InstallationFinished />;
-
   if (state.dbusError) return <DBusError />;
   if (state.loading) return <LoadingEnvironment />;
   if (state.probing) return <ProbingProgress />;
