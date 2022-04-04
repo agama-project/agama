@@ -95,7 +95,6 @@ export default class ManagerClient {
    * @return {Promise.<boolean>}
    */
   rebootSystem() {
-    console.log("Rebooting the system");
     return cockpit.spawn(["/usr/sbin/shutdown", "-r", "now"]);
   }
 }
