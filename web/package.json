@@ -17,7 +17,8 @@
     "preview": "vite preview",
     "test": "jest",
     "lint": "npx eslint src",
-    "format": "npx prettier --write \"src/**/*.js{,x}\""
+    "format": "npx prettier --write \"src/**/*.js{,x}\"",
+    "screenshots": "viteshot shoot"
   },
   "browserslist": {
     "production": [
