@@ -1,6 +1,7 @@
 [Unit]
 Description=D-Installer Service
 Requires=dbus.socket cockpit.socket
+After=network-online.target
 
 [Service]
 Type=dbus
