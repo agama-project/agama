@@ -19,10 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { Button, Flex, FlexItem } from "@patternfly/react-core";
+import { Button, Modal, ModalVariant, Flex, FlexItem, Text } from "@patternfly/react-core";
 
 import Layout from "./Layout";
 import Category from "./Category";
@@ -58,10 +58,41 @@ function Overview() {
   ];
 
   const InstallButton = () => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const open = () => setIsOpen(true);
+    const close = () => setIsOpen(false);
+    const install = () => client.manager.startInstallation();
+
     return (
-      <Button isLarge variant="primary" onClick={() => client.manager.startInstallation()}>
-        Install
-      </Button>
+      <>
+        <Button isLarge variant="primary" onClick={open}>
+          Install
+        </Button>
+
+        <Modal
+          title="Confirm Installation"
+          isOpen={isOpen}
+          showClose={false}
+          variant={ModalVariant.small}
+          actions={[
+            <Button key="accept" variant="primary" onClick={install}>
+              Install
+            </Button>,
+            <Button key="back" variant="primary" onClick={close} autoFocus>
+              Back
+            </Button>
+          ]}
+        >
+          <Text>
+            If you continue, partitions on your hard disk will be modified according to the
+            installation settings in the previous dialog.
+          </Text>
+          <Text>
+            Go back and check the settings if you are unsure.
+          </Text>
+        </Modal>
+      </>
     );
   };
 

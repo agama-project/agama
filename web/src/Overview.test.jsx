@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Overview from "./Overview";
@@ -80,13 +80,43 @@ test("renders the Overview", async () => {
   await screen.findByText("openSUSE Tumbleweed");
 });
 
-test("starts the installation when the user clicks 'Install'", async () => {
-  installerRender(<Overview />);
+describe("when the user clicks 'Install'", () => {
+  let dialog;
 
-  // TODO: we should have some UI element to tell the user we have finished
-  // with loading data.
-  await screen.findByText("English");
+  beforeEach(async () => {
+    installerRender(<Overview />)
 
-  userEvent.click(screen.getByRole("button", { name: /Install/ }));
-  expect(startInstallationFn).toHaveBeenCalled();
+    // TODO: we should have some UI element to tell the user we have finished
+    // with loading data.
+    await screen.findByText("English");
+
+    const installButton = screen.getByRole("button", { name: /Install/ });
+    userEvent.click(installButton);
+
+    dialog = await screen.findByRole("dialog");
+  });
+
+  test("asks for confirmation", () => {
+    const title = within(dialog).getByText(/Confirm Installation/i);
+
+    expect(title).toBeDefined();
+  });
+
+  test("starts the installation if the user confirms", () => {
+    const button = within(dialog).getByRole("button", { name: /Install/i });
+    userEvent.click(button);
+
+    expect(startInstallationFn).toBeCalled();
+  });
+
+  test("does not start the installation if the user goes back", async () => {
+    const button = within(dialog).getByRole("button", { name: /Back/i });
+    userEvent.click(button);
+
+    expect(startInstallationFn).not.toBeCalled();
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+  });
 });
