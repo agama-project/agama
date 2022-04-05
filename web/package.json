@@ -51,8 +51,10 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.5.1",
     "jest-transform-stub": "^2.0.0",
+    "playwright": "^1.20.2",
     "prettier": "^2.5.1",
     "sass": "^1.49.8",
-    "vite": "^2.8.4"
+    "vite": "^2.8.4",
+    "viteshot": "^0.3.1"
   }
 }
