@@ -109,8 +109,8 @@ describe("when the user clicks 'Install'", () => {
     expect(startInstallationFn).toBeCalled();
   });
 
-  test("does not start the installation if the user goes back", async () => {
-    const button = within(dialog).getByRole("button", { name: /Back/i });
+  test("does not start the installation if the user cancels", async () => {
+    const button = within(dialog).getByRole("button", { name: /Cancel/i });
     userEvent.click(button);
 
     expect(startInstallationFn).not.toBeCalled();

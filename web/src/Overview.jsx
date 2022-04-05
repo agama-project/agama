@@ -79,8 +79,8 @@ function Overview() {
             <Button key="accept" variant="primary" onClick={install}>
               Install
             </Button>,
-            <Button key="back" variant="primary" onClick={close} autoFocus>
-              Back
+            <Button key="back" variant="secondary" onClick={close} autoFocus>
+              Cancel
             </Button>
           ]}
         >
@@ -89,7 +89,7 @@ function Overview() {
             installation settings in the previous dialog.
           </Text>
           <Text>
-            Go back and check the settings if you are unsure.
+            Please, cancel and check the settings if you are unsure.
           </Text>
         </Modal>
       </>
