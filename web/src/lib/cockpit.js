@@ -29,7 +29,6 @@ try {
 /* injected by tests */
 var mock = mock || { }; // eslint-disable-line no-use-before-define, no-var
 
-(function() {
 const cockpit = { };
 event_mixin(cockpit, { });
 
@@ -186,8 +185,11 @@ function base64_encode(data) {
 }
 
 function b64_to_uint6 (x) {
-    return x > 64 && x < 91 ? x - 65 : x > 96 && x < 123
-        ? x - 71 : x > 47 && x < 58 ? x + 4 : x === 43 ? 62 : x === 47 ? 63 : 0;
+    return x > 64 && x < 91
+        ? x - 65
+        : x > 96 && x < 123
+        ? x - 71
+        : x > 47 && x < 58 ? x + 4 : x === 43 ? 62 : x === 47 ? 63 : 0;
 }
 
 function base64_decode(str, constructor) {
@@ -1059,12 +1061,18 @@ function factory() {
 
             while (i < len) {
                 const p = data.charCodeAt(i);
-                const x = p == 255 ? 0
-                    : p > 251 && p < 254 ? 6
-                    : p > 247 && p < 252 ? 5
-                    : p > 239 && p < 248 ? 4
-                    : p > 223 && p < 240 ? 3
-                    : p > 191 && p < 224 ? 2
+                const x = p == 255
+                    ? 0
+                    : p > 251 && p < 254
+                    ? 6
+                    : p > 247 && p < 252
+                    ? 5
+                    : p > 239 && p < 248
+                    ? 4
+                    : p > 223 && p < 240
+                    ? 3
+                    : p > 191 && p < 224
+                    ? 2
                     : p < 128 ? 1 : 0;
 
                 let ok = (i + x <= len);
@@ -1450,36 +1458,43 @@ function factory() {
         return fmt.replace(fmt_re, replace);
     };
 
-    cockpit.format_number = function format_number(number) {
-        /* We show 3 digits of precision but avoid scientific notation.
+    cockpit.format_number = function format_number(number, precision) {
+        /* We show given number of digits of precision (default 3), but avoid scientific notation.
          * We also show integers without digits after the comma.
          *
-         * We want to localise the decimal place, but we never want to
+         * We want to localise the decimal separator, but we never want to
          * show thousands separators (to avoid ambiguity).  For this
          * reason, for integers and large enough numbers, we use
          * non-localised conversions (and in both cases, show no
          * fractional part).
          */
+        if (precision === undefined)
+            precision = 3;
         const lang = cockpit.language === undefined ? undefined : cockpit.language.replace('_', '-');
+        const smallestValue = 10 ** (-precision);
 
         if (!number && number !== 0)
             return "";
         else if (number % 1 === 0)
             return number.toString();
-        else if (number > 0 && number <= 0.001)
-            return (0.001).toLocaleString(lang);
-        else if (number < 0 && number >= -0.001)
-            return (-0.001).toLocaleString(lang);
+        else if (number > 0 && number <= smallestValue)
+            return smallestValue.toLocaleString(lang);
+        else if (number < 0 && number >= -smallestValue)
+            return (-smallestValue).toLocaleString(lang);
         else if (number > 999 || number < -999)
             return number.toFixed(0);
         else
             return number.toLocaleString(lang, {
-                maximumSignificantDigits: 3,
-                minimumSignificantDigits: 3
+                maximumSignificantDigits: precision,
+                minimumSignificantDigits: precision,
             });
     };
 
-    function format_units(number, suffixes, factor, separate) {
+    function format_units(number, suffixes, factor, options) {
+        // backwards compat: "options" argument position used to be a boolean flag "separate"
+        if (!is_object(options))
+            options = { separate: options };
+
         let suffix = null;
 
         /* Find that factor string */
@@ -1517,7 +1532,7 @@ function factory() {
             }
         }
 
-        const string_representation = cockpit.format_number(number);
+        const string_representation = cockpit.format_number(number, options.precision);
         let ret;
 
         if (string_representation && suffix)
@@ -1525,7 +1540,7 @@ function factory() {
         else
             ret = [string_representation];
 
-        if (!separate)
+        if (!options.separate)
             ret = ret.join(" ");
 
         return ret;
@@ -1536,15 +1551,15 @@ function factory() {
         1024: [null, "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB"]
     };
 
-    cockpit.format_bytes = function format_bytes(number, factor, separate) {
+    cockpit.format_bytes = function format_bytes(number, factor, options) {
         if (factor === undefined)
-            factor = 1024;
-        return format_units(number, byte_suffixes, factor, separate);
+            factor = 1000;
+        return format_units(number, byte_suffixes, factor, options);
     };
 
     cockpit.get_byte_units = function get_byte_units(guide_value, factor) {
         if (factor === undefined || !(factor in byte_suffixes))
-            factor = 1024;
+            factor = 1000;
 
         function unit(index) {
             return {
@@ -1569,23 +1584,24 @@ function factory() {
     };
 
     const byte_sec_suffixes = {
+        1000: ["B/s", "kB/s", "MB/s", "GB/s", "TB/s", "PB/s", "EB/s", "ZB/s"],
         1024: ["B/s", "KiB/s", "MiB/s", "GiB/s", "TiB/s", "PiB/s", "EiB/s", "ZiB/s"]
     };
 
-    cockpit.format_bytes_per_sec = function format_bytes_per_sec(number, factor, separate) {
+    cockpit.format_bytes_per_sec = function format_bytes_per_sec(number, factor, options) {
         if (factor === undefined)
-            factor = 1024;
-        return format_units(number, byte_sec_suffixes, factor, separate);
+            factor = 1000;
+        return format_units(number, byte_sec_suffixes, factor, options);
     };
 
     const bit_suffixes = {
         1000: ["bps", "Kbps", "Mbps", "Gbps", "Tbps", "Pbps", "Ebps", "Zbps"]
     };
 
-    cockpit.format_bits_per_sec = function format_bits_per_sec(number, factor, separate) {
+    cockpit.format_bits_per_sec = function format_bits_per_sec(number, factor, options) {
         if (factor === undefined)
             factor = 1000;
-        return format_units(number, bit_suffixes, factor, separate);
+        return format_units(number, bit_suffixes, factor, options);
     };
 
     /* ---------------------------------------------------------------------
@@ -4510,13 +4526,10 @@ function factory() {
     };
 
     return cockpit;
-} /* scope end */
+}
 
-/*
- * Register this script as global
- */
-
+// Register cockpit object as global, so that it can be used without ES6 modules
+// we need to do that here instead of in pkg/base1/cockpit.js, so that po.js can access cockpit already
 window.cockpit = factory();
-})();
 
 export default window.cockpit;
