@@ -99,13 +99,6 @@
   // for the :last-child too.
   // See https://github.com/patternfly/patternfly/blob/9c8cb7c8609613ab53eef3fe05addda16bc63233/src/patternfly/components/ModalBox/modal-box.scss#L211
   > .pf-c-button {
-    margin-inline-end: 1ch;
-  }
-
-  // But avoid the gap between buttons and links. We keep using a link
-  // variant for a "Do not XYZ" actions, which are not destructive in the
-  // context of the installer.
-  > .pf-m-link {
-    margin-inline-end: 0;
+    margin-inline-end: var(--pf-c-modal-box__footer--c-button--MarginRight);
   }
 }
