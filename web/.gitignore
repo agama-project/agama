@@ -12,7 +12,7 @@ Test*FAIL*
 /bots
 test/common/
 test/images/
-# src/lib/
+src/lib/
 *.pot
 POTFILES*
 tmp/

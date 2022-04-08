@@ -182,12 +182,13 @@ test/common:
 	    git reset test/common'
 
 # checkout Cockpit's PF/React/build library; again this has no API stability guarantee, so check out a stable tag
+# TODO: replace the commit with the tag 267 once it is released, which includes cockpit.js as a ES6 module in lib/.
 $(LIB_TEST):
 	flock Makefile sh -ec '\
-	    git fetch --depth=1 https://github.com/cockpit-project/cockpit.git 265; \
+	    git fetch --depth=1 https://github.com/cockpit-project/cockpit.git 4ca4c20ce6697c76463d79113dae4772a31777d8; \
 	    git checkout --force FETCH_HEAD -- ../pkg/lib; \
 	    git reset -- ../pkg/lib'
-	mv ../pkg/lib/cockpit-po-plugin.js ../pkg/lib/cockpit-rsync-plugin.js src/lib && rm -r ../pkg
+	mv ../pkg/lib src/ && rmdir ../pkg
 
 $(NODE_MODULES_TEST): package.json
 	# if it exists already, npm install won't update it; force that so that we always get up-to-date packages
