@@ -32,7 +32,7 @@ import "@fontsource/lato/700.css";
 import "@fontsource/poppins/300.css";
 import "@fontsource/poppins/500.css";
 import "@fontsource/roboto-mono/400.css";
-import "./app.scss";
+// import "./app.scss";
 
 function App() {
   const {

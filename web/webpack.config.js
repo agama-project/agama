@@ -49,6 +49,7 @@ module.exports = {
     resolve: {
         modules: [ "node_modules", path.resolve(__dirname, 'src/lib') ],
         alias: { 'font-awesome': 'font-awesome-sass/assets/stylesheets' },
+        extensions: ['', '.js', '.json', '.jsx']
     },
     resolveLoader: {
         modules: [ "node_modules", path.resolve(__dirname, 'src/lib') ],
@@ -148,6 +149,12 @@ module.exports = {
                     },
                 ]
             },
+            {
+              test: /\.svg/,
+              use: {
+                loader: "svg-url-loader",
+              },
+            }
         ]
     },
     plugins: plugins

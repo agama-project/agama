@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import "./layout.scss";
+// import "./layout.scss";
 import logo from "./assets/suse-horizontal-logo.svg";
 
 import About from "./About";

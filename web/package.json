@@ -15,6 +15,9 @@
     "@babel/eslint-parser": "^7.13.14",
     "@babel/preset-env": "^7.5.4",
     "@babel/preset-react": "^7.0.0",
+    "@fontsource/lato": "^4.5.5",
+    "@fontsource/poppins": "^4.5.5",
+    "@fontsource/roboto-mono": "^4.5.5",
     "babel-loader": "^8.0.6",
     "chrome-remote-interface": "^0.31.0",
     "compression-webpack-plugin": "^9.0.0",
@@ -50,9 +53,13 @@
   "dependencies": {
     "@patternfly/patternfly": "4.183.1",
     "@patternfly/react-core": "4.198.19",
+    "@patternfly/react-table": "^4.61.15",
+    "core-js": "^3.21.1",
+    "eos-ds": "^5.0.0",
+    "eos-icons-react": "^2.2.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "eos-ds": "^5.0.0",
-    "eos-icons-react": "^2.2.0"
+    "regenerator-runtime": "^0.13.9",
+    "svg-url-loader": "^7.1.1"
   }
 }
