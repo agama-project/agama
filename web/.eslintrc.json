@@ -2,7 +2,8 @@
     "root": true,
     "env": {
         "browser": true,
-        "es6": true
+        "es6": true,
+        "jest": true
     },
     "extends": ["eslint:recommended", "standard", "standard-jsx", "standard-react"],
     "parser": "@babel/eslint-parser",
