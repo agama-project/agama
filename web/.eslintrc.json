@@ -16,7 +16,7 @@
     },
     "plugins": ["flowtype", "react", "react-hooks"],
     "rules": {
-        "indent": ["error", 4,
+        "indent": ["error", 2,
             {
                 "ObjectExpression": "first",
                 "CallExpression": {"arguments": "first"},
@@ -27,7 +27,7 @@
         "no-var": "error",
         "lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
         "prefer-promise-reject-errors": ["error", { "allowEmptyReject": true }],
-        "react/jsx-indent": ["error", 4],
+        "react/jsx-indent": ["error", 2],
         "semi": ["error", "always", { "omitLastInOneLineBlock": true }],
 
         "react-hooks/rules-of-hooks": "error",
