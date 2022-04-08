@@ -1,1 +1,2 @@
-src/lib/cockpit.js
+node_modules/*
+src/lib/*

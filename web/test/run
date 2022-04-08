@@ -1,0 +1,8 @@
+#! /bin/sh
+set -eu
+
+# This is the expected entry point for Cockpit CI; will be called without
+# arguments but with an appropriate $TEST_OS, and optionally $TEST_SCENARIO
+
+[ -z "${TEST_SCENARIO:-}" ] || export TEST_BROWSER="$TEST_SCENARIO"
+make check
