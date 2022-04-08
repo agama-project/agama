@@ -28,6 +28,9 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Retrieve shared components and libraries
+      run: make
+
     # - name: Build the application
     #   run: npm run build --if-present
 
