@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import cockpit from "../cockpit";
+import cockpit from "../lib/cockpit";
 import { applyMixin, withDBus } from "./mixins";
 
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";

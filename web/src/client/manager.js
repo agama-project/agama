@@ -20,7 +20,7 @@
  */
 
 import { applyMixin, withDBus } from "./mixins";
-import cockpit from "../cockpit";
+import cockpit from "../lib/cockpit";
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 const MANAGER_PATH = "/org/opensuse/DInstaller/Manager1";

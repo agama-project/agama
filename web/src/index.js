@@ -29,7 +29,7 @@ import "./patternfly.scss";
 import App from "./App";
 import { InstallerClientProvider } from "./context/installer";
 import { AuthProvider } from "./context/auth";
-import { createClient } from "./lib/client";
+import { createClient } from "./client";
 
 const client = createClient();
 

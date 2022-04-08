@@ -24,9 +24,9 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Overview from "./Overview";
-import { createClient } from "./lib/client";
+import { createClient } from "./client";
 
-jest.mock("./lib/client");
+jest.mock("./client");
 
 const proposal = {
   candidateDevices: ["/dev/sda"],

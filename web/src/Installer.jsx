@@ -22,7 +22,7 @@
 import React, { useEffect, useReducer } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { PROBING, PROBED, INSTALLING, INSTALLED } from "./lib/client/status";
+import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
 
 import DBusError from "./DBusError";
 import Overview from "./Overview";

@@ -24,9 +24,9 @@ import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Storage from "./Storage";
-import { createClient } from "./lib/client";
+import { createClient } from "./client";
 
-jest.mock("./lib/client");
+jest.mock("./client");
 
 const proposalSettings = {
   availableDevices: [

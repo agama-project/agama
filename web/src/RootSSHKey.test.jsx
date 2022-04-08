@@ -24,10 +24,10 @@ import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { authRender } from "./test-utils";
-import { createClient } from "./lib/client";
+import { createClient } from "./client";
 import RootSSHKey from "./RootSSHKey";
 
-jest.mock("./lib/client");
+jest.mock("./client");
 
 let sshKey;
 const getRootSSHKeyFn = () => sshKey;

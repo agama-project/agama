@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { createClient } from "../lib/client";
+import { createClient } from "../client";
 
 const AuthContext = React.createContext();
 

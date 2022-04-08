@@ -21,7 +21,7 @@
 
 import { applyMixin, withDBus } from "./mixins";
 
-import cockpit from "../cockpit";
+import cockpit from "../lib/cockpit";
 
 export default class AuthClient {
   /**

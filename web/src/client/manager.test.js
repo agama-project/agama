@@ -20,9 +20,9 @@
  */
 
 import ManagerClient from "./manager";
-import cockpit from "../cockpit";
+import cockpit from "../lib/cockpit";
 
-jest.mock("../cockpit");
+jest.mock("../lib/cockpit");
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 

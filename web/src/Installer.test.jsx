@@ -23,12 +23,12 @@ import React from "react";
 
 import { act, screen } from "@testing-library/react";
 import { authRender } from "./test-utils";
-import { createClient } from "./lib/client";
-import { PROBING, PROBED, INSTALLING, INSTALLED } from "./lib/client/status";
+import { createClient } from "./client";
+import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
 
 import Installer from "./Installer";
 
-jest.mock("./lib/client");
+jest.mock("./client");
 
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export

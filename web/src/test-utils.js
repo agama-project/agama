@@ -24,7 +24,7 @@ import { render } from "@testing-library/react";
 
 import { InstallerClientProvider } from "./context/installer";
 import { AuthProvider } from "./context/auth";
-import { createClient } from "./lib/client";
+import { createClient } from "./client";
 
 const InstallerProvider = ({ children }) => {
   const client = createClient();
