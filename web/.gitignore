@@ -3,6 +3,7 @@
 *.tar.xz
 *.rpm
 node_modules/
+coverage/
 dist/
 /*.spec
 /.vagrant
