@@ -17,9 +17,9 @@
 
 
 Name:           d-installer-web
-Version:        0
+Version:        %{VERSION}
 Release:        0
-Summary:        Web-based user interface for D-Installer
+Summary:        Cockpit module for D-Installer
 License:        GPL-2.0-only
 URL:            https://github.com/yast/d-installer
 # source_validator insists that if obscpio has no version then
