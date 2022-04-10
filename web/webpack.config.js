@@ -143,6 +143,7 @@ module.exports = {
                         options: {
                             sourceMap: !production,
                             sassOptions: {
+                                includePaths: ["node_modules"],
                                 outputStyle: production ? 'compressed' : undefined,
                             },
                         },

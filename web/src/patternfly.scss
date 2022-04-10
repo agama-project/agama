@@ -1,9 +1,9 @@
 // Import PatternFly CSS
-@import "@patternfly/react-core/dist/styles/base.css";
-@import "@patternfly/patternfly/patternfly.css";
+@use "@patternfly/react-core/dist/styles/base.css";
+@use "@patternfly/patternfly/patternfly.css";
 
 // See https://github.com/patternfly/patternfly/pull/4297
-@import "@patternfly/react-styles/css/utilities/Sizing/sizing.css";
+@use "@patternfly/react-styles/css/utilities/Sizing/sizing.css";
 
 // PatternFly overrides for using CSS Logical Properties
 .pf-l-split.pf-m-gutter > :not(:last-child) {
