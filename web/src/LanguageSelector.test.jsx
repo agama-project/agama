@@ -67,3 +67,40 @@ describe("when the user changes the language", () => {
     expect(setLanguagesFn).toHaveBeenCalledWith(["de_DE"]);
   });
 });
+
+describe("when the user changes the language but cancels", () => {
+  it("does not change the selected language", async () => {
+    installerRender(<LanguageSelector />);
+    const button = await screen.findByRole("button", { name: "English" });
+    userEvent.click(button);
+
+    const languageSelector = await screen.findByLabelText("Language");
+    userEvent.selectOptions(languageSelector, ["German"]);
+    userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+    await screen.findByRole("button", { name: "English" });
+    expect(setLanguagesFn).not.toHaveBeenCalled();
+  });
+});
+
+describe("when the user changes the language AND THEN cancels", () => {
+  it("reverts to the selected language, not English", async () => {
+    installerRender(<LanguageSelector />);
+    const button = await screen.findByRole("button", { name: "English" });
+    userEvent.click(button);
+
+    const languageSelector = await screen.findByLabelText("Language");
+    userEvent.selectOptions(languageSelector, ["German"]);
+    userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+
+    const button2 = await screen.findByRole("button", { name: "German" });
+    userEvent.click(button2);
+
+    await screen.findByLabelText("Language");
+    userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+    await screen.findByRole("button", { name: "German" });
+    expect(setLanguagesFn).toHaveBeenCalledTimes(1);
+    expect(setLanguagesFn).toHaveBeenCalledWith(["de_DE"]);
+  });
+});
