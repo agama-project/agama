@@ -40,7 +40,7 @@ jest.mock("./InstallationFinished", () => () => "InstallationFinished Mock");
 jest.mock("./Overview", () => () => "Overview Mock");
 
 let callbacks;
-let initialStatusMock = null;
+const initialStatusMock = null;
 let onChangeFn = jest.fn();
 let getStatusFn = jest.fn();
 
@@ -62,7 +62,7 @@ describe("Installer", () => {
   describe("when there are problems connecting with D-Bus service", () => {
     beforeEach(() => {
       getStatusFn = () => {
-        throw "Could'n connect to D-Bus service";
+        throw new Error("Could'n connect to D-Bus service");
       };
     });
 

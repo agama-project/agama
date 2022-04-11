@@ -19,8 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
 import { Alert } from "@patternfly/react-core";

@@ -60,7 +60,7 @@ describe("when username and password are wrong", () => {
     createClient.mockImplementation(() => {
       return {
         auth: {
-          authorize: () => Promise.reject("password does not match"),
+          authorize: () => Promise.reject(new Error("password does not match")),
           isLoggedIn: () => Promise.resolve(false),
           onSignal: jest.fn()
         }

@@ -80,7 +80,7 @@ function Installer() {
       dispatch({ type: "SET_DBUS_ERROR", payload: { error: "Connection lost" } });
     });
   }, []);
-  
+
   if (state.dbusError) return <DBusError />;
   if (state.loading) return <LoadingEnvironment />;
   if (state.probing) return <ProbingProgress />;

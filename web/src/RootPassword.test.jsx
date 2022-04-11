@@ -32,8 +32,8 @@ jest.mock("./client");
 
 let isRootPasswordSetFn;
 let setRootPasswordFn = jest.fn();
-let getRootSSHKeyFn = () => "";
-let removeRootPasswordFn = jest.fn();
+const getRootSSHKeyFn = () => "";
+const removeRootPasswordFn = jest.fn();
 
 beforeEach(() => {
   isRootPasswordSetFn = () => Promise.resolve(false);

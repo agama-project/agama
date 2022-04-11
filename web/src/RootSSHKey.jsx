@@ -28,9 +28,9 @@ import {
   Modal,
   ModalVariant,
   Skeleton,
-  Text
+  Text,
+  FileUpload
 } from "@patternfly/react-core";
-import { FileUpload } from "@patternfly/react-core";
 
 export default function RootSSHKey() {
   const client = useInstallerClient();

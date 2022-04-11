@@ -84,7 +84,7 @@ describe("when the user clicks 'Install'", () => {
   let dialog;
 
   beforeEach(async () => {
-    installerRender(<Overview />)
+    installerRender(<Overview />);
 
     // TODO: we should have some UI element to tell the user we have finished
     // with loading data.

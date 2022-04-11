@@ -43,16 +43,16 @@ function Overview() {
   const client = useInstallerClient();
 
   const categories = [
-    <Category title="Language" icon={LanguagesSelectionIcon}>
+    <Category key="language" title="Language" icon={LanguagesSelectionIcon}>
       <LanguageSelector />
     </Category>,
-    <Category title="Product" icon={ProductsIcon}>
+    <Category key="product" title="Product" icon={ProductsIcon}>
       <ProductSelector />
     </Category>,
-    <Category title="Target" icon={HardDriveIcon}>
+    <Category key="targer" title="Target" icon={HardDriveIcon}>
       <Storage />
     </Category>,
-    <Category title="Users" icon={UsersIcon}>
+    <Category key="users" title="Users" icon={UsersIcon}>
       <Users />
     </Category>
   ];

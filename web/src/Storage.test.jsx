@@ -109,12 +109,6 @@ describe("when the proposal changes", () => {
     installerRender(<Storage />);
     await screen.findByText("Mount /dev/sda1 as root");
 
-    const actions = [
-      {
-        t: "a{sv}",
-        v: { Text: { t: "s", v: "Mount /dev/sdb1 as root" }, Subvol: { t: "b", v: false } }
-      }
-    ];
     const [cb] = callbacks;
     act(() => {
       cb({ All: [{ text: "Mount /dev/sdb1 as root", subvol: false }] });

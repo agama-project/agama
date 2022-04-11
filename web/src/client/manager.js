@@ -29,6 +29,7 @@ export default class ManagerClient {
   constructor(dbusClient) {
     this._client = dbusClient;
   }
+
   /**
    * Run probing process
    *

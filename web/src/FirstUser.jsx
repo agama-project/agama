@@ -127,7 +127,7 @@ export default function Users() {
               aria-label="Username"
               value={formValues.userName}
               label="Username"
-              required={true}
+              required
               onChange={handleInputChange}
             />
           </FormGroup>
