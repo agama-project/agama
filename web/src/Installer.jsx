@@ -58,13 +58,10 @@ function Installer() {
   const client = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, null, init);
 
-  useEffect(async () => {
-    try {
-      const status = await client.manager.getStatus();
-      dispatch({ type: "CHANGE_STATUS", payload: { status } });
-    } catch (error) {
-      dispatch({ type: "SET_DBUS_ERROR", payload: { error } });
-    }
+  useEffect(() => {
+    client.manager.getStatus()
+      .then(status => dispatch({ type: "CHANGE_STATUS", payload: { status } }))
+      .catch(error => dispatch({ type: "SET_DBUS_ERROR", payload: { error } }));
   }, []);
 
   useEffect(() => {

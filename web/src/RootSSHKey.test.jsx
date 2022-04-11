@@ -30,7 +30,7 @@ import RootSSHKey from "./RootSSHKey";
 jest.mock("./client");
 
 let sshKey;
-const getRootSSHKeyFn = () => sshKey;
+const getRootSSHKeyFn = () => Promise.resolve(sshKey);
 const setRootSSHKeyFn = jest.fn();
 const testKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example";
 

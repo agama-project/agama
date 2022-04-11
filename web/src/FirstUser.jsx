@@ -25,10 +25,11 @@ export default function Users() {
   const [formValues, setFormValues] = useState(initialUser);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  useEffect(async () => {
-    const userValues = await client.users.getUser();
-    setUser(userValues);
-    setFormValues({ ...formValues, ...userValues });
+  useEffect(() => {
+    client.users.getUser().then(userValues => {
+      setUser(userValues);
+      setFormValues({ ...formValues, ...userValues });
+    });
   }, []);
 
   if (user === null) return <Skeleton width="50%" fontSize="sm" />;

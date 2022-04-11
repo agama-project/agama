@@ -71,13 +71,17 @@ export default function LanguageSelector() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { current: language, languages, isFormOpen } = state;
 
-  useEffect(async () => {
-    const languages = await client.language.getLanguages();
-    const [current] = await client.language.getSelectedLanguages();
-    dispatch({
-      type: "LOAD",
-      payload: { languages, current, initial: current }
-    });
+  useEffect(() => {
+    const loadLanguages = async () => {
+      const languages = await client.language.getLanguages();
+      const [current] = await client.language.getSelectedLanguages();
+      dispatch({
+        type: "LOAD",
+        payload: { languages, current, initial: current }
+      });
+    };
+
+    loadLanguages().catch(console.error);
   }, []);
 
   const open = () => dispatch({ type: "OPEN" });

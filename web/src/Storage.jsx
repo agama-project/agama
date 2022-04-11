@@ -64,16 +64,20 @@ export default function Storage() {
       dispatch({ type: "CHANGE_TARGET", payload });
     });
 
-  useEffect(async () => {
-    const {
-      availableDevices: disks,
-      candidateDevices: [disk]
-    } = await client.storage.getStorageProposal();
-    const actions = await client.storage.getStorageActions();
-    dispatch({
-      type: "LOAD",
-      payload: { target: disk, targets: disks, actions }
-    });
+  useEffect(() => {
+    const loadStorage = async () => {
+      const {
+        availableDevices: disks,
+        candidateDevices: [disk]
+      } = await client.storage.getStorageProposal();
+      const actions = await client.storage.getStorageActions();
+      dispatch({
+        type: "LOAD",
+        payload: { target: disk, targets: disks, actions }
+      });
+    };
+
+    loadStorage().catch(console.error);
   }, []);
 
   useEffect(() => {

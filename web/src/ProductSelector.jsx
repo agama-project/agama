@@ -71,13 +71,17 @@ export default function ProductSelector() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { current: product, products, isFormOpen } = state;
 
-  useEffect(async () => {
-    const products = await client.software.getProducts();
-    const current = await client.software.getSelectedProduct();
-    dispatch({
-      type: "LOAD",
-      payload: { products, current, initial: current }
-    });
+  useEffect(() => {
+    const loadProducts = async () => {
+      const products = await client.software.getProducts();
+      const current = await client.software.getSelectedProduct();
+      dispatch({
+        type: "LOAD",
+        payload: { products, current, initial: current }
+      });
+    };
+
+    loadProducts().catch(console.error);
   }, []);
 
   const open = () => dispatch({ type: "OPEN" });

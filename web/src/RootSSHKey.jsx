@@ -39,9 +39,10 @@ export default function RootSSHKey() {
   const [nextSSHKey, setNextSSHKey] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  useEffect(async () => {
-    const key = await client.users.getRootSSHKey();
-    setSSHKey(key);
+  useEffect(() => {
+    client.users.getRootSSHKey()
+      .then(setSSHKey)
+      .catch(console.error);
   }, []);
 
   if (sshKey === null) return <Skeleton width="55%" fontSize="sm" />;
