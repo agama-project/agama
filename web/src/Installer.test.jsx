@@ -61,7 +61,7 @@ beforeEach(() => {
 describe("Installer", () => {
   describe("when there are problems connecting with D-Bus service", () => {
     beforeEach(() => {
-      getStatusFn = () => Promise.reject("Couldn't connect to D-Bus service");
+      getStatusFn = () => Promise.reject(new Error("Couldn't connect to D-Bus service"));
     });
 
     it("renders the DBusError component", async () => {
