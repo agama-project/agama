@@ -23,13 +23,13 @@ import React from "react";
 
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { authRender } from "./test-utils";
+import { installerRender } from "./test-utils";
 
 import About from "./About";
 
 describe("About", () => {
   it("allows user to read 'About D-Installer'", async () => {
-    authRender(<About />);
+    installerRender(<About />);
 
     const button = screen.getByRole("button", { name: /About/i });
     userEvent.click(button);

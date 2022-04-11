@@ -28,7 +28,6 @@ import "@patternfly/patternfly/patternfly.css";
 
 import App from "./App";
 import { InstallerClientProvider } from "./context/installer";
-import { AuthProvider } from "./context/auth";
 import { createClient } from "./client";
 
 /*
@@ -53,9 +52,7 @@ const client = createClient();
 ReactDOM.render(
   <StrictMode>
     <InstallerClientProvider client={client}>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <App />
     </InstallerClientProvider>
   </StrictMode>,
   document.getElementById("root")

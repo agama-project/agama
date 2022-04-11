@@ -23,25 +23,25 @@ import React from "react";
 
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { authRender } from "./test-utils";
+import { installerRender } from "./test-utils";
 
 import DBusError from "./DBusError";
 
 describe("DBusError", () => {
   it("includes a generic D-Bus connection problem message", async () => {
-    authRender(<DBusError />);
+    installerRender(<DBusError />);
 
     await screen.findByText(/Could not connect to the D-Bus service/i);
   });
 
   it("includes a button for reloading", async () => {
-    authRender(<DBusError />);
+    installerRender(<DBusError />);
 
     await screen.findByRole("button", { name: /Reload/i });
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
-    authRender(<DBusError />);
+    installerRender(<DBusError />);
 
     const reloadButton = await screen.findByRole("button", { name: /Reload/i });
 

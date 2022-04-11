@@ -20,63 +20,122 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { authRender } from "./test-utils";
-import App from "./App";
+
+import { act, screen } from "@testing-library/react";
+import { installerRender } from "./test-utils";
 import { createClient } from "./client";
+import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
+
+import App from "./App";
 
 jest.mock("./client");
-jest.mock("./Installer", () => {
-  return {
-    __esModule: true,
-    default: () => {
-      return <div>Installer Component</div>;
-    }
-  };
+
+// Mock some components,
+// See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
+
+jest.mock("./DBusError", () => () => "D-BusError Mock");
+jest.mock("./ProbingProgress", () => () => "ProbingProgress Mock");
+jest.mock("./InstallationProgress", () => () => "InstallationProgress Mock");
+jest.mock("./InstallationFinished", () => () => "InstallationFinished Mock");
+jest.mock("./Overview", () => () => "Overview Mock");
+
+let callbacks;
+const initialStatusMock = null;
+let onChangeFn = jest.fn();
+let getStatusFn = jest.fn();
+
+beforeEach(() => {
+  createClient.mockImplementation(() => {
+    return {
+      manager: {
+        getStatus: getStatusFn,
+        onChange: onChangeFn
+      },
+      monitor: {
+        onDisconnect: jest.fn()
+      }
+    };
+  });
 });
 
-describe("when the user is already logged in", () => {
-  beforeEach(() => {
-    createClient.mockImplementation(() => {
-      return {
-        auth: {
-          authorize: (_username, _password) => Promise.resolve(false),
-          isLoggedIn: () => Promise.resolve(true),
-          currentUser: () => Promise.resolve("jane")
-        }
-      };
+describe("App", () => {
+  describe("when there are problems connecting with D-Bus service", () => {
+    beforeEach(() => {
+      getStatusFn = () => Promise.reject(new Error("Couldn't connect to D-Bus service"));
+    });
+
+    it("renders the DBusError component", async () => {
+      installerRender(<App />);
+
+      await screen.findByText("D-BusError Mock");
     });
   });
 
-  it("shows the installer", async () => {
-    authRender(<App />);
-    await screen.findByText("Installer Component");
-  });
-});
-
-describe("when username and password are wrong", () => {
-  beforeEach(() => {
-    createClient.mockImplementation(() => {
-      return {
-        auth: {
-          authorize: () => Promise.reject(new Error("password does not match")),
-          isLoggedIn: () => Promise.resolve(false),
-          onSignal: jest.fn()
-        }
-      };
+  describe("when D-Bus service status changes", () => {
+    beforeEach(() => {
+      callbacks = [];
+      getStatusFn = () => Promise.resolve(initialStatusMock);
+      onChangeFn = cb => callbacks.push(cb);
     });
-  });
 
-  it("shows an error", async () => {
-    authRender(<App />);
+    it("renders the ProbingProgress component when PROBING", async () => {
+      installerRender(<App />);
 
-    await screen.findByText(/Username/i);
+      await screen.findByText(/Loading.*environment/i);
 
-    userEvent.type(screen.getByLabelText(/Username/i), "john");
-    userEvent.type(screen.getByLabelText(/Password/i), "something");
-    userEvent.click(screen.getByRole("button", { name: /Login/ }));
+      // NOTE: there can be more than one susbcriptions to the
+      // manager#onChange. We're insterested in the latest one here.
+      const cb = callbacks[callbacks.length - 1];
+      act(() => {
+        cb({ Status: PROBING });
+      });
 
-    await screen.findByText(/Authentication failed/i);
+      await screen.findByText("ProbingProgress Mock");
+    });
+
+    it("renders the InstallationProgress component when INSTALLING", async () => {
+      installerRender(<App />);
+
+      await screen.findByText(/Loading.*environment/i);
+
+      // NOTE: there can be more than one susbcriptions to the
+      // manager#onChange. We're insterested in the latest one here.
+      const cb = callbacks[callbacks.length - 1];
+      act(() => {
+        cb({ Status: INSTALLING });
+      });
+
+      await screen.findByText("InstallationProgress Mock");
+    });
+
+    it("renders the InstallationFinished component when INSTALLED", async () => {
+      installerRender(<App />);
+
+      await screen.findByText(/Loading.*environment/i);
+
+      // NOTE: there can be more than one susbcriptions to the
+      // manager#onChange. We're insterested in the latest one here.
+      const cb = callbacks[callbacks.length - 1];
+      act(() => {
+        cb({ Status: INSTALLED });
+      });
+
+      await screen.findByText("InstallationFinished Mock");
+    });
+
+    it("renders the Overview component if not PROBING, INSTALLING, or INSTALLED", async () => {
+      installerRender(<App />);
+
+      await screen.findByText(/Loading.*environment/i);
+
+      // NOTE: there can be more than one susbcriptions to the
+      // manager#onChange. We're insterested in the latest one here.
+      const cb = callbacks[callbacks.length - 1];
+      act(() => {
+        cb({ Status: PROBED });
+      });
+
+      await screen.findByText("Overview Mock");
+    });
   });
 });

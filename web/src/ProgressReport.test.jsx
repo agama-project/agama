@@ -22,7 +22,7 @@
 import React from "react";
 
 import { act, screen } from "@testing-library/react";
-import { authRender } from "./test-utils";
+import { installerRender } from "./test-utils";
 import { createClient } from "./client";
 
 import ProgressReport from "./ProgressReport";
@@ -47,13 +47,13 @@ describe("ProbingProgress", () => {
 
   describe("when there is not progress information available", () => {
     it("renders a waiting message", async () => {
-      authRender(<ProgressReport />);
+      installerRender(<ProgressReport />);
 
       await screen.findByText(/Waiting for/i);
     });
 
     it("does not show progress bars", async () => {
-      authRender(<ProgressReport />);
+      installerRender(<ProgressReport />);
 
       const mainProgressBar = await screen.queryByLabelText("Main progress bar");
       expect(mainProgressBar).toBeNull();
@@ -68,7 +68,7 @@ describe("ProbingProgress", () => {
 
     describe("without substeps", () => {
       it("shows main progress bar", async () => {
-        authRender(<ProgressReport />);
+        installerRender(<ProgressReport />);
 
         await screen.findByText(/Waiting/i);
 
@@ -83,7 +83,7 @@ describe("ProbingProgress", () => {
       });
 
       it("does not show secondary progress bar", async () => {
-        authRender(<ProgressReport />);
+        installerRender(<ProgressReport />);
 
         await screen.findByText(/Waiting/i);
 
@@ -101,7 +101,7 @@ describe("ProbingProgress", () => {
 
     describe("with substeps", () => {
       it("shows main progress bar", async () => {
-        authRender(<ProgressReport />);
+        installerRender(<ProgressReport />);
 
         await screen.findByText(/Waiting/i);
 
@@ -116,7 +116,7 @@ describe("ProbingProgress", () => {
       });
 
       it("shows secondary progress bar", async () => {
-        authRender(<ProgressReport />);
+        installerRender(<ProgressReport />);
 
         await screen.findByText(/Waiting/i);
 

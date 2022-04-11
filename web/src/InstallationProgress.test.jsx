@@ -22,7 +22,7 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { authRender } from "./test-utils";
+import { installerRender } from "./test-utils";
 
 import InstallationProgress from "./InstallationProgress";
 
@@ -30,19 +30,19 @@ jest.mock("./ProgressReport", () => () => "ProgressReport Mock");
 
 describe("InstallationProgress", () => {
   it("uses 'Installing' as title", async () => {
-    authRender(<InstallationProgress />);
+    installerRender(<InstallationProgress />);
 
     await screen.findByText("Installing");
   });
 
   it("renders progress report", async () => {
-    authRender(<InstallationProgress />);
+    installerRender(<InstallationProgress />);
 
     await screen.findByText("ProgressReport Mock");
   });
 
   it("does not show actions", async () => {
-    authRender(<InstallationProgress />);
+    installerRender(<InstallationProgress />);
 
     const button = screen.queryByRole("navigation", { name: /Installer Actions/i });
     expect(button).toBeNull();

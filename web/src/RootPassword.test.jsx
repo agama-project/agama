@@ -23,7 +23,7 @@ import React from "react";
 
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { authRender } from "./test-utils";
+import { installerRender } from "./test-utils";
 import { createClient } from "./client";
 
 import RootPassword from "./RootPassword";
@@ -51,14 +51,14 @@ beforeEach(() => {
 
 describe("while waiting for the root password status", () => {
   it.skip("displays a loading component", async () => {
-    authRender(<RootPassword />);
+    installerRender(<RootPassword />);
     await screen.findByText("Loading root password status");
   });
 });
 
 it("allows changing the password ", async () => {
   const password = "nots3cr3t";
-  authRender(<RootPassword />);
+  installerRender(<RootPassword />);
   const rootPassword = await screen.findByText(/Root password/i);
   const button = within(rootPassword).getByRole("button", { name: "is not set" });
   userEvent.click(button);
@@ -81,7 +81,7 @@ it("allows changing the password ", async () => {
 
 describe("when the password is not set", () => {
   it("displays a disabled remove button", async () => {
-    authRender(<RootPassword />);
+    installerRender(<RootPassword />);
     const rootPassword = await screen.findByText(/Root password/i);
     const button = within(rootPassword).getByRole("button", { name: "is not set" });
     userEvent.click(button);
@@ -97,7 +97,7 @@ describe("when the password is set", () => {
   });
 
   it("allows removing the password", async () => {
-    authRender(<RootPassword />);
+    installerRender(<RootPassword />);
     const rootPassword = await screen.findByText(/Root password/i);
     const button = within(rootPassword).getByRole("button", { name: "is set" });
     userEvent.click(button);
@@ -113,7 +113,7 @@ describe("when the password is set", () => {
 });
 
 it("does not change the password if the user cancels", async () => {
-  authRender(<RootPassword />);
+  installerRender(<RootPassword />);
   const rootPassword = await screen.findByText(/Root password/i);
   const button = within(rootPassword).getByRole("button", { name: "is not set" });
   userEvent.click(button);
@@ -136,7 +136,7 @@ describe("when an error happens while changing the password", () => {
   });
 
   it.skip("displays an error", async () => {
-    authRender(<RootPassword />);
+    installerRender(<RootPassword />);
     const rootPassword = await screen.findByText(/Root password/i);
     const button = within(rootPassword).getByRole("button", { name: "is not set" });
     userEvent.click(button);

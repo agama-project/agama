@@ -19,7 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-import AuthClient from "./auth";
 import LanguageClient from "./language";
 import ManagerClient from "./manager";
 import Monitor from "./monitor";
@@ -39,7 +38,6 @@ const createClient = () => {
   });
 
   return {
-    auth: new AuthClient(),
     language: new LanguageClient(client),
     manager: new ManagerClient(client),
     monitor: new Monitor(SERVICE_NAME),
