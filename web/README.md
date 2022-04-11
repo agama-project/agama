@@ -24,4 +24,6 @@ everytime you save a change:
     npm run watch
 ```
 
-However, there is no hot or live reloading feature, so you need to reload the code in your browser.
+However, there is no live or hot reloading feature, so you need to reload the code in your browser.
+You can visit the module through the following URL:
+http://localhost:9090/cockpit/@localhost/d-installer/index.html.
