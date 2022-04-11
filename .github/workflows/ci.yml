@@ -28,7 +28,7 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Retrieve shared components and libraries
+    - name: Build the application
       run: make
 
     # - name: Build the application
@@ -45,34 +45,6 @@ jobs:
         path-to-lcov: ./web/coverage/lcov.info
         flag-name: frontend
         parallel: true
-
-  frontend-linter:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./web
-
-    strategy:
-      matrix:
-        node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: 'web/package-lock.json'
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Run ESLint
-      run: npm run lint
 
   backend_tests:
     runs-on: ubuntu-latest
