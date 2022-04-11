@@ -28,57 +28,6 @@ $code: 'Roboto Mono', monospace;
 $font-size-base: 14px;
 $line-height: 1.5rem;
 
-:root {
-  // Overrides some PatternFly CSS variables for using values
-  // provided or suggested by EOS Design System.
-  //
-  // See more at
-  //   - https://eosdesignsystem.herokuapp.com
-  //   - https://gitlab.com/SUSE-UIUX/eos-ds-npm/
-  //   - https://github.com/mcoker/patternfly/blob/main/src/patternfly/base/_variables.scss
-
-  // Font families
-  --pf-global--FontFamily--sans-serif: #{$base};
-  --pf-global--FontFamily--heading--sans-serif: #{$headlines};
-  --pf-global--FontFamily--monospace: #{$code};
-  --pf-global--FontFamily--redhat-updated--sans-serif: #{base};
-  --pf-global--FontFamily--redhat-updated--heading--sans-serif: #{$headlines};
-  --pf-global--FontFamily--redhat--monospace: #{$code};
-  --pf-global--FontFamily--redhatVF--sans-serif: #{base};
-  --pf-global--FontFamily--redhatVF--heading--sans-serif: #{$headlines};
-  --pf-global--FontFamily--redhatVF--monospace: #{$code};
-  --pf-global--FontFamily--overpass--sans-serif: #{base};
-  --pf-global--FontFamily--overpass--monospace: #{$code};
-
-  // Font size
-  // Based on sizes of EOS headings.
-  // See "eos-ds/dist/scss/eos-base/variables/titles.scss";
-  --pf-global--FontSize--4xl: 2em;
-  --pf-global--FontSize--3xl: 1.75em;
-  --pf-global--FontSize--2xl: 1.5em;
-  --pf-global--FontSize--xl: 1.3em;
-  --pf-global--FontSize--lg: 1.15em;
-  --pf-global--FontSize--md: #{$font-size-base};
-  // TODO: find equivalences for sm and xs
-  // --pf-global--FontSize--sm: #{$pf-global--FontSize--sm};
-  // --pf-global--FontSize--xs: #{$pf-global--FontSize--xs};
-
-  // Font weight
-  --pf-global--FontWeight--light: 300;
-  --pf-global--FontWeight--normal: 400;
-  --pf-global--FontWeight--semi-bold: 400;
-  --pf-global--FontWeight--overpass--semi-bold: 400;
-  --pf-global--FontWeight--bold: 700;
-  --pf-global--FontWeight--overpass--bold: 700;
-
-  // Colors
-  --pf-global--primary-color--100: #{branding.$eos-bc-green-500};
-  --pf-global--primary-color--200: #{branding.$eos-bc-green-900};
-  --pf-global--link--Color: var(--pf-global--primary-color--100);
-  --pf-global--link--Color--hover: var(--pf-global--primary-color--200);
-  --pf-global--BackgroundColor--dark-100: #{branding.$eos-bc-pine-500};
-}
-
 // Style focus as proposed by EOS
 // https://eosdesignsystem.herokuapp.com/focus#scss-code
 *:focus {
