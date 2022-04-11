@@ -38,19 +38,19 @@ const reducer = (state, action) => {
       return { ...state, ...action.payload };
     }
     case "ACCEPT": {
-      return { ...state, isFormOpen: false };
+      return { ...state, isFormOpen: false, current: state.formCurrent };
     }
 
     case "CANCEL": {
-      return { ...state, isFormOpen: false, current: state.initial };
+      return { ...state, isFormOpen: false };
     }
 
     case "CHANGE": {
-      return { ...state, current: action.payload };
+      return { ...state, formCurrent: action.payload };
     }
 
     case "OPEN": {
-      return { ...state, isFormOpen: true };
+      return { ...state, isFormOpen: true, formCurrent: state.current };
     }
 
     default: {
@@ -61,8 +61,8 @@ const reducer = (state, action) => {
 
 const initialState = {
   languages: [],
-  initial: null,
   current: null,
+  formCurrent: null,
   isFormOpen: false
 };
 
@@ -77,7 +77,7 @@ export default function LanguageSelector() {
       const [current] = await client.language.getSelectedLanguages();
       dispatch({
         type: "LOAD",
-        payload: { languages, current, initial: current }
+        payload: { languages, current }
       });
     };
 
@@ -90,7 +90,7 @@ export default function LanguageSelector() {
 
   const accept = async () => {
     // TODO: handle errors
-    await client.language.setLanguages([language]);
+    await client.language.setLanguages([state.formCurrent]);
     dispatch({ type: "ACCEPT" });
   };
 
@@ -99,7 +99,7 @@ export default function LanguageSelector() {
     return selectedLanguage ? selectedLanguage.name : "Select language";
   };
 
-  const buildSelector = () => {
+  const buildSelector = formCurrent => {
     const selectorOptions = languages.map(lang => (
       <FormSelectOption key={lang.id} value={lang.id} label={lang.name} />
     ));
@@ -108,7 +108,7 @@ export default function LanguageSelector() {
       <FormSelect
         id="language"
         aria-label="language"
-        value={language}
+        value={formCurrent}
         onChange={v => dispatch({ type: "CHANGE", payload: v })}
       >
         {selectorOptions}
@@ -138,7 +138,7 @@ export default function LanguageSelector() {
       >
         <Form>
           <FormGroup fieldId="language" label="Language">
-            {buildSelector()}
+            {buildSelector(state.formCurrent)}
           </FormGroup>
         </Form>
       </Modal>
