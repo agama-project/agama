@@ -23,7 +23,7 @@ import React from "react";
 
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { authRender } from "./test-utils";
+import { installerRender } from "./test-utils";
 import { createClient } from "./client";
 
 import InstallationFinished from "./InstallationFinished";
@@ -46,25 +46,25 @@ describe("InstallationFinished", () => {
   });
 
   it("shows the finished installation screen", async () => {
-    authRender(<InstallationFinished />);
+    installerRender(<InstallationFinished />);
 
     await screen.findByText("Congratulations!");
   });
 
   it("shows a 'Restart Installation' button", async () => {
-    authRender(<InstallationFinished />);
+    installerRender(<InstallationFinished />);
 
     await screen.findByRole("button", { name: /Restart Installation/i });
   });
 
   it("shows a 'Reboot' button", async () => {
-    authRender(<InstallationFinished />);
+    installerRender(<InstallationFinished />);
 
     await screen.findByRole("button", { name: /Reboot/i });
   });
 
   it("starts the probing process if user clicks on 'Restart Installation' button", async () => {
-    authRender(<InstallationFinished />);
+    installerRender(<InstallationFinished />);
 
     const button = await screen.findByRole("button", { name: /Restart Installation/i });
     userEvent.click(button);
@@ -72,7 +72,7 @@ describe("InstallationFinished", () => {
   });
 
   it("reboots the system if the user clicks on 'Reboot' button", async () => {
-    authRender(<InstallationFinished />);
+    installerRender(<InstallationFinished />);
     const button = await screen.findByRole("button", { name: /Reboot/i });
     userEvent.click(button);
     expect(rebootSystemFn).toHaveBeenCalled();

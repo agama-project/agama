@@ -22,13 +22,13 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { authRender } from "./test-utils";
+import { installerRender } from "./test-utils";
 
 import LoadingEnvironment from "./LoadingEnvironment";
 
 describe("LoadingEnvironment", () => {
   it("shows a loading message", async () => {
-    authRender(<LoadingEnvironment />);
+    installerRender(<LoadingEnvironment />);
 
     await screen.findByText(/Loading installation environment/i);
   });

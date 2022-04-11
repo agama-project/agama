@@ -23,7 +23,7 @@ import React from "react";
 
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { authRender } from "./test-utils";
+import { installerRender } from "./test-utils";
 import { createClient } from "./client";
 import RootSSHKey from "./RootSSHKey";
 
@@ -47,7 +47,7 @@ beforeEach(() => {
 });
 
 it("allows defining a new root SSH public key", async () => {
-  authRender(<RootSSHKey />);
+  installerRender(<RootSSHKey />);
   const rootSSHKey = await screen.findByText(/Root SSH public key/i);
   const button = within(rootSSHKey).getByRole("button", { name: "is not set" });
   userEvent.click(button);
@@ -71,7 +71,7 @@ it("allows defining a new root SSH public key", async () => {
 it("does not change anything if the user cancels", async () => {
   let openButton;
 
-  authRender(<RootSSHKey />);
+  installerRender(<RootSSHKey />);
 
   const rootSSHKey = await screen.findByText(/Root SSH public key/i);
   openButton = within(rootSSHKey).getByRole("button", { name: "is not set" });
@@ -101,7 +101,7 @@ describe("when the SSH public key is set", () => {
   });
 
   it("allows removing the SSH public key", async () => {
-    authRender(<RootSSHKey />);
+    installerRender(<RootSSHKey />);
     const rootSSHKey = await screen.findByText(/Root SSH public key/i);
     const button = within(rootSSHKey).getByRole("button", { name: "is set" });
     userEvent.click(button);

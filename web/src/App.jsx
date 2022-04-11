@@ -19,26 +19,72 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useRef } from "react";
-import { useAuthContext } from "./context/auth";
+import React, { useEffect, useReducer } from "react";
+import { useInstallerClient } from "./context/installer";
 
+import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
+
+import DBusError from "./DBusError";
+import Overview from "./Overview";
+import ProbingProgress from "./ProbingProgress";
+import InstallationProgress from "./InstallationProgress";
+import InstallationFinished from "./InstallationFinished";
 import LoadingEnvironment from "./LoadingEnvironment";
-import LoginForm from "./LoginForm";
-import Installer from "./Installer";
 
-import "./app.scss";
+const init = status => ({
+  loading: status === null,
+  probing: status === PROBING,
+  probed: status === PROBED,
+  installing: status === INSTALLING,
+  finished: status === INSTALLED,
+  dbusError: null
+});
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "CHANGE_STATUS": {
+      return init(action.payload.status);
+    }
+    case "SET_DBUS_ERROR": {
+      return { ...state, dbusError: action.payload.error };
+    }
+    default: {
+      throw new Error(`Unsupported action type: ${action.type}`);
+    }
+  }
+};
 
 function App() {
-  const {
-    state: { loggedIn },
-    autoLogin
-  } = useAuthContext();
+  const client = useInstallerClient();
+  const [state, dispatch] = useReducer(reducer, null, init);
 
-  const autoLoginFn = useRef(autoLogin);
-  useEffect(() => autoLoginFn.current(), [autoLoginFn]);
+  useEffect(() => {
+    client.manager.getStatus()
+      .then(status => dispatch({ type: "CHANGE_STATUS", payload: { status } }))
+      .catch(error => dispatch({ type: "SET_DBUS_ERROR", payload: { error } }));
+  }, [client.manager]);
 
-  if (loggedIn === null) return <LoadingEnvironment />;
-  return loggedIn ? <Installer /> : <LoginForm />;
+  useEffect(() => {
+    return client.manager.onChange(changes => {
+      if ("Status" in changes) {
+        dispatch({ type: "CHANGE_STATUS", payload: { status: changes.Status } });
+      }
+    });
+  }, [client.manager]);
+
+  useEffect(() => {
+    return client.monitor.onDisconnect(() => {
+      dispatch({ type: "SET_DBUS_ERROR", payload: { error: "Connection lost" } });
+    });
+  }, [client.monitor]);
+
+  if (state.dbusError) return <DBusError />;
+  if (state.loading) return <LoadingEnvironment />;
+  if (state.probing) return <ProbingProgress />;
+  if (state.installing) return <InstallationProgress />;
+  if (state.finished) return <InstallationFinished />;
+
+  return <Overview />;
 }
 
 export default App;
