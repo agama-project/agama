@@ -18,15 +18,8 @@
 // @import "eos-ds/dist/scss/eos-base/index.scss";
 @use "eos-ds/dist/scss/eos-base/variables/branding.scss";
 
-// Note: for this particular case, we are not using
-// @use "eos-ds/dist/scss/eos-base/variables/typography.scss"
-// because it imports fonts from googleapis, external source.
-// Instead, we use @fontsource to import them from local sources in App.jsx
-$base: Lato, arial, helvetica, sans-serif;
-$headlines: Poppins, san-serif;
-$code: 'Roboto Mono', monospace;
-$font-size-base: 14px;
-$line-height: 1.5rem;
+// D-Installer fonts
+@use "assets/fonts.scss";
 
 // Style focus as proposed by EOS
 // https://eosdesignsystem.herokuapp.com/focus#scss-code
@@ -63,7 +56,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: $headlines;
+  font-family: fonts.$headlines;
   font-weight: 500;
 }
 
@@ -78,7 +71,7 @@ h4, h5, h6 {
 }
 
 p {
-  margin-block-start: $font-size-base;
+  margin-block-start: fonts.$size-base;
 }
 
 #root {

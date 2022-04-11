@@ -2,17 +2,8 @@
 @use "eos-ds/dist/scss/eos-base/variables/branding.scss";
 // See https://github.com/patternfly/patternfly/pull/4297
 @use "@patternfly/react-styles/css/utilities/Sizing/sizing.css";
-
-// Note: for this particular case, we are not using
-// @use "eos-ds/dist/scss/eos-base/variables/typography.scss"
-// because it imports fonts from googleapis, external source.
-// Instead, we use @fontsource to import them from local sources in App.jsx
-
-$base: Lato, arial, helvetica, sans-serif;
-$headlines: Poppins, san-serif;
-$code: 'Roboto Mono', monospace;
-$font-size-base: 14px;
-$line-height: 1.5rem;
+// D-Installer fonts
+@use "assets/fonts.scss";
 
 :root {
   // Overrides some PatternFly CSS variables for using values
@@ -24,18 +15,17 @@ $line-height: 1.5rem;
   //   - https://github.com/mcoker/patternfly/blob/main/src/patternfly/base/_variables.scss
 
   // Font families
-  // Commented until make @fontsource work  with the current webpack configuration
-  // --pf-global--FontFamily--sans-serif: #{$base};
-  // --pf-global--FontFamily--heading--sans-serif: #{$headlines};
-  // --pf-global--FontFamily--monospace: #{$code};
-  // --pf-global--FontFamily--redhat-updated--sans-serif: #{base};
-  // --pf-global--FontFamily--redhat-updated--heading--sans-serif: #{$headlines};
-  // --pf-global--FontFamily--redhat--monospace: #{$code};
-  // --pf-global--FontFamily--redhatVF--sans-serif: #{base};
-  // --pf-global--FontFamily--redhatVF--heading--sans-serif: #{$headlines};
-  // --pf-global--FontFamily--redhatVF--monospace: #{$code};
-  // --pf-global--FontFamily--overpass--sans-serif: #{base};
-  // --pf-global--FontFamily--overpass--monospace: #{$code};
+  --pf-global--FontFamily--sans-serif: #{fonts.$base};
+  --pf-global--FontFamily--heading--sans-serif: #{fonts.$headlines};
+  --pf-global--FontFamily--monospace: #{fonts.$code};
+  --pf-global--FontFamily--redhat-updated--sans-serif: #{fonts.$base};
+  --pf-global--FontFamily--redhat-updated--heading--sans-serif: #{fonts.$headlines};
+  --pf-global--FontFamily--redhat--monospace: #{fonts.$code};
+  --pf-global--FontFamily--redhatVF--sans-serif: #{fonts.$base};
+  --pf-global--FontFamily--redhatVF--heading--sans-serif: #{fonts.$headlines};
+  --pf-global--FontFamily--redhatVF--monospace: #{fonts.$code};
+  --pf-global--FontFamily--overpass--sans-serif: #{fonts.$base};
+  --pf-global--FontFamily--overpass--monospace: #{fonts.$code};
 
   // Font size
   // Based on sizes of EOS headings.
@@ -45,7 +35,7 @@ $line-height: 1.5rem;
   --pf-global--FontSize--2xl: 1.5em;
   --pf-global--FontSize--xl: 1.3em;
   --pf-global--FontSize--lg: 1.15em;
-  --pf-global--FontSize--md: #{$font-size-base};
+  --pf-global--FontSize--md: #{fonts.$size-base};
   // TODO: find equivalences for sm and xs
   // --pf-global--FontSize--sm: #{$pf-global--FontSize--sm};
   // --pf-global--FontSize--xs: #{$pf-global--FontSize--xs};
