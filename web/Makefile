@@ -9,7 +9,7 @@ export TEST_OS
 TARFILE=$(RPM_NAME)-$(VERSION).tar.xz
 NODE_CACHE=$(RPM_NAME)-node-$(VERSION).tar.xz
 SPEC=$(RPM_NAME).spec
-APPSTREAMFILE=org.cockpit-project.$(PACKAGE_NAME).metainfo.xml
+APPSTREAMFILE=org.opensuse.$(PACKAGE_NAME).metainfo.xml
 VM_IMAGE=$(CURDIR)/test/images/$(TEST_OS)
 # stamp file to check if/when npm install ran
 NODE_MODULES_TEST=package-lock.json
