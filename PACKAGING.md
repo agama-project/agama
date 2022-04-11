@@ -23,10 +23,10 @@ in the repository](./service/package/gem2rpm.yml). To regenerate the spec, just 
 
     gem2rpm --config gem2rpm.yml d-installer-0.1.gem > rubygem-d-installer.spec
 
-## Web interface
+## Cockpit module
 
 The current package is
-[YaST:Head:D-Installer/d-installer-web](https://build.opensuse.org/package/show/YaST:Head:D-Installer/rubygem-d-installer).
+[YaST:Head:D-Installer/cockpit-d-installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/cockpit-d-installer).
 You can figure out most details by checking the
 [_service](_./web/package/_service) file. It might happen that you get
 out of RAM when building the package, so in this case, it is better to
