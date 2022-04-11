@@ -22,7 +22,7 @@
 import React, { useEffect, useReducer } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { PROBING, PROBED, INSTALLING, INSTALLED } from "./lib/client/status";
+import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
 
 import DBusError from "./DBusError";
 import Overview from "./Overview";
@@ -58,14 +58,11 @@ function Installer() {
   const client = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, null, init);
 
-  useEffect(async () => {
-    try {
-      const status = await client.manager.getStatus();
-      dispatch({ type: "CHANGE_STATUS", payload: { status } });
-    } catch (error) {
-      dispatch({ type: "SET_DBUS_ERROR", payload: { error } });
-    }
-  }, []);
+  useEffect(() => {
+    client.manager.getStatus()
+      .then(status => dispatch({ type: "CHANGE_STATUS", payload: { status } }))
+      .catch(error => dispatch({ type: "SET_DBUS_ERROR", payload: { error } }));
+  }, [client.manager]);
 
   useEffect(() => {
     return client.manager.onChange(changes => {
@@ -73,14 +70,14 @@ function Installer() {
         dispatch({ type: "CHANGE_STATUS", payload: { status: changes.Status } });
       }
     });
-  }, []);
+  }, [client.manager]);
 
   useEffect(() => {
     return client.monitor.onDisconnect(() => {
       dispatch({ type: "SET_DBUS_ERROR", payload: { error: "Connection lost" } });
     });
-  }, []);
-  
+  }, [client.monitor]);
+
   if (state.dbusError) return <DBusError />;
   if (state.loading) return <LoadingEnvironment />;
   if (state.probing) return <ProbingProgress />;

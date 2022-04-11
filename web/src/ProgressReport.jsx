@@ -46,7 +46,7 @@ const ProgressReport = () => {
         setProgress({ title, steps, step, substeps, substep });
       }
     });
-  }, []);
+  }, [client.manager]);
 
   if (!progress.steps) return <Text>Waiting for progress status...</Text>;
 

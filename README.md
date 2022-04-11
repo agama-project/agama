@@ -91,29 +91,12 @@ If you want to get the properties, just type:
 
 ### Starting the web-based user interface
 
-The current UI is a small web application built with [React](https://reactjs.org/). On production it
-is meant to be served by `cockpit-ws` from a directory in `XDG_DATA_DIRS` (e.g.,
-`/usr/share/cockpit/static/installer`). Building the code might time some time, so there is a
-*development mode* available that reloads the code every time it changes.
-
-### Development mode
-
-It allows to set a few installation parameters and start the installation (not implemented yet).
+The web-based UI is a Cockpit module. To build the application, just type:
 
     cd web
-    npm install
-    npm run dev
+    make devel-install
 
-Point your browser to http://localhost:3000 and happy hacking!
-
-### Production-like mode
-
-    cd web
-    npm run build
-    sudo mkdir /usr/share/cockpit/static/installer
-    sudo mount -o bind dist /usr/share/cockpit/static/installer
-
-Point your browser to http://localhost:9090/cockpit/static/installer/index.html and enjoy!
+Point your browser to http://localhost:9090/cockpit/@localhost/d-installer.index.html and happy hacking!
 
 ## References
 

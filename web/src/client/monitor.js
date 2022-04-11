@@ -20,7 +20,7 @@
  */
 
 import { applyMixin, withDBus } from "./mixins";
-import cockpit from "../cockpit";
+import cockpit from "../lib/cockpit";
 
 const DBUS_SERVICE = "org.freedesktop.DBus";
 const MATCHER = { interface: DBUS_SERVICE, member: "NameOwnerChanged" };

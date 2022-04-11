@@ -23,11 +23,11 @@ import React from "react";
 
 import { act, screen } from "@testing-library/react";
 import { authRender } from "./test-utils";
-import { createClient } from "./lib/client";
+import { createClient } from "./client";
 
 import ProgressReport from "./ProgressReport";
 
-jest.mock("./lib/client");
+jest.mock("./client");
 
 let callbacks;
 let onChangeFn = jest.fn();

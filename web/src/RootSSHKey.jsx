@@ -28,9 +28,9 @@ import {
   Modal,
   ModalVariant,
   Skeleton,
-  Text
+  Text,
+  FileUpload
 } from "@patternfly/react-core";
-import { FileUpload } from "@patternfly/react-core";
 
 export default function RootSSHKey() {
   const client = useInstallerClient();
@@ -39,10 +39,11 @@ export default function RootSSHKey() {
   const [nextSSHKey, setNextSSHKey] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  useEffect(async () => {
-    const key = await client.users.getRootSSHKey();
-    setSSHKey(key);
-  }, []);
+  useEffect(() => {
+    client.users.getRootSSHKey()
+      .then(setSSHKey)
+      .catch(console.error);
+  }, [client.users]);
 
   if (sshKey === null) return <Skeleton width="55%" fontSize="sm" />;
 

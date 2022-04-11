@@ -24,9 +24,9 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import ProductSelector from "./ProductSelector";
-import { createClient } from "./lib/client";
+import { createClient } from "./client";
 
-jest.mock("./lib/client");
+jest.mock("./client");
 
 const products = [
   { id: "openSUSE", name: "openSUSE Tumbleweed" },

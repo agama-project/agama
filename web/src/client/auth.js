@@ -21,7 +21,7 @@
 
 import { applyMixin, withDBus } from "./mixins";
 
-import cockpit from "../cockpit";
+import cockpit from "../lib/cockpit";
 
 export default class AuthClient {
   /**
@@ -39,7 +39,7 @@ export default class AuthClient {
       return fetch("/cockpit/login", {
         headers: { Authorization: `Basic ${auth}`, "X-Superuser": "any" }
       }).then(resp => {
-        if (resp.status == 200) {
+        if (resp.status === 200) {
           resolve(true);
         } else {
           reject(resp.statusText);

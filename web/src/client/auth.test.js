@@ -20,9 +20,9 @@
  */
 
 import AuthClient from "./auth";
-import cockpit from "../cockpit";
+import cockpit from "../lib/cockpit";
 
-jest.mock("../cockpit");
+jest.mock("../lib/cockpit");
 
 const dbusClient = {};
 

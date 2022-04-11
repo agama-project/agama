@@ -28,7 +28,7 @@ import StorageClient from "./storage";
 import UsersClient from "./users";
 import status from "./status";
 
-import cockpit from "../cockpit";
+import cockpit from "../lib/cockpit";
 
 const SERVICE_NAME = "org.opensuse.DInstaller";
 

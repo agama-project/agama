@@ -13,8 +13,8 @@ sudo cp service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstall
 cd service; bundle config set --local path 'vendor/bundle'; bundle install; cd -
 
 # set up the web UI
-cd web; npm install; cd -
+cd web; make devel-install; cd -
 
 # Start the installer
 echo -e "Start the d-installer service:\n  cd service; sudo bundle exec bin/d-installer\n"
-echo -e "Start the web UI:\n  cd web; npm run dev"
+echo -e "Visit http://localhost:9090/cockpit/@localhost/d-installer/index.html"

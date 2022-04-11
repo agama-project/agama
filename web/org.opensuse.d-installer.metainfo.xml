@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="addon">
+  <id>org.opensuse.d-installer</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <name>D-Installer</name>
+  <summary>D-Installer cockpit module</summary>
+  <description>
+    <p>
+      Cockpit module for D-Installer, a YaST-based installation tool.
+    </p>
+  </description>
+  <extends>org.cockpit_project.cockpit</extends>
+  <launchable type="cockpit-manifest">d-installer</launchable>
+  <url type="homepage">https://github.com/yast/d-installer</url>
+  <url type="bugtracker">https://github.com/yast/d-installer</url>
+  <update_contact>yast-devel_AT_lists.opensuse.org</update_contact>
+</component>

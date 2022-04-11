@@ -20,14 +20,14 @@
  */
 
 import ManagerClient from "./manager";
-import cockpit from "../cockpit";
+import cockpit from "../lib/cockpit";
 
-jest.mock("../cockpit");
+jest.mock("../lib/cockpit");
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 
 const dbusClient = {};
-let managerProxy = {
+const managerProxy = {
   wait: jest.fn(),
   Commit: jest.fn(),
   Probe: jest.fn(),
@@ -36,7 +36,7 @@ let managerProxy = {
 
 beforeEach(() => {
   dbusClient.proxy = jest.fn().mockImplementation(iface => {
-    if (iface == MANAGER_IFACE) return managerProxy;
+    if (iface === MANAGER_IFACE) return managerProxy;
   });
 });
 

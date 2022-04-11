@@ -19,19 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useAuthContext } from "./context/auth";
 
 import LoadingEnvironment from "./LoadingEnvironment";
 import LoginForm from "./LoginForm";
 import Installer from "./Installer";
 
-import "@fontsource/lato/400.css";
-import "@fontsource/lato/400-italic.css";
-import "@fontsource/lato/700.css";
-import "@fontsource/poppins/300.css";
-import "@fontsource/poppins/500.css";
-import "@fontsource/roboto-mono/400.css";
 import "./app.scss";
 
 function App() {
@@ -40,7 +34,8 @@ function App() {
     autoLogin
   } = useAuthContext();
 
-  useEffect(autoLogin, []);
+  const autoLoginFn = useRef(autoLogin);
+  useEffect(() => autoLoginFn.current(), [autoLoginFn]);
 
   if (loggedIn === null) return <LoadingEnvironment />;
   return loggedIn ? <Installer /> : <LoginForm />;

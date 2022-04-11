@@ -24,9 +24,9 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import LanguageSelector from "./LanguageSelector";
-import { createClient } from "./lib/client";
+import { createClient } from "./client";
 
-jest.mock("./lib/client");
+jest.mock("./client");
 
 const languages = [
   { id: "en_US", name: "English" },

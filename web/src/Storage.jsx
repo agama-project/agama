@@ -19,8 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 
 import { Alert } from "@patternfly/react-core";
@@ -65,24 +64,28 @@ export default function Storage() {
       dispatch({ type: "CHANGE_TARGET", payload });
     });
 
-  useEffect(async () => {
-    const {
-      availableDevices: disks,
-      candidateDevices: [disk]
-    } = await client.storage.getStorageProposal();
-    const actions = await client.storage.getStorageActions();
-    dispatch({
-      type: "LOAD",
-      payload: { target: disk, targets: disks, actions }
-    });
-  }, []);
+  useEffect(() => {
+    const loadStorage = async () => {
+      const {
+        availableDevices: disks,
+        candidateDevices: [disk]
+      } = await client.storage.getStorageProposal();
+      const actions = await client.storage.getStorageActions();
+      dispatch({
+        type: "LOAD",
+        payload: { target: disk, targets: disks, actions }
+      });
+    };
+
+    loadStorage().catch(console.error);
+  }, [client.storage]);
 
   useEffect(() => {
     return client.storage.onActionsChange(changes => {
       const { All: newActions } = changes;
       dispatch({ type: "UPDATE_ACTIONS", payload: newActions });
     });
-  }, []);
+  }, [client.storage]);
 
   const errorMessage = `Cannot make a proposal for ${target}`;
 

@@ -21,13 +21,32 @@
 
 import React, { StrictMode } from "react";
 import ReactDOM from "react-dom";
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 
-import "./patternfly.scss";
+import "@patternfly/patternfly/patternfly.css";
 
 import App from "./App";
 import { InstallerClientProvider } from "./context/installer";
 import { AuthProvider } from "./context/auth";
-import { createClient } from "./lib/client";
+import { createClient } from "./client";
+
+/*
+ * PF4 overrides need to come after the JSX components imports because
+ * these are importing CSS stylesheets that we are overriding
+ * Having the overrides here will ensure that when mini-css-extract-plugin will extract the CSS
+ * out of the dist/index.js and since it will maintain the order of the imported CSS,
+ * the overrides will be correctly in the end of our stylesheet.
+ */
+
+// import "@fontsource/lato/400.css";
+// import "@fontsource/lato/400-italic.css";
+// import "@fontsource/lato/700.css";
+// import "@fontsource/poppins/300.css";
+// import "@fontsource/poppins/500.css";
+// import "@fontsource/roboto-mono/400.css";
+
+import "./patternfly.scss";
 
 const client = createClient();
 

@@ -24,14 +24,14 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { authRender } from "./test-utils";
-import { createClient } from "./lib/client";
+import { createClient } from "./client";
 
 import InstallationFinished from "./InstallationFinished";
 
-jest.mock("./lib/client");
+jest.mock("./client");
 
-let startProbingFn = jest.fn();
-let rebootSystemFn = jest.fn();
+const startProbingFn = jest.fn();
+const rebootSystemFn = jest.fn();
 
 describe("InstallationFinished", () => {
   beforeEach(() => {
@@ -62,7 +62,6 @@ describe("InstallationFinished", () => {
 
     await screen.findByRole("button", { name: /Reboot/i });
   });
-
 
   it("starts the probing process if user clicks on 'Restart Installation' button", async () => {
     authRender(<InstallationFinished />);

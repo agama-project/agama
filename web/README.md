@@ -1,21 +1,29 @@
 # D-Installer Web-Based UI
 
-This application offers a web-based UI which connects to [yastd](file:../yastd) through D-bus, using
-[Cockpit's infrastructure](https://cockpit-project.org/guide/latest/api-base1.html), and drives the
-installation process. It is built with the popular [React JavaScript library](https://reactjs.org/)
-and it uses [Vite](https://vitejs.dev) as build tool, although it was bootstrapped with [Create
-React App](https://github.com/facebook/create-react-app).
+This Cockpit modules offers a UI to the [D-Installer service](file:../service). The code is based on
+[Cockpit's Starter Kit
+(b2379f7)](https://github.com/cockpit-project/starter-kit/tree/b2379f78e203aab0028d8548b39f5f0bd2b27d2a).
 
-## Available Tasks
+## Development
 
-These are the available tasks (they are defined under the `scripts` key in the
-[package.json file](./package.json).
+Cockpit searches for modules in the `$HOME/.local/share/cockpit` directory of the logged in user,
+which is really handy when working on a module. To make the module available to Cockpit, you can
+link your build folder (`dist`) or just rely on the `devel-install` task:
 
-* `npm run dev`: runs the application in development mode on `http://localhost:3000`. The page will
-  reload if change the source code.
-* `npm test`: launches the test runner in interactive watch mode. See [running
-  tests](https://create-react-app.dev/docs/running-tests) for more information.
-* `npm run build`: builds the application for production in the `build` folder.
-* `npm run lint`: runs [ESLint](https://eslint.org/) on the source code.
-* `npm run format`: formats the code using [Prettier](https://prettier.io/) to
-  stick to [our rules](./.prettierrc).
+```
+    make devel-install
+```
+
+Bear in mind that if something goes wrong while building the application (e.g., the linter fails),
+the link will not be created.
+
+While working on the code, you might want to run the following command to refresh the build
+everytime you save a change:
+
+```
+    npm run watch
+```
+
+However, there is no live or hot reloading feature, so you need to reload the code in your browser.
+You can visit the module through the following URL:
+http://localhost:9090/cockpit/@localhost/d-installer/index.html.

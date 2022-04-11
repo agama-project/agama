@@ -23,12 +23,12 @@ import React from "react";
 
 import { act, screen } from "@testing-library/react";
 import { authRender } from "./test-utils";
-import { createClient } from "./lib/client";
-import { PROBING, PROBED, INSTALLING, INSTALLED } from "./lib/client/status";
+import { createClient } from "./client";
+import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
 
 import Installer from "./Installer";
 
-jest.mock("./lib/client");
+jest.mock("./client");
 
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
@@ -40,7 +40,7 @@ jest.mock("./InstallationFinished", () => () => "InstallationFinished Mock");
 jest.mock("./Overview", () => () => "Overview Mock");
 
 let callbacks;
-let initialStatusMock = null;
+const initialStatusMock = null;
 let onChangeFn = jest.fn();
 let getStatusFn = jest.fn();
 
@@ -61,9 +61,7 @@ beforeEach(() => {
 describe("Installer", () => {
   describe("when there are problems connecting with D-Bus service", () => {
     beforeEach(() => {
-      getStatusFn = () => {
-        throw "Could'n connect to D-Bus service";
-      };
+      getStatusFn = () => Promise.reject(new Error("Couldn't connect to D-Bus service"));
     });
 
     it("renders the DBusError component", async () => {

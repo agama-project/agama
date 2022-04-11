@@ -24,9 +24,9 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Overview from "./Overview";
-import { createClient } from "./lib/client";
+import { createClient } from "./client";
 
-jest.mock("./lib/client");
+jest.mock("./client");
 
 const proposal = {
   candidateDevices: ["/dev/sda"],
@@ -63,8 +63,8 @@ beforeEach(() => {
       },
       users: {
         getUser: () => Promise.resolve(fakeUser),
-        isRootPasswordSet: jest.fn(),
-        getRootSSHKey: jest.fn()
+        isRootPasswordSet: () => Promise.resolve(true),
+        getRootSSHKey: () => Promise.resolve("ssh-rsa")
       }
     };
   });
@@ -84,7 +84,7 @@ describe("when the user clicks 'Install'", () => {
   let dialog;
 
   beforeEach(async () => {
-    installerRender(<Overview />)
+    installerRender(<Overview />);
 
     // TODO: we should have some UI element to tell the user we have finished
     // with loading data.

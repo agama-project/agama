@@ -16,15 +16,15 @@
 #
 
 
-Name:           d-installer-web
+Name:           cockpit-d-installer
 Version:        0
 Release:        0
-Summary:        Web-based user interface for D-Installer
+Summary:        Cockpit module for D-Installer
 License:        GPL-2.0-only
 URL:            https://github.com/yast/d-installer
 # source_validator insists that if obscpio has no version then
 # tarball must neither
-Source:         d-installer-web.tar
+Source:         cockpit-d-installer.tar
 Source10:       package-lock.json
 Source11:       node_modules.spec.inc
 %include %_sourcedir/node_modules.spec.inc
@@ -33,10 +33,10 @@ Requires:       cockpit
 BuildRequires:  cockpit
 BuildRequires:  cockpit-devel >= 243
 BuildRequires:  local-npm-registry
+BuildRequires:  appstream-glib
 
 %description
-Web-based user interface for the experimental YaST D-Installer.
-
+Cockpit module for the experimental YaST D-Installer.
 
 %prep
 %autosetup -p1 -n %{name}
@@ -44,14 +44,16 @@ rm -f package-lock.json
 local-npm-registry %{_sourcedir} install --with=dev --legacy-peer-deps || ( find ~/.npm/_logs -name '*-debug.log' -print0 | xargs -0 cat; false)
 
 %build
-npm run build
+# cp -r %{_datadir}/cockpit/devel/lib src/lib
+NODE_ENV="production" npm run build
 
 %install
-mkdir -p %{buildroot}/%{_datadir}/cockpit/static/installer
-cp -R --no-dereference --preserve=mode,links -v dist/* %{buildroot}/%{_datadir}/cockpit/static/installer
+%make_install
+appstream-util validate-relax --nonet %{buildroot}/%{_datadir}/metainfo/*
 
 %files
 %doc README.md
-%{_datadir}/cockpit/static/installer
+%{_datadir}/cockpit
+%{_datadir}/metainfo/*
 
 %changelog

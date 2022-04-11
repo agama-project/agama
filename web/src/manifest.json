@@ -1,0 +1,12 @@
+{
+    "name": "d-installer",
+    "requires": {
+        "cockpit": "137"
+    },
+
+    "tools": {
+        "index": {
+            "label": "D-Installer"
+        }
+    }
+}
