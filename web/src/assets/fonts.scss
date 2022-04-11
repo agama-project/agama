@@ -1,7 +1,7 @@
 // Note: for this particular case, we are not using
 // @use "eos-ds/dist/scss/eos-base/variables/typography.scss"
-// because it imports fonts from googleapis, external source.
-// Instead, we use @fontsource to import them from local sources in App.jsx
+// because it imports fonts from an external source, which does not fit requirements of the
+// installer (which can be running in a machine without internet access)
 
 $base: Lato, arial, helvetica, sans-serif;
 $headlines: Poppins, san-serif;
