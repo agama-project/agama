@@ -8,8 +8,7 @@ endif
 export TEST_OS
 TARFILE=$(RPM_NAME)-$(VERSION).tar.xz
 NODE_CACHE=$(RPM_NAME)-node-$(VERSION).tar.xz
-SPEC=$(RPM_NAME).spec
-APPSTREAMFILE=org.opensuse.$(PACKAGE_NAME).metainfo.xml
+APPSTREAMFILE=org.cockpit-project.$(PACKAGE_NAME).metainfo.xml
 VM_IMAGE=$(CURDIR)/test/images/$(TEST_OS)
 # stamp file to check if/when npm install ran
 NODE_MODULES_TEST=package-lock.json
@@ -73,7 +72,6 @@ watch:
 
 clean:
 	rm -rf dist/
-	rm -f $(SPEC)
 	rm -f po/LINGUAS
 
 install: $(WEBPACK_TEST) po/LINGUAS
@@ -105,13 +103,13 @@ dist: $(TARFILE)
 # pre-built dist/ (so it's not necessary) and ship packge-lock.json (so that
 # node_modules/ can be reconstructed if necessary)
 $(TARFILE): export NODE_ENV=production
-$(TARFILE): $(WEBPACK_TEST) $(SPEC)
+$(TARFILE): $(WEBPACK_TEST)
 	if type appstream-util >/dev/null 2>&1; then appstream-util validate-relax --nonet *.metainfo.xml; fi
 	touch -r package.json $(NODE_MODULES_TEST)
 	touch dist/*
 	tar --xz $(TAR_ARGS) -cf $(TARFILE) --transform 's,^,$(RPM_NAME)/,' \
-		--exclude packaging/$(SPEC).in --exclude node_modules \
-		$$(git ls-files) src/lib package-lock.json $(SPEC) dist/
+		--exclude node_modules \
+		$$(git ls-files) src/lib package-lock.json dist/
 
 $(NODE_CACHE): $(NODE_MODULES_TEST)
 	tar --xz $(TAR_ARGS) -cf $@ node_modules
@@ -119,14 +117,13 @@ $(NODE_CACHE): $(NODE_MODULES_TEST)
 node-cache: $(NODE_CACHE)
 
 # convenience target for developers
-srpm: $(TARFILE) $(NODE_CACHE) $(SPEC)
+srpm: $(TARFILE) $(NODE_CACHE)
 	rpmbuild -bs \
 	  --define "_sourcedir `pwd`" \
-	  --define "_srcrpmdir `pwd`" \
-	  $(SPEC)
+	  --define "_srcrpmdir `pwd`"
 
 # convenience target for developers
-rpm: $(TARFILE) $(NODE_CACHE) $(SPEC)
+rpm: $(TARFILE) $(NODE_CACHE)
 	mkdir -p "`pwd`/output"
 	mkdir -p "`pwd`/rpmbuild"
 	rpmbuild -bb \
@@ -135,8 +132,7 @@ rpm: $(TARFILE) $(NODE_CACHE) $(SPEC)
 	  --define "_builddir `pwd`/rpmbuild" \
 	  --define "_srcrpmdir `pwd`" \
 	  --define "_rpmdir `pwd`/output" \
-	  --define "_buildrootdir `pwd`/build" \
-	  $(SPEC)
+	  --define "_buildrootdir `pwd`/build"
 	find `pwd`/output -name '*.rpm' -printf '%f\n' -exec mv {} . \;
 	rm -r "`pwd`/rpmbuild"
 	rm -r "`pwd`/output" "`pwd`/build"

@@ -16,15 +16,15 @@
 #
 
 
-Name:           d-installer-web
-Version:        %{VERSION}
+Name:           cockpit-d-installer
+Version:        0
 Release:        0
 Summary:        Cockpit module for D-Installer
 License:        GPL-2.0-only
 URL:            https://github.com/yast/d-installer
 # source_validator insists that if obscpio has no version then
 # tarball must neither
-Source:         d-installer-web.tar
+Source:         cockpit-d-installer.tar
 Source10:       package-lock.json
 Source11:       node_modules.spec.inc
 %include %_sourcedir/node_modules.spec.inc
@@ -45,7 +45,7 @@ local-npm-registry %{_sourcedir} install --with=dev --legacy-peer-deps || ( find
 
 %build
 # cp -r %{_datadir}/cockpit/devel/lib src/lib
-npm run build
+NODE_ENV="production" npm run build
 
 %install
 %make_install
