@@ -62,7 +62,7 @@ function Installer() {
     client.manager.getStatus()
       .then(status => dispatch({ type: "CHANGE_STATUS", payload: { status } }))
       .catch(error => dispatch({ type: "SET_DBUS_ERROR", payload: { error } }));
-  }, []);
+  }, [client.manager]);
 
   useEffect(() => {
     return client.manager.onChange(changes => {
@@ -70,13 +70,13 @@ function Installer() {
         dispatch({ type: "CHANGE_STATUS", payload: { status: changes.Status } });
       }
     });
-  }, []);
+  }, [client.manager]);
 
   useEffect(() => {
     return client.monitor.onDisconnect(() => {
       dispatch({ type: "SET_DBUS_ERROR", payload: { error: "Connection lost" } });
     });
-  }, []);
+  }, [client.monitor]);
 
   if (state.dbusError) return <DBusError />;
   if (state.loading) return <LoadingEnvironment />;

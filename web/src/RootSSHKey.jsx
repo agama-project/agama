@@ -43,7 +43,7 @@ export default function RootSSHKey() {
     client.users.getRootSSHKey()
       .then(setSSHKey)
       .catch(console.error);
-  }, []);
+  }, [client.users]);
 
   if (sshKey === null) return <Skeleton width="55%" fontSize="sm" />;
 

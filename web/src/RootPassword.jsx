@@ -43,7 +43,7 @@ export default function RootPassword() {
     client.users.isRootPasswordSet()
       .then(setIsRootPasswordSet)
       .catch(console.error);
-  }, []);
+  }, [client.users]);
 
   if (isRootPasswordSet === null) return <Skeleton width="60%" fontSize="sm" />;
 

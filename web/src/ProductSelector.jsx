@@ -82,7 +82,7 @@ export default function ProductSelector() {
     };
 
     loadProducts().catch(console.error);
-  }, []);
+  }, [client.software]);
 
   const open = () => dispatch({ type: "OPEN" });
 

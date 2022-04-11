@@ -78,14 +78,14 @@ export default function Storage() {
     };
 
     loadStorage().catch(console.error);
-  }, []);
+  }, [client.storage]);
 
   useEffect(() => {
     return client.storage.onActionsChange(changes => {
       const { All: newActions } = changes;
       dispatch({ type: "UPDATE_ACTIONS", payload: newActions });
     });
-  }, []);
+  }, [client.storage]);
 
   const errorMessage = `Cannot make a proposal for ${target}`;
 

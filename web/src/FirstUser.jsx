@@ -28,9 +28,9 @@ export default function Users() {
   useEffect(() => {
     client.users.getUser().then(userValues => {
       setUser(userValues);
-      setFormValues({ ...formValues, ...userValues });
+      setFormValues({ ...initialUser, ...userValues });
     });
-  }, []);
+  }, [client.users]);
 
   if (user === null) return <Skeleton width="50%" fontSize="sm" />;
 

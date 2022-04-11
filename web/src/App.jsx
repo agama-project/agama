@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useAuthContext } from "./context/auth";
 
 import LoadingEnvironment from "./LoadingEnvironment";
@@ -40,7 +40,8 @@ function App() {
     autoLogin
   } = useAuthContext();
 
-  useEffect(autoLogin, []);
+  const autoLoginFn = useRef(autoLogin);
+  useEffect(autoLoginFn.current, [autoLoginFn]);
 
   if (loggedIn === null) return <LoadingEnvironment />;
   return loggedIn ? <Installer /> : <LoginForm />;

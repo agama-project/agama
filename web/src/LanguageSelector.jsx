@@ -82,7 +82,7 @@ export default function LanguageSelector() {
     };
 
     loadLanguages().catch(console.error);
-  }, []);
+  }, [client.language]);
 
   const open = () => dispatch({ type: "OPEN" });
 
