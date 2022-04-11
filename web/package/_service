@@ -14,10 +14,10 @@
   </service>
   <service mode="buildtime" name="tar">
     <param name="obsinfo">d-installer.obsinfo</param>
-    <param name="filename">d-installer-web</param>
+    <param name="filename">cockpit-d-installer</param>
   </service>
   <service mode="buildtime" name="set_version">
-    <param name="basename">d-installer</param>
+    <param name="basename">cockpit-d-installer</param>
     <param name="version">0.1</param>
   </service>
 </services>
