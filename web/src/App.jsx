@@ -41,7 +41,7 @@ function App() {
   } = useAuthContext();
 
   const autoLoginFn = useRef(autoLogin);
-  useEffect(autoLoginFn.current, [autoLoginFn]);
+  useEffect(() => autoLoginFn.current(), [autoLoginFn]);
 
   if (loggedIn === null) return <LoadingEnvironment />;
   return loggedIn ? <Installer /> : <LoginForm />;
