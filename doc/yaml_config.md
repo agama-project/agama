@@ -9,6 +9,12 @@ JSON format we also consider has serious disadvantage - lack of comments.
 So we decide to go with YaML which is still comfortable to read and also machine read.
 Only disadvantage we found is lack of mature schema support for YaML.
 
+Rules for Config
+================
+
+1. No default values in code. All values have to be defined in yaml config.
+2. No objects, just built-in data types.
+
 Structure
 =========
 
