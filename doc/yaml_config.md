@@ -1,13 +1,13 @@
-YaML Config
+YAML Config
 -----------
 
-Why YaML
+Why YAML
 ========
 
 With our previous experience we discard at the start XML due to its poor readability.
 JSON format we also consider has serious disadvantage - lack of comments.
-So we decide to go with YaML which is still comfortable to read and also machine read.
-Only disadvantage we found is lack of mature schema support for YaML.
+So we decide to go with YAML which is still comfortable to read and also machine read.
+Only disadvantage we found is lack of mature schema support for YAML.
 
 Rules for Config
 ================
