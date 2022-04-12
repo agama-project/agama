@@ -100,4 +100,4 @@ Point your browser to http://localhost:9090/cockpit/@localhost/d-installer.index
 
 ## References
 
-* [Development Notes](./DEVELOPMENT.md)
+* [Development Notes](./web/README.md)
