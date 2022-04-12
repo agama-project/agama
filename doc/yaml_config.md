@@ -35,13 +35,13 @@ List of supported distros that can be offered in installer.
 ### conditions
 
 List of specific conditions. Conditions are specific keys that based on data can modify
-installatio config like distro or arch specific options. If multiple conditions
+installation config like distro or arch specific options. If multiple conditions
 are specified like arch and distro together, then both have to be satisfied.
 Below are possible keys.
 
 #### distro
 
-List of distros for which condition apply. Any of it can apply. Possible keys are from list
+List of distros for which condition apply. Any of them can apply. Possible keys are from list
 supported distros in software section. TODO: regex of glob support?
 
 #### arch
