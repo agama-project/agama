@@ -37,14 +37,6 @@ import { createClient } from "./client";
  * out of the dist/index.js and since it will maintain the order of the imported CSS,
  * the overrides will be correctly in the end of our stylesheet.
  */
-
-// import "@fontsource/lato/400.css";
-// import "@fontsource/lato/400-italic.css";
-// import "@fontsource/lato/700.css";
-// import "@fontsource/poppins/300.css";
-// import "@fontsource/poppins/500.css";
-// import "@fontsource/roboto-mono/400.css";
-
 import "./patternfly.scss";
 
 const client = createClient();

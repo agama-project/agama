@@ -31,6 +31,9 @@ import InstallationProgress from "./InstallationProgress";
 import InstallationFinished from "./InstallationFinished";
 import LoadingEnvironment from "./LoadingEnvironment";
 
+import './assets/fonts.scss';
+import "./app.scss";
+
 const init = status => ({
   loading: status === null,
   probing: status === PROBING,

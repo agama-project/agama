@@ -128,7 +128,7 @@ module.exports = {
             },
             {
                 test: /\.s?css$/,
-                exclude: /patternfly-4-cockpit.scss/,
+                exclude: [/patternfly-4-cockpit.scss/, /fonts.scss/],
                 use: [
                     extract.loader,
                     {
@@ -150,11 +150,26 @@ module.exports = {
                     },
                 ]
             },
+            // Load D-Intaller fonts
             {
-              test: /\.svg/,
-              use: {
-                loader: "svg-url-loader",
-              },
+                test: /fonts.scss/,
+                use: [
+                    { loader: 'css-loader' },
+                    { loader: 'sass-loader' }
+                ]
+            },
+            {
+                test: /\.(eot|ttf|woff|woff2)$/,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'fonts/[name][ext]',
+                }
+            },
+            {
+                test: /\.svg/,
+                use: {
+                    loader: "svg-url-loader",
+                },
             }
         ]
     },
