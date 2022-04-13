@@ -28,7 +28,7 @@ Software manager related options. It is map with following keys:
 
 Array of url for installation repositories.
 
-### distros
+### distributions
 
 List of supported distros that can be offered in installer.
 
@@ -39,7 +39,7 @@ installation config like distro or arch specific options. If multiple conditions
 are specified like arch and distro together, then both have to be satisfied.
 Below are possible keys.
 
-#### distro
+#### distribution
 
 List of distros for which condition apply. Any of them can apply. Possible keys are from list
 supported distros in software section. TODO: regex of glob support?
