@@ -103,11 +103,12 @@
   }
 }
 
-// Do not use "cursor: pointer" for labels because it is not common and confusing)
-// https://github.com/yast/d-installer/issues/115#issuecomment-1090205696
-// https://github.com/patternfly/patternfly/blob/dc6cf07d69cbb80026dca7fe43dc28704aabea64/src/patternfly/components/Form/form.scss#L262-L281
+// Do not change the default cursor for labels forms because it is confusing
+//
+// See:
+//  * https://github.com/yast/d-installer/issues/115#issuecomment-1090205696
+//  * https://github.com/patternfly/patternfly/issues/4777#issuecomment-1092090484
 .pf-c-form__label {
-  &:not(.pf-m-disabled):hover {
-    cursor: default !important;
-  }
+  --pf-c-form__label--hover--Cursor: default;
+  --pf-c-form__label--m-disabled--hover--Cursor: default;
 }
