@@ -1,8 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
-const copy = require("copy-webpack-plugin");
-const extract = require("mini-css-extract-plugin");
+const Copy = require("copy-webpack-plugin");
+const Extract = require("mini-css-extract-plugin");
 const TerserJSPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CompressionPlugin = require("compression-webpack-plugin");
@@ -21,157 +21,118 @@ const packageJson = JSON.parse(fs.readFileSync('package.json'));
 
 // Non-JS files which are copied verbatim to dist/
 const copy_files = [
-    "./src/index.html",
-    "./src/manifest.json",
+  "./src/index.html",
+  "./src/manifest.json",
 ];
 
 const plugins = [
-    new copy({ patterns: copy_files }),
-    new extract({filename: "[name].css"}),
-    new CockpitPoPlugin(),
-    new CockpitRsyncPlugin({dest: packageJson.name}),
+  new Copy({ patterns: copy_files }),
+  new Extract({ filename: "[name].css" }),
+  new CockpitPoPlugin(),
+  new CockpitRsyncPlugin({ dest: packageJson.name }),
 ];
 
 if (eslint) {
-    plugins.push(new ESLintPlugin({ extensions: ["js", "jsx"], failOnWarning: true, }));
+  plugins.push(new ESLintPlugin({ extensions: ["js", "jsx"], failOnWarning: true, }));
 }
 
 /* Only minimize when in production mode */
 if (production) {
-    plugins.unshift(new CompressionPlugin({
-        test: /\.(js|html|css)$/,
-        deleteOriginalAssets: true
-    }));
+  plugins.unshift(new CompressionPlugin({
+    test: /\.(js|html|css)$/,
+    deleteOriginalAssets: true
+  }));
 }
 
 module.exports = {
-    mode: production ? 'production' : 'development',
-    resolve: {
-        modules: [ "node_modules", path.resolve(__dirname, 'src/lib') ],
-        alias: { 'font-awesome': 'font-awesome-sass/assets/stylesheets' },
-        extensions: ['', '.js', '.json', '.jsx']
-    },
-    resolveLoader: {
-        modules: [ "node_modules", path.resolve(__dirname, 'src/lib') ],
-    },
-    watchOptions: {
-        ignored: /node_modules/,
-    },
-    entry: {
-        index: "./src/index.js",
-    },
-    // cockpit.js gets included via <script>, everything else should be bundled
-    externals: { "cockpit": "cockpit" },
-    devtool: "source-map",
-    stats: "errors-warnings",
+  mode: production ? 'production' : 'development',
+  resolve: {
+    modules: ["node_modules", path.resolve(__dirname, 'src/lib')],
+    alias: { 'font-awesome': 'font-awesome-sass/assets/stylesheets' },
+    extensions: ['', '.js', '.json', '.jsx']
+  },
+  resolveLoader: {
+    modules: ["node_modules", path.resolve(__dirname, 'src/lib')],
+  },
+  watchOptions: {
+    ignored: /node_modules/,
+  },
+  entry: {
+    index: "./src/index.js",
+  },
+  // cockpit.js gets included via <script>, everything else should be bundled
+  externals: { cockpit: "cockpit" },
+  devtool: "source-map",
+  stats: "errors-warnings",
 
-    optimization: {
-        minimize: production,
-        minimizer: [
-            new TerserJSPlugin({
-                extractComments: {
-                    condition: true,
-                    filename: `[file].LICENSE.txt?query=[query]&filebase=[base]`,
-                    banner(licenseFile) {
-                        return `License information can be found in ${licenseFile}`;
-                    },
-                },
-            }),
-            new CssMinimizerPlugin()
-        ],
-    },
+  optimization: {
+    minimize: production,
+    minimizer: [
+      new TerserJSPlugin({
+        extractComments: {
+          condition: true,
+          filename: `[file].LICENSE.txt?query=[query]&filebase=[base]`,
+          banner(licenseFile) {
+            return `License information can be found in ${licenseFile}`;
+          },
+        },
+      }),
+      new CssMinimizerPlugin()
+    ],
+  },
 
-    module: {
-        rules: [
-            {
-                exclude: /node_modules/,
-                use: "babel-loader",
-                test: /\.(js|jsx)$/
-            },
-            /* HACK: remove unwanted fonts from PatternFly's css */
-            {
-                test: /patternfly-4-cockpit.scss$/,
-                use: [
-                    extract.loader,
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            sourceMap: true,
-                            url: false,
-                        },
-                    },
-                    {
-                        loader: 'string-replace-loader',
-                        options: {
-                            multiple: [
-                                {
-                                    search: /src:url\("patternfly-icons-fake-path\/pficon[^}]*/g,
-                                    replace: 'src:url("../base1/fonts/patternfly.woff") format("woff");',
-                                },
-                                {
-                                    search: /@font-face[^}]*patternfly-fonts-fake-path[^}]*}/g,
-                                    replace: '',
-                                },
-                            ]
-                        },
-                    },
-                    {
-                        loader: 'sass-loader',
-                        options: {
-                            sourceMap: !production,
-                            sassOptions: {
-                                outputStyle: production ? 'compressed' : undefined,
-                            },
-                        },
-                    },
-                ]
-            },
-            {
-                test: /\.s?css$/,
-                exclude: [/patternfly-4-cockpit.scss/, /fonts.scss/],
-                use: [
-                    extract.loader,
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            sourceMap: true,
-                            url: false
-                        }
-                    },
-                    {
-                        loader: 'sass-loader',
-                        options: {
-                            sourceMap: !production,
-                            sassOptions: {
-                                includePaths: ["node_modules"],
-                                outputStyle: production ? 'compressed' : undefined,
-                            },
-                        },
-                    },
-                ]
-            },
-            // Load D-Intaller fonts
-            {
-                test: /fonts.scss/,
-                use: [
-                    { loader: 'css-loader' },
-                    { loader: 'sass-loader' }
-                ]
-            },
-            {
-                test: /\.(eot|ttf|woff|woff2)$/,
-                type: 'asset/resource',
-                generator: {
-                    filename: 'fonts/[name][ext]',
-                }
-            },
-            {
-                test: /\.svg/,
-                use: {
-                    loader: "svg-url-loader",
-                },
+  module: {
+    rules: [
+      {
+        exclude: /node_modules/,
+        use: "babel-loader",
+        test: /\.(js|jsx)$/
+      },
+      {
+        test: /\.s?css$/,
+        exclude: [/fonts.scss/],
+        use: [
+          Extract.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              url: false
             }
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: !production,
+              sassOptions: {
+                includePaths: ["node_modules"],
+                outputStyle: production ? 'compressed' : undefined,
+              },
+            },
+          },
         ]
-    },
-    plugins: plugins
-}
+      },
+      // Load D-Intaller fonts
+      {
+        test: /fonts.scss/,
+        use: [
+          { loader: 'css-loader' },
+          { loader: 'sass-loader' }
+        ]
+      },
+      {
+        test: /\.(eot|ttf|woff|woff2)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext]',
+        }
+      },
+      // Load SVG files
+      {
+        test: /\.svg/,
+        type: 'asset/inline',
+      }
+    ]
+  },
+  plugins: plugins
+};

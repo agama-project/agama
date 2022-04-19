@@ -24,7 +24,7 @@ import ReactDOM from "react-dom";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
-import "@patternfly/patternfly/patternfly.css";
+import "@patternfly/patternfly/patternfly-base.scss";
 
 import App from "./App";
 import { InstallerClientProvider } from "./context/installer";
