@@ -11,7 +11,7 @@ NODE_CACHE=$(RPM_NAME)-node-$(VERSION).tar.xz
 APPSTREAMFILE=org.opensuse.$(PACKAGE_NAME).metainfo.xml
 VM_IMAGE=$(CURDIR)/test/images/$(TEST_OS)
 # stamp file to check if/when npm install ran
-NODE_MODULES_TEST=package-lock.json
+NODE_MODULES_TEST=node_modules
 # one example file in dist/ from webpack to check if that already ran
 WEBPACK_TEST=dist/manifest.json
 # one example file in src/lib to check if it was already checked out
@@ -186,9 +186,7 @@ $(LIB_TEST):
 	    git reset -- ../pkg/lib'
 	mv ../pkg/lib src/ && rmdir ../pkg
 
-$(NODE_MODULES_TEST): package.json
-	# if it exists already, npm install won't update it; force that so that we always get up-to-date packages
-	rm -f package-lock.json
+$(NODE_MODULES_TEST):
 	# unset NODE_ENV, skips devDependencies otherwise
 	env -u NODE_ENV npm install
 	env -u NODE_ENV npm prune
