@@ -88,47 +88,9 @@ module.exports = {
         use: "babel-loader",
         test: /\.(js|jsx)$/
       },
-      /* HACK: remove unwanted fonts from PatternFly's css */
-      {
-        test: /patternfly-4-cockpit.scss$/,
-        use: [
-          Extract.loader,
-          {
-            loader: 'css-loader',
-            options: {
-              sourceMap: true,
-              url: false,
-            },
-          },
-          {
-            loader: 'string-replace-loader',
-            options: {
-              multiple: [
-                {
-                  search: /src:url\("patternfly-icons-fake-path\/pficon[^}]*/g,
-                  replace: 'src:url("../base1/fonts/patternfly.woff") format("woff");',
-                },
-                {
-                  search: /@font-face[^}]*patternfly-fonts-fake-path[^}]*}/g,
-                  replace: '',
-                },
-              ]
-            },
-          },
-          {
-            loader: 'sass-loader',
-            options: {
-              sourceMap: !production,
-              sassOptions: {
-                outputStyle: production ? 'compressed' : undefined,
-              },
-            },
-          },
-        ]
-      },
       {
         test: /\.s?css$/,
-        exclude: [/patternfly-4-cockpit.scss/, /fonts.scss/],
+        exclude: [/fonts.scss/],
         use: [
           Extract.loader,
           {
