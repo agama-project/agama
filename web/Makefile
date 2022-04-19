@@ -176,7 +176,7 @@ bots:
 # when you start a new project, use the latest release, and update it from time to time
 test/common:
 	flock Makefile sh -ec '\
-	    git fetch --depth=1 https://github.com/cockpit-project/cockpit.git 265; \
+	    git fetch --depth=1 https://github.com/cockpit-project/cockpit.git 267; \
 	    git checkout --force FETCH_HEAD -- test/common; \
 	    git reset test/common'
 
@@ -184,7 +184,7 @@ test/common:
 # TODO: replace the commit with the tag 267 once it is released, which includes cockpit.js as a ES6 module in lib/.
 $(LIB_TEST):
 	flock Makefile sh -ec '\
-	    git fetch --depth=1 https://github.com/cockpit-project/cockpit.git 4ca4c20ce6697c76463d79113dae4772a31777d8; \
+	    git fetch --depth=1 https://github.com/cockpit-project/cockpit.git 267; \
 	    git checkout --force FETCH_HEAD -- ../pkg/lib; \
 	    git reset -- ../pkg/lib'
 	mv ../pkg/lib src/ && rmdir ../pkg
