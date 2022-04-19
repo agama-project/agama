@@ -127,11 +127,10 @@ module.exports = {
           filename: 'fonts/[name][ext]',
         }
       },
+      // Load SVG files
       {
         test: /\.svg/,
-        use: {
-          loader: "svg-url-loader",
-        },
+        type: 'asset/inline',
       }
     ]
   },
