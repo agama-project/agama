@@ -74,6 +74,9 @@ clean:
 	rm -rf dist/
 	rm -f po/LINGUAS
 
+clean_all: clean
+	rm -rf node_modules/
+
 install: $(WEBPACK_TEST) po/LINGUAS
 	mkdir -p $(DESTDIR)/usr/share/cockpit/$(PACKAGE_NAME)
 	cp -r dist/* $(DESTDIR)/usr/share/cockpit/$(PACKAGE_NAME)
