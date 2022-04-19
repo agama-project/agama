@@ -27,14 +27,24 @@ module DInstaller
   # data change, like if user pick different distro to install.
   class Config
     SYSTEM_PATH = "/etc/d-installer.yaml"
-    GIT_PATH = FILE.expand_path("#{__dir__}/../../etc/d-installer.yaml")
+    GIT_PATH = File.expand_path("#{__dir__}/../../etc/d-installer.yaml")
 
     def initialize(logger)
       @logger = logger
       load_file
+      parse_file
     end
 
     attr_reader :data
+
+    # parse loaded yaml file, so it properly applies conditions
+    # with default options it load file without conditions
+    def parse_file(arch = nil, distro = nil)
+      # TODO move to internal only. public one should be something like evaluate or just setter for distro and arch
+      logger.info "parse file with #{arch} and #{distro}"
+      # TODO do real evaluation of conditions
+      @data = @pure_data
+    end
 
   private
 
@@ -49,14 +59,8 @@ module DInstaller
       else
         raise "Missing config file at #{SYSTEM_PATH}"
       end
-      @pure_data = Yaml.safe_load(file)
+      @pure_data = YAML.safe_load(file)
     end
 
-    # parse loaded yaml file, so it properly applies conditions
-    def parse_file(arch, distro)
-      logger.log "parse file with #{arch} and #{distro}"
-      # TODO do real parsing
-      @data = @pure_data
-    end
   end
 end

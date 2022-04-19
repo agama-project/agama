@@ -145,10 +145,10 @@ module DInstaller
 
     def add_base_repo
       # TODO properly pass config around. Here it is just for quick testing
-      config = Config.new
+      config = Config.new(logger)
       config.parse_file("x86_64", "Tumbleweed")
       config.data["software"]["installation_repositories"].each do |repo|
-        Yast::Pkg.SourceCreate(repo)
+        Yast::Pkg.SourceCreate(repo, "/") # TODO: having that dir also in config?
       end
 
       Yast::Pkg.SourceSaveAll
