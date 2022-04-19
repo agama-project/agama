@@ -16,5 +16,5 @@ cd service; bundle config set --local path 'vendor/bundle'; bundle install; cd -
 cd web; make devel-install; cd -
 
 # Start the installer
-echo -e "Start the d-installer service:\n  cd service; sudo bundle exec bin/d-installer\n"
+echo -e "\nStart the d-installer service:\n  cd service; sudo bundle exec bin/d-installer\n"
 echo -e "Visit http://localhost:9090/cockpit/@localhost/d-installer/index.html"
