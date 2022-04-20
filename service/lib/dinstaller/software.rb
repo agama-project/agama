@@ -41,10 +41,11 @@ module DInstaller
 
     attr_reader :product, :products
 
-    def initialize(logger)
+    def initialize(logger, config)
       @logger = logger
       @products = []
       @product = "" # do not use nil here, otherwise dbus crash
+      @config = config
     end
 
     def select_product(name)
@@ -144,10 +145,7 @@ module DInstaller
     end
 
     def add_base_repo
-      # TODO properly pass config around. Here it is just for quick testing
-      config = Config.new(logger)
-      config.parse_file("x86_64", "Tumbleweed")
-      config.data["software"]["installation_repositories"].each do |repo|
+      @config.data["software"]["installation_repositories"].each do |repo|
         Yast::Pkg.SourceCreate(repo, "/") # TODO: having that dir also in config?
       end
 
