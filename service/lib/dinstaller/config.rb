@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
@@ -40,9 +42,10 @@ module DInstaller
     # parse loaded yaml file, so it properly applies conditions
     # with default options it load file without conditions
     def parse_file(arch = nil, distro = nil)
-      # TODO move to internal only. public one should be something like evaluate or just setter for distro and arch
+      # TODO: move to internal only. public one should be something
+      # like evaluate or just setter for distro and arch
       logger.info "parse file with #{arch} and #{distro}"
-      # TODO do real evaluation of conditions
+      # TODO: do real evaluation of conditions
       @data = @pure_data
     end
 
@@ -61,6 +64,5 @@ module DInstaller
       end
       @pure_data = YAML.safe_load(file)
     end
-
   end
 end
