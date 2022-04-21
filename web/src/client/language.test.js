@@ -27,14 +27,7 @@ const dbusClient = {};
 const langProxy = {
   wait: jest.fn(),
   AvailableLanguages: [
-    {
-      t: "av",
-      v: [
-        { t: "s", v: "cs_CZ" },
-        { t: "s", v: "Cestina" },
-        { t: "a{sv}", v: {} }
-      ]
-    }
+    ["cs_CZ", "Cestina", {}]
   ]
 };
 

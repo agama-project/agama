@@ -29,24 +29,10 @@ const dbusClient = {};
 const storageProposalProxy = {
   wait: jest.fn(),
   AvailableDevices: [
-    {
-      t: "av",
-      v: [
-        { t: "s", v: "/dev/sda" },
-        { t: "s", v: "/dev/sda, 950 GiB, Windows" },
-        { t: "a{sv}", v: {} }
-      ]
-    },
-    {
-      t: "av",
-      v: [
-        { t: "s", v: "/dev/sdb" },
-        { t: "s", v: "/dev/sdb, 500 GiB" },
-        { t: "a{sv}", v: {} }
-      ]
-    }
+    ["/dev/sda", "/dev/sda, 950 GiB, Windows"],
+    ["/dev/sdb", "/dev/sdb, 500 GiB"]
   ],
-  CandidateDevices: [{ t: "s", v: "/dev/sda" }],
+  CandidateDevices: ["/dev/sda"],
   LVM: true
 };
 
@@ -54,12 +40,9 @@ const storageActionsProxy = {
   wait: jest.fn(),
   All: [
     {
-      t: "a{sv}",
-      v: {
-        Text: { t: "s", v: "Mount /dev/sdb1 as root" },
-        Subvol: { t: "b", v: false },
-        Delete: { t: "b", v: false }
-      }
+      Text: { t: "v", v: { t: "s", v: "Mount /dev/sdb1 as root" } },
+      Subvol: { t: "v", v: { t: "b", v: false } },
+      Delete: { t: "v", v: { t: "b", v: false } }
     }
   ]
 };

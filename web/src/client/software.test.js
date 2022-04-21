@@ -27,14 +27,7 @@ const dbusClient = {};
 const softProxy = {
   wait: jest.fn(),
   AvailableBaseProducts: [
-    {
-      t: "av",
-      v: [
-        { t: "s", v: "MicroOS" },
-        { t: "s", v: "openSUSE MicroOS" },
-        { t: "a{sv}", v: {} }
-      ]
-    }
+    ["MicroOS", "openSUSE MicroOS", {}]
   ],
   SelectedBaseProduct: "microos"
 };
