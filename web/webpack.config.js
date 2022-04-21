@@ -67,6 +67,8 @@ module.exports = {
   externals: { cockpit: "cockpit" },
   devtool: "source-map",
   stats: "errors-warnings",
+  // always regenerate dist/, so make rules work
+  output: { clean: true, compareBeforeEmit: false },
 
   optimization: {
     minimize: production,
