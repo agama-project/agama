@@ -20,13 +20,15 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
+require "dinstaller/config"
 require "dinstaller/software"
 require "dinstaller/progress"
 
 describe DInstaller::Software do
-  subject { described_class.new(logger) }
+  subject { described_class.new(logger, config) }
 
   let(:logger) { Logger.new($stdout) }
+  let(:config) { DInstaller::Config.new(logger) }
   let(:progress) { DInstaller::Progress.new }
   let(:products) { [tw_prod] }
   let(:tw_prod) { instance_double(Y2Packager::Product, name: "openSUSE") }
@@ -44,7 +46,7 @@ describe DInstaller::Software do
     allow(Yast::Packages).to receive(:Proposal).and_return({})
     allow(Yast::InstURL).to receive(:installInf2Url).with("")
       .and_return(base_url)
-    allow(Yast::Pkg).to receive(:SourceCreateBase)
+    allow(Yast::Pkg).to receive(:SourceCreate)
     allow(Yast::Installation).to receive(:destdir).and_return(destdir)
   end
 
@@ -70,24 +72,14 @@ describe DInstaller::Software do
       subject.probe(progress)
     end
 
-    context "when a base URL is defined via the InstURL module" do
-      let(:base_url) { "dvd://" }
-
-      it "registers the repository" do
-        expect(Yast::Pkg).to receive(:SourceCreateBase).with(base_url, "/")
-        expect(Yast::Pkg).to receive(:SourceSaveAll)
-        subject.probe(progress)
-      end
-    end
-
-    context "when no base URL is defined" do
-      let(:base_url) { "" }
-
-      it "registers the repository" do
-        expect(Yast::Pkg).to receive(:SourceCreateBase).with(/download.opensuse.org/, "/")
-        expect(Yast::Pkg).to receive(:SourceSaveAll)
-        subject.probe(progress)
-      end
+    it "registers the repository from config" do
+      url = "https://download.opensuse.org/download/tumbleweed"
+      allow(config).to receive(:data).and_return(
+        { "software" => { "installation_repositories" => [url] } }
+      )
+      expect(Yast::Pkg).to receive(:SourceCreate).with(url, "/")
+      expect(Yast::Pkg).to receive(:SourceSaveAll)
+      subject.probe(progress)
     end
 
     context "when no supported products are found" do

@@ -113,11 +113,16 @@ module DInstaller
     end
     # rubocop:enable Metrics/AbcSize
 
+    # Configuration
+    def config
+      @config ||= Config.new(logger)
+    end
+
     # Software manager
     #
     # @return [Software]
     def software
-      @software ||= Software.new(logger)
+      @software ||= Software.new(logger, config)
     end
 
     # Language manager

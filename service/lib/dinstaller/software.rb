@@ -21,9 +21,9 @@
 
 require "yast"
 require "dinstaller/package_callbacks"
+require "dinstaller/config"
 require "y2packager/product"
 
-Yast.import "InstURL"
 Yast.import "PackageInstallation"
 Yast.import "Pkg"
 Yast.import "Stage"
@@ -35,18 +35,17 @@ module DInstaller
     GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
     private_constant :GPG_KEYS_GLOB
 
-    FALLBACK_REPO = "https://download.opensuse.org/tumbleweed/repo/oss/"
-    private_constant :FALLBACK_REPO
-
+    # TODO: move to yaml config
     SUPPORTED_PRODUCTS = ["Leap", "openSUSE"].freeze
     private_constant :SUPPORTED_PRODUCTS
 
     attr_reader :product, :products
 
-    def initialize(logger)
+    def initialize(logger, config)
       @logger = logger
       @products = []
       @product = "" # do not use nil here, otherwise dbus crash
+      @config = config
     end
 
     def select_product(name)
@@ -146,9 +145,10 @@ module DInstaller
     end
 
     def add_base_repo
-      base_url = Yast::InstURL.installInf2Url("")
-      base_url = FALLBACK_REPO if base_url.empty?
-      Yast::Pkg.SourceCreateBase(base_url, "/")
+      @config.data["software"]["installation_repositories"].each do |repo|
+        Yast::Pkg.SourceCreate(repo, "/") # TODO: having that dir also in config?
+      end
+
       Yast::Pkg.SourceSaveAll
     end
 
