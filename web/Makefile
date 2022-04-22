@@ -88,6 +88,7 @@ install: $(WEBPACK_TEST) po/LINGUAS
 # this requires a built source tree and avoids having to install anything system-wide
 devel-install: $(WEBPACK_TEST)
 	mkdir -p ~/.local/share/cockpit
+	rm -f ~/.local/share/cockpit/$(PACKAGE_NAME)
 	ln -s `pwd`/dist ~/.local/share/cockpit/$(PACKAGE_NAME)
 
 # assumes that there was symlink set up using the above devel-install target,
