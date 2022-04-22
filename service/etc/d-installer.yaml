@@ -7,3 +7,8 @@ software:
 distributions:
   # TODO replace simple id with better description of distributions
   - Tumbleweed
+
+web:
+  ssl: null
+  ssl_cert: null
+  ssl_key: null
