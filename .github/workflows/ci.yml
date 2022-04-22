@@ -75,7 +75,7 @@ jobs:
       run: bundle config set --local with 'development' && bundle install
 
     - name: Run the tests and generate coverage report
-      run: bundle exec rspec test/**/*_test.rb
+      run: bundle exec rspec
 
     - name: Coveralls GitHub Action
       uses: coverallsapp/github-action@1.1.3
