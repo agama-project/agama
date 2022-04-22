@@ -32,6 +32,7 @@ require "dinstaller/dbus/service"
 
 logger = Logger.new($stdout)
 manager = DInstaller::Manager.new(logger)
+manager.setup
 
 EM.run do
   service = DInstaller::DBus::Service.new(manager, logger)

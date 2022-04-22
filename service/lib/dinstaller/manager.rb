@@ -22,6 +22,8 @@
 require "yast"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
+require "dinstaller/config"
+require "dinstaller/cockpit_manager"
 require "dinstaller/language"
 require "dinstaller/network"
 require "dinstaller/progress"
@@ -57,6 +59,11 @@ module DInstaller
       @progress = Progress.new
 
       initialize_yast
+    end
+
+    # Sets up the installation process
+    def setup
+      setup_cockpit
     end
 
     # Probes the system
@@ -162,6 +169,11 @@ module DInstaller
       # Set stage to initial, so it will act as installer for some cases like
       # proposing installer instead of reading current one
       Yast::Stage.Set("initial")
+    end
+
+    def setup_cockpit
+      cockpit = CockpitManager.new(logger)
+      cockpit.setup(config.data["web"])
     end
 
     # Performs probe steps

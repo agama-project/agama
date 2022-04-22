@@ -27,6 +27,7 @@ describe DInstaller::Manager do
 
   let(:logger) { Logger.new($stdout) }
 
+  let(:cockpit) { instance_double(DInstaller::CockpitManager, setup: nil) }
   let(:software) do
     instance_double(DInstaller::Software, probe: nil, install: nil, propose: nil, finish: nil)
   end
@@ -45,6 +46,7 @@ describe DInstaller::Manager do
     allow(DInstaller::StatusManager).to receive(:new).and_return(status_manager)
     allow(DInstaller::Storage::Manager).to receive(:new).and_return(storage)
     allow(DInstaller::Users).to receive(:new).and_return(users)
+    allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
   end
 
   describe "#probe" do
