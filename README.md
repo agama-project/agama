@@ -96,8 +96,8 @@ The web-based UI is a Cockpit module. To build the application, just type:
     cd web
     make devel-install
 
-Point your browser to http://localhost:9090/cockpit/@localhost/d-installer.index.html and happy hacking!
+Point your browser to http://localhost:9090/cockpit/@localhost/d-installer/index.html and happy hacking!
 
 ## References
 
-* [Development Notes](./DEVELOPMENT.md)
+* [Development Notes](./web/README.md)
