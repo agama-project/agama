@@ -23,9 +23,24 @@
 
 // Style focus as proposed by EOS
 // https://eosdesignsystem.herokuapp.com/focus#scss-code
+// but making use of :focus-visible, see https://matthiasott.com/notes/focus-visible-is-here
 *:focus {
- box-shadow: 0 0 0 1px branding.$eos-bc-cerulean-500;
- outline: none;
+  outline: none;
+}
+
+*:focus:not(:focus-visible) {
+  box-shadow: none;
+}
+
+*:focus-visible {
+  box-shadow: 0 0 0 1px branding.$eos-bc-cerulean-500;
+}
+
+// Adds a tiny "padding" when focusing a primary or secondary action to avoid
+// https://github.com/yast/d-installer/issues/115#issuecomment-1087375598
+.pf-c-button.pf-m-primary:focus-visible,
+.pf-c-button.pf-m-secondary:focus-visible {
+  box-shadow: 0 0 0 1px white, 0 0 0 2px branding.$eos-bc-cerulean-500;
 }
 
 // NOTE: commented it out because looks like those
