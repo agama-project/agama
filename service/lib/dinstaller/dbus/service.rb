@@ -26,6 +26,7 @@ require "dinstaller/dbus/software"
 require "dinstaller/dbus/users"
 require "dinstaller/dbus/storage/proposal"
 require "dinstaller/dbus/storage/actions"
+require "dinstaller/dbus/questions"
 
 module DInstaller
   module DBus
@@ -89,7 +90,8 @@ module DInstaller
           software_dbus,
           users_dbus,
           storage_proposal_dbus,
-          storage_actions_dbus
+          storage_actions_dbus,
+          questions_dbus
         ]
       end
 
@@ -118,6 +120,10 @@ module DInstaller
       def storage_actions_dbus
         @storage_actions_dbus ||=
           DInstaller::DBus::Storage::Actions.new(manager.storage.actions, logger)
+      end
+
+      def questions_dbus
+        @questions_dbus ||= DInstaller::DBus::Questions.new(manager.questions_manager, logger)
       end
     end
   end

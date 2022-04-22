@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../test_helper"
+require_relative "../../test_helper"
 require "dinstaller/dbus/service"
 require "dinstaller/manager"
 
@@ -82,6 +82,15 @@ describe DInstaller::DBus::Service do
         .with(manager.users, logger).and_return(users_obj)
 
       expect(bus_service).to receive(:export).with(users_obj)
+      service.export
+    end
+
+    it "exports the questions object" do
+      dbus_object = instance_double(DInstaller::DBus::Questions, path: nil)
+      allow(DInstaller::DBus::Questions).to receive(:new)
+        .with(manager.questions_manager, logger).and_return(dbus_object)
+
+      expect(bus_service).to receive(:export).with(dbus_object)
       service.export
     end
   end
