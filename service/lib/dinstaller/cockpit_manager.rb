@@ -121,6 +121,7 @@ module DInstaller
     #
     # @param location [String] Certificate location
     def copy_ssl_cert(location)
+      logger.info "Retrieving SSL certificate from #{location}"
       copy_file(location, File.join(prefix, WS_CERTS_DIR, "0-d-installer.cert"))
     end
 
@@ -130,6 +131,7 @@ module DInstaller
     #
     # @param location [String] Certificate key location
     def copy_ssl_key(location)
+      logger.info "Retrieving SSL key from #{location}"
       copy_file(location, File.join(prefix, WS_CERTS_DIR, "0-d-installer.key"))
     end
 
