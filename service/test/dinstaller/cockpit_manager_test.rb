@@ -23,6 +23,7 @@ require_relative "../test_helper"
 require "tmpdir"
 require "fileutils"
 require "dinstaller/cockpit_manager"
+Yast.import "Installation"
 
 describe DInstaller::CockpitManager do
   subject(:cockpit) { described_class.new(logger) }
@@ -102,29 +103,15 @@ describe DInstaller::CockpitManager do
       end
     end
 
-    context "when a TLS/SSL certificate URL is given" do
+    context "when a TLS/SSL certificate and key URLs are given" do
       let(:options) do
-        { "ssl_cert" => "file://" + File.join(FIXTURES_PATH, "d-installer.cert") }
+        { "ssl_cert" => "file://" + File.join(FIXTURES_PATH, "d-installer.cert"),
+          "ssl_key"  => "file://" + File.join(FIXTURES_PATH, "d-installer.key") }
       end
 
       it "downloads the certificate to Cockpit's certificates directory" do
         subject.setup(options)
         expect(File).to exist(File.join(cockpit_certs, "0-d-installer.cert"))
-      end
-
-      it "restarts cockpit" do
-        expect(systemd_service).to receive(:restart)
-        subject.setup(options)
-      end
-    end
-
-    context "when a TLS/SSL certificate key URL is given" do
-      let(:options) do
-        { "ssl_key" => "file://" + File.join(FIXTURES_PATH, "d-installer.key") }
-      end
-
-      it "downloads the key to Cockpit's certificates directory" do
-        subject.setup(options)
         expect(File).to exist(File.join(cockpit_certs, "0-d-installer.key"))
       end
 
@@ -132,12 +119,40 @@ describe DInstaller::CockpitManager do
         expect(systemd_service).to receive(:restart)
         subject.setup(options)
       end
+
+      context "when a self-signed certificate exist" do
+        before do
+          FileUtils.touch(File.join(cockpit_certs, "0-self-signed.cert"))
+          FileUtils.touch(File.join(cockpit_certs, "0-self-signed.key"))
+        end
+
+        it "removes the self-signed certificate" do
+          expect(File).to exist(File.join(cockpit_certs, "0-self-signed.cert"))
+          expect(File).to exist(File.join(cockpit_certs, "0-self-signed.key"))
+          subject.setup(options)
+          expect(File).to_not exist(File.join(cockpit_certs, "0-self-signed.cert"))
+          expect(File).to_not exist(File.join(cockpit_certs, "0-self-signed.key"))
+        end
+      end
     end
 
     context "when an empty configuration is given" do
       it "does not restart cockpit" do
         expect(systemd_service).to_not receive(:restart)
         subject.setup({})
+      end
+    end
+
+    context "when a self-signed certificate exists" do
+      before do
+        FileUtils.touch(File.join(cockpit_certs, "0-self-signed.cert"))
+        FileUtils.touch(File.join(cockpit_certs, "0-self-signed.key"))
+      end
+
+      it "does not remove the self-signed certificate" do
+        subject.setup({})
+        expect(File).to exist(File.join(cockpit_certs, "0-self-signed.cert"))
+        expect(File).to exist(File.join(cockpit_certs, "0-self-signed.key"))
       end
     end
   end

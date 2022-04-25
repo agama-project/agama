@@ -23,6 +23,7 @@ require "yast"
 require "yast2/systemd/service"
 require "cfa/base_model"
 require "transfer/file_from_url"
+require "fileutils"
 
 Yast.import "URL"
 
@@ -87,8 +88,11 @@ module DInstaller
       return if options.values.all?(&:nil?)
 
       enable_ssl(options["ssl"]) unless options["ssl"].nil?
-      copy_ssl_cert(options["ssl_cert"]) unless options["ssl_cert"].nil?
-      copy_ssl_key(options["ssl_key"]) unless options["ssl_key"].nil?
+      if options["ssl_cert"]
+        copy_ssl_cert(options["ssl_cert"])
+        copy_ssl_key(options["ssl_key"]) unless options["ssl_key"].nil?
+        clear_self_signed_cert
+      end
 
       restart_cockpit
     end
@@ -127,6 +131,12 @@ module DInstaller
     # @param location [String] Certificate key location
     def copy_ssl_key(location)
       copy_file(location, File.join(prefix, WS_CERTS_DIR, "0-d-installer.key"))
+    end
+
+    # Remove Cockpit's self signed certificates if they exist
+    def clear_self_signed_cert
+      self_signed = Dir[File.join(prefix, WS_CERTS_DIR, "0-self-signed.*")]
+      ::FileUtils.rm(self_signed)
     end
 
     # Copy a file from a potentially remote location
