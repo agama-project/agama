@@ -24,6 +24,10 @@ require "dinstaller/question"
 module DInstaller
   # This class represent a question to ask whether to activate a LUKS device
   #
+  # Clients have to answer one of these options:
+  #   * skip: to skip the activation of the LUKS device
+  #   * decrypt: to activate the device using the provided password
+  #
   # @example
   #   question = LuksQuestion.new("/dev/sda1", label: "mydata", size: "10 GiB")
   #   question.password = "n0ts3cr3t"
@@ -42,8 +46,6 @@ module DInstaller
       @label = label
       @size = size
 
-      # Clients should answer either skip activation (:skip) or decrypt (:decrypt) with the given
-      # password (see {#password}).
       super(generate_text, options: [:skip, :decrypt])
     end
 
