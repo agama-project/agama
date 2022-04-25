@@ -66,9 +66,7 @@ module DInstaller
 
     # Directory to store Cockpit certificates
     WS_CERTS_DIR = "/etc/cockpit/ws-certs.d"
-
     COCKPIT_SERVICE = "cockpit"
-
     COCKPIT_CONF_PATH = "/etc/cockpit/cockpit.conf"
 
     def initialize(logger, prefix: "/")
