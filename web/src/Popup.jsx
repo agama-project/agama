@@ -31,6 +31,7 @@ import { Button, Modal } from "@patternfly/react-core";
  *
  * @example
  *   <Popup
+ *     title="User Settings"
  *     isOpen={showUserSettings}
  *     onConfirm={updateUsersSettings}
  *     onCancel={closeUserSettings}
@@ -38,7 +39,6 @@ import { Button, Modal } from "@patternfly/react-core";
  *     confirmDisabled={username === ""}
  *     confirmText={currentUser ? "Update" : "Confirm"}
  *     unsetText="Use default settings"
- *     sectionTitle="User Settings"
  *   >
  *     <UserSettingsForm />
  *   </Popup>
