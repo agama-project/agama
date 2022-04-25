@@ -23,6 +23,7 @@ require_relative "../../test_helper"
 require "dinstaller/dbus/questions"
 require "dinstaller/questions_manager"
 require "dinstaller/question"
+require "dinstaller/luks_question"
 require "dbus"
 
 describe DInstaller::DBus::Questions do
@@ -54,19 +55,19 @@ describe DInstaller::DBus::Questions do
       expect(id).to eq(question2.id)
     end
 
-    expect(subject).to receive(:PropertiesChanged).twice
+    expect(subject).to receive(:InterfacesAdded).twice
 
     backend.add(question1)
     backend.add(question2)
 
-    expect(subject.all.size).to eq(2)
+    expect(subject.managed_objects.keys.size).to eq(2)
   end
 
   it "configures callbacks for unexporting a D-Bus question when a question is deleted" do
     question1 = DInstaller::Question.new("test1")
     question2 = DInstaller::Question.new("test2")
 
-    allow(subject).to receive(:PropertiesChanged)
+    allow(subject).to receive(:InterfacesAdded)
 
     backend.add(question1)
     backend.add(question2)
@@ -76,11 +77,11 @@ describe DInstaller::DBus::Questions do
       expect(id).to eq(question1.id)
     end
 
-    expect(subject).to receive(:PropertiesChanged).once
+    expect(subject).to receive(:InterfacesRemoved).once
 
     backend.delete(question1)
 
-    expect(subject.all.size).to eq(1)
+    expect(subject.managed_objects.keys.size).to eq(1)
   end
 
   it "configures callbacks to dispatch D-Bus messages while waiting for answers" do
@@ -90,5 +91,44 @@ describe DInstaller::DBus::Questions do
     expect(system_bus).to receive(:dispatch_message_queue)
 
     backend.wait
+  end
+
+  describe "#managed_objects" do
+    before do
+      allow(subject).to receive(:InterfacesAdded)
+
+      backend.add(question1)
+      backend.add(question2)
+    end
+
+    let(:question1) { DInstaller::Question.new("test1") }
+    let(:question2) { DInstaller::LuksQuestion.new("/dev/sda1") }
+
+    it "returns interfaces and properties for each exported question" do
+      result = subject.managed_objects
+
+      path1 = "/org/opensuse/DInstaller/Questions1/#{question1.id}"
+      path2 = "/org/opensuse/DInstaller/Questions1/#{question2.id}"
+
+      expect(result.keys).to contain_exactly(path1, path2)
+
+      expect(result[path1].keys).to contain_exactly(
+        "org.freedesktop.DBus.Properties",
+        "org.opensuse.DInstaller.Question1"
+      )
+
+      expect(result[path2].keys).to contain_exactly(
+        "org.freedesktop.DBus.Properties",
+        "org.opensuse.DInstaller.Question1",
+        "org.opensuse.DInstaller.Question.LuksPassword1"
+      )
+
+      expect(result[path1]["org.freedesktop.DBus.Properties"].keys).to be_empty
+      expect(result[path1]["org.opensuse.DInstaller.Question1"].keys).to contain_exactly(
+        "Id", "Text", "Options", "DefaultOption", "Answer"
+      )
+      expect(result[path2]["org.opensuse.DInstaller.Question.LuksPassword1"].keys)
+        .to contain_exactly("Value")
+    end
   end
 end

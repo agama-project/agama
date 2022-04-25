@@ -20,47 +20,25 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "pathname"
 require "dinstaller/dbus/question"
 
 module DInstaller
   module DBus
-    # This class mimics the basic functionality of ObjectManager. Note that ruby-dbus does not
-    # support ObjectManager yet.
+    # This class represents a D-Bus object implementing ObjectManager interface for questions
     #
-    # What does a {DBus::Questions} object do:
+    # {DBus::Questions} uses a {QuestionsManager} as backend and exports a {DBus::Question} object
+    # when a {DInstaller::Question} is added to the questions manager. A {DBus::Question} is
+    # unexported when a {DInstaller::Question} is deleted from the questions manager.
     #
-    # * Uses a {QuestionsManager} as backend.
-    # * Exports a {DBus::Question} object when a {DInstaller::Question} is added to the questions
-    #   manager.
-    # * Unexports a {DBus::Question} object when a {DInstaller::Question} is deleted from the
-    #   questions manager.
-    # * Ensures that D-Bus messages are dispatched while questions manager waits for all questions
-    #   be answered.
-    #
-    # Questions are exported in D-Bus in a tree form similar to ObjectManager. For example:
-    #
-    # /org/opensuse/DInstaller/Questions1
-    #   /org/opensuse/DInstaller/Questions1/1
-    #   /org/opensuse/DInstaller/Questions1/2
-    #   /org/opensuse/DInstaller/Questions1/3
-    #
-    # This class configures the callbacks of {QuestionsManager} to ensure that the proper D-Bus
-    # actions are performed when adding, deleting or waiting for answers.
+    # Callbacks of {QuestionsManager} are used to ensure that the proper D-Bus actions are performed
+    # when adding, deleting or waiting for answers.
     class Questions < ::DBus::Object
       PATH = "/org/opensuse/DInstaller/Questions1"
       private_constant :PATH
 
-      QUESTIONS_INTERFACE = "org.opensuse.DInstaller.Questions1"
-      private_constant :QUESTIONS_INTERFACE
-
-      # Path of the object
-      #
-      # {DBus::Question} objects are dynamically exported under this path.
-      #
-      # @return [String]
-      def self.path
-        PATH
-      end
+      OBJECT_MANAGER_INTERFACE = "org.freedesktop.DBus.ObjectManager"
+      private_constant :OBJECT_MANAGER_INTERFACE
 
       # Constructor
       #
@@ -79,18 +57,20 @@ module DInstaller
         super(PATH)
       end
 
-      # Paths of all currently exported questions
+      # Information provided by ObjectManger for each exported object
       #
-      # @warn This method is used to implement a D-Bus reader method. Do not use it to recover all
-      #   the {Question} objects.
+      # Returns a hash containing paths of exported objects as keys. Each value is the information
+      # of interfaces and properties for that object, see {#interfaces_and_properties}.
       #
-      # @return [Array<::DBus::ObjectPath>]
-      def all
-        exported_questions.map(&:path)
+      # @return [Hash]
+      def managed_objects
+        exported_questions.each_with_object({}) { |q, h| h[q.path] = interfaces_and_properties(q) }
       end
 
-      dbus_interface QUESTIONS_INTERFACE do
-        dbus_reader :all, "as"
+      dbus_interface OBJECT_MANAGER_INTERFACE do
+        dbus_method(:GetManagedObjects, "out res:a{oa{sa{sv}}}") { [managed_objects] }
+        dbus_signal(:InterfacesAdded, "object:o, interfaces_and_properties:a{sa{sv}}")
+        dbus_signal(:InterfacesRemoved, "object:o, interfaces:as")
       end
 
     private
@@ -106,14 +86,40 @@ module DInstaller
       # @return [Array<DBus::Question>]
       attr_reader :exported_questions
 
+      # Builds the question path (e.g., org.opensuse.DInstaller/Questions1/1)
+      #
+      # @param question [DInstaller::Question]
+      # @return [::DBus::ObjectPath]
+      def path_for(question)
+        path = Pathname.new(PATH).join(question.id.to_s)
+
+        ::DBus::ObjectPath.new(path.to_s)
+      end
+
+      # Generates information about interfaces and properties for the given question
+      #
+      # Returns a hash containing interfaces names as keys. Each value is the same hash that would
+      # be returned by the org.freedesktop.DBus.Properties.GetAll() method for that combination of
+      # object path and interface. If an interface has no properties, the empty hash is returned.
+      #
+      # @param question [DBus::Question]
+      # @return [Hash]
+      def interfaces_and_properties(question)
+        get_all_method = self.class.make_method_name("org.freedesktop.DBus.Properties", :GetAll)
+
+        question.intfs.keys.each_with_object({}) do |interface, hash|
+          hash[interface] = question.public_send(get_all_method, interface).first
+        end
+      end
+
       # Callbacks with actions to do when adding, deleting or waiting for questions
       def register_callbacks
         # When adding a question, a new question is exported on D-Bus.
         backend.on_add do |question|
-          dbus_object = DBus::Question.new(question, logger)
+          dbus_object = DBus::Question.new(path_for(question), question, logger)
           @service.export(dbus_object)
           exported_questions << dbus_object
-          PropertiesChanged(QUESTIONS_INTERFACE, { "All" => all }, [])
+          InterfacesAdded(dbus_object.path, interfaces_and_properties(dbus_object))
         end
 
         # When removing a question, the question is unexported from D-Bus.
@@ -122,7 +128,7 @@ module DInstaller
           if dbus_object
             @service.unexport(dbus_object)
             exported_questions.delete(dbus_object)
-            PropertiesChanged(QUESTIONS_INTERFACE, { "All" => all }, [])
+            InterfacesRemoved(dbus_object.path, dbus_object.intfs.keys)
           end
         end
 

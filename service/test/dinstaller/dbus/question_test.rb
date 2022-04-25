@@ -26,11 +26,13 @@ require "dinstaller/luks_question"
 require "dbus"
 
 describe DInstaller::DBus::Question do
-  subject { described_class.new(backend, logger) }
+  subject { described_class.new(path, backend, logger) }
 
   before do
     subject.instance_variable_set(:@service, service)
   end
+
+  let(:path) { "/org/test" }
 
   let(:logger) { instance_double(Logger, warn: nil, info: nil, error: nil) }
 
@@ -118,6 +120,8 @@ describe DInstaller::DBus::Question do
         end
       end
     end
+
+    let(:backend) { DInstaller::Question.new("test") }
 
     context "for a generic question" do
       let(:backend) do

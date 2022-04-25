@@ -20,8 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "pathname"
-require "dinstaller/dbus/questions"
 require "dinstaller/question"
 require "dinstaller/luks_question"
 
@@ -30,8 +28,7 @@ module DInstaller
     # Class to represent a question on D-Bus
     #
     # Questions are dynamically exported on D-Bus. All questions are exported as children of
-    # {DBus::Questions} object to mimic ObjectManager behavior. Note that ruby-dbus does not support
-    # ObjectManager yet.
+    # {DBus::Questions} object.
     #
     # Clients should provide an answer for each question.
     class Question < ::DBus::Object
@@ -147,13 +144,14 @@ module DInstaller
 
       # Constructor
       #
+      # @param path [::DBus::ObjectPath]
       # @param backend [DInstaller::Question]
       # @param logger [Logger]
-      def initialize(backend, logger)
+      def initialize(path, backend, logger)
         @backend = backend
         @logger = logger
 
-        super(build_path)
+        super(path)
 
         add_interfaces
       end
@@ -162,13 +160,6 @@ module DInstaller
 
       # @return [DInstaller::Question]
       attr_reader :backend
-
-      # Builds the question path under {DBus::Questions} path (e.g., o.o.DInstaller/Questions1/1)
-      #
-      # @return [String]
-      def build_path
-        Pathname.new(Questions.path).join(backend.id.to_s).to_s
-      end
 
       # Adds interfaces to the question
       def add_interfaces
