@@ -28,9 +28,9 @@ import {
   FormGroup,
   FormSelect,
   FormSelectOption,
-  Modal,
-  ModalVariant
 } from "@patternfly/react-core";
+
+import Popup from './Popup';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -122,26 +122,18 @@ export default function ProductSelector() {
         {label()}
       </Button>
 
-      <Modal
+      <Popup
         isOpen={isFormOpen}
-        showClose={false}
-        variant={ModalVariant.small}
         aria-label="Product Selector"
-        actions={[
-          <Button key="confirm" variant="primary" onClick={accept}>
-            Confirm
-          </Button>,
-          <Button key="cancel" variant="secondary" onClick={cancel}>
-            Cancel
-          </Button>
-        ]}
+        onConfirm={accept}
+        onCancel={cancel}
       >
         <Form>
           <FormGroup fieldId="product" label="Product">
             {buildSelector()}
           </FormGroup>
         </Form>
-      </Modal>
+      </Popup>
     </>
   );
 }

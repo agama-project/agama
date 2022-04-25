@@ -27,9 +27,9 @@ import {
   FormGroup,
   FormSelect,
   FormSelectOption,
-  Modal,
-  ModalVariant
 } from "@patternfly/react-core";
+
+import Popup from './Popup';
 
 export default function TargetSelector({ target, targets, onAccept }) {
   const [value, setValue] = useState("");
@@ -66,26 +66,18 @@ export default function TargetSelector({ target, targets, onAccept }) {
         {target}
       </Button>
 
-      <Modal
+      <Popup
         isOpen={isFormOpen}
-        showClose={false}
-        variant={ModalVariant.small}
         aria-label="Target Selector"
-        actions={[
-          <Button key="confirm" variant="primary" onClick={accept}>
-            Confirm
-          </Button>,
-          <Button key="cancel" variant="secondary" onClick={cancel}>
-            Cancel
-          </Button>
-        ]}
+        onConfirm={accept}
+        onCancel={cancel}
       >
         <Form>
           <FormGroup fieldId="target" label="Device to install into">
             {buildSelector()}
           </FormGroup>
         </Form>
-      </Modal>
+      </Popup>
     </>
   );
 }

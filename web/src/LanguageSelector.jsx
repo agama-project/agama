@@ -27,10 +27,10 @@ import {
   Form,
   FormGroup,
   FormSelect,
-  FormSelectOption,
-  Modal,
-  ModalVariant
+  FormSelectOption
 } from "@patternfly/react-core";
+
+import Popup from './Popup';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -122,26 +122,18 @@ export default function LanguageSelector() {
         {label()}
       </Button>
 
-      <Modal
+      <Popup
         isOpen={isFormOpen}
-        showClose={false}
-        variant={ModalVariant.small}
+        onConfirm={accept}
+        onCancel={cancel}
         aria-label="Language Selector"
-        actions={[
-          <Button key="confirm" variant="primary" onClick={accept}>
-            Confirm
-          </Button>,
-          <Button key="cancel" variant="secondary" onClick={cancel}>
-            Cancel
-          </Button>
-        ]}
       >
         <Form>
           <FormGroup fieldId="language" label="Language">
             {buildSelector(state.formCurrent)}
           </FormGroup>
         </Form>
-      </Modal>
+      </Popup>
     </>
   );
 }

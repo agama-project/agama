@@ -22,7 +22,7 @@
 import React, { useState } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import { Button, Modal, ModalVariant, Flex, FlexItem, Text } from "@patternfly/react-core";
+import { Button, Flex, FlexItem, Text } from "@patternfly/react-core";
 
 import Layout from "./Layout";
 import Category from "./Category";
@@ -30,6 +30,7 @@ import LanguageSelector from "./LanguageSelector";
 import ProductSelector from "./ProductSelector";
 import Storage from "./Storage";
 import Users from "./Users";
+import Popup from "./Popup";
 
 import {
   EOS_FACT_CHECK as OverviewIcon,
@@ -70,19 +71,13 @@ function Overview() {
           Install
         </Button>
 
-        <Modal
+        <Popup
           title="Confirm Installation"
           isOpen={isOpen}
-          showClose={false}
-          variant={ModalVariant.small}
-          actions={[
-            <Button key="accept" variant="primary" onClick={install}>
-              Install
-            </Button>,
-            <Button key="back" variant="secondary" onClick={close} autoFocus>
-              Cancel
-            </Button>
-          ]}
+          autoFocusOn="cancel"
+          onConfirm={install}
+          confirmText="Install"
+          onCancel={close}
         >
           <Text>
             If you continue, partitions on your hard disk will be modified according to the
@@ -91,7 +86,7 @@ function Overview() {
           <Text>
             Please, cancel and check the settings if you are unsure.
           </Text>
-        </Modal>
+        </Popup>
       </>
     );
   };
