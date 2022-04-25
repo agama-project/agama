@@ -127,8 +127,6 @@ describe DInstaller::CockpitManager do
         end
 
         it "removes the self-signed certificate" do
-          expect(File).to exist(File.join(cockpit_certs, "0-self-signed.cert"))
-          expect(File).to exist(File.join(cockpit_certs, "0-self-signed.key"))
           subject.setup(options)
           expect(File).to_not exist(File.join(cockpit_certs, "0-self-signed.cert"))
           expect(File).to_not exist(File.join(cockpit_certs, "0-self-signed.key"))
