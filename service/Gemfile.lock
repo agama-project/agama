@@ -9,7 +9,7 @@ PATH
       fast_gettext (~> 2.2.0)
       nokogiri (~> 1.13.1)
       rexml (~> 3.2.5)
-      ruby-dbus (>= 0.17.0)
+      ruby-dbus (>= 0.18.0.beta5)
 
 GEM
   remote: https://rubygems.org/
@@ -51,7 +51,7 @@ GEM
       rspec-support (~> 3.11.0)
     rspec-support (3.11.0)
     ruby-augeas (0.5.0)
-    ruby-dbus (0.17.0)
+    ruby-dbus (0.18.0.beta5)
       rexml
     simplecov (0.21.2)
       docile (~> 1.1)
