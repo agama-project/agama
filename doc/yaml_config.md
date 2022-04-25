@@ -52,3 +52,22 @@ List of architectures where apply condition.
 
 map with same structure as top level config element that overwrites default values. Only exception
 is conditions which cannot be nested.
+
+### web
+
+Cockpit's web server related settings.
+
+#### ssl
+
+Whether enable or disable TLS/SSL for remote connections. If it is not set, it does not modify
+Cockpit configuration in that regard.
+
+#### ssl_cert
+
+Location of the certificate to use for remote connections. The certificate is retrieved and copied
+to `/etc/cockpit/ws-certs.d`.
+
+#### ssl_key
+
+Location of the certificate key to use for remote connections. The key is retrieved and copied to
+`/etc/cockpit/ws-certs.d`. This option is ignored unless the `ssl_cert` is set.
