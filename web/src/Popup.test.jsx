@@ -105,9 +105,9 @@ describe("Popup.SecondaryAction", () => {
   });
 });
 
-describe("Popup.TertiaryAction", () => {
+describe("Popup.AncillaryAction", () => {
   it("renders a 'link' button with given children as content", async () => {
-    installerRender(<Popup.TertiaryAction>Do not use</Popup.TertiaryAction>);
+    installerRender(<Popup.AncillaryAction>Do not use</Popup.AncillaryAction>);
 
     const button = screen.queryByRole("button", { name: "Do not use" });
     expect(button.classList.contains("pf-m-link")).toBe(true);

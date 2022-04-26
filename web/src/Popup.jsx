@@ -134,18 +134,18 @@ const Cancel = ({ children = "Cancel", ...props }) => (
  * to "link", no matter what is given in `props`
  *
  * @example
- *   <TertiaryAction onClick={turnUserSeettingsOff}>Do not set this</TertiaryAction>
+ *   <AncillaryAction onClick={turnUserSeettingsOff}>Do not set this</AncillaryAction>
  *
  * @example
- *   <TertiaryAction onClick={turnUserSettingsOff}>
+ *   <AncillaryAction onClick={turnUserSettingsOff}>
  *     <Removeicon />
  *     <Text>Do not set</Text>
- *   </TertiaryAction>
+ *   </AncillaryAction>
  *
  * @param {React.ReactNode} props.children - content of the action
  * @param {object} [props] - { @link Action } props
  */
-const TertiaryAction = ({ children, ...props }) => (
+const AncillaryAction = ({ children, ...props }) => (
   <Action { ...props } variant="link">{ children }</Action>
 );
 
@@ -208,6 +208,6 @@ Popup.PrimaryAction = PrimaryAction;
 Popup.Confirm = Confirm;
 Popup.SecondaryAction = SecondaryAction;
 Popup.Cancel = Cancel;
-Popup.TertiaryAction = TertiaryAction;
+Popup.AncillaryAction = AncillaryAction;
 
 export default Popup;

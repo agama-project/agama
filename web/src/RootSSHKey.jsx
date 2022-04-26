@@ -102,9 +102,9 @@ export default function RootSSHKey() {
         <Popup.Actions>
           <Popup.Confirm onClick={accept} />
           <Popup.Cancel onClick={cancel} />
-          <Popup.TertiaryAction onClick={remove} isDisabled={sshKey === ""}>
+          <Popup.AncillaryAction onClick={remove} isDisabled={sshKey === ""}>
             Do not use SSH public key
-          </Popup.TertiaryAction>
+          </Popup.AncillaryAction>
         </Popup.Actions>
       </Popup>
     </>
