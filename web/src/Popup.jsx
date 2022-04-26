@@ -21,6 +21,7 @@
 
 import React from "react";
 import { Button, Modal } from "@patternfly/react-core";
+import { partition } from "./utils";
 
 /**
  * Wrapper component for holding Popup actions
@@ -187,9 +188,7 @@ const TertiaryAction = ({ children, ...props }) => (
  *
  */
 const Popup = ({ isOpen = false, showClose = false, variant = "small", children, ...pf4ModalProps }) => {
-  const flattenChildren = React.Children.toArray(children);
-  const content = flattenChildren.filter(child => child.type !== Actions);
-  const actions = flattenChildren.filter(child => child.type === Actions);
+  const [actions, content] = partition(React.Children.toArray(children), child => child.type === Actions);
 
   return (
     <Modal
