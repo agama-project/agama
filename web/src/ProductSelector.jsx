@@ -122,17 +122,17 @@ export default function ProductSelector() {
         {label()}
       </Button>
 
-      <Popup
-        isOpen={isFormOpen}
-        aria-label="Product Selector"
-        onConfirm={accept}
-        onCancel={cancel}
-      >
+      <Popup isOpen={isFormOpen} aria-label="Product Selector">
         <Form>
           <FormGroup fieldId="product" label="Product">
             {buildSelector()}
           </FormGroup>
         </Form>
+
+        <Popup.Actions>
+          <Popup.Confirm onClick={accept} />
+          <Popup.Cancel onClick={cancel} />
+        </Popup.Actions>
       </Popup>
     </>
   );

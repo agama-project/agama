@@ -38,9 +38,6 @@ export default function About() {
       <Popup
         isOpen={isOpen}
         title="About D-Installer"
-        autoFocusOn="confirm"
-        onConfirm={close}
-        confirmText="Close"
       >
         <Text>
           D-Installer is an <strong>experimental installer</strong> for (open)SUSE systems. It is
@@ -51,6 +48,9 @@ export default function About() {
           For more information, check{" "}
           <a href="https://github.com/yast/d-installer">the project's repository</a>.
         </Text>
+        <Popup.Actions>
+          <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
+        </Popup.Actions>
       </Popup>
     </>
   );

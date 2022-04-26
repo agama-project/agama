@@ -80,15 +80,7 @@ export default function RootSSHKey() {
   return (
     <>
       {renderLink()}
-      <Popup
-        isOpen={isFormOpen}
-        aria-label="Set root SSH public key"
-        onConfirm={accept}
-        onCancel={cancel}
-        onUnset={remove}
-        unsetText="Do not use SSH public key"
-        unsetDisabled={sshKey === ""}
-      >
+      <Popup isOpen={isFormOpen} aria-label="Set root SSH public key">
         <Form>
           <FormGroup fieldId="sshKey" label="Root SSH public key">
             <FileUpload
@@ -106,6 +98,14 @@ export default function RootSSHKey() {
             />
           </FormGroup>
         </Form>
+
+        <Popup.Actions>
+          <Popup.Confirm onClick={accept} />
+          <Popup.Cancel onClick={cancel} />
+          <Popup.TertiaryAction onClick={remove} isDisabled={sshKey === ""}>
+            Do not use SSH public key
+          </Popup.TertiaryAction>
+        </Popup.Actions>
       </Popup>
     </>
   );

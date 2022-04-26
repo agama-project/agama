@@ -74,10 +74,6 @@ function Overview() {
         <Popup
           title="Confirm Installation"
           isOpen={isOpen}
-          autoFocusOn="cancel"
-          onConfirm={install}
-          confirmText="Install"
-          onCancel={close}
         >
           <Text>
             If you continue, partitions on your hard disk will be modified according to the
@@ -86,6 +82,11 @@ function Overview() {
           <Text>
             Please, cancel and check the settings if you are unsure.
           </Text>
+
+          <Popup.Actions>
+            <Popup.Confirm onClick={install}>Install</Popup.Confirm>
+            <Popup.Cancel onClick={close} autoFocus />
+          </Popup.Actions>
         </Popup>
       </>
     );

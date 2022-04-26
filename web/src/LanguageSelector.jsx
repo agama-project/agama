@@ -124,8 +124,6 @@ export default function LanguageSelector() {
 
       <Popup
         isOpen={isFormOpen}
-        onConfirm={accept}
-        onCancel={cancel}
         aria-label="Language Selector"
       >
         <Form>
@@ -133,6 +131,10 @@ export default function LanguageSelector() {
             {buildSelector(state.formCurrent)}
           </FormGroup>
         </Form>
+        <Popup.Actions>
+          <Popup.Confirm onClick={accept} />
+          <Popup.Cancel onClick={cancel} />
+        </Popup.Actions>
       </Popup>
     </>
   );

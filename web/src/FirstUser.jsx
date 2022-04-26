@@ -87,16 +87,7 @@ export default function Users() {
     <>
       {renderLink()}
 
-      <Popup
-        isOpen={isFormOpen}
-        title="User account"
-        onConfirm={accept}
-        confirmDisabled={formValues.userName === ""}
-        onCancel={cancel}
-        onUnset={remove}
-        unsetText="Do not create a user"
-        unsetDisabled={!userIsDefined}
-      >
+      <Popup isOpen={isFormOpen} title="User account">
         <Form>
           <FormGroup fieldId="userFullName" label="Full name">
             <TextInput
@@ -141,6 +132,14 @@ export default function Users() {
             onChange={handleInputChange}
           />
         </Form>
+
+        <Popup.Actions>
+          <Popup.Confirm onClick={accept} isDisabled={formValues.userName === ""} />
+          <Popup.Cancel onClick={cancel} />
+          <Popup.TertiaryAction onClick={remove} isDisabled={!userIsDefined}>
+            Do not create a user
+          </Popup.TertiaryAction>
+        </Popup.Actions>
       </Popup>
     </>
   );

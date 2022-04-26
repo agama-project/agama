@@ -66,17 +66,17 @@ export default function TargetSelector({ target, targets, onAccept }) {
         {target}
       </Button>
 
-      <Popup
-        isOpen={isFormOpen}
-        aria-label="Target Selector"
-        onConfirm={accept}
-        onCancel={cancel}
-      >
+      <Popup isOpen={isFormOpen} aria-label="Target Selector">
         <Form>
           <FormGroup fieldId="target" label="Device to install into">
             {buildSelector()}
           </FormGroup>
         </Form>
+
+        <Popup.Actions>
+          <Popup.Confirm onClick={accept} />
+          <Popup.Cancel onClick={cancel} />
+        </Popup.Actions>
       </Popup>
     </>
   );

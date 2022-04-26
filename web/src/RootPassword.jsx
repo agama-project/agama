@@ -89,12 +89,6 @@ export default function RootPassword() {
       <Popup
         isOpen={isFormOpen}
         aria-label="Set new root password"
-        onConfirm={accept}
-        confirmDisabled={rootPassword === ""}
-        onCancel={close}
-        onUnset={remove}
-        unsetText="Do not use a password"
-        unsetDisabled={!isRootPasswordSet}
       >
         <Form>
           <FormGroup fieldId="rootPassword" label="New root password">
@@ -107,6 +101,14 @@ export default function RootPassword() {
             />
           </FormGroup>
         </Form>
+
+        <Popup.Actions>
+          <Popup.Confirm onClick={accept} isDisabled={rootPassword === ""} />
+          <Popup.Cancel onClick={close} />
+          <Popup.TertiaryAction onClick={remove} isDisabled={!isRootPasswordSet}>
+            Do not use a password
+          </Popup.TertiaryAction>
+        </Popup.Actions>
       </Popup>
     </>
   );
