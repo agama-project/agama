@@ -31,6 +31,7 @@ require "dinstaller/software"
 require "dinstaller/status_manager"
 require "dinstaller/storage"
 require "dinstaller/users"
+require "dinstaller/questions_manager"
 
 Yast.import "Stage"
 
@@ -47,6 +48,9 @@ module DInstaller
     # @return [StatusManager]
     attr_reader :status_manager
 
+    # @return [QuestionsManager]
+    attr_reader :questions_manager
+
     # @return [Progress]
     attr_reader :progress
 
@@ -56,6 +60,7 @@ module DInstaller
     def initialize(logger)
       @logger = logger
       @status_manager = StatusManager.new(Status::Error.new) # temporary status until probing starts
+      @questions_manager = QuestionsManager.new(logger)
       @progress = Progress.new
 
       initialize_yast
