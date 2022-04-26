@@ -23,100 +23,173 @@ import React from "react";
 import { Button, Modal } from "@patternfly/react-core";
 
 /**
+ * Wrapper component for holding Popup actions
+ *
+ * Useful and required for placing the components to be used as PF4/Modal actions, usually a
+ * Popup.Action or PF4/Button
+ *
+ * @see Popup examples.
+ *
+ * @param {React.ReactNode} [props.children] - a collection of Action components
+ */
+const Actions = ({ children }) => <>{children}</>;
+
+/**
+ * A convenient component representing a Popup action
+ *
+ * Built on top of { @link https://www.patternfly.org/v4/components/button PF4/Button }
+ *
+ * @see Popup examples.
+ *
+ * @param {React.ReactNode} props.children - content of the action
+ * @param {object} [props] - PF4/Button props, see { @link https://www.patternfly.org/v4/components/button#props }
+ */
+const Action = ({ children, ...props }) => (
+  <Button { ...props }>
+    {children}
+  </Button>
+);
+
+/**
+ * A Popup primary action
+ *
+ * It always set `variant` { @link https://www.patternfly.org/v4/components/button PF4/Button }
+ * prop to "primary", no matter what given in `props`.
+ *
+ * @example
+ *   <PrimaryAction onClick={doSomething}>Let's go</PrimaryAction>
+ *
+ * @example
+ *   <PrimaryAction onClick={upload}>
+ *     <UploadIcon />
+ *     <Text>Upload</Text>
+ *   </PrimaryAction>
+ *
+ * @param {React.ReactNode} props.children - content of the action
+ * @param {object} [props] - { @link Action } props
+ */
+const PrimaryAction = ({ children, ...props }) => (
+  <Action { ...props } variant="primary">{ children }</Action>
+);
+
+/**
+ * Shortcut for the primary "Confirm" action
+ *
+ * @example
+ *   <Confirm onClick={confirm} />
+ *
+ * @example
+ *   <Confirm onClick={accept}>Accept</Confirm>
+ *
+ * @param {React.ReactNode} [props.children="confirm"] - content of the action
+ * @param {object} [props] - { @link Action } props
+ */
+const Confirm = ({ children = "Confirm", ...props }) => (
+  <PrimaryAction key="confirm" { ...props }>{ children }</PrimaryAction>
+);
+
+/**
+ * A Popup secondary action
+ *
+ * It always set `variant` { @link https://www.patternfly.org/v4/components/button PF4/Button }
+ * prop to "secondary", no matter what given in `props`.
+ *
+ * @example
+ *   <SecondaryAction onClick={cancel}>Cancel</SecondaryAction>
+ *
+ * @example
+ *   <SecondaryAction onClick={upload}>
+ *     <DismissIcon />
+ *     <Text>Dismiss</Text>
+ *   </SecondaryAction>
+ *
+ * @param {React.ReactNode} props.children - content of the action
+ * @param {object} [props] - { @link Action } props
+ */
+const SecondaryAction = ({ children, ...props }) => (
+  <Action { ...props } variant="secondary">{ children }</Action>
+);
+
+/**
+ * Shortcut for the secondary "Cancel" action
+ *
+ * @example
+ *   <Cancel onClick={cancel} />
+ *
+ * @example
+ *   <Cancel onClick={dissmiss}>Dismiss</Confirm>
+ *
+ * @param {React.ReactNode} [props.children="Cancel"] - content of the action
+ * @param {object} [props] - { @link Action } props
+ */
+const Cancel = ({ children = "Cancel", ...props }) => (
+  <SecondaryAction key="cancel" { ...props }>{ children }</SecondaryAction>
+);
+
+/**
+ * A Popup tertiary action, rendered as a link
+ *
+ * It always set `variant` { @link https://www.patternfly.org/v4/components/button PF4/Button } prop
+ * to "link", no matter what is given in `props`
+ *
+ * @example
+ *   <TertiaryAction onClick={turnUserSeettingsOff}>Do not set this</TertiaryAction>
+ *
+ * @example
+ *   <TertiaryAction onClick={turnUserSettingsOff}>
+ *     <Removeicon />
+ *     <Text>Do not set</Text>
+ *   </TertiaryAction>
+ *
+ * @param {React.ReactNode} props.children - content of the action
+ * @param {object} [props] - { @link Action } props
+ */
+const TertiaryAction = ({ children, ...props }) => (
+  <Action { ...props } variant="link">{ children }</Action>
+);
+
+/**
  * D-Installer component for displaying a popup
  *
- * Built on top of { @link https://www.patternfly.org/v4/components/modal PF4/Modal }, it displays
- * up to three actions according to given params: "Confirm", "Cancel", and "Do not use". All of them
- * can be tweaked via corresponding params, but at least `onConfirm` callback must be provided
+ * Built on top of { @link https://www.patternfly.org/v4/components/modal PF4/Modal }, it manipulate
+ * the children object for extraction {Actions} from there.
  *
  * @example
  *   <Popup
  *     title="User Settings"
  *     isOpen={showUserSettings}
- *     onConfirm={updateUsersSettings}
- *     onCancel={closeUserSettings}
- *     onUnset={unsetUserSettings}
- *     confirmDisabled={username === ""}
- *     confirmText={currentUser ? "Update" : "Confirm"}
- *     unsetText="Use default settings"
  *   >
  *     <UserSettingsForm />
+ *     <Popup.Actions>
+ *       <Popup.PrimaryAction onClick={updateUserSetting}>Confirm</Popup.PrimaryAction>
+ *       <Popup.SecondaryAction onClick={cancel}>Cancel</Popup.SecondaryAction>
+ *     </Popup.Actions>
+ *   </Popup>
+ *
+ * @example
+ *   <Popup
+ *     title="User Settings"
+ *     isOpen={showUserSettings}
+ *   >
+ *     <UserSettingsForm />
+ *     <Popup.Actions>
+ *       <Popup.Confirm onClick={updateUserSetting} />
+ *       <Popup.Cancel onClick={cancel} />
+ *     </Popup.Actions>
  *   </Popup>
  *
  * @param {object} props - component props
  * @param {boolean} [props.isOpen=false] - whether the popup is displayed or not
  * @param {boolean} [props.showClose=false] - whether the popup should include a "X" action for closing it
- * @param {string} [props.variant="small"] - the popup size, based on Pf4/Modal variant prop
- * @param {"confirm" | "cancel" | "unset" } [props.autoFocusOn] - force autoFocus to the button with given key
- * @param {function} props.onConfirm - function to be triggered when user clicks on confirm action
- * @param {string} [props.confirmText="Confirm"] - text to be used for the confirm action
- * @param {boolean} [props.confirmDisabled=false] - whether the confirm action should be disabled
- * @param {function} [props.onCancel] - function to be triggered when user clicks on cancel action
- * @param {string} [props.cancelText="Cancel"] - text to be used for the cancel action
- * @param {boolean} [props.cancelDisabled=false] - whether the cancel action should be disabled
- * @param {function} [props.onUnset] - function to be triggered when user clicks on unset action
- * @param {string} [props.unsetText="Do not use"] - text to be used for the unset action
- * @param {boolean} [props.unsetDisabled=true] - whether the unset action should be disabled
- * @param {React.ReactNode} [props.children] - the popup content
- * @param {object} [pf4ModalProps] - PF4/Modal props, @see https://www.patternfly.org/v4/components/modal#props
+ * @param {string} [props.variant="small"] - the popup size, based on Pf4/Modal `variant` prop
+ * @param {React.ReactNode} props.children - the popup content and actions
+ * @param {object} [pf4ModalProps] - PF4/Modal props, See { @link https://www.patternfly.org/v4/components/modal#props }
  *
  */
-export default function Popup({
-  isOpen = false,
-  showClose = false,
-  variant = "small",
-  autoFocusOn,
-  onConfirm,
-  confirmText = "Confirm",
-  confirmDisabled = false,
-  onCancel,
-  cancelText = "Cancel",
-  cancelDisabled = false,
-  onUnset,
-  unsetText = "Do not use",
-  unsetDisabled = true,
-  children,
-  ...pf4ModalProps
-}) {
-  const actions = [
-    <Button
-      key="confirm"
-      variant="primary"
-      onClick={onConfirm}
-      autoFocus={autoFocusOn === "confirm"}
-      isDisabled={confirmDisabled}
-    >
-      {confirmText}
-    </Button>
-  ];
-
-  if (onCancel) {
-    actions.push(
-      <Button
-        key="cancel"
-        variant="secondary"
-        onClick={onCancel}
-        isDisabled={cancelDisabled}
-        autoFocus={autoFocusOn === "cancel"}
-      >
-        {cancelText}
-      </Button>
-    );
-  }
-
-  if (onUnset) {
-    actions.push(
-      <Button
-        key="unset"
-        variant="link"
-        onClick={onUnset}
-        isDisabled={unsetDisabled}
-        autoFocus={autoFocusOn === "unset"}
-      >
-        {unsetText}
-      </Button>
-    );
-  }
+const Popup = ({ isOpen = false, showClose = false, variant = "small", children, ...pf4ModalProps }) => {
+  const flattenChildren = React.Children.toArray(children);
+  const content = flattenChildren.filter(child => child.type !== Actions);
+  const actions = flattenChildren.filter(child => child.type === Actions);
 
   return (
     <Modal
@@ -126,7 +199,16 @@ export default function Popup({
       actions={actions}
       { ...pf4ModalProps }
     >
-      { children }
+      { content }
     </Modal>
   );
-}
+};
+
+Popup.Actions = Actions;
+Popup.PrimaryAction = PrimaryAction;
+Popup.Confirm = Confirm;
+Popup.SecondaryAction = SecondaryAction;
+Popup.Cancel = Cancel;
+Popup.TertiaryAction = TertiaryAction;
+
+export default Popup;

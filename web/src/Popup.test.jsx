@@ -21,33 +21,26 @@
 
 import React from "react";
 
-import { screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 
 import Popup from "./Popup";
 
 let isOpen;
-const onConfirmFn = jest.fn();
-const confirmText = "Let's go";
-const onCancelFn = jest.fn();
-const cancelText = "Close without saving";
-const onUnsetFn = jest.fn();
-const unsetText = "Ignore this setting";
+const confirmFn = jest.fn();
+const cancelFn = jest.fn();
 
 const TestingPopup = (props) => (
   <Popup
     title="Testing Popup component"
     isOpen={isOpen}
-    onConfirm={onConfirmFn}
-    confirmText={confirmText}
-    onCancel={onCancelFn}
-    cancelText={cancelText}
-    onUnset={onUnsetFn}
-    unsetText={unsetText}
     { ...props }
   >
     <p>The Popup Content</p>
+    <Popup.Actions>
+      <Popup.Confirm onClick={confirmFn} isDisabled />
+      <Popup.Cancel onClick={cancelFn} />
+    </Popup.Actions>
   </Popup>
 );
 
@@ -57,10 +50,10 @@ describe("Popup", () => {
       isOpen = false;
     });
 
-    it("displays nothing", async () => {
+    it("renders nothing", async () => {
       installerRender(<TestingPopup />);
 
-      const dialog = await screen.queryByRole("dialog");
+      const dialog = screen.queryByRole("dialog");
       expect(dialog).toBeNull();
     });
   });
@@ -70,110 +63,97 @@ describe("Popup", () => {
       isOpen = true;
     });
 
-    it("displays the popup content", async () => {
+    it("renders the popup content inside a PF4/Modal", async () => {
       installerRender(<TestingPopup />);
 
       const dialog = await screen.findByRole("dialog");
+      expect(dialog.classList.contains("pf-c-modal-box")).toBe(true);
 
       within(dialog).getByText("The Popup Content");
     });
 
-    it.each([
-      { action: "confirm", actionText: confirmText },
-      { action: "cancel", actionText: cancelText },
-      { action: "unset", actionText: unsetText }
-    ])("honors autoFocusOn={'$action'} when $action is enabled", async ({ action, actionText }) => {
-      const actionDisabledProp = `${action}Disabled`;
-      const props = {
-        autoFocusOn: action,
-        [actionDisabledProp]: false
-      };
-
-      installerRender(<TestingPopup { ...props } />);
-
-      const dialog = await screen.findByRole("dialog");
-      const actionButton = within(dialog).queryByRole("button", { name: actionText });
-      expect(actionButton).toHaveFocus();
-    });
-
-    it.each([
-      { action: "confirm", actionText: confirmText },
-      { action: "cancel", actionText: cancelText },
-      { action: "unset", actionText: unsetText }
-    ])("does not honor autoFocusOn={'$action'} when $action is disabled", async ({ action, actionText }) => {
-      const actionDisabledProp = `${action}Disabled`;
-      const props = {
-        autoFocusOn: action,
-        [actionDisabledProp]: true
-      };
-
-      installerRender(<TestingPopup { ...props } />);
-
-      const dialog = await screen.findByRole("dialog");
-      const actionButton = within(dialog).queryByRole("button", { name: actionText });
-      expect(actionButton).not.toHaveFocus();
-    });
-
-    it.each([
-      { action: "Cancel", actionText: cancelText },
-      { action: "Unset", actionText: unsetText }
-    ])("includes the '$action' action when its callback is defined", async ({ action, actionText }) => {
+    it("renders the popup actions inside a PF4/Modal footer", async () => {
       installerRender(<TestingPopup />);
 
       const dialog = await screen.findByRole("dialog");
-      const actionButton = within(dialog).queryByRole("button", { name: actionText });
-      expect(actionButton).not.toBeNull();
+      // NOTE: Sadly, PF4 Modal/ModalFooter does not have a footer or navigation role.
+      // So, using https://developer.mozilla.org/es/docs/Web/API/Document/querySelector
+      // for getting the footer. See https://github.com/testing-library/react-testing-library/issues/417 too.
+      const footer = dialog.querySelector("footer");
+
+      within(footer).getByText("Confirm");
+      within(footer).getByText("Cancel");
     });
+  });
+});
 
-    it.each([
-      { action: "Cancel", actionText: cancelText },
-      { action: "Unset", actionText: unsetText }
-    ])("does not include the '$action' action when its callback is not defined", async ({ action, actionText }) => {
-      const props = {
-        [`on${action}`]: undefined
-      };
+describe("Popup.PrimaryAction", () => {
+  it("renders a 'primary' button with given children as content", async () => {
+    installerRender(<Popup.PrimaryAction>Do something</Popup.PrimaryAction>);
 
-      installerRender(<TestingPopup { ...props } />);
+    const button = screen.queryByRole("button", { name: "Do something" });
+    expect(button.classList.contains("pf-m-primary")).toBe(true);
+  });
+});
 
-      const dialog = await screen.findByRole("dialog");
-      const actionButton = within(dialog).queryByRole("button", { name: actionText });
-      expect(actionButton).toBeNull();
+describe("Popup.SecondaryAction", () => {
+  it("renders a 'secondary' button with given children as content", async () => {
+    installerRender(<Popup.SecondaryAction>Do something</Popup.SecondaryAction>);
+
+    const button = screen.queryByRole("button", { name: "Do something" });
+    expect(button.classList.contains("pf-m-secondary")).toBe(true);
+  });
+});
+
+describe("Popup.TertiaryAction", () => {
+  it("renders a 'link' button with given children as content", async () => {
+    installerRender(<Popup.TertiaryAction>Do not use</Popup.TertiaryAction>);
+
+    const button = screen.queryByRole("button", { name: "Do not use" });
+    expect(button.classList.contains("pf-m-link")).toBe(true);
+  });
+});
+
+describe("Popup.Confirm", () => {
+  describe("when holding no children", () => {
+    it("renders a 'primary' button using 'Confirm' text as content", async () => {
+      installerRender(<Popup.Confirm />);
+
+      const button = screen.queryByRole("button", { name: "Confirm" });
+      expect(button).not.toBeNull();
+      expect(button.classList.contains("pf-m-primary")).toBe(true);
     });
+  });
 
-    it.each([
-      { action: "confirm", actionText: confirmText, actionFn: onConfirmFn },
-      { action: "cancel", actionText: cancelText, actionFn: onCancelFn },
-      { action: "unset", actionText: unsetText, actionFn: onUnsetFn }
-    ])("triggers the '$action' callback when action is enabled and the user clicks on it", async ({ action, actionFn, actionText }) => {
-      const props = {
-        [`${action}Disabled`]: false
-      };
+  describe("when holding children", () => {
+    it("renders a 'primary' button with children as content", async () => {
+      installerRender(<Popup.Confirm>Let's go</Popup.Confirm>);
 
-      installerRender(<TestingPopup { ...props } />);
-
-      const dialog = await screen.findByRole("dialog");
-      const actionButton = within(dialog).queryByRole("button", { name: actionText });
-      userEvent.click(actionButton);
-
-      expect(actionFn).toHaveBeenCalled();
+      const button = screen.queryByRole("button", { name: "Let's go" });
+      expect(button).not.toBeNull();
+      expect(button.classList.contains("pf-m-primary")).toBe(true);
     });
+  });
+});
 
-    it.each([
-      { action: "confirm", actionText: confirmText, actionFn: onConfirmFn },
-      { action: "cancel", actionText: cancelText, actionFn: onCancelFn },
-      { action: "unset", actionText: unsetText, actionFn: onUnsetFn }
-    ])("does not trigger the '$action' callback when action is disabled", async ({ action, actionFn, actionText }) => {
-      const props = {
-        [`${action}Disabled`]: true
-      };
+describe("Popup.Cancel", () => {
+  describe("when holding no children", () => {
+    it("renders a 'secondary' button using 'Cancel' text as content", async () => {
+      installerRender(<Popup.Cancel />);
 
-      installerRender(<TestingPopup { ...props } />);
+      const button = screen.queryByRole("button", { name: "Cancel" });
+      expect(button).not.toBeNull();
+      expect(button.classList.contains("pf-m-secondary")).toBe(true);
+    });
+  });
 
-      const dialog = await screen.findByRole("dialog");
-      const actionButton = within(dialog).queryByRole("button", { name: actionText });
-      userEvent.click(actionButton);
+  describe("when holding children", () => {
+    it("renders a 'secondary' button with children as content", async () => {
+      installerRender(<Popup.Cancel>Discard</Popup.Cancel>);
 
-      expect(actionFn).not.toHaveBeenCalled();
+      const button = screen.queryByRole("button", { name: "Discard" });
+      expect(button).not.toBeNull();
+      expect(button.classList.contains("pf-m-secondary")).toBe(true);
     });
   });
 });
