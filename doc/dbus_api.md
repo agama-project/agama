@@ -238,3 +238,50 @@ Inspired by Udisks2.Partition
 
 - FirstUser -> struct( string FullName, string UserName, boolean AutoLogin, map AdditionalData)
   info about first user to set. if Username is empty, it means not set and other values can be ignored
+
+
+## Questions
+
+D-Installers offers a mechanism to communicate with clients. The D-Bus service exports a *Questions*
+object that implements the *org.freedesktop.DBus.ObjectManager* interface. Individual questions are
+dynamically exported in a tree under the */org/opensuse/DInstaller/Questions1* path, for example:
+
+~~~
+/org/opensuse/DInstaller/Questions1
+  /org/opensuse/DInstaller/Questions1/1
+  /org/opensuse/DInstaller/Questions1/2
+  /org/opensuse/DInstaller/Questions1/4
+~~~
+
+Each D-Bus question implements its own set of interfaces, depending on the type of question. For
+example, a generic question implements *org.opensuse.DInstaller.Question1*. And a question asking
+for a LUKS password also implements *org.opensuse.DInstaller.Question.LuksPassword1*. Questions
+can be "unexported" from the ObjectManager tree. The service typically unexports a question when the
+question is answered.
+
+### org.opensuse.DInstaller.Question1
+
+#### Properties
+
+- Id -> unsigned 32-bit integer (r)
+  Question id. The question is exported at *root_path/id*.
+
+- Text -> string (r)
+  Text of the question. Clients show this text to the users.
+
+- Options -> array(string) (r)
+  Options for answering the question. The question only admits an option from the list as valid
+  answer.
+
+- DefaultOption -> string (r)
+  Clients should offer this option as default option for answering the question.
+
+- Answer -> string (rw)
+  Answer for the question. Clients set an option as answer.
+
+### org.opensuse.DInstaller.Question.LuksPassword1
+
+#### Properties
+
+- Value -> string (rw)
+  Password provided to decrypt a LUKS device.
