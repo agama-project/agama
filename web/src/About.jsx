@@ -20,7 +20,8 @@
  */
 
 import React, { useState } from "react";
-import { Button, Modal, ModalVariant, Text } from "@patternfly/react-core";
+import { Button, Text } from "@patternfly/react-core";
+import Popup from "./Popup";
 
 export default function About() {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,16 +35,9 @@ export default function About() {
         About
       </Button>
 
-      <Modal
+      <Popup
         isOpen={isOpen}
-        showClose={false}
-        variant={ModalVariant.small}
         title="About D-Installer"
-        actions={[
-          <Button key="confirm" variant="primary" onClick={close} autoFocus>
-            Close
-          </Button>
-        ]}
       >
         <Text>
           D-Installer is an <strong>experimental installer</strong> for (open)SUSE systems. It is
@@ -54,7 +48,10 @@ export default function About() {
           For more information, check{" "}
           <a href="https://github.com/yast/d-installer">the project's repository</a>.
         </Text>
-      </Modal>
+        <Popup.Actions>
+          <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
+        </Popup.Actions>
+      </Popup>
     </>
   );
 }

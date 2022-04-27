@@ -6,12 +6,12 @@ import {
   Checkbox,
   Form,
   FormGroup,
-  Modal,
-  ModalVariant,
   Skeleton,
   Text,
   TextInput
 } from "@patternfly/react-core";
+
+import Popup from './Popup';
 
 const initialUser = {
   userName: "",
@@ -87,28 +87,7 @@ export default function Users() {
     <>
       {renderLink()}
 
-      <Modal
-        isOpen={isFormOpen}
-        showClose={false}
-        variant={ModalVariant.small}
-        title="User account"
-        actions={[
-          <Button
-            key="confirm"
-            variant="primary"
-            onClick={accept}
-            isDisabled={formValues.userName === ""}
-          >
-            Confirm
-          </Button>,
-          <Button key="cancel" variant="secondary" onClick={cancel}>
-            Cancel
-          </Button>,
-          <Button key="remove" variant="link" onClick={remove} isDisabled={!userIsDefined}>
-            Do not create a user
-          </Button>
-        ]}
-      >
+      <Popup isOpen={isFormOpen} title="User account">
         <Form>
           <FormGroup fieldId="userFullName" label="Full name">
             <TextInput
@@ -153,7 +132,15 @@ export default function Users() {
             onChange={handleInputChange}
           />
         </Form>
-      </Modal>
+
+        <Popup.Actions>
+          <Popup.Confirm onClick={accept} isDisabled={formValues.userName === ""} />
+          <Popup.Cancel onClick={cancel} />
+          <Popup.AncillaryAction onClick={remove} isDisabled={!userIsDefined} key="unset">
+            Do not create a user
+          </Popup.AncillaryAction>
+        </Popup.Actions>
+      </Popup>
     </>
   );
 }

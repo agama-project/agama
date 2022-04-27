@@ -26,12 +26,12 @@ import {
   Button,
   Form,
   FormGroup,
-  Modal,
-  ModalVariant,
   Skeleton,
   Text,
   TextInput
 } from "@patternfly/react-core";
+
+import Popup from './Popup';
 
 export default function RootPassword() {
   const client = useInstallerClient();
@@ -86,22 +86,9 @@ export default function RootPassword() {
     <>
       {renderLink()}
 
-      <Modal
+      <Popup
         isOpen={isFormOpen}
-        showClose={false}
-        variant={ModalVariant.small}
         aria-label="Set new root password"
-        actions={[
-          <Button key="confirm" variant="primary" onClick={accept} isDisabled={rootPassword === ""}>
-            Confirm
-          </Button>,
-          <Button key="cancel" variant="secondary" onClick={close}>
-            Cancel
-          </Button>,
-          <Button key="remove" variant="link" onClick={remove} isDisabled={!isRootPasswordSet}>
-            Do not use a password
-          </Button>
-        ]}
       >
         <Form>
           <FormGroup fieldId="rootPassword" label="New root password">
@@ -114,7 +101,15 @@ export default function RootPassword() {
             />
           </FormGroup>
         </Form>
-      </Modal>
+
+        <Popup.Actions>
+          <Popup.Confirm onClick={accept} isDisabled={rootPassword === ""} />
+          <Popup.Cancel onClick={close} />
+          <Popup.AncillaryAction onClick={remove} isDisabled={!isRootPasswordSet} key="unset">
+            Do not use a password
+          </Popup.AncillaryAction>
+        </Popup.Actions>
+      </Popup>
     </>
   );
 }

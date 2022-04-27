@@ -25,12 +25,12 @@ import {
   Button,
   Form,
   FormGroup,
-  Modal,
-  ModalVariant,
   Skeleton,
   Text,
   FileUpload
 } from "@patternfly/react-core";
+
+import Popup from './Popup';
 
 export default function RootSSHKey() {
   const client = useInstallerClient();
@@ -80,23 +80,7 @@ export default function RootSSHKey() {
   return (
     <>
       {renderLink()}
-      <Modal
-        isOpen={isFormOpen}
-        showClose={false}
-        variant={ModalVariant.small}
-        aria-label="Set root SSH public key"
-        actions={[
-          <Button key="confirm" variant="primary" onClick={accept}>
-            Confirm
-          </Button>,
-          <Button key="cancel" variant="secondary" onClick={cancel}>
-            Cancel
-          </Button>,
-          <Button key="remove" variant="link" onClick={remove} isDisabled={sshKey === ""}>
-            Do not use SSH public key
-          </Button>
-        ]}
-      >
+      <Popup isOpen={isFormOpen} aria-label="Set root SSH public key">
         <Form>
           <FormGroup fieldId="sshKey" label="Root SSH public key">
             <FileUpload
@@ -114,7 +98,15 @@ export default function RootSSHKey() {
             />
           </FormGroup>
         </Form>
-      </Modal>
+
+        <Popup.Actions>
+          <Popup.Confirm onClick={accept} />
+          <Popup.Cancel onClick={cancel} />
+          <Popup.AncillaryAction onClick={remove} isDisabled={sshKey === ""} key="unset">
+            Do not use SSH public key
+          </Popup.AncillaryAction>
+        </Popup.Actions>
+      </Popup>
     </>
   );
 }
