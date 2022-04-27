@@ -57,10 +57,10 @@ const Action = ({ children, ...props }) => (
  * It always set `variant` { @link https://www.patternfly.org/v4/components/button PF4/Button }
  * prop to "primary", no matter what given in `props`.
  *
- * @example
+ * @example <caption>Simple usage</caption>
  *   <PrimaryAction onClick={doSomething}>Let's go</PrimaryAction>
  *
- * @example
+ * @example <caption>Advanced usage</caption>
  *   <PrimaryAction onClick={upload}>
  *     <UploadIcon />
  *     <Text>Upload</Text>
@@ -76,10 +76,10 @@ const PrimaryAction = ({ children, ...props }) => (
 /**
  * Shortcut for the primary "Confirm" action
  *
- * @example
+ * @example <caption>Using it with the default text</caption>
  *   <Confirm onClick={confirm} />
  *
- * @example
+ * @example <caption>Using it with a custom text</caption>
  *   <Confirm onClick={accept}>Accept</Confirm>
  *
  * @param {React.ReactNode} [props.children="confirm"] - content of the action
@@ -95,10 +95,10 @@ const Confirm = ({ children = "Confirm", ...props }) => (
  * It always set `variant` { @link https://www.patternfly.org/v4/components/button PF4/Button }
  * prop to "secondary", no matter what given in `props`.
  *
- * @example
+ * @example <caption>Simple usage</caption>
  *   <SecondaryAction onClick={cancel}>Cancel</SecondaryAction>
  *
- * @example
+ * @example <caption>Advanced usage</caption>
  *   <SecondaryAction onClick={upload}>
  *     <DismissIcon />
  *     <Text>Dismiss</Text>
@@ -114,10 +114,10 @@ const SecondaryAction = ({ children, ...props }) => (
 /**
  * Shortcut for the secondary "Cancel" action
  *
- * @example
+ * @example <caption>Using it with the default text</caption>
  *   <Cancel onClick={cancel} />
  *
- * @example
+ * @example <caption>Using it with a custom text</caption>
  *   <Cancel onClick={dissmiss}>Dismiss</Confirm>
  *
  * @param {React.ReactNode} [props.children="Cancel"] - content of the action
@@ -128,15 +128,15 @@ const Cancel = ({ children = "Cancel", ...props }) => (
 );
 
 /**
- * A Popup tertiary action, rendered as a link
+ * A Popup additional action, rendered as a link
  *
  * It always set `variant` { @link https://www.patternfly.org/v4/components/button PF4/Button } prop
  * to "link", no matter what is given in `props`
  *
- * @example
- *   <AncillaryAction onClick={turnUserSeettingsOff}>Do not set this</AncillaryAction>
+ * @example <caption>Simple usage</caption>
+ *   <AncillaryAction onClick={turnUserSettingsOff}>Do not set this</AncillaryAction>
  *
- * @example
+ * @example <caption>Advanced usage</caption>
  *   <AncillaryAction onClick={turnUserSettingsOff}>
  *     <Removeicon />
  *     <Text>Do not set</Text>
@@ -155,19 +155,22 @@ const AncillaryAction = ({ children, ...props }) => (
  * Built on top of { @link https://www.patternfly.org/v4/components/modal PF4/Modal }, it manipulate
  * the children object for extraction {Actions} from there.
  *
- * @example
+ * @example <caption>Usage example</caption>
  *   <Popup
  *     title="User Settings"
  *     isOpen={showUserSettings}
  *   >
  *     <UserSettingsForm />
  *     <Popup.Actions>
- *       <Popup.PrimaryAction onClick={updateUserSetting}>Confirm</Popup.PrimaryAction>
- *       <Popup.SecondaryAction onClick={cancel}>Cancel</Popup.SecondaryAction>
+ *       <Popup.PrimaryAction key="confirm" onClick={updateUserSetting}>Confirm</Popup.PrimaryAction>
+ *       <Popup.SecondaryAction key="cancel" onClick={cancel}>Cancel</Popup.SecondaryAction>
+ *       <Popup.AncillaryAction key="unset" onClick={turnUserSettingsOff}>
+ *         Do not set a user
+ *       </Popup.AncillaryAction>
  *     </Popup.Actions>
  *   </Popup>
  *
- * @example
+ * @example <caption>Usage example using shortcuts actions</caption>
  *   <Popup
  *     title="User Settings"
  *     isOpen={showUserSettings}
@@ -176,6 +179,9 @@ const AncillaryAction = ({ children, ...props }) => (
  *     <Popup.Actions>
  *       <Popup.Confirm onClick={updateUserSetting} />
  *       <Popup.Cancel onClick={cancel} />
+ *       <Popup.AncillaryAction key="unset" onClick={turnUserSettingsOff}>
+ *         Do not set a user
+ *       </Popup.AncillaryAction>
  *     </Popup.Actions>
  *   </Popup>
  *
