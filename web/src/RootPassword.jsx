@@ -105,7 +105,7 @@ export default function RootPassword() {
         <Popup.Actions>
           <Popup.Confirm onClick={accept} isDisabled={rootPassword === ""} />
           <Popup.Cancel onClick={close} />
-          <Popup.AncillaryAction onClick={remove} isDisabled={!isRootPasswordSet}>
+          <Popup.AncillaryAction onClick={remove} isDisabled={!isRootPasswordSet} key="unset">
             Do not use a password
           </Popup.AncillaryAction>
         </Popup.Actions>

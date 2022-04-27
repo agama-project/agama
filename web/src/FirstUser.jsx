@@ -136,7 +136,7 @@ export default function Users() {
         <Popup.Actions>
           <Popup.Confirm onClick={accept} isDisabled={formValues.userName === ""} />
           <Popup.Cancel onClick={cancel} />
-          <Popup.AncillaryAction onClick={remove} isDisabled={!userIsDefined}>
+          <Popup.AncillaryAction onClick={remove} isDisabled={!userIsDefined} key="unset">
             Do not create a user
           </Popup.AncillaryAction>
         </Popup.Actions>
