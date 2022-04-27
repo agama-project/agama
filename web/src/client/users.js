@@ -35,7 +35,7 @@ export default class UsersClient {
    */
   async getUser() {
     const proxy = await this.proxy(USERS_IFACE);
-    const [fullName, userName, autologin] = proxy.FirstUser.map(u => u.v);
+    const [fullName, userName, autologin] = proxy.FirstUser;
     return { fullName, userName, autologin };
   }
 

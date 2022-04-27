@@ -27,11 +27,7 @@ const dbusClient = {};
 
 const usersProxy = {
   wait: jest.fn(),
-  FirstUser: [
-    { t: "s", v: "Jane Doe" },
-    { t: "s", v: "jane" },
-    { t: "b", v: false }
-  ],
+  FirstUser: ["Jane Doe", "jane", false, {}],
   SetFirstUser: jest.fn().mockResolvedValue(0),
   RemoveFirstUser: jest.fn().mockResolvedValue(0),
   SetRootPassword: jest.fn().mockResolvedValue(0),

@@ -36,7 +36,7 @@ export default class LanguageClient {
   async getLanguages() {
     const proxy = await this.proxy(LANGUAGE_IFACE);
     return proxy.AvailableLanguages.map(lang => {
-      const [{ v: id }, { v: name }] = lang.v;
+      const [id, name] = lang;
       return { id, name };
     });
   }
@@ -48,7 +48,7 @@ export default class LanguageClient {
    */
   async getSelectedLanguages() {
     const proxy = await this.proxy(LANGUAGE_IFACE);
-    return proxy.MarkedForInstall.map(lang => lang.v);
+    return proxy.MarkedForInstall;
   }
 
   /**
