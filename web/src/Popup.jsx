@@ -152,8 +152,8 @@ const AncillaryAction = ({ children, ...props }) => (
 /**
  * D-Installer component for displaying a popup
  *
- * Built on top of { @link https://www.patternfly.org/v4/components/modal PF4/Modal }, it manipulate
- * the children object for extraction {Actions} from there.
+ * Built on top of { @link https://www.patternfly.org/v4/components/modal PF4/Modal }, it
+ * manipulates the children object for extracting {Actions}.
  *
  * @example <caption>Usage example</caption>
  *   <Popup

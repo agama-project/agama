@@ -20,8 +20,8 @@
  */
 
 /**
- * Returns a new array with collection split into two groups, the first holdings element which do
- * satisfy the given filter and the second with those which not.
+ * Returns a new array with a given collection split into two groups, the first holding elements
+ * satisfying the filter and the second with those which do not.
  *
  * @param {Array} collection - the collection to be filtered
  * @param {function} filter - the function to be used as filter
