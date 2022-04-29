@@ -40,9 +40,9 @@ const storageActionsProxy = {
   wait: jest.fn(),
   All: [
     {
-      Text: { t: "v", v: { t: "s", v: "Mount /dev/sdb1 as root" } },
-      Subvol: { t: "v", v: { t: "b", v: false } },
-      Delete: { t: "v", v: { t: "b", v: false } }
+      Text: { t: "s", v: "Mount /dev/sdb1 as root" },
+      Subvol: { t: "b", v: false },
+      Delete: { t: "b", v: false }
     }
   ]
 };
