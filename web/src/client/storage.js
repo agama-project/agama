@@ -40,7 +40,7 @@ export default class StorageClient {
     const proxy = await this.proxy(STORAGE_ACTIONS_IFACE);
     return proxy.All.map(action => {
       const { Text: { v: textVar }, Subvol: { v: subvolVar }, Delete: { v: deleteVar } } = action;
-      return { text: textVar.v, subvol: subvolVar.v, delete: deleteVar.v };
+      return { text: textVar, subvol: subvolVar, delete: deleteVar };
     });
   }
 
