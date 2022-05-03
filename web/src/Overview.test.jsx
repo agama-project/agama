@@ -21,7 +21,6 @@
 
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Overview from "./Overview";
 import { createClient } from "./client";
@@ -82,16 +81,18 @@ test("renders the Overview", async () => {
 
 describe("when the user clicks 'Install'", () => {
   let dialog;
+  let user;
 
   beforeEach(async () => {
-    installerRender(<Overview />);
+    const { user: userEvent } = installerRender(<Overview />);
+    user = userEvent;
 
     // TODO: we should have some UI element to tell the user we have finished
     // with loading data.
     await screen.findByText("English");
 
     const installButton = screen.getByRole("button", { name: /Install/ });
-    userEvent.click(installButton);
+    await user.click(installButton);
 
     dialog = await screen.findByRole("dialog");
   });
@@ -102,16 +103,16 @@ describe("when the user clicks 'Install'", () => {
     expect(title).toBeDefined();
   });
 
-  test("starts the installation if the user confirms", () => {
+  test("starts the installation if the user confirms", async () => {
     const button = within(dialog).getByRole("button", { name: /Install/i });
-    userEvent.click(button);
+    await user.click(button);
 
     expect(startInstallationFn).toBeCalled();
   });
 
   test("does not start the installation if the user cancels", async () => {
     const button = within(dialog).getByRole("button", { name: /Cancel/i });
-    userEvent.click(button);
+    await user.click(button);
 
     expect(startInstallationFn).not.toBeCalled();
 

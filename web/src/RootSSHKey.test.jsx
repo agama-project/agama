@@ -22,7 +22,6 @@
 import React from "react";
 
 import { screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import { createClient } from "./client";
 import RootSSHKey from "./RootSSHKey";
@@ -47,19 +46,19 @@ beforeEach(() => {
 });
 
 it("allows defining a new root SSH public key", async () => {
-  installerRender(<RootSSHKey />);
+  const { user } = installerRender(<RootSSHKey />);
   const rootSSHKey = await screen.findByText(/Root SSH public key/i);
   const button = within(rootSSHKey).getByRole("button", { name: "is not set" });
-  userEvent.click(button);
+  await user.click(button);
 
   await screen.findByRole("dialog");
 
   const sshKeyInput = screen.getByLabelText("Root SSH public key");
-  userEvent.type(sshKeyInput, testKey);
+  await user.type(sshKeyInput, testKey);
 
   const confirmButton = screen.getByRole("button", { name: /Confirm/i });
   expect(confirmButton).toBeEnabled();
-  userEvent.click(confirmButton);
+  await user.click(confirmButton);
 
   expect(setRootSSHKeyFn).toHaveBeenCalledWith(testKey);
 
@@ -71,19 +70,19 @@ it("allows defining a new root SSH public key", async () => {
 it("does not change anything if the user cancels", async () => {
   let openButton;
 
-  installerRender(<RootSSHKey />);
+  const { user } = installerRender(<RootSSHKey />);
 
   const rootSSHKey = await screen.findByText(/Root SSH public key/i);
   openButton = within(rootSSHKey).getByRole("button", { name: "is not set" });
-  userEvent.click(openButton);
+  await user.click(openButton);
 
   await screen.findByRole("dialog");
 
   const sshKeyInput = screen.getByLabelText("Root SSH public key");
-  userEvent.type(sshKeyInput, testKey);
+  await user.type(sshKeyInput, testKey);
 
   const cancelButton = screen.getByRole("button", { name: /Cancel/i });
-  userEvent.click(cancelButton);
+  await user.click(cancelButton);
 
   expect(setRootSSHKeyFn).not.toHaveBeenCalled();
   await waitFor(() => {
@@ -101,15 +100,15 @@ describe("when the SSH public key is set", () => {
   });
 
   it("allows removing the SSH public key", async () => {
-    installerRender(<RootSSHKey />);
+    const { user } = installerRender(<RootSSHKey />);
     const rootSSHKey = await screen.findByText(/Root SSH public key/i);
     const button = within(rootSSHKey).getByRole("button", { name: "is set" });
-    userEvent.click(button);
+    await user.click(button);
 
     await screen.findByRole("dialog");
 
     const removeButton = await screen.findByRole("button", { name: /Do not use/i });
-    userEvent.click(removeButton);
+    await user.click(removeButton);
 
     expect(setRootSSHKeyFn).toHaveBeenCalledWith("");
 

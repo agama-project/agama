@@ -22,7 +22,6 @@
 import React from "react";
 
 import { screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import { createClient } from "./client";
 import FirstUser from "./FirstUser";
@@ -53,25 +52,25 @@ beforeEach(() => {
 });
 
 it("allows defining a new user", async () => {
-  installerRender(<FirstUser />);
+  const { user } = installerRender(<FirstUser />);
   const firstUser = await screen.findByText(/A user/);
   const button = within(firstUser).getByRole("button", { name: "is not defined" });
-  userEvent.click(button);
+  await user.click(button);
 
   await screen.findByRole("dialog");
 
   const fullNameInput = screen.getByLabelText("Full name");
-  userEvent.type(fullNameInput, "Jane Doe");
+  await user.type(fullNameInput, "Jane Doe");
 
   const usernameInput = screen.getByLabelText("Username");
-  userEvent.type(usernameInput, "jane");
+  await user.type(usernameInput, "jane");
 
   const passwordInput = screen.getByLabelText("Password");
-  userEvent.type(passwordInput, "12345");
+  await user.type(passwordInput, "12345");
 
   const confirmButton = screen.getByRole("button", { name: /Confirm/i });
   expect(confirmButton).toBeEnabled();
-  userEvent.click(confirmButton);
+  await user.click(confirmButton);
 
   expect(setUserFn).toHaveBeenCalledWith({
     fullName: "Jane Doe",
@@ -86,15 +85,15 @@ it("allows defining a new user", async () => {
 });
 
 it("does not change anything if the user cancels", async () => {
-  installerRender(<FirstUser />);
+  const { user } = installerRender(<FirstUser />);
   const firstUser = await screen.findByText(/A user/);
   const button = within(firstUser).getByRole("button", { name: "is not defined" });
-  userEvent.click(button);
+  await user.click(button);
 
   await screen.findByRole("dialog");
 
   const cancelButton = screen.getByRole("button", { name: /Cancel/i });
-  userEvent.click(cancelButton);
+  await user.click(cancelButton);
 
   expect(setUserFn).not.toHaveBeenCalled();
   await waitFor(() => {
@@ -112,14 +111,14 @@ describe("when the first user is already defined", () => {
   });
 
   it("allows removing the user", async () => {
-    installerRender(<FirstUser />);
+    const { user } = installerRender(<FirstUser />);
     const button = await screen.findByRole("button", { name: "jdoe" });
-    userEvent.click(button);
+    await user.click(button);
 
     await screen.findByRole("dialog");
 
     const removeButton = screen.getByRole("button", { name: "Do not create a user" });
-    userEvent.click(removeButton);
+    await user.click(removeButton);
 
     expect(removeUserFn).toHaveBeenCalled();
     await waitFor(() => {

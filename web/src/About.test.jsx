@@ -22,24 +22,23 @@
 import React from "react";
 
 import { screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 
 import About from "./About";
 
 describe("About", () => {
   it("allows user to read 'About D-Installer'", async () => {
-    installerRender(<About />);
+    const { user } = installerRender(<About />);
 
     const button = screen.getByRole("button", { name: /About/i });
-    userEvent.click(button);
+    await user.click(button);
 
     const dialog = await screen.findByRole("dialog");
 
     within(dialog).getByText("About D-Installer");
 
     const closeButton = within(dialog).getByRole("button", { name: /Close/i });
-    userEvent.click(closeButton);
+    await user.click(closeButton);
 
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

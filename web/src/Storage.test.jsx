@@ -21,7 +21,6 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Storage from "./Storage";
 import { createClient } from "./client";
@@ -67,13 +66,13 @@ describe("when the user selects another disk", () => {
   it("changes the selected disk", async () => {
     calculateStorageProposalFn = jest.fn().mockResolvedValue(0);
 
-    installerRender(<Storage />);
+    const { user } = installerRender(<Storage />);
     const button = await screen.findByRole("button", { name: "/dev/sda" });
-    userEvent.click(button);
+    await user.click(button);
 
     const targetSelector = await screen.findByLabelText("Device to install into");
-    userEvent.selectOptions(targetSelector, ["/dev/sdb"]);
-    userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    await user.selectOptions(targetSelector, ["/dev/sdb"]);
+    await user.click(screen.getByRole("button", { name: "Confirm" }));
 
     await screen.findByRole("button", { name: "/dev/sdb" });
     expect(calculateStorageProposalFn).toHaveBeenCalledWith({
@@ -84,13 +83,13 @@ describe("when the user selects another disk", () => {
   it("reports an error when the proposal is not possible", async () => {
     calculateStorageProposalFn = jest.fn().mockResolvedValue(1);
 
-    installerRender(<Storage />);
+    const { user } = installerRender(<Storage />);
     const button = await screen.findByRole("button", { name: "/dev/sda" });
-    userEvent.click(button);
+    await user.click(button);
 
     const targetSelector = await screen.findByLabelText("Device to install into");
-    userEvent.selectOptions(targetSelector, ["/dev/sdb"]);
-    userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    await user.selectOptions(targetSelector, ["/dev/sdb"]);
+    await user.click(screen.getByRole("button", { name: "Confirm" }));
 
     await screen.findByRole("button", { name: "/dev/sdb" });
     await screen.findByText("Cannot make a proposal for /dev/sdb");

@@ -22,7 +22,6 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 
 import DBusError from "./DBusError";
@@ -41,7 +40,7 @@ describe("DBusError", () => {
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
-    installerRender(<DBusError />);
+    const { user } = installerRender(<DBusError />);
 
     const reloadButton = await screen.findByRole("button", { name: /Reload/i });
 
@@ -51,7 +50,7 @@ describe("DBusError", () => {
     delete window.location;
     window.location = { reload: jest.fn() };
 
-    userEvent.click(reloadButton);
+    await user.click(reloadButton);
     expect(window.location.reload).toHaveBeenCalled();
 
     // restore windows.location

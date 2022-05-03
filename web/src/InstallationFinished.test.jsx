@@ -22,7 +22,6 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import { createClient } from "./client";
 
@@ -64,17 +63,17 @@ describe("InstallationFinished", () => {
   });
 
   it("starts the probing process if user clicks on 'Restart Installation' button", async () => {
-    installerRender(<InstallationFinished />);
+    const { user } = installerRender(<InstallationFinished />);
 
     const button = await screen.findByRole("button", { name: /Restart Installation/i });
-    userEvent.click(button);
+    await user.click(button);
     expect(startProbingFn).toHaveBeenCalled();
   });
 
   it("reboots the system if the user clicks on 'Reboot' button", async () => {
-    installerRender(<InstallationFinished />);
+    const { user } = installerRender(<InstallationFinished />);
     const button = await screen.findByRole("button", { name: /Reboot/i });
-    userEvent.click(button);
+    await user.click(button);
     expect(rebootSystemFn).toHaveBeenCalled();
   });
 });
