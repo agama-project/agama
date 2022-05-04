@@ -20,6 +20,7 @@
  */
 
 import React from "react";
+import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
 
 import { InstallerClientProvider } from "./context/installer";
@@ -30,8 +31,9 @@ const InstallerProvider = ({ children }) => {
   return <InstallerClientProvider client={client}>{children}</InstallerClientProvider>;
 };
 
-const installerRender = (ui, options = {}) => {
-  return render(ui, { wrapper: InstallerProvider, ...options });
-};
+const installerRender = (ui, options = {}) => ({
+  user: userEvent.setup(),
+  ...render(ui, { wrapper: InstallerProvider, ...options })
+});
 
 export { installerRender };

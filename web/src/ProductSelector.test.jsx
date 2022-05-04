@@ -21,7 +21,6 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import ProductSelector from "./ProductSelector";
 import { createClient } from "./client";
@@ -59,17 +58,17 @@ it("displays the proposal", async () => {
 
 describe("when the user changes the product", () => {
   it("changes the selected product", async () => {
-    installerRender(<ProductSelector />);
+    const { user } = installerRender(<ProductSelector />);
     const button = await screen.findByRole("button", {
       name: "openSUSE MicroOS"
     });
-    userEvent.click(button);
+    await user.click(button);
 
     const dialog = await screen.findByRole("dialog");
 
     const productSelector = await within(dialog).findByLabelText(/Product/i);
-    userEvent.selectOptions(productSelector, ["openSUSE Tumbleweed"]);
-    userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    await user.selectOptions(productSelector, ["openSUSE Tumbleweed"]);
+    await user.click(screen.getByRole("button", { name: "Confirm" }));
 
     await screen.findByRole("button", { name: "openSUSE Tumbleweed" });
     expect(selectProductFn).toHaveBeenCalledWith("openSUSE");

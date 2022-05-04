@@ -21,7 +21,6 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Proposal from "./Proposal";
 
@@ -37,16 +36,16 @@ const generalAction = {
   delete: false
 };
 
-it("displays the actions showing/hiding the subvolume actions on user request", () => {
-  installerRender(<Proposal data={[generalAction, subvolAction]} />);
+it("displays the actions showing/hiding the subvolume actions on user request", async () => {
+  const { user } = installerRender(<Proposal data={[generalAction, subvolAction]} />);
   expect(screen.getByText(generalAction.text)).toBeVisible();
   expect(screen.getByText(subvolAction.text)).not.toBeVisible();
 
   const showButton = screen.getByRole("button", { name: /Show/ });
-  userEvent.click(showButton);
+  await user.click(showButton);
   expect(screen.getByText(subvolAction.text)).toBeVisible();
 
   const hideButton = screen.getByRole("button", { name: /Hide/ });
-  userEvent.click(hideButton);
+  await user.click(hideButton);
   expect(screen.getByText(subvolAction.text)).not.toBeVisible();
 });

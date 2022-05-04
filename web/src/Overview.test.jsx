@@ -21,7 +21,6 @@
 
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { installerRender } from "./test-utils";
 import Overview from "./Overview";
 import { createClient } from "./client";
@@ -81,37 +80,42 @@ test("renders the Overview", async () => {
 });
 
 describe("when the user clicks 'Install'", () => {
-  let dialog;
-
-  beforeEach(async () => {
-    installerRender(<Overview />);
+  const prepareScenario = async () => {
+    const { user } = installerRender(<Overview />);
 
     // TODO: we should have some UI element to tell the user we have finished
     // with loading data.
     await screen.findByText("English");
 
-    const installButton = screen.getByRole("button", { name: /Install/ });
-    userEvent.click(installButton);
+    await user.click(screen.getByRole("button", { name: /Install/ }));
 
-    dialog = await screen.findByRole("dialog");
-  });
+    const dialog = await screen.findByRole("dialog");
 
-  test("asks for confirmation", () => {
+    return {
+      user,
+      dialog
+    };
+  };
+
+  it("asks for confirmation", async () => {
+    const { dialog } = await prepareScenario();
     const title = within(dialog).getByText(/Confirm Installation/i);
 
     expect(title).toBeDefined();
   });
 
-  test("starts the installation if the user confirms", () => {
+  it("starts the installation if the user confirms", async () => {
+    const { dialog, user } = await prepareScenario();
     const button = within(dialog).getByRole("button", { name: /Install/i });
-    userEvent.click(button);
+    await user.click(button);
 
     expect(startInstallationFn).toBeCalled();
   });
 
-  test("does not start the installation if the user cancels", async () => {
+  it("does not start the installation if the user cancels", async () => {
+    const { dialog, user } = await prepareScenario();
     const button = within(dialog).getByRole("button", { name: /Cancel/i });
-    userEvent.click(button);
+    await user.click(button);
 
     expect(startInstallationFn).not.toBeCalled();
 
