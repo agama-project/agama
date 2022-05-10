@@ -26,14 +26,14 @@ const withDBus = {
    * @param {string} iface - D-Bus iface
    * @return {Object} a cockpit DBusProxy
    */
-  async proxy(iface) {
+  async proxy(iface, path) {
     const _proxies = this.proxies();
 
     if (_proxies[iface]) {
       return _proxies[iface];
     }
 
-    const proxy = this._client.proxy(iface, undefined, { watch: true });
+    const proxy = this._client.proxy(iface, path, { watch: true });
     await proxy.wait();
     _proxies[iface] = proxy;
     return proxy;
