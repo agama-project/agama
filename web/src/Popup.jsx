@@ -198,11 +198,11 @@ const Popup = ({ isOpen = false, showClose = false, variant = "small", children,
 
   return (
     <Modal
+      { ...pf4ModalProps }
       isOpen={isOpen}
       showClose={showClose}
       variant={variant}
       actions={actions}
-      { ...pf4ModalProps }
     >
       { content }
     </Modal>

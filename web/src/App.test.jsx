@@ -38,11 +38,14 @@ jest.mock("./ProbingProgress", () => () => "ProbingProgress Mock");
 jest.mock("./InstallationProgress", () => () => "InstallationProgress Mock");
 jest.mock("./InstallationFinished", () => () => "InstallationFinished Mock");
 jest.mock("./Overview", () => () => "Overview Mock");
+jest.mock("./Questions", () => () => <div>Questions Mock</div>);
 
-let callbacks;
+const callbacks = {};
 const initialStatusMock = null;
-let onChangeFn = jest.fn();
 let getStatusFn = jest.fn();
+
+// capture the latest subsccription to the manager#onChange for triggering it manually
+const onChangeFn = cb => { callbacks.onChange = cb };
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
@@ -58,83 +61,68 @@ beforeEach(() => {
   });
 });
 
+const changeStatusTo = status => act(() => callbacks.onChange({ Status: status }));
+
 describe("App", () => {
   describe("when there are problems connecting with D-Bus service", () => {
     beforeEach(() => {
       getStatusFn = () => Promise.reject(new Error("Couldn't connect to D-Bus service"));
     });
 
-    it("renders the DBusError component", async () => {
+    it("renders the Questions and DBusError components", async () => {
       installerRender(<App />);
 
+      await screen.findByText("Questions Mock");
       await screen.findByText("D-BusError Mock");
     });
   });
 
   describe("when D-Bus service status changes", () => {
     beforeEach(() => {
-      callbacks = [];
       getStatusFn = () => Promise.resolve(initialStatusMock);
-      onChangeFn = cb => callbacks.push(cb);
     });
 
-    it("renders the ProbingProgress component when PROBING", async () => {
+    it("renders Questions and ProbingProgress components when PROBING", async () => {
       installerRender(<App />);
 
       await screen.findByText(/Loading.*environment/i);
 
-      // NOTE: there can be more than one susbcriptions to the
-      // manager#onChange. We're insterested in the latest one here.
-      const cb = callbacks[callbacks.length - 1];
-      act(() => {
-        cb({ Status: PROBING });
-      });
+      changeStatusTo(PROBING);
 
+      await screen.findByText("Questions Mock");
       await screen.findByText("ProbingProgress Mock");
     });
 
-    it("renders the InstallationProgress component when INSTALLING", async () => {
+    it("renders Questions and InstallationProgress components when INSTALLING", async () => {
       installerRender(<App />);
 
       await screen.findByText(/Loading.*environment/i);
 
-      // NOTE: there can be more than one susbcriptions to the
-      // manager#onChange. We're insterested in the latest one here.
-      const cb = callbacks[callbacks.length - 1];
-      act(() => {
-        cb({ Status: INSTALLING });
-      });
+      changeStatusTo(INSTALLING);
 
+      await screen.findByText("Questions Mock");
       await screen.findByText("InstallationProgress Mock");
     });
 
-    it("renders the InstallationFinished component when INSTALLED", async () => {
+    it("renders Questions and InstallationFinished components when INSTALLED", async () => {
       installerRender(<App />);
 
       await screen.findByText(/Loading.*environment/i);
 
-      // NOTE: there can be more than one susbcriptions to the
-      // manager#onChange. We're insterested in the latest one here.
-      const cb = callbacks[callbacks.length - 1];
-      act(() => {
-        cb({ Status: INSTALLED });
-      });
+      changeStatusTo(INSTALLED);
 
+      await screen.findByText("Questions Mock");
       await screen.findByText("InstallationFinished Mock");
     });
 
-    it("renders the Overview component if not PROBING, INSTALLING, or INSTALLED", async () => {
+    it("renders Questions and Overview components if not PROBING, INSTALLING, or INSTALLED", async () => {
       installerRender(<App />);
 
       await screen.findByText(/Loading.*environment/i);
 
-      // NOTE: there can be more than one susbcriptions to the
-      // manager#onChange. We're insterested in the latest one here.
-      const cb = callbacks[callbacks.length - 1];
-      act(() => {
-        cb({ Status: PROBED });
-      });
+      changeStatusTo(PROBED);
 
+      await screen.findByText("Questions Mock");
       await screen.findByText("Overview Mock");
     });
   });
