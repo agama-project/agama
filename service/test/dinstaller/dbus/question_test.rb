@@ -22,7 +22,7 @@
 require_relative "../../test_helper"
 require "dinstaller/dbus/question"
 require "dinstaller/question"
-require "dinstaller/luks_question"
+require "dinstaller/luks_activation_question"
 require "dbus"
 
 describe DInstaller::DBus::Question do
@@ -41,7 +41,7 @@ describe DInstaller::DBus::Question do
   let(:system_bus) { instance_double(DBus::SystemBus, emit: nil) }
 
   describe ".new" do
-    shared_examples "Interfaces::Question" do
+    shared_examples "Question interface" do
       it "defines #id, #text, #options, #default_option, #answer" do
         expect(subject).to respond_to(:id, :text, :options, :default_option, :answer)
       end
@@ -89,7 +89,7 @@ describe DInstaller::DBus::Question do
       end
     end
 
-    shared_examples "Interfaces::LuksPassword" do
+    shared_examples "LuksActivation interface" do
       it "defines #luks_password" do
         expect(subject).to respond_to(:luks_password)
       end
@@ -119,6 +119,16 @@ describe DInstaller::DBus::Question do
           expect(backend.password).to eq("n0ts3cr3t")
         end
       end
+
+      describe "#activation_attempt" do
+        before do
+          allow(backend).to receive(:attempt).and_return(2)
+        end
+
+        it "returns the current attempt" do
+          expect(subject.activation_attempt).to eq(2)
+        end
+      end
     end
 
     let(:backend) { DInstaller::Question.new("test") }
@@ -132,7 +142,7 @@ describe DInstaller::DBus::Question do
 
       let(:default_option) { nil }
 
-      include_examples "Interfaces::Question"
+      include_examples "Question interface"
 
       describe "#options" do
         it "returns the question options as strings" do
@@ -160,10 +170,10 @@ describe DInstaller::DBus::Question do
     end
 
     context "for a question to activate a LUKS device" do
-      let(:backend) { DInstaller::LuksQuestion.new("/dev/sda1") }
+      let(:backend) { DInstaller::LuksActivationQuestion.new("/dev/sda1") }
 
-      include_examples "Interfaces::Question"
-      include_examples "Interfaces::LuksPassword"
+      include_examples "Question interface"
+      include_examples "LuksActivation interface"
 
       describe "#options" do
         it "returns 'skip' and 'decrypt'" do

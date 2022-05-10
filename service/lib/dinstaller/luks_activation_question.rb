@@ -29,22 +29,28 @@ module DInstaller
   #   * decrypt: to activate the device using the provided password
   #
   # @example
-  #   question = LuksQuestion.new("/dev/sda1", label: "mydata", size: "10 GiB")
+  #   question = LuksActivationQuestion.new("/dev/sda1", label: "mydata", size: "10 GiB")
   #   question.password = "n0ts3cr3t"
   #
   #   question.answer = :skip    # in case you do not want to activate the device
   #
   #   question.answer = :decrypt # in case you want to decrypt with the given password
-  class LuksQuestion < Question
+  class LuksActivationQuestion < Question
+    # Current attempt to decrypt the device
+    #
+    # @return [Integer]
+    attr_reader :attempt
+
     # Constructor
     #
     # @param device [String] name of the device to be activated (e.g., "/dev/sda1")
     # @param label [String, nil] label of the device
     # @param size [String, nil] size of the device (e.g., "5 GiB")
-    def initialize(device, label: nil, size: nil)
+    def initialize(device, label: nil, size: nil, attempt: 1)
       @device = device
       @label = label
       @size = size
+      @attempt = attempt
 
       super(generate_text, options: [:skip, :decrypt])
     end

@@ -20,11 +20,11 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require "dinstaller/luks_question"
+require "dinstaller/luks_activation_question"
 
-describe DInstaller::LuksQuestion do
+describe DInstaller::LuksActivationQuestion do
   describe ".new" do
-    it "creates a question with the text to ask for a LUKS password" do
+    it "creates a question with the text to ask for a LUKS activation" do
       question = described_class.new("/dev/sda1")
       expect(question.text).to match(/device \/dev\/sda1 is encrypted/)
 
@@ -36,6 +36,18 @@ describe DInstaller::LuksQuestion do
 
       question = described_class.new("/dev/sda1", label: "mydata", size: "5 GiB")
       expect(question.text).to match(/device \/dev\/sda1 mydata \(5 GiB\) is encrypted/)
+    end
+  end
+
+  subject { described_class.new("/dev/sda1") }
+
+  it "has no default option" do
+    expect(subject.default_option).to be_nil
+  end
+
+  describe "#options" do
+    it "returns :skip and :decrypt" do
+      expect(subject.options).to contain_exactly(:skip, :decrypt)
     end
   end
 end
