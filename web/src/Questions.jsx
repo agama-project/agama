@@ -26,7 +26,7 @@ import BasicQuestion from "./BasicQuestion";
 import LuksActivationQuestion from "./LuksActivationQuestion";
 
 const QUESTION_TYPES = {
-  basic: BasicQuestion,
+  generic: BasicQuestion,
   luksActivation: LuksActivationQuestion
 };
 

@@ -22,39 +22,20 @@
 import React from "react";
 import { Text } from "@patternfly/react-core";
 import Popup from "./Popup";
-import { partition } from "./utils";
+import { buildQuestionActions } from "./questions-utils";
 
 export default function BasicQuestion({ question, answerCallback }) {
-  const answer = (option) => {
+  const actionCallback = (option) => {
     question.answer = option;
     answerCallback(question);
   };
-
-  const label = option => `${option[0].toUpperCase()}${option.slice[1]}`;
-
-  const renderOptions = () => {
-    let [[defaultOption], options] = partition(question.options, o => o === question.defaultOption);
-
-    // Ensure there is a default option always
-    if (!defaultOption) [defaultOption, ...options] = options
-
-    return(
-    <Popup.Actions>
-      <Popup.PrimaryAction onclick={() => answer(defaultOption)}>{label(defaultOption)}</Popup.PrimaryAction>
-      {options.map(option =>
-          <Popup.SecondaryAction key={option} onclick={() => answer(option)}>{label(option)}</Popup.SecondaryAction>
-        )}
-    </Popup.Actions>
-
-    )
-  }
 
   return (
     <Popup isOpen aria-label="A question from DBus">
       <Text>
         { question.text }
       </Text>
-      { renderOptions() }
+      { buildQuestionActions(question, actionCallback) }
     </Popup>
   );
 }

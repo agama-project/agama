@@ -32,7 +32,7 @@ jest.mock("./BasicQuestion", () => () => "A Basic question mock");
 jest.mock("./LuksActivationQuestion", () => () => "A LUKS activation question mock");
 
 const handlers = {};
-const basicQuestion = { id: 1, type: 'basic' };
+const basicQuestion = { id: 1, type: 'generic' };
 const luksActivationQuestion = { id: 1, type: 'luksActivation' };
 let pendingQuestions = [];
 

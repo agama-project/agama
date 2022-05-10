@@ -20,16 +20,15 @@
  */
 
 import React from "react";
-
-import { screen, prettyDOM } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "./test-utils";
-
 import BasicQuestion from "./BasicQuestion";
 
 const question = {
   id: 1,
-  text: "Do you want to continue?",
-  options: ["yes", "no", "maybe"]
+  text: "Do you write unit tests?",
+  options: ["always", "sometimes", "never"],
+  defaultOption: "sometimes"
 };
 
 const answerFn = jest.fn();
@@ -39,44 +38,45 @@ const renderQuestion = () => (
 );
 
 describe("BasicQuestions", () => {
-  it.only("renders the question text", async () => {
-    const { container } = renderQuestion();
-    console.log(prettyDOM(container));
+  it("renders the question text", async () => {
+    renderQuestion();
 
     await screen.findByText(question.text);
   });
 
-  it("contains a 'Cancel' action", async () => {
+  it("contains the default option as primary action", async () => {
     renderQuestion();
 
-    const skipButton = await screen.findByRole("button", { name: /Cancel/ });
-    expect(skipButton).not.toBeNull();
+    const button = await screen.findByRole("button", { name: "Sometimes" });
+    expect(button.classList.contains("pf-m-primary")).toBe(true);
   });
 
-  it("contains a 'Confirm' action", async () => {
+  it("contains the non default options as secondary actions", async () => {
     renderQuestion();
 
-    const decryptButton = await screen.findByRole("button", { name: /Confirm/ });
-    expect(decryptButton).not.toBeNull();
+    const alwaysButton = await screen.findByRole("button", { name: "Always" });
+    expect(alwaysButton.classList.contains("pf-m-secondary")).toBe(true);
+
+    const neverButton = await screen.findByRole("button", { name: "Never" });
+    expect(neverButton.classList.contains("pf-m-secondary")).toBe(true);
   });
 
-  it("sends 'yes' answer when user confirms", async() => {
+  it("sets chosen option and calls the callback after user clicking an action", async() => {
     const { user } = renderQuestion();
 
-    const confirmButton = await screen.findByRole("button", { name: /Confirm/ });
-    await user.click(confirmButton);
-
-    expect(question).toEqual(expect.objectContaining({ answer: "yes" }));
+    let button = await screen.findByRole("button", { name: /Sometimes/ });
+    await user.click(button);
+    expect(question).toEqual(expect.objectContaining({ answer: "sometimes" }));
     expect(answerFn).toHaveBeenCalledWith(question);
-  });
 
-  it("sends 'no' answer when user cancels", async() => {
-    const { user } = renderQuestion();
+    button = await screen.findByRole("button", { name: /Always/ });
+    await user.click(button);
+    expect(question).toEqual(expect.objectContaining({ answer: "always" }));
+    expect(answerFn).toHaveBeenCalledWith(question);
 
-    const cancelButton = await screen.findByRole("button", { name: /Cancel/ });
-    await user.click(cancelButton);
-
-    expect(question).toEqual(expect.objectContaining({ answer: "no" }));
+    button = await screen.findByRole("button", { name: /Never/ });
+    await user.click(button);
+    expect(question).toEqual(expect.objectContaining({ answer: "never" }));
     expect(answerFn).toHaveBeenCalledWith(question);
   });
 });
