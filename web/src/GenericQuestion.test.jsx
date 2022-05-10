@@ -22,7 +22,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "./test-utils";
-import BasicQuestion from "./BasicQuestion";
+import GenericQuestion from "./GenericQuestion";
 
 const question = {
   id: 1,
@@ -34,10 +34,10 @@ const question = {
 const answerFn = jest.fn();
 
 const renderQuestion = () => (
-  installerRender(<BasicQuestion question={question} answerCallback={answerFn} />)
+  installerRender(<GenericQuestion question={question} answerCallback={answerFn} />)
 );
 
-describe("BasicQuestions", () => {
+describe("GenericQuestion", () => {
   it("renders the question text", async () => {
     renderQuestion();
 

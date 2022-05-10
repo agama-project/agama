@@ -28,11 +28,11 @@ import { createClient } from "./client";
 import Questions from "./Questions";
 
 jest.mock("./client");
-jest.mock("./BasicQuestion", () => () => "A Basic question mock");
+jest.mock("./GenericQuestion", () => () => "A Generic question mock");
 jest.mock("./LuksActivationQuestion", () => () => "A LUKS activation question mock");
 
 const handlers = {};
-const basicQuestion = { id: 1, type: 'generic' };
+const genericQuestion = { id: 1, type: 'generic' };
 const luksActivationQuestion = { id: 1, type: 'luksActivation' };
 let pendingQuestions = [];
 
@@ -68,38 +68,38 @@ describe("Questions", () => {
       expect(container).toBeEmptyDOMElement();
 
       // Manually triggers the handler given for the onQuestionAdded signal
-      act(() => handlers.onAdd(basicQuestion));
+      act(() => handlers.onAdd(genericQuestion));
 
-      await screen.findByText("A Basic question mock");
+      await screen.findByText("A Generic question mock");
     });
   });
 
   describe("when a question is removed", () => {
     beforeEach(() => {
-      pendingQuestions = [basicQuestion];
+      pendingQuestions = [genericQuestion];
     });
 
     it("quits it from the queue", async () => {
       installerRender(<Questions />);
-      await screen.findByText("A Basic question mock");
+      await screen.findByText("A Generic question mock");
 
       // Manually triggers the handler given for the onQuestionRemoved signal
-      act(() => handlers.onRemove(basicQuestion.id));
+      act(() => handlers.onRemove(genericQuestion.id));
 
-      const content = screen.queryByText("A Basic question mock");
+      const content = screen.queryByText("A Generic question mock");
       expect(content).toBeNull();
     });
   });
 
-  describe("when there is a basic question pending", () => {
+  describe("when there is a generic question pending", () => {
     beforeEach(() => {
-      pendingQuestions = [basicQuestion];
+      pendingQuestions = [genericQuestion];
     });
 
-    it("renders a BasicQuestion component", async () => {
+    it("renders a GenericQuestion component", async () => {
       installerRender(<Questions />);
 
-      await screen.findByText("A Basic question mock");
+      await screen.findByText("A Generic question mock");
     });
   });
 

@@ -22,11 +22,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useInstallerClient } from "./context/installer";
 
-import BasicQuestion from "./BasicQuestion";
+import GenericQuestion from "./GenericQuestion";
 import LuksActivationQuestion from "./LuksActivationQuestion";
 
 const QUESTION_TYPES = {
-  generic: BasicQuestion,
+  generic: GenericQuestion,
   luksActivation: LuksActivationQuestion
 };
 
