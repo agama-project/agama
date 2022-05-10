@@ -23,10 +23,11 @@ require "yast"
 require "y2storage/storage_manager"
 require "dinstaller/storage/proposal"
 require "dinstaller/storage/actions"
+require "dinstaller/storage/callbacks"
 
 module DInstaller
   module Storage
-    # Backend class to handle storage configuration
+    # Manager to handle storage configuration
     class Manager
       def initialize(logger)
         @logger = logger
@@ -35,10 +36,12 @@ module DInstaller
       # Probes storage devices and performs an initial proposal
       #
       # @param progress [Progress] Progress reporting object
-      def probe(progress)
+      # @param questions_manager [QuestionsManager]
+      def probe(progress, questions_manager)
         logger.info "Probing storage and performing proposal"
         progress.init_minor_steps(2, "Probing Storage Devices")
-        Y2Storage::StorageManager.instance.probe
+        activate_devices(questions_manager)
+        probe_devices
         progress.next_minor_step("Calculating Storage Proposal")
         proposal.calculate
       end
@@ -68,6 +71,21 @@ module DInstaller
 
       # @return [Logger]
       attr_reader :logger
+
+      # Activates the devices, calling activation callbacks if needed
+      #
+      # @param questions_manager [QuestionsManager]
+      def activate_devices(questions_manager)
+        callbacks = Callbacks::Activate.new(questions_manager, logger)
+
+        Y2Storage::StorageManager.instance.activate(callbacks)
+      end
+
+      # Probes the devices
+      def probe_devices
+        # TODO: probe callbacks
+        Y2Storage::StorageManager.instance.probe
+      end
     end
   end
 end
