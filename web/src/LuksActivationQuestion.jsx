@@ -25,7 +25,7 @@ import Popup from "./Popup";
 import { buildQuestionActions } from "./questions-utils";
 
 const renderAlert = (attempt) => {
-  if (attempt <= 1) return null;
+  if (!attempt || attempt === 1) return null;
 
   return (
     <StackItem>
