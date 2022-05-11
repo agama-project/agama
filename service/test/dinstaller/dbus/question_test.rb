@@ -34,7 +34,7 @@ describe DInstaller::DBus::Question do
 
   let(:path) { "/org/test" }
 
-  let(:logger) { instance_double(Logger, warn: nil, info: nil, error: nil) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:service) { instance_double(DBus::Service, bus: system_bus) }
 

@@ -35,7 +35,7 @@ describe DInstaller::DBus::Questions do
 
   let(:backend) { DInstaller::QuestionsManager.new(logger) }
 
-  let(:logger) { instance_double(Logger, warn: nil, info: nil, error: nil) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:service) { instance_double(DBus::Service, export: nil, unexport: nil, bus: system_bus) }
 

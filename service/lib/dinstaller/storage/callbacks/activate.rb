@@ -46,7 +46,7 @@ module DInstaller
         # Messages are ignored to not bother the user
         #
         # See Storage::Callbacks#message in libstorage-ng
-        def message(message); end
+        def message(_message); end
 
         # Decides whether multipath should be activated
         #

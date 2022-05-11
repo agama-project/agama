@@ -29,10 +29,10 @@ describe DInstaller::Storage::Callbacks::ActivateLuks do
 
   let(:questions_manager) { DInstaller::QuestionsManager.new(logger) }
 
-  let(:logger) { instance_double(Logger, warn: nil, info: nil, error: nil) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#call" do
-    let(:info) do
+    let(:luks_info) do
       instance_double(Storage::LuksInfo,
         device_name: "/dev/sda1",
         label:       "MyData",
@@ -46,7 +46,7 @@ describe DInstaller::Storage::Callbacks::ActivateLuks do
         expect(question).to be_a(DInstaller::LuksActivationQuestion)
       end
 
-      subject.call(info, attempt)
+      subject.call(luks_info, attempt)
     end
 
     context "when the question is answered as :skip" do
@@ -55,11 +55,14 @@ describe DInstaller::Storage::Callbacks::ActivateLuks do
       end
 
       let(:question) do
-        instance_double(DInstaller::LuksActivationQuestion, answer: :skip, password: "notsecret")
+        DInstaller::LuksActivationQuestion.new("/dev/sda1").tap do |q|
+          q.answer = :skip
+          q.password = "notsecret"
+        end
       end
 
-      it "returns a list containing false and the password" do
-        expect(subject.call(info, attempt)).to eq([false, "notsecret"])
+      it "returns a tuple containing false and the password" do
+        expect(subject.call(luks_info, attempt)).to eq([false, "notsecret"])
       end
     end
 
@@ -69,11 +72,14 @@ describe DInstaller::Storage::Callbacks::ActivateLuks do
       end
 
       let(:question) do
-        instance_double(DInstaller::LuksActivationQuestion, answer: :decrypt, password: "notsecret")
+        DInstaller::LuksActivationQuestion.new("/dev/sda1").tap do |q|
+          q.answer = :decrypt
+          q.password = "notsecret"
+        end
       end
 
-      it "returns a list containing true and the password" do
-        expect(subject.call(info, attempt)).to eq([true, "notsecret"])
+      it "returns a tuple containing true and the password" do
+        expect(subject.call(luks_info, attempt)).to eq([true, "notsecret"])
       end
     end
   end

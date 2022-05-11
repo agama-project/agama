@@ -25,7 +25,7 @@ require "dinstaller/manager"
 describe DInstaller::Manager do
   subject { described_class.new(logger) }
 
-  let(:logger) { instance_double(Logger, warn: nil, info: nil, error: nil) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:cockpit) { instance_double(DInstaller::CockpitManager, setup: nil) }
   let(:software) do

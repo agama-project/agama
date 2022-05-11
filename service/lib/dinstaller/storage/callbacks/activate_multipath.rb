@@ -47,7 +47,11 @@ module DInstaller
         def call(looks_like_real_multipath)
           return false unless looks_like_real_multipath
 
-          ask(question) { |q| q.answer == :yes }
+          ask(question) do |q|
+            logger.info("#{q.text} #{q.answer}")
+
+            q.answer == :yes
+          end
         end
 
       private

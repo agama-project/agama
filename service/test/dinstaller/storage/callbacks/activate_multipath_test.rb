@@ -28,7 +28,7 @@ describe DInstaller::Storage::Callbacks::ActivateMultipath do
 
   let(:questions_manager) { DInstaller::QuestionsManager.new(logger) }
 
-  let(:logger) { instance_double(Logger, warn: nil, info: nil, error: nil) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#call" do
     context "if the devices do not look like real multipath" do
@@ -61,7 +61,9 @@ describe DInstaller::Storage::Callbacks::ActivateMultipath do
           allow(subject).to receive(:ask).and_yield(question)
         end
 
-        let(:question) { instance_double(DInstaller::Question, answer: :yes) }
+        let(:question) do
+          DInstaller::Question.new("test", options: [:yes, :no]).tap { |q| q.answer = :yes }
+        end
 
         it "returns true" do
           expect(subject.call(real_multipath)).to eq(true)
@@ -73,7 +75,9 @@ describe DInstaller::Storage::Callbacks::ActivateMultipath do
           allow(subject).to receive(:ask).and_yield(question)
         end
 
-        let(:question) { instance_double(DInstaller::Question, answer: :no) }
+        let(:question) do
+          DInstaller::Question.new("test", options: [:yes, :no]).tap { |q| q.answer = :no }
+        end
 
         it "returns false" do
           expect(subject.call(real_multipath)).to eq(false)

@@ -28,7 +28,7 @@ describe DInstaller::Storage::Callbacks::Activate do
 
   let(:questions_manager) { DInstaller::QuestionsManager.new(logger) }
 
-  let(:logger) { instance_double(Logger, warn: nil, info: nil, error: nil) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#multipath" do
     before do

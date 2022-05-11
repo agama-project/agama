@@ -27,7 +27,7 @@ require "dinstaller/questions_manager"
 describe DInstaller::Storage::Manager do
   subject(:storage) { described_class.new(logger) }
 
-  let(:logger) { instance_double(Logger, warn: nil, info: nil, error: nil) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
   let(:progress) { DInstaller::Progress.new }
 
   describe "#probe" do

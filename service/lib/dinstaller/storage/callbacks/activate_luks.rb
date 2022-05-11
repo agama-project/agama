@@ -46,13 +46,15 @@ module DInstaller
         # @param info [Storage::LuksInfo]
         # @param attempt [Numeric]
         #
-        # @return [Array<Boolean, String>] The first value is whether to activate the device, and
+        # @return [Array(Boolean, String)] The first value is whether to activate the device, and
         #   the second one is the LUKS password. Note that the password would only be considered
         #   when the first value is true.
         def call(info, attempt)
           question = question(info, attempt)
 
           ask(question) do |q|
+            logger.info("#{q.text} #{q.answer}")
+
             activate = q.answer == :decrypt
             password = q.password
 
@@ -74,15 +76,15 @@ module DInstaller
         def question(info, attempt)
           LuksActivationQuestion.new(info.device_name,
             label:   info.label,
-            size:    size(info.size),
+            size:    formatted_size(info.size),
             attempt: attempt)
         end
 
-        # Generates a representation of the size
+        # Generates a formatted representation of the size
         #
         # @param size [Y2Storage::DiskSize]
         # @return [String]
-        def size(value)
+        def formatted_size(value)
           Y2Storage::DiskSize.new(value).to_human_string
         end
       end
