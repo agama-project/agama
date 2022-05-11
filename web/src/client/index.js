@@ -26,6 +26,7 @@ import SoftwareClient from "./software";
 import StorageClient from "./storage";
 import UsersClient from "./users";
 import status from "./status";
+import QuestionsClient from "./questions";
 
 import cockpit from "../lib/cockpit";
 
@@ -43,7 +44,8 @@ const createClient = () => {
     monitor: new Monitor(SERVICE_NAME),
     software: new SoftwareClient(client),
     storage: new StorageClient(client),
-    users: new UsersClient(client)
+    users: new UsersClient(client),
+    questions: new QuestionsClient(client)
   };
 };
 

@@ -191,7 +191,7 @@ module DInstaller
       language.probe(progress)
 
       progress.next_step("Probing Storage")
-      storage.probe(progress)
+      storage.probe(progress, questions_manager)
 
       progress.next_step("Probing Software")
       software.probe(progress)

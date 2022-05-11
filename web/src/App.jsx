@@ -30,6 +30,7 @@ import ProbingProgress from "./ProbingProgress";
 import InstallationProgress from "./InstallationProgress";
 import InstallationFinished from "./InstallationFinished";
 import LoadingEnvironment from "./LoadingEnvironment";
+import Questions from "./Questions";
 
 import './assets/fonts.scss';
 import "./app.scss";
@@ -57,6 +58,16 @@ const reducer = (state, action) => {
   }
 };
 
+const renderMainContent = (state) => {
+  if (state.dbusError) return <DBusError />;
+  if (state.loading) return <LoadingEnvironment />;
+  if (state.probing) return <ProbingProgress />;
+  if (state.installing) return <InstallationProgress />;
+  if (state.finished) return <InstallationFinished />;
+
+  return <Overview />;
+};
+
 function App() {
   const client = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, null, init);
@@ -81,13 +92,12 @@ function App() {
     });
   }, [client.monitor]);
 
-  if (state.dbusError) return <DBusError />;
-  if (state.loading) return <LoadingEnvironment />;
-  if (state.probing) return <ProbingProgress />;
-  if (state.installing) return <InstallationProgress />;
-  if (state.finished) return <InstallationFinished />;
-
-  return <Overview />;
+  return (
+    <>
+      <Questions />
+      { renderMainContent(state) }
+    </>
+  );
 }
 
 export default App;

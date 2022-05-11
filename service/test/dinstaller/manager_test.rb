@@ -25,7 +25,7 @@ require "dinstaller/manager"
 describe DInstaller::Manager do
   subject { described_class.new(logger) }
 
-  let(:logger) { Logger.new($stdout) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:cockpit) { instance_double(DInstaller::CockpitManager, setup: nil) }
   let(:software) do
@@ -38,6 +38,7 @@ describe DInstaller::Manager do
   let(:status_manager) do
     instance_double(DInstaller::StatusManager, change: nil)
   end
+  let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
   before do
     allow(DInstaller::Language).to receive(:new).and_return(language)
@@ -47,6 +48,7 @@ describe DInstaller::Manager do
     allow(DInstaller::Storage::Manager).to receive(:new).and_return(storage)
     allow(DInstaller::Users).to receive(:new).and_return(users)
     allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
+    allow(DInstaller::QuestionsManager).to receive(:new).and_return(questions_manager)
   end
 
   describe "#probe" do
@@ -60,7 +62,7 @@ describe DInstaller::Manager do
       expect(software).to receive(:probe).with(subject.progress)
       expect(language).to receive(:probe).with(subject.progress)
       expect(network).to receive(:probe).with(subject.progress)
-      expect(storage).to receive(:probe).with(subject.progress)
+      expect(storage).to receive(:probe).with(subject.progress, subject.questions_manager)
       subject.probe
     end
   end

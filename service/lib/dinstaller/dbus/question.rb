@@ -21,7 +21,7 @@
 
 require "dbus"
 require "dinstaller/question"
-require "dinstaller/luks_question"
+require "dinstaller/luks_activation_question"
 
 module DInstaller
   module DBus
@@ -102,10 +102,10 @@ module DInstaller
           end
         end
 
-        # Interface to request a LUKS password
-        module LuksPassword
-          LUKS_PASSWORD_INTERFACE = "org.opensuse.DInstaller.Question.LuksPassword1"
-          private_constant :LUKS_PASSWORD_INTERFACE
+        # Interface to provide information when activating a LUKS device
+        module LuksActivation
+          LUKS_ACTIVATION_INTERFACE = "org.opensuse.DInstaller.Question.LuksActivation1"
+          private_constant :LUKS_ACTIVATION_INTERFACE
 
           # @!method backend
           #   @note Classes including this mixin must define a #backend method
@@ -125,10 +125,18 @@ module DInstaller
             backend.password = value
           end
 
+          # Current attempt for activating the device
+          #
+          # @return [Integer]
+          def activation_attempt
+            backend.attempt
+          end
+
           def self.included(base)
             base.class_eval do
-              dbus_interface LUKS_PASSWORD_INTERFACE do
-                dbus_accessor :luks_password, "s", dbus_name: "Value"
+              dbus_interface LUKS_ACTIVATION_INTERFACE do
+                dbus_accessor :luks_password, "s", dbus_name: "Password"
+                dbus_reader :activation_attempt, "u", dbus_name: "Attempt"
               end
             end
           end
@@ -137,8 +145,8 @@ module DInstaller
 
       # Defines the interfaces to implement according to the backend type
       INTERFACES_TO_INCLUDE = {
-        DInstaller::Question     => [Interfaces::Question],
-        DInstaller::LuksQuestion => [Interfaces::Question, Interfaces::LuksPassword]
+        DInstaller::Question               => [Interfaces::Question],
+        DInstaller::LuksActivationQuestion => [Interfaces::Question, Interfaces::LuksActivation]
       }.freeze
       private_constant :INTERFACES_TO_INCLUDE
 

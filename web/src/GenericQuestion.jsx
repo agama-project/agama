@@ -19,25 +19,29 @@
  * find current contact information at www.suse.com.
  */
 
-/**
- * Returns a new array with a given collection split into two groups, the first holding elements
- * satisfying the filter and the second with those which do not.
- *
- * @param {Array} collection - the collection to be filtered
- * @param {function} filter - the function to be used as filter
- * @return {Array[]} a pair of arrays, [passing, failing]
- */
-const partition = (collection, filter) => {
-  const pass = [];
-  const fail = [];
+import React from "react";
+import { Text } from "@patternfly/react-core";
+import Popup from "./Popup";
+import QuestionActions from "./QuestionActions";
 
-  collection.forEach(element => {
-    filter(element) ? pass.push(element) : fail.push(element);
-  });
+export default function GenericQuestion({ question, answerCallback }) {
+  const actionCallback = (option) => {
+    question.answer = option;
+    answerCallback(question);
+  };
 
-  return [pass, fail];
-};
-
-export {
-  partition
-};
+  return (
+    <Popup isOpen aria-label="Question">
+      <Text>
+        { question.text }
+      </Text>
+      <Popup.Actions>
+        <QuestionActions
+          actions={question.options}
+          defaultAction={question.defaultOption}
+          actionCallback={actionCallback}
+        />
+      </Popup.Actions>
+    </Popup>
+  );
+}

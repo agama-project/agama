@@ -22,17 +22,19 @@
 require_relative "../../test_helper"
 require "dinstaller/storage/manager"
 require "dinstaller/progress"
+require "dinstaller/questions_manager"
 
 describe DInstaller::Storage::Manager do
   subject(:storage) { described_class.new(logger) }
 
-  let(:logger) { Logger.new($stdout) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
   let(:progress) { DInstaller::Progress.new }
 
   describe "#probe" do
     let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
     let(:proposal) { instance_double(DInstaller::Storage::Proposal, calculate: nil) }
     let(:actions) { instance_double(DInstaller::Storage::Actions) }
+    let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
     before do
       allow(DInstaller::Storage::Proposal).to receive(:new).and_return(proposal)
@@ -41,9 +43,12 @@ describe DInstaller::Storage::Manager do
     end
 
     it "probes the storage devices and calculates a proposal" do
+      expect(y2storage_manager).to receive(:activate) do |callbacks|
+        expect(callbacks).to be_a(DInstaller::Storage::Callbacks::Activate)
+      end
       expect(y2storage_manager).to receive(:probe)
       expect(proposal).to receive(:calculate)
-      storage.probe(progress)
+      storage.probe(progress, questions_manager)
     end
   end
 

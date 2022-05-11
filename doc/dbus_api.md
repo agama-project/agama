@@ -255,9 +255,9 @@ dynamically exported in a tree under the */org/opensuse/DInstaller/Questions1* p
 
 Each D-Bus question implements its own set of interfaces, depending on the type of question. For
 example, a generic question implements *org.opensuse.DInstaller.Question1*. And a question asking
-for a LUKS password also implements *org.opensuse.DInstaller.Question.LuksPassword1*. Questions
-can be "unexported" from the ObjectManager tree. The service typically unexports a question when the
-question is answered.
+for the activation of a LUKS device also implements *org.opensuse.DInstaller.Question.LuksActivation1*.
+Questions can be "unexported" from the ObjectManager tree. The service typically unexports a question
+when the question is answered.
 
 ### org.opensuse.DInstaller.Question1
 
@@ -279,9 +279,12 @@ question is answered.
 - Answer -> string (rw)
   Answer for the question. Clients set an option as answer.
 
-### org.opensuse.DInstaller.Question.LuksPassword1
+### org.opensuse.DInstaller.Question.LuksActivation1
 
 #### Properties
 
-- Value -> string (rw)
+- Password -> string (rw)
   Password provided to decrypt a LUKS device.
+- Attempt -> unsigned 32-bit integer (r)
+  Current attempt to decrypt the device. This value is useful for clients to know if the very same
+  question is asked again (i.e., when the provided password did not work).

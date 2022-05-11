@@ -24,16 +24,17 @@ const withDBus = {
    * Registers a proxy for given iface
    *
    * @param {string} iface - D-Bus iface
+   * @param {string} path - D-Bus object path
    * @return {Object} a cockpit DBusProxy
    */
-  async proxy(iface) {
+  async proxy(iface, path) {
     const _proxies = this.proxies();
 
     if (_proxies[iface]) {
       return _proxies[iface];
     }
 
-    const proxy = this._client.proxy(iface, undefined, { watch: true });
+    const proxy = this._client.proxy(iface, path, { watch: true });
     await proxy.wait();
     _proxies[iface] = proxy;
     return proxy;
@@ -53,6 +54,7 @@ const withDBus = {
    *
    * @param {string} path - D-Bus path
    * @param {function} handler - callback function
+   * @return {function} function to unsubscribe
    */
   onObjectChanged(path, handler) {
     const { remove } = this._client.subscribe(
@@ -73,6 +75,7 @@ const withDBus = {
    * Register a callback to run when some D-Bus signal is emitted
    *
    * @param {function} handler - callback function
+   * @return {function} function to unsubscribe
    */
   onSignal(match, handler) {
     const { remove } = this._client.subscribe(match, handler);

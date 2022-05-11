@@ -26,7 +26,7 @@ require "dinstaller/question"
 describe DInstaller::QuestionsManager do
   subject { described_class.new(logger) }
 
-  let(:logger) { instance_double(Logger, warn: nil, info: nil, error: nil) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:callback) { proc {} }
 

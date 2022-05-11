@@ -23,7 +23,7 @@ require_relative "../../test_helper"
 require "dinstaller/dbus/questions"
 require "dinstaller/questions_manager"
 require "dinstaller/question"
-require "dinstaller/luks_question"
+require "dinstaller/luks_activation_question"
 require "dbus"
 
 describe DInstaller::DBus::Questions do
@@ -35,7 +35,7 @@ describe DInstaller::DBus::Questions do
 
   let(:backend) { DInstaller::QuestionsManager.new(logger) }
 
-  let(:logger) { instance_double(Logger, warn: nil, info: nil, error: nil) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:service) { instance_double(DBus::Service, export: nil, unexport: nil, bus: system_bus) }
 
@@ -102,7 +102,7 @@ describe DInstaller::DBus::Questions do
     end
 
     let(:question1) { DInstaller::Question.new("test1") }
-    let(:question2) { DInstaller::LuksQuestion.new("/dev/sda1") }
+    let(:question2) { DInstaller::LuksActivationQuestion.new("/dev/sda1") }
 
     it "returns interfaces and properties for each exported question" do
       result = subject.managed_objects
@@ -120,15 +120,15 @@ describe DInstaller::DBus::Questions do
       expect(result[path2].keys).to contain_exactly(
         "org.freedesktop.DBus.Properties",
         "org.opensuse.DInstaller.Question1",
-        "org.opensuse.DInstaller.Question.LuksPassword1"
+        "org.opensuse.DInstaller.Question.LuksActivation1"
       )
 
       expect(result[path1]["org.freedesktop.DBus.Properties"].keys).to be_empty
       expect(result[path1]["org.opensuse.DInstaller.Question1"].keys).to contain_exactly(
         "Id", "Text", "Options", "DefaultOption", "Answer"
       )
-      expect(result[path2]["org.opensuse.DInstaller.Question.LuksPassword1"].keys)
-        .to contain_exactly("Value")
+      expect(result[path2]["org.opensuse.DInstaller.Question.LuksActivation1"].keys)
+        .to contain_exactly("Attempt", "Password")
     end
   end
 end
