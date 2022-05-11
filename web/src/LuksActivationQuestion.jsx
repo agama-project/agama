@@ -22,7 +22,7 @@
 import React, { useState } from "react";
 import { Alert, Form, FormGroup, Stack, StackItem, Text, TextInput } from "@patternfly/react-core";
 import Popup from "./Popup";
-import { buildQuestionActions } from "./questions-utils";
+import QuestionActions from "./QuestionActions";
 
 const renderAlert = (attempt) => {
   if (!attempt || attempt === 1) return null;
@@ -36,6 +36,7 @@ const renderAlert = (attempt) => {
 
 export default function LuksActivationQuestion({ question, answerCallback }) {
   const [password, setPassword] = useState(question.password || "");
+  const conditions = { disable: { decrypt: password === "" } };
 
   const actionCallback = (option) => {
     if (option === question.defaultOption) question.password = password;
@@ -67,7 +68,14 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
         </StackItem>
       </Stack>
 
-      { buildQuestionActions(question, actionCallback, { disable: { decrypt: password === "" } }) }
+      <Popup.Actions>
+        <QuestionActions
+          actions={question.options}
+          defaultAction={question.defaultOption}
+          actionCallback={actionCallback}
+          conditions={conditions}
+        />
+      </Popup.Actions>
     </Popup>
   );
 }

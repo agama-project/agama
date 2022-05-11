@@ -22,7 +22,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "./test-utils";
-import { buildQuestionActions } from "./questions-utils";
+import QuestionActions from "./QuestionActions";
 
 const question = {
   id: 1,
@@ -33,32 +33,27 @@ const question = {
 
 const actionCallback = jest.fn();
 
-const Wrapper = ({ question, actionCallback, conditions = {} }) => (
-  <>
-    { buildQuestionActions(question, actionCallback, conditions) }
-  </>
-);
-
-const renderActions = () => (
+const renderQuestionActions = () => (
   installerRender(
-    <Wrapper
-      question={question}
+    <QuestionActions
+      actions={question.options}
+      defaultAction={question.defaultOption}
       actionCallback={actionCallback}
       conditions={ { disable: { no: true } } }
     />
   )
 );
 
-describe("#buildQuestionActions", () => {
+describe("QuestionActions", () => {
   it("renders the default option as primary action", async () => {
-    renderActions();
+    renderQuestionActions();
 
     const button = await screen.findByRole("button", { name: "Maybe" });
     expect(button.classList.contains("pf-m-primary")).toBe(true);
   });
 
   it("renders non default options as secondary actions", async () => {
-    renderActions();
+    renderQuestionActions();
 
     let button = await screen.findByRole("button", { name: "Handsdown" });
     expect(button.classList.contains("pf-m-secondary")).toBe(true);
@@ -68,7 +63,7 @@ describe("#buildQuestionActions", () => {
   });
 
   it("renders actions enabled or disabled according to given conditions", async () => {
-    renderActions();
+    renderQuestionActions();
 
     let button = await screen.findByRole("button", { name: "No" });
     expect(button).toHaveAttribute('disabled');
@@ -77,8 +72,8 @@ describe("#buildQuestionActions", () => {
     expect(button).not.toHaveAttribute('disabled');
   });
 
-  it("calls the actionCallback when useers clicks on an action", async () => {
-    const { user } = renderActions();
+  it("calls the actionCallback when useers clicks on action", async () => {
+    const { user } = renderQuestionActions();
 
     const button = await screen.findByRole("button", { name: "Handsdown" });
     await user.click(button);

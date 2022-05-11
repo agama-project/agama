@@ -22,7 +22,7 @@
 import React from "react";
 import { Text } from "@patternfly/react-core";
 import Popup from "./Popup";
-import { buildQuestionActions } from "./questions-utils";
+import QuestionActions from "./QuestionActions";
 
 export default function GenericQuestion({ question, answerCallback }) {
   const actionCallback = (option) => {
@@ -35,7 +35,13 @@ export default function GenericQuestion({ question, answerCallback }) {
       <Text>
         { question.text }
       </Text>
-      { buildQuestionActions(question, actionCallback) }
+      <Popup.Actions>
+        <QuestionActions
+          actions={question.options}
+          defaultAction={question.defaultOption}
+          actionCallback={actionCallback}
+        />
+      </Popup.Actions>
     </Popup>
   );
 }
