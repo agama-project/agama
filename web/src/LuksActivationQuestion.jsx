@@ -24,6 +24,8 @@ import { Alert, Form, FormGroup, Stack, StackItem, Text, TextInput } from "@patt
 import Popup from "./Popup";
 import QuestionActions from "./QuestionActions";
 
+import { EOS_LOCK as Icon } from "eos-icons-react";
+
 const renderAlert = (attempt) => {
   if (!attempt || attempt === 1) return null;
 
@@ -45,7 +47,7 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
   };
 
   return (
-    <Popup isOpen title="Encrypted Device">
+    <Popup isOpen title="Encrypted Device" titleIconVariant={() => <Icon size="24" />}>
       <Stack hasGutter>
         { renderAlert(question.attempt) }
         <StackItem>
