@@ -29,7 +29,7 @@ import { partition } from "./utils";
  * TODO: make it work with i18n
  *
  * @param {String} text - string to be capitalized
- * @returns {String} capitalized text
+ * @return {String} capitalized text
  */
 const label = text => `${text[0].toUpperCase()}${text.slice(1)}`;
 

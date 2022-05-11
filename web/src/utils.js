@@ -25,7 +25,7 @@
  *
  * @param {Array} collection - the collection to be filtered
  * @param {function} filter - the function to be used as filter
- * @returns {[Array, Array]} the new array with grouped elements
+ * @return {[Array, Array]} the new array with grouped elements
  */
 const partition = (collection, filter) => {
   const pass = [];

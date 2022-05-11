@@ -43,7 +43,7 @@ const QUESTION_TYPES = {
  * Returns interfaces and properties from given DBus question object
  *
  * @param {Object} dbusQuestion
- * @returns {Object}
+ * @return {Object}
  */
 const getIfacesAndProperties = (dbusQuestion) => Object.values(dbusQuestion)[0];
 
@@ -51,7 +51,7 @@ const getIfacesAndProperties = (dbusQuestion) => Object.values(dbusQuestion)[0];
  * Returns interfaces from given DBus question object
  *
  * @param {Object} dbusQuestion
- * @returns {Object}
+ * @return {Object}
  */
 const getIfaces = (dbusQuestion) => Object.keys(getIfacesAndProperties(dbusQuestion));
 
@@ -60,7 +60,7 @@ const getIfaces = (dbusQuestion) => Object.keys(getIfacesAndProperties(dbusQuest
  *
  * @param {Object} ifaceProperties
  * @param {String} key
- * @returns {*} the value
+ * @return {*} the value
  */
 const fetchValue = (ifaceProperties, key) => {
   const dbusValue = ifaceProperties[key];
@@ -72,7 +72,7 @@ const fetchValue = (ifaceProperties, key) => {
  * Builds a question from the given D-Bus question
  *
  * @param {Object} dbusQuestion
- * @returns {Object}
+ * @return {Object}
 */
 function buildQuestion(dbusQuestion) {
   const question = {};
@@ -145,7 +145,9 @@ export default class QuestionsClient {
   /**
    * Register a callback to run when the questions D-Bus object emits an Object Manager signal
    *
+   * @param {String} member - name of the Object Manager signal
    * @param {function} handler - callback function
+   * @return {function} function to unsubscribe
    */
   onObjectsChanged(member, handler) {
     const { remove } = this._client.subscribe(
@@ -162,6 +164,12 @@ export default class QuestionsClient {
     return remove;
   }
 
+  /**
+   * Register a callback to run when a questions is added
+   *
+   * @param {function} handler - callback function
+   * @return {function} function to unsubscribe
+   */
   onQuestionAdded(handler) {
     return this.onObjectsChanged("InterfacesAdded", (path, ifacesAndProperties) => {
       const question = buildQuestion({ [path]: ifacesAndProperties });
@@ -169,6 +177,12 @@ export default class QuestionsClient {
     });
   }
 
+  /**
+   * Register a callback to run when a questions is removed
+   *
+   * @param {function} handler - callback function
+   * @return {function} function to unsubscribe
+   */
   onQuestionRemoved(handler) {
     return this.onObjectsChanged("InterfacesRemoved", path => {
       const id = path.split("/").at(-1);
