@@ -37,9 +37,9 @@ const label = text => `${text[0].toUpperCase()}${text.slice(1)}`;
  * A component for building a Question actions, using the defaultAction
  * as the Popup.PrimaryAction
  *
- * NOTE: Questions are shown using the Popup component, which will wrap this actions inside a
- * Popup.Actions, which must be an immediate child of Popup. That's why a React.Fragment (aka <>) is
- * used here for wrapping the actions, instead of directly using the Popup.Actions.
+ * NOTE: We use the Popup component for displaying a question, wrapping its actions inside a
+ * Popup.Actions component, which must be an immediate child of Popup. That's why we use
+ * React.Fragment (aka <>) here for wrapping the actions instead of directly using the Popup.Actions.
  *
  * @param {object} props - component props
  * @param {Array.<String>} props.actions - the actions to be shown

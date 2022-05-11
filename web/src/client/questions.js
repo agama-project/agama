@@ -40,24 +40,41 @@ const QUESTION_TYPES = {
 };
 
 /**
+ * Returns interfaces and properties from given DBus question object
+ *
+ * @param {Object} dbusQuestion
+ * @returns {Object}
+ */
+const getIfacesAndProperties = (dbusQuestion) => Object.values(dbusQuestion)[0];
+
+/**
+ * Returns interfaces from given DBus question object
+ *
+ * @param {Object} dbusQuestion
+ * @returns {Object}
+ */
+const getIfaces = (dbusQuestion) => Object.keys(getIfacesAndProperties(dbusQuestion));
+
+/**
+ * Returns the value from given object at given key
+ *
+ * @param {Object} ifaceProperties
+ * @param {String} key
+ * @returns {*} the value
+ */
+const fetchValue = (ifaceProperties, key) => {
+  const dbusValue = ifaceProperties[key];
+  if (dbusValue) return dbusValue.v;
+  return null;
+};
+
+/**
  * Builds a question from the given D-Bus question
  *
  * @param {Object} dbusQuestion
  * @returns {Object}
 */
 function buildQuestion(dbusQuestion) {
-  const getIfacesAndProperties = (dbusQuestion) => Object.values(dbusQuestion)[0];
-
-  const getIfaces = (dbusQuestion) => Object.keys(getIfacesAndProperties(dbusQuestion));
-
-  const fetchValue = (ifaceProperties, key) => {
-    const dbusValue = ifaceProperties[key];
-
-    if (dbusValue) return dbusValue.v;
-
-    return null;
-  };
-
   const question = {};
   const ifaces = getIfaces(dbusQuestion);
   const ifacesAndProperties = getIfacesAndProperties(dbusQuestion);

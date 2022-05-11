@@ -51,7 +51,7 @@ export default function Questions() {
   useEffect(() => {
     client.questions.getQuestions()
       .then(setPendingQuestions)
-      .catch(e => console.log("Something went wrong retrieving pending questions", e));
+      .catch(e => console.error("Something went wrong retrieving pending questions", e));
     client.questions.onQuestionAdded(addQuestion);
     client.questions.onQuestionRemoved(removeQuestion);
   }, [client.questions, addQuestion, removeQuestion]);

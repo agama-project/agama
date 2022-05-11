@@ -94,7 +94,6 @@ describe("LuksActivationQuestion", () => {
       const { user } = renderQuestion();
 
       const passwordInput = await screen.findByLabelText("Encryption Password");
-
       await user.type(passwordInput, "notSecret");
       const skipButton = await screen.findByRole("button", { name: /Skip/ });
       await user.click(skipButton);
@@ -118,7 +117,6 @@ describe("LuksActivationQuestion", () => {
       const { user } = renderQuestion();
 
       const passwordInput = await screen.findByLabelText("Encryption Password");
-
       await user.type(passwordInput, "notSecret");
       const skipButton = await screen.findByRole("button", { name: /Decrypt/ });
       await user.click(skipButton);

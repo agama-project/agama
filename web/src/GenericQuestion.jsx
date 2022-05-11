@@ -31,7 +31,7 @@ export default function GenericQuestion({ question, answerCallback }) {
   };
 
   return (
-    <Popup isOpen aria-label="A question from DBus">
+    <Popup isOpen aria-label="Question">
       <Text>
         { question.text }
       </Text>

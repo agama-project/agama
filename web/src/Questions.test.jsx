@@ -79,7 +79,7 @@ describe("Questions", () => {
       pendingQuestions = [genericQuestion];
     });
 
-    it("quits it from the queue", async () => {
+    it("removes it from the queue", async () => {
       installerRender(<Questions />);
       await screen.findByText("A Generic question mock");
 
