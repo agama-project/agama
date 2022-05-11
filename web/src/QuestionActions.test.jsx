@@ -24,11 +24,13 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import QuestionActions from "./QuestionActions";
 
-const question = {
+let defaultOption = "handsdown";
+
+let question = {
   id: 1,
-  text: "Should we use a component instead?",
-  options: ["handsdown", "maybe", "no"],
-  defaultOption: "maybe"
+  text: "Should we use a component for rendering actions?",
+  options: ["no", "maybe", "handsdown"],
+  defaultOption
 };
 
 const actionCallback = jest.fn();
@@ -45,21 +47,48 @@ const renderQuestionActions = () => (
 );
 
 describe("QuestionActions", () => {
-  it("renders the default option as primary action", async () => {
-    renderQuestionActions();
+  describe("when question has a default option", () => {
+    it("renders the default option as primary action", async () => {
+      renderQuestionActions();
 
-    const button = await screen.findByRole("button", { name: "Maybe" });
-    expect(button.classList.contains("pf-m-primary")).toBe(true);
+      const button = await screen.findByRole("button", { name: "Handsdown" });
+      expect(button.classList.contains("pf-m-primary")).toBe(true);
+    });
+
+    it("renders non default options as secondary actions", async () => {
+      renderQuestionActions();
+
+      let button = await screen.findByRole("button", { name: "Maybe" });
+      expect(button.classList.contains("pf-m-secondary")).toBe(true);
+
+      button = await screen.findByRole("button", { name: "No" });
+      expect(button.classList.contains("pf-m-secondary")).toBe(true);
+    });
   });
 
-  it("renders non default options as secondary actions", async () => {
-    renderQuestionActions();
+  describe("when question does not have a default option", () => {
+    beforeEach(() => {
+      // Using destructuring for partially clone the object.
+      // See "Gotcha if there's no let" at https://javascript.info/destructuring-assignment#the-rest-pattern
+      ({ defaultOption, ...question } = question);
+    });
 
-    let button = await screen.findByRole("button", { name: "Handsdown" });
-    expect(button.classList.contains("pf-m-secondary")).toBe(true);
+    it("renders the first option  as primary action", async () => {
+      renderQuestionActions();
 
-    button = await screen.findByRole("button", { name: "No" });
-    expect(button.classList.contains("pf-m-secondary")).toBe(true);
+      const button = await screen.findByRole("button", { name: "No" });
+      expect(button.classList.contains("pf-m-primary")).toBe(true);
+    });
+
+    it("renders the other options as secondary actions", async () => {
+      renderQuestionActions();
+
+      let button = await screen.findByRole("button", { name: "Maybe" });
+      expect(button.classList.contains("pf-m-secondary")).toBe(true);
+
+      button = await screen.findByRole("button", { name: "Handsdown" });
+      expect(button.classList.contains("pf-m-secondary")).toBe(true);
+    });
   });
 
   it("renders actions enabled or disabled according to given conditions", async () => {
@@ -72,7 +101,7 @@ describe("QuestionActions", () => {
     expect(button).not.toHaveAttribute('disabled');
   });
 
-  it("calls the actionCallback when useers clicks on action", async () => {
+  it("calls the actionCallback when user clicks on action", async () => {
     const { user } = renderQuestionActions();
 
     const button = await screen.findByRole("button", { name: "Handsdown" });

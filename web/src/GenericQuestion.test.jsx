@@ -44,23 +44,6 @@ describe("GenericQuestion", () => {
     await screen.findByText(question.text);
   });
 
-  it("contains the default option as primary action", async () => {
-    renderQuestion();
-
-    const button = await screen.findByRole("button", { name: "Sometimes" });
-    expect(button.classList.contains("pf-m-primary")).toBe(true);
-  });
-
-  it("contains the non default options as secondary actions", async () => {
-    renderQuestion();
-
-    const alwaysButton = await screen.findByRole("button", { name: "Always" });
-    expect(alwaysButton.classList.contains("pf-m-secondary")).toBe(true);
-
-    const neverButton = await screen.findByRole("button", { name: "Never" });
-    expect(neverButton.classList.contains("pf-m-secondary")).toBe(true);
-  });
-
   it("sets chosen option and calls the callback after user clicking an action", async() => {
     const { user } = renderQuestion();
 
