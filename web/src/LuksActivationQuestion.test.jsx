@@ -24,14 +24,7 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import LuksActivationQuestion from "./LuksActivationQuestion";
 
-const question = {
-  id: 1,
-  text: "A Luks device found. Do you want to open it?",
-  attempt: 1,
-  options: ["open", "skip"],
-  defaultOption: "open"
-};
-
+let question;
 const answerFn = jest.fn();
 
 const renderQuestion = () => (
@@ -39,6 +32,15 @@ const renderQuestion = () => (
 );
 
 describe("LuksActivationQuestion", () => {
+  beforeEach(() => {
+    question = {
+      id: 1,
+      text: "A Luks device found. Do you want to open it?",
+      attempt: 1,
+      options: ["decrypt", "skip"],
+    };
+  });
+
   it("renders the question text", async () => {
     renderQuestion();
 
@@ -52,20 +54,6 @@ describe("LuksActivationQuestion", () => {
     expect(passwordInput).not.toBeNull();
   });
 
-  it("contains the default option as primary action", async () => {
-    renderQuestion();
-
-    const button = await screen.findByRole("button", { name: "Open" });
-    expect(button.classList.contains("pf-m-primary")).toBe(true);
-  });
-
-  it("contains the non default option as secondary action", async () => {
-    renderQuestion();
-
-    const button = await screen.findByRole("button", { name: "Skip" });
-    expect(button.classList.contains("pf-m-secondary")).toBe(true);
-  });
-
   describe("when it is the first attempt", () => {
     it("does not contain a warning", async () => {
       renderQuestion();
@@ -76,7 +64,14 @@ describe("LuksActivationQuestion", () => {
   });
 
   describe("when it is not the first attempt", () => {
-    beforeEach(() => { question.attempt = 2 });
+    beforeEach(() => {
+      question = {
+        id: 1,
+        text: "A Luks device found. Do you want to open it?",
+        attempt: 3,
+        options: ["decrypt", "skip"],
+      };
+    });
 
     it("contains a warning", async () => {
       renderQuestion();
@@ -85,36 +80,50 @@ describe("LuksActivationQuestion", () => {
     });
   });
 
-  describe("when the user clicks on the secondary action", () => {
-    it("calls the callback after setting the answer but not the password", async() => {
-      const { user } = renderQuestion();
-
-      const passwordInput = await screen.findByLabelText("Encryption Password");
-
-      // Simulate that user enters a password before deciding to skip opening the device
-      await user.type(passwordInput, "notSecret");
-
-      const skipButton = await screen.findByRole("button", { name: /Skip/ });
-      await user.click(skipButton);
-
-      expect(question).toEqual(expect.not.objectContaining({ password: "notSecret" }));
-      expect(question).toEqual(expect.objectContaining({ answer: "skip" }));
-      expect(answerFn).toHaveBeenCalledWith(question);
+  describe("when the user clicks on 'Skip'", () => {
+    beforeEach(() => {
+      question = {
+        id: 1,
+        text: "A Luks device found. Do you want to open it?",
+        attempt: 1,
+        options: ["decrypt", "skip"],
+      };
     });
-  });
 
-  describe("when clicks on the primary action", () => {
     it("calls the callback after setting both, answer and password", async() => {
       const { user } = renderQuestion();
 
       const passwordInput = await screen.findByLabelText("Encryption Password");
 
       await user.type(passwordInput, "notSecret");
-      const button = await screen.findByRole("button", { name: /Open/ });
-      await user.click(button);
+      const skipButton = await screen.findByRole("button", { name: /Skip/ });
+      await user.click(skipButton);
 
-      expect(question).toEqual(expect.objectContaining({ password: "notSecret" }));
-      expect(question).toEqual(expect.objectContaining({ answer: "open" }));
+      expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "skip" }));
+      expect(answerFn).toHaveBeenCalledWith(question);
+    });
+  });
+
+  describe("when the user clicks on 'Decrypt'", () => {
+    beforeEach(() => {
+      question = {
+        id: 1,
+        text: "A Luks device found. Do you want to open it?",
+        attempt: 1,
+        options: ["decrypt", "skip"],
+      };
+    });
+
+    it("calls the callback after setting both, answer and password", async() => {
+      const { user } = renderQuestion();
+
+      const passwordInput = await screen.findByLabelText("Encryption Password");
+
+      await user.type(passwordInput, "notSecret");
+      const skipButton = await screen.findByRole("button", { name: /Decrypt/ });
+      await user.click(skipButton);
+
+      expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "decrypt" }));
       expect(answerFn).toHaveBeenCalledWith(question);
     });
   });
