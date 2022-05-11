@@ -38,12 +38,12 @@ const Actions = ({ children }) => <>{children}</>;
 /**
  * A convenient component representing a Popup action
  *
- * Built on top of { @link https://www.patternfly.org/v4/components/button PF4/Button }
+ * Built on top of {@link https://www.patternfly.org/v4/components/button PF4/Button}
  *
  * @see Popup examples.
  *
  * @param {React.ReactNode} props.children - content of the action
- * @param {object} [props] - PF4/Button props, see { @link https://www.patternfly.org/v4/components/button#props }
+ * @param {object} [props] - PF4/Button props, see {@link https://www.patternfly.org/v4/components/button#props}
  */
 const Action = ({ children, ...props }) => (
   <Button { ...props }>
@@ -54,7 +54,7 @@ const Action = ({ children, ...props }) => (
 /**
  * A Popup primary action
  *
- * It always set `variant` { @link https://www.patternfly.org/v4/components/button PF4/Button }
+ * It always set `variant` {@link https://www.patternfly.org/v4/components/button PF4/Button}
  * prop to "primary", no matter what given in `props`.
  *
  * @example <caption>Simple usage</caption>
@@ -67,7 +67,7 @@ const Action = ({ children, ...props }) => (
  *   </PrimaryAction>
  *
  * @param {React.ReactNode} props.children - content of the action
- * @param {object} [props] - { @link Action } props
+ * @param {object} [props] - {@link Action} props
  */
 const PrimaryAction = ({ children, ...props }) => (
   <Action { ...props } variant="primary">{ children }</Action>
@@ -83,7 +83,7 @@ const PrimaryAction = ({ children, ...props }) => (
  *   <Confirm onClick={accept}>Accept</Confirm>
  *
  * @param {React.ReactNode} [props.children="confirm"] - content of the action
- * @param {object} [props] - { @link Action } props
+ * @param {object} [props] - {@link Action} props
  */
 const Confirm = ({ children = "Confirm", ...props }) => (
   <PrimaryAction key="confirm" { ...props }>{ children }</PrimaryAction>
@@ -92,7 +92,7 @@ const Confirm = ({ children = "Confirm", ...props }) => (
 /**
  * A Popup secondary action
  *
- * It always set `variant` { @link https://www.patternfly.org/v4/components/button PF4/Button }
+ * It always set `variant` {@link https://www.patternfly.org/v4/components/button PF4/Button}
  * prop to "secondary", no matter what given in `props`.
  *
  * @example <caption>Simple usage</caption>
@@ -105,7 +105,7 @@ const Confirm = ({ children = "Confirm", ...props }) => (
  *   </SecondaryAction>
  *
  * @param {React.ReactNode} props.children - content of the action
- * @param {object} [props] - { @link Action } props
+ * @param {object} [props] - {@link Action} props
  */
 const SecondaryAction = ({ children, ...props }) => (
   <Action { ...props } variant="secondary">{ children }</Action>
@@ -121,7 +121,7 @@ const SecondaryAction = ({ children, ...props }) => (
  *   <Cancel onClick={dissmiss}>Dismiss</Confirm>
  *
  * @param {React.ReactNode} [props.children="Cancel"] - content of the action
- * @param {object} [props] - { @link Action } props
+ * @param {object} [props] - {@link Action} props
  */
 const Cancel = ({ children = "Cancel", ...props }) => (
   <SecondaryAction key="cancel" { ...props }>{ children }</SecondaryAction>
@@ -130,7 +130,7 @@ const Cancel = ({ children = "Cancel", ...props }) => (
 /**
  * A Popup additional action, rendered as a link
  *
- * It always set `variant` { @link https://www.patternfly.org/v4/components/button PF4/Button } prop
+ * It always set `variant` {@link https://www.patternfly.org/v4/components/button PF4/Button} prop
  * to "link", no matter what is given in `props`
  *
  * @example <caption>Simple usage</caption>
@@ -143,7 +143,7 @@ const Cancel = ({ children = "Cancel", ...props }) => (
  *   </AncillaryAction>
  *
  * @param {React.ReactNode} props.children - content of the action
- * @param {object} [props] - { @link Action } props
+ * @param {object} [props] - {@link Action} props
  */
 const AncillaryAction = ({ children, ...props }) => (
   <Action { ...props } variant="link">{ children }</Action>
@@ -152,7 +152,7 @@ const AncillaryAction = ({ children, ...props }) => (
 /**
  * D-Installer component for displaying a popup
  *
- * Built on top of { @link https://www.patternfly.org/v4/components/modal PF4/Modal }, it
+ * Built on top of {@link https://www.patternfly.org/v4/components/modal PF4/Modal}, it
  * manipulates the children object for extracting {Actions}.
  *
  * @example <caption>Usage example</caption>
@@ -190,7 +190,7 @@ const AncillaryAction = ({ children, ...props }) => (
  * @param {boolean} [props.showClose=false] - whether the popup should include a "X" action for closing it
  * @param {string} [props.variant="small"] - the popup size, based on Pf4/Modal `variant` prop
  * @param {React.ReactNode} props.children - the popup content and actions
- * @param {object} [pf4ModalProps] - PF4/Modal props, See { @link https://www.patternfly.org/v4/components/modal#props }
+ * @param {object} [pf4ModalProps] - PF4/Modal props, See {@link https://www.patternfly.org/v4/components/modal#props}
  *
  */
 const Popup = ({ isOpen = false, showClose = false, variant = "small", children, ...pf4ModalProps }) => {
