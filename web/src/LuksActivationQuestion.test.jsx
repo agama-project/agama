@@ -38,7 +38,7 @@ const renderQuestion = () => (
   installerRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />)
 );
 
-describe("LuksActivationQuestions", () => {
+describe("LuksActivationQuestion", () => {
   it("renders the question text", async () => {
     renderQuestion();
 

@@ -108,7 +108,7 @@ describe("Questions", () => {
       pendingQuestions = [luksActivationQuestion];
     });
 
-    it("renders a LuksActivationQuestions component", async () => {
+    it("renders a LuksActivationQuestion component", async () => {
       installerRender(<Questions />);
 
       await screen.findByText("A LUKS activation question mock");
