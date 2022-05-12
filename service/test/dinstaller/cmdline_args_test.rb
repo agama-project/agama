@@ -20,31 +20,16 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require "dinstaller/config_reader"
+require "dinstaller/cmdline_args"
 
-describe DInstaller::ConfigReader do
+describe DInstaller::CmdlineArgs do
   let(:workdir) { File.join(FIXTURES_PATH, "root_dir") }
   subject { described_class.new(workdir: workdir) }
-  before do
-    allow(Yast::Directory).to receive(:tmpdir).and_return(File.join(workdir, "tmpdir"))
-    allow(subject).to receive(:copy_file)
-  end
 
-  describe "#config" do
-    it "returns the resultant config after merging all found configurations" do
-      config = subject.config
-      expect(config.data.dig("web", "ssl")).to eql("MODIFIED")
-    end
-  end
-
-  describe "#configs" do
-    it "returns an array with all the Configs present in the system" do
-      configs = subject.configs
-      # Default, RemoteBootConfig, CmdlineConfig
-      expect(configs.size).to eql(3)
-      expect(configs[0].data.dig("web", "ssl")).to eql(nil)
-      expect(configs[1].data.dig("web", "ssl")).to eql("WHATEVER")
-      expect(configs[2].data.dig("web", "ssl")).to eql("MODIFIED")
+  describe "#read" do
+    it "reads the kernel command line options" do
+      expect { subject.read }.to change { subject.args }.to({ "web" => { "ssl" => "MODIFIED" } })
+        .and change { subject.config_url }.to("http://example.org/d-installer.yaml")
     end
   end
 end

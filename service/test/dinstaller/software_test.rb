@@ -38,7 +38,8 @@ describe DInstaller::Software do
   let(:gpg_keys) { [] }
 
   before do
-    allow(config).to receive(:data).and_return({ "software" => { "installation_repositories" => [] } })
+    allow(config).to receive(:data)
+      .and_return({ "software" => { "installation_repositories" => [] } })
     allow(Yast::Pkg).to receive(:TargetInitialize)
     allow(Yast::Pkg).to receive(:ImportGPGKey)
     allow(Dir).to receive(:glob).with(/keys/).and_return(gpg_keys)

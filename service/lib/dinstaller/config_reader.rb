@@ -1,8 +1,28 @@
 # frozen_string_literal: true
 
+# Copyright (c) [2022] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
 require "yast"
 require "logger"
 require "dinstaller/config"
+require "dinstaller/cmdline_args"
 require "transfer/file_from_url"
 
 Yast.import "URL"
@@ -18,9 +38,7 @@ module DInstaller
     # Default DInstaller configuration wich should define all the possible values
     SYSTEM_PATH = "/etc/d-installer.yaml"
     GIT_PATH = File.expand_path("#{__dir__}/../../etc/d-installer.yaml")
-    CMDLINE_PATH = "/proc/cmdline"
     REMOTE_BOOT_CONFIG = "d-installer_boot.yaml"
-    CMDLINE_PREFIX = "dinst."
 
     PATHS = [
       "/usr/lib/d-installer.d",
@@ -34,6 +52,7 @@ module DInstaller
     # Constructor
     #
     # @param logger [Logger]
+    # @param workdir [String] Root directory to read the configuration from
     def initialize(logger: nil, workdir: "/")
       @logger = logger || ::Logger.new($stdout)
       @workdir = workdir
@@ -45,7 +64,12 @@ module DInstaller
     #
     # @returm [Array<Config>] an array with all the configurations read from the system
     def configs
-      @configs ||= config_paths.map { |path| config_from_file(path) }.concat(boot_configs)
+      return @configs if @configs
+
+      @configs = config_paths.map { |path| config_from_file(path) }
+      @configs << remote_config if remote_config
+      @configs << cmdline_config if cmdline_config
+      @configs
     end
 
     # Return a {Config} oject
@@ -81,46 +105,37 @@ module DInstaller
       res
     end
 
-    # @return [Hash] Cmdline DInstaller options
-    def cmdline_opts
-      options = File.read(File.join(workdir, CMDLINE_PATH))
+    def cmdline_reader
+      return @cmdline_reader if @cmdline_reader
 
-      options.split.each_with_object({}) do |option, result|
-        next unless option.start_with?(CMDLINE_PREFIX)
-
-        key, value = option.split("=")
-        key.gsub!(CMDLINE_PREFIX, "")
-        if key.include?(".")
-          section, key = key.split(".")
-          result[section] = {} unless result.keys.include?(section)
-          result[section][key] = value
-        else
-          result[key.gsub(CMDLINE_PREFIX, "")] = value
-        end
-      end
+      @cmdline_reader = CmdlineArgs.new(workdir: workdir)
+      @cmdline_reader.read
+      @cmdline_reader
     end
 
-    # @return [Array<Config>]
-    def boot_configs
-      options = (cmdline_opts || {})
-      return [] if options.empty?
+    # return [Config]
+    def cmdline_config
+      return if cmdline_reader.args.empty?
 
-      result =  [Config.new.tap { |c| c.pure_data = options }]
-      return result if options.fetch("config_url", "").empty?
+      Config.new(cmdline_reader.args)
+    end
+
+    # return [Config]
+    def remote_config
+      return unless cmdline_reader.config_url
 
       file_path = File.join(Yast::Directory.tmpdir, REMOTE_BOOT_CONFIG)
       logger.info "Copying boot config to #{file_path}"
 
-      copy_file(options.fetch("config_url"), file_path)
-      result.prepend(config_from_file(file_path))
-      result
+      copy_file(cmdline_reader.config_url, file_path)
+      config_from_file(file_path)
     end
 
     # loads correct yaml file
     def config_from_file(path = nil)
       raise "Missing config file at #{path}" unless File.exist?(path)
 
-      Config.new.tap { |c| c.pure_data = YAML.safe_load(File.read(path)) }
+      Config.new(YAML.safe_load(File.read(path)))
     end
 
     def default_path
