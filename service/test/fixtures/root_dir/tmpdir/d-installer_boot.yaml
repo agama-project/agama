@@ -1,0 +1,14 @@
+software:
+  installation_repositories:
+    - https://download.opensuse.org/tumbleweed/repo/oss/
+    - https://download.opensuse.org/tumbleweed/repo/non-oss/
+    - https://download.opensuse.org/update/tumbleweed/
+
+distributions:
+  # TODO replace simple id with better description of distributions
+  - Tumbleweed
+
+web:
+  ssl: WHATEVER
+  ssl_cert: null
+  ssl_key: null

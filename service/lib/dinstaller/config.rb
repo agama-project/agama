@@ -19,7 +19,9 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
 require "yaml"
+require "dinstaller/config_reader"
 
 module DInstaller
   # class responsible for getting current configuration.
@@ -28,41 +30,78 @@ module DInstaller
   # This also means that config needs to be re-evaluated if conditions
   # data change, like if user pick different distro to install.
   class Config
-    SYSTEM_PATH = "/etc/d-installer.yaml"
-    GIT_PATH = File.expand_path("#{__dir__}/../../etc/d-installer.yaml")
+    # @return [Hash] configuration data
+    attr_accessor :pure_data
 
-    def initialize(logger)
-      @logger = logger
-      load_file
-      parse_file
+    class << self
+      attr_accessor :current, :base
+
+      # Loads base and current config reading configuration from the system
+      def load
+        @base = ConfigReader.new.config
+        @current = @base&.copy
+      end
+
+      # It resets the configuration internal state
+      def reset
+        @base = nil
+        @current = nil
+      end
     end
 
-    attr_reader :data
+    # Constructor
+    #
+    # @param config_data [Hash] configuration data
+    def initialize(config_data = nil)
+      @pure_data = config_data
+    end
 
     # parse loaded yaml file, so it properly applies conditions
     # with default options it load file without conditions
-    def parse_file(arch = nil, distro = nil)
+    def parse_file(_arch = nil, _distro = nil)
       # TODO: move to internal only. public one should be something
       # like evaluate or just setter for distro and arch
-      logger.info "parse file with #{arch} and #{distro}"
+      # logger.info "parse file with #{arch} and #{distro}"
       # TODO: do real evaluation of conditions
-      @data = @pure_data
+      data
+    end
+
+    def data
+      @data ||= @pure_data || {}
+    end
+
+    # Returns a copy of this Object
+    #
+    # @return [Config]
+    def copy
+      Marshal.load(Marshal.dump(self))
+    end
+
+    # Returns a new {Config} with the merge of the given ones
+    #
+    # @params config [Config, Hash]
+    # @return [Config] new Configuration with the merge of the given ones
+    def merge(config)
+      Config.new(simple_merge(data, config.data))
     end
 
   private
 
-    attr_reader :logger
+    # Simple deep merge
+    #
+    # @param a_hash       [Hash] Default values
+    # @param another_hash [Hash] Pillar data
+    # @return [Hash]
+    def simple_merge(a_hash, another_hash)
+      a_hash.reduce({}) do |all, (k, v)|
+        next all.merge(k => v) if another_hash[k].nil?
 
-    # loads correct yaml file
-    def load_file
-      if File.exist?(GIT_PATH)
-        file = File.read(GIT_PATH)
-      elsif File.exist?(SYSTEM_PATH)
-        file = File.read(SYSTEM_PATH)
-      else
-        raise "Missing config file at #{SYSTEM_PATH}"
+        if v.is_a?(Hash)
+          all.merge(k => simple_merge(a_hash[k], another_hash[k]))
+        else
+          all.merge(k => another_hash[k])
+        end
       end
-      @pure_data = YAML.safe_load(file)
     end
   end
 end
