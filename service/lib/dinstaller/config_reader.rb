@@ -68,12 +68,12 @@ module DInstaller
       url = Yast::URL.Parse(location)
 
       res = get_file_from_url(
-        scheme: url["scheme"],
-        host: url["host"],
-        urlpath: url["path"],
+        scheme:    url["scheme"],
+        host:      url["host"],
+        urlpath:   url["path"],
         localfile: target,
-        urltok: url,
-        destdir: "/"
+        urltok:    url,
+        destdir:   "/"
       )
 
       # TODO: exception?
