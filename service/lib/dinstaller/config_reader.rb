@@ -59,7 +59,7 @@ module DInstaller
     end
 
     # loads correct yaml file
-    def self.from_file(path = nil)
+    def config_from_file(path = nil)
       raise "Missing config file at #{path}" unless File.exist?(path)
 
       Config.new(YAML.safe_load(File.read(path)))
@@ -73,7 +73,7 @@ module DInstaller
     def configs
       return @configs if @configs
 
-      @configs = config_paths.map { |path| self.class.from_file(path) }
+      @configs = config_paths.map { |path| config_from_file(path) }
       @configs << remote_config if remote_config
       @configs << cmdline_config if cmdline_config
       @configs
@@ -130,7 +130,7 @@ module DInstaller
       logger.info "Copying boot config to #{file_path}"
 
       copy_file(cmdline_args.config_url, file_path)
-      self.class.from_file(file_path)
+      config_from_file(file_path)
     end
 
     def default_path

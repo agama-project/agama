@@ -45,7 +45,7 @@ module DInstaller
 
         key, value = option.split("=")
         key.gsub!(CMDLINE_PREFIX, "")
-        # Ommit config_url from Config options
+        # Omit config_url from Config options
         next args.config_url = value if key == "config_url"
 
         if key.include?(".")
