@@ -127,9 +127,8 @@ module DInstaller
 
     # Configuration
     def config
-      return Config.current if Config.current
+      Config.load unless Config.current
 
-      Config.load
       Config.current
     end
 
