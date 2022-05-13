@@ -24,7 +24,7 @@ require "yaml"
 require "dinstaller/config_reader"
 
 module DInstaller
-  # class responsible for getting current configuration.
+  # Class responsible for getting current configuration.
   # It is smarter then just plain yaml reader as it also evaluates
   # conditions in it, so it is result of all conditions in file.
   # This also means that config needs to be re-evaluated if conditions
