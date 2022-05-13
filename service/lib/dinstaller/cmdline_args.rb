@@ -25,39 +25,39 @@ module DInstaller
     CMDLINE_PATH = "/proc/cmdline"
     CMDLINE_PREFIX = "dinst."
 
-    attr_reader :config_url
-    attr_reader :args
-    attr_reader :workdir
+    attr_accessor :config_url
+    attr_reader :data
 
     # Constructor
     #
-    # @param workdir [String] root directory to read the configuration from
-    def initialize(workdir: "/")
-      @workdir = workdir
+    # @param data [Hash]
+    def initialize(data = {})
+      @data = data
     end
 
     # Reads the kernel command line options
-    def read
-      options = File.read(File.join(workdir, CMDLINE_PATH))
-      @config_url = nil
-      @args = {}
+    def self.read_from(path)
+      options = File.read(path)
+      args = new({})
 
       options.split.each do |option|
         next unless option.start_with?(CMDLINE_PREFIX)
 
         key, value = option.split("=")
         key.gsub!(CMDLINE_PREFIX, "")
-        # Omit config_url from Config options
-        next @config_url = value if key == "config_url"
+        # Ommit config_url from Config options
+        next args.config_url = value if key == "config_url"
 
         if key.include?(".")
           section, key = key.split(".")
-          @args[section] = {} unless @args.keys.include?(section)
-          @args[section][key] = value
+          args.data[section] = {} unless args.data.keys.include?(section)
+          args.data[section][key] = value
         else
-          @args[key.gsub(CMDLINE_PREFIX, "")] = value
+          args.data[key.gsub(CMDLINE_PREFIX, "")] = value
         end
       end
+
+      args
     end
   end
 end

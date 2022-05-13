@@ -26,10 +26,11 @@ describe DInstaller::CmdlineArgs do
   let(:workdir) { File.join(FIXTURES_PATH, "root_dir") }
   subject { described_class.new(workdir: workdir) }
 
-  describe "#read" do
-    it "reads the kernel command line options" do
-      expect { subject.read }.to change { subject.args }.to({ "web" => { "ssl" => "MODIFIED" } })
-        .and change { subject.config_url }.to("http://example.org/d-installer.yaml")
+  describe ".read_from" do
+    it "reads the kernel command line options and return a CmdlineArgs object" do
+      args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
+      expect(args.data).to eql({ "web" => { "ssl" => "MODIFIED" } })
+      expect(args.config_url).to eql("http://example.org/d-installer.yaml")
     end
   end
 end

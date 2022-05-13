@@ -30,6 +30,14 @@ describe DInstaller::ConfigReader do
     allow(subject).to receive(:copy_file)
   end
 
+  describe ".from_file" do
+    it "returns a Config object with the configuration read from the given file" do
+      config = described_class.from_file(File.join(workdir, "etc", "d-installer.yaml"))
+      expect(config).to be_a(DInstaller::Config)
+      expect(config.data["distributions"]).to eql(["Tumbleweed"])
+    end
+  end
+
   describe "#config" do
     it "returns the resultant config after merging all found configurations" do
       config = subject.config

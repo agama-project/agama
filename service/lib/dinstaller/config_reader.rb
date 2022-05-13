@@ -35,7 +35,7 @@ module DInstaller
     include Yast::Transfer::FileFromUrl
     include Yast::I18n
 
-    # Default DInstaller configuration wich should define all the possible values
+    # Default DInstaller configuration which should define all the possible values
     SYSTEM_PATH = "/etc/d-installer.yaml"
     GIT_PATH = File.expand_path("#{__dir__}/../../etc/d-installer.yaml")
     REMOTE_BOOT_CONFIG = "d-installer_boot.yaml"
@@ -58,6 +58,13 @@ module DInstaller
       @workdir = workdir
     end
 
+    # loads correct yaml file
+    def self.from_file(path = nil)
+      raise "Missing config file at #{path}" unless File.exist?(path)
+
+      Config.new(YAML.safe_load(File.read(path)))
+    end
+
     # Return an {Array} with the different {Config} objects read from the different locations
     #
     # TODO: handle precedence correctly
@@ -66,7 +73,7 @@ module DInstaller
     def configs
       return @configs if @configs
 
-      @configs = config_paths.map { |path| config_from_file(path) }
+      @configs = config_paths.map { |path| self.class.from_file(path) }
       @configs << remote_config if remote_config
       @configs << cmdline_config if cmdline_config
       @configs
@@ -105,37 +112,25 @@ module DInstaller
       res
     end
 
-    def cmdline_reader
-      return @cmdline_reader if @cmdline_reader
-
-      @cmdline_reader = CmdlineArgs.new(workdir: workdir)
-      @cmdline_reader.read
-      @cmdline_reader
+    # @return [CmdlineArgs]
+    def cmdline_args
+      @cmdline_args ||= CmdlineArgs.read_from(File.join(workdir, "/proc/cmdline"))
     end
 
     # return [Config]
     def cmdline_config
-      return if cmdline_reader.args.empty?
-
-      Config.new(cmdline_reader.args)
+      Config.new(cmdline_args.data)
     end
 
     # return [Config]
     def remote_config
-      return unless cmdline_reader.config_url
+      return unless cmdline_args.config_url
 
       file_path = File.join(Yast::Directory.tmpdir, REMOTE_BOOT_CONFIG)
       logger.info "Copying boot config to #{file_path}"
 
-      copy_file(cmdline_reader.config_url, file_path)
-      config_from_file(file_path)
-    end
-
-    # loads correct yaml file
-    def config_from_file(path = nil)
-      raise "Missing config file at #{path}" unless File.exist?(path)
-
-      Config.new(YAML.safe_load(File.read(path)))
+      copy_file(cmdline_args.config_url, file_path)
+      self.class.from_file(file_path)
     end
 
     def default_path
