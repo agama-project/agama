@@ -28,7 +28,7 @@ describe DInstaller::Software do
   subject { described_class.new(logger, config) }
 
   let(:logger) { Logger.new($stdout) }
-  let(:config) { DInstaller::Config.new(logger) }
+  let(:config) { DInstaller::Config.new }
   let(:progress) { DInstaller::Progress.new }
   let(:products) { [tw_prod] }
   let(:tw_prod) { instance_double(Y2Packager::Product, name: "openSUSE") }
@@ -38,6 +38,8 @@ describe DInstaller::Software do
   let(:gpg_keys) { [] }
 
   before do
+    allow(config).to receive(:data)
+      .and_return({ "software" => { "installation_repositories" => [] } })
     allow(Yast::Pkg).to receive(:TargetInitialize)
     allow(Yast::Pkg).to receive(:ImportGPGKey)
     allow(Dir).to receive(:glob).with(/keys/).and_return(gpg_keys)

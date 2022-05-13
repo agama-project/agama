@@ -127,7 +127,9 @@ module DInstaller
 
     # Configuration
     def config
-      @config ||= Config.new(logger)
+      Config.load unless Config.current
+
+      Config.current
     end
 
     # Software manager
