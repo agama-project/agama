@@ -14,7 +14,7 @@ Tue May 17 10:58:43 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Wed Mar 30 07:06:18 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- First release:
+- First release (version 0.1):
   * Minimal installation of openSUSE Leap or Tumbleweed.
   * Allow setting the language, selecting a product, choosing a disk to
     install into, setting the root authentication mechanism and creating
