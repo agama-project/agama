@@ -7,8 +7,9 @@ Tue May 17 10:58:51 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   * Add basic storage devices activation (gh#yast/d-installer#150).
   * Fix the behavior of the language selector
     (gh#yast/d-installer#125).
-  * Add an installation confirmation dialog (gh#yast/d-installer#118)
-    and a reboot button (gh#yast/d-installer#118).
+  * Add an installation confirmation dialog
+    (gh#yast/d-installer#118) and a reboot button
+    (gh#yast/d-installer#114).
 
 -------------------------------------------------------------------
 Wed Mar 30 07:06:23 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
