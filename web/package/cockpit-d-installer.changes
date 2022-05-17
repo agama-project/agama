@@ -1,10 +1,22 @@
 -------------------------------------------------------------------
+Tue May 17 10:58:51 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.2:
+  * Turn the web UI into a Cockpit module (gh#yast/d-installer#127)
+    and drop the authentication code (gh#yast/d-installer#128).
+  * Add basic storage devices activation (gh#yast/d-installer#150).
+  * Fix the behavior of the language selector
+    (gh#yast/d-installer#125).
+  * Add an installation confirmation dialog
+    (gh#yast/d-installer#118) and a reboot button
+    (gh#yast/d-installer#114).
+
+-------------------------------------------------------------------
 Wed Mar 30 07:06:23 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- First release:
+- First release (version 0.1):
   * Allow setting the language, selecting a product, choosing a disk to
     install into, setting the root authentication mechanism and creating
     a first user.
   * Report installation progress.
   * Communication with D-Bus through Cockpit's infrastructure.
-- 0.1

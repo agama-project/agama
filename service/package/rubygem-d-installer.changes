@@ -1,7 +1,20 @@
 -------------------------------------------------------------------
+Tue May 17 10:58:43 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.2:
+  * Introduce a YAML-based configuration system
+    (gh#yast/d-installer#132 and gh#yast/d-installer#158).
+  * Add a mechanism to allow user interaction from the service
+    (gh#yast/d-installer#123 and gh#yast/d-installer#135).
+  * Allow setting an SSL certificate for remote installation
+    or disabling SSL completely (gh#yast/d-installer#145).
+  * Define the installation repository through a configuration
+    file (gh#yast/d-installer#122).
+
+-------------------------------------------------------------------
 Wed Mar 30 07:06:18 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- First release:
+- First release (version 0.1):
   * Minimal installation of openSUSE Leap or Tumbleweed.
   * Allow setting the language, selecting a product, choosing a disk to
     install into, setting the root authentication mechanism and creating
@@ -9,4 +22,3 @@ Wed Mar 30 07:06:18 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   * Automatic boot loader installation.
   * Automatic network set up based on the configuration of the
     underlying system.
-- 0.1
