@@ -48,6 +48,9 @@ module DInstaller
         # Omit config_url from Config options
         next args.config_url = value if key == "config_url"
 
+        # TODO: Add some kind of schema or 'knowledge' of attribute types to convert them properly
+        # by now we will just convert Boolean values
+        value = normalize(value)
         if key.include?(".")
           section, key = key.split(".")
           args.data[section] = {} unless args.data.keys.include?(section)
@@ -59,5 +62,19 @@ module DInstaller
 
       args
     end
+
+    # Convenience method to normalize the given value by now it just convert "true" and "false"
+    # strings to {Boolean}s
+    #
+    # @param value [String]
+    # @return [Object] normalized value
+    def self.normalize(value)
+      val = value.to_s.downcase
+      return value unless ["false", "true"].include?(val)
+
+      (val == "true")
+    end
+
+    private_class_method :normalize
   end
 end
