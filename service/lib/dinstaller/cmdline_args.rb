@@ -50,7 +50,7 @@ module DInstaller
 
         # TODO: Add some kind of schema or 'knowdlege' of attribute types to convert them properly
         # by now we will just convert Boolean values
-        value = (value == "true") if ["false", "true"].include?(value.to_s.downcase)
+        value = normalize(value)
         if key.include?(".")
           section, key = key.split(".")
           args.data[section] = {} unless args.data.keys.include?(section)
@@ -62,5 +62,19 @@ module DInstaller
 
       args
     end
+
+    # Convenience method to normalize the given value by now it just convert "true" and "false"
+    # strings to {Boolean}s
+    #
+    # @param value [String]
+    # @return [Object] normalized value
+    def self.normalize(value)
+      val = value.to_s.downcase
+      return value unless ["false", "true"].include?(val)
+
+      (val == "true")
+    end
+
+    private_class_method :normalize
   end
 end
