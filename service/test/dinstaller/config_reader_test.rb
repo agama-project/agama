@@ -41,7 +41,7 @@ describe DInstaller::ConfigReader do
   describe "#config" do
     it "returns the resultant config after merging all found configurations" do
       config = subject.config
-      expect(config.data.dig("web", "ssl")).to eql("MODIFIED")
+      expect(config.data.dig("web", "ssl")).to eql(true)
     end
   end
 
@@ -51,8 +51,8 @@ describe DInstaller::ConfigReader do
       # Default, RemoteBootConfig, CmdlineConfig
       expect(configs.size).to eql(3)
       expect(configs[0].data.dig("web", "ssl")).to eql(nil)
-      expect(configs[1].data.dig("web", "ssl")).to eql("WHATEVER")
-      expect(configs[2].data.dig("web", "ssl")).to eql("MODIFIED")
+      expect(configs[1].data.dig("web", "ssl")).to eql(false)
+      expect(configs[2].data.dig("web", "ssl")).to eql(true)
     end
   end
 end

@@ -48,6 +48,9 @@ module DInstaller
         # Omit config_url from Config options
         next args.config_url = value if key == "config_url"
 
+        # TODO: Add some kind of schema or 'knowdlege' of attribute types to convert them properly
+        # by now we will just convert Boolean values
+        value = (value == "true") if ["false", "true"].include?(value.to_s.downcase)
         if key.include?(".")
           section, key = key.split(".")
           args.data[section] = {} unless args.data.keys.include?(section)

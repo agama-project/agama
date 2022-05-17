@@ -29,7 +29,7 @@ describe DInstaller::CmdlineArgs do
   describe ".read_from" do
     it "reads the kernel command line options and return a CmdlineArgs object" do
       args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
-      expect(args.data).to eql({ "web" => { "ssl" => "MODIFIED" } })
+      expect(args.data).to eql("web" => { "ssl" => true })
       expect(args.config_url).to eql("http://example.org/d-installer.yaml")
     end
   end
