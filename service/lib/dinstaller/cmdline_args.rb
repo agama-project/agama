@@ -48,7 +48,7 @@ module DInstaller
         # Omit config_url from Config options
         next args.config_url = value if key == "config_url"
 
-        # TODO: Add some kind of schema or 'knowdlege' of attribute types to convert them properly
+        # TODO: Add some kind of schema or 'knowledge' of attribute types to convert them properly
         # by now we will just convert Boolean values
         value = normalize(value)
         if key.include?(".")
