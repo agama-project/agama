@@ -92,6 +92,12 @@ module DInstaller
           PropertiesChanged(USERS_INTERFACE, { "FirstUser" => {} }, [])
           0
         end
+
+        dbus_method :Write, "out result:u" do
+          logger.info "Writting users"
+
+          write(nil) # TODO progress?
+        end
       end
       # rubocop:enable Metrics/BlockLength
 

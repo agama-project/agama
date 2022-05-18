@@ -20,25 +20,19 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "dinstaller/dbus/manager"
-require "dinstaller/dbus/language"
-require "dinstaller/dbus/software"
 require "dinstaller/dbus/users"
-require "dinstaller/dbus/storage/proposal"
-require "dinstaller/dbus/storage/actions"
-require "dinstaller/dbus/questions"
 
 module DInstaller
   module DBus
     # D-Bus service (org.opensuse.DInstaller)
     #
     # It connects to the system D-Bus and answers requests on objects below
-    # `/org/opensuse/DInstaller`.
-    class Service
+    # `/org/opensuse/DInstaller/Users`.
+    class UsersService
       # Service name
       #
       # @return [String]
-      SERVICE_NAME = "org.opensuse.DInstaller"
+      SERVICE_NAME = "org.opensuse.DInstaller.Users"
       private_constant :SERVICE_NAME
 
       # System D-Bus
@@ -46,15 +40,8 @@ module DInstaller
       # @return [::DBus::Connection]
       attr_reader :bus
 
-      # Installation manager
-      #
-      # @return [DInstaller::Manager]
-      attr_reader :manager
-
-      # @param manager [Manager] Installation manager
       # @param logger [Logger]
-      def initialize(manager, logger = nil)
-        @manager = manager
+      def initialize(logger = nil)
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
       end
@@ -85,45 +72,12 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          manager_dbus,
-          language_dbus,
-          software_dbus,
           users_dbus,
-          storage_proposal_dbus,
-          storage_actions_dbus,
-          questions_dbus
         ]
       end
 
-      def manager_dbus
-        @manager_dbus ||= DInstaller::DBus::Manager.new(manager, logger)
-      end
-
-      def language_dbus
-        @language_dbus ||= DInstaller::DBus::Language.new(manager.language, logger)
-      end
-
-      def software_dbus
-        @software_dbus ||= DInstaller::DBus::Software.new(manager.software, logger)
-      end
-
       def users_dbus
-        @users_dbus ||= DInstaller::DBus::Users.new(manager.users, logger)
-      end
-
-      def storage_proposal_dbus
-        @storage_proposal_dbus ||= DInstaller::DBus::Storage::Proposal.new(
-          manager.storage.proposal, storage_actions_dbus, logger
-        )
-      end
-
-      def storage_actions_dbus
-        @storage_actions_dbus ||=
-          DInstaller::DBus::Storage::Actions.new(manager.storage.actions, logger)
-      end
-
-      def questions_dbus
-        @questions_dbus ||= DInstaller::DBus::Questions.new(manager.questions_manager, logger)
+        @users_dbus ||= DInstaller::DBus::Users.new(Users.new(logger), logger)
       end
     end
   end

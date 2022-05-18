@@ -30,7 +30,7 @@ require "dinstaller/progress"
 require "dinstaller/software"
 require "dinstaller/status_manager"
 require "dinstaller/storage"
-require "dinstaller/users"
+require "dinstaller/dbus/clients/users"
 require "dinstaller/questions_manager"
 
 Yast.import "Stage"
@@ -150,7 +150,7 @@ module DInstaller
     #
     # @return [Users]
     def users
-      @users ||= Users.new(logger)
+      @users ||= DBus::Clients::Users
     end
 
     # Network manager
