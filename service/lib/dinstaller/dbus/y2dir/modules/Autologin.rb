@@ -28,6 +28,9 @@
 # $Id$
 require "yast"
 
+require "dinstaller/dbus/clients/dinstaller"
+
+
 module Yast
   class AutologinClass < Module
     include Yast::Logger
@@ -43,7 +46,6 @@ module Yast
     def main
       textdomain "pam"
 
-      Yast.import "Package"
       Yast.import "Popup"
 
       # User to log in automaticaly
@@ -176,7 +178,7 @@ module Yast
     #
     # @return Boolean
     def supported?
-      supported = DISPLAY_MANAGERS.any? { |dm| Package.Available(dm) }
+      supported = DInstaller::DBus::Clients::DInstaller.provisions_selected?(DISPLAY_MANAGERS).any?
 
       if supported
         log.info("Autologin is supported")
