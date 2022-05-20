@@ -88,7 +88,6 @@ module DInstaller
           manager_dbus,
           language_dbus,
           software_dbus,
-          users_dbus,
           storage_proposal_dbus,
           storage_actions_dbus,
           questions_dbus
@@ -105,10 +104,6 @@ module DInstaller
 
       def software_dbus
         @software_dbus ||= DInstaller::DBus::Software.new(manager.software, logger)
-      end
-
-      def users_dbus
-        @users_dbus ||= DInstaller::DBus::Users.new(manager.users, logger)
       end
 
       def storage_proposal_dbus
