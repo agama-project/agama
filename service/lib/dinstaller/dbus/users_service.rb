@@ -21,6 +21,7 @@
 
 require "dbus"
 require "dinstaller/dbus/users"
+require "dinstaller/users"
 
 module DInstaller
   module DBus
@@ -77,7 +78,11 @@ module DInstaller
       end
 
       def users_dbus
-        @users_dbus ||= DInstaller::DBus::Users.new(Users.new(logger), logger)
+        @users_dbus ||= DInstaller::DBus::Users.new(Users.new(users_backend(logger), logger), logger)
+      end
+
+      def users_backend(logger)
+	@users_backend ||= DInstaller::Users.new(logger)
       end
     end
   end
