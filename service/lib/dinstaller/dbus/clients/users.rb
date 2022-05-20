@@ -27,7 +27,7 @@ module DInstaller
       class Users
         def self.write(_progress)
           sysbus = ::DBus.system_bus
-          service   = sysbus["org.opensuse.dinstaller.users"]
+          service   = sysbus["org.opensuse.DInstaller.Users"]
           object    = service["/org/opensuse/DInstaller/Users1"]
           interface = object["org.opensuse.DInstaller.Users1"]
           interface.write
