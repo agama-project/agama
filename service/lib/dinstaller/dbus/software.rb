@@ -56,6 +56,14 @@ module DInstaller
           select_product(product_id)
           PropertiesChanged(SOFTWARE_INTERFACE, { "SelectedBaseProduct" => product_id }, [])
         end
+
+        dbus_method :ProvisionSelected, "in Provision:s, out Result:b" do |provision|
+          backend.provision_selected?(provision)
+        end
+
+        dbus_method :ProvisionsSelected, "in Provisions:as, out Result:ab" do |provisions|
+          [provisions.map { |p| backend.provision_selected?(p) }]
+        end
       end
 
       def available_base_products

@@ -127,6 +127,11 @@ module DInstaller
       Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
     end
 
+    # checks if given provision is provided by any resolvable marked for installation
+    def provision_selected?(provision)
+      Yast::Pkg.IsSelected(provision) || Yast::Pkg.IsProvided(provision)
+    end
+
   private
 
     # @return [Logger]
