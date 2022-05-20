@@ -31,9 +31,15 @@ import QuestionsClient from "./questions";
 import cockpit from "../lib/cockpit";
 
 const SERVICE_NAME = "org.opensuse.DInstaller";
+const USERS_SERVICE_NAME = "org.opensuse.DInstaller.Users";
 
 const createClient = () => {
   const client = cockpit.dbus(SERVICE_NAME, {
+    bus: "system",
+    superuser: "try"
+  });
+
+  const usersClient = cockpit.dbus(USERS_SERVICE_NAME, {
     bus: "system",
     superuser: "try"
   });
@@ -44,7 +50,7 @@ const createClient = () => {
     monitor: new Monitor(SERVICE_NAME),
     software: new SoftwareClient(client),
     storage: new StorageClient(client),
-    users: new UsersClient(client),
+    users: new UsersClient(usersClient),
     questions: new QuestionsClient(client)
   };
 };
