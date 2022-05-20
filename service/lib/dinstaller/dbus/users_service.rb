@@ -78,7 +78,7 @@ module DInstaller
       end
 
       def users_dbus
-        @users_dbus ||= DInstaller::DBus::Users.new(Users.new(users_backend(logger), logger), logger)
+        @users_dbus ||= DInstaller::DBus::Users.new(users_backend(logger), logger)
       end
 
       def users_backend(logger)
