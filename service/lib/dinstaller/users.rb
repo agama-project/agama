@@ -113,7 +113,8 @@ module DInstaller
     # TODO: it is C&P from manager.rb. Maybe mixin as each process need to switch target?
     def on_target(&block)
       old_handle = Yast::WFM.SCRGetDefault
-      handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
+      # chroot directly to /mnt instead of Installation.destdir to avoid unnecessary deps
+      handle = Yast::WFM.SCROpen("chroot=/mnt:scr", false)
       Yast::WFM.SCRSetDefault(handle)
 
       begin
