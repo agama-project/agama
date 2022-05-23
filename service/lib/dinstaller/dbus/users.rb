@@ -96,7 +96,8 @@ module DInstaller
         dbus_method :Write, "out result:u" do
           logger.info "Writting users"
 
-          write(nil) # TODO progress?
+          backend.write(nil) # TODO progress?
+          0
         end
       end
       # rubocop:enable Metrics/BlockLength

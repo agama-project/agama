@@ -30,7 +30,7 @@ module DInstaller
           service   = sysbus["org.opensuse.DInstaller.Users"]
           object    = service["/org/opensuse/DInstaller/Users1"]
           interface = object["org.opensuse.DInstaller.Users1"]
-          interface.write
+          interface.Write
         end
       end
     end
