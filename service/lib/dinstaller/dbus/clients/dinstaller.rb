@@ -38,7 +38,7 @@ module DInstaller
         private
 
           def bus
-            @bus ||=  ::DBus.system_bus
+            @bus ||= ::DBus.system_bus
           end
 
           def service
@@ -50,9 +50,8 @@ module DInstaller
           end
 
           def software
-            @interface ||= object["org.opensuse.DInstaller.Software1"]
+            @software ||= object["org.opensuse.DInstaller.Software1"]
           end
-
         end
       end
     end

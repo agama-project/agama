@@ -24,6 +24,7 @@ require "dbus"
 module DInstaller
   module DBus
     module Clients
+      # Class used by other DBus services to communicate with users service
       class Users
         def self.write(_progress)
           sysbus = ::DBus.system_bus

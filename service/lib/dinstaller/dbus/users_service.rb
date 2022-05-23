@@ -73,7 +73,7 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          users_dbus,
+          users_dbus
         ]
       end
 
@@ -82,7 +82,7 @@ module DInstaller
       end
 
       def users_backend(logger)
-	@users_backend ||= DInstaller::Users.new(logger)
+        @users_backend ||= DInstaller::Users.new(logger)
       end
     end
   end

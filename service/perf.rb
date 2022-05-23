@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "benchmark"
 
 $LOAD_PATH << File.expand_path("lib", __dir__)
@@ -6,8 +8,8 @@ require "dinstaller/dbus/clients/dinstaller"
 
 PACKAGES = ["autologin-support", "kdm", "gdm", "sddm", "lightdm"].freeze
 
-CLIENT = DInstaller::DBus::Clients::DInstaller 
-#warm up call
+CLIENT = DInstaller::DBus::Clients::DInstaller
+# warm up call
 CLIENT.provisions_selected?(PACKAGES)
 
 RUNS = 100
