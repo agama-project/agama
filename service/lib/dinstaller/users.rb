@@ -25,7 +25,10 @@ require "y2users/linux" # FIXME: linux is not in y2users file
 require "yast2/execute"
 
 module DInstaller
-  # Backend class between dbus service and yast code
+  # Backend class using YaST code.
+  #
+  # {DInstaller::DBus::Users} wraps it with a D-Bus interface and
+  # {DInstaller::DBus::Clients::Users} is a D-Bus client for that.
   class Users
     def initialize(logger)
       @logger = logger
