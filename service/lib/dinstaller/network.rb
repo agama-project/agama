@@ -40,6 +40,9 @@ module DInstaller
       settings = Y2Network::ProposalSettings.instance
       settings.refresh_packages
       settings.apply_defaults
+      # XXX: microos
+      settings.enable_network_manager!
+      # XXX: end of microos
     end
 
     # Writes the network configuration to the installed system
