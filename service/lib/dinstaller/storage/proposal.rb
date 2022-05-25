@@ -122,6 +122,45 @@ module DInstaller
 
         settings.each { |k, v| proposal_settings.public_send("#{k}=", v) }
 
+        # XXX: microOS specific
+        proposal_settings.force_enable_snapshots
+        proposal_settings.windows_delete_mode = :always
+        proposal_settings.linux_delete_mode = :always
+        proposal_settings.other_delete_mode = :always
+        proposal_settings.volumes = []
+        root_volume = Y2Storage::VolumeSpecification.new(
+          mount_point: "/",
+          fs_type: "btrfs",
+          desired_size: "20 GiB",
+          min_size: "5 Gib",
+          max_size: "20 GiB",
+          weight: 20,
+          snapshots: true,
+          snapshots_configurable: false,
+          btrfs_read_only: true,
+          btrfs_default_subvolume: "@",
+          subvolumes: [
+            "root", "home", "opt", "srv", "boot/writable", "usr/local",
+            # for arch specific use only x86_64 for now
+            { "path" => "boot/grub2/i386-pc", "archs" => "x86_64" },
+            { "path" => "boot/grub2/x86_64-efi", "archs" => "x86_64" }
+          ]
+        )
+        var_volume = Y2Storage::VolumeSpecification.new(
+          mount_point: "/var",
+          fs_type: "btrfs",
+          desired_size: "19 GiB",
+          min_size: "5 Gib",
+          max_size: "unlimited",
+          weight: 40,
+          snapshots: false,
+          snapshots_configurable: false,
+          btrfs_read_only: false,
+          disable_order: 1
+        )
+        proposal_settings.volumes << root_volume << var_volume
+
+        # XXX: end of microos
         proposal_settings
       end
 
