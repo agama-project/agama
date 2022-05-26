@@ -85,16 +85,15 @@ install: $(WEBPACK_TEST) po/LINGUAS
 		--template $(APPSTREAMFILE) \
 		-o $(DESTDIR)/usr/share/metainfo/$(APPSTREAMFILE)
 
-# this requires a built source tree and avoids having to install anything system-wide
+# this requires a built source tree and register that build sources to cockpit
+# running on systemd
 devel-install: $(WEBPACK_TEST)
-	mkdir -p ~/.local/share/cockpit
-	rm -f ~/.local/share/cockpit/$(PACKAGE_NAME)
-	ln -s `pwd`/dist ~/.local/share/cockpit/$(PACKAGE_NAME)
+	ln -s `pwd`/dist /usr/share/cockpit/$(PACKAGE_NAME)
 
 # assumes that there was symlink set up using the above devel-install target,
 # and removes it
 devel-uninstall:
-	rm -f ~/.local/share/cockpit/$(PACKAGE_NAME)
+	rm -f /usr/share/cockpit/$(PACKAGE_NAME)
 
 print-version:
 	@echo "$(VERSION)"
