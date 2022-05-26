@@ -23,7 +23,7 @@ import React, { useState } from "react";
 import Popup from "./Popup";
 import { Button, Text } from "@patternfly/react-core";
 
-import NetworkManager from "./NetworkManager";
+import NMOverview from "./NetworkManager";
 
 export default function Ip() {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,7 +34,7 @@ export default function Ip() {
   return (
     <>
       <Button variant="link" onClick={open}>
-        <NetworkManager /> (hostname)
+        <NMOverview />
       </Button>
 
       <Popup
