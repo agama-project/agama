@@ -4,7 +4,7 @@
 # package. This script is supposed to run within a repository clone.
 
 sudo zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel \
-  npm git augeas-devel cockpit || exit 1
+  npm git augeas-devel cockpit jemalloc-devel || exit 1
 
 sudo systemctl start cockpit
 
