@@ -22,16 +22,17 @@
 require "yast"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
-require "dinstaller/config"
 require "dinstaller/cockpit_manager"
+require "dinstaller/config"
 require "dinstaller/language"
 require "dinstaller/network"
 require "dinstaller/progress"
+require "dinstaller/questions_manager"
+require "dinstaller/security"
 require "dinstaller/software"
 require "dinstaller/status_manager"
 require "dinstaller/storage"
 require "dinstaller/users"
-require "dinstaller/questions_manager"
 
 Yast.import "Stage"
 
@@ -108,6 +109,7 @@ module DInstaller
         network.install(progress)
 
         progress.next_step("Installing Bootloader")
+        security.write(progress)
         ::Bootloader::FinishClient.new.write
 
         progress.next_step("Saving Language Settings")
@@ -167,6 +169,14 @@ module DInstaller
       @storage ||= Storage::Manager.new(logger)
     end
 
+    # Security manager
+    #
+    # @return [Security]
+    def security
+      @security ||= Security.new(logger)
+    end
+
+
   private
 
     # Initializes YaST
@@ -196,6 +206,7 @@ module DInstaller
       storage.probe(progress, questions_manager)
 
       progress.next_step("Probing Software")
+      security.probe(progress)
       software.probe(progress)
 
       progress.next_step("Probing Network")
