@@ -25,7 +25,7 @@ require "yast2/execute"
 
 module DInstaller
   # Backend class between dbus service and yast code
-  class Users
+  class Security
     def initialize(logger)
       @logger = logger
     end
