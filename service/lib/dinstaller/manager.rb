@@ -176,7 +176,6 @@ module DInstaller
       @security ||= Security.new(logger)
     end
 
-
   private
 
     # Initializes YaST
@@ -196,6 +195,7 @@ module DInstaller
     # Performs probe steps
     #
     # Status and progress are properly updated during the process.
+    # rubocop:disable Metrics/AbcSize
     def probe_steps
       status_manager.change(Status::Probing.new)
 
@@ -216,6 +216,7 @@ module DInstaller
 
       status_manager.change(Status::Probed.new)
     end
+    # rubocop:enable Metrics/AbcSize
 
     # Performs required steps after installing the system
     #
