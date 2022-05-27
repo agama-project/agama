@@ -124,9 +124,10 @@ module DInstaller
 
         # XXX: microOS specific
         proposal_settings.force_enable_snapshots
-        proposal_settings.windows_delete_mode = :always
-        proposal_settings.linux_delete_mode = :always
-        proposal_settings.other_delete_mode = :always
+        proposal_settings.windows_delete_mode = :all
+        proposal_settings.linux_delete_mode = :all
+        proposal_settings.other_delete_mode = :all
+        proposal_settings.use_lvm = false
         proposal_settings.volumes = []
         root_volume = Y2Storage::VolumeSpecification.new(
           mount_point: "/",
