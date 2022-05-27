@@ -36,7 +36,7 @@ module DInstaller
     private_constant :GPG_KEYS_GLOB
 
     # TODO: move to yaml config
-    SUPPORTED_PRODUCTS = ["Leap", "openSUSE"].freeze
+    SUPPORTED_PRODUCTS = ["Leap-Micro"].freeze
     private_constant :SUPPORTED_PRODUCTS
 
     attr_reader :product, :products
@@ -156,6 +156,7 @@ module DInstaller
 
     def find_products
       supported_products = Y2Packager::Product.available_base_products.select do |product|
+        logger.info "Found product #{product.name}"
         SUPPORTED_PRODUCTS.include?(product.name)
       end
       logger.info "Supported products found: #{supported_products.map(&:name).join(",")}"
