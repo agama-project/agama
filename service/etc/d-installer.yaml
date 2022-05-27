@@ -1,8 +1,7 @@
 software:
   installation_repositories:
-    - https://download.opensuse.org/tumbleweed/repo/oss/
-    - https://download.opensuse.org/tumbleweed/repo/non-oss/
-    - https://download.opensuse.org/update/tumbleweed/
+    - http://download.opensuse.org/distribution/leap-micro/5.2/product/repo/Leap-Micro-5.2-x86_64-Media/
+    - http://download.opensuse.org/update/leap-micro/5.2/
 
 distributions:
   # TODO replace simple id with better description of distributions
