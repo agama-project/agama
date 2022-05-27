@@ -35,9 +35,9 @@ module DInstaller
     end
 
     def probe(_progress)
-      # TODO: hardcoded apparmor here instead of calling `.propose_default`
-      # as we soon change it to value from config.yml
-      config.select(:apparmor)
+      # XXX: microos
+      config.select(:selinux)
+      config.selinux.mode = :enforced
     end
 
   private
