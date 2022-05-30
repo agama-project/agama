@@ -93,13 +93,18 @@ module DInstaller
       # FIXME: workaround to have at least reasonable proposal
       # Yast::PackagesProposal.AddResolvables("d-installer", :pattern, ["base", "enhanced_base"])
       # XXX: microos
-      Yast::PackagesProposal.AddResolvables("d-installer", :pattern, ["microos_base", "microos_base_zypper", "microos_defaults", "microos_hardware", "bootloader"])
+      Yast::PackagesProposal.AddResolvables("d-installer", :pattern, ["microos_base", "microos_base_zypper", "microos_hardware", "bootloader"])
+      # TODO: failed to found pattern "microos_defaults", only package patterns-microos-defaults
       # FIXME: temporary workaround to get btrfsprogs into the installed system
       Yast::PackagesProposal.AddResolvables("d-installer", :package, ["btrfsprogs"])
       proposal = Yast::Packages.Proposal(force_reset = false, reinit = false, _simple = true)
       logger.info "proposal #{proposal["raw_proposal"]}"
       res = Yast::Pkg.PkgSolve(unused = true)
       logger.info "solver run #{res.inspect}"
+      if !res
+        logger.error "Solver failed: #{Yast::Pkg.LastError}"
+        logger.error "Details: #{Yast::Pkg.LastErrorDetails}"
+      end
 
       Yast::Stage.Set("initial")
       # do not return proposal hash, so intentional nil here
