@@ -1,7 +1,6 @@
 software:
   installation_repositories:
     - http://download.opensuse.org/distribution/leap-micro/5.2/product/repo/Leap-Micro-5.2-x86_64-Media/
-    - http://download.opensuse.org/update/leap-micro/5.2/
 
 distributions:
   # TODO replace simple id with better description of distributions

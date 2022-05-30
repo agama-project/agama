@@ -82,6 +82,7 @@ module DInstaller
     end
 
     def propose
+      Yast::Pkg.TargetFinish # ensure that previous target is closed
       Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
       Yast::Pkg.TargetLoad
       selected_product = @products.find { |p| p.name == @product }
