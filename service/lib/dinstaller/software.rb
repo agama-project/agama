@@ -105,6 +105,7 @@ module DInstaller
       if !res
         logger.error "Solver failed: #{Yast::Pkg.LastError}"
         logger.error "Details: #{Yast::Pkg.LastErrorDetails}"
+        logger.error "Solving issues: #{Yast::Pkg.PkgSolveErrors}"
       end
 
       Yast::Stage.Set("initial")

@@ -91,8 +91,8 @@ module DInstaller
       # first make bootloader proposal to be sure that required packages are installed
       proposal = ::Bootloader::ProposalClient.new.make_proposal({})
       logger.info "Bootloader proposal #{proposal.inspect}"
-      software.propose
       storage.install(progress)
+      software.propose
 
       # call inst bootloader to get properly initialized bootloader
       # sysconfig before package installation
