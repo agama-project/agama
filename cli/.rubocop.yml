@@ -1,0 +1,11 @@
+# use the shared Yast defaults
+inherit_from:
+  /usr/share/YaST2/data/devtools/data/rubocop-1.24.1_yast_style.yml
+
+AllCops:
+  Exclude:
+    - vendor/**/*
+
+# assignment in method calls is used to document some params
+Lint/UselessAssignment:
+  Enabled: false
