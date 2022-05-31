@@ -114,13 +114,13 @@ module DInstaller
 
         progress.next_step("Saving Language Settings")
         language.install(progress)
+
+        progress.next_step("Writing repositories information")
+        software.finish(progress)
+
+        progress.next_step("Finishing installation")
+        finish_installation
       end
-
-      progress.next_step("Writing repositories information")
-      software.finish(progress)
-
-      progress.next_step("Finishing installation")
-      finish_installation
 
       progress.next_step("Installation Finished")
       status_manager.change(Status::Installed.new)
