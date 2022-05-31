@@ -94,7 +94,7 @@ module DInstaller
       # FIXME: workaround to have at least reasonable proposal
       # Yast::PackagesProposal.AddResolvables("d-installer", :pattern, ["base", "enhanced_base"])
       # XXX: microos
-      Yast::PackagesProposal.AddResolvables("d-installer", :pattern, ["microos_base", "microos_base_zypper", "microos_hardware", "bootloader"])
+      Yast::PackagesProposal.AddResolvables("d-installer", :pattern, ["microos-base", "microos-hardware", "microos-bootloader"])
       # TODO: failed to found pattern "microos_defaults", only package patterns-microos-defaults
       # FIXME: temporary workaround to get btrfsprogs into the installed system
       Yast::PackagesProposal.AddResolvables("d-installer", :package, ["btrfsprogs"])
