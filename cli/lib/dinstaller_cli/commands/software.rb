@@ -55,7 +55,7 @@ module DInstallerCli
       end
 
       desc "selected_product [<id>]", "Select the product to install in the target system"
-      long_desc "Use without arguments to see the currectly selected product."
+      long_desc "Use without arguments to see the currently selected product."
       def selected_product(id = nil)
         client.select_product(id) if id
         puts client.selected_product

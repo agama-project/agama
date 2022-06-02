@@ -40,13 +40,13 @@ module DInstallerCli
 
       desc "show", "Show the user configuration"
       def show
-        user = client.first_user
+        full_name, name, autologin = client.first_user
 
-        return if user[1].empty?
+        return if name.empty?
 
-        puts "Full Name: #{user[0]}"
-        puts "Name: #{user[1]}"
-        puts "Autologin: #{user[2] ? "yes" : "no"}"
+        puts "Full Name: #{full_name}"
+        puts "Name: #{name}"
+        puts "Autologin: #{autologin ? "yes" : "no"}"
         puts "Password: <secret>"
       end
 

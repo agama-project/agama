@@ -32,7 +32,7 @@ module DInstallerCli
       end
 
       desc "selected_devices [<device>...]", "Select devices for the installation"
-      long_desc "Use without arguments to see the currectly selected devices."
+      long_desc "Use without arguments to see the currently selected devices."
       def selected_devices(*devices)
         client.calculate(devices) if devices.any?
         puts client.candidate_devices
