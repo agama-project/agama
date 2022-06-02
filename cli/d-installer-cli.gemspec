@@ -22,7 +22,7 @@
 Gem::Specification.new do |spec|
   spec.name = "d-installer-cli"
   spec.version = File.read(File.expand_path("VERSION", File.join(__dir__, ".."))).chomp
-  spec.summary = "Command line interface for D-Installer service"
+  spec.summary = "D-Installer CLI"
   spec.description = "Command line interface for D-Installer service"
   spec.author = "YaST Team"
   spec.email = "yast-devel@opensuse.org"
@@ -39,7 +39,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.11.0"
   spec.add_development_dependency "simplecov", "~> 0.21.2"
   spec.add_development_dependency "simplecov-lcov", "~> 0.8.0"
+  spec.add_runtime_dependency "thor", "~> 1.2", ">= 1.2.1"
   spec.add_dependency "fast_gettext", "~> 2.2.0"
   spec.add_dependency "ruby-dbus", ">= 0.18.0.beta5"
-  spec.add_dependency "thor", ">= 1.2.1"
 end
