@@ -45,6 +45,14 @@ export default function RootPassword() {
       .catch(console.error);
   }, [client.users]);
 
+  useEffect(() => {
+    return client.users.onUsersChange(changes => {
+      if (changes.rootPasswordSet !== undefined) {
+        setIsRootPasswordSet(changes.rootPasswordSet);
+      }
+    });
+  }, [client.users]);
+
   if (isRootPasswordSet === null) return <Skeleton width="60%" fontSize="sm" />;
 
   const open = () => setIsFormOpen(true);

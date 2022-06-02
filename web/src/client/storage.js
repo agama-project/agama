@@ -25,6 +25,7 @@ import { applyMixin, withDBus } from "./mixins";
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
 const ACTIONS_PATH = "/org/opensuse/DInstaller/Storage/Actions1";
+const TARGET_PATH = "/org/opensuse/DInstaller/Storage/Proposal1";
 
 export default class StorageClient {
   constructor(dbusClient) {
@@ -79,6 +80,18 @@ export default class StorageClient {
         return { text: textVar.v, subvol: subvolVar.v, delete: deleteVar.v };
       });
       handler({ All: newActions });
+    });
+  }
+
+  /**
+   * Register a callback to run when properties in the Target object change
+   *
+   * @param {function} handler - callback function
+   */
+  onTargetChange(handler) {
+    return this.onObjectChanged(TARGET_PATH, changes => {
+      const [selected] = changes.CandidateDevices.v;
+      handler(selected.v);
     });
   }
 }
