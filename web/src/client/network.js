@@ -29,8 +29,16 @@ export default class NetworkClient {
   }
 
   async config() {
+    const data = await this.addresses();
+    const addrs = data.map(a => {
+      return {
+        address: a.address.v,
+        prefix: a.prefix.v
+      };
+    });
+
     return {
-      addresses: await this.addresses(),
+      addresses: addrs,
       hostname: await this.hostname()
     };
   }

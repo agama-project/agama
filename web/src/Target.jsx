@@ -19,38 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-import Popup from "./Popup";
-import { Button, Text } from "@patternfly/react-core";
-
-import NMOverview from "./NetworkManager";
+import React from "react";
+import NMDetailsPopup from "./NetworkManager";
 
 export default function Ip() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
-
   return (
     <>
-      <Button variant="link" onClick={open}>
-        <NMOverview />
-      </Button>
-
-      <Popup
-        isOpen={isOpen}
-        title="Hostname"
-      >
-        <Text>
-          IP1<br />
-          IP2<br />
-          ...<br />
-          IPn<br />
-        </Text>
-        <Popup.Actions>
-          <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
-        </Popup.Actions>
-      </Popup>
+      <NMDetailsPopup />
     </>
   );
 }

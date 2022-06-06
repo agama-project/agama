@@ -19,8 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { useInstallerClient } from "./context/installer";
+import Popup from "./Popup";
+import { Button, Text } from "@patternfly/react-core";
 
 const initIpData = {
   addresses: [],
@@ -47,7 +49,7 @@ function formatIp(address, prefix) {
   return address + "/" + prefix;
 }
 
-export default function Overview() {
+function LoadNmConfig() {
   const client = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, initIpData);
 
@@ -64,17 +66,36 @@ export default function Overview() {
     config();
   }, [client.network]);
 
-  let first_ip = "";
+  return state;
+}
 
-  if (state.addresses.length > 0) {
-    const ip = state.addresses[0];
+export default function DetailsPopup() {
+  const [isOpen, setIsOpen] = useState(false);
 
-    first_ip = formatIp(ip.address.v, ip.prefix.v);
-  }
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+
+  const state = LoadNmConfig();
+  const ips = state.addresses.map((addr) => formatIp(addr.address, addr.prefix));
+  const firstIp = ips.length > 0 ? ips[0] : "";
 
   return (
     <>
-      {first_ip} ({state.hostname})
+      <Button variant="link" onClick={open}>
+        { firstIp } ({state.hostname})
+      </Button>
+
+      <Popup
+        isOpen={isOpen}
+        title={state.hostname}
+      >
+        <Text>
+          { ips }
+        </Text>
+        <Popup.Actions>
+          <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
+        </Popup.Actions>
+      </Popup>
     </>
   );
 }
