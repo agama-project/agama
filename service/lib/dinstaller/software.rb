@@ -89,23 +89,15 @@ module DInstaller
       selected_product.select
       logger.info "selected product #{selected_product.inspect}"
 
-      # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
-      Yast::Stage.Set("normal")
       # FIXME: workaround to have at least reasonable proposal
       Yast::PackagesProposal.AddResolvables("d-installer", :pattern, ["base", "enhanced_base"])
       # FIXME: temporary workaround to get btrfsprogs into the installed system
       Yast::PackagesProposal.AddResolvables("d-installer", :package, ["btrfsprogs"])
       proposal = Yast::Packages.Proposal(force_reset = false, reinit = false, _simple = true)
       logger.info "proposal #{proposal["raw_proposal"]}"
-      res = Yast::Pkg.PkgSolve(unused = true)
-      logger.info "solver run #{res.inspect}"
-      if !res
-        logger.error "Solver failed: #{Yast::Pkg.LastError}"
-        logger.error "Details: #{Yast::Pkg.LastErrorDetails}"
-        logger.error "Solving issues: #{Yast::Pkg.PkgSolveErrors}"
-      end
 
-      Yast::Stage.Set("initial")
+      solve_dependencies
+
       # do not return proposal hash, so intentional nil here
       nil
     end
@@ -134,6 +126,17 @@ module DInstaller
     end
 
   private
+
+    def solve_dependencies
+      res = Yast::Pkg.PkgSolve(unused = true)
+      logger.info "solver run #{res.inspect}"
+
+      return if res
+
+      logger.error "Solver failed: #{Yast::Pkg.LastError}"
+      logger.error "Details: #{Yast::Pkg.LastErrorDetails}"
+      logger.error "Solving issues: #{Yast::Pkg.PkgSolveErrors}"
+    end
 
     # @return [Logger]
     attr_reader :logger
