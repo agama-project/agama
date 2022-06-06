@@ -82,6 +82,7 @@ module DInstaller
     end
 
     def propose
+      Yast::Pkg.TargetFinish # ensure that previous target is close
       Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
       Yast::Pkg.TargetLoad
       selected_product = @products.find { |p| p.name == @product }
@@ -98,6 +99,11 @@ module DInstaller
       logger.info "proposal #{proposal["raw_proposal"]}"
       res = Yast::Pkg.PkgSolve(unused = true)
       logger.info "solver run #{res.inspect}"
+      if !res
+        logger.error "Solver failed: #{Yast::Pkg.LastError}"
+        logger.error "Details: #{Yast::Pkg.LastErrorDetails}"
+        logger.error "Solving issues: #{Yast::Pkg.PkgSolveErrors}"
+      end
 
       Yast::Stage.Set("initial")
       # do not return proposal hash, so intentional nil here
@@ -154,6 +160,7 @@ module DInstaller
 
     def find_products
       supported_products = Y2Packager::Product.available_base_products.select do |product|
+        logger.info "Base product #{product.name} found."
         SUPPORTED_PRODUCTS.include?(product.name)
       end
       logger.info "Supported products found: #{supported_products.map(&:name).join(",")}"

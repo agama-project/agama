@@ -91,8 +91,10 @@ module DInstaller
       # first make bootloader proposal to be sure that required packages are installed
       proposal = ::Bootloader::ProposalClient.new.make_proposal({})
       logger.info "Bootloader proposal #{proposal.inspect}"
-      software.propose
       storage.install(progress)
+      # propose software after /mnt is already separated, so it use proper
+      # target
+      software.propose
 
       # call inst bootloader to get properly initialized bootloader
       # sysconfig before package installation
@@ -114,13 +116,13 @@ module DInstaller
 
         progress.next_step("Saving Language Settings")
         language.install(progress)
+
+        progress.next_step("Writing repositories information")
+        software.finish(progress)
+
+        progress.next_step("Finishing installation")
+        finish_installation
       end
-
-      progress.next_step("Writing repositories information")
-      software.finish(progress)
-
-      progress.next_step("Finishing installation")
-      finish_installation
 
       progress.next_step("Installation Finished")
       status_manager.change(Status::Installed.new)
