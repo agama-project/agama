@@ -92,7 +92,7 @@ module DInstaller
       proposal = ::Bootloader::ProposalClient.new.make_proposal({})
       logger.info "Bootloader proposal #{proposal.inspect}"
       storage.install(progress)
-      # propose software after /mnt is already separated, so it use proper
+      # propose software after /mnt is already separated, so it uses proper
       # target
       software.propose
 
