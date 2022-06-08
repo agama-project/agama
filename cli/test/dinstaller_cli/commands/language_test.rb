@@ -27,7 +27,7 @@ describe DInstallerCli::Commands::Language do
   subject { described_class.new }
 
   before do
-    allow(subject).to receive(:puts)
+    allow(subject).to receive(:say)
     allow(DInstallerCli::Clients::Language).to receive(:new).and_return(client)
   end
 
@@ -41,11 +41,9 @@ describe DInstallerCli::Commands::Language do
     let(:languages) { [["en_GB", "English (UK)"], ["en_US", "English (US)"], ["es_ES", "Español"]] }
 
     it "shows the available languages" do
-      expect(subject).to receive(:puts).with([
-                                               "en_GB - English (UK)",
-                                               "en_US - English (US)",
-                                               "es_ES - Español"
-                                             ])
+      expect(subject).to receive(:say).with("en_GB - English (UK)")
+      expect(subject).to receive(:say).with("en_US - English (US)")
+      expect(subject).to receive(:say).with("es_ES - Español")
 
       subject.available
     end
@@ -60,7 +58,7 @@ describe DInstallerCli::Commands::Language do
 
     context "when no language ids are given" do
       it "shows the currently selected languages" do
-        expect(subject).to receive(:puts).with(languages)
+        expect(subject).to receive(:say).once.with("en_GB")
 
         subject.selected
       end

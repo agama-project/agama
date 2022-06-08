@@ -262,7 +262,7 @@ describe DInstallerCli::Commands::Main do
 
       it "reports 'error'" do
 
-        expect(subject).to receive(:puts).with("error")
+        expect(subject).to receive(:say).with("error")
 
         subject.status
       end
@@ -273,7 +273,7 @@ describe DInstallerCli::Commands::Main do
 
       it "reports 'probing'" do
 
-        expect(subject).to receive(:puts).with("probing")
+        expect(subject).to receive(:say).with("probing")
 
         subject.status
       end
@@ -284,7 +284,7 @@ describe DInstallerCli::Commands::Main do
 
       it "reports 'probed'" do
 
-        expect(subject).to receive(:puts).with("probed")
+        expect(subject).to receive(:say).with("probed")
 
         subject.status
       end
@@ -295,7 +295,7 @@ describe DInstallerCli::Commands::Main do
 
       it "reports 'installing'" do
 
-        expect(subject).to receive(:puts).with("installing")
+        expect(subject).to receive(:say).with("installing")
 
         subject.status
       end
@@ -306,7 +306,7 @@ describe DInstallerCli::Commands::Main do
 
       it "reports 'installed'" do
 
-        expect(subject).to receive(:puts).with("installed")
+        expect(subject).to receive(:say).with("installed")
 
         subject.status
       end
@@ -317,7 +317,7 @@ describe DInstallerCli::Commands::Main do
 
       it "reports 'unknown'" do
 
-        expect(subject).to receive(:puts).with("unknown")
+        expect(subject).to receive(:say).with("unknown")
 
         subject.status
       end

@@ -27,7 +27,7 @@ describe DInstallerCli::Commands::Storage do
   subject { described_class.new }
 
   before do
-    allow(subject).to receive(:puts)
+    allow(subject).to receive(:say)
     allow(DInstallerCli::Clients::Storage).to receive(:new).and_return(client)
   end
 
@@ -41,7 +41,8 @@ describe DInstallerCli::Commands::Storage do
     let(:devices) { ["/dev/sda", "/dev/sdb"] }
 
     it "shows the available devices" do
-      expect(subject).to receive(:puts).with(["/dev/sda", "/dev/sdb"])
+      expect(subject).to receive(:say).with("/dev/sda")
+      expect(subject).to receive(:say).with("/dev/sdb")
 
       subject.available_devices
     end
@@ -54,7 +55,7 @@ describe DInstallerCli::Commands::Storage do
 
     context "when no device is given" do
       it "shows the currently selected devices" do
-        expect(subject).to receive(:puts).with(["/dev/sda"])
+        expect(subject).to receive(:say).once.with("/dev/sda")
 
         subject.selected_devices
       end
@@ -84,7 +85,7 @@ describe DInstallerCli::Commands::Storage do
     end
 
     it "shows the actions to perform" do
-      expect(subject).to receive(:puts).with(actions)
+      actions.each { |a| expect(subject).to receive(:say).with(a) }
 
       subject.actions
     end

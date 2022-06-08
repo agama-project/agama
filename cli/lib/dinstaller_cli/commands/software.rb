@@ -50,15 +50,14 @@ module DInstallerCli
       desc "available_products", "List available products for the installation"
       def available_products
         products = client.available_products.map { |l| l.join(" - ") }
-
-        puts products
+        products.each { |p| say(p) }
       end
 
       desc "selected_product [<id>]", "Select the product to install in the target system"
       long_desc "Use without arguments to see the currently selected product."
       def selected_product(id = nil)
         client.select_product(id) if id
-        puts client.selected_product
+        say(client.selected_product)
       end
 
     private

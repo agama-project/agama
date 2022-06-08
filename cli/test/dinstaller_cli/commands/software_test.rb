@@ -27,7 +27,7 @@ describe DInstallerCli::Commands::Software do
   subject { described_class.new }
 
   before do
-    allow(subject).to receive(:puts)
+    allow(subject).to receive(:say)
     allow(DInstallerCli::Clients::Software).to receive(:new).and_return(client)
   end
 
@@ -41,10 +41,8 @@ describe DInstallerCli::Commands::Software do
     let(:products) { [["Tumbleweed", "openSUSE Tumbleweed"], ["Leap15.4", "openSUSE Leap 15.4"]] }
 
     it "shows the available products" do
-      expect(subject).to receive(:puts).with([
-                                               "Tumbleweed - openSUSE Tumbleweed",
-                                               "Leap15.4 - openSUSE Leap 15.4"
-                                             ])
+      expect(subject).to receive(:say).with("Tumbleweed - openSUSE Tumbleweed")
+      expect(subject).to receive(:say).with("Leap15.4 - openSUSE Leap 15.4")
 
       subject.available_products
     end
@@ -57,7 +55,7 @@ describe DInstallerCli::Commands::Software do
 
     context "when no product is given" do
       it "shows the currently selected product" do
-        expect(subject).to receive(:puts).with("Tumbleweed")
+        expect(subject).to receive(:say).once.with("Tumbleweed")
 
         subject.selected_product
       end

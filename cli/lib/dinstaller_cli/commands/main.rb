@@ -68,7 +68,7 @@ module DInstallerCli
           "unknown"
         end
 
-        puts status
+        say(status)
       end
 
       desc "language SUBCOMMAND", "Manage language configuration"

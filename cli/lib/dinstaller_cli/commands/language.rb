@@ -29,15 +29,14 @@ module DInstallerCli
       desc "available", "List available languages for the installation"
       def available
         languages = client.available_languages.map { |l| l.join(" - ") }
-
-        puts languages
+        languages.each { |l| say(l) }
       end
 
       desc "selected [<id>...]", "Select the languages to install in the target system"
       long_desc "Use without arguments to see the currently selected languages."
       def selected(*ids)
         client.select_languages(ids) if ids.any?
-        puts client.selected_languages
+        client.selected_languages.each { |l| say(l) }
       end
 
     private

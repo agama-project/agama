@@ -27,7 +27,7 @@ describe DInstallerCli::Commands::RootUser do
   subject { described_class.new }
 
   before do
-    allow(subject).to receive(:puts)
+    allow(subject).to receive(:say)
     allow(DInstallerCli::Clients::Users).to receive(:new).and_return(client)
   end
 
@@ -40,7 +40,7 @@ describe DInstallerCli::Commands::RootUser do
 
     context "when no SSH key is given" do
       it "shows the current SSH key" do
-        expect(subject).to receive(:puts).with("xyz-123")
+        expect(subject).to receive(:say).with("xyz-123")
 
         subject.ssh_key
       end
@@ -65,7 +65,7 @@ describe DInstallerCli::Commands::RootUser do
         let(:password_set) { false }
 
         it "shows nothing" do
-          expect(subject).to_not receive(:puts)
+          expect(subject).to_not receive(:say)
 
           subject.password
         end
@@ -75,7 +75,7 @@ describe DInstallerCli::Commands::RootUser do
         let(:password_set) { true }
 
         it "shows <secret>" do
-          expect(subject).to receive(:puts).with("<secret>")
+          expect(subject).to receive(:say).with("<secret>")
 
           subject.password
         end
