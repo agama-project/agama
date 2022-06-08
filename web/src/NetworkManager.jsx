@@ -88,6 +88,7 @@ export default function DetailsPopup() {
       <Popup
         isOpen={isOpen}
         title={state.hostname}
+        aria-label="IP Addresses"
       >
         <Text>
           { ips.map((ip) => <p key={ip}> {ip} </p>) }
