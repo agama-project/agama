@@ -89,10 +89,7 @@ module DInstaller
       selected_product.select
       logger.info "selected product #{selected_product.inspect}"
 
-      # FIXME: workaround to have at least reasonable proposal
-      Yast::PackagesProposal.AddResolvables("d-installer", :pattern, ["base", "enhanced_base"])
-      # FIXME: temporary workaround to get btrfsprogs into the installed system
-      Yast::PackagesProposal.AddResolvables("d-installer", :package, ["btrfsprogs"])
+      add_resolvables
       proposal = Yast::Packages.Proposal(force_reset = false, reinit = false, _simple = true)
       logger.info "proposal #{proposal["raw_proposal"]}"
 
@@ -127,6 +124,20 @@ module DInstaller
 
   private
 
+    # adds resolvables from yaml config for given product
+    def add_resolvables
+      mandatory_patterns = @config.data["software"]["mandatory_patterns"] || []
+      Yast::PackagesProposal.SetResolvables("d-installer", :pattern, mandatory_patterns)
+
+      optional_patterns = @config.data["software"]["optional_patterns"] || []
+      Yast::PackagesProposal.SetResolvables("d-installer", :pattern, optional_patterns,
+        optional: true)
+
+      # FIXME: temporary workaround to get btrfsprogs into the installed system
+      Yast::PackagesProposal.AddResolvables("d-installer", :package, ["btrfsprogs"])
+    end
+
+    # call solver to satisfy dependency or log error
     def solve_dependencies
       res = Yast::Pkg.PkgSolve(unused = true)
       logger.info "solver run #{res.inspect}"
