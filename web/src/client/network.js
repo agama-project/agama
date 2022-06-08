@@ -43,6 +43,12 @@ export default class NetworkClient {
     };
   }
 
+  async connections() {
+    const proxy = await this.proxy(NM_IFACE);
+
+    return proxy.ActiveConnections;
+  }
+
   /**
    * Return the computer's hostname
    *
@@ -54,15 +60,24 @@ export default class NetworkClient {
     return proxy.Hostname;
   }
 
+  async address(connection) {
+    const configPath = await this.proxy(NM_IFACE + ".Connection.Active", connection);
+    const ipConfigs = await this.proxy(NM_IFACE + ".IP4Config", configPath.Ip4Config);
+
+    return ipConfigs.AddressData;
+  }
+
   async addresses() {
-    const proxy = this._client.proxy(
-      "org.freedesktop.NetworkManager.IP4Config",
-      "/org/freedesktop/NetworkManager/IP4Config/1"
-    );
+    const conns = await this.connections();
 
-    await proxy.wait();
+    let result = [];
 
-    return proxy.AddressData;
+    for (const i in conns) {
+      const addr = await this.address(conns[i]);
+      result = [...result, ...addr];
+    }
+
+    return result;
   }
 }
 
