@@ -1,61 +1,56 @@
-## Multi Process Backend
+## Multi-Process Backend
 
-It is attempt to have backend consisting of several dbus services that
-communicates between.
-The goal of attempt is to verify that having separate services can speed up
-probing phase and maybe even slightly installation one. Also it will help with
-responsivness, so for long running tasks like software installation other parts
-of DBus can still respond and only software part is blocked.
-The secondary goal is to have smaller dbus services that can be easier to reuse
-and have more formal API in between.
-When considering threads versus separate processes, the choice pick was for
-processes, because threads is known to cause several issues to yast and also it
-is easier to avoid race condition using processes. And we also already use dbus
-for process communication.
+The idea is to have a backend consisting of several services that communicate
+via D-Bus. The goals of such an approach are:
 
-### POC
+* Parallelize as much work as possible, especially relevant during probing.
+* Keep service responsiveness even when a long-running task is running.
+* Improve reusability by building smaller D-Bus-based services.
 
-When thinking about POC initial thought was to pick storage as it has very
-limited set of dependencies, but for POC it is needed both side of
-communication -> into process and out of process. And sadly storage-ng API
-is so rich and bootloader use quite big part of it, so having all of it exposed
-on DBUS makes it hard. So picked part which should be easy in context of
-dinstaller is users. Reasons are
+## Processes or threads
 
-1. users is also new enough, so code well covered
-2. other parts of dinstaller do not use users
+We decided to go for processes instead of threads because the latter are known
+to cause problems to YaST and it is easier to avoid race conditions. Moreover,
+we could even reimplement any of those services in a different language in the
+future.
 
-So it needs just to be sure that users communication goes over dbus with other
-parts of YaST that is used in DInstaller.
-The most important ones are software and storage because both has lock on
-process ID, so another dbus process cannot get it.
+## Proof-of-concept
 
-Found dependencies of users:
+Untangling the YaST code into different processes is quite a challenging task.
+Take the *storage* API as an example: other components, like *bootloader*, use
+its API extensively. Hence we decided to extract the *users handling* part in
+the first place. Of course, in terms of speed and responsiveness, it does not
+bring much benefit, but we thought it was a good starting point because:
 
-- MailAliases ( depends on MailTable ) and other parts of dinstall does not
-  depend on it. So no action is needed.
-- ShadowConfig that uses CFA to modify login.defs which is used also from
-  Security. Looks like Security is not used in other parts of d-installer.
-  Even transitively.
-- Autologin that uses many modules including packages which can be tricky.
-  It basically checks which of supported Display Managers are available.
-- ProductFeatures which should be in dinstaller replaced by Config. It can mean
-  that each process needs to evaluate dinstaller config. Ignored in POC for now.
+1. Users handling was (partially) refactored recently, so it is well covered
+   by unit tests.
+2. No other D-Installer component relies on users handling.
 
-What was agreed:
+### Users
 
-- for POC it uses Y2DIR with modified dependent modules that uses dbus to
-  provide info. It is now located at `service/lib/dinstaller/dbus/y2dir`
-  where is modified yast sources
-- Having `DInstaller::DBus::Clients for dbus clients that is needed to
+We found these dependencies:
+
+- `MailAliases` (which depends on `MailTable`): no other D-Installer component
+  depends on it.
+- `ShadowConfig` uses CFA to modify the `login.defs` file, which is also used
+  by `Security`. However, it looks like `Security` is not used in other parts
+  of D-installer.
+- `Autologin`, which uses many modules, including packages, can be tricky. It
+  basically checks which supported Display Managers are available.
+- `ProductFeatures`, which should be replaced with D-Installer configuration
+  mechanism. Ignored by now.
+
+We reached these agreements:
+
+- This PoC uses a special directory (`service/lib/dinstaller/dbus/y2dir`)
+  which contains a modified version of the dependencies. This directory is
+  added to `Y2DIR`, so these modules are used instead of the original ones.
+- Having `DInstaller::DBus::Clients` for D-Bus clients that are needed to
   communicate between different processes.
 
-### Future steps
+## Future steps
 
-- For questions we agreed that it should be separate DBus services that have
-  two APIs - one for Clients that discover new questions and reply to them and
-  one for Services which asks questions and then get notified that result is
-  available.
-- The next step is to have separate service for Software as it can have
-  the biggest impact due to its slow probe and installation. So we can do next
-  evaluation when we have it and do software probing asynchronous.
+- We agreed on using a separate process for questions. The API should allow to
+  asking questions and replying to them.
+- Software is the most time-consuming aspect of the installation, so we should
+  aim to move it to a separate process.
