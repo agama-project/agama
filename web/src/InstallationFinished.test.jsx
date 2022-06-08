@@ -37,7 +37,6 @@ describe("InstallationFinished", () => {
     createClient.mockImplementation(() => {
       return {
         manager: {
-          startProbing: startProbingFn,
           rebootSystem: rebootSystemFn
         }
       };
@@ -50,24 +49,10 @@ describe("InstallationFinished", () => {
     await screen.findByText("Congratulations!");
   });
 
-  it("shows a 'Restart Installation' button", async () => {
-    installerRender(<InstallationFinished />);
-
-    await screen.findByRole("button", { name: /Restart Installation/i });
-  });
-
   it("shows a 'Reboot' button", async () => {
     installerRender(<InstallationFinished />);
 
     await screen.findByRole("button", { name: /Reboot/i });
-  });
-
-  it("starts the probing process if user clicks on 'Restart Installation' button", async () => {
-    const { user } = installerRender(<InstallationFinished />);
-
-    const button = await screen.findByRole("button", { name: /Restart Installation/i });
-    await user.click(button);
-    expect(startProbingFn).toHaveBeenCalled();
   });
 
   it("reboots the system if the user clicks on 'Reboot' button", async () => {

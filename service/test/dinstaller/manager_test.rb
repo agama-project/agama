@@ -34,6 +34,7 @@ describe DInstaller::Manager do
   let(:language) { instance_double(DInstaller::Language, probe: nil, install: nil) }
   let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
   let(:storage) { instance_double(DInstaller::Storage::Manager, probe: nil, install: nil) }
+  let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
   let(:status_manager) do
     instance_double(DInstaller::StatusManager, change: nil)
   end
@@ -42,6 +43,7 @@ describe DInstaller::Manager do
   before do
     allow(DInstaller::Language).to receive(:new).and_return(language)
     allow(DInstaller::Network).to receive(:new).and_return(network)
+    allow(DInstaller::Security).to receive(:new).and_return(security)
     allow(DInstaller::Software).to receive(:new).and_return(software)
     allow(DInstaller::StatusManager).to receive(:new).and_return(status_manager)
     allow(DInstaller::Storage::Manager).to receive(:new).and_return(storage)
@@ -59,6 +61,7 @@ describe DInstaller::Manager do
 
     it "calls #probe method of each module passing a progress object" do
       expect(software).to receive(:probe).with(subject.progress)
+      expect(security).to receive(:probe).with(subject.progress)
       expect(language).to receive(:probe).with(subject.progress)
       expect(network).to receive(:probe).with(subject.progress)
       expect(storage).to receive(:probe).with(subject.progress, subject.questions_manager)
@@ -82,6 +85,7 @@ describe DInstaller::Manager do
       expect(language).to receive(:install).with(subject.progress)
       expect(network).to receive(:install).with(subject.progress)
       expect(software).to receive(:install).with(subject.progress)
+      expect(security).to receive(:write).with(subject.progress)
       expect(storage).to receive(:install).with(subject.progress)
       expect(DInstaller::DBus::Clients::Users).to receive(:write).with(subject.progress)
       subject.install

@@ -22,16 +22,17 @@
 require "yast"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
-require "dinstaller/config"
 require "dinstaller/cockpit_manager"
+require "dinstaller/config"
 require "dinstaller/language"
 require "dinstaller/network"
 require "dinstaller/progress"
+require "dinstaller/questions_manager"
+require "dinstaller/security"
 require "dinstaller/software"
 require "dinstaller/status_manager"
 require "dinstaller/storage"
 require "dinstaller/dbus/clients/users"
-require "dinstaller/questions_manager"
 
 Yast.import "Stage"
 
@@ -90,8 +91,10 @@ module DInstaller
       # first make bootloader proposal to be sure that required packages are installed
       proposal = ::Bootloader::ProposalClient.new.make_proposal({})
       logger.info "Bootloader proposal #{proposal.inspect}"
-      software.propose
       storage.install(progress)
+      # propose software after /mnt is already separated, so it uses proper
+      # target
+      software.propose
 
       # call inst bootloader to get properly initialized bootloader
       # sysconfig before package installation
@@ -108,17 +111,18 @@ module DInstaller
         network.install(progress)
 
         progress.next_step("Installing Bootloader")
+        security.write(progress)
         ::Bootloader::FinishClient.new.write
 
         progress.next_step("Saving Language Settings")
         language.install(progress)
+
+        progress.next_step("Writing repositories information")
+        software.finish(progress)
+
+        progress.next_step("Finishing installation")
+        finish_installation
       end
-
-      progress.next_step("Writing repositories information")
-      software.finish(progress)
-
-      progress.next_step("Finishing installation")
-      finish_installation
 
       progress.next_step("Installation Finished")
       status_manager.change(Status::Installed.new)
@@ -167,6 +171,13 @@ module DInstaller
       @storage ||= Storage::Manager.new(logger)
     end
 
+    # Security manager
+    #
+    # @return [Security]
+    def security
+      @security ||= Security.new(logger)
+    end
+
   private
 
     # Initializes YaST
@@ -186,6 +197,7 @@ module DInstaller
     # Performs probe steps
     #
     # Status and progress are properly updated during the process.
+    # rubocop:disable Metrics/AbcSize
     def probe_steps
       status_manager.change(Status::Probing.new)
 
@@ -196,6 +208,7 @@ module DInstaller
       storage.probe(progress, questions_manager)
 
       progress.next_step("Probing Software")
+      security.probe(progress)
       software.probe(progress)
 
       progress.next_step("Probing Network")
@@ -205,6 +218,7 @@ module DInstaller
 
       status_manager.change(Status::Probed.new)
     end
+    # rubocop:enable Metrics/AbcSize
 
     # Performs required steps after installing the system
     #
