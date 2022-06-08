@@ -36,4 +36,9 @@ const installerRender = (ui, options = {}) => ({
   ...render(ui, { wrapper: InstallerProvider, ...options })
 });
 
-export { installerRender };
+const plainRender = (ui, options = {}) => ({
+  user: userEvent.setup(),
+  ...render(ui, options)
+});
+
+export { installerRender, plainRender };
