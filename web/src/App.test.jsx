@@ -56,6 +56,9 @@ beforeEach(() => {
       },
       monitor: {
         onDisconnect: jest.fn()
+      },
+      network: {
+        config: jest.fn()
       }
     };
   });
