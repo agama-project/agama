@@ -90,7 +90,7 @@ export default function DetailsPopup() {
         title={state.hostname}
       >
         <Text>
-          { ips }
+          { ips.map((ip) => <p key={ip}> {ip} </p>) }
         </Text>
         <Popup.Actions>
           <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
