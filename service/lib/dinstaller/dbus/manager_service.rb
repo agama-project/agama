@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/manager"
 require "dinstaller/dbus/manager"
 require "dinstaller/dbus/language"
 require "dinstaller/dbus/software"
@@ -34,7 +35,7 @@ module DInstaller
     #
     # It connects to the system D-Bus and answers requests on objects below
     # `/org/opensuse/DInstaller`.
-    class Service
+    class ManagerService
       # Service name
       #
       # @return [String]
@@ -51,12 +52,24 @@ module DInstaller
       # @return [DInstaller::Manager]
       attr_reader :manager
 
-      # @param manager [Manager] Installation manager
+      # @param config [Config] Configuration
       # @param logger [Logger]
-      def initialize(manager, logger = nil)
-        @manager = manager
+      def initialize(config, logger = nil)
+        @manager = DInstaller::Manager.new(config, logger)
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
+      end
+
+      # Initializes and exports the D-Bus API
+      #
+      # * Set up the environment (Manager#setup)
+      # * Export the D-Bus API
+      # * Run the probing phase
+      def start
+        manager.setup
+        export
+        manager.probe
+        manager.progress.on_change { dispatch } # make single thread more responsive
       end
 
       # Exports the installer object through the D-Bus service

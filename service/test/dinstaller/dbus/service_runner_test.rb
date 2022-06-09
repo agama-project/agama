@@ -20,46 +20,31 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
+require "dinstaller/config"
 require "dinstaller/dbus/service_runner"
-require "dinstaller/dbus/users_service"
+require "dinstaller/dbus/manager_service"
+require "dinstaller/manager"
 
 describe DInstaller::DBus::ServiceRunner do
   describe "#run" do
+    subject(:runner) { DInstaller::DBus::ServiceRunner.new(:manager) }
+
+    let(:config) { DInstaller::Config.new }
     let(:logger) { Logger.new($stdout) }
+    let(:manager) { DInstaller::Manager.new(config, logger) }
+    let(:service) { instance_double(DInstaller::DBus::ManagerService) }
 
-    context "when the service :manager is chosen" do
-      subject(:runner) { DInstaller::DBus::ServiceRunner.new(:manager) }
-
-      let(:manager) { DInstaller::Manager.new(logger) }
-      let(:service) { instance_double(DInstaller::DBus::Service) }
-
-      before do
-        allow(manager).to receive(:setup)
-        allow(manager).to receive(:probe)
-      end
-
-      it "runs the manager service" do
-        expect(DInstaller::Manager).to receive(:new).and_return(manager)
-        expect(DInstaller::DBus::Service).to receive(:new).with(manager, Logger)
-          .and_return(service)
-        expect(service).to receive(:export)
-        expect(EventMachine).to receive(:run)
-        runner.run
-      end
+    before do
+      allow(DInstaller::Config).to receive(:current).and_return(config)
+      allow(DInstaller::Manager).to receive(:new).with(config).and_return(manager)
+      allow(DInstaller::DBus::ManagerService).to receive(:new).with(config, Logger)
+        .and_return(service)
     end
 
-    context "when another service chosen" do
-      subject(:runner) { DInstaller::DBus::ServiceRunner.new(:users) }
-
-      let(:service) { instance_double(DInstaller::DBus::Service) }
-
-      it "runs the chosen service" do
-        expect(DInstaller::DBus::UsersService).to receive(:new).with(Logger)
-          .and_return(service)
-        expect(service).to receive(:export)
-        expect(EventMachine).to receive(:run)
-        runner.run
-      end
+    it "starts the given service" do
+      expect(service).to receive(:start)
+      expect(EventMachine).to receive(:run)
+      runner.run
     end
   end
 end

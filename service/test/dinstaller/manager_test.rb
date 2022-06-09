@@ -21,10 +21,12 @@
 
 require_relative "../test_helper"
 require "dinstaller/manager"
+require "dinstaller/config"
 
 describe DInstaller::Manager do
-  subject { described_class.new(logger) }
+  subject { described_class.new(config, logger) }
 
+  let(:config) { DInstaller::Config.new }
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:cockpit) { instance_double(DInstaller::CockpitManager, setup: nil) }
