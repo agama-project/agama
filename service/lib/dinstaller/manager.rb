@@ -168,7 +168,7 @@ module DInstaller
     #
     # @return [Storage::Manager]
     def storage
-      @storage ||= Storage::Manager.new(logger)
+      @storage ||= Storage::Manager.new(logger, config)
     end
 
     # Security manager

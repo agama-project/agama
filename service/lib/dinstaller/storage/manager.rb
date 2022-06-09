@@ -29,8 +29,9 @@ module DInstaller
   module Storage
     # Manager to handle storage configuration
     class Manager
-      def initialize(logger)
+      def initialize(logger, config)
         @logger = logger
+        @config = config
       end
 
       # Probes storage devices and performs an initial proposal
@@ -57,7 +58,7 @@ module DInstaller
       #
       # @return [Storage::Proposal]
       def proposal
-        @proposal ||= Proposal.new(logger)
+        @proposal ||= Proposal.new(logger, config)
       end
 
       # Storage actions manager
@@ -71,6 +72,9 @@ module DInstaller
 
       # @return [Logger]
       attr_reader :logger
+
+      # @return [Config]
+      attr_reader :config
 
       # Activates the devices, calling activation callbacks if needed
       #

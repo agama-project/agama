@@ -23,11 +23,13 @@ require_relative "../../test_helper"
 require "dinstaller/storage/manager"
 require "dinstaller/progress"
 require "dinstaller/questions_manager"
+require "dinstaller/config"
 
 describe DInstaller::Storage::Manager do
-  subject(:storage) { described_class.new(logger) }
+  subject(:storage) { described_class.new(logger, config) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
+  let(:config) { DInstaller::Config.new }
   let(:progress) { DInstaller::Progress.new }
 
   describe "#probe" do
