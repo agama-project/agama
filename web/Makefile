@@ -91,11 +91,6 @@ devel-install: $(WEBPACK_TEST)
 	rm -f ~/.local/share/cockpit/$(PACKAGE_NAME)
 	ln -s `pwd`/dist ~/.local/share/cockpit/$(PACKAGE_NAME)
 
-custom-install: $(WEBPACK_TEST)
-	mkdir -p ~/.local/share/cockpit
-	rm -f ~/.local/share/cockpit/$(PACKAGE_NAME)
-	ln -s `pwd`/dist ~/.local/share/cockpit/$(PACKAGE_NAME)
-
 # assumes that there was symlink set up using the above devel-install target,
 # and removes it
 devel-uninstall:

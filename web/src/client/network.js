@@ -28,8 +28,14 @@ export default class NetworkClient {
     this._client = dbusClient;
   }
 
+  /**
+   * Returns IP config overview - addresses and hostname
+   *
+   * @return {Promise.<Map>} address key stores list of addresses,
+   *                         hostname stores target's hostname
+   */
   async config() {
-    const data = await this.addresses();
+    const data = await this.#addresses();
     const addrs = data.map(a => {
       return {
         address: a.address.v,
@@ -43,16 +49,10 @@ export default class NetworkClient {
     };
   }
 
-  async connections() {
-    const proxy = await this.proxy(NM_IFACE);
-
-    return proxy.ActiveConnections;
-  }
-
   /**
-   * Return the computer's hostname
+   * Returns the computer's hostname
    *
-   * @return {Promise.<Object>}
+   * @return {Promise.<String>}
    */
   async hostname() {
     const proxy = await this.proxy(NM_IFACE + ".Settings");
@@ -60,20 +60,49 @@ export default class NetworkClient {
     return proxy.Hostname;
   }
 
-  async address(connection) {
+  /*
+   * Returns list of active NM connections
+   *
+   * Private method.
+   * See NM API documentation for details.
+   *
+   * @return {Promis.<Array>}
+   */
+  async #connections() {
+    const proxy = await this.proxy(NM_IFACE);
+
+    return proxy.ActiveConnections;
+  }
+
+  /*
+   * Returns NM IP config for the particular connection
+   *
+   * Private method.
+   * See NM API documentation for details
+   *
+   * @return {Promise.<Map>}
+   */
+  async #address(connection) {
     const configPath = await this.proxy(NM_IFACE + ".Connection.Active", connection);
     const ipConfigs = await this.proxy(NM_IFACE + ".IP4Config", configPath.Ip4Config);
 
     return ipConfigs.AddressData;
   }
 
-  async addresses() {
-    const conns = await this.connections();
+  /*
+   * Returns list of IP addresses for all active NM connections
+   *
+   * Private method.
+   *
+   * @return {Promise.<Array>}
+   */
+  async #addresses() {
+    const conns = await this.#connections();
 
     let result = [];
 
     for (const i in conns) {
-      const addr = await this.address(conns[i]);
+      const addr = await this.#address(conns[i]);
       result = [...result, ...addr];
     }
 

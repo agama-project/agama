@@ -22,7 +22,7 @@
 import React from "react";
 import NMDetailsPopup from "./NetworkManager";
 
-export default function Ip() {
+export default function TargetAddressOverview() {
   return (
     <>
       <NMDetailsPopup />

@@ -49,9 +49,15 @@ function formatIp(address, prefix) {
   return address + "/" + prefix;
 }
 
-function LoadNmConfig() {
+export default function DetailsPopup() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
   const client = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, initIpData);
+  const ips = state.addresses.map((addr) => formatIp(addr.address, addr.prefix));
+  const firstIp = ips.length > 0 ? ips[0] : "";
 
   useEffect(() => {
     const config = async () => {
@@ -65,19 +71,6 @@ function LoadNmConfig() {
 
     config();
   }, [client.network]);
-
-  return state;
-}
-
-export default function DetailsPopup() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
-
-  const state = LoadNmConfig();
-  const ips = state.addresses.map((addr) => formatIp(addr.address, addr.prefix));
-  const firstIp = ips.length > 0 ? ips[0] : "";
 
   return (
     <>
