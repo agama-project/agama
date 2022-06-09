@@ -58,10 +58,6 @@ Required patterns for given lsm to be selected.
 Default policy. Only applicable for selinux lsm.
 
 
-#### selinux\_policy
-
-Default policy for selinux. It is ignored if lsm is not selinux.
-
 ### distributions
 
 List of supported distros that can be offered in installer.
