@@ -22,7 +22,6 @@
 require "eventmachine"
 require "dinstaller/manager"
 require "dinstaller/dbus/service"
-require "dinstaller/dbus/users_service"
 
 module DInstaller
   module DBus
@@ -36,11 +35,6 @@ module DInstaller
     #   runner = ServiceRunner.new(:users)
     #   runner.run
     class ServiceRunner
-      SERVICES_MAP = {
-        users: DInstaller::DBus::UsersService
-      }.freeze
-      private_constant :SERVICES_MAP
-
       # @param name [Symbol,String] Service name (:manager, :users, etc.)
       # @param logger [Logger] Service logger
       def initialize(name, logger: Logger.new($stdout))
@@ -87,10 +81,11 @@ module DInstaller
       # @param logger [Logger] Service logger
       # @return [#export,#dispatch] Class that implements #export and #dispatch methods.
       def setup_service(name, logger)
-        klass = SERVICES_MAP[name]
-        raise "Service not found" unless klass
-
+        require "dinstaller/dbus/#{name}_service"
+        klass = DInstaller::DBus.const_get("#{name.capitalize}Service")
         klass.new(logger)
+      rescue LoadError, NameError
+        raise "Service '#{name}' not found"
       end
     end
   end

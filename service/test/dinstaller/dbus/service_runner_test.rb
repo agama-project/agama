@@ -21,6 +21,7 @@
 
 require_relative "../../test_helper"
 require "dinstaller/dbus/service_runner"
+require "dinstaller/dbus/users_service"
 
 describe DInstaller::DBus::ServiceRunner do
   describe "#run" do
