@@ -9,6 +9,7 @@
     "build": "webpack",
     "eslint": "eslint --ext .js --ext .jsx src/",
     "eslint:fix": "eslint --fix --ext .js --ext .jsx src/",
+    "jsdoc": "npx jsdoc -c jsdoc.conf.json; echo Tip:; echo xdg-open out/index.html",
     "test": "jest"
   },
   "devDependencies": {

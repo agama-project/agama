@@ -27,3 +27,10 @@ everytime you save a change:
 However, there is no live or hot reloading feature, so you need to reload the code in your browser.
 You can visit the module through the following URL:
 http://localhost:9090/cockpit/@localhost/d-installer/index.html.
+
+### JSDoc Documentation
+
+```
+npm run jsdoc
+xdg-open out/index.html
+```
