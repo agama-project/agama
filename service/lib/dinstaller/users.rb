@@ -25,7 +25,10 @@ require "y2users/linux" # FIXME: linux is not in y2users file
 require "yast2/execute"
 
 module DInstaller
-  # Backend class between dbus service and yast code
+  # Backend class using YaST code.
+  #
+  # {DInstaller::DBus::Users} wraps it with a D-Bus interface and
+  # {DInstaller::DBus::Clients::Users} is a D-Bus client for that.
   class Users
     def initialize(logger)
       @logger = logger
@@ -86,13 +89,15 @@ module DInstaller
 
     def write(_progress)
       without_run_mount do
-        system_config = Y2Users::ConfigManager.instance.system(force_read: true)
-        target_config = system_config.copy
-        Y2Users::ConfigMerger.new(target_config, config).merge
+        on_target do
+          system_config = Y2Users::ConfigManager.instance.system(force_read: true)
+          target_config = system_config.copy
+          Y2Users::ConfigMerger.new(target_config, config).merge
 
-        writer = Y2Users::Linux::Writer.new(target_config, system_config)
-        issues = writer.write
-        logger.error(issues.inspect) unless issues.empty?
+          writer = Y2Users::Linux::Writer.new(target_config, system_config)
+          issues = writer.write
+          logger.error(issues.inspect) unless issues.empty?
+        end
       end
     end
 
@@ -105,6 +110,24 @@ module DInstaller
       block.call
     ensure
       Yast::Execute.locally!("/usr/bin/mount", "-o", "bind", "/run", "/mnt/run")
+    end
+
+    # Run a block in the target system
+    # TODO: it is C&P from manager.rb. Maybe mixin as each process need to switch target?
+    def on_target(&block)
+      old_handle = Yast::WFM.SCRGetDefault
+      # chroot directly to /mnt instead of Installation.destdir to avoid unnecessary deps
+      handle = Yast::WFM.SCROpen("chroot=/mnt:scr", false)
+      Yast::WFM.SCRSetDefault(handle)
+
+      begin
+        block.call
+      rescue StandardError => e
+        logger.error "Error while running on target tasks: #{e.inspect}"
+      ensure
+        Yast::WFM.SCRSetDefault(old_handle)
+        Yast::WFM.SCRClose(handle)
+      end
     end
 
     def config

@@ -32,7 +32,6 @@ describe DInstaller::Manager do
     instance_double(DInstaller::Software, probe: nil, install: nil, propose: nil, finish: nil)
   end
   let(:language) { instance_double(DInstaller::Language, probe: nil, install: nil) }
-  let(:users) { instance_double(DInstaller::Users, write: nil) }
   let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
   let(:storage) { instance_double(DInstaller::Storage::Manager, probe: nil, install: nil) }
   let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
@@ -48,7 +47,7 @@ describe DInstaller::Manager do
     allow(DInstaller::Software).to receive(:new).and_return(software)
     allow(DInstaller::StatusManager).to receive(:new).and_return(status_manager)
     allow(DInstaller::Storage::Manager).to receive(:new).and_return(storage)
-    allow(DInstaller::Users).to receive(:new).and_return(users)
+    allow(DInstaller::DBus::Clients::Users).to receive(:write)
     allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
     allow(DInstaller::QuestionsManager).to receive(:new).and_return(questions_manager)
   end
@@ -88,7 +87,7 @@ describe DInstaller::Manager do
       expect(software).to receive(:install).with(subject.progress)
       expect(security).to receive(:write).with(subject.progress)
       expect(storage).to receive(:install).with(subject.progress)
-      expect(users).to receive(:write).with(subject.progress)
+      expect(DInstaller::DBus::Clients::Users).to receive(:write).with(subject.progress)
       subject.install
     end
 

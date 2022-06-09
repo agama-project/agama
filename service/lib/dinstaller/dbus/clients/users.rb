@@ -1,7 +1,5 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
 
-#
 # Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
@@ -21,17 +19,21 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-# TEMPORARY overwrite of Y2DIR to use DBus for communication with dependent yast modules
-ENV["Y2DIR"] = File.expand_path("../lib/dinstaller/dbus/y2dir", __dir__)
+require "dbus"
 
-$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
-
-require "rubygems"
-require "bundler/setup"
-require "dinstaller/dbus/service_runner"
-
-service_name = $ARGV[0]&.to_sym || :manager
-service_runner = DInstaller::DBus::ServiceRunner.new(
-  service_name, logger: Logger.new($stdout)
-)
-service_runner.run
+module DInstaller
+  module DBus
+    module Clients
+      # A client to the "org.opensuse.DInstaller.Users" D-Bus service.
+      class Users
+        def self.write(_progress)
+          sysbus = ::DBus.system_bus
+          service   = sysbus["org.opensuse.DInstaller.Users"]
+          object    = service["/org/opensuse/DInstaller/Users1"]
+          interface = object["org.opensuse.DInstaller.Users1"]
+          interface.Write
+        end
+      end
+    end
+  end
+end

@@ -76,15 +76,6 @@ describe DInstaller::DBus::Service do
       service.export
     end
 
-    it "exports the users manager object" do
-      users_obj = instance_double(DInstaller::DBus::Users, path: nil)
-      allow(DInstaller::DBus::Users).to receive(:new)
-        .with(manager.users, logger).and_return(users_obj)
-
-      expect(bus_service).to receive(:export).with(users_obj)
-      service.export
-    end
-
     it "exports the questions object" do
       dbus_object = instance_double(DInstaller::DBus::Questions, path: nil)
       allow(DInstaller::DBus::Questions).to receive(:new)

@@ -2,9 +2,12 @@
 inherit_from:
   /usr/share/YaST2/data/devtools/data/rubocop-1.24.1_yast_style.yml
 
+# vendor is not controlled by us and y2dir is often modified old yast code that
+# we do not want to rewrite now
 AllCops:
   Exclude:
     - vendor/**/*
+    - lib/dinstaller/dbus/y2dir/**/*
 
 # assignment in method calls is used to document some params
 Lint/UselessAssignment:
