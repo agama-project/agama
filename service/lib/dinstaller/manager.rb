@@ -175,7 +175,7 @@ module DInstaller
     #
     # @return [Security]
     def security
-      @security ||= Security.new(logger)
+      @security ||= Security.new(logger, config)
     end
 
   private
