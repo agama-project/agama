@@ -44,10 +44,10 @@ module DInstallerCli
 
         return if name.empty?
 
-        puts "Full Name: #{full_name}"
-        puts "Name: #{name}"
-        puts "Autologin: #{autologin ? "yes" : "no"}"
-        puts "Password: <secret>"
+        say("Full Name: #{full_name}\n" \
+            "Name: #{name}\n" \
+            "Autologin: #{autologin ? "yes" : "no"}\n" \
+            "Password: <secret>")
       end
 
       desc "clear", "Clear the user configuration"

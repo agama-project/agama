@@ -27,7 +27,7 @@ describe DInstallerCli::Commands::User do
   subject { described_class.new }
 
   before do
-    allow(subject).to receive(:puts)
+    allow(subject).to receive(:say)
     allow(DInstallerCli::Clients::Users).to receive(:new).and_return(client)
   end
 
@@ -50,7 +50,7 @@ describe DInstallerCli::Commands::User do
       let(:config) { [] }
 
       it "shows nothing" do
-        expect(subject).to_not receive(:puts)
+        expect(subject).to_not receive(:say)
       end
     end
 
@@ -58,9 +58,8 @@ describe DInstallerCli::Commands::User do
       let(:config) { ["Test user", "test", true] }
 
       it "shows the first user config" do
-        expect(subject).to receive(:puts).with(/Full Name: Test user/)
-        expect(subject).to receive(:puts).with(/Name: test/)
-        expect(subject).to receive(:puts).with(/Autologin: yes/)
+        expect(subject).to receive(:say).once
+          .with(/Full Name: Test user\nName: test\nAutologin: yes/)
 
         subject.show
       end

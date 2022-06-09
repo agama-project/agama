@@ -30,13 +30,13 @@ module DInstallerCli
       long_desc "Use without arguments to see the current SSH key value."
       def ssh_key(key = nil)
         client.root_ssh_key = key if key
-        puts client.root_ssh_key
+        say(client.root_ssh_key)
       end
 
       desc "password [<plain password>]", "Set the root password"
       def password(password = nil)
         client.root_password = password if password
-        puts "<secret>" if client.root_password?
+        say("<secret>") if client.root_password?
       end
 
       desc "clear", "Clear root configuration"
