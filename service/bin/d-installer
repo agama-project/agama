@@ -25,19 +25,10 @@ $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
 require "rubygems"
 require "bundler/setup"
+require "dinstaller/dbus/service_runner"
 
-require "eventmachine"
-require "dinstaller/manager"
-require "dinstaller/dbus/service"
-
-logger = Logger.new($stdout)
-manager = DInstaller::Manager.new(logger)
-manager.setup
-
-EM.run do
-  service = DInstaller::DBus::Service.new(manager, logger)
-  service.export
-  manager.probe # probe after export, so we can report on DBus
-  manager.progress.on_change { service.dispatch } # make single thread more responsive
-  EventMachine::PeriodicTimer.new(0.1) { service.dispatch }
-end
+service_name = $ARGV[0]&.to_sym || :manager
+service_runner = DInstaller::DBus::ServiceRunner.new(
+  service_name, logger: Logger.new($stdout)
+)
+service_runner.run
