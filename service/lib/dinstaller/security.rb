@@ -35,7 +35,7 @@ module Y2Security
       def product_feature_settings
         return @product_feature_settings unless @product_feature_settings.nil?
 
-        value = DIinstaller::Config.current.data["security"]["available_lsms"][id.to_s]
+        value = ::DInstaller::Config.current.data["security"]["available_lsms"][id.to_s]
         res = if value
           {
             selectable:   true,
