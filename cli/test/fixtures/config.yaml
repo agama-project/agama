@@ -1,0 +1,20 @@
+---
+languages:
+  - "es_ES"
+  - "en_US"
+
+product: "Tumbleweed"
+
+disks:
+  - /dev/vda
+  - /dev/vdb
+
+user:
+  name: "test"
+  fullname: "User Test"
+  password: "n0ts3cr3t"
+  autologin: true
+
+root:
+  ssh_key: "1234abcd"
+  password: "n0ts3cr3t"

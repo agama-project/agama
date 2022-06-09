@@ -28,19 +28,19 @@ module DInstallerCli
     class Storage < Thor
       desc "available_devices", "List available devices for the installation"
       def available_devices
-        puts client.available_devices
+        client.available_devices.each { |d| say(d) }
       end
 
       desc "selected_devices [<device>...]", "Select devices for the installation"
       long_desc "Use without arguments to see the currently selected devices."
       def selected_devices(*devices)
         client.calculate(devices) if devices.any?
-        puts client.candidate_devices
+        client.candidate_devices.each { |d| say(d) }
       end
 
       desc "actions", "List the storage actions to perform"
       def actions
-        puts client.actions
+        client.actions.each { |a| say(a) }
       end
 
     private
