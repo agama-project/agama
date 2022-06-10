@@ -42,7 +42,7 @@ module DInstaller
 
     attr_reader :product, :products
 
-    def initialize(logger, config)
+    def initialize(config, logger)
       @logger = logger
       @products = []
       @product = "" # do not use nil here, otherwise dbus crash
