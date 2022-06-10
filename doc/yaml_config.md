@@ -71,3 +71,13 @@ to `/etc/cockpit/ws-certs.d`.
 
 Location of the certificate key to use for remote connections. The key is retrieved and copied to
 `/etc/cockpit/ws-certs.d`. This option is ignored unless the `ssl_cert` is set.
+
+## storage
+
+Options related to management of storage devices. It is map with the following keys:
+
+### volumes
+
+List of volumes used by the proposal. Each volume contains the very same fields described at the
+[corresponding section](https://github.com/yast/yast-installation/blob/master/doc/control-file.md#the-volumes-subsection)
+of the YaST configuration.
