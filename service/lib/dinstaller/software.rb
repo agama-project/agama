@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "fileutils"
 require "dinstaller/package_callbacks"
 require "dinstaller/config"
 require "y2packager/product"
@@ -56,6 +57,7 @@ module DInstaller
 
     def probe(progress)
       logger.info "Probing software"
+      store_original_repos
       Yast::Pkg.SetSolverFlags(
         "ignoreAlreadyRecommended" => false, "onlyRequires" => true
       )
@@ -120,6 +122,7 @@ module DInstaller
       Yast::Pkg.SourceSaveAll
       Yast::Pkg.TargetFinish
       Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
+      restore_original_repos
     end
 
   private
@@ -179,6 +182,27 @@ module DInstaller
       end
       logger.info "Supported products found: #{supported_products.map(&:name).join(",")}"
       supported_products
+    end
+
+    REPOS_BACKUP = "/etc/zypp/repos.d.dinstaller.backup"
+    private_constant :REPOS_BACKUP
+
+    REPOS_DIR = "/etc/zypp/repos.d"
+    private_constant :REPOS_DIR
+
+    # ensure that repos backup is there and repos.d is empty
+    def store_original_repos
+      # Backup was already created, so just remove all repos
+      if File.directory?(REPOS_BACKUP)
+        FileUtils.rm_rf(REPOS_DIR)
+      else # move repos to backup
+        FileUtils.mv(REPOS_DIR, REPOS_BACKUP)
+      end
+    end
+
+    def restore_original_repos
+      FileUtils.rm_rf(REPOS_DIR)
+      FileUtils.mv(REPOS_BACKUP, REPOS_DIR)
     end
   end
 end
