@@ -24,6 +24,7 @@ require "dinstaller_cli/commands/main"
 require "dinstaller_cli/install_config"
 require "dinstaller_cli/install_config_reader"
 require "dinstaller_cli/clients"
+require "dinstaller/dbus/clients/users"
 
 describe DInstallerCli::Commands::Main do
   it "includes a 'language' command" do
@@ -51,14 +52,14 @@ describe DInstallerCli::Commands::Main do
     allow(DInstallerCli::Clients::Software).to receive(:new).and_return(software_client)
     allow(DInstallerCli::Clients::Language).to receive(:new).and_return(language_client)
     allow(DInstallerCli::Clients::Storage).to receive(:new).and_return(storage_client)
-    allow(DInstallerCli::Clients::Users).to receive(:new).and_return(users_client)
+    allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(users_client)
   end
 
   let(:manager_client) { instance_double(DInstallerCli::Clients::Manager) }
   let(:software_client) { instance_double(DInstallerCli::Clients::Software) }
   let(:language_client) { instance_double(DInstallerCli::Clients::Language) }
   let(:storage_client) { instance_double(DInstallerCli::Clients::Storage) }
-  let(:users_client) { instance_double(DInstallerCli::Clients::Users) }
+  let(:users_client) { instance_double(DInstaller::DBus::Clients::Users) }
 
   subject { described_class.new }
 
