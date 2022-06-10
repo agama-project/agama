@@ -140,7 +140,7 @@ module DInstaller
     #
     # @return [Software]
     def software
-      @software ||= Software.new(logger, config)
+      @software ||= Software.new(logger, config, self)
     end
 
     # Language manager
