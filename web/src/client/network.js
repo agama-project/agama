@@ -23,16 +23,28 @@ import { applyMixin, withDBus } from "./mixins";
 
 const NM_IFACE = "org.freedesktop.NetworkManager";
 
-export default class NetworkClient {
+/**
+ * Network client
+ */
+class NetworkClient {
   constructor(dbusClient) {
     this._client = dbusClient;
   }
 
   /**
+   * @typedef {Object} IPAddress
+   * @property {string} address - like "129.168.1.2"
+   * @property {string} prefix - like "16"
+   */
+  /**
+   * @typedef {Object} IPConfig
+   * @property {IPAddress[]} addresses
+   * @property {string} hostname
+   */
+
+  /**
    * Returns IP config overview - addresses and hostname
-   *
-   * @return {Promise.<Objects>} address key stores list of addresses,
-   *                         hostname stores target's hostname
+   * @return {Promise.<IPConfig>}
    */
   async config() {
     const data = await this.#addresses();
@@ -69,7 +81,7 @@ export default class NetworkClient {
    * See NM API documentation for details.
    * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
    *
-   * @return {Promis.<Array>}
+   * @return {Promise.<Array>}
    */
   async #connections() {
     const proxy = await this.proxy(NM_IFACE);
@@ -116,3 +128,4 @@ export default class NetworkClient {
 }
 
 applyMixin(NetworkClient, withDBus);
+export default NetworkClient;
