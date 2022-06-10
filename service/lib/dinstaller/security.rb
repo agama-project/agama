@@ -23,10 +23,45 @@ require "yast"
 require "y2security/lsm"
 require "yast2/execute"
 
+require "dinstaller/config"
+
+# FIXME: monkey patching of security config to not read control.xml and
+# instead use DIinstaller::Config
+# TODO: add ability to set product features in LSM::Base
+module Y2Security
+  module LSM
+    # modified LSM Base class to use dinstaller config
+    class Base
+      def product_feature_settings
+        return @product_feature_settings unless @product_feature_settings.nil?
+
+        value = ::DInstaller::Config.current.data["security"]["available_lsms"][id.to_s]
+        res = if value
+          {
+            selectable:   true,
+            configurable: true,
+            patterns:     (value["patterns"] || []).join(" "),
+            mode:         value["policy"]
+          }
+        else
+          {
+            selectable:   false,
+            configurable: false,
+            patterns:     "",
+            mode:         nil
+          }
+        end
+        @product_feature_settings = res
+      end
+    end
+  end
+end
+
 module DInstaller
   # Backend class between dbus service and yast code
   class Security
-    def initialize(logger)
+    def initialize(logger, config)
+      @config = config
       @logger = logger
     end
 
@@ -35,9 +70,7 @@ module DInstaller
     end
 
     def probe(_progress)
-      # TODO: hardcoded apparmor here instead of calling `.propose_default`
-      # as we soon change it to value from config.yml
-      config.select(:apparmor)
+      config.select(@config.data["security"]["lsm"])
     end
 
   private

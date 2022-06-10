@@ -3,6 +3,22 @@ software:
     - https://download.opensuse.org/tumbleweed/repo/oss/
     - https://download.opensuse.org/tumbleweed/repo/non-oss/
     - https://download.opensuse.org/update/tumbleweed/
+  mandatory_patterns:
+    - enhanced_base # only pattern that is shared among all roles on TW
+  optional_patterns: null # no optional pattern shared
+
+security:
+  lsm: apparmor
+  available_lsms:
+    apparmor:
+      patterns:
+        - apparmor
+    selinux:
+      patterns:
+        - selinux
+      policy: permissive
+    none:
+      patterns: null
 
 distributions:
   # TODO replace simple id with better description of distributions
