@@ -46,9 +46,12 @@ jobs:
         flag-name: frontend
         parallel: true
 
-    # TODO: once it works, push it to surge.sh
     - name: Build JSDoc Documentation
       run: npm run jsdoc
+
+    - name: Publish JSDoc Documentation
+      run: npx surge out/ ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
+
 
   backend_tests:
     runs-on: ubuntu-latest
