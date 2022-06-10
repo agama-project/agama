@@ -36,12 +36,6 @@ describe("DBusError", () => {
       .toBeInTheDocument()
   });
 
-  it("includes a button for reloading", async () => {
-    installerRender(<DBusError />);
-
-    await screen.findByRole("button", { name: /Reload/i });
-  });
-
   it("calls location.reload when user clicks on 'Reload'", async () => {
     const { user } = plainRender(<DBusError />);
 
