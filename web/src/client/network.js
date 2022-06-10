@@ -52,6 +52,8 @@ export default class NetworkClient {
   /**
    * Returns the computer's hostname
    *
+   * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.Settings.html
+   *
    * @return {Promise.<String>}
    */
   async hostname() {
@@ -65,6 +67,7 @@ export default class NetworkClient {
    *
    * Private method.
    * See NM API documentation for details.
+   * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
    *
    * @return {Promis.<Array>}
    */
@@ -79,6 +82,8 @@ export default class NetworkClient {
    *
    * Private method.
    * See NM API documentation for details
+   * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.Connection.Active.html
+   * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.IP4Config.html
    *
    * @return {Promise.<Map>}
    */
