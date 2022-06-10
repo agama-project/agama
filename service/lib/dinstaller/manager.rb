@@ -148,7 +148,7 @@ module DInstaller
     #
     # @return [Users]
     def users
-      @users ||= DBus::Clients::Users
+      @users ||= DBus::Clients::Users.new
     end
 
     # Network manager

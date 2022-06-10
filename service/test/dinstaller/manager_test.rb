@@ -49,7 +49,7 @@ describe DInstaller::Manager do
     allow(DInstaller::Software).to receive(:new).and_return(software)
     allow(DInstaller::StatusManager).to receive(:new).and_return(status_manager)
     allow(DInstaller::Storage::Manager).to receive(:new).and_return(storage)
-    allow(DInstaller::DBus::Clients::Users).to receive(:write)
+    allow_any_instance_of(DInstaller::DBus::Clients::Users).to receive(:write)
     allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
     allow(DInstaller::QuestionsManager).to receive(:new).and_return(questions_manager)
   end
@@ -74,6 +74,7 @@ describe DInstaller::Manager do
   describe "#install" do
     let(:bootloader_proposal) { instance_double(Bootloader::ProposalClient, make_proposal: nil) }
     let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
+    let(:users_client) { instance_double(DInstaller::DBus::Clients::Users, write: nil) }
 
     before do
       allow(Yast::WFM).to receive(:CallFunction)
@@ -81,6 +82,7 @@ describe DInstaller::Manager do
         .and_return(bootloader_proposal)
       allow(Bootloader::FinishClient).to receive(:new)
         .and_return(bootloader_finish)
+      allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(users_client)
     end
 
     it "calls #install (or #write) method of each module passing a progress object" do
@@ -89,7 +91,7 @@ describe DInstaller::Manager do
       expect(software).to receive(:install).with(subject.progress)
       expect(security).to receive(:write).with(subject.progress)
       expect(storage).to receive(:install).with(subject.progress)
-      expect(DInstaller::DBus::Clients::Users).to receive(:write).with(subject.progress)
+      expect(users_client).to receive(:write).with(subject.progress)
       subject.install
     end
 
