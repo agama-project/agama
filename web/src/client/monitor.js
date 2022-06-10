@@ -25,7 +25,10 @@ import cockpit from "../lib/cockpit";
 const DBUS_SERVICE = "org.freedesktop.DBus";
 const MATCHER = { interface: DBUS_SERVICE, member: "NameOwnerChanged" };
 
-export default class Monitor {
+/**
+ * Monitor a D-Bus service
+ */
+class Monitor {
   /**
    * @param {object} dbusClient - from cockpit.dbus
    * @param {string} serviceName - service to monitor
@@ -54,3 +57,4 @@ export default class Monitor {
 }
 
 applyMixin(Monitor, withDBus);
+export default Monitor;
