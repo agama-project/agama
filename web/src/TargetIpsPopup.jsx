@@ -49,7 +49,7 @@ function formatIp(address, prefix) {
   return address + "/" + prefix;
 }
 
-export default function DetailsPopup() {
+export default function TargetIpsPopup() {
   const [isOpen, setIsOpen] = useState(false);
 
   const open = () => setIsOpen(true);
@@ -83,9 +83,7 @@ export default function DetailsPopup() {
         title={state.hostname}
         aria-label="IP Addresses"
       >
-        <Text>
-          { ips.map((ip) => <Text key={ip}> {ip} </Text>) }
-        </Text>
+        { ips.map((ip) => <Text key={ip}> {ip} </Text>) }
         <Popup.Actions>
           <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
         </Popup.Actions>

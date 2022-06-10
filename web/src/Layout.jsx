@@ -25,7 +25,7 @@ import "./layout.scss";
 import logo from "./assets/suse-horizontal-logo.svg";
 
 import About from "./About";
-import TargetAddressOverview from "./Target";
+import TargetIpsPopup from "./TargetIpsPopup";
 
 /**
  * D-Installer main layout component.
@@ -86,7 +86,7 @@ function Layout({ MenuIcon, sectionTitle, SectionIcon, FooterActions, children }
       <div className="layout__footer-info-area">
         <img src={logo} alt="Logo of SUSE" className="company-logo" />
         <About />
-        <TargetAddressOverview />
+        <TargetIpsPopup />
       </div>
       { FooterActions &&
       <div

@@ -31,12 +31,12 @@ export default class NetworkClient {
   /**
    * Returns IP config overview - addresses and hostname
    *
-   * @return {Promise.<Map>} address key stores list of addresses,
+   * @return {Promise.<Objects>} address key stores list of addresses,
    *                         hostname stores target's hostname
    */
   async config() {
     const data = await this.#addresses();
-    const addrs = data.map(a => {
+    const addresses = data.map(a => {
       return {
         address: a.address.v,
         prefix: a.prefix.v
@@ -44,7 +44,7 @@ export default class NetworkClient {
     });
 
     return {
-      addresses: addrs,
+      addresses,
       hostname: await this.hostname()
     };
   }
