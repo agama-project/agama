@@ -2,7 +2,7 @@
     // comments are allowed.
     // https://jsdoc.app/about-configuring-jsdoc.html
     "opts": {
-        "destination": "./out/", // just make the default explicit
+        "destination": "./jsdoc.out/",
         "private": true,
         "recurse": true
     },

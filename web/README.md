@@ -32,7 +32,7 @@ http://localhost:9090/cockpit/@localhost/d-installer/index.html.
 
 ```
 npm run jsdoc
-xdg-open out/index.html
+xdg-open jsdoc.out/index.html
 ```
 
 GitHub Actions will automatically publish the result to

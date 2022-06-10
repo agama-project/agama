@@ -50,7 +50,7 @@ jobs:
       run: npm run jsdoc
 
     - name: Publish JSDoc Documentation
-      run: npx surge out/ ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
+      run: npx surge jsdoc.out/ ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
 
 
   backend_tests:
