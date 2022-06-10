@@ -47,15 +47,18 @@ beforeEach(() => {
       storage: {
         getStorageProposal: () => Promise.resolve(proposal),
         getStorageActions: () => Promise.resolve(actions),
-        onActionsChange: jest.fn()
+        onActionsChange: jest.fn(),
+        onStorageProposalChange: jest.fn()
       },
       language: {
         getLanguages: () => Promise.resolve(languages),
-        getSelectedLanguages: () => Promise.resolve(["en_US"])
+        getSelectedLanguages: () => Promise.resolve(["en_US"]),
+        onLanguageChange: jest.fn()
       },
       software: {
         getProducts: () => Promise.resolve(products),
-        getSelectedProduct: () => Promise.resolve("openSUSE")
+        getSelectedProduct: () => Promise.resolve("openSUSE"),
+        onProductChange: jest.fn()
       },
       manager: {
         startInstallation: startInstallationFn
@@ -63,7 +66,8 @@ beforeEach(() => {
       users: {
         getUser: () => Promise.resolve(fakeUser),
         isRootPasswordSet: () => Promise.resolve(true),
-        getRootSSHKey: () => Promise.resolve("ssh-rsa")
+        getRootSSHKey: () => Promise.resolve("ssh-rsa"),
+        onUsersChange: jest.fn()
       }
     };
   });

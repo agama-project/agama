@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import { createClient } from "./client";
 
@@ -31,6 +31,7 @@ jest.mock("./client");
 
 let isRootPasswordSetFn;
 let setRootPasswordFn = jest.fn();
+let onUsersChangeFn = jest.fn();
 const getRootSSHKeyFn = () => "";
 const removeRootPasswordFn = jest.fn();
 
@@ -42,7 +43,8 @@ beforeEach(() => {
         isRootPasswordSet: isRootPasswordSetFn,
         setRootPassword: setRootPasswordFn,
         removeRootPassword: removeRootPasswordFn,
-        getRootSSHKey: getRootSSHKeyFn
+        getRootSSHKey: getRootSSHKeyFn,
+        onUsersChange: onUsersChangeFn
       }
     };
   });
@@ -145,5 +147,30 @@ describe("when an error happens while changing the password", () => {
     await user.click(cancelButton);
 
     await screen.findByText(/Something went wrong/i);
+  });
+});
+
+describe("when the Users change", () => {
+  let callbacks;
+
+  beforeEach(() => {
+    callbacks = [];
+    onUsersChangeFn = cb => callbacks.push(cb);
+  });
+
+  describe("and the RootPassword has been modified", () => {
+    it("updates the proposal root password description", async () => {
+      installerRender(<RootPassword />);
+      let rootPassword = await screen.findByText(/Root password/i);
+      within(rootPassword).getByRole("button", { name: "is not set" });
+
+      const [cb] = callbacks;
+      act(() => {
+        cb({ rootPasswordSet: true });
+      });
+
+      rootPassword = await screen.findByText(/Root password/i);
+      within(rootPassword).getByRole("button", { name: "is set" });
+    });
   });
 });

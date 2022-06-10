@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import { createClient } from "./client";
 import FirstUser from "./FirstUser";
@@ -37,6 +37,7 @@ const emptyUser = {
 
 const setUserFn = jest.fn();
 const removeUserFn = jest.fn();
+let onUsersChangeFn = jest.fn();
 
 beforeEach(() => {
   user = emptyUser;
@@ -45,7 +46,8 @@ beforeEach(() => {
       users: {
         setUser: setUserFn,
         removeUser: removeUserFn,
-        getUser: jest.fn().mockResolvedValue(user)
+        getUser: jest.fn().mockResolvedValue(user),
+        onUsersChange: onUsersChangeFn
       }
     };
   });
@@ -123,6 +125,33 @@ describe("when the first user is already defined", () => {
     expect(removeUserFn).toHaveBeenCalled();
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+  });
+});
+
+describe("when the Users change", () => {
+  let callbacks;
+
+  beforeEach(() => {
+    callbacks = [];
+    onUsersChangeFn = cb => callbacks.push(cb);
+  });
+
+  describe("and the FirstUser has been modified", () => {
+    it("updates the proposal first User description", async () => {
+      installerRender(<FirstUser />);
+
+      let firstUser = await screen.findByText(/A user/i);
+      within(firstUser).getByRole("button", { name: "is not defined" });
+
+      const [cb] = callbacks;
+      act(() => {
+        cb({ firstUser: { userName: "yast", fullName: "YaST", autologin: false } });
+      });
+
+      firstUser = await screen.findByText(/User/i);
+      within(firstUser).getByRole("button", { name: "yast" });
+      within(firstUser).findByText("is defined");
     });
   });
 });
