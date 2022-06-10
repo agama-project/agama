@@ -25,7 +25,7 @@ require "dinstaller/software"
 require "dinstaller/progress"
 
 describe DInstaller::Software do
-  subject { described_class.new(logger, config) }
+  subject { described_class.new(config, logger) }
 
   let(:logger) { Logger.new($stdout) }
   let(:config) { DInstaller::Config.new }

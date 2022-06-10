@@ -19,14 +19,14 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "dinstaller_cli/clients/software"
+require_relative "../../../test_helper"
+require "dinstaller/dbus/clients/software"
 require "dbus"
 
-describe DInstallerCli::Clients::Software do
+describe DInstaller::DBus::Clients::Software do
   before do
     allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.DInstaller").and_return(service)
+    allow(bus).to receive(:service).with("org.opensuse.DInstaller.Software").and_return(service)
     allow(service).to receive(:object).with("/org/opensuse/DInstaller/Software1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)

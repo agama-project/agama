@@ -21,7 +21,7 @@
 
 require_relative "../../test_helper"
 require "dinstaller_cli/commands/software"
-require "dinstaller_cli/clients/software"
+require "dinstaller/clients/dbus/software"
 
 describe DInstallerCli::Commands::Software do
   subject { described_class.new }
