@@ -64,8 +64,6 @@ module DInstaller
       @status_manager = StatusManager.new(Status::Error.new) # temporary status until probing starts
       @questions_manager = QuestionsManager.new(logger)
       @progress = Progress.new
-
-      initialize_yast
     end
 
     # Sets up the installation process
@@ -175,15 +173,6 @@ module DInstaller
   private
 
     attr_reader :config
-
-    # Initializes YaST
-    def initialize_yast
-      Yast::Mode.SetUI("commandline")
-      Yast::Mode.SetMode("installation")
-      # Set stage to initial, so it will act as installer for some cases like
-      # proposing installer instead of reading current one
-      Yast::Stage.Set("initial")
-    end
 
     def setup_cockpit
       cockpit = CockpitManager.new(logger)

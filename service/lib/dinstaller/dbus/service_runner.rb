@@ -45,6 +45,7 @@ module DInstaller
       #
       # This method listens for D-Bus calls.
       def run
+        initialize_yast
         service = build_service(name, logger)
         # TODO: implement a #start method in all services,
         # which is equivalent to #export in most cases.
@@ -75,6 +76,15 @@ module DInstaller
         klass.new(config, logger)
       rescue LoadError, NameError
         raise "Service '#{name}' not found"
+      end
+
+      # Initializes YaST
+      def initialize_yast
+        Yast::Mode.SetUI("commandline")
+        Yast::Mode.SetMode("installation")
+        # Set stage to initial, so it will act as installer for some cases like
+        # proposing installer instead of reading current one
+        Yast::Stage.Set("initial")
       end
     end
   end
