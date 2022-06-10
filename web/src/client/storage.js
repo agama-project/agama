@@ -26,7 +26,10 @@ const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
 const ACTIONS_PATH = "/org/opensuse/DInstaller/Storage/Actions1";
 
-export default class StorageClient {
+/**
+ * Storage client
+ */
+class StorageClient {
   constructor(dbusClient) {
     this._client = dbusClient;
   }
@@ -84,3 +87,4 @@ export default class StorageClient {
 }
 
 applyMixin(StorageClient, withDBus);
+export default StorageClient;

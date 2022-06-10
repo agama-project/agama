@@ -23,7 +23,10 @@ import { applyMixin, withDBus } from "./mixins";
 
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
 
-export default class SoftwareClient {
+/**
+ * Software client
+ */
+class SoftwareClient {
   constructor(dbusClient) {
     this._client = dbusClient;
   }
@@ -53,3 +56,4 @@ export default class SoftwareClient {
 }
 
 applyMixin(SoftwareClient, withDBus);
+export default SoftwareClient;

@@ -23,7 +23,10 @@ import { applyMixin, withDBus } from "./mixins";
 
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 
-export default class LanguageClient {
+/**
+ * Language client
+ */
+class LanguageClient {
   constructor(dbusClient) {
     this._client = dbusClient;
   }
@@ -64,3 +67,4 @@ export default class LanguageClient {
 }
 
 applyMixin(LanguageClient, withDBus);
+export default LanguageClient;

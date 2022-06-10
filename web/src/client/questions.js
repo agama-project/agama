@@ -101,7 +101,10 @@ function buildQuestion(dbusQuestion) {
   return question;
 }
 
-export default class QuestionsClient {
+/**
+ * Questions client
+ */
+class QuestionsClient {
   constructor(dbusClient) {
     this._client = dbusClient;
   }
@@ -190,3 +193,5 @@ export default class QuestionsClient {
     });
   }
 }
+
+export default QuestionsClient;

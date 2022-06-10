@@ -23,7 +23,10 @@ import { applyMixin, withDBus } from "./mixins";
 
 const USERS_IFACE = "org.opensuse.DInstaller.Users1";
 
-export default class UsersClient {
+/**
+ * Users client
+ */
+class UsersClient {
   constructor(dbusClient) {
     this._client = dbusClient;
   }
@@ -125,3 +128,4 @@ export default class UsersClient {
 }
 
 applyMixin(UsersClient, withDBus);
+export default UsersClient;
