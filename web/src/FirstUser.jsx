@@ -53,6 +53,14 @@ export default function Users() {
     });
   }, [client.users]);
 
+  useEffect(() => {
+    return client.users.onUsersChange(changes => {
+      if (changes.firstUser !== undefined) {
+        setUser(changes.firstUser);
+      }
+    });
+  }, [client.users]);
+
   if (user === null) return <Skeleton width="50%" fontSize="sm" />;
 
   const open = () => {

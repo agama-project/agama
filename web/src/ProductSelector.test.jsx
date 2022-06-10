@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { act, screen, within } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import ProductSelector from "./ProductSelector";
 import { createClient } from "./client";
@@ -38,6 +38,7 @@ const softwareMock = {
 };
 
 const selectProductFn = jest.fn().mockResolvedValue();
+let onProductChangeFn = jest.fn();
 
 beforeEach(() => {
   // if defined outside, the mock is cleared automatically
@@ -45,7 +46,8 @@ beforeEach(() => {
     return {
       software: {
         ...softwareMock,
-        selectProduct: selectProductFn
+        selectProduct: selectProductFn,
+        onProductChange: onProductChangeFn
       }
     };
   });
@@ -73,5 +75,25 @@ describe("when the user changes the product", () => {
     await screen.findByRole("button", { name: "openSUSE Tumbleweed" });
     expect(selectProductFn).toHaveBeenCalledWith("openSUSE");
     expect(selectProductFn).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("when the Product Selection change", () => {
+  let callbacks;
+
+  beforeEach(() => {
+    callbacks = [];
+    onProductChangeFn = cb => callbacks.push(cb);
+  });
+
+  it("updates the proposal", async () => {
+    installerRender(<ProductSelector />);
+    await screen.findByRole("button", { name: "openSUSE MicroOS" });
+
+    const [cb] = callbacks;
+    act(() => {
+      cb("openSUSE");
+    });
+    await screen.findByRole("button", { name: "openSUSE Tumbleweed" });
   });
 });

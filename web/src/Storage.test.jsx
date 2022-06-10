@@ -37,6 +37,7 @@ const proposalSettings = {
 };
 
 let onActionsChangeFn = jest.fn();
+let onStorageProposalChangeFn = jest.fn();
 let calculateStorageProposalFn;
 
 const storageMock = {
@@ -51,7 +52,8 @@ beforeEach(() => {
       storage: {
         ...storageMock,
         calculateStorageProposal: calculateStorageProposalFn,
-        onActionsChange: onActionsChangeFn
+        onActionsChange: onActionsChangeFn,
+        onStorageProposalChange: onStorageProposalChangeFn
       }
     };
   });
@@ -96,7 +98,27 @@ describe("when the user selects another disk", () => {
   });
 });
 
-describe("when the proposal changes", () => {
+describe("when the storage proposal changes", () => {
+  let callbacks;
+
+  beforeEach(() => {
+    callbacks = [];
+    onStorageProposalChangeFn = cb => callbacks.push(cb);
+  });
+
+  it("updates the proposal", async () => {
+    installerRender(<Storage />);
+    await screen.findByRole("button", { name: "/dev/sda" });
+
+    const [cb] = callbacks;
+    act(() => {
+      cb("/dev/sdb");
+    });
+    await screen.findByRole("button", { name: "/dev/sdb" });
+  });
+});
+
+describe("when the storage actions changes", () => {
   let callbacks;
 
   beforeEach(() => {

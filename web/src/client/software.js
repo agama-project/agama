@@ -22,6 +22,7 @@
 import { applyMixin, withDBus } from "./mixins";
 
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
+const SOFTWARE_PATH = "/org/opensuse/DInstaller/Software1";
 
 export default class SoftwareClient {
   constructor(dbusClient) {
@@ -49,6 +50,18 @@ export default class SoftwareClient {
   async selectProduct(id) {
     const proxy = await this.proxy(SOFTWARE_IFACE);
     return proxy.SelectProduct(id);
+  }
+
+  /**
+   * Register a callback to run when properties in the Software object change
+   *
+   * @param {function} handler - callback function
+   */
+  onProductChange(handler) {
+    return this.onObjectChanged(SOFTWARE_PATH, changes => {
+      const selected = changes.SelectedBaseProduct.v;
+      handler(selected);
+    });
   }
 }
 

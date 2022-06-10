@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import { createClient } from "./client";
 import RootSSHKey from "./RootSSHKey";
@@ -31,6 +31,7 @@ jest.mock("./client");
 let sshKey;
 const getRootSSHKeyFn = () => Promise.resolve(sshKey);
 const setRootSSHKeyFn = jest.fn();
+let onUsersChangeFn = jest.fn();
 const testKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example";
 
 beforeEach(() => {
@@ -39,7 +40,8 @@ beforeEach(() => {
     return {
       users: {
         getRootSSHKey: getRootSSHKeyFn,
-        setRootSSHKey: setRootSSHKeyFn
+        setRootSSHKey: setRootSSHKeyFn,
+        onUsersChange: onUsersChangeFn
       }
     };
   });
@@ -114,6 +116,31 @@ describe("when the SSH public key is set", () => {
 
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+  });
+});
+
+describe("when the Users change", () => {
+  let callbacks;
+
+  beforeEach(() => {
+    callbacks = [];
+    onUsersChangeFn = cb => callbacks.push(cb);
+  });
+
+  describe("and the RootSSHKey has been modified", () => {
+    it("updates the proposal root SSH Key description", async () => {
+      installerRender(<RootSSHKey />);
+      let rootSSHKey = await screen.findByText(/Root SSH public key/i);
+      within(rootSSHKey).getByRole("button", { name: "is not set" });
+
+      const [cb] = callbacks;
+      act(() => {
+        cb({ rootSSHKey: true });
+      });
+
+      rootSSHKey = await screen.findByText(/Root SSH public key/i);
+      within(rootSSHKey).getByRole("button", { name: "is set" });
     });
   });
 });
