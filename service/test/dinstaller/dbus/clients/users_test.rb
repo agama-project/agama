@@ -19,14 +19,14 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "dinstaller_cli/clients/users"
+require_relative "../../../test_helper"
+require "dinstaller/dbus/clients/users"
 require "dbus"
 
-describe DInstallerCli::Clients::Users do
+describe DInstaller::DBus::Clients::Users do
   before do
     allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.DInstaller").and_return(service)
+    allow(bus).to receive(:service).with("org.opensuse.DInstaller.Users").and_return(service)
     allow(service).to receive(:object).with("/org/opensuse/DInstaller/Users1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
@@ -127,6 +127,17 @@ describe DInstallerCli::Clients::Users do
       expect(dbus_object).to receive(:SetRootSSHKey).with("")
 
       subject.remove_root_info
+    end
+  end
+
+  describe "#write" do
+    # Using partial double because methods are dynamically added to the proxy object
+    let(:dbus_object) { double(::DBus::ProxyObject) }
+
+    it "applies changes into the system" do
+      expect(dbus_object).to receive(:Write)
+
+      subject.write(nil)
     end
   end
 end
