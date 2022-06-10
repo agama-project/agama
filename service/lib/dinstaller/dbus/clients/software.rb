@@ -54,6 +54,23 @@ module DInstaller
           dbus_object.SelectProduct(name)
         end
 
+        # Starts the probing process
+        def probe
+          dbus_object.Probe
+        end
+
+        def install
+          dbus_object.Install
+        end
+
+        def propose
+          dbus_object.Propose
+        end
+
+        def finish
+          dbus_object.Finish
+        end
+
       private
 
         # @return [::DBus::Object]
@@ -65,7 +82,7 @@ module DInstaller
         end
 
         def bus
-          @bus ||= DBus::SystemBus.instance
+          @bus ||= ::DBus::SystemBus.instance
         end
       end
     end

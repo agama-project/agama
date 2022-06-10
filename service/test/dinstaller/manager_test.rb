@@ -31,7 +31,9 @@ describe DInstaller::Manager do
 
   let(:cockpit) { instance_double(DInstaller::CockpitManager, setup: nil) }
   let(:software) do
-    instance_double(DInstaller::Software, probe: nil, install: nil, propose: nil, finish: nil)
+    instance_double(
+      DInstaller::DBus::Clients::Software, probe: nil, install: nil, propose: nil, finish: nil
+    )
   end
   let(:language) { instance_double(DInstaller::Language, probe: nil, install: nil) }
   let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
@@ -46,7 +48,7 @@ describe DInstaller::Manager do
     allow(DInstaller::Language).to receive(:new).and_return(language)
     allow(DInstaller::Network).to receive(:new).and_return(network)
     allow(DInstaller::Security).to receive(:new).and_return(security)
-    allow(DInstaller::Software).to receive(:new).and_return(software)
+    allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(DInstaller::StatusManager).to receive(:new).and_return(status_manager)
     allow(DInstaller::Storage::Manager).to receive(:new).and_return(storage)
     allow_any_instance_of(DInstaller::DBus::Clients::Users).to receive(:write)
@@ -62,7 +64,7 @@ describe DInstaller::Manager do
     end
 
     it "calls #probe method of each module passing a progress object" do
-      expect(software).to receive(:probe).with(subject.progress)
+      expect(software).to receive(:probe)
       expect(security).to receive(:probe).with(subject.progress)
       expect(language).to receive(:probe).with(subject.progress)
       expect(network).to receive(:probe).with(subject.progress)
@@ -88,7 +90,7 @@ describe DInstaller::Manager do
     it "calls #install (or #write) method of each module passing a progress object" do
       expect(language).to receive(:install).with(subject.progress)
       expect(network).to receive(:install).with(subject.progress)
-      expect(software).to receive(:install).with(subject.progress)
+      expect(software).to receive(:install)
       expect(security).to receive(:write).with(subject.progress)
       expect(storage).to receive(:install).with(subject.progress)
       expect(users_client).to receive(:write).with(subject.progress)

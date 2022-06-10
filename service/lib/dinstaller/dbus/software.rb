@@ -64,6 +64,22 @@ module DInstaller
         dbus_method :ProvisionsSelected, "in Provisions:as, out Result:ab" do |provisions|
           [provisions.map { |p| backend.provision_selected?(p) }]
         end
+
+        dbus_method :Propose do
+          backend.propose
+        end
+
+        dbus_method :Probe do
+          backend.probe(DInstaller::Progress.new)
+        end
+
+        dbus_method :Install do
+          backend.install(DInstaller::Progress.new)
+        end
+
+        dbus_method :Finish do
+          backend.finish(DInstaller::Progress.new)
+        end
       end
 
       def available_base_products

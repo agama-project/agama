@@ -29,9 +29,9 @@ require "dinstaller/network"
 require "dinstaller/progress"
 require "dinstaller/questions_manager"
 require "dinstaller/security"
-require "dinstaller/software"
 require "dinstaller/status_manager"
 require "dinstaller/storage"
+require "dinstaller/dbus/clients/software"
 require "dinstaller/dbus/clients/users"
 
 Yast.import "Stage"
@@ -100,7 +100,7 @@ module DInstaller
       Yast::WFM.CallFunction("inst_bootloader", [])
 
       progress.next_step("Installing Software")
-      software.install(progress)
+      software.install
 
       on_target do
         progress.next_step("Writting Users")
@@ -117,7 +117,7 @@ module DInstaller
         language.install(progress)
 
         progress.next_step("Writing repositories information")
-        software.finish(progress)
+        software.finish
 
         progress.next_step("Finishing installation")
         finish_installation
@@ -132,7 +132,7 @@ module DInstaller
     #
     # @return [Software]
     def software
-      @software ||= Software.new(logger, config)
+      @software ||= DBus::Clients::Software.new
     end
 
     # Language manager
@@ -194,7 +194,7 @@ module DInstaller
 
       progress.next_step("Probing Software")
       security.probe(progress)
-      software.probe(progress)
+      software.probe
 
       progress.next_step("Probing Network")
       network.probe(progress)
