@@ -39,6 +39,9 @@ describe("InstallationFinished", () => {
         manager: {
           startProbing: startProbingFn,
           rebootSystem: rebootSystemFn
+        },
+        network: {
+          config: jest.fn()
         }
       };
     });

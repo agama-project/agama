@@ -60,6 +60,9 @@ beforeEach(() => {
       manager: {
         startInstallation: startInstallationFn
       },
+      network: {
+        config: jest.fn()
+      },
       users: {
         getUser: () => Promise.resolve(fakeUser),
         isRootPasswordSet: () => Promise.resolve(true),

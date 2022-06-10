@@ -22,15 +22,18 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { installerRender } from "./test-utils";
+import { installerRender, plainRender } from "./test-utils";
 
 import DBusError from "./DBusError";
 
-describe("DBusError", () => {
-  it("includes a generic D-Bus connection problem message", async () => {
-    installerRender(<DBusError />);
+jest.mock("./Target", () => () => "IP Mock");
 
-    await screen.findByText(/Could not connect to the D-Bus service/i);
+describe("DBusError", () => {
+  it("includes a generic D-Bus connection problem message", () => {
+    plainRender(<DBusError />);
+
+    expect(screen.getByText(/Could not connect to the D-Bus service/i))
+      .toBeInTheDocument()
   });
 
   it("includes a button for reloading", async () => {
@@ -40,7 +43,7 @@ describe("DBusError", () => {
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
-    const { user } = installerRender(<DBusError />);
+    const { user } = plainRender(<DBusError />);
 
     const reloadButton = await screen.findByRole("button", { name: /Reload/i });
 
