@@ -38,10 +38,6 @@ module DInstaller
     GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
     private_constant :GPG_KEYS_GLOB
 
-    # TODO: move to yaml config
-    SUPPORTED_PRODUCTS = ["Leap", "openSUSE"].freeze
-    private_constant :SUPPORTED_PRODUCTS
-
     # @return [StatusManager]
     attr_reader :status_manager
 
@@ -51,17 +47,19 @@ module DInstaller
     attr_reader :progress
 
     def initialize(config, logger)
+      @config = config
       @logger = logger
       @status_manager = StatusManager.new(Status::Error.new) # temporary status until probing starts
-      @products = []
-      @product = "" # do not use nil here, otherwise dbus crash
-      @config = config
+      @products = @config.data["products"]
+      @product = @products.first # use the first available product as default
+      @config.pick_product(@product)
       @progress = Progress.new
     end
 
     def select_product(name)
       raise ArgumentError unless @products.any? { |p| p.name == name }
 
+      @config.pick_product(name)
       @product = name
     end
 
@@ -80,9 +78,6 @@ module DInstaller
       progress.next_step("Initialize sources")
       add_base_repo
 
-      progress.next_step("Searching for supported products")
-      search_supported_products
-
       progress.next_step("Making the initial proposal")
       proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
       logger.info "proposal #{proposal["raw_proposal"]}"
@@ -97,13 +92,6 @@ module DInstaller
       import_gpg_keys
     end
 
-    def search_supported_products
-      @products = find_products
-      @product = @products.first&.name || ""
-
-      raise "No product available" if @product.empty?
-    end
-
     # @note The status is set to installing. The status will keep as installing until {#finish} is
     #   called.
     def propose
@@ -112,9 +100,7 @@ module DInstaller
       Yast::Pkg.TargetFinish # ensure that previous target is closed
       Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
       Yast::Pkg.TargetLoad
-      selected_product = @products.find { |p| p.name == @product }
-      selected_product.select
-      logger.info "selected product #{selected_product.inspect}"
+      select_base_product(@config.data["software"]["base_product"])
 
       add_resolvables
       proposal = Yast::Packages.Proposal(force_reset = false, reinit = false, _simple = true)
@@ -213,13 +199,13 @@ module DInstaller
       Yast::Pkg.SourceSaveAll
     end
 
-    def find_products
-      supported_products = Y2Packager::Product.available_base_products.select do |product|
+    def select_base_product(name)
+      base_product = Y2Packager::Product.available_base_products.find do |product|
         logger.info "Base product #{product.name} found."
-        SUPPORTED_PRODUCTS.include?(product.name)
+        product.name == name
       end
-      logger.info "Supported products found: #{supported_products.map(&:name).join(",")}"
-      supported_products
+      logger.info "Base product to select: #{product&.name}"
+      base_product&.select
     end
 
     REPOS_BACKUP = "/etc/zypp/repos.d.dinstaller.backup"

@@ -1,99 +1,174 @@
-software:
-  installation_repositories:
-    - https://download.opensuse.org/tumbleweed/repo/oss/
-    - https://download.opensuse.org/tumbleweed/repo/non-oss/
-    - https://download.opensuse.org/update/tumbleweed/
-  mandatory_patterns:
-    - enhanced_base # only pattern that is shared among all roles on TW
-  optional_patterns: null # no optional pattern shared
-
-security:
-  lsm: apparmor
-  available_lsms:
-    apparmor:
-      patterns:
-        - apparmor
-    selinux:
-      patterns:
-        - selinux
-      policy: permissive
-    none:
-      patterns: null
-
-distributions:
-  # TODO replace simple id with better description of distributions
+products:
+  # TODO replace simple id with better description
   - Tumbleweed
+  - Leap Micro
 
 web:
   ssl: null
   ssl_cert: null
   ssl_key: null
 
-storage:
-  volumes:
-  - mount_point: "/"
-    fs_type: btrfs
-    desired_size: 10 GiB
-    min_size: 5 GiB
-    max_size: unlimited
-    weight: 30
 
-    # There must always be a root
-    proposed_configurable: false
+Tumbleweed:
+  software:
+    installation_repositories:
+      - https://download.opensuse.org/tumbleweed/repo/oss/
+      - https://download.opensuse.org/tumbleweed/repo/non-oss/
+      - https://download.opensuse.org/update/tumbleweed/
+    mandatory_patterns:
+      - enhanced_base # only pattern that is shared among all roles on TW
+    optional_patterns: null # no optional pattern shared
+    base_product: openSUSE
 
-    snapshots: true
-    snapshots_percentage: 250
-    snapshots_configurable: true
-    # Disable snapshots if there is not enough room
-    disable_order: 3
+  security:
+    lsm: apparmor
+    available_lsms:
+      apparmor:
+        patterns:
+          - apparmor
+      selinux:
+        patterns:
+          - selinux
+        policy: permissive
+      none:
+        patterns: null
 
-    btrfs_default_subvolume: "@"
-    subvolumes:
-    - path: home
-    - path: opt
-    - path: root
-    - path: srv
-    - path: usr/local
-    # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
-    - path: var
-      copy_on_write: false
+  storage:
+    volumes:
+    - mount_point: "/"
+      fs_type: btrfs
+      desired_size: 10 GiB
+      min_size: 5 GiB
+      max_size: unlimited
+      weight: 30
 
-    # Architecture specific subvolumes
-    - path: boot/grub2/arm64-efi
-      archs: aarch64
-    - path: boot/grub2/arm-efi
-      archs: arm
-    - path: boot/grub2/i386-pc
-      archs: x86_64
-    - path: boot/grub2/powerpc-ieee1275
-      archs: ppc,!board_powernv
-    - path: boot/grub2/s390x-emu
-      archs: s390
-    - path: boot/grub2/x86_64-efi
-      archs: x86_64
-    - path: boot/grub2/riscv64-efi
-      archs: riscv64
+      # There must always be a root
+      proposed_configurable: false
 
-  - mount_point: "/home"
-    fs_type: xfs
-    desired_size: 40 GiB
-    min_size: 10 GiB
-    max_size: unlimited
-    weight: 60
+      snapshots: true
+      snapshots_percentage: 250
+      snapshots_configurable: true
+      # Disable snapshots if there is not enough room
+      disable_order: 3
 
-    proposed: false
-    proposed_configurable: true
-    disable_order: 1
+      btrfs_default_subvolume: "@"
+      subvolumes:
+      - path: home
+      - path: opt
+      - path: root
+      - path: srv
+      - path: usr/local
+      # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
+      - path: var
+        copy_on_write: false
 
-  - mount_point: "swap"
-    fs_type: swap
-    desired_size: 2 GiB
-    min_size: 1 GiB
-    max_size: 2 GiB
-    weight: 10
+      # Architecture specific subvolumes
+      - path: boot/grub2/arm64-efi
+        archs: aarch64
+      - path: boot/grub2/arm-efi
+        archs: arm
+      - path: boot/grub2/i386-pc
+        archs: x86_64
+      - path: boot/grub2/powerpc-ieee1275
+        archs: ppc,!board_powernv
+      - path: boot/grub2/s390x-emu
+        archs: s390
+      - path: boot/grub2/x86_64-efi
+        archs: x86_64
+      - path: boot/grub2/riscv64-efi
+        archs: riscv64
 
-    adjust_by_ram: false
-    adjust_by_ram_configurable: true
+    - mount_point: "/home"
+      fs_type: xfs
+      desired_size: 40 GiB
+      min_size: 10 GiB
+      max_size: unlimited
+      weight: 60
 
-    proposed_configurable: true
-    disable_order: 2
+      proposed: false
+      proposed_configurable: true
+      disable_order: 1
+
+    - mount_point: "swap"
+      fs_type: swap
+      desired_size: 2 GiB
+      min_size: 1 GiB
+      max_size: 2 GiB
+      weight: 10
+
+      adjust_by_ram: false
+      adjust_by_ram_configurable: true
+
+      proposed_configurable: true
+      disable_order: 2
+
+Leap Micro:
+  software:
+    installation_repositories:
+      - https://download.opensuse.org/distribution/leap-micro/5.2/product/repo/Leap-Micro-5.2-x86_64-Media/
+    mandatory_patterns:
+      - microos-base
+      - microos-hardware
+      - microos-bootloader
+      - microos-defaults
+      - microos-basesystem
+    optional_patterns: null # no optional pattern shared
+    base_product: Leap-Micro
+
+  security:
+    lsm: selinux
+    available_lsms:
+      selinux:
+        patterns:
+          - microos-selinux
+        policy: enforcing
+      none:
+        patterns: null
+
+  storage:
+      volumes:
+        - mount_point: "/"
+          fs_type: btrfs
+          desired_size: 20 GiB
+          min_size: 5 GiB
+          max_size: 20 GiB
+          fs_types:
+            - btrfs
+          weight: 20
+          snapshots: true
+          snapshots_configurable: false
+          proposed_configurable: false
+          btrfs_default_subvolume: "@"
+          btrfs_read_only: true
+          subvolumes:
+          - path: root
+          - path: home
+          - path: opt
+          - path: srv
+          - path: root
+          - path: boot/writable
+          - path: usr/local
+          - path: boot/grub2/arm64-efi
+            archs: aarch64
+          - path: boot/grub2/i386-pc
+            archs: x86_64
+          - path: boot/grub2/powerpc-ieee1275
+            archs: ppc,!board_powernv
+          - path: boot/grub2/s390x-emu
+            archs: s390
+          - path: boot/grub2/x86_64-efi
+            archs: x86_64
+        - mount_point: "/var"
+          fs_type: btrfs
+          fs_types:
+            - btrfs
+          desired_size: 19 GiB
+          min_size: 5 GiB
+          max_size: unlimited
+          weight: 40
+          snapshots: false
+          snapshots_configurable: false
+          disable_order: 1
+          fallback_for_desired_size: "/"
+          fallback_for_max_size: "/"
+          fallback_for_weight: "/"

@@ -66,7 +66,15 @@ module DInstaller
     end
 
     def data
-      @data ||= @pure_data || {}
+      return @data if @data
+
+      @data = @pure_data || {}
+      pick_product(@data["products"].first)
+      @data
+    end
+
+    def pick_product(product)
+      @data.merge(@data[product])
     end
 
     # Returns a copy of this Object
