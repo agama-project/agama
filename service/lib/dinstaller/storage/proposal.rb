@@ -33,8 +33,10 @@ module DInstaller
       # Constructor
       #
       # @param logger [Logger]
-      def initialize(logger)
+      # @param config [Config]
+      def initialize(logger, config)
         @logger = logger
+        @config = config
       end
 
       # Available devices for installation
@@ -110,6 +112,9 @@ module DInstaller
       # @return [Logger]
       attr_reader :logger
 
+      # @return [Config]
+      attr_reader :config
+
       # @return [Y2Storage::InitialGuidedProposal]
       attr_reader :proposal
 
@@ -120,9 +125,21 @@ module DInstaller
       def generate_proposal_settings(settings)
         proposal_settings = Y2Storage::ProposalSettings.new_for_current_product
 
+        config_volumes = read_config_volumes
+        # If no volumes are specified, just leave the default ones (hardcoded at Y2Storage)
+        proposal_settings.volumes = config_volumes unless config_volumes.empty?
+
         settings.each { |k, v| proposal_settings.public_send("#{k}=", v) }
 
         proposal_settings
+      end
+
+      # Reads the list of volumes from the D-Installer configuration
+      #
+      # @return [Array<Y2Storage::VolumeSpecification>]
+      def read_config_volumes
+        vols = config.data.fetch("storage", {}).fetch("volumes", [])
+        vols.map { |v| Y2Storage::VolumeSpecification.new(v) }
       end
 
       # Saves the proposal or restores initial devices if a proposal was not calculated
