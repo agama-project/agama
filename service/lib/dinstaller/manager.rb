@@ -58,7 +58,8 @@ module DInstaller
     # Constructor
     #
     # @param logger [Logger]
-    def initialize(logger)
+    def initialize(config, logger)
+      @config = config
       @logger = logger
       @status_manager = StatusManager.new(Status::Error.new) # temporary status until probing starts
       @questions_manager = QuestionsManager.new(logger)
@@ -129,13 +130,6 @@ module DInstaller
     end
     # rubocop:enable Metrics/AbcSize
 
-    # Configuration
-    def config
-      Config.load unless Config.current
-
-      Config.current
-    end
-
     # Software manager
     #
     # @return [Software]
@@ -179,6 +173,8 @@ module DInstaller
     end
 
   private
+
+    attr_reader :config
 
     # Initializes YaST
     def initialize_yast

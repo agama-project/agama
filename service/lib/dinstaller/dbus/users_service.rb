@@ -41,8 +41,9 @@ module DInstaller
       # @return [::DBus::Connection]
       attr_reader :bus
 
+      # @param config [Config] Configuration object
       # @param logger [Logger]
-      def initialize(logger = nil)
+      def initialize(_config, logger = nil)
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
       end

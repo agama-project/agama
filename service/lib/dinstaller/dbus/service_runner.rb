@@ -21,7 +21,6 @@
 
 require "eventmachine"
 require "dinstaller/manager"
-require "dinstaller/dbus/service"
 
 module DInstaller
   module DBus
@@ -46,13 +45,10 @@ module DInstaller
       #
       # This method listens for D-Bus calls.
       def run
-        service = if name == :manager
-          setup_manager(logger)
-        else
-          setup_service(name, logger)
-        end
-
-        service.export
+        service = build_service(name, logger)
+        # TODO: implement a #start method in all services,
+        # which is equivalent to #export in most cases.
+        service.respond_to?(:start) ? service.start : service.export
         EventMachine.run do
           EventMachine::PeriodicTimer.new(0.1) { service.dispatch }
         end
@@ -62,28 +58,21 @@ module DInstaller
 
       attr_reader :name, :logger
 
-      # Set up the manager service
-      #
-      # @param logger [Logger] Service logger
-      # @return [DInstaller::DBus::Service] Manager service
-      def setup_manager(logger)
-        manager = DInstaller::Manager.new(logger)
-        manager.setup
-        service = DInstaller::DBus::Service.new(manager, logger)
-        manager.probe # probe after export, so we can report on DBus
-        manager.progress.on_change { service.dispatch } # make single thread more responsive
-        service
+      # Configuration
+      def config
+        Config.load unless Config.current
+        Config.current
       end
 
       # Set up a service
       #
-      # @param name [String] Service name (ie, "users")
+      # @param name [Symbol] Service name (ie, :users)
       # @param logger [Logger] Service logger
       # @return [#export,#dispatch] Class that implements #export and #dispatch methods.
-      def setup_service(name, logger)
+      def build_service(name, logger)
         require "dinstaller/dbus/#{name}_service"
         klass = DInstaller::DBus.const_get("#{name.capitalize}Service")
-        klass.new(logger)
+        klass.new(config, logger)
       rescue LoadError, NameError
         raise "Service '#{name}' not found"
       end
