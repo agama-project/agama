@@ -194,14 +194,18 @@ module DInstaller
     def store_original_repos
       # Backup was already created, so just remove all repos
       if File.directory?(REPOS_BACKUP)
+        logger.info "removing #{REPOS_DIR}"
         FileUtils.rm_rf(REPOS_DIR)
       else # move repos to backup
+        logger.info "moving #{REPOS_DIR} to #{REPOS_BACKUP}"
         FileUtils.mv(REPOS_DIR, REPOS_BACKUP)
       end
     end
 
     def restore_original_repos
+      logger.info "removing #{REPOS_DIR}"
       FileUtils.rm_rf(REPOS_DIR)
+      logger.info "moving #{REPOS_BACKUP} to #{REPOS_DIR}"
       FileUtils.mv(REPOS_BACKUP, REPOS_DIR)
     end
   end
