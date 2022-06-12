@@ -57,7 +57,7 @@ module DInstaller
     end
 
     def select_product(name)
-      raise ArgumentError unless @products.any? { |p| p.name == name }
+      raise ArgumentError unless @products.include?(name)
 
       @config.pick_product(name)
       @product = name
