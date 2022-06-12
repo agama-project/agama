@@ -50,8 +50,10 @@ module DInstaller
     def select_product(name)
       raise ArgumentError unless @products.any? { |p| p.name == name }
 
+      logger.info "Selecting product #{name}"
       @config.pick_product(name)
       @product = name
+      logger.info "Re-probing for new product"
       @manager.probe
     end
 

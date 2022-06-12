@@ -60,7 +60,7 @@ module DInstaller
 
       def available_base_products
         backend.products.map do |product|
-          [product.name, product.display_name, {}].freeze
+          [product, product, {}].freeze
         end
       end
 
