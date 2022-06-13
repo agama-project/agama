@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useInstallerClient } from "./context/installer";
 import Popup from "./Popup";
 import { Button, Text } from "@patternfly/react-core";
@@ -27,22 +27,6 @@ import { Button, Text } from "@patternfly/react-core";
 const initIpData = {
   addresses: [],
   hostname: ""
-};
-
-const reducer = (state, action) => {
-  const data = action.payload;
-
-  switch (action.type) {
-    case "READ": {
-      return {
-        ...state,
-        ...data
-      };
-    }
-    default: {
-      return state;
-    }
-  }
 };
 
 function formatIp(address, prefix) {
@@ -55,22 +39,18 @@ export default function TargetIpsPopup() {
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
   const client = useInstallerClient();
-  const [state, dispatch] = useReducer(reducer, initIpData);
+  const [state, setState] = useState(initIpData);
   const ips = state.addresses.map((addr) => formatIp(addr.address, addr.prefix));
   const firstIp = ips.length > 0 ? ips[0] : "";
 
   useEffect(() => {
     const config = async () => {
       const data = await client.network.config();
-
-      dispatch({
-        type: "READ",
-        payload: data
-      });
+      setState({ ...state, ...data });
     };
 
     config();
-  }, [client.network]);
+  }, [client.network, state]);
 
   return (
     <>
