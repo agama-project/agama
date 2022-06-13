@@ -27,6 +27,7 @@ require "dinstaller_cli/commands/storage"
 require "dinstaller_cli/commands/root_user"
 require "dinstaller_cli/commands/user"
 require "dinstaller_cli/clients"
+require "dinstaller/dbus/clients/users"
 
 module DInstallerCli
   module Commands
@@ -145,7 +146,7 @@ module DInstallerCli
       end
 
       def users_client
-        @users_client ||= Clients::Users.new
+        @users_client ||= DInstaller::DBus::Clients::Users.new
       end
     end
   end

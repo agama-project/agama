@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "thor"
-require "dinstaller_cli/clients/users"
+require "dinstaller/dbus/clients/users"
 
 module DInstallerCli
   module Commands
@@ -47,7 +47,7 @@ module DInstallerCli
     private
 
       def client
-        @client ||= Clients::Users.new
+        @client ||= DInstaller::DBus::Clients::Users.new
       end
     end
   end

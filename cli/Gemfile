@@ -21,6 +21,8 @@
 
 source "https://rubygems.org"
 
+gem "d-installer", path: "../service"
+
 gemspec
 
 group :development do
