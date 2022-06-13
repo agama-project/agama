@@ -35,13 +35,9 @@ module DInstaller
         # Constructor
         #
         # @param backend [DInstaller::Storage::Proposal]
-        # @param actions [DInstaller::DBus::Storage::Actions] D-Bus object representing the storage
-        #   actions to perform in the system. It is needed to raise signals when a new proposal is
-        #   calculated.
         # @param logger [Logger]
-        def initialize(backend, actions, logger)
+        def initialize(backend, logger)
           @backend = backend
-          @actions = actions
           @logger = logger
 
           super(PATH)
@@ -66,7 +62,6 @@ module DInstaller
             success = backend.calculate(to_proposal_properties(settings))
 
             PropertiesChanged(INTERFACE, settings, [])
-            actions.refresh
 
             success ? 0 : 1
           end
@@ -103,9 +98,6 @@ module DInstaller
 
         # @return [Logger]
         attr_reader :logger
-
-        # @return [DInstaller::DBus::Storage::Actions]
-        attr_reader :actions
 
         # Equivalence between properties names in D-Bus and backend.
         PROPOSAL_PROPERTIES = {

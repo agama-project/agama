@@ -28,6 +28,7 @@ module DInstaller
       # @param logger [Logger]
       def initialize(logger)
         @logger = logger
+        @listeners = []
       end
 
       # All actions properly sorted
@@ -35,6 +36,14 @@ module DInstaller
       # @return [Array<Y2Storage::CompoundAction>]
       def all
         main_actions + subvolume_actions
+      end
+
+      def changed!
+        @listeners.each(&:call)
+      end
+
+      def add_on_change_listener(&block)
+        @listeners << block
       end
 
     private

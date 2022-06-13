@@ -58,7 +58,7 @@ module DInstaller
       #
       # @return [Storage::Proposal]
       def proposal
-        @proposal ||= Proposal.new(logger, config)
+        @proposal ||= Proposal.new(logger, config, actions)
       end
 
       # Storage actions manager
