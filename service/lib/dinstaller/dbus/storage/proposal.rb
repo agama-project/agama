@@ -41,6 +41,12 @@ module DInstaller
           @logger = logger
 
           super(PATH)
+
+          backend.add_on_change_listener do
+            PropertiesChanged(INTERFACE, { "LVM" => lvm,
+              "CandidateDevices" => candidate_devices,
+              "AvailableDevices" => available_devices }, [])
+          end
         end
 
         dbus_interface INTERFACE do
@@ -60,8 +66,6 @@ module DInstaller
           # result: 0 success; 1 error
           dbus_method :Calculate, "in settings:a{sv}, out result:u" do |settings|
             success = backend.calculate(to_proposal_properties(settings))
-
-            PropertiesChanged(INTERFACE, settings, [])
 
             success ? 0 : 1
           end
