@@ -26,7 +26,7 @@ import { installerRender, plainRender } from "./test-utils";
 
 import DBusError from "./DBusError";
 
-jest.mock("./Target", () => () => "IP Mock");
+jest.mock("./TargetIpsPopup", () => () => "IP Mock");
 
 describe("DBusError", () => {
   it("includes a generic D-Bus connection problem message", () => {
