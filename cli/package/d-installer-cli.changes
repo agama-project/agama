@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Mon Jun 13 10:32:43 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.3:
+  - Set the same installation options than the web UI
+    (gh#yast/d-installer#166).
+  - Support for unattended installation (gh#yast/d-installer#163
+    and gh#yast/d-installer#179).
+
+-------------------------------------------------------------------
 Fri May 27 11:57:29 UTC 2022 - José Iván López González <jlopez@suse.com>
 
 - Initial CLI
