@@ -39,6 +39,7 @@ module DInstaller
         @logger = logger
         @config = config
         @actions = actions
+        @listeners = []
       end
 
       def add_on_change_listener(&block)
