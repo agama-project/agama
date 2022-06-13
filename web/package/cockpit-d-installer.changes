@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Mon Jun 13 10:10:03 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.3:
+  * Refresh the web UI when a selected option changes (e.g., through
+    the CLI) (gh#yast/d-installer#180).
+  * Remove the "Restart Installation" button
+    (gh#yast/d-installer#167 and gh#yast/d-installer#174).
+  * Add a task to generate the JSDoc-based documentation
+    (gh#yast/d-installer#186 and gh#yast/d-installer#191).
+
+-------------------------------------------------------------------
 Tue May 17 10:58:51 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.2:
