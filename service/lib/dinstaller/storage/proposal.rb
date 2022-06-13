@@ -34,9 +34,11 @@ module DInstaller
       #
       # @param logger [Logger]
       # @param config [Config]
-      def initialize(logger, config)
+      # @param actions [Actions]
+      def initialize(logger, config, actions)
         @logger = logger
         @config = config
+        @actions = actions
       end
 
       # Available devices for installation
@@ -103,6 +105,8 @@ module DInstaller
         )
 
         save
+
+        @actions.changed!
 
         !proposal.failed?
       end

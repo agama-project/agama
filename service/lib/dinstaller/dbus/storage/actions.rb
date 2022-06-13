@@ -41,6 +41,10 @@ module DInstaller
           @backend = backend
 
           super(PATH)
+
+          backend.add_on_change_listener do
+            PropertiesChanged(INTERFACE, { "All" => all }, [])
+          end
         end
 
         dbus_interface INTERFACE do
@@ -55,12 +59,6 @@ module DInstaller
         # @return [Array<Hash>]
         def all
           backend.all.map { |a| to_dbus(a) }
-        end
-
-        # This method is called from other D-Bus object in order to emit a signal when the list of
-        # actions changes (e.g., after calculating a proposal).
-        def refresh
-          PropertiesChanged(INTERFACE, { "All" => all }, [])
         end
 
       private
