@@ -59,8 +59,8 @@ module DInstaller
       end
 
       def available_base_products
-        backend.products.map do |product|
-          [product, product, {}].freeze
+        backend.products.map do |id, data|
+          [id, data["name"], { "description" => data["description"] }].freeze
         end
       end
 

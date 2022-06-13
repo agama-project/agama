@@ -42,13 +42,13 @@ module DInstaller
       @logger = logger
       @config = config
       @products = @config.data["products"]
-      @product = @products.first # use the first available product as default
+      @product = @products.keys.first # use the first available product as default
       @config.pick_product(@product)
       @manager = manager
     end
 
     def select_product(name)
-      raise ArgumentError unless @products.include?(name)
+      raise ArgumentError unless @products[name]
 
       logger.info "Selecting product #{name}"
       @config.pick_product(name)
