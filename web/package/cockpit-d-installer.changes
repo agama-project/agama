@@ -2,7 +2,7 @@
 Mon Jun 13 10:10:03 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.3:
-  * Refresh the web UI a selected option changes (e.g., through
+  * Refresh the web UI when a selected option changes (e.g., through
     the CLI) (gh#yast/d-installer#180).
   * Remove the "Restart Installation" button
     (gh#yast/d-installer#167 and gh#yast/d-installer#174).
