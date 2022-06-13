@@ -69,7 +69,7 @@ module DInstaller
       return @data if @data
 
       @data = @pure_data || {}
-      pick_product(@data["products"].first) if @data["products"]
+      pick_product(@data["products"].keys.first) if @data["products"]
       @data
     end
 

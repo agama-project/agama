@@ -109,8 +109,8 @@ module DInstaller
         # rubocop:enable Metrics/BlockLength
 
         def available_base_products
-          backend.products.map do |product|
-            [product.name, product.display_name, {}].freeze
+          backend.products.map do |id, data|
+            [id, data["name"], { "description" => data["description"] }].freeze
           end
         end
 

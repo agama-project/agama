@@ -51,13 +51,13 @@ module DInstaller
       @logger = logger
       @status_manager = StatusManager.new(Status::Error.new) # temporary status until probing starts
       @products = @config.data["products"]
-      @product = @products.first # use the first available product as default
+      @product = @products.keys.first # use the first available product as default
       @config.pick_product(@product)
       @progress = Progress.new
     end
 
     def select_product(name)
-      raise ArgumentError unless @products.include?(name)
+      raise ArgumentError unless @products[name]
 
       @config.pick_product(name)
       @product = name
