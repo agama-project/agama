@@ -41,6 +41,14 @@ module DInstaller
         @actions = actions
       end
 
+      def add_on_change_listener(&block)
+        @listeners << block
+      end
+
+      def changed!
+        @listeners.each(&:call)
+      end
+
       # Available devices for installation
       #
       # @return [Array<Y2Storage::Device>]
@@ -106,6 +114,7 @@ module DInstaller
 
         save
 
+        changed!
         @actions.changed!
 
         !proposal.failed?
