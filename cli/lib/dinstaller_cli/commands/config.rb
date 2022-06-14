@@ -39,7 +39,7 @@ module DInstallerCli
         say_error("error: invalid configuration")
       end
 
-      desc "dump", "Dump the current installation config"
+      desc "dump", "Dump the current installation config to stdout"
       def dump
         say(current_config.dump)
       end
