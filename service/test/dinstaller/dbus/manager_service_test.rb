@@ -50,15 +50,6 @@ describe DInstaller::DBus::ManagerService do
       service.export
     end
 
-    it "exports the software manager object" do
-      software_obj = instance_double(DInstaller::DBus::Software, path: nil)
-      allow(DInstaller::DBus::Software).to receive(:new)
-        .with(manager.software, logger).and_return(software_obj)
-
-      expect(bus_service).to receive(:export).with(software_obj)
-      service.export
-    end
-
     it "exports the storage actions object" do
       actions_obj = instance_double(DInstaller::DBus::Storage::Actions, path: nil)
       allow(DInstaller::DBus::Storage::Actions).to receive(:new)
