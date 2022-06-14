@@ -57,6 +57,7 @@ module DInstaller
     end
 
     def select_product(name)
+      return if name == @product
       raise ArgumentError unless @products[name]
 
       @config.pick_product(name)
