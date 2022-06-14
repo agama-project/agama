@@ -40,6 +40,10 @@ const languages = [{ id: "en_US", name: "English" }];
 const products = [{ id: "openSUSE", name: "openSUSE Tumbleweed" }];
 const startInstallationFn = jest.fn();
 const fakeUser = { fullName: "Fake User", userName: "fake_user", autologin: true };
+const ipData = {
+  addresses: [],
+  hostname: "example.net"
+}
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
@@ -61,7 +65,7 @@ beforeEach(() => {
         startInstallation: startInstallationFn
       },
       network: {
-        config: jest.fn()
+        config: () => Promise.resolve(ipData)
       },
       users: {
         getUser: () => Promise.resolve(fakeUser),

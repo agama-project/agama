@@ -44,19 +44,10 @@ export default function TargetIpsPopup() {
   const firstIp = ips.length > 0 ? ips[0] : "";
 
   useEffect(() => {
-    let mounted = true;
-
-    const config = async () => {
-      const data = await client.network.config();
-
-      if (mounted)
-        setState({ ...state, ...data });
-    };
-
-    config();
-
-    return () => { mounted = false };
-  }, [client.network, state]);
+    client.network.config().then((data) => {
+      setState(data);
+    });
+  }, [client.network]);
 
   return (
     <>
