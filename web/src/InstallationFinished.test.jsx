@@ -41,7 +41,7 @@ describe("InstallationFinished", () => {
           rebootSystem: rebootSystemFn
         },
         network: {
-          config: jest.fn()
+          config: () => Promise.resolve({ addresses: [], hostname: "example.net" })
         }
       };
     });
