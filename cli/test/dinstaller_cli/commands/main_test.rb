@@ -26,6 +26,10 @@ require "dinstaller_cli/install_config_reader"
 require "dinstaller_cli/clients/manager"
 
 describe DInstallerCli::Commands::Main do
+  it "includes a 'config' command" do
+    expect(described_class.subcommands).to include("config")
+  end
+
   it "includes a 'language' command" do
     expect(described_class.subcommands).to include("language")
   end

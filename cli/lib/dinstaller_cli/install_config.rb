@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yaml"
+
 module DInstallerCli
   # Class to represent the installation config
   class InstallConfig
@@ -53,6 +55,28 @@ module DInstallerCli
       @disks = []
       @user = nil
       @root = nil
+    end
+
+    def dump
+      to_h.to_yaml
+    end
+
+    def to_h
+      {
+        "product"   => product,
+        "languages" => languages,
+        "disks"     => disks,
+        "user"      => {
+          "name"      => user&.name,
+          "fullname"  => user&.fullname,
+          "autologin" => user&.autologin,
+          "password"  => user&.password
+        },
+        "root"      => {
+          "ssh_key"  => root&.ssh_key,
+          "password" => root&.password
+        }
+      }
     end
 
     # Class to represent the user config

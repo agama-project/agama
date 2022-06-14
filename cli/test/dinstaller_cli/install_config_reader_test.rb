@@ -48,8 +48,27 @@ describe DInstallerCli::InstallConfigReader do
         expect(config.user.fullname).to eq("User Test")
         expect(config.user.password).to eq("n0ts3cr3t")
         expect(config.user.autologin).to eq(true)
+        expect(config.root).to_not be_nil
         expect(config.root.password).to eq("n0ts3cr3t")
         expect(config.root.ssh_key).to eq("1234abcd")
+      end
+
+      context "and some settings are missing in the config file" do
+        let(:source) { File.join(FIXTURES_PATH, "incomplete_config.yaml") }
+
+        it "generates an install config without the missing settings" do
+          config = subject.read
+
+          expect(config.languages).to contain_exactly("en_US")
+          expect(config.product).to be_nil
+          expect(config.disks).to contain_exactly("/dev/vda")
+          expect(config.user).to_not be_nil
+          expect(config.user.name).to eq("test")
+          expect(config.user.fullname).to be_nil
+          expect(config.user.password).to be_empty
+          expect(config.user.autologin).to eq(true)
+          expect(config.root).to be_nil
+        end
       end
     end
   end

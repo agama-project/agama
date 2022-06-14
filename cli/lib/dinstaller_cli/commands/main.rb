@@ -66,6 +66,9 @@ module DInstallerCli
         say(status)
       end
 
+      desc "config SUBCOMMAND", "Manage configuration of the installation"
+      subcommand "config", Config
+
       desc "language SUBCOMMAND", "Manage language configuration"
       subcommand "language", Language
 
