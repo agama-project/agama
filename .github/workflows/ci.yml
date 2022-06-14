@@ -50,6 +50,7 @@ jobs:
       run: npm run jsdoc
 
     - name: Publish JSDoc Documentation
+      if: ${{ secrets.SURGE_TOKEN != '' }}
       run: npx surge jsdoc.out/ ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
 
 
