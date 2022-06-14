@@ -39,6 +39,7 @@ jest.mock("./InstallationProgress", () => () => "InstallationProgress Mock");
 jest.mock("./InstallationFinished", () => () => "InstallationFinished Mock");
 jest.mock("./Overview", () => () => "Overview Mock");
 jest.mock("./Questions", () => () => <div>Questions Mock</div>);
+jest.mock("./TargetIpsPopup", () => () => "Target IPs Mock");
 
 const callbacks = {};
 const initialStatusMock = null;
