@@ -48,6 +48,7 @@ module DInstaller
     end
 
     def select_product(name)
+      return if name == @product
       raise ArgumentError unless @products[name]
 
       logger.info "Selecting product #{name}"
