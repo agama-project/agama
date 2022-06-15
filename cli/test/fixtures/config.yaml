@@ -1,9 +1,9 @@
 ---
+product: "Tumbleweed"
+
 languages:
   - "es_ES"
   - "en_US"
-
-product: "Tumbleweed"
 
 disks:
   - /dev/vda

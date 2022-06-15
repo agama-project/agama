@@ -20,13 +20,13 @@
 # find current contact information at www.suse.com.
 
 require "thor"
-require "dinstaller_cli/install_config_reader"
+require "dinstaller_cli/commands/config"
 require "dinstaller_cli/commands/language"
 require "dinstaller_cli/commands/software"
 require "dinstaller_cli/commands/storage"
 require "dinstaller_cli/commands/root_user"
 require "dinstaller_cli/commands/user"
-require "dinstaller_cli/clients"
+require "dinstaller_cli/clients/manager"
 
 module DInstallerCli
   module Commands
@@ -36,15 +36,10 @@ module DInstallerCli
         true
       end
 
-      desc "install [<config>]", "Perform the installation"
-      def install(config_source = nil)
+      desc "install", "Perform the installation"
+      def install
         answer = ask("Do you want to start the installation?", limited_to: ["y", "n"])
         return unless answer == "y"
-
-        if config_source
-          config = InstallConfigReader.new(config_source).read
-          configure_installation(config)
-        end
 
         manager_client.commit
       rescue InstallConfigReader::Error
@@ -71,6 +66,9 @@ module DInstallerCli
         say(status)
       end
 
+      desc "config SUBCOMMAND", "Manage configuration of the installation"
+      subcommand "config", Config
+
       desc "language SUBCOMMAND", "Manage language configuration"
       subcommand "language", Language
 
@@ -88,64 +86,8 @@ module DInstallerCli
 
     private
 
-      # Configures the installation according to the given config
-      #
-      # Performs D-Bus calls to configure the proper services.
-      #
-      # @param config [InstallConfig]
-      def configure_installation(config)
-        software_client.select_product(config.product) if config.product
-        language_client.select_languages(config.languages) if config.languages.any?
-        storage_client.calculate(config.disks) if config.disks.any?
-
-        configure_user(config.user) if config.user
-        configure_root(config.root) if config.root
-      end
-
-      # Configures the user
-      #
-      # Performs D-Bus calls to configure the users service.
-      #
-      # @param user_config [InstallConfig::User]
-      def configure_user(user_config)
-        user_name = user_config.name || ""
-
-        return if user_name.empty?
-
-        users_client.create_first_user(user_config.name,
-          fullname:  user_config.fullname,
-          password:  user_config.password,
-          autologin: user_config.autologin)
-      end
-
-      # Configures the root user
-      #
-      # Performs D-Bus calls to configure the users service.
-      #
-      # @param root_config [InstallConfig::Root]
-      def configure_root(root_config)
-        users_client.root_password = root_config.password if root_config.password
-        users_client.root_ssh_key = root_config.ssh_key if root_config.ssh_key
-      end
-
       def manager_client
         @manager_client ||= Clients::Manager.new
-      end
-
-      def language_client
-        @language_client ||= Clients::Language.new
-      end
-
-      def software_client
-        @software_client ||= Clients::Software.new
-      end
-
-      def storage_client
-        @storage_client ||= Clients::Storage.new
-      end
-
-      def users_client
-        @users_client ||= Clients::Users.new
       end
     end
   end
