@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/dbus/task_runner"
 
 module DInstaller
   module DBus
@@ -35,9 +36,10 @@ module DInstaller
       #
       # @param backend [DInstaller::Manager] Installation manager
       # @param logger [Logger]
-      def initialize(backend, logger)
+      def initialize(backend, logger, task_runner)
         @logger = logger
         @backend = backend
+        @task_runner = task_runner
 
         register_status_callback
         register_progress_callback
@@ -46,9 +48,13 @@ module DInstaller
       end
 
       dbus_interface MANAGER_INTERFACE do
-        dbus_method(:Probe, "") { backend.probe }
+        dbus_method(:Probe, "") do
+          task_runner.run_thread { backend.probe }
+        end
 
-        dbus_method(:Commit, "") { backend.install }
+        dbus_method(:Commit, "") do
+          task_runner.run_thread { backend.install } 
+        end
 
         # Current status
         #
@@ -112,6 +118,8 @@ module DInstaller
 
       # @return [DInstaller::Manager]
       attr_reader :backend
+
+      attr_reader :task_runner
 
       # Registers callback to be called when the status changes
       #

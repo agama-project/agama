@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/dbus/task_runner"
 require "dinstaller/dbus/manager"
 require "dinstaller/dbus/language"
 require "dinstaller/dbus/software"
@@ -51,12 +52,15 @@ module DInstaller
       # @return [DInstaller::Manager]
       attr_reader :manager
 
+      attr_reader :task_runner
+
       # @param manager [Manager] Installation manager
       # @param logger [Logger]
       def initialize(manager, logger = nil)
         @manager = manager
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
+        @task_runner = TaskRunner.new
       end
 
       # Exports the installer object through the D-Bus service
@@ -69,6 +73,7 @@ module DInstaller
 
       # Call this from some main loop to dispatch the D-Bus messages
       def dispatch
+        task_runner.cleanup
         bus.dispatch_message_queue
       end
 
