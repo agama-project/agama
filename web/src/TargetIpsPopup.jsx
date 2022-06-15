@@ -37,6 +37,7 @@ export default function TargetIpsPopup() {
   const [isOpen, setIsOpen] = useState(false);
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
+
   const client = useInstallerClient();
   const [state, setState] = useState(initIpData);
   const ips = state.addresses.map((addr) => formatIp(addr.address, addr.prefix));
