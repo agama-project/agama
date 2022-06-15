@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yaml"
+
 module DInstallerCli
   # Class to represent the installation config
   class InstallConfig
@@ -55,6 +57,26 @@ module DInstallerCli
       @root = nil
     end
 
+    # Dumps the settings in YAML format
+    #
+    # @return [String]
+    def dump
+      to_h.to_yaml
+    end
+
+    # Converts the settings to hash
+    #
+    # @return [Hash]
+    def to_h
+      {
+        "product"   => product,
+        "languages" => languages,
+        "disks"     => disks,
+        "user"      => user&.to_h || {},
+        "root"      => root&.to_h || {}
+      }
+    end
+
     # Class to represent the user config
     class User
       # @param [String, nil]
@@ -81,6 +103,18 @@ module DInstallerCli
         @password = password
         @autologin = autologin
       end
+
+      # Converts the settings to hash
+      #
+      # @return [Hash]
+      def to_h
+        {
+          "name"      => name,
+          "fullname"  => fullname,
+          "autologin" => autologin,
+          "password"  => password
+        }
+      end
     end
 
     # Class to represent the root user config
@@ -98,6 +132,16 @@ module DInstallerCli
       def initialize(password: nil, ssh_key: nil)
         @password = password
         @ssh_key = ssh_key
+      end
+
+      # Converts the settings to hash
+      #
+      # @return [Hash]
+      def to_h
+        {
+          "ssh_key"  => ssh_key,
+          "password" => password
+        }
       end
     end
   end

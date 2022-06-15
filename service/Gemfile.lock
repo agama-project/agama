@@ -26,7 +26,11 @@ GEM
     docile (1.4.0)
     eventmachine (1.2.7)
     fast_gettext (2.2.0)
-    nokogiri (1.13.1-x86_64-linux)
+    mini_portile2 (2.8.0)
+    nokogiri (1.13.6)
+      mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
+    nokogiri (1.13.6-x86_64-linux)
       racc (~> 1.4)
     packaging_rake_tasks (1.5.1)
       rake
@@ -47,7 +51,7 @@ GEM
       rspec-support (~> 3.11.0)
     rspec-support (3.11.0)
     ruby-augeas (0.5.0)
-    ruby-dbus (0.18.0.beta5)
+    ruby-dbus (0.18.0.beta6)
       rexml
     simplecov (0.21.2)
       docile (~> 1.1)

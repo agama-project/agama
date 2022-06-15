@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import LanguageSelector from "./LanguageSelector";
 import { createClient } from "./client";
@@ -33,17 +33,23 @@ const languages = [
 ];
 
 const setLanguagesFn = jest.fn().mockResolvedValue();
+let onLanguageChangeFn = jest.fn();
 
 const languageMock = {
   getLanguages: () => Promise.resolve(languages),
   getSelectedLanguages: () => Promise.resolve(["en_US"]),
-  setLanguages: setLanguagesFn
+  setLanguages: setLanguagesFn,
 };
 
 beforeEach(() => {
   // if defined outside, the mock is cleared automatically
   createClient.mockImplementation(() => {
-    return { language: languageMock };
+    return {
+      language: {
+        ...languageMock,
+        onLanguageChange: onLanguageChangeFn
+      }
+    };
   });
 });
 
@@ -101,5 +107,25 @@ describe("when the user changes the language AND THEN cancels", () => {
     await screen.findByRole("button", { name: "German" });
     expect(setLanguagesFn).toHaveBeenCalledTimes(1);
     expect(setLanguagesFn).toHaveBeenCalledWith(["de_DE"]);
+  });
+});
+
+describe("when the Language Selection changes", () => {
+  let callbacks;
+
+  beforeEach(() => {
+    callbacks = [];
+    onLanguageChangeFn = cb => callbacks.push(cb);
+  });
+
+  it("updates the proposal", async () => {
+    installerRender(<LanguageSelector />);
+    await screen.findByRole("button", { name: "English" });
+
+    const [cb] = callbacks;
+    act(() => {
+      cb({ current: "de_DE" });
+    });
+    await screen.findByRole("button", { name: "German" });
   });
 });

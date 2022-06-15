@@ -22,8 +22,12 @@
 import { applyMixin, withDBus } from "./mixins";
 
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
+const LANGUAGE_PATH = "/org/opensuse/DInstaller/Language1";
 
-export default class LanguageClient {
+/**
+ * Language client
+ */
+class LanguageClient {
   constructor(dbusClient) {
     this._client = dbusClient;
   }
@@ -61,6 +65,19 @@ export default class LanguageClient {
     const proxy = await this.proxy(LANGUAGE_IFACE);
     return proxy.ToInstall(langIDs);
   }
+
+  /**
+   * Register a callback to run when properties in the Language object change
+   *
+   * @param {function} handler - callback function
+   */
+  onLanguageChange(handler) {
+    return this.onObjectChanged(LANGUAGE_PATH, changes => {
+      const selected = changes.MarkedForInstall.v[0];
+      handler({ current: selected.v });
+    });
+  }
 }
 
 applyMixin(LanguageClient, withDBus);
+export default LanguageClient;

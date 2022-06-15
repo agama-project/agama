@@ -29,7 +29,6 @@ import InstallationFinished from "./InstallationFinished";
 
 jest.mock("./client");
 
-const startProbingFn = jest.fn();
 const rebootSystemFn = jest.fn();
 
 describe("InstallationFinished", () => {

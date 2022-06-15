@@ -25,7 +25,10 @@ import cockpit from "../lib/cockpit";
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 const MANAGER_PATH = "/org/opensuse/DInstaller/Manager1";
 
-export default class ManagerClient {
+/**
+ * Manager client
+ */
+class ManagerClient {
   constructor(dbusClient) {
     this._client = dbusClient;
   }
@@ -101,3 +104,4 @@ export default class ManagerClient {
 }
 
 applyMixin(ManagerClient, withDBus);
+export default ManagerClient;

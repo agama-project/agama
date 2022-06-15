@@ -28,6 +28,36 @@ Software manager related options. It is map with following keys:
 
 Array of url for installation repositories.
 
+#### mandatory\_patterns
+
+Array of patterns that have to be selected.
+
+#### optional\_patterns
+
+Array of patterns that should be selected but can be deselected or skipped if not available.
+
+### security
+
+Options related to security
+
+#### lsm
+
+Default linux security module. Currently supported values are `selinux`, `apparmor` and `none`.
+
+#### available\_lsms
+
+Map for available linux security modules. If only one module is
+available it means that lsm is not configurable.
+
+##### patterns
+
+Required patterns for given lsm to be selected.
+
+##### policy
+
+Default policy. Only applicable for selinux lsm.
+
+
 ### distributions
 
 List of supported distros that can be offered in installer.
@@ -62,12 +92,22 @@ Cockpit's web server related settings.
 Whether enable or disable TLS/SSL for remote connections. If it is not set, it does not modify
 Cockpit configuration in that regard.
 
-#### ssl_cert
+#### ssl\_cert
 
 Location of the certificate to use for remote connections. The certificate is retrieved and copied
 to `/etc/cockpit/ws-certs.d`.
 
-#### ssl_key
+#### ssl\_key
 
 Location of the certificate key to use for remote connections. The key is retrieved and copied to
 `/etc/cockpit/ws-certs.d`. This option is ignored unless the `ssl_cert` is set.
+
+## storage
+
+Options related to management of storage devices. It is map with the following keys:
+
+### volumes
+
+List of volumes used by the proposal. Each volume contains the very same fields described at the
+[corresponding section](https://github.com/yast/yast-installation/blob/master/doc/control-file.md#the-volumes-subsection)
+of the YaST configuration.

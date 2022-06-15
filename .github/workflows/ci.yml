@@ -46,6 +46,14 @@ jobs:
         flag-name: frontend
         parallel: true
 
+    - name: Build JSDoc Documentation
+      run: npm run jsdoc
+
+    - name: Publish JSDoc Documentation
+      if: ${{ github.ref == 'refs/heads/master' }}
+      run: npx surge jsdoc.out/ ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
+
+
   backend_tests:
     runs-on: ubuntu-latest
     env:

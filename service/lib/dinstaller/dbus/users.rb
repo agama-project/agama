@@ -89,7 +89,7 @@ module DInstaller
           logger.info "Removing the first user"
           backend.remove_first_user
 
-          PropertiesChanged(USERS_INTERFACE, { "FirstUser" => {} }, [])
+          PropertiesChanged(USERS_INTERFACE, { "FirstUser" => first_user }, [])
           0
         end
 
