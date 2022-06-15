@@ -35,7 +35,6 @@ function formatIp(address, prefix) {
 
 export default function TargetIpsPopup() {
   const [isOpen, setIsOpen] = useState(false);
-
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
   const client = useInstallerClient();
