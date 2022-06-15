@@ -57,25 +57,23 @@ module DInstallerCli
       @root = nil
     end
 
+    # Dumps the settings in YAML format
+    #
+    # @return [String]
     def dump
       to_h.to_yaml
     end
 
+    # Converts the settings to hash
+    #
+    # @return [Hash]
     def to_h
       {
         "product"   => product,
         "languages" => languages,
         "disks"     => disks,
-        "user"      => {
-          "name"      => user&.name,
-          "fullname"  => user&.fullname,
-          "autologin" => user&.autologin,
-          "password"  => user&.password
-        },
-        "root"      => {
-          "ssh_key"  => root&.ssh_key,
-          "password" => root&.password
-        }
+        "user"      => user&.to_h || {},
+        "root"      => root&.to_h || {}
       }
     end
 
@@ -105,6 +103,18 @@ module DInstallerCli
         @password = password
         @autologin = autologin
       end
+
+      # Converts the settings to hash
+      #
+      # @return [Hash]
+      def to_h
+        {
+          "name"      => name,
+          "fullname"  => fullname,
+          "autologin" => autologin,
+          "password"  => password
+        }
+      end
     end
 
     # Class to represent the root user config
@@ -122,6 +132,16 @@ module DInstallerCli
       def initialize(password: nil, ssh_key: nil)
         @password = password
         @ssh_key = ssh_key
+      end
+
+      # Converts the settings to hash
+      #
+      # @return [Hash]
+      def to_h
+        {
+          "ssh_key"  => ssh_key,
+          "password" => password
+        }
       end
     end
   end

@@ -82,5 +82,25 @@ describe DInstallerCli::InstallConfig do
         }
       )
     end
+
+    context "when there is no user" do
+      before do
+        subject.user = nil
+      end
+
+      it "returns an empty hash for the user key" do
+        expect(subject.to_h["user"]).to eq({})
+      end
+    end
+
+    context "when there is no root" do
+      before do
+        subject.root = nil
+      end
+
+      it "returns an empty hash for the root key" do
+        expect(subject.to_h["root"]).to eq({})
+      end
+    end
   end
 end
