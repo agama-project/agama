@@ -9,6 +9,7 @@
     "build": "webpack",
     "eslint": "eslint --ext .js --ext .jsx src/",
     "eslint:fix": "eslint --fix --ext .js --ext .jsx src/",
+    "jsdoc": "npx jsdoc -c jsdoc.conf.json && echo Tip: && echo xdg-open jsdoc.out/index.html",
     "test": "jest"
   },
   "devDependencies": {
@@ -43,6 +44,7 @@
     "jed": "^1.1.1",
     "jest": "^27.5.1",
     "jest-transform-stub": "^2.0.0",
+    "jsdoc": "^3.6.10",
     "mini-css-extract-plugin": "^2.5.3",
     "po2json": "^1.0.0-alpha",
     "qunit": "^2.9.3",
@@ -51,6 +53,7 @@
     "sizzle": "^2.3.3",
     "stdio": "^2.1.0",
     "string-replace-loader": "^3.0.0",
+    "surge": "^0.23.1",
     "terser-webpack-plugin": "^5.1.4",
     "webpack": "^5.54.0",
     "webpack-cli": "^4.9.1"

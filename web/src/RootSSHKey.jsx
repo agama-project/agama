@@ -45,6 +45,14 @@ export default function RootSSHKey() {
       .catch(console.error);
   }, [client.users]);
 
+  useEffect(() => {
+    return client.users.onUsersChange(changes => {
+      if (changes.rootSSHKey !== undefined) {
+        setSSHKey(changes.rootSSHKey);
+      }
+    });
+  }, [client.users]);
+
   if (sshKey === null) return <Skeleton width="55%" fontSize="sm" />;
 
   const open = () => {

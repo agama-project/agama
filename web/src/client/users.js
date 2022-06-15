@@ -1,4 +1,5 @@
 /*
+const USERS_IFACE = "org.opensuse.DInstaller.Users1";
  * Copyright (c) [2022] SUSE LLC
  *
  * All Rights Reserved.
@@ -22,8 +23,12 @@
 import { applyMixin, withDBus } from "./mixins";
 
 const USERS_IFACE = "org.opensuse.DInstaller.Users1";
+const USERS_PATH = "/org/opensuse/DInstaller/Users1";
 
-export default class UsersClient {
+/**
+ * Users client
+ */
+class UsersClient {
   constructor(dbusClient) {
     this._client = dbusClient;
   }
@@ -122,6 +127,25 @@ export default class UsersClient {
     const result = await proxy.SetRootSSHKey(key);
     return result === 0;
   }
+
+  /**
+   * Register a callback to run when properties in the Users object change
+   *
+   * @param {function} handler - callback function
+   */
+  onUsersChange(handler) {
+    return this.onObjectChanged(USERS_PATH, changes => {
+      if (changes.RootPasswordSet) {
+        return handler({ rootPasswordSet: changes.RootPasswordSet.v });
+      } else if (changes.RootSSHKey) {
+        return handler({ rootSSHKey: changes.RootSSHKey.v });
+      } else if (changes.FirstUser) {
+        const [{ v: fullName }, { v: userName }, { v: autologin }] = changes.FirstUser.v;
+        return handler({ firstUser: { fullName, userName, autologin } });
+      }
+    });
+  }
 }
 
 applyMixin(UsersClient, withDBus);
+export default UsersClient;

@@ -67,13 +67,14 @@ export default function Storage() {
   useEffect(() => {
     const loadStorage = async () => {
       const {
-        availableDevices: disks,
-        candidateDevices: [disk]
+        availableDevices,
+        candidateDevices: [candidateDeviceId]
       } = await client.storage.getStorageProposal();
       const actions = await client.storage.getStorageActions();
+      const targetDeviceId = candidateDeviceId || availableDevices[0]?.id;
       dispatch({
         type: "LOAD",
-        payload: { target: disk, targets: disks, actions }
+        payload: { target: targetDeviceId, targets: availableDevices, actions }
       });
     };
 
@@ -84,6 +85,12 @@ export default function Storage() {
     return client.storage.onActionsChange(changes => {
       const { All: newActions } = changes;
       dispatch({ type: "UPDATE_ACTIONS", payload: newActions });
+    });
+  }, [client.storage]);
+
+  useEffect(() => {
+    return client.storage.onStorageProposalChange(changes => {
+      dispatch({ type: "CHANGE_TARGET", payload: { selected: changes } });
     });
   }, [client.storage]);
 

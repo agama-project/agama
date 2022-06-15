@@ -49,6 +49,10 @@ const reducer = (state, action) => {
       return { ...state, formCurrent: action.payload };
     }
 
+    case "MODIFIED": {
+      return { ...state, current: action.payload };
+    }
+
     case "OPEN": {
       return { ...state, isFormOpen: true, formCurrent: state.current };
     }
@@ -82,6 +86,15 @@ export default function LanguageSelector() {
     };
 
     loadLanguages().catch(console.error);
+  }, [client.language]);
+
+  useEffect(() => {
+    return client.language.onLanguageChange(changes => {
+      dispatch({
+        type: "MODIFIED",
+        payload: changes.current
+      });
+    });
   }, [client.language]);
 
   const open = () => dispatch({ type: "OPEN" });

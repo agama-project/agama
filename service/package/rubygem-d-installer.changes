@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Mon Jun 13 10:17:32 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.3:
+  * Extend configuration to support:
+    - Selecting patterns for installation
+      (gh#yast/d-installer#184).
+    - Configuring an LSM (gh#yast/d-installer#173 and
+      gh#yast/d-installer#184).
+    - Specifying the list of storage volumes
+      (gh#yast/d-installer#188).
+
+-------------------------------------------------------------------
 Tue May 17 10:58:43 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.2:

@@ -84,6 +84,15 @@ export default function ProductSelector() {
     loadProducts().catch(console.error);
   }, [client.software]);
 
+  useEffect(() => {
+    return client.software.onProductChange(changes => {
+      dispatch({
+        type: "CHANGE",
+        payload: changes
+      });
+    });
+  }, [client.software]);
+
   const open = () => dispatch({ type: "OPEN" });
 
   const cancel = () => dispatch({ type: "CANCEL" });

@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "fileutils"
 require "dinstaller/package_callbacks"
 require "dinstaller/config"
 require "y2packager/product"
@@ -56,6 +57,7 @@ module DInstaller
 
     def probe(progress)
       logger.info "Probing software"
+      store_original_repos
       Yast::Pkg.SetSolverFlags(
         "ignoreAlreadyRecommended" => false, "onlyRequires" => true
       )
@@ -89,10 +91,7 @@ module DInstaller
       selected_product.select
       logger.info "selected product #{selected_product.inspect}"
 
-      # FIXME: workaround to have at least reasonable proposal
-      Yast::PackagesProposal.AddResolvables("d-installer", :pattern, ["base", "enhanced_base"])
-      # FIXME: temporary workaround to get btrfsprogs into the installed system
-      Yast::PackagesProposal.AddResolvables("d-installer", :package, ["btrfsprogs"])
+      add_resolvables
       proposal = Yast::Packages.Proposal(force_reset = false, reinit = false, _simple = true)
       logger.info "proposal #{proposal["raw_proposal"]}"
 
@@ -123,6 +122,7 @@ module DInstaller
       Yast::Pkg.SourceSaveAll
       Yast::Pkg.TargetFinish
       Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
+      restore_original_repos
     end
 
     # checks if given provision is provided by any resolvable marked for installation
@@ -132,6 +132,20 @@ module DInstaller
 
   private
 
+    # adds resolvables from yaml config for given product
+    def add_resolvables
+      mandatory_patterns = @config.data["software"]["mandatory_patterns"] || []
+      Yast::PackagesProposal.SetResolvables("d-installer", :pattern, mandatory_patterns)
+
+      optional_patterns = @config.data["software"]["optional_patterns"] || []
+      Yast::PackagesProposal.SetResolvables("d-installer", :pattern, optional_patterns,
+        optional: true)
+
+      # FIXME: temporary workaround to get btrfsprogs into the installed system
+      Yast::PackagesProposal.AddResolvables("d-installer", :package, ["btrfsprogs"])
+    end
+
+    # call solver to satisfy dependency or log error
     def solve_dependencies
       res = Yast::Pkg.PkgSolve(unused = true)
       logger.info "solver run #{res.inspect}"
@@ -173,6 +187,31 @@ module DInstaller
       end
       logger.info "Supported products found: #{supported_products.map(&:name).join(",")}"
       supported_products
+    end
+
+    REPOS_BACKUP = "/etc/zypp/repos.d.dinstaller.backup"
+    private_constant :REPOS_BACKUP
+
+    REPOS_DIR = "/etc/zypp/repos.d"
+    private_constant :REPOS_DIR
+
+    # ensure that repos backup is there and repos.d is empty
+    def store_original_repos
+      # Backup was already created, so just remove all repos
+      if File.directory?(REPOS_BACKUP)
+        logger.info "removing #{REPOS_DIR}"
+        FileUtils.rm_rf(REPOS_DIR)
+      else # move repos to backup
+        logger.info "moving #{REPOS_DIR} to #{REPOS_BACKUP}"
+        FileUtils.mv(REPOS_DIR, REPOS_BACKUP)
+      end
+    end
+
+    def restore_original_repos
+      logger.info "removing #{REPOS_DIR}"
+      FileUtils.rm_rf(REPOS_DIR)
+      logger.info "moving #{REPOS_BACKUP} to #{REPOS_DIR}"
+      FileUtils.mv(REPOS_BACKUP, REPOS_DIR)
     end
   end
 end

@@ -27,11 +27,11 @@ module DInstallerCli
   #
   # The YAML file has the following structure:
   #
+  # product: <product-id>
+  #
   # languages:
   #   - <language-id>
   #   - <language-id>
-  #
-  # product: <product-id>
   #
   # disks:
   #   - <device-name>
@@ -87,14 +87,14 @@ module DInstallerCli
     # @return [InstallConfig]
     def config_from(content)
       InstallConfig.new.tap do |config|
-        languages = content["languages"]
         product = content["product"]
+        languages = content["languages"]
         disks = content["disks"]
         user = content["user"]
         root = content["root"]
 
-        config.languages = languages if languages
         config.product = product if product
+        config.languages = languages if languages
         config.disks = disks if disks
         config.user = user_config_from(user) if user
         config.root = root_config_from(root) if root
