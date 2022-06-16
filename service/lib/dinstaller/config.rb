@@ -37,8 +37,8 @@ module DInstaller
       attr_accessor :current, :base
 
       # Loads base and current config reading configuration from the system
-      def load
-        @base = ConfigReader.new.config
+      def load(logger = Logger.new($stdout))
+        @base = ConfigReader.new(logger: logger).config
         @current = @base&.copy
       end
 

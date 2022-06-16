@@ -61,7 +61,7 @@ module DInstaller
 
       # Configuration
       def config
-        Config.load unless Config.current
+        Config.load(logger) unless Config.current
         Config.current
       end
 
