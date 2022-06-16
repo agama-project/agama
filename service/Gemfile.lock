@@ -51,7 +51,7 @@ GEM
       rspec-support (~> 3.11.0)
     rspec-support (3.11.0)
     ruby-augeas (0.5.0)
-    ruby-dbus (0.18.0.beta6)
+    ruby-dbus (0.18.0.beta7)
       rexml
     simplecov (0.21.2)
       docile (~> 1.1)
