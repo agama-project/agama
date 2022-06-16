@@ -22,6 +22,7 @@ const USERS_IFACE = "org.opensuse.DInstaller.Users1";
 
 import { applyMixin, withDBus } from "./mixins";
 
+const USERS_SERVICE = "org.opensuse.DInstaller.Users";
 const USERS_IFACE = "org.opensuse.DInstaller.Users1";
 const USERS_PATH = "/org/opensuse/DInstaller/Users1";
 
@@ -29,8 +30,10 @@ const USERS_PATH = "/org/opensuse/DInstaller/Users1";
  * Users client
  */
 class UsersClient {
-  constructor(dbusClient) {
-    this._client = dbusClient;
+  constructor() {
+    this._client = cockpit.dbus(USERS_SERVICE, {
+      bus: "system", superuser: "try"
+    });
   }
 
   /**
