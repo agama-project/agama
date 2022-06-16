@@ -156,8 +156,6 @@ module DInstaller
       elsif File.directory?(path)
         Dir.glob("#{path}/*.{yml,yaml}")
       else
-        logger.debug("Ignoring not valid path: #{path}")
-
         []
       end
     end
