@@ -41,7 +41,8 @@ module DInstaller
   #
   # It is responsible for orchestrating the installation process. For module
   # specific stuff it delegates it to the corresponding module class (e.g.,
-  # {DInstaller::Software}, {DInstaller::Storage::Proposal}, etc.).
+  # {DInstaller::Network}, {DInstaller::Storage::Proposal}, etc.) or asks
+  # other services via D-Bus (e.g., `org.opensuse.DInstaller.Software`).
   class Manager
     # @return [Logger]
     attr_reader :logger
