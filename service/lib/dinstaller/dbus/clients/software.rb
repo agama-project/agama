@@ -55,8 +55,10 @@ module DInstaller
         end
 
         # Starts the probing process
-        def probe
-          dbus_object.Probe
+        def probe(&block)
+          return dbus_object.Probe unless block_given?
+
+          dbus_object.Probe(&block)
         end
 
         def install

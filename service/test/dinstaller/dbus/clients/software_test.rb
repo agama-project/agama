@@ -79,4 +79,24 @@ describe DInstaller::DBus::Clients::Software do
       subject.select_product("Tumbleweed")
     end
   end
+
+  describe "#Probe" do
+    let(:dbus_object) { double(::DBus::ProxyObject, Probe: nil) }
+    it "calls the D-Bus Probe method" do
+      expect(dbus_object).to receive(:Probe)
+
+      subject.probe
+    end
+
+    context "when a block is given" do
+      it "passes the block to the Probe method (async)" do
+        callback = proc {}
+        expect(dbus_object).to receive(:Probe) do |&block|
+          expect(block).to be(callback)
+        end
+        
+        subject.probe(&callback)
+      end
+    end
+  end
 end

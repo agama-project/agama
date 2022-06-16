@@ -194,7 +194,7 @@ module DInstaller
 
       progress.next_step("Probing Software")
       security.probe(progress)
-      software.probe
+      software.probe { logger.info "Probing software done" }
 
       progress.next_step("Probing Network")
       network.probe(progress)
