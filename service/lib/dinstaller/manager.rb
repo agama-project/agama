@@ -103,7 +103,7 @@ module DInstaller
       software.install
 
       on_target do
-        progress.next_step("Writting Users")
+        progress.next_step("Writing Users")
         users.write(progress)
 
         progress.next_step("Writing Network Configuration")

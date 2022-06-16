@@ -64,7 +64,7 @@ module DInstaller
 
       # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
       Yast::Stage.Set("normal")
-      progress.init_minor_steps(3, "Initialiaze target repositories")
+      progress.init_minor_steps(3, "Initialize target repositories")
       Yast::Pkg.TargetInitialize("/")
       import_gpg_keys
 
