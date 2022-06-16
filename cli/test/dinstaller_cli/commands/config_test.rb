@@ -24,19 +24,19 @@ require "dinstaller_cli/commands/config"
 require "dinstaller_cli/install_config"
 require "dinstaller_cli/install_config_reader"
 require "dinstaller_cli/clients/language"
-require "dinstaller_cli/clients/software"
 require "dinstaller_cli/clients/storage"
 require "dinstaller/dbus/clients/users"
+require "dinstaller/dbus/clients/software"
 
 describe DInstallerCli::Commands::Config do
   before do
-    allow(DInstallerCli::Clients::Software).to receive(:new).and_return(software_client)
+    allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software_client)
     allow(DInstallerCli::Clients::Language).to receive(:new).and_return(language_client)
     allow(DInstallerCli::Clients::Storage).to receive(:new).and_return(storage_client)
     allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(users_client)
   end
 
-  let(:software_client) { instance_double(DInstallerCli::Clients::Software) }
+  let(:software_client) { instance_double(DInstaller::DBus::Clients::Software) }
   let(:language_client) { instance_double(DInstallerCli::Clients::Language) }
   let(:storage_client) { instance_double(DInstallerCli::Clients::Storage) }
   let(:users_client) { instance_double(DInstaller::DBus::Clients::Users) }

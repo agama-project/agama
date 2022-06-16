@@ -21,17 +21,17 @@
 
 require_relative "../../test_helper"
 require "dinstaller_cli/commands/software"
-require "dinstaller/clients/dbus/software"
+require "dinstaller/dbus/clients/software"
 
 describe DInstallerCli::Commands::Software do
   subject { described_class.new }
 
   before do
     allow(subject).to receive(:say)
-    allow(DInstallerCli::Clients::Software).to receive(:new).and_return(client)
+    allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(client)
   end
 
-  let(:client) { instance_double(DInstallerCli::Clients::Software) }
+  let(:client) { instance_double(DInstaller::DBus::Clients::Software) }
 
   describe "#available_products" do
     before do
