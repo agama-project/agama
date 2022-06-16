@@ -94,7 +94,7 @@ describe DInstaller::DBus::Clients::Software do
         expect(dbus_object).to receive(:Probe) do |&block|
           expect(block).to be(callback)
         end
-        
+
         subject.probe(&callback)
       end
     end

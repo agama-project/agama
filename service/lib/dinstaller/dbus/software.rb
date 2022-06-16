@@ -42,6 +42,7 @@ module DInstaller
         super(PATH)
       end
 
+      # rubocop:disable Metrics/BlockLength
       dbus_interface SOFTWARE_INTERFACE do
         dbus_reader :available_base_products, "a(ssa{sv})"
         attr_writer :available_base_products
@@ -81,6 +82,7 @@ module DInstaller
           backend.finish(DInstaller::Progress.new)
         end
       end
+      # rubocop:enable Metrics/BlockLength
 
       def available_base_products
         backend.products.map do |product|
