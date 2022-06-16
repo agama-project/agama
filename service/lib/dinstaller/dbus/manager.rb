@@ -94,15 +94,7 @@ module DInstaller
 
       # @see DInstaller::Manager#progress
       def progress
-        prg = backend.progress
-
-        [
-          prg.message,
-          prg.total_steps,
-          prg.current_step,
-          prg.total_minor_steps,
-          prg.current_minor_step
-        ].freeze
+        backend.progress.to_a
       end
 
     private

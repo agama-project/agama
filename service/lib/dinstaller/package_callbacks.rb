@@ -46,7 +46,7 @@ module DInstaller
         fun_ref(method(:package_installed), "string (integer, string)")
       )
 
-      @progress.init_minor_steps(@total, msg)
+      @progress.init_progress(@total, msg)
     end
 
   private
@@ -58,7 +58,7 @@ module DInstaller
     # TODO: error handling
     def package_installed(_error, _reason)
       @installed += 1
-      @progress.next_minor_step(msg)
+      @progress.next_step(msg)
 
       ""
     end

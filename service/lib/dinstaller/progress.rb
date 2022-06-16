@@ -109,6 +109,15 @@ module DInstaller
       trigger_callbacks
     end
 
+    # Returns an array containing the progress information
+    #
+    # Useful to expose the progress information as a D-Bus property.
+    #
+    # @return [Array<String,Integer,Integer,Integer,Integer>]
+    def to_a
+      [message, total_steps, current_step, total_minor_steps, current_minor_step].freeze
+    end
+
   private
 
     def trigger_callbacks

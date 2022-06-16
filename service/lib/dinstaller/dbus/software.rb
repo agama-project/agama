@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/progress"
 
 module DInstaller
   module DBus
@@ -38,6 +39,9 @@ module DInstaller
       def initialize(backend, logger)
         @backend = backend
         @logger = logger
+
+        @progress_handler = DInstaller::Progress.new
+        register_progress_callback
 
         super(PATH)
       end
@@ -67,20 +71,28 @@ module DInstaller
         end
 
         dbus_method :Propose do
-          backend.propose
+          backend.propose(progress_handler)
         end
 
         dbus_method :Probe do
-          backend.probe(DInstaller::Progress.new)
+          backend.probe(progress_handler)
         end
 
         dbus_method :Install do
-          backend.install(DInstaller::Progress.new)
+          backend.install(progress_handler)
         end
 
         dbus_method :Finish do
-          backend.finish(DInstaller::Progress.new)
+          backend.finish(progress_handler)
         end
+
+        # Progress has struct with values:
+        #   s message
+        #   t total major steps to do
+        #   t current major step (0-based)
+        #   t total minor steps. Can be zero which means no minor steps
+        #   t current minor step
+        dbus_reader :progress, "(stttt)"
       end
       # rubocop:enable Metrics/BlockLength
 
@@ -98,6 +110,10 @@ module DInstaller
         backend.select_product(product_id)
       end
 
+      def progress
+        progress_handler.to_a
+      end
+
     private
 
       # @return [Logger]
@@ -105,6 +121,18 @@ module DInstaller
 
       # @return [DInstaller::Software]
       attr_reader :backend
+
+      # @return [DInstaller::Progress]
+      attr_reader :progress_handler
+
+      # Registers callback to be called when the progress changes
+      #
+      # The callback will emit a signal
+      def register_progress_callback
+        progress_handler.on_change do
+          PropertiesChanged(SOFTWARE_INTERFACE, { "Progress" => progress }, [])
+        end
+      end
     end
   end
 end
