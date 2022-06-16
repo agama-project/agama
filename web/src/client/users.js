@@ -21,6 +21,7 @@ const USERS_IFACE = "org.opensuse.DInstaller.Users1";
  */
 
 import { applyMixin, withDBus } from "./mixins";
+import cockpit from "../lib/cockpit";
 
 const USERS_SERVICE = "org.opensuse.DInstaller.Users";
 const USERS_IFACE = "org.opensuse.DInstaller.Users1";

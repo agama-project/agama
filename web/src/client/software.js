@@ -19,8 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import cockpit from "../lib/cockpit";
 import { applyMixin, withDBus } from "./mixins";
+import cockpit from "../lib/cockpit";
 
 const SOFTWARE_SERVICE = "org.opensuse.DInstaller.Software";
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
