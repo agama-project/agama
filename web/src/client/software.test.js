@@ -20,6 +20,7 @@
  */
 
 import SoftwareClient from "./software";
+import cockpit from "../lib/cockpit";
 
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
 
@@ -33,6 +34,7 @@ const softProxy = {
 };
 
 beforeEach(() => {
+  cockpit.dbus = jest.fn().mockImplementation(() => dbusClient);
   dbusClient.proxy = jest.fn().mockImplementation(iface => {
     if (iface === SOFTWARE_IFACE) return softProxy;
   });
