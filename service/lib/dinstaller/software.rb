@@ -23,6 +23,7 @@ require "yast"
 require "fileutils"
 require "dinstaller/package_callbacks"
 require "dinstaller/config"
+require "dinstaller/progress"
 require "y2packager/product"
 
 Yast.import "PackageInstallation"
@@ -42,11 +43,15 @@ module DInstaller
 
     attr_reader :product, :products
 
+    # @return [Progress]
+    attr_reader :progress
+
     def initialize(config, logger)
       @logger = logger
       @products = []
       @product = "" # do not use nil here, otherwise dbus crash
       @config = config
+      @progress = Progress.new
     end
 
     def select_product(name)
@@ -55,7 +60,7 @@ module DInstaller
       @product = name
     end
 
-    def probe(progress)
+    def probe
       logger.info "Probing software"
       store_original_repos
       Yast::Pkg.SetSolverFlags(
@@ -83,7 +88,7 @@ module DInstaller
       Yast::Stage.Set("initial")
     end
 
-    def propose(_progress)
+    def propose
       Yast::Pkg.TargetFinish # ensure that previous target is closed
       Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
       Yast::Pkg.TargetLoad
@@ -101,7 +106,7 @@ module DInstaller
       nil
     end
 
-    def install(progress)
+    def install
       PackageCallbacks.setup(progress, count_packages)
 
       # TODO: error handling
@@ -116,9 +121,7 @@ module DInstaller
     end
 
     # Writes the repositories information to the installed system
-    #
-    # @param _progress [Progress] Progress reporting object
-    def finish(_progress)
+    def finish
       progress.init_progress(1, "Writing repositories to the target system")
       Yast::Pkg.SourceSaveAll
       Yast::Pkg.TargetFinish

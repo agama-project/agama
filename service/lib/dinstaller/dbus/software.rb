@@ -40,7 +40,6 @@ module DInstaller
         @backend = backend
         @logger = logger
 
-        @progress_handler = DInstaller::Progress.new
         register_progress_callback
 
         super(PATH)
@@ -71,19 +70,19 @@ module DInstaller
         end
 
         dbus_method :Propose do
-          backend.propose(progress_handler)
+          backend.propose
         end
 
         dbus_method :Probe do
-          backend.probe(progress_handler)
+          backend.probe
         end
 
         dbus_method :Install do
-          backend.install(progress_handler)
+          backend.install
         end
 
         dbus_method :Finish do
-          backend.finish(progress_handler)
+          backend.finish
         end
 
         # Progress has struct with values:
@@ -111,7 +110,7 @@ module DInstaller
       end
 
       def progress
-        progress_handler.to_a
+        backend.progress.to_a
       end
 
     private
@@ -122,14 +121,11 @@ module DInstaller
       # @return [DInstaller::Software]
       attr_reader :backend
 
-      # @return [DInstaller::Progress]
-      attr_reader :progress_handler
-
       # Registers callback to be called when the progress changes
       #
       # The callback will emit a signal
       def register_progress_callback
-        progress_handler.on_change do
+        backend.progress.on_change do
           PropertiesChanged(SOFTWARE_INTERFACE, { "Progress" => progress }, [])
         end
       end
