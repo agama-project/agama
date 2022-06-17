@@ -55,20 +55,28 @@ module DInstaller
         end
 
         # Starts the probing process
-        def probe(&block)
+        #
+        # If a block is given, the method returns inmmediatelly and the probing is performed in an
+        # asynchronous way.
+        #
+        # @param done [Proc] Block to execute once the probing is done
+        def probe(&done)
           return dbus_object.Probe unless block_given?
 
-          dbus_object.Probe(&block)
+          dbus_object.Probe(&done)
         end
 
+        # Perform package installation
         def install
           dbus_object.Install
         end
 
+        # Make software proposal
         def propose
           dbus_object.Propose
         end
 
+        # Finish software installation
         def finish
           dbus_object.Finish
         end
