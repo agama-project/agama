@@ -61,8 +61,6 @@ module DInstaller
         #
         # @param done [Proc] Block to execute once the probing is done
         def probe(&done)
-          return dbus_object.Probe unless block_given?
-
           dbus_object.Probe(&done)
         end
 
