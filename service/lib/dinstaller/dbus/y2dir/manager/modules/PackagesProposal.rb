@@ -24,8 +24,6 @@ require "dinstaller/dbus/clients/software"
 module Yast
   # Replacement for the Yast::PackagesProposal module
   class PackagesProposalClass < Module
-    include Yast::Logger
-
     def main
       puts "Loading mocked module #{__FILE__}"
       @client = DInstaller::DBus::Clients::Software.new
