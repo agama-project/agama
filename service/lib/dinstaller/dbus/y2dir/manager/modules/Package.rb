@@ -36,14 +36,6 @@ module Yast
     def Available(_package_name)
       true
     end
-
-    # Installs a package
-    #
-    # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/packages/src/modules/Package.rb#L398
-    # @todo Perform a real D-Bus call.
-    def Install(_package_name)
-      true
-    end
   end
 
   Package = PackageClass.new
