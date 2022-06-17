@@ -37,7 +37,9 @@ describe DInstaller::Manager do
   end
   let(:language) { instance_double(DInstaller::Language, probe: nil, install: nil) }
   let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
-  let(:storage) { instance_double(DInstaller::Storage::Manager, probe: nil, install: nil) }
+  let(:storage) do
+    instance_double(DInstaller::Storage::Manager, probe: nil, install: nil, finish: nil)
+  end
   let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
   let(:status_manager) do
     instance_double(DInstaller::StatusManager, change: nil)
@@ -91,8 +93,10 @@ describe DInstaller::Manager do
       expect(language).to receive(:install).with(subject.progress)
       expect(network).to receive(:install).with(subject.progress)
       expect(software).to receive(:install)
+      expect(software).to receive(:finish)
       expect(security).to receive(:write).with(subject.progress)
       expect(storage).to receive(:install).with(subject.progress)
+      expect(storage).to receive(:finish)
       expect(users_client).to receive(:write).with(subject.progress)
       subject.install
     end

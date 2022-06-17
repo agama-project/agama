@@ -32,11 +32,15 @@ describe DInstaller::DBus::Clients::Software do
     allow(dbus_object).to receive(:introspect)
     allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Software1")
       .and_return(software_iface)
+
+    allow(service).to receive(:object).with("/org/opensuse/DInstaller/Software/Proposal1")
+      .and_return(dbus_proposal)
   end
 
   let(:bus) { instance_double(::DBus::SystemBus) }
   let(:service) { instance_double(::DBus::Service) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
+  let(:dbus_proposal) { instance_double(::DBus::ProxyObject, introspect: nil) }
   let(:software_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
   subject { described_class.new }
