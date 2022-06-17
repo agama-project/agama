@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
@@ -49,7 +51,8 @@ module DInstaller
         end
 
         dbus_interface INTERFACE do
-          dbus_method :AddResolvables, "in Id:s, in Type:y, in Resolvables:as" do |id, type, resolvables|
+          dbus_method :AddResolvables,
+            "in Id:s, in Type:y, in Resolvables:as" do |id, type, resolvables|
             Yast::PackagesProposal.AddResolvables(id, TYPES[type], resolvables)
           end
 
@@ -57,11 +60,13 @@ module DInstaller
             [Yast::PackagesProposal.GetResolvables(id, TYPES[type])]
           end
 
-          dbus_method :SetResolvables, "in Id:s, in Type:y, in Resolvables:as" do |id, type, resolvables|
+          dbus_method :SetResolvables,
+            "in Id:s, in Type:y, in Resolvables:as" do |id, type, resolvables|
             Yast::PackagesProposal.SetResolvables(id, TYPES[type], resolvables)
           end
 
-          dbus_method :RemoveResolvables, "in Id:s, in Type:y, in Resolvables:as" do |id, type, resolvables|
+          dbus_method :RemoveResolvables,
+            "in Id:s, in Type:y, in Resolvables:as" do |id, type, resolvables|
             Yast::PackagesProposal.RemoveResolvables(id, TYPES[type], resolvables)
           end
         end
