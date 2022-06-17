@@ -30,4 +30,5 @@ module DInstaller
 end
 
 require "dinstaller/dbus/clients/dinstaller"
+require "dinstaller/dbus/clients/software"
 require "dinstaller/dbus/clients/users"

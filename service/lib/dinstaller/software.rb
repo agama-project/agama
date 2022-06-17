@@ -23,6 +23,7 @@ require "yast"
 require "fileutils"
 require "dinstaller/package_callbacks"
 require "dinstaller/config"
+require "dinstaller/progress"
 require "y2packager/product"
 
 Yast.import "PackageInstallation"
@@ -42,11 +43,15 @@ module DInstaller
 
     attr_reader :product, :products
 
-    def initialize(logger, config)
+    # @return [Progress]
+    attr_reader :progress
+
+    def initialize(config, logger)
       @logger = logger
       @products = []
       @product = "" # do not use nil here, otherwise dbus crash
       @config = config
+      @progress = Progress.new
     end
 
     def select_product(name)
@@ -55,7 +60,7 @@ module DInstaller
       @product = name
     end
 
-    def probe(progress)
+    def probe
       logger.info "Probing software"
       store_original_repos
       Yast::Pkg.SetSolverFlags(
@@ -64,22 +69,22 @@ module DInstaller
 
       # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
       Yast::Stage.Set("normal")
-      progress.init_minor_steps(3, "Initialiaze target repositories")
+      progress.init_progress(3, "Initialize target repositories")
       Yast::Pkg.TargetInitialize("/")
       import_gpg_keys
 
-      progress.next_minor_step("Initialize sources")
+      progress.next_step("Initialize sources")
       add_base_repo
 
-      progress.next_minor_step("Searching for supported products")
+      progress.next_step("Searching for supported products")
       @products = find_products
       @product = @products.first&.name || ""
       raise "No product available" if @product.empty?
 
-      progress.next_minor_step("Making initial proposal")
+      progress.next_step("Making the initial proposal")
       proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
       logger.info "proposal #{proposal["raw_proposal"]}"
-      progress.next_minor_step("Software probing finished")
+      progress.next_step("Software probing finished")
       Yast::Stage.Set("initial")
     end
 
@@ -101,7 +106,7 @@ module DInstaller
       nil
     end
 
-    def install(progress)
+    def install
       PackageCallbacks.setup(progress, count_packages)
 
       # TODO: error handling
@@ -116,12 +121,12 @@ module DInstaller
     end
 
     # Writes the repositories information to the installed system
-    #
-    # @param _progress [Progress] Progress reporting object
-    def finish(_progress)
+    def finish
+      progress.init_progress(1, "Writing repositories to the target system")
       Yast::Pkg.SourceSaveAll
       Yast::Pkg.TargetFinish
       Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
+      progress.next_step("Restoring original repositories")
       restore_original_repos
     end
 

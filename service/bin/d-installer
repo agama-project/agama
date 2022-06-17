@@ -30,8 +30,42 @@ require "rubygems"
 require "bundler/setup"
 require "dinstaller/dbus/service_runner"
 
-service_name = $ARGV[0]&.to_sym || :manager
-service_runner = DInstaller::DBus::ServiceRunner.new(
-  service_name, logger: Logger.new($stdout)
-)
-service_runner.run
+# Runs the service with the given name
+#
+# @param name [Symbol] Service name
+# @see ORDERED_SERVICES
+def start_service(name)
+  logger = Logger.new($stdout, progname: name.to_s)
+  service_runner = DInstaller::DBus::ServiceRunner.new(
+    name, logger: logger
+  )
+  service_runner.run
+end
+
+ORDERED_SERVICES = [:software, :users, :manager].freeze
+
+# Starts all the services
+#
+# @return [Array<Integer>] PIDs
+# @see ORDERED_SERVICES
+def start_all_services
+  ORDERED_SERVICES.map do |name|
+    fork { exec("#{__FILE__} #{name}") }
+  end
+end
+
+if ARGV.empty?
+  pids = start_all_services
+  Signal.trap("SIGINT") do
+    puts "Stopping all services..."
+    exit
+  end
+  Process.wait
+else
+  name = ARGV[0]
+  Signal.trap("SIGINT") do
+    puts "Stopping #{name} service..."
+    exit
+  end
+  start_service(name.to_sym)
+end

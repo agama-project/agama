@@ -19,7 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
 require "yaml"
 require "dinstaller/config_reader"
 
@@ -37,8 +36,8 @@ module DInstaller
       attr_accessor :current, :base
 
       # Loads base and current config reading configuration from the system
-      def load
-        @base = ConfigReader.new.config
+      def load(logger = Logger.new($stdout))
+        @base = ConfigReader.new(logger: logger).config
         @current = @base&.copy
       end
 

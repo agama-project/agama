@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    d-installer (0.2)
+    d-installer (0.3)
       cfa (~> 1.0.2)
       cfa_grub2 (~> 2.0.0)
       cheetah (~> 1.0.0)
@@ -51,7 +51,7 @@ GEM
       rspec-support (~> 3.11.0)
     rspec-support (3.11.0)
     ruby-augeas (0.5.0)
-    ruby-dbus (0.18.0.beta6)
+    ruby-dbus (0.18.0.beta7)
       rexml
     simplecov (0.21.2)
       docile (~> 1.1)

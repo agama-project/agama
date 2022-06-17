@@ -20,7 +20,9 @@
  */
 
 import { applyMixin, withDBus } from "./mixins";
+import cockpit from "../lib/cockpit";
 
+const SOFTWARE_SERVICE = "org.opensuse.DInstaller.Software";
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
 const SOFTWARE_PATH = "/org/opensuse/DInstaller/Software1";
 
@@ -28,8 +30,10 @@ const SOFTWARE_PATH = "/org/opensuse/DInstaller/Software1";
  * Software client
  */
 class SoftwareClient {
-  constructor(dbusClient) {
-    this._client = dbusClient;
+  constructor() {
+    this._client = cockpit.dbus(SOFTWARE_SERVICE, {
+      bus: "system", superuser: "try"
+    });
   }
 
   /**

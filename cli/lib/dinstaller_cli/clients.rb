@@ -27,5 +27,4 @@ end
 
 require "dinstaller_cli/clients/manager"
 require "dinstaller_cli/clients/language"
-require "dinstaller_cli/clients/software"
 require "dinstaller_cli/clients/storage"

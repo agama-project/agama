@@ -20,6 +20,7 @@
  */
 
 import UsersClient from "./users";
+import cockpit from "../lib/cockpit";
 
 const USERS_IFACE = "org.opensuse.DInstaller.Users1";
 
@@ -38,6 +39,7 @@ const usersProxy = {
 };
 
 beforeEach(() => {
+  cockpit.dbus = jest.fn().mockImplementation(() => dbusClient);
   dbusClient.proxy = jest.fn().mockImplementation(iface => {
     if (iface === USERS_IFACE) return usersProxy;
   });
