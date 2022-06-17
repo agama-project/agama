@@ -55,7 +55,7 @@ describe DInstaller::Software do
   describe "#probe" do
     it "initializes the package system" do
       expect(Yast::Pkg).to receive(:TargetInitialize).with("/")
-      subject.probe(progress)
+      subject.probe
     end
 
     context "when GPG keys are available at /" do
@@ -65,13 +65,13 @@ describe DInstaller::Software do
 
       it "imports the GPG keys" do
         expect(Yast::Pkg).to receive(:ImportGPGKey).with(gpg_keys.first, true)
-        subject.probe(progress)
+        subject.probe
       end
     end
 
     it "creates a packages proposal" do
       expect(Yast::Packages).to receive(:Proposal)
-      subject.probe(progress)
+      subject.probe
     end
 
     it "registers the repository from config" do
@@ -81,14 +81,14 @@ describe DInstaller::Software do
       )
       expect(Yast::Pkg).to receive(:SourceCreate).with(url, "/")
       expect(Yast::Pkg).to receive(:SourceSaveAll)
-      subject.probe(progress)
+      subject.probe
     end
 
     context "when no supported products are found" do
       let(:products) { [] }
 
       it "raises an exception" do
-        expect { subject.probe(progress) }.to raise_error(RuntimeError)
+        expect { subject.probe }.to raise_error(RuntimeError)
       end
     end
   end
@@ -101,7 +101,7 @@ describe DInstaller::Software do
     end
 
     describe "after probing" do
-      before { subject.probe(progress) }
+      before { subject.probe }
 
       it "returns the name of the found products that are supported" do
         expect(subject.products).to eq([tw_prod])
