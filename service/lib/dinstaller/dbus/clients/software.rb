@@ -66,17 +66,17 @@ module DInstaller
           dbus_object.Probe(&done)
         end
 
-        # Perform package installation
+        # Performs the packages installation
         def install
           dbus_object.Install
         end
 
-        # Make software proposal
+        # Makes the software proposal
         def propose
           dbus_object.Propose
         end
 
-        # Finish software installation
+        # Finishes the software installation
         def finish
           dbus_object.Finish
         end

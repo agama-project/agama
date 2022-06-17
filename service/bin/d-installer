@@ -30,7 +30,7 @@ require "rubygems"
 require "bundler/setup"
 require "dinstaller/dbus/service_runner"
 
-# Run the service with the given name
+# Runs the service with the given name
 #
 # @param name [Symbol] Service name
 # @see ORDERED_SERVICES
@@ -44,7 +44,7 @@ end
 
 ORDERED_SERVICES = [:software, :users, :manager].freeze
 
-# Start all the services
+# Starts all the services
 #
 # @return [Array<Integer>] PIDs
 # @see ORDERED_SERVICES
