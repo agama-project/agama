@@ -26,9 +26,15 @@ module DInstaller
     module Clients
       # D-Bus client for software configuration
       class Software
+        TYPES = [:package, :pattern].freeze
+        private_constant :TYPES
+
         def initialize
           @dbus_object = service.object("/org/opensuse/DInstaller/Software1")
           @dbus_object.introspect
+
+          @dbus_proposal = service.object("/org/opensuse/DInstaller/Software/Proposal1")
+          @dbus_proposal.introspect
         end
 
         # Available products for the installation
@@ -79,7 +85,46 @@ module DInstaller
           dbus_object.Finish
         end
 
+        # Add the given list of resolvables to the packages proposal
+        #
+        # @param unique_id [String] Unique identifier for the resolvables list
+        # @param type [Symbol] Resolvables type (:package or :pattern)
+        # @param resolvables [Array<String>] Resolvables to add
+        def add_resolvables(unique_id, type, resolvables)
+          dbus_proposal.AddResolvables(unique_id, TYPES.index(type), resolvables)
+        end
+
+        # Returns a list of resolvables
+        #
+        # @param unique_id [String] Unique identifier for the resolvables list
+        # @param type [Symbol] Resolvables type (:package or :pattern)
+        # @return [Array<String>] Resolvables
+        def get_resolvables(unique_id, type)
+          dbus_proposal.GetResolvables(unique_id, TYPES.index(type)).first
+        end
+
+        # Replace a list of resolvables in the packages proposal
+        #
+        # @param unique_id [String] Unique identifier for the resolvables list
+        # @param type [Symbol] Resolvables type (:package or :pattern)
+        # @param resolvables [Array<String>] List of resolvables
+        def set_resolvables(unique_id, type, resolvables)
+          dbus_proposal.SetResolvables(unique_id, TYPES.index(type), resolvables)
+        end
+
+        # Remove resolvables from a list
+        #
+        # @param unique_id [String] Unique identifier for the resolvables list
+        # @param type [Symbol] Resolvables type (:package or :pattern)
+        # @param resolvables [Array<String>] Resolvables to remove
+        def remove_resolvables(unique_id, type, resolvables)
+          dbus_proposal.RemoveResolvables(unique_id, TYPES.index(type), resolvables)
+        end
+
       private
+
+        # @return [::DBus::Object]
+        attr_reader :dbus_proposal
 
         # @return [::DBus::Object]
         attr_reader :dbus_object
