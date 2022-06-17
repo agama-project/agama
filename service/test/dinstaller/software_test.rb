@@ -108,4 +108,33 @@ describe DInstaller::Software do
       end
     end
   end
+
+  describe "#finish" do
+    let(:rootdir) { Dir.mktmpdir }
+    let(:repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d") }
+    let(:backup_repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d.backup") }
+
+    before do
+      stub_const("DInstaller::Software::REPOS_DIR", repos_dir)
+      stub_const("DInstaller::Software::REPOS_BACKUP", backup_repos_dir)
+      FileUtils.mkdir_p(repos_dir)
+      FileUtils.mkdir_p(backup_repos_dir)
+      FileUtils.touch(File.join(backup_repos_dir, "example.repo"))
+      puts Dir[File.join(repos_dir, "**", "*")]
+    end
+
+    after do
+      FileUtils.remove_entry(rootdir)
+    end
+
+    it "releases the packaging system and restores the backup" do
+      expect(Yast::Pkg).to receive(:SourceSaveAll)
+      expect(Yast::Pkg).to receive(:TargetFinish)
+      expect(Yast::Pkg).to receive(:SourceCacheCopyTo)
+        .with(Yast::Installation.destdir)
+
+      subject.finish
+      expect(File).to exist(File.join(repos_dir, "example.repo"))
+    end
+  end
 end
