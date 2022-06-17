@@ -25,5 +25,5 @@ module DInstaller
   end
 end
 
-require "dinstaller/dbus/software/main"
+require "dinstaller/dbus/software/manager"
 require "dinstaller/dbus/software/proposal"

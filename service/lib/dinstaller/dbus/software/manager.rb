@@ -25,7 +25,7 @@ module DInstaller
   module DBus
     module Software
       # D-Bus object to manage software installation
-      class Main < ::DBus::Object
+      class Manager < ::DBus::Object
         PATH = "/org/opensuse/DInstaller/Software1"
         private_constant :PATH
 
