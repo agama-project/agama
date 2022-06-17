@@ -54,7 +54,7 @@ def start_all_services
   end
 end
 
-if $ARGV.empty?
+if ARGV.empty?
   pids = start_all_services
   Signal.trap("SIGINT") do
     puts "Stopping all services..."
