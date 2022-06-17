@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "dinstaller/progress"
 
 module DInstaller
   module DBus
