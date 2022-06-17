@@ -83,7 +83,7 @@ module DInstaller
       Yast::Stage.Set("initial")
     end
 
-    def propose
+    def propose(_progress)
       Yast::Pkg.TargetFinish # ensure that previous target is closed
       Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
       Yast::Pkg.TargetLoad
