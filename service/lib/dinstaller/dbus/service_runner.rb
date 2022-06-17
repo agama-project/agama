@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "eventmachine"
-require "dinstaller/manager"
+require "logger"
 
 module DInstaller
   module DBus
@@ -61,6 +61,8 @@ module DInstaller
 
       # Configuration
       def config
+        # TODO: do not require "yast" until it is needed
+        require "dinstaller/config"
         Config.load(logger) unless Config.current
         Config.current
       end
@@ -80,6 +82,10 @@ module DInstaller
 
       # Initializes YaST
       def initialize_yast
+        require "yast"
+        Yast.import "Mode"
+        Yast.import "Stage"
+
         Yast::Mode.SetUI("commandline")
         Yast::Mode.SetMode("installation")
         # Set stage to initial, so it will act as installer for some cases like
