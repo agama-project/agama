@@ -54,6 +54,11 @@ module DInstaller
         Yast::WFM.CallFunction("inst_prepdisk", [])
       end
 
+      # Umounts the target file system
+      def finish
+        Yast::WFM.CallFunction("umount_finish", ["Write"])
+      end
+
       # Storage proposal manager
       #
       # @return [Storage::Proposal]
