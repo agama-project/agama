@@ -49,8 +49,6 @@ module DInstaller
         dbus_interface SOFTWARE_INTERFACE do
           dbus_reader :available_base_products, "a(ssa{sv})"
 
-          dbus_watcher :available_base_products
-
           dbus_reader :selected_base_product, "s"
 
           dbus_method :SelectProduct, "in ProductID:s" do |product_id|
