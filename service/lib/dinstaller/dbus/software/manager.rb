@@ -61,6 +61,7 @@ module DInstaller
             PropertiesChanged(SOFTWARE_INTERFACE, { "SelectedBaseProduct" => product_id }, [])
           end
 
+          # TODO: just for performance comparison (see `perf.rb`)
           dbus_method :ProvisionSelected, "in Provision:s, out Result:b" do |provision|
             backend.provision_selected?(provision)
           end

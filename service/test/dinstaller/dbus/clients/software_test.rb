@@ -103,5 +103,16 @@ describe DInstaller::DBus::Clients::Software do
         subject.probe(&callback)
       end
     end
+
+    describe "#provisions_selected" do
+      let(:dbus_object) { double(::DBus::ProxyObject) }
+
+      it "returns true/false for every tag given" do
+        expect(dbus_object).to receive(:ProvisionsSelected)
+          .with(["sddm", "gdm"]).and_return([true, false])
+        expect(subject.provisions_selected?(["sddm", "gdm"]))
+          .to eq([true, false])
+      end
+    end
   end
 end
