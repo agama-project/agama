@@ -28,7 +28,7 @@ module DInstaller
     module Software
       # Software proposal D-Bus representation
       #
-      # This class allows to change sofware proposal settings through D-Bus.
+      # This class allows to change software proposal settings through D-Bus.
       #
       # @see Yast::PackagesProposal
       class Proposal < ::DBus::Object
