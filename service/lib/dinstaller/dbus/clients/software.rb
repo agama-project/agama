@@ -121,6 +121,15 @@ module DInstaller
           dbus_proposal.RemoveResolvables(unique_id, TYPES.index(type), resolvables)
         end
 
+        # Determines whether a package is available
+        #
+        # @param name [String] Package name
+        # @return [Boolean] true if the package is available; false otherwise
+        # @see Yast::Package#Available
+        def package_available?(name)
+          dbus_object.IsPackageAvailable(name)
+        end
+
       private
 
         # @return [::DBus::Object]

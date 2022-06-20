@@ -103,4 +103,24 @@ describe DInstaller::DBus::Clients::Software do
       end
     end
   end
+
+  describe "#package_available?" do
+    let(:dbus_object) { double(::DBus::ProxyObject, IsPackageAvailable: result) }
+
+    context "when the package is available" do
+      let(:result) { true }
+
+      it "returns true" do
+        expect(subject.package_available?("foo")).to eq(true)
+      end
+    end
+
+    context "when the package is available" do
+      let(:result) { false }
+
+      it "returns false" do
+        expect(subject.package_available?("foo")).to eq(false)
+      end
+    end
+  end
 end
