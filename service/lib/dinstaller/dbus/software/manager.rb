@@ -48,7 +48,6 @@ module DInstaller
         # rubocop:disable Metrics/BlockLength
         dbus_interface SOFTWARE_INTERFACE do
           dbus_reader :available_base_products, "a(ssa{sv})"
-          attr_writer :available_base_products
 
           dbus_watcher :available_base_products
 
