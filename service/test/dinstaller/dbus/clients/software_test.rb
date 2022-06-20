@@ -84,8 +84,9 @@ describe DInstaller::DBus::Clients::Software do
     end
   end
 
-  describe "#Probe" do
+  describe "#probe" do
     let(:dbus_object) { double(::DBus::ProxyObject, Probe: nil) }
+
     it "calls the D-Bus Probe method" do
       expect(dbus_object).to receive(:Probe)
 
