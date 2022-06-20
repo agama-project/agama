@@ -78,7 +78,7 @@ module DInstaller
     rescue StandardError => e
       status = Status::Error.new.tap { |s| s.messages << e.message }
       status_manager.change(status)
-      logger.error "Probing error: #{e.inspect}"
+      logger.error "Probing error: #{e.inspect}. Backtrace: #{e.backtrace}"
     end
 
     # rubocop:disable Metrics/AbcSize
