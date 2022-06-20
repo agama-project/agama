@@ -108,6 +108,8 @@ module DInstaller
         # @param unique_id [String] Unique identifier for the resolvables list
         # @param type [Symbol] Resolvables type (:package or :pattern)
         # @param resolvables [Array<String>] Resolvables to add
+        # @param [Boolean] optional True for optional list, false (the default) for
+        #   the required list
         def add_resolvables(unique_id, type, resolvables, optional: false)
           dbus_proposal.AddResolvables(unique_id, TYPES.index(type), resolvables, optional)
         end
@@ -116,6 +118,8 @@ module DInstaller
         #
         # @param unique_id [String] Unique identifier for the resolvables list
         # @param type [Symbol] Resolvables type (:package or :pattern)
+        # @param [Boolean] optional True for optional list, false (the default) for
+        #   the required list
         # @return [Array<String>] Resolvables
         def get_resolvables(unique_id, type, optional: false)
           dbus_proposal.GetResolvables(unique_id, TYPES.index(type), optional).first
@@ -126,6 +130,8 @@ module DInstaller
         # @param unique_id [String] Unique identifier for the resolvables list
         # @param type [Symbol] Resolvables type (:package or :pattern)
         # @param resolvables [Array<String>] List of resolvables
+        # @param [Boolean] optional True for optional list, false (the default) for
+        #   the required list
         def set_resolvables(unique_id, type, resolvables, optional: false)
           dbus_proposal.SetResolvables(unique_id, TYPES.index(type), resolvables, optional)
         end
@@ -135,6 +141,8 @@ module DInstaller
         # @param unique_id [String] Unique identifier for the resolvables list
         # @param type [Symbol] Resolvables type (:package or :pattern)
         # @param resolvables [Array<String>] Resolvables to remove
+        # @param [Boolean] optional True for optional list, false (the default) for
+        #   the required list
         def remove_resolvables(unique_id, type, resolvables, optional: false)
           dbus_proposal.RemoveResolvables(unique_id, TYPES.index(type), resolvables, optional)
         end
