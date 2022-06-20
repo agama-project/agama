@@ -27,22 +27,15 @@ module Yast
   class PackageClass < Module
     def main
       puts "Loading mocked module #{__FILE__}"
-      @client = DInstaller::DBus::Clients::Software.new
     end
 
     # Determines whether the package is available
     #
-    # @param package [String] Package name
-    # @return [Boolean] true if the package is available; false otherwise
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/packages/src/modules/Package.rb#L72
     # @todo Perform a real D-Bus call.
-    def Available(package)
-      client.package_available?(name)
+    def Available(_package_name)
+      true
     end
-
-  private
-
-    attr_reader :client
   end
 
   Package = PackageClass.new
