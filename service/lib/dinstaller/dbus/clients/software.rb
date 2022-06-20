@@ -90,8 +90,8 @@ module DInstaller
         # @param unique_id [String] Unique identifier for the resolvables list
         # @param type [Symbol] Resolvables type (:package or :pattern)
         # @param resolvables [Array<String>] Resolvables to add
-        def add_resolvables(unique_id, type, resolvables)
-          dbus_proposal.AddResolvables(unique_id, TYPES.index(type), resolvables)
+        def add_resolvables(unique_id, type, resolvables, optional: false)
+          dbus_proposal.AddResolvables(unique_id, TYPES.index(type), resolvables, optional)
         end
 
         # Returns a list of resolvables
@@ -99,8 +99,8 @@ module DInstaller
         # @param unique_id [String] Unique identifier for the resolvables list
         # @param type [Symbol] Resolvables type (:package or :pattern)
         # @return [Array<String>] Resolvables
-        def get_resolvables(unique_id, type)
-          dbus_proposal.GetResolvables(unique_id, TYPES.index(type)).first
+        def get_resolvables(unique_id, type, optional: false)
+          dbus_proposal.GetResolvables(unique_id, TYPES.index(type), optional).first
         end
 
         # Replace a list of resolvables in the packages proposal
@@ -108,8 +108,8 @@ module DInstaller
         # @param unique_id [String] Unique identifier for the resolvables list
         # @param type [Symbol] Resolvables type (:package or :pattern)
         # @param resolvables [Array<String>] List of resolvables
-        def set_resolvables(unique_id, type, resolvables)
-          dbus_proposal.SetResolvables(unique_id, TYPES.index(type), resolvables)
+        def set_resolvables(unique_id, type, resolvables, optional: false)
+          dbus_proposal.SetResolvables(unique_id, TYPES.index(type), resolvables, optional)
         end
 
         # Remove resolvables from a list
@@ -117,8 +117,8 @@ module DInstaller
         # @param unique_id [String] Unique identifier for the resolvables list
         # @param type [Symbol] Resolvables type (:package or :pattern)
         # @param resolvables [Array<String>] Resolvables to remove
-        def remove_resolvables(unique_id, type, resolvables)
-          dbus_proposal.RemoveResolvables(unique_id, TYPES.index(type), resolvables)
+        def remove_resolvables(unique_id, type, resolvables, optional: false)
+          dbus_proposal.RemoveResolvables(unique_id, TYPES.index(type), resolvables, optional)
         end
 
         # Determines whether a package is available

@@ -52,22 +52,23 @@ module DInstaller
 
         dbus_interface INTERFACE do
           dbus_method :AddResolvables,
-            "in Id:s, in Type:y, in Resolvables:as" do |id, type, resolvables|
-            Yast::PackagesProposal.AddResolvables(id, TYPES[type], resolvables)
+            "in Id:s, in Type:y, in Resolvables:as, in Optional:b" do |id, type, resolvables, opt|
+            Yast::PackagesProposal.AddResolvables(id, TYPES[type], resolvables, optional: opt)
           end
 
-          dbus_method :GetResolvables, "in Id:s, in Type:y, out Resolvables:as" do |id, type|
-            [Yast::PackagesProposal.GetResolvables(id, TYPES[type])]
+          dbus_method :GetResolvables,
+            "in Id:s, in Type:y, in Optional:b, out Resolvables:as" do |id, type, opt|
+            [Yast::PackagesProposal.GetResolvables(id, TYPES[type], optional: opt)]
           end
 
           dbus_method :SetResolvables,
-            "in Id:s, in Type:y, in Resolvables:as" do |id, type, resolvables|
-            Yast::PackagesProposal.SetResolvables(id, TYPES[type], resolvables)
+            "in Id:s, in Type:y, in Resolvables:as, in Optional:b" do |id, type, resolvables, opt|
+            Yast::PackagesProposal.SetResolvables(id, TYPES[type], resolvables, optional: opt)
           end
 
           dbus_method :RemoveResolvables,
-            "in Id:s, in Type:y, in Resolvables:as" do |id, type, resolvables|
-            Yast::PackagesProposal.RemoveResolvables(id, TYPES[type], resolvables)
+            "in Id:s, in Type:y, in Resolvables:as, in Optional:b" do |id, type, resolvables, opt|
+            Yast::PackagesProposal.RemoveResolvables(id, TYPES[type], resolvables, optional: opt)
           end
         end
 
