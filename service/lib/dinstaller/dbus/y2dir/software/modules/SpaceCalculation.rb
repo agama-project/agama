@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
@@ -19,13 +17,28 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module DInstaller
-  module DBus
-    # Name space for software D-Bus classes
-    module Software
+require "yast"
+
+# :nodoc:
+module Yast
+  # Replacement for the Yast::SpaceCalculation module.
+  class SpaceCalculationClass < Module
+    def main
+      puts "Loading mocked module #{__FILE__}"
+    end
+
+    # @see https://github.com/yast/yast-packager/blob/master/src/modules/SpaceCalculation.rb#L711
+    def GetPartitionInfo; end
+
+    # @see https://github.com/yast/yast-packager/blob/master/src/modules/SpaceCalculation.rb#L860
+    def CheckDiskSize; end
+
+    # @see https://github.com/yast/yast-packager/blob/master/src/modules/SpaceCalculation.rb#L60
+    def GetFailedMounts
+      []
     end
   end
-end
 
-require "dinstaller/dbus/software/manager"
-require "dinstaller/dbus/software/proposal"
+  SpaceCalculation = SpaceCalculationClass.new
+  SpaceCalculation.main
+end

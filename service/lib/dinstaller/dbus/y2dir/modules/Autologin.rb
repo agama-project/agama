@@ -28,7 +28,7 @@
 # $Id$
 require "yast"
 
-require "dinstaller/dbus/clients/dinstaller"
+require "dinstaller/dbus/clients/software"
 
 
 module Yast
@@ -64,6 +64,9 @@ module Yast
 
       # Pkg stuff initialized?
       @pkg_initialized = false
+
+      # D-Bus software client
+      @dbus_client = DInstaller::Clients::Software.new
     end
 
     def available
@@ -178,7 +181,7 @@ module Yast
     #
     # @return Boolean
     def supported?
-      supported = DInstaller::DBus::Clients::DInstaller.provisions_selected?(DISPLAY_MANAGERS).any?
+      supported = @dbus_client.provisions_selected?(DISPLAY_MANAGERS).any?
 
       if supported
         log.info("Autologin is supported")

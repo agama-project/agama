@@ -78,7 +78,7 @@ module DInstaller
     rescue StandardError => e
       status = Status::Error.new.tap { |s| s.messages << e.message }
       status_manager.change(status)
-      logger.error "Probing error: #{e.inspect}"
+      logger.error "Probing error: #{e.inspect}. Backtrace: #{e.backtrace}"
     end
 
     # rubocop:disable Metrics/AbcSize
@@ -214,10 +214,8 @@ module DInstaller
     def finish_installation
       progress.init_minor_steps(2, "Copying logs")
       Yast::WFM.CallFunction("copy_logs_finish", ["Write"])
-
       progress.next_minor_step("Unmounting target system")
-      Yast::WFM.CallFunction("pre_umount_finish", ["Write"])
-      Yast::WFM.CallFunction("umount_finish", ["Write"])
+      storage.finish
       progress.next_minor_step("Target system correctly unmounted")
     end
 

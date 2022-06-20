@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
@@ -19,13 +17,27 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module DInstaller
-  module DBus
-    # Name space for software D-Bus classes
-    module Software
+require "yast"
+
+# :nodoc:
+module Yast
+  # Replacement for the Yast::Package module
+  #
+  # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/packages/src/modules/Package.rb
+  class PackageClass < Module
+    def main
+      puts "Loading mocked module #{__FILE__}"
+    end
+
+    # Determines whether the package is available
+    #
+    # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/packages/src/modules/Package.rb#L72
+    # @todo Perform a real D-Bus call.
+    def Available(_package_name)
+      true
     end
   end
-end
 
-require "dinstaller/dbus/software/manager"
-require "dinstaller/dbus/software/proposal"
+  Package = PackageClass.new
+  Package.main
+end

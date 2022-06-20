@@ -71,7 +71,8 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          DInstaller::DBus::Software.new(@backend, logger)
+          DInstaller::DBus::Software::Manager.new(@backend, logger),
+          DInstaller::DBus::Software::Proposal.new(logger)
         ]
       end
     end

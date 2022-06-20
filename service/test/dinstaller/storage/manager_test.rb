@@ -72,4 +72,11 @@ describe DInstaller::Storage::Manager do
       expect(storage.proposal).to be_a(DInstaller::Storage::Proposal)
     end
   end
+
+  describe "#finish" do
+    it "runs the umount_finish client" do
+      expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
+      storage.finish
+    end
+  end
 end

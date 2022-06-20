@@ -21,7 +21,7 @@
 
 module DInstaller
   module DBus
-    # Namespace for storage DBus objects
+    # Namespace for storage D-Bus classes
     module Storage
     end
   end

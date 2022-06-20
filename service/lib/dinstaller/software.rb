@@ -130,9 +130,13 @@ module DInstaller
       restore_original_repos
     end
 
-    # checks if given provision is provided by any resolvable marked for installation
-    def provision_selected?(provision)
-      Yast::Pkg.IsSelected(provision) || Yast::Pkg.IsProvided(provision)
+    # Determine whether the given tag is provided by the selected packages
+    #
+    # @param tag [String] Tag to search for (package names, requires/provides, or file
+    #   names)
+    # @return [Boolean] true if it is provided; false otherwise
+    def provision_selected?(tag)
+      Yast::Pkg.IsSelected(tag) || Yast::Pkg.IsProvided(tag)
     end
 
   private

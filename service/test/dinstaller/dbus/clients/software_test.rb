@@ -32,11 +32,15 @@ describe DInstaller::DBus::Clients::Software do
     allow(dbus_object).to receive(:introspect)
     allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Software1")
       .and_return(software_iface)
+
+    allow(service).to receive(:object).with("/org/opensuse/DInstaller/Software/Proposal1")
+      .and_return(dbus_proposal)
   end
 
   let(:bus) { instance_double(::DBus::SystemBus) }
   let(:service) { instance_double(::DBus::Service) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
+  let(:dbus_proposal) { instance_double(::DBus::ProxyObject, introspect: nil) }
   let(:software_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
   subject { described_class.new }
@@ -80,8 +84,9 @@ describe DInstaller::DBus::Clients::Software do
     end
   end
 
-  describe "#Probe" do
+  describe "#probe" do
     let(:dbus_object) { double(::DBus::ProxyObject, Probe: nil) }
+
     it "calls the D-Bus Probe method" do
       expect(dbus_object).to receive(:Probe)
 
@@ -96,6 +101,17 @@ describe DInstaller::DBus::Clients::Software do
         end
 
         subject.probe(&callback)
+      end
+    end
+
+    describe "#provisions_selected" do
+      let(:dbus_object) { double(::DBus::ProxyObject) }
+
+      it "returns true/false for every tag given" do
+        expect(dbus_object).to receive(:ProvisionsSelected)
+          .with(["sddm", "gdm"]).and_return([true, false])
+        expect(subject.provisions_selected?(["sddm", "gdm"]))
+          .to eq([true, false])
       end
     end
   end
