@@ -21,46 +21,49 @@
 
 import React from "react";
 
-import { screen } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import { createClient } from "./client";
 
-import InstallationFinished from "./InstallationFinished";
+import TargetIpsPopup from "./TargetIpsPopup";
 
 jest.mock("./client");
 
-const rebootSystemFn = jest.fn();
+describe("TargetIpsPopup", () => {
+  const hostname = "example.net";
 
-describe("InstallationFinished", () => {
   beforeEach(() => {
     createClient.mockImplementation(() => {
       return {
-        manager: {
-          rebootSystem: rebootSystemFn
-        },
         network: {
-          config: () => Promise.resolve({ addresses: [], hostname: "example.net" })
+          config: () => Promise.resolve({
+            addresses: [
+              { address: "1.2.3.4", prefix: 24 },
+              { address: "5.6.7.8", prefix: 16 },
+            ],
+            hostname
+          })
         }
       };
     });
   });
 
-  it("shows the finished installation screen", async () => {
-    installerRender(<InstallationFinished />);
+  it("lists target IPs in hostname labeled popup", async () => {
+    const { user } = installerRender(<TargetIpsPopup />);
 
-    await screen.findByText("Congratulations!");
-  });
-
-  it("shows a 'Reboot' button", async () => {
-    installerRender(<InstallationFinished />);
-
-    await screen.findByRole("button", { name: /Reboot/i });
-  });
-
-  it("reboots the system if the user clicks on 'Reboot' button", async () => {
-    const { user } = installerRender(<InstallationFinished />);
-    const button = await screen.findByRole("button", { name: /Reboot/i });
+    const button = await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });
     await user.click(button);
-    expect(rebootSystemFn).toHaveBeenCalled();
+
+    const dialog = await screen.findByRole("dialog");
+
+    within(dialog).getByText(hostname);
+    within(dialog).getByText("5.6.7.8/16");
+
+    const closeButton = within(dialog).getByRole("button", { name: /Close/i });
+    await user.click(closeButton);
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
   });
 });
