@@ -183,9 +183,17 @@ module DInstaller
     # Performs probe steps
     #
     # Status and progress are properly updated during the process.
+    #
+    # FIXME: progress has no much sense now because probing steps are performed in parallel.
+    #
     # rubocop:disable Metrics/AbcSize
     def probe_steps
       status_manager.change(Status::Probing.new)
+
+      # FIXME: manager_probing_status is needed until moving all probing steps to separate services.
+      #   Note that the status of the manager represents the global status, so we still need a
+      #   status for the sequential probing steps that are still done by the manager.
+      manager_probing_status = status_manager.status
 
       progress.init_progress(4, "Probing Languages")
       language.probe(progress)
@@ -195,14 +203,16 @@ module DInstaller
 
       progress.next_step("Probing Software")
       security.probe(progress)
-      software.probe { logger.info "Probing software done" }
+      software.probe { update_status(manager_probing_status) }
 
       progress.next_step("Probing Network")
       network.probe(progress)
 
       progress.next_step("Probing Finished")
 
-      status_manager.change(Status::Probed.new)
+      # Sequential steps are finished, so they are now in probed status.
+      manager_probing_status = Status::Probed.new
+      update_status(manager_probing_status)
     end
     # rubocop:enable Metrics/AbcSize
 
@@ -233,6 +243,76 @@ module DInstaller
         Yast::WFM.SCRSetDefault(old_handle)
         Yast::WFM.SCRClose(handle)
       end
+    end
+
+    # Updates the manager status according to the status of the rest of services
+    #
+    # @param manager_probing_status [Status::Base] Status of the sequential probing tasks that are
+    #   still performed by the manager. Those probing tasks will be moved to separated services and
+    #   this param could be removed.
+    def update_status(manager_probing_status)
+      new_status = calculate_status(manager_probing_status)
+
+      status_manager.change(new_status) unless status_manager.status == new_status
+    end
+
+    # Calculate the status according to the status of the services
+    #
+    # @param manager_probing_status [Status::Base] see {#update_status}
+    # @return [Status::Base]
+    def calculate_status(manager_probing_status)
+      statuses = clients_statuses.append(manager_probing_status)
+
+      if probing?(statuses)
+        Status::Probing.new
+      elsif probed?(statuses)
+        Status::Probed.new
+      elsif installing?(statuses)
+        Status::Installating.new
+      elsif installed?(statuses)
+        Status::Installed.new
+      else
+        Status::Error.new.tap { |s| s.messages << "Unknown status" }
+      end
+    end
+
+    # Whether the manager status should be probing according to the given statuses
+    #
+    # @param statuses [Array<Status::Base>]
+    # @return [Boolean]
+    def probing?(statuses)
+      statuses.any? { |s| s.is_a?(Status::Probing) }
+    end
+
+    # Whether the manager status should be probed according to the given statuses
+    #
+    # @param statuses [Array<Status::Base>]
+    # @return [Boolean]
+    def probed?(statuses)
+      statuses.all? { |s| s.is_a?(Status::Probed) }
+    end
+
+    # Whether the manager status should be installing according to the given statuses
+    #
+    # @param statuses [Array<Status::Base>]
+    # @return [Boolean]
+    def installing?(statuses)
+      statuses.any? { |s| s.is_a?(Status::Installing) }
+    end
+
+    # Whether the manager status should be installed according to the given statuses
+    #
+    # @param statuses [Array<Status::Base>]
+    # @return [Boolean]
+    def installed?(statuses)
+      statuses.all? { |s| s.is_a?(Status::Installed) }
+    end
+
+    # Current status of the clients
+    #
+    # @return [Array<Status::Base>]
+    def clients_statuses
+      [software, users].map(&:status)
     end
   end
 end

@@ -35,15 +35,13 @@ describe DInstaller::Manager do
       DInstaller::DBus::Clients::Software, probe: nil, install: nil, propose: nil, finish: nil
     )
   end
+  let(:users) { instance_double(DInstaller::DBus::Clients::Users, write: nil) }
   let(:language) { instance_double(DInstaller::Language, probe: nil, install: nil) }
   let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
   let(:storage) do
     instance_double(DInstaller::Storage::Manager, probe: nil, install: nil, finish: nil)
   end
   let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
-  let(:status_manager) do
-    instance_double(DInstaller::StatusManager, change: nil)
-  end
   let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
   before do
@@ -51,19 +49,20 @@ describe DInstaller::Manager do
     allow(DInstaller::Network).to receive(:new).and_return(network)
     allow(DInstaller::Security).to receive(:new).and_return(security)
     allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software)
-    allow(DInstaller::StatusManager).to receive(:new).and_return(status_manager)
+    allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(users)
     allow(DInstaller::Storage::Manager).to receive(:new).and_return(storage)
-    allow_any_instance_of(DInstaller::DBus::Clients::Users).to receive(:write)
     allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
     allow(DInstaller::QuestionsManager).to receive(:new).and_return(questions_manager)
   end
 
   describe "#probe" do
-    it "sets the status to probing and probed" do
-      expect(status_manager).to receive(:change).with(DInstaller::Status::Probing)
-      expect(status_manager).to receive(:change).with(DInstaller::Status::Probed)
-      subject.probe
+    before do
+      allow(software).to receive(:status).and_return(software_status)
+      allow(users).to receive(:status).and_return(users_status)
     end
+
+    let(:software_status) { DInstaller::Status::Error.new }
+    let(:users_status) { DInstaller::Status::Error.new }
 
     it "calls #probe method of each module passing a progress object" do
       expect(software).to receive(:probe)
@@ -72,6 +71,31 @@ describe DInstaller::Manager do
       expect(network).to receive(:probe).with(subject.progress)
       expect(storage).to receive(:probe).with(subject.progress, subject.questions_manager)
       subject.probe
+    end
+
+    it "sets the status to probing" do
+      expect(subject.status_manager).to receive(:change).with(DInstaller::Status::Probing)
+      subject.probe
+    end
+
+    context "if any service has not finished the probing phase" do
+      let(:software_status) { DInstaller::Status::Probing.new }
+      let(:users_status) { DInstaller::Status::Probed.new }
+
+      it "keeps the status as probing" do
+        subject.probe
+        expect(subject.status_manager.status).to eq(DInstaller::Status::Probing.new)
+      end
+    end
+
+    context "if all services have finished the probing phase" do
+      let(:software_status) { DInstaller::Status::Probed.new }
+      let(:users_status) { DInstaller::Status::Probed.new }
+
+      it "sets the status to probed" do
+        subject.probe
+        expect(subject.status_manager.status).to eq(DInstaller::Status::Probed.new)
+      end
     end
   end
 
@@ -107,9 +131,9 @@ describe DInstaller::Manager do
       subject.install
     end
 
-    it "sets the status to installed and installed" do
-      expect(status_manager).to receive(:change).with(DInstaller::Status::Installing)
-      expect(status_manager).to receive(:change).with(DInstaller::Status::Installed)
+    it "sets the status to installing and installed" do
+      expect(subject.status_manager).to receive(:change).with(DInstaller::Status::Installing)
+      expect(subject.status_manager).to receive(:change).with(DInstaller::Status::Installed)
       subject.install
     end
   end

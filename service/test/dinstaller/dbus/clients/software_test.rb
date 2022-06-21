@@ -45,6 +45,16 @@ describe DInstaller::DBus::Clients::Software do
 
   subject { described_class.new }
 
+  describe "#status" do
+    before do
+      allow(software_iface).to receive(:[]).with("Status").and_return(2)
+    end
+
+    it "returns the status of the service" do
+      expect(subject.status).to eq(DInstaller::Status::Probed.new)
+    end
+  end
+
   describe "#available_products" do
     before do
       allow(software_iface).to receive(:[]).with("AvailableBaseProducts").and_return(

@@ -40,6 +40,8 @@ module DInstaller
         @backend = backend
         @logger = logger
 
+        register_status_callback
+
         super(PATH)
       end
 
@@ -99,6 +101,20 @@ module DInstaller
           backend.write(nil) # TODO: progress?
           0
         end
+
+        # Current status
+        #
+        # TODO: these values come from the id of statuses, see {DInstaller::Status::Base}. This
+        #   D-Bus class should explicitly convert statuses to integer instead of relying on the id
+        #   value, which could change.
+        #
+        # Possible values:
+        #   0 : error
+        #   1 : probing
+        #   2 : probed
+        #   3 : installing
+        #   4 : installed
+        dbus_reader :status, "u"
       end
       # rubocop:enable Metrics/BlockLength
 
@@ -114,11 +130,27 @@ module DInstaller
         backend.root_password?
       end
 
+      # Id of the current status
+      #
+      # @return [Integer]
+      def status
+        backend.status_manager.status.id
+      end
+
     private
 
       attr_reader :logger
 
       attr_reader :backend
+
+      # Registers callback to be called when the status changes
+      #
+      # The callback will emit a signal
+      def register_status_callback
+        backend.status_manager.on_change do
+          PropertiesChanged(USERS_INTERFACE, { "Status" => status }, [])
+        end
+      end
     end
   end
 end

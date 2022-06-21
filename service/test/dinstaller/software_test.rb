@@ -27,7 +27,7 @@ require "dinstaller/progress"
 describe DInstaller::Software do
   subject { described_class.new(config, logger) }
 
-  let(:logger) { Logger.new($stdout) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
   let(:config) { DInstaller::Config.new }
   let(:progress) { DInstaller::Progress.new }
   let(:products) { [tw_prod] }
@@ -53,6 +53,12 @@ describe DInstaller::Software do
   end
 
   describe "#probe" do
+    it "sets the status to probing and probed" do
+      expect(subject.status_manager).to receive(:change).with(DInstaller::Status::Probing)
+      expect(subject.status_manager).to receive(:change).with(DInstaller::Status::Probed)
+      subject.probe
+    end
+
     it "initializes the package system" do
       expect(Yast::Pkg).to receive(:TargetInitialize).with("/")
       subject.probe

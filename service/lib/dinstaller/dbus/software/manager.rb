@@ -40,6 +40,7 @@ module DInstaller
           @backend = backend
           @logger = logger
 
+          register_status_callback
           register_progress_callback
 
           super(PATH)
@@ -83,6 +84,20 @@ module DInstaller
             backend.finish
           end
 
+          # Current status
+          #
+          # TODO: these values come from the id of statuses, see {DInstaller::Status::Base}. This
+          #   D-Bus class should explicitly convert statuses to integer instead of relying on the id
+          #   value, which could change.
+          #
+          # Possible values:
+          #   0 : error
+          #   1 : probing
+          #   2 : probed
+          #   3 : installing
+          #   4 : installed
+          dbus_reader :status, "u"
+
           # Progress has struct with values:
           #   s message
           #   t total major steps to do
@@ -107,6 +122,13 @@ module DInstaller
           backend.select_product(product_id)
         end
 
+        # Id of the current status
+        #
+        # @return [Integer]
+        def status
+          backend.status_manager.status.id
+        end
+
         def progress
           backend.progress.to_a
         end
@@ -118,6 +140,15 @@ module DInstaller
 
         # @return [DInstaller::Software]
         attr_reader :backend
+
+        # Registers callback to be called when the status changes
+        #
+        # The callback will emit a signal
+        def register_status_callback
+          backend.status_manager.on_change do
+            PropertiesChanged(SOFTWARE_INTERFACE, { "Status" => status }, [])
+          end
+        end
 
         # Registers callback to be called when the progress changes
         #

@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/status_manager"
 
 module DInstaller
   module DBus
@@ -29,6 +30,13 @@ module DInstaller
         def initialize
           @dbus_object = service.object("/org/opensuse/DInstaller/Users1")
           @dbus_object.introspect
+        end
+
+        # Current status of the service
+        #
+        # @return [Status]
+        def status
+          Status.create(dbus_object["org.opensuse.DInstaller.Users1"]["Status"])
         end
 
         # Configuration of the first user to create during the installation

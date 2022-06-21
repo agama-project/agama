@@ -41,6 +41,16 @@ describe DInstaller::DBus::Clients::Users do
 
   subject { described_class.new }
 
+  describe "#status" do
+    before do
+      allow(users_iface).to receive(:[]).with("Status").and_return(2)
+    end
+
+    it "returns the status of the service" do
+      expect(subject.status).to eq(DInstaller::Status::Probed.new)
+    end
+  end
+
   describe "#first_user" do
     before do
       allow(users_iface).to receive(:[]).with("FirstUser").and_return(

@@ -23,6 +23,7 @@ require "yast"
 require "y2users"
 require "y2users/linux" # FIXME: linux is not in y2users file
 require "yast2/execute"
+require "dinstaller/status_manager"
 
 module DInstaller
   # Backend class using YaST code.
@@ -30,8 +31,13 @@ module DInstaller
   # {DInstaller::DBus::Users} wraps it with a D-Bus interface and
   # {DInstaller::DBus::Clients::Users} is a D-Bus client for that.
   class Users
+    # @return [StatusManager]
+    attr_reader :status_manager
+
     def initialize(logger)
       @logger = logger
+      # Users are considered as probed from the very beginning
+      @status_manager = StatusManager.new(Status::Probed.new)
     end
 
     def root_ssh_key
@@ -88,6 +94,8 @@ module DInstaller
     end
 
     def write(_progress)
+      status_manager.change(Status::Installing.new)
+
       without_run_mount do
         on_target do
           system_config = Y2Users::ConfigManager.instance.system(force_read: true)
@@ -99,6 +107,8 @@ module DInstaller
           logger.error(issues.inspect) unless issues.empty?
         end
       end
+
+      status_manager.change(Status::Installed.new)
     end
 
   private

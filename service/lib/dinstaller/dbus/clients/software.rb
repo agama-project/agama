@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/status_manager"
 
 module DInstaller
   module DBus
@@ -35,6 +36,13 @@ module DInstaller
 
           @dbus_proposal = service.object("/org/opensuse/DInstaller/Software/Proposal1")
           @dbus_proposal.introspect
+        end
+
+        # Current status of the service
+        #
+        # @return [Status]
+        def status
+          Status.create(dbus_object["org.opensuse.DInstaller.Software1"]["Status"])
         end
 
         # Available products for the installation
@@ -62,7 +70,7 @@ module DInstaller
 
         # Starts the probing process
         #
-        # If a block is given, the method returns inmmediatelly and the probing is performed in an
+        # If a block is given, the method returns immediately and the probing is performed in an
         # asynchronous way.
         #
         # @param done [Proc] Block to execute once the probing is done
