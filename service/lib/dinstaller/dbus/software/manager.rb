@@ -56,7 +56,7 @@ module DInstaller
             logger.info "SelectProduct #{product_id}"
 
             select_product(product_id)
-            PropertiesChanged(SOFTWARE_INTERFACE, { "SelectedBaseProduct" => product_id }, [])
+            dbus_properties_changed(SOFTWARE_INTERFACE, { "SelectedBaseProduct" => product_id }, [])
           end
 
           # TODO: just for performance comparison (see `perf.rb`)
@@ -146,7 +146,7 @@ module DInstaller
         # The callback will emit a signal
         def register_status_callback
           backend.status_manager.on_change do
-            PropertiesChanged(SOFTWARE_INTERFACE, { "Status" => status }, [])
+            dbus_properties_changed(SOFTWARE_INTERFACE, { "Status" => status }, [])
           end
         end
 
@@ -155,7 +155,7 @@ module DInstaller
         # The callback will emit a signal
         def register_progress_callback
           backend.progress.on_change do
-            PropertiesChanged(SOFTWARE_INTERFACE, { "Progress" => progress }, [])
+            dbus_properties_changed(SOFTWARE_INTERFACE, { "Progress" => progress }, [])
           end
         end
       end

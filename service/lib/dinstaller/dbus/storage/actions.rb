@@ -43,7 +43,7 @@ module DInstaller
           super(PATH)
 
           backend.add_on_change_listener do
-            PropertiesChanged(INTERFACE, { "All" => all }, [])
+            dbus_properties_changed(INTERFACE, { "All" => all }, [])
           end
         end
 

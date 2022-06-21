@@ -43,7 +43,7 @@ module DInstaller
           super(PATH)
 
           backend.add_on_change_listener do
-            PropertiesChanged(INTERFACE, { "LVM" => lvm,
+            dbus_properties_changed(INTERFACE, { "LVM" => lvm,
               "CandidateDevices" => candidate_devices,
               "AvailableDevices" => available_devices }, [])
           end

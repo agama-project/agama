@@ -45,10 +45,9 @@ module DInstaller
       end
 
       dbus_interface LANGUAGE_INTERFACE do
-        dbus_reader :available_languages, "a(ssa{sv})"
-        attr_writer :available_languages
+        attr_accessor :available_languages
 
-        dbus_watcher :available_languages
+        dbus_reader :available_languages, "a(ssa{sv})"
 
         dbus_reader :marked_for_install, "as"
 
@@ -56,7 +55,7 @@ module DInstaller
           logger.info "ToInstall #{lang_ids.inspect}"
           result = select_to_install(lang_ids)
 
-          PropertiesChanged(LANGUAGE_INTERFACE, { "MarkedForInstall" => lang_ids }, [])
+          dbus_properties_changed(LANGUAGE_INTERFACE, { "MarkedForInstall" => lang_ids }, [])
           result ? 0 : 1
         end
       end
