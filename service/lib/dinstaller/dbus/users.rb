@@ -56,7 +56,7 @@ module DInstaller
           logger.info "Setting Root Password"
           backend.assign_root_password(value, encrypted)
 
-          PropertiesChanged(USERS_INTERFACE, { "RootPasswordSet" => !value.empty? }, [])
+          dbus_properties_changed(USERS_INTERFACE, { "RootPasswordSet" => !value.empty? }, [])
           0
         end
 
@@ -64,7 +64,8 @@ module DInstaller
           logger.info "Clearing the root password"
           backend.remove_root_password
 
-          PropertiesChanged(USERS_INTERFACE, { "RootPasswordSet" => backend.root_password? }, [])
+          dbus_properties_changed(USERS_INTERFACE, { "RootPasswordSet" => backend.root_password? },
+            [])
           0
         end
 
@@ -72,7 +73,7 @@ module DInstaller
           logger.info "Setting Root ssh key"
           backend.root_ssh_key = (value)
 
-          PropertiesChanged(USERS_INTERFACE, { "RootSSHKey" => value }, [])
+          dbus_properties_changed(USERS_INTERFACE, { "RootSSHKey" => value }, [])
           0
         end
 
@@ -81,7 +82,7 @@ module DInstaller
           logger.info "Setting first user #{full_name}"
           backend.assign_first_user(full_name, user_name, password, auto_login, data)
 
-          PropertiesChanged(USERS_INTERFACE, { "FirstUser" => first_user }, [])
+          dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => first_user }, [])
           0
         end
 
@@ -89,7 +90,7 @@ module DInstaller
           logger.info "Removing the first user"
           backend.remove_first_user
 
-          PropertiesChanged(USERS_INTERFACE, { "FirstUser" => {} }, [])
+          dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => {} }, [])
           0
         end
       end

@@ -54,7 +54,7 @@ module DInstaller
           logger.info "SelectProduct #{product_id}"
 
           select_product(product_id)
-          PropertiesChanged(SOFTWARE_INTERFACE, { "SelectedBaseProduct" => product_id }, [])
+          dbus_properties_changed(SOFTWARE_INTERFACE, { "SelectedBaseProduct" => product_id }, [])
         end
       end
 
