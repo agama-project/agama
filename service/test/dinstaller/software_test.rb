@@ -109,6 +109,33 @@ describe DInstaller::Software do
     end
   end
 
+  describe "#install" do
+    let(:commit_result) { [250, [], [], [], []] }
+
+    before do
+      allow(Yast::PackageInstallation).to receive(:Commit).and_return(commit_result)
+    end
+
+    it "installs the packages" do
+      expect(Yast::PackageInstallation).to receive(:Commit).with({})
+        .and_return(commit_result)
+      subject.install
+    end
+
+    it "sets up the package callbacks" do
+      expect(DInstaller::PackageCallbacks).to receive(:setup)
+      subject.install
+    end
+
+    context "when packages installation fails" do
+      let(:commit_result) { nil }
+
+      it "raises an exception" do
+        expect { subject.install }.to raise_error(RuntimeError)
+      end
+    end
+  end
+
   describe "#finish" do
     let(:rootdir) { Dir.mktmpdir }
     let(:repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d") }

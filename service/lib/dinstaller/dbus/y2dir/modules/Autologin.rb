@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2006-2012 Novell, Inc. All Rights Reserved.
 #
@@ -27,9 +25,7 @@
 #
 # $Id$
 require "yast"
-
 require "dinstaller/dbus/clients/software"
-
 
 module Yast
   class AutologinClass < Module
@@ -65,8 +61,8 @@ module Yast
       # Pkg stuff initialized?
       @pkg_initialized = false
 
-      # D-Bus software client
-      @dbus_client = DInstaller::Clients::Software.new
+      # Software service client
+      @dbus_client = nil
     end
 
     def available
@@ -94,17 +90,16 @@ module Yast
         )
       ) == "yes"
 
-      @user = "" if @user == nil || @user == ""
+      @user = "" if @user.nil? || @user == ""
 
       @used = @user != ""
       @used
     end
 
-
     # Write autologin settings
     # @param [Boolean] write_only when true, suseconfig script will not be run
     # @return written anything?
-    def Write(write_only)
+    def Write(_write_only)
       return false if !available || !@modified
 
       Builtins.y2milestone(
@@ -181,7 +176,7 @@ module Yast
     #
     # @return Boolean
     def supported?
-      supported = @dbus_client.provisions_selected?(DISPLAY_MANAGERS).any?
+      supported = dbus_client.provisions_selected?(DISPLAY_MANAGERS).any?
 
       if supported
         log.info("Autologin is supported")
@@ -192,17 +187,26 @@ module Yast
       supported
     end
 
-    publish :variable => :user, :type => "string"
-    publish :variable => :pw_less, :type => "boolean"
-    publish :variable => :used, :type => "boolean"
-    publish :variable => :modified, :type => "boolean"
-    publish :function => :Read, :type => "boolean ()"
-    publish :function => :Write, :type => "boolean (boolean)"
-    publish :function => :Disable, :type => "void ()"
-    publish :function => :Use, :type => "void (boolean)"
-    publish :function => :supported?, :type => "boolean ()"
-    publish :function => :DisableAndWrite, :type => "boolean (boolean)"
-    publish :function => :AskForDisabling, :type => "boolean (string)"
+    publish variable: :user, type: "string"
+    publish variable: :pw_less, type: "boolean"
+    publish variable: :used, type: "boolean"
+    publish variable: :modified, type: "boolean"
+    publish function: :Read, type: "boolean ()"
+    publish function: :Write, type: "boolean (boolean)"
+    publish function: :Disable, type: "void ()"
+    publish function: :Use, type: "void (boolean)"
+    publish function: :supported?, type: "boolean ()"
+    publish function: :DisableAndWrite, type: "boolean (boolean)"
+    publish function: :AskForDisabling, type: "boolean (string)"
+
+  private
+
+    # Software service client
+    #
+    # @return [DInstaller::DBus::Clients::Software] Software service client
+    def dbus_client
+      @dbus_client ||= DInstaller::DBus::Clients::Software.new
+    end
   end
 
   Autologin = AutologinClass.new
