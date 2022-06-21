@@ -23,6 +23,7 @@ require "yast"
 require "fileutils"
 require "dinstaller/package_callbacks"
 require "dinstaller/config"
+require "dinstaller/status_manager"
 require "dinstaller/progress"
 require "y2packager/product"
 
@@ -41,6 +42,9 @@ module DInstaller
     SUPPORTED_PRODUCTS = ["Leap", "openSUSE"].freeze
     private_constant :SUPPORTED_PRODUCTS
 
+    # @return [StatusManager]
+    attr_reader :status_manager
+
     attr_reader :product, :products
 
     # @return [Progress]
@@ -48,6 +52,7 @@ module DInstaller
 
     def initialize(config, logger)
       @logger = logger
+      @status_manager = StatusManager.new(Status::Error.new) # temporary status until probing starts
       @products = []
       @product = "" # do not use nil here, otherwise dbus crash
       @config = config
@@ -62,33 +67,48 @@ module DInstaller
 
     def probe
       logger.info "Probing software"
+      status_manager.change(Status::Probing.new)
+
       store_original_repos
-      Yast::Pkg.SetSolverFlags(
-        "ignoreAlreadyRecommended" => false, "onlyRequires" => true
-      )
+      Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false, "onlyRequires" => true)
 
       # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
       Yast::Stage.Set("normal")
       progress.init_progress(3, "Initialize target repositories")
-      Yast::Pkg.TargetInitialize("/")
-      import_gpg_keys
+      initialize_target_repos
 
       progress.next_step("Initialize sources")
       add_base_repo
 
       progress.next_step("Searching for supported products")
-      @products = find_products
-      @product = @products.first&.name || ""
-      raise "No product available" if @product.empty?
+      search_supported_products
 
       progress.next_step("Making the initial proposal")
       proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
       logger.info "proposal #{proposal["raw_proposal"]}"
       progress.next_step("Software probing finished")
       Yast::Stage.Set("initial")
+
+      status_manager.change(Status::Probed.new)
     end
 
+    def initialize_target_repos
+      Yast::Pkg.TargetInitialize("/")
+      import_gpg_keys
+    end
+
+    def search_supported_products
+      @products = find_products
+      @product = @products.first&.name || ""
+
+      raise "No product available" if @product.empty?
+    end
+
+    # @note The status is set to installing. The status will keep as installing until {#finish} is
+    #   called.
     def propose
+      status_manager.change(Status::Installing.new)
+
       Yast::Pkg.TargetFinish # ensure that previous target is closed
       Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
       Yast::Pkg.TargetLoad
@@ -121,6 +141,8 @@ module DInstaller
     end
 
     # Writes the repositories information to the installed system
+    #
+    # @note Sets the status to installed.
     def finish
       progress.init_progress(1, "Writing repositories to the target system")
       Yast::Pkg.SourceSaveAll
@@ -128,6 +150,8 @@ module DInstaller
       Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
       progress.next_step("Restoring original repositories")
       restore_original_repos
+
+      status_manager.change(Status::Installed.new)
     end
 
     # Determine whether the given tag is provided by the selected packages

@@ -72,7 +72,23 @@ module DInstaller
     attr_reader :on_change_callbacks
   end
 
+  # Status of the service
   module Status
+    def self.create(id)
+      case id
+      when 0
+        Error.new
+      when 1
+        Probing.new
+      when 2
+        Probed.new
+      when 3
+        Installing.new
+      when 4
+        Installed.new
+      end
+    end
+
     # Status base class
     class Base
       # Status id
@@ -85,6 +101,14 @@ module DInstaller
       # @param id [Integer] status id
       def initialize(id)
         @id = id
+      end
+
+      # Two status are equal if they have the same id
+      #
+      # @param other [Status::Base]
+      # @return [Boolean]
+      def ==(other)
+        id == other.id
       end
     end
 

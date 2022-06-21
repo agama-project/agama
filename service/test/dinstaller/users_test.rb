@@ -36,6 +36,13 @@ describe DInstaller::Users do
       .and_return(users_config)
   end
 
+  describe "#new" do
+    it "initializes the service as probed" do
+      users = described_class.new(logger)
+      expect(users.status_manager.status).to eq(DInstaller::Status::Probed.new)
+    end
+  end
+
   describe "#assign_root_password" do
     let(:root_user) { instance_double(Y2Users::User) }
 
@@ -132,6 +139,12 @@ describe DInstaller::Users do
         .with(force_read: true).and_return(system_config)
       allow(Y2Users::Linux::Writer).to receive(:new).and_return(writer)
       allow(Yast::Execute).to receive(:locally!)
+    end
+
+    it "sets the status to installing and installed" do
+      expect(subject.status_manager).to receive(:change).with(DInstaller::Status::Installing)
+      expect(subject.status_manager).to receive(:change).with(DInstaller::Status::Installed)
+      subject.write(progress)
     end
 
     it "writes system and installer defined users" do
