@@ -66,8 +66,10 @@ class SoftwareClient {
    */
   onProductChange(handler) {
     return this.onObjectChanged(SOFTWARE_PATH, changes => {
-      const selected = changes.SelectedBaseProduct.v;
-      handler(selected);
+      if ("SelectedBaseProduct" in changes) {
+        const selected = changes.SelectedBaseProduct.v;
+        handler(selected);
+      }
     });
   }
 }
