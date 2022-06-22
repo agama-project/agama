@@ -22,7 +22,6 @@
 require "yast"
 require "y2storage/storage_manager"
 require "dinstaller/storage/proposal"
-require "dinstaller/storage/actions"
 require "dinstaller/storage/callbacks"
 
 module DInstaller
@@ -63,14 +62,7 @@ module DInstaller
       #
       # @return [Storage::Proposal]
       def proposal
-        @proposal ||= Proposal.new(logger, config, actions)
-      end
-
-      # Storage actions manager
-      #
-      # @return [Storage::Actions]
-      def actions
-        @actions ||= Actions.new(logger)
+        @proposal ||= Proposal.new(logger, config)
       end
 
     private

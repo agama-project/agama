@@ -69,6 +69,8 @@ module DInstaller
 
             success ? 0 : 1
           end
+
+          dbus_reader :actions, "aa{sv}"
         end
 
         # List of disks available for installation
@@ -93,6 +95,15 @@ module DInstaller
         # @see DInstaller::Storage::Proposal
         def candidate_devices
           backend.candidate_devices
+        end
+
+        # List of sorted actions in D-Bus format
+        #
+        # @see #to_dbus
+        #
+        # @return [Array<Hash>]
+        def actions
+          backend.actions.all.map { |a| action_to_dbus(a) }
         end
 
       private
@@ -122,6 +133,18 @@ module DInstaller
           settings.each_with_object({}) do |e, h|
             h[PROPOSAL_PROPERTIES[e.first]] = e.last
           end
+        end
+
+        # Converts an action to D-Bus format
+        #
+        # @param action [Y2Storage::CompoundAction]
+        # @return [Hash]
+        def action_to_dbus(action)
+          {
+            "Text"   => action.sentence,
+            "Subvol" => action.device_is?(:btrfs_subvolume),
+            "Delete" => action.delete?
+          }
         end
       end
     end

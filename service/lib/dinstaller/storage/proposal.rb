@@ -34,11 +34,9 @@ module DInstaller
       #
       # @param logger [Logger]
       # @param config [Config]
-      # @param actions [Actions]
-      def initialize(logger, config, actions)
+      def initialize(logger, config)
         @logger = logger
         @config = config
-        @actions = actions
         @listeners = []
       end
 
@@ -112,13 +110,20 @@ module DInstaller
           devicegraph:   probed_devicegraph,
           disk_analyzer: disk_analyzer
         )
-
         save
-
         changed!
-        @actions.changed!
 
         !proposal.failed?
+      end
+
+      # Storage actions manager
+      #
+      # @fixme this method should directly return the actions
+      #
+      # @return [Storage::Actions]
+      def actions
+        # FIXME: this class could receive the storage manager instance
+        @actions ||= Actions.new(logger)
       end
 
     private

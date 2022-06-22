@@ -32,7 +32,8 @@ describe DInstaller::Manager do
   let(:cockpit) { instance_double(DInstaller::CockpitManager, setup: nil) }
   let(:software) do
     instance_double(
-      DInstaller::DBus::Clients::Software, probe: nil, install: nil, propose: nil, finish: nil
+      DInstaller::DBus::Clients::Software,
+      probe: nil, install: nil, propose: nil, finish: nil, on_product_selected: nil
     )
   end
   let(:users) { instance_double(DInstaller::DBus::Clients::Users, write: nil) }
