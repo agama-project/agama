@@ -66,7 +66,7 @@ module DInstaller
 
         # Error messages when the status is 0
         dbus_reader :error_messages, "as",
-          emits_changed_signal: ::DBus::EmitsChangedSignal.new(:invalidates)
+          emits_changed_signal: :invalidates
 
         # Progress has struct with values:
         #   s message
