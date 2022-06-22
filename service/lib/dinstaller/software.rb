@@ -41,7 +41,12 @@ module DInstaller
     # @return [StatusManager]
     attr_reader :status_manager
 
-    attr_reader :product, :products
+    attr_reader :product
+
+    # FIXME: what about defining a Product class?
+    # @return [Array<Array<String,Hash>>] An array containing the product ID and
+    #   additional information in a hash
+    attr_reader :products
 
     # @return [Progress]
     attr_reader :progress
