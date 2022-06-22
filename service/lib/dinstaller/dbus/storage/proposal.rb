@@ -45,7 +45,8 @@ module DInstaller
           backend.add_on_change_listener do
             dbus_properties_changed(INTERFACE, { "LVM" => lvm,
               "CandidateDevices" => candidate_devices,
-              "AvailableDevices" => available_devices }, [])
+              "AvailableDevices" => available_devices,
+              "Actions" => actions }, [])
           end
         end
 
