@@ -32,7 +32,7 @@ import {
 } from "@patternfly/react-core";
 
 import {
-  EOS_FACT_CHECK as OverviewIcon,
+  EOS_PRODUCT_SUBSCRIPTIONS as SectionIcon,
 } from "eos-icons-react";
 
 import Layout from "./Layout";
@@ -108,7 +108,7 @@ export default function ProductSelection() {
   return (
     <Layout
       sectionTitle="D-Installer"
-      SectionIcon={OverviewIcon}
+      SectionIcon={SectionIcon}
       FooterActions={ContinueButton}
     >
       <Form>
