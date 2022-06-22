@@ -44,8 +44,8 @@ class SoftwareClient {
   async getProducts() {
     const proxy = await this.proxy(SOFTWARE_IFACE);
     return proxy.AvailableBaseProducts.map(product => {
-      const [id, name] = product;
-      return { id, name };
+      const [id, name, meta] = product;
+      return { id, name, description: meta.description.v };
     });
   }
 
