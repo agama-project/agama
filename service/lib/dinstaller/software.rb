@@ -207,10 +207,9 @@ module DInstaller
 
     def select_base_product(name)
       base_product = Y2Packager::Product.available_base_products.find do |product|
-        logger.info "Base product #{product.name} found."
         product.name == name
       end
-      logger.info "Base product to select: #{product&.name}"
+      logger.info "Base product to select: #{base_product&.name}"
       base_product&.select
     end
 
