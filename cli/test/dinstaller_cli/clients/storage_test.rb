@@ -30,21 +30,14 @@ describe DInstallerCli::Clients::Storage do
     allow(service).to receive(:object).with("/org/opensuse/DInstaller/Storage/Proposal1")
       .and_return(dbus_proposal)
     allow(dbus_proposal).to receive(:introspect)
-    allow(service).to receive(:object).with("/org/opensuse/DInstaller/Storage/Actions1")
-      .and_return(dbus_actions)
-    allow(dbus_actions).to receive(:introspect)
     allow(dbus_proposal).to receive(:[]).with("org.opensuse.DInstaller.Storage.Proposal1")
       .and_return(proposal_iface)
-    allow(dbus_actions).to receive(:[]).with("org.opensuse.DInstaller.Storage.Actions1")
-      .and_return(actions_iface)
   end
 
   let(:bus) { instance_double(::DBus::SystemBus) }
   let(:service) { instance_double(::DBus::Service) }
   let(:dbus_proposal) { instance_double(::DBus::ProxyObject) }
-  let(:dbus_actions) { instance_double(::DBus::ProxyObject) }
   let(:proposal_iface) { instance_double(::DBus::ProxyObjectInterface) }
-  let(:actions_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
   subject { described_class.new }
 
@@ -86,7 +79,7 @@ describe DInstallerCli::Clients::Storage do
 
   describe "#actions" do
     before do
-      allow(actions_iface).to receive(:[]).with("All").and_return(
+      allow(proposal_iface).to receive(:[]).with("Actions").and_return(
         [
           {
             "Text"      => "Create GPT on /dev/vdc",

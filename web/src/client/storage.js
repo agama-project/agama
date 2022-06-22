@@ -23,8 +23,6 @@ import cockpit from "../lib/cockpit";
 import { applyMixin, withDBus } from "./mixins";
 
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
-const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
-const ACTIONS_PATH = "/org/opensuse/DInstaller/Storage/Actions1";
 const STORAGE_PROPOSAL_PATH = "/org/opensuse/DInstaller/Storage/Proposal1";
 
 /**
@@ -41,8 +39,8 @@ class StorageClient {
    * @return {Promise.<Array.<Object>>}
    */
   async getStorageActions() {
-    const proxy = await this.proxy(STORAGE_ACTIONS_IFACE);
-    return proxy.All.map(action => {
+    const proxy = await this.proxy(STORAGE_PROPOSAL_IFACE);
+    return proxy.Actions.map(action => {
       const { Text: { v: textVar }, Subvol: { v: subvolVar }, Delete: { v: deleteVar } } = action;
       return { text: textVar, subvol: subvolVar, delete: deleteVar };
     });
@@ -77,12 +75,14 @@ class StorageClient {
    * @param {function} handler - callback function
    */
   onActionsChange(handler) {
-    return this.onObjectChanged(ACTIONS_PATH, changes => {
-      const newActions = changes.All.v.map(action => {
-        const { Text: textVar, Subvol: subvolVar, Delete: deleteVar } = action.v;
-        return { text: textVar.v, subvol: subvolVar.v, delete: deleteVar.v };
-      });
-      handler({ All: newActions });
+    return this.onObjectChanged(STORAGE_PROPOSAL_PATH, changes => {
+      if ("Actions" in changes) {
+        const newActions = changes.All.v.map(action => {
+          const { Text: textVar, Subvol: subvolVar, Delete: deleteVar } = action.v;
+          return { text: textVar.v, subvol: subvolVar.v, delete: deleteVar.v };
+        });
+        handler({ All: newActions });
+      }
     });
   }
 
