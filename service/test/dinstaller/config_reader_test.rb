@@ -34,7 +34,7 @@ describe DInstaller::ConfigReader do
     it "returns a Config object with the configuration read from the given file" do
       config = subject.config_from_file(File.join(workdir, "etc", "d-installer.yaml"))
       expect(config).to be_a(DInstaller::Config)
-      expect(config.data["distributions"]).to eql(["Tumbleweed"])
+      expect(config.data["products"].keys).to include("Tumbleweed")
     end
   end
 
