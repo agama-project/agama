@@ -68,6 +68,7 @@ module DInstaller
 
     # Sets up the installation process
     def setup
+      software.on_product_selected { probe }
     end
 
     # Probes the system
@@ -131,11 +132,7 @@ module DInstaller
     #
     # @return [Software]
     def software
-      return @software if @software
-
-      @software = DBus::Clients::Software.new
-      @software.on_product_selected { probe }
-      @software
+      @software ||= DBus::Clients::Software.new
     end
 
     # Language manager
@@ -177,7 +174,6 @@ module DInstaller
 
     attr_reader :config
 
-
     # Performs probe steps
     #
     # Status and progress are properly updated during the process.
@@ -201,6 +197,7 @@ module DInstaller
 
       progress.next_step("Probing Software")
       security.probe(progress)
+      # FIXME: should software probing be done here?
       software.probe { update_status(manager_probing_status) }
 
       progress.next_step("Probing Network")

@@ -53,6 +53,7 @@ module DInstaller
       # @param config [Config] Configuration
       # @param logger [Logger]
       def initialize(config, logger = nil)
+        @config = config
         @manager = DInstaller::Manager.new(config, logger)
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
@@ -67,8 +68,8 @@ module DInstaller
         setup_cockpit
         manager.setup
         export
-        manager.probe
         manager.progress.on_change { dispatch } # make single thread more responsive
+        manager.probe unless config.multi_product?
       end
 
       # Exports the installer object through the D-Bus service
@@ -88,6 +89,9 @@ module DInstaller
 
       # @return [Logger]
       attr_reader :logger
+
+      # @return [Config]
+      attr_reader :config
 
       def setup_cockpit
         cockpit = CockpitManager.new(logger)

@@ -77,6 +77,13 @@ module DInstaller
       @data.merge!(@data[product])
     end
 
+    # Whether there are more than one product
+    #
+    # @return [Boolean] false if there is only one product; true otherwise
+    def multi_product?
+      @data["products"].size > 1
+    end
+
     # Returns a copy of this Object
     #
     # @return [Config]
