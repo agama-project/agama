@@ -28,23 +28,23 @@ describe DInstaller::Software do
   subject { described_class.new(config, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
-  let(:config) { DInstaller::Config.new }
   let(:progress) { DInstaller::Progress.new }
-  let(:products) { [tw_prod] }
-  let(:tw_prod) { instance_double(Y2Packager::Product, name: "openSUSE") }
-  let(:other_prod) { instance_double(Y2Packager::Product, name: "another") }
   let(:base_url) { "" }
   let(:destdir) { "/mnt" }
   let(:gpg_keys) { [] }
 
+  let(:config_path) do
+    File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
+  end
+
+  let(:config) do
+    DInstaller::Config.new(YAML.safe_load(File.read(config_path)))
+  end
+
   before do
-    allow(config).to receive(:data)
-      .and_return({ "software" => { "installation_repositories" => [] } })
     allow(Yast::Pkg).to receive(:TargetInitialize)
     allow(Yast::Pkg).to receive(:ImportGPGKey)
     allow(Dir).to receive(:glob).with(/keys/).and_return(gpg_keys)
-    allow(Y2Packager::Product).to receive(:available_base_products)
-      .and_return(products)
     allow(Yast::Packages).to receive(:Proposal).and_return({})
     allow(Yast::InstURL).to receive(:installInf2Url).with("")
       .and_return(base_url)
@@ -65,9 +65,7 @@ describe DInstaller::Software do
     end
 
     context "when GPG keys are available at /" do
-      let(:gpg_keys) do
-        ["/usr/lib/gnupg/keys/gpg-key.asc"]
-      end
+      let(:gpg_keys) { ["/usr/lib/gnupg/keys/gpg-key.asc"] }
 
       it "imports the GPG keys" do
         expect(Yast::Pkg).to receive(:ImportGPGKey).with(gpg_keys.first, true)
@@ -81,37 +79,60 @@ describe DInstaller::Software do
     end
 
     it "registers the repository from config" do
-      url = "https://download.opensuse.org/download/tumbleweed"
-      allow(config).to receive(:data).and_return(
-        { "software" => { "installation_repositories" => [url] } }
-      )
-      expect(Yast::Pkg).to receive(:SourceCreate).with(url, "/")
+      expect(Yast::Pkg).to receive(:SourceCreate)
+        .exactly(3).with(/tumbleweed/, "/")
       expect(Yast::Pkg).to receive(:SourceSaveAll)
       subject.probe
-    end
-
-    context "when no supported products are found" do
-      let(:products) { [] }
-
-      it "raises an exception" do
-        expect { subject.probe }.to raise_error(RuntimeError)
-      end
     end
   end
 
   describe "#products" do
-    describe "before probing" do
-      it "returns an empty array" do
-        expect(subject.products).to eq([])
-      end
+    it "returns the list of known products" do
+      products = subject.products
+      expect(products.size).to eq(3)
+      id, data = products.first
+      expect(id).to eq("Tumbleweed")
+      expect(data).to include(
+        "name"        => "openSUSE Tumbleweed",
+        "description" => String
+      )
+    end
+  end
+
+  describe "#propose" do
+    let(:tw_prod) { instance_double(Y2Packager::Product, name: "openSUSE", select: nil) }
+    let(:leap_micro_prod) do
+      instance_double(Y2Packager::Product, name: "Leap-Micro")
+    end
+    let(:products) { [leap_micro_prod, tw_prod] }
+
+    before do
+      allow(Y2Packager::Product).to receive(:available_base_products)
+        .and_return(products)
+      allow(Yast::Pkg).to receive(:TargetFinish)
+      allow(Yast::Pkg).to receive(:TargetLoad)
+
+      subject.select_product("Tumbleweed")
     end
 
-    describe "after probing" do
-      before { subject.probe }
+    it "initializes the packaging target" do
+      expect(Yast::Pkg).to receive(:TargetFinish)
+      expect(Yast::Pkg).to receive(:TargetInitialize).with(destdir)
+      expect(Yast::Pkg).to receive(:TargetLoad)
+      subject.propose
+    end
 
-      it "returns the name of the found products that are supported" do
-        expect(subject.products).to eq([tw_prod])
-      end
+    it "selects the selected libzypp product" do
+      expect(tw_prod).to receive(:select)
+      subject.propose
+    end
+
+    it "adds the packages to install" do
+      expect(Yast::PackagesProposal).to receive(:SetResolvables)
+        .with("d-installer", :pattern, ["enhanced_base"])
+      expect(Yast::PackagesProposal).to receive(:SetResolvables)
+        .with("d-installer", :pattern, ["optional_base"], optional: true)
+      subject.propose
     end
   end
 

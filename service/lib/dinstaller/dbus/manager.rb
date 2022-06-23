@@ -65,7 +65,8 @@ module DInstaller
         dbus_reader :status, "u"
 
         # Error messages when the status is 0
-        dbus_reader :error_messages, "as"
+        dbus_reader :error_messages, "as",
+          emits_changed_signal: :invalidates
 
         # Progress has struct with values:
         #   s message
@@ -110,7 +111,7 @@ module DInstaller
       # The callback will emit a signal
       def register_status_callback
         backend.status_manager.on_change do
-          PropertiesChanged(MANAGER_INTERFACE, { "Status" => status }, ["ErrorMessages"])
+          dbus_properties_changed(MANAGER_INTERFACE, { "Status" => status }, ["ErrorMessages"])
         end
       end
 
@@ -119,7 +120,7 @@ module DInstaller
       # The callback will emit a signal
       def register_progress_callback
         backend.progress.on_change do
-          PropertiesChanged(MANAGER_INTERFACE, { "Progress" => progress }, [])
+          dbus_properties_changed(MANAGER_INTERFACE, { "Progress" => progress }, [])
         end
       end
     end

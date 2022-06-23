@@ -132,7 +132,7 @@ describe("when the storage actions changes", () => {
 
     const [cb] = callbacks;
     act(() => {
-      cb({ All: [{ text: "Mount /dev/sdb1 as root", subvol: false }] });
+      cb([{ text: "Mount /dev/sdb1 as root", subvol: false }]);
     });
     await screen.findByText("Mount /dev/sdb1 as root");
   });

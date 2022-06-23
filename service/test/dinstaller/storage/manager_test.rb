@@ -35,12 +35,10 @@ describe DInstaller::Storage::Manager do
   describe "#probe" do
     let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
     let(:proposal) { instance_double(DInstaller::Storage::Proposal, calculate: nil) }
-    let(:actions) { instance_double(DInstaller::Storage::Actions) }
     let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
     before do
       allow(DInstaller::Storage::Proposal).to receive(:new).and_return(proposal)
-      allow(DInstaller::Storage::Actions).to receive(:new).and_return(actions)
       allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
     end
 
@@ -58,12 +56,6 @@ describe DInstaller::Storage::Manager do
     it "runs the inst_prepdisk client" do
       expect(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
       storage.install(progress)
-    end
-  end
-
-  describe "#actions" do
-    it "returns an instance of the Storage::Actions class" do
-      expect(storage.actions).to be_a(DInstaller::Storage::Actions)
     end
   end
 

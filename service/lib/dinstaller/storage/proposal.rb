@@ -37,6 +37,15 @@ module DInstaller
       def initialize(logger, config)
         @logger = logger
         @config = config
+        @listeners = []
+      end
+
+      def add_on_change_listener(&block)
+        @listeners << block
+      end
+
+      def changed!
+        @listeners.each(&:call)
       end
 
       # Available devices for installation
@@ -101,10 +110,20 @@ module DInstaller
           devicegraph:   probed_devicegraph,
           disk_analyzer: disk_analyzer
         )
-
         save
+        changed!
 
         !proposal.failed?
+      end
+
+      # Storage actions manager
+      #
+      # @fixme this method should directly return the actions
+      #
+      # @return [Storage::Actions]
+      def actions
+        # FIXME: this class could receive the storage manager instance
+        @actions ||= Actions.new(logger)
       end
 
     private

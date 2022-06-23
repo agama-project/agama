@@ -133,7 +133,11 @@ module DInstaller
     #
     # @return [Software]
     def software
-      @software ||= DBus::Clients::Software.new
+      return @software if @software
+
+      @software = DBus::Clients::Software.new
+      @software.on_product_selected { probe }
+      @software
     end
 
     # Language manager

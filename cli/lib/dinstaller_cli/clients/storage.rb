@@ -28,9 +28,6 @@ module DInstallerCli
       def initialize
         @dbus_proposal = service.object("/org/opensuse/DInstaller/Storage/Proposal1")
         @dbus_proposal.introspect
-
-        @dbus_actions = service.object("/org/opensuse/DInstaller/Storage/Actions1")
-        @dbus_actions.introspect
       end
 
       # Devices available for the installation
@@ -47,18 +44,18 @@ module DInstallerCli
         dbus_proposal["org.opensuse.DInstaller.Storage.Proposal1"]["CandidateDevices"]
       end
 
+      # Actions to perform in the storage devices
+      #
+      # @return [Array<String>]
+      def actions
+        dbus_proposal["org.opensuse.DInstaller.Storage.Proposal1"]["Actions"].map { |a| a["Text"] }
+      end
+
       # Calculates the storage proposal with the given devices
       #
       # @param candidate_devices [Array<String>] name of the new candidate devices
       def calculate(candidate_devices)
         dbus_proposal.Calculate({ "CandidateDevices" => candidate_devices })
-      end
-
-      # Actions to perform in the storage devices
-      #
-      # @return [Array<String>]
-      def actions
-        dbus_actions["org.opensuse.DInstaller.Storage.Actions1"]["All"].map { |a| a["Text"] }
       end
 
     private

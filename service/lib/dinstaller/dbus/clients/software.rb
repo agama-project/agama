@@ -155,6 +155,17 @@ module DInstaller
           dbus_proposal.RemoveResolvables(unique_id, TYPES.index(type), resolvables, optional)
         end
 
+        # Registers a callback to run when the product changes
+        #
+        # @param callback [Proc] Callback to run when a product is selected
+        def on_product_selected(&callback)
+          dbus_properties = @dbus_object["org.freedesktop.DBus.Properties"]
+          dbus_properties.on_signal("PropertiesChanged") do |_, changes, _|
+            base_product = changes["SelectedBaseProduct"]
+            callback.call(base_product) unless base_product.nil?
+          end
+        end
+
       private
 
         # @return [::DBus::Object]

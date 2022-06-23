@@ -35,16 +35,19 @@ module DInstaller
         # Constructor
         #
         # @param backend [DInstaller::Storage::Proposal]
-        # @param actions [DInstaller::DBus::Storage::Actions] D-Bus object representing the storage
-        #   actions to perform in the system. It is needed to raise signals when a new proposal is
-        #   calculated.
         # @param logger [Logger]
-        def initialize(backend, actions, logger)
+        def initialize(backend, logger)
           @backend = backend
-          @actions = actions
           @logger = logger
 
           super(PATH)
+
+          backend.add_on_change_listener do
+            dbus_properties_changed(INTERFACE, { "LVM" => lvm,
+              "CandidateDevices" => candidate_devices,
+              "AvailableDevices" => available_devices,
+              "Actions" => actions }, [])
+          end
         end
 
         dbus_interface INTERFACE do
@@ -65,11 +68,10 @@ module DInstaller
           dbus_method :Calculate, "in settings:a{sv}, out result:u" do |settings|
             success = backend.calculate(to_proposal_properties(settings))
 
-            PropertiesChanged(INTERFACE, settings, [])
-            actions.refresh
-
             success ? 0 : 1
           end
+
+          dbus_reader :actions, "aa{sv}"
         end
 
         # List of disks available for installation
@@ -96,6 +98,15 @@ module DInstaller
           backend.candidate_devices
         end
 
+        # List of sorted actions in D-Bus format
+        #
+        # @see #to_dbus
+        #
+        # @return [Array<Hash>]
+        def actions
+          backend.actions.all.map { |a| action_to_dbus(a) }
+        end
+
       private
 
         # @return [DInstaller::Storage::Proposal]
@@ -103,9 +114,6 @@ module DInstaller
 
         # @return [Logger]
         attr_reader :logger
-
-        # @return [DInstaller::DBus::Storage::Actions]
-        attr_reader :actions
 
         # Equivalence between properties names in D-Bus and backend.
         PROPOSAL_PROPERTIES = {
@@ -126,6 +134,18 @@ module DInstaller
           settings.each_with_object({}) do |e, h|
             h[PROPOSAL_PROPERTIES[e.first]] = e.last
           end
+        end
+
+        # Converts an action to D-Bus format
+        #
+        # @param action [Y2Storage::CompoundAction]
+        # @return [Hash]
+        def action_to_dbus(action)
+          {
+            "Text"   => action.sentence,
+            "Subvol" => action.device_is?(:btrfs_subvolume),
+            "Delete" => action.delete?
+          }
         end
       end
     end
