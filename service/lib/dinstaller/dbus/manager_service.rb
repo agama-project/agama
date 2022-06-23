@@ -21,6 +21,7 @@
 
 require "dbus"
 require "dinstaller/manager"
+require "dinstaller/cockpit_manager"
 require "dinstaller/dbus/manager"
 require "dinstaller/dbus/language"
 require "dinstaller/dbus/storage/proposal"
@@ -63,6 +64,7 @@ module DInstaller
       # * Export the D-Bus API
       # * Run the probing phase
       def start
+        setup_cockpit
         manager.setup
         export
         manager.probe
@@ -86,6 +88,11 @@ module DInstaller
 
       # @return [Logger]
       attr_reader :logger
+
+      def setup_cockpit
+        cockpit = CockpitManager.new(logger)
+        cockpit.setup(config.data["web"])
+      end
 
       # @return [::DBus::Service]
       def service

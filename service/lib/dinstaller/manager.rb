@@ -22,7 +22,6 @@
 require "yast"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
-require "dinstaller/cockpit_manager"
 require "dinstaller/config"
 require "dinstaller/language"
 require "dinstaller/network"
@@ -69,7 +68,6 @@ module DInstaller
 
     # Sets up the installation process
     def setup
-      setup_cockpit
     end
 
     # Probes the system
@@ -179,10 +177,6 @@ module DInstaller
 
     attr_reader :config
 
-    def setup_cockpit
-      cockpit = CockpitManager.new(logger)
-      cockpit.setup(config.data["web"])
-    end
 
     # Performs probe steps
     #
