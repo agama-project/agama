@@ -20,6 +20,7 @@
  */
 
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -40,6 +41,7 @@ import Center from "./Center";
 
 export default function ProductSelection() {
   const client = useInstallerClient();
+  const navigate = useNavigate();
   const [previous, setPrevious] = useState(undefined);
   const [selected, setSelected] = useState(undefined);
   const [products, setProducts] = useState(undefined);
@@ -64,14 +66,24 @@ export default function ProductSelection() {
     return client.software.onProductChange(setSelected);
   }, [client.software]);
 
-  if (!products) return <Center>"Loading available products..."</Center>;
+  // FIXME: improve this
+  if (!products) {
+    return <Layout
+      sectionTitle="D-Installer"
+      SectionIcon={SectionIcon}
+      FooterActions={ContinueButton}
+    > 
+      <Center>Loading available products...</Center>
+    </Layout>
+  }
 
   const isSelected = p => p.id === selected;
 
   const accept = () => {
     if (selected !== previous) {
       // TODO: handle errors
-      client.software.selectProduct(selected);
+      client.software.selectProduct(selected)
+        .then(() => navigate("overview"));
     }
   };
 

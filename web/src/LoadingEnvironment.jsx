@@ -27,14 +27,14 @@ import Center from "./Center";
 
 import { EOS_THREE_DOTS_LOADING_ANIMATED as LoadingIcon } from "eos-icons-react";
 
-function LoadingEnvironment() {
+function LoadingEnvironment({ text = "Loading, please wait." }) {
   return (
     <Layout sectionTitle="D-Installer">
       <Center>
         <EmptyState>
           <EmptyStateIcon icon={LoadingIcon} />
           <Title headingLevel="h4" size="lg">
-            Loading installation environment, please wait.
+            { text }
           </Title>
         </EmptyState>
       </Center>

@@ -20,6 +20,7 @@
  */
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useInstallerClient } from "./context/installer";
 
 import { Button, Flex, FlexItem, Text } from "@patternfly/react-core";
@@ -42,6 +43,7 @@ import {
 
 function Overview() {
   const client = useInstallerClient();
+  const navigate = useNavigate();
 
   const categories = [
     <Category key="language" title="Language" icon={LanguagesSelectionIcon}>

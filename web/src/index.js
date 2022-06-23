@@ -26,7 +26,7 @@ import "regenerator-runtime/runtime";
 
 import "@patternfly/patternfly/patternfly-base.scss";
 
-import App from "./App";
+import Router from "./Router";
 import { InstallerClientProvider } from "./context/installer";
 import { createClient } from "./client";
 
@@ -44,7 +44,7 @@ const client = createClient();
 ReactDOM.render(
   <StrictMode>
     <InstallerClientProvider client={client}>
-      <App />
+      <Router />
     </InstallerClientProvider>
   </StrictMode>,
   document.getElementById("root")
