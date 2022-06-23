@@ -68,13 +68,10 @@ export default function ProductSelection() {
 
   const isSelected = p => p.id === selected;
 
-  const accept = async () => {
+  const accept = () => {
     if (selected !== previous) {
-      // FIXME remove console log
-      console.log(selected, "selected");
-
       // TODO: handle errors
-      await client.software.selectProduct(selected);
+      client.software.selectProduct(selected);
     }
   };
 
