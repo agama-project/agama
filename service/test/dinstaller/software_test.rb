@@ -53,6 +53,20 @@ describe DInstaller::Software do
   end
 
   describe "#probe" do
+    let(:rootdir) { Dir.mktmpdir }
+    let(:repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d") }
+    let(:backup_repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d.backup") }
+
+    before do
+      stub_const("DInstaller::Software::REPOS_DIR", repos_dir)
+      stub_const("DInstaller::Software::REPOS_BACKUP", backup_repos_dir)
+      FileUtils.mkdir_p(repos_dir)
+    end
+
+    after do
+      FileUtils.remove_entry(rootdir)
+    end
+
     it "sets the status to probing and probed" do
       expect(subject.status_manager).to receive(:change).with(DInstaller::Status::Probing)
       expect(subject.status_manager).to receive(:change).with(DInstaller::Status::Probed)
