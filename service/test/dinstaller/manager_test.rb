@@ -66,7 +66,6 @@ describe DInstaller::Manager do
     let(:users_status) { DInstaller::Status::Error.new }
 
     it "calls #probe method of each module passing a progress object" do
-      expect(software).to receive(:probe)
       expect(security).to receive(:probe).with(subject.progress)
       expect(language).to receive(:probe).with(subject.progress)
       expect(network).to receive(:probe).with(subject.progress)
@@ -118,6 +117,7 @@ describe DInstaller::Manager do
       expect(language).to receive(:install).with(subject.progress)
       expect(network).to receive(:install).with(subject.progress)
       expect(software).to receive(:install)
+      expect(software).to receive(:probe)
       expect(software).to receive(:finish)
       expect(security).to receive(:write).with(subject.progress)
       expect(storage).to receive(:install).with(subject.progress)

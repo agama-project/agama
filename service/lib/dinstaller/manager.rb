@@ -83,11 +83,15 @@ module DInstaller
     # rubocop:disable Metrics/AbcSize
     def install
       status_manager.change(Status::Installing.new)
-      progress.init_progress(8, "Partitioning")
+      progress.init_progress(9, "Reading software repositories")
+      software.probe
+
       Yast::Installation.destdir = "/mnt"
+
       # lets propose it here to be sure that software proposal reflects product selection
       # FIXME: maybe repropose after product selection change?
       # first make bootloader proposal to be sure that required packages are installed
+      progress.next_step("Partitioning")
       proposal = ::Bootloader::ProposalClient.new.make_proposal({})
       logger.info "Bootloader proposal #{proposal.inspect}"
       storage.install(progress)
@@ -197,8 +201,6 @@ module DInstaller
 
       progress.next_step("Probing Software")
       security.probe(progress)
-      # FIXME: should software probing be done here?
-      software.probe { update_status(manager_probing_status) }
 
       progress.next_step("Probing Network")
       network.probe(progress)
