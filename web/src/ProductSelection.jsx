@@ -50,7 +50,7 @@ export default function ProductSelection() {
     const loadProducts = async () => {
       // TODO: check if it can be done in one line without performance penalty
       const availableProducts = await client.software.getProducts();
-      const selectedProduct = await client.software.getSelectedProduct();
+      const { id: selectedProduct } = await client.software.getSelectedProduct();
 
       setProducts(availableProducts);
       setPrevious(selectedProduct);
@@ -66,25 +66,17 @@ export default function ProductSelection() {
     return client.software.onProductChange(setSelected);
   }, [client.software]);
 
-  // FIXME: improve this
-  if (!products) {
-    return <Layout
-      sectionTitle="D-Installer"
-      SectionIcon={SectionIcon}
-      FooterActions={ContinueButton}
-    > 
-      <Center>Loading available products...</Center>
-    </Layout>
-  }
-
   const isSelected = p => p.id === selected;
 
   const accept = () => {
-    if (selected !== previous) {
-      // TODO: handle errors
-      client.software.selectProduct(selected)
-        .then(() => navigate("overview"));
+    if (selected === previous) {
+      navigate("/");
+      return;
     }
+
+    // TODO: handle errors
+    client.software.selectProduct(selected)
+      .then(() => navigate("/"));
   };
 
   const ContinueButton = () => {
@@ -94,6 +86,19 @@ export default function ProductSelection() {
       </Button>
     );
   };
+
+  // FIXME: improve this
+  if (!products) {
+    return (
+      <Layout
+        sectionTitle="D-Installer"
+        SectionIcon={SectionIcon}
+        FooterActions={ContinueButton}
+      >
+        <Center>Loading available products...</Center>
+      </Layout>
+    );
+  }
 
   const buildOptions = () => {
     const options = products.map((p) => (
