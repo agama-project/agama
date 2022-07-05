@@ -76,12 +76,13 @@ class StorageClient {
    */
   onActionsChange(handler) {
     return this.onObjectChanged(STORAGE_PROPOSAL_PATH, changes => {
-      if ("Actions" in changes) {
-        const newActions = changes.All.v.map(action => {
-          const { Text: textVar, Subvol: subvolVar, Delete: deleteVar } = action.v;
+      const { Actions: actions } = changes;
+      if (actions !== undefined) {
+        const newActions = actions.v.map(action => {
+          const { Text: textVar, Subvol: subvolVar, Delete: deleteVar } = action;
           return { text: textVar.v, subvol: subvolVar.v, delete: deleteVar.v };
         });
-        handler({ All: newActions });
+        handler(newActions);
       }
     });
   }

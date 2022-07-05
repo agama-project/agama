@@ -36,7 +36,11 @@ const withDBus = {
 
     const proxy = this._client.proxy(iface, path, { watch: true });
     await proxy.wait();
-    _proxies[iface] = proxy;
+
+    if (!path) {
+      _proxies[iface] = proxy;
+    }
+
     return proxy;
   },
 
