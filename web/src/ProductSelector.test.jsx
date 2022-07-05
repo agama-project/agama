@@ -34,7 +34,7 @@ const products = [
 
 const softwareMock = {
   getProducts: () => Promise.resolve(products),
-  getSelectedProduct: () => Promise.resolve("micro")
+  getSelectedProduct: () => Promise.resolve({ id: "MicroOS" })
 };
 
 const selectProductFn = jest.fn().mockResolvedValue();

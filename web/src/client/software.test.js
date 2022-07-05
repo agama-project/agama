@@ -28,9 +28,10 @@ const dbusClient = {};
 const softProxy = {
   wait: jest.fn(),
   AvailableBaseProducts: [
-    ["MicroOS", "openSUSE MicroOS", {}]
+    ["MicroOS", "openSUSE MicroOS", {}],
+    ["Tumbleweed", "openSUSE Tumbleweed", {}]
   ],
-  SelectedBaseProduct: "microos"
+  SelectedBaseProduct: "MicroOS"
 };
 
 beforeEach(() => {
@@ -44,14 +45,19 @@ describe("#getProducts", () => {
   it("returns the list of available products", async () => {
     const client = new SoftwareClient(dbusClient);
     const availableProducts = await client.getProducts();
-    expect(availableProducts).toEqual([{ id: "MicroOS", name: "openSUSE MicroOS" }]);
+    expect(availableProducts).toEqual([
+      { id: "MicroOS", name: "openSUSE MicroOS" },
+      { id: "Tumbleweed", name: "openSUSE Tumbleweed" }
+    ]);
   });
 });
 
-describe("#getSelectedProduct", () => {
-  it("returns the ID of the selected product", async () => {
+describe('#getSelectedProduct', () => {
+  it("returns the selected product", async () => {
     const client = new SoftwareClient(dbusClient);
-    const selected = await client.getSelectedProduct();
-    expect(selected).toEqual("microos");
+    const selectedProduct = await client.getSelectedProduct();
+    expect(selectedProduct).toEqual(
+      { id: "MicroOS", name: "openSUSE MicroOS" }
+    );
   });
 });

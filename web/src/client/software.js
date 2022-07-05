@@ -45,13 +45,19 @@ class SoftwareClient {
     const proxy = await this.proxy(SOFTWARE_IFACE);
     return proxy.AvailableBaseProducts.map(product => {
       const [id, name, meta] = product;
-      return { id, name, description: meta.description.v };
+      return { id, name, description: meta.description?.v };
     });
   }
 
+  /**
+   * Return the selected product
+   *
+   * @return {Promise.<Object>}
+   */
   async getSelectedProduct() {
+    const products = await this.getProducts();
     const proxy = await this.proxy(SOFTWARE_IFACE);
-    return proxy.SelectedBaseProduct;
+    return products.find(product => product.id === proxy.SelectedBaseProduct);
   }
 
   async selectProduct(id) {
