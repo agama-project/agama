@@ -74,6 +74,7 @@ module DInstaller
         config.pick_product(selected)
         probe
       end
+      probe_single_product unless config.multi_product?
     end
 
     # Probes the system
@@ -310,6 +311,17 @@ module DInstaller
     # @return [Array<Status::Base>]
     def clients_statuses
       [software, users].map(&:status)
+    end
+
+    # Runs the probing phase for the first product found
+    #
+    # Adjust the configuration and run the probing phase.
+    #
+    # This method is expected to be used on single-product scenarios.
+    def probe_single_product
+      selected = config.data["products"].keys.first
+      config.pick_product(selected)
+      probe
     end
   end
 end

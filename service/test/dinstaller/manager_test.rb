@@ -26,7 +26,10 @@ require "dinstaller/config"
 describe DInstaller::Manager do
   subject { described_class.new(config, logger) }
 
-  let(:config) { DInstaller::Config.new }
+  let(:config_path) do
+    File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
+  end
+  let(:config) { DInstaller::Config.from_file(config_path) }
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:software) do
@@ -60,7 +63,24 @@ describe DInstaller::Manager do
       expect(software).to receive(:on_product_selected)
       subject.setup
     end
+
+    it "does not perform the probing for other components" do
+      expect(subject).to_not receive(:probe)
+      subject.setup
+    end
+
+    context "when only one product is defined" do
+      let(:config_path) do
+        File.join(FIXTURES_PATH, "d-installer-single.yaml")
+      end
+
+      it "adjusts the configuration and performs the probing" do
+        expect(subject).to receive(:probe)
+        subject.setup
+      end
+    end
   end
+
   describe "#probe" do
     before do
       allow(software).to receive(:status).and_return(software_status)
