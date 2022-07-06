@@ -22,6 +22,7 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import LoadingEnvironment from "./LoadingEnvironment";
+import Questions from "./Questions";
 import { useInstallerClient } from "./context/installer";
 
 function Main() {
@@ -40,7 +41,12 @@ function Main() {
     return <LoadingEnvironment />;
   }
 
-  return <Outlet />;
+  return (
+    <>
+      <Questions />
+      <Outlet />
+    </>
+  );
 }
 
 export default Main;
