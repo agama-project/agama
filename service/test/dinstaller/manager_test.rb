@@ -29,7 +29,6 @@ describe DInstaller::Manager do
   let(:config) { DInstaller::Config.new }
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:cockpit) { instance_double(DInstaller::CockpitManager, setup: nil) }
   let(:software) do
     instance_double(
       DInstaller::DBus::Clients::Software,
@@ -52,10 +51,16 @@ describe DInstaller::Manager do
     allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(users)
     allow(DInstaller::Storage::Manager).to receive(:new).and_return(storage)
-    allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
     allow(DInstaller::QuestionsManager).to receive(:new).and_return(questions_manager)
   end
 
+  describe "#setup" do
+    it "probes languages" do
+      expect(language).to receive(:probe)
+      expect(software).to receive(:on_product_selected)
+      subject.setup
+    end
+  end
   describe "#probe" do
     before do
       allow(software).to receive(:status).and_return(software_status)
@@ -67,7 +72,6 @@ describe DInstaller::Manager do
 
     it "calls #probe method of each module passing a progress object" do
       expect(security).to receive(:probe).with(subject.progress)
-      expect(language).to receive(:probe).with(subject.progress)
       expect(network).to receive(:probe).with(subject.progress)
       expect(storage).to receive(:probe).with(subject.progress, subject.questions_manager)
       subject.probe

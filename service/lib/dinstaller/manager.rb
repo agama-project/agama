@@ -68,7 +68,12 @@ module DInstaller
 
     # Sets up the installation process
     def setup
-      software.on_product_selected { probe }
+      progress.init_progress(1, "Probing Languages")
+      language.probe(progress)
+      software.on_product_selected do |selected|
+        config.pick_product(selected)
+        probe
+      end
     end
 
     # Probes the system
@@ -183,8 +188,6 @@ module DInstaller
     # Status and progress are properly updated during the process.
     #
     # FIXME: progress has no much sense now because probing steps are performed in parallel.
-    #
-    # rubocop:disable Metrics/AbcSize
     def probe_steps
       status_manager.change(Status::Probing.new)
 
@@ -192,9 +195,6 @@ module DInstaller
       #   Note that the status of the manager represents the global status, so we still need a
       #   status for the sequential probing steps that are still done by the manager.
       manager_probing_status = status_manager.status
-
-      progress.init_progress(4, "Probing Languages")
-      language.probe(progress)
 
       progress.next_step("Probing Storage")
       storage.probe(progress, questions_manager)
