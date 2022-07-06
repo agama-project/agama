@@ -50,11 +50,13 @@ export default function ProductSelection() {
     const loadProducts = async () => {
       // TODO: check if it can be done in one line without performance penalty
       const availableProducts = await client.software.getProducts();
-      const { id: selectedProduct } = await client.software.getSelectedProduct();
+      const selectedProduct = await client.software.getSelectedProduct();
 
       setProducts(availableProducts);
-      setPrevious(selectedProduct);
-      setSelected(selectedProduct);
+      if (selectedProduct) {
+        setPrevious(selectedProduct.id);
+        setSelected(selectedProduct.id);
+      }
     };
 
     loadProducts().catch(console.error);

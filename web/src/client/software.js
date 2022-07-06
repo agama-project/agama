@@ -52,11 +52,14 @@ class SoftwareClient {
   /**
    * Return the selected product
    *
-   * @return {Promise.<Object>}
+   * @return {Promise.<Object|null>}
    */
   async getSelectedProduct() {
     const products = await this.getProducts();
     const proxy = await this.proxy(SOFTWARE_IFACE);
+    if (proxy.SelectedBaseProduct === "") {
+      return null;
+    }
     return products.find(product => product.id === proxy.SelectedBaseProduct);
   }
 
