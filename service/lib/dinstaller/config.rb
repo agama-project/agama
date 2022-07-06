@@ -88,7 +88,7 @@ module DInstaller
     #
     # @return [Boolean] false if there is only one product; true otherwise
     def multi_product?
-      @data["products"].size > 1
+      data["products"].size > 1
     end
 
     # Returns a copy of this Object

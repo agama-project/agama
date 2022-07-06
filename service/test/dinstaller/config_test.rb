@@ -88,4 +88,28 @@ describe DInstaller::Config do
       expect(copy.data).to eql(subject.data)
     end
   end
+
+  describe "#multi_product?" do
+    context "when more than one product is defined" do
+      subject do
+        described_class.from_file(
+          File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
+        )
+      end
+
+      it "returns true" do
+        expect(subject.multi_product?).to eq(true)
+      end
+    end
+
+    context "when just one product is defined" do
+      subject do
+        described_class.from_file(File.join(FIXTURES_PATH, "d-installer-single.yaml"))
+      end
+
+      it "returns true" do
+        expect(subject.multi_product?).to eq(false)
+      end
+    end
+  end
 end
