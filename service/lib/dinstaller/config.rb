@@ -46,6 +46,13 @@ module DInstaller
         @base = nil
         @current = nil
       end
+
+      # Load the configuration from a given file
+      #
+      # @param path [String|Pathname] File path
+      def from_file(path)
+        new(YAML.safe_load(File.read(path.to_s)))
+      end
     end
 
     # Constructor

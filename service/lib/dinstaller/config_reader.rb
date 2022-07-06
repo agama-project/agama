@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "yaml"
 require "logger"
 require "dinstaller/config"
 require "dinstaller/cmdline_args"
@@ -62,7 +63,7 @@ module DInstaller
     def config_from_file(path = nil)
       raise "Missing config file at #{path}" unless File.exist?(path)
 
-      Config.new(YAML.safe_load(File.read(path)))
+      Config.from_file(path)
     end
 
     # Return an {Array} with the different {Config} objects read from the different locations
