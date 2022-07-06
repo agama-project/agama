@@ -114,8 +114,11 @@ module DInstaller
           end
         end
 
+        # Returns the selected base product
+        #
+        # @return [String] Product ID or an empty string if no product is selected
         def selected_base_product
-          backend.product
+          backend.product || ""
         end
 
         def select_product(product_id)
