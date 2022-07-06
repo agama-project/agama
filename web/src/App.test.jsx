@@ -38,8 +38,10 @@ jest.mock("./ProbingProgress", () => () => "ProbingProgress Mock");
 jest.mock("./InstallationProgress", () => () => "InstallationProgress Mock");
 jest.mock("./InstallationFinished", () => () => "InstallationFinished Mock");
 jest.mock("./Overview", () => () => "Overview Mock");
-jest.mock("./Questions", () => () => <div>Questions Mock</div>);
 jest.mock("./TargetIpsPopup", () => () => "Target IPs Mock");
+jest.mock('react-router-dom', () => ({
+  Outlet: () => <div>Content</div>
+}));
 
 const callbacks = {};
 const initialStatusMock = null;
@@ -60,6 +62,9 @@ beforeEach(() => {
       },
       network: {
         config: jest.fn()
+      },
+      software: {
+        getProducts: jest.fn().mockResolvedValue([{ id: "Tumbleweed" }])
       }
     };
   });
@@ -73,10 +78,9 @@ describe("App", () => {
       getStatusFn = () => Promise.reject(new Error("Couldn't connect to D-Bus service"));
     });
 
-    it("renders the Questions and DBusError components", async () => {
+    it("renders the DBusError component", async () => {
       installerRender(<App />);
 
-      await screen.findByText("Questions Mock");
       await screen.findByText("D-BusError Mock");
     });
   });
@@ -86,48 +90,44 @@ describe("App", () => {
       getStatusFn = () => Promise.resolve(initialStatusMock);
     });
 
-    it("renders Questions and ProbingProgress components when PROBING", async () => {
+    it("renders ProbingProgress components when PROBING", async () => {
       installerRender(<App />);
 
       await screen.findByText(/Loading.*environment/i);
 
       changeStatusTo(PROBING);
 
-      await screen.findByText("Questions Mock");
       await screen.findByText("ProbingProgress Mock");
     });
 
-    it("renders Questions and InstallationProgress components when INSTALLING", async () => {
+    it("renders InstallationProgress components when INSTALLING", async () => {
       installerRender(<App />);
 
       await screen.findByText(/Loading.*environment/i);
 
       changeStatusTo(INSTALLING);
 
-      await screen.findByText("Questions Mock");
       await screen.findByText("InstallationProgress Mock");
     });
 
-    it("renders Questions and InstallationFinished components when INSTALLED", async () => {
+    it("renders InstallationFinished components when INSTALLED", async () => {
       installerRender(<App />);
 
       await screen.findByText(/Loading.*environment/i);
 
       changeStatusTo(INSTALLED);
 
-      await screen.findByText("Questions Mock");
       await screen.findByText("InstallationFinished Mock");
     });
 
-    it("renders Questions and Overview components if not PROBING, INSTALLING, or INSTALLED", async () => {
+    it("renders the content if not PROBING, INSTALLING, or INSTALLED", async () => {
       installerRender(<App />);
 
       await screen.findByText(/Loading.*environment/i);
 
       changeStatusTo(PROBED);
 
-      await screen.findByText("Questions Mock");
-      await screen.findByText("Overview Mock");
+      await screen.findByText("Content");
     });
   });
 });

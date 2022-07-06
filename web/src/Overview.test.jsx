@@ -61,7 +61,7 @@ beforeEach(() => {
       },
       software: {
         getProducts: () => Promise.resolve(products),
-        getSelectedProduct: () => Promise.resolve("openSUSE"),
+        getSelectedProduct: () => Promise.resolve(products[0]),
         onProductChange: jest.fn()
       },
       manager: {
