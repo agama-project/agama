@@ -212,7 +212,6 @@ module DInstaller
       manager_probing_status = Status::Probed.new
       update_status(manager_probing_status)
     end
-    # rubocop:enable Metrics/AbcSize
 
     # Performs required steps after installing the system
     #
