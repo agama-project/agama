@@ -43,7 +43,7 @@ const fakeUser = { fullName: "Fake User", userName: "fake_user", autologin: true
 const ipData = {
   addresses: [],
   hostname: "example.net"
-}
+};
 
 beforeEach(() => {
   createClient.mockImplementation(() => {

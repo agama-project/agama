@@ -44,7 +44,7 @@ const storageProposalProxy = {
 
 beforeEach(() => {
   dbusClient.proxy = jest.fn().mockImplementation(iface => {
-    if (iface === STORAGE_PROPOSAL_IFACE) return storageProposalProxy
+    if (iface === STORAGE_PROPOSAL_IFACE) return storageProposalProxy;
   });
 });
 

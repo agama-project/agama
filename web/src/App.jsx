@@ -21,7 +21,7 @@
 
 import React, { useEffect, useReducer } from "react";
 import { useInstallerClient } from "./context/installer";
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
 

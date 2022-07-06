@@ -22,7 +22,7 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { installerRender, plainRender } from "./test-utils";
+import { plainRender } from "./test-utils";
 
 import DBusError from "./DBusError";
 
@@ -33,7 +33,7 @@ describe("DBusError", () => {
     plainRender(<DBusError />);
 
     expect(screen.getByText(/Could not connect to the D-Bus service/i))
-      .toBeInTheDocument()
+      .toBeInTheDocument();
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
