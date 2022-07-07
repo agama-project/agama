@@ -32,7 +32,7 @@ import { createClient } from "./client";
 
 import App from "./App";
 import Main from "./Main";
-import ProductSelection from "./ProductSelection";
+import ProductSelectionPage from "./ProductSelectionPage";
 import Overview from "./Overview";
 
 /*
@@ -56,7 +56,7 @@ ReactDOM.render(
               <Route path="/" element={<Overview />} />
               <Route path="/overview" element={<Overview />} />
             </Route>
-            <Route path="products" element={<ProductSelection />} />
+            <Route path="products" element={<ProductSelectionPage />} />
           </Route>
         </Routes>
       </HashRouter>

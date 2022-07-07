@@ -39,7 +39,7 @@ import {
 import Layout from "./Layout";
 import Center from "./Center";
 
-export default function ProductSelection() {
+function ProductSelectionPage() {
   const client = useInstallerClient();
   const navigate = useNavigate();
   const { products, product } = useOutletContext();
@@ -119,3 +119,5 @@ export default function ProductSelection() {
     </Layout>
   );
 }
+
+export default ProductSelectionPage;

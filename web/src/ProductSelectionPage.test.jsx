@@ -22,7 +22,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "./test-utils";
-import ProductSelection from "./ProductSelection";
+import ProductSelectionPage from "./ProductSelectionPage";
 import { createClient } from "./client";
 
 const products = [
@@ -62,7 +62,7 @@ beforeEach(() => {
 
 describe("when the user chooses a product", () => {
   it("selects the product and redirects to the main page", async () => {
-    const { user } = installerRender(<ProductSelection />);
+    const { user } = installerRender(<ProductSelectionPage />);
     const radio = await screen.findByRole("radio", { name: "openSUSE MicroOS" });
     await user.click(radio);
     const button = await screen.findByRole("button", { name: "Select" });
@@ -74,7 +74,7 @@ describe("when the user chooses a product", () => {
 
 describe("when the user chooses does not change the product", () => {
   it("redirects to the main page", async () => {
-    const { user } = installerRender(<ProductSelection />);
+    const { user } = installerRender(<ProductSelectionPage />);
     await screen.findByText("openSUSE Tumbleweed");
     const button = await screen.findByRole("button", { name: "Select" });
     await user.click(button);
