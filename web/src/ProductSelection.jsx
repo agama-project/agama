@@ -65,10 +65,10 @@ export default function ProductSelection() {
       .then(() => navigate("/"));
   };
 
-  const ContinueButton = () => {
+  const SelectButton = () => {
     return (
       <Button isLarge variant="primary" onClick={accept}>
-        Continue
+        Select
       </Button>
     );
   };
@@ -79,7 +79,7 @@ export default function ProductSelection() {
       <Layout
         sectionTitle="D-Installer"
         SectionIcon={SectionIcon}
-        FooterActions={ContinueButton}
+        FooterActions={SelectButton}
       >
         <Center>Loading available products...</Center>
       </Layout>
@@ -109,7 +109,7 @@ export default function ProductSelection() {
     <Layout
       sectionTitle="D-Installer"
       SectionIcon={SectionIcon}
-      FooterActions={ContinueButton}
+      FooterActions={SelectButton}
     >
       <Form>
         <FormGroup isStack label={`Choose a product (${products.length} available)`} role="radiogroup">

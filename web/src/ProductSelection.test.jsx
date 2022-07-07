@@ -65,7 +65,7 @@ describe("when the user chooses a product", () => {
     const { user } = installerRender(<ProductSelection />);
     const radio = await screen.findByRole("radio", { name: "openSUSE MicroOS" });
     await user.click(radio);
-    const button = await screen.findByRole("button", { name: "Continue" });
+    const button = await screen.findByRole("button", { name: "Select" });
     await user.click(button);
     expect(softwareMock.selectProduct).toHaveBeenCalledWith("MicroOS");
     expect(mockUseNavigate).toHaveBeenCalledWith("/");
@@ -76,7 +76,7 @@ describe("when the user chooses does not change the product", () => {
   it("redirects to the main page", async () => {
     const { user } = installerRender(<ProductSelection />);
     await screen.findByText("openSUSE Tumbleweed");
-    const button = await screen.findByRole("button", { name: "Continue" });
+    const button = await screen.findByRole("button", { name: "Select" });
     await user.click(button);
     expect(softwareMock.selectProduct).not.toHaveBeenCalled();
     expect(mockUseNavigate).toHaveBeenCalledWith("/");
