@@ -33,7 +33,7 @@ import Users from "./Users";
 import Popup from "./Popup";
 
 import {
-  EOS_FACT_CHECK as OverviewIcon,
+  EOS_SOFTWARE as OverviewIcon,
   EOS_TRANSLATE as LanguagesSelectionIcon,
   EOS_VOLUME as HardDriveIcon,
   EOS_MANAGE_ACCOUNTS as UsersIcon,
