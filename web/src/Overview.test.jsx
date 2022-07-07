@@ -26,6 +26,10 @@ import Overview from "./Overview";
 import { createClient } from "./client";
 
 jest.mock("./client");
+jest.mock("react-router-dom", () => ({
+  useOutletContext: () => ({ product }),
+  useNavigate: () => {}
+}));
 
 const proposal = {
   candidateDevices: ["/dev/sda"],
@@ -37,7 +41,7 @@ const proposal = {
 };
 const actions = [{ text: "Mount /dev/sda1 as root", subvol: false }];
 const languages = [{ id: "en_US", name: "English" }];
-const products = [{ id: "openSUSE", name: "openSUSE Tumbleweed" }];
+const product = { id: "openSUSE", name: "openSUSE Tumbleweed" };
 const startInstallationFn = jest.fn();
 const fakeUser = { fullName: "Fake User", userName: "fake_user", autologin: true };
 const ipData = {
@@ -60,8 +64,6 @@ beforeEach(() => {
         onLanguageChange: jest.fn()
       },
       software: {
-        getProducts: () => Promise.resolve(products),
-        getSelectedProduct: () => Promise.resolve(products[0]),
         onProductChange: jest.fn()
       },
       manager: {
@@ -82,7 +84,7 @@ beforeEach(() => {
 
 test("renders the Overview", async () => {
   installerRender(<Overview />);
-  const title = screen.getByText(/Installation Summary/i);
+  const title = screen.getByText(/openSUSE Tumbleweed/i);
   expect(title).toBeInTheDocument();
 
   await screen.findByText("English");
