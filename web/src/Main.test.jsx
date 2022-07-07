@@ -60,12 +60,12 @@ describe("when a product is selected", () => {
   });
 });
 
-describe("when a product is selected", () => {
+describe("when a product not is selected", () => {
   beforeEach(() => {
     product = null;
   });
 
-  it("renders the Questions component and the content", async () => {
+  it("redirects to the product selection page", async () => {
     installerRender(<Main />);
 
     await screen.findByText("Navigate");
