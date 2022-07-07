@@ -19,19 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
-import { Outlet, Navigate } from "react-router-dom";
+import React from "react";
+import { Outlet, Navigate, useOutletContext } from "react-router-dom";
 import LoadingEnvironment from "./LoadingEnvironment";
 import Questions from "./Questions";
-import { useInstallerClient } from "./context/installer";
 
 function Main() {
-  const [product, setProduct] = useState(undefined);
-  const client = useInstallerClient();
-
-  useEffect(() => {
-    return client.software.getSelectedProduct().then(setProduct);
-  }, [client.software]);
+  const { products, product } = useOutletContext();
 
   if (product === null) {
     return <Navigate to="/products" />;
@@ -44,7 +38,7 @@ function Main() {
   return (
     <>
       <Questions />
-      <Outlet context={{product}} />
+      <Outlet context={{ products, product }} />
     </>
   );
 }

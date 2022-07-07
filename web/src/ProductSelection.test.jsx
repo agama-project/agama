@@ -25,13 +25,6 @@ import { installerRender } from "./test-utils";
 import ProductSelection from "./ProductSelection";
 import { createClient } from "./client";
 
-jest.mock("./client");
-jest.mock("./TargetIpsPopup", () => () => "Target IPs Mock");
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockUseNavigate
-}));
-
 const products = [
   {
     id: "Tumbleweed",
@@ -44,6 +37,13 @@ const products = [
     description: "MicroOS description"
   }
 ];
+jest.mock("./client");
+jest.mock("./TargetIpsPopup", () => () => "Target IPs Mock");
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useOutletContext: () => ({ products, product: products[0] }),
+  useNavigate: () => mockUseNavigate
+}));
 
 const mockUseNavigate = jest.fn();
 

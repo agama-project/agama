@@ -23,33 +23,26 @@ import React from "react";
 
 import { screen } from "@testing-library/react";
 import { installerRender } from "./test-utils";
-import { createClient } from "./client";
+import { useOutletContext } from "react-router-dom";
 
 import Main from "./Main";
 
 jest.mock("./client");
-jest.mock('react-router-dom', () => ({
-  Outlet: () => <div>Content</div>,
-  Navigate: () => <div>Navigate</div>
-}));
 jest.mock("./Questions", () => () => "Questions Mock");
 jest.mock("./Layout", () => ({ children }) => <>{children}</>);
+jest.mock('react-router-dom', () => ({
+  Outlet: () => <div>Content</div>,
+  Navigate: () => <div>Navigate</div>,
+  useOutletContext: jest.fn()
+}));
 
-let product;
-
-beforeEach(() => {
-  createClient.mockImplementation(() => {
-    return {
-      software: {
-        getSelectedProduct: jest.fn().mockResolvedValue(product)
-      }
-    };
-  });
-});
+const tumbleweed = { id: "Tumbleweed", name: "openSUSE Tumbleweed" };
 
 describe("when a product is selected", () => {
   beforeEach(() => {
-    product = { id: "Tumbleweed" };
+    useOutletContext.mockImplementation(() => ({
+      products: [tumbleweed], product: tumbleweed
+    }));
   });
 
   it("renders the Questions component and the content", async () => {
@@ -60,9 +53,11 @@ describe("when a product is selected", () => {
   });
 });
 
-describe("when a product not is selected", () => {
+describe("when no product is selected", () => {
   beforeEach(() => {
-    product = null;
+    useOutletContext.mockImplementation(() => ({
+      products: [tumbleweed], product: null
+    }));
   });
 
   it("redirects to the product selection page", async () => {

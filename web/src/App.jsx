@@ -48,6 +48,14 @@ const reducer = (state, action) => {
     case "SET_DBUS_ERROR": {
       return { ...state, dbusError: action.payload.error };
     }
+    case "LOAD_PRODUCTS": {
+      const { products, product } = action.payload;
+      return { ...state, products, product };
+    }
+    case "SELECT_PRODUCT": {
+      const { productId } = action.payload;
+      return { ...state, product: productId };
+    }
     default: {
       throw new Error(`Unsupported action type: ${action.type}`);
     }
@@ -57,6 +65,14 @@ const reducer = (state, action) => {
 function App() {
   const client = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, null, init);
+  const { products, product } = state;
+
+  let selectedProduct;
+  if (product === null) {
+    selectedProduct = null;
+  } else if (products) {
+    selectedProduct = products.find(p => p.id === product);
+  }
 
   useEffect(() => {
     client.manager.getStatus()
@@ -75,6 +91,25 @@ function App() {
   }, [client.manager]);
 
   useEffect(() => {
+    return client.software.onProductChange(productId => {
+      dispatch({ type: "SELECT_PRODUCT", payload: { productId } });
+    });
+  }, [client.software]);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      const available = await client.software.getProducts();
+      const selected = await client.software.getSelectedProduct();
+      dispatch({
+        type: "LOAD_PRODUCTS",
+        payload: { products: available, product: selected?.id || null }
+      });
+    };
+
+    loadProducts().catch(console.error);
+  }, [client.software]);
+
+  useEffect(() => {
     return client.monitor.onDisconnect(() => {
       dispatch({ type: "SET_DBUS_ERROR", payload: { error: "Connection lost" } });
     });
@@ -86,7 +121,7 @@ function App() {
   if (state.installing) return <InstallationProgress />;
   if (state.finished) return <InstallationFinished />;
 
-  return <Outlet />;
+  return <Outlet context={{ products, product: selectedProduct }} />;
 }
 
 export default App;

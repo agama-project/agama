@@ -27,7 +27,7 @@ import { createClient } from "./client";
 
 jest.mock("./client");
 jest.mock("react-router-dom", () => ({
-  useOutletContext: () => ({ product }),
+  useOutletContext: () => ({ products, product }),
   useNavigate: () => {}
 }));
 
@@ -42,6 +42,7 @@ const proposal = {
 const actions = [{ text: "Mount /dev/sda1 as root", subvol: false }];
 const languages = [{ id: "en_US", name: "English" }];
 const product = { id: "openSUSE", name: "openSUSE Tumbleweed" };
+const products = [{ id: "openSUSE", name: "openSUSE Tumbleweed" }];
 const startInstallationFn = jest.fn();
 const fakeUser = { fullName: "Fake User", userName: "fake_user", autologin: true };
 const ipData = {

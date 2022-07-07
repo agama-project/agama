@@ -20,7 +20,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -42,25 +42,9 @@ import Center from "./Center";
 export default function ProductSelection() {
   const client = useInstallerClient();
   const navigate = useNavigate();
-  const [previous, setPrevious] = useState(undefined);
-  const [selected, setSelected] = useState(undefined);
-  const [products, setProducts] = useState(undefined);
-
-  useEffect(() => {
-    const loadProducts = async () => {
-      // TODO: check if it can be done in one line without performance penalty
-      const availableProducts = await client.software.getProducts();
-      const selectedProduct = await client.software.getSelectedProduct();
-
-      setProducts(availableProducts);
-      if (selectedProduct) {
-        setPrevious(selectedProduct.id);
-        setSelected(selectedProduct.id);
-      }
-    };
-
-    loadProducts().catch(console.error);
-  }, [client.software]);
+  const { products, product } = useOutletContext();
+  const previous = product?.id;
+  const [selected, setSelected] = useState(product?.id);
 
   useEffect(() => {
     // TODO: display a notification in the UI to emphasizes that

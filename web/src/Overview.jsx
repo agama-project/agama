@@ -40,20 +40,6 @@ import {
   EOS_MODE_EDIT as ModeEditIcon
 } from "eos-icons-react";
 
-const RightActions = () => {
-  const navigate = useNavigate();
-
-  return (
-    <Button
-      isSmall
-      variant="plain"
-      icon={<ModeEditIcon />}
-      aria-label="Change selected product"
-      onClick={() => navigate("products")}
-    />
-  );
-};
-
 const InstallButton = () => {
   const client = useInstallerClient();
   const [isOpen, setIsOpen] = useState(false);
@@ -90,7 +76,8 @@ const InstallButton = () => {
 };
 
 function Overview() {
-  const { product } = useOutletContext();
+  const { products, product } = useOutletContext();
+  const navigate = useNavigate();
 
   const categories = [
     <Category key="language" title="Language" icon={LanguagesSelectionIcon}>
@@ -110,6 +97,24 @@ function Overview() {
         {category}
       </FlexItem>
     ));
+  };
+
+  const RightActions = () => {
+    if (products.length === 1) {
+      return "";
+    }
+
+    const navigate = useNavigate();
+
+    return (
+      <Button
+        isSmall
+        variant="plain"
+        icon={<ModeEditIcon />}
+        aria-label="Change selected product"
+        onClick={() => navigate("products")}
+      />
+    );
   };
 
   return (

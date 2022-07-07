@@ -64,7 +64,8 @@ beforeEach(() => {
         config: jest.fn()
       },
       software: {
-        getProducts: jest.fn().mockResolvedValue([{ id: "Tumbleweed" }])
+        getProducts: jest.fn().mockResolvedValue([{ id: "Tumbleweed" }]),
+        onProductChange: jest.fn()
       }
     };
   });
