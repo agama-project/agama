@@ -82,6 +82,13 @@ beforeEach(() => {
   });
 });
 
+// FIXME: it must not display the action if there is only one product
+test("includes an action for changing the selected product", async () => {
+  installerRender(<Overview />);
+
+  await screen.findByLabelText("Change selected product");
+});
+
 test("renders the Overview", async () => {
   installerRender(<Overview />);
   const title = screen.getByText(/openSUSE Tumbleweed/i);
