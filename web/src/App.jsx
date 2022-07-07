@@ -48,9 +48,6 @@ const reducer = (state, action) => {
     case "SET_DBUS_ERROR": {
       return { ...state, dbusError: action.payload.error };
     }
-    case "LOAD_PRODUCTS": {
-      return { ...state, products: action.payload.products };
-    }
     default: {
       throw new Error(`Unsupported action type: ${action.type}`);
     }
@@ -83,15 +80,8 @@ function App() {
     });
   }, [client.monitor]);
 
-  useEffect(() => {
-    return client.software.getProducts()
-      .then(products => {
-        dispatch({ type: "LOAD_PRODUCTS", payload: { products } });
-      });
-  }, [client.software]);
-
   if (state.dbusError) return <DBusError />;
-  if (state.loading || !state.products) return <LoadingEnvironment />;
+  if (state.loading) return <LoadingEnvironment />;
   if (state.probing) return <ProbingProgress />;
   if (state.installing) return <InstallationProgress />;
   if (state.finished) return <InstallationFinished />;
