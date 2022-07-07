@@ -39,6 +39,7 @@
 
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
 
   // Centers the section title.
@@ -56,11 +57,15 @@
 .layout__header-left-action {
 }
 
-.layout__header-right-actions > svg {
-  fill: white;
-  block-size: 1.5rem;
-  inline-size: 1.5rem;
-  vertical-align: text-top;
+.layout__header-right-actions {
+  button {
+    vertical-align: text-top;
+  }
+
+  svg {
+    fill: white;
+    vertical-align: middle;
+  }
 }
 
 .layout__header-action-icon {

@@ -44,7 +44,12 @@ const RightActions = () => {
   const navigate = useNavigate();
 
   return (
-    <Button onClick={() => navigate("products")} variant="link" icon={<ModeEditIcon color="white" />} />
+    <Button
+      isSmall
+      variant="plain"
+      icon={<ModeEditIcon />}
+      onClick={() => navigate("products")}
+    />
   );
 };
 
