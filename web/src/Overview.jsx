@@ -49,6 +49,7 @@ const RightActions = () => {
 };
 
 const InstallButton = () => {
+  const client = useInstallerClient();
   const [isOpen, setIsOpen] = useState(false);
 
   const open = () => setIsOpen(true);
