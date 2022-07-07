@@ -20,8 +20,9 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useInstallerClient } from "./context/installer";
+import { useSoftware } from "./context/software";
 
 import {
   Button,
@@ -42,9 +43,9 @@ import Center from "./Center";
 function ProductSelectionPage() {
   const client = useInstallerClient();
   const navigate = useNavigate();
-  const { products, product } = useOutletContext();
-  const previous = product?.id;
-  const [selected, setSelected] = useState(product?.id);
+  const { products, selectedProduct } = useSoftware();
+  const previous = selectedProduct?.id;
+  const [selected, setSelected] = useState(selectedProduct?.id);
 
   useEffect(() => {
     // TODO: display a notification in the UI to emphasizes that

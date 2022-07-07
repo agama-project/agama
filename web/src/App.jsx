@@ -21,6 +21,7 @@
 
 import React, { useEffect, useReducer } from "react";
 import { useInstallerClient } from "./context/installer";
+import { useSoftware } from "./context/software";
 import { Outlet } from "react-router-dom";
 
 import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
@@ -48,14 +49,6 @@ const reducer = (state, action) => {
     case "SET_DBUS_ERROR": {
       return { ...state, dbusError: action.payload.error };
     }
-    case "LOAD_PRODUCTS": {
-      const { products, product } = action.payload;
-      return { ...state, products, product };
-    }
-    case "SELECT_PRODUCT": {
-      const { productId } = action.payload;
-      return { ...state, product: productId };
-    }
     default: {
       throw new Error(`Unsupported action type: ${action.type}`);
     }
@@ -64,15 +57,11 @@ const reducer = (state, action) => {
 
 function App() {
   const client = useInstallerClient();
+  const {
+    setProducts,
+    setSelectedProduct
+  } = useSoftware();
   const [state, dispatch] = useReducer(reducer, null, init);
-  const { products, product } = state;
-
-  let selectedProduct;
-  if (product === null) {
-    selectedProduct = null;
-  } else if (products) {
-    selectedProduct = products.find(p => p.id === product);
-  }
 
   useEffect(() => {
     client.manager.getStatus()
@@ -91,23 +80,19 @@ function App() {
   }, [client.manager]);
 
   useEffect(() => {
-    return client.software.onProductChange(productId => {
-      dispatch({ type: "SELECT_PRODUCT", payload: { productId } });
-    });
-  }, [client.software]);
+    return client.software.onProductChange(setSelectedProduct);
+  }, [client.software, setSelectedProduct]);
 
   useEffect(() => {
     const loadProducts = async () => {
       const available = await client.software.getProducts();
       const selected = await client.software.getSelectedProduct();
-      dispatch({
-        type: "LOAD_PRODUCTS",
-        payload: { products: available, product: selected?.id || null }
-      });
+      setProducts(available);
+      setSelectedProduct(selected?.id || null);
     };
 
     loadProducts().catch(console.error);
-  }, [client.software]);
+  }, [client.software, setProducts, setSelectedProduct]);
 
   useEffect(() => {
     return client.monitor.onDisconnect(() => {
@@ -121,7 +106,7 @@ function App() {
   if (state.installing) return <InstallationProgress />;
   if (state.finished) return <InstallationFinished />;
 
-  return <Outlet context={{ products, product: selectedProduct }} />;
+  return <Outlet />;
 }
 
 export default App;

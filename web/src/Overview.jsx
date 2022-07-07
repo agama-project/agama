@@ -21,7 +21,8 @@
 
 import React, { useState } from "react";
 import { useInstallerClient } from "./context/installer";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useSoftware } from "./context/software";
+import { useNavigate } from "react-router-dom";
 
 import { Button, Flex, FlexItem, Text } from "@patternfly/react-core";
 
@@ -76,7 +77,7 @@ const InstallButton = () => {
 };
 
 function Overview() {
-  const { products, product } = useOutletContext();
+  const { products, selectedProduct } = useSoftware();
   const navigate = useNavigate();
 
   const categories = [
@@ -117,7 +118,7 @@ function Overview() {
 
   return (
     <Layout
-      sectionTitle={product.name}
+      sectionTitle={selectedProduct.name}
       SectionIcon={OverviewIcon}
       FooterActions={InstallButton}
       RightActions={RightActions}

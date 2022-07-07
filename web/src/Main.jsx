@@ -20,25 +20,26 @@
  */
 
 import React from "react";
-import { Outlet, Navigate, useOutletContext } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import LoadingEnvironment from "./LoadingEnvironment";
 import Questions from "./Questions";
+import { useSoftware } from "./context/software";
 
 function Main() {
-  const { products, product } = useOutletContext();
+  const { selectedProduct } = useSoftware();
 
-  if (product === null) {
+  if (selectedProduct === null) {
     return <Navigate to="/products" />;
   }
 
-  if (product === undefined) {
+  if (selectedProduct === undefined) {
     return <LoadingEnvironment />;
   }
 
   return (
     <>
       <Questions />
-      <Outlet context={{ products, product }} />
+      <Outlet />
     </>
   );
 }

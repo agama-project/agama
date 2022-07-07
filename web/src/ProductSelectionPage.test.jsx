@@ -41,8 +41,17 @@ jest.mock("./client");
 jest.mock("./TargetIpsPopup", () => () => "Target IPs Mock");
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  useOutletContext: () => ({ products, product: products[0] }),
   useNavigate: () => mockUseNavigate
+}));
+
+jest.mock("./context/software", () => ({
+  ...jest.requireActual("./context/software"),
+  useSoftware: () => {
+    return {
+      products: products,
+      selectedProduct: products[0]
+    };
+  }
 }));
 
 const mockUseNavigate = jest.fn();

@@ -28,6 +28,7 @@ import "@patternfly/patternfly/patternfly-base.scss";
 
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { InstallerClientProvider } from "./context/installer";
+import { SoftwareProvider } from "./context/software";
 import { createClient } from "./client";
 
 import App from "./App";
@@ -49,17 +50,19 @@ const client = createClient();
 ReactDOM.render(
   <StrictMode>
     <InstallerClientProvider client={client}>
-      <HashRouter>
-        <Routes>
-          <Route path="/" element={<App />}>
-            <Route path="/" element={<Main />}>
-              <Route path="/" element={<Overview />} />
-              <Route path="/overview" element={<Overview />} />
+      <SoftwareProvider>
+        <HashRouter>
+          <Routes>
+            <Route path="/" element={<App />}>
+              <Route path="/" element={<Main />}>
+                <Route path="/" element={<Overview />} />
+                <Route path="/overview" element={<Overview />} />
+              </Route>
+              <Route path="products" element={<ProductSelectionPage />} />
             </Route>
-            <Route path="products" element={<ProductSelectionPage />} />
-          </Route>
-        </Routes>
-      </HashRouter>
+          </Routes>
+        </HashRouter>
+      </SoftwareProvider>
     </InstallerClientProvider>
   </StrictMode>,
   document.getElementById("root")

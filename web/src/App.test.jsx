@@ -46,6 +46,8 @@ jest.mock('react-router-dom', () => ({
 const callbacks = {};
 const initialStatusMock = null;
 let getStatusFn = jest.fn();
+const product = { id: "Tumbleweed", name: "openSUSE Tumbleweed" };
+const products = [product];
 
 // capture the latest subsccription to the manager#onChange for triggering it manually
 const onChangeFn = cb => { callbacks.onChange = cb };
@@ -64,7 +66,8 @@ beforeEach(() => {
         config: jest.fn()
       },
       software: {
-        getProducts: jest.fn().mockResolvedValue([{ id: "Tumbleweed" }]),
+        getProducts: jest.fn().mockResolvedValue(products),
+        getSelectedProduct: jest.fn().mockResolvedValue(product),
         onProductChange: jest.fn()
       }
     };
