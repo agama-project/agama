@@ -104,8 +104,6 @@ function Overview() {
       return "";
     }
 
-    const navigate = useNavigate();
-
     return (
       <Button
         isSmall
