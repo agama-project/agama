@@ -56,6 +56,13 @@
 .layout__header-left-action {
 }
 
+.layout__header-right-actions > svg {
+  fill: white;
+  block-size: 1.5rem;
+  inline-size: 1.5rem;
+  vertical-align: text-top;
+}
+
 .layout__header-action-icon {
   fill: white;
   block-size: 1.5rem;

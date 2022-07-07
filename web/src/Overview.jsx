@@ -21,6 +21,7 @@
 
 import React, { useState } from "react";
 import { useInstallerClient } from "./context/installer";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 import { Button, Flex, FlexItem, Text } from "@patternfly/react-core";
 
@@ -37,11 +38,54 @@ import {
   EOS_TRANSLATE as LanguagesSelectionIcon,
   EOS_VOLUME as HardDriveIcon,
   EOS_PACKAGES as ProductsIcon,
-  EOS_MANAGE_ACCOUNTS as UsersIcon
+  EOS_MANAGE_ACCOUNTS as UsersIcon,
+  EOS_MODE_EDIT as ModeEditIcon
 } from "eos-icons-react";
 
+const RightActions = () => {
+  const navigate = useNavigate();
+
+  return (
+    <Button onClick={() => navigate("products")} variant="link" icon={<ModeEditIcon color="white" />} />
+  );
+};
+
+const InstallButton = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+  const install = () => client.manager.startInstallation();
+
+  return (
+    <>
+      <Button isLarge variant="primary" onClick={open}>
+        Install
+      </Button>
+
+      <Popup
+        title="Confirm Installation"
+        isOpen={isOpen}
+      >
+        <Text>
+          If you continue, partitions on your hard disk will be modified according to the
+          installation settings in the previous dialog.
+        </Text>
+        <Text>
+          Please, cancel and check the settings if you are unsure.
+        </Text>
+
+        <Popup.Actions>
+          <Popup.Confirm onClick={install}>Install</Popup.Confirm>
+          <Popup.Cancel onClick={close} autoFocus />
+        </Popup.Actions>
+      </Popup>
+    </>
+  );
+};
+
 function Overview() {
-  const client = useInstallerClient();
+  const { product } = useOutletContext();
 
   const categories = [
     <Category key="language" title="Language" icon={LanguagesSelectionIcon}>
@@ -58,40 +102,6 @@ function Overview() {
     </Category>
   ];
 
-  const InstallButton = () => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const open = () => setIsOpen(true);
-    const close = () => setIsOpen(false);
-    const install = () => client.manager.startInstallation();
-
-    return (
-      <>
-        <Button isLarge variant="primary" onClick={open}>
-          Install
-        </Button>
-
-        <Popup
-          title="Confirm Installation"
-          isOpen={isOpen}
-        >
-          <Text>
-            If you continue, partitions on your hard disk will be modified according to the
-            installation settings in the previous dialog.
-          </Text>
-          <Text>
-            Please, cancel and check the settings if you are unsure.
-          </Text>
-
-          <Popup.Actions>
-            <Popup.Confirm onClick={install}>Install</Popup.Confirm>
-            <Popup.Cancel onClick={close} autoFocus />
-          </Popup.Actions>
-        </Popup>
-      </>
-    );
-  };
-
   const renderCategories = () => {
     return categories.map(category => (
       <FlexItem key={category.props.title} className="installation-overview-section">
@@ -102,9 +112,10 @@ function Overview() {
 
   return (
     <Layout
-      sectionTitle="Installation Summary"
+      sectionTitle={product.name}
       SectionIcon={OverviewIcon}
       FooterActions={InstallButton}
+      RightActions={RightActions}
     >
       <Flex direction={{ default: "column" }}>{renderCategories()}</Flex>
     </Layout>

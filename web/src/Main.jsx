@@ -44,7 +44,7 @@ function Main() {
   return (
     <>
       <Questions />
-      <Outlet />
+      <Outlet context={{product}} />
     </>
   );
 }
