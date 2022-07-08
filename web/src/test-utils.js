@@ -24,15 +24,12 @@ import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
 
 import { InstallerClientProvider } from "./context/installer";
-import { SoftwareProvider } from "./context/software";
 import { createClient } from "./client";
 
 const InstallerProvider = ({ children }) => {
   const client = createClient();
   return (
-    <InstallerClientProvider client={client}>
-      <SoftwareProvider>{children}</SoftwareProvider>
-    </InstallerClientProvider>
+    <InstallerClientProvider client={client}>{children}</InstallerClientProvider>
   );
 };
 
