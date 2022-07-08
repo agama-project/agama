@@ -23,9 +23,15 @@ import React from "react";
 
 import "./layout.scss";
 import logo from "./assets/suse-horizontal-logo.svg";
+import { createTeleporter } from "react-teleporter";
 
 import About from "./About";
 import TargetIpsPopup from "./TargetIpsPopup";
+
+const PageTitle = createTeleporter();
+const HeaderActions = createTeleporter();
+const HeaderIcon = createTeleporter();
+const FooterActions = createTeleporter();
 
 /**
  * D-Installer main layout component.
@@ -43,53 +49,27 @@ import TargetIpsPopup from "./TargetIpsPopup";
  *   </Layout>
  *
  * @param {object} props - component props
- * @param {React.ReactNode} [props.MenuIcon] - the icon for the application menu
- * @param {string} [props.sectionTitle] - the section title in the header
  * @param {React.ReactNode} [props.SectionIcon] - the section icon in the header
- * @param {React.ReactNode} [props.FooterActions] - actions shown in the footer
  * @param {React.ReactNode} [props.children] - the section content
  *
  */
-function Layout({ MenuIcon, sectionTitle, SectionIcon, RightActions, FooterActions, children }) {
+function Layout({ children }) {
   const responsiveWidthRules = "pf-u-w-66-on-lg pf-u-w-50-on-xl pf-u-w-33-on-2xl";
   const className = `layout ${responsiveWidthRules}`;
-
-  // FIXME: by now, it is here only for illustrating a possible app/section menu
-  const renderHeaderLeftAction = () => {
-    // if (!SectionAction)
-    if (!MenuIcon) return null;
-
-    return (
-      <div className="layout__header-left-action">
-        <MenuIcon className="layout__header-action-icon" />
-      </div>
-    );
-  };
-
-  const renderHeaderRightActions = () => {
-    // if (!SectionAction)
-    if (!RightActions) return null;
-
-    return (
-      <div className="layout__header-right-actions">
-        <RightActions />
-      </div>
-    );
-  };
 
   const renderHeader = () => {
     return (
       <div className="layout__header">
-        {renderHeaderLeftAction()}
-
         <div className="layout__header-section-title">
           <h1>
-            {SectionIcon && <SectionIcon className="layout__header-section-title-icon" />}
-            {sectionTitle}
+            <HeaderIcon.Target className="layout__header-section-title-icon" />
+            <PageTitle.Target />
           </h1>
         </div>
 
-        {renderHeaderRightActions()}
+        <div className="layout__header-right-actions">
+          <HeaderActions.Target />
+        </div>
       </div>
     );
   };
@@ -101,14 +81,13 @@ function Layout({ MenuIcon, sectionTitle, SectionIcon, RightActions, FooterActio
         <About />
         <TargetIpsPopup />
       </div>
-      { FooterActions &&
       <div
         className="layout__footer-actions-area"
         role="navigation"
         aria-label="Installer Actions"
       >
-        <FooterActions />
-      </div> }
+        <FooterActions.Target />
+      </div>
     </div>
   );
 
@@ -123,4 +102,15 @@ function Layout({ MenuIcon, sectionTitle, SectionIcon, RightActions, FooterActio
   );
 }
 
-export default Layout;
+const Title = PageTitle.Source;
+const PageIcon = HeaderIcon.Source;
+const PageActions = HeaderActions.Source;
+const MainActions = FooterActions.Source;
+
+export {
+  Layout as default,
+  Title,
+  PageIcon,
+  PageActions,
+  MainActions
+};

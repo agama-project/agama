@@ -29,7 +29,6 @@ import { EOS_THREE_DOTS_LOADING_ANIMATED as LoadingIcon } from "eos-icons-react"
 
 function LoadingEnvironment({ text = "Loading installation environment, please wait." }) {
   return (
-    <Layout sectionTitle="D-Installer">
       <Center>
         <EmptyState>
           <EmptyStateIcon icon={LoadingIcon} />
@@ -38,7 +37,6 @@ function LoadingEnvironment({ text = "Loading installation environment, please w
           </Title>
         </EmptyState>
       </Center>
-    </Layout>
   );
 }
 

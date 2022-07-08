@@ -22,17 +22,17 @@
 import React from "react";
 
 import Center from "./Center";
-import Layout from "./Layout";
+import { Title, PageIcon } from "./Layout";
 import ProgressReport from "./ProgressReport";
 
-import { EOS_MULTISTATE as SectionIcon } from "eos-icons-react";
+import { EOS_MULTISTATE as Icon } from "eos-icons-react";
 
 const ProbingProgress = () => (
-  <Layout sectionTitle="Probing" SectionIcon={SectionIcon}>
-    <Center>
-      <ProgressReport />
-    </Center>
-  </Layout>
+  <>
+    <Title>Probing</Title>
+    <PageIcon><Icon /></PageIcon>
+    <Center><ProgressReport /></Center>
+  </>
 );
 
 export default ProbingProgress;

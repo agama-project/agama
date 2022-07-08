@@ -22,6 +22,7 @@
 import React, { useEffect, useReducer } from "react";
 import { useInstallerClient } from "./context/installer";
 import { Outlet } from "react-router-dom";
+import Layout, { Title } from "./Layout";
 
 import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
 
@@ -78,13 +79,22 @@ function App() {
     });
   }, [client.monitor]);
 
-  if (state.dbusError) return <DBusError />;
-  if (state.loading) return <LoadingEnvironment />;
-  if (state.probing) return <ProbingProgress />;
-  if (state.installing) return <InstallationProgress />;
-  if (state.finished) return <InstallationFinished />;
+  const Content = () => {
+    if (state.dbusError) return <DBusError />;
+    if (state.loading) return <LoadingEnvironment />;
+    if (state.probing) return <ProbingProgress />;
+    if (state.installing) return <InstallationProgress />;
+    if (state.finished) return <InstallationFinished />;
 
-  return <Outlet />;
+    return <Outlet />;
+  };
+
+  return (
+    <Layout>
+      <Title>D-Installer</Title>
+      <Content />
+    </Layout>
+  );
 }
 
 export default App;

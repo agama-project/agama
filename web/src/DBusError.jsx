@@ -22,11 +22,15 @@
 import React from "react";
 import { Button, Title, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
 
-import Layout from "./Layout";
+import {
+  Title as PageTitle,
+  PageIcon,
+  MainActions
+} from "./Layout";
 import Center from "./Center";
 
 import {
-  EOS_ANNOUNCEMENT as SectionIcon,
+  EOS_ANNOUNCEMENT as Icon,
   EOS_ENDPOINTS_DISCONNECTED as DisconnectionIcon
 } from "eos-icons-react";
 
@@ -39,7 +43,11 @@ const ReloadAction = () => (
 
 function DBusError() {
   return (
-    <Layout sectionTitle="D-Bus Error" SectionIcon={SectionIcon} FooterActions={ReloadAction}>
+    <>
+      <PageTitle>D-Bus Error</PageTitle>
+      <PageIcon><Icon /></PageIcon>
+      <MainActions><ReloadAction /></MainActions>
+
       <Center>
         <EmptyState>
           <EmptyStateIcon icon={DisconnectionIcon} />
@@ -51,7 +59,7 @@ function DBusError() {
           </EmptyStateBody>
         </EmptyState>
       </Center>
-    </Layout>
+    </>
   );
 }
 
