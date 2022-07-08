@@ -95,7 +95,6 @@ beforeEach(() => {
   });
 });
 
-// FIXME: it must not display the action if there is only one product
 test("includes an action for changing the selected product", async () => {
   installerRender(<Overview />);
 

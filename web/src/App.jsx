@@ -66,8 +66,6 @@ function App() {
 
   useEffect(() => {
     return client.manager.onChange(changes => {
-      console.log("manager has changed", changes);
-
       if ("Status" in changes) {
         dispatch({ type: "CHANGE_STATUS", payload: { status: changes.Status } });
       }
