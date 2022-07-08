@@ -21,7 +21,6 @@
 
 import React, { useEffect, useReducer } from "react";
 import { useInstallerClient } from "./context/installer";
-import { useSoftware } from "./context/software";
 import { Outlet } from "react-router-dom";
 
 import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
@@ -57,10 +56,6 @@ const reducer = (state, action) => {
 
 function App() {
   const client = useInstallerClient();
-  const {
-    setProducts,
-    setSelectedProduct
-  } = useSoftware();
   const [state, dispatch] = useReducer(reducer, null, init);
 
   useEffect(() => {
@@ -78,21 +73,6 @@ function App() {
       }
     });
   }, [client.manager]);
-
-  useEffect(() => {
-    return client.software.onProductChange(setSelectedProduct);
-  }, [client.software, setSelectedProduct]);
-
-  useEffect(() => {
-    const loadProducts = async () => {
-      const available = await client.software.getProducts();
-      const selected = await client.software.getSelectedProduct();
-      setProducts(available);
-      setSelectedProduct(selected?.id || null);
-    };
-
-    loadProducts().catch(console.error);
-  }, [client.software, setProducts, setSelectedProduct]);
 
   useEffect(() => {
     return client.monitor.onDisconnect(() => {

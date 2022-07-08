@@ -19,13 +19,30 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect, useMemo } from "react";
+import { useInstallerClient } from "./installer";
 
 const SoftwareContext = React.createContext();
 
 function SoftwareProvider({ children }) {
+  const client = useInstallerClient();
   const [products, setProducts] = React.useState(undefined);
   const [selectedId, setSelectedId] = React.useState(undefined);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      const available = await client.software.getProducts();
+      const selected = await client.software.getSelectedProduct();
+      setProducts(available);
+      setSelectedId(selected?.id || null);
+    };
+
+    loadProducts().catch(console.error);
+  }, [client.software, setProducts, setSelectedId]);
+
+  useEffect(() => {
+    return client.software.onProductChange(setSelectedId);
+  }, [client.software, setSelectedId]);
 
   const value = [products, setProducts, selectedId, setSelectedId];
   return <SoftwareContext.Provider value={value}>{children}</SoftwareContext.Provider>;
@@ -45,7 +62,7 @@ function useSoftware() {
     selectedProduct = products.find(p => p.id === selectedId);
   }
 
-  const setSelectedProduct = React.useMemo(() => (product) => {
+  const setSelectedProduct = useMemo(() => (product) => {
     if (typeof product === "object") {
       setSelectedId(product?.id || null);
     } else {
