@@ -23,6 +23,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInstallerClient } from "./context/installer";
 import { useSoftware } from "./context/software";
+import LoadingEnvironment from "./LoadingEnvironment";
 
 import {
   Button,
@@ -38,7 +39,6 @@ import {
 } from "eos-icons-react";
 
 import Layout from "./Layout";
-import Center from "./Center";
 
 function ProductSelectionPage() {
   const client = useInstallerClient();
@@ -74,7 +74,9 @@ function ProductSelectionPage() {
     );
   };
 
-  if (!products) return <LoadingEnvironment text="Loading available products, please wait..." />
+  if (!products) return (
+    <LoadingEnvironment text="Loading available products, please wait..." />
+  );
 
   const buildOptions = () => {
     const options = products.map((p) => (
