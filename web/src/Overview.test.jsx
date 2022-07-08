@@ -26,6 +26,19 @@ import Overview from "./Overview";
 import { createClient } from "./client";
 
 jest.mock("./client");
+jest.mock("react-router-dom", () => ({
+  useNavigate: () => {}
+}));
+
+jest.mock("./context/software", () => ({
+  ...jest.requireActual("./context/software"),
+  useSoftware: () => {
+    return {
+      products: mockProducts,
+      selectedProduct: product
+    };
+  }
+}));
 
 const proposal = {
   candidateDevices: ["/dev/sda"],
@@ -37,13 +50,17 @@ const proposal = {
 };
 const actions = [{ text: "Mount /dev/sda1 as root", subvol: false }];
 const languages = [{ id: "en_US", name: "English" }];
-const products = [{ id: "openSUSE", name: "openSUSE Tumbleweed" }];
+const product = { id: "openSUSE", name: "openSUSE Tumbleweed" };
+let mockProducts = [
+  { id: "openSUSE", name: "openSUSE Tumbleweed" },
+  { id: "Leap Micro", name: "openSUSE Micro" }
+];
 const startInstallationFn = jest.fn();
 const fakeUser = { fullName: "Fake User", userName: "fake_user", autologin: true };
 const ipData = {
   addresses: [],
   hostname: "example.net"
-}
+};
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
@@ -60,8 +77,6 @@ beforeEach(() => {
         onLanguageChange: jest.fn()
       },
       software: {
-        getProducts: () => Promise.resolve(products),
-        getSelectedProduct: () => Promise.resolve("openSUSE"),
         onProductChange: jest.fn()
       },
       manager: {
@@ -80,9 +95,28 @@ beforeEach(() => {
   });
 });
 
+test("includes an action for changing the selected product", async () => {
+  installerRender(<Overview />);
+
+  await screen.findByLabelText("Change selected product");
+});
+
+describe("if there is only one product", () => {
+  beforeEach(() => {
+    mockProducts = [product];
+  });
+
+  it("does not show the action for changing the selected product", async () => {
+    installerRender(<Overview />);
+
+    await screen.findByText("openSUSE Tumbleweed");
+    expect(screen.queryByLabelText("Change selected product")).not.toBeInTheDocument();
+  });
+});
+
 test("renders the Overview", async () => {
   installerRender(<Overview />);
-  const title = screen.getByText(/Installation Summary/i);
+  const title = screen.getByText(/openSUSE Tumbleweed/i);
   expect(title).toBeInTheDocument();
 
   await screen.findByText("English");

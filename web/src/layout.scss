@@ -8,7 +8,7 @@
   --header-block-size: 8ex;
   --footer-block-size: calc(1.5 * var(--header-block-size));
   --min-layout-content-block-size: calc(100vh - var(--header-block-size));
-  --layout-content-padding: 1rem;
+  --layout-content-padding: 1.3rem;
   --layout-content-padding-block-end: calc(
     var(--layout-content-padding)
     + var(--footer-block-size)
@@ -39,6 +39,7 @@
 
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
 
   // Centers the section title.
@@ -54,6 +55,17 @@
 }
 
 .layout__header-left-action {
+}
+
+.layout__header-right-actions {
+  button {
+    vertical-align: text-top;
+  }
+
+  svg {
+    fill: white;
+    vertical-align: middle;
+  }
 }
 
 .layout__header-action-icon {

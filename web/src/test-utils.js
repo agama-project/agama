@@ -28,7 +28,9 @@ import { createClient } from "./client";
 
 const InstallerProvider = ({ children }) => {
   const client = createClient();
-  return <InstallerClientProvider client={client}>{children}</InstallerClientProvider>;
+  return (
+    <InstallerClientProvider client={client}>{children}</InstallerClientProvider>
+  );
 };
 
 const installerRender = (ui, options = {}) => ({

@@ -24,6 +24,7 @@ require "dinstaller/config"
 
 describe DInstaller::Config do
   let(:config) { described_class.new("web" => { "ssl" => "SOMETHING" }) }
+
   before do
     allow_any_instance_of(DInstaller::ConfigReader).to receive(:config).and_return(config)
   end
@@ -43,6 +44,16 @@ describe DInstaller::Config do
       expect { described_class.load }.to change { described_class.base }.from(nil).to(config)
       expect(described_class.base).to_not eql(described_class.current)
       expect(described_class.base.data).to eql(described_class.current.data)
+    end
+  end
+
+  describe ".from_file" do
+    it "builds a new instance from a given file" do
+      config = described_class.from_file(
+        File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
+      )
+      expect(config).to be_a(described_class)
+      expect(config.data["products"].size).to eq(3)
     end
   end
 
@@ -75,6 +86,30 @@ describe DInstaller::Config do
       copy = subject.copy
       expect(copy.object_id).to_not eq(subject.object_id)
       expect(copy.data).to eql(subject.data)
+    end
+  end
+
+  describe "#multi_product?" do
+    context "when more than one product is defined" do
+      subject do
+        described_class.from_file(
+          File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
+        )
+      end
+
+      it "returns true" do
+        expect(subject.multi_product?).to eq(true)
+      end
+    end
+
+    context "when just one product is defined" do
+      subject do
+        described_class.from_file(File.join(FIXTURES_PATH, "d-installer-single.yaml"))
+      end
+
+      it "returns true" do
+        expect(subject.multi_product?).to eq(false)
+      end
     end
   end
 end

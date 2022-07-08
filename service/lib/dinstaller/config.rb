@@ -46,6 +46,13 @@ module DInstaller
         @base = nil
         @current = nil
       end
+
+      # Load the configuration from a given file
+      #
+      # @param path [String|Pathname] File path
+      def from_file(path)
+        new(YAML.safe_load(File.read(path.to_s)))
+      end
     end
 
     # Constructor
@@ -75,6 +82,13 @@ module DInstaller
 
     def pick_product(product)
       @data.merge!(@data[product])
+    end
+
+    # Whether there are more than one product
+    #
+    # @return [Boolean] false if there is only one product; true otherwise
+    def multi_product?
+      data["products"].size > 1
     end
 
     # Returns a copy of this Object

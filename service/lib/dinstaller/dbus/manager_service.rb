@@ -21,6 +21,7 @@
 
 require "dbus"
 require "dinstaller/manager"
+require "dinstaller/cockpit_manager"
 require "dinstaller/dbus/manager"
 require "dinstaller/dbus/language"
 require "dinstaller/dbus/storage/proposal"
@@ -52,6 +53,7 @@ module DInstaller
       # @param config [Config] Configuration
       # @param logger [Logger]
       def initialize(config, logger = nil)
+        @config = config
         @manager = DInstaller::Manager.new(config, logger)
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
@@ -61,11 +63,10 @@ module DInstaller
       #
       # * Set up the environment (Manager#setup)
       # * Export the D-Bus API
-      # * Run the probing phase
       def start
+        setup_cockpit
         manager.setup
         export
-        manager.probe
         manager.progress.on_change { dispatch } # make single thread more responsive
       end
 
@@ -86,6 +87,14 @@ module DInstaller
 
       # @return [Logger]
       attr_reader :logger
+
+      # @return [Config]
+      attr_reader :config
+
+      def setup_cockpit
+        cockpit = CockpitManager.new(logger)
+        cockpit.setup(config.data["web"])
+      end
 
       # @return [::DBus::Service]
       def service

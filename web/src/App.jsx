@@ -21,19 +21,15 @@
 
 import React, { useEffect, useReducer } from "react";
 import { useInstallerClient } from "./context/installer";
+import { Outlet } from "react-router-dom";
 
 import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
 
 import DBusError from "./DBusError";
-import Overview from "./Overview";
 import ProbingProgress from "./ProbingProgress";
 import InstallationProgress from "./InstallationProgress";
 import InstallationFinished from "./InstallationFinished";
 import LoadingEnvironment from "./LoadingEnvironment";
-import Questions from "./Questions";
-
-import './assets/fonts.scss';
-import "./app.scss";
 
 const init = status => ({
   loading: status === null,
@@ -47,7 +43,7 @@ const init = status => ({
 const reducer = (state, action) => {
   switch (action.type) {
     case "CHANGE_STATUS": {
-      return init(action.payload.status);
+      return { ...state, ...init(action.payload.status) };
     }
     case "SET_DBUS_ERROR": {
       return { ...state, dbusError: action.payload.error };
@@ -56,16 +52,6 @@ const reducer = (state, action) => {
       throw new Error(`Unsupported action type: ${action.type}`);
     }
   }
-};
-
-const renderMainContent = (state) => {
-  if (state.dbusError) return <DBusError />;
-  if (state.loading) return <LoadingEnvironment />;
-  if (state.probing) return <ProbingProgress />;
-  if (state.installing) return <InstallationProgress />;
-  if (state.finished) return <InstallationFinished />;
-
-  return <Overview />;
 };
 
 function App() {
@@ -92,12 +78,13 @@ function App() {
     });
   }, [client.monitor]);
 
-  return (
-    <>
-      <Questions />
-      { renderMainContent(state) }
-    </>
-  );
+  if (state.dbusError) return <DBusError />;
+  if (state.loading) return <LoadingEnvironment />;
+  if (state.probing) return <ProbingProgress />;
+  if (state.installing) return <InstallationProgress />;
+  if (state.finished) return <InstallationFinished />;
+
+  return <Outlet />;
 }
 
 export default App;

@@ -50,7 +50,7 @@ import TargetIpsPopup from "./TargetIpsPopup";
  * @param {React.ReactNode} [props.children] - the section content
  *
  */
-function Layout({ MenuIcon, sectionTitle, SectionIcon, FooterActions, children }) {
+function Layout({ MenuIcon, sectionTitle, SectionIcon, RightActions, FooterActions, children }) {
   const responsiveWidthRules = "pf-u-w-66-on-lg pf-u-w-50-on-xl pf-u-w-33-on-2xl";
   const className = `layout ${responsiveWidthRules}`;
 
@@ -66,6 +66,17 @@ function Layout({ MenuIcon, sectionTitle, SectionIcon, FooterActions, children }
     );
   };
 
+  const renderHeaderRightActions = () => {
+    // if (!SectionAction)
+    if (!RightActions) return null;
+
+    return (
+      <div className="layout__header-right-actions">
+        <RightActions />
+      </div>
+    );
+  };
+
   const renderHeader = () => {
     return (
       <div className="layout__header">
@@ -77,6 +88,8 @@ function Layout({ MenuIcon, sectionTitle, SectionIcon, FooterActions, children }
             {sectionTitle}
           </h1>
         </div>
+
+        {renderHeaderRightActions()}
       </div>
     );
   };

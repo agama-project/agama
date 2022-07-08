@@ -20,26 +20,28 @@
  */
 
 import React from "react";
-import { Title, EmptyState, EmptyStateIcon } from "@patternfly/react-core";
+import { Outlet, Navigate } from "react-router-dom";
+import LoadingEnvironment from "./LoadingEnvironment";
+import Questions from "./Questions";
+import { useSoftware } from "./context/software";
 
-import Layout from "./Layout";
-import Center from "./Center";
+function Main() {
+  const { selectedProduct } = useSoftware();
 
-import { EOS_THREE_DOTS_LOADING_ANIMATED as LoadingIcon } from "eos-icons-react";
+  if (selectedProduct === null) {
+    return <Navigate to="/products" />;
+  }
 
-function LoadingEnvironment({ text = "Loading installation environment, please wait." }) {
+  if (selectedProduct === undefined) {
+    return <LoadingEnvironment />;
+  }
+
   return (
-    <Layout sectionTitle="D-Installer">
-      <Center>
-        <EmptyState>
-          <EmptyStateIcon icon={LoadingIcon} />
-          <Title headingLevel="h4" size="lg">
-            { text }
-          </Title>
-        </EmptyState>
-      </Center>
-    </Layout>
+    <>
+      <Questions />
+      <Outlet />
+    </>
   );
 }
 
-export default LoadingEnvironment;
+export default Main;

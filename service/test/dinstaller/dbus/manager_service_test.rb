@@ -33,11 +33,13 @@ describe DInstaller::DBus::ManagerService do
   let(:bus_service) do
     instance_double(::DBus::Service, export: nil)
   end
+  let(:cockpit) { instance_double(DInstaller::CockpitManager, setup: nil) }
 
   before do
     allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
     allow(bus).to receive(:request_service).and_return(bus_service)
     allow(DInstaller::Manager).to receive(:new).with(config, logger).and_return(manager)
+    allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
   end
 
   describe "#export" do

@@ -56,8 +56,12 @@ module DInstaller
       @logger = logger
       @status_manager = StatusManager.new(Status::Error.new) # temporary status until probing starts
       @products = @config.data["products"]
-      @product = @products.keys.first # use the first available product as default
-      @config.pick_product(@product)
+      if @config.multi_product?
+        @product = nil
+      else
+        @product = @products.keys.first # use the available product as default
+        @config.pick_product(@product)
+      end
       @progress = Progress.new
     end
 

@@ -26,10 +26,12 @@ require "dinstaller/config"
 describe DInstaller::Manager do
   subject { described_class.new(config, logger) }
 
-  let(:config) { DInstaller::Config.new }
+  let(:config_path) do
+    File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
+  end
+  let(:config) { DInstaller::Config.from_file(config_path) }
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:cockpit) { instance_double(DInstaller::CockpitManager, setup: nil) }
   let(:software) do
     instance_double(
       DInstaller::DBus::Clients::Software,
@@ -52,8 +54,31 @@ describe DInstaller::Manager do
     allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(users)
     allow(DInstaller::Storage::Manager).to receive(:new).and_return(storage)
-    allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
     allow(DInstaller::QuestionsManager).to receive(:new).and_return(questions_manager)
+  end
+
+  describe "#setup" do
+    it "probes languages" do
+      expect(language).to receive(:probe)
+      expect(software).to receive(:on_product_selected)
+      subject.setup
+    end
+
+    it "does not perform the probing for other components" do
+      expect(subject).to_not receive(:probe)
+      subject.setup
+    end
+
+    context "when only one product is defined" do
+      let(:config_path) do
+        File.join(FIXTURES_PATH, "d-installer-single.yaml")
+      end
+
+      it "adjusts the configuration and performs the probing" do
+        expect(subject).to receive(:probe)
+        subject.setup
+      end
+    end
   end
 
   describe "#probe" do
@@ -66,9 +91,7 @@ describe DInstaller::Manager do
     let(:users_status) { DInstaller::Status::Error.new }
 
     it "calls #probe method of each module passing a progress object" do
-      expect(software).to receive(:probe)
       expect(security).to receive(:probe).with(subject.progress)
-      expect(language).to receive(:probe).with(subject.progress)
       expect(network).to receive(:probe).with(subject.progress)
       expect(storage).to receive(:probe).with(subject.progress, subject.questions_manager)
       subject.probe
@@ -118,6 +141,7 @@ describe DInstaller::Manager do
       expect(language).to receive(:install).with(subject.progress)
       expect(network).to receive(:install).with(subject.progress)
       expect(software).to receive(:install)
+      expect(software).to receive(:probe)
       expect(software).to receive(:finish)
       expect(security).to receive(:write).with(subject.progress)
       expect(storage).to receive(:install).with(subject.progress)

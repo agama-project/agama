@@ -22,7 +22,6 @@
 require "yast"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
-require "dinstaller/cockpit_manager"
 require "dinstaller/config"
 require "dinstaller/language"
 require "dinstaller/network"
@@ -69,7 +68,13 @@ module DInstaller
 
     # Sets up the installation process
     def setup
-      setup_cockpit
+      progress.init_progress(1, "Probing Languages")
+      language.probe(progress)
+      software.on_product_selected do |selected|
+        config.pick_product(selected)
+        probe
+      end
+      probe_single_product unless config.multi_product?
     end
 
     # Probes the system
@@ -84,11 +89,15 @@ module DInstaller
     # rubocop:disable Metrics/AbcSize
     def install
       status_manager.change(Status::Installing.new)
-      progress.init_progress(8, "Partitioning")
+      progress.init_progress(9, "Reading software repositories")
+      software.probe
+
       Yast::Installation.destdir = "/mnt"
+
       # lets propose it here to be sure that software proposal reflects product selection
       # FIXME: maybe repropose after product selection change?
       # first make bootloader proposal to be sure that required packages are installed
+      progress.next_step("Partitioning")
       proposal = ::Bootloader::ProposalClient.new.make_proposal({})
       logger.info "Bootloader proposal #{proposal.inspect}"
       storage.install(progress)
@@ -133,11 +142,7 @@ module DInstaller
     #
     # @return [Software]
     def software
-      return @software if @software
-
-      @software = DBus::Clients::Software.new
-      @software.on_product_selected { probe }
-      @software
+      @software ||= DBus::Clients::Software.new
     end
 
     # Language manager
@@ -179,18 +184,11 @@ module DInstaller
 
     attr_reader :config
 
-    def setup_cockpit
-      cockpit = CockpitManager.new(logger)
-      cockpit.setup(config.data["web"])
-    end
-
     # Performs probe steps
     #
     # Status and progress are properly updated during the process.
     #
     # FIXME: progress has no much sense now because probing steps are performed in parallel.
-    #
-    # rubocop:disable Metrics/AbcSize
     def probe_steps
       status_manager.change(Status::Probing.new)
 
@@ -199,15 +197,11 @@ module DInstaller
       #   status for the sequential probing steps that are still done by the manager.
       manager_probing_status = status_manager.status
 
-      progress.init_progress(4, "Probing Languages")
-      language.probe(progress)
-
       progress.next_step("Probing Storage")
       storage.probe(progress, questions_manager)
 
       progress.next_step("Probing Software")
       security.probe(progress)
-      software.probe { update_status(manager_probing_status) }
 
       progress.next_step("Probing Network")
       network.probe(progress)
@@ -218,7 +212,6 @@ module DInstaller
       manager_probing_status = Status::Probed.new
       update_status(manager_probing_status)
     end
-    # rubocop:enable Metrics/AbcSize
 
     # Performs required steps after installing the system
     #
@@ -317,6 +310,17 @@ module DInstaller
     # @return [Array<Status::Base>]
     def clients_statuses
       [software, users].map(&:status)
+    end
+
+    # Runs the probing phase for the first product found
+    #
+    # Adjust the configuration and run the probing phase.
+    #
+    # This method is expected to be used on single-product scenarios.
+    def probe_single_product
+      selected = config.data["products"].keys.first
+      config.pick_product(selected)
+      probe
     end
   end
 end

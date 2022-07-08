@@ -44,14 +44,23 @@ class SoftwareClient {
   async getProducts() {
     const proxy = await this.proxy(SOFTWARE_IFACE);
     return proxy.AvailableBaseProducts.map(product => {
-      const [id, name] = product;
-      return { id, name };
+      const [id, name, meta] = product;
+      return { id, name, description: meta.description?.v };
     });
   }
 
+  /**
+   * Return the selected product
+   *
+   * @return {Promise.<Object|null>}
+   */
   async getSelectedProduct() {
+    const products = await this.getProducts();
     const proxy = await this.proxy(SOFTWARE_IFACE);
-    return proxy.SelectedBaseProduct;
+    if (proxy.SelectedBaseProduct === "") {
+      return null;
+    }
+    return products.find(product => product.id === proxy.SelectedBaseProduct);
   }
 
   async selectProduct(id) {
@@ -66,8 +75,10 @@ class SoftwareClient {
    */
   onProductChange(handler) {
     return this.onObjectChanged(SOFTWARE_PATH, changes => {
-      const selected = changes.SelectedBaseProduct.v;
-      handler(selected);
+      if ("SelectedBaseProduct" in changes) {
+        const selected = changes.SelectedBaseProduct.v;
+        handler(selected);
+      }
     });
   }
 }
