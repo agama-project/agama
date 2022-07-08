@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { useInstallerClient } from "./installer";
 
 const SoftwareContext = React.createContext();
@@ -44,7 +44,7 @@ function SoftwareProvider({ children }) {
     return client.software.onProductChange(setSelectedId);
   }, [client.software, setSelectedId]);
 
-  const value = [products, setProducts, selectedId, setSelectedId];
+  const value = [products, selectedId];
   return <SoftwareContext.Provider value={value}>{children}</SoftwareContext.Provider>;
 }
 
@@ -55,26 +55,16 @@ function useSoftware() {
     throw new Error("useSoftware must be used within a SoftwareProvider");
   }
 
-  const [products, setProducts, selectedId, setSelectedId] = context;
+  const [products, selectedId] = context;
 
   let selectedProduct = selectedId;
   if (selectedId) {
     selectedProduct = products.find(p => p.id === selectedId);
   }
 
-  const setSelectedProduct = useMemo(() => (product) => {
-    if (typeof product === "object") {
-      setSelectedId(product?.id || null);
-    } else {
-      setSelectedId(product);
-    }
-  }, [setSelectedId]);
-
   return {
     products,
-    setProducts,
-    selectedProduct,
-    setSelectedProduct
+    selectedProduct
   };
 }
 
