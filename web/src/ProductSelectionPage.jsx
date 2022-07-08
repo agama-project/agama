@@ -74,18 +74,7 @@ function ProductSelectionPage() {
     );
   };
 
-  // FIXME: improve this
-  if (!products) {
-    return (
-      <Layout
-        sectionTitle="D-Installer"
-        SectionIcon={SectionIcon}
-        FooterActions={SelectButton}
-      >
-        <Center>Loading available products...</Center>
-      </Layout>
-    );
-  }
+  if (!products) return <LoadingEnvironment text="Loading available products, please wait..." />
 
   const buildOptions = () => {
     const options = products.map((p) => (
