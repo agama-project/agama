@@ -40,11 +40,4 @@ describe("InstallationProgress", () => {
 
     await screen.findByText("ProgressReport Mock");
   });
-
-  it("does not show actions", async () => {
-    installerRender(<InstallationProgress />);
-
-    const button = screen.queryByRole("navigation", { name: /Installer Actions/i });
-    expect(button).toBeNull();
-  });
 });
