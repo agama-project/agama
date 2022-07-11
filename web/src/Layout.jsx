@@ -81,13 +81,11 @@ function Layout({ children }) {
         <About />
         <TargetIpsPopup />
       </div>
-      <div
+      <FooterActions.Target
         className="layout__footer-actions-area"
         role="navigation"
         aria-label="Installer Actions"
-      >
-        <FooterActions.Target />
-      </div>
+      />
     </div>
   );
 
