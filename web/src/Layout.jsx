@@ -62,8 +62,8 @@ function Layout({ children }) {
       <div className="layout__header">
         <div className="layout__header-section-title">
           <h1>
-            <HeaderIcon.Target className="layout__header-section-title-icon" />
-            <PageTitle.Target />
+            <HeaderIcon.Target as="span" className="layout__header-section-title-icon" />
+            <PageTitle.Target as="span" />
           </h1>
         </div>
 
