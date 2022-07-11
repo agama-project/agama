@@ -19,88 +19,56 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useState } from "react";
 import { useInstallerClient } from "./context/installer";
 import { Outlet } from "react-router-dom";
 
-import Layout, { Title, AdditionalInfo } from "./Layout";
-import About from "./About";
-import TargetIpsPopup from "./TargetIpsPopup";
+import { STARTUP, INSTALL } from "./client/phase";
+import { BUSY } from "./client/status";
+
 import DBusError from "./DBusError";
-import ProbingProgress from "./ProbingProgress";
 import InstallationProgress from "./InstallationProgress";
 import InstallationFinished from "./InstallationFinished";
 import LoadingEnvironment from "./LoadingEnvironment";
 
-import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
-
-const init = status => ({
-  loading: status === null,
-  probing: status === PROBING,
-  probed: status === PROBED,
-  installing: status === INSTALLING,
-  finished: status === INSTALLED,
-  dbusError: null
-});
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "CHANGE_STATUS": {
-      return { ...state, ...init(action.payload.status) };
-    }
-    case "SET_DBUS_ERROR": {
-      return { ...state, dbusError: action.payload.error };
-    }
-    default: {
-      throw new Error(`Unsupported action type: ${action.type}`);
-    }
-  }
-};
-
 function App() {
   const client = useInstallerClient();
-  const [state, dispatch] = useReducer(reducer, null, init);
+  const [status, setStatus] = useState(undefined);
+  const [phase, setPhase] = useState(undefined);
+  const [error, setError] = useState(undefined);
 
   useEffect(() => {
-    client.manager.getStatus()
-      .then(status => dispatch({ type: "CHANGE_STATUS", payload: { status } }))
-      .catch(error => dispatch({ type: "SET_DBUS_ERROR", payload: { error } }));
-  }, [client.manager]);
+    const loadPhase = async () => {
+      const phase = await client.manager.getPhase();
+      const status = await client.manager.getStatus();
+      setPhase(phase);
+      setStatus(status);
+    };
+
+    loadPhase().catch(setError);
+  }, [client.manager, setPhase, setStatus, setError]);
 
   useEffect(() => {
-    return client.manager.onChange(changes => {
-      if ("Status" in changes) {
-        dispatch({ type: "CHANGE_STATUS", payload: { status: changes.Status } });
-      }
-    });
-  }, [client.manager]);
+    return client.manager.onPhaseChange(setPhase);
+  }, [client.manager, setPhase]);
 
   useEffect(() => {
-    return client.monitor.onDisconnect(() => {
-      dispatch({ type: "SET_DBUS_ERROR", payload: { error: "Connection lost" } });
-    });
-  }, [client.monitor]);
+    return client.manager.onStatusChange(setStatus);
+  }, [client.manager, setStatus]);
 
-  const Content = () => {
-    if (state.dbusError) return <DBusError />;
-    if (state.loading) return <LoadingEnvironment />;
-    if (state.probing) return <ProbingProgress />;
-    if (state.installing) return <InstallationProgress />;
-    if (state.finished) return <InstallationFinished />;
+  useEffect(() => {
+    return client.monitor.onDisconnect(setError);
+  }, [client.monitor, setError]);
 
-    return <Outlet />;
-  };
+  if (error) return <DBusError />;
+  if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
+    return <LoadingEnvironment />;
+  }
+  if (phase === INSTALL) {
+    return (status === BUSY) ? <InstallationProgress /> : <InstallationFinished />;
+  }
 
-  return (
-    <Layout>
-      <Title>D-Installer</Title>
-      <Content />
-      <AdditionalInfo>
-        <About />
-        <TargetIpsPopup />
-      </AdditionalInfo>
-    </Layout>
-  );
+  return <Outlet />;
 }
 
 export default App;
