@@ -60,8 +60,8 @@ function Layout({ children }) {
   const responsiveWidthRules = "pf-u-w-66-on-lg pf-u-w-50-on-xl pf-u-w-33-on-2xl";
   const className = `layout ${responsiveWidthRules}`;
 
-  const renderHeader = () => {
-    return (
+  return (
+    <div className={className}>
       <div className="layout__header">
         <div className="layout__header-section-title">
           <h1>
@@ -72,30 +72,20 @@ function Layout({ children }) {
 
         <HeaderActions.Target className="layout__header-section-actions" />
       </div>
-    );
-  };
-
-  const renderFooter = () => (
-    <div className="layout__footer">
-      <div className="layout__footer-info-area">
-        <img src={logo} alt="Logo of SUSE" className="company-logo" />
-        <FooterInfoArea.Target />
-      </div>
-      <FooterActions.Target
-        className="layout__footer-actions-area"
-        role="navigation"
-        aria-label="Installer Actions"
-      />
-    </div>
-  );
-
-  return (
-    <div className={className}>
-      {renderHeader()}
 
       <main className="layout__content">{children}</main>
 
-      {renderFooter()}
+      <div className="layout__footer">
+        <div className="layout__footer-info-area">
+          <img src={logo} alt="Logo of SUSE" className="company-logo" />
+          <FooterInfoArea.Target />
+        </div>
+        <FooterActions.Target
+          className="layout__footer-actions-area"
+          role="navigation"
+          aria-label="Installer Actions"
+        />
+      </div>
     </div>
   );
 }
