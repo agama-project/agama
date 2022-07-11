@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { applyMixin, withDBus } from "./mixins";
+import { applyMixin, withDBus, withStatus, withProgress } from "./mixins";
 import cockpit from "../lib/cockpit";
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
@@ -64,9 +64,23 @@ class ManagerClient {
    *
    * @return {Promise.<number>}
    */
-  async getStatus() {
+  async getPhase() {
     const proxy = await this.proxy(MANAGER_IFACE);
-    return proxy.Status;
+    return proxy.CurrentInstallationPhase;
+  }
+
+  /**
+   * Register a callback to run when the "CurrentInstallationPhase" changes
+   *
+   * @param {function} handler - callback function
+   * @return {function} function to disable callback
+   */
+  onPhaseChange(handler) {
+    return this.onObjectChanged(MANAGER_PATH, (changes) => {
+      if ("CurrentInstallationPhase" in changes) {
+        handler(changes.CurrentInstallationPhase.v);
+      }
+    });
   }
 
   /**
@@ -94,6 +108,19 @@ class ManagerClient {
   }
 
   /**
+   * Registers a callback to run when the installation phase changes
+   *
+   * @param {function} handler - callback function that received the phase code
+   */
+  onStatusChange(handler) {
+    return this.onObjectChanged(MANAGER_PATH, (changes) => {
+      if ("Status" in changes) {
+        handler(changes.Status.v);
+      }
+    });
+  }
+
+  /**
    * Returns whether calling the system reboot suceeded or not.
    *
    * @return {Promise.<boolean>}
@@ -103,5 +130,7 @@ class ManagerClient {
   }
 }
 
-applyMixin(ManagerClient, withDBus);
+applyMixin(
+  ManagerClient, withDBus, withStatus(MANAGER_PATH), withProgress(MANAGER_PATH)
+);
 export default ManagerClient;

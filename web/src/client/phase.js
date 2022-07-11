@@ -19,10 +19,12 @@
  * find current contact information at www.suse.com.
  */
 
-export const IDLE = 0;
-export const BUSY = 1;
+export const STARTUP = 0;
+export const CONFIG = 1;
+export const INSTALL = 2;
 
 export default {
-  BUSY,
-  IDLE
+  STARTUP,
+  CONFIG,
+  INSTALL
 };

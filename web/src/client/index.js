@@ -25,7 +25,7 @@ import Monitor from "./monitor";
 import SoftwareClient from "./software";
 import StorageClient from "./storage";
 import UsersClient from "./users";
-import status from "./status";
+import phase from "./phase";
 import QuestionsClient from "./questions";
 import NetworkClient from "./network";
 
@@ -56,4 +56,4 @@ const createClient = () => {
   };
 };
 
-export { createClient, status };
+export { createClient, phase };

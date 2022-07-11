@@ -87,6 +87,82 @@ const withDBus = {
   }
 };
 
+const STATUS_IFACE = "org.opensuse.DInstaller.ServiceStatus1";
+
+const withStatus = (object_path) => {
+  return {
+    /**
+     * Returns the service status
+     *
+     * @return {Promise.<number>} 0 for idle, 1 for busy
+     */
+    async getStatus() {
+      const proxy = await this.proxy(STATUS_IFACE, object_path);
+      return proxy.Current;
+    },
+
+    /**
+     * Register a callback to run when the "CurrentInstallationPhase" changes
+     *
+     * @param {function} handler - callback function
+     * @return {function} function to disable the callback
+     */
+    onStatusChange(handler) {
+      return this.onObjectChanged(object_path, (changes) => {
+        if ("CurrentInstallationPhase" in changes) {
+          handler(changes.CurrentInstallationPhase.v);
+        }
+      });
+    }
+  };
+};
+
+const PROGRESS_IFACE = "org.opensuse.DInstaller.Progress1";
+
+const withProgress = (object_path) => {
+  return {
+    /**
+     * Returns the service progress
+     *
+     * @return {Promise.<object>} an object containing the total steps,
+     *   the current step and whether the service finished or not.
+     */
+    async getProgress() {
+      const proxy = await this.proxy(PROGRESS_IFACE, object_path);
+      return {
+        total:    proxy.TotalSteps,
+        current:  proxy.CurrentStep[0],
+        message:  proxy.CurrentStep[1],
+        finished: proxy.Finished
+      };
+    },
+
+    /**
+     * Register a callback to run when the status changes
+     *
+     * @param {function} handler - callback function
+     * @return {function} function to disable the callback
+     */
+    onProgressChange(handler) {
+      return this.onObjectChanged(object_path, (changes) => {
+        const { TotalSteps, CurrentStep, Finished } = changes;
+        if (TotalSteps === undefined && CurrentStep === undefined && Finished === undefined) {
+          return;
+        }
+
+        this.getProgress().then(handler);
+
+        // FIXME: we might need to take all the values from getProgress().
+        // handler({
+        //   total: TotalSteps?.v,
+        //   current: CurrentStep?.v,
+        //   finished: Finished?.v
+        // });
+      });
+    }
+  };
+};
+
 /**
  * Utility method for applying mixins to given object
  *
@@ -95,4 +171,4 @@ const withDBus = {
  */
 const applyMixin = (klass, ...fn) => Object.assign(klass.prototype, ...fn);
 
-export { applyMixin, withDBus };
+export { applyMixin, withDBus, withStatus, withProgress };
