@@ -22,7 +22,6 @@
 import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import LoadingEnvironment from "./LoadingEnvironment";
-import Questions from "./Questions";
 import { useSoftware } from "./context/software";
 
 function Main() {
@@ -36,12 +35,7 @@ function Main() {
     return <LoadingEnvironment />;
   }
 
-  return (
-    <>
-      <Questions />
-      <Outlet />
-    </>
-  );
+  return <Outlet />;
 }
 
 export default Main;

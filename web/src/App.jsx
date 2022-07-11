@@ -31,6 +31,7 @@ import ProbingProgress from "./ProbingProgress";
 import InstallationProgress from "./InstallationProgress";
 import InstallationFinished from "./InstallationFinished";
 import LoadingEnvironment from "./LoadingEnvironment";
+import Questions from "./Questions";
 
 import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
 
@@ -94,6 +95,7 @@ function App() {
   return (
     <Layout>
       <Title>D-Installer</Title>
+      <Questions />
       <Content />
       <AdditionalInfo>
         <About />

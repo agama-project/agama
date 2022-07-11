@@ -39,13 +39,14 @@ jest.mock("./InstallationProgress", () => () => "InstallationProgress Mock");
 jest.mock("./InstallationFinished", () => () => "InstallationFinished Mock");
 jest.mock("./Overview", () => () => "Overview Mock");
 jest.mock("./TargetIpsPopup", () => () => "Target IPs Mock");
+jest.mock("./Questions", () => () => <div>Questions Mock</div>);
 jest.mock('react-router-dom', () => ({
   Outlet: () => <div>Content</div>
 }));
 
 const callbacks = {};
 const initialStatusMock = null;
-let getStatusFn = jest.fn();
+let getStatusFn = () => Promise.resolve(initialStatusMock);
 const product = { id: "Tumbleweed", name: "openSUSE Tumbleweed" };
 const products = [product];
 
@@ -75,6 +76,12 @@ beforeEach(() => {
 });
 
 const changeStatusTo = status => act(() => callbacks.onChange({ Status: status }));
+
+test("renders the Questions component", async () => {
+  installerRender(<App />);
+
+  await screen.findByText("Questions Mock");
+});
 
 describe("App", () => {
   describe("when there are problems connecting with D-Bus service", () => {

@@ -27,7 +27,6 @@ import { installerRender } from "./test-utils";
 import Main from "./Main";
 
 jest.mock("./client");
-jest.mock("./Questions", () => () => "Questions Mock");
 jest.mock("./Layout", () => ({ children }) => <>{children}</>);
 jest.mock('react-router-dom', () => ({
   Outlet: () => <div>Content</div>,
@@ -48,10 +47,9 @@ const products = [{ id: "Tumbleweed", name: "openSUSE Tumbleweed" }];
 let mockProduct = products[0];
 
 describe("when a product is selected", () => {
-  it("renders the Questions component and the content", async () => {
+  it("renders the application content", async () => {
     installerRender(<Main />);
 
-    await screen.findByText("Questions Mock");
     await screen.findByText("Content");
   });
 });
