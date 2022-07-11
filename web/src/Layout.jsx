@@ -67,9 +67,7 @@ function Layout({ children }) {
           </h1>
         </div>
 
-        <div className="layout__header-right-actions">
-          <HeaderActions.Target />
-        </div>
+        <HeaderActions.Target className="layout__header-section-actions" />
       </div>
     );
   };
