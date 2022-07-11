@@ -30,7 +30,7 @@ import {
   EmptyStateSecondaryActions
 } from "@patternfly/react-core";
 
-import Layout from "./Layout";
+import { Title as SectionTitle, PageIcon, MainActions } from "./Layout";
 import Center from "./Center";
 import { useInstallerClient } from "./context/installer";
 
@@ -39,24 +39,20 @@ import {
   EOS_CHECK_CIRCLE as SectionIcon
 } from "eos-icons-react";
 
-const Actions = ({ onReboot }) => (
-  <>
-    <Button isLarge variant="primary" onClick={onReboot}>
-      Reboot
-    </Button>
-  </>
-);
-
 function InstallationFinished() {
   const client = useInstallerClient();
   const onRebootAction = () => client.manager.rebootSystem();
 
   return (
-    <Layout
-      sectionTitle="Installation Finished"
-      SectionIcon={SectionIcon}
-      FooterActions={() => <Actions onReboot={onRebootAction} />}
-    >
+    <>
+      <SectionTitle>Installation Finished</SectionTitle>
+      <PageIcon><SectionIcon /></PageIcon>
+      <MainActions>
+        <Button isLarge variant="primary" onClick={onRebootAction}>
+          Reboot
+        </Button>
+      </MainActions>
+
       <Center>
         <EmptyState>
           <EmptyStateIcon icon={InstallationFinishedIcon} className="success-icon" />
@@ -79,7 +75,7 @@ function InstallationFinished() {
           </EmptyStateBody>
         </EmptyState>
       </Center>
-    </Layout>
+    </>
   );
 }
 

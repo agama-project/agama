@@ -22,18 +22,18 @@
 import React from "react";
 
 import Center from "./Center";
-import Layout from "./Layout";
+import { Title, PageIcon } from "./Layout";
 import ProgressReport from "./ProgressReport";
 
-import { EOS_DOWNLOADING as SectionIcon } from "eos-icons-react";
+import { EOS_DOWNLOADING as Icon } from "eos-icons-react";
 
 function InstallationProgress() {
   return (
-    <Layout sectionTitle="Installing" SectionIcon={SectionIcon}>
-      <Center>
-        <ProgressReport />
-      </Center>
-    </Layout>
+    <>
+      <Title>Installing</Title>
+      <PageIcon><Icon /></PageIcon>
+      <Center><ProgressReport /></Center>
+    </>
   );
 }
 

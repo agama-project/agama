@@ -23,13 +23,16 @@ import React, { useEffect, useReducer } from "react";
 import { useInstallerClient } from "./context/installer";
 import { Outlet } from "react-router-dom";
 
-import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
-
+import Layout, { Title, AdditionalInfo } from "./Layout";
+import About from "./About";
+import TargetIpsPopup from "./TargetIpsPopup";
 import DBusError from "./DBusError";
 import ProbingProgress from "./ProbingProgress";
 import InstallationProgress from "./InstallationProgress";
 import InstallationFinished from "./InstallationFinished";
 import LoadingEnvironment from "./LoadingEnvironment";
+
+import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
 
 const init = status => ({
   loading: status === null,
@@ -78,13 +81,26 @@ function App() {
     });
   }, [client.monitor]);
 
-  if (state.dbusError) return <DBusError />;
-  if (state.loading) return <LoadingEnvironment />;
-  if (state.probing) return <ProbingProgress />;
-  if (state.installing) return <InstallationProgress />;
-  if (state.finished) return <InstallationFinished />;
+  const Content = () => {
+    if (state.dbusError) return <DBusError />;
+    if (state.loading) return <LoadingEnvironment />;
+    if (state.probing) return <ProbingProgress />;
+    if (state.installing) return <InstallationProgress />;
+    if (state.finished) return <InstallationFinished />;
 
-  return <Outlet />;
+    return <Outlet />;
+  };
+
+  return (
+    <Layout>
+      <Title>D-Installer</Title>
+      <Content />
+      <AdditionalInfo>
+        <About />
+        <TargetIpsPopup />
+      </AdditionalInfo>
+    </Layout>
+  );
 }
 
 export default App;

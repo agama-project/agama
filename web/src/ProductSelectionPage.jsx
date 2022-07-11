@@ -34,11 +34,9 @@ import {
   Radio
 } from "@patternfly/react-core";
 
-import {
-  EOS_PRODUCT_SUBSCRIPTIONS as SectionIcon,
-} from "eos-icons-react";
+import { EOS_PRODUCT_SUBSCRIPTIONS as Icon } from "eos-icons-react";
 
-import Layout from "./Layout";
+import { Title, PageIcon, MainActions } from "./Layout";
 
 function ProductSelectionPage() {
   const client = useInstallerClient();
@@ -66,14 +64,6 @@ function ProductSelectionPage() {
       .then(() => navigate("/"));
   };
 
-  const SelectButton = () => {
-    return (
-      <Button isLarge variant="primary" onClick={accept}>
-        Select
-      </Button>
-    );
-  };
-
   if (!products) return (
     <LoadingEnvironment text="Loading available products, please wait..." />
   );
@@ -98,17 +88,21 @@ function ProductSelectionPage() {
   };
 
   return (
-    <Layout
-      sectionTitle="D-Installer"
-      SectionIcon={SectionIcon}
-      FooterActions={SelectButton}
-    >
+    <>
+      <Title>Product selection</Title>
+      <PageIcon><Icon /></PageIcon>
+      <MainActions>
+        <Button isLarge variant="primary" onClick={accept}>
+          Select
+        </Button>
+      </MainActions>
+
       <Form>
         <FormGroup isStack label={`Choose a product (${products.length} available)`} role="radiogroup">
           {buildOptions()}
         </FormGroup>
       </Form>
-    </Layout>
+    </>
   );
 }
 

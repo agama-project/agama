@@ -54,10 +54,7 @@
   }
 }
 
-.layout__header-left-action {
-}
-
-.layout__header-right-actions {
+.layout__header-section-actions {
   button {
     vertical-align: text-top;
   }
@@ -79,7 +76,7 @@
   font-size: 1.5rem;
 }
 
-.layout__header-section-title-icon {
+.layout__header-section-title-icon > svg {
   fill: white;
   // Sadly, we can't use font-size with EOS Icons
   block-size: 1em;

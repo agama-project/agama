@@ -47,7 +47,12 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
   };
 
   return (
-    <Popup isOpen title="Encrypted Device" titleIconVariant={() => <Icon size="24" />}>
+    <Popup
+      isOpen
+      title="Encrypted Device"
+      aria-label="Question"
+      titleIconVariant={() => <Icon size="24" />}
+    >
       <Stack hasGutter>
         { renderAlert(question.attempt) }
         <StackItem>

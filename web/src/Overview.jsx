@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom";
 
 import { Button, Flex, FlexItem, Text } from "@patternfly/react-core";
 
-import Layout from "./Layout";
+import { Title, PageIcon, PageActions, MainActions } from "./Layout";
 import Category from "./Category";
 import LanguageSelector from "./LanguageSelector";
 import Storage from "./Storage";
@@ -41,7 +41,7 @@ import {
   EOS_MODE_EDIT as ModeEditIcon
 } from "eos-icons-react";
 
-const RightActions = () => {
+const ChangeProductButton = () => {
   const { products } = useSoftware();
   const navigate = useNavigate();
 
@@ -119,14 +119,13 @@ function Overview() {
   };
 
   return (
-    <Layout
-      sectionTitle={selectedProduct.name}
-      SectionIcon={OverviewIcon}
-      FooterActions={InstallButton}
-      RightActions={RightActions}
-    >
+    <>
+      <Title>{selectedProduct.name}</Title>
+      <PageIcon><OverviewIcon /></PageIcon>
+      <PageActions><ChangeProductButton /></PageActions>
+      <MainActions><InstallButton /></MainActions>
       <Flex direction={{ default: "column" }}>{renderCategories()}</Flex>
-    </Layout>
+    </>
   );
 }
 
