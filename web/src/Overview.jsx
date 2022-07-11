@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom";
 
 import { Button, Flex, FlexItem, Text } from "@patternfly/react-core";
 
-import Layout, { Title, PageIcon, PageActions, MainActions } from "./Layout";
+import { Title, PageIcon, PageActions, MainActions } from "./Layout";
 import Category from "./Category";
 import LanguageSelector from "./LanguageSelector";
 import Storage from "./Storage";

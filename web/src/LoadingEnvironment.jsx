@@ -22,21 +22,20 @@
 import React from "react";
 import { Title, EmptyState, EmptyStateIcon } from "@patternfly/react-core";
 
-import Layout from "./Layout";
 import Center from "./Center";
 
 import { EOS_THREE_DOTS_LOADING_ANIMATED as LoadingIcon } from "eos-icons-react";
 
 function LoadingEnvironment({ text = "Loading installation environment, please wait." }) {
   return (
-      <Center>
-        <EmptyState>
-          <EmptyStateIcon icon={LoadingIcon} />
-          <Title headingLevel="h4" size="lg">
-            { text }
-          </Title>
-        </EmptyState>
-      </Center>
+    <Center>
+      <EmptyState>
+        <EmptyStateIcon icon={LoadingIcon} />
+        <Title headingLevel="h4" size="lg">
+          { text }
+        </Title>
+      </EmptyState>
+    </Center>
   );
 }
 
