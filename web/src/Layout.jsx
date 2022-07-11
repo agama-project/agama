@@ -25,13 +25,11 @@ import "./layout.scss";
 import logo from "./assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
 
-import About from "./About";
-import TargetIpsPopup from "./TargetIpsPopup";
-
 const PageTitle = createTeleporter();
 const HeaderActions = createTeleporter();
 const HeaderIcon = createTeleporter();
 const FooterActions = createTeleporter();
+const FooterInfoArea = createTeleporter();
 
 /**
  * D-Installer main layout component.
@@ -76,8 +74,7 @@ function Layout({ children }) {
     <div className="layout__footer">
       <div className="layout__footer-info-area">
         <img src={logo} alt="Logo of SUSE" className="company-logo" />
-        <About />
-        <TargetIpsPopup />
+        <FooterInfoArea.Target />
       </div>
       <FooterActions.Target
         className="layout__footer-actions-area"
@@ -102,11 +99,13 @@ const Title = PageTitle.Source;
 const PageIcon = HeaderIcon.Source;
 const PageActions = HeaderActions.Source;
 const MainActions = FooterActions.Source;
+const AdditionalInfo = FooterInfoArea.Source;
 
 export {
   Layout as default,
   Title,
   PageIcon,
   PageActions,
-  MainActions
+  MainActions,
+  AdditionalInfo
 };
