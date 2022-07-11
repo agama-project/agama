@@ -34,20 +34,25 @@ const FooterInfoArea = createTeleporter();
 /**
  * D-Installer main layout component.
  *
- * It displays the content in a single vertical responsive column with sticky
- * header and fixed footer.
+ * It displays the content in a single vertical responsive column with fixed
+ * header and footer.
  *
  * @example
- *   <Layout
- *     sectionTitle="Software"
- *     SectionIcon={SoftwareSectionIcon}
- *     FooterActions={SoftwareSectionActions}
- *   >
- *     <SoftwareSection />
+ *   <Layout>
+ *     <PageIcon><DashboardIcon /></PageIcon>
+ *     <PageActions><DahboardActions /></PageActions>
+ *     <MainActions><Install /></MainActions>
+ *     <Title>Dashboard</Title>
+ *
+ *     <Content />
+ *
+ *     <AdditionaInfo>
+ *       <About />
+ *       <TheTeam />
+ *     </AdditionalInfo
  *   </Layout>
  *
  * @param {object} props - component props
- * @param {React.ReactNode} [props.SectionIcon] - the section icon in the header
  * @param {React.ReactNode} [props.children] - the section content
  *
  */
@@ -95,10 +100,65 @@ function Layout({ children }) {
   );
 }
 
+/**
+ * Component for setting the title shown at the header
+ *
+ * @example
+ *   <Title>Partitioner</Title>
+ */
 const Title = PageTitle.Source;
+
+/**
+ * Component for setting the icon shown at the header left
+ *
+ * @example
+ *   import { PageIcon } from "dinstaller-layout";
+ *   import { FancyIcon } from "icons-package";
+ *   ...
+ *   <PageIcon><FancyIcon color="white" /></PageIcon>
+ */
 const PageIcon = HeaderIcon.Source;
+
+/**
+ * Component for setting page actions shown on the header right
+ *
+ * @example
+ *   import { PageActions } from "dinstaller-layout";
+ *   import { FancyButton } from "somewhere";
+ *   ...
+ *   <PageActions>
+ *     <FancyButton onClick={() => console.log("do something")} />
+ *   </PageActions>
+ */
 const PageActions = HeaderActions.Source;
+
+/**
+ * Component for setting the main actions shown on the footer right
+ *
+ * @example
+ *   import { MainActions } from "dinstaller-layout";
+ *   import { FancyButton } from "somewhere";
+ *   ...
+ *   <MainActions>
+ *     <FancyButton onClick={() => console.log("do something")} />
+ *   </MainActions>
+ */
 const MainActions = FooterActions.Source;
+
+/**
+ * Component for setting the additional content shown at the footer
+ *
+ * @example
+ *   import { AdditionaInfo } from "dinstaller-layout";
+ *   import { About, HostIp } from "somewhere";
+ *
+ *   ...
+ *
+ *   <AdditionalInfo>
+ *     <About onClick={() => console.log("show a pop-up with more information")} />
+ *     <HotIp />
+ *   </AdditionalInfo>
+ */
 const AdditionalInfo = FooterInfoArea.Source;
 
 export {
