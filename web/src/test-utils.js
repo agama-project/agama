@@ -24,23 +24,44 @@ import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
 
 import { InstallerClientProvider } from "./context/installer";
+import Layout from "./Layout.jsx";
 import { createClient } from "./client";
 
 const InstallerProvider = ({ children }) => {
   const client = createClient();
   return (
-    <InstallerClientProvider client={client}>{children}</InstallerClientProvider>
+    <InstallerClientProvider client={client}>
+      {children}
+    </InstallerClientProvider>
   );
 };
 
-const installerRender = (ui, options = {}) => ({
-  user: userEvent.setup(),
-  ...render(ui, { wrapper: InstallerProvider, ...options })
-});
+const content = (ui, usingLayout) => {
+  if (!usingLayout) return ui;
 
-const plainRender = (ui, options = {}) => ({
-  user: userEvent.setup(),
-  ...render(ui, options)
-});
+  return <Layout>{ui}</Layout>;
+};
+
+const installerRender = (ui, options = { usingLayout: true }) => {
+  const { usingLayout, ...testingLibraryOptions } = options;
+
+  return (
+    {
+      user: userEvent.setup(),
+      ...render(content(ui, usingLayout), { wrapper: InstallerProvider, ...testingLibraryOptions })
+    }
+  );
+};
+
+const plainRender = (ui, options = { usingLayout: true }) => {
+  const { usingLayout, ...testingLibraryOptions } = options;
+
+  return (
+    {
+      user: userEvent.setup(),
+      ...render(content(ui, usingLayout), testingLibraryOptions)
+    }
+  );
+};
 
 export { installerRender, plainRender };
