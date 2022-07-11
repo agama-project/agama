@@ -28,29 +28,10 @@ const withDBus = {
    * @return {Object} a cockpit DBusProxy
    */
   async proxy(iface, path) {
-    const _proxies = this.proxies();
-
-    if (_proxies[iface]) {
-      return _proxies[iface];
-    }
-
     const proxy = this._client.proxy(iface, path, { watch: true });
     await proxy.wait();
 
-    if (!path) {
-      _proxies[iface] = proxy;
-    }
-
     return proxy;
-  },
-
-  /**
-   * Returns known proxies
-   *
-   * @return {Object.<string, Object>} a collection of cockpit DBusProxy indexed by their D-Bus iface
-   */
-  proxies() {
-    return (this._proxies ||= {});
   },
 
   /**
