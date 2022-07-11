@@ -49,11 +49,15 @@ export default function Questions() {
   }, [client.questions, removeQuestion]);
 
   useEffect(() => {
+    const unsubscribeCallbacks = [];
+
     client.questions.getQuestions()
       .then(setPendingQuestions)
       .catch(e => console.error("Something went wrong retrieving pending questions", e));
-    client.questions.onQuestionAdded(addQuestion);
-    client.questions.onQuestionRemoved(removeQuestion);
+    unsubscribeCallbacks.push(client.questions.onQuestionAdded(addQuestion));
+    unsubscribeCallbacks.push(client.questions.onQuestionRemoved(removeQuestion));
+
+    return () => { unsubscribeCallbacks.forEach(cb => cb()) };
   }, [client.questions, addQuestion, removeQuestion]);
 
   if (pendingQuestions.length === 0) return null;
