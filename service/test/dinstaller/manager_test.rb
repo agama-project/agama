@@ -72,7 +72,11 @@ describe DInstaller::Manager do
 
     it "probes languages" do
       expect(language).to receive(:probe)
-      # expect(software).to receive(:on_product_selected)
+      subject.startup_phase
+    end
+
+    it "configures software callbacks" do
+      expect(software).to receive(:on_product_selected)
       subject.startup_phase
     end
 

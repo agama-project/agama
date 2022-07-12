@@ -76,6 +76,11 @@ module DInstaller
       start_progress(1)
       progress.step("Probing Languages") { language.probe }
 
+      software.on_product_selected do |selected|
+        config.pick_product(selected)
+        config_phase
+      end
+
       probe_single_product unless config.multi_product?
     end
 
@@ -145,10 +150,6 @@ module DInstaller
     # @return [DBus::Clients::Software]
     def software
       @software ||= DBus::Clients::Software.new.tap do |client|
-        client.on_product_selected do |selected|
-          config.pick_product(selected)
-          config_phase
-        end
         client.on_service_status_change do |status|
           service_status_recorder.save(client.service.name, status)
         end
