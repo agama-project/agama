@@ -27,7 +27,7 @@ describe DInstaller::DBus::ManagerService do
   subject(:service) { described_class.new(config, logger) }
 
   let(:config) { DInstaller::Config.new }
-  let(:logger) { Logger.new($stdout) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
   let(:manager) { DInstaller::Manager.new(config, logger) }
   let(:bus) { instance_double(::DBus::SystemBus) }
   let(:bus_service) do
@@ -40,6 +40,13 @@ describe DInstaller::DBus::ManagerService do
     allow(bus).to receive(:request_service).and_return(bus_service)
     allow(DInstaller::Manager).to receive(:new).with(config, logger).and_return(manager)
     allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
+  end
+
+  describe "#start" do
+    it "runs the startup phase" do
+      expect(manager).to receive(:startup_phase)
+      subject.start
+    end
   end
 
   describe "#export" do
