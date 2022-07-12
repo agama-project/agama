@@ -23,9 +23,10 @@ import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
 import { BUSY } from "./client/status";
 
-import { Alert, Skeleton } from "@patternfly/react-core";
+import { Alert } from "@patternfly/react-core";
 import TargetSelector from "./TargetSelector";
 import Proposal from "./Proposal";
+import InstallerSkeleton from "./InstallerSkeleton";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -57,7 +58,7 @@ export default function Storage() {
   const client = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, {
     targets: [],
-    target: "",
+    target: undefined,
     actions: [],
     error: false
   });
@@ -112,9 +113,9 @@ export default function Storage() {
 
   const errorMessage = `Cannot make a proposal for ${target}`;
 
-  if (state.status === BUSY) {
+  if (state.status === BUSY || target === undefined) {
     return (
-      <Skeleton width="50%" screenreaderText="Loading storage proposal" fontSize="sm" />
+      <InstallerSkeleton lines={3} />
     );
   }
 
