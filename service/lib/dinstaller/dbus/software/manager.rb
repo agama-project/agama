@@ -20,33 +20,37 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/dbus/base_object"
+require "dinstaller/dbus/with_service_status"
+require "dinstaller/dbus/interfaces/progress"
+require "dinstaller/dbus/interfaces/service_status"
 
 module DInstaller
   module DBus
     module Software
       # D-Bus object to manage software installation
-      class Manager < ::DBus::Object
+      class Manager < BaseObject
+        include WithServiceStatus
+        include Interfaces::Progress
+        include Interfaces::ServiceStatus
+
         PATH = "/org/opensuse/DInstaller/Software1"
         private_constant :PATH
-
-        SOFTWARE_INTERFACE = "org.opensuse.DInstaller.Software1"
-        private_constant :SOFTWARE_INTERFACE
 
         # Constructor
         #
         # @param backend [DInstaller::Software]
         # @param logger [Logger]
         def initialize(backend, logger)
+          super(PATH, logger: logger)
           @backend = backend
-          @logger = logger
-
-          register_status_callback
-          register_progress_callback
-
-          super(PATH)
+          register_progress_callbacks
+          register_service_status_callbacks
         end
 
-        # rubocop:disable Metrics/BlockLength
+        SOFTWARE_INTERFACE = "org.opensuse.DInstaller.Software1"
+        private_constant :SOFTWARE_INTERFACE
+
         dbus_interface SOFTWARE_INTERFACE do
           dbus_reader :available_base_products, "a(ssa{sv})"
 
@@ -68,45 +72,11 @@ module DInstaller
             [provisions.map { |p| backend.provision_selected?(p) }]
           end
 
-          dbus_method :Propose do
-            backend.propose
-          end
-
-          dbus_method :Probe do
-            backend.probe
-          end
-
-          dbus_method :Install do
-            backend.install
-          end
-
-          dbus_method :Finish do
-            backend.finish
-          end
-
-          # Current status
-          #
-          # TODO: these values come from the id of statuses, see {DInstaller::Status::Base}. This
-          #   D-Bus class should explicitly convert statuses to integer instead of relying on the id
-          #   value, which could change.
-          #
-          # Possible values:
-          #   0 : error
-          #   1 : probing
-          #   2 : probed
-          #   3 : installing
-          #   4 : installed
-          dbus_reader :status, "u"
-
-          # Progress has struct with values:
-          #   s message
-          #   t total major steps to do
-          #   t current major step (0-based)
-          #   t total minor steps. Can be zero which means no minor steps
-          #   t current minor step
-          dbus_reader :progress, "(stttt)"
+          dbus_method(:Probe) { probe }
+          dbus_method(:Propose) { propose }
+          dbus_method(:Install) { install }
+          dbus_method(:Finish) { finish }
         end
-        # rubocop:enable Metrics/BlockLength
 
         def available_base_products
           backend.products.map do |id, data|
@@ -125,42 +95,26 @@ module DInstaller
           backend.select_product(product_id)
         end
 
-        # Id of the current status
-        #
-        # @return [Integer]
-        def status
-          backend.status_manager.status.id
+        def probe
+          busy_while { backend.probe }
         end
 
-        def progress
-          backend.progress.to_a
+        def propose
+          busy_while { backend.propose }
+        end
+
+        def install
+          busy_while { backend.install }
+        end
+
+        def finish
+          busy_while { backend.finish }
         end
 
       private
 
-        # @return [Logger]
-        attr_reader :logger
-
         # @return [DInstaller::Software]
         attr_reader :backend
-
-        # Registers callback to be called when the status changes
-        #
-        # The callback will emit a signal
-        def register_status_callback
-          backend.status_manager.on_change do
-            dbus_properties_changed(SOFTWARE_INTERFACE, { "Status" => status }, [])
-          end
-        end
-
-        # Registers callback to be called when the progress changes
-        #
-        # The callback will emit a signal
-        def register_progress_callback
-          backend.progress.on_change do
-            dbus_properties_changed(SOFTWARE_INTERFACE, { "Progress" => progress }, [])
-          end
-        end
       end
     end
   end

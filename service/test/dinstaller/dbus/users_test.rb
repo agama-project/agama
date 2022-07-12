@@ -20,35 +20,31 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
+require "dinstaller/dbus/interfaces/service_status"
 require "dinstaller/dbus/users"
 require "dinstaller/users"
-require "dinstaller/status_manager"
 
 describe DInstaller::DBus::Users do
   subject { described_class.new(backend, logger) }
 
-  let(:backend) { instance_double(DInstaller::Users, status_manager: status_manager) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:logger) { Logger.new($stdout) }
+  let(:backend) { instance_double(DInstaller::Users) }
 
-  let(:status_manager) { DInstaller::StatusManager.new(status) }
-
-  let(:status) { DInstaller::Status::Installing.new }
-
-  it "configures callbacks for changes in the status" do
-    new_status = DInstaller::Status::Installed.new
-
-    expect(subject).to receive(:PropertiesChanged) do |iface, properties, _|
-      expect(iface).to match(/Users1/)
-      expect(properties["Status"]).to eq(new_status.id)
-    end
-
-    status_manager.change(new_status)
+  let(:service_status_interface) do
+    DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
   end
 
-  describe "#status" do
-    it "returns the id of its current status" do
-      expect(subject.status).to eq(status.id)
-    end
+  before do
+    allow_any_instance_of(described_class).to receive(:register_service_status_callbacks)
+  end
+
+  it "defines ServiceStatus D-Bus interface" do
+    expect(subject.intfs.keys).to include(service_status_interface)
+  end
+
+  it "configures callbacks from ServiceStatus interface" do
+    expect_any_instance_of(described_class).to receive(:register_service_status_callbacks)
+    subject
   end
 end

@@ -60,11 +60,11 @@ module DInstaller
       # Information provided by ObjectManger for each exported object
       #
       # Returns a hash containing paths of exported objects as keys. Each value is the information
-      # of interfaces and properties for that object, see {#interfaces_and_properties}.
+      # of interfaces and properties for that object, see {BaseObject#interfaces_and_properties}.
       #
       # @return [Hash]
       def managed_objects
-        exported_questions.each_with_object({}) { |q, h| h[q.path] = interfaces_and_properties(q) }
+        exported_questions.each_with_object({}) { |q, h| h[q.path] = q.interfaces_and_properties }
       end
 
       dbus_interface OBJECT_MANAGER_INTERFACE do
@@ -96,22 +96,6 @@ module DInstaller
         ::DBus::ObjectPath.new(path.to_s)
       end
 
-      # Generates information about interfaces and properties for the given question
-      #
-      # Returns a hash containing interfaces names as keys. Each value is the same hash that would
-      # be returned by the org.freedesktop.DBus.Properties.GetAll() method for that combination of
-      # object path and interface. If an interface has no properties, the empty hash is returned.
-      #
-      # @param question [DBus::Question]
-      # @return [Hash]
-      def interfaces_and_properties(question)
-        get_all_method = self.class.make_method_name("org.freedesktop.DBus.Properties", :GetAll)
-
-        question.intfs.keys.each_with_object({}) do |interface, hash|
-          hash[interface] = question.public_send(get_all_method, interface).first
-        end
-      end
-
       # Callbacks with actions to do when adding, deleting or waiting for questions
       def register_callbacks
         # When adding a question, a new question is exported on D-Bus.
@@ -119,7 +103,7 @@ module DInstaller
           dbus_object = DBus::Question.new(path_for(question), question, logger)
           @service.export(dbus_object)
           exported_questions << dbus_object
-          InterfacesAdded(dbus_object.path, interfaces_and_properties(dbus_object))
+          InterfacesAdded(dbus_object.path, dbus_object.interfaces_and_properties)
         end
 
         # When removing a question, the question is unexported from D-Bus.

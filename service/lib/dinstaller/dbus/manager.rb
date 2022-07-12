@@ -20,107 +20,97 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/manager"
+require "dinstaller/dbus/base_object"
+require "dinstaller/dbus/with_service_status"
+require "dinstaller/dbus/interfaces/progress"
+require "dinstaller/dbus/interfaces/service_status"
 
 module DInstaller
   module DBus
     # D-Bus object to manage the installation process
-    class Manager < ::DBus::Object
+    class Manager < BaseObject
+      include WithServiceStatus
+      include Interfaces::Progress
+      include Interfaces::ServiceStatus
+
       PATH = "/org/opensuse/DInstaller/Manager1"
       private_constant :PATH
+
+      # Constructor
+      #
+      # @param backend [DInstaller::Manager]
+      # @param logger [Logger]
+      def initialize(backend, logger)
+        super(PATH, logger: logger)
+        @backend = backend
+        register_callbacks
+        register_progress_callbacks
+        register_service_status_callbacks
+      end
 
       MANAGER_INTERFACE = "org.opensuse.DInstaller.Manager1"
       private_constant :MANAGER_INTERFACE
 
-      # Constructor
-      #
-      # @param backend [DInstaller::Manager] Installation manager
-      # @param logger [Logger]
-      def initialize(backend, logger)
-        @logger = logger
-        @backend = backend
-
-        register_status_callback
-        register_progress_callback
-
-        super(PATH)
-      end
-
       dbus_interface MANAGER_INTERFACE do
-        dbus_method(:Probe, "") { backend.probe }
-
-        dbus_method(:Commit, "") { backend.install }
-
-        # Current status
-        #
-        # TODO: these values come from the id of statuses, see {DInstaller::Status::Base}. This
-        #   D-Bus class should explicitly convert statuses to integer instead of relying on the id
-        #   value, which could change.
-        #
-        # Possible values:
-        #   0 : error
-        #   1 : probing
-        #   2 : probed
-        #   3 : installing
-        #   4 : installed
-        dbus_reader :status, "u"
-
-        # Error messages when the status is 0
-        dbus_reader :error_messages, "as",
-          emits_changed_signal: :invalidates
-
-        # Progress has struct with values:
-        #   s message
-        #   t total major steps to do
-        #   t current major step (0-based)
-        #   t total minor steps. Can be zero which means no minor steps
-        #   t current minor step
-        dbus_reader :progress, "(stttt)"
+        dbus_method(:Probe, "") { config_phase }
+        dbus_method(:Commit, "") { install_phase }
+        dbus_reader :installation_phases, "aa{sv}"
+        dbus_reader :current_installation_phase, "u"
+        dbus_reader :busy_services, "as"
       end
 
-      # Id of the current status
+      # Runs the config phase
+      def config_phase
+        busy_while { backend.config_phase }
+      end
+
+      # Runs the install phase
+      def install_phase
+        busy_while { backend.install_phase }
+      end
+
+      # Description of all possible installation phase values
+      #
+      # @return [Array<Hash>]
+      def installation_phases
+        [
+          { "id" => 0, "label" => "startup" },
+          { "id" => 1, "label" => "config" },
+          { "id" => 2, "label" => "install" }
+        ]
+      end
+
+      # Current value of the installation phase
       #
       # @return [Integer]
-      def status
-        backend.status_manager.status.id
+      def current_installation_phase
+        return 0 if backend.installation_phase.startup?
+        return 1 if backend.installation_phase.config?
+        return 2 if backend.installation_phase.install?
       end
 
-      # Error messages from the error status
+      # Name of the services that are currently busy
       #
       # @return [Array<String>]
-      def error_messages
-        return [] unless backend.status_manager.error?
-
-        backend.status_manager.status.messages
-      end
-
-      # @see DInstaller::Manager#progress
-      def progress
-        backend.progress.to_a
+      def busy_services
+        backend.service_status_recorder.busy_services
       end
 
     private
 
-      # @return [Logger]
-      attr_reader :logger
-
       # @return [DInstaller::Manager]
       attr_reader :backend
 
-      # Registers callback to be called when the status changes
-      #
-      # The callback will emit a signal
-      def register_status_callback
-        backend.status_manager.on_change do
-          dbus_properties_changed(MANAGER_INTERFACE, { "Status" => status }, ["ErrorMessages"])
+      # Registers callback to be called
+      def register_callbacks
+        backend.installation_phase.on_change do
+          dbus_properties_changed(MANAGER_INTERFACE,
+            { "CurrentInstallationPhase" => current_installation_phase }, [])
         end
-      end
 
-      # Registers callback to be called when the progress changes
-      #
-      # The callback will emit a signal
-      def register_progress_callback
-        backend.progress.on_change do
-          dbus_properties_changed(MANAGER_INTERFACE, { "Progress" => progress }, [])
+        backend.service_status_recorder.on_service_status_change do
+          dbus_properties_changed(MANAGER_INTERFACE, { "BusyServices" => busy_services }, [])
         end
       end
     end
