@@ -21,8 +21,9 @@
 
 import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
+import { BUSY } from "./client/status";
 
-import { Alert } from "@patternfly/react-core";
+import { Alert, Skeleton } from "@patternfly/react-core";
 import TargetSelector from "./TargetSelector";
 import Proposal from "./Proposal";
 
@@ -40,6 +41,10 @@ const reducer = (state, action) => {
 
     case "UPDATE_ACTIONS": {
       return { ...state, actions: action.payload };
+    }
+
+    case "CHANGE_STATUS": {
+      return { ...state, status: action.payload };
     }
 
     default: {
@@ -93,7 +98,25 @@ export default function Storage() {
     });
   }, [client.storage]);
 
+  useEffect(() => {
+    client.storage.getStatus().then(status => {
+      dispatch({ type: "CHANGE_STATUS", payload: status });
+    });
+  }, [client.storage]);
+
+  useEffect(() => {
+    return client.storage.onStatusChange(status => {
+      dispatch({ type: "CHANGE_STATUS", payload: status });
+    });
+  }, [client.storage]);
+
   const errorMessage = `Cannot make a proposal for ${target}`;
+
+  if (state.status === BUSY) {
+    return (
+      <Skeleton width="50%" screenreaderText="Loading storage proposal" fontSize="sm" />
+    );
+  }
 
   return (
     <>
