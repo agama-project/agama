@@ -20,13 +20,15 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "dinstaller/status_manager"
+require "dinstaller/dbus/clients/with_service_status"
 
 module DInstaller
   module DBus
     module Clients
       # D-Bus client for software configuration
       class Software
+        include WithServiceStatus
+
         TYPES = [:package, :pattern].freeze
         private_constant :TYPES
 
@@ -38,11 +40,9 @@ module DInstaller
           @dbus_proposal.introspect
         end
 
-        # Current status of the service
-        #
-        # @return [Status]
-        def status
-          Status.create(dbus_object["org.opensuse.DInstaller.Software1"]["Status"])
+        # @return [::DBus::Service]
+        def service
+          @service ||= bus.service("org.opensuse.DInstaller.Software")
         end
 
         # Available products for the installation
@@ -173,11 +173,6 @@ module DInstaller
 
         # @return [::DBus::Object]
         attr_reader :dbus_object
-
-        # @return [::DBus::Service]
-        def service
-          @service ||= bus.service("org.opensuse.DInstaller.Software")
-        end
 
         def bus
           @bus ||= ::DBus::SystemBus.instance
