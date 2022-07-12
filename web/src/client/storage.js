@@ -95,7 +95,7 @@ class StorageClient {
   onStorageProposalChange(handler) {
     return this.onObjectChanged(STORAGE_PROPOSAL_PATH, STORAGE_PROPOSAL_IFACE, changes => {
       const [selected] = changes.CandidateDevices.v;
-      handler(selected.v);
+      handler(selected);
     });
   }
 }
