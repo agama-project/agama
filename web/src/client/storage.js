@@ -75,7 +75,7 @@ class StorageClient {
    * @param {function} handler - callback function
    */
   onActionsChange(handler) {
-    return this.onObjectChanged(STORAGE_PROPOSAL_PATH, changes => {
+    return this.onObjectChanged(STORAGE_PROPOSAL_PATH, STORAGE_PROPOSAL_IFACE, changes => {
       const { Actions: actions } = changes;
       if (actions !== undefined) {
         const newActions = actions.v.map(action => {
@@ -93,7 +93,7 @@ class StorageClient {
    * @param {function} handler - callback function
    */
   onStorageProposalChange(handler) {
-    return this.onObjectChanged(STORAGE_PROPOSAL_PATH, changes => {
+    return this.onObjectChanged(STORAGE_PROPOSAL_PATH, STORAGE_PROPOSAL_IFACE, changes => {
       const [selected] = changes.CandidateDevices.v;
       handler(selected.v);
     });

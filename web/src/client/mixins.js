@@ -38,10 +38,11 @@ const withDBus = {
    * Register a callback to run when properties change for given D-Bus path
    *
    * @param {string} path - D-Bus path
+   * @param {string} iface - D-Bus interface name
    * @param {function} handler - callback function
    * @return {function} function to unsubscribe
    */
-  onObjectChanged(path, handler) {
+  onObjectChanged(path, iface, handler) {
     const { remove } = this._client.subscribe(
       {
         path,
@@ -49,8 +50,10 @@ const withDBus = {
         member: "PropertiesChanged"
       },
       (_path, _iface, _signal, args) => {
-        const [, changes, invalid] = args;
-        handler(changes, invalid);
+        const [source_iface, changes, invalid] = args;
+        if (iface === source_iface) {
+          handler(changes, invalid);
+        }
       }
     );
     return remove;
@@ -89,9 +92,9 @@ const withStatus = (object_path) => {
      * @return {function} function to disable the callback
      */
     onStatusChange(handler) {
-      return this.onObjectChanged(object_path, (changes) => {
-        if ("CurrentInstallationPhase" in changes) {
-          handler(changes.CurrentInstallationPhase.v);
+      return this.onObjectChanged(object_path, STATUS_IFACE, (changes) => {
+        if ("Current" in changes) {
+          handler(changes.Current.v);
         }
       });
     }
@@ -125,7 +128,7 @@ const withProgress = (object_path) => {
      * @return {function} function to disable the callback
      */
     onProgressChange(handler) {
-      return this.onObjectChanged(object_path, (changes) => {
+      return this.onObjectChanged(object_path, PROGRESS_IFACE, (changes) => {
         const { TotalSteps, CurrentStep, Finished } = changes;
         if (TotalSteps === undefined && CurrentStep === undefined && Finished === undefined) {
           return;

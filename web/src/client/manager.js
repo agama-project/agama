@@ -76,7 +76,7 @@ class ManagerClient {
    * @return {function} function to disable callback
    */
   onPhaseChange(handler) {
-    return this.onObjectChanged(MANAGER_PATH, (changes) => {
+    return this.onObjectChanged(MANAGER_PATH, MANAGER_IFACE, (changes) => {
       if ("CurrentInstallationPhase" in changes) {
         handler(changes.CurrentInstallationPhase.v);
       }
@@ -92,7 +92,7 @@ class ManagerClient {
    * @param {function} handler - callback function
    */
   onChange(handler) {
-    return this.onObjectChanged(MANAGER_PATH, (changes, invalid) => {
+    return this.onObjectChanged(MANAGER_PATH, MANAGER_IFACE, (changes, invalid) => {
       const data = {};
 
       if ("Status" in changes) {
@@ -113,7 +113,7 @@ class ManagerClient {
    * @param {function} handler - callback function that received the phase code
    */
   onStatusChange(handler) {
-    return this.onObjectChanged(MANAGER_PATH, (changes) => {
+    return this.onObjectChanged(MANAGER_PATH, MANAGER_IFACE, (changes) => {
       if ("Status" in changes) {
         handler(changes.Status.v);
       }

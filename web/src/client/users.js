@@ -138,7 +138,7 @@ class UsersClient {
    * @param {function} handler - callback function
    */
   onUsersChange(handler) {
-    return this.onObjectChanged(USERS_PATH, changes => {
+    return this.onObjectChanged(USERS_PATH, USERS_IFACE, changes => {
       if (changes.RootPasswordSet) {
         return handler({ rootPasswordSet: changes.RootPasswordSet.v });
       } else if (changes.RootSSHKey) {

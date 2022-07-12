@@ -72,7 +72,7 @@ class LanguageClient {
    * @param {function} handler - callback function
    */
   onLanguageChange(handler) {
-    return this.onObjectChanged(LANGUAGE_PATH, changes => {
+    return this.onObjectChanged(LANGUAGE_PATH, LANGUAGE_IFACE, changes => {
       const selected = changes.MarkedForInstall.v[0];
       handler({ current: selected.v });
     });
