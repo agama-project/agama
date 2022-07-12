@@ -108,7 +108,8 @@ module DInstaller
     end
 
     def install
-      PackageCallbacks.setup(count_packages)
+      start_progress(count_packages)
+      PackageCallbacks.setup(count_packages, progress)
 
       # TODO: error handling
       commit_result = Yast::PackageInstallation.Commit({})
