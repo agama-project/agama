@@ -20,7 +20,7 @@
  */
 
 import cockpit from "../lib/cockpit";
-import { applyMixin, withDBus } from "./mixins";
+import { applyMixin, withDBus, withStatus } from "./mixins";
 
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_PROPOSAL_PATH = "/org/opensuse/DInstaller/Storage/Proposal1";
@@ -100,5 +100,5 @@ class StorageClient {
   }
 }
 
-applyMixin(StorageClient, withDBus);
+applyMixin(StorageClient, withDBus, withStatus(STORAGE_PROPOSAL_PATH));
 export default StorageClient;
