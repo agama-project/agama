@@ -21,15 +21,13 @@
 
 require_relative "../test_helper"
 require "dinstaller/language"
-require "dinstaller/progress"
 
 Yast.import "Language"
 
 describe DInstaller::Language do
   subject { described_class.new(logger) }
 
-  let(:logger) { Logger.new($stdout) }
-  let(:progress) { DInstaller::Progress.new }
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#probe" do
     let(:languages) do
@@ -45,7 +43,7 @@ describe DInstaller::Language do
 
     it "reads the list of languages" do
       expect(subject.languages).to be_empty
-      subject.probe(progress)
+      subject.probe
       expect(subject.languages).to eq(languages)
     end
   end
@@ -53,13 +51,13 @@ describe DInstaller::Language do
   describe "#install" do
     it "writes language settings" do
       expect(Yast::Language).to receive(:Save)
-      subject.install(progress)
+      subject.install
     end
   end
 
   describe "#language=" do
     before do
-      subject.probe(progress)
+      subject.probe
     end
 
     it "sets the language and selects the related packages" do

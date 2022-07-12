@@ -74,7 +74,7 @@ module DInstaller
 
           activate, password = callback.call(info, attempt)
 
-          ::Storage::PairBoolString.new(activate, password)
+          ::Storage::PairBoolString.new(activate, password || "")
         end
 
       private

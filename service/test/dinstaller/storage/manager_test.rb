@@ -21,7 +21,6 @@
 
 require_relative "../../test_helper"
 require "dinstaller/storage/manager"
-require "dinstaller/progress"
 require "dinstaller/questions_manager"
 require "dinstaller/config"
 
@@ -30,7 +29,6 @@ describe DInstaller::Storage::Manager do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:config) { DInstaller::Config.new }
-  let(:progress) { DInstaller::Progress.new }
 
   describe "#probe" do
     let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
@@ -48,14 +46,14 @@ describe DInstaller::Storage::Manager do
       end
       expect(y2storage_manager).to receive(:probe)
       expect(proposal).to receive(:calculate)
-      storage.probe(progress, questions_manager)
+      storage.probe(questions_manager)
     end
   end
 
   describe "#install" do
     it "runs the inst_prepdisk client" do
       expect(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
-      storage.install(progress)
+      storage.install
     end
   end
 

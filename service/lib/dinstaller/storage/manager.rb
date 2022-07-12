@@ -35,21 +35,17 @@ module DInstaller
 
       # Probes storage devices and performs an initial proposal
       #
-      # @param progress [Progress] Progress reporting object
       # @param questions_manager [QuestionsManager]
-      def probe(progress, questions_manager)
+      def probe(questions_manager)
+        # TODO: Add progress once this is moved to its own service
         logger.info "Probing storage and performing proposal"
-        progress.init_minor_steps(2, "Probing Storage Devices")
         activate_devices(questions_manager)
         probe_devices
-        progress.next_minor_step("Calculating Storage Proposal")
         proposal.calculate
       end
 
       # Prepares the partitioning to install the system
-      #
-      # @param _progress [Progress] Progress reporting object
-      def install(_progress)
+      def install
         Yast::WFM.CallFunction("inst_prepdisk", [])
       end
 

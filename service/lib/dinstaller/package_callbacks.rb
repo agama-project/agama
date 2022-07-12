@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "dinstaller/with_progress"
 
 Yast.import "Pkg"
 
@@ -27,16 +28,15 @@ Yast.import "Pkg"
 module DInstaller
   # This class represents the installer status
   class PackageCallbacks
+    include WithProgress
+
     class << self
-      def setup(progress, pkg_count)
-        new(progress, pkg_count).setup
+      def setup(pkg_count)
+        new(pkg_count).setup
       end
     end
 
-    attr_reader :progress
-
-    def initialize(progress, pkg_count)
-      @progress = progress
+    def initialize(pkg_count)
       @total = pkg_count
       @installed = 0
     end
@@ -46,7 +46,7 @@ module DInstaller
         fun_ref(method(:package_installed), "string (integer, string)")
       )
 
-      @progress.init_progress(@total, msg)
+      start_progress(@total)
     end
 
   private
@@ -58,7 +58,7 @@ module DInstaller
     # TODO: error handling
     def package_installed(_error, _reason)
       @installed += 1
-      @progress.next_step(msg)
+      progress.step(msg)
 
       ""
     end
