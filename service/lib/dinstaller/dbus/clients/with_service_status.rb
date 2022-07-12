@@ -42,15 +42,22 @@ module DInstaller
 
         # Registers a callback to run when the current status property changes
         #
+        # @note Signal subscription is done only once. Otherwise, the latest subscription overrides
+        #   the previous one.
+        #
         # @param callback [Proc]
         # @yieldparam service_status [String]
         def on_service_status_change(&callback)
-          dbus_properties = dbus_object["org.freedesktop.DBus.Properties"]
+          @on_service_status_change_callbacks ||= []
+          @on_service_status_change_callbacks << callback
 
+          return if @on_service_status_change_callbacks.size > 1
+
+          dbus_properties = dbus_object["org.freedesktop.DBus.Properties"]
           dbus_properties.on_signal("PropertiesChanged") do |interface, changes, _|
             if interface == Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
               service_status = to_service_status(changes["Current"])
-              callback.call(service_status)
+              @on_service_status_change_callbacks.each { |c| c.call(service_status) }
             end
           end
         end
