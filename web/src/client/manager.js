@@ -84,43 +84,6 @@ class ManagerClient {
   }
 
   /**
-   * Register a callback to run when properties in the Manager object change
-   *
-   * Additionally, this method handles the conversion of the values coming
-   * from the {cockpit} module.
-   *
-   * @param {function} handler - callback function
-   */
-  onChange(handler) {
-    return this.onObjectChanged(MANAGER_PATH, MANAGER_IFACE, (changes, invalid) => {
-      const data = {};
-
-      if ("Status" in changes) {
-        data.Status = changes.Status.v;
-      }
-
-      if ("Progress" in changes) {
-        data.Progress = changes.Progress.v.map(p => p.v);
-      }
-
-      handler(data, invalid);
-    });
-  }
-
-  /**
-   * Registers a callback to run when the installation phase changes
-   *
-   * @param {function} handler - callback function that received the phase code
-   */
-  onStatusChange(handler) {
-    return this.onObjectChanged(MANAGER_PATH, MANAGER_IFACE, (changes) => {
-      if ("Status" in changes) {
-        handler(changes.Status.v);
-      }
-    });
-  }
-
-  /**
    * Returns whether calling the system reboot suceeded or not.
    *
    * @return {Promise.<boolean>}

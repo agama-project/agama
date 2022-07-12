@@ -135,13 +135,6 @@ const withProgress = (object_path) => {
         }
 
         this.getProgress().then(handler);
-
-        // FIXME: we might need to take all the values from getProgress().
-        // handler({
-        //   total: TotalSteps?.v,
-        //   current: CurrentStep?.v,
-        //   finished: Finished?.v
-        // });
       });
     }
   };
