@@ -29,16 +29,32 @@ module DInstaller
       # @note This mixin is expected to be included in a class inherited from {::DBus::Object} and
       #   it requires a #service_status method that returns a {DInstaller::DBus::ServiceStatus}
       #   object.
+      #
+      # @example
+      #   class Demo < ::DBus::Object
+      #     include DInstaller::DBus::Interfaces::ServiceStatus
+      #
+      #     def initialize
+      #       super("org.test.Demo")
+      #       register_service_status_callbacks
+      #     end
+      #
+      #     def service_status
+      #       @service_status ||= DInstaller::DBus::ServiceStatus.new
+      #   end
       module ServiceStatus
         SERVICE_STATUS_INTERFACE = "org.opensuse.DInstaller.ServiceStatus1"
+
+        SERVICE_STATUS_IDLE = 0
+        SERVICE_STATUS_BUSY = 1
 
         # Description of all possible service status values
         #
         # @return [Array<Hash>]
         def service_status_all
           [
-            { "id" => 0, "label" => "idle" },
-            { "id" => 1, "label" => "busy" }
+            { "id" => SERVICE_STATUS_IDLE, "label" => "idle" },
+            { "id" => SERVICE_STATUS_BUSY, "label" => "busy" }
           ]
         end
 
@@ -46,10 +62,12 @@ module DInstaller
         #
         # @return [Integer]
         def service_status_current
-          service_status.busy? ? 1 : 0
+          service_status.busy? ? SERVICE_STATUS_BUSY : SERVICE_STATUS_IDLE
         end
 
         # Registers callbacks to be called when the value of the service status changes
+        #
+        # @note This method is expected to be called in the constructor.
         def register_service_status_callbacks
           service_status.on_change do
             dbus_properties_changed(SERVICE_STATUS_INTERFACE,

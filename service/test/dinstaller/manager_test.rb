@@ -22,6 +22,7 @@
 require_relative "../test_helper"
 require "dinstaller/manager"
 require "dinstaller/config"
+require "dinstaller/dbus/service_status"
 
 describe DInstaller::Manager do
   subject { described_class.new(config, logger) }
@@ -140,6 +141,43 @@ describe DInstaller::Manager do
       expect(bootloader_proposal).to receive(:make_proposal)
       expect(bootloader_finish).to receive(:write)
       subject.install_phase
+    end
+  end
+
+  let(:idle) { DInstaller::DBus::ServiceStatus::IDLE }
+  let(:busy) { DInstaller::DBus::ServiceStatus::BUSY }
+
+  describe "#busy_services" do
+    before do
+      allow(subject).to receive(:service_status_recorder).and_return(service_status_recorder)
+
+      service_status_recorder.save("org.opensuse.DInstaller.Test1", busy)
+      service_status_recorder.save("org.opensuse.DInstaller.Test2", idle)
+      service_status_recorder.save("org.opensuse.DInstaller.Test3", busy)
+    end
+
+    let(:service_status_recorder) { DInstaller::ServiceStatusRecorder.new }
+
+    it "returns the name of the busy services" do
+      expect(subject.busy_services).to contain_exactly(
+        "org.opensuse.DInstaller.Test1",
+        "org.opensuse.DInstaller.Test3"
+      )
+    end
+  end
+
+  describe "#on_services_status_change" do
+    before do
+      allow(subject).to receive(:service_status_recorder).and_return(service_status_recorder)
+    end
+
+    let(:service_status_recorder) { DInstaller::ServiceStatusRecorder.new }
+
+    it "add a callback to be run when the status of a service changes" do
+      subject.on_services_status_change { logger.info("change status") }
+
+      expect(logger).to receive(:info).with(/change status/)
+      service_status_recorder.save("org.opensuse.DInstaller.Test", busy)
     end
   end
 end

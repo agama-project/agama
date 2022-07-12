@@ -29,6 +29,24 @@ module DInstaller
       # @note This mixin is expected to be included in a class inherited from {DBus::BaseObject}
       #   class and it requires a #backend method that returns an instance of a class including the
       #   {DInstaller::WithProgress} mixin.
+      #
+      # @example
+      #   class Backend
+      #     include DInstaller::WithProgress
+      #   end
+      #
+      #   class Demo < DInstaller::DBus::BaseObject
+      #     include DInstaller::DBus::Interfaces::Progress
+      #
+      #     def initialize
+      #       super("org.test.Demo")
+      #       register_progress_callbacks
+      #     end
+      #
+      #     def backend
+      #       @backend ||= Backend.new
+      #     end
+      #   end
       module Progress
         PROGRESS_INTERFACE = "org.opensuse.DInstaller.Progress1"
 
@@ -68,6 +86,8 @@ module DInstaller
         end
 
         # Registers callbacks to be called when the progress changes or finishes
+        #
+        # @note This method is expected to be called in the constructor.
         def register_progress_callbacks
           backend.on_progress_change do
             dbus_properties_changed(PROGRESS_INTERFACE, progress_properties, [])

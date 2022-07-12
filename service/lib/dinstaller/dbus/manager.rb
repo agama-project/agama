@@ -52,6 +52,10 @@ module DInstaller
       MANAGER_INTERFACE = "org.opensuse.DInstaller.Manager1"
       private_constant :MANAGER_INTERFACE
 
+      STARTUP_PHASE = 0
+      CONFIG_PHASE = 1
+      INSTALL_PHASE = 2
+
       dbus_interface MANAGER_INTERFACE do
         dbus_method(:Probe, "") { config_phase }
         dbus_method(:Commit, "") { install_phase }
@@ -75,9 +79,9 @@ module DInstaller
       # @return [Array<Hash>]
       def installation_phases
         [
-          { "id" => 0, "label" => "startup" },
-          { "id" => 1, "label" => "config" },
-          { "id" => 2, "label" => "install" }
+          { "id" => STARTUP_PHASE, "label" => "startup" },
+          { "id" => CONFIG_PHASE,  "label" => "config" },
+          { "id" => INSTALL_PHASE, "label" => "install" }
         ]
       end
 
@@ -85,16 +89,16 @@ module DInstaller
       #
       # @return [Integer]
       def current_installation_phase
-        return 0 if backend.installation_phase.startup?
-        return 1 if backend.installation_phase.config?
-        return 2 if backend.installation_phase.install?
+        return STARTUP_PHASE if backend.installation_phase.startup?
+        return CONFIG_PHASE if backend.installation_phase.config?
+        return INSTALL_PHASE if backend.installation_phase.install?
       end
 
       # Name of the services that are currently busy
       #
       # @return [Array<String>]
       def busy_services
-        backend.service_status_recorder.busy_services
+        backend.busy_services
       end
 
     private
@@ -109,7 +113,7 @@ module DInstaller
             { "CurrentInstallationPhase" => current_installation_phase }, [])
         end
 
-        backend.service_status_recorder.on_service_status_change do
+        backend.on_services_status_change do
           dbus_properties_changed(MANAGER_INTERFACE, { "BusyServices" => busy_services }, [])
         end
       end

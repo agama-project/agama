@@ -32,8 +32,8 @@ describe DInstaller::DBus::Manager do
 
   let(:backend) do
     instance_double(DInstaller::Manager,
-      installation_phase:      installation_phase,
-      service_status_recorder: service_status_recorder)
+      installation_phase:        installation_phase,
+      on_services_status_change: nil)
   end
 
   let(:installation_phase) { DInstaller::InstallationPhase.new }
@@ -59,32 +59,30 @@ describe DInstaller::DBus::Manager do
     expect(subject.intfs.keys).to include(service_status_interface)
   end
 
-  it "configures callbacks for changes in the installation phase" do
-    expect(subject).to receive(:dbus_properties_changed) do |iface, properties, _|
-      expect(iface).to match(/DInstaller\.Manager1/)
-      expect(properties["CurrentInstallationPhase"]).to eq(0)
+  describe "#new" do
+    it "configures callbacks for changes in the installation phase" do
+      expect(subject).to receive(:dbus_properties_changed) do |iface, properties, _|
+        expect(iface).to match(/DInstaller\.Manager1/)
+        expect(properties["CurrentInstallationPhase"]).to eq(0)
+      end
+
+      installation_phase.startup
     end
 
-    installation_phase.startup
-  end
-
-  it "configures callbacks for changes in the status of other services" do
-    expect(subject).to receive(:dbus_properties_changed) do |iface, properties, _|
-      expect(iface).to match(/DInstaller\.Manager1/)
-      expect(properties["BusyServices"]).to contain_exactly("org.opensuse.DInstaller.Users")
+    it "configures callbacks for changes in the status of other services" do
+      expect(backend).to receive(:on_services_status_change)
+      subject
     end
 
-    service_status_recorder.save("org.opensuse.DInstaller.Users", busy)
-  end
+    it "configures callbacks from Progress interface" do
+      expect_any_instance_of(described_class).to receive(:register_progress_callbacks)
+      subject
+    end
 
-  it "configures callbacks from Progress interface" do
-    expect_any_instance_of(described_class).to receive(:register_progress_callbacks)
-    subject
-  end
-
-  it "configures callbacks from ServiceStatus interface" do
-    expect_any_instance_of(described_class).to receive(:register_service_status_callbacks)
-    subject
+    it "configures callbacks from ServiceStatus interface" do
+      expect_any_instance_of(described_class).to receive(:register_service_status_callbacks)
+      subject
+    end
   end
 
   describe "#config_phase" do
@@ -115,17 +113,17 @@ describe DInstaller::DBus::Manager do
 
     it "associates 'startup' with the id 0" do
       startup = subject.installation_phases.find { |i| i["label"] == "startup" }
-      expect(startup["id"]).to eq(0)
+      expect(startup["id"]).to eq(described_class::STARTUP_PHASE)
     end
 
     it "associates 'config' with the id 1" do
       config = subject.installation_phases.find { |i| i["label"] == "config" }
-      expect(config["id"]).to eq(1)
+      expect(config["id"]).to eq(described_class::CONFIG_PHASE)
     end
 
     it "associates 'install' with the id 2" do
       install = subject.installation_phases.find { |i| i["label"] == "install" }
-      expect(install["id"]).to eq(2)
+      expect(install["id"]).to eq(described_class::INSTALL_PHASE)
     end
   end
 
@@ -135,8 +133,8 @@ describe DInstaller::DBus::Manager do
         installation_phase.startup
       end
 
-      it "returns 0" do
-        expect(subject.current_installation_phase).to eq(0)
+      it "returns the startup phase vale" do
+        expect(subject.current_installation_phase).to eq(described_class::STARTUP_PHASE)
       end
     end
 
@@ -145,8 +143,8 @@ describe DInstaller::DBus::Manager do
         installation_phase.config
       end
 
-      it "returns 1" do
-        expect(subject.current_installation_phase).to eq(1)
+      it "returns the config phase value" do
+        expect(subject.current_installation_phase).to eq(described_class::CONFIG_PHASE)
       end
     end
 
@@ -155,16 +153,15 @@ describe DInstaller::DBus::Manager do
         installation_phase.install
       end
 
-      it "returns 2" do
-        expect(subject.current_installation_phase).to eq(2)
+      it "returns the install phase value" do
+        expect(subject.current_installation_phase).to eq(described_class::INSTALL_PHASE)
       end
     end
   end
 
   describe "#busy_services" do
     before do
-      service_status_recorder.save("org.opensuse.DInstaller.Users", busy)
-      service_status_recorder.save("org.opensuse.DInstaller.Software", idle)
+      allow(backend).to receive(:busy_services).and_return(["org.opensuse.DInstaller.Users"])
     end
 
     it "returns the names of the busy services" do

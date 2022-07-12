@@ -34,7 +34,7 @@ module DInstaller
         #
         # @see Interfaces::ServiceStatus
         #
-        # @return [String]
+        # @return [ServiceStatus::IDLE, ServiceStatus::BUSY]
         def service_status
           dbus_status = dbus_object[Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE]["Current"]
           to_service_status(dbus_status)
@@ -46,7 +46,7 @@ module DInstaller
         #   the previous one.
         #
         # @param callback [Proc]
-        # @yieldparam service_status [String]
+        # @yieldparam service_status [ServiceStatus::IDLE, ServiceStatus::BUSY]
         def on_service_status_change(&callback)
           @on_service_status_change_callbacks ||= []
           @on_service_status_change_callbacks << callback
@@ -65,12 +65,12 @@ module DInstaller
         # Converts the D-Bus status value to the equivalent service status value
         #
         # @param dbus_status [Integer]
-        # @return [String]
+        # @return [ServiceStatus::IDLE, ServiceStatus::BUSY]
         def to_service_status(dbus_status)
           case dbus_status
-          when 0
+          when Interfaces::ServiceStatus::SERVICE_STATUS_IDLE
             ServiceStatus::IDLE
-          when 1
+          when Interfaces::ServiceStatus::SERVICE_STATUS_BUSY
             ServiceStatus::BUSY
           end
         end

@@ -22,6 +22,7 @@
 require_relative "../../../test_helper"
 require "dinstaller/dbus/clients/users"
 require "dinstaller/dbus/service_status"
+require "dinstaller/dbus/interfaces/service_status"
 require "dbus"
 
 describe DInstaller::DBus::Clients::Users do
@@ -47,7 +48,8 @@ describe DInstaller::DBus::Clients::Users do
 
   describe "#service_status" do
     before do
-      allow(service_status_iface).to receive(:[]).with("Current").and_return(1)
+      allow(service_status_iface).to receive(:[]).with("Current")
+        .and_return(DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_BUSY)
     end
 
     it "returns the value of the service status" do

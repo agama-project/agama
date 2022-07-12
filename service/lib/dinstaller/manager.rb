@@ -55,9 +55,6 @@ module DInstaller
     # @return [InstallationPhase]
     attr_reader :installation_phase
 
-    # @return [ServiceStatusRecorder]
-    attr_reader :service_status_recorder
-
     # Constructor
     #
     # @param logger [Logger]
@@ -82,6 +79,8 @@ module DInstaller
       end
 
       probe_single_product unless config.multi_product?
+
+      logger.info("Startup phase done")
     end
 
     # Runs the config phase
@@ -91,6 +90,8 @@ module DInstaller
       storage.probe(questions_manager)
       security.probe
       network.probe
+
+      logger.info("Config phase done")
     rescue StandardError => e
       logger.error "Startup error: #{e.inspect}. Backtrace: #{e.backtrace}"
       # TODO: report errors
@@ -142,6 +143,8 @@ module DInstaller
 
         progress.step("Finishing installation") { finish_installation }
       end
+
+      logger.info("Install phase done")
     end
     # rubocop:enable Metrics/AbcSize
 
@@ -195,9 +198,28 @@ module DInstaller
       @security ||= Security.new(logger, config)
     end
 
+    # Name of busy services
+    #
+    # @see ServiceStatusRecorder
+    #
+    # @return [Array<String>]
+    def busy_services
+      service_status_recorder.busy_services
+    end
+
+    # Registers a callback to be called when the status of a service changes
+    #
+    # @see ServiceStatusRecorder
+    def on_services_status_change(&block)
+      service_status_recorder.on_service_status_change(&block)
+    end
+
   private
 
     attr_reader :config
+
+    # @return [ServiceStatusRecorder]
+    attr_reader :service_status_recorder
 
     # Performs required steps after installing the system
     #

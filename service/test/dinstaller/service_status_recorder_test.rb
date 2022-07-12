@@ -74,7 +74,7 @@ describe DInstaller::ServiceStatusRecorder do
       subject.save("org.opensuse.DInstaller.Test3", busy)
     end
 
-    it "returns the names of the busy services" do
+    it "returns the name of the busy services" do
       expect(subject.busy_services).to contain_exactly(
         "org.opensuse.DInstaller.Test1",
         "org.opensuse.DInstaller.Test3"
