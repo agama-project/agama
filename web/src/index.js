@@ -44,6 +44,7 @@ import Overview from "./Overview";
  * the overrides will be correctly in the end of our stylesheet.
  */
 import "./patternfly.scss";
+import "./app.scss";
 
 const client = createClient();
 
