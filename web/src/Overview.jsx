@@ -102,7 +102,7 @@ function Overview() {
     <Category key="language" title="Language" icon={LanguagesSelectionIcon}>
       <LanguageSelector />
     </Category>,
-    <Category key="targer" title="Target" icon={HardDriveIcon}>
+    <Category key="target" title="Storage" icon={HardDriveIcon}>
       <Storage />
     </Category>,
     <Category key="users" title="Users" icon={UsersIcon}>
