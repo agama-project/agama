@@ -24,6 +24,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import Overview from "./Overview";
 import { createClient } from "./client";
+import { IDLE } from "./client/status";
 
 jest.mock("./client");
 jest.mock("react-router-dom", () => ({
@@ -69,7 +70,9 @@ beforeEach(() => {
         getStorageProposal: () => Promise.resolve(proposal),
         getStorageActions: () => Promise.resolve(actions),
         onActionsChange: jest.fn(),
-        onStorageProposalChange: jest.fn()
+        onStorageProposalChange: jest.fn(),
+        getStatus: () => Promise.resolve(IDLE),
+        onStatusChange: () => jest.fn()
       },
       language: {
         getLanguages: () => Promise.resolve(languages),
@@ -80,7 +83,9 @@ beforeEach(() => {
         onProductChange: jest.fn()
       },
       manager: {
-        startInstallation: startInstallationFn
+        startInstallation: startInstallationFn,
+        getStatus: () => Promise.resolve(IDLE),
+        onStatusChange: () => jest.fn()
       },
       network: {
         config: () => Promise.resolve(ipData)
