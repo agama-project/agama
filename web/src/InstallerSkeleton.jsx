@@ -30,10 +30,10 @@ const InstallerSkeleton = ({ lines = 2, ...props }) => (
     return (
       <Skeleton
         className="installer-skeleton"
-        key={i}
         screenreaderText="Waiting..."
         fontSize="sm"
         {...props}
+        key={i}
         width={`${width}%`}
       />
     );
