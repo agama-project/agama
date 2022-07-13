@@ -122,7 +122,7 @@ const withProgress = (object_path) => {
     },
 
     /**
-     * Register a callback to run when the status changes
+     * Register a callback to run when the progress changes
      *
      * @param {function} handler - callback function
      * @return {function} function to disable the callback
