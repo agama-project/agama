@@ -111,6 +111,20 @@ export default function Storage() {
     });
   }, [client.storage]);
 
+  // FIXME: this useEffect should be removed after moving storage to its own service.
+  useEffect(() => {
+    client.manager.getStatus().then(status => {
+      dispatch({ type: "CHANGE_STATUS", payload: status });
+    });
+  }, [client.manager]);
+
+  // FIXME: this useEffect should be removed after moving storage to its own service.
+  useEffect(() => {
+    return client.manager.onStatusChange(status => {
+      dispatch({ type: "CHANGE_STATUS", payload: status });
+    });
+  }, [client.manager]);
+
   const errorMessage = `Cannot make a proposal for ${target}`;
 
   if (state.status === BUSY || target === undefined) {
