@@ -26,6 +26,9 @@ import { Outlet } from "react-router-dom";
 import { STARTUP, INSTALL } from "./client/phase";
 import { BUSY } from "./client/status";
 
+import Layout, { Title, AdditionalInfo } from "./Layout";
+import About from "./About";
+import TargetIpsPopup from "./TargetIpsPopup";
 import DBusError from "./DBusError";
 import InstallationProgress from "./InstallationProgress";
 import InstallationFinished from "./InstallationFinished";
@@ -60,15 +63,29 @@ function App() {
     return client.monitor.onDisconnect(setError);
   }, [client.monitor, setError]);
 
-  if (error) return <DBusError />;
-  if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
-    return <LoadingEnvironment />;
-  }
-  if (phase === INSTALL) {
-    return (status === BUSY) ? <InstallationProgress /> : <InstallationFinished />;
-  }
+  const Content = () => {
+    if (error) return <DBusError />;
 
-  return <Outlet />;
+    if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
+      return <LoadingEnvironment />;
+    }
+
+    if (phase === INSTALL) {
+      return (status === BUSY) ? <InstallationProgress /> : <InstallationFinished />;
+    }
+    return <Outlet />;
+  };
+
+  return (
+    <Layout>
+      <Title>D-Installer</Title>
+      <Content />
+      <AdditionalInfo>
+        <About />
+        <TargetIpsPopup />
+      </AdditionalInfo>
+    </Layout>
+  );
 }
 
 export default App;
