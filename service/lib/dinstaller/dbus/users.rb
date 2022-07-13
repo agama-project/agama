@@ -105,7 +105,7 @@ module DInstaller
         dbus_method :Write, "out result:u" do
           logger.info "Writting users"
 
-          backend.write(nil) # TODO: progress?
+          backend.write
           0
         end
       end

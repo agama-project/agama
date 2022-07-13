@@ -21,10 +21,12 @@
 
 import React, { useReducer, useEffect } from "react";
 import { useInstallerClient } from "./context/installer";
+import { BUSY } from "./client/status";
 
 import { Alert } from "@patternfly/react-core";
 import TargetSelector from "./TargetSelector";
 import Proposal from "./Proposal";
+import InstallerSkeleton from "./InstallerSkeleton";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -42,6 +44,10 @@ const reducer = (state, action) => {
       return { ...state, actions: action.payload };
     }
 
+    case "CHANGE_STATUS": {
+      return { ...state, status: action.payload };
+    }
+
     default: {
       return state;
     }
@@ -52,7 +58,7 @@ export default function Storage() {
   const client = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, {
     targets: [],
-    target: "",
+    target: undefined,
     actions: [],
     error: false
   });
@@ -93,7 +99,39 @@ export default function Storage() {
     });
   }, [client.storage]);
 
+  useEffect(() => {
+    client.storage.getStatus().then(status => {
+      dispatch({ type: "CHANGE_STATUS", payload: status });
+    });
+  }, [client.storage]);
+
+  useEffect(() => {
+    return client.storage.onStatusChange(status => {
+      dispatch({ type: "CHANGE_STATUS", payload: status });
+    });
+  }, [client.storage]);
+
+  // FIXME: this useEffect should be removed after moving storage to its own service.
+  useEffect(() => {
+    client.manager.getStatus().then(status => {
+      dispatch({ type: "CHANGE_STATUS", payload: status });
+    });
+  }, [client.manager]);
+
+  // FIXME: this useEffect should be removed after moving storage to its own service.
+  useEffect(() => {
+    return client.manager.onStatusChange(status => {
+      dispatch({ type: "CHANGE_STATUS", payload: status });
+    });
+  }, [client.manager]);
+
   const errorMessage = `Cannot make a proposal for ${target}`;
+
+  if (state.status === BUSY || target === undefined) {
+    return (
+      <InstallerSkeleton lines={3} />
+    );
+  }
 
   return (
     <>

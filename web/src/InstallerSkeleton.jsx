@@ -20,24 +20,24 @@
  */
 
 import React from "react";
+import { Skeleton } from "@patternfly/react-core";
 
-import { screen } from "@testing-library/react";
-import { installerRender } from "./test-utils";
+const MAX = 100;
 
-import ProbingProgress from "./ProbingProgress";
+const InstallerSkeleton = ({ lines = 2, ...props }) => (
+  [...Array(lines)].map((_, i) => {
+    const width = Math.floor(Math.random() * MAX);
+    return (
+      <Skeleton
+        className="installer-skeleton"
+        screenreaderText="Waiting..."
+        fontSize="sm"
+        {...props}
+        key={i}
+        width={`${width}%`}
+      />
+    );
+  })
+);
 
-jest.mock("./ProgressReport", () => () => "ProgressReport Mock");
-
-describe("ProbingProgress", () => {
-  it("uses 'Probing' as title", async () => {
-    installerRender(<ProbingProgress />);
-
-    await screen.findByText("Probing");
-  });
-
-  it("renders progress report", async () => {
-    installerRender(<ProbingProgress />);
-
-    await screen.findByText("ProgressReport Mock");
-  });
-});
+export default InstallerSkeleton;

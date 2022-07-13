@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { applyMixin, withDBus } from "./mixins";
+import { applyMixin, withDBus, withStatus, withProgress } from "./mixins";
 import cockpit from "../lib/cockpit";
 
 const SOFTWARE_SERVICE = "org.opensuse.DInstaller.Software";
@@ -74,7 +74,7 @@ class SoftwareClient {
    * @param {function} handler - callback function
    */
   onProductChange(handler) {
-    return this.onObjectChanged(SOFTWARE_PATH, changes => {
+    return this.onObjectChanged(SOFTWARE_PATH, SOFTWARE_IFACE, changes => {
       if ("SelectedBaseProduct" in changes) {
         const selected = changes.SelectedBaseProduct.v;
         handler(selected);
@@ -83,5 +83,7 @@ class SoftwareClient {
   }
 }
 
-applyMixin(SoftwareClient, withDBus);
+applyMixin(
+  SoftwareClient, withDBus, withStatus(SOFTWARE_PATH), withProgress(SOFTWARE_PATH)
+);
 export default SoftwareClient;

@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { applyMixin, withDBus } from "./mixins";
+import { applyMixin, withDBus, withStatus, withProgress } from "./mixins";
 import cockpit from "../lib/cockpit";
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
@@ -64,32 +64,22 @@ class ManagerClient {
    *
    * @return {Promise.<number>}
    */
-  async getStatus() {
+  async getPhase() {
     const proxy = await this.proxy(MANAGER_IFACE);
-    return proxy.Status;
+    return proxy.CurrentInstallationPhase;
   }
 
   /**
-   * Register a callback to run when properties in the Manager object change
-   *
-   * Additionally, this method handles the conversion of the values coming
-   * from the {cockpit} module.
+   * Register a callback to run when the "CurrentInstallationPhase" changes
    *
    * @param {function} handler - callback function
+   * @return {function} function to disable callback
    */
-  onChange(handler) {
-    return this.onObjectChanged(MANAGER_PATH, (changes, invalid) => {
-      const data = {};
-
-      if ("Status" in changes) {
-        data.Status = changes.Status.v;
+  onPhaseChange(handler) {
+    return this.onObjectChanged(MANAGER_PATH, MANAGER_IFACE, (changes) => {
+      if ("CurrentInstallationPhase" in changes) {
+        handler(changes.CurrentInstallationPhase.v);
       }
-
-      if ("Progress" in changes) {
-        data.Progress = changes.Progress.v.map(p => p.v);
-      }
-
-      handler(data, invalid);
     });
   }
 
@@ -103,5 +93,7 @@ class ManagerClient {
   }
 }
 
-applyMixin(ManagerClient, withDBus);
+applyMixin(
+  ManagerClient, withDBus, withStatus(MANAGER_PATH), withProgress(MANAGER_PATH)
+);
 export default ManagerClient;

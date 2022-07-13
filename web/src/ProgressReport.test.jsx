@@ -30,19 +30,23 @@ import ProgressReport from "./ProgressReport";
 jest.mock("./client");
 
 let callbacks;
-let onChangeFn = jest.fn();
+let onManagerProgressChange = jest.fn();
+let onSoftwareProgressChange = jest.fn();
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       manager: {
-        onChange: onChangeFn
+        onProgressChange: onManagerProgressChange
+      },
+      software: {
+        onProgressChange: onSoftwareProgressChange
       }
     };
   });
 });
 
-describe("ProbingProgress", () => {
+describe("ProgressReport", () => {
   // TODO: complete testing where the substep bar must be shown
 
   describe("when there is not progress information available", () => {
@@ -52,82 +56,71 @@ describe("ProbingProgress", () => {
       await screen.findByText(/Waiting for/i);
     });
 
-    it("does not show progress bars", async () => {
+    it("does not show progress bars", () => {
       installerRender(<ProgressReport />);
 
-      const mainProgressBar = await screen.queryByLabelText("Main progress bar");
+      const mainProgressBar = screen.queryByLabelText("Main progress bar");
       expect(mainProgressBar).toBeNull();
     });
   });
 
   describe("when there is progress information available", () => {
     beforeEach(() => {
-      callbacks = [];
-      onChangeFn = cb => callbacks.push(cb);
+      callbacks = { manager: [], software: [] };
+      onManagerProgressChange = cb => callbacks.manager.push(cb);
+      onSoftwareProgressChange = cb => callbacks.software.push(cb);
     });
 
-    describe("without substeps", () => {
-      it("shows main progress bar", async () => {
-        installerRender(<ProgressReport />);
+    it("shows the main progress bar", async () => {
+      installerRender(<ProgressReport />);
 
-        await screen.findByText(/Waiting/i);
+      await screen.findByText(/Waiting/i);
 
-        // NOTE: there can be more than one susbcriptions to the
-        // manager#onChange. We're insterested in the latest one here.
-        const cb = callbacks[callbacks.length - 1];
-        act(() => {
-          cb({ Progress: ["Mock progress", 2, 1, 0, 0] });
-        });
-
-        await screen.findByLabelText("Main progress bar");
+      // NOTE: there can be more than one susbcriptions to the
+      // manager#onProgressChange. We're interested in the latest one here.
+      const cb = callbacks.manager[callbacks.manager.length - 1];
+      act(() => {
+        cb({ message: "Partitioning", current: 1, total: 10 });
       });
 
-      it("does not show secondary progress bar", async () => {
-        installerRender(<ProgressReport />);
-
-        await screen.findByText(/Waiting/i);
-
-        // NOTE: there can be more than one susbcriptions to the
-        // manager#onChange. We're insterested in the latest one here.
-        const cb = callbacks[callbacks.length - 1];
-        act(() => {
-          cb({ Progress: ["Mock progress", 2, 1, 0, 0] });
-        });
-
-        const secondaryProgressBar = await screen.queryByLabelText("Secondary progress bar");
-        expect(secondaryProgressBar).toBeNull();
-      });
+      await screen.findByLabelText("Partitioning");
+      await screen.findByText("1 of 10");
     });
 
-    describe("with substeps", () => {
-      it("shows main progress bar", async () => {
-        installerRender(<ProgressReport />);
+    it("does not show secondary progress bar", async () => {
+      installerRender(<ProgressReport />);
 
-        await screen.findByText(/Waiting/i);
+      await screen.findByText(/Waiting/i);
 
-        // NOTE: there can be more than one susbcriptions to the
-        // manager#onChange. We're insterested in the latest one here.
-        const cb = callbacks[callbacks.length - 1];
-        act(() => {
-          cb({ Progress: ["Mock progress", 2, 1, 4, 2] });
-        });
-
-        await screen.findByLabelText("Main progress bar");
+      const cb = callbacks.manager[callbacks.manager.length - 1];
+      act(() => {
+        cb({ message: "Partitioning", current: 1, total: 10 });
       });
 
-      it("shows secondary progress bar", async () => {
+      const bars = screen.queryAllByRole("progressbar");
+      expect(bars.length).toEqual(1);
+    });
+
+    describe("when there is progress information from the software service", () => {
+      it("shows the secondary progress bar", async () => {
         installerRender(<ProgressReport />);
 
         await screen.findByText(/Waiting/i);
 
         // NOTE: there can be more than one susbcriptions to the
         // manager#onChange. We're insterested in the latest one here.
-        const cb = callbacks[callbacks.length - 1];
+        const cb0 = callbacks.manager[callbacks.manager.length - 1];
         act(() => {
-          cb({ Progress: ["Mock progress", 2, 1, 4, 2] });
+          cb0({ message: "Installing software", current: 4, total: 10 });
         });
 
-        await screen.findByLabelText("Secondary progress bar");
+        const cb1 = callbacks.software[callbacks.software.length - 1];
+        act(() => {
+          cb1({ message: "Installing YaST2", current: 256, total: 500, finished: false });
+        });
+
+        const bars = screen.queryAllByRole("progressbar");
+        expect(bars.length).toEqual(2);
       });
     });
   });

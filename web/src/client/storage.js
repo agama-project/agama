@@ -20,7 +20,7 @@
  */
 
 import cockpit from "../lib/cockpit";
-import { applyMixin, withDBus } from "./mixins";
+import { applyMixin, withDBus, withStatus } from "./mixins";
 
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_PROPOSAL_PATH = "/org/opensuse/DInstaller/Storage/Proposal1";
@@ -75,7 +75,7 @@ class StorageClient {
    * @param {function} handler - callback function
    */
   onActionsChange(handler) {
-    return this.onObjectChanged(STORAGE_PROPOSAL_PATH, changes => {
+    return this.onObjectChanged(STORAGE_PROPOSAL_PATH, STORAGE_PROPOSAL_IFACE, changes => {
       const { Actions: actions } = changes;
       if (actions !== undefined) {
         const newActions = actions.v.map(action => {
@@ -93,12 +93,12 @@ class StorageClient {
    * @param {function} handler - callback function
    */
   onStorageProposalChange(handler) {
-    return this.onObjectChanged(STORAGE_PROPOSAL_PATH, changes => {
+    return this.onObjectChanged(STORAGE_PROPOSAL_PATH, STORAGE_PROPOSAL_IFACE, changes => {
       const [selected] = changes.CandidateDevices.v;
-      handler(selected.v);
+      handler(selected);
     });
   }
 }
 
-applyMixin(StorageClient, withDBus);
+applyMixin(StorageClient, withDBus, withStatus(STORAGE_PROPOSAL_PATH));
 export default StorageClient;

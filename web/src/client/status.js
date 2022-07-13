@@ -19,16 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-export const ERROR = 0;
-export const PROBING = 1;
-export const PROBED = 2;
-export const INSTALLING = 3;
-export const INSTALLED = 4;
+export const IDLE = 0;
+export const BUSY = 1;
 
 export default {
-  ERROR,
-  PROBING,
-  PROBED,
-  INSTALLING,
-  INSTALLED
+  BUSY,
+  IDLE
 };
