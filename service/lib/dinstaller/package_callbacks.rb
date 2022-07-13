@@ -28,28 +28,27 @@ module DInstaller
   # This class represents the installer status
   class PackageCallbacks
     class << self
-      def setup(progress, pkg_count)
-        new(progress, pkg_count).setup
+      def setup(pkg_count, progress)
+        new(pkg_count, progress).setup
       end
     end
 
-    attr_reader :progress
-
-    def initialize(progress, pkg_count)
-      @progress = progress
+    def initialize(pkg_count, progress)
       @total = pkg_count
       @installed = 0
+      @progress = progress
     end
 
     def setup
       Yast::Pkg.CallbackDonePackage(
         fun_ref(method(:package_installed), "string (integer, string)")
       )
-
-      @progress.init_progress(@total, msg)
     end
 
   private
+
+    # @return [DInstaller::Progress]
+    attr_reader :progress
 
     def fun_ref(method, signature)
       Yast::FunRef.new(method, signature)
@@ -58,7 +57,7 @@ module DInstaller
     # TODO: error handling
     def package_installed(_error, _reason)
       @installed += 1
-      @progress.next_step(msg)
+      progress.step(msg)
 
       ""
     end

@@ -21,6 +21,8 @@
 
 require_relative "../../../test_helper"
 require "dinstaller/dbus/clients/software"
+require "dinstaller/dbus/service_status"
+require "dinstaller/dbus/interfaces/service_status"
 require "dbus"
 
 describe DInstaller::DBus::Clients::Software do
@@ -32,6 +34,8 @@ describe DInstaller::DBus::Clients::Software do
     allow(dbus_object).to receive(:introspect)
     allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Software1")
       .and_return(software_iface)
+    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.ServiceStatus1")
+      .and_return(service_status_iface)
 
     allow(service).to receive(:object).with("/org/opensuse/DInstaller/Software/Proposal1")
       .and_return(dbus_proposal)
@@ -42,16 +46,18 @@ describe DInstaller::DBus::Clients::Software do
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:dbus_proposal) { instance_double(::DBus::ProxyObject, introspect: nil) }
   let(:software_iface) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:service_status_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
   subject { described_class.new }
 
-  describe "#status" do
+  describe "#service_status" do
     before do
-      allow(software_iface).to receive(:[]).with("Status").and_return(2)
+      allow(service_status_iface).to receive(:[]).with("Current")
+        .and_return(DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_BUSY)
     end
 
-    it "returns the status of the service" do
-      expect(subject.status).to eq(DInstaller::Status::Probed.new)
+    it "returns the value of the service status" do
+      expect(subject.service_status).to eq(DInstaller::DBus::ServiceStatus::BUSY)
     end
   end
 
@@ -113,16 +119,16 @@ describe DInstaller::DBus::Clients::Software do
         subject.probe(&callback)
       end
     end
+  end
 
-    describe "#provisions_selected" do
-      let(:dbus_object) { double(::DBus::ProxyObject) }
+  describe "#provisions_selected" do
+    let(:dbus_object) { double(::DBus::ProxyObject) }
 
-      it "returns true/false for every tag given" do
-        expect(dbus_object).to receive(:ProvisionsSelected)
-          .with(["sddm", "gdm"]).and_return([true, false])
-        expect(subject.provisions_selected?(["sddm", "gdm"]))
-          .to eq([true, false])
-      end
+    it "returns true/false for every tag given" do
+      expect(dbus_object).to receive(:ProvisionsSelected)
+        .with(["sddm", "gdm"]).and_return([true, false])
+      expect(subject.provisions_selected?(["sddm", "gdm"]))
+        .to eq([true, false])
     end
   end
 end

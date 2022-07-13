@@ -20,13 +20,15 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "dinstaller/status_manager"
+require "dinstaller/dbus/clients/with_service_status"
 
 module DInstaller
   module DBus
     module Clients
       # D-Bus client for software configuration
       class Software
+        include WithServiceStatus
+
         TYPES = [:package, :pattern].freeze
         private_constant :TYPES
 
@@ -38,11 +40,9 @@ module DInstaller
           @dbus_proposal.introspect
         end
 
-        # Current status of the service
-        #
-        # @return [Status]
-        def status
-          Status.create(dbus_object["org.opensuse.DInstaller.Software1"]["Status"])
+        # @return [::DBus::Service]
+        def service
+          @service ||= bus.service("org.opensuse.DInstaller.Software")
         end
 
         # Available products for the installation
@@ -157,12 +157,20 @@ module DInstaller
 
         # Registers a callback to run when the product changes
         #
+        # @note Signal subscription is done only once. Otherwise, the latest subscription overrides
+        #   the previous one.
+        #
         # @param callback [Proc] Callback to run when a product is selected
         def on_product_selected(&callback)
+          @on_product_selected_callbacks ||= []
+          @on_product_selected_callbacks << callback
+
+          return if @on_product_selected_callbacks.size > 1
+
           dbus_properties = @dbus_object["org.freedesktop.DBus.Properties"]
           dbus_properties.on_signal("PropertiesChanged") do |_, changes, _|
             base_product = changes["SelectedBaseProduct"]
-            callback.call(base_product) unless base_product.nil?
+            @on_product_selected_callbacks.each { |c| c.call(base_product) } if !base_product.nil?
           end
         end
 
@@ -173,11 +181,6 @@ module DInstaller
 
         # @return [::DBus::Object]
         attr_reader :dbus_object
-
-        # @return [::DBus::Service]
-        def service
-          @service ||= bus.service("org.opensuse.DInstaller.Software")
-        end
 
         def bus
           @bus ||= ::DBus::SystemBus.instance

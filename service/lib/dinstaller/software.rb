@@ -23,8 +23,7 @@ require "yast"
 require "fileutils"
 require "dinstaller/package_callbacks"
 require "dinstaller/config"
-require "dinstaller/status_manager"
-require "dinstaller/progress"
+require "dinstaller/with_progress"
 require "y2packager/product"
 
 Yast.import "PackageInstallation"
@@ -35,11 +34,10 @@ Yast.import "Stage"
 module DInstaller
   # This class is responsible for software handling
   class Software
+    include WithProgress
+
     GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
     private_constant :GPG_KEYS_GLOB
-
-    # @return [StatusManager]
-    attr_reader :status_manager
 
     attr_reader :product
 
@@ -48,13 +46,9 @@ module DInstaller
     #   additional information in a hash
     attr_reader :products
 
-    # @return [Progress]
-    attr_reader :progress
-
     def initialize(config, logger)
       @config = config
       @logger = logger
-      @status_manager = StatusManager.new(Status::Error.new) # temporary status until probing starts
       @products = @config.data["products"]
       if @config.multi_product?
         @product = nil
@@ -62,7 +56,6 @@ module DInstaller
         @product = @products.keys.first # use the available product as default
         @config.pick_product(@product)
       end
-      @progress = Progress.new
     end
 
     def select_product(name)
@@ -75,26 +68,22 @@ module DInstaller
 
     def probe
       logger.info "Probing software"
-      status_manager.change(Status::Probing.new)
 
       store_original_repos
       Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false, "onlyRequires" => true)
 
       # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
       Yast::Stage.Set("normal")
-      progress.init_progress(3, "Initialize target repositories")
-      initialize_target_repos
 
-      progress.next_step("Initialize sources")
-      add_base_repo
+      start_progress(3)
+      progress.step("Initialize target repositories") { initialize_target_repos }
+      progress.step("Initialize sources") { add_base_repo }
+      progress.step("Making the initial proposal") do
+        proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
+        logger.info "proposal #{proposal["raw_proposal"]}"
+      end
 
-      progress.next_step("Making the initial proposal")
-      proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
-      logger.info "proposal #{proposal["raw_proposal"]}"
-      progress.next_step("Software probing finished")
       Yast::Stage.Set("initial")
-
-      status_manager.change(Status::Probed.new)
     end
 
     def initialize_target_repos
@@ -102,11 +91,7 @@ module DInstaller
       import_gpg_keys
     end
 
-    # @note The status is set to installing. The status will keep as installing until {#finish} is
-    #   called.
     def propose
-      status_manager.change(Status::Installing.new)
-
       Yast::Pkg.TargetFinish # ensure that previous target is closed
       Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
       Yast::Pkg.TargetLoad
@@ -123,7 +108,8 @@ module DInstaller
     end
 
     def install
-      PackageCallbacks.setup(progress, count_packages)
+      start_progress(count_packages)
+      PackageCallbacks.setup(count_packages, progress)
 
       # TODO: error handling
       commit_result = Yast::PackageInstallation.Commit({})
@@ -137,17 +123,14 @@ module DInstaller
     end
 
     # Writes the repositories information to the installed system
-    #
-    # @note Sets the status to installed.
     def finish
-      progress.init_progress(1, "Writing repositories to the target system")
-      Yast::Pkg.SourceSaveAll
-      Yast::Pkg.TargetFinish
-      Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
-      progress.next_step("Restoring original repositories")
-      restore_original_repos
-
-      status_manager.change(Status::Installed.new)
+      start_progress(2)
+      progress.step("Writing repositories to the target system") do
+        Yast::Pkg.SourceSaveAll
+        Yast::Pkg.TargetFinish
+        Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
+      end
+      progress.step("Restoring original repositories") { restore_original_repos }
     end
 
     # Determine whether the given tag is provided by the selected packages

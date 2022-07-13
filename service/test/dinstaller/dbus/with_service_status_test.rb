@@ -20,31 +20,33 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
-require "dinstaller/dbus/interfaces/service_status"
-require "dinstaller/dbus/users"
-require "dinstaller/users"
+require "dinstaller/dbus/with_service_status"
 
-describe DInstaller::DBus::Users do
-  subject { described_class.new(backend, logger) }
+class WithServiceStatusTest
+  include DInstaller::DBus::WithServiceStatus
+end
 
+describe WithServiceStatusTest do
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:backend) { instance_double(DInstaller::Users) }
-
-  let(:service_status_interface) do
-    DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
+  describe "#service_status" do
+    it "returns a service status" do
+      expect(subject.service_status).to be_a(DInstaller::DBus::ServiceStatus)
+    end
   end
 
-  before do
-    allow_any_instance_of(described_class).to receive(:register_service_status_callbacks)
-  end
+  describe "#busy_while" do
+    it "runs the given block, setting the service status as busy meanwhile" do
+      expect(subject.service_status).to receive(:busy)
+      expect(logger).to receive(:info).with(/running block/)
+      expect(subject.service_status).to receive(:idle)
 
-  it "defines ServiceStatus D-Bus interface" do
-    expect(subject.intfs.keys).to include(service_status_interface)
-  end
+      subject.busy_while { logger.info("running block") }
+    end
 
-  it "configures callbacks from ServiceStatus interface" do
-    expect_any_instance_of(described_class).to receive(:register_service_status_callbacks)
-    subject
+    it "returns the result of the block" do
+      result = subject.busy_while { "test" }
+      expect(result).to eq("test")
+    end
   end
 end

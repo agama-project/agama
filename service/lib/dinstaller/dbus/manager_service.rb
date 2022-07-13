@@ -61,13 +61,12 @@ module DInstaller
 
       # Initializes and exports the D-Bus API
       #
-      # * Set up the environment (Manager#setup)
-      # * Export the D-Bus API
+      # @note The service runs its startup phase
       def start
         setup_cockpit
-        manager.setup
         export
-        manager.progress.on_change { dispatch } # make single thread more responsive
+        manager.on_progress_change { dispatch } # make single thread more responsive
+        manager.startup_phase
       end
 
       # Exports the installer object through the D-Bus service

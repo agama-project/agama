@@ -21,29 +21,35 @@
 
 require "dbus"
 require "dinstaller/users"
+require "dinstaller/dbus/base_object"
+require "dinstaller/dbus/with_service_status"
+require "dinstaller/dbus/interfaces/service_status"
 
 module DInstaller
   module DBus
     # YaST D-Bus object (/org/opensuse/DInstaller/Users1)
-    #
-    # @see https://rubygems.org/gems/ruby-dbus
-    class Users < ::DBus::Object
+    class Users < BaseObject
+      include WithServiceStatus
+      include Interfaces::ServiceStatus
+
       PATH = "/org/opensuse/DInstaller/Users1"
       private_constant :PATH
 
+      # Constructor
+      #
+      # @param backend [DInstaller::Users]
+      # @param logger [Logger]
+      def initialize(backend, logger)
+        super(PATH, logger: logger)
+        @backend = backend
+        register_service_status_callbacks
+      end
+
       USERS_INTERFACE = "org.opensuse.DInstaller.Users1"
       private_constant :USERS_INTERFACE
+
       FUSER_SIG = "in FullName:s, in UserName:s, in Password:s, in AutoLogin:b, in data:a{sv}"
       private_constant :FUSER_SIG
-
-      def initialize(backend, logger)
-        @backend = backend
-        @logger = logger
-
-        register_status_callback
-
-        super(PATH)
-      end
 
       # rubocop:disable Metrics/BlockLength
       dbus_interface USERS_INTERFACE do
@@ -102,20 +108,6 @@ module DInstaller
           backend.write(nil) # TODO: progress?
           0
         end
-
-        # Current status
-        #
-        # TODO: these values come from the id of statuses, see {DInstaller::Status::Base}. This
-        #   D-Bus class should explicitly convert statuses to integer instead of relying on the id
-        #   value, which could change.
-        #
-        # Possible values:
-        #   0 : error
-        #   1 : probing
-        #   2 : probed
-        #   3 : installing
-        #   4 : installed
-        dbus_reader :status, "u"
       end
       # rubocop:enable Metrics/BlockLength
 
@@ -131,27 +123,10 @@ module DInstaller
         backend.root_password?
       end
 
-      # Id of the current status
-      #
-      # @return [Integer]
-      def status
-        backend.status_manager.status.id
-      end
-
     private
 
-      attr_reader :logger
-
+      # @return [DInstaller::Users]
       attr_reader :backend
-
-      # Registers callback to be called when the status changes
-      #
-      # The callback will emit a signal
-      def register_status_callback
-        backend.status_manager.on_change do
-          PropertiesChanged(USERS_INTERFACE, { "Status" => status }, [])
-        end
-      end
     end
   end
 end

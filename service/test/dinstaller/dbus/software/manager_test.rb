@@ -21,39 +21,83 @@
 
 require_relative "../../../test_helper"
 require "dinstaller/dbus/software/manager"
+require "dinstaller/dbus/interfaces/progress"
+require "dinstaller/dbus/interfaces/service_status"
 require "dinstaller/software"
-require "dinstaller/status_manager"
-require "dinstaller/progress"
 
 describe DInstaller::DBus::Software::Manager do
   subject { described_class.new(backend, logger) }
 
-  let(:backend) do
-    instance_double(DInstaller::Software, status_manager: status_manager, progress: progress)
+  let(:logger) { Logger.new($stdout, level: :warn) }
+
+  let(:backend) { instance_double(DInstaller::Software) }
+
+  let(:progress_interface) { DInstaller::DBus::Interfaces::Progress::PROGRESS_INTERFACE }
+
+  let(:service_status_interface) do
+    DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
   end
 
-  let(:logger) { Logger.new($stdout) }
+  before do
+    allow_any_instance_of(described_class).to receive(:register_progress_callbacks)
+    allow_any_instance_of(described_class).to receive(:register_service_status_callbacks)
+  end
 
-  let(:status_manager) { DInstaller::StatusManager.new(status) }
+  it "defines Progress D-Bus interface" do
+    expect(subject.intfs.keys).to include(progress_interface)
+  end
 
-  let(:status) { DInstaller::Status::Installing.new }
+  it "defines ServiceStatus D-Bus interface" do
+    expect(subject.intfs.keys).to include(service_status_interface)
+  end
 
-  let(:progress) { DInstaller::Progress.new }
+  it "configures callbacks from Progress interface" do
+    expect_any_instance_of(described_class).to receive(:register_progress_callbacks)
+    subject
+  end
 
-  it "configures callbacks for changes in the status" do
-    new_status = DInstaller::Status::Installed.new
+  it "configures callbacks from ServiceStatus interface" do
+    expect_any_instance_of(described_class).to receive(:register_service_status_callbacks)
+    subject
+  end
 
-    expect(subject).to receive(:PropertiesChanged) do |iface, properties, _|
-      expect(iface).to match(/Software1/)
-      expect(properties["Status"]).to eq(new_status.id)
+  describe "#probe" do
+    it "runs the probing, setting the service as busy meanwhile" do
+      expect(subject.service_status).to receive(:busy)
+      expect(backend).to receive(:probe)
+      expect(subject.service_status).to receive(:idle)
+
+      subject.probe
     end
-
-    status_manager.change(new_status)
   end
 
-  describe "#status" do
-    it "returns the id of its current status" do
-      expect(subject.status).to eq(status.id)
+  describe "#propose" do
+    it "calculates the proposal, setting the service as busy meanwhile" do
+      expect(subject.service_status).to receive(:busy)
+      expect(backend).to receive(:propose)
+      expect(subject.service_status).to receive(:idle)
+
+      subject.propose
+    end
+  end
+
+  describe "#install" do
+    it "installs the software, setting the service as busy meanwhile" do
+      expect(subject.service_status).to receive(:busy)
+      expect(backend).to receive(:install)
+      expect(subject.service_status).to receive(:idle)
+
+      subject.install
+    end
+  end
+
+  describe "#finish" do
+    it "finishes the software installation, setting the service as busy meanwhile" do
+      expect(subject.service_status).to receive(:busy)
+      expect(backend).to receive(:finish)
+      expect(subject.service_status).to receive(:idle)
+
+      subject.finish
     end
   end
 end

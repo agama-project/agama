@@ -20,27 +20,18 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require "dinstaller/progress"
 require "dinstaller/users"
 
 describe DInstaller::Users do
   subject(:storage) { described_class.new(logger) }
 
   let(:logger) { Logger.new($stdout) }
-  let(:progress) { DInstaller::Progress.new }
 
   let(:users_config) { Y2Users::Config.new }
 
   before do
     allow(Y2Users::ConfigManager.instance).to receive(:target)
       .and_return(users_config)
-  end
-
-  describe "#new" do
-    it "initializes the service as probed" do
-      users = described_class.new(logger)
-      expect(users.status_manager.status).to eq(DInstaller::Status::Probed.new)
-    end
   end
 
   describe "#assign_root_password" do
@@ -141,12 +132,6 @@ describe DInstaller::Users do
       allow(Yast::Execute).to receive(:locally!)
     end
 
-    it "sets the status to installing and installed" do
-      expect(subject.status_manager).to receive(:change).with(DInstaller::Status::Installing)
-      expect(subject.status_manager).to receive(:change).with(DInstaller::Status::Installed)
-      subject.write(progress)
-    end
-
     it "writes system and installer defined users" do
       subject.assign_first_user("Jane Doe", "jane", "12345", false, {})
 
@@ -157,7 +142,7 @@ describe DInstaller::Users do
       end
 
       expect(writer).to receive(:write).and_return([])
-      subject.write(progress)
+      subject.write
     end
 
     context "if some issue occurs" do
@@ -165,14 +150,14 @@ describe DInstaller::Users do
 
       it "logs the issue" do
         expect(logger).to receive(:error).with(/issue/)
-        subject.write(progress)
+        subject.write
       end
     end
 
     it "writes without /run bind mounted" do
       expect(Yast::Execute).to receive(:locally!).with(/umount/, anything)
 
-      subject.write(progress)
+      subject.write
     end
   end
 end

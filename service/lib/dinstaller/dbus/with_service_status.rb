@@ -19,35 +19,30 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "singleton"
-require "yast"
-require "y2network/proposal_settings"
-Yast.import "Lan"
+require "dinstaller/dbus/service_status"
 
 module DInstaller
-  # Backend class to handle network configuration
-  class Network
-    def initialize(logger)
-      @logger = logger
+  module DBus
+    # Mixin to be included by D-Bus objects that needs to register a service status
+    module WithServiceStatus
+      # Service status
+      #
+      # @return [ServiceStatus]
+      def service_status
+        @service_status ||= ServiceStatus.new.idle
+      end
+
+      # Sets the service status to busy meanwhile the given block is running
+      #
+      # @param block [Proc]
+      # @return [Object] the result of the given block
+      def busy_while(&block)
+        service_status.busy
+        result = block.call
+        service_status.idle
+
+        result
+      end
     end
-
-    # Probes the network configuration
-    def probe
-      logger.info "Probing network"
-      Yast::Lan.read_config
-      settings = Y2Network::ProposalSettings.instance
-      settings.refresh_packages
-      settings.apply_defaults
-    end
-
-    # Writes the network configuration to the installed system
-    def install
-      Yast::WFM.CallFunction("save_network", [])
-    end
-
-  private
-
-    # @return [Logger]
-    attr_reader :logger
   end
 end

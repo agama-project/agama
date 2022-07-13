@@ -65,11 +65,11 @@ module DInstaller
       @logger = logger
     end
 
-    def write(_progress)
+    def write
       config.save
     end
 
-    def probe(_progress)
+    def probe
       config.select(@config.data["security"]["lsm"])
     end
 
