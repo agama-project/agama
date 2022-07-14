@@ -19,27 +19,72 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Outlet, Navigate } from "react-router-dom";
-import LoadingEnvironment from "./LoadingEnvironment";
-import Questions from "./Questions";
+import React, { useEffect, useState } from "react";
+import { useInstallerClient } from "./context/installer";
 import { useSoftware } from "./context/software";
 
+import { STARTUP, INSTALL } from "./client/phase";
+import { BUSY } from "./client/status";
+
+import { Outlet, Navigate } from "react-router-dom";
+import Questions from "./Questions";
+import DBusError from "./DBusError";
+import InstallationProgress from "./InstallationProgress";
+import InstallationFinished from "./InstallationFinished";
+import LoadingEnvironment from "./LoadingEnvironment";
+
 function Main() {
+  const client = useInstallerClient();
+  const [status, setStatus] = useState(undefined);
+  const [phase, setPhase] = useState(undefined);
+  const [error, setError] = useState(undefined);
   const { selectedProduct } = useSoftware();
+
+  useEffect(() => {
+    const loadPhase = async () => {
+      const phase = await client.manager.getPhase();
+      const status = await client.manager.getStatus();
+      setPhase(phase);
+      setStatus(status);
+    };
+
+    loadPhase().catch(setError);
+  }, [client.manager, setPhase, setStatus, setError]);
+
+  useEffect(() => {
+    return client.manager.onPhaseChange(setPhase);
+  }, [client.manager, setPhase]);
+
+  useEffect(() => {
+    return client.manager.onStatusChange(setStatus);
+  }, [client.manager, setStatus]);
+
+  useEffect(() => {
+    return client.monitor.onDisconnect(setError);
+  }, [client.monitor, setError]);
 
   if (selectedProduct === null) {
     return <Navigate to="/products" />;
   }
 
-  if (selectedProduct === undefined) {
-    return <LoadingEnvironment />;
-  }
+  const Content = () => {
+    if (error) return <DBusError />;
+
+    if ((phase === STARTUP && status === BUSY) || selectedProduct === undefined || phase === undefined || status === undefined) {
+      return <LoadingEnvironment />;
+    }
+
+    if (phase === INSTALL) {
+      return (status === BUSY) ? <InstallationProgress /> : <InstallationFinished />;
+    }
+
+    return <Outlet />;
+  };
 
   return (
     <>
       <Questions />
-      <Outlet />
+      <Content />
     </>
   );
 }
