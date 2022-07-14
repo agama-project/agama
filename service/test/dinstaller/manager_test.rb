@@ -76,11 +76,6 @@ describe DInstaller::Manager do
       subject.startup_phase
     end
 
-    it "configures software callbacks" do
-      expect(software).to receive(:on_product_selected)
-      subject.startup_phase
-    end
-
     context "when only one product is defined" do
       let(:config_path) do
         File.join(FIXTURES_PATH, "d-installer-single.yaml")
@@ -178,6 +173,19 @@ describe DInstaller::Manager do
 
       expect(logger).to receive(:info).with(/change status/)
       service_status_recorder.save("org.opensuse.DInstaller.Test", busy)
+    end
+  end
+
+  describe "#select_product" do
+    it "configures the given product as selected product" do
+      subject.select_product("Leap")
+      expect(config.data["software"]["base_product"]).to eq("Leap")
+      expect(config.pure_data["software"]).to be_nil
+    end
+
+    it "runs the config phase" do
+      expect(subject).to receive(:config_phase)
+      subject.select_product("Leap")
     end
   end
 end

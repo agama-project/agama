@@ -19,24 +19,26 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "dbus"
+require "dinstaller/dbus/clients/base"
 require "dinstaller/dbus/clients/with_service_status"
 
 module DInstaller
   module DBus
     module Clients
       # D-Bus client for users configuration
-      class Users
+      class Users < Base
         include WithServiceStatus
 
         def initialize
+          super
+
           @dbus_object = service.object("/org/opensuse/DInstaller/Users1")
           @dbus_object.introspect
         end
 
-        # @return [::DBus::Service]
-        def service
-          @service ||= bus.service("org.opensuse.DInstaller.Users")
+        # @return [String]
+        def service_name
+          @service_name ||= "org.opensuse.DInstaller.Users"
         end
 
         # Configuration of the first user to create during the installation
@@ -104,10 +106,6 @@ module DInstaller
 
         # @return [::DBus::Object]
         attr_reader :dbus_object
-
-        def bus
-          @bus ||= ::DBus::SystemBus.instance
-        end
       end
     end
   end

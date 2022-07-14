@@ -33,10 +33,14 @@ describe DInstaller::DBus::Manager do
   let(:backend) do
     instance_double(DInstaller::Manager,
       installation_phase:        installation_phase,
+      software:                  software_client,
       on_services_status_change: nil)
   end
 
   let(:installation_phase) { DInstaller::InstallationPhase.new }
+  let(:software_client) do
+    instance_double(DInstaller::DBus::Clients::Software, on_product_selected: nil)
+  end
   let(:service_status_recorder) { DInstaller::ServiceStatusRecorder.new }
 
   let(:idle) { DInstaller::DBus::ServiceStatus::IDLE }
@@ -74,6 +78,11 @@ describe DInstaller::DBus::Manager do
       subject
     end
 
+    it "configures callbacks to be called when a product is selected" do
+      expect(software_client).to receive(:on_product_selected)
+      subject
+    end
+
     it "configures callbacks from Progress interface" do
       expect_any_instance_of(described_class).to receive(:register_progress_callbacks)
       subject
@@ -86,22 +95,54 @@ describe DInstaller::DBus::Manager do
   end
 
   describe "#config_phase" do
-    it "runs the config phase, setting the service as busy meanwhile" do
-      expect(subject.service_status).to receive(:busy)
-      expect(backend).to receive(:config_phase)
-      expect(subject.service_status).to receive(:idle)
+    context "when the service is idle" do
+      before do
+        subject.service_status.idle
+      end
 
-      subject.config_phase
+      it "runs the config phase, setting the service as busy meanwhile" do
+        expect(subject.service_status).to receive(:busy)
+        expect(backend).to receive(:config_phase)
+        expect(subject.service_status).to receive(:idle)
+
+        subject.config_phase
+      end
+    end
+
+    context "when the service is busy" do
+      before do
+        subject.service_status.busy
+      end
+
+      it "raises a D-Bus error" do
+        expect { subject.config_phase }.to raise_error(::DBus::Error)
+      end
     end
   end
 
   describe "#install_phase" do
-    it "runs the install phase, setting the service as busy meanwhile" do
-      expect(subject.service_status).to receive(:busy)
-      expect(backend).to receive(:install_phase)
-      expect(subject.service_status).to receive(:idle)
+    context "when the service is idle" do
+      before do
+        subject.service_status.idle
+      end
 
-      subject.install_phase
+      it "runs the install phase, setting the service as busy meanwhile" do
+        expect(subject.service_status).to receive(:busy)
+        expect(backend).to receive(:install_phase)
+        expect(subject.service_status).to receive(:idle)
+
+        subject.install_phase
+      end
+    end
+
+    context "when the service is busy" do
+      before do
+        subject.service_status.busy
+      end
+
+      it "raises a D-Bus error" do
+        expect { subject.install_phase }.to raise_error(::DBus::Error)
+      end
     end
   end
 

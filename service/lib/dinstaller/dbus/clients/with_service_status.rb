@@ -45,19 +45,13 @@ module DInstaller
         # @note Signal subscription is done only once. Otherwise, the latest subscription overrides
         #   the previous one.
         #
-        # @param callback [Proc]
+        # @param block [Proc]
         # @yieldparam service_status [ServiceStatus::IDLE, ServiceStatus::BUSY]
-        def on_service_status_change(&callback)
-          @on_service_status_change_callbacks ||= []
-          @on_service_status_change_callbacks << callback
-
-          return if @on_service_status_change_callbacks.size > 1
-
-          dbus_properties = dbus_object["org.freedesktop.DBus.Properties"]
-          dbus_properties.on_signal("PropertiesChanged") do |interface, changes, _|
+        def on_service_status_change(&block)
+          on_properties_change(dbus_object) do |interface, changes, _|
             if interface == Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
               service_status = to_service_status(changes["Current"])
-              @on_service_status_change_callbacks.each { |c| c.call(service_status) }
+              block.call(service_status)
             end
           end
         end

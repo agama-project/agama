@@ -66,12 +66,16 @@ module DInstaller
 
       # Runs the config phase
       def config_phase
-        busy_while { backend.config_phase }
+        safe_run do
+          busy_while { backend.config_phase }
+        end
       end
 
       # Runs the install phase
       def install_phase
-        busy_while { backend.install_phase }
+        safe_run do
+          busy_while { backend.install_phase }
+        end
       end
 
       # Description of all possible installation phase values
@@ -106,6 +110,21 @@ module DInstaller
       # @return [DInstaller::Manager]
       attr_reader :backend
 
+      # Executes the given block only if the service is idle
+      #
+      # @note The service still dispatches messages while waiting for a D-Bus answer.
+      #
+      # @param block [Proc]
+      def safe_run(&block)
+        raise busy_error if service_status.busy?
+
+        block.call
+      end
+
+      def busy_error
+        ::DBus.error("org.opensuse.DInstaller.Error.Busy")
+      end
+
       # Registers callback to be called
       def register_callbacks
         backend.installation_phase.on_change do
@@ -115,6 +134,12 @@ module DInstaller
 
         backend.on_services_status_change do
           dbus_properties_changed(MANAGER_INTERFACE, { "BusyServices" => busy_services }, [])
+        end
+
+        backend.software.on_product_selected do |product|
+          safe_run do
+            busy_while { backend.select_product(product) }
+          end
         end
       end
     end

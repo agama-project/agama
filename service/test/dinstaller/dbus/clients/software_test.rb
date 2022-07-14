@@ -36,6 +36,8 @@ describe DInstaller::DBus::Clients::Software do
       .and_return(software_iface)
     allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.ServiceStatus1")
       .and_return(service_status_iface)
+    allow(dbus_object).to receive(:[]).with("org.freedesktop.DBus.Properties")
+      .and_return(properties_iface)
 
     allow(service).to receive(:object).with("/org/opensuse/DInstaller/Software/Proposal1")
       .and_return(dbus_proposal)
@@ -47,6 +49,7 @@ describe DInstaller::DBus::Clients::Software do
   let(:dbus_proposal) { instance_double(::DBus::ProxyObject, introspect: nil) }
   let(:software_iface) { instance_double(::DBus::ProxyObjectInterface) }
   let(:service_status_iface) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:properties_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
   subject { described_class.new }
 
@@ -129,6 +132,31 @@ describe DInstaller::DBus::Clients::Software do
         .with(["sddm", "gdm"]).and_return([true, false])
       expect(subject.provisions_selected?(["sddm", "gdm"]))
         .to eq([true, false])
+    end
+  end
+
+  describe "#on_product_selected" do
+    before do
+      allow(dbus_object).to receive(:path).and_return("/org/opensuse/DInstaller/Test")
+      allow(properties_iface).to receive(:on_signal)
+    end
+
+    context "if there are no callbacks for changes in properties" do
+      it "subscribes to properties change signal" do
+        expect(properties_iface).to receive(:on_signal)
+        subject.on_product_selected { "test" }
+      end
+    end
+
+    context "if there already are callbacks for changes in properties" do
+      before do
+        subject.on_product_selected { "test" }
+      end
+
+      it "does not subscribe to properties change signal again" do
+        expect(properties_iface).to_not receive(:on_signal)
+        subject.on_product_selected { "test" }
+      end
     end
   end
 end

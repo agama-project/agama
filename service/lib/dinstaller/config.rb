@@ -75,13 +75,13 @@ module DInstaller
     def data
       return @data if @data
 
-      @data = @pure_data || {}
+      @data = @pure_data.dup || {}
       pick_product(@data["products"].keys.first) if @data["products"]
       @data
     end
 
     def pick_product(product)
-      @data.merge!(@data[product])
+      data.merge!(data[product])
     end
 
     # Whether there are more than one product
