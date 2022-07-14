@@ -34,12 +34,16 @@ describe DInstaller::DBus::ManagerService do
     instance_double(::DBus::Service, export: nil)
   end
   let(:cockpit) { instance_double(DInstaller::CockpitManager, setup: nil) }
+  let(:software_client) do
+    instance_double(DInstaller::DBus::Clients::Software, on_product_selected: nil)
+  end
 
   before do
     allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
     allow(bus).to receive(:request_service).and_return(bus_service)
     allow(DInstaller::Manager).to receive(:new).with(config, logger).and_return(manager)
     allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
+    allow(manager).to receive(:software).and_return(software_client)
   end
 
   describe "#start" do

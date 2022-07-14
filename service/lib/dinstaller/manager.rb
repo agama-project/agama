@@ -73,11 +73,6 @@ module DInstaller
       start_progress(1)
       progress.step("Probing Languages") { language.probe }
 
-      software.on_product_selected do |selected|
-        config.pick_product(selected)
-        config_phase
-      end
-
       probe_single_product unless config.multi_product?
 
       logger.info("Startup phase done")
@@ -196,6 +191,14 @@ module DInstaller
     # @return [Security]
     def security
       @security ||= Security.new(logger, config)
+    end
+
+    # Actions to perform when a product is selected
+    #
+    # @note The config phase is executed.
+    def select_product(product)
+      config.pick_product(product)
+      config_phase
     end
 
     # Name of busy services

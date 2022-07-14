@@ -33,10 +33,14 @@ describe DInstaller::DBus::Manager do
   let(:backend) do
     instance_double(DInstaller::Manager,
       installation_phase:        installation_phase,
+      software:                  software_client,
       on_services_status_change: nil)
   end
 
   let(:installation_phase) { DInstaller::InstallationPhase.new }
+  let(:software_client) do
+    instance_double(DInstaller::DBus::Clients::Software, on_product_selected: nil)
+  end
   let(:service_status_recorder) { DInstaller::ServiceStatusRecorder.new }
 
   let(:idle) { DInstaller::DBus::ServiceStatus::IDLE }
@@ -71,6 +75,11 @@ describe DInstaller::DBus::Manager do
 
     it "configures callbacks for changes in the status of other services" do
       expect(backend).to receive(:on_services_status_change)
+      subject
+    end
+
+    it "configures callbacks to be called when a product is selected" do
+      expect(software_client).to receive(:on_product_selected)
       subject
     end
 
