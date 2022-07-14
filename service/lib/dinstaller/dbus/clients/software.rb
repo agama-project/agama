@@ -19,20 +19,22 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "dbus"
+require "dinstaller/dbus/clients/base"
 require "dinstaller/dbus/clients/with_service_status"
 
 module DInstaller
   module DBus
     module Clients
       # D-Bus client for software configuration
-      class Software
+      class Software < Base
         include WithServiceStatus
 
         TYPES = [:package, :pattern].freeze
         private_constant :TYPES
 
         def initialize
+          super
+
           @dbus_object = service.object("/org/opensuse/DInstaller/Software1")
           @dbus_object.introspect
 
@@ -40,9 +42,9 @@ module DInstaller
           @dbus_proposal.introspect
         end
 
-        # @return [::DBus::Service]
-        def service
-          @service ||= bus.service("org.opensuse.DInstaller.Software")
+        # @return [String]
+        def service_name
+          @service_name ||= "org.opensuse.DInstaller.Software"
         end
 
         # Available products for the installation
@@ -160,31 +162,21 @@ module DInstaller
         # @note Signal subscription is done only once. Otherwise, the latest subscription overrides
         #   the previous one.
         #
-        # @param callback [Proc] Callback to run when a product is selected
-        def on_product_selected(&callback)
-          @on_product_selected_callbacks ||= []
-          @on_product_selected_callbacks << callback
-
-          return if @on_product_selected_callbacks.size > 1
-
-          dbus_properties = @dbus_object["org.freedesktop.DBus.Properties"]
-          dbus_properties.on_signal("PropertiesChanged") do |_, changes, _|
+        # @param block [Proc] Callback to run when a product is selected
+        def on_product_selected(&block)
+          on_properties_change(dbus_object) do |_, changes, _|
             base_product = changes["SelectedBaseProduct"]
-            @on_product_selected_callbacks.each { |c| c.call(base_product) } if !base_product.nil?
+            block.call(base_product) unless base_product.nil?
           end
         end
 
       private
 
         # @return [::DBus::Object]
-        attr_reader :dbus_proposal
-
-        # @return [::DBus::Object]
         attr_reader :dbus_object
 
-        def bus
-          @bus ||= ::DBus::SystemBus.instance
-        end
+        # @return [::DBus::Object]
+        attr_reader :dbus_proposal
       end
     end
   end
