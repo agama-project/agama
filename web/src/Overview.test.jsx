@@ -24,77 +24,45 @@ import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import Overview from "./Overview";
 import { createClient } from "./client";
-import { IDLE } from "./client/status";
 
 jest.mock("./client");
-jest.mock("react-router-dom", () => ({
-  useNavigate: () => {}
-}));
 
 jest.mock("./context/software", () => ({
   ...jest.requireActual("./context/software"),
   useSoftware: () => {
     return {
       products: mockProducts,
-      selectedProduct: product
+      selectedProduct: mockProduct
     };
   }
 }));
 
-const proposal = {
-  candidateDevices: ["/dev/sda"],
-  availableDevices: [
-    { id: "/dev/sda", label: "/dev/sda, 500 GiB" },
-    { id: "/dev/sdb", label: "/dev/sdb, 650 GiB" }
-  ],
-  lvm: false
-};
-const actions = [{ text: "Mount /dev/sda1 as root", subvol: false }];
-const languages = [{ id: "en_US", name: "English" }];
-const product = { id: "openSUSE", name: "openSUSE Tumbleweed" };
+jest.mock('react-router-dom', () => ({
+  Outlet: () => <div>Content</div>,
+  Navigate: () => <div>Navigate</div>,
+  useNavigate: () => jest.fn()
+}));
+
+jest.mock("./LanguageSelector", () => () => "Language Selector");
+jest.mock("./Storage", () => () => "Storage Configuration");
+jest.mock("./Users", () => () => "Users Configuration");
+
+let mockProduct;
 let mockProducts = [
   { id: "openSUSE", name: "openSUSE Tumbleweed" },
   { id: "Leap Micro", name: "openSUSE Micro" }
 ];
 const startInstallationFn = jest.fn();
-const fakeUser = { fullName: "Fake User", userName: "fake_user", autologin: true };
-const ipData = {
-  addresses: [],
-  hostname: "example.net"
-};
 
 beforeEach(() => {
+  mockProduct = { id: "openSUSE", name: "openSUSE Tumbleweed" };
   createClient.mockImplementation(() => {
     return {
-      storage: {
-        getStorageProposal: () => Promise.resolve(proposal),
-        getStorageActions: () => Promise.resolve(actions),
-        onActionsChange: jest.fn(),
-        onStorageProposalChange: jest.fn(),
-        getStatus: () => Promise.resolve(IDLE),
-        onStatusChange: () => jest.fn()
-      },
-      language: {
-        getLanguages: () => Promise.resolve(languages),
-        getSelectedLanguages: () => Promise.resolve(["en_US"]),
-        onLanguageChange: jest.fn()
-      },
       software: {
         onProductChange: jest.fn()
       },
       manager: {
         startInstallation: startInstallationFn,
-        getStatus: () => Promise.resolve(IDLE),
-        onStatusChange: () => jest.fn()
-      },
-      network: {
-        config: () => Promise.resolve(ipData)
-      },
-      users: {
-        getUser: () => Promise.resolve(fakeUser),
-        isRootPasswordSet: () => Promise.resolve(true),
-        getRootSSHKey: () => Promise.resolve("ssh-rsa"),
-        onUsersChange: jest.fn()
       }
     };
   });
@@ -106,9 +74,21 @@ test("includes an action for changing the selected product", async () => {
   await screen.findByLabelText("Change selected product");
 });
 
+describe("when no product is selected", () => {
+  beforeEach(() => {
+    mockProduct = null;
+  });
+
+  it("redirects to the product selection page", async () => {
+    installerRender(<Overview />);
+
+    await screen.findByText("Navigate");
+  });
+});
+
 describe("if there is only one product", () => {
   beforeEach(() => {
-    mockProducts = [product];
+    mockProducts = [mockProduct];
   });
 
   it("does not show the action for changing the selected product", async () => {
@@ -124,9 +104,9 @@ test("renders the Overview", async () => {
   const title = screen.getByText(/openSUSE Tumbleweed/i);
   expect(title).toBeInTheDocument();
 
-  await screen.findByText("English");
-  await screen.findByText("/dev/sda");
-  await screen.findByText("openSUSE Tumbleweed");
+  await screen.findByText("Language Selector");
+  await screen.findByText("Storage Configuration");
+  await screen.findByText("Users Configuration");
 });
 
 describe("when the user clicks 'Install'", () => {
@@ -135,7 +115,7 @@ describe("when the user clicks 'Install'", () => {
 
     // TODO: we should have some UI element to tell the user we have finished
     // with loading data.
-    await screen.findByText("English");
+    await screen.findByText("Language Selector");
 
     await user.click(screen.getByRole("button", { name: /Install/ }));
 

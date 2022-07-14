@@ -22,7 +22,7 @@
 import React, { useState } from "react";
 import { useInstallerClient } from "./context/installer";
 import { useSoftware } from "./context/software";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 
 import { Button, Flex, FlexItem, Text } from "@patternfly/react-core";
 
@@ -97,6 +97,10 @@ const InstallButton = () => {
 
 function Overview() {
   const { selectedProduct } = useSoftware();
+
+  if (selectedProduct === null) {
+    return <Navigate to="/products" />;
+  }
 
   const categories = [
     <Category key="language" title="Language" icon={LanguagesSelectionIcon}>

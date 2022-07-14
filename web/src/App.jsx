@@ -19,67 +19,18 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
-import { useInstallerClient } from "./context/installer";
+import React from "react";
 import { Outlet } from "react-router-dom";
-
-import { STARTUP, INSTALL } from "./client/phase";
-import { BUSY } from "./client/status";
 
 import Layout, { Title, AdditionalInfo } from "./Layout";
 import About from "./About";
 import TargetIpsPopup from "./TargetIpsPopup";
-import DBusError from "./DBusError";
-import InstallationProgress from "./InstallationProgress";
-import InstallationFinished from "./InstallationFinished";
-import LoadingEnvironment from "./LoadingEnvironment";
 
 function App() {
-  const client = useInstallerClient();
-  const [status, setStatus] = useState(undefined);
-  const [phase, setPhase] = useState(undefined);
-  const [error, setError] = useState(undefined);
-
-  useEffect(() => {
-    const loadPhase = async () => {
-      const phase = await client.manager.getPhase();
-      const status = await client.manager.getStatus();
-      setPhase(phase);
-      setStatus(status);
-    };
-
-    loadPhase().catch(setError);
-  }, [client.manager, setPhase, setStatus, setError]);
-
-  useEffect(() => {
-    return client.manager.onPhaseChange(setPhase);
-  }, [client.manager, setPhase]);
-
-  useEffect(() => {
-    return client.manager.onStatusChange(setStatus);
-  }, [client.manager, setStatus]);
-
-  useEffect(() => {
-    return client.monitor.onDisconnect(setError);
-  }, [client.monitor, setError]);
-
-  const Content = () => {
-    if (error) return <DBusError />;
-
-    if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
-      return <LoadingEnvironment />;
-    }
-
-    if (phase === INSTALL) {
-      return (status === BUSY) ? <InstallationProgress /> : <InstallationFinished />;
-    }
-    return <Outlet />;
-  };
-
   return (
     <Layout>
       <Title>D-Installer</Title>
-      <Content />
+      <Outlet />
       <AdditionalInfo>
         <About />
         <TargetIpsPopup />
