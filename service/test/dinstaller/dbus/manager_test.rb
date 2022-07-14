@@ -86,22 +86,54 @@ describe DInstaller::DBus::Manager do
   end
 
   describe "#config_phase" do
-    it "runs the config phase, setting the service as busy meanwhile" do
-      expect(subject.service_status).to receive(:busy)
-      expect(backend).to receive(:config_phase)
-      expect(subject.service_status).to receive(:idle)
+    context "when the service is idle" do
+      before do
+        subject.service_status.idle
+      end
 
-      subject.config_phase
+      it "runs the config phase, setting the service as busy meanwhile" do
+        expect(subject.service_status).to receive(:busy)
+        expect(backend).to receive(:config_phase)
+        expect(subject.service_status).to receive(:idle)
+
+        subject.config_phase
+      end
+    end
+
+    context "when the service is busy" do
+      before do
+        subject.service_status.busy
+      end
+
+      it "raises a D-Bus error" do
+        expect { subject.config_phase }.to raise_error(::DBus::Error)
+      end
     end
   end
 
   describe "#install_phase" do
-    it "runs the install phase, setting the service as busy meanwhile" do
-      expect(subject.service_status).to receive(:busy)
-      expect(backend).to receive(:install_phase)
-      expect(subject.service_status).to receive(:idle)
+    context "when the service is idle" do
+      before do
+        subject.service_status.idle
+      end
 
-      subject.install_phase
+      it "runs the install phase, setting the service as busy meanwhile" do
+        expect(subject.service_status).to receive(:busy)
+        expect(backend).to receive(:install_phase)
+        expect(subject.service_status).to receive(:idle)
+
+        subject.install_phase
+      end
+    end
+
+    context "when the service is busy" do
+      before do
+        subject.service_status.busy
+      end
+
+      it "raises a D-Bus error" do
+        expect { subject.install_phase }.to raise_error(::DBus::Error)
+      end
     end
   end
 
