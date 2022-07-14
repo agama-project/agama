@@ -44,6 +44,12 @@ const ProgressReport = () => {
   const [subProgress, setSubProgress] = useState(undefined);
 
   useEffect(() => {
+    client.manager.getProgress().then(({ message, current, total }) => {
+      setProgress({ title: message, step: current, steps: total });
+    });
+  }, [client.manager]);
+
+  useEffect(() => {
     return client.manager.onProgressChange(({ message, current, total }) => {
       setProgress({ title: message, step: current, steps: total });
     });
