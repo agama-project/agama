@@ -21,12 +21,11 @@
 
 import React, { useEffect, useState } from "react";
 import { useInstallerClient } from "./context/installer";
-import { useSoftware } from "./context/software";
 
 import { STARTUP, INSTALL } from "./client/phase";
 import { BUSY } from "./client/status";
 
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Questions from "./Questions";
 import DBusError from "./DBusError";
 import InstallationProgress from "./InstallationProgress";
@@ -38,7 +37,6 @@ function Main() {
   const [status, setStatus] = useState(undefined);
   const [phase, setPhase] = useState(undefined);
   const [error, setError] = useState(undefined);
-  const { selectedProduct } = useSoftware();
 
   useEffect(() => {
     const loadPhase = async () => {
@@ -63,14 +61,10 @@ function Main() {
     return client.monitor.onDisconnect(setError);
   }, [client.monitor, setError]);
 
-  if (selectedProduct === null) {
-    return <Navigate to="/products" />;
-  }
-
   const Content = () => {
     if (error) return <DBusError />;
 
-    if ((phase === STARTUP && status === BUSY) || selectedProduct === undefined || phase === undefined || status === undefined) {
+    if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
       return <LoadingEnvironment />;
     }
 
