@@ -36,6 +36,14 @@ module Yast
     def Available(_package_name)
       true
     end
+
+    # Determines whether the package is available
+    #
+    # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/packages/src/modules/Package.rb#L121
+    # @todo Perform a real D-Bus call.
+    def Installed(_package_name, target: nil)
+      false
+    end
   end
 
   Package = PackageClass.new
