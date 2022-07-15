@@ -71,4 +71,11 @@ describe DInstaller::Security do
       end
     end
   end
+
+  describe "#write" do
+    it "saves the LSM configuration" do
+      expect(lsm_config).to receive(:save)
+      security.write
+    end
+  end
 end

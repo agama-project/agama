@@ -69,7 +69,7 @@ module DInstaller
     end
 
     def write
-      config.save
+      lsm_config.save
     end
 
     def probe
