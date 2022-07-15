@@ -46,7 +46,7 @@ const FooterInfoArea = createTeleporter();
  *
  *     <Content />
  *
- *     <AdditionaInfo>
+ *     <AdditionalInfo>
  *       <About />
  *       <TheTeam />
  *     </AdditionalInfo
