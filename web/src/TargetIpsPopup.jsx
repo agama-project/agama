@@ -22,7 +22,7 @@
 import React, { useEffect, useState } from "react";
 import { useInstallerClient } from "./context/installer";
 import Popup from "./Popup";
-import { Button, Text } from "@patternfly/react-core";
+import { Button, List, ListItem, Text } from "@patternfly/react-core";
 
 const initIpData = {
   addresses: [],
@@ -34,14 +34,10 @@ function formatIp(address, prefix) {
 }
 
 export default function TargetIpsPopup() {
-  const [isOpen, setIsOpen] = useState(false);
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
-
   const client = useInstallerClient();
   const [state, setState] = useState(initIpData);
-  const ips = state.addresses.map((addr) => formatIp(addr.address, addr.prefix));
-  const firstIp = ips.length > 0 ? ips[0] : "";
+  const [isOpen, setIsOpen] = useState(false);
+  const { hostname, addresses } = state;
 
   useEffect(() => {
     client.network.config().then((data) => {
@@ -49,18 +45,35 @@ export default function TargetIpsPopup() {
     });
   }, [client.network]);
 
+  const ips = addresses.map((addr) => formatIp(addr.address, addr.prefix));
+  let label = ips[0];
+  let title = "IP addresses";
+
+  if (hostname) {
+    label += ` (${hostname})`;
+    title += ` for ${hostname}`;
+  }
+
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+
+  if (addresses.length === 0) return null;
+
+  if (ips.length === 1) return <Text component="small" className="host-ip">{label}</Text>;
+
   return (
     <>
       <Button variant="link" onClick={open}>
-        { firstIp } ({state.hostname})
+        { label }
       </Button>
 
       <Popup
         isOpen={isOpen}
-        title={state.hostname}
-        aria-label="IP Addresses"
+        title={title}
       >
-        { ips.map((ip) => <Text key={ip}> {ip} </Text>) }
+        <List>
+          { ips.map((ip) => <ListItem key={ip}>{ip}</ListItem>) }
+        </List>
         <Popup.Actions>
           <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
         </Popup.Actions>
