@@ -23,7 +23,7 @@ require_relative "../test_helper"
 require "dinstaller/security"
 
 describe DInstaller::Security do
-  subject { described_class.new(logger, config) }
+  subject(:security) { described_class.new(logger, config) }
 
   let(:logger) { Logger.new($stdout) }
 
@@ -35,18 +35,40 @@ describe DInstaller::Security do
     DInstaller::Config.new(YAML.safe_load(File.read(config_path)))
   end
 
-  let(:y2security) do
+  let(:lsm_config) do
     instance_double(Y2Security::LSM::Config, select: nil)
   end
 
   before do
-    allow(Y2Security::LSM::Config).to receive(:instance).and_return(y2security)
+    allow(Y2Security::LSM::Config).to receive(:instance).and_return(lsm_config)
   end
 
   describe "#probe" do
     it "selects the default LSM" do
-      expect(y2security).to receive(:select).with("apparmor")
-      subject.probe
+      expect(lsm_config).to receive(:select).with("apparmor")
+      security.probe
+    end
+
+    it "add LSM patterns for installation" do
+      expect(Yast::PackagesProposal).to receive(:SetResolvables)
+        .with("LSM", :pattern, ["apparmor"])
+      security.probe
+    end
+
+    context "when no LSM is selected" do
+      before do
+        allow(config).to receive(:data).and_return({ "security" => {} })
+      end
+
+      it "unselects the LSM" do
+        expect(lsm_config).to receive(:select).with(nil)
+        security.probe
+      end
+
+      it "removes the list of patterns to install" do
+        Yast::PackagesProposal.SetResolvables("LSM", :pattern, [])
+        security.probe
+      end
     end
   end
 end
