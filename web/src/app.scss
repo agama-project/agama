@@ -178,3 +178,12 @@ p {
 .installer-skeleton {
   margin-block-start: 1em;
 }
+
+.hidden {
+  visibility: hidden;
+}
+
+.host-ip {
+  vertical-align: middle;
+  color: branding.$eos-bc-gray-900;
+}

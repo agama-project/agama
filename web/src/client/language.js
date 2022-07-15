@@ -74,7 +74,7 @@ class LanguageClient {
   onLanguageChange(handler) {
     return this.onObjectChanged(LANGUAGE_PATH, LANGUAGE_IFACE, changes => {
       const selected = changes.MarkedForInstall.v[0];
-      handler({ current: selected.v });
+      handler({ current: selected });
     });
   }
 }
