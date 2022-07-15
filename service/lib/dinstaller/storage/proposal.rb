@@ -24,6 +24,8 @@ require "y2storage/guided_proposal"
 require "y2storage/proposal_settings"
 require "y2storage/dialogs/guided_setup/helpers/disk"
 
+Yast.import "PackagesProposal"
+
 module DInstaller
   module Storage
     # Backend class to calculate a storage proposal
@@ -95,6 +97,9 @@ module DInstaller
         proposal.settings.use_lvm
       end
 
+      PROPOSAL_ID = "storage_proposal"
+      private_constant :PROPOSAL_ID
+
       # Calculates a new proposal
       #
       # @param settings [Hash] settings to calculate the proposal
@@ -111,6 +116,8 @@ module DInstaller
           disk_analyzer: disk_analyzer
         )
         save
+
+        add_packages_for(proposal.devices)
         changed!
 
         !proposal.failed?
@@ -187,6 +194,17 @@ module DInstaller
       # @return [Y2Storage::Devicegraph]
       def probed_devicegraph
         storage_manager.probed
+      end
+
+      # Adds the required packages to the list of resolvables to install
+      #
+      # @param [Y2Storage::Devicegraph] Devicegraph to base on
+      def add_packages_for(devicegraph)
+        packages = devicegraph.used_features.pkg_list
+        return if packages.empty?
+
+        logger.info "Selecting these packages for installation: #{packages}"
+        Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, packages)
       end
 
       def storage_manager

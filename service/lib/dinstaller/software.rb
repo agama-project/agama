@@ -152,9 +152,6 @@ module DInstaller
       optional_patterns = @config.data["software"]["optional_patterns"] || []
       Yast::PackagesProposal.SetResolvables("d-installer", :pattern, optional_patterns,
         optional: true)
-
-      # FIXME: temporary workaround to get btrfsprogs into the installed system
-      Yast::PackagesProposal.AddResolvables("d-installer", :package, ["btrfsprogs"])
     end
 
     # call solver to satisfy dependency or log error
