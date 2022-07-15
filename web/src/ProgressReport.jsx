@@ -24,47 +24,35 @@ import { useInstallerClient } from "./context/installer";
 
 import { Progress, Stack, StackItem, Text } from "@patternfly/react-core";
 
-const renderSubprogress = progress => (
-  <Progress
-    size="sm"
-    min={0}
-    max={progress.steps}
-    value={progress.step}
-    label={progress.message}
-    valueText={progress.message}
-    measureLocation="none"
-    aria-label="Secondary progress bar"
-  />
-);
-
 const ProgressReport = () => {
   const client = useInstallerClient();
-  // progress and subprogress are basically objects containing { title, step, steps }
+  // progress and subprogress are basically objects containing { message, step, steps }
   const [progress, setProgress] = useState({});
   const [subProgress, setSubProgress] = useState(undefined);
 
   useEffect(() => {
     client.manager.getProgress().then(({ message, current, total }) => {
-      setProgress({ title: message, step: current, steps: total });
+      setProgress({ message, step: current, steps: total });
     });
   }, [client.manager]);
 
   useEffect(() => {
     return client.manager.onProgressChange(({ message, current, total }) => {
-      setProgress({ title: message, step: current, steps: total });
+      setProgress({ message, step: current, steps: total });
     });
   }, [client.manager]);
 
   useEffect(() => {
     return client.software.onProgressChange(({ message, current, total, finished }) => {
-      setSubProgress({ title: message, step: current, steps: total, finished });
+      if (finished) {
+        setSubProgress(undefined);
+      } else {
+        setSubProgress({ message, step: current, steps: total });
+      }
     });
   }, [client.software]);
 
   if (!progress.steps) return <Text>Waiting for progress status...</Text>;
-
-  const showSubsteps = subProgress && !subProgress.finished;
-  const label = `${progress.step} of ${progress.steps}`;
 
   return (
     <Stack hasGutter className="pf-u-w-100">
@@ -73,14 +61,26 @@ const ProgressReport = () => {
           min={0}
           max={progress.steps}
           value={progress.step}
-          label={label}
-          valueText={label}
-          title={progress.title}
-          aria-label="Main progress bar"
+          title={progress.message}
+          label={" "}
+          aria-label={progress.message}
         />
       </StackItem>
 
-      <StackItem>{showSubsteps && renderSubprogress(subProgress)}</StackItem>
+      <StackItem>
+        <Progress
+          size="sm"
+          min={0}
+          max={subProgress?.steps}
+          value={subProgress?.step}
+          title={subProgress?.message}
+          label={" "}
+          measureLocation="none"
+          className={!subProgress && 'hidden'}
+          aria-label={subProgress?.message || " "}
+          aria-hidden={!subProgress}
+        />
+      </StackItem>
     </Stack>
   );
 };
