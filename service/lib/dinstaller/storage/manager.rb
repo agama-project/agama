@@ -22,7 +22,6 @@
 require "yast"
 require "y2storage/storage_manager"
 require "dinstaller/storage/proposal"
-require "dinstaller/storage/actions"
 require "dinstaller/storage/callbacks"
 
 module DInstaller
@@ -36,22 +35,23 @@ module DInstaller
 
       # Probes storage devices and performs an initial proposal
       #
-      # @param progress [Progress] Progress reporting object
       # @param questions_manager [QuestionsManager]
-      def probe(progress, questions_manager)
+      def probe(questions_manager)
+        # TODO: Add progress once this is moved to its own service
         logger.info "Probing storage and performing proposal"
-        progress.init_minor_steps(2, "Probing Storage Devices")
         activate_devices(questions_manager)
         probe_devices
-        progress.next_minor_step("Calculating Storage Proposal")
         proposal.calculate
       end
 
       # Prepares the partitioning to install the system
-      #
-      # @param _progress [Progress] Progress reporting object
-      def install(_progress)
+      def install
         Yast::WFM.CallFunction("inst_prepdisk", [])
+      end
+
+      # Umounts the target file system
+      def finish
+        Yast::WFM.CallFunction("umount_finish", ["Write"])
       end
 
       # Storage proposal manager
@@ -59,13 +59,6 @@ module DInstaller
       # @return [Storage::Proposal]
       def proposal
         @proposal ||= Proposal.new(logger, config)
-      end
-
-      # Storage actions manager
-      #
-      # @return [Storage::Actions]
-      def actions
-        @actions ||= Actions.new(logger)
       end
 
     private

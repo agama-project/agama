@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://github.com/yast/d-installer"
   spec.license = "GPL-2.0-only"
   spec.files = Dir["lib/**/*.rb", "bin/*", "share/*", "etc/*", "[A-Z]*"]
-  spec.executables << "d-installer"
+  spec.executables = ["d-installer"]
   spec.metadata = { "rubygems_mfa_required" => "true" }
 
   spec.required_ruby_version = ">= 2.5.0"
@@ -47,5 +47,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "fast_gettext", "~> 2.2.0"
   spec.add_dependency "nokogiri", "~> 1.13.1"
   spec.add_dependency "rexml", "~> 3.2.5"
-  spec.add_dependency "ruby-dbus", ">= 0.18.0.beta5"
+  spec.add_dependency "ruby-dbus", ">= 0.18.0.beta8"
 end

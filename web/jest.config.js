@@ -183,15 +183,16 @@ module.exports = {
   // A map from regular expressions to paths to transformers
   // transform: undefined,
   transform: {
-    "\\.jsx?$": "babel-jest",
+    "\\.m?jsx?$": "babel-jest",
     "\\.(css|svg)$": "jest-transform-stub"
-  }
+  },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
-  // transformIgnorePatterns: [
-  //   "/node_modules/",
-  //   "\\.pnp\\.[^\\/]+$"
-  // ],
+  transformIgnorePatterns: [
+    //   "/node_modules/",
+    //   "\\.pnp\\.[^\\/]+$"
+    "/node_modules/(?!(react-teleporter)/)"
+  ],
 
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
   // unmockedModulePathPatterns: undefined,

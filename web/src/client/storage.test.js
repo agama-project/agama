@@ -23,7 +23,6 @@ import StorageClient from "./storage";
 
 // NOTE: should we export them?
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
-const STORAGE_ACTIONS_IFACE = "org.opensuse.DInstaller.Storage.Actions1";
 
 const dbusClient = {};
 const storageProposalProxy = {
@@ -33,12 +32,8 @@ const storageProposalProxy = {
     ["/dev/sdb", "/dev/sdb, 500 GiB"]
   ],
   CandidateDevices: ["/dev/sda"],
-  LVM: true
-};
-
-const storageActionsProxy = {
-  wait: jest.fn(),
-  All: [
+  LVM: true,
+  Actions: [
     {
       Text: { t: "s", v: "Mount /dev/sdb1 as root" },
       Subvol: { t: "b", v: false },
@@ -47,14 +42,9 @@ const storageActionsProxy = {
   ]
 };
 
-const proxies = {
-  [STORAGE_PROPOSAL_IFACE]: storageProposalProxy,
-  [STORAGE_ACTIONS_IFACE]: storageActionsProxy
-};
-
 beforeEach(() => {
   dbusClient.proxy = jest.fn().mockImplementation(iface => {
-    return proxies[iface];
+    if (iface === STORAGE_PROPOSAL_IFACE) return storageProposalProxy;
   });
 });
 

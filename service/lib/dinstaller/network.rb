@@ -32,9 +32,7 @@ module DInstaller
     end
 
     # Probes the network configuration
-    #
-    # @param _progress [Progress] Progress reporting class
-    def probe(_progress)
+    def probe
       logger.info "Probing network"
       Yast::Lan.read_config
       settings = Y2Network::ProposalSettings.instance
@@ -43,9 +41,7 @@ module DInstaller
     end
 
     # Writes the network configuration to the installed system
-    #
-    # @param _progress [Progress] Progress reporting class
-    def install(_progress)
+    def install
       Yast::WFM.CallFunction("save_network", [])
     end
 

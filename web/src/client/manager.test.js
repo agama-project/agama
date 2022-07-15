@@ -25,18 +25,38 @@ import cockpit from "../lib/cockpit";
 jest.mock("../lib/cockpit");
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
+const SERVICE_IFACE = "org.opensuse.DInstaller.ServiceStatus1";
+const PROGRESS_IFACE = "org.opensuse.DInstaller.Progress1";
 
 const dbusClient = {};
 const managerProxy = {
   wait: jest.fn(),
   Commit: jest.fn(),
   Probe: jest.fn(),
-  Status: 2
+  CurrentInstallationPhase: 0
+};
+
+const statusProxy = {
+  wait: jest.fn(),
+  Current: 0
+};
+
+const progressProxy = {
+  wait: jest.fn(),
+  CurrentStep: [2, "Installing software"],
+  TotalSteps: 3,
+  Finished: false
+};
+
+const proxies = {
+  [MANAGER_IFACE]: managerProxy,
+  [SERVICE_IFACE]: statusProxy,
+  [PROGRESS_IFACE]: progressProxy
 };
 
 beforeEach(() => {
   dbusClient.proxy = jest.fn().mockImplementation(iface => {
-    if (iface === MANAGER_IFACE) return managerProxy;
+    return proxies[iface];
   });
 });
 
@@ -44,7 +64,20 @@ describe("#getStatus", () => {
   it("returns the installer status", async () => {
     const client = new ManagerClient(dbusClient);
     const status = await client.getStatus();
-    expect(status).toEqual(2);
+    expect(status).toEqual(0);
+  });
+});
+
+describe("#getProgress", () => {
+  it("returns the manager service progress", async () => {
+    const client = new ManagerClient(dbusClient);
+    const status = await client.getProgress();
+    expect(status).toEqual({
+      message: "Installing software",
+      current: 2,
+      total: 3,
+      finished: false
+    });
   });
 });
 
@@ -53,6 +86,14 @@ describe("#startProbing", () => {
     const client = new ManagerClient(dbusClient);
     await client.startProbing();
     expect(managerProxy.Probe).toHaveBeenCalledWith();
+  });
+});
+
+describe("#getPhase", () => {
+  it("resolves to the current phase", () => {
+    const client = new ManagerClient(dbusClient);
+    const phase = client.getPhase();
+    expect(phase).resolves.toEqual(0);
   });
 });
 

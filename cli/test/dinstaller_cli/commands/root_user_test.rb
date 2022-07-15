@@ -21,17 +21,17 @@
 
 require_relative "../../test_helper"
 require "dinstaller_cli/commands/root_user"
-require "dinstaller_cli/clients/users"
+require "dinstaller/dbus/clients/users"
 
 describe DInstallerCli::Commands::RootUser do
   subject { described_class.new }
 
   before do
     allow(subject).to receive(:say)
-    allow(DInstallerCli::Clients::Users).to receive(:new).and_return(client)
+    allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(client)
   end
 
-  let(:client) { instance_double(DInstallerCli::Clients::Users) }
+  let(:client) { instance_double(DInstaller::DBus::Clients::Users) }
 
   describe "#ssh_key" do
     before do

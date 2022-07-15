@@ -22,6 +22,7 @@
 require "dbus"
 require "dinstaller/question"
 require "dinstaller/luks_activation_question"
+require "dinstaller/dbus/base_object"
 
 module DInstaller
   module DBus
@@ -31,7 +32,7 @@ module DInstaller
     # {DBus::Questions} object.
     #
     # Clients should provide an answer for each question.
-    class Question < ::DBus::Object
+    class Question < BaseObject
       # This module contains the D-Bus interfaces that question D-Bus object can implement. The
       # interfaces that a question implements are dynamically determined while creating a new
       # D-Bus question.
@@ -156,11 +157,8 @@ module DInstaller
       # @param backend [DInstaller::Question]
       # @param logger [Logger]
       def initialize(path, backend, logger)
+        super(path, logger: logger)
         @backend = backend
-        @logger = logger
-
-        super(path)
-
         add_interfaces
       end
 

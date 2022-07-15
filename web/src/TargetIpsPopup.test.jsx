@@ -56,7 +56,7 @@ describe("TargetIpsPopup", () => {
 
     const dialog = await screen.findByRole("dialog");
 
-    within(dialog).getByText(hostname);
+    within(dialog).getByText(/example.net/);
     within(dialog).getByText("5.6.7.8/16");
 
     const closeButton = within(dialog).getByRole("button", { name: /Close/i });

@@ -19,66 +19,13 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "dbus"
-
 module DInstaller
   module DBus
-    # D-Bus object to manage software installation
-    class Software < ::DBus::Object
-      PATH = "/org/opensuse/DInstaller/Software1"
-      private_constant :PATH
-
-      SOFTWARE_INTERFACE = "org.opensuse.DInstaller.Software1"
-      private_constant :SOFTWARE_INTERFACE
-
-      # Constructor
-      #
-      # @param backend [DInstaller::Software]
-      # @param logger [Logger]
-      def initialize(backend, logger)
-        @backend = backend
-        @logger = logger
-
-        super(PATH)
-      end
-
-      dbus_interface SOFTWARE_INTERFACE do
-        dbus_reader :available_base_products, "a(ssa{sv})"
-        attr_writer :available_base_products
-
-        dbus_watcher :available_base_products
-
-        dbus_reader :selected_base_product, "s"
-
-        dbus_method :SelectProduct, "in ProductID:s" do |product_id|
-          logger.info "SelectProduct #{product_id}"
-
-          select_product(product_id)
-          PropertiesChanged(SOFTWARE_INTERFACE, { "SelectedBaseProduct" => product_id }, [])
-        end
-      end
-
-      def available_base_products
-        backend.products.map do |product|
-          [product.name, product.display_name, {}].freeze
-        end
-      end
-
-      def selected_base_product
-        backend.product
-      end
-
-      def select_product(product_id)
-        backend.select_product(product_id)
-      end
-
-    private
-
-      # @return [Logger]
-      attr_reader :logger
-
-      # @return [DInstaller::Software]
-      attr_reader :backend
+    # Name space for software D-Bus classes
+    module Software
     end
   end
 end
+
+require "dinstaller/dbus/software/manager"
+require "dinstaller/dbus/software/proposal"

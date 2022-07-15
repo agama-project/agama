@@ -20,14 +20,12 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require "dinstaller/progress"
 require "dinstaller/users"
 
 describe DInstaller::Users do
   subject(:storage) { described_class.new(logger) }
 
   let(:logger) { Logger.new($stdout) }
-  let(:progress) { DInstaller::Progress.new }
 
   let(:users_config) { Y2Users::Config.new }
 
@@ -144,7 +142,7 @@ describe DInstaller::Users do
       end
 
       expect(writer).to receive(:write).and_return([])
-      subject.write(progress)
+      subject.write
     end
 
     context "if some issue occurs" do
@@ -152,14 +150,14 @@ describe DInstaller::Users do
 
       it "logs the issue" do
         expect(logger).to receive(:error).with(/issue/)
-        subject.write(progress)
+        subject.write
       end
     end
 
     it "writes without /run bind mounted" do
       expect(Yast::Execute).to receive(:locally!).with(/umount/, anything)
 
-      subject.write(progress)
+      subject.write
     end
   end
 end

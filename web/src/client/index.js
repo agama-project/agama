@@ -25,7 +25,7 @@ import Monitor from "./monitor";
 import SoftwareClient from "./software";
 import StorageClient from "./storage";
 import UsersClient from "./users";
-import status from "./status";
+import phase from "./phase";
 import QuestionsClient from "./questions";
 import NetworkClient from "./network";
 
@@ -48,12 +48,12 @@ const createClient = () => {
     language: new LanguageClient(client),
     manager: new ManagerClient(client),
     monitor: new Monitor(SERVICE_NAME),
-    software: new SoftwareClient(client),
+    network: new NetworkClient(nmClient),
+    software: new SoftwareClient(),
     storage: new StorageClient(client),
-    users: new UsersClient(client),
-    questions: new QuestionsClient(client),
-    network: new NetworkClient(nmClient)
+    users: new UsersClient(),
+    questions: new QuestionsClient(client)
   };
 };
 
-export { createClient, status };
+export { createClient, phase };

@@ -285,6 +285,112 @@ when the question is answered.
 
 - Password -> string (rw)
   Password provided to decrypt a LUKS device.
+
 - Attempt -> unsigned 32-bit integer (r)
   Current attempt to decrypt the device. This value is useful for clients to know if the very same
   question is asked again (i.e., when the provided password did not work).
+
+
+## ServiceStatus
+
+Each service will have an status (*idle* or *busy*). The service should change its status to *busy*
+when it is going to start an expensive tasks. The status should be set back to *idle* once the long
+task is done.
+
+The main object of a service implements the following interface:
+
+### org.opensuse.DInstaller.ServiceStatus1
+
+#### Properties
+
+- All -> array(array(dict(string, variant))) (r)
+
+  All possible statuses:
+  ~~~
+  [
+    {"id" => 0, "label" => "idle"},
+    {"id" => 1, "label" => "busy"}
+  ]
+  ~~~
+
+- Current -> unsigned 32-bit integer (r)
+
+  Id of the current status.
+
+
+## Progress
+
+The main object of a service implements the following interface:
+
+### org.opensuse.DInstaller.Progress1
+
+- TotalSteps: unsigned 32-bit integer (r)
+  Number of steps.
+
+- CurrentStep: struct(unsigned 32-bit integer, string) (r)
+  Number of the current step and its description.
+
+- Finished: b (r)
+  Whether the progress has finished.
+
+## Manager
+
+### Installation Phases
+
+The installation process follows a set of phases. Only the main service (`DInstaller::Manager`)
+knows the information about the current installation phase. The rest of services will act as utility
+services without any knowledge about the whole installation process.
+
+A client (e.g., a web UI) will ask to the main service for the current phase of the installation.
+
+In principle, the installation will follow 3 possible phases: *Startup*, *Config* and *Install*.
+
+* *Startup* Phase
+
+This is the initial phase. The manager service will start in this phase and it will not change to
+another phase until the client asks for performing the next phase.
+
+* *Config* Phase
+
+The installation is configured during this phase. Configuring the installation means that everything
+needed from the system is read and the required default proposal are calculated. In YaST terms, the
+*config* phase implies to probe some modules like storage, language, etc, and to perform their
+proposals. Note that not all modules have to be probed/proposed. Probing some modules could be
+delayed to the next *install* phase.
+
+* *Install* Phase
+
+This phase implies to perform everything to install the system according to the selected options and
+proposals. Note that this phase is not only a typical YaST commit. For example, some proposals
+(software?) could be done during this phase. In short, at the beginning of this phase we have all
+the required information to perform the installation, and at the end of the phase the system is
+installed.
+
+### Status of the Services
+
+Note that the services are blocked meanwhile they are performing a long task. For this
+reason, the *manager* service will store the status of each service and the clients will ask to
+*manager* to know that status.
+
+### org.opensuse.DInstaller.Manager1
+
+#### Properties
+
+- InstallationPhases -> array(array(dict(string, variant))) (r)
+
+  All possible phases:
+~~~
+  [
+    {"id" => 0, "label" => "startup"},
+    {"id" => 1, "label" => "config"},
+    {"id" => 2, "label" => "install"}
+  ]
+~~~
+
+- CurrentInstallationPhase -> unsigned 32-bit integer (r)
+
+  Id of the current phase.
+
+- BusyServices -> a(s) (r)
+
+  List of names of the currently busy services.

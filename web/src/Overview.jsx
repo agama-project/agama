@@ -21,76 +21,98 @@
 
 import React, { useState } from "react";
 import { useInstallerClient } from "./context/installer";
+import { useSoftware } from "./context/software";
+import { useNavigate, Navigate } from "react-router-dom";
 
 import { Button, Flex, FlexItem, Text } from "@patternfly/react-core";
 
-import Layout from "./Layout";
+import { Title, PageIcon, PageActions, MainActions } from "./Layout";
 import Category from "./Category";
 import LanguageSelector from "./LanguageSelector";
-import ProductSelector from "./ProductSelector";
 import Storage from "./Storage";
 import Users from "./Users";
 import Popup from "./Popup";
 
 import {
-  EOS_FACT_CHECK as OverviewIcon,
+  EOS_SOFTWARE as OverviewIcon,
   EOS_TRANSLATE as LanguagesSelectionIcon,
   EOS_VOLUME as HardDriveIcon,
-  EOS_PACKAGES as ProductsIcon,
-  EOS_MANAGE_ACCOUNTS as UsersIcon
+  EOS_MANAGE_ACCOUNTS as UsersIcon,
+  EOS_MODE_EDIT as ModeEditIcon
 } from "eos-icons-react";
 
-function Overview() {
+const ChangeProductButton = () => {
+  const { products } = useSoftware();
+  const navigate = useNavigate();
+
+  if (products.length === 1) {
+    return "";
+  }
+
+  return (
+    <Button
+      isSmall
+      variant="plain"
+      icon={<ModeEditIcon />}
+      aria-label="Change selected product"
+      onClick={() => navigate("products")}
+    />
+  );
+};
+
+const InstallButton = () => {
   const client = useInstallerClient();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+  const install = () => client.manager.startInstallation();
+
+  return (
+    <>
+      <Button isLarge variant="primary" onClick={open}>
+        Install
+      </Button>
+
+      <Popup
+        title="Confirm Installation"
+        isOpen={isOpen}
+      >
+        <Text>
+          If you continue, partitions on your hard disk will be modified according to the
+          installation settings in the previous dialog.
+        </Text>
+        <Text>
+          Please, cancel and check the settings if you are unsure.
+        </Text>
+
+        <Popup.Actions>
+          <Popup.Confirm onClick={install}>Install</Popup.Confirm>
+          <Popup.Cancel onClick={close} autoFocus />
+        </Popup.Actions>
+      </Popup>
+    </>
+  );
+};
+
+function Overview() {
+  const { selectedProduct } = useSoftware();
+
+  if (selectedProduct === null) {
+    return <Navigate to="/products" />;
+  }
 
   const categories = [
     <Category key="language" title="Language" icon={LanguagesSelectionIcon}>
       <LanguageSelector />
     </Category>,
-    <Category key="product" title="Product" icon={ProductsIcon}>
-      <ProductSelector />
-    </Category>,
-    <Category key="targer" title="Target" icon={HardDriveIcon}>
+    <Category key="storage" title="Storage" icon={HardDriveIcon}>
       <Storage />
     </Category>,
     <Category key="users" title="Users" icon={UsersIcon}>
       <Users />
     </Category>
   ];
-
-  const InstallButton = () => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const open = () => setIsOpen(true);
-    const close = () => setIsOpen(false);
-    const install = () => client.manager.startInstallation();
-
-    return (
-      <>
-        <Button isLarge variant="primary" onClick={open}>
-          Install
-        </Button>
-
-        <Popup
-          title="Confirm Installation"
-          isOpen={isOpen}
-        >
-          <Text>
-            If you continue, partitions on your hard disk will be modified according to the
-            installation settings in the previous dialog.
-          </Text>
-          <Text>
-            Please, cancel and check the settings if you are unsure.
-          </Text>
-
-          <Popup.Actions>
-            <Popup.Confirm onClick={install}>Install</Popup.Confirm>
-            <Popup.Cancel onClick={close} autoFocus />
-          </Popup.Actions>
-        </Popup>
-      </>
-    );
-  };
 
   const renderCategories = () => {
     return categories.map(category => (
@@ -101,13 +123,13 @@ function Overview() {
   };
 
   return (
-    <Layout
-      sectionTitle="Installation Summary"
-      SectionIcon={OverviewIcon}
-      FooterActions={InstallButton}
-    >
+    <>
+      <Title>{selectedProduct.name}</Title>
+      <PageIcon><OverviewIcon /></PageIcon>
+      <PageActions><ChangeProductButton /></PageActions>
+      <MainActions><InstallButton /></MainActions>
       <Flex direction={{ default: "column" }}>{renderCategories()}</Flex>
-    </Layout>
+    </>
   );
 }
 

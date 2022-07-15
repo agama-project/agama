@@ -19,20 +19,12 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+export const STARTUP = 0;
+export const CONFIG = 1;
+export const INSTALL = 2;
 
-import Center from "./Center";
-import Layout from "./Layout";
-import ProgressReport from "./ProgressReport";
-
-import { EOS_MULTISTATE as SectionIcon } from "eos-icons-react";
-
-const ProbingProgress = () => (
-  <Layout sectionTitle="Probing" SectionIcon={SectionIcon}>
-    <Center>
-      <ProgressReport />
-    </Center>
-  </Layout>
-);
-
-export default ProbingProgress;
+export default {
+  STARTUP,
+  CONFIG,
+  INSTALL
+};

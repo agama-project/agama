@@ -21,27 +21,35 @@
 
 require "dbus"
 require "dinstaller/users"
+require "dinstaller/dbus/base_object"
+require "dinstaller/dbus/with_service_status"
+require "dinstaller/dbus/interfaces/service_status"
 
 module DInstaller
   module DBus
     # YaST D-Bus object (/org/opensuse/DInstaller/Users1)
-    #
-    # @see https://rubygems.org/gems/ruby-dbus
-    class Users < ::DBus::Object
+    class Users < BaseObject
+      include WithServiceStatus
+      include Interfaces::ServiceStatus
+
       PATH = "/org/opensuse/DInstaller/Users1"
       private_constant :PATH
 
+      # Constructor
+      #
+      # @param backend [DInstaller::Users]
+      # @param logger [Logger]
+      def initialize(backend, logger)
+        super(PATH, logger: logger)
+        @backend = backend
+        register_service_status_callbacks
+      end
+
       USERS_INTERFACE = "org.opensuse.DInstaller.Users1"
       private_constant :USERS_INTERFACE
+
       FUSER_SIG = "in FullName:s, in UserName:s, in Password:s, in AutoLogin:b, in data:a{sv}"
       private_constant :FUSER_SIG
-
-      def initialize(backend, logger)
-        @backend = backend
-        @logger = logger
-
-        super(PATH)
-      end
 
       # rubocop:disable Metrics/BlockLength
       dbus_interface USERS_INTERFACE do
@@ -56,7 +64,7 @@ module DInstaller
           logger.info "Setting Root Password"
           backend.assign_root_password(value, encrypted)
 
-          PropertiesChanged(USERS_INTERFACE, { "RootPasswordSet" => !value.empty? }, [])
+          dbus_properties_changed(USERS_INTERFACE, { "RootPasswordSet" => !value.empty? }, [])
           0
         end
 
@@ -64,7 +72,8 @@ module DInstaller
           logger.info "Clearing the root password"
           backend.remove_root_password
 
-          PropertiesChanged(USERS_INTERFACE, { "RootPasswordSet" => backend.root_password? }, [])
+          dbus_properties_changed(USERS_INTERFACE, { "RootPasswordSet" => backend.root_password? },
+            [])
           0
         end
 
@@ -72,7 +81,7 @@ module DInstaller
           logger.info "Setting Root ssh key"
           backend.root_ssh_key = (value)
 
-          PropertiesChanged(USERS_INTERFACE, { "RootSSHKey" => value }, [])
+          dbus_properties_changed(USERS_INTERFACE, { "RootSSHKey" => value }, [])
           0
         end
 
@@ -81,7 +90,7 @@ module DInstaller
           logger.info "Setting first user #{full_name}"
           backend.assign_first_user(full_name, user_name, password, auto_login, data)
 
-          PropertiesChanged(USERS_INTERFACE, { "FirstUser" => first_user }, [])
+          dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => first_user }, [])
           0
         end
 
@@ -89,7 +98,14 @@ module DInstaller
           logger.info "Removing the first user"
           backend.remove_first_user
 
-          PropertiesChanged(USERS_INTERFACE, { "FirstUser" => first_user }, [])
+          dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => {} }, [])
+          0
+        end
+
+        dbus_method :Write, "out result:u" do
+          logger.info "Writting users"
+
+          backend.write
           0
         end
       end
@@ -109,8 +125,7 @@ module DInstaller
 
     private
 
-      attr_reader :logger
-
+      # @return [DInstaller::Users]
       attr_reader :backend
     end
   end

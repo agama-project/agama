@@ -26,9 +26,15 @@ import "regenerator-runtime/runtime";
 
 import "@patternfly/patternfly/patternfly-base.scss";
 
-import App from "./App";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { InstallerClientProvider } from "./context/installer";
+import { SoftwareProvider } from "./context/software";
 import { createClient } from "./client";
+
+import App from "./App";
+import Main from "./Main";
+import ProductSelectionPage from "./ProductSelectionPage";
+import Overview from "./Overview";
 
 /*
  * PF4 overrides need to come after the JSX components imports because
@@ -38,13 +44,26 @@ import { createClient } from "./client";
  * the overrides will be correctly in the end of our stylesheet.
  */
 import "./patternfly.scss";
+import "./app.scss";
 
 const client = createClient();
 
 ReactDOM.render(
   <StrictMode>
     <InstallerClientProvider client={client}>
-      <App />
+      <SoftwareProvider>
+        <HashRouter>
+          <Routes>
+            <Route path="/" element={<App />}>
+              <Route path="/" element={<Main />}>
+                <Route path="/" element={<Overview />} />
+                <Route path="/overview" element={<Overview />} />
+              </Route>
+              <Route path="products" element={<ProductSelectionPage />} />
+            </Route>
+          </Routes>
+        </HashRouter>
+      </SoftwareProvider>
     </InstallerClientProvider>
   </StrictMode>,
   document.getElementById("root")

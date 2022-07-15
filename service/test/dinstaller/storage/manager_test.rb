@@ -21,7 +21,6 @@
 
 require_relative "../../test_helper"
 require "dinstaller/storage/manager"
-require "dinstaller/progress"
 require "dinstaller/questions_manager"
 require "dinstaller/config"
 
@@ -30,17 +29,14 @@ describe DInstaller::Storage::Manager do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:config) { DInstaller::Config.new }
-  let(:progress) { DInstaller::Progress.new }
 
   describe "#probe" do
     let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
     let(:proposal) { instance_double(DInstaller::Storage::Proposal, calculate: nil) }
-    let(:actions) { instance_double(DInstaller::Storage::Actions) }
     let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
     before do
       allow(DInstaller::Storage::Proposal).to receive(:new).and_return(proposal)
-      allow(DInstaller::Storage::Actions).to receive(:new).and_return(actions)
       allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
     end
 
@@ -50,26 +46,27 @@ describe DInstaller::Storage::Manager do
       end
       expect(y2storage_manager).to receive(:probe)
       expect(proposal).to receive(:calculate)
-      storage.probe(progress, questions_manager)
+      storage.probe(questions_manager)
     end
   end
 
   describe "#install" do
     it "runs the inst_prepdisk client" do
       expect(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
-      storage.install(progress)
-    end
-  end
-
-  describe "#actions" do
-    it "returns an instance of the Storage::Actions class" do
-      expect(storage.actions).to be_a(DInstaller::Storage::Actions)
+      storage.install
     end
   end
 
   describe "#proposal" do
     it "returns an instance of the Storage::Proposal class" do
       expect(storage.proposal).to be_a(DInstaller::Storage::Proposal)
+    end
+  end
+
+  describe "#finish" do
+    it "runs the umount_finish client" do
+      expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
+      storage.finish
     end
   end
 end

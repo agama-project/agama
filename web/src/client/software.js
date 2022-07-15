@@ -19,8 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { applyMixin, withDBus } from "./mixins";
+import { applyMixin, withDBus, withStatus, withProgress } from "./mixins";
+import cockpit from "../lib/cockpit";
 
+const SOFTWARE_SERVICE = "org.opensuse.DInstaller.Software";
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
 const SOFTWARE_PATH = "/org/opensuse/DInstaller/Software1";
 
@@ -28,8 +30,10 @@ const SOFTWARE_PATH = "/org/opensuse/DInstaller/Software1";
  * Software client
  */
 class SoftwareClient {
-  constructor(dbusClient) {
-    this._client = dbusClient;
+  constructor() {
+    this._client = cockpit.dbus(SOFTWARE_SERVICE, {
+      bus: "system", superuser: "try"
+    });
   }
 
   /**
@@ -40,14 +44,23 @@ class SoftwareClient {
   async getProducts() {
     const proxy = await this.proxy(SOFTWARE_IFACE);
     return proxy.AvailableBaseProducts.map(product => {
-      const [id, name] = product;
-      return { id, name };
+      const [id, name, meta] = product;
+      return { id, name, description: meta.description?.v };
     });
   }
 
+  /**
+   * Return the selected product
+   *
+   * @return {Promise.<Object|null>}
+   */
   async getSelectedProduct() {
+    const products = await this.getProducts();
     const proxy = await this.proxy(SOFTWARE_IFACE);
-    return proxy.SelectedBaseProduct;
+    if (proxy.SelectedBaseProduct === "") {
+      return null;
+    }
+    return products.find(product => product.id === proxy.SelectedBaseProduct);
   }
 
   async selectProduct(id) {
@@ -61,12 +74,16 @@ class SoftwareClient {
    * @param {function} handler - callback function
    */
   onProductChange(handler) {
-    return this.onObjectChanged(SOFTWARE_PATH, changes => {
-      const selected = changes.SelectedBaseProduct.v;
-      handler(selected);
+    return this.onObjectChanged(SOFTWARE_PATH, SOFTWARE_IFACE, changes => {
+      if ("SelectedBaseProduct" in changes) {
+        const selected = changes.SelectedBaseProduct.v;
+        handler(selected);
+      }
     });
   }
 }
 
-applyMixin(SoftwareClient, withDBus);
+applyMixin(
+  SoftwareClient, withDBus, withStatus(SOFTWARE_PATH), withProgress(SOFTWARE_PATH)
+);
 export default SoftwareClient;

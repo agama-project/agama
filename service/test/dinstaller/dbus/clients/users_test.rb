@@ -19,27 +19,43 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "dinstaller_cli/clients/users"
+require_relative "../../../test_helper"
+require "dinstaller/dbus/clients/users"
+require "dinstaller/dbus/service_status"
+require "dinstaller/dbus/interfaces/service_status"
 require "dbus"
 
-describe DInstallerCli::Clients::Users do
+describe DInstaller::DBus::Clients::Users do
   before do
     allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.DInstaller").and_return(service)
+    allow(bus).to receive(:service).with("org.opensuse.DInstaller.Users").and_return(service)
     allow(service).to receive(:object).with("/org/opensuse/DInstaller/Users1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
     allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Users1")
       .and_return(users_iface)
+    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.ServiceStatus1")
+      .and_return(service_status_iface)
   end
 
   let(:bus) { instance_double(::DBus::SystemBus) }
   let(:service) { instance_double(::DBus::Service) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:users_iface) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:service_status_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
   subject { described_class.new }
+
+  describe "#service_status" do
+    before do
+      allow(service_status_iface).to receive(:[]).with("Current")
+        .and_return(DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_BUSY)
+    end
+
+    it "returns the value of the service status" do
+      expect(subject.service_status).to eq(DInstaller::DBus::ServiceStatus::BUSY)
+    end
+  end
 
   describe "#first_user" do
     before do
@@ -127,6 +143,17 @@ describe DInstallerCli::Clients::Users do
       expect(dbus_object).to receive(:SetRootSSHKey).with("")
 
       subject.remove_root_info
+    end
+  end
+
+  describe "#write" do
+    # Using partial double because methods are dynamically added to the proxy object
+    let(:dbus_object) { double(::DBus::ProxyObject) }
+
+    it "applies changes into the system" do
+      expect(dbus_object).to receive(:Write)
+
+      subject.write
     end
   end
 end

@@ -26,11 +26,10 @@ require "dinstaller/progress"
 describe DInstaller::Network do
   subject(:network) { described_class.new(logger) }
 
-  let(:logger) { Logger.new($stdout) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
   let(:proposal) do
     instance_double(Y2Network::ProposalSettings, apply_defaults: nil, refresh_packages: nil)
   end
-  let(:progress) { DInstaller::Progress.new }
 
   describe "#probe" do
     before do
@@ -40,20 +39,20 @@ describe DInstaller::Network do
 
     it "reads the network configuration" do
       expect(Yast::Lan).to receive(:read_config)
-      network.probe(progress)
+      network.probe
     end
 
     it "refresh packages and apply defaults" do
       expect(proposal).to receive(:refresh_packages)
       expect(proposal).to receive(:apply_defaults)
-      network.probe(progress)
+      network.probe
     end
   end
 
   describe "#install" do
     it "runs the save_network client" do
       expect(Yast::WFM).to receive(:CallFunction).with("save_network", [])
-      network.install(progress)
+      network.install
     end
   end
 end

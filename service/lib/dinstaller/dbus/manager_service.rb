@@ -20,21 +20,20 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/manager"
+require "dinstaller/cockpit_manager"
 require "dinstaller/dbus/manager"
 require "dinstaller/dbus/language"
-require "dinstaller/dbus/software"
-require "dinstaller/dbus/users"
 require "dinstaller/dbus/storage/proposal"
-require "dinstaller/dbus/storage/actions"
 require "dinstaller/dbus/questions"
 
 module DInstaller
   module DBus
     # D-Bus service (org.opensuse.DInstaller)
     #
-    # It connects to the system D-Bus and answers requests on objets below
+    # It connects to the system D-Bus and answers requests on objects below
     # `/org/opensuse/DInstaller`.
-    class Service
+    class ManagerService
       # Service name
       #
       # @return [String]
@@ -51,12 +50,23 @@ module DInstaller
       # @return [DInstaller::Manager]
       attr_reader :manager
 
-      # @param manager [Manager] Installation manager
+      # @param config [Config] Configuration
       # @param logger [Logger]
-      def initialize(manager, logger = nil)
-        @manager = manager
+      def initialize(config, logger = nil)
+        @config = config
+        @manager = DInstaller::Manager.new(config, logger)
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
+      end
+
+      # Initializes and exports the D-Bus API
+      #
+      # @note The service runs its startup phase
+      def start
+        setup_cockpit
+        export
+        manager.on_progress_change { dispatch } # make single thread more responsive
+        manager.startup_phase
       end
 
       # Exports the installer object through the D-Bus service
@@ -77,6 +87,14 @@ module DInstaller
       # @return [Logger]
       attr_reader :logger
 
+      # @return [Config]
+      attr_reader :config
+
+      def setup_cockpit
+        cockpit = CockpitManager.new(logger)
+        cockpit.setup(config.data["web"])
+      end
+
       # @return [::DBus::Service]
       def service
         @service ||= bus.request_service(SERVICE_NAME)
@@ -87,10 +105,7 @@ module DInstaller
         @dbus_objects ||= [
           manager_dbus,
           language_dbus,
-          software_dbus,
-          users_dbus,
           storage_proposal_dbus,
-          storage_actions_dbus,
           questions_dbus
         ]
       end
@@ -103,23 +118,10 @@ module DInstaller
         @language_dbus ||= DInstaller::DBus::Language.new(manager.language, logger)
       end
 
-      def software_dbus
-        @software_dbus ||= DInstaller::DBus::Software.new(manager.software, logger)
-      end
-
-      def users_dbus
-        @users_dbus ||= DInstaller::DBus::Users.new(manager.users, logger)
-      end
-
       def storage_proposal_dbus
         @storage_proposal_dbus ||= DInstaller::DBus::Storage::Proposal.new(
-          manager.storage.proposal, storage_actions_dbus, logger
+          manager.storage.proposal, logger
         )
-      end
-
-      def storage_actions_dbus
-        @storage_actions_dbus ||=
-          DInstaller::DBus::Storage::Actions.new(manager.storage.actions, logger)
       end
 
       def questions_dbus

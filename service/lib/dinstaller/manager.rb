@@ -22,17 +22,17 @@
 require "yast"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
-require "dinstaller/cockpit_manager"
 require "dinstaller/config"
 require "dinstaller/language"
 require "dinstaller/network"
-require "dinstaller/progress"
-require "dinstaller/questions_manager"
 require "dinstaller/security"
-require "dinstaller/software"
-require "dinstaller/status_manager"
 require "dinstaller/storage"
-require "dinstaller/users"
+require "dinstaller/questions_manager"
+require "dinstaller/with_progress"
+require "dinstaller/installation_phase"
+require "dinstaller/service_status_recorder"
+require "dinstaller/dbus/clients/software"
+require "dinstaller/dbus/clients/users"
 
 Yast.import "Stage"
 
@@ -41,106 +41,117 @@ module DInstaller
   #
   # It is responsible for orchestrating the installation process. For module
   # specific stuff it delegates it to the corresponding module class (e.g.,
-  # {DInstaller::Software}, {DInstaller::Storage::Proposal}, etc.).
+  # {DInstaller::Network}, {DInstaller::Storage::Proposal}, etc.) or asks
+  # other services via D-Bus (e.g., `org.opensuse.DInstaller.Software`).
   class Manager
+    include WithProgress
+
     # @return [Logger]
     attr_reader :logger
-
-    # @return [StatusManager]
-    attr_reader :status_manager
 
     # @return [QuestionsManager]
     attr_reader :questions_manager
 
-    # @return [Progress]
-    attr_reader :progress
+    # @return [InstallationPhase]
+    attr_reader :installation_phase
 
     # Constructor
     #
     # @param logger [Logger]
-    def initialize(logger)
+    def initialize(config, logger)
+      @config = config
       @logger = logger
-      @status_manager = StatusManager.new(Status::Error.new) # temporary status until probing starts
       @questions_manager = QuestionsManager.new(logger)
-      @progress = Progress.new
-
-      initialize_yast
+      @installation_phase = InstallationPhase.new
+      @service_status_recorder = ServiceStatusRecorder.new
     end
 
-    # Sets up the installation process
-    def setup
-      setup_cockpit
+    # Runs the startup phase
+    def startup_phase
+      installation_phase.startup
+
+      start_progress(1)
+      progress.step("Probing Languages") { language.probe }
+
+      probe_single_product unless config.multi_product?
+
+      logger.info("Startup phase done")
     end
 
-    # Probes the system
-    def probe
-      probe_steps
+    # Runs the config phase
+    def config_phase
+      installation_phase.config
+
+      storage.probe(questions_manager)
+      security.probe
+      network.probe
+
+      logger.info("Config phase done")
     rescue StandardError => e
-      status = Status::Error.new.tap { |s| s.messages << e.message }
-      status_manager.change(status)
-      logger.error "Probing error: #{e.inspect}"
+      logger.error "Startup error: #{e.inspect}. Backtrace: #{e.backtrace}"
+      # TODO: report errors
     end
 
+    # Runs the install phase
     # rubocop:disable Metrics/AbcSize
-    def install
-      status_manager.change(Status::Installing.new)
-      progress.init_progress(8, "Partitioning")
-      Yast::Installation.destdir = "/mnt"
-      # lets propose it here to be sure that software proposal reflects product selection
-      # FIXME: maybe repropose after product selection change?
-      # first make bootloader proposal to be sure that required packages are installed
-      proposal = ::Bootloader::ProposalClient.new.make_proposal({})
-      logger.info "Bootloader proposal #{proposal.inspect}"
-      storage.install(progress)
-      # propose software after /mnt is already separated, so it uses proper
-      # target
-      software.propose
+    def install_phase
+      installation_phase.install
 
-      # call inst bootloader to get properly initialized bootloader
-      # sysconfig before package installation
-      Yast::WFM.CallFunction("inst_bootloader", [])
+      start_progress(9)
 
-      progress.next_step("Installing Software")
-      software.install(progress)
-
-      on_target do
-        progress.next_step("Writting Users")
-        users.write(progress)
-
-        progress.next_step("Writing Network Configuration")
-        network.install(progress)
-
-        progress.next_step("Installing Bootloader")
-        security.write(progress)
-        ::Bootloader::FinishClient.new.write
-
-        progress.next_step("Saving Language Settings")
-        language.install(progress)
-
-        progress.next_step("Writing repositories information")
-        software.finish(progress)
-
-        progress.next_step("Finishing installation")
-        finish_installation
+      progress.step("Reading software repositories") do
+        software.probe
+        Yast::Installation.destdir = "/mnt"
       end
 
-      progress.next_step("Installation Finished")
-      status_manager.change(Status::Installed.new)
+      progress.step("Partitioning") do
+        # lets propose it here to be sure that software proposal reflects product selection
+        # FIXME: maybe repropose after product selection change?
+        # first make bootloader proposal to be sure that required packages are installed
+        proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+        logger.info "Bootloader proposal #{proposal.inspect}"
+        storage.install
+        # propose software after /mnt is already separated, so it uses proper
+        # target
+        software.propose
+
+        # call inst bootloader to get properly initialized bootloader
+        # sysconfig before package installation
+        Yast::WFM.CallFunction("inst_bootloader", [])
+      end
+
+      progress.step("Installing Software") { software.install }
+
+      on_target do
+        progress.step("Writing Users") { users.write }
+
+        progress.step("Writing Network Configuration") { network.install }
+
+        progress.step("Installing Bootloader") do
+          security.write
+          ::Bootloader::FinishClient.new.write
+        end
+
+        progress.step("Saving Language Settings") { language.install }
+
+        progress.step("Writing repositories information") { software.finish }
+
+        progress.step("Finishing installation") { finish_installation }
+      end
+
+      logger.info("Install phase done")
     end
     # rubocop:enable Metrics/AbcSize
 
-    # Configuration
-    def config
-      Config.load unless Config.current
-
-      Config.current
-    end
-
-    # Software manager
+    # Software client
     #
-    # @return [Software]
+    # @return [DBus::Clients::Software]
     def software
-      @software ||= Software.new(logger, config)
+      @software ||= DBus::Clients::Software.new.tap do |client|
+        client.on_service_status_change do |status|
+          service_status_recorder.save(client.service.name, status)
+        end
+      end
     end
 
     # Language manager
@@ -150,11 +161,15 @@ module DInstaller
       @language ||= Language.new(logger)
     end
 
-    # Users manager
+    # Users client
     #
-    # @return [Users]
+    # @return [DBus::Clients::Users]
     def users
-      @users ||= Users.new(logger)
+      @users ||= DBus::Clients::Users.new.tap do |client|
+        client.on_service_status_change do |status|
+          service_status_recorder.save(client.service.name, status)
+        end
+      end
     end
 
     # Network manager
@@ -178,47 +193,36 @@ module DInstaller
       @security ||= Security.new(logger, config)
     end
 
+    # Actions to perform when a product is selected
+    #
+    # @note The config phase is executed.
+    def select_product(product)
+      config.pick_product(product)
+      config_phase
+    end
+
+    # Name of busy services
+    #
+    # @see ServiceStatusRecorder
+    #
+    # @return [Array<String>]
+    def busy_services
+      service_status_recorder.busy_services
+    end
+
+    # Registers a callback to be called when the status of a service changes
+    #
+    # @see ServiceStatusRecorder
+    def on_services_status_change(&block)
+      service_status_recorder.on_service_status_change(&block)
+    end
+
   private
 
-    # Initializes YaST
-    def initialize_yast
-      Yast::Mode.SetUI("commandline")
-      Yast::Mode.SetMode("installation")
-      # Set stage to initial, so it will act as installer for some cases like
-      # proposing installer instead of reading current one
-      Yast::Stage.Set("initial")
-    end
+    attr_reader :config
 
-    def setup_cockpit
-      cockpit = CockpitManager.new(logger)
-      cockpit.setup(config.data["web"])
-    end
-
-    # Performs probe steps
-    #
-    # Status and progress are properly updated during the process.
-    # rubocop:disable Metrics/AbcSize
-    def probe_steps
-      status_manager.change(Status::Probing.new)
-
-      progress.init_progress(4, "Probing Languages")
-      language.probe(progress)
-
-      progress.next_step("Probing Storage")
-      storage.probe(progress, questions_manager)
-
-      progress.next_step("Probing Software")
-      security.probe(progress)
-      software.probe(progress)
-
-      progress.next_step("Probing Network")
-      network.probe(progress)
-
-      progress.next_step("Probing Finished")
-
-      status_manager.change(Status::Probed.new)
-    end
-    # rubocop:enable Metrics/AbcSize
+    # @return [ServiceStatusRecorder]
+    attr_reader :service_status_recorder
 
     # Performs required steps after installing the system
     #
@@ -226,16 +230,11 @@ module DInstaller
     # performs many more steps like copying configuration files, creating snapshots, etc. Adding
     # more features to D-Installer could require to recover some of that YaST logic.
     def finish_installation
-      progress.init_minor_steps(2, "Copying logs")
       Yast::WFM.CallFunction("copy_logs_finish", ["Write"])
-
-      progress.next_minor_step("Unmounting target system")
-      Yast::WFM.CallFunction("pre_umount_finish", ["Write"])
-      Yast::WFM.CallFunction("umount_finish", ["Write"])
-      progress.next_minor_step("Target system correctly unmounted")
+      storage.finish
     end
 
-    # Run a block in the target system
+    # Runs a block in the target system
     def on_target(&block)
       old_handle = Yast::WFM.SCRGetDefault
       handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
@@ -249,6 +248,17 @@ module DInstaller
         Yast::WFM.SCRSetDefault(old_handle)
         Yast::WFM.SCRClose(handle)
       end
+    end
+
+    # Runs the config phase for the first product found
+    #
+    # Adjust the configuration and run the config phase.
+    #
+    # This method is expected to be used on single-product scenarios.
+    def probe_single_product
+      selected = config.data["products"].keys.first
+      config.pick_product(selected)
+      config_phase
     end
   end
 end

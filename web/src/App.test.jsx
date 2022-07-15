@@ -21,113 +21,27 @@
 
 import React from "react";
 
-import { act, screen } from "@testing-library/react";
-import { installerRender } from "./test-utils";
-import { createClient } from "./client";
-import { PROBING, PROBED, INSTALLING, INSTALLED } from "./client/status";
+import { screen } from "@testing-library/react";
+import { plainRender } from "./test-utils";
 
 import App from "./App";
-
-jest.mock("./client");
 
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
 
-jest.mock("./DBusError", () => () => "D-BusError Mock");
-jest.mock("./ProbingProgress", () => () => "ProbingProgress Mock");
-jest.mock("./InstallationProgress", () => () => "InstallationProgress Mock");
-jest.mock("./InstallationFinished", () => () => "InstallationFinished Mock");
-jest.mock("./Overview", () => () => "Overview Mock");
-jest.mock("./Questions", () => () => <div>Questions Mock</div>);
 jest.mock("./TargetIpsPopup", () => () => "Target IPs Mock");
-
-const callbacks = {};
-const initialStatusMock = null;
-let getStatusFn = jest.fn();
-
-// capture the latest subsccription to the manager#onChange for triggering it manually
-const onChangeFn = cb => { callbacks.onChange = cb };
-
-beforeEach(() => {
-  createClient.mockImplementation(() => {
-    return {
-      manager: {
-        getStatus: getStatusFn,
-        onChange: onChangeFn
-      },
-      monitor: {
-        onDisconnect: jest.fn()
-      },
-      network: {
-        config: jest.fn()
-      }
-    };
-  });
-});
-
-const changeStatusTo = status => act(() => callbacks.onChange({ Status: status }));
+jest.mock('react-router-dom', () => ({
+  Outlet: () => <div>Content</div>
+}));
 
 describe("App", () => {
-  describe("when there are problems connecting with D-Bus service", () => {
-    beforeEach(() => {
-      getStatusFn = () => Promise.reject(new Error("Couldn't connect to D-Bus service"));
-    });
-
-    it("renders the Questions and DBusError components", async () => {
-      installerRender(<App />);
-
-      await screen.findByText("Questions Mock");
-      await screen.findByText("D-BusError Mock");
-    });
+  it("renders the application's content", () => {
+    plainRender(<App />);
+    expect(screen.queryByText("Content")).toBeInTheDocument();
   });
 
-  describe("when D-Bus service status changes", () => {
-    beforeEach(() => {
-      getStatusFn = () => Promise.resolve(initialStatusMock);
-    });
-
-    it("renders Questions and ProbingProgress components when PROBING", async () => {
-      installerRender(<App />);
-
-      await screen.findByText(/Loading.*environment/i);
-
-      changeStatusTo(PROBING);
-
-      await screen.findByText("Questions Mock");
-      await screen.findByText("ProbingProgress Mock");
-    });
-
-    it("renders Questions and InstallationProgress components when INSTALLING", async () => {
-      installerRender(<App />);
-
-      await screen.findByText(/Loading.*environment/i);
-
-      changeStatusTo(INSTALLING);
-
-      await screen.findByText("Questions Mock");
-      await screen.findByText("InstallationProgress Mock");
-    });
-
-    it("renders Questions and InstallationFinished components when INSTALLED", async () => {
-      installerRender(<App />);
-
-      await screen.findByText(/Loading.*environment/i);
-
-      changeStatusTo(INSTALLED);
-
-      await screen.findByText("Questions Mock");
-      await screen.findByText("InstallationFinished Mock");
-    });
-
-    it("renders Questions and Overview components if not PROBING, INSTALLING, or INSTALLED", async () => {
-      installerRender(<App />);
-
-      await screen.findByText(/Loading.*environment/i);
-
-      changeStatusTo(PROBED);
-
-      await screen.findByText("Questions Mock");
-      await screen.findByText("Overview Mock");
-    });
+  it("renders IP address and hostname", () => {
+    plainRender(<App />);
+    expect(screen.queryByText("Target IPs Mock")).toBeInTheDocument();
   });
 });

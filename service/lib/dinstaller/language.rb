@@ -38,17 +38,13 @@ module DInstaller
     end
 
     # Probes the available system languages
-    #
-    # @param _progress [Progress] Progress reporting object
-    def probe(_progress)
+    def probe
       logger.info "Probing languages"
       @languages = Yast::Language.GetLanguagesMap(true)
     end
 
     # Writes the language settings
-    #
-    # @param _progress [Progress] Progress reporting object
-    def install(_progress)
+    def install
       Yast::Language.Save
     end
 

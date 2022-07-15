@@ -24,8 +24,10 @@ import { act, screen } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import Storage from "./Storage";
 import { createClient } from "./client";
+import { IDLE } from "./client/status";
 
 jest.mock("./client");
+jest.mock("./InstallerSkeleton", () => () => "Loading storage");
 
 const proposalSettings = {
   availableDevices: [
@@ -39,6 +41,7 @@ const proposalSettings = {
 let onActionsChangeFn = jest.fn();
 let onStorageProposalChangeFn = jest.fn();
 let calculateStorageProposalFn;
+const getStatusFn = jest.fn().mockResolvedValue(IDLE);
 
 const storageMock = {
   getStorageProposal: () => Promise.resolve(proposalSettings),
@@ -53,7 +56,13 @@ beforeEach(() => {
         ...storageMock,
         calculateStorageProposal: calculateStorageProposalFn,
         onActionsChange: onActionsChangeFn,
-        onStorageProposalChange: onStorageProposalChangeFn
+        onStorageProposalChange: onStorageProposalChangeFn,
+        getStatus: getStatusFn.mockResolvedValue(IDLE),
+        onStatusChange: jest.fn()
+      },
+      manager: {
+        getStatus: jest.fn().mockResolvedValue(IDLE),
+        onStatusChange: jest.fn()
       }
     };
   });
@@ -132,7 +141,7 @@ describe("when the storage actions changes", () => {
 
     const [cb] = callbacks;
     act(() => {
-      cb({ All: [{ text: "Mount /dev/sdb1 as root", subvol: false }] });
+      cb([{ text: "Mount /dev/sdb1 as root", subvol: false }]);
     });
     await screen.findByText("Mount /dev/sdb1 as root");
   });

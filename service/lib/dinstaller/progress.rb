@@ -22,101 +22,128 @@
 module DInstaller
   # Class to manage progress
   #
-  # It uses callbacks to report the progress, specially useful for long run actions like probing or
-  # committing. The progress supports major and minor steps.
+  # It allows to configure callbacks to be called on each step and also when the progress finishes.
   #
   # @example
-  #   def long_action
-  #     progress = Progress.new
-  #     progress.on_chage { puts progress.message }
   #
-  #     progress.init_progress(3, "Doing step1")    # steps 0/3
-  #     step1(progress)
-  #     progress.next_step("Doing step2")           # steps 1/3
-  #     step2(progress)
-  #     progress.next_step("Doing step3")           # steps 2/3
-  #     step3(progress)
-  #     progress.next_step("Finished action")       # steps 3/3, progress is done
-  #   end
+  #   progress = Progress.new(3)                    # 3 steps
+  #   progress.on_change { puts progress.message }  # configures callbacks
+  #   progress.on_finish { puts "finished"  }       # configures callbacks
   #
-  #   def step2(progress)
-  #     progress.init_minor_steps(2, "Doing subtask1")  # sub-steps 0/2
-  #     subtask1
-  #     progress.next_minor_step("Doing subtask2")      # sub-steps 1/2
-  #     subtask2
-  #     progress.next_minor_step("Finished step")       # sub-steps 2/2
-  #   end
+  #   progress.step("Doing step1") { step1 }        # calls on_change callbacks and executes step1
+  #   progress.step("Doing step2") { step2 }        # calls on_change callbacks and executes step2
+  #
+  #   progress.current_step                         #=> <Step>
+  #   progress.current_step.id                      #=> 2
+  #   progress.current_step.description             #=> "Doing step2"
+  #
+  #   progress.finished?                            #=> false
+
+  #   progress.step("Doing step3") do               # calls on_change callbacks, executes the given
+  #     progress.current_step.description           # block and calls on_finish callbacks
+  #   end                                           #=> "Doing step3"
+  #
+  #   progress.finished?                            #=> true
+  #   progress.current_step                         #=> nil
   class Progress
-    # Message of the current progress step (or sub-step)
-    #
-    # @return [String]
-    attr_reader :message
+    # Step of the progress
+    class Step
+      # Id of the step
+      #
+      # @return [Integer]
+      attr_reader :id
+
+      # Description of the step
+      #
+      # @return [String]
+      attr_reader :description
+
+      # Constructor
+      #
+      # @param id [Integer]
+      # @param description [String]
+      def initialize(id, description)
+        @id = id
+        @description = description
+      end
+    end
 
     # Total number of steps
     #
     # @return [Integer]
     attr_reader :total_steps
 
-    # Number of the current step (first step is 0)
+    # Constructor
     #
-    # @return [Integer]
-    attr_reader :current_step
-
-    # Total number of sub-steps
-    #
-    # @return [Integer]
-    attr_reader :total_minor_steps
-
-    # Number of the current sub-step
-    #
-    # @return [Integer]
-    attr_reader :current_minor_step
-
-    def initialize
-      @message = ""
-      @total_steps = @current_step = @total_minor_steps = @current_minor_step = 0
+    # @param toal_steps [Integer] total number of steps
+    def initialize(total_steps)
+      @total_steps = total_steps
+      @current_step = nil
+      @counter = 0
+      @finished = false
       @on_change_callbacks = []
+      @on_finish_callbacks = []
     end
 
-    # Adds callback that is called when progress changed
+    # Current progress step, if any
+    #
+    # @return [Step, nil] nil if the progress is already finished or not stated yet.
+    def current_step
+      return nil if finished?
+
+      @current_step
+    end
+
+    # Runs a progress step
+    #
+    # It calls the `on_change` callbacks and then runs the given block, if any. It also calls
+    # `on_finish` callbacks after the last step.
+    #
+    # @param description [String] description of the step
+    # @param block [Proc]
+    #
+    # @return [Object, nil] result of the given block or nil if no block is given
+    def step(description, &block)
+      return if finished?
+
+      @counter += 1
+      @current_step = Step.new(@counter, description)
+      @on_change_callbacks.each(&:call)
+
+      result = block_given? ? block.call : nil
+
+      finish if @counter == total_steps
+
+      result
+    end
+
+    # Whether the last step was already done
+    #
+    # @return [Boolean]
+    def finished?
+      total_steps == 0 || @finished
+    end
+
+    # Finishes the progress and runs the callbacks
+    #
+    # This method can be called to force the progress to finish before of running all the steps.
+    def finish
+      @finished = true
+      @on_finish_callbacks.each(&:call)
+    end
+
+    # Adds a callback to be called when progress changes
+    #
+    # @param block [Proc]
     def on_change(&block)
       @on_change_callbacks << block
     end
 
-    def init_progress(amount_of_major_steps, message)
-      @total_steps = amount_of_major_steps
-      @current_step = 0
-      @message = message
-      trigger_callbacks
-    end
-
-    def next_step(message)
-      reset_minor_steps
-      @message = message
-      @current_step += 1
-      trigger_callbacks
-    end
-
-    def init_minor_steps(amount_of_minor_steps, message)
-      @total_minor_steps = amount_of_minor_steps
-      @message = message
-      trigger_callbacks
-    end
-
-    def next_minor_step(message)
-      @message = message
-      @current_minor_step += 1
-      trigger_callbacks
-    end
-
-  private
-
-    def trigger_callbacks
-      @on_change_callbacks.each(&:call)
-    end
-
-    def reset_minor_steps
-      @total_minor_steps = @current_minor_step = 0
+    # Adds a callback to be called when progress finishes
+    #
+    # @param block [Proc]
+    def on_finish(&block)
+      @on_finish_callbacks << block
     end
   end
 end

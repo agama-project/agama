@@ -21,56 +21,88 @@
 
 require_relative "../test_helper"
 require "dinstaller/manager"
+require "dinstaller/config"
+require "dinstaller/dbus/service_status"
 
 describe DInstaller::Manager do
-  subject { described_class.new(logger) }
+  subject { described_class.new(config, logger) }
 
+  let(:config_path) do
+    File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
+  end
+  let(:config) { DInstaller::Config.from_file(config_path) }
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:cockpit) { instance_double(DInstaller::CockpitManager, setup: nil) }
   let(:software) do
-    instance_double(DInstaller::Software, probe: nil, install: nil, propose: nil, finish: nil)
+    instance_double(
+      DInstaller::DBus::Clients::Software,
+      probe: nil, install: nil, propose: nil, finish: nil, on_product_selected: nil,
+      on_service_status_change: nil
+    )
+  end
+  let(:users) do
+    instance_double(DInstaller::DBus::Clients::Users, write: nil, on_service_status_change: nil)
   end
   let(:language) { instance_double(DInstaller::Language, probe: nil, install: nil) }
-  let(:users) { instance_double(DInstaller::Users, write: nil) }
   let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
-  let(:storage) { instance_double(DInstaller::Storage::Manager, probe: nil, install: nil) }
-  let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
-  let(:status_manager) do
-    instance_double(DInstaller::StatusManager, change: nil)
+  let(:storage) do
+    instance_double(DInstaller::Storage::Manager, probe: nil, install: nil, finish: nil)
   end
+  let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
   let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
   before do
     allow(DInstaller::Language).to receive(:new).and_return(language)
     allow(DInstaller::Network).to receive(:new).and_return(network)
     allow(DInstaller::Security).to receive(:new).and_return(security)
-    allow(DInstaller::Software).to receive(:new).and_return(software)
-    allow(DInstaller::StatusManager).to receive(:new).and_return(status_manager)
+    allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software)
+    allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(users)
     allow(DInstaller::Storage::Manager).to receive(:new).and_return(storage)
-    allow(DInstaller::Users).to receive(:new).and_return(users)
-    allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
     allow(DInstaller::QuestionsManager).to receive(:new).and_return(questions_manager)
   end
 
-  describe "#probe" do
-    it "sets the status to probing and probed" do
-      expect(status_manager).to receive(:change).with(DInstaller::Status::Probing)
-      expect(status_manager).to receive(:change).with(DInstaller::Status::Probed)
-      subject.probe
+  describe "#startup_phase" do
+    before do
+      allow(subject).to receive(:config_phase)
     end
 
-    it "calls #probe method of each module passing a progress object" do
-      expect(software).to receive(:probe).with(subject.progress)
-      expect(security).to receive(:probe).with(subject.progress)
-      expect(language).to receive(:probe).with(subject.progress)
-      expect(network).to receive(:probe).with(subject.progress)
-      expect(storage).to receive(:probe).with(subject.progress, subject.questions_manager)
-      subject.probe
+    it "sets the installation phase to startup" do
+      subject.startup_phase
+      expect(subject.installation_phase.startup?).to eq(true)
+    end
+
+    it "probes languages" do
+      expect(language).to receive(:probe)
+      subject.startup_phase
+    end
+
+    context "when only one product is defined" do
+      let(:config_path) do
+        File.join(FIXTURES_PATH, "d-installer-single.yaml")
+      end
+
+      it "adjusts the configuration and runs the config phase" do
+        expect(subject).to receive(:config_phase)
+        subject.startup_phase
+      end
     end
   end
 
-  describe "#install" do
+  describe "#config_phase" do
+    it "sets the installation phase to config" do
+      subject.config_phase
+      expect(subject.installation_phase.config?).to eq(true)
+    end
+
+    it "calls #probe method of each module" do
+      expect(security).to receive(:probe)
+      expect(network).to receive(:probe)
+      expect(storage).to receive(:probe).with(subject.questions_manager)
+      subject.config_phase
+    end
+  end
+
+  describe "#install_phase" do
     let(:bootloader_proposal) { instance_double(Bootloader::ProposalClient, make_proposal: nil) }
     let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
 
@@ -82,26 +114,78 @@ describe DInstaller::Manager do
         .and_return(bootloader_finish)
     end
 
-    it "calls #install (or #write) method of each module passing a progress object" do
-      expect(language).to receive(:install).with(subject.progress)
-      expect(network).to receive(:install).with(subject.progress)
-      expect(software).to receive(:install).with(subject.progress)
-      expect(security).to receive(:write).with(subject.progress)
-      expect(storage).to receive(:install).with(subject.progress)
-      expect(users).to receive(:write).with(subject.progress)
-      subject.install
+    it "sets the installation phase to install" do
+      subject.install_phase
+      expect(subject.installation_phase.install?).to eq(true)
+    end
+
+    it "calls #install (or #write) method of each module" do
+      expect(language).to receive(:install)
+      expect(network).to receive(:install)
+      expect(software).to receive(:install)
+      expect(software).to receive(:probe)
+      expect(software).to receive(:finish)
+      expect(security).to receive(:write)
+      expect(storage).to receive(:install)
+      expect(storage).to receive(:finish)
+      expect(users).to receive(:write)
+      subject.install_phase
     end
 
     it "proposes and writes the bootloader configuration" do
       expect(bootloader_proposal).to receive(:make_proposal)
       expect(bootloader_finish).to receive(:write)
-      subject.install
+      subject.install_phase
+    end
+  end
+
+  let(:idle) { DInstaller::DBus::ServiceStatus::IDLE }
+  let(:busy) { DInstaller::DBus::ServiceStatus::BUSY }
+
+  describe "#busy_services" do
+    before do
+      allow(subject).to receive(:service_status_recorder).and_return(service_status_recorder)
+
+      service_status_recorder.save("org.opensuse.DInstaller.Test1", busy)
+      service_status_recorder.save("org.opensuse.DInstaller.Test2", idle)
+      service_status_recorder.save("org.opensuse.DInstaller.Test3", busy)
     end
 
-    it "sets the status to installed and installed" do
-      expect(status_manager).to receive(:change).with(DInstaller::Status::Installing)
-      expect(status_manager).to receive(:change).with(DInstaller::Status::Installed)
-      subject.install
+    let(:service_status_recorder) { DInstaller::ServiceStatusRecorder.new }
+
+    it "returns the name of the busy services" do
+      expect(subject.busy_services).to contain_exactly(
+        "org.opensuse.DInstaller.Test1",
+        "org.opensuse.DInstaller.Test3"
+      )
+    end
+  end
+
+  describe "#on_services_status_change" do
+    before do
+      allow(subject).to receive(:service_status_recorder).and_return(service_status_recorder)
+    end
+
+    let(:service_status_recorder) { DInstaller::ServiceStatusRecorder.new }
+
+    it "add a callback to be run when the status of a service changes" do
+      subject.on_services_status_change { logger.info("change status") }
+
+      expect(logger).to receive(:info).with(/change status/)
+      service_status_recorder.save("org.opensuse.DInstaller.Test", busy)
+    end
+  end
+
+  describe "#select_product" do
+    it "configures the given product as selected product" do
+      subject.select_product("Leap")
+      expect(config.data["software"]["base_product"]).to eq("Leap")
+      expect(config.pure_data["software"]).to be_nil
+    end
+
+    it "runs the config phase" do
+      expect(subject).to receive(:config_phase)
+      subject.select_product("Leap")
     end
   end
 end

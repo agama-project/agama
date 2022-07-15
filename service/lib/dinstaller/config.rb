@@ -19,7 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
 require "yaml"
 require "dinstaller/config_reader"
 
@@ -37,8 +36,8 @@ module DInstaller
       attr_accessor :current, :base
 
       # Loads base and current config reading configuration from the system
-      def load
-        @base = ConfigReader.new.config
+      def load(logger = Logger.new($stdout))
+        @base = ConfigReader.new(logger: logger).config
         @current = @base&.copy
       end
 
@@ -46,6 +45,13 @@ module DInstaller
       def reset
         @base = nil
         @current = nil
+      end
+
+      # Load the configuration from a given file
+      #
+      # @param path [String|Pathname] File path
+      def from_file(path)
+        new(YAML.safe_load(File.read(path.to_s)))
       end
     end
 
@@ -67,7 +73,22 @@ module DInstaller
     end
 
     def data
-      @data ||= @pure_data || {}
+      return @data if @data
+
+      @data = @pure_data.dup || {}
+      pick_product(@data["products"].keys.first) if @data["products"]
+      @data
+    end
+
+    def pick_product(product)
+      data.merge!(data[product])
+    end
+
+    # Whether there are more than one product
+    #
+    # @return [Boolean] false if there is only one product; true otherwise
+    def multi_product?
+      data["products"].size > 1
     end
 
     # Returns a copy of this Object

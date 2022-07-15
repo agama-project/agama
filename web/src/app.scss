@@ -148,3 +148,42 @@ p {
 .overview-users > div {
   margin-block-start: 0.5ex;
 }
+
+// Using a "selected-product" CSS class because sadly we cannot use
+// ".pf-c-card:has(> input[type="radio"]:checked)" yet
+//
+// See:
+//   - https://drafts.csswg.org/selectors/#relational
+//   - https://caniuse.com/css-has
+.pf-c-card.selected-product {
+  //border: 1px solid branding.$eos-bc-green-500;
+  --pf-c-card--BoxShadow: var(--pf-global--BoxShadow--md);
+
+  .pf-c-radio {
+    // https://drafts.csswg.org/css-ui/#widget-accent
+    // https://caniuse.com/mdn-css_properties_accent-color
+    accent-color: branding.$eos-bc-pine-500;
+  }
+
+  .pf-c-radio__label {
+    color: branding.$eos-bc-green-500;
+    font-weight: bold;
+  }
+
+  .pf-c-radio__description {
+    color: branding.$eos-bc-pine-500;
+  }
+}
+
+.installer-skeleton {
+  margin-block-start: 1em;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.host-ip {
+  vertical-align: middle;
+  color: branding.$eos-bc-gray-900;
+}

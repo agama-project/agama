@@ -20,22 +20,37 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
-require "dinstaller/dbus/service"
-require "dinstaller/manager"
+require "dinstaller/dbus/manager_service"
+require "dinstaller/config"
 
-describe DInstaller::DBus::Service do
-  subject(:service) { described_class.new(manager, logger) }
+describe DInstaller::DBus::ManagerService do
+  subject(:service) { described_class.new(config, logger) }
 
-  let(:logger) { Logger.new($stdout) }
-  let(:manager) { DInstaller::Manager.new(logger) }
+  let(:config) { DInstaller::Config.new }
+  let(:logger) { Logger.new($stdout, level: :warn) }
+  let(:manager) { DInstaller::Manager.new(config, logger) }
   let(:bus) { instance_double(::DBus::SystemBus) }
   let(:bus_service) do
     instance_double(::DBus::Service, export: nil)
+  end
+  let(:cockpit) { instance_double(DInstaller::CockpitManager, setup: nil) }
+  let(:software_client) do
+    instance_double(DInstaller::DBus::Clients::Software, on_product_selected: nil)
   end
 
   before do
     allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
     allow(bus).to receive(:request_service).and_return(bus_service)
+    allow(DInstaller::Manager).to receive(:new).with(config, logger).and_return(manager)
+    allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
+    allow(manager).to receive(:software).and_return(software_client)
+  end
+
+  describe "#start" do
+    it "runs the startup phase" do
+      expect(manager).to receive(:startup_phase)
+      subject.start
+    end
   end
 
   describe "#export" do
@@ -48,40 +63,13 @@ describe DInstaller::DBus::Service do
       service.export
     end
 
-    it "exports the software manager object" do
-      software_obj = instance_double(DInstaller::DBus::Software, path: nil)
-      allow(DInstaller::DBus::Software).to receive(:new)
-        .with(manager.software, logger).and_return(software_obj)
-
-      expect(bus_service).to receive(:export).with(software_obj)
-      service.export
-    end
-
-    it "exports the storage actions object" do
-      actions_obj = instance_double(DInstaller::DBus::Storage::Actions, path: nil)
-      allow(DInstaller::DBus::Storage::Actions).to receive(:new)
-        .with(manager.storage.actions, logger).and_return(actions_obj)
-
-      expect(bus_service).to receive(:export).with(actions_obj)
-      service.export
-    end
-
     it "exports the storage proposal object" do
       proposal_obj = instance_double(DInstaller::DBus::Storage::Proposal, path: nil)
       allow(DInstaller::DBus::Storage::Proposal).to receive(:new)
-        .with(manager.storage.proposal, DInstaller::DBus::Storage::Actions, logger)
+        .with(manager.storage.proposal, logger)
         .and_return(proposal_obj)
 
       expect(bus_service).to receive(:export).with(proposal_obj)
-      service.export
-    end
-
-    it "exports the users manager object" do
-      users_obj = instance_double(DInstaller::DBus::Users, path: nil)
-      allow(DInstaller::DBus::Users).to receive(:new)
-        .with(manager.users, logger).and_return(users_obj)
-
-      expect(bus_service).to receive(:export).with(users_obj)
       service.export
     end
 

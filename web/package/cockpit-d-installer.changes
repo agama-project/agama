@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Fri Jul 15 07:32:48 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.4:
+  * Support for installing multiple products
+    (gh#yast/d-installer#211).
+  * Adapt to the new status/progress reporting API
+    (gh#yast/d-installer#219).
+  * Add a better layout mechanism (gh#yast/d-installer#216).
+
+-------------------------------------------------------------------
 Mon Jun 13 10:10:03 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.3:

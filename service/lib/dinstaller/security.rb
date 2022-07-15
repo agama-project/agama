@@ -60,22 +60,36 @@ end
 module DInstaller
   # Backend class between dbus service and yast code
   class Security
+    # @return [Logger]
+    attr_reader :logger
+
     def initialize(logger, config)
       @config = config
       @logger = logger
     end
 
-    def write(_progress)
-      config.save
+    def write
+      lsm_config.save
     end
 
-    def probe(_progress)
-      config.select(@config.data["security"]["lsm"])
+    def probe
+      selected_lsm = config.data["security"]["lsm"]
+      lsm_config.select(selected_lsm)
+
+      patterns = if selected_lsm.nil?
+        []
+      else
+        lsm_data = config.data["security"]["available_lsms"][selected_lsm]
+        lsm_data["patterns"]
+      end
+      Yast::PackagesProposal.SetResolvables("LSM", :pattern, patterns)
     end
 
   private
 
-    def config
+    attr_reader :config
+
+    def lsm_config
       Y2Security::LSM::Config.instance
     end
   end
