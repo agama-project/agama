@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    d-installer (0.3)
+    d-installer (0.4)
       cfa (~> 1.0.2)
       cfa_grub2 (~> 2.0.0)
       cheetah (~> 1.0.0)
@@ -26,10 +26,6 @@ GEM
     docile (1.4.0)
     eventmachine (1.2.7)
     fast_gettext (2.2.0)
-    mini_portile2 (2.8.0)
-    nokogiri (1.13.6)
-      mini_portile2 (~> 2.8.0)
-      racc (~> 1.4)
     nokogiri (1.13.6-x86_64-linux)
       racc (~> 1.4)
     packaging_rake_tasks (1.5.1)

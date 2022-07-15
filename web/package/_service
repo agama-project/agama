@@ -18,6 +18,6 @@
   </service>
   <service mode="buildtime" name="set_version">
     <param name="basename">cockpit-d-installer</param>
-    <param name="version">0.3</param>
+    <param name="version">0.4</param>
   </service>
 </services>

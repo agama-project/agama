@@ -3,6 +3,15 @@
 :preamble: |-
   BuildRequires:  libdbus-1-3
   Requires:       libdbus-1-3
+  Requires:       snapper
+  Requires:       yast2-bootloader
+  Requires:       yast2-country
+  Requires:       yast2-hardware-detection
+  Requires:       yast2-installation
+  Requires:       yast2-network
+  Requires:       yast2-proxy
+  Requires:       yast2-storage-ng
+  Requires:       yast2-users
 # ## used by gem2rpm
 :post_install: |-
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/dbus.conf %{buildroot}%{_sysconfdir}/dbus-1/system.d/org.opensuse.DInstaller.conf
