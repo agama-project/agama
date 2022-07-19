@@ -9,6 +9,7 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
 const CockpitPoPlugin = require("./src/lib/cockpit-po-plugin");
 const CockpitRsyncPlugin = require("./src/lib/cockpit-rsync-plugin");
+const StylelintPlugin = require('stylelint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 /* A standard nodejs and webpack pattern */
@@ -16,6 +17,9 @@ const production = process.env.NODE_ENV === 'production';
 
 /* development options for faster iteration */
 const eslint = process.env.ESLINT !== '0';
+
+/* Default to disable csslint for faster production builds */
+const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : !production;
 
 // Obtain package name from package.json
 const packageJson = JSON.parse(fs.readFileSync('package.json'));
@@ -37,6 +41,12 @@ const plugins = [
 
 if (eslint) {
   plugins.push(new ESLintPlugin({ extensions: ["js", "jsx"], failOnWarning: true, }));
+}
+
+if (stylelint) {
+  plugins.push(new StylelintPlugin({
+    context: "src/",
+  }));
 }
 
 /* Only minimize when in production mode */
