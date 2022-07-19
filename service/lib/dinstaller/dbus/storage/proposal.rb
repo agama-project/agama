@@ -20,6 +20,10 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/dbus/base_object"
+require "dinstaller/dbus/with_service_status"
+require "dinstaller/dbus/interfaces/service_status"
+require "dinstaller/storage/proposal"
 
 module DInstaller
   module DBus
@@ -90,11 +94,15 @@ module DInstaller
         # @see DInstaller::Storage::Proposal
         def lvm
           backend.lvm?
+        rescue DInstaller::Storage::Proposal::NoProposalError
+          false
         end
 
         # @see DInstaller::Storage::Proposal
         def candidate_devices
           backend.candidate_devices
+        rescue DInstaller::Storage::Proposal::NoProposalError
+          []
         end
 
         # List of sorted actions in D-Bus format

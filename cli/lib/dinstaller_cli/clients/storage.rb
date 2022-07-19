@@ -19,15 +19,21 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "dbus"
+require "dinstaller/dbus/clients/base"
 
 module DInstallerCli
   module Clients
     # D-Bus client for storage configuration
-    class Storage
+    class Storage < DInstaller::DBus::Clients::Base
       def initialize
+        super
+
         @dbus_proposal = service.object("/org/opensuse/DInstaller/Storage/Proposal1")
         @dbus_proposal.introspect
+      end
+
+      def service_name
+        @service_name ||= "org.opensuse.DInstaller"
       end
 
       # Devices available for the installation
@@ -62,18 +68,6 @@ module DInstallerCli
 
       # @return [::DBus::Object]
       attr_reader :dbus_proposal
-
-      # @return [::DBus::Object]
-      attr_reader :dbus_actions
-
-      # @return [::DBus::Service]
-      def service
-        @service ||= bus.service("org.opensuse.DInstaller")
-      end
-
-      def bus
-        @bus ||= DBus::SystemBus.instance
-      end
     end
   end
 end
