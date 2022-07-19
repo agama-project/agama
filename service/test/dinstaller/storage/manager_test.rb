@@ -51,6 +51,30 @@ describe DInstaller::Storage::Manager do
   end
 
   describe "#install" do
+    before do
+      allow(Y2Storage::StorageManager.instance).to receive(:staging)
+        .and_return(proposed_devicegraph)
+
+      allow(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
+      allow(Yast::PackagesProposal).to receive(:SetResolvables)
+    end
+
+    let(:proposed_devicegraph) do
+      instance_double(Y2Storage::Devicegraph, used_features: used_features)
+    end
+
+    let(:used_features) do
+      instance_double(Y2Storage::StorageFeaturesList, pkg_list: ["btrfsprogs", "snapper"])
+    end
+
+    it "adds storage software to install" do
+      expect(Yast::PackagesProposal).to receive(:SetResolvables) do |_, _, packages|
+        expect(packages).to contain_exactly("btrfsprogs", "snapper")
+      end
+
+      storage.install
+    end
+
     it "runs the inst_prepdisk client" do
       expect(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
       storage.install
