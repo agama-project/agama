@@ -20,6 +20,8 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
+require_relative "with_service_status_examples"
+require_relative "with_progress_examples"
 require "dinstaller/dbus/clients/software"
 require "dinstaller/dbus/service_status"
 require "dinstaller/dbus/interfaces/service_status"
@@ -34,11 +36,8 @@ describe DInstaller::DBus::Clients::Software do
     allow(dbus_object).to receive(:introspect)
     allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Software1")
       .and_return(software_iface)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.ServiceStatus1")
-      .and_return(service_status_iface)
     allow(dbus_object).to receive(:[]).with("org.freedesktop.DBus.Properties")
       .and_return(properties_iface)
-
     allow(service).to receive(:object).with("/org/opensuse/DInstaller/Software/Proposal1")
       .and_return(dbus_proposal)
   end
@@ -48,21 +47,9 @@ describe DInstaller::DBus::Clients::Software do
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:dbus_proposal) { instance_double(::DBus::ProxyObject, introspect: nil) }
   let(:software_iface) { instance_double(::DBus::ProxyObjectInterface) }
-  let(:service_status_iface) { instance_double(::DBus::ProxyObjectInterface) }
   let(:properties_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
   subject { described_class.new }
-
-  describe "#service_status" do
-    before do
-      allow(service_status_iface).to receive(:[]).with("Current")
-        .and_return(DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_BUSY)
-    end
-
-    it "returns the value of the service status" do
-      expect(subject.service_status).to eq(DInstaller::DBus::ServiceStatus::BUSY)
-    end
-  end
 
   describe "#available_products" do
     before do
@@ -159,4 +146,7 @@ describe DInstaller::DBus::Clients::Software do
       end
     end
   end
+
+  include_examples "service status"
+  include_examples "progress"
 end

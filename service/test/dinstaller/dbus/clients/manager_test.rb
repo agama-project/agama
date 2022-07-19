@@ -19,11 +19,15 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "dinstaller_cli/clients/manager"
+require_relative "../../../test_helper"
+require_relative "with_service_status_examples"
+require_relative "with_progress_examples"
 require "dbus"
+require "dinstaller/dbus/clients/manager"
+require "dinstaller/dbus/manager"
+require "dinstaller/installation_phase"
 
-describe DInstallerCli::Clients::Manager do
+describe DInstaller::DBus::Clients::Manager do
   before do
     allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
     allow(bus).to receive(:service).with("org.opensuse.DInstaller").and_return(service)
@@ -44,24 +48,59 @@ describe DInstallerCli::Clients::Manager do
 
   subject { described_class.new }
 
+  describe "#Probe" do
+    # Using partial double because methods are dynamically added to the proxy object
+    let(:dbus_object) { double(::DBus::ProxyObject) }
+
+    it "starts the config phase" do
+      expect(dbus_object).to receive(:Probe)
+
+      subject.probe
+    end
+  end
+
   describe "#commit" do
     # Using partial double because methods are dynamically added to the proxy object
     let(:dbus_object) { double(::DBus::ProxyObject) }
 
-    it "starts the installation" do
+    it "starts the install phase" do
       expect(dbus_object).to receive(:Commit)
 
       subject.commit
     end
   end
 
-  describe "#status" do
+  describe "#current_installation_phase" do
     before do
-      allow(manager_iface).to receive(:[]).with("Status").and_return(2)
+      expect(manager_iface).to receive(:[]).with("CurrentInstallationPhase")
+        .and_return(current_phase)
     end
 
-    it "returns the installation status" do
-      expect(subject.status).to eq(2)
+    context "when the current phase is startup" do
+      let(:current_phase) { DInstaller::DBus::Manager::STARTUP_PHASE }
+
+      it "returns the startup phase value" do
+        expect(subject.current_installation_phase).to eq(DInstaller::InstallationPhase::STARTUP)
+      end
+    end
+
+    context "when the current phase is config" do
+      let(:current_phase) { DInstaller::DBus::Manager::CONFIG_PHASE }
+
+      it "returns the config phase value" do
+        expect(subject.current_installation_phase).to eq(DInstaller::InstallationPhase::CONFIG)
+      end
+    end
+
+    context "when the current phase is install" do
+      let(:current_phase) { DInstaller::DBus::Manager::INSTALL_PHASE }
+
+      it "returns the install phase value" do
+        expect(subject.current_installation_phase).to eq(DInstaller::InstallationPhase::INSTALL)
+      end
     end
   end
+
+  include_examples "service status"
+  include_examples "progress"
 end

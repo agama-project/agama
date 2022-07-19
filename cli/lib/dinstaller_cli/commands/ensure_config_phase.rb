@@ -19,11 +19,29 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "dinstaller/installation_phase"
+
 module DInstallerCli
-  # D-Bus clients
-  module Clients
+  module Commands
+    # Mixin that provides methods to ensure a specific installation phase while running code
+    #
+    # @note Requires a #manager_client method that returns an instance of
+    #   {DInstaller::DBus::Clients::Manager}.
+    module EnsureConfigPhase
+      # Ensures the config phase is executed before calling the given block
+      #
+      # @param block [Proc]
+      def ensure_config_phase(&block)
+        manager_client.probe unless config_phase?
+        block.call
+      end
+
+      # Whether the manager client is in config phase
+      #
+      # @return [Boolean]
+      def config_phase?
+        manager_client.current_installation_phase == DInstaller::InstallationPhase::CONFIG
+      end
+    end
   end
 end
-
-require "dinstaller_cli/clients/language"
-require "dinstaller_cli/clients/storage"

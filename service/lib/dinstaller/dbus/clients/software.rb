@@ -21,6 +21,7 @@
 
 require "dinstaller/dbus/clients/base"
 require "dinstaller/dbus/clients/with_service_status"
+require "dinstaller/dbus/clients/with_progress"
 
 module DInstaller
   module DBus
@@ -28,6 +29,7 @@ module DInstaller
       # D-Bus client for software configuration
       class Software < Base
         include WithServiceStatus
+        include WithProgress
 
         TYPES = [:package, :pattern].freeze
         private_constant :TYPES

@@ -43,8 +43,10 @@ describe DInstaller::DBus::Users do
     expect(subject.intfs.keys).to include(service_status_interface)
   end
 
-  it "configures callbacks from ServiceStatus interface" do
-    expect_any_instance_of(described_class).to receive(:register_service_status_callbacks)
-    subject
+  describe ".new" do
+    it "configures callbacks from ServiceStatus interface" do
+      expect_any_instance_of(described_class).to receive(:register_service_status_callbacks)
+      subject
+    end
   end
 end

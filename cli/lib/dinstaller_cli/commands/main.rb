@@ -26,12 +26,16 @@ require "dinstaller_cli/commands/software"
 require "dinstaller_cli/commands/storage"
 require "dinstaller_cli/commands/root_user"
 require "dinstaller_cli/commands/user"
-require "dinstaller_cli/clients/manager"
+require "dinstaller_cli/commands/ensure_config_phase"
+require "dinstaller/dbus/clients/manager"
+require "dinstaller/dbus/clients/software"
 
 module DInstallerCli
   module Commands
     # Main command
     class Main < Thor
+      include EnsureConfigPhase
+
       def self.exit_on_failure?
         true
       end
@@ -41,29 +45,8 @@ module DInstallerCli
         answer = ask("Do you want to start the installation?", limited_to: ["y", "n"])
         return unless answer == "y"
 
-        manager_client.commit
-      rescue InstallConfigReader::Error
-        say_error("error: invalid configuration")
-      end
-
-      desc "status", "Get installation status"
-      def status
-        status = case manager_client.status
-        when 0
-          "error"
-        when 1
-          "probing"
-        when 2
-          "probed"
-        when 3
-          "installing"
-        when 4
-          "installed"
-        else
-          "unknown"
-        end
-
-        say(status)
+        register_callbacks
+        ensure_config_phase { manager_client.commit }
       end
 
       desc "config SUBCOMMAND", "Manage configuration of the installation"
@@ -87,7 +70,25 @@ module DInstallerCli
     private
 
       def manager_client
-        @manager_client ||= Clients::Manager.new
+        @manager_client ||= DInstaller::DBus::Clients::Manager.new
+      end
+
+      def software_client
+        @software_client ||= DInstaller::DBus::Clients::Software.new
+      end
+
+      # Registers callbacks
+      def register_callbacks
+        # Callback to show the main progress
+        manager_client.on_progress_change do |total_steps, current_step, message, finished|
+          feedback = finished ? "Done" : "(#{current_step}/#{total_steps}) #{message}"
+          say(feedback)
+        end
+
+        # Callback to show the software progress
+        software_client.on_progress_change do |_, _, message, finished|
+          say("--> #{message}") unless finished
+        end
       end
     end
   end
