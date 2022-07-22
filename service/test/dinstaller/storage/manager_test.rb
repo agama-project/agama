@@ -30,14 +30,18 @@ describe DInstaller::Storage::Manager do
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:config) { DInstaller::Config.new }
 
+  before do
+    allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
+  end
+
+  let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
+
   describe "#probe" do
-    let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
     let(:proposal) { instance_double(DInstaller::Storage::Proposal, calculate: nil) }
     let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
     before do
       allow(DInstaller::Storage::Proposal).to receive(:new).and_return(proposal)
-      allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
     end
 
     it "probes the storage devices and calculates a proposal" do
@@ -52,8 +56,7 @@ describe DInstaller::Storage::Manager do
 
   describe "#install" do
     before do
-      allow(Y2Storage::StorageManager.instance).to receive(:staging)
-        .and_return(proposed_devicegraph)
+      allow(y2storage_manager).to receive(:staging).and_return(proposed_devicegraph)
 
       allow(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
       allow(Yast::PackagesProposal).to receive(:SetResolvables)
