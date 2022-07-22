@@ -31,7 +31,7 @@ describe DInstaller::DBus::Clients::Manager do
   before do
     allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
     allow(bus).to receive(:service).with("org.opensuse.DInstaller").and_return(service)
-    allow(service).to receive(:object).with("/org/opensuse/DInstaller/Manager1")
+    allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Manager1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
     allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Manager1")

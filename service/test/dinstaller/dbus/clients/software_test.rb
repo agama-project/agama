@@ -31,14 +31,14 @@ describe DInstaller::DBus::Clients::Software do
   before do
     allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
     allow(bus).to receive(:service).with("org.opensuse.DInstaller.Software").and_return(service)
-    allow(service).to receive(:object).with("/org/opensuse/DInstaller/Software1")
+    allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Software1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
     allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Software1")
       .and_return(software_iface)
     allow(dbus_object).to receive(:[]).with("org.freedesktop.DBus.Properties")
       .and_return(properties_iface)
-    allow(service).to receive(:object).with("/org/opensuse/DInstaller/Software/Proposal1")
+    allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Software/Proposal1")
       .and_return(dbus_proposal)
   end
 

@@ -37,10 +37,10 @@ module DInstaller
         def initialize
           super
 
-          @dbus_object = service.object("/org/opensuse/DInstaller/Software1")
+          @dbus_object = service["/org/opensuse/DInstaller/Software1"]
           @dbus_object.introspect
 
-          @dbus_proposal = service.object("/org/opensuse/DInstaller/Software/Proposal1")
+          @dbus_proposal = service["/org/opensuse/DInstaller/Software/Proposal1"]
           @dbus_proposal.introspect
         end
 
