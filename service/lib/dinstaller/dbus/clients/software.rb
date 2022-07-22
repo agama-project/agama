@@ -21,6 +21,7 @@
 
 require "dinstaller/dbus/clients/base"
 require "dinstaller/dbus/clients/with_service_status"
+require "dinstaller/dbus/clients/with_progress"
 
 module DInstaller
   module DBus
@@ -28,6 +29,7 @@ module DInstaller
       # D-Bus client for software configuration
       class Software < Base
         include WithServiceStatus
+        include WithProgress
 
         TYPES = [:package, :pattern].freeze
         private_constant :TYPES
@@ -35,10 +37,10 @@ module DInstaller
         def initialize
           super
 
-          @dbus_object = service.object("/org/opensuse/DInstaller/Software1")
+          @dbus_object = service["/org/opensuse/DInstaller/Software1"]
           @dbus_object.introspect
 
-          @dbus_proposal = service.object("/org/opensuse/DInstaller/Software/Proposal1")
+          @dbus_proposal = service["/org/opensuse/DInstaller/Software/Proposal1"]
           @dbus_proposal.introspect
         end
 

@@ -30,14 +30,18 @@ describe DInstaller::Storage::Manager do
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:config) { DInstaller::Config.new }
 
+  before do
+    allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
+  end
+
+  let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
+
   describe "#probe" do
-    let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
     let(:proposal) { instance_double(DInstaller::Storage::Proposal, calculate: nil) }
     let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
     before do
       allow(DInstaller::Storage::Proposal).to receive(:new).and_return(proposal)
-      allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
     end
 
     it "probes the storage devices and calculates a proposal" do
@@ -51,6 +55,29 @@ describe DInstaller::Storage::Manager do
   end
 
   describe "#install" do
+    before do
+      allow(y2storage_manager).to receive(:staging).and_return(proposed_devicegraph)
+
+      allow(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
+      allow(Yast::PackagesProposal).to receive(:SetResolvables)
+    end
+
+    let(:proposed_devicegraph) do
+      instance_double(Y2Storage::Devicegraph, used_features: used_features)
+    end
+
+    let(:used_features) do
+      instance_double(Y2Storage::StorageFeaturesList, pkg_list: ["btrfsprogs", "snapper"])
+    end
+
+    it "adds storage software to install" do
+      expect(Yast::PackagesProposal).to receive(:SetResolvables) do |_, _, packages|
+        expect(packages).to contain_exactly("btrfsprogs", "snapper")
+      end
+
+      storage.install
+    end
+
     it "runs the inst_prepdisk client" do
       expect(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
       storage.install

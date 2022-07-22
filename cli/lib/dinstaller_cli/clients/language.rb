@@ -19,15 +19,21 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "dbus"
+require "dinstaller/dbus/clients/base"
 
 module DInstallerCli
   module Clients
     # D-Bus client for language configuration
-    class Language
+    class Language < DInstaller::DBus::Clients::Base
       def initialize
+        super
+
         @dbus_object = service.object("/org/opensuse/DInstaller/Language1")
         @dbus_object.introspect
+      end
+
+      def service_name
+        @service_name ||= "org.opensuse.DInstaller"
       end
 
       # Available languages for the installation
@@ -55,15 +61,6 @@ module DInstallerCli
 
       # @return [::DBus::Object]
       attr_reader :dbus_object
-
-      # @return [::DBus::Service]
-      def service
-        @service ||= bus.service("org.opensuse.DInstaller")
-      end
-
-      def bus
-        @bus ||= DBus::SystemBus.instance
-      end
     end
   end
 end

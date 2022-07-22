@@ -19,17 +19,19 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
+require_relative "../../../test_helper"
+require "dinstaller/dbus/storage/proposal"
 require "dinstaller/dbus/interfaces/service_status"
-require "dinstaller/dbus/users"
-require "dinstaller/users"
+require "dinstaller/storage/proposal"
 
-describe DInstaller::DBus::Users do
+describe DInstaller::DBus::Storage::Proposal do
   subject { described_class.new(backend, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:backend) { instance_double(DInstaller::Users) }
+  let(:backend) do
+    instance_double(DInstaller::Storage::Proposal, add_on_change_listener: nil)
+  end
 
   let(:service_status_interface) do
     DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE

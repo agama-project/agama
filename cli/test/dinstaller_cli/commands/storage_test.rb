@@ -22,20 +22,24 @@
 require_relative "../../test_helper"
 require "dinstaller_cli/commands/storage"
 require "dinstaller_cli/clients/storage"
+require "dinstaller/dbus/clients/manager"
+require "dinstaller/installation_phase"
 
 describe DInstallerCli::Commands::Storage do
   subject { described_class.new }
 
   before do
     allow(subject).to receive(:say)
-    allow(DInstallerCli::Clients::Storage).to receive(:new).and_return(client)
+    allow(DInstallerCli::Clients::Storage).to receive(:new).and_return(storage_client)
+    allow(DInstaller::DBus::Clients::Manager).to receive(:new).and_return(manager_client)
   end
 
-  let(:client) { instance_double(DInstallerCli::Clients::Storage) }
+  let(:storage_client) { instance_double(DInstallerCli::Clients::Storage) }
+  let(:manager_client) { instance_double(DInstaller::DBus::Clients::Manager) }
 
   describe "#available_devices" do
     before do
-      allow(client).to receive(:available_devices).and_return(devices)
+      allow(storage_client).to receive(:available_devices).and_return(devices)
     end
 
     let(:devices) { ["/dev/sda", "/dev/sdb"] }
@@ -50,7 +54,7 @@ describe DInstallerCli::Commands::Storage do
 
   describe "#selected_devices" do
     before do
-      allow(client).to receive(:candidate_devices).and_return(["/dev/sda"])
+      allow(storage_client).to receive(:candidate_devices).and_return(["/dev/sda"])
     end
 
     context "when no device is given" do
@@ -59,20 +63,74 @@ describe DInstallerCli::Commands::Storage do
 
         subject.selected_devices
       end
+
+      it "does not calculate a proposal" do
+        expect(storage_client).to_not receive(:calculate)
+
+        subject.selected_devices
+      end
     end
 
     context "when a device is given" do
-      it "calculates the proposal with the given device" do
-        expect(client).to receive(:calculate).with(["/dev/sdb"])
+      before do
+        allow(manager_client).to receive(:current_installation_phase).and_return(current_phase)
+        allow(manager_client).to receive(:probe)
+        allow(storage_client).to receive(:calculate)
+      end
 
-        subject.selected_devices("/dev/sdb")
+      context "and the current installation phase is startup" do
+        let(:current_phase) { DInstaller::InstallationPhase::STARTUP }
+
+        it "executes the config phase" do
+          expect(manager_client).to receive(:probe)
+
+          subject.selected_devices("/dev/sdb")
+        end
+
+        it "calculates the proposal with the given device" do
+          expect(storage_client).to receive(:calculate).with(["/dev/sdb"])
+
+          subject.selected_devices("/dev/sdb")
+        end
+      end
+
+      context "and the current installation phase is config" do
+        let(:current_phase) { DInstaller::InstallationPhase::CONFIG }
+
+        it "does not execute the config phase" do
+          expect(manager_client).to_not receive(:probe)
+
+          subject.selected_devices("/dev/sdb")
+        end
+
+        it "calculates the proposal with the given device" do
+          expect(storage_client).to receive(:calculate).with(["/dev/sdb"])
+
+          subject.selected_devices("/dev/sdb")
+        end
+      end
+
+      context "and the current installation phase is install" do
+        let(:current_phase) { DInstaller::InstallationPhase::INSTALL }
+
+        it "executes the config phase" do
+          expect(manager_client).to receive(:probe)
+
+          subject.selected_devices("/dev/sdb")
+        end
+
+        it "calculates the proposal with the given device" do
+          expect(storage_client).to receive(:calculate).with(["/dev/sdb"])
+
+          subject.selected_devices("/dev/sdb")
+        end
       end
     end
   end
 
   describe "#actions" do
     before do
-      allow(client).to receive(:actions).and_return(actions)
+      allow(storage_client).to receive(:actions).and_return(actions)
     end
 
     let(:actions) do

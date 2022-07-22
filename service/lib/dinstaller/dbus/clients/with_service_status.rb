@@ -28,7 +28,11 @@ module DInstaller
     module Clients
       # Mixin for clients of services that define the ServiceStatus D-Bus interface
       #
-      # Provides methods to interact with the API provided by the ServiceStatus interface.
+      # Provides methods to interact with the API of the ServiceStatus interface.
+      #
+      # @note This mixin is expected to be included in a class inherited from {Clients::Base} and
+      #   it requires a #dbus_object method that returns a {::DBus::Object} implementing the
+      #   ServiceStatus interface.
       module WithServiceStatus
         # Current value of the service status
         #
@@ -41,9 +45,6 @@ module DInstaller
         end
 
         # Registers a callback to run when the current status property changes
-        #
-        # @note Signal subscription is done only once. Otherwise, the latest subscription overrides
-        #   the previous one.
         #
         # @param block [Proc]
         # @yieldparam service_status [ServiceStatus::IDLE, ServiceStatus::BUSY]

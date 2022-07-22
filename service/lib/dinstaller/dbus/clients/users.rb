@@ -32,7 +32,7 @@ module DInstaller
         def initialize
           super
 
-          @dbus_object = service.object("/org/opensuse/DInstaller/Users1")
+          @dbus_object = service["/org/opensuse/DInstaller/Users1"]
           @dbus_object.introspect
         end
 

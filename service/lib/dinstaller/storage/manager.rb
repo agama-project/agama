@@ -24,6 +24,8 @@ require "y2storage/storage_manager"
 require "dinstaller/storage/proposal"
 require "dinstaller/storage/callbacks"
 
+Yast.import "PackagesProposal"
+
 module DInstaller
   module Storage
     # Manager to handle storage configuration
@@ -46,6 +48,7 @@ module DInstaller
 
       # Prepares the partitioning to install the system
       def install
+        add_packages
         Yast::WFM.CallFunction("inst_prepdisk", [])
       end
 
@@ -62,6 +65,9 @@ module DInstaller
       end
 
     private
+
+      PROPOSAL_ID = "storage_proposal"
+      private_constant :PROPOSAL_ID
 
       # @return [Logger]
       attr_reader :logger
@@ -82,6 +88,16 @@ module DInstaller
       def probe_devices
         # TODO: probe callbacks
         Y2Storage::StorageManager.instance.probe
+      end
+
+      # Adds the required packages to the list of resolvables to install
+      def add_packages
+        devicegraph = Y2Storage::StorageManager.instance.staging
+        packages = devicegraph.used_features.pkg_list
+        return if packages.empty?
+
+        logger.info "Selecting these packages for installation: #{packages}"
+        Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, packages)
       end
     end
   end

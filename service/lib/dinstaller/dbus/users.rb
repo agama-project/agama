@@ -98,7 +98,7 @@ module DInstaller
           logger.info "Removing the first user"
           backend.remove_first_user
 
-          dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => {} }, [])
+          dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => first_user }, [])
           0
         end
 

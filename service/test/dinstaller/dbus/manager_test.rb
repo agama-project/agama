@@ -63,7 +63,7 @@ describe DInstaller::DBus::Manager do
     expect(subject.intfs.keys).to include(service_status_interface)
   end
 
-  describe "#new" do
+  describe ".new" do
     it "configures callbacks for changes in the installation phase" do
       expect(subject).to receive(:dbus_properties_changed) do |iface, properties, _|
         expect(iface).to match(/DInstaller\.Manager1/)

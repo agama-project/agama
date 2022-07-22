@@ -20,33 +20,42 @@
 # find current contact information at www.suse.com.
 
 require "thor"
+require "dinstaller_cli/commands/ensure_config_phase"
 require "dinstaller_cli/clients/storage"
+require "dinstaller/dbus/clients/manager"
 
 module DInstallerCli
   module Commands
     # Subcommand to manage storage settings
     class Storage < Thor
+      include EnsureConfigPhase
+
       desc "available_devices", "List available devices for the installation"
       def available_devices
-        client.available_devices.each { |d| say(d) }
+        storage_client.available_devices.each { |d| say(d) }
       end
 
       desc "selected_devices [<device>...]", "Select devices for the installation"
       long_desc "Use without arguments to see the currently selected devices."
       def selected_devices(*devices)
-        client.calculate(devices) if devices.any?
-        client.candidate_devices.each { |d| say(d) }
+        return storage_client.candidate_devices.each { |d| say(d) } if devices.none?
+
+        ensure_config_phase { storage_client.calculate(devices) }
       end
 
       desc "actions", "List the storage actions to perform"
       def actions
-        client.actions.each { |a| say(a) }
+        storage_client.actions.each { |a| say(a) }
       end
 
     private
 
-      def client
-        @client ||= Clients::Storage.new
+      def storage_client
+        @storage_client ||= Clients::Storage.new
+      end
+
+      def manager_client
+        @manager_client ||= DInstaller::DBus::Clients::Manager.new
       end
     end
   end

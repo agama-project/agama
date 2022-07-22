@@ -23,7 +23,9 @@ require_relative "../../test_helper"
 require "dinstaller_cli/commands/main"
 require "dinstaller_cli/install_config"
 require "dinstaller_cli/install_config_reader"
-require "dinstaller_cli/clients/manager"
+require "dinstaller/dbus/clients/manager"
+require "dinstaller/dbus/clients/software"
+require "dinstaller/installation_phase"
 
 describe DInstallerCli::Commands::Main do
   it "includes a 'config' command" do
@@ -51,17 +53,22 @@ describe DInstallerCli::Commands::Main do
   end
 
   before do
-    allow(DInstallerCli::Clients::Manager).to receive(:new).and_return(manager_client)
+    allow(DInstaller::DBus::Clients::Manager).to receive(:new).and_return(manager_client)
+    allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software_client)
   end
 
-  let(:manager_client) { instance_double(DInstallerCli::Clients::Manager) }
+  let(:manager_client) { instance_double(DInstaller::DBus::Clients::Manager) }
+  let(:software_client) { instance_double(DInstaller::DBus::Clients::Software) }
 
   subject { described_class.new }
 
   describe "#install" do
     before do
       allow(subject).to receive(:ask).and_return(answer)
+      allow(manager_client).to receive(:probe)
       allow(manager_client).to receive(:commit)
+      allow(manager_client).to receive(:on_progress_change)
+      allow(software_client).to receive(:on_progress_change)
     end
 
     let(:answer) { "n" }
@@ -85,82 +92,56 @@ describe DInstallerCli::Commands::Main do
     context "if the user confirms" do
       let(:answer) { "y" }
 
-      it "performs the installation" do
-        expect(manager_client).to receive(:commit)
-
-        subject.install
+      before do
+        allow(manager_client).to receive(:current_installation_phase).and_return(current_phase)
       end
-    end
-  end
 
-  describe "#status" do
-    before do
-      allow(manager_client).to receive(:status).and_return(status)
-    end
+      context "and the current installation phase is startup" do
+        let(:current_phase) { DInstaller::InstallationPhase::STARTUP }
 
-    context "when the service status is 0" do
-      let(:status) { 0 }
+        it "executes the config phase" do
+          expect(manager_client).to receive(:probe)
 
-      it "reports 'error'" do
+          subject.install
+        end
 
-        expect(subject).to receive(:say).with("error")
+        it "executes the install phase" do
+          expect(manager_client).to receive(:commit)
 
-        subject.status
+          subject.install
+        end
       end
-    end
 
-    context "when the service status is 1" do
-      let(:status) { 1 }
+      context "and the current installation phase is config" do
+        let(:current_phase) { DInstaller::InstallationPhase::CONFIG }
 
-      it "reports 'probing'" do
+        it "does not execute the config phase" do
+          expect(manager_client).to_not receive(:probe)
 
-        expect(subject).to receive(:say).with("probing")
+          subject.install
+        end
 
-        subject.status
+        it "executes the install phase" do
+          expect(manager_client).to receive(:commit)
+
+          subject.install
+        end
       end
-    end
 
-    context "when the service status is 2" do
-      let(:status) { 2 }
+      context "and the current installation phase is install" do
+        let(:current_phase) { DInstaller::InstallationPhase::INSTALL }
 
-      it "reports 'probed'" do
+        it "executes the config phase" do
+          expect(manager_client).to receive(:probe)
 
-        expect(subject).to receive(:say).with("probed")
+          subject.install
+        end
 
-        subject.status
-      end
-    end
+        it "executes the install phase" do
+          expect(manager_client).to receive(:commit)
 
-    context "when the service status is 3" do
-      let(:status) { 3 }
-
-      it "reports 'installing'" do
-
-        expect(subject).to receive(:say).with("installing")
-
-        subject.status
-      end
-    end
-
-    context "when the service status is 4" do
-      let(:status) { 4 }
-
-      it "reports 'installed'" do
-
-        expect(subject).to receive(:say).with("installed")
-
-        subject.status
-      end
-    end
-
-    context "when the service status is 5" do
-      let(:status) { 5 }
-
-      it "reports 'unknown'" do
-
-        expect(subject).to receive(:say).with("unknown")
-
-        subject.status
+          subject.install
+        end
       end
     end
   end

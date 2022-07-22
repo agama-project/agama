@@ -28,17 +28,9 @@ describe DInstaller::Storage::Proposal do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:config) { DInstaller::Config.new(config_data) }
-  let(:y2storage_proposal) do
-    instance_double(Y2Storage::GuidedProposal, failed?: failed, devices: proposed_devicegraph)
-  end
+  let(:y2storage_proposal) { instance_double(Y2Storage::GuidedProposal, failed?: failed) }
   let(:y2storage_manager) do
     instance_double(Y2Storage::StorageManager, probed: nil, probed_disk_analyzer: nil)
-  end
-  let(:proposed_devicegraph) do
-    instance_double(Y2Storage::Devicegraph, used_features: used_features)
-  end
-  let(:used_features) do
-    instance_double(Y2Storage::StorageFeaturesList, pkg_list: ["btrfsprogs", "snapper"])
   end
   let(:failed) { false }
   let(:config_data) { {} }
@@ -47,7 +39,6 @@ describe DInstaller::Storage::Proposal do
     before do
       allow(Y2Storage::StorageManager).to receive(:instance).and_return y2storage_manager
       allow(Y2Storage::GuidedProposal).to receive(:initial).and_return y2storage_proposal
-      allow(Yast::PackagesProposal).to receive(:SetResolvables)
       allow(y2storage_manager).to receive(:proposal=)
     end
 
