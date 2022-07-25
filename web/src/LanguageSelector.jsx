@@ -102,7 +102,8 @@ export default function LanguageSelector() {
 
   const cancel = () => dispatch({ type: "CANCEL" });
 
-  const accept = async () => {
+  const accept = async (e) => {
+    e.preventDefault();
     // TODO: handle errors
     await client.language.setLanguages([state.formCurrent]);
     dispatch({ type: "ACCEPT" });
@@ -140,13 +141,13 @@ export default function LanguageSelector() {
         isOpen={isFormOpen}
         aria-label="Language Selector"
       >
-        <Form>
+        <Form id="language-selector" onSubmit={accept}>
           <FormGroup fieldId="language" label="Language">
             {buildSelector(state.formCurrent)}
           </FormGroup>
         </Form>
         <Popup.Actions>
-          <Popup.Confirm onClick={accept} />
+          <Popup.Confirm form="language-selector" type="submit" />
           <Popup.Cancel onClick={cancel} />
         </Popup.Actions>
       </Popup>

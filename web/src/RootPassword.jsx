@@ -63,7 +63,8 @@ export default function RootPassword() {
     setIsFormOpen(false);
   };
 
-  const accept = async () => {
+  const accept = async (e) => {
+    e.preventDefault();
     // TODO: handle errors
     if (rootPassword !== "") {
       const result = await client.users.setRootPassword(rootPassword);
@@ -99,7 +100,7 @@ export default function RootPassword() {
         isOpen={isFormOpen}
         aria-label="Set new root password"
       >
-        <Form>
+        <Form id="root-password" onSubmit={accept}>
           <FormGroup fieldId="rootPassword" label="New root password">
             <TextInput
               id="rootPassword"
@@ -112,7 +113,7 @@ export default function RootPassword() {
         </Form>
 
         <Popup.Actions>
-          <Popup.Confirm onClick={accept} isDisabled={rootPassword === ""} />
+          <Popup.Confirm form="root-password" type="submit" isDisabled={rootPassword === ""} />
           <Popup.Cancel onClick={close} />
           <Popup.AncillaryAction onClick={remove} isDisabled={!isRootPasswordSet} key="unset">
             Do not use a password

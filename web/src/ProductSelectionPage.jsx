@@ -53,7 +53,8 @@ function ProductSelectionPage() {
 
   const isSelected = p => p.id === selected;
 
-  const accept = () => {
+  const accept = (e) => {
+    e.preventDefault();
     if (selected === previous) {
       navigate("/");
       return;

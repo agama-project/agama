@@ -40,7 +40,8 @@ export default function TargetSelector({ target, targets, onAccept }) {
     setValue(target);
   };
 
-  const accept = () => {
+  const accept = (e) => {
+    e.preventDefault();
     // TODO: handle errors
     onAccept(value);
     setIsFormOpen(false);
@@ -66,15 +67,15 @@ export default function TargetSelector({ target, targets, onAccept }) {
         {target}
       </Button>
 
-      <Popup isOpen={isFormOpen} aria-label="Target Selector">
-        <Form>
+      <Popup isOpen={isFormOpen} onSubmit={accept} aria-label="Target Selector">
+        <Form id="target-selector">
           <FormGroup fieldId="target" label="Device to install into">
             {buildSelector()}
           </FormGroup>
         </Form>
 
         <Popup.Actions>
-          <Popup.Confirm onClick={accept} />
+          <Popup.Confirm form="target-selector" type="submit" />
           <Popup.Cancel onClick={cancel} />
         </Popup.Actions>
       </Popup>

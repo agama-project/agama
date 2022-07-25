@@ -63,7 +63,8 @@ export default function RootSSHKey() {
 
   const cancel = () => setIsFormOpen(false);
 
-  const accept = async () => {
+  const accept = async (e) => {
+    e.preventDefault();
     await client.users.setRootSSHKey(nextSSHKey);
     setSSHKey(nextSSHKey);
     setIsFormOpen(false);
@@ -90,7 +91,7 @@ export default function RootSSHKey() {
     <>
       {renderLink()}
       <Popup isOpen={isFormOpen} aria-label="Set root SSH public key">
-        <Form>
+        <Form id="root-ssh-key" onSubmit={accept}>
           <FormGroup fieldId="sshKey" label="Root SSH public key">
             <FileUpload
               id="sshKey"
@@ -109,7 +110,7 @@ export default function RootSSHKey() {
         </Form>
 
         <Popup.Actions>
-          <Popup.Confirm onClick={accept} />
+          <Popup.Confirm form="root-ssh-key" type="submit" />
           <Popup.Cancel onClick={cancel} />
           <Popup.AncillaryAction onClick={remove} isDisabled={sshKey === ""} key="unset">
             Do not use SSH public key

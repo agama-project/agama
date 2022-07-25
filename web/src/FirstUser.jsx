@@ -73,7 +73,8 @@ export default function Users() {
     setIsFormOpen(false);
   };
 
-  const accept = async () => {
+  const accept = async (e) => {
+    e.preventDefault();
     const result = await client.users.setUser(formValues);
 
     if (result) {
@@ -118,7 +119,7 @@ export default function Users() {
       {renderLink()}
 
       <Popup isOpen={isFormOpen} title="User account">
-        <Form>
+        <Form id="first-user" onSubmit={accept}>
           <FormGroup fieldId="userFullName" label="Full name">
             <TextInput
               id="userFullName"
@@ -164,7 +165,7 @@ export default function Users() {
         </Form>
 
         <Popup.Actions>
-          <Popup.Confirm onClick={accept} isDisabled={formValues.userName === ""} />
+          <Popup.Confirm form="first-user" type="submit" isDisabled={formValues.userName === ""} />
           <Popup.Cancel onClick={cancel} />
           <Popup.AncillaryAction onClick={remove} isDisabled={!userIsDefined} key="unset">
             Do not create a user
