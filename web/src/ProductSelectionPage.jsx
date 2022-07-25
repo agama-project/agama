@@ -48,8 +48,8 @@ function ProductSelectionPage() {
   useEffect(() => {
     // TODO: display a notification in the UI to emphasizes that
     // selected product has changed
-    return client.software.onProductChange(setSelected);
-  }, [client.software]);
+    return client.software.onProductChange(() => navigate("/"));
+  }, [client.software, navigate]);
 
   const isSelected = p => p.id === selected;
 

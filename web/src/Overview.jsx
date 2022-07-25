@@ -55,7 +55,7 @@ const ChangeProductButton = () => {
       variant="plain"
       icon={<ModeEditIcon />}
       aria-label="Change selected product"
-      onClick={() => navigate("products")}
+      onClick={() => navigate("/products")}
     />
   );
 };
