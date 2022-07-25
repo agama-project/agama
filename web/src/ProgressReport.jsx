@@ -38,8 +38,8 @@ const ProgressReport = () => {
   }, [client.manager]));
 
   useEffect(() => {
-    return client.manager.onProgressChange(({ message, current, total }) => {
-      setProgress({ message, step: current, steps: total });
+    return client.manager.onProgressChange(({ message, current, total, finished }) => {
+      if (!finished) setProgress({ message, step: current, steps: total });
     });
   }, [client.manager]);
 
