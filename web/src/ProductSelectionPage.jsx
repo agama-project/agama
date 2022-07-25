@@ -92,12 +92,12 @@ function ProductSelectionPage() {
       <Title>Product selection</Title>
       <PageIcon><Icon /></PageIcon>
       <MainActions>
-        <Button isLarge variant="primary" onClick={accept}>
+        <Button isLarge variant="primary" form="product-selector" type="submit">
           Select
         </Button>
       </MainActions>
 
-      <Form>
+      <Form id="product-selector" onSubmit={accept}>
         <FormGroup isStack label={`Choose a product (${products.length} available)`} role="radiogroup">
           {buildOptions()}
         </FormGroup>

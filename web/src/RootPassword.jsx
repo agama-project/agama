@@ -19,7 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useSafeEffect } from "./utils";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -39,11 +40,11 @@ export default function RootPassword() {
   const [rootPassword, setRootPassword] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  useEffect(() => {
+  useSafeEffect(useCallback((makeSafe) => {
     client.users.isRootPasswordSet()
-      .then(setIsRootPasswordSet)
+      .then(makeSafe(setIsRootPasswordSet))
       .catch(console.error);
-  }, [client.users]);
+  }, [client.users]));
 
   useEffect(() => {
     return client.users.onUsersChange(changes => {

@@ -19,7 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useCallback } from "react";
+import { useSafeEffect } from "./utils";
 import { useInstallerClient } from "./context/installer";
 import { BUSY } from "./client/status";
 
@@ -70,7 +71,7 @@ export default function Storage() {
       dispatch({ type: "CHANGE_TARGET", payload });
     });
 
-  useEffect(() => {
+  useSafeEffect(useCallback((makeSafe) => {
     const loadStorage = async () => {
       const {
         availableDevices,
@@ -78,14 +79,15 @@ export default function Storage() {
       } = await client.storage.getStorageProposal();
       const actions = await client.storage.getStorageActions();
       const targetDeviceId = candidateDeviceId || availableDevices[0]?.id;
-      dispatch({
+      const error = actions.length === 0;
+      makeSafe(dispatch)({
         type: "LOAD",
         payload: { target: targetDeviceId, targets: availableDevices, actions }
       });
     };
 
     loadStorage().catch(console.error);
-  }, [client.storage]);
+  }, [client.storage]));
 
   useEffect(() => {
     return client.storage.onActionsChange(actions => {
@@ -99,24 +101,24 @@ export default function Storage() {
     });
   }, [client.storage]);
 
-  useEffect(() => {
+  useSafeEffect(useCallback((makeSafe) => {
     client.storage.getStatus().then(status => {
-      dispatch({ type: "CHANGE_STATUS", payload: status });
+      makeSafe(dispatch)({ type: "CHANGE_STATUS", payload: status });
     });
-  }, [client.storage]);
+  }, [client.storage]));
 
-  useEffect(() => {
+  useSafeEffect(useCallback((makeSafe) => {
     return client.storage.onStatusChange(status => {
-      dispatch({ type: "CHANGE_STATUS", payload: status });
+      makeSafe(dispatch)({ type: "CHANGE_STATUS", payload: status });
     });
-  }, [client.storage]);
+  }, [client.storage]));
 
   // FIXME: this useEffect should be removed after moving storage to its own service.
-  useEffect(() => {
+  useSafeEffect(useCallback((makeSafe) => {
     client.manager.getStatus().then(status => {
-      dispatch({ type: "CHANGE_STATUS", payload: status });
+      makeSafe(dispatch)({ type: "CHANGE_STATUS", payload: status });
     });
-  }, [client.manager]);
+  }, [client.manager]));
 
   // FIXME: this useEffect should be removed after moving storage to its own service.
   useEffect(() => {

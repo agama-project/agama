@@ -19,7 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useSafeEffect } from "./utils";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -46,12 +47,12 @@ export default function Users() {
   const [formValues, setFormValues] = useState(initialUser);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  useEffect(() => {
+  useSafeEffect(useCallback((makeSafe) => {
     client.users.getUser().then(userValues => {
-      setUser(userValues);
-      setFormValues({ ...initialUser, ...userValues });
+      makeSafe(setUser)(userValues);
+      makeSafe(setFormValues)({ ...initialUser, ...userValues });
     });
-  }, [client.users]);
+  }, [client.users]));
 
   useEffect(() => {
     return client.users.onUsersChange(changes => {

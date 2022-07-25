@@ -19,7 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useSafeEffect } from "./utils";
 import { useInstallerClient } from "./context/installer";
 import {
   Button,
@@ -39,11 +40,11 @@ export default function RootSSHKey() {
   const [nextSSHKey, setNextSSHKey] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  useEffect(() => {
+  useSafeEffect(useCallback((makeSafe) => {
     client.users.getRootSSHKey()
-      .then(setSSHKey)
+      .then(makeSafe(setSSHKey))
       .catch(console.error);
-  }, [client.users]);
+  }, [client.users]));
 
   useEffect(() => {
     return client.users.onUsersChange(changes => {

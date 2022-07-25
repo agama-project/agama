@@ -21,6 +21,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useInstallerClient } from "./context/installer";
+import { useSafeEffect } from "./utils";
 
 import GenericQuestion from "./GenericQuestion";
 import LuksActivationQuestion from "./LuksActivationQuestion";
@@ -48,12 +49,14 @@ export default function Questions() {
     removeQuestion(question.id);
   }, [client.questions, removeQuestion]);
 
+  useSafeEffect(useCallback((makeSafe) => {
+    client.questions.getQuestions()
+      .then(makeSafe(setPendingQuestions))
+      .catch(e => console.error("Something went wrong retrieving pending questions", e));
+  }, [client.questions]));
+
   useEffect(() => {
     const unsubscribeCallbacks = [];
-
-    client.questions.getQuestions()
-      .then(setPendingQuestions)
-      .catch(e => console.error("Something went wrong retrieving pending questions", e));
     unsubscribeCallbacks.push(client.questions.onQuestionAdded(addQuestion));
     unsubscribeCallbacks.push(client.questions.onQuestionRemoved(removeQuestion));
 

@@ -19,7 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useSafeEffect } from "./utils";
 import { useInstallerClient } from "./context/installer";
 
 import { Progress, Stack, StackItem, Text } from "@patternfly/react-core";
@@ -30,11 +31,11 @@ const ProgressReport = () => {
   const [progress, setProgress] = useState({});
   const [subProgress, setSubProgress] = useState(undefined);
 
-  useEffect(() => {
+  useSafeEffect(useCallback((makeSafe) => {
     client.manager.getProgress().then(({ message, current, total }) => {
-      setProgress({ message, step: current, steps: total });
+      makeSafe(setProgress)({ message, step: current, steps: total });
     });
-  }, [client.manager]);
+  }, [client.manager]));
 
   useEffect(() => {
     return client.manager.onProgressChange(({ message, current, total }) => {

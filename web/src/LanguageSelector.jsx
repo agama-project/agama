@@ -19,7 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useCallback } from "react";
+import { useSafeEffect } from "./utils";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -75,18 +76,18 @@ export default function LanguageSelector() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { current: language, languages, isFormOpen } = state;
 
-  useEffect(() => {
+  useSafeEffect(useCallback((makeSafe) => {
     const loadLanguages = async () => {
       const languages = await client.language.getLanguages();
       const [current] = await client.language.getSelectedLanguages();
-      dispatch({
+      makeSafe(dispatch)({
         type: "LOAD",
         payload: { languages, current }
       });
     };
 
     loadLanguages().catch(console.error);
-  }, [client.language]);
+  }, [client.language]));
 
   useEffect(() => {
     return client.language.onLanguageChange(changes => {
