@@ -20,28 +20,184 @@
  */
 
 import React from "react";
-
-import { screen } from "@testing-library/react";
-import { plainRender } from "./test-utils";
-
+import { act, screen } from "@testing-library/react";
+import { installerRender } from "./test-utils";
+import { createClient } from "./client";
 import App from "./App";
+import { STARTUP, CONFIG, INSTALL } from "./client/phase";
+import { IDLE, BUSY } from "./client/status";
+
+jest.mock("./client");
 
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
 
+jest.mock("./Questions", () => () => <div>Questions Mock</div>);
+jest.mock("./DBusError", () => () => <div>D-BusError Mock</div>);
+jest.mock("./InstallationProgress", () => () => "InstallationProgress Mock");
+jest.mock("./InstallationFinished", () => () => "InstallationFinished Mock");
+jest.mock("./LoadingEnvironment", () => () => "LoadingEnvironment Mock");
 jest.mock("./TargetIpsPopup", () => () => "Target IPs Mock");
 jest.mock('react-router-dom', () => ({
-  Outlet: () => <div>Content</div>
+  Outlet: () => <div>Content</div>,
 }));
 
+const callbacks = {};
+const getStatusFn = jest.fn();
+const getPhaseFn = jest.fn();
+
+// capture the latest subscription to the manager#onStatusChange for triggering it manually
+const onStatusChangeFn = cb => { callbacks.onStatusChange = cb };
+
+// capture the latest subscription to the manager#onPhaseChange for triggering it manually
+const onPhaseChangeFn = cb => { callbacks.onPhaseChange = cb };
+
+const onConnectionChangeFn = cb => { callbacks.onConnectionChange = cb };
+
+const changeStatusTo = status => act(() => callbacks.onStatusChange(status));
+const changePhaseTo = phase => act(() => callbacks.onPhaseChange(phase));
+const changeConnectionTo = connected => act(() => callbacks.onConnectionChange(connected));
+
 describe("App", () => {
-  it("renders the application's content", () => {
-    plainRender(<App />);
-    expect(screen.queryByText("Content")).toBeInTheDocument();
+  beforeEach(() => {
+    createClient.mockImplementation(() => {
+      return {
+        manager: {
+          getStatus: getStatusFn,
+          getPhase: getPhaseFn,
+          onPhaseChange: onPhaseChangeFn,
+          onStatusChange: onStatusChangeFn
+        },
+        monitor: {
+          onConnectionChange: onConnectionChangeFn
+        }
+      };
+    });
   });
 
-  it("renders IP address and hostname", () => {
-    plainRender(<App />);
-    expect(screen.queryByText("Target IPs Mock")).toBeInTheDocument();
+  describe("when there are problems connecting with D-Bus service", () => {
+    beforeEach(() => {
+      getStatusFn.mockRejectedValue(new Error("Couldn't connect to D-Bus service"));
+    });
+
+    it("renders the DBusError component", async () => {
+      installerRender(<App />);
+      await screen.findByText("D-BusError Mock");
+    });
+  });
+
+  describe("when the D-Bus service is disconnected", () => {
+    beforeEach(() => {
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        value: { reload: jest.fn() },
+      });
+    });
+
+    it("renders the DBusError component", async () => {
+      installerRender(<App />);
+      changeConnectionTo(false);
+      installerRender(<App />);
+      await screen.findByText("D-BusError Mock");
+    });
+  });
+
+  describe("when the D-Bus service is re-connected", () => {
+    beforeEach(() => {
+      getStatusFn.mockRejectedValue(new Error("Couldn't connect to D-Bus service"));
+
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        value: { reload: jest.fn() },
+      });
+    });
+
+    it("reloads the page", async () => {
+      installerRender(<App />);
+      await screen.findByText("D-BusError Mock");
+
+      changeConnectionTo(true);
+      expect(window.location.reload).toHaveBeenCalled();
+    });
+  });
+
+  describe("when the D-Bus service is busy during startup", () => {
+    beforeEach(() => {
+      getPhaseFn.mockResolvedValue(STARTUP);
+      getStatusFn.mockResolvedValue(BUSY);
+    });
+
+    it("renders the LoadingEnvironment component", async () => {
+      installerRender(<App />);
+
+      await screen.findByText("LoadingEnvironment Mock");
+    });
+  });
+
+  describe("when D-Bus service status or phase change", () => {
+    beforeEach(() => {
+      getStatusFn.mockResolvedValue(BUSY);
+    });
+
+    it("renders InstallationProgress component when INSTALLING", async () => {
+      installerRender(<App />);
+      await screen.findByText(/Loading.*environment/i);
+
+      changePhaseTo(INSTALL);
+      changeStatusTo(BUSY);
+      await screen.findByText("InstallationProgress Mock");
+    });
+
+    it("renders InstallationFinished component when INSTALLED", async () => {
+      installerRender(<App />);
+      await screen.findByText(/Loading.*environment/i);
+
+      changePhaseTo(INSTALL);
+      changeStatusTo(IDLE);
+      await screen.findByText("InstallationFinished Mock");
+    });
+
+    it("renders the application's content when the config phase is done", async () => {
+      installerRender(<App />);
+      await screen.findByText(/Loading.*environment/i);
+
+      changePhaseTo(CONFIG);
+      changeStatusTo(IDLE);
+      await screen.findByText("Content");
+    });
+  });
+
+  describe("when the config phase is done", () => {
+    beforeEach(() => {
+      getPhaseFn.mockResolvedValue(CONFIG);
+      getStatusFn.mockResolvedValue(IDLE);
+    });
+
+    it("renders the application's content", async () => {
+      installerRender(<App />);
+      await screen.findByText("Content");
+    });
+
+    it("renders IP address and hostname", async () => {
+      installerRender(<App />);
+      await screen.findByText("Target IPs Mock");
+    });
   });
 });
+
+// Mock some components,
+// See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
+
+// jest.mock("./TargetIpsPopup", () => () => "Target IPs Mock");
+
+// describe("App", () => {
+//   it("renders the application's content", () => {
+//     plainRender(<App />);
+//     expect(screen.queryByText("Content")).toBeInTheDocument();
+//   });
+
+//   it("renders IP address and hostname", () => {
+//     plainRender(<App />);
+//     expect(screen.queryByText("Target IPs Mock")).toBeInTheDocument();
+//   });
+// });

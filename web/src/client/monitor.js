@@ -42,15 +42,17 @@ class Monitor {
   }
 
   /**
-   * Registers a callback to be executed the service disconnects from D-Bus
+   * Registers a callback to be executed when the D-Bus service connection changes
    *
-   * @param {function} handler - function to execute
+   * @param {function} handler - function to execute. It receives true if the service was connected
+   *  and false if the service was disconnected.
    */
-  onDisconnect(handler) {
+  onConnectionChange(handler) {
     return this.onSignal(MATCHER, (_path, _interface, _signal, args) => {
       const [service, , newOwner] = args;
-      if (service === this.serviceName && newOwner.length === 0) {
-        handler();
+      if (service === this.serviceName) {
+        const connected = newOwner.length !== 0;
+        handler(connected);
       }
     });
   }
