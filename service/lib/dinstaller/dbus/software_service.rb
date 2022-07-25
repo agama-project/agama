@@ -71,9 +71,18 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          DInstaller::DBus::Software::Manager.new(@backend, logger),
+          dbus_software_manager,
           DInstaller::DBus::Software::Proposal.new(logger)
         ]
+      end
+
+      # @return [DInstaller::DBus::Software::Manager]
+      def dbus_software_manager
+        return @dbus_software_manager if @dbus_software_manager
+
+        @backend.on_progress_change { dispatch }
+        @dbus_software_manager = DInstaller::DBus::Software::Manager.new(@backend, logger)
+        @dbus_software_manager
       end
     end
   end
