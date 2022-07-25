@@ -42,6 +42,7 @@ module DInstaller
       # @param logger [Logger]
       def initialize(config, logger = nil)
         @backend = DInstaller::Software.new(config, logger)
+        @backend.on_progress_change { dispatch }
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
       end
@@ -80,7 +81,6 @@ module DInstaller
       def dbus_software_manager
         return @dbus_software_manager if @dbus_software_manager
 
-        @backend.on_progress_change { dispatch }
         @dbus_software_manager = DInstaller::DBus::Software::Manager.new(@backend, logger)
         @dbus_software_manager
       end
