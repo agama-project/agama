@@ -38,6 +38,8 @@ const proposalSettings = {
   lvm: false
 };
 
+let storageActions;
+
 let onActionsChangeFn = jest.fn();
 let onStorageProposalChangeFn = jest.fn();
 let calculateStorageProposalFn;
@@ -45,11 +47,11 @@ const getStatusFn = jest.fn().mockResolvedValue(IDLE);
 
 const storageMock = {
   getStorageProposal: () => Promise.resolve(proposalSettings),
-  getStorageActions: () =>
-    Promise.resolve([{ text: "Mount /dev/sda1 as root", subvol: false, delete: false }])
+  getStorageActions: () => Promise.resolve(storageActions)
 };
 
 beforeEach(() => {
+  storageActions = [{ text: "Mount /dev/sda1 as root", subvol: false, delete: false }];
   createClient.mockImplementation(() => {
     return {
       storage: {
@@ -68,9 +70,22 @@ beforeEach(() => {
   });
 });
 
-it("displays the proposal", async () => {
-  installerRender(<Storage />);
-  await screen.findByText("Mount /dev/sda1 as root");
+describe("when there is a proposal", () => {
+  it("displays the proposal", async () => {
+    installerRender(<Storage />);
+    await screen.findByText("Mount /dev/sda1 as root");
+  });
+});
+
+describe("when there is no proposal", () => {
+  beforeEach(() => {
+    storageActions = [];
+  });
+
+  it("reports an error", async () => {
+    installerRender(<Storage />);
+    await screen.findByText("Cannot make a proposal for /dev/sda");
+  });
 });
 
 describe("when the user selects another disk", () => {
@@ -89,21 +104,6 @@ describe("when the user selects another disk", () => {
     expect(calculateStorageProposalFn).toHaveBeenCalledWith({
       candidateDevices: ["/dev/sdb"]
     });
-  });
-
-  it("reports an error when the proposal is not possible", async () => {
-    calculateStorageProposalFn = jest.fn().mockResolvedValue(1);
-
-    const { user } = installerRender(<Storage />);
-    const button = await screen.findByRole("button", { name: "/dev/sda" });
-    await user.click(button);
-
-    const targetSelector = await screen.findByLabelText("Device to install into");
-    await user.selectOptions(targetSelector, ["/dev/sdb"]);
-    await user.click(screen.getByRole("button", { name: "Confirm" }));
-
-    await screen.findByRole("button", { name: "/dev/sdb" });
-    await screen.findByText("Cannot make a proposal for /dev/sdb");
   });
 });
 
@@ -144,5 +144,14 @@ describe("when the storage actions changes", () => {
       cb([{ text: "Mount /dev/sdb1 as root", subvol: false }]);
     });
     await screen.findByText("Mount /dev/sdb1 as root");
+  });
+
+  it("reports an error when there are no actions", async () => {
+    installerRender(<Storage />);
+    await screen.findByText("Mount /dev/sda1 as root");
+
+    const [cb] = callbacks;
+    act(() => cb([]));
+    await screen.findByText("Cannot make a proposal for /dev/sda");
   });
 });

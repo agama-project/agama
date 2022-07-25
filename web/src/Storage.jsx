@@ -32,17 +32,18 @@ import InstallerSkeleton from "./InstallerSkeleton";
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOAD": {
-      const { targets, target, actions } = action.payload;
-      return { ...state, targets, target, actions };
+      const { targets, target, actions, error } = action.payload;
+      return { ...state, targets, target, actions, error };
     }
 
     case "CHANGE_TARGET": {
-      const { selected: target, error } = action.payload;
-      return { ...state, target, error };
+      const { selected: target } = action.payload;
+      return { ...state, target };
     }
 
     case "UPDATE_ACTIONS": {
-      return { ...state, actions: action.payload };
+      const { actions, error } = action.payload;
+      return { ...state, actions, error };
     }
 
     case "CHANGE_STATUS": {
@@ -67,7 +68,7 @@ export default function Storage() {
 
   const onAccept = selected =>
     client.storage.calculateStorageProposal({ candidateDevices: [selected] }).then(result => {
-      const payload = { selected, error: result !== 0 };
+      const payload = { selected };
       dispatch({ type: "CHANGE_TARGET", payload });
     });
 
@@ -82,7 +83,7 @@ export default function Storage() {
       const error = actions.length === 0;
       makeSafe(dispatch)({
         type: "LOAD",
-        payload: { target: targetDeviceId, targets: availableDevices, actions }
+        payload: { target: targetDeviceId, targets: availableDevices, actions, error }
       });
     };
 
@@ -91,7 +92,8 @@ export default function Storage() {
 
   useEffect(() => {
     return client.storage.onActionsChange(actions => {
-      dispatch({ type: "UPDATE_ACTIONS", payload: actions });
+      const error = actions.length === 0;
+      dispatch({ type: "UPDATE_ACTIONS", payload: { actions, error } });
     });
   }, [client.storage]);
 
