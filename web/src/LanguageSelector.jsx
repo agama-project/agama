@@ -19,8 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer, useEffect, useCallback } from "react";
-import { useSafeEffect } from "./utils";
+import React, { useReducer, useEffect } from "react";
+import { useCancellablePromise } from "./utils";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -73,21 +73,22 @@ const initialState = {
 
 export default function LanguageSelector() {
   const client = useInstallerClient();
+  const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { current: language, languages, isFormOpen } = state;
 
-  useSafeEffect(useCallback((makeSafe) => {
+  useEffect(() => {
     const loadLanguages = async () => {
-      const languages = await client.language.getLanguages();
-      const [current] = await client.language.getSelectedLanguages();
-      makeSafe(dispatch)({
+      const languages = await cancellablePromise(client.language.getLanguages());
+      const [current] = await cancellablePromise(client.language.getSelectedLanguages());
+      dispatch({
         type: "LOAD",
         payload: { languages, current }
       });
     };
 
     loadLanguages().catch(console.error);
-  }, [client.language]));
+  }, [client.language, cancellablePromise]);
 
   useEffect(() => {
     return client.language.onLanguageChange(changes => {

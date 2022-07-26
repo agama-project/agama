@@ -19,23 +19,24 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect, useCallback } from "react";
-import { useSafeEffect } from "./utils";
+import React, { useState, useEffect } from "react";
+import { useCancellablePromise } from "./utils";
 import { useInstallerClient } from "./context/installer";
 
 import { Progress, Stack, StackItem, Text } from "@patternfly/react-core";
 
 const ProgressReport = () => {
   const client = useInstallerClient();
+  const { cancellablePromise } = useCancellablePromise();
   // progress and subprogress are basically objects containing { message, step, steps }
   const [progress, setProgress] = useState({});
   const [subProgress, setSubProgress] = useState(undefined);
 
-  useSafeEffect(useCallback((makeSafe) => {
-    client.manager.getProgress().then(({ message, current, total }) => {
-      makeSafe(setProgress)({ message, step: current, steps: total });
+  useEffect(() => {
+    cancellablePromise(client.manager.getProgress()).then(({ message, current, total }) => {
+      setProgress({ message, step: current, steps: total });
     });
-  }, [client.manager]));
+  }, [client.manager, cancellablePromise]);
 
   useEffect(() => {
     return client.manager.onProgressChange(({ message, current, total, finished }) => {

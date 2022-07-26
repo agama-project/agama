@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useEffect } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 /**
  * Returns a new array with a given collection split into two groups, the first holding elements
@@ -41,60 +41,85 @@ const partition = (collection, filter) => {
 };
 
 /**
- * Allows using the React useEffect hook in a safer way.
+ * @typedef {Object} cancellableWrapper
+ * @property {Promise} promise - Cancellable promise
+ * @property {function} cancel - Function for canceling the promise
+ */
+
+/**
+ * Creates a wrapper object with a cancellable promise and a function for canceling the promise
  *
- * This effect is useful for performing actions that modify a React component after resolving a
- * promise (e.g., setting the component state once a D-Bus call is answered). Note that nothing
+ * @see useCancellablePromise
+ *
+ * @param {Promise} promise
+ * @returns {cancellableWrapper}
+ */
+function makeCancellable(promise) {
+  let isCanceled = false;
+
+  const cancellablePromise = new Promise((resolve, reject) => {
+    promise
+      .then((value) => (!isCanceled && resolve(value)))
+      .catch((error) => (!isCanceled && reject(error)));
+  });
+
+  return {
+    promise: cancellablePromise,
+    cancel() {
+      isCanceled = true;
+    }
+  };
+}
+
+/**
+ * Allows using promises in a safer way.
+ *
+ * This hook is useful for safely performing actions that modify a React component after resolving
+ * a promise (e.g., setting the component state once a D-Bus call is answered). Note that nothing
  * guarantees that a React component is still mounted when a promise is resolved.
  *
  *  @see {@link https://overreacted.io/a-complete-guide-to-useeffect/#speaking-of-race-conditions|Race conditions}
  *
- * This effect receives a callback function as argument. That callback will be invoked passing a
- * function argument which can be used inside the callback code in order to run unsafe actions in a
- * safe way.
+ * The hook provides a function for making promises cancellable. All cancellable promises are
+ * automatically canceled once the component is unmounted. A canceled promise will be neither
+ * resolved nor rejected. The promise object will be destroyed by the garbage collector after
+ * unmounting the component.
  *
- * The callback is the only one dependency of this effect. Make sure the callback object does not
- * change to avoid firing the effect after every completed render. It is recommended to wrap your
- * callback function with a useCallback hook.
- *
- * The callback passed to useSafeEffect can return a clean-up function.
+ * @see {@link https://rajeshnaroth.medium.com/writing-a-react-hook-to-cancel-promises-when-a-component-unmounts-526efabf251f|Cancel promises}
  *
  * @example
  *
+ * const { cancellablePromise } = useCancellablePromise();
  * const [state, setState] = useState();
  *
  * useEffect(() => {
  *  const promise = new Promise((resolve) => setTimeout(() => resolve("success"), 6000));
- *  promise.then(setState); // This could fail if the component is unmounted
- * }, [setState]);
- *
- * useSafeEffect(useCallback((makeSafe) => {
- *  const promise = new Promise((resolve) => setTimeout(() => resolve("success"), 6000));
- *  promise.then(makeSafe(setState));  // The state is only set if the component is still mounted
- * }, [setState]));
- *
- * @param {function} callback
+ * // The state is only set if the promise is not canceled
+ *  cancellablePromise(promise).then(setState);
+ * }, [setState, cancellablePromise]);
  */
-function useSafeEffect(callback) {
+function useCancellablePromise() {
+  const promises = useRef();
+
   useEffect(() => {
-    let mounted = true;
-
-    const makeSafe = (unsafeFn) => {
-      return (...args) => {
-        if (mounted) unsafeFn(...args);
-      };
-    };
-
-    const result = callback(makeSafe);
+    promises.current = [];
 
     return () => {
-      mounted = false;
-      if (result) result();
+      promises.current.forEach(p => p.cancel());
+      promises.current = [];
     };
-  }, [callback]);
+  }, []);
+
+  const cancellablePromise = useCallback((promise) => {
+    const cancellableWrapper = makeCancellable(promise);
+    promises.current.push(cancellableWrapper);
+    return cancellableWrapper.promise;
+  }, []);
+
+  return { cancellablePromise };
 }
 
 export {
   partition,
-  useSafeEffect
+  useCancellablePromise
 };

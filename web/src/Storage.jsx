@@ -19,8 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer, useEffect, useCallback } from "react";
-import { useSafeEffect } from "./utils";
+import React, { useReducer, useEffect } from "react";
+import { useCancellablePromise } from "./utils";
 import { useInstallerClient } from "./context/installer";
 import { BUSY } from "./client/status";
 
@@ -58,6 +58,7 @@ const reducer = (state, action) => {
 
 export default function Storage() {
   const client = useInstallerClient();
+  const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, {
     targets: [],
     target: undefined,
@@ -72,23 +73,23 @@ export default function Storage() {
       dispatch({ type: "CHANGE_TARGET", payload });
     });
 
-  useSafeEffect(useCallback((makeSafe) => {
+  useEffect(() => {
     const loadStorage = async () => {
       const {
         availableDevices,
         candidateDevices: [candidateDeviceId]
-      } = await client.storage.getStorageProposal();
-      const actions = await client.storage.getStorageActions();
+      } = await cancellablePromise(client.storage.getStorageProposal());
+      const actions = await cancellablePromise(client.storage.getStorageActions());
       const targetDeviceId = candidateDeviceId || availableDevices[0]?.id;
       const error = actions.length === 0;
-      makeSafe(dispatch)({
+      dispatch({
         type: "LOAD",
         payload: { target: targetDeviceId, targets: availableDevices, actions, error }
       });
     };
 
     loadStorage().catch(console.error);
-  }, [client.storage]));
+  }, [client.storage, cancellablePromise]);
 
   useEffect(() => {
     return client.storage.onActionsChange(actions => {
@@ -103,24 +104,24 @@ export default function Storage() {
     });
   }, [client.storage]);
 
-  useSafeEffect(useCallback((makeSafe) => {
-    client.storage.getStatus().then(status => {
-      makeSafe(dispatch)({ type: "CHANGE_STATUS", payload: status });
+  useEffect(() => {
+    cancellablePromise(client.storage.getStatus()).then(status => {
+      dispatch({ type: "CHANGE_STATUS", payload: status });
     });
-  }, [client.storage]));
+  }, [client.storage, cancellablePromise]);
 
-  useSafeEffect(useCallback((makeSafe) => {
+  useEffect(() => {
     return client.storage.onStatusChange(status => {
-      makeSafe(dispatch)({ type: "CHANGE_STATUS", payload: status });
+      dispatch({ type: "CHANGE_STATUS", payload: status });
     });
-  }, [client.storage]));
+  }, [client.storage]);
 
   // FIXME: this useEffect should be removed after moving storage to its own service.
-  useSafeEffect(useCallback((makeSafe) => {
-    client.manager.getStatus().then(status => {
-      makeSafe(dispatch)({ type: "CHANGE_STATUS", payload: status });
+  useEffect(() => {
+    cancellablePromise(client.manager.getStatus()).then(status => {
+      dispatch({ type: "CHANGE_STATUS", payload: status });
     });
-  }, [client.manager]));
+  }, [client.manager, cancellablePromise]);
 
   // FIXME: this useEffect should be removed after moving storage to its own service.
   useEffect(() => {

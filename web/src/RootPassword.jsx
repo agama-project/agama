@@ -19,8 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect, useCallback } from "react";
-import { useSafeEffect } from "./utils";
+import React, { useState, useEffect } from "react";
+import { useCancellablePromise } from "./utils";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -36,15 +36,16 @@ import Popup from './Popup';
 
 export default function RootPassword() {
   const client = useInstallerClient();
+  const { cancellablePromise } = useCancellablePromise();
   const [isRootPasswordSet, setIsRootPasswordSet] = useState(null);
   const [rootPassword, setRootPassword] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  useSafeEffect(useCallback((makeSafe) => {
-    client.users.isRootPasswordSet()
-      .then(makeSafe(setIsRootPasswordSet))
+  useEffect(() => {
+    cancellablePromise(client.users.isRootPasswordSet())
+      .then(setIsRootPasswordSet)
       .catch(console.error);
-  }, [client.users]));
+  }, [client.users, cancellablePromise]);
 
   useEffect(() => {
     return client.users.onUsersChange(changes => {

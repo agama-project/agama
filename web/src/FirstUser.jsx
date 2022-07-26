@@ -19,8 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect, useCallback } from "react";
-import { useSafeEffect } from "./utils";
+import React, { useState, useEffect } from "react";
+import { useCancellablePromise } from "./utils";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -43,16 +43,17 @@ const initialUser = {
 };
 export default function Users() {
   const client = useInstallerClient();
+  const { cancellablePromise } = useCancellablePromise();
   const [user, setUser] = useState(null);
   const [formValues, setFormValues] = useState(initialUser);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  useSafeEffect(useCallback((makeSafe) => {
-    client.users.getUser().then(userValues => {
-      makeSafe(setUser)(userValues);
-      makeSafe(setFormValues)({ ...initialUser, ...userValues });
+  useEffect(() => {
+    cancellablePromise(client.users.getUser()).then(userValues => {
+      setUser(userValues);
+      setFormValues({ ...initialUser, ...userValues });
     });
-  }, [client.users]));
+  }, [client.users, cancellablePromise]);
 
   useEffect(() => {
     return client.users.onUsersChange(changes => {
