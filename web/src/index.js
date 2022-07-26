@@ -56,7 +56,7 @@ ReactDOM.render(
           <Routes>
             <Route path="/" element={<App />}>
               <Route path="/" element={<Main />}>
-                <Route path="/" element={<Overview />} />
+                <Route index element={<Overview />} />
                 <Route path="/overview" element={<Overview />} />
               </Route>
               <Route path="products" element={<ProductSelectionPage />} />

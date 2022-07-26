@@ -20,6 +20,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { useCancellablePromise } from "./utils";
 import { useInstallerClient } from "./context/installer";
 import {
   Button,
@@ -34,16 +35,17 @@ import Popup from './Popup';
 
 export default function RootSSHKey() {
   const client = useInstallerClient();
+  const { cancellablePromise } = useCancellablePromise();
   const [loading, setLoading] = useState(false);
   const [sshKey, setSSHKey] = useState(null);
   const [nextSSHKey, setNextSSHKey] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
-    client.users.getRootSSHKey()
+    cancellablePromise(client.users.getRootSSHKey())
       .then(setSSHKey)
       .catch(console.error);
-  }, [client.users]);
+  }, [client.users, cancellablePromise]);
 
   useEffect(() => {
     return client.users.onUsersChange(changes => {
@@ -62,7 +64,8 @@ export default function RootSSHKey() {
 
   const cancel = () => setIsFormOpen(false);
 
-  const accept = async () => {
+  const accept = async (e) => {
+    e.preventDefault();
     await client.users.setRootSSHKey(nextSSHKey);
     setSSHKey(nextSSHKey);
     setIsFormOpen(false);
@@ -89,7 +92,7 @@ export default function RootSSHKey() {
     <>
       {renderLink()}
       <Popup isOpen={isFormOpen} aria-label="Set root SSH public key">
-        <Form>
+        <Form id="root-ssh-key" onSubmit={accept}>
           <FormGroup fieldId="sshKey" label="Root SSH public key">
             <FileUpload
               id="sshKey"
@@ -108,7 +111,7 @@ export default function RootSSHKey() {
         </Form>
 
         <Popup.Actions>
-          <Popup.Confirm onClick={accept} />
+          <Popup.Confirm form="root-ssh-key" type="submit" />
           <Popup.Cancel onClick={cancel} />
           <Popup.AncillaryAction onClick={remove} isDisabled={sshKey === ""} key="unset">
             Do not use SSH public key

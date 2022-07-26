@@ -144,7 +144,7 @@ class UsersClient {
       } else if (changes.RootSSHKey) {
         return handler({ rootSSHKey: changes.RootSSHKey.v });
       } else if (changes.FirstUser) {
-        const [{ v: fullName }, { v: userName }, { v: autologin }] = changes.FirstUser.v;
+        const [fullName, userName, autologin] = changes.FirstUser.v;
         return handler({ firstUser: { fullName, userName, autologin } });
       }
     });

@@ -20,25 +20,27 @@
  */
 
 import React, { useEffect } from "react";
+import { useCancellablePromise } from "../utils";
 import { useInstallerClient } from "./installer";
 
 const SoftwareContext = React.createContext();
 
 function SoftwareProvider({ children }) {
   const client = useInstallerClient();
+  const { cancellablePromise } = useCancellablePromise();
   const [products, setProducts] = React.useState(undefined);
   const [selectedId, setSelectedId] = React.useState(undefined);
 
   useEffect(() => {
     const loadProducts = async () => {
-      const available = await client.software.getProducts();
-      const selected = await client.software.getSelectedProduct();
+      const available = await cancellablePromise(client.software.getProducts());
+      const selected = await cancellablePromise(client.software.getSelectedProduct());
       setProducts(available);
       setSelectedId(selected?.id || null);
     };
 
     loadProducts().catch(console.error);
-  }, [client.software, setProducts, setSelectedId]);
+  }, [client.software, setProducts, setSelectedId, cancellablePromise]);
 
   useEffect(() => {
     return client.software.onProductChange(setSelectedId);

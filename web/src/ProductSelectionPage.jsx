@@ -48,12 +48,13 @@ function ProductSelectionPage() {
   useEffect(() => {
     // TODO: display a notification in the UI to emphasizes that
     // selected product has changed
-    return client.software.onProductChange(setSelected);
-  }, [client.software]);
+    return client.software.onProductChange(() => navigate("/"));
+  }, [client.software, navigate]);
 
   const isSelected = p => p.id === selected;
 
-  const accept = () => {
+  const accept = (e) => {
+    e.preventDefault();
     if (selected === previous) {
       navigate("/");
       return;
@@ -92,12 +93,12 @@ function ProductSelectionPage() {
       <Title>Product selection</Title>
       <PageIcon><Icon /></PageIcon>
       <MainActions>
-        <Button isLarge variant="primary" onClick={accept}>
+        <Button isLarge variant="primary" form="product-selector" type="submit">
           Select
         </Button>
       </MainActions>
 
-      <Form>
+      <Form id="product-selector" onSubmit={accept}>
         <FormGroup isStack label={`Choose a product (${products.length} available)`} role="radiogroup">
           {buildOptions()}
         </FormGroup>

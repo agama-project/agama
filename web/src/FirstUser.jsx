@@ -20,6 +20,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { useCancellablePromise } from "./utils";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -42,16 +43,17 @@ const initialUser = {
 };
 export default function Users() {
   const client = useInstallerClient();
+  const { cancellablePromise } = useCancellablePromise();
   const [user, setUser] = useState(null);
   const [formValues, setFormValues] = useState(initialUser);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
-    client.users.getUser().then(userValues => {
+    cancellablePromise(client.users.getUser()).then(userValues => {
       setUser(userValues);
       setFormValues({ ...initialUser, ...userValues });
     });
-  }, [client.users]);
+  }, [client.users, cancellablePromise]);
 
   useEffect(() => {
     return client.users.onUsersChange(changes => {
@@ -72,7 +74,8 @@ export default function Users() {
     setIsFormOpen(false);
   };
 
-  const accept = async () => {
+  const accept = async (e) => {
+    e.preventDefault();
     const result = await client.users.setUser(formValues);
 
     if (result) {
@@ -117,7 +120,7 @@ export default function Users() {
       {renderLink()}
 
       <Popup isOpen={isFormOpen} title="User account">
-        <Form>
+        <Form id="first-user" onSubmit={accept}>
           <FormGroup fieldId="userFullName" label="Full name">
             <TextInput
               id="userFullName"
@@ -163,7 +166,7 @@ export default function Users() {
         </Form>
 
         <Popup.Actions>
-          <Popup.Confirm onClick={accept} isDisabled={formValues.userName === ""} />
+          <Popup.Confirm form="first-user" type="submit" isDisabled={formValues.userName === ""} />
           <Popup.Cancel onClick={cancel} />
           <Popup.AncillaryAction onClick={remove} isDisabled={!userIsDefined} key="unset">
             Do not create a user

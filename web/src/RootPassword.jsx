@@ -20,6 +20,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { useCancellablePromise } from "./utils";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -35,15 +36,16 @@ import Popup from './Popup';
 
 export default function RootPassword() {
   const client = useInstallerClient();
+  const { cancellablePromise } = useCancellablePromise();
   const [isRootPasswordSet, setIsRootPasswordSet] = useState(null);
   const [rootPassword, setRootPassword] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
-    client.users.isRootPasswordSet()
+    cancellablePromise(client.users.isRootPasswordSet())
       .then(setIsRootPasswordSet)
       .catch(console.error);
-  }, [client.users]);
+  }, [client.users, cancellablePromise]);
 
   useEffect(() => {
     return client.users.onUsersChange(changes => {
@@ -62,7 +64,8 @@ export default function RootPassword() {
     setIsFormOpen(false);
   };
 
-  const accept = async () => {
+  const accept = async (e) => {
+    e.preventDefault();
     // TODO: handle errors
     if (rootPassword !== "") {
       const result = await client.users.setRootPassword(rootPassword);
@@ -98,7 +101,7 @@ export default function RootPassword() {
         isOpen={isFormOpen}
         aria-label="Set new root password"
       >
-        <Form>
+        <Form id="root-password" onSubmit={accept}>
           <FormGroup fieldId="rootPassword" label="New root password">
             <TextInput
               id="rootPassword"
@@ -111,7 +114,7 @@ export default function RootPassword() {
         </Form>
 
         <Popup.Actions>
-          <Popup.Confirm onClick={accept} isDisabled={rootPassword === ""} />
+          <Popup.Confirm form="root-password" type="submit" isDisabled={rootPassword === ""} />
           <Popup.Cancel onClick={close} />
           <Popup.AncillaryAction onClick={remove} isDisabled={!isRootPasswordSet} key="unset">
             Do not use a password

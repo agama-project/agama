@@ -20,6 +20,7 @@
  */
 
 import React, { useReducer, useEffect } from "react";
+import { useCancellablePromise } from "./utils";
 import { useInstallerClient } from "./context/installer";
 
 import {
@@ -72,13 +73,14 @@ const initialState = {
 
 export default function LanguageSelector() {
   const client = useInstallerClient();
+  const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { current: language, languages, isFormOpen } = state;
 
   useEffect(() => {
     const loadLanguages = async () => {
-      const languages = await client.language.getLanguages();
-      const [current] = await client.language.getSelectedLanguages();
+      const languages = await cancellablePromise(client.language.getLanguages());
+      const [current] = await cancellablePromise(client.language.getSelectedLanguages());
       dispatch({
         type: "LOAD",
         payload: { languages, current }
@@ -86,7 +88,7 @@ export default function LanguageSelector() {
     };
 
     loadLanguages().catch(console.error);
-  }, [client.language]);
+  }, [client.language, cancellablePromise]);
 
   useEffect(() => {
     return client.language.onLanguageChange(changes => {
@@ -101,7 +103,8 @@ export default function LanguageSelector() {
 
   const cancel = () => dispatch({ type: "CANCEL" });
 
-  const accept = async () => {
+  const accept = async (e) => {
+    e.preventDefault();
     // TODO: handle errors
     await client.language.setLanguages([state.formCurrent]);
     dispatch({ type: "ACCEPT" });
@@ -139,13 +142,13 @@ export default function LanguageSelector() {
         isOpen={isFormOpen}
         aria-label="Language Selector"
       >
-        <Form>
+        <Form id="language-selector" onSubmit={accept}>
           <FormGroup fieldId="language" label="Language">
             {buildSelector(state.formCurrent)}
           </FormGroup>
         </Form>
         <Popup.Actions>
-          <Popup.Confirm onClick={accept} />
+          <Popup.Confirm form="language-selector" type="submit" />
           <Popup.Cancel onClick={cancel} />
         </Popup.Actions>
       </Popup>

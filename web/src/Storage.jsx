@@ -20,6 +20,7 @@
  */
 
 import React, { useReducer, useEffect } from "react";
+import { useCancellablePromise } from "./utils";
 import { useInstallerClient } from "./context/installer";
 import { BUSY } from "./client/status";
 
@@ -31,17 +32,18 @@ import InstallerSkeleton from "./InstallerSkeleton";
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOAD": {
-      const { targets, target, actions } = action.payload;
-      return { ...state, targets, target, actions };
+      const { targets, target, actions, error } = action.payload;
+      return { ...state, targets, target, actions, error };
     }
 
     case "CHANGE_TARGET": {
-      const { selected: target, error } = action.payload;
-      return { ...state, target, error };
+      const { selected: target } = action.payload;
+      return { ...state, target };
     }
 
     case "UPDATE_ACTIONS": {
-      return { ...state, actions: action.payload };
+      const { actions, error } = action.payload;
+      return { ...state, actions, error };
     }
 
     case "CHANGE_STATUS": {
@@ -56,6 +58,7 @@ const reducer = (state, action) => {
 
 export default function Storage() {
   const client = useInstallerClient();
+  const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, {
     targets: [],
     target: undefined,
@@ -66,7 +69,7 @@ export default function Storage() {
 
   const onAccept = selected =>
     client.storage.calculateStorageProposal({ candidateDevices: [selected] }).then(result => {
-      const payload = { selected, error: result !== 0 };
+      const payload = { selected };
       dispatch({ type: "CHANGE_TARGET", payload });
     });
 
@@ -75,21 +78,23 @@ export default function Storage() {
       const {
         availableDevices,
         candidateDevices: [candidateDeviceId]
-      } = await client.storage.getStorageProposal();
-      const actions = await client.storage.getStorageActions();
+      } = await cancellablePromise(client.storage.getStorageProposal());
+      const actions = await cancellablePromise(client.storage.getStorageActions());
       const targetDeviceId = candidateDeviceId || availableDevices[0]?.id;
+      const error = actions.length === 0;
       dispatch({
         type: "LOAD",
-        payload: { target: targetDeviceId, targets: availableDevices, actions }
+        payload: { target: targetDeviceId, targets: availableDevices, actions, error }
       });
     };
 
     loadStorage().catch(console.error);
-  }, [client.storage]);
+  }, [client.storage, cancellablePromise]);
 
   useEffect(() => {
     return client.storage.onActionsChange(actions => {
-      dispatch({ type: "UPDATE_ACTIONS", payload: actions });
+      const error = actions.length === 0;
+      dispatch({ type: "UPDATE_ACTIONS", payload: { actions, error } });
     });
   }, [client.storage]);
 
@@ -100,10 +105,10 @@ export default function Storage() {
   }, [client.storage]);
 
   useEffect(() => {
-    client.storage.getStatus().then(status => {
+    cancellablePromise(client.storage.getStatus()).then(status => {
       dispatch({ type: "CHANGE_STATUS", payload: status });
     });
-  }, [client.storage]);
+  }, [client.storage, cancellablePromise]);
 
   useEffect(() => {
     return client.storage.onStatusChange(status => {
@@ -113,10 +118,10 @@ export default function Storage() {
 
   // FIXME: this useEffect should be removed after moving storage to its own service.
   useEffect(() => {
-    client.manager.getStatus().then(status => {
+    cancellablePromise(client.manager.getStatus()).then(status => {
       dispatch({ type: "CHANGE_STATUS", payload: status });
     });
-  }, [client.manager]);
+  }, [client.manager, cancellablePromise]);
 
   // FIXME: this useEffect should be removed after moving storage to its own service.
   useEffect(() => {

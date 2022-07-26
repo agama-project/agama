@@ -21,6 +21,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useInstallerClient } from "./context/installer";
+import { useCancellablePromise } from "./utils";
 
 import GenericQuestion from "./GenericQuestion";
 import LuksActivationQuestion from "./LuksActivationQuestion";
@@ -32,6 +33,7 @@ const QUESTION_TYPES = {
 
 export default function Questions() {
   const client = useInstallerClient();
+  const { cancellablePromise } = useCancellablePromise();
 
   const [pendingQuestions, setPendingQuestions] = useState([]);
 
@@ -49,11 +51,13 @@ export default function Questions() {
   }, [client.questions, removeQuestion]);
 
   useEffect(() => {
-    const unsubscribeCallbacks = [];
-
-    client.questions.getQuestions()
+    cancellablePromise(client.questions.getQuestions())
       .then(setPendingQuestions)
       .catch(e => console.error("Something went wrong retrieving pending questions", e));
+  }, [client.questions, cancellablePromise]);
+
+  useEffect(() => {
+    const unsubscribeCallbacks = [];
     unsubscribeCallbacks.push(client.questions.onQuestionAdded(addQuestion));
     unsubscribeCallbacks.push(client.questions.onQuestionRemoved(removeQuestion));
 
