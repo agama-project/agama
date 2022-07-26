@@ -81,9 +81,10 @@ function makeCancellable(promise) {
  *  @see {@link https://overreacted.io/a-complete-guide-to-useeffect/#speaking-of-race-conditions|Race conditions}
  *
  * The hook provides a function for making promises cancellable. All cancellable promises are
- * automatically canceled once the component is unmounted. A canceled promise will be neither
- * resolved nor rejected. The promise object will be destroyed by the garbage collector after
- * unmounting the component.
+ * automatically canceled once the component is unmounted. Note that the promises are not really
+ * canceled. In this context, a canceled promise means that the promise will be neither resolved nor
+ * rejected. Canceled promises will be destroyed by the garbage collector after unmounting the
+ * component.
  *
  * @see {@link https://rajeshnaroth.medium.com/writing-a-react-hook-to-cancel-promises-when-a-component-unmounts-526efabf251f|Cancel promises}
  *
