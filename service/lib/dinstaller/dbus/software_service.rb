@@ -41,9 +41,10 @@ module DInstaller
       # @param config [Config] Configuration object
       # @param logger [Logger]
       def initialize(config, logger = nil)
-        @backend = DInstaller::Software.new(config, logger)
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
+        @backend = DInstaller::Software.new(config, logger)
+        @backend.on_progress_change { dispatch }
       end
 
       # Exports the software object through the D-Bus service
@@ -71,9 +72,14 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          DInstaller::DBus::Software::Manager.new(@backend, logger),
+          dbus_software_manager,
           DInstaller::DBus::Software::Proposal.new(logger)
         ]
+      end
+
+      # @return [DInstaller::DBus::Software::Manager]
+      def dbus_software_manager
+        @dbus_software_manager ||= DInstaller::DBus::Software::Manager.new(@backend, logger)
       end
     end
   end
