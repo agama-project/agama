@@ -184,20 +184,3 @@ describe("App", () => {
     });
   });
 });
-
-// Mock some components,
-// See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
-
-// jest.mock("./TargetIpsPopup", () => () => "Target IPs Mock");
-
-// describe("App", () => {
-//   it("renders the application's content", () => {
-//     plainRender(<App />);
-//     expect(screen.queryByText("Content")).toBeInTheDocument();
-//   });
-
-//   it("renders IP address and hostname", () => {
-//     plainRender(<App />);
-//     expect(screen.queryByText("Target IPs Mock")).toBeInTheDocument();
-//   });
-// });
