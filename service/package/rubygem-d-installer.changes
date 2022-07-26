@@ -12,6 +12,7 @@ Fri Jul 15 07:24:16 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
     (gh#yast/d-installer#209).
   * Install packages that are required to configure the LSM
     (gh#yast/d-installer#222).
+- Add dependencies on YaST2 and snapper packages.
 
 -------------------------------------------------------------------
 Mon Jun 13 10:17:32 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
