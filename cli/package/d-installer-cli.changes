@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul 26 10:05:33 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.4.1:
+  * Adapt the code to the new D-Bus status/progress reporting API
+    (gh#yast/d-installer#229).
+
+-------------------------------------------------------------------
 Mon Jun 13 10:32:43 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.3:

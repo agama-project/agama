@@ -1,4 +1,22 @@
 -------------------------------------------------------------------
+Tue Jul 26 10:04:53 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.4.1:
+  * Fix several user interface-related issues (gh#yast/d-installer#230):
+    - Avoid reloading the page when pushing the enter key.
+    - Always display the D-Bus error page when the connection gets
+      broken. Reload the UI again when the D-Bus connection is
+      working again.
+    - Update the product selection page when the product is
+      modified in background (e.g., using the CLI).
+    - Update the first user settings when they are changed in
+      background.
+    - Refresh the storage section when the settings are modified
+      in background.
+    - If the storage proposal fails, display the error even after
+      reloading the page.
+
+-------------------------------------------------------------------
 Fri Jul 15 07:32:48 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.4:
