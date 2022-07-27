@@ -25,10 +25,10 @@ require "dinstaller/users"
 
 module DInstaller
   module DBus
-    # D-Bus service (org.opensuse.DInstaller)
+    # D-Bus service (org.opensuse.DInstaller.Users)
     #
     # It connects to the system D-Bus and answers requests on objects below
-    # `/org/opensuse/DInstaller/Users`.
+    # `/org/opensuse/DInstaller/Users1`.
     class UsersService
       # Service name
       #
