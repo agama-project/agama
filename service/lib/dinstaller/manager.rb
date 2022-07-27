@@ -22,10 +22,12 @@
 require "yast"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
+require "dinstaller/can_ask_question"
 require "dinstaller/config"
 require "dinstaller/network"
 require "dinstaller/security"
 require "dinstaller/storage"
+require "dinstaller/question"
 require "dinstaller/questions_manager"
 require "dinstaller/with_progress"
 require "dinstaller/installation_phase"
@@ -45,6 +47,7 @@ module DInstaller
   # other services via D-Bus (e.g., `org.opensuse.DInstaller.Software`).
   class Manager
     include WithProgress
+    include CanAskQuestion
 
     # @return [Logger]
     attr_reader :logger
@@ -82,11 +85,20 @@ module DInstaller
       storage.probe(questions_manager)
       security.probe
       network.probe
+      testing_question
 
       logger.info("Config phase done")
     rescue StandardError => e
       logger.error "Startup error: #{e.inspect}. Backtrace: #{e.backtrace}"
       # TODO: report errors
+    end
+
+    def testing_question
+      question = Question.new("What is your favourite colour?", options: [:blue, :yellow])
+      correct = ask(question) do |q|
+        q.answer == :blue
+      end
+      logger.info(correct ? "Off you go" : "Aaaaaugh!")
     end
 
     # Runs the install phase
