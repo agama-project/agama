@@ -23,7 +23,9 @@ require "yast"
 require "fileutils"
 require "dinstaller/package_callbacks"
 require "dinstaller/config"
+require "dinstaller/can_ask_question"
 require "dinstaller/with_progress"
+require "dinstaller/dbus/clients/questions_manager"
 require "y2packager/product"
 
 Yast.import "PackageInstallation"
@@ -35,6 +37,7 @@ module DInstaller
   # This class is responsible for software handling
   class Software
     include WithProgress
+    include CanAskQuestion
 
     GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
     private_constant :GPG_KEYS_GLOB
@@ -68,8 +71,17 @@ module DInstaller
       return if name == @product
       raise ArgumentError unless @products[name]
 
+      testing_question
       @config.pick_product(name)
       @product = name
+    end
+
+    def testing_question
+      question = Question.new("What is the capital of Assyria?", options: [:nineveh, :damascus])
+      correct = ask(question) do |q|
+        q.answer == :nineveh
+      end
+      logger.info(correct ? "Off you go" : "Aaaaaugh!")
     end
 
     def probe
@@ -227,6 +239,13 @@ module DInstaller
       FileUtils.rm_rf(REPOS_DIR)
       logger.info "moving #{REPOS_BACKUP} to #{REPOS_DIR}"
       FileUtils.mv(REPOS_BACKUP, REPOS_DIR)
+    end
+
+    def questions_manager
+      logger.info "QMGR init"
+      @qmgr_proxy ||= DBus::Clients::QuestionsManager.new
+      logger.info "QMGR yes"
+      @qmgr_proxy
     end
   end
 end
