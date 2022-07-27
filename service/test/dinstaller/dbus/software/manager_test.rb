@@ -39,6 +39,7 @@ describe DInstaller::DBus::Software::Manager do
   end
 
   before do
+    allow_any_instance_of(described_class).to receive(:register_callbacks)
     allow_any_instance_of(described_class).to receive(:register_progress_callbacks)
     allow_any_instance_of(described_class).to receive(:register_service_status_callbacks)
   end

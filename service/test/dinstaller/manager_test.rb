@@ -43,7 +43,7 @@ describe DInstaller::Manager do
   let(:users) do
     instance_double(DInstaller::DBus::Clients::Users, write: nil, on_service_status_change: nil)
   end
-  let(:language) { instance_double(DInstaller::Language, probe: nil, install: nil, finish: nil) }
+  let(:language) { instance_double(DInstaller::DBus::Clients::Language, finish: nil) }
   let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
   let(:storage) do
     instance_double(DInstaller::Storage::Manager, probe: nil, install: nil, finish: nil)
@@ -52,9 +52,9 @@ describe DInstaller::Manager do
   let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
   before do
-    allow(DInstaller::Language).to receive(:new).and_return(language)
     allow(DInstaller::Network).to receive(:new).and_return(network)
     allow(DInstaller::Security).to receive(:new).and_return(security)
+    allow(DInstaller::DBus::Clients::Language).to receive(:new).and_return(language)
     allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(users)
     allow(DInstaller::Storage::Manager).to receive(:new).and_return(storage)
@@ -69,11 +69,6 @@ describe DInstaller::Manager do
     it "sets the installation phase to startup" do
       subject.startup_phase
       expect(subject.installation_phase.startup?).to eq(true)
-    end
-
-    it "probes languages" do
-      expect(language).to receive(:probe)
-      subject.startup_phase
     end
 
     context "when only one product is defined" do
@@ -120,11 +115,11 @@ describe DInstaller::Manager do
     end
 
     it "calls #install (or #write) method of each module" do
-      expect(language).to receive(:install)
       expect(network).to receive(:install)
       expect(software).to receive(:install)
       expect(software).to receive(:probe)
       expect(software).to receive(:finish)
+      expect(language).to receive(:finish)
       expect(security).to receive(:write)
       expect(storage).to receive(:install)
       expect(storage).to receive(:finish)

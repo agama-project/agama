@@ -58,6 +58,11 @@ module DInstaller
           dbus_object.ToInstall(ids)
         end
 
+        # Finishes the language installation
+        def finish
+          dbus_object.Finish
+        end
+
         # Registers a callback to run when the language changes
         #
         # @note Signal subscription is done only once. Otherwise, the latest subscription overrides

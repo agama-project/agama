@@ -79,4 +79,11 @@ describe DInstaller::DBus::Language do
       end
     end
   end
+
+  describe "#finish" do
+    it "finishes the language installation" do
+      expect(backend).to receive(:finish)
+      subject.finish
+    end
+  end
 end
