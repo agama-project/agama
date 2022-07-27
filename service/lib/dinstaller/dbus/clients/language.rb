@@ -21,46 +21,48 @@
 
 require "dinstaller/dbus/clients/base"
 
-module DInstallerCli
-  module Clients
-    # D-Bus client for language configuration
-    class Language < DInstaller::DBus::Clients::Base
-      def initialize
-        super
+module DInstaller
+  module DBus
+    module Clients
+      # D-Bus client for language configuration
+      class Language < Base
+        def initialize
+          super
 
-        @dbus_object = service.object("/org/opensuse/DInstaller/Language1")
-        @dbus_object.introspect
+          @dbus_object = service.object("/org/opensuse/DInstaller/Language1")
+          @dbus_object.introspect
+        end
+
+        def service_name
+          @service_name ||= "org.opensuse.DInstaller"
+        end
+
+        # Available languages for the installation
+        #
+        # @return [Array<Array<String, String>>] id and name of each language
+        def available_languages
+          dbus_object["org.opensuse.DInstaller.Language1"]["AvailableLanguages"].map { |l| l[0..1] }
+        end
+
+        # Languages selected to install
+        #
+        # @return [Array<String>] ids of the languages
+        def selected_languages
+          dbus_object["org.opensuse.DInstaller.Language1"]["MarkedForInstall"]
+        end
+
+        # Selects the languages to install
+        #
+        # @param ids [Array<String>]
+        def select_languages(ids)
+          dbus_object.ToInstall(ids)
+        end
+
+      private
+
+        # @return [::DBus::Object]
+        attr_reader :dbus_object
       end
-
-      def service_name
-        @service_name ||= "org.opensuse.DInstaller"
-      end
-
-      # Available languages for the installation
-      #
-      # @return [Array<Array<String, String>>] id and name of each language
-      def available_languages
-        dbus_object["org.opensuse.DInstaller.Language1"]["AvailableLanguages"].map { |l| l[0..1] }
-      end
-
-      # Languages selected to install
-      #
-      # @return [Array<String>] ids of the languages
-      def selected_languages
-        dbus_object["org.opensuse.DInstaller.Language1"]["MarkedForInstall"]
-      end
-
-      # Selects the languages to install
-      #
-      # @param ids [Array<String>]
-      def select_languages(ids)
-        dbus_object.ToInstall(ids)
-      end
-
-    private
-
-      # @return [::DBus::Object]
-      attr_reader :dbus_object
     end
   end
 end
