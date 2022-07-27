@@ -28,7 +28,6 @@ describe DInstaller::Language do
   subject { described_class.new(logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
-  let(:client) { instance_double(DInstaller::DBus::Clients::Software) }
 
   describe "#probe" do
     let(:languages) do

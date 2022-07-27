@@ -34,7 +34,7 @@ module DInstaller
         end
 
         def service_name
-          @service_name ||= "org.opensuse.DInstaller"
+          @service_name ||= "org.opensuse.DInstaller.Language"
         end
 
         # Available languages for the installation
