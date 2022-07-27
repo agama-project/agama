@@ -66,6 +66,13 @@ module DInstaller
       @product = name
     end
 
+    # Selects language pacakges for installation
+    #
+    # @param languages [Array<String>] Language ids
+    def select_languages(languages)
+      Yast::Language.PackagesInit(languages)
+    end
+
     def probe
       logger.info "Probing software"
 

@@ -28,6 +28,7 @@ describe DInstaller::Language do
   subject { described_class.new(logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
+  let(:client) { instance_double(DInstaller::DBus::Clients::Software) }
 
   describe "#probe" do
     let(:languages) do
@@ -49,9 +50,21 @@ describe DInstaller::Language do
   end
 
   describe "#install" do
+    before do
+      allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(client)
+      allow(Yast::Language).to receive(:language).and_return("de_DE")
+    end
+
+    it "selects the software settings" do
+      expect(client).to receive(:select_languages).with(["de_DE"])
+      subject.install
+    end
+  end
+
+  describe "#finish" do
     it "writes language settings" do
       expect(Yast::Language).to receive(:Save)
-      subject.install
+      subject.finish
     end
   end
 
@@ -62,7 +75,6 @@ describe DInstaller::Language do
 
     it "sets the language and selects the related packages" do
       expect(Yast::Language).to receive(:Set).with("de_DE")
-      expect(Yast::Language).to receive(:PackagesInit).with(["de_DE"])
       subject.language = "de_DE"
     end
 

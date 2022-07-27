@@ -43,7 +43,7 @@ describe DInstaller::Manager do
   let(:users) do
     instance_double(DInstaller::DBus::Clients::Users, write: nil, on_service_status_change: nil)
   end
-  let(:language) { instance_double(DInstaller::Language, probe: nil, install: nil) }
+  let(:language) { instance_double(DInstaller::Language, probe: nil, install: nil, finish: nil) }
   let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
   let(:storage) do
     instance_double(DInstaller::Storage::Manager, probe: nil, install: nil, finish: nil)

@@ -21,6 +21,7 @@
 
 require "yast"
 require "dinstaller/errors"
+require "dinstaller/dbus/clients/software"
 
 Yast.import "Language"
 
@@ -43,8 +44,14 @@ module DInstaller
       @languages = Yast::Language.GetLanguagesMap(true)
     end
 
-    # Writes the language settings
+    # Selects language packages for installation
     def install
+      client = DInstaller::DBus::Clients::Software.new
+      client.select_languages([Yast::Language.language])
+    end
+
+    # Writes the language settings
+    def finish
       Yast::Language.Save
     end
 
@@ -57,7 +64,6 @@ module DInstaller
 
       Yast::Language.Set(name)
       Yast::Language.languages = Yast::Language.RemoveSuffix(name)
-      Yast::Language.PackagesInit([name])
     end
 
     # Returns the selected language
