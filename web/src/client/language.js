@@ -20,7 +20,9 @@
  */
 
 import { applyMixin, withDBus } from "./mixins";
+import cockpit from "../lib/cockpit";
 
+const LANGUAGE_SERVICE = "org.opensuse.DInstaller.Language";
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 const LANGUAGE_PATH = "/org/opensuse/DInstaller/Language1";
 
@@ -28,8 +30,10 @@ const LANGUAGE_PATH = "/org/opensuse/DInstaller/Language1";
  * Language client
  */
 class LanguageClient {
-  constructor(dbusClient) {
-    this._client = dbusClient;
+  constructor() {
+    this._client = cockpit.dbus(LANGUAGE_SERVICE, {
+      bus: "system", superuser: "try"
+    });
   }
 
   /**
