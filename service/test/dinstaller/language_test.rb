@@ -49,18 +49,6 @@ describe DInstaller::Language do
     end
   end
 
-  describe "#install" do
-    before do
-      allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(client)
-      allow(Yast::Language).to receive(:language).and_return("de_DE")
-    end
-
-    it "selects the software settings" do
-      expect(client).to receive(:select_languages).with(["de_DE"])
-      subject.install
-    end
-  end
-
   describe "#finish" do
     it "writes language settings" do
       expect(Yast::Language).to receive(:Save)

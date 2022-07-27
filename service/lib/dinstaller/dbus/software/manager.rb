@@ -22,6 +22,7 @@
 require "dbus"
 require "dinstaller/dbus/base_object"
 require "dinstaller/dbus/with_service_status"
+require "dinstaller/dbus/clients/language"
 require "dinstaller/dbus/interfaces/progress"
 require "dinstaller/dbus/interfaces/service_status"
 
@@ -44,6 +45,7 @@ module DInstaller
         def initialize(backend, logger)
           super(PATH, logger: logger)
           @backend = backend
+          register_callbacks
           register_progress_callbacks
           register_service_status_callbacks
         end
@@ -61,10 +63,6 @@ module DInstaller
 
             select_product(product_id)
             dbus_properties_changed(SOFTWARE_INTERFACE, { "SelectedBaseProduct" => product_id }, [])
-          end
-
-          dbus_method :SelectLanguages, "in LanguageID:as" do |language_ids|
-            backend.select_languages(language_ids)
           end
 
           # TODO: just for performance comparison (see `perf.rb`)
@@ -119,6 +117,14 @@ module DInstaller
 
         # @return [DInstaller::Software]
         attr_reader :backend
+
+        # Registers callback to be called
+        def register_callbacks
+          client = DInstaller::DBus::Clients::Language.new
+          client.on_language_selected do |language_ids|
+            backend.languages = language_ids
+          end
+        end
       end
     end
   end

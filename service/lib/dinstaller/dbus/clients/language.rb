@@ -58,6 +58,19 @@ module DInstaller
           dbus_object.ToInstall(ids)
         end
 
+        # Registers a callback to run when the language changes
+        #
+        # @note Signal subscription is done only once. Otherwise, the latest subscription overrides
+        #   the previous one.
+        #
+        # @param block [Proc] Callback to run when a language is selected
+        def on_language_selected(&block)
+          on_properties_change(dbus_object) do |_, changes, _|
+            languages = changes["MarkedForInstall"]
+            block.call(languages)
+          end
+        end
+
       private
 
         # @return [::DBus::Object]

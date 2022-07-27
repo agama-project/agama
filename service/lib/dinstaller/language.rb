@@ -21,7 +21,6 @@
 
 require "yast"
 require "dinstaller/errors"
-require "dinstaller/dbus/clients/software"
 
 Yast.import "Language"
 
@@ -42,12 +41,6 @@ module DInstaller
     def probe
       logger.info "Probing languages"
       @languages = Yast::Language.GetLanguagesMap(true)
-    end
-
-    # Selects language packages for installation
-    def install
-      client = DInstaller::DBus::Clients::Software.new
-      client.select_languages([Yast::Language.language])
     end
 
     # Writes the language settings

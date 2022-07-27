@@ -72,13 +72,6 @@ module DInstaller
           dbus_object.SelectProduct(name)
         end
 
-        # Selects the locale to install
-        #
-        # @param languages [Array<String>] Language ids (e.g., ["de_DE"])
-        def select_languages(languages)
-          dbus_object.SelectLanguages(languages)
-        end
-
         # Starts the probing process
         #
         # If a block is given, the method returns immediately and the probing is performed in an

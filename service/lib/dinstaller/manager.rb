@@ -97,14 +97,12 @@ module DInstaller
     def install_phase
       installation_phase.install
 
-      start_progress(10)
+      start_progress(9)
 
       progress.step("Reading software repositories") do
         software.probe
         Yast::Installation.destdir = "/mnt"
       end
-
-      progress.step("Selecting language packages") { language.install }
 
       progress.step("Partitioning") do
         # lets propose it here to be sure that software proposal reflects product selection

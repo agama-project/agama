@@ -90,15 +90,6 @@ describe DInstaller::DBus::Clients::Software do
     end
   end
 
-  describe "#select_languages" do
-    let(:dbus_object) { double(::DBus::ProxyObject) }
-
-    it "selects the given locale" do
-      expect(dbus_object).to receive(:SelectLanguages).with(["de_DE"])
-      subject.select_languages(["de_DE"])
-    end
-  end
-
   describe "#probe" do
     let(:dbus_object) { double(::DBus::ProxyObject, Probe: nil) }
 
