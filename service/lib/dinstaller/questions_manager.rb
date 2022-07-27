@@ -46,14 +46,14 @@ module DInstaller
     # @yieldparam question [Question] added question
     #
     # @param question [Question]
-    # @return [Boolean] whether the question was added
+    # @return [Question,nil] the actually added question (to be passed to {#delete} later)
     def add(question)
-      return false if include?(question)
+      return nil if include?(question)
 
       questions << question
       on_add_callbacks.each { |c| c.call(question) }
 
-      true
+      question
     end
 
     # Deletes the given question
@@ -63,14 +63,14 @@ module DInstaller
     # @yieldparam question [Question] deleted question
     #
     # @param question [Question]
-    # @return [Boolean] whether the question was deleted
+    # @return [Question,nil] whether the question was deleted
     def delete(question)
-      return false unless include?(question)
+      return nil unless include?(question)
 
       questions.delete(question)
       on_delete_callbacks.each { |c| c.call(question) }
 
-      true
+      question
     end
 
     # Waits until all questions are answered

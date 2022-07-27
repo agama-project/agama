@@ -33,14 +33,16 @@ module DInstaller
     #   ask(question2) { |q| q.answer == :yes }  #=> Boolean
     #
     # @param question [Question]
-    # @yield [Question] Gives the answered question to the block.
+    # @yield [Question,DBus::Clients::Question] Gives the answered question to the block.
     # @return [Symbol, Object] The question answer, or the result of the block in case a block is
     #   given.
     def ask(question)
-      questions_manager.add(question)
+      # asked_question has the same interface as question
+      # but it may be a D-Bus proxy, if our questions_manager is also one
+      asked_question = questions_manager.add(question)
       questions_manager.wait
-      result = block_given? ? yield(question) : question.answer
-      questions_manager.delete(question)
+      result = block_given? ? yield(asked_question) : asked_question.answer
+      questions_manager.delete(asked_question)
 
       result
     end
