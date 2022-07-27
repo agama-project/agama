@@ -31,13 +31,13 @@ module Yast
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L118
     def AddResolvables(unique_id, type, resolvables, optional: false)
-      client.add_resolvables(unique_id, type, resolvables, optional: optional)
+      client.add_resolvables(unique_id, type, resolvables || [], optional: optional)
       true
     end
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L145
     def SetResolvables(unique_id, type, resolvables, optional: false)
-      client.set_resolvables(unique_id, type, resolvables, optional: optional)
+      client.set_resolvables(unique_id, type, resolvables || [], optional: optional)
       true
     end
 
@@ -48,7 +48,7 @@ module Yast
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L177
     def RemoveResolvables(unique_id, type, resolvables, optional: false)
-      client.remove_resolvables(unique_id, type, resolvables, optional: optional)
+      client.remove_resolvables(unique_id, type, resolvables || [], optional: optional)
       true
     end
 
