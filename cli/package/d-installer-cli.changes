@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jul 28 08:15:39 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.4.2:
+  * Move the language client to the service gem
+    (related to gh#yast/yast-dinstaller#240).
+
+-------------------------------------------------------------------
 Tue Jul 26 10:05:33 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.4.1:
