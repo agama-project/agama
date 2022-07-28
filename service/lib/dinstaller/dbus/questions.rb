@@ -83,13 +83,20 @@ module DInstaller
         #
         # The object path of the new question is not returned!
         # Instead, you 're supposed to listen to ObjectManager.InterfacesAdded
-        dbus_method :New, "in text:s, in options:as, in default_option:as" do |text, options, default_option|
+        dbus_method :New, "in text:s, in options:as, in default_option:as, out q:o" do |text, options, default_option|
           backend_q = DInstaller::Question.new(
                 text,
                 options: options.map(&:to_sym),
                 default_option: default_option.map(&:to_sym).first
           )
           backend.add(backend_q)
+          path_for(backend_q)
+        end
+
+        dbus_method :Delete, "in question:o" do |question_path|
+          dbus_q = @service.get_node(question_path)&.object
+          backend_q = dbus_q.instance_variable_get(:@backend) # FIXME: make attr public
+          backend.delete(backend_q)
         end
       end
 

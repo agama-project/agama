@@ -48,9 +48,11 @@ module DInstaller
         # @yieldparam question [Question] added question
         #
         # @param question [Question]
-        # @return [Boolean] whether the question was added
+        # @return [Boolean] whether the question was added FIXME
         def add(question)
-          @dbus_object.New(question.text, question.options.map(&:to_s), Array(question.default_option&.to_s))
+          q_path = @dbus_object.New(question.text, question.options.map(&:to_s), Array(question.default_option&.to_s))
+          p q_path
+          service[q_path]
           # question identity, the api does not really fit, New really should return an obj path
           # or whatever
         end
@@ -61,28 +63,31 @@ module DInstaller
         #
         # @yieldparam question [Question] deleted question
         #
-        # @param question [Question]
-        # @return [Boolean] whether the question was deleted
+        # @param question [Question] FIXME the yardocs are wrong here
         def delete(question)
-          return false unless include?(question)
-
-          questions.delete(question)
-          on_delete_callbacks.each { |c| c.call(question) }
-
-          true
+          @dbus_object.Delete(question.path)
         end
 
         # Waits until all questions are answered
         #
         # Callbacks are periodically called while waiting, see {#on_wait}.
-        def wait
-          logger.info "Waiting for questions to be answered"
+        def wait(questions)
+          puts "In Wait"
+          # so what is the minimum we must do? wait should receive a list of questions to wait for (object paths) and ignore the others
+          # register the InterfacesAdded callback...
+          # stupid but simple way: poll the answered property of the questions.first object, sleep 0.5 s, repeat
+          #
+          question = questions.first # FIXME: use them all
+          q_proxy_iface = question["org.opensuse.DInstaller.Question1"]
+          10.times do
+            puts "asking answer"
+            answer = q_proxy_iface["Answer"]
+            puts "  it is #{answer.inspect}"
+            break unless answer.empty?
 
-          loop do
-            on_wait_callbacks.each(&:call)
-            sleep(0.1)
-            break if questions_answered?
+            sleep(0.5)
           end
+          question.define_singleton_method(:answer) { q_proxy_iface["Answer"] }
         end
 
         # Registers a callback to be called while waiting for questions be answered
@@ -93,9 +98,6 @@ module DInstaller
         end
 
       private
-
-        # @return [Logger]
-        attr_reader :logger
 
         # Callbacks to be called when waiting for answers
         #

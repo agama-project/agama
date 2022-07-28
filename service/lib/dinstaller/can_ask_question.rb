@@ -40,7 +40,7 @@ module DInstaller
       # asked_question has the same interface as question
       # but it may be a D-Bus proxy, if our questions_manager is also one
       asked_question = questions_manager.add(question)
-      questions_manager.wait
+      questions_manager.wait([asked_question])
       result = block_given? ? yield(asked_question) : asked_question.answer
       questions_manager.delete(asked_question)
 

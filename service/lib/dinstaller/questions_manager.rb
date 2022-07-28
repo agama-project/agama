@@ -76,7 +76,7 @@ module DInstaller
     # Waits until all questions are answered
     #
     # Callbacks are periodically called while waiting, see {#on_wait}.
-    def wait
+    def wait(_questions)
       logger.info "Waiting for questions to be answered"
 
       loop do
