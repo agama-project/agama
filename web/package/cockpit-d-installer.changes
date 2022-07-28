@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jul 28 08:17:06 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.4.2:
+  * Connect to the org.opensuse.DInstaller.Language service
+    (related to gh#yast/d-installer#240).
+
+-------------------------------------------------------------------
 Tue Jul 26 10:04:53 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.4.1:
