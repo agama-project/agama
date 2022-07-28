@@ -58,6 +58,8 @@ module DInstaller
           dbus_properties_changed(LANGUAGE_INTERFACE, { "MarkedForInstall" => lang_ids }, [])
           result ? 0 : 1
         end
+
+        dbus_method(:Finish) { finish }
       end
 
       def available_languages
@@ -76,6 +78,10 @@ module DInstaller
         true
       rescue Errors::InvalidValue
         false
+      end
+
+      def finish
+        backend.finish
       end
 
     private

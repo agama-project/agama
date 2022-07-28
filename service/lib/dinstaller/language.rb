@@ -44,7 +44,7 @@ module DInstaller
     end
 
     # Writes the language settings
-    def install
+    def finish
       Yast::Language.Save
     end
 
@@ -57,7 +57,6 @@ module DInstaller
 
       Yast::Language.Set(name)
       Yast::Language.languages = Yast::Language.RemoveSuffix(name)
-      Yast::Language.PackagesInit([name])
     end
 
     # Returns the selected language

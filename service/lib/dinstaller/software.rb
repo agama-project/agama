@@ -41,6 +41,11 @@ module DInstaller
 
     attr_reader :product
 
+    DEFAULT_LANGUAGES = ["en_US"].freeze
+    private_constant :DEFAULT_LANGUAGES
+
+    attr_accessor :languages
+
     # FIXME: what about defining a Product class?
     # @return [Array<Array<String,Hash>>] An array containing the product ID and
     #   additional information in a hash
@@ -49,6 +54,7 @@ module DInstaller
     def initialize(config, logger)
       @config = config
       @logger = logger
+      @languages = DEFAULT_LANGUAGES
       @products = @config.data["products"]
       if @config.multi_product?
         @product = nil
@@ -95,6 +101,7 @@ module DInstaller
       Yast::Pkg.TargetFinish # ensure that previous target is closed
       Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
       Yast::Pkg.TargetLoad
+      Yast::Pkg.SetAdditionalLocales(languages)
       select_base_product(@config.data["software"]["base_product"])
 
       add_resolvables

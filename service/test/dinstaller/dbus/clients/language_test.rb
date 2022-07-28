@@ -19,14 +19,14 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "dinstaller_cli/clients/language"
+require_relative "../../../test_helper"
+require "dinstaller/dbus/clients/language"
 require "dbus"
 
-describe DInstallerCli::Clients::Language do
+describe DInstaller::DBus::Clients::Language do
   before do
     allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.DInstaller").and_return(service)
+    allow(bus).to receive(:service).with("org.opensuse.DInstaller.Language").and_return(service)
     allow(service).to receive(:object).with("/org/opensuse/DInstaller/Language1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
@@ -79,6 +79,15 @@ describe DInstallerCli::Clients::Language do
       expect(dbus_object).to receive(:ToInstall).with(["en_GB"])
 
       subject.select_languages(["en_GB"])
+    end
+  end
+
+  describe "#finish" do
+    let(:dbus_object) { double(::DBus::ProxyObject) }
+
+    it "calls the D-Bus finish method" do
+      expect(dbus_object).to receive(:Finish)
+      subject.finish
     end
   end
 end

@@ -48,10 +48,10 @@ describe DInstaller::Language do
     end
   end
 
-  describe "#install" do
+  describe "#finish" do
     it "writes language settings" do
       expect(Yast::Language).to receive(:Save)
-      subject.install
+      subject.finish
     end
   end
 
@@ -62,7 +62,6 @@ describe DInstaller::Language do
 
     it "sets the language and selects the related packages" do
       expect(Yast::Language).to receive(:Set).with("de_DE")
-      expect(Yast::Language).to receive(:PackagesInit).with(["de_DE"])
       subject.language = "de_DE"
     end
 

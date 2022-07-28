@@ -20,20 +20,20 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "dinstaller/dbus/users"
-require "dinstaller/users"
+require "dinstaller/dbus/language"
+require "dinstaller/language"
 
 module DInstaller
   module DBus
-    # D-Bus service (org.opensuse.DInstaller.Users)
+    # D-Bus service (org.opensuse.DInstaller.Language)
     #
     # It connects to the system D-Bus and answers requests on objects below
-    # `/org/opensuse/DInstaller/Users1`.
-    class UsersService
+    # `/org/opensuse/DInstaller/Language1`.
+    class LanguageService
       # Service name
       #
       # @return [String]
-      SERVICE_NAME = "org.opensuse.DInstaller.Users"
+      SERVICE_NAME = "org.opensuse.DInstaller.Language"
       private_constant :SERVICE_NAME
 
       # System D-Bus
@@ -74,18 +74,18 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          users_dbus
+          language_dbus
         ]
       end
 
-      # @return [DInstaller::DBus::Users]
-      def users_dbus
-        @users_dbus ||= DInstaller::DBus::Users.new(users_backend(logger), logger)
+      # @return [DInstaller::DBus::Language]
+      def language_dbus
+        @language_dbus ||= DInstaller::DBus::Language.new(language_backend(logger), logger)
       end
 
-      # @return [DInstaller::Users]
-      def users_backend(logger)
-        @users_backend ||= DInstaller::Users.new(logger)
+      # @return [DInstaller::Language]
+      def language_backend(logger)
+        @language_backend ||= DInstaller::Language.new(logger).tap(&:probe)
       end
     end
   end

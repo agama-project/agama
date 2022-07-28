@@ -133,6 +133,12 @@ describe DInstaller::Software do
       subject.propose
     end
 
+    it "selects the language packages" do
+      expect(Yast::Pkg).to receive(:SetAdditionalLocales).with(["de_DE"])
+      subject.languages = ["de_DE"]
+      subject.propose
+    end
+
     it "adds the packages to install" do
       expect(Yast::PackagesProposal).to receive(:SetResolvables)
         .with("d-installer", :pattern, ["enhanced_base"])

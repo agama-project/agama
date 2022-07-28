@@ -23,7 +23,6 @@ require "yast"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
 require "dinstaller/config"
-require "dinstaller/language"
 require "dinstaller/network"
 require "dinstaller/security"
 require "dinstaller/storage"
@@ -31,6 +30,7 @@ require "dinstaller/questions_manager"
 require "dinstaller/with_progress"
 require "dinstaller/installation_phase"
 require "dinstaller/service_status_recorder"
+require "dinstaller/dbus/clients/language"
 require "dinstaller/dbus/clients/software"
 require "dinstaller/dbus/clients/users"
 
@@ -69,9 +69,6 @@ module DInstaller
     # Runs the startup phase
     def startup_phase
       installation_phase.startup
-
-      start_progress(1)
-      progress.step("Probing Languages") { language.probe }
 
       probe_single_product unless config.multi_product?
 
@@ -132,7 +129,7 @@ module DInstaller
           ::Bootloader::FinishClient.new.write
         end
 
-        progress.step("Saving Language Settings") { language.install }
+        progress.step("Saving Language Settings") { language.finish }
 
         progress.step("Writing repositories information") { software.finish }
 
@@ -156,9 +153,9 @@ module DInstaller
 
     # Language manager
     #
-    # @return [Language]
+    # @return [DBus::Clients::Language]
     def language
-      @language ||= Language.new(logger)
+      @language ||= DBus::Clients::Language.new
     end
 
     # Users client

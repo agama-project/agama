@@ -22,6 +22,7 @@
 require "dbus"
 require "dinstaller/dbus/base_object"
 require "dinstaller/dbus/with_service_status"
+require "dinstaller/dbus/clients/language"
 require "dinstaller/dbus/interfaces/progress"
 require "dinstaller/dbus/interfaces/service_status"
 
@@ -44,6 +45,7 @@ module DInstaller
         def initialize(backend, logger)
           super(PATH, logger: logger)
           @backend = backend
+          register_callbacks
           register_progress_callbacks
           register_service_status_callbacks
         end
@@ -115,6 +117,14 @@ module DInstaller
 
         # @return [DInstaller::Software]
         attr_reader :backend
+
+        # Registers callback to be called
+        def register_callbacks
+          client = DInstaller::DBus::Clients::Language.new
+          client.on_language_selected do |language_ids|
+            backend.languages = language_ids
+          end
+        end
       end
     end
   end

@@ -20,6 +20,7 @@
  */
 
 import LanguageClient from "./language";
+import cockpit from "../lib/cockpit";
 
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 
@@ -32,6 +33,7 @@ const langProxy = {
 };
 
 beforeEach(() => {
+  cockpit.dbus = jest.fn().mockImplementation(() => dbusClient);
   dbusClient.proxy = jest.fn().mockImplementation(iface => {
     if (iface === LANGUAGE_IFACE) return langProxy;
   });

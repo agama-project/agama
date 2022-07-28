@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "thor"
-require "dinstaller_cli/clients/language"
+require "dinstaller/dbus/clients/language"
 
 module DInstallerCli
   module Commands
@@ -42,7 +42,7 @@ module DInstallerCli
     private
 
       def client
-        @client ||= Clients::Language.new
+        @client ||= DInstaller::DBus::Clients::Language.new
       end
     end
   end
