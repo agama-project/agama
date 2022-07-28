@@ -97,6 +97,10 @@ module DInstaller
           dbus_object.Finish
         end
 
+        def testing_question
+          dbus_object.TestingQuestion
+        end
+
         # Determine whether the given tag are provided by the selected packages
         #
         # @param tag [String] Tag to search for (package names, requires/provides, or file

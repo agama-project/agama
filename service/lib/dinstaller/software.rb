@@ -25,6 +25,7 @@ require "dinstaller/package_callbacks"
 require "dinstaller/config"
 require "dinstaller/can_ask_question"
 require "dinstaller/with_progress"
+require "dinstaller/question"
 require "dinstaller/dbus/clients/questions_manager"
 require "y2packager/product"
 
@@ -71,13 +72,13 @@ module DInstaller
       return if name == @product
       raise ArgumentError unless @products[name]
 
-      testing_question
+      #testing_question
       @config.pick_product(name)
       @product = name
     end
 
     def testing_question
-      question = Question.new("What is the capital of Assyria?", options: [:nineveh, :damascus])
+      question = Question.new("Software: What is the capital of Assyria?", options: [:nineveh, :damascus])
       correct = ask(question) do |q|
         q.answer == :nineveh
       end
@@ -242,10 +243,7 @@ module DInstaller
     end
 
     def questions_manager
-      logger.info "QMGR init"
-      @qmgr_proxy ||= DBus::Clients::QuestionsManager.new
-      logger.info "QMGR yes"
-      @qmgr_proxy
+      @questions_manager ||= DBus::Clients::QuestionsManager.new
     end
   end
 end
