@@ -22,8 +22,8 @@
 require "thor"
 require "dinstaller_cli/install_config"
 require "dinstaller_cli/install_config_reader"
-require "dinstaller_cli/clients/language"
 require "dinstaller_cli/clients/storage"
+require "dinstaller/dbus/clients/language"
 require "dinstaller/dbus/clients/software"
 require "dinstaller/dbus/clients/users"
 
@@ -131,7 +131,7 @@ module DInstallerCli
       end
 
       def language_client
-        @language_client ||= Clients::Language.new
+        @language_client ||= DInstaller::DBus::Clients::Language.new
       end
 
       def software_client

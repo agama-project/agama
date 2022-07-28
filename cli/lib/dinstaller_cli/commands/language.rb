@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "thor"
-require "dinstaller/clients/language"
+require "dinstaller/dbus/clients/language"
 
 module DInstallerCli
   module Commands

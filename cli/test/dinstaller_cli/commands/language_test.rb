@@ -21,17 +21,17 @@
 
 require_relative "../../test_helper"
 require "dinstaller_cli/commands/language"
-require "dinstaller_cli/clients/language"
+require "dinstaller/dbus/clients/language"
 
 describe DInstallerCli::Commands::Language do
   subject { described_class.new }
 
   before do
     allow(subject).to receive(:say)
-    allow(DInstallerCli::Clients::Language).to receive(:new).and_return(client)
+    allow(DInstaller::DBus::Clients::Language).to receive(:new).and_return(client)
   end
 
-  let(:client) { instance_double(DInstallerCli::Clients::Language) }
+  let(:client) { instance_double(DInstaller::DBus::Clients::Language) }
 
   describe "available" do
     before do
