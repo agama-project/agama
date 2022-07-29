@@ -79,7 +79,7 @@ module DInstaller
     # FIXME: waiting until ALL questions are answered is wrong,
     # we must wait only for the set of questions asked
     # by a specific CanAskQuestion#ask
-    def wait(_questions)
+    def wait(_questions = [])
       logger.info "Waiting for questions to be answered"
 
       loop do

@@ -84,6 +84,11 @@ describe DInstaller::Manager do
   end
 
   describe "#config_phase" do
+    before do
+      allow(subject).to receive(:testing_question)
+      allow(software).to receive(:testing_question)
+    end
+
     it "sets the installation phase to config" do
       subject.config_phase
       expect(subject.installation_phase.config?).to eq(true)
@@ -172,6 +177,11 @@ describe DInstaller::Manager do
   end
 
   describe "#select_product" do
+    before do
+      allow(subject).to receive(:testing_question)
+      allow(software).to receive(:testing_question)
+    end
+
     it "configures the given product as selected product" do
       subject.select_product("Leap")
       expect(config.data["software"]["base_product"]).to eq("Leap")
