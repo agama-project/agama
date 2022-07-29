@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dinstaller/dbus/clients/base"
-require "dinstaller/dbus/clients/with_service_status"
+require "dinstaller/dbus/clients/question"
 
 module DInstaller
   module DBus
@@ -45,7 +45,7 @@ module DInstaller
         #
         # FIXME: I don't see a need for callbacks here. Keep them anyway?
         #
-        # @param question [Question]
+        # @param question [DInstaller::Question]
         # @return [DBus::Clients::Question] FIXME: I don't understand the concept of not asking a duplicate question
         def add(question)
           q_path = @dbus_object.New(
@@ -53,9 +53,7 @@ module DInstaller
             question.options.map(&:to_s),
             Array(question.default_option&.to_s)
           )
-          # FIXME: we're using ::DBus::ProxyObject
-          # but there should be a DInstaller::DBus::Clients::Question to wrap it
-          service[q_path]
+          DBus::Clients::Question.new(q_path)
         end
 
         # Deletes the given question
@@ -65,33 +63,27 @@ module DInstaller
         # @param question [DBus::Clients::Question]
         # @return [void]
         def delete(question)
-          # FIXME: we're using ::DBus::ProxyObject
-          # but there should be a DInstaller::DBus::Clients::Question to wrap it
-          @dbus_object.Delete(question.path)
+          @dbus_object.Delete(question.dbus_object.path)
         end
 
         # Waits until specified questions are answered.
         # @param questions [Array<DBus::Clients::Question>]
         # @return [void]
         def wait(questions)
-          puts "In Wait"
           # so what is the minimum we must do? wait should receive a list of questions to wait for (object paths) and ignore the others
           # register the InterfacesAdded callback...
           # stupid but simple way: poll the answered property of the questions.first object, sleep 0.5 s, repeat
 
           question = questions.first # FIXME: use them all
-          q_proxy_iface = question["org.opensuse.DInstaller.Question1"]
-          # This hacky implementation times out in case no UI shows up
-          10.times do
-            puts "asking answer"
-            answer = q_proxy_iface["Answer"]
-            puts "  it is #{answer.inspect}"
+          # TODO: detect if no UI showed up to display the question and time out?
+          # for example:
+          # (0..Float::INFINITY).each { |i| break if i > 100 && !question.displayed; ... }
+          loop do
+            answer = question.answer
             break unless answer.empty?
 
             sleep(0.5)
           end
-          # Hack ProxyObject to act like a Question with #answer
-          question.define_singleton_method(:answer) { q_proxy_iface["Answer"] }
         end
 
       private
