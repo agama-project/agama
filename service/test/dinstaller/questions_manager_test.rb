@@ -51,8 +51,8 @@ describe DInstaller::QuestionsManager do
         subject.add(question1)
       end
 
-      it "returns true" do
-        expect(subject.add(question1)).to eq(true)
+      it "returns trthy value" do
+        expect(subject.add(question1)).to be_truthy
       end
     end
 
@@ -73,8 +73,8 @@ describe DInstaller::QuestionsManager do
         subject.add(question1)
       end
 
-      it "returns false" do
-        expect(subject.add(question1)).to eq(false)
+      it "returns falsy value" do
+        expect(subject.add(question1)).to be_falsy
       end
     end
   end
@@ -101,8 +101,8 @@ describe DInstaller::QuestionsManager do
         subject.delete(question1)
       end
 
-      it "returns true" do
-        expect(subject.delete(question1)).to eq(true)
+      it "returns truthy value" do
+        expect(subject.delete(question1)).to be_truthy
       end
     end
 
@@ -123,8 +123,8 @@ describe DInstaller::QuestionsManager do
         subject.delete(question1)
       end
 
-      it "returns false" do
-        expect(subject.delete(question1)).to eq(false)
+      it "returns falsy value" do
+        expect(subject.delete(question1)).to be_falsy
       end
     end
   end
