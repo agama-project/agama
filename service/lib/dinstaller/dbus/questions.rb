@@ -90,7 +90,7 @@ module DInstaller
 
         dbus_method :Delete, "in question:o" do |question_path|
           dbus_q = @service.get_node(question_path)&.object
-          backend_q = dbus_q.instance_variable_get(:@backend) # FIXME: make attr public
+          backend_q = dbus_q.backend
           backend.delete(backend_q)
         end
       end
