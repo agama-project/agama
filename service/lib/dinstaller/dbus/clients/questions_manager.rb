@@ -43,42 +43,45 @@ module DInstaller
 
         # Adds a question
         #
-        # Callbacks are called after adding the question, see {#on_add}.
-        #
-        # @yieldparam question [Question] added question
+        # FIXME: I don't see a need for callbacks here. Keep them anyway?
         #
         # @param question [Question]
-        # @return [Boolean] whether the question was added FIXME
+        # @return [DBus::Clients::Question] FIXME: I don't understand the concept of not asking a duplicate question
         def add(question)
-          q_path = @dbus_object.New(question.text, question.options.map(&:to_s), Array(question.default_option&.to_s))
-          p q_path
+          q_path = @dbus_object.New(
+            question.text,
+            question.options.map(&:to_s),
+            Array(question.default_option&.to_s)
+          )
+          # FIXME: we're using ::DBus::ProxyObject
+          # but there should be a DInstaller::DBus::Clients::Question to wrap it
           service[q_path]
-          # question identity, the api does not really fit, New really should return an obj path
-          # or whatever
         end
 
         # Deletes the given question
         #
-        # Callbacks are called after deleting the question, see {#on_delete}.
+        # FIXME: I don't see a need for callbacks here. Keep them anyway?
         #
-        # @yieldparam question [Question] deleted question
-        #
-        # @param question [Question] FIXME the yardocs are wrong here
+        # @param question [DBus::Clients::Question]
+        # @return [void]
         def delete(question)
+          # FIXME: we're using ::DBus::ProxyObject
+          # but there should be a DInstaller::DBus::Clients::Question to wrap it
           @dbus_object.Delete(question.path)
         end
 
-        # Waits until all questions are answered
-        #
-        # Callbacks are periodically called while waiting, see {#on_wait}.
+        # Waits until specified questions are answered.
+        # @param questions [Array<DBus::Clients::Question>]
+        # @return [void]
         def wait(questions)
           puts "In Wait"
           # so what is the minimum we must do? wait should receive a list of questions to wait for (object paths) and ignore the others
           # register the InterfacesAdded callback...
           # stupid but simple way: poll the answered property of the questions.first object, sleep 0.5 s, repeat
-          #
+
           question = questions.first # FIXME: use them all
           q_proxy_iface = question["org.opensuse.DInstaller.Question1"]
+          # This hacky implementation times out in case no UI shows up
           10.times do
             puts "asking answer"
             answer = q_proxy_iface["Answer"]
@@ -87,37 +90,11 @@ module DInstaller
 
             sleep(0.5)
           end
+          # Hack ProxyObject to act like a Question with #answer
           question.define_singleton_method(:answer) { q_proxy_iface["Answer"] }
         end
 
-        # Registers a callback to be called while waiting for questions be answered
-        #
-        # @param block [Proc]
-        def on_wait(&block)
-          on_wait_callbacks << block
-        end
-
       private
-
-        # Callbacks to be called when waiting for answers
-        #
-        # @return [Array<Proc>]
-        attr_reader :on_wait_callbacks
-
-        # Whether a question with the same id as the given question is already in the list of questions
-        #
-        # @param question [Question]
-        # @return [Boolean]
-        def include?(question)
-          questions.any? { |q| q.id == question.id }
-        end
-
-        # Whether all questions are already answered
-        #
-        # @return [Boolean]
-        def questions_answered?
-          questions.all?(&:answered?)
-        end
 
         # @return [::DBus::Object]
         attr_reader :dbus_object

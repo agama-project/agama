@@ -24,7 +24,7 @@ module DInstaller
   module CanAskQuestion
     # @!method questions_manager
     #   @note Classes including this mixin must define a #questions_manager method
-    #   @return [QuestionsManager]
+    #   @return [QuestionsManager,DBus::Clients::QuestionsManager]
 
     # Asks the given question and waits until the question is answered
     #

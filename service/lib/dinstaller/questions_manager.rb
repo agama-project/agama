@@ -76,6 +76,9 @@ module DInstaller
     # Waits until all questions are answered
     #
     # Callbacks are periodically called while waiting, see {#on_wait}.
+    # FIXME: waiting until ALL questions are answered is wrong,
+    # we must wait only for the set of questions asked
+    # by a specific CanAskQuestion#ask
     def wait(_questions)
       logger.info "Waiting for questions to be answered"
 

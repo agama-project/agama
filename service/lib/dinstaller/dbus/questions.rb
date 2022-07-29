@@ -77,17 +77,12 @@ module DInstaller
       end
 
       dbus_interface QUESTIONS_INTERFACE do
-        # FIXME: editorconfig for vscode indentation
-
         # default_option is an array of 0 or 1 elements
-        #
-        # The object path of the new question is not returned!
-        # Instead, you 're supposed to listen to ObjectManager.InterfacesAdded
         dbus_method :New, "in text:s, in options:as, in default_option:as, out q:o" do |text, options, default_option|
           backend_q = DInstaller::Question.new(
-                text,
-                options: options.map(&:to_sym),
-                default_option: default_option.map(&:to_sym).first
+            text,
+            options:        options.map(&:to_sym),
+            default_option: default_option.map(&:to_sym).first
           )
           backend.add(backend_q)
           path_for(backend_q)
