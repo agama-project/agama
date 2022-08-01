@@ -12,9 +12,9 @@ service. At first sight, we have identified these components:
 * A user interface. We decided to use [Cockpit's infrastructure](https://cockpit-project.org/) to
   communicate the UI with the D-Bus service.
 
-  ||||
-  |-|-|-|
-  |![Installation summary](./screenshots/d-installer-overview.png) |![Installing](./screenshots/d-installer-installing.png) | ![Installation finished](./screenshots/d-installer-finished.png) |
+  |||||
+  |-|-|-|-|
+  |![Product selection](./screenshots/product-selection.png) |![Installation overview](./screenshots/overview.png) |![Installing](./screenshots/installing.png) |![Installation finished](./screenshots/finished.png) |
 
 ## Quickstart
 
