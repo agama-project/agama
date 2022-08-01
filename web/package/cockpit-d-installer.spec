@@ -27,6 +27,7 @@ URL:            https://github.com/yast/d-installer
 Source:         cockpit-d-installer.tar
 Source10:       package-lock.json
 Source11:       node_modules.spec.inc
+Source12:       node_modules.sums
 %include %_sourcedir/node_modules.spec.inc
 BuildArch:      noarch
 Requires:       cockpit
