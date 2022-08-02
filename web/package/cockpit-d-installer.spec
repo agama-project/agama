@@ -24,9 +24,10 @@ License:        GPL-2.0-only
 URL:            https://github.com/yast/d-installer
 # source_validator insists that if obscpio has no version then
 # tarball must neither
-Source:         cockpit-d-installer.tar
+Source0:        d-installer.tar
 Source10:       package-lock.json
 Source11:       node_modules.spec.inc
+Source12:       node_modules.sums
 %include %_sourcedir/node_modules.spec.inc
 BuildArch:      noarch
 Requires:       cockpit
@@ -39,7 +40,7 @@ BuildRequires:  appstream-glib
 Cockpit module for the experimental YaST D-Installer.
 
 %prep
-%autosetup -p1 -n %{name}
+%autosetup -p1 -n d-installer
 rm -f package-lock.json
 local-npm-registry %{_sourcedir} install --with=dev --legacy-peer-deps || ( find ~/.npm/_logs -name '*-debug.log' -print0 | xargs -0 cat; false)
 
