@@ -25,8 +25,8 @@ module DInstaller
   module DBus
     module Clients
       # D-Bus client for asking a question.
-      # It has the same interface as {DInstaller::QuestionsManager}
-      # so it can be used for {DInstaller::CanAskQuestion}.
+      # Its interface is a subset of {DInstaller::Question}
+      # so it can be used in the block of {DInstaller::CanAskQuestion#ask}.
       class Question < Base
         # @return [::DBus::ProxyObject]
         attr_reader :dbus_object
@@ -46,9 +46,9 @@ module DInstaller
 
         # TODO: what other methods are useful?
 
-        # @return [String] no answer yet = ""
+        # @return [Symbol] no answer yet = :""
         def answer
-          @dbus_iface["Answer"]
+          @dbus_iface["Answer"].to_sym
         end
       end
     end
