@@ -73,19 +73,21 @@ module DInstaller
       question
     end
 
-    # Waits until all questions are answered
+    # Waits until all specified questions are answered.
+    # There may be other questions, asked from other services, which
+    # are waited for by remote question managers, so we ignore those.
     #
     # Callbacks are periodically called while waiting, see {#on_wait}.
-    # FIXME: waiting until ALL questions are answered is wrong,
-    # we must wait only for the set of questions asked
-    # by a specific CanAskQuestion#ask
-    def wait(_questions = [])
+    # @param questions [Array<Question>]
+    def wait(questions)
       logger.info "Waiting for questions to be answered"
 
       loop do
         on_wait_callbacks.each(&:call)
+        questions = questions.find_all { |q| !q.answered? }
+        break if questions.empty?
+
         sleep(0.1)
-        break if questions_answered?
       end
     end
 
@@ -136,13 +138,6 @@ module DInstaller
     # @return [Boolean]
     def include?(question)
       questions.any? { |q| q.id == question.id }
-    end
-
-    # Whether all questions are already answered
-    #
-    # @return [Boolean]
-    def questions_answered?
-      questions.all?(&:answered?)
     end
   end
 end

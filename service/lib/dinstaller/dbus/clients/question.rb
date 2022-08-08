@@ -50,6 +50,13 @@ module DInstaller
         def answer
           @dbus_iface["Answer"].to_sym
         end
+
+        # Whether the question is already answered
+        #
+        # @return [Boolean]
+        def answered?
+          answer != :""
+        end
       end
     end
   end

@@ -46,7 +46,9 @@ module DInstaller
         # FIXME: I don't see a need for callbacks here. Keep them anyway?
         #
         # @param question [DInstaller::Question]
-        # @return [DBus::Clients::Question] FIXME: I don't understand the concept of not asking a duplicate question
+        # @return [DBus::Clients::Question]
+        #   FIXME: I don't understand the concept of not asking a duplicate question
+        #   and CanAskQuestion ignores the error case anyway
         def add(question)
           q_path = @dbus_object.New(
             question.text,
@@ -70,17 +72,15 @@ module DInstaller
         # @param questions [Array<DBus::Clients::Question>]
         # @return [void]
         def wait(questions)
-          # so what is the minimum we must do? wait should receive a list of questions to wait for (object paths) and ignore the others
-          # register the InterfacesAdded callback...
-          # stupid but simple way: poll the answered property of the questions.first object, sleep 0.5 s, repeat
-
-          question = questions.first # FIXME: use them all
-          # TODO: detect if no UI showed up to display the question and time out?
+          # TODO: detect if no UI showed up to display the questions and time out?
           # for example:
           # (0..Float::INFINITY).each { |i| break if i > 100 && !question.displayed; ... }
+
+          # We should register the InterfacesAdded callback... BEFORE adding to avoid races.
+          # Stupid but simple way: poll the answer property, sleep, repeat
           loop do
-            answer = question.answer
-            break unless answer.empty?
+            questions = questions.find_all { |q| !q.answered? }
+            break if questions.empty?
 
             sleep(0.5)
           end

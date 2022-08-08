@@ -151,15 +151,15 @@ describe DInstaller::QuestionsManager do
     end
 
     it "waits until all questions are answered" do
-      expect(subject).to receive(:sleep).exactly(3).times
+      expect(subject).to receive(:sleep).exactly(2).times
 
-      subject.wait
+      subject.wait([question1, question2])
     end
 
     it "calls the #on_wait callbacks while waiting" do
       expect(callback).to receive(:call).and_call_original.exactly(3).times
 
-      subject.wait
+      subject.wait([question1, question2])
     end
   end
 end
