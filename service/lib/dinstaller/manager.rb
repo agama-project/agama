@@ -85,8 +85,11 @@ module DInstaller
       storage.probe(questions_manager)
       security.probe
       network.probe
-      testing_question
-      software.testing_question
+
+      if ENV["DINSTALLER_TEST_QUESTIONS"] == "1"
+        testing_question
+        software.testing_question
+      end
 
       logger.info("Config phase done")
     rescue StandardError => e

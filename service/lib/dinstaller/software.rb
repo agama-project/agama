@@ -72,13 +72,17 @@ module DInstaller
       return if name == @product
       raise ArgumentError unless @products[name]
 
-      #testing_question
+      # TODO: if a question is asked here, there is no web UI to handle it.
+      # Is it a problem?
+      # testing_question if ENV["DINSTALLER_TEST_QUESTIONS"] == "1"
+
       @config.pick_product(name)
       @product = name
     end
 
     def testing_question
-      question = Question.new("Software: What is the capital of Assyria?", options: [:nineveh, :damascus])
+      question = Question.new("Software: What is the capital of Assyria?",
+        options: [:nineveh, :damascus])
       correct = ask(question) do |q|
         q.answer == :nineveh
       end
