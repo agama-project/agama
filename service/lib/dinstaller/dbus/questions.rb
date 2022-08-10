@@ -92,6 +92,10 @@ module DInstaller
 
         dbus_method :Delete, "in question:o" do |question_path|
           dbus_q = @service.get_node(question_path)&.object
+          raise ArgumentError, "Object path #{question_path} not found" unless dbus_q
+          raise ArgumentError, "Object #{question_path} is not a Question" unless
+            dbus_q.is_a? DInstaller::DBus::Question
+
           backend_q = dbus_q.backend
           backend.delete(backend_q)
         end
