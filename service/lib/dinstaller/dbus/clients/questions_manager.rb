@@ -43,12 +43,8 @@ module DInstaller
 
         # Adds a question
         #
-        # FIXME: I don't see a need for callbacks here. Keep them anyway?
-        #
         # @param question [DInstaller::Question]
         # @return [DBus::Clients::Question]
-        #   FIXME: I don't understand the concept of not asking a duplicate question
-        #   and CanAskQuestion ignores the error case anyway
         def add(question)
           q_path = @dbus_object.New(
             question.text,
@@ -60,10 +56,9 @@ module DInstaller
 
         # Deletes the given question
         #
-        # FIXME: I don't see a need for callbacks here. Keep them anyway?
-        #
         # @param question [DBus::Clients::Question]
         # @return [void]
+        # @raise [::DBus::Error] if trying to delete a question twice
         def delete(question)
           @dbus_object.Delete(question.dbus_object.path)
         end
