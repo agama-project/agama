@@ -22,6 +22,7 @@
 require_relative "../test_helper"
 require "dinstaller/manager"
 require "dinstaller/config"
+require "dinstaller/question"
 require "dinstaller/dbus/service_status"
 require "dinstaller/dbus/clients/questions_manager"
 
@@ -203,9 +204,12 @@ describe DInstaller::Manager do
       expect(questions_manager).to receive(:add).and_return(question_stub)
       expect(questions_manager).to receive(:wait)
       expect(questions_manager).to receive(:delete)
-      expect(logger).to receive(:info).with("Off you go")
 
-      subject.testing_question
+      question = DInstaller::Question.new("What is your favorite color?", options: [:blue, :yellow])
+      correct = subject.ask(question) do |q|
+        q.answer == :blue
+      end
+      expect(correct).to be true
     end
   end
 end
