@@ -84,8 +84,7 @@ module DInstaller
 
       loop do
         on_wait_callbacks.each(&:call)
-        questions = questions.find_all { |q| !q.answered? }
-        break if questions.empty?
+        break if questions.all?(&:answered?)
 
         sleep(0.1)
       end
