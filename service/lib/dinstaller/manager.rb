@@ -27,7 +27,6 @@ require "dinstaller/config"
 require "dinstaller/network"
 require "dinstaller/security"
 require "dinstaller/storage"
-require "dinstaller/question"
 require "dinstaller/questions_manager"
 require "dinstaller/with_progress"
 require "dinstaller/installation_phase"
@@ -86,23 +85,10 @@ module DInstaller
       security.probe
       network.probe
 
-      if ENV["DINSTALLER_TEST_QUESTIONS"] == "1"
-        testing_question
-        software.testing_question
-      end
-
       logger.info("Config phase done")
     rescue StandardError => e
       logger.error "Startup error: #{e.inspect}. Backtrace: #{e.backtrace}"
       # TODO: report errors
-    end
-
-    def testing_question
-      question = Question.new("What is your favourite colour?", options: [:blue, :yellow])
-      correct = ask(question) do |q|
-        q.answer == :blue
-      end
-      logger.info(correct ? "Off you go" : "Aaaaaugh!")
     end
 
     # Runs the install phase

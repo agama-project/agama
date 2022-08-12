@@ -78,8 +78,6 @@ module DInstaller
           dbus_method(:Propose) { propose }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
-
-          dbus_method(:TestingQuestion) { backend.testing_question }
         end
 
         def available_base_products
