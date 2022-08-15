@@ -37,6 +37,9 @@ module DInstaller
       PATH = "/org/opensuse/DInstaller/Questions1"
       private_constant :PATH
 
+      QUESTIONS_INTERFACE = "org.opensuse.DInstaller.Questions1"
+      private_constant :QUESTIONS_INTERFACE
+
       OBJECT_MANAGER_INTERFACE = "org.freedesktop.DBus.ObjectManager"
       private_constant :OBJECT_MANAGER_INTERFACE
 
@@ -71,6 +74,31 @@ module DInstaller
         dbus_method(:GetManagedObjects, "out res:a{oa{sa{sv}}}") { [managed_objects] }
         dbus_signal(:InterfacesAdded, "object:o, interfaces_and_properties:a{sa{sv}}")
         dbus_signal(:InterfacesRemoved, "object:o, interfaces:as")
+      end
+
+      dbus_interface QUESTIONS_INTERFACE do
+        # default_option is an array of 0 or 1 elements
+        dbus_method :New, "in text:s, in options:as, in default_option:as, out q:o" do
+          |text, options, default_option|
+
+          backend_q = DInstaller::Question.new(
+            text,
+            options:        options.map(&:to_sym),
+            default_option: default_option.map(&:to_sym).first
+          )
+          backend.add(backend_q)
+          path_for(backend_q)
+        end
+
+        dbus_method :Delete, "in question:o" do |question_path|
+          dbus_q = @service.get_node(question_path)&.object
+          raise ArgumentError, "Object path #{question_path} not found" unless dbus_q
+          raise ArgumentError, "Object #{question_path} is not a Question" unless
+            dbus_q.is_a? DInstaller::DBus::Question
+
+          backend_q = dbus_q.backend
+          backend.delete(backend_q)
+        end
       end
 
     private

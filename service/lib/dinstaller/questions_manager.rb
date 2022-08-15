@@ -46,14 +46,14 @@ module DInstaller
     # @yieldparam question [Question] added question
     #
     # @param question [Question]
-    # @return [Boolean] whether the question was added
+    # @return [Question,nil] the actually added question (to be passed to {#delete} later)
     def add(question)
-      return false if include?(question)
+      return nil if include?(question)
 
       questions << question
       on_add_callbacks.each { |c| c.call(question) }
 
-      true
+      question
     end
 
     # Deletes the given question
@@ -63,26 +63,30 @@ module DInstaller
     # @yieldparam question [Question] deleted question
     #
     # @param question [Question]
-    # @return [Boolean] whether the question was deleted
+    # @return [Question,nil] whether the question was deleted
     def delete(question)
-      return false unless include?(question)
+      return nil unless include?(question)
 
       questions.delete(question)
       on_delete_callbacks.each { |c| c.call(question) }
 
-      true
+      question
     end
 
-    # Waits until all questions are answered
+    # Waits until all specified questions are answered.
+    # There may be other questions, asked from other services, which
+    # are waited for by remote question managers, so we ignore those.
     #
     # Callbacks are periodically called while waiting, see {#on_wait}.
-    def wait
+    # @param questions [Array<Question>]
+    def wait(questions)
       logger.info "Waiting for questions to be answered"
 
       loop do
         on_wait_callbacks.each(&:call)
+        break if questions.all?(&:answered?)
+
         sleep(0.1)
-        break if questions_answered?
       end
     end
 
@@ -133,13 +137,6 @@ module DInstaller
     # @return [Boolean]
     def include?(question)
       questions.any? { |q| q.id == question.id }
-    end
-
-    # Whether all questions are already answered
-    #
-    # @return [Boolean]
-    def questions_answered?
-      questions.all?(&:answered?)
     end
   end
 end

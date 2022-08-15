@@ -162,10 +162,10 @@ module DInstaller
         add_interfaces
       end
 
-    private
-
       # @return [DInstaller::Question]
       attr_reader :backend
+
+    private
 
       # Adds interfaces to the question
       def add_interfaces

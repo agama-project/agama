@@ -90,7 +90,8 @@ describe DInstaller::DBus::Questions do
 
     expect(system_bus).to receive(:dispatch_message_queue)
 
-    backend.wait
+    question1 = DInstaller::Question.new("test1")
+    backend.wait([question1])
   end
 
   describe "#managed_objects" do

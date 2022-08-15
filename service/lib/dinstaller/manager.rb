@@ -22,6 +22,7 @@
 require "yast"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
+require "dinstaller/can_ask_question"
 require "dinstaller/config"
 require "dinstaller/network"
 require "dinstaller/security"
@@ -45,6 +46,7 @@ module DInstaller
   # other services via D-Bus (e.g., `org.opensuse.DInstaller.Software`).
   class Manager
     include WithProgress
+    include CanAskQuestion
 
     # @return [Logger]
     attr_reader :logger

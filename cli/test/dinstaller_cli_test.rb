@@ -19,10 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module DInstallerCli
-  # D-Bus clients
-  module Clients
-  end
-end
+require_relative "test_helper"
+require "dinstaller_cli"
 
-require "dinstaller_cli/clients/storage"
+# nothing else, this test just covers the require-only files

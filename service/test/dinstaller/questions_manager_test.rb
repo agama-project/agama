@@ -51,8 +51,8 @@ describe DInstaller::QuestionsManager do
         subject.add(question1)
       end
 
-      it "returns true" do
-        expect(subject.add(question1)).to eq(true)
+      it "returns trthy value" do
+        expect(subject.add(question1)).to be_truthy
       end
     end
 
@@ -73,8 +73,8 @@ describe DInstaller::QuestionsManager do
         subject.add(question1)
       end
 
-      it "returns false" do
-        expect(subject.add(question1)).to eq(false)
+      it "returns falsy value" do
+        expect(subject.add(question1)).to be_falsy
       end
     end
   end
@@ -101,8 +101,8 @@ describe DInstaller::QuestionsManager do
         subject.delete(question1)
       end
 
-      it "returns true" do
-        expect(subject.delete(question1)).to eq(true)
+      it "returns truthy value" do
+        expect(subject.delete(question1)).to be_truthy
       end
     end
 
@@ -123,8 +123,8 @@ describe DInstaller::QuestionsManager do
         subject.delete(question1)
       end
 
-      it "returns false" do
-        expect(subject.delete(question1)).to eq(false)
+      it "returns falsy value" do
+        expect(subject.delete(question1)).to be_falsy
       end
     end
   end
@@ -151,15 +151,15 @@ describe DInstaller::QuestionsManager do
     end
 
     it "waits until all questions are answered" do
-      expect(subject).to receive(:sleep).exactly(3).times
+      expect(subject).to receive(:sleep).exactly(2).times
 
-      subject.wait
+      subject.wait([question1, question2])
     end
 
     it "calls the #on_wait callbacks while waiting" do
       expect(callback).to receive(:call).and_call_original.exactly(3).times
 
-      subject.wait
+      subject.wait([question1, question2])
     end
   end
 end
