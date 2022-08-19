@@ -34,14 +34,13 @@ module DInstaller
     # Callbacks of {QuestionsManager} are used to ensure that the proper D-Bus actions are performed
     # when adding, deleting or waiting for answers.
     class Questions < ::DBus::Object
+      include ::DBus::ObjectManager
+
       PATH = "/org/opensuse/DInstaller/Questions1"
       private_constant :PATH
 
       QUESTIONS_INTERFACE = "org.opensuse.DInstaller.Questions1"
       private_constant :QUESTIONS_INTERFACE
-
-      OBJECT_MANAGER_INTERFACE = "org.freedesktop.DBus.ObjectManager"
-      private_constant :OBJECT_MANAGER_INTERFACE
 
       # Constructor
       #
@@ -58,22 +57,6 @@ module DInstaller
         register_callbacks
 
         super(PATH)
-      end
-
-      # Information provided by ObjectManger for each exported object
-      #
-      # Returns a hash containing paths of exported objects as keys. Each value is the information
-      # of interfaces and properties for that object, see {BaseObject#interfaces_and_properties}.
-      #
-      # @return [Hash]
-      def managed_objects
-        exported_questions.each_with_object({}) { |q, h| h[q.path] = q.interfaces_and_properties }
-      end
-
-      dbus_interface OBJECT_MANAGER_INTERFACE do
-        dbus_method(:GetManagedObjects, "out res:a{oa{sa{sv}}}") { [managed_objects] }
-        dbus_signal(:InterfacesAdded, "object:o, interfaces_and_properties:a{sa{sv}}")
-        dbus_signal(:InterfacesRemoved, "object:o, interfaces:as")
       end
 
       dbus_interface QUESTIONS_INTERFACE do
@@ -142,7 +125,6 @@ module DInstaller
           dbus_object = DBus::Question.new(path_for(question), question, logger)
           @service.export(dbus_object)
           exported_questions << dbus_object
-          InterfacesAdded(dbus_object.path, dbus_object.interfaces_and_properties)
         end
 
         # When removing a question, the question is unexported from D-Bus.
@@ -151,7 +133,6 @@ module DInstaller
           if dbus_object
             @service.unexport(dbus_object)
             exported_questions.delete(dbus_object)
-            InterfacesRemoved(dbus_object.path, dbus_object.intfs.keys)
           end
         end
 
