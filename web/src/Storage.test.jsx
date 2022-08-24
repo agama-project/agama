@@ -29,15 +29,7 @@ import { IDLE } from "./client/status";
 jest.mock("./client");
 jest.mock("./InstallerSkeleton", () => () => "Loading storage");
 
-const proposalSettings = {
-  availableDevices: [
-    { id: "/dev/sda", label: "/dev/sda, 500 GiB" },
-    { id: "/dev/sdb", label: "/dev/sdb, 650 GiB" }
-  ],
-  candidateDevices: ["/dev/sda"],
-  lvm: false
-};
-
+let proposalSettings;
 let storageActions;
 
 let onActionsChangeFn = jest.fn();
@@ -52,6 +44,14 @@ const storageMock = {
 
 beforeEach(() => {
   storageActions = [{ text: "Mount /dev/sda1 as root", subvol: false, delete: false }];
+  proposalSettings = {
+    availableDevices: [
+      { id: "/dev/sda", label: "/dev/sda, 500 GiB" },
+      { id: "/dev/sdb", label: "/dev/sdb, 650 GiB" }
+    ],
+    candidateDevices: ["/dev/sda"],
+    lvm: false
+  };
   createClient.mockImplementation(() => {
     return {
       storage: {
@@ -153,5 +153,21 @@ describe("when the storage actions changes", () => {
     const [cb] = callbacks;
     act(() => cb([]));
     await screen.findByText("Cannot make a proposal for /dev/sda");
+  });
+});
+
+describe("when there are not devices for installation", () => {
+  beforeEach(() => {
+    storageActions = [];
+    proposalSettings = {
+      availableDevices: [],
+      candidateDevices: [],
+      lvm: false
+    };
+  });
+
+  it("reports an error", async() => {
+    installerRender(<Storage />);
+    await screen.findByText("Cannot find a suitable storage device for installation");
   });
 });
