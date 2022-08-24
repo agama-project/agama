@@ -61,10 +61,12 @@ export default function TargetSelector({ target, targets, onAccept }) {
     );
   };
 
+  const targetDevice = targets.find(i => i.id === target);
+
   return (
     <>
       <Button variant="link" onClick={open}>
-        {target}
+        {targetDevice && targetDevice.label}
       </Button>
 
       <Popup isOpen={isFormOpen} onSubmit={accept} aria-label="Target Selector">

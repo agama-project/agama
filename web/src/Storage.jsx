@@ -130,9 +130,17 @@ export default function Storage() {
     });
   }, [client.manager]);
 
-  const errorMessage = `Cannot make a proposal for ${target}`;
+  const errorMessage = () => {
+    if (targets.length === 0) {
+      return "Cannot find a suitable storage device for installation";
+    } else if (target) {
+      return `Cannot make a proposal for ${target}`;
+    } else {
+      return "Something went wrong when trying to come up with an storage proposal";
+    }
+  };
 
-  if (state.status === BUSY || target === undefined) {
+  if (state.status === BUSY) {
     return (
       <InstallerSkeleton lines={3} />
     );
@@ -140,12 +148,13 @@ export default function Storage() {
 
   return (
     <>
-      <TargetSelector
-        target={target || "Select device to install into"}
-        targets={targets}
-        onAccept={onAccept}
-      />
-      {error && <Alert variant="danger" isPlain isInline title={errorMessage} />}
+      {targets.length > 0 &&
+        <TargetSelector
+          target={target || "Select device to install into"}
+          targets={targets}
+          onAccept={onAccept}
+        />}
+      {error && <Alert variant="danger" isPlain isInline title={errorMessage()} />}
       <Proposal data={actions} />
     </>
   );

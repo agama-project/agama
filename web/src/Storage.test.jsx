@@ -29,15 +29,7 @@ import { IDLE } from "./client/status";
 jest.mock("./client");
 jest.mock("./InstallerSkeleton", () => () => "Loading storage");
 
-const proposalSettings = {
-  availableDevices: [
-    { id: "/dev/sda", label: "/dev/sda, 500 GiB" },
-    { id: "/dev/sdb", label: "/dev/sdb, 650 GiB" }
-  ],
-  candidateDevices: ["/dev/sda"],
-  lvm: false
-};
-
+let proposalSettings;
 let storageActions;
 
 let onActionsChangeFn = jest.fn();
@@ -52,6 +44,14 @@ const storageMock = {
 
 beforeEach(() => {
   storageActions = [{ text: "Mount /dev/sda1 as root", subvol: false, delete: false }];
+  proposalSettings = {
+    availableDevices: [
+      { id: "/dev/sda", label: "/dev/sda, 500 GiB" },
+      { id: "/dev/sdb", label: "/dev/sdb, 650 GiB" }
+    ],
+    candidateDevices: ["/dev/sda"],
+    lvm: false
+  };
   createClient.mockImplementation(() => {
     return {
       storage: {
@@ -93,14 +93,14 @@ describe("when the user selects another disk", () => {
     calculateStorageProposalFn = jest.fn().mockResolvedValue(0);
 
     const { user } = installerRender(<Storage />);
-    const button = await screen.findByRole("button", { name: "/dev/sda" });
+    const button = await screen.findByRole("button", { name: "/dev/sda, 500 GiB" });
     await user.click(button);
 
     const targetSelector = await screen.findByLabelText("Device to install into");
     await user.selectOptions(targetSelector, ["/dev/sdb"]);
     await user.click(screen.getByRole("button", { name: "Confirm" }));
 
-    await screen.findByRole("button", { name: "/dev/sdb" });
+    await screen.findByRole("button", { name: "/dev/sdb, 650 GiB" });
     expect(calculateStorageProposalFn).toHaveBeenCalledWith({
       candidateDevices: ["/dev/sdb"]
     });
@@ -117,13 +117,13 @@ describe("when the storage proposal changes", () => {
 
   it("updates the proposal", async () => {
     installerRender(<Storage />);
-    await screen.findByRole("button", { name: "/dev/sda" });
+    await screen.findByRole("button", { name: "/dev/sda, 500 GiB" });
 
     const [cb] = callbacks;
     act(() => {
       cb("/dev/sdb");
     });
-    await screen.findByRole("button", { name: "/dev/sdb" });
+    await screen.findByRole("button", { name: "/dev/sdb, 650 GiB" });
   });
 });
 
@@ -153,5 +153,21 @@ describe("when the storage actions changes", () => {
     const [cb] = callbacks;
     act(() => cb([]));
     await screen.findByText("Cannot make a proposal for /dev/sda");
+  });
+});
+
+describe("when there are not devices for installation", () => {
+  beforeEach(() => {
+    storageActions = [];
+    proposalSettings = {
+      availableDevices: [],
+      candidateDevices: [],
+      lvm: false
+    };
+  });
+
+  it("reports an error", async() => {
+    installerRender(<Storage />);
+    await screen.findByText("Cannot find a suitable storage device for installation");
   });
 });
