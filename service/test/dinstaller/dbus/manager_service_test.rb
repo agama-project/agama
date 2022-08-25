@@ -67,16 +67,6 @@ describe DInstaller::DBus::ManagerService do
       service.export
     end
 
-    it "exports the storage proposal object" do
-      proposal_obj = instance_double(DInstaller::DBus::Storage::Proposal, path: nil)
-      allow(DInstaller::DBus::Storage::Proposal).to receive(:new)
-        .with(manager.storage.proposal, logger)
-        .and_return(proposal_obj)
-
-      expect(bus_service).to receive(:export).with(proposal_obj)
-      service.export
-    end
-
     it "exports the questions object" do
       dbus_object = instance_double(DInstaller::DBus::Questions, path: nil)
       allow(DInstaller::DBus::Questions).to receive(:new)

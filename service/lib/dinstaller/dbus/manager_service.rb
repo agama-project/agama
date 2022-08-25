@@ -105,7 +105,6 @@ module DInstaller
         @dbus_objects ||= [
           manager_dbus,
           language_dbus,
-          storage_proposal_dbus,
           questions_dbus
         ]
       end
@@ -116,12 +115,6 @@ module DInstaller
 
       def language_dbus
         @language_dbus ||= DInstaller::DBus::Language.new(manager.language, logger)
-      end
-
-      def storage_proposal_dbus
-        @storage_proposal_dbus ||= DInstaller::DBus::Storage::Proposal.new(
-          manager.storage.proposal, logger
-        )
       end
 
       def questions_dbus

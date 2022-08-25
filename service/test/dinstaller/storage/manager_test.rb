@@ -25,20 +25,22 @@ require "dinstaller/questions_manager"
 require "dinstaller/config"
 
 describe DInstaller::Storage::Manager do
-  subject(:storage) { described_class.new(logger, config) }
+  subject(:storage) { described_class.new(config, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:config) { DInstaller::Config.new }
 
   before do
     allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
+    allow(DInstaller::DBus::Clients::QuestionsManager).to receive(:new)
+      .and_return(questions_manager)
   end
 
   let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
+  let(:questions_manager) { instance_double(DInstaller::DBus::Clients::QuestionsManager) }
 
   describe "#probe" do
     let(:proposal) { instance_double(DInstaller::Storage::Proposal, calculate: nil) }
-    let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
     before do
       allow(DInstaller::Storage::Proposal).to receive(:new).and_return(proposal)
@@ -50,7 +52,7 @@ describe DInstaller::Storage::Manager do
       end
       expect(y2storage_manager).to receive(:probe)
       expect(proposal).to receive(:calculate)
-      storage.probe(questions_manager)
+      storage.probe
     end
   end
 

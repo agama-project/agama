@@ -48,7 +48,10 @@ describe DInstaller::Manager do
   let(:language) { instance_double(DInstaller::DBus::Clients::Language, finish: nil) }
   let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
   let(:storage) do
-    instance_double(DInstaller::Storage::Manager, probe: nil, install: nil, finish: nil)
+    instance_double(
+      DInstaller::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
+      on_service_status_change: nil
+    )
   end
   let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
   let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
@@ -58,8 +61,8 @@ describe DInstaller::Manager do
     allow(DInstaller::Security).to receive(:new).and_return(security)
     allow(DInstaller::DBus::Clients::Language).to receive(:new).and_return(language)
     allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software)
+    allow(DInstaller::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(users)
-    allow(DInstaller::Storage::Manager).to receive(:new).and_return(storage)
     allow(DInstaller::QuestionsManager).to receive(:new).and_return(questions_manager)
   end
 
@@ -94,7 +97,7 @@ describe DInstaller::Manager do
     it "calls #probe method of each module" do
       expect(security).to receive(:probe)
       expect(network).to receive(:probe)
-      expect(storage).to receive(:probe).with(subject.questions_manager)
+      expect(storage).to receive(:probe)
       subject.config_phase
     end
   end

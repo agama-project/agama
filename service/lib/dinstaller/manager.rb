@@ -33,6 +33,7 @@ require "dinstaller/installation_phase"
 require "dinstaller/service_status_recorder"
 require "dinstaller/dbus/clients/language"
 require "dinstaller/dbus/clients/software"
+require "dinstaller/dbus/clients/storage"
 require "dinstaller/dbus/clients/users"
 
 Yast.import "Stage"
@@ -81,7 +82,7 @@ module DInstaller
     def config_phase
       installation_phase.config
 
-      storage.probe(questions_manager)
+      storage.probe
       security.probe
       network.probe
 
@@ -182,7 +183,11 @@ module DInstaller
     #
     # @return [Storage::Manager]
     def storage
-      @storage ||= Storage::Manager.new(logger, config)
+      @storage ||= DBus::Clients::Storage.new.tap do |client|
+        client.on_service_status_change do |status|
+          service_status_recorder.save(client.service.name, status)
+        end
+      end
     end
 
     # Security manager
