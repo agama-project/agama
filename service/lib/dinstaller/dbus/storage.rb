@@ -27,4 +27,5 @@ module DInstaller
   end
 end
 
+require "dinstaller/dbus/storage/manager"
 require "dinstaller/dbus/storage/proposal"

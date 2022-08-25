@@ -20,21 +20,50 @@
 # find current contact information at www.suse.com.
 
 require "dinstaller/dbus/clients/base"
+require "dinstaller/dbus/clients/with_service_status"
+require "dinstaller/dbus/clients/with_progress"
 
 module DInstaller
   module DBus
     module Clients
       # D-Bus client for storage configuration
       class Storage < Base
+        include WithServiceStatus
+        include WithProgress
+
         def initialize
           super
+
+          @dbus_object = service["/org/opensuse/DInstaller/Storage1"]
+          @dbus_object.introspect
 
           @dbus_proposal = service.object("/org/opensuse/DInstaller/Storage/Proposal1")
           @dbus_proposal.introspect
         end
 
+        # @return [String]
         def service_name
-          @service_name ||= "org.opensuse.DInstaller"
+          @service_name ||= "org.opensuse.DInstaller.Storage"
+        end
+
+        # Starts the probing process
+        #
+        # If a block is given, the method returns immediately and the probing is performed in an
+        # asynchronous way.
+        #
+        # @param done [Proc] Block to execute once the probing is done
+        def probe(&done)
+          dbus_object.Probe(&done)
+        end
+
+        # Performs the packages installation
+        def install
+          dbus_object.Install
+        end
+
+        # Cleans-up the storage stuff after installation
+        def finish
+          dbus_object.Finish
         end
 
         # Devices available for the installation
@@ -66,6 +95,9 @@ module DInstaller
         end
 
       private
+
+        # @return [::DBus::Object]
+        attr_reader :dbus_object
 
         # @return [::DBus::Object]
         attr_reader :dbus_proposal
