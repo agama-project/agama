@@ -46,6 +46,11 @@ module DInstaller
 
         # TODO: what other methods are useful?
 
+        # @return [String] Question text
+        def text
+          @dbus_iface["Text"].to_s
+        end
+
         # @return [Symbol] no answer yet = :""
         def answer
           @dbus_iface["Answer"].to_sym
