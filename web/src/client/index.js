@@ -50,7 +50,7 @@ const createClient = () => {
     monitor: new Monitor(SERVICE_NAME),
     network: new NetworkClient(nmClient),
     software: new SoftwareClient(),
-    storage: new StorageClient(client),
+    storage: new StorageClient(),
     users: new UsersClient(),
     questions: new QuestionsClient(client)
   };
