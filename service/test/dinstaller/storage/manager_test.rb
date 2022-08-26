@@ -34,10 +34,13 @@ describe DInstaller::Storage::Manager do
     allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
     allow(DInstaller::DBus::Clients::QuestionsManager).to receive(:new)
       .and_return(questions_manager)
+    allow(Bootloader::FinishClient).to receive(:new)
+      .and_return(bootloader_finish)
   end
 
   let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
   let(:questions_manager) { instance_double(DInstaller::DBus::Clients::QuestionsManager) }
+  let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
 
   describe "#probe" do
     let(:proposal) { instance_double(DInstaller::Storage::Proposal, calculate: nil) }
@@ -61,7 +64,10 @@ describe DInstaller::Storage::Manager do
       allow(y2storage_manager).to receive(:staging).and_return(proposed_devicegraph)
 
       allow(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
+      allow(Yast::WFM).to receive(:CallFunction).with("inst_bootloader", [])
       allow(Yast::PackagesProposal).to receive(:SetResolvables)
+      allow(Bootloader::ProposalClient).to receive(:new)
+        .and_return(bootloader_proposal)
     end
 
     let(:proposed_devicegraph) do
@@ -71,6 +77,8 @@ describe DInstaller::Storage::Manager do
     let(:used_features) do
       instance_double(Y2Storage::StorageFeaturesList, pkg_list: ["btrfsprogs", "snapper"])
     end
+
+    let(:bootloader_proposal) { instance_double(Bootloader::ProposalClient, make_proposal: nil) }
 
     it "adds storage software to install" do
       expect(Yast::PackagesProposal).to receive(:SetResolvables) do |_, _, packages|
@@ -93,7 +101,8 @@ describe DInstaller::Storage::Manager do
   end
 
   describe "#finish" do
-    it "runs the umount_finish client" do
+    it "installs the bootloader and runs the umount_finish client" do
+      expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
       storage.finish
     end

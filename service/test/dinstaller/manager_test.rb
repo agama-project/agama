@@ -103,17 +103,6 @@ describe DInstaller::Manager do
   end
 
   describe "#install_phase" do
-    let(:bootloader_proposal) { instance_double(Bootloader::ProposalClient, make_proposal: nil) }
-    let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
-
-    before do
-      allow(Yast::WFM).to receive(:CallFunction)
-      allow(Bootloader::ProposalClient).to receive(:new)
-        .and_return(bootloader_proposal)
-      allow(Bootloader::FinishClient).to receive(:new)
-        .and_return(bootloader_finish)
-    end
-
     it "sets the installation phase to install" do
       subject.install_phase
       expect(subject.installation_phase.install?).to eq(true)
@@ -129,12 +118,6 @@ describe DInstaller::Manager do
       expect(storage).to receive(:install)
       expect(storage).to receive(:finish)
       expect(users).to receive(:write)
-      subject.install_phase
-    end
-
-    it "proposes and writes the bootloader configuration" do
-      expect(bootloader_proposal).to receive(:make_proposal)
-      expect(bootloader_finish).to receive(:write)
       subject.install_phase
     end
   end

@@ -20,8 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "bootloader/proposal_client"
-require "bootloader/finish_client"
 require "dinstaller/can_ask_question"
 require "dinstaller/config"
 require "dinstaller/network"
@@ -105,37 +103,23 @@ module DInstaller
       end
 
       progress.step("Partitioning") do
-        # lets propose it here to be sure that software proposal reflects product selection
-        # FIXME: maybe repropose after product selection change?
-        # first make bootloader proposal to be sure that required packages are installed
-        proposal = ::Bootloader::ProposalClient.new.make_proposal({})
-        logger.info "Bootloader proposal #{proposal.inspect}"
         storage.install
         # propose software after /mnt is already separated, so it uses proper
         # target
         software.propose
-
-        # call inst bootloader to get properly initialized bootloader
-        # sysconfig before package installation
-        Yast::WFM.CallFunction("inst_bootloader", [])
       end
 
       progress.step("Installing Software") { software.install }
 
       on_target do
         progress.step("Writing Users") { users.write }
-
         progress.step("Writing Network Configuration") { network.install }
-
-        progress.step("Installing Bootloader") do
-          security.write
-          ::Bootloader::FinishClient.new.write
-        end
-
         progress.step("Saving Language Settings") { language.finish }
-
         progress.step("Writing repositories information") { software.finish }
-
+        progress.step("Finishing storage configuration") do
+          security.write
+          storage.finish
+        end
         progress.step("Finishing installation") { finish_installation }
       end
 
@@ -235,7 +219,6 @@ module DInstaller
     # more features to D-Installer could require to recover some of that YaST logic.
     def finish_installation
       Yast::WFM.CallFunction("copy_logs_finish", ["Write"])
-      storage.finish
     end
 
     # Runs a block in the target system

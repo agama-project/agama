@@ -20,6 +20,8 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "bootloader/proposal_client"
+require "bootloader/finish_client"
 require "y2storage/storage_manager"
 require "dinstaller/storage/proposal"
 require "dinstaller/storage/callbacks"
@@ -51,16 +53,30 @@ module DInstaller
 
       # Prepares the partitioning to install the system
       def install
-        start_progress(2)
+        start_progress(4)
+        progress.step("Preparing bootloader proposal") do
+          # first make bootloader proposal to be sure that required packages are installed
+          proposal = ::Bootloader::ProposalClient.new.make_proposal({})
+          logger.debug "Bootloader proposal #{proposal.inspect}"
+        end
         progress.step("Adding storage-related packages") { add_packages }
         progress.step("Preparing the storage devices") do
           Yast::WFM.CallFunction("inst_prepdisk", [])
+        end
+        progress.step("Writing bootloader sysconfig") do
+          # call inst bootloader to get properly initialized bootloader
+          # sysconfig before package installation
+          Yast::WFM.CallFunction("inst_bootloader", [])
         end
       end
 
       # Umounts the target file system
       def finish
-        start_progress(1)
+        start_progress(2)
+
+        progress.step("Installing bootloader") do
+          ::Bootloader::FinishClient.new.write
+        end
         progress.step("Umounting storage devices") do
           Yast::WFM.CallFunction("umount_finish", ["Write"])
         end
