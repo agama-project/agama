@@ -43,7 +43,7 @@ def start_service(name)
   service_runner.run
 end
 
-ORDERED_SERVICES = [:language, :software, :storage, :users, :manager].freeze
+ORDERED_SERVICES = [:questions, :language, :software, :storage, :users, :manager].freeze
 
 # Starts all the services
 #

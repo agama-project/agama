@@ -66,15 +66,6 @@ describe DInstaller::DBus::ManagerService do
       expect(bus_service).to receive(:export).with(language_obj)
       service.export
     end
-
-    it "exports the questions object" do
-      dbus_object = instance_double(DInstaller::DBus::Questions, path: nil)
-      allow(DInstaller::DBus::Questions).to receive(:new)
-        .with(manager.questions_manager, logger).and_return(dbus_object)
-
-      expect(bus_service).to receive(:export).with(dbus_object)
-      service.export
-    end
   end
 
   describe "#dispatch" do

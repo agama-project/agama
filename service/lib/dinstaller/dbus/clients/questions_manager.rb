@@ -38,7 +38,7 @@ module DInstaller
 
         # @return [String]
         def service_name
-          @service_name ||= "org.opensuse.DInstaller"
+          @service_name ||= "org.opensuse.DInstaller.Questions"
         end
 
         # Adds a question

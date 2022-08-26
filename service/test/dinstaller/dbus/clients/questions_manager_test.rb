@@ -27,7 +27,7 @@ require "dbus"
 describe DInstaller::DBus::Clients::QuestionsManager do
   before do
     allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.DInstaller").and_return(service)
+    allow(bus).to receive(:service).with("org.opensuse.DInstaller.Questions").and_return(service)
     allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Questions1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:default_iface=)
