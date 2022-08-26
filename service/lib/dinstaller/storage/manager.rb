@@ -27,6 +27,7 @@ require "dinstaller/storage/proposal"
 require "dinstaller/storage/callbacks"
 require "dinstaller/with_progress"
 require "dinstaller/can_ask_question"
+require "dinstaller/security"
 require "dinstaller/dbus/clients/questions_manager"
 
 Yast.import "PackagesProposal"
@@ -45,10 +46,11 @@ module DInstaller
 
       # Probes storage devices and performs an initial proposal
       def probe
-        start_progress(3)
+        start_progress(4)
         progress.step("Activating storage devices") { activate_devices }
         progress.step("Probing storage devices") { probe_devices }
         progress.step("Calculating the storage proposal") { proposal.calculate }
+        progress.step("Selecting Linux Security Modules") { security.probe }
       end
 
       # Prepares the partitioning to install the system
@@ -72,8 +74,9 @@ module DInstaller
 
       # Umounts the target file system
       def finish
-        start_progress(2)
+        start_progress(3)
 
+        progress.step("Writing Linux Security Modules configuration") { security.write }
         progress.step("Installing bootloader") do
           ::Bootloader::FinishClient.new.write
         end
@@ -121,6 +124,13 @@ module DInstaller
 
         logger.info "Selecting these packages for installation: #{packages}"
         Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, packages)
+      end
+
+      # Security manager
+      #
+      # @return [Security]
+      def security
+        @security ||= Security.new(logger, config)
       end
 
       # Returns the client to ask questions

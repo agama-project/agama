@@ -28,7 +28,10 @@ describe DInstaller::Storage::Manager do
   subject(:storage) { described_class.new(config, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
-  let(:config) { DInstaller::Config.new }
+  let(:config_path) do
+    File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
+  end
+  let(:config) { DInstaller::Config.from_file(config_path) }
 
   before do
     allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
@@ -36,11 +39,13 @@ describe DInstaller::Storage::Manager do
       .and_return(questions_manager)
     allow(Bootloader::FinishClient).to receive(:new)
       .and_return(bootloader_finish)
+    allow(DInstaller::Security).to receive(:new).and_return(security)
   end
 
   let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
   let(:questions_manager) { instance_double(DInstaller::DBus::Clients::QuestionsManager) }
   let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
+  let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
 
   describe "#probe" do
     let(:proposal) { instance_double(DInstaller::Storage::Proposal, calculate: nil) }
@@ -102,6 +107,7 @@ describe DInstaller::Storage::Manager do
 
   describe "#finish" do
     it "installs the bootloader and runs the umount_finish client" do
+      expect(security).to receive(:write)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
       storage.finish

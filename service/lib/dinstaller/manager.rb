@@ -23,7 +23,6 @@ require "yast"
 require "dinstaller/can_ask_question"
 require "dinstaller/config"
 require "dinstaller/network"
-require "dinstaller/security"
 require "dinstaller/storage"
 require "dinstaller/questions_manager"
 require "dinstaller/with_progress"
@@ -81,7 +80,6 @@ module DInstaller
       installation_phase.config
 
       storage.probe
-      security.probe
       network.probe
 
       logger.info("Config phase done")
@@ -116,11 +114,8 @@ module DInstaller
         progress.step("Writing Network Configuration") { network.install }
         progress.step("Saving Language Settings") { language.finish }
         progress.step("Writing repositories information") { software.finish }
-        progress.step("Finishing storage configuration") do
-          security.write
-          storage.finish
-        end
-        progress.step("Finishing installation") { finish_installation }
+        progress.step("Copying logs") { copy_logs }
+        progress.step("Finishing storage configuration") { storage.finish }
       end
 
       logger.info("Install phase done")
@@ -174,13 +169,6 @@ module DInstaller
       end
     end
 
-    # Security manager
-    #
-    # @return [Security]
-    def security
-      @security ||= Security.new(logger, config)
-    end
-
     # Actions to perform when a product is selected
     #
     # @note The config phase is executed.
@@ -212,12 +200,8 @@ module DInstaller
     # @return [ServiceStatusRecorder]
     attr_reader :service_status_recorder
 
-    # Performs required steps after installing the system
-    #
-    # For now, this only unmounts the installed system and copies installation logs. Note that YaST
-    # performs many more steps like copying configuration files, creating snapshots, etc. Adding
-    # more features to D-Installer could require to recover some of that YaST logic.
-    def finish_installation
+    # Copy the logs to the target system
+    def copy_logs
       Yast::WFM.CallFunction("copy_logs_finish", ["Write"])
     end
 

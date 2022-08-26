@@ -53,12 +53,10 @@ describe DInstaller::Manager do
       on_service_status_change: nil
     )
   end
-  let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
   let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
   before do
     allow(DInstaller::Network).to receive(:new).and_return(network)
-    allow(DInstaller::Security).to receive(:new).and_return(security)
     allow(DInstaller::DBus::Clients::Language).to receive(:new).and_return(language)
     allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(DInstaller::DBus::Clients::Storage).to receive(:new).and_return(storage)
@@ -95,7 +93,6 @@ describe DInstaller::Manager do
     end
 
     it "calls #probe method of each module" do
-      expect(security).to receive(:probe)
       expect(network).to receive(:probe)
       expect(storage).to receive(:probe)
       subject.config_phase
@@ -114,7 +111,6 @@ describe DInstaller::Manager do
       expect(software).to receive(:probe)
       expect(software).to receive(:finish)
       expect(language).to receive(:finish)
-      expect(security).to receive(:write)
       expect(storage).to receive(:install)
       expect(storage).to receive(:finish)
       expect(users).to receive(:write)
