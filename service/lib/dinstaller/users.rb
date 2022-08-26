@@ -31,7 +31,7 @@ module DInstaller
   # {DInstaller::DBus::Users} wraps it with a D-Bus interface and
   # {DInstaller::DBus::Clients::Users} is a D-Bus client for that.
   class Users
-    include DInstaller::Helpers
+    include Helpers
 
     def initialize(logger)
       @logger = logger

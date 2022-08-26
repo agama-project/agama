@@ -29,6 +29,7 @@ require "dinstaller/with_progress"
 require "dinstaller/can_ask_question"
 require "dinstaller/security"
 require "dinstaller/dbus/clients/questions_manager"
+require "dinstaller/helpers"
 
 Yast.import "PackagesProposal"
 
@@ -38,6 +39,7 @@ module DInstaller
     class Manager
       include WithProgress
       include CanAskQuestion
+      include Helpers
 
       def initialize(config, logger)
         @config = config
@@ -76,12 +78,14 @@ module DInstaller
       def finish
         start_progress(3)
 
-        progress.step("Writing Linux Security Modules configuration") { security.write }
-        progress.step("Installing bootloader") do
-          ::Bootloader::FinishClient.new.write
-        end
-        progress.step("Umounting storage devices") do
-          Yast::WFM.CallFunction("umount_finish", ["Write"])
+        on_target do
+          progress.step("Writing Linux Security Modules configuration") { security.write }
+          progress.step("Installing bootloader") do
+            ::Bootloader::FinishClient.new.write
+          end
+          progress.step("Umounting storage devices") do
+            Yast::WFM.CallFunction("umount_finish", ["Write"])
+          end
         end
       end
 
