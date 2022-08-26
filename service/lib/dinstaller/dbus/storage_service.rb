@@ -79,4 +79,3 @@ module DInstaller
     end
   end
 end
-

@@ -62,7 +62,7 @@ module DInstaller
       def finish
         start_progress(1)
         progress.step("Umounting storage devices") do
-          Yast::WFM.CallFunction("umount_finish", ["Write"]) 
+          Yast::WFM.CallFunction("umount_finish", ["Write"])
         end
       end
 

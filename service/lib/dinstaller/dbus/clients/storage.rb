@@ -70,7 +70,8 @@ module DInstaller
         #
         # @return [Array<String>] name of the devices
         def available_devices
-          dbus_proposal["org.opensuse.DInstaller.Storage.Proposal1"]["AvailableDevices"].map(&:first)
+          dbus_proposal["org.opensuse.DInstaller.Storage.Proposal1"]["AvailableDevices"]
+            .map(&:first)
         end
 
         # Devices selected for the installation
@@ -84,7 +85,9 @@ module DInstaller
         #
         # @return [Array<String>]
         def actions
-          dbus_proposal["org.opensuse.DInstaller.Storage.Proposal1"]["Actions"].map { |a| a["Text"] }
+          dbus_proposal["org.opensuse.DInstaller.Storage.Proposal1"]["Actions"].map do |a|
+            a["Text"]
+          end
         end
 
         # Calculates the storage proposal with the given devices
