@@ -29,6 +29,7 @@ require "dinstaller/dbus/clients/language"
 require "dinstaller/dbus/clients/software"
 require "dinstaller/dbus/clients/storage"
 require "dinstaller/dbus/clients/users"
+require "dinstaller/helpers"
 
 Yast.import "Stage"
 
@@ -41,6 +42,7 @@ module DInstaller
   # other services via D-Bus (e.g., `org.opensuse.DInstaller.Software`).
   class Manager
     include WithProgress
+    include Helpers
 
     # @return [Logger]
     attr_reader :logger
@@ -195,22 +197,6 @@ module DInstaller
     # Copy the logs to the target system
     def copy_logs
       Yast::WFM.CallFunction("copy_logs_finish", ["Write"])
-    end
-
-    # Runs a block in the target system
-    def on_target(&block)
-      old_handle = Yast::WFM.SCRGetDefault
-      handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
-      Yast::WFM.SCRSetDefault(handle)
-
-      begin
-        block.call
-      rescue StandardError => e
-        logger.error "Error while running on target tasks: #{e.inspect}"
-      ensure
-        Yast::WFM.SCRSetDefault(old_handle)
-        Yast::WFM.SCRClose(handle)
-      end
     end
 
     # Runs the config phase for the first product found

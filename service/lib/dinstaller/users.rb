@@ -23,6 +23,7 @@ require "yast"
 require "y2users"
 require "y2users/linux" # FIXME: linux is not in y2users file
 require "yast2/execute"
+require "dinstaller/helpers"
 
 module DInstaller
   # Backend class using YaST code.
@@ -30,6 +31,8 @@ module DInstaller
   # {DInstaller::DBus::Users} wraps it with a D-Bus interface and
   # {DInstaller::DBus::Clients::Users} is a D-Bus client for that.
   class Users
+    include DInstaller::Helpers
+
     def initialize(logger)
       @logger = logger
     end
@@ -110,24 +113,6 @@ module DInstaller
       block.call
     ensure
       Yast::Execute.locally!("/usr/bin/mount", "-o", "bind", "/run", "/mnt/run")
-    end
-
-    # Run a block in the target system
-    # TODO: it is C&P from manager.rb. Maybe mixin as each process need to switch target?
-    def on_target(&block)
-      old_handle = Yast::WFM.SCRGetDefault
-      # chroot directly to /mnt instead of Installation.destdir to avoid unnecessary deps
-      handle = Yast::WFM.SCROpen("chroot=/mnt:scr", false)
-      Yast::WFM.SCRSetDefault(handle)
-
-      begin
-        block.call
-      rescue StandardError => e
-        logger.error "Error while running on target tasks: #{e.inspect}"
-      ensure
-        Yast::WFM.SCRSetDefault(old_handle)
-        Yast::WFM.SCRClose(handle)
-      end
     end
 
     def config
