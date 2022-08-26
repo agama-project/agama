@@ -48,18 +48,19 @@ describe DInstaller::Manager do
   let(:language) { instance_double(DInstaller::DBus::Clients::Language, finish: nil) }
   let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
   let(:storage) do
-    instance_double(DInstaller::Storage::Manager, probe: nil, install: nil, finish: nil)
+    instance_double(
+      DInstaller::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
+      on_service_status_change: nil
+    )
   end
-  let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
   let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
   before do
     allow(DInstaller::Network).to receive(:new).and_return(network)
-    allow(DInstaller::Security).to receive(:new).and_return(security)
     allow(DInstaller::DBus::Clients::Language).to receive(:new).and_return(language)
     allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software)
+    allow(DInstaller::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(users)
-    allow(DInstaller::Storage::Manager).to receive(:new).and_return(storage)
     allow(DInstaller::QuestionsManager).to receive(:new).and_return(questions_manager)
   end
 
@@ -92,25 +93,13 @@ describe DInstaller::Manager do
     end
 
     it "calls #probe method of each module" do
-      expect(security).to receive(:probe)
       expect(network).to receive(:probe)
-      expect(storage).to receive(:probe).with(subject.questions_manager)
+      expect(storage).to receive(:probe)
       subject.config_phase
     end
   end
 
   describe "#install_phase" do
-    let(:bootloader_proposal) { instance_double(Bootloader::ProposalClient, make_proposal: nil) }
-    let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
-
-    before do
-      allow(Yast::WFM).to receive(:CallFunction)
-      allow(Bootloader::ProposalClient).to receive(:new)
-        .and_return(bootloader_proposal)
-      allow(Bootloader::FinishClient).to receive(:new)
-        .and_return(bootloader_finish)
-    end
-
     it "sets the installation phase to install" do
       subject.install_phase
       expect(subject.installation_phase.install?).to eq(true)
@@ -122,16 +111,9 @@ describe DInstaller::Manager do
       expect(software).to receive(:probe)
       expect(software).to receive(:finish)
       expect(language).to receive(:finish)
-      expect(security).to receive(:write)
       expect(storage).to receive(:install)
       expect(storage).to receive(:finish)
       expect(users).to receive(:write)
-      subject.install_phase
-    end
-
-    it "proposes and writes the bootloader configuration" do
-      expect(bootloader_proposal).to receive(:make_proposal)
-      expect(bootloader_finish).to receive(:write)
       subject.install_phase
     end
   end
@@ -183,23 +165,6 @@ describe DInstaller::Manager do
     it "runs the config phase" do
       expect(subject).to receive(:config_phase)
       subject.select_product("Leap")
-    end
-  end
-
-  describe "#testing_question" do
-    let(:question_stub) { instance_double(DInstaller::DBus::Clients::Question, answer: :blue) }
-
-    # this is a clumsy way to test the CanAskQuestion mixin
-    it "uses CanAskQuestion#ask" do
-      expect(questions_manager).to receive(:add).and_return(question_stub)
-      expect(questions_manager).to receive(:wait)
-      expect(questions_manager).to receive(:delete)
-
-      question = DInstaller::Question.new("What is your favorite color?", options: [:blue, :yellow])
-      correct = subject.ask(question) do |q|
-        q.answer == :blue
-      end
-      expect(correct).to be true
     end
   end
 end

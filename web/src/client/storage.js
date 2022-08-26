@@ -22,6 +22,7 @@
 import cockpit from "../lib/cockpit";
 import { applyMixin, withDBus, withStatus } from "./mixins";
 
+const STORAGE_SERVICE = "org.opensuse.DInstaller.Storage";
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_PROPOSAL_PATH = "/org/opensuse/DInstaller/Storage/Proposal1";
 
@@ -29,8 +30,10 @@ const STORAGE_PROPOSAL_PATH = "/org/opensuse/DInstaller/Storage/Proposal1";
  * Storage client
  */
 class StorageClient {
-  constructor(dbusClient) {
-    this._client = dbusClient;
+  constructor() {
+    this._client = cockpit.dbus(STORAGE_SERVICE, {
+      bus: "system", superuser: "try"
+    });
   }
 
   /**

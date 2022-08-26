@@ -42,9 +42,15 @@ beforeEach(() => {
       questions: {
         getQuestions: () => Promise.resolve(pendingQuestions),
         // Capture the handler for the onQuestionAdded signal for triggering it manually
-        onQuestionAdded: onAddHandler => { handlers.onAdd = onAddHandler },
+        onQuestionAdded: onAddHandler => {
+          handlers.onAdd = onAddHandler;
+          return () => {};
+        },
         // Capture the handler for the onQuestionREmoved signal for triggering it manually
-        onQuestionRemoved: onRemoveHandler => { handlers.onRemove = onRemoveHandler },
+        onQuestionRemoved: onRemoveHandler => {
+          handlers.onRemove = onRemoveHandler;
+          return () => {};
+        },
       }
     };
   });

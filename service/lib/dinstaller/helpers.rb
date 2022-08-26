@@ -19,13 +19,31 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
+
 module DInstaller
-  module DBus
-    # Namespace for storage D-Bus classes
-    module Storage
+  # This module contains some reusable utility methods
+  #
+  # We might consider turning some of them into proper classes if needed.
+  module Helpers
+    # Run a block in the target system
+    #
+    # @param block [Proc] Block to run on the target system
+    def on_target(&block)
+      Yast.import "WFM"
+      old_handle = Yast::WFM.SCRGetDefault
+      # chroot directly to /mnt instead of Installation.destdir to avoid unnecessary deps
+      handle = Yast::WFM.SCROpen("chroot=/mnt:scr", false)
+      Yast::WFM.SCRSetDefault(handle)
+
+      begin
+        block.call
+      rescue StandardError => e
+        logger.error "Error while running on target tasks: #{e.inspect}"
+      ensure
+        Yast::WFM.SCRSetDefault(old_handle)
+        Yast::WFM.SCRClose(handle)
+      end
     end
   end
 end
-
-require "dinstaller/dbus/storage/manager"
-require "dinstaller/dbus/storage/proposal"

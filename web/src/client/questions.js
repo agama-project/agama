@@ -19,6 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
+import cockpit from "../lib/cockpit";
+
+const QUESTIONS_SERVICE = "org.opensuse.DInstaller.Questions";
+
 const DBUS_CONFIG = {
   questions: {
     path: "/org/opensuse/DInstaller/Questions1",
@@ -105,8 +109,10 @@ function buildQuestion(dbusQuestion) {
  * Questions client
  */
 class QuestionsClient {
-  constructor(dbusClient) {
-    this._client = dbusClient;
+  constructor() {
+    this._client = cockpit.dbus(QUESTIONS_SERVICE, {
+      bus: "system", superuser: "try"
+    });
   }
 
   /**

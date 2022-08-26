@@ -20,20 +20,16 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "bootloader/proposal_client"
-require "bootloader/finish_client"
-require "dinstaller/can_ask_question"
 require "dinstaller/config"
 require "dinstaller/network"
-require "dinstaller/security"
-require "dinstaller/storage"
-require "dinstaller/questions_manager"
 require "dinstaller/with_progress"
 require "dinstaller/installation_phase"
 require "dinstaller/service_status_recorder"
 require "dinstaller/dbus/clients/language"
 require "dinstaller/dbus/clients/software"
+require "dinstaller/dbus/clients/storage"
 require "dinstaller/dbus/clients/users"
+require "dinstaller/helpers"
 
 Yast.import "Stage"
 
@@ -46,13 +42,10 @@ module DInstaller
   # other services via D-Bus (e.g., `org.opensuse.DInstaller.Software`).
   class Manager
     include WithProgress
-    include CanAskQuestion
+    include Helpers
 
     # @return [Logger]
     attr_reader :logger
-
-    # @return [QuestionsManager]
-    attr_reader :questions_manager
 
     # @return [InstallationPhase]
     attr_reader :installation_phase
@@ -63,7 +56,6 @@ module DInstaller
     def initialize(config, logger)
       @config = config
       @logger = logger
-      @questions_manager = QuestionsManager.new(logger)
       @installation_phase = InstallationPhase.new
       @service_status_recorder = ServiceStatusRecorder.new
     end
@@ -81,8 +73,7 @@ module DInstaller
     def config_phase
       installation_phase.config
 
-      storage.probe(questions_manager)
-      security.probe
+      storage.probe
       network.probe
 
       logger.info("Config phase done")
@@ -104,38 +95,21 @@ module DInstaller
       end
 
       progress.step("Partitioning") do
-        # lets propose it here to be sure that software proposal reflects product selection
-        # FIXME: maybe repropose after product selection change?
-        # first make bootloader proposal to be sure that required packages are installed
-        proposal = ::Bootloader::ProposalClient.new.make_proposal({})
-        logger.info "Bootloader proposal #{proposal.inspect}"
         storage.install
         # propose software after /mnt is already separated, so it uses proper
         # target
         software.propose
-
-        # call inst bootloader to get properly initialized bootloader
-        # sysconfig before package installation
-        Yast::WFM.CallFunction("inst_bootloader", [])
       end
 
       progress.step("Installing Software") { software.install }
 
       on_target do
         progress.step("Writing Users") { users.write }
-
         progress.step("Writing Network Configuration") { network.install }
-
-        progress.step("Installing Bootloader") do
-          security.write
-          ::Bootloader::FinishClient.new.write
-        end
-
         progress.step("Saving Language Settings") { language.finish }
-
         progress.step("Writing repositories information") { software.finish }
-
-        progress.step("Finishing installation") { finish_installation }
+        progress.step("Copying logs") { copy_logs }
+        progress.step("Finishing storage configuration") { storage.finish }
       end
 
       logger.info("Install phase done")
@@ -182,14 +156,11 @@ module DInstaller
     #
     # @return [Storage::Manager]
     def storage
-      @storage ||= Storage::Manager.new(logger, config)
-    end
-
-    # Security manager
-    #
-    # @return [Security]
-    def security
-      @security ||= Security.new(logger, config)
+      @storage ||= DBus::Clients::Storage.new.tap do |client|
+        client.on_service_status_change do |status|
+          service_status_recorder.save(client.service.name, status)
+        end
+      end
     end
 
     # Actions to perform when a product is selected
@@ -223,30 +194,9 @@ module DInstaller
     # @return [ServiceStatusRecorder]
     attr_reader :service_status_recorder
 
-    # Performs required steps after installing the system
-    #
-    # For now, this only unmounts the installed system and copies installation logs. Note that YaST
-    # performs many more steps like copying configuration files, creating snapshots, etc. Adding
-    # more features to D-Installer could require to recover some of that YaST logic.
-    def finish_installation
+    # Copy the logs to the target system
+    def copy_logs
       Yast::WFM.CallFunction("copy_logs_finish", ["Write"])
-      storage.finish
-    end
-
-    # Runs a block in the target system
-    def on_target(&block)
-      old_handle = Yast::WFM.SCRGetDefault
-      handle = Yast::WFM.SCROpen("chroot=#{Yast::Installation.destdir}:scr", false)
-      Yast::WFM.SCRSetDefault(handle)
-
-      begin
-        block.call
-      rescue StandardError => e
-        logger.error "Error while running on target tasks: #{e.inspect}"
-      ensure
-        Yast::WFM.SCRSetDefault(old_handle)
-        Yast::WFM.SCRClose(handle)
-      end
     end
 
     # Runs the config phase for the first product found

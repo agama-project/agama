@@ -19,14 +19,21 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "dinstaller_cli/clients/storage"
+require_relative "../../../test_helper"
+require "dinstaller/dbus/clients/storage"
 require "dbus"
 
-describe DInstallerCli::Clients::Storage do
+describe DInstaller::DBus::Clients::Storage do
   before do
     allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.DInstaller").and_return(service)
+    allow(bus).to receive(:service).with("org.opensuse.DInstaller.Storage").and_return(service)
+
+    allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Storage1")
+      .and_return(dbus_object)
+    allow(dbus_object).to receive(:introspect)
+    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Storage1")
+      .and_return(storage_iface)
+
     allow(service).to receive(:object).with("/org/opensuse/DInstaller/Storage/Proposal1")
       .and_return(dbus_proposal)
     allow(dbus_proposal).to receive(:introspect)
@@ -36,10 +43,55 @@ describe DInstallerCli::Clients::Storage do
 
   let(:bus) { instance_double(::DBus::SystemBus) }
   let(:service) { instance_double(::DBus::Service) }
+
+  let(:dbus_object) { instance_double(::DBus::ProxyObject) }
+  let(:storage_iface) { instance_double(::DBus::ProxyObjectInterface) }
+
   let(:dbus_proposal) { instance_double(::DBus::ProxyObject) }
   let(:proposal_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
   subject { described_class.new }
+
+  describe "#probe" do
+    let(:dbus_object) { double(::DBus::ProxyObject, Probe: nil) }
+
+    it "calls the D-Bus Probe method" do
+      expect(dbus_object).to receive(:Probe)
+
+      subject.probe
+    end
+
+    context "when a block is given" do
+      it "passes the block to the Probe method (async)" do
+        callback = proc {}
+        expect(dbus_object).to receive(:Probe) do |&block|
+          expect(block).to be(callback)
+        end
+
+        subject.probe(&callback)
+      end
+    end
+  end
+
+  describe "#install" do
+    let(:dbus_object) { double(::DBus::ProxyObject, Install: nil) }
+
+    it "calls the D-Bus Install method" do
+      expect(dbus_object).to receive(:Install)
+
+      subject.install
+    end
+  end
+
+  describe "#finish" do
+    let(:dbus_object) { double(::DBus::ProxyObject, Finish: nil) }
+
+    it "calls the D-Bus Install method" do
+      expect(dbus_object).to receive(:Finish)
+
+      subject.finish
+    end
+  end
 
   describe "#available_devices" do
     before do

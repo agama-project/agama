@@ -20,58 +20,35 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "dinstaller/manager"
-require "dinstaller/cockpit_manager"
-require "dinstaller/dbus/manager"
-require "dinstaller/dbus/language"
-require "dinstaller/dbus/storage/proposal"
+require "dinstaller/dbus/questions"
+require "dinstaller/questions_manager"
 
 module DInstaller
   module DBus
-    # D-Bus service (org.opensuse.DInstaller)
+    # D-Bus service (org.opensuse.DInstaller.Software)
     #
     # It connects to the system D-Bus and answers requests on objects below
-    # `/org/opensuse/DInstaller`.
-    class ManagerService
-      # Service name
-      #
-      # @return [String]
-      SERVICE_NAME = "org.opensuse.DInstaller"
+    # `/org/opensuse/DInstaller/Software`.
+    class QuestionsService
+      SERVICE_NAME = "org.opensuse.DInstaller.Questions"
       private_constant :SERVICE_NAME
 
-      # System D-Bus
+      # D-Bus connection
       #
       # @return [::DBus::Connection]
       attr_reader :bus
 
-      # Installation manager
-      #
-      # @return [DInstaller::Manager]
-      attr_reader :manager
-
-      # @param config [Config] Configuration
+      # @param _config [Config] Configuration object
       # @param logger [Logger]
-      def initialize(config, logger = nil)
-        @config = config
-        @manager = DInstaller::Manager.new(config, logger)
+      def initialize(_config, logger = nil)
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
+        @backend ||= DInstaller::QuestionsManager.new(logger)
       end
 
-      # Initializes and exports the D-Bus API
-      #
-      # @note The service runs its startup phase
-      def start
-        setup_cockpit
-        export
-        manager.on_progress_change { dispatch } # make single thread more responsive
-        manager.startup_phase
-      end
-
-      # Exports the installer object through the D-Bus service
+      # Exports the software object through the D-Bus service
       def export
         dbus_objects.each { |o| service.export(o) }
-
         paths = dbus_objects.map(&:path).join(", ")
         logger.info "Exported #{paths} objects"
       end
@@ -84,15 +61,7 @@ module DInstaller
     private
 
       # @return [Logger]
-      attr_reader :logger
-
-      # @return [Config]
-      attr_reader :config
-
-      def setup_cockpit
-        cockpit = CockpitManager.new(logger)
-        cockpit.setup(config.data["web"])
-      end
+      attr_reader :logger, :backend
 
       # @return [::DBus::Service]
       def service
@@ -102,17 +71,8 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          manager_dbus,
-          language_dbus
+          DInstaller::DBus::Questions.new(backend, logger)
         ]
-      end
-
-      def manager_dbus
-        @manager_dbus ||= DInstaller::DBus::Manager.new(manager, logger)
-      end
-
-      def language_dbus
-        @language_dbus ||= DInstaller::DBus::Language.new(manager.language, logger)
       end
     end
   end
