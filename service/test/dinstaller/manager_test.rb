@@ -167,21 +167,4 @@ describe DInstaller::Manager do
       subject.select_product("Leap")
     end
   end
-
-  describe "#testing_question" do
-    let(:question_stub) { instance_double(DInstaller::DBus::Clients::Question, answer: :blue) }
-
-    # this is a clumsy way to test the CanAskQuestion mixin
-    it "uses CanAskQuestion#ask" do
-      expect(questions_manager).to receive(:add).and_return(question_stub)
-      expect(questions_manager).to receive(:wait)
-      expect(questions_manager).to receive(:delete)
-
-      question = DInstaller::Question.new("What is your favorite color?", options: [:blue, :yellow])
-      correct = subject.ask(question) do |q|
-        q.answer == :blue
-      end
-      expect(correct).to be true
-    end
-  end
 end

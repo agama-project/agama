@@ -20,10 +20,8 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "dinstaller/can_ask_question"
 require "dinstaller/config"
 require "dinstaller/network"
-require "dinstaller/questions_manager"
 require "dinstaller/with_progress"
 require "dinstaller/installation_phase"
 require "dinstaller/service_status_recorder"
@@ -43,13 +41,9 @@ module DInstaller
   # other services via D-Bus (e.g., `org.opensuse.DInstaller.Software`).
   class Manager
     include WithProgress
-    include CanAskQuestion
 
     # @return [Logger]
     attr_reader :logger
-
-    # @return [QuestionsManager]
-    attr_reader :questions_manager
 
     # @return [InstallationPhase]
     attr_reader :installation_phase
@@ -60,7 +54,6 @@ module DInstaller
     def initialize(config, logger)
       @config = config
       @logger = logger
-      @questions_manager = QuestionsManager.new(logger)
       @installation_phase = InstallationPhase.new
       @service_status_recorder = ServiceStatusRecorder.new
     end
