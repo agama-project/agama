@@ -38,7 +38,7 @@ module DInstaller
       # @return [::DBus::Connection]
       attr_reader :bus
 
-      # @param config [Config] Configuration object
+      # @param _config [Config] Configuration object
       # @param logger [Logger]
       def initialize(_config, logger = nil)
         @logger = logger || Logger.new($stdout)

@@ -31,6 +31,9 @@ module DInstaller
         include WithServiceStatus
         include WithProgress
 
+        PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1"
+        private_constant :PROPOSAL_IFACE
+
         def initialize
           super
 
@@ -70,7 +73,7 @@ module DInstaller
         #
         # @return [Array<String>] name of the devices
         def available_devices
-          dbus_proposal["org.opensuse.DInstaller.Storage.Proposal1"]["AvailableDevices"]
+          dbus_proposal[PROPOSAL_IFACE]["AvailableDevices"]
             .map(&:first)
         end
 
@@ -78,14 +81,14 @@ module DInstaller
         #
         # @return [Array<String>] name of the devices
         def candidate_devices
-          dbus_proposal["org.opensuse.DInstaller.Storage.Proposal1"]["CandidateDevices"]
+          dbus_proposal[PROPOSAL_IFACE]["CandidateDevices"]
         end
 
         # Actions to perform in the storage devices
         #
         # @return [Array<String>]
         def actions
-          dbus_proposal["org.opensuse.DInstaller.Storage.Proposal1"]["Actions"].map do |a|
+          dbus_proposal[PROPOSAL_IFACE]["Actions"].map do |a|
             a["Text"]
           end
         end
