@@ -20,6 +20,7 @@
  */
 
 import QuestionsClient from "./questions";
+import cockpit from "../lib/cockpit";
 
 // NOTE: should we export them?
 const QUESTION_IFACE = "org.opensuse.DInstaller.Question1";
@@ -98,14 +99,17 @@ const proxies = {
 };
 
 const dbusClient = {
-  proxy: jest.fn().mockImplementation(iface => proxies[iface]),
   call: () => getManagedObjectsMock
 };
 
-const client = new QuestionsClient(dbusClient);
+beforeEach(() => {
+  cockpit.dbus = jest.fn().mockImplementation(() => dbusClient);
+  dbusClient.proxy = jest.fn().mockImplementation(iface => proxies[iface]);
+});
 
 describe("#getQuestions", () => {
   it("returns pending questions", async () => {
+    const client = new QuestionsClient(dbusClient);
     const questions = await client.getQuestions();
     expect(questions).toEqual(expectedQuestions);
   });
@@ -119,6 +123,7 @@ describe("#answer", () => {
   });
 
   it("sets given answer", async () => {
+    const client = new QuestionsClient(dbusClient);
     await client.answer(question);
 
     expect(questionsProxy).toMatchObject({ Answer: 'the-answer' });
@@ -130,6 +135,7 @@ describe("#answer", () => {
     });
 
     it("sets given password", async () => {
+      const client = new QuestionsClient(dbusClient);
       await client.answer(question);
 
       expect(luksActivationProxy).toMatchObject({ Password: "notSecret" });
