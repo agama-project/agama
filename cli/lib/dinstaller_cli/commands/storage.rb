@@ -21,7 +21,7 @@
 
 require "thor"
 require "dinstaller_cli/commands/ensure_config_phase"
-require "dinstaller_cli/clients/storage"
+require "dinstaller/dbus/clients/storage"
 require "dinstaller/dbus/clients/manager"
 
 module DInstallerCli
@@ -51,7 +51,7 @@ module DInstallerCli
     private
 
       def storage_client
-        @storage_client ||= Clients::Storage.new
+        @storage_client ||= DInstaller::DBus::Clients::Storage.new
       end
 
       def manager_client

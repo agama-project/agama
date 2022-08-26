@@ -21,7 +21,7 @@
 
 require_relative "../../test_helper"
 require "dinstaller_cli/commands/storage"
-require "dinstaller_cli/clients/storage"
+require "dinstaller/dbus/clients/storage"
 require "dinstaller/dbus/clients/manager"
 require "dinstaller/installation_phase"
 
@@ -30,11 +30,11 @@ describe DInstallerCli::Commands::Storage do
 
   before do
     allow(subject).to receive(:say)
-    allow(DInstallerCli::Clients::Storage).to receive(:new).and_return(storage_client)
+    allow(DInstaller::DBus::Clients::Storage).to receive(:new).and_return(storage_client)
     allow(DInstaller::DBus::Clients::Manager).to receive(:new).and_return(manager_client)
   end
 
-  let(:storage_client) { instance_double(DInstallerCli::Clients::Storage) }
+  let(:storage_client) { instance_double(DInstaller::DBus::Clients::Storage) }
   let(:manager_client) { instance_double(DInstaller::DBus::Clients::Manager) }
 
   describe "#available_devices" do

@@ -22,7 +22,7 @@
 require "thor"
 require "dinstaller_cli/install_config"
 require "dinstaller_cli/install_config_reader"
-require "dinstaller_cli/clients/storage"
+require "dinstaller/dbus/clients/storage"
 require "dinstaller/dbus/clients/language"
 require "dinstaller/dbus/clients/software"
 require "dinstaller/dbus/clients/users"
@@ -139,7 +139,7 @@ module DInstallerCli
       end
 
       def storage_client
-        @storage_client ||= Clients::Storage.new
+        @storage_client ||= DInstaller::DBus::Clients::Storage.new
       end
 
       def users_client
