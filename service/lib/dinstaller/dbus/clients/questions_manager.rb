@@ -46,12 +46,16 @@ module DInstaller
         # @param question [DInstaller::Question]
         # @return [DBus::Clients::Question]
         def add(question)
-          q_path = @dbus_object.New(
-            question.text,
-            question.options.map(&:to_s),
-            Array(question.default_option&.to_s)
-          )
+          q_path = add_dbus_question(question)
           DBus::Clients::Question.new(q_path)
+        end
+
+        def add_dbus_question(question)
+          if question.is_a?(DInstaller::LuksActivationQuestion)
+            add_luks_activation_question(question)
+          else
+            add_generic_question(question)
+          end
         end
 
         # Deletes the given question
@@ -85,6 +89,20 @@ module DInstaller
 
         # @return [::DBus::Object]
         attr_reader :dbus_object
+
+        def add_generic_question(question)
+          @dbus_object.New(
+            question.text,
+            question.options.map(&:to_s),
+            Array(question.default_option&.to_s)
+          )
+        end
+
+        def add_luks_activation_question(question)
+          @dbus_object.NewLuksActivation(
+            question.device, question.label, question.size
+          )
+        end
       end
     end
   end
