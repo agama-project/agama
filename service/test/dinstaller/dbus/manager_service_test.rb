@@ -37,9 +37,6 @@ describe DInstaller::DBus::ManagerService do
   let(:software_client) do
     instance_double(DInstaller::DBus::Clients::Software, on_product_selected: nil)
   end
-  let(:language_client) do
-    instance_double(DInstaller::DBus::Clients::Language, on_language_selected: nil)
-  end
 
   before do
     allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
@@ -47,7 +44,6 @@ describe DInstaller::DBus::ManagerService do
     allow(DInstaller::Manager).to receive(:new).with(config, logger).and_return(manager)
     allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
     allow(manager).to receive(:software).and_return(software_client)
-    allow(manager).to receive(:language).and_return(language_client)
   end
 
   describe "#start" do
@@ -58,12 +54,12 @@ describe DInstaller::DBus::ManagerService do
   end
 
   describe "#export" do
-    it "exports the language manager object" do
-      language_obj = instance_double(DInstaller::DBus::Language, path: nil)
-      allow(DInstaller::DBus::Language).to receive(:new)
-        .with(manager.language, logger).and_return(language_obj)
+    it "exports the manager object" do
+      manager_obj = instance_double(DInstaller::DBus::Manager, path: nil)
+      allow(DInstaller::DBus::Manager).to receive(:new)
+        .with(manager, logger).and_return(manager_obj)
 
-      expect(bus_service).to receive(:export).with(language_obj)
+      expect(bus_service).to receive(:export).with(manager_obj)
       service.export
     end
   end
