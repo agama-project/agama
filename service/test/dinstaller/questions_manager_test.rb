@@ -31,7 +31,7 @@ describe DInstaller::QuestionsManager do
   let(:callback) { proc {} }
 
   let(:question1) { DInstaller::Question.new("test1", options: [:yes, :no]) }
-  let(:question2) { DInstaller::Question.new("test2", options: [:yes, :no]) }
+  let(:question2) { DInstaller::LuksActivationQuestion.new("sda1") }
 
   describe "#add" do
     before do
@@ -51,7 +51,7 @@ describe DInstaller::QuestionsManager do
         subject.add(question1)
       end
 
-      it "returns trthy value" do
+      it "returns truthy value" do
         expect(subject.add(question1)).to be_truthy
       end
     end
@@ -137,7 +137,7 @@ describe DInstaller::QuestionsManager do
       proc do
         times += 1
         question1.answer = :yes if times == 2
-        question2.answer = :no if times == 3
+        question2.answer = :skip if times == 3
       end
     end
 

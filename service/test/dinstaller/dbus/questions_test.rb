@@ -132,4 +132,44 @@ describe DInstaller::DBus::Questions do
         .to contain_exactly("Attempt", "Password")
     end
   end
+
+  describe "Questions interface" do
+    let(:interface) { "org.opensuse.DInstaller.Questions1" }
+    let(:full_method_name) { described_class.make_method_name(interface, method_name) }
+
+    describe "#New" do
+      let(:method_name) { "New" }
+
+      it "adds a question and returns its path" do
+        expect(backend).to receive(:add)
+        expect(subject.public_send(full_method_name, "How you doin?", ["fine", "great"], []))
+          .to start_with "/org/opensuse/DInstaller/Questions1/"
+      end
+    end
+
+    describe "#NewLuksActivation" do
+      let(:method_name) { "NewLuksActivation" }
+
+      it "adds a question and returns its path" do
+        expect(backend).to receive(:add)
+        expect(subject.public_send(full_method_name, "/dev/tape1", "New games", "90 minutes"))
+          .to start_with "/org/opensuse/DInstaller/Questions1/"
+      end
+    end
+
+    describe "#Delete" do
+      let(:method_name) { "Delete" }
+
+      it "deletes the question" do
+        q = DInstaller::Question.new("Huh?", options: [])
+        path = "/org/opensuse/DInstaller/Questions1/666"
+        dbus_q = DInstaller::DBus::Question.new(path, q, logger)
+        node = instance_double(DBus::Node, object: dbus_q)
+
+        expect(service).to receive(:get_node).with(path).and_return(node)
+        expect(backend).to receive(:delete).with(q)
+        expect { subject.public_send(full_method_name, path) }.to_not raise_error
+      end
+    end
+  end
 end
