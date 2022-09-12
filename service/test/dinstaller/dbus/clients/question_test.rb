@@ -31,12 +31,15 @@ describe DInstaller::DBus::Clients::Question do
       .and_return(dbus_object)
     allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Question1")
       .and_return(question_iface)
+    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Question.LuksActivation1")
+      .and_return(luks_iface)
   end
 
   let(:bus) { instance_double(::DBus::SystemBus) }
   let(:service) { instance_double(::DBus::Service) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:question_iface) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:luks_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
   subject { described_class.new("/org/opensuse/DInstaller/Questions1/23") }
 
@@ -44,6 +47,20 @@ describe DInstaller::DBus::Clients::Question do
     it "returns false if there is no answer" do
       expect(question_iface).to receive(:[]).with("Answer").and_return("")
       expect(subject.answered?).to eq false
+    end
+  end
+
+  describe "#text" do
+    it "returns the appropriate property" do
+      expect(question_iface).to receive(:[]).with("Text").and_return("the text")
+      expect(subject.text).to eq "the text"
+    end
+  end
+
+  describe "#password" do
+    it "returns the appropriate property of the luks interface" do
+      expect(luks_iface).to receive(:[]).with("Password").and_return("the password")
+      expect(subject.password).to eq "the password"
     end
   end
 end

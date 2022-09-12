@@ -90,6 +90,14 @@ module DInstaller
           path_for(backend_q)
         end
 
+        dbus_method :NewLuksActivation, "in device:s, in label:s, in size:s, out q:o" do
+          |device, label, size|
+
+          backend_q = DInstaller::LuksActivationQuestion.new(device, label: label, size: size)
+          backend.add(backend_q)
+          path_for(backend_q)
+        end
+
         dbus_method :Delete, "in question:o" do |question_path|
           dbus_q = @service.get_node(question_path)&.object
           raise ArgumentError, "Object path #{question_path} not found" unless dbus_q

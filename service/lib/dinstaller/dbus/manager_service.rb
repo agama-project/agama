@@ -23,7 +23,6 @@ require "dbus"
 require "dinstaller/manager"
 require "dinstaller/cockpit_manager"
 require "dinstaller/dbus/manager"
-require "dinstaller/dbus/language"
 require "dinstaller/dbus/storage/proposal"
 
 module DInstaller
@@ -102,17 +101,12 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          manager_dbus,
-          language_dbus
+          manager_dbus
         ]
       end
 
       def manager_dbus
         @manager_dbus ||= DInstaller::DBus::Manager.new(manager, logger)
-      end
-
-      def language_dbus
-        @language_dbus ||= DInstaller::DBus::Language.new(manager.language, logger)
       end
     end
   end

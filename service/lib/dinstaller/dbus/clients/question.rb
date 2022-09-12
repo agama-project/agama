@@ -37,6 +37,8 @@ module DInstaller
 
           @dbus_object = service[object_path]
           @dbus_iface = @dbus_object["org.opensuse.DInstaller.Question1"]
+          # one D-Bus client for all kinds of questions
+          @luks_iface = @dbus_object["org.opensuse.DInstaller.Question.LuksActivation1"]
         end
 
         # @return [String]
@@ -46,9 +48,19 @@ module DInstaller
 
         # TODO: what other methods are useful?
 
+        # @return [String] Question text
+        def text
+          @dbus_iface["Text"].to_s
+        end
+
         # @return [Symbol] no answer yet = :""
         def answer
           @dbus_iface["Answer"].to_sym
+        end
+
+        # @return [String]
+        def password
+          @luks_iface["Password"]
         end
 
         # Whether the question is already answered

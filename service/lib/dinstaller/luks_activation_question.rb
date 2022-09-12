@@ -36,6 +36,15 @@ module DInstaller
   #
   #   question.answer = :decrypt # in case you want to decrypt with the given password
   class LuksActivationQuestion < Question
+    # @return [String]
+    attr_reader :device
+
+    # @return [String, nil]
+    attr_reader :label
+
+    # @return [String, nil]
+    attr_reader :size
+
     # Current attempt to decrypt the device
     #
     # @return [Integer]
@@ -61,15 +70,6 @@ module DInstaller
     attr_accessor :password
 
   private
-
-    # @return [String]
-    attr_reader :device
-
-    # @return [String, nil]
-    attr_reader :label
-
-    # @return [String, nil]
-    attr_reader :size
 
     # Generate the text for the question
     #
