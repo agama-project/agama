@@ -100,7 +100,7 @@ module DInstaller
 
         def add_luks_activation_question(question)
           @dbus_object.NewLuksActivation(
-            question.device, question.label, question.size
+            question.device, question.label, question.size, question.attempt
           )
         end
       end

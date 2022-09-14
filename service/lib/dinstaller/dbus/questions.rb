@@ -90,10 +90,13 @@ module DInstaller
           path_for(backend_q)
         end
 
-        dbus_method :NewLuksActivation, "in device:s, in label:s, in size:s, out q:o" do
-          |device, label, size|
+        dbus_method :NewLuksActivation, "in device:s, in label:s, in size:s, in attempt:y, out q:o" do
+          |device, label, size, attempt|
 
-          backend_q = DInstaller::LuksActivationQuestion.new(device, label: label, size: size)
+          backend_q = DInstaller::LuksActivationQuestion.new(
+            device, label: label, size: size, attempt: attempt
+          )
+
           backend.add(backend_q)
           path_for(backend_q)
         end

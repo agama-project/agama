@@ -152,7 +152,7 @@ describe DInstaller::DBus::Questions do
 
       it "adds a question and returns its path" do
         expect(backend).to receive(:add)
-        expect(subject.public_send(full_method_name, "/dev/tape1", "New games", "90 minutes"))
+        expect(subject.public_send(full_method_name, "/dev/tape1", "New games", "90 minutes", 1))
           .to start_with "/org/opensuse/DInstaller/Questions1/"
       end
     end
