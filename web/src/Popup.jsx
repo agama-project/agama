@@ -70,7 +70,7 @@ const Action = ({ children, ...props }) => (
  * @param {object} [props] - {@link Action} props
  */
 const PrimaryAction = ({ children, ...props }) => (
-  <Action { ...props } variant="primary">{ children }</Action>
+  <Action { ...props } variant="primary" type="submit">{ children }</Action>
 );
 
 /**

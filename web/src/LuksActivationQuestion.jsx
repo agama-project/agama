@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { Alert, Form, FormGroup, Stack, StackItem, Text, TextInput } from "@patternfly/react-core";
+import { ActionGroup, Alert, Form, FormGroup, Stack, StackItem, Text, TextInput } from "@patternfly/react-core";
 import Popup from "./Popup";
 import QuestionActions from "./QuestionActions";
 
@@ -53,15 +53,15 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       aria-label="Question"
       titleIconVariant={() => <Icon size="24" />}
     >
-      <Stack hasGutter>
-        { renderAlert(question.attempt) }
-        <StackItem>
-          <Text>
-            { question.text }
-          </Text>
-        </StackItem>
-        <StackItem>
-          <Form>
+      <Form>
+        <Stack hasGutter>
+          { renderAlert(question.attempt) }
+          <StackItem>
+            <Text>
+              { question.text }
+            </Text>
+          </StackItem>
+          <StackItem>
             <FormGroup label="Encryption Password" fieldId="luks-password">
               <TextInput
                 autoFocus
@@ -71,18 +71,20 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
                 onChange={setPassword}
               />
             </FormGroup>
-          </Form>
-        </StackItem>
-      </Stack>
+          </StackItem>
+        </Stack>
 
-      <Popup.Actions>
-        <QuestionActions
-          actions={question.options}
-          defaultAction={question.defaultOption}
-          actionCallback={actionCallback}
-          conditions={conditions}
-        />
-      </Popup.Actions>
+        <ActionGroup>
+          <Popup.Actions>
+            <QuestionActions
+              actions={question.options}
+              defaultAction="decrypt"
+              actionCallback={actionCallback}
+              conditions={conditions}
+            />
+          </Popup.Actions>
+        </ActionGroup>
+      </Form>
     </Popup>
   );
 }
