@@ -51,7 +51,6 @@ module DInstaller
       FUSER_SIG = "in FullName:s, in UserName:s, in Password:s, in AutoLogin:b, in data:a{sv}"
       private_constant :FUSER_SIG
 
-      # rubocop:disable Metrics/BlockLength
       dbus_interface USERS_INTERFACE do
         dbus_reader :root_password_set, "b"
 
@@ -109,7 +108,6 @@ module DInstaller
           0
         end
       end
-      # rubocop:enable Metrics/BlockLength
 
       def root_ssh_key
         backend.root_ssh_key
