@@ -47,7 +47,7 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
     answerCallback(question);
   };
 
-  const triggerDefaultAction = async (e) => {
+  const triggerDefaultAction = (e) => {
     e.preventDefault();
     if (!conditions.disable?.[defaultAction]) {
       actionCallback(defaultAction);
