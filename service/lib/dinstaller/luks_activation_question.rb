@@ -75,7 +75,7 @@ module DInstaller
     #
     # @return [String]
     def generate_text
-      "The device #{device_info} is encrypted. Do you want to decrypt it?"
+      "The device #{device_info} is encrypted."
     end
 
     # Device information to include in the question
