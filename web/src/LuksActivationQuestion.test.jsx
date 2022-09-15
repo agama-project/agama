@@ -80,7 +80,7 @@ describe("LuksActivationQuestion", () => {
     });
   });
 
-  describe("when the user clicks on 'Skip'", () => {
+  describe("when the user selects one of the options", () => {
     beforeEach(() => {
       question = {
         id: 1,
@@ -90,39 +90,44 @@ describe("LuksActivationQuestion", () => {
       };
     });
 
-    it("calls the callback after setting both, answer and password", async() => {
-      const { user } = renderQuestion();
+    describe("by clicking on 'Skip'", () => {
+      it("calls the callback after setting both, answer and password", async() => {
+        const { user } = renderQuestion();
 
-      const passwordInput = await screen.findByLabelText("Encryption Password");
-      await user.type(passwordInput, "notSecret");
-      const skipButton = await screen.findByRole("button", { name: /Skip/ });
-      await user.click(skipButton);
+        const passwordInput = await screen.findByLabelText("Encryption Password");
+        await user.type(passwordInput, "notSecret");
+        const skipButton = await screen.findByRole("button", { name: /Skip/ });
+        await user.click(skipButton);
 
-      expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "skip" }));
-      expect(answerFn).toHaveBeenCalledWith(question);
-    });
-  });
-
-  describe("when the user clicks on 'Decrypt'", () => {
-    beforeEach(() => {
-      question = {
-        id: 1,
-        text: "A Luks device found. Do you want to open it?",
-        attempt: 1,
-        options: ["decrypt", "skip"],
-      };
+        expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "skip" }));
+        expect(answerFn).toHaveBeenCalledWith(question);
+      });
     });
 
-    it("calls the callback after setting both, answer and password", async() => {
-      const { user } = renderQuestion();
+    describe("by clicking on 'Decrypt'", () => {
+      it("calls the callback after setting both, answer and password", async() => {
+        const { user } = renderQuestion();
 
-      const passwordInput = await screen.findByLabelText("Encryption Password");
-      await user.type(passwordInput, "notSecret");
-      const skipButton = await screen.findByRole("button", { name: /Decrypt/ });
-      await user.click(skipButton);
+        const passwordInput = await screen.findByLabelText("Encryption Password");
+        await user.type(passwordInput, "notSecret");
+        const decryptButton = await screen.findByRole("button", { name: /Decrypt/ });
+        await user.click(decryptButton);
 
-      expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "decrypt" }));
-      expect(answerFn).toHaveBeenCalledWith(question);
+        expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "decrypt" }));
+        expect(answerFn).toHaveBeenCalledWith(question);
+      });
+    });
+
+    describe("submiting the form by pressing 'enter'", () => {
+      it("calls the callback after setting both, answer and password", async() => {
+        const { user } = renderQuestion();
+
+        const passwordInput = await screen.findByLabelText("Encryption Password");
+        await user.type(passwordInput, "notSecret{enter}");
+
+        expect(question).toEqual(expect.objectContaining({ password: "notSecret", answer: "decrypt" }));
+        expect(answerFn).toHaveBeenCalledWith(question);
+      });
     });
   });
 });
