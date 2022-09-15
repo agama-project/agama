@@ -39,11 +39,19 @@ const renderAlert = (attempt) => {
 export default function LuksActivationQuestion({ question, answerCallback }) {
   const [password, setPassword] = useState(question.password || "");
   const conditions = { disable: { decrypt: password === "" } };
+  const defaultAction = "decrypt";
 
   const actionCallback = (option) => {
     question.password = password;
     question.answer = option;
     answerCallback(question);
+  };
+
+  const triggerDefaultAction = async (e) => {
+    e.preventDefault();
+    if (!conditions.disable?.[defaultAction]) {
+      actionCallback(defaultAction);
+    }
   };
 
   return (
@@ -61,7 +69,7 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
           </Text>
         </StackItem>
         <StackItem>
-          <Form>
+          <Form onSubmit={triggerDefaultAction}>
             <FormGroup label="Encryption Password" fieldId="luks-password">
               <TextInput
                 autoFocus
@@ -78,7 +86,7 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       <Popup.Actions>
         <QuestionActions
           actions={question.options}
-          defaultAction={question.defaultOption}
+          defaultAction={defaultAction}
           actionCallback={actionCallback}
           conditions={conditions}
         />
