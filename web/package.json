@@ -9,6 +9,7 @@
     "build": "webpack",
     "eslint": "eslint --ext .js --ext .jsx src/",
     "eslint:fix": "eslint --fix --ext .js --ext .jsx src/",
+    "check-types": "tsc",
     "jsdoc": "npx jsdoc -c jsdoc.conf.json && echo Tip: && echo xdg-open jsdoc.out/index.html",
     "test": "jest"
   },
