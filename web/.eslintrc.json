@@ -5,8 +5,14 @@
         "es6": true,
         "jest": true
     },
-    "extends": ["eslint:recommended", "standard", "standard-jsx", "standard-react"],
-    "parser": "@babel/eslint-parser",
+    "extends": [
+      "eslint:recommended",
+      "standard", 
+      "standard-jsx",
+      "standard-react",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 7,
         "ecmaFeatures": {
@@ -14,7 +20,7 @@
         },
         "sourceType": "module"
     },
-    "plugins": ["flowtype", "react", "react-hooks"],
+    "plugins": ["flowtype", "react", "react-hooks", "@typescript-eslint"],
     "rules": {
         "indent": ["error", 2,
             {
@@ -26,6 +32,8 @@
             }],
         "newline-per-chained-call": ["error", { "ignoreChainWithDepth": 2 }],
         "no-var": "error",
+        "no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": "warn",
         "lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
         "prefer-promise-reject-errors": ["error", { "allowEmptyReject": true }],
         "react/jsx-indent": ["error", 2],
