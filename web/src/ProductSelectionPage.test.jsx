@@ -39,6 +39,8 @@ const products = [
 ];
 jest.mock("./client");
 jest.mock("./TargetIpsPopup", () => () => "Target IPs Mock");
+
+const mockUseNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockUseNavigate
@@ -53,8 +55,6 @@ jest.mock("./context/software", () => ({
     };
   }
 }));
-
-const mockUseNavigate = jest.fn();
 
 const softwareMock = {
   getProducts: () => Promise.resolve(products),

@@ -44,12 +44,12 @@ beforeEach(() => {
         // Capture the handler for the onQuestionAdded signal for triggering it manually
         onQuestionAdded: onAddHandler => {
           handlers.onAdd = onAddHandler;
-          return () => {};
+          return jest.fn;
         },
         // Capture the handler for the onQuestionREmoved signal for triggering it manually
         onQuestionRemoved: onRemoveHandler => {
           handlers.onRemove = onRemoveHandler;
-          return () => {};
+          return jest.fn;
         },
       }
     };
