@@ -3,7 +3,10 @@
     "isolatedModules": true,
     "noEmit": true,
     "target": "esnext",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "allowSyntheticDefaultImports": true,
   },
   "include": [
     "src"
