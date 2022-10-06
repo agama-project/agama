@@ -19,8 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { applyMixin, withDBus } from "./mixins";
-import cockpit from "../lib/cockpit";
+// @ts-check
+import { DBusClient } from "./dbus";
 
 const LANGUAGE_SERVICE = "org.opensuse.DInstaller.Language";
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
@@ -31,9 +31,7 @@ const LANGUAGE_PATH = "/org/opensuse/DInstaller/Language1";
  */
 class LanguageClient {
   constructor() {
-    this._client = cockpit.dbus(LANGUAGE_SERVICE, {
-      bus: "system", superuser: "try"
-    });
+    this.client = new DBusClient(LANGUAGE_SERVICE);
   }
 
   /**
@@ -42,7 +40,7 @@ class LanguageClient {
    * @return {Promise.<Array>}
    */
   async getLanguages() {
-    const proxy = await this.proxy(LANGUAGE_IFACE);
+    const proxy = await this.client.proxy(LANGUAGE_IFACE);
     return proxy.AvailableLanguages.map(lang => {
       const [id, name] = lang;
       return { id, name };
@@ -55,7 +53,7 @@ class LanguageClient {
    * @return {Promise.<String|undefined>}
    */
   async getSelectedLanguages() {
-    const proxy = await this.proxy(LANGUAGE_IFACE);
+    const proxy = await this.client.proxy(LANGUAGE_IFACE);
     return proxy.MarkedForInstall;
   }
 
@@ -66,7 +64,7 @@ class LanguageClient {
    * @return {Promise.<String|undefined>}
    */
   async setLanguages(langIDs) {
-    const proxy = await this.proxy(LANGUAGE_IFACE);
+    const proxy = await this.client.proxy(LANGUAGE_IFACE);
     return proxy.ToInstall(langIDs);
   }
 
@@ -76,12 +74,11 @@ class LanguageClient {
    * @param {function} handler - callback function
    */
   onLanguageChange(handler) {
-    return this.onObjectChanged(LANGUAGE_PATH, LANGUAGE_IFACE, changes => {
+    return this.client.onObjectChanged(LANGUAGE_PATH, LANGUAGE_IFACE, changes => {
       const selected = changes.MarkedForInstall.v[0];
       handler({ current: selected });
     });
   }
 }
 
-applyMixin(LanguageClient, withDBus);
 export default LanguageClient;
