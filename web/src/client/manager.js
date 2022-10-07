@@ -19,43 +19,50 @@
  * find current contact information at www.suse.com.
  */
 
-import { applyMixin, withDBus, withStatus, withProgress } from "./mixins";
+// @ts-check
+
+import { DBusClient } from "./dbus";
+import { WithStatus, WithProgress } from "./mixins";
 import cockpit from "../lib/cockpit";
 
+const MANAGER_SERVICE = "org.opensuse.DInstaller.Manager";
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 const MANAGER_PATH = "/org/opensuse/DInstaller/Manager1";
 
 /**
- * Manager client
+ * Manager base client
+ *
+ * @ignore
  */
-class ManagerClient {
+class ManagerBaseClient {
+  /**
+   * @param {DBusClient} [dbusClient] - D-Bus client
+   */
   constructor(dbusClient) {
-    this._client = dbusClient;
+    this.client = dbusClient || new DBusClient(MANAGER_SERVICE);
   }
 
   /**
    * Run probing process
    *
-   * The progress of the probing process can be tracked through installer
-   * signals (see {onSignal}).
+   * The progress of the probing process can be tracked through installer signals.
    *
-   * @return {Promise}
+   * @return {Promise<void>}
    */
   async startProbing() {
-    const proxy = await this.proxy(MANAGER_IFACE);
+    const proxy = await this.client.proxy(MANAGER_IFACE);
     return proxy.Probe();
   }
 
   /**
    * Start the installation process
    *
-   * The progress of the installation process can be tracked through installer
-   * signals (see {onSignal}).
+   * The progress of the installation process can be tracked through installer signals.
    *
    * @return {Promise}
    */
   async startInstallation() {
-    const proxy = await this.proxy(MANAGER_IFACE);
+    const proxy = await this.client.proxy(MANAGER_IFACE);
     return proxy.Commit();
   }
 
@@ -65,7 +72,7 @@ class ManagerClient {
    * @return {Promise.<number>}
    */
   async getPhase() {
-    const proxy = await this.proxy(MANAGER_IFACE);
+    const proxy = await this.client.proxy(MANAGER_IFACE);
     return proxy.CurrentInstallationPhase;
   }
 
@@ -76,7 +83,7 @@ class ManagerClient {
    * @return {function} function to disable callback
    */
   onPhaseChange(handler) {
-    return this.onObjectChanged(MANAGER_PATH, MANAGER_IFACE, (changes) => {
+    return this.client.onObjectChanged(MANAGER_PATH, MANAGER_IFACE, (changes) => {
       if ("CurrentInstallationPhase" in changes) {
         handler(changes.CurrentInstallationPhase.v);
       }
@@ -84,16 +91,18 @@ class ManagerClient {
   }
 
   /**
-   * Returns whether calling the system reboot suceeded or not.
+   * Returns whether calling the system reboot succeeded or not.
    *
-   * @return {Promise.<boolean>}
+   * @return {Promise<boolean>}
    */
   rebootSystem() {
     return cockpit.spawn(["/usr/sbin/shutdown", "-r", "now"]);
   }
 }
 
-applyMixin(
-  ManagerClient, withDBus, withStatus(MANAGER_PATH), withProgress(MANAGER_PATH)
-);
-export default ManagerClient;
+/**
+  * Client to interact with the D-Installer manager service
+  */
+class ManagerClient extends WithProgress(WithStatus(ManagerBaseClient, MANAGER_PATH), MANAGER_PATH) {}
+
+export { ManagerClient };

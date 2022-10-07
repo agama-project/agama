@@ -20,7 +20,7 @@
  */
 
 import LanguageClient from "./language";
-import ManagerClient from "./manager";
+import { ManagerClient } from "./manager";
 import Monitor from "./monitor";
 import SoftwareClient from "./software";
 import StorageClient from "./storage";
