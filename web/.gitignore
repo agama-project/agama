@@ -17,3 +17,4 @@ POTFILES*
 tmp/
 /po/LINGUAS
 /jsdoc.out/
+/docs/

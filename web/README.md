@@ -28,7 +28,12 @@ However, there is no live or hot reloading feature, so you need to reload the co
 You can visit the module through the following URL:
 http://localhost:9090/cockpit/@localhost/d-installer/index.html.
 
+
 ### JSDoc Documentation
+
+This project uses [TypeDoc](https://typedoc.org/) to generate the API documentation. The `jsdoc`
+task generates the documentation to the `jsout.out` directory. If you need to adjust TypeDoc
+option, please check the `typedocOptions` key in the `tsconfig.js` file.
 
 ```
 npm run jsdoc
@@ -37,3 +42,5 @@ xdg-open jsdoc.out/index.html
 
 GitHub Actions will automatically publish the result to
 <https://d-installer-frontend.surge.sh/>
+
+
