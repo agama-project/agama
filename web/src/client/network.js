@@ -19,16 +19,20 @@
  * find current contact information at www.suse.com.
  */
 
-import { applyMixin, withDBus } from "./mixins";
+import { DBusClient } from "./dbus";
 
+const NM_SERVICE_NAME = "org.freedesktop.NetworkManager";
 const NM_IFACE = "org.freedesktop.NetworkManager";
 
 /**
  * Network client
  */
 class NetworkClient {
+  /**
+   * @param {DBusClient} [dbusClient] - D-Bus client
+   */
   constructor(dbusClient) {
-    this._client = dbusClient;
+    this.client = dbusClient || new DBusClient(NM_SERVICE_NAME);
   }
 
   /**
@@ -127,5 +131,4 @@ class NetworkClient {
   }
 }
 
-applyMixin(NetworkClient, withDBus);
-export default NetworkClient;
+export { NetworkClient };

@@ -27,19 +27,14 @@ import { StorageClient } from "./storage";
 import { UsersClient } from "./users";
 import phase from "./phase";
 import { QuestionsClient } from "./questions";
-import NetworkClient from "./network";
+import { NetworkClient } from "./network";
 
 import cockpit from "../lib/cockpit";
 
 const SERVICE_NAME = "org.opensuse.DInstaller";
-const NM_SERVICE_NAME = "org.freedesktop.NetworkManager";
 
 const createClient = () => {
   const client = cockpit.dbus(SERVICE_NAME, {
-    bus: "system",
-    superuser: "try"
-  });
-  const nmClient = cockpit.dbus(NM_SERVICE_NAME, {
     bus: "system",
     superuser: "try"
   });
@@ -48,7 +43,7 @@ const createClient = () => {
     language: new LanguageClient(client),
     manager: new ManagerClient(client),
     monitor: new Monitor(SERVICE_NAME),
-    network: new NetworkClient(nmClient),
+    network: new NetworkClient(),
     software: new SoftwareClient(),
     storage: new StorageClient(),
     users: new UsersClient(),
