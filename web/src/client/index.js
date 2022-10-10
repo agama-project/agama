@@ -41,7 +41,7 @@ const createClient = () => {
   const client = new DBusClient(SERVICE_NAME);
 
   return {
-    language: new LanguageClient(client),
+    language: new LanguageClient(),
     manager: new ManagerClient(client),
     monitor: new Monitor(client, SERVICE_NAME),
     network: new NetworkClient(),
