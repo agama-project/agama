@@ -4,9 +4,19 @@
 
 D-Installer is a new Linux installer born in the core of the YaST team. It is designed to offer re-usability, integration with third party tools and the possibility of building advanced user interfaces over it.
 
-  |||||
-  |-|-|-|-|
-  |![Product selection](./doc/images/screenshots/product-selection.png) |![Installation overview](./doc/images/screenshots/overview.png) |![Installing](./doc/images/screenshots/installing.png) |![Installation finished](./doc/images/screenshots/finished.png) |
+|||||
+|-|-|-|-|
+|![Product selection](./doc/images/screenshots/product-selection.png) |![Installation overview](./doc/images/screenshots/overview.png) |![Installing](./doc/images/screenshots/installing.png) |![Installation finished](./doc/images/screenshots/finished.png) |
+
+## Table of Content
+
+* [Why a New Installer](#why-a-new-installer)
+* [Architecture](#architecture)
+* [How to Run](#how-to-run)
+  * [Live ISO Image](#live-iso-image)
+  * [Manual Configuration](#manual-configuration)
+* [How to Contribute](#how-to-contribute)
+* [Development Notes](#development-notes)
 
 ## Why a New Installer
 
@@ -42,7 +52,7 @@ D-Installer offers a web interface and its UI process uses the [Cockpit's infras
 
 There are two ways of running the project: a) by using a D-Installer live ISO image or b) by cloning and configuring the project.
 
-### D-Installer Live ISO Image
+### Live ISO Image
 
 The easiest way to give D-Installer a try is to grab a [live ISO image](https://build.opensuse.org/package/binaries/YaST:Head:D-Installer/d-installer-live/images) and boot it in a virtual machine. This is also the recommended way if you only want to play and see it in action. If you want to have a closer look, then clone and configure the project as explained in the next section.
 
