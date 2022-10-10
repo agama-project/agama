@@ -24,7 +24,7 @@ import { ManagerClient } from "./manager";
 import { Monitor } from "./monitor";
 import { SoftwareClient } from "./software";
 import StorageClient from "./storage";
-import UsersClient from "./users";
+import { UsersClient } from "./users";
 import phase from "./phase";
 import QuestionsClient from "./questions";
 import NetworkClient from "./network";
