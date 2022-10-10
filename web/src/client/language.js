@@ -28,8 +28,8 @@ const LANGUAGE_PATH = "/org/opensuse/DInstaller/Language1";
 
 /**
  * @typedef {object} Language
- * @property {string} Language ID (e.g., "en_US")
- * @property {string} Language name (e.g., "English (US)")
+ * @property {string} id - Language ID (e.g., "en_US")
+ * @property {string} name - Language name (e.g., "English (US)")
  */
 
 /**
