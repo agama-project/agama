@@ -28,11 +28,10 @@ However, there is no live or hot reloading feature, so you need to reload the co
 You can visit the module through the following URL:
 http://localhost:9090/cockpit/@localhost/d-installer/index.html.
 
-
-### JSDoc Documentation
+## JSDoc Documentation
 
 This project uses [TypeDoc](https://typedoc.org/) to generate the API documentation. The `jsdoc`
-task generates the documentation to the `jsout.out` directory. If you need to adjust TypeDoc
+task generates the documentation to the `jsout.out` directory. If you need to adjust any TypeDoc
 option, please check the `typedocOptions` key in the `tsconfig.js` file.
 
 ```
@@ -40,7 +39,19 @@ npm run jsdoc
 xdg-open jsdoc.out/index.html
 ```
 
-GitHub Actions will automatically publish the result to
-<https://d-installer-frontend.surge.sh/>
+GitHub Actions will automatically publish the result to <https://d-installer-frontend.surge.sh/>.
 
+## Type-Checking Support
 
+This module started as a JavaScript-only project. We have decided to add type-checking support, but
+instead of converting the code to TypeScript, we prefer to use [TypeScript support for JSDoc
+annotations](https://www.typescriptlang.org/docs/handbook/intro-to-js-ts.html).
+
+Run the following command to check the types:
+
+```
+npm run check-types
+```
+
+Not our JavaScript code is properly documented yet, so type-checking is an opt-in feature by now. If
+you want a JavaScript file to be type-checked, please add a `// @ts-check` comment before any code.
