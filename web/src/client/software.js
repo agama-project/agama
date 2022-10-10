@@ -19,30 +19,42 @@
  * find current contact information at www.suse.com.
  */
 
-import { applyMixin, withDBus, withStatus, withProgress } from "./mixins";
-import cockpit from "../lib/cockpit";
+// @ts-check
+
+import { DBusClient } from "./dbus";
+import { WithStatus, WithProgress } from "./mixins";
 
 const SOFTWARE_SERVICE = "org.opensuse.DInstaller.Software";
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
 const SOFTWARE_PATH = "/org/opensuse/DInstaller/Software1";
 
 /**
- * Software client
+ * @typedef {object} Product
+ * @property {string} id - Product ID (e.g., "Leap")
+ * @property {string} name - Product name (e.g., "openSUSE Leap 15.4")
+ * @property {string} description - Product description
  */
-class SoftwareClient {
-  constructor() {
-    this._client = cockpit.dbus(SOFTWARE_SERVICE, {
-      bus: "system", superuser: "try"
-    });
+
+/**
+ * Software client
+ *
+ * @ignore
+ */
+class SoftwareBaseClient {
+  /**
+   * @param {DBusClient} [dbusClient] - D-Bus client
+   */
+  constructor(dbusClient) {
+    this.client = dbusClient || new DBusClient(SOFTWARE_SERVICE);
   }
 
   /**
-   * Return the list of available products
+   * Returns the list of available products
    *
-   * @return {Promise.<Array>}
+   * @return {Promise<Array<Product>>}
    */
   async getProducts() {
-    const proxy = await this.proxy(SOFTWARE_IFACE);
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
     return proxy.AvailableBaseProducts.map(product => {
       const [id, name, meta] = product;
       return { id, name, description: meta.description?.v };
@@ -50,40 +62,47 @@ class SoftwareClient {
   }
 
   /**
-   * Return the selected product
+   * Returns the selected product
    *
-   * @return {Promise.<Object|null>}
+   * @return {Promise<Product|null>}
    */
   async getSelectedProduct() {
     const products = await this.getProducts();
-    const proxy = await this.proxy(SOFTWARE_IFACE);
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
     if (proxy.SelectedBaseProduct === "") {
       return null;
     }
     return products.find(product => product.id === proxy.SelectedBaseProduct);
   }
 
+  /**
+   * Selects a product for installation
+   *
+   * @param {string} id - product ID
+   */
   async selectProduct(id) {
-    const proxy = await this.proxy(SOFTWARE_IFACE);
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
     return proxy.SelectProduct(id);
   }
 
   /**
-   * Register a callback to run when properties in the Software object change
+   * Registers a callback to run when properties in the Software object change
    *
-   * @param {function} handler - callback function
+   * @param {(id: string) => void} handler - callback function
    */
   onProductChange(handler) {
-    return this.onObjectChanged(SOFTWARE_PATH, SOFTWARE_IFACE, changes => {
+    return this.client.onObjectChanged(SOFTWARE_PATH, SOFTWARE_IFACE, changes => {
       if ("SelectedBaseProduct" in changes) {
-        const selected = changes.SelectedBaseProduct.v;
+        const selected = changes.SelectedBaseProduct.v.toString();
         handler(selected);
       }
     });
   }
 }
 
-applyMixin(
-  SoftwareClient, withDBus, withStatus(SOFTWARE_PATH), withProgress(SOFTWARE_PATH)
-);
-export default SoftwareClient;
+/**
+ * Allows getting the list the available products and selecting one for installation.
+ */
+class SoftwareClient extends WithProgress(WithStatus(SoftwareBaseClient, SOFTWARE_PATH), SOFTWARE_PATH) {}
+
+export { SoftwareClient };
