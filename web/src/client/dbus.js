@@ -80,13 +80,26 @@ class DBusClient {
    *
    * @param {string} iface - D-Bus iface
    * @param {string} [path] - D-Bus object path
-   * @return a cockpit DBusProxy
+   * @return {Promise<object>} a cockpit DBusProxy
    */
   async proxy(iface, path) {
     const proxy = this.client.proxy(iface, path, { watch: true });
     await proxy.wait();
 
     return proxy;
+  }
+
+  /**
+   * Performs a D-Bus call to a given method
+   *
+   * @param {string} path - D-Bus object path
+   * @param {string} iface - D-Bus interface name
+   * @param {string} method - Method name
+   * @param {any[]} args - Call arguments
+   * @return {Promise<any>}
+   */
+  async call(path, iface, method, args = null) {
+    return this.client.call(path, iface, method, args);
   }
 
   /**
