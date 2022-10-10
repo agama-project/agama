@@ -80,7 +80,7 @@ class ManagerBaseClient {
    * Register a callback to run when the "CurrentInstallationPhase" changes
    *
    * @param {function} handler - callback function
-   * @return {function} function to disable callback
+   * @return {import ("./dbus").RemoveFn} function to disable the callback
    */
   onPhaseChange(handler) {
     return this.client.onObjectChanged(MANAGER_PATH, MANAGER_IFACE, (changes) => {

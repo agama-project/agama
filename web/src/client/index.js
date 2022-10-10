@@ -19,6 +19,9 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
+import { DBusClient } from "./dbus";
 import { LanguageClient } from "./language";
 import { ManagerClient } from "./manager";
 import { Monitor } from "./monitor";
@@ -29,20 +32,18 @@ import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
 
-import cockpit from "../lib/cockpit";
-
 const SERVICE_NAME = "org.opensuse.DInstaller";
 
+/**
+ * Creates a D-Installer client
+ */
 const createClient = () => {
-  const client = cockpit.dbus(SERVICE_NAME, {
-    bus: "system",
-    superuser: "try"
-  });
+  const client = new DBusClient(SERVICE_NAME);
 
   return {
     language: new LanguageClient(client),
     manager: new ManagerClient(client),
-    monitor: new Monitor(SERVICE_NAME),
+    monitor: new Monitor(client, SERVICE_NAME),
     network: new NetworkClient(),
     software: new SoftwareClient(),
     storage: new StorageClient(),
