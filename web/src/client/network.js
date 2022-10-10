@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import { DBusClient } from "./dbus";
 
 const NM_SERVICE_NAME = "org.freedesktop.NetworkManager";
@@ -73,8 +75,7 @@ class NetworkClient {
    * @return {Promise.<String>}
    */
   async hostname() {
-    const proxy = await this.proxy(NM_IFACE + ".Settings");
-
+    const proxy = await this.client.proxy(NM_IFACE + ".Settings");
     return proxy.Hostname;
   }
 
@@ -88,8 +89,7 @@ class NetworkClient {
    * @return {Promise.<Array>}
    */
   async #connections() {
-    const proxy = await this.proxy(NM_IFACE);
-
+    const proxy = await this.client.proxy(NM_IFACE);
     return proxy.ActiveConnections;
   }
 
@@ -104,9 +104,8 @@ class NetworkClient {
    * @return {Promise.<Map>}
    */
   async #address(connection) {
-    const configPath = await this.proxy(NM_IFACE + ".Connection.Active", connection);
-    const ipConfigs = await this.proxy(NM_IFACE + ".IP4Config", configPath.Ip4Config);
-
+    const configPath = await this.client.proxy(NM_IFACE + ".Connection.Active", connection);
+    const ipConfigs = await this.client.proxy(NM_IFACE + ".IP4Config", configPath.Ip4Config);
     return ipConfigs.AddressData;
   }
 
