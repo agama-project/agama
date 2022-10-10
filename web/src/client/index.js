@@ -23,7 +23,7 @@ import { LanguageClient } from "./language";
 import { ManagerClient } from "./manager";
 import { Monitor } from "./monitor";
 import { SoftwareClient } from "./software";
-import StorageClient from "./storage";
+import { StorageClient } from "./storage";
 import { UsersClient } from "./users";
 import phase from "./phase";
 import QuestionsClient from "./questions";
