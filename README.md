@@ -50,7 +50,7 @@ D-Installer offers a web interface and its UI process uses the [Cockpit's infras
 
 ## How to run
 
-There are two ways of running the project: a) by using a D-Installer live ISO image or b) by cloning and configuring the project.
+There are two ways of running this project: a) by using a D-Installer live ISO image or b) by cloning and configuring the project.
 
 ### Live ISO Image
 
@@ -68,7 +68,7 @@ $ ./setup.h
 
 Then point your browser to http://localhost:9090/cockpit/@localhost/d-installer/index.html and that's all.
 
-Note that the [setup.sh](./setup.sh) script installs the required dependencies to build and run the project and it also configures the D-Installer services and cockpit. Alternatively, just go through the following instructions if you want to do it manually:
+Note that the [setup.sh](./setup.sh) script installs the required dependencies to build and run the project and it also configures the D-Installer services and cockpit. Alternatively, just go through the following instructions if you want to configure it manually:
 
 * Install dependencies:
 
@@ -104,8 +104,8 @@ $ sudo bundle exec bin/d-installer
 ~~~
 
 * Check that D-Installer services are working with a tool like
-[busctl](https://www.freedesktop.org/wiki/Software/dbus/) (or
-[D-Feet](https://wiki.gnome.org/Apps/DFeet)) if you prefer a graphical one:
+[busctl](https://www.freedesktop.org/wiki/Software/dbus/) or
+[D-Feet](https://wiki.gnome.org/Apps/DFeet) if you prefer a graphical one:
 
 ~~~
 $ busctl call org.opensuse.DInstaller /org/opensuse/DInstaller/Language1 \
@@ -117,7 +117,7 @@ $ busctl call org.opensuse.DInstaller /org/opensuse/DInstaller/Language1 \
 
 ## How to Contribute
 
-If you want to contribute to this project, then please open a pull request or report an issue. You can also have a look to our [road-map](https://github.com/orgs/yast/projects/1/views/1).
+If you want to contribute to D-Installer, then please open a pull request or report an issue. You can also have a look to our [road-map](https://github.com/orgs/yast/projects/1/views/1).
 
 ## Development Notes
 
