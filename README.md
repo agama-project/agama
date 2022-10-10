@@ -27,9 +27,9 @@ YaST is a mature installer and control center for SUSE and openSUSE operating sy
 * The architecture of YaST is complex and its code-base has too much technical debt.
 * Designing and building rich and modern user interfaces is a real challenge.
 * Sharing logic with other tools like Salt or Ansible is very difficult.
-* Some in-house solutions like libyui difficult external collaboration.
+* Some in-house solutions like libyui makes more difficult to contribute to the project.
 
-SUSE is strongly working on its next generation operating system called ALP (Adaptable Linux Platform). ALP is designed to be a lean core system, moving most of the software and workloads to containers and virtual machines. For some cases, for example cloud and virtual machines, ALP based systems will be deployed with auto-installable images. But still there are quite some situations in which ALP must be installed in a more traditional way. A clear example consists on installing over bare metal where some system analysis is required beforehand. D-Installer is also intended to cover such use cases for ALP, offering a minimal but powerful installer able to support a wide range of scenarios (e.g., RAID, encryption, LVM, network storage, etc).
+SUSE is working on its next generation operating system called ALP (Adaptable Linux Platform). ALP is designed to be a lean core system, moving most of the software and workloads to containers and virtual machines. For some cases, for example cloud and virtual machines, ALP based systems will be deployed with auto-installable images. But still there are quite some situations in which ALP must be installed in a more traditional way. A clear example consists on installing over bare metal where some system analysis is required beforehand. D-Installer is also intended to cover such use cases for ALP, offering a minimal but powerful installer able to support a wide range of scenarios (e.g., RAID, encryption, LVM, network storage, etc).
 
 ## Architecture
 
@@ -86,7 +86,7 @@ $ bundle install
 $ cd -
 ~~~
 
-* Set up the web UI:
+* Setup the web UI:
 
 ~~~
 $ sudo ln -s `pwd`/web/dist /usr/share/cockpit/d-installer
