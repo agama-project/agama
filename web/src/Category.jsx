@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 import {
   Split,
@@ -30,8 +32,20 @@ import {
   TextVariants
 } from "@patternfly/react-core";
 
+/**
+ * Displays an installation section
+ *
+ * @component
+ *
+ * @example
+ *   <Category key="users" title="Users" icon={UsersIcon} />
+ *
+ * @param {object} props
+ * @param {React.FunctionComponent} props.icon - Category icon
+ * @param {string} props.title - Category title
+ * @param {JSX.Element} props.children - Category content
+ */
 export default function Category({ icon, title, children }) {
-  // FIXME: improve how icons are managed
   const Icon = icon;
 
   return (
