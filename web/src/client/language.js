@@ -27,17 +27,26 @@ const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 const LANGUAGE_PATH = "/org/opensuse/DInstaller/Language1";
 
 /**
- * Language client
+ * @typedef {object} Language
+ * @property {string} Language ID (e.g., "en_US")
+ * @property {string} Language name (e.g., "English (US)")
+ */
+
+/**
+ * Allows getting the list of available languages and selecting one for installation.
  */
 class LanguageClient {
-  constructor() {
-    this.client = new DBusClient(LANGUAGE_SERVICE);
+  /**
+   * @param {DBusClient} [dbusClient] - D-Bus client
+   */
+  constructor(dbusClient) {
+    this.client = dbusClient || new DBusClient(LANGUAGE_SERVICE);
   }
 
   /**
-   * Return the list of available languages
+   * Returns the list of available languages
    *
-   * @return {Promise.<Array>}
+   * @return {Promise<Array<Language>>}
    */
   async getLanguages() {
     const proxy = await this.client.proxy(LANGUAGE_IFACE);
@@ -48,9 +57,9 @@ class LanguageClient {
   }
 
   /**
-   * Return the languages selected for installation
+   * Returns the languages selected for installation
    *
-   * @return {Promise.<String|undefined>}
+   * @return {Promise<Array<String>>} IDs of the selected languages
    */
   async getSelectedLanguages() {
     const proxy = await this.client.proxy(LANGUAGE_IFACE);
@@ -61,7 +70,7 @@ class LanguageClient {
    * Set the languages to install
    *
    * @param {string} langIDs - Identifier of languages to install
-   * @return {Promise.<String|undefined>}
+   * @return {Promise<void>}
    */
   async setLanguages(langIDs) {
     const proxy = await this.client.proxy(LANGUAGE_IFACE);
@@ -71,14 +80,15 @@ class LanguageClient {
   /**
    * Register a callback to run when properties in the Language object change
    *
-   * @param {function} handler - callback function
+   * @param {(language: string) => void} handler - function to call when the language change
+   * @return {import ("./dbus").RemoveFn} function to disable the callback
    */
   onLanguageChange(handler) {
     return this.client.onObjectChanged(LANGUAGE_PATH, LANGUAGE_IFACE, changes => {
       const selected = changes.MarkedForInstall.v[0];
-      handler({ current: selected });
+      handler(selected);
     });
   }
 }
 
-export default LanguageClient;
+export { LanguageClient };

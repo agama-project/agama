@@ -91,10 +91,10 @@ export default function LanguageSelector() {
   }, [client.language, cancellablePromise]);
 
   useEffect(() => {
-    return client.language.onLanguageChange(changes => {
+    return client.language.onLanguageChange(language => {
       dispatch({
         type: "MODIFIED",
-        payload: changes.current
+        payload: language
       });
     });
   }, [client.language]);

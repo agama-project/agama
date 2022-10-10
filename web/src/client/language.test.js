@@ -19,12 +19,14 @@
  * find current contact information at www.suse.com.
  */
 
-import LanguageClient from "./language";
-import cockpit from "../lib/cockpit";
+// @ts-check
+
+import { LanguageClient } from "./language";
+import { DBusClient } from "./dbus";
 
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 
-const dbusClient = {};
+const dbusClient = new DBusClient("");
 const langProxy = {
   wait: jest.fn(),
   AvailableLanguages: [
@@ -33,7 +35,6 @@ const langProxy = {
 };
 
 beforeEach(() => {
-  cockpit.dbus = jest.fn().mockImplementation(() => dbusClient);
   dbusClient.proxy = jest.fn().mockImplementation(iface => {
     if (iface === LANGUAGE_IFACE) return langProxy;
   });

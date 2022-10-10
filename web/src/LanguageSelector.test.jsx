@@ -124,7 +124,7 @@ describe("when the Language Selection changes", () => {
 
     const [cb] = callbacks;
     act(() => {
-      cb({ current: "de_DE" });
+      cb("de_DE");
     });
     await screen.findByRole("button", { name: "German" });
   });
