@@ -1,103 +1,124 @@
-# Service-based experimental installer
-
 [![Coverage Status](https://coveralls.io/repos/github/yast/d-installer/badge.svg?branch=master)](https://coveralls.io/github/yast/d-installer?branch=master)
 
-The idea of this repository is to build a proof-of-concept of a Linux installer that runs as a
-service. At first sight, we have identified these components:
+# D-Installer: A Service-based Linux Installer
 
-* A YaST-based library that performs the system installation. It represents the installer itself and
-  it features an API to query and set installation options (product to install, disk, etc.).
-* A [D-Bus](https://www.freedesktop.org/wiki/Software/dbus/) service that exposes the installer's
-  API.
-* A user interface. We decided to use [Cockpit's infrastructure](https://cockpit-project.org/) to
-  communicate the UI with the D-Bus service.
+D-Installer is a new Linux installer born in the core of the YaST team. It is designed to offer re-usability, integration with third party tools and the possibility of building advanced user interfaces over it.
 
-  |||||
-  |-|-|-|-|
-  |![Product selection](./screenshots/product-selection.png) |![Installation overview](./screenshots/overview.png) |![Installing](./screenshots/installing.png) |![Installation finished](./screenshots/finished.png) |
+|||||
+|-|-|-|-|
+|![Product selection](./doc/images/screenshots/product-selection.png) |![Installation overview](./doc/images/screenshots/overview.png) |![Installing](./doc/images/screenshots/installing.png) |![Installation finished](./doc/images/screenshots/finished.png) |
 
-## Quickstart
+## Table of Content
 
-:warning: **This is a proof-of-concept. Please, use a virtual machine to give it a try.** :warning:
+* [Why a New Installer](#why-a-new-installer)
+* [Architecture](#architecture)
+* [How to Run](#how-to-run)
+  * [Live ISO Image](#live-iso-image)
+  * [Manual Configuration](#manual-configuration)
+* [How to Contribute](#how-to-contribute)
+* [Development Notes](#development-notes)
 
-The easiest way to give D-Installer a try is to install the
-[rubygem-d-installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/rubygem-d-installer)
-and
-[d-installer-web](https://build.opensuse.org/package/show/YaST:Head:D-Installer/d-installer-web)
-packages in an [openSUSE Tumbleweed Live
-image](https://get.opensuse.org/tumbleweed).
+## Why a New Installer
 
-You need to perform some additional steps, like starting the Cockpit service or setting a password
-for the "linux" user. However, the repository contains [a script](./deploy.sh) that takes care of
-everything. So after booting the image, just type:
+This new project follows two main motivations: to overcome some of the limitations of YaST and to serve as installer for new projects like SUSE ALP (Adaptable Linux Platform).
 
-    wget https://raw.githubusercontent.com/yast/the-installer/master/deploy.sh
-    # inspect content to ensure that nothing malicious is done there
-    sh deploy.sh
+YaST is a mature installer and control center for SUSE and openSUSE operating systems. With more than 20 years behind it, YaST is a competent and flexible installer able to cover uncountable use cases. But time goes by, and the good old YaST is starting to show its age in some aspects:
 
-This process may take a while. Use `linux`/`linux` when the browser opens the log in form.
+* The architecture of YaST is complex and its code-base has too much technical debt.
+* Designing and building rich and modern user interfaces is a real challenge.
+* Sharing logic with other tools like Salt or Ansible is very difficult.
+* Some in-house solutions like libyui makes more difficult to contribute to the project.
 
-## Setup
+SUSE is working on its next generation operating system called ALP (Adaptable Linux Platform). ALP is designed to be a lean core system, moving most of the software and workloads to containers and virtual machines. For some cases, for example cloud and virtual machines, ALP based systems will be deployed with auto-installable images. But still there are quite some situations in which ALP must be installed in a more traditional way. A clear example consists on installing over bare metal where some system analysis is required beforehand. D-Installer is also intended to cover such use cases for ALP, offering a minimal but powerful installer able to support a wide range of scenarios (e.g., RAID, encryption, LVM, network storage, etc).
 
-If you want to contribute to the project or just have a closer look, you can run D-Installer from
-sources. The first step should be to install Git (if it is not already installed) and clone the
-repository:
+## Architecture
 
-    sudo zypper --non-interactive in git
-    git clone https://github.com/yast/d-installer
-    cd d-installer
+This project is designed as a service-client system, using D-Bus for process communication.
 
-If you want to save some time, run the [setup.sh script](./setup.sh) and follow the instructions at
-the end. Alternatively, just go through the following process if you want to do it manually.
+![Architecture](./doc/images/architecture.png)
 
-### Dependencies
+D-Installer consists on a set of D-Bus services and a web client (an experimental CLI is also available). The services use YaST-based libraries under the hood, reusing a lot logic already provided by YaST. Currently D-Installer comes with six separate services, although the list can increase in the future:
 
-To build and run this software, you need a few tools. To install them on openSUSE Tumbleweed just
-type:
+* D-Installer service: it is the main service which manages and controls the installation process.
+* Software service: configures the product and software to install.
+* Users service: manages first user creation and configuration for root.
+* Language service: allows to configure the language and keyboard settings.
+* Storage service: analyzes and prepares the storage devices in order to perform the installation.
+* Questions service: helper service used for requesting information from clients.
 
-    sudo zypper in gcc gcc-c++ make openssl-devel ruby-devel augeas-devel npm cockpit
+D-Installer offers a web interface and its UI process uses the [Cockpit's infrastructure](https://cockpit-project.org/) to communicate with the D-Bus services.
 
-The user interface uses Cockpit infrastructure to interact with the D-Bus interface, so you
-need to make sure that the `cockpit` service is running:
+## How to run
 
-    sudo systemctl start cockpit
+There are two ways of running this project: a) by using a D-Installer live ISO image or b) by cloning and configuring the project.
 
-### Running the `d-installer` service
+### Live ISO Image
 
-`d-installer` is a YaST-based service that is able to install a system. You can interact with that
-service using the D-Bus interface it provides.
+The easiest way to give D-Installer a try is to grab a [live ISO image](https://build.opensuse.org/package/binaries/YaST:Head:D-Installer/d-installer-live/images) and boot it in a virtual machine. This is also the recommended way if you only want to play and see it in action. If you want to have a closer look, then clone and configure the project as explained in the next section.
 
-Beware that `d-installer` must run as root (like YaST does) to do hardware probing, partition the
-disks, install the software and so on. So you need to tell dbus about the service by copying
-`service/share/dbus.conf` to `/usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf`.
+### Manual Configuration
 
-To run the service, type:
+You can run D-Installer from its sources by cloning and configuring the project:
 
-    cd service
-    bundle install
-    sudo bundle exec bin/d-installer
+~~~
+$ git clone https://github.com/yast/d-installer
+$ cd d-installer
+$ ./setup.h
+~~~
 
-To check that `d-installer` is working, you can use a tool like
-[busctl](https://www.freedesktop.org/wiki/Software/dbus/) (or
-[D-Feet](https://wiki.gnome.org/Apps/DFeet)) if you prefer a graphical one:
+Then point your browser to http://localhost:9090/cockpit/@localhost/d-installer/index.html and that's all.
 
-    busctl call org.opensuse.DInstaller /org/opensuse/DInstaller/Language1 \
-      org.opensuse.DInstaller.Language1 AvailableLanguages
+Note that the [setup.sh](./setup.sh) script installs the required dependencies to build and run the project and it also configures the D-Installer services and cockpit. Alternatively, just go through the following instructions if you want to configure it manually:
 
-If you want to get the properties, just type:
+* Install dependencies:
 
-    busctl call org.opensuse.DInstaller /org/opensuse/DInstaller/Language1 \
-      org.freedesktop.DBus.Properties GetAll s org.opensuse.DInstaller.Language1
+~~~
+$ sudo zypper in gcc gcc-c++ make openssl-devel ruby-devel augeas-devel npm cockpit
+~~~
 
-### Starting the web-based user interface
+* Setup the D-Installer services:
 
-The web-based UI is a Cockpit module. To build the application, just type:
+~~~
+$ sudo cp service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf
+$ cd service;
+$ bundle config set --local path 'vendor/bundle';
+$ bundle install
+$ cd -
+~~~
 
-    cd web
-    make devel-install
+* Setup the web UI:
 
-Point your browser to http://localhost:9090/cockpit/@localhost/d-installer/index.html and happy hacking!
+~~~
+$ sudo ln -s `pwd`/web/dist /usr/share/cockpit/d-installer
+$ sudo systemctl start cockpit
+$ cd web
+$ make devel-install
+$ cd -
+~~~
 
-## References
+* Start the services: beware that D-Installer must run as root (like YaST does) to do hardware probing, partition the disks, install the software and so on.
 
-* [Development Notes](./web/README.md)
+~~~
+$ cd service
+$ sudo bundle exec bin/d-installer
+~~~
+
+* Check that D-Installer services are working with a tool like
+[busctl](https://www.freedesktop.org/wiki/Software/dbus/) or
+[D-Feet](https://wiki.gnome.org/Apps/DFeet) if you prefer a graphical one:
+
+~~~
+$ busctl call org.opensuse.DInstaller /org/opensuse/DInstaller/Language1 \
+    org.opensuse.DInstaller.Language1 AvailableLanguages
+
+$ busctl call org.opensuse.DInstaller /org/opensuse/DInstaller/Language1 \
+    org.freedesktop.DBus.Properties GetAll s org.opensuse.DInstaller.Language1
+~~~
+
+## How to Contribute
+
+If you want to contribute to D-Installer, then please open a pull request or report an issue. You can also have a look to our [road-map](https://github.com/orgs/yast/projects/1/views/1).
+
+## Development Notes
+
+* [Working with the web UI](./web/README.md).
