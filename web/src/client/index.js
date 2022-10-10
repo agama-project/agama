@@ -26,7 +26,7 @@ import { SoftwareClient } from "./software";
 import { StorageClient } from "./storage";
 import { UsersClient } from "./users";
 import phase from "./phase";
-import QuestionsClient from "./questions";
+import { QuestionsClient } from "./questions";
 import NetworkClient from "./network";
 
 import cockpit from "../lib/cockpit";
@@ -52,7 +52,7 @@ const createClient = () => {
     software: new SoftwareClient(),
     storage: new StorageClient(),
     users: new UsersClient(),
-    questions: new QuestionsClient(client)
+    questions: new QuestionsClient()
   };
 };
 
