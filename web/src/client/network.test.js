@@ -21,7 +21,9 @@
 
 // @ts-check
 
-import { CONNECTION_STATE, CONNECTION_TYPES, NetworkClient, formatIp } from "./network";
+import {
+  CONNECTION_STATE, CONNECTION_TYPES, NetworkClient, formatIp, NetworkManagerAdapter
+} from "./network";
 import { DBusClient } from "./dbus";
 
 const NM_IFACE = "org.freedesktop.NetworkManager";
@@ -122,7 +124,7 @@ describe("NetworkClient", () => {
 
   describe("#config", () => {
     it("returns an object containing the hostname, known IPv4 addresses, and active connections", async () => {
-      const client = new NetworkClient(dbusClient);
+      const client = new NetworkClient(new NetworkManagerAdapter(dbusClient));
       const config = await client.config();
 
       expect(config.hostname).toEqual(networkSettingsProxy.Hostname);
@@ -136,7 +138,7 @@ describe("NetworkClient", () => {
 
   describe("#activeConnections", () => {
     it("returns thel list of active connections", async () => {
-      const client = new NetworkClient(dbusClient);
+      const client = new NetworkClient(new NetworkManagerAdapter(dbusClient));
       const availableConnections = await client.activeConnections();
 
       expect(availableConnections).toEqual(expectedActiveConnections);
