@@ -107,7 +107,7 @@ export default function IpSettingsForm({ connection, onClose }) {
       gateway
     };
 
-    // TODO: call method for updating the connection
+    client.network.updateConnection(updatedConnection);
     onClose();
   };
 

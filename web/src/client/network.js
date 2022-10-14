@@ -67,6 +67,8 @@ const CONNECTION_TYPES = {
  * @typedef {object} Connection
  * @property {string} id
  * @property {string} path
+ * @property {string} settings_path
+ * @property {string} device_path
  * @property {string} type
  * @property {number} state
  * @property {IPAddress[]} addresses
@@ -93,7 +95,7 @@ const CONNECTION_TYPES = {
 /**
  * Returns given IP address in the X.X.X.X/YY format
  *
- * @property {IPAddress} addr
+ * @param {IPAddress} addr
  * @return {string}
  */
 const formatIp = addr => `${addr.address}/${addr.prefix}`;
@@ -204,7 +206,21 @@ class NetworkManagerAdapter {
       }
     };
 
-    return settingsObject.Update(newSettings);
+    settingsObject.Update(newSettings);
+    await this.activateConnection(connection);
+  }
+
+  /**
+   * Reactivate the given connection
+   *
+   * @private
+   * @param {Connection} connection
+   * See NM API documentation for details.
+   * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
+   */
+  async activateConnection(connection) {
+    const proxy = await this.client.proxy(NM_IFACE);
+    return proxy.ActivateConnection(connection.settings_path, connection.device_path, "/");
   }
 
   /*
@@ -242,6 +258,8 @@ class NetworkManagerAdapter {
     return {
       id: proxy.Id,
       path: proxy.Connection,
+      settings_path: proxy.Connection,
+      device_path: proxy.Devices[0],
       addresses,
       type: proxy.Type,
       state: proxy.State
@@ -257,6 +275,19 @@ class NetworkManagerAdapter {
   async connectionFromPath(path) {
     const proxy = await this.client.proxy(NM_ACTIVE_CONNECTION_IFACE, path);
     return this.connectionFromProxy(proxy);
+  }
+
+  /**
+   *
+   * Returns connection settings for the given connection
+   *
+   * @param {Connection} connection
+   * @return { Promise<any> }
+   */
+  async connectionSettings(connection) {
+    const proxy = await this.client.proxy(NM_CONNECTION_IFACE, connection.settings_path);
+    const settings = await proxy.GetSettings();
+    return settings;
   }
 
   /*
