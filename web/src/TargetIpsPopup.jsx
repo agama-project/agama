@@ -42,26 +42,26 @@ export default function TargetIpsPopup() {
   }, [client.network, cancellablePromise]);
 
   useEffect(() => {
-    const onConnectionAdded = connections => {
-      setConnections(conns => [...conns, ...connections]);
+    const onConnectionAdded = addedConnection => {
+      setConnections(conns => [...conns, addedConnection]);
     };
 
     return client.network.listen("connectionAdded", onConnectionAdded);
   }, [client.network]);
 
   useEffect(() => {
-    const onConnectionRemoved = connectionPaths => {
-      setConnections(conns => conns.filter(c => !connectionPaths.includes(c.path)));
+    const onConnectionRemoved = connectionPath => {
+      setConnections(conns => conns.filter(c => c.path !== connectionPath));
     };
 
     return client.network.listen("connectionRemoved", onConnectionRemoved);
   }, [client.network]);
 
   useEffect(() => {
-    const onConnectionUpdated = connection => {
+    const onConnectionUpdated = updatedConnection => {
       setConnections(conns => {
-        const newConnections = conns.filter(c => c.path !== connection.path);
-        return [...newConnections, connection];
+        const newConnections = conns.filter(c => c.path !== updatedConnection.path);
+        return [...newConnections, updatedConnection];
       });
     };
 
