@@ -30,23 +30,23 @@ import NetworkWifiStatus from "./NetworkWifiStatus";
 export default function Network() {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const [connections, setConnections] = useState(undefined);
+  const [connections, setConnections] = useState([]);
 
   useEffect(() => {
     cancellablePromise(client.network.activeConnections()).then(setConnections);
   }, [client.network, cancellablePromise]);
 
   useEffect(() => {
-    const onConnectionAdded = connections => {
-      setConnections(conns => [...conns, ...connections]);
+    const onConnectionAdded = addedConnection => {
+      setConnections(conns => [...conns, addedConnection]);
     };
 
     return client.network.listen("connectionAdded", onConnectionAdded);
   }, [client.network]);
 
   useEffect(() => {
-    const onConnectionRemoved = connectionPaths => {
-      setConnections(conns => conns.filter(c => !connectionPaths.includes(c.path)));
+    const onConnectionRemoved = connectionPath => {
+      setConnections(conns => conns.filter(c => c.path !== connectionPath));
     };
 
     return client.network.listen("connectionRemoved", onConnectionRemoved);

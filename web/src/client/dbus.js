@@ -90,6 +90,18 @@ class DBusClient {
   }
 
   /**
+   * Returns a collection of Cockpit D-Bus proxies
+   *
+   * @param {string|undefined} iface - Interface name
+   * @param {string|undefined} path_namespace - Path namespace
+   * @param {object|undefined} options - Proxy options
+   * @return {Promise<any>} DBusProxies object
+   */
+  async proxies(iface, path_namespace, options) {
+    return this.client.proxies(iface, path_namespace, options);
+  }
+
+  /**
    * Performs a D-Bus call to a given method
    *
    * @param {string} path - D-Bus object path

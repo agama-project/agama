@@ -32,6 +32,10 @@ const NM_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Settings.Connection"
 const NM_ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Active";
 const NM_IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
 
+const CONNECTION_ADDED = "CONNECTIONS_ADDED";
+const CONNECTION_UPDATED = "CONNECTION_UPDATED";
+const CONNECTION_REMOVED = "CONNECTION_REMOVED";
+
 /**
  * Enum for the active connection state values
  *
@@ -81,6 +85,8 @@ const CONNECTION_TYPES = {
 /**
  * @typedef {object} NetworkAdapter
  * @property {function} activeConnections
+ * @property {(handler: (event: NetworkEvent) => void) => void} subscribe
+ * @property {(connection: Connection) => Promise<any>} updateConnection
  * @property {() => Promise<string>} hostname
  */
 
@@ -102,6 +108,9 @@ const formatIp = addr => `${addr.address}/${addr.prefix}`;
 
 /**
  * NetworkClient adapter for NetworkManager
+ *
+ * This class is responsible for providing an interface to interact with NetworkManager through
+ * D-Bus. Its interface is modeled to serve NetworkClient requirements.
  */
 class NetworkManagerAdapter {
   /**
@@ -109,8 +118,6 @@ class NetworkManagerAdapter {
    */
   constructor(dbusClient) {
     this.client = dbusClient || new DBusClient(NM_SERVICE_NAME);
-    /** @type {string[]}) */
-    this.connectionPaths = [];
   }
 
   /**
@@ -123,7 +130,7 @@ class NetworkManagerAdapter {
     const paths = await this.activeConnectionsPaths();
 
     for (const path of paths) {
-      connections = [...connections, await this.connection(path)];
+      connections = [...connections, await this.connectionFromPath(path)];
     }
 
     return connections;
@@ -132,49 +139,43 @@ class NetworkManagerAdapter {
   /**
    * Subscribes to network events
    *
+   * Registers a handler for changes in /org/freedesktop/NetworkManager/ActiveConnection/*.
+   * The handler recevies a NetworkEvent object.
+   *
    * @param {(event: NetworkEvent) => void} handler - Event handler function
    */
   async subscribe(handler) {
-    this.connectionsPaths = await this.activeConnectionsPaths();
-
-    this.client.onSignal(
-      { interface: "org.freedesktop.NetworkManager.Connection.Active", member: "StateChanged" },
-      path => {
-        this.connection(path).then(c => handler({ type: "CONNECTION_UPDATED", payload: c }));
-      }
+    const proxies = await this.client.proxies(
+      "org.freedesktop.NetworkManager.Connection.Active",
+      "/org/freedesktop/NetworkManager/ActiveConnection",
+      { watch: true }
     );
 
-    return this.client.onObjectChanged(
-      "/org/freedesktop/NetworkManager",
-      "org.freedesktop.NetworkManager",
-      changes => {
-        if ("ActiveConnections" in changes && Array.isArray(changes.ActiveConnections.v)) {
-          const oldActiveConnections = this.connectionsPaths;
-          this.connectionsPaths = changes.ActiveConnections.v.map(v => v.toString());
-          const addedConnections = this.connectionsPaths.filter(
-            c => !oldActiveConnections.includes(c)
-          );
-          const removedConnections = oldActiveConnections.filter(
-            c => !this.connectionsPaths.includes(c)
-          );
-          if (addedConnections.length) {
-            this.findConnections(addedConnections).then(connections =>
-              connections.forEach(c => handler({ type: "CONNECTION_ADDED", payload: c }))
-            );
-          }
+    proxies.addEventListener("added", (_event, proxy) => {
+      proxy.wait(() => {
+        this.connectionFromProxy(proxy).then(connection => {
+          handler({ type: CONNECTION_ADDED, payload: connection });
+        });
+      });
+    });
 
-          if (removedConnections.length) {
-            removedConnections.forEach(path => handler({ type: "CONNECTION_REMOVED", payload: path }));
-          }
-        }
-      }
-    );
+    proxies.addEventListener("changed", (_event, proxy) => {
+      proxy.wait(() => {
+        this.connectionFromProxy(proxy).then(connection => {
+          handler({ type: CONNECTION_UPDATED, payload: connection });
+        });
+      });
+    });
+
+    proxies.addEventListener("removed", (_event, proxy) => {
+      handler({ type: CONNECTION_REMOVED, payload: proxy.path });
+    });
   }
 
   /**
    * Updates the connection
    *
-   * It uses the 'path' to match the connection in the backend.
+   * It uses the 'connection.path' to match the connection in the backend.
    *
    * @param {Connection} connection - Connection to update
    */
@@ -183,11 +184,6 @@ class NetworkManagerAdapter {
     const settingsPath = proxy.Connection;
     const settingsObject = await this.client.proxy(NM_CONNECTION_IFACE, settingsPath);
     const settings = await settingsObject.GetSettings();
-
-    /* la parte complicada */
-
-    console.log("#updateConnection connection", connection);
-    console.log("#updateConnection settings", settings);
     delete settings.ipv4.addresses;
     const newSettings = {
       ...settings,
@@ -208,15 +204,14 @@ class NetworkManagerAdapter {
       }
     };
 
-    console.log("#updateConnection newsettings", newSettings);
-
     return settingsObject.Update(newSettings);
   }
 
   /*
    * Returns the list of active NM connections paths
    *
-   * @returns { Promise.<string[]> }
+   * @private
+   * @returns {Promise<string[]>}
    *
    * Private method.
    * See NM API documentation for details.
@@ -228,33 +223,40 @@ class NetworkManagerAdapter {
   }
 
   /**
-   * @param {string[]} paths - Device paths
-   */
-  findConnections(paths) {
-    return Promise.all(paths.map(path => this.connection(path)));
-  }
-
-  /**
+   * Builds a connection object from a Cockpit's proxy object
    *
-   * @param {string} path
-   * @returns {Promise.<Connection>}
+   * It retrieves additional information like IPv4 settings.
+   *
+   * @private
+   * @param {object} proxy - Proxy object from /org/freedesktop/NetworkManager/ActiveConnection/*
+   * @return Promise<Connection>
    */
-  async connection(path) {
-    const connection = await this.client.proxy(NM_ACTIVE_CONNECTION_IFACE, path);
+  async connectionFromProxy(proxy) {
     let addresses = [];
 
-    if (connection.State === CONNECTION_STATE.ACTIVATED) {
-      const ip4Config = await this.client.proxy(NM_IP4CONFIG_IFACE, connection.Ip4Config);
+    if (proxy.State === CONNECTION_STATE.ACTIVATED) {
+      const ip4Config = await this.client.proxy(NM_IP4CONFIG_IFACE, proxy.Ip4Config);
       addresses = ip4Config.AddressData.map(this.connectionIPAddress);
     }
 
     return {
-      id: connection.Id,
-      path,
+      id: proxy.Id,
+      path: proxy.Connection,
       addresses,
-      type: connection.Type,
-      state: connection.State
+      type: proxy.Type,
+      state: proxy.State
     };
+  }
+
+  /**
+   * Builds a connection object from a D-Bus path.
+   *
+   * @param {string} path - Connection D-Bus path
+   * @returns {Promise.<Connection>}
+   */
+  async connectionFromPath(path) {
+    const proxy = await this.client.proxy(NM_ACTIVE_CONNECTION_IFACE, path);
+    return this.connectionFromProxy(proxy);
   }
 
   /*
@@ -346,23 +348,22 @@ o  *   NetworkManagerAdapter.
    */
   async subscribe() {
     // TODO: refactor this method
-    this.susbcribed = true;
+    this.subscribed = true;
 
-    this.adapter.subscribe(event => {
-      const { type, payload } = event;
+    this.adapter.subscribe(({ type, payload }) => {
       switch (type) {
-        case "CONNECTION_ADDED": {
+        case CONNECTION_ADDED: {
           this.handlers.connectionAdded.forEach(handler => handler(payload));
           break;
         }
 
-        case "CONNECTION_UPDATED": {
+        case CONNECTION_UPDATED: {
           this.handlers.connectionUpdated.forEach(handler => handler(payload));
           break;
         }
 
-        case "CONNECTION_REMOVED": {
-          this.handlers.connectionRemoved.forEach(handler => handler(payload));
+        case CONNECTION_REMOVED: {
+          this.handlers.connectionRemoved.forEach(handler => handler(payload.path));
           break;
         }
       }
