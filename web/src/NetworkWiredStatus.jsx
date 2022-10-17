@@ -19,19 +19,24 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { Text } from "@patternfly/react-core";
+import IpSettingsForm from "./IpSettingsForm";
 import ConnectionsDataList from "./ConnectionsDataList";
 
 import { CONNECTION_STATE } from "./client/network";
 
 export default function NetworkWiredStatus({ connections }) {
+  const [connection, setConnection] = useState(null);
+
   const conns = connections.filter(c => c.state === CONNECTION_STATE.ACTIVATED);
 
   return (
     <>
       <Text>{conns.length ? "Wired connected:" : "Wired not connected"}</Text>
-      <ConnectionsDataList conns={conns} />
+
+      <ConnectionsDataList conns={conns} onSelect={setConnection} />
+      { connection && <IpSettingsForm connection={connection} onClose={() => setConnection(null)} /> }
     </>
   );
 }
