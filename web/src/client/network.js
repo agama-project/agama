@@ -71,6 +71,8 @@ const CONNECTION_TYPES = {
  * @property {string} device_path
  * @property {string} type
  * @property {number} state
+ * @property {Object} ipv4
+ * @property {Object} ipv6
  * @property {IPAddress[]} addresses
  */
 
@@ -248,18 +250,18 @@ class NetworkManagerAdapter {
    * @return Promise<Connection>
    */
   async connectionFromProxy(proxy) {
-    let addresses = [];
-
-    if (proxy.State === CONNECTION_STATE.ACTIVATED) {
-      const ip4Config = await this.client.proxy(NM_IP4CONFIG_IFACE, proxy.Ip4Config);
-      addresses = ip4Config.AddressData.map(this.connectionIPAddress);
-    }
+    const settings = await this.connectionSettings(proxy.Connection);
+    console.log("settings for", proxy.Connection, settings)
+    const { ipv4, ipv6 } = settings;
+    const addresses = [...ipv4["address-data"].v, ...ipv6["address-data"].v].map(this.connectionIPAddress);
 
     return {
       id: proxy.Id,
       path: proxy.Connection,
       settings_path: proxy.Connection,
       device_path: proxy.Devices[0],
+      ipv4,
+      ipv6,
       addresses,
       type: proxy.Type,
       state: proxy.State
@@ -281,11 +283,11 @@ class NetworkManagerAdapter {
    *
    * Returns connection settings for the given connection
    *
-   * @param {Connection} connection
+   * @param {string} connectionPath
    * @return { Promise<any> }
    */
-  async connectionSettings(connection) {
-    const proxy = await this.client.proxy(NM_CONNECTION_IFACE, connection.settings_path);
+  async connectionSettings(connectionPath) {
+    const proxy = await this.client.proxy(NM_CONNECTION_IFACE, connectionPath);
     const settings = await proxy.GetSettings();
     return settings;
   }

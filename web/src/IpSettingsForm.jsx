@@ -32,11 +32,11 @@ const METHODS = {
 
 export default function IpSettingsForm({ connection, onClose }) {
   const client = useInstallerClient();
-  const { ipv4: ipv4Settings = {} } = connection;
+  const { ipv4 = {} } = connection;
   const [name, setName] = useState(connection.id);
-  const [addresses, setAddresses] = useState(ipv4Settings.addresses || []);
-  const [method, setMethod] = useState(ipv4Settings.method || "auto");
-  const [gateway, setGateway] = useState(ipv4Settings.gateway || "");
+  const [addresses, setAddresses] = useState(connection.addresses || []);
+  const [method, setMethod] = useState(ipv4.method?.v || "auto");
+  const [gateway, setGateway] = useState(ipv4.gateway?.v || "");
   const [errors, setErrors] = useState({});
 
   const isSetAsInvalid = field => Object.keys(errors).includes(field);
