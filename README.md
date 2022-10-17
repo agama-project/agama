@@ -108,10 +108,10 @@ $ sudo bundle exec bin/d-installer
 [D-Feet](https://wiki.gnome.org/Apps/DFeet) if you prefer a graphical one:
 
 ~~~
-$ busctl call org.opensuse.DInstaller /org/opensuse/DInstaller/Language1 \
+$ busctl call org.opensuse.DInstaller.Language /org/opensuse/DInstaller/Language1 \
     org.opensuse.DInstaller.Language1 AvailableLanguages
 
-$ busctl call org.opensuse.DInstaller /org/opensuse/DInstaller/Language1 \
+$ busctl call org.opensuse.DInstaller.Language /org/opensuse/DInstaller/Language1 \
     org.freedesktop.DBus.Properties GetAll s org.opensuse.DInstaller.Language1
 ~~~
 
