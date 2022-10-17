@@ -72,7 +72,6 @@ const CONNECTION_TYPES = {
  * @property {string} type
  * @property {number} state
  * @property {Object} ipv4
- * @property {Object} ipv6
  * @property {IPAddress[]} addresses
  */
 
@@ -179,16 +178,18 @@ class NetworkManagerAdapter {
   /**
    * Updates the connection
    *
-   * It uses the 'connection.path' to match the connection in the backend.
+   * @fixme improve it.
    *
    * @param {Connection} connection - Connection to update
    */
   async updateConnection(connection) {
-    const proxy = await this.client.proxy(NM_ACTIVE_CONNECTION_IFACE, connection.path);
-    const settingsPath = proxy.Connection;
-    const settingsObject = await this.client.proxy(NM_CONNECTION_IFACE, settingsPath);
+    const settingsObject = await this.client.proxy(NM_CONNECTION_IFACE, connection.settings_path);
     const settings = await settingsObject.GetSettings();
+
     delete settings.ipv4.addresses;
+    delete settings.ipv4["address-data"];
+    delete settings.ipv4.gateway;
+
     const newSettings = {
       ...settings,
       connection: {
@@ -197,18 +198,24 @@ class NetworkManagerAdapter {
       },
       ipv4: {
         ...settings.ipv4,
-        "address-data": cockpit.variant("aa{sv}", connection.addresses.map(addr => (
+        "address-data": cockpit.variant("aa{sv}", connection.ipv4.addresses.map(addr => (
           {
             address: cockpit.variant("s", addr.address),
             prefix: cockpit.variant("u", parseInt(addr.prefix))
           }
         ))
         ),
-        method: cockpit.variant("s", "manual")
+        method: cockpit.variant("s", connection.ipv4.method)
       }
     };
 
-    settingsObject.Update(newSettings);
+    // FIXME: find a better way to add gateway only if there are addresses. If not, a DBusError will
+    // be raises "gateway cannot be set if there are no addresses configured".
+    if (newSettings.ipv4["address-data"].v.length !== 0) {
+      newSettings.ipv4.gateway = cockpit.variant("s", connection.ipv4.gateway);
+    }
+
+    await settingsObject.Update(newSettings);
     await this.activateConnection(connection);
   }
 
@@ -251,9 +258,13 @@ class NetworkManagerAdapter {
    */
   async connectionFromProxy(proxy) {
     const settings = await this.connectionSettings(proxy.Connection);
-    console.log("settings for", proxy.Connection, settings)
-    const { ipv4, ipv6 } = settings;
-    const addresses = [...ipv4["address-data"].v, ...ipv6["address-data"].v].map(this.connectionIPAddress);
+    const { ipv4 } = settings;
+    let addresses = [];
+
+    if (proxy.State === CONNECTION_STATE.ACTIVATED) {
+      const ip4Config = await this.client.proxy(NM_IP4CONFIG_IFACE, proxy.Ip4Config);
+      addresses = ip4Config.AddressData.map(this.connectionIPAddress);
+    }
 
     return {
       id: proxy.Id,
@@ -261,7 +272,6 @@ class NetworkManagerAdapter {
       settings_path: proxy.Connection,
       device_path: proxy.Devices[0],
       ipv4,
-      ipv6,
       addresses,
       type: proxy.Type,
       state: proxy.State

@@ -102,11 +102,14 @@ export default function IpSettingsForm({ connection, onClose }) {
     const updatedConnection = {
       ...connection,
       id: name,
-      addresses: sanitizedAddresses,
-      method,
-      gateway
+      ipv4: {
+        addresses: sanitizedAddresses,
+        method,
+        gateway
+      }
     };
 
+    console.log(">>> let's update conn", updatedConnection)
     client.network.updateConnection(updatedConnection);
     onClose();
   };
