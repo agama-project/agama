@@ -187,3 +187,10 @@ p {
   vertical-align: middle;
   color: branding.$eos-bc-gray-900;
 }
+
+ul.connections-datalist {
+  border: 0;
+  li {
+    border: 0;
+  }
+}
