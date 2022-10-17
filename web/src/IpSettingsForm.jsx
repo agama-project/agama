@@ -122,7 +122,7 @@ export default function IpSettingsForm({ connection, onClose }) {
   };
 
   return (
-    <Popup isOpen title={`Edit "${connection.id}" connection`}>
+    <Popup isOpen height="medium" title={`Edit "${connection.id}" connection`}>
       {/* FIXME: use a real onSubmit callback */}
       <Form id="edit-connection" onSubmit={onSubmit}>
         <FormGroup fieldId="id" label="Name">

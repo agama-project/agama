@@ -189,12 +189,22 @@ const AncillaryAction = ({ children, ...props }) => (
  * @param {boolean} [props.isOpen=false] - whether the popup is displayed or not
  * @param {boolean} [props.showClose=false] - whether the popup should include a "X" action for closing it
  * @param {string} [props.variant="small"] - the popup size, based on Pf4/Modal `variant` prop
+ * @param {string} [props.height="auto"] - the popup height, "auto", "medium", "large"
  * @param {React.ReactNode} props.children - the popup content and actions
  * @param {object} [pf4ModalProps] - PF4/Modal props, See {@link https://www.patternfly.org/v4/components/modal#props}
  *
  */
-const Popup = ({ isOpen = false, showClose = false, variant = "small", children, ...pf4ModalProps }) => {
+const Popup = ({
+  isOpen = false,
+  showClose = false,
+  variant = "small",
+  height="auto",
+  children,
+  className,
+  ...pf4ModalProps
+}) => {
   const [actions, content] = partition(React.Children.toArray(children), child => child.type === Actions);
+  const classesNames = [className, `${height}-modal-popup`].filter(c => c !== "").join(" ");
 
   return (
     <Modal
@@ -203,6 +213,7 @@ const Popup = ({ isOpen = false, showClose = false, variant = "small", children,
       showClose={showClose}
       variant={variant}
       actions={actions}
+      className={classesNames}
     >
       { content }
     </Modal>
