@@ -20,62 +20,80 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { useInstallerClient } from "./context/installer";
-import Popup from "./Popup";
 import { Button, List, ListItem, Text } from "@patternfly/react-core";
+import Popup from "./Popup";
 
-const initIpData = {
-  addresses: [],
-  hostname: ""
-};
-
-function formatIp(address, prefix) {
-  return address + "/" + prefix;
-}
+import { useInstallerClient } from "./context/installer";
+import { useCancellablePromise } from "./utils";
+import { formatIp } from "./client/network";
 
 export default function TargetIpsPopup() {
   const client = useInstallerClient();
-  const [state, setState] = useState(initIpData);
+  const { cancellablePromise } = useCancellablePromise();
+  const [connections, setConnections] = useState([]);
+  const [hostname, setHostname] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const { hostname, addresses } = state;
 
   useEffect(() => {
-    client.network.config().then((data) => {
-      setState(data);
+    cancellablePromise(client.network.config()).then(config => {
+      setConnections(config.connections);
+      setHostname(config.hostname);
     });
+  }, [client.network, cancellablePromise]);
+
+  useEffect(() => {
+    const onConnectionAdded = connections => {
+      setConnections(conns => [...conns, ...connections]);
+    };
+
+    return client.network.listen("connectionAdded", onConnectionAdded);
   }, [client.network]);
 
-  const ips = addresses.map((addr) => formatIp(addr.address, addr.prefix));
-  let label = ips[0];
-  let title = "IP addresses";
+  useEffect(() => {
+    const onConnectionRemoved = connectionPaths => {
+      setConnections(conns => conns.filter(c => !connectionPaths.includes(c.path)));
+    };
 
-  if (hostname) {
-    label += ` (${hostname})`;
-    title += ` for ${hostname}`;
-  }
+    return client.network.listen("connectionRemoved", onConnectionRemoved);
+  }, [client.network]);
+
+  useEffect(() => {
+    const onConnectionUpdated = connection => {
+      setConnections(conns => {
+        const newConnections = conns.filter(c => c.path !== connection.path);
+        return [...newConnections, connection];
+      });
+    };
+
+    return client.network.listen("connectionUpdated", onConnectionUpdated);
+  }, [client.network]);
+
+  if (connections.length === 0) return null;
+
+  const ips = connections.flatMap(conn => conn.addresses.map(formatIp));
+  const [firstIp] = ips;
+
+  if (ips.length === 0) return null;
 
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
 
-  if (addresses.length === 0) return null;
-
-  if (ips.length === 1) return <Text component="small" className="host-ip">{label}</Text>;
-
   return (
     <>
-      <Button variant="link" onClick={open}>
-        { label }
+      <Button variant="link" onClick={open} isDisabled={ips.length === 1}>
+        {firstIp} {hostname && <Text component="small">({hostname})</Text>}
       </Button>
 
-      <Popup
-        isOpen={isOpen}
-        title={title}
-      >
+      <Popup isOpen={isOpen} title="Ip Addresses">
         <List>
-          { ips.map((ip) => <ListItem key={ip}>{ip}</ListItem>) }
+          {ips.map(ip => (
+            <ListItem key={ip}>{ip}</ListItem>
+          ))}
         </List>
         <Popup.Actions>
-          <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
+          <Popup.Confirm onClick={close} autoFocus>
+            Close
+          </Popup.Confirm>
         </Popup.Actions>
       </Popup>
     </>
