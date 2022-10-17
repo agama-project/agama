@@ -64,7 +64,7 @@ export default function IpSettingsForm({ connection, onClose }) {
   const changeMethod = (value) => {
     let nextAddresses = cleanAddresses(addresses);
 
-    if (value === "manual" && nextAddresses.length === 0) {
+    if (value === METHODS.MANUAL && nextAddresses.length === 0) {
       // FIXME: Use a model instead?
       nextAddresses = [{ address: "", prefix: "" }];
     }
@@ -148,8 +148,8 @@ export default function IpSettingsForm({ connection, onClose }) {
             onChange={changeMethod}
             validated={validatedAttrValue("method")}
           >
-            <FormSelectOption key="auto" value="auto" label="Automatic (DHCP)" />
-            <FormSelectOption key="manual" value="manual" label="Manual" />
+            <FormSelectOption key="auto" value={METHODS.AUTO} label="Automatic (DHCP)" />
+            <FormSelectOption key="manual" value={METHODS.MANUAL} label="Manual" />
           </FormSelect>
           {renderError("method")}
         </FormGroup>
