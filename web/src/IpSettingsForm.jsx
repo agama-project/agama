@@ -109,7 +109,6 @@ export default function IpSettingsForm({ connection, onClose }) {
       }
     };
 
-    console.log(">>> let's update conn", updatedConnection)
     client.network.updateConnection(updatedConnection);
     onClose();
   };
