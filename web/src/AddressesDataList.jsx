@@ -43,6 +43,7 @@ import {
 
 import PlusIcon from "@patternfly/react-icons/dist/js/icons/plus-icon";
 import MinusIcon from "@patternfly/react-icons/dist/js/icons/minus-icon";
+import FormLabel from "./FormLabel";
 
 let index = 0;
 
@@ -120,7 +121,9 @@ export default function AddressesDataList({
     <Stack className="data-list-form" hasGutter>
       <StackItem>
         <Split hasGutter>
-          <SplitItem isFilled>Addresses</SplitItem>
+          <SplitItem isFilled>
+            <FormLabel isRequired={!allowEmpty}>Addresses</FormLabel>
+          </SplitItem>
           <SplitItem>
             <Button variant="primary" className="btn-sm" onClick={() => addAddress()}>
               <PlusIcon />
