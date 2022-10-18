@@ -71,7 +71,7 @@ const CONNECTION_TYPES = {
  * @property {string} device_path
  * @property {string} type
  * @property {number} state
- * @property {Object} ipv4
+ * @property {object} ipv4
  * @property {IPAddress[]} addresses
  */
 

@@ -233,11 +233,14 @@ describe("NetworkClient", () => {
       const client = new NetworkClient(new NetworkManagerAdapter(dbusClient));
 
       const updatedConnection = {
-        path: "/active/connection/wifi/1",
         id: "Updated Connection",
+        path: "/active/connection/wifi/1",
+        settings_path: "/active/connection/wifi/1",
+        device_path: "/hardware/wifi/1",
         ipv4: { addresses: [] },
-        method: "auto",
-        gateway: "10.0.0.254",
+        addresses: [],
+        type: "manual",
+        state: 2
       };
 
       await client.updateConnection(updatedConnection);
@@ -254,13 +257,14 @@ describe("NetworkClient", () => {
       const client = new NetworkClient(new NetworkManagerAdapter(dbusClient));
 
       const updatedConnection = {
+        id: "Updated Connection",
         path: "/active/connection/wifi/1",
         settings_path: "/active/connection/wifi/1",
         device_path: "/hardware/wifi/1",
-        id: "Updated Connection",
         ipv4: { addresses: [] },
-        method: "auto",
-        gateway: "10.0.0.254",
+        addresses: [],
+        type: "manual",
+        state: 2
       };
 
       await client.updateConnection(updatedConnection);
