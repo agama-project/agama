@@ -198,7 +198,7 @@ const Popup = ({
   isOpen = false,
   showClose = false,
   variant = "small",
-  height="auto",
+  height = "auto",
   children,
   className,
   ...pf4ModalProps
