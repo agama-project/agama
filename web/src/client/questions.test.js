@@ -19,8 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import QuestionsClient from "./questions";
-import cockpit from "../lib/cockpit";
+import { DBusClient } from "./dbus";
+import { QuestionsClient } from "./questions";
 
 // NOTE: should we export them?
 const QUESTION_IFACE = "org.opensuse.DInstaller.Question1";
@@ -98,13 +98,15 @@ const proxies = {
   [LUKS_ACTIVATION_IFACE]: luksActivationProxy
 };
 
-const dbusClient = {
-  call: () => getManagedObjectsMock
-};
+// const dbusClient = {
+//   call: () => getManagedObjectsMock
+// };
+
+const dbusClient = new DBusClient("");
 
 beforeEach(() => {
-  cockpit.dbus = jest.fn().mockImplementation(() => dbusClient);
   dbusClient.proxy = jest.fn().mockImplementation(iface => proxies[iface]);
+  dbusClient.call = () => getManagedObjectsMock;
 });
 
 describe("#getQuestions", () => {

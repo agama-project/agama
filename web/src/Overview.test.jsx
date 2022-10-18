@@ -25,6 +25,13 @@ import { installerRender } from "./test-utils";
 import Overview from "./Overview";
 import { createClient } from "./client";
 
+let mockProduct;
+let mockProducts = [
+  { id: "openSUSE", name: "openSUSE Tumbleweed" },
+  { id: "Leap Micro", name: "openSUSE Micro" }
+];
+const startInstallationFn = jest.fn();
+
 jest.mock("./client");
 
 jest.mock("./context/software", () => ({
@@ -46,13 +53,6 @@ jest.mock('react-router-dom', () => ({
 jest.mock("./LanguageSelector", () => () => "Language Selector");
 jest.mock("./Storage", () => () => "Storage Configuration");
 jest.mock("./Users", () => () => "Users Configuration");
-
-let mockProduct;
-let mockProducts = [
-  { id: "openSUSE", name: "openSUSE Tumbleweed" },
-  { id: "Leap Micro", name: "openSUSE Micro" }
-];
-const startInstallationFn = jest.fn();
 
 beforeEach(() => {
   mockProduct = { id: "openSUSE", name: "openSUSE Tumbleweed" };

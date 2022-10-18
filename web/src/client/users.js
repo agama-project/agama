@@ -1,5 +1,4 @@
 /*
-const USERS_IFACE = "org.opensuse.DInstaller.Users1";
  * Copyright (c) [2022] SUSE LLC
  *
  * All Rights Reserved.
@@ -20,52 +19,69 @@ const USERS_IFACE = "org.opensuse.DInstaller.Users1";
  * find current contact information at www.suse.com.
  */
 
-import { applyMixin, withDBus } from "./mixins";
-import cockpit from "../lib/cockpit";
+// @ts-check
+
+import { DBusClient } from "./dbus";
 
 const USERS_SERVICE = "org.opensuse.DInstaller.Users";
 const USERS_IFACE = "org.opensuse.DInstaller.Users1";
 const USERS_PATH = "/org/opensuse/DInstaller/Users1";
 
 /**
+ * @typedef {object} User
+ * @property {string} fullName - User full name
+ * @property {string} userName - userName
+ * @property {string} [password] - user password
+ * @property {boolean} autologin - Whether autologin is enabled
+ */
+
+/**
+* @typedef {object} UserSettings
+* @property {User} [firstUser] - first user
+* @property {boolean} [rootPasswordSet] - whether the root password is set
+* @property {string} [rootSSHKey] - root SSH public key
+*/
+
+/**
  * Users client
  */
 class UsersClient {
-  constructor() {
-    this._client = cockpit.dbus(USERS_SERVICE, {
-      bus: "system", superuser: "try"
-    });
+  /**
+   * @param {DBusClient} [dbusClient] - D-Bus client
+   */
+  constructor(dbusClient) {
+    this.client = dbusClient || new DBusClient(USERS_SERVICE);
   }
 
   /**
-   * Return the first user structure
+   * Returns the first user structure
    *
-   * @return {Promise.<Object>}
+   * @return {Promise<User>}
    */
   async getUser() {
-    const proxy = await this.proxy(USERS_IFACE);
+    const proxy = await this.client.proxy(USERS_IFACE);
     const [fullName, userName, autologin] = proxy.FirstUser;
     return { fullName, userName, autologin };
   }
 
   /**
-   * Return true if root password is set
+   * Returns true if the root password is set
    *
-   * @return {Promise.<Boolean>}
+   * @return {Promise<Boolean>}
    */
   async isRootPasswordSet() {
-    const proxy = await this.proxy(USERS_IFACE);
+    const proxy = await this.client.proxy(USERS_IFACE);
     return proxy.RootPasswordSet;
   }
 
   /**
-   * Set the languages to install
+   * Sets the languages to install
    *
-   * @param {object} user - object with full name, user name, password and boolean for autologin
-   * @return {Promise.<String|undefined>}
+   * @param {User} user - object with full name, user name, password and boolean for autologin
+   * @return {Promise<boolean>} whether the operation was successful or not
    */
   async setUser(user) {
-    const proxy = await this.proxy(USERS_IFACE);
+    const proxy = await this.client.proxy(USERS_IFACE);
     const result = await proxy.SetFirstUser(
       user.fullName,
       user.userName,
@@ -77,73 +93,76 @@ class UsersClient {
   }
 
   /**
-   * Remove the first user
+   * Removes the first user
    *
-   * @return {Promise.<boolean>}
+   * @return {Promise<boolean>} whether the operation was successful or not
    */
   async removeUser() {
-    const proxy = await this.proxy(USERS_IFACE);
+    const proxy = await this.client.proxy(USERS_IFACE);
     const result = await proxy.RemoveFirstUser();
     return result === 0;
   }
 
   /**
-   * Set the root password
+   * Sets the root password
    *
    * @param {String} password - plain text root password ( maybe allow client side encryption?)
-   * @return {Promise.<Number>}
+   * @return {Promise<boolean>} whether the operation was successful or not
    */
   async setRootPassword(password) {
-    const proxy = await this.proxy(USERS_IFACE);
+    const proxy = await this.client.proxy(USERS_IFACE);
     const result = await proxy.SetRootPassword(password, false);
     return result === 0;
   }
 
   /**
-   * Clear the root password
+   * Clears the root password
    *
-   * @return {Promise.<Number>}
+   * @return {Promise<boolean>} whether the operation was successful or not
    */
   async removeRootPassword() {
-    const proxy = await this.proxy(USERS_IFACE);
+    const proxy = await this.client.proxy(USERS_IFACE);
     const result = await proxy.RemoveRootPassword();
     return result === 0;
   }
 
   /**
-   * Return string with ssh key or empty string
+   * Returns the root's public SSH key
    *
-   * @return {Promise.<String>}
+   * @return {Promise<String>} SSH public key or an empty string if it is not set
    */
   async getRootSSHKey() {
-    const proxy = await this.proxy(USERS_IFACE);
+    const proxy = await this.client.proxy(USERS_IFACE);
     return proxy.RootSSHKey;
   }
 
   /**
-   * Set the root SSH Key
+   * Sets root's public SSH Key
    *
    * @param {String} key - plain text root ssh key. Empty string means disabled
-   * @return {Promise.<Number>}
+   * @return {Promise<boolean>} whether the operation was successful or not
    */
   async setRootSSHKey(key) {
-    const proxy = await this.proxy(USERS_IFACE);
+    const proxy = await this.client.proxy(USERS_IFACE);
     const result = await proxy.SetRootSSHKey(key);
     return result === 0;
   }
 
   /**
-   * Register a callback to run when properties in the Users object change
+   * Registers a callback to run when user properties change
    *
-   * @param {function} handler - callback function
+   * @param {(userSettings: UserSettings) => void} handler - callback function
+   * @return {import ("./dbus").RemoveFn} function to disable the callback
    */
   onUsersChange(handler) {
-    return this.onObjectChanged(USERS_PATH, USERS_IFACE, changes => {
+    return this.client.onObjectChanged(USERS_PATH, USERS_IFACE, changes => {
       if (changes.RootPasswordSet) {
+        // @ts-ignore
         return handler({ rootPasswordSet: changes.RootPasswordSet.v });
       } else if (changes.RootSSHKey) {
-        return handler({ rootSSHKey: changes.RootSSHKey.v });
+        return handler({ rootSSHKey: changes.RootSSHKey.v.toString() });
       } else if (changes.FirstUser) {
+        // @ts-ignore
         const [fullName, userName, autologin] = changes.FirstUser.v;
         return handler({ firstUser: { fullName, userName, autologin } });
       }
@@ -151,5 +170,4 @@ class UsersClient {
   }
 }
 
-applyMixin(UsersClient, withDBus);
-export default UsersClient;
+export { UsersClient };

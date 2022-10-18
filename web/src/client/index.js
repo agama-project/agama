@@ -19,40 +19,36 @@
  * find current contact information at www.suse.com.
  */
 
-import LanguageClient from "./language";
-import ManagerClient from "./manager";
-import Monitor from "./monitor";
-import SoftwareClient from "./software";
-import StorageClient from "./storage";
-import UsersClient from "./users";
-import phase from "./phase";
-import QuestionsClient from "./questions";
-import NetworkClient from "./network";
+// @ts-check
 
-import cockpit from "../lib/cockpit";
+import { DBusClient } from "./dbus";
+import { LanguageClient } from "./language";
+import { ManagerClient } from "./manager";
+import { Monitor } from "./monitor";
+import { SoftwareClient } from "./software";
+import { StorageClient } from "./storage";
+import { UsersClient } from "./users";
+import phase from "./phase";
+import { QuestionsClient } from "./questions";
+import { NetworkClient } from "./network";
 
 const SERVICE_NAME = "org.opensuse.DInstaller";
-const NM_SERVICE_NAME = "org.freedesktop.NetworkManager";
 
+/**
+ * Creates a D-Installer client
+ */
 const createClient = () => {
-  const client = cockpit.dbus(SERVICE_NAME, {
-    bus: "system",
-    superuser: "try"
-  });
-  const nmClient = cockpit.dbus(NM_SERVICE_NAME, {
-    bus: "system",
-    superuser: "try"
-  });
+  const client = new DBusClient(SERVICE_NAME);
 
   return {
-    language: new LanguageClient(client),
+    language: new LanguageClient(),
     manager: new ManagerClient(client),
-    monitor: new Monitor(SERVICE_NAME),
-    network: new NetworkClient(nmClient),
+    monitor: new Monitor(client, SERVICE_NAME),
+    network: new NetworkClient(),
     software: new SoftwareClient(),
     storage: new StorageClient(),
     users: new UsersClient(),
-    questions: new QuestionsClient(client)
+    questions: new QuestionsClient()
   };
 };
 

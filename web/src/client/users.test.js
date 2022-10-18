@@ -19,12 +19,14 @@
  * find current contact information at www.suse.com.
  */
 
-import UsersClient from "./users";
-import cockpit from "../lib/cockpit";
+// @ts-check
+
+import { DBusClient } from "./dbus";
+import { UsersClient } from "./users";
 
 const USERS_IFACE = "org.opensuse.DInstaller.Users1";
 
-const dbusClient = {};
+const dbusClient = new DBusClient("");
 
 const usersProxy = {
   wait: jest.fn(),
@@ -39,7 +41,6 @@ const usersProxy = {
 };
 
 beforeEach(() => {
-  cockpit.dbus = jest.fn().mockImplementation(() => dbusClient);
   dbusClient.proxy = jest.fn().mockImplementation(iface => {
     if (iface === USERS_IFACE) return usersProxy;
   });
@@ -157,7 +158,7 @@ describe("#setRootPassword", () => {
 describe("#removeRootPassword", () => {
   it("removes the root password", async () => {
     const client = new UsersClient(dbusClient);
-    const result = await client.removeRootPassword("12345");
+    const result = await client.removeRootPassword();
     expect(usersProxy.RemoveRootPassword).toHaveBeenCalled();
     expect(result).toEqual(true);
   });

@@ -68,7 +68,7 @@ export default function Storage() {
   const { target, targets, actions, error } = state;
 
   const onAccept = selected =>
-    client.storage.calculateStorageProposal({ candidateDevices: [selected] }).then(result => {
+    client.storage.calculateStorageProposal({ candidateDevices: [selected] }).then(() => {
       const payload = { selected };
       dispatch({ type: "CHANGE_TARGET", payload });
     });

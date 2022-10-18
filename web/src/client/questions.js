@@ -19,7 +19,9 @@
  * find current contact information at www.suse.com.
  */
 
-import cockpit from "../lib/cockpit";
+// @ts-check
+
+import { DBusClient } from "./dbus";
 
 const QUESTIONS_SERVICE = "org.opensuse.DInstaller.Questions";
 
@@ -109,10 +111,11 @@ function buildQuestion(dbusQuestion) {
  * Questions client
  */
 class QuestionsClient {
-  constructor() {
-    this._client = cockpit.dbus(QUESTIONS_SERVICE, {
-      bus: "system", superuser: "try"
-    });
+  /**
+   * @param {DBusClient} [dbusClient] - D-Bus client
+   */
+  constructor(dbusClient) {
+    this.client = dbusClient || new DBusClient(QUESTIONS_SERVICE);
   }
 
   /**
@@ -121,7 +124,7 @@ class QuestionsClient {
    * @return {Promise.<Array.<Object>>}
    */
   async getQuestions() {
-    const dbusQuestions = await this._client.call(
+    const dbusQuestions = await this.client.call(
       DBUS_CONFIG.questions.path,
       DBUS_CONFIG.questions.ifaces.objectManager,
       "GetManagedObjects",
@@ -141,13 +144,11 @@ class QuestionsClient {
     const path = DBUS_CONFIG.questions.path + "/" + question.id;
 
     if (question.type === QUESTION_TYPES.luksActivation) {
-      const proxy = this._client.proxy(DBUS_CONFIG.question.ifaces.luksActivation, path);
-      await proxy.wait();
+      const proxy = await this.client.proxy(DBUS_CONFIG.question.ifaces.luksActivation, path);
       proxy.Password = question.password;
     }
 
-    const proxy = this._client.proxy(DBUS_CONFIG.question.ifaces.question, path);
-    await proxy.wait();
+    const proxy = await this.client.proxy(DBUS_CONFIG.question.ifaces.question, path);
     proxy.Answer = question.answer;
   }
 
@@ -159,7 +160,7 @@ class QuestionsClient {
    * @return {function} function to unsubscribe
    */
   onObjectsChanged(member, handler) {
-    const { remove } = this._client.subscribe(
+    return this.client.onSignal(
       {
         path: DBUS_CONFIG.questions.path,
         interface: "org.freedesktop.DBus.ObjectManager",
@@ -170,7 +171,6 @@ class QuestionsClient {
         handler(path, changes, invalid);
       }
     );
-    return remove;
   }
 
   /**
@@ -200,4 +200,4 @@ class QuestionsClient {
   }
 }
 
-export default QuestionsClient;
+export { QuestionsClient };

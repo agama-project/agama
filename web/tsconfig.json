@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "isolatedModules": true,
+    "noEmit": true,
+    "target": "esnext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true,
+  },
+  "include": [
+    "src"
+  ],
+  "typedocOptions": {
+    "out": "jsdoc.out"
+  }
+}

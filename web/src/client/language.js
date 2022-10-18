@@ -19,30 +19,37 @@
  * find current contact information at www.suse.com.
  */
 
-import { applyMixin, withDBus } from "./mixins";
-import cockpit from "../lib/cockpit";
+// @ts-check
+import { DBusClient } from "./dbus";
 
 const LANGUAGE_SERVICE = "org.opensuse.DInstaller.Language";
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
 const LANGUAGE_PATH = "/org/opensuse/DInstaller/Language1";
 
 /**
- * Language client
+ * @typedef {object} Language
+ * @property {string} id - Language ID (e.g., "en_US")
+ * @property {string} name - Language name (e.g., "English (US)")
+ */
+
+/**
+ * Allows getting the list of available languages and selecting one for installation.
  */
 class LanguageClient {
-  constructor() {
-    this._client = cockpit.dbus(LANGUAGE_SERVICE, {
-      bus: "system", superuser: "try"
-    });
+  /**
+   * @param {DBusClient} [dbusClient] - D-Bus client
+   */
+  constructor(dbusClient) {
+    this.client = dbusClient || new DBusClient(LANGUAGE_SERVICE);
   }
 
   /**
-   * Return the list of available languages
+   * Returns the list of available languages
    *
-   * @return {Promise.<Array>}
+   * @return {Promise<Array<Language>>}
    */
   async getLanguages() {
-    const proxy = await this.proxy(LANGUAGE_IFACE);
+    const proxy = await this.client.proxy(LANGUAGE_IFACE);
     return proxy.AvailableLanguages.map(lang => {
       const [id, name] = lang;
       return { id, name };
@@ -50,12 +57,12 @@ class LanguageClient {
   }
 
   /**
-   * Return the languages selected for installation
+   * Returns the languages selected for installation
    *
-   * @return {Promise.<String|undefined>}
+   * @return {Promise<Array<String>>} IDs of the selected languages
    */
   async getSelectedLanguages() {
-    const proxy = await this.proxy(LANGUAGE_IFACE);
+    const proxy = await this.client.proxy(LANGUAGE_IFACE);
     return proxy.MarkedForInstall;
   }
 
@@ -63,25 +70,25 @@ class LanguageClient {
    * Set the languages to install
    *
    * @param {string} langIDs - Identifier of languages to install
-   * @return {Promise.<String|undefined>}
+   * @return {Promise<void>}
    */
   async setLanguages(langIDs) {
-    const proxy = await this.proxy(LANGUAGE_IFACE);
+    const proxy = await this.client.proxy(LANGUAGE_IFACE);
     return proxy.ToInstall(langIDs);
   }
 
   /**
    * Register a callback to run when properties in the Language object change
    *
-   * @param {function} handler - callback function
+   * @param {(language: string) => void} handler - function to call when the language change
+   * @return {import ("./dbus").RemoveFn} function to disable the callback
    */
   onLanguageChange(handler) {
-    return this.onObjectChanged(LANGUAGE_PATH, LANGUAGE_IFACE, changes => {
+    return this.client.onObjectChanged(LANGUAGE_PATH, LANGUAGE_IFACE, changes => {
       const selected = changes.MarkedForInstall.v[0];
-      handler({ current: selected });
+      handler(selected);
     });
   }
 }
 
-applyMixin(LanguageClient, withDBus);
-export default LanguageClient;
+export { LanguageClient };
