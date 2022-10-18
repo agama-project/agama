@@ -20,18 +20,21 @@
  */
 
 import React from "react";
-import { Text } from "@patternfly/react-core";
 import { CONNECTION_STATE } from "./client/network";
 
 import ConnectionsDataList from "./ConnectionsDataList";
 
+/**
+ * D-Installer component to show status of wireless network connections
+ *
+ * @todo evaluate if it should be "merged" into NetworkWiredStatus
+ * @todo display link for setting up a WiFi connection when possible
+ * @param {import ("client/network").Connection[]} connections
+ */
 export default function NetworkWiFiStatus({ connections }) {
   const conns = connections.filter(c => c.state === CONNECTION_STATE.ACTIVATED);
 
   return (
-    <>
-      <Text>{conns.length ? "WiFi connected:" : "WiFi not connected"}</Text>
-      <ConnectionsDataList conns={conns} />
-    </>
+    <ConnectionsDataList conns={conns} />
   );
 }

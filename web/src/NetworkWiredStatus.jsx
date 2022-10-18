@@ -20,12 +20,17 @@
  */
 
 import React, { useState } from "react";
-import { Text } from "@patternfly/react-core";
 import IpSettingsForm from "./IpSettingsForm";
 import ConnectionsDataList from "./ConnectionsDataList";
 
 import { CONNECTION_STATE } from "./client/network";
 
+/**
+ * D-Installer component to show status of wired network connections
+ *
+ * @todo evaluate if it should be "merged" into NetworkWifiStatus
+ * @param {import ("client/network").Connection[]} connections
+ */
 export default function NetworkWiredStatus({ connections }) {
   const [connection, setConnection] = useState(null);
 
@@ -33,8 +38,6 @@ export default function NetworkWiredStatus({ connections }) {
 
   return (
     <>
-      <Text>{conns.length ? "Wired connected:" : "Wired not connected"}</Text>
-
       <ConnectionsDataList conns={conns} onSelect={setConnection} />
       { connection && <IpSettingsForm connection={connection} onClose={() => setConnection(null)} /> }
     </>

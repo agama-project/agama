@@ -192,6 +192,13 @@ ul.connections-datalist {
   border: 0;
   li {
     border: 0;
+    // TODO: get rid of this nested overrides once the network overview UI is better defined
+    .pf-c-data-list__item-row {
+      padding-inline: 0;
+      .pf-c-data-list__item-content {
+        padding-block-end: 0;
+      }
+    }
   }
 }
 

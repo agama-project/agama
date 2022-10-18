@@ -34,12 +34,12 @@ import { formatIp } from "./client/network";
 export default function ConnectionsDataList({ conns, onSelect }) {
   if (conns.length === 0) return null;
 
-  const renderConnectionId = (conn, callback) => {
-    if (!callback) return conn.id;
+  const renderConnectionId = (connection, onClick) => {
+    if (typeof onClick !== "function") return connection.id;
 
     return (
-      <Button variant="link" isInline onClick={() => callback(conn)}>
-        {conn.id}
+      <Button variant="link" isInline onClick={() => onClick(connection)}>
+        {connection.id}
       </Button>
     );
   };
