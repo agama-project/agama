@@ -52,6 +52,7 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock("./LanguageSelector", () => () => "Language Selector");
 jest.mock("./Storage", () => () => "Storage Configuration");
+jest.mock("./Network", () => () => "Network Configuration");
 jest.mock("./Users", () => () => "Users Configuration");
 
 beforeEach(() => {
@@ -105,6 +106,7 @@ test("renders the Overview", async () => {
   expect(title).toBeInTheDocument();
 
   await screen.findByText("Language Selector");
+  await screen.findByText("Network Configuration");
   await screen.findByText("Storage Configuration");
   await screen.findByText("Users Configuration");
 });

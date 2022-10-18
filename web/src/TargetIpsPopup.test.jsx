@@ -36,10 +36,15 @@ describe("TargetIpsPopup", () => {
     createClient.mockImplementation(() => {
       return {
         network: {
+          listen: jest.fn(),
           config: () => Promise.resolve({
-            addresses: [
-              { address: "1.2.3.4", prefix: 24 },
-              { address: "5.6.7.8", prefix: 16 },
+            connections: [
+              {
+                addresses: [
+                  { address: "1.2.3.4", prefix: 24 },
+                  { address: "5.6.7.8", prefix: 16 },
+                ],
+              }
             ],
             hostname
           })
@@ -56,7 +61,7 @@ describe("TargetIpsPopup", () => {
 
     const dialog = await screen.findByRole("dialog");
 
-    within(dialog).getByText(/example.net/);
+    within(dialog).getByText(/Ip Addresses/);
     within(dialog).getByText("5.6.7.8/16");
 
     const closeButton = within(dialog).getByRole("button", { name: /Close/i });

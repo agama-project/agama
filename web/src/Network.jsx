@@ -63,6 +63,8 @@ export default function Network() {
     return client.network.listen("connectionUpdated", onConnectionUpdated);
   }, [client.network]);
 
+  if (!connections.length) return null;
+
   const activeWiredConnections = connections.filter(c => c.type === CONNECTION_TYPES.ETHERNET);
   const activeWifiConnections = connections.filter(c => c.type === CONNECTION_TYPES.WIFI);
 
