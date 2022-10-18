@@ -38,8 +38,8 @@ import {
   EOS_SOFTWARE as OverviewIcon,
   EOS_TRANSLATE as LanguagesSelectionIcon,
   EOS_VOLUME as HardDriveIcon,
+  EOS_SETTINGS_ETHERNET as NetworkIcon,
   EOS_MANAGE_ACCOUNTS as UsersIcon,
-  EOS_WIFI as NetworkIcon,
   EOS_MODE_EDIT as ModeEditIcon
 } from "eos-icons-react";
 

@@ -29,10 +29,33 @@ import {
   DataListItemCells
 } from "@patternfly/react-core";
 
-import { formatIp } from "./client/network";
+import {
+  // EOS_LAN icon does not work
+  EOS_ENDPOINTS_CONNECTED as EthernetIcon,
+  EOS_WIFI as WifiIcon
+} from "eos-icons-react";
+
+import { CONNECTION_TYPES, formatIp } from "./client/network";
 
 export default function ConnectionsDataList({ conns, onSelect }) {
   if (conns.length === 0) return null;
+
+  const renderConnectionIcon = (connectionType) => {
+    let Icon;
+
+    switch (connectionType) {
+      case CONNECTION_TYPES.ETHERNET:
+        Icon = EthernetIcon;
+        break;
+      case CONNECTION_TYPES.WIFI:
+        Icon = WifiIcon;
+        break;
+      default:
+        Icon = () => null;
+    }
+
+    return <Icon size="16" />;
+  };
 
   const renderConnectionId = (connection, onClick) => {
     if (typeof onClick !== "function") return connection.id;
@@ -46,22 +69,27 @@ export default function ConnectionsDataList({ conns, onSelect }) {
 
   return (
     <DataList isCompact gridBreakpoint="none" className="connections-datalist">
-      {conns.map(conn => (
-        <DataListItem key={conn.path}>
-          <DataListItemRow>
-            <DataListItemCells
-              dataListCells={[
-                <DataListCell key="connection-id" isFilled={false}>
-                  {renderConnectionId(conn, onSelect)}
-                </DataListCell>,
-                <DataListCell key="connection-ips" isFilled={false} wrapModifier="truncate">
-                  {conn.addresses.map(formatIp).join(", ")}
-                </DataListCell>
-              ]}
-            />
-          </DataListItemRow>
-        </DataListItem>
-      ))}
+      {conns.map(conn => {
+        return (
+          <DataListItem key={conn.path}>
+            <DataListItemRow>
+              <DataListItemCells
+                dataListCells={[
+                  <DataListCell key="connection-icon" isFilled={false}>
+                    {renderConnectionIcon(conn.type)}
+                  </DataListCell>,
+                  <DataListCell key="connection-id" isFilled={false}>
+                    {renderConnectionId(conn, onSelect)}
+                  </DataListCell>,
+                  <DataListCell key="connection-ips" isFilled={false} wrapModifier="truncate">
+                    {conn.addresses.map(formatIp).join(", ")}
+                  </DataListCell>
+                ]}
+              />
+            </DataListItemRow>
+          </DataListItem>
+        );
+      })}
     </DataList>
   );
 }
