@@ -46,7 +46,7 @@ const STATUS_IFACE = "org.opensuse.DInstaller.ServiceStatus1";
  */
 
 /**
- * Extends the given class with methods to get andd track the progress over D-Bus
+ * Extends the given class with methods to get and track the progress over D-Bus
  *
  * @template {!WithDBusClient} T
  * @param {string} object_path - object path
