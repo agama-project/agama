@@ -80,7 +80,7 @@ export default function AddressesDataList({
 
       return (
         <DataListAction>
-          <Button variant="secondary" className="btn-sm" onClick={() => deleteAddress(id)}>
+          <Button isSmall variant="secondary" className="btn-sm" onClick={() => deleteAddress(id)}>
             Remove
           </Button>
         </DataListAction>
@@ -126,7 +126,7 @@ export default function AddressesDataList({
             <FormLabel isRequired={!allowEmpty}>Addresses</FormLabel>
           </SplitItem>
           <SplitItem>
-            <Button variant="primary" className="btn-sm" onClick={() => addAddress()}>
+            <Button isSmall variant="primary" className="btn-sm" onClick={() => addAddress()}>
               {newAddressButtonText}
             </Button>
           </SplitItem>
