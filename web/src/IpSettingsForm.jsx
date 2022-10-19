@@ -33,7 +33,6 @@ const METHODS = {
 export default function IpSettingsForm({ connection, onClose }) {
   const client = useInstallerClient();
   const { ipv4 = {} } = connection;
-  const [name, setName] = useState(connection.id);
   const [addresses, setAddresses] = useState(connection.addresses || []);
   const [method, setMethod] = useState(ipv4.method?.v || "auto");
   const [gateway, setGateway] = useState(ipv4.gateway?.v || "");
@@ -56,11 +55,6 @@ export default function IpSettingsForm({ connection, onClose }) {
     }
   };
 
-  const changeName = (value) => {
-    cleanError("name");
-    setName(value);
-  };
-
   const changeMethod = (value) => {
     let nextAddresses = cleanAddresses(addresses);
 
@@ -78,10 +72,6 @@ export default function IpSettingsForm({ connection, onClose }) {
     setErrors({});
 
     const nextErrors = {};
-
-    if (name === "") {
-      nextErrors.name = "The connection must have a name";
-    }
 
     if (method === METHODS.MANUAL && sanitizedAddresses.length === 0) {
       nextErrors.method = "At least one address must be provided for selected mode";
@@ -101,7 +91,6 @@ export default function IpSettingsForm({ connection, onClose }) {
 
     const updatedConnection = {
       ...connection,
-      id: name,
       ipv4: {
         addresses: sanitizedAddresses,
         method,
@@ -127,19 +116,6 @@ export default function IpSettingsForm({ connection, onClose }) {
     <Popup isOpen height="medium" title={`Edit "${connection.id}" connection`}>
       {/* FIXME: use a real onSubmit callback */}
       <Form id="edit-connection" onSubmit={onSubmit}>
-        <FormGroup fieldId="name" label="Name" isRequired>
-          <TextInput
-            id="name"
-            name="name"
-            aria-label="Name"
-            value={name}
-            label="Name"
-            onChange={changeName}
-            validated={validatedAttrValue("name")}
-          />
-          {renderError("name")}
-        </FormGroup>
-
         <FormGroup fieldId="method" label="Mode" isRequired>
           <FormSelect
             id="method"

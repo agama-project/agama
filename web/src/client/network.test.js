@@ -237,7 +237,7 @@ describe("NetworkClient", () => {
         path: "/active/connection/wifi/1",
         settings_path: "/active/connection/wifi/1",
         device_path: "/hardware/wifi/1",
-        ipv4: { addresses: [] },
+        ipv4: { method: "manual", addresses: [{ address: "192.168.1.100", prefix: 24 }] },
         addresses: [],
         type: "manual",
         state: 2
@@ -246,8 +246,8 @@ describe("NetworkClient", () => {
       await client.updateConnection(updatedConnection);
       expect(connectionSettingsMock.Update).toHaveBeenCalledWith(
         expect.objectContaining({
-          connection: expect.objectContaining({
-            id: expect.objectContaining({ v: "Updated Connection" })
+          ipv4: expect.objectContaining({
+            method: expect.objectContaining({ v: "manual" })
           })
         })
       );
