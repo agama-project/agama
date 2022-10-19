@@ -88,7 +88,7 @@ export default function AddressesDataList({
     };
 
     const cells = [
-      <DataListCell key={`address-${id}-local`}>
+      <DataListCell key={`address-${id}-address`}>
         <IpAddressInput
           defaultValue={address}
           onChange={value => updateAddress(id, "address", value)}
@@ -96,7 +96,7 @@ export default function AddressesDataList({
           aria-label="IP Address"
         />
       </DataListCell>,
-      <DataListCell key={`address-${id}-label`}>
+      <DataListCell key={`address-${id}-prefix`}>
         <IpPrefixInput
           defaultValue={prefix}
           onChange={value => updateAddress(id, "prefix", value)}
