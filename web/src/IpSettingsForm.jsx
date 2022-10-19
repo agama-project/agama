@@ -30,6 +30,8 @@ const METHODS = {
   AUTO: "auto"
 };
 
+const usingDHCP = (method) => method === METHODS.AUTO;
+
 export default function IpSettingsForm({ connection, onClose }) {
   const client = useInstallerClient();
   const { ipv4 = {} } = connection;
@@ -50,7 +52,8 @@ export default function IpSettingsForm({ connection, onClose }) {
 
   const cleanError = (field) => {
     if (isSetAsInvalid(field)) {
-      const { [field]: _, ...nextErrors } = errors;
+      const nextErrors = { ...errors };
+      delete nextErrors[field];
       setErrors(nextErrors);
     }
   };
@@ -58,7 +61,7 @@ export default function IpSettingsForm({ connection, onClose }) {
   const changeMethod = (value) => {
     let nextAddresses = cleanAddresses(addresses);
 
-    if (value === METHODS.MANUAL && nextAddresses.length === 0) {
+    if (!usingDHCP(value) && nextAddresses.length === 0) {
       // FIXME: Use a model instead?
       nextAddresses = [{ address: "", prefix: "" }];
     }
@@ -73,7 +76,7 @@ export default function IpSettingsForm({ connection, onClose }) {
 
     const nextErrors = {};
 
-    if (method === METHODS.MANUAL && sanitizedAddresses.length === 0) {
+    if (!usingDHCP(method) && sanitizedAddresses.length === 0) {
       nextErrors.method = "At least one address must be provided for selected mode";
     }
 
@@ -135,7 +138,7 @@ export default function IpSettingsForm({ connection, onClose }) {
         <AddressesDataList
           addresses={addresses}
           updateAddresses={setAddresses}
-          allowEmpty={method === METHODS.AUTO}
+          allowEmpty={usingDHCP(method)}
         />
 
         <FormGroup fieldId="gateway" label="Gateway">
@@ -145,7 +148,7 @@ export default function IpSettingsForm({ connection, onClose }) {
             aria-label="Gateway"
             value={gateway}
             label="Gateway"
-            isDisabled={method === METHODS.AUTO}
+            isDisabled={usingDHCP(method)}
             onChange={setGateway}
           />
         </FormGroup>
