@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, TextInput } from "@patternfly/react-core";
+import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, Text, TextInput } from "@patternfly/react-core";
 import { useInstallerClient } from "./context/installer";
 import AddressesDataList from "./AddressesDataList";
 import DnsDataList from "./DnsDataList";
@@ -119,6 +119,10 @@ export default function IpSettingsForm({ connection, onClose }) {
     );
   };
 
+  const gatewayLabel = usingDHCP(method)
+    ? <>Gateway <Text component="small">(only for manual mode)</Text></>
+    : <>Gateway</>;
+
   return (
     <Popup isOpen height="medium" title={`Edit "${connection.id}" connection`}>
       {/* FIXME: use a real onSubmit callback */}
@@ -145,7 +149,7 @@ export default function IpSettingsForm({ connection, onClose }) {
           allowEmpty={usingDHCP(method)}
         />
 
-        <FormGroup fieldId="gateway" label="Gateway">
+        <FormGroup fieldId="gateway" label={gatewayLabel}>
           <TextInput
             id="gateway"
             name="gateway"
