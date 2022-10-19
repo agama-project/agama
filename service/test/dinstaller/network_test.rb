@@ -28,7 +28,8 @@ describe DInstaller::Network do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:proposal) do
-    instance_double(Y2Network::ProposalSettings, apply_defaults: nil, refresh_packages: nil)
+    instance_double(Y2Network::ProposalSettings,
+      apply_defaults: nil, refresh_packages: nil, enable_network_manager!: true)
   end
 
   describe "#probe" do
@@ -42,9 +43,13 @@ describe DInstaller::Network do
       network.probe
     end
 
-    it "refresh packages and apply defaults" do
-      expect(proposal).to receive(:refresh_packages)
+    it "apply the defaults" do
       expect(proposal).to receive(:apply_defaults)
+      network.probe
+    end
+
+    it "forces a selection of NetworkManager as the backend to be used" do
+      expect(proposal).to receive(:enable_network_manager!)
       network.probe
     end
   end
