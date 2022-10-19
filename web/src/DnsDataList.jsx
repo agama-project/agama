@@ -34,7 +34,6 @@ import {
   DataListItemCells,
   DataListCell,
   DataListAction,
-  TextInput,
   Stack,
   StackItem,
   Split,
@@ -42,6 +41,7 @@ import {
 } from "@patternfly/react-core";
 
 import FormLabel from "./FormLabel";
+import IpAddressInput from "./IpAddressInput";
 
 let index = 0;
 
@@ -74,7 +74,7 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
         <DataListItemRow>
           <DataListItemCells dataListCells={[
             <DataListCell key={`dns-${id}-address`}>
-              <TextInput
+              <IpAddressInput
                 defaultValue={address}
                 onChange={value => updateServer(id, "address", value)}
                 placeholder="Server IP"
