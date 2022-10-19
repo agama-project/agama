@@ -274,5 +274,64 @@ describe("NetworkClient", () => {
         "/"
       );
     });
+
+    describe("when using DHCP", () => {
+      let client;
+      let updatedConnection;
+
+      describe("without manual addresses", () => {
+        beforeEach(() => {
+          client = new NetworkClient(new NetworkManagerAdapter(dbusClient));
+          updatedConnection = {
+            id: "Updated Connection",
+            path: "/active/connection/wifi/1",
+            settings_path: "/active/connection/wifi/1",
+            device_path: "/hardware/wifi/1",
+            ipv4: { method: "auto", addresses: [], gateway: "192.168.1.1" },
+            addresses: [],
+            type: "manual",
+            state: 2
+          };
+        });
+
+        it("does not sent a gateway", async () => {
+          await client.updateConnection(updatedConnection);
+          expect(connectionSettingsMock.Update).toHaveBeenCalledWith(
+            expect.objectContaining({
+              ipv4: expect.not.objectContaining({
+                gateway: expect.objectContaining({ v: "192.168.1.1" })
+              })
+            })
+          );
+        });
+      });
+
+      describe("with manual addresses", () => {
+        beforeEach(() => {
+          client = new NetworkClient(new NetworkManagerAdapter(dbusClient));
+          updatedConnection = {
+            id: "Updated Connection",
+            path: "/active/connection/wifi/1",
+            settings_path: "/active/connection/wifi/1",
+            device_path: "/hardware/wifi/1",
+            ipv4: { method: "auto", addresses: [{ address: "192.168.1.2", prefix: 24 }], gateway: "192.168.1.1" },
+            addresses: [],
+            type: "manual",
+            state: 2
+          };
+        });
+
+        it("sends an empty gateway", async () => {
+          await client.updateConnection(updatedConnection);
+          expect(connectionSettingsMock.Update).toHaveBeenCalledWith(
+            expect.objectContaining({
+              ipv4: expect.objectContaining({
+                gateway: expect.objectContaining({ v: "" })
+              })
+            })
+          );
+        });
+      });
+    });
   });
 });

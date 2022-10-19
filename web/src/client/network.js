@@ -212,7 +212,8 @@ class NetworkManagerAdapter {
     // FIXME: find a better way to add gateway only if there are addresses. If not, a DBusError will
     // be raises "gateway cannot be set if there are no addresses configured".
     if (newSettings.ipv4["address-data"].v.length !== 0) {
-      newSettings.ipv4.gateway = cockpit.variant("s", connection.ipv4.gateway);
+      const gateway = newSettings.ipv4.method === "manual" ? newSettings.ipv4.gateway : "";
+      newSettings.ipv4.gateway = cockpit.variant("s", gateway);
     }
 
     await settingsObject.Update(newSettings);

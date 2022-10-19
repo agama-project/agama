@@ -156,6 +156,12 @@ export default function IpSettingsForm({ connection, onClose }) {
           {renderError("method")}
         </FormGroup>
 
+        <AddressesDataList
+          addresses={addresses}
+          updateAddresses={setAddresses}
+          allowEmpty={method === METHODS.AUTO}
+        />
+
         <FormGroup fieldId="gateway" label="Gateway">
           <TextInput
             id="gateway"
@@ -163,15 +169,10 @@ export default function IpSettingsForm({ connection, onClose }) {
             aria-label="Gateway"
             value={gateway}
             label="Gateway"
+            isDisabled={method === METHODS.AUTO}
             onChange={setGateway}
           />
         </FormGroup>
-
-        <AddressesDataList
-          addresses={addresses}
-          updateAddresses={setAddresses}
-          allowEmpty={method === "auto"}
-        />
       </Form>
 
       <Popup.Actions>
