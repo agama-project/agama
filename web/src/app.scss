@@ -208,3 +208,16 @@ ul.connections-datalist {
   min-block-size: 85vh;
   max-block-size: 85vh;
 }
+
+// *DataLists custom styles
+li.pf-c-data-list__item {
+  border-block-end-width: thin;
+}
+
+div.pf-c-data-list__item-row:has(button.remove-link:hover) {
+  background-color: #FAFAFA;
+}
+
+button.remove-link:hover {
+  color: var(--pf-c-button--m-danger--BackgroundColor);
+}

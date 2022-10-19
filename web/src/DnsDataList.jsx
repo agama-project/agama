@@ -84,7 +84,7 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
           ]}
           />
           <DataListAction>
-            <Button isSmall variant="secondary" className="btn-sm" onClick={() => deleteServer(id)}>
+            <Button isSmall variant="link" className="remove-link" onClick={() => deleteServer(id)}>
               Remove
             </Button>
           </DataListAction>

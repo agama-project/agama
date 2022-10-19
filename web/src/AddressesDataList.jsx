@@ -80,7 +80,7 @@ export default function AddressesDataList({
 
       return (
         <DataListAction>
-          <Button isSmall variant="secondary" className="btn-sm" onClick={() => deleteAddress(id)}>
+          <Button isSmall variant="link" className="remove-link" onClick={() => deleteAddress(id)}>
             Remove
           </Button>
         </DataListAction>
