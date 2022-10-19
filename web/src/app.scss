@@ -36,13 +36,6 @@
   box-shadow: 0 0 0 1px branding.$eos-bc-cerulean-500;
 }
 
-// Adds a tiny "padding" when focusing a primary or secondary action to avoid
-// https://github.com/yast/d-installer/issues/115#issuecomment-1087375598
-.pf-c-button.pf-m-primary:focus-visible,
-.pf-c-button.pf-m-secondary:focus-visible {
-  box-shadow: 0 0 0 1px white, 0 0 0 2px branding.$eos-bc-cerulean-500;
-}
-
 // NOTE: commented it out because looks like those
 // sizes makes the headings too big
 // // See "eos-ds/dist/scss/eos-base/variables/titles.scss";

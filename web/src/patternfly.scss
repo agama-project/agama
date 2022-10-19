@@ -56,6 +56,20 @@
   --pf-global--link--Color: var(--pf-global--primary-color--100);
   --pf-global--link--Color--hover: var(--pf-global--primary-color--200);
   --pf-global--BackgroundColor--dark-100: #{branding.$eos-bc-pine-500};
+
+}
+
+.pf-c-button.pf-m-link {
+  // Colors for buttons mofidiers
+  --pf-c-button--m-link--Color: #{branding.$eos-bc-green-500};
+  --pf-c-button--m-link--Color--hover: #{branding.$eos-bc-green-900};
+}
+
+// Adds a tiny "padding" when focusing a primary or secondary action to avoid
+// https://github.com/yast/d-installer/issues/115#issuecomment-1087375598
+.pf-c-button.pf-m-primary:focus-visible,
+.pf-c-button.pf-m-secondary:focus-visible {
+  box-shadow: 0 0 0 1px white, 0 0 0 2px branding.$eos-bc-cerulean-500;
 }
 
 // PatternFly overrides for using CSS Logical Properties
