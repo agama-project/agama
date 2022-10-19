@@ -23,6 +23,7 @@ import React, { useState } from "react";
 import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, TextInput } from "@patternfly/react-core";
 import { useInstallerClient } from "./context/installer";
 import AddressesDataList from "./AddressesDataList";
+import DnsDataList from "./DnsDataList";
 import Popup from "./Popup";
 
 const METHODS = {
@@ -36,6 +37,8 @@ export default function IpSettingsForm({ connection, onClose }) {
   const client = useInstallerClient();
   const { ipv4 = {} } = connection;
   const [addresses, setAddresses] = useState(connection.addresses || []);
+  // TODO: fill initial DNS Servers value from connection object
+  const [dnsServers, setDnsServers] = useState([]);
   const [method, setMethod] = useState(ipv4.method?.v || "auto");
   const [gateway, setGateway] = useState(ipv4.gateway?.v || "");
   const [errors, setErrors] = useState({});
@@ -92,6 +95,7 @@ export default function IpSettingsForm({ connection, onClose }) {
 
     if (!validate(sanitizedAddresses)) return;
 
+    // TODO: deal with DNS servers
     const updatedConnection = {
       ...connection,
       ipv4: {
@@ -152,6 +156,8 @@ export default function IpSettingsForm({ connection, onClose }) {
             onChange={setGateway}
           />
         </FormGroup>
+
+        <DnsDataList servers={dnsServers} updateDnsServers={setDnsServers} />
       </Form>
 
       <Popup.Actions>
