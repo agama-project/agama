@@ -40,8 +40,6 @@ import {
   SplitItem
 } from "@patternfly/react-core";
 
-import PlusIcon from "@patternfly/react-icons/dist/js/icons/plus-icon";
-import MinusIcon from "@patternfly/react-icons/dist/js/icons/minus-icon";
 import FormLabel from "./FormLabel";
 import IpAddressInput from "./IpAddressInput";
 import IpPrefixInput from "./IpPrefixInput";
@@ -83,7 +81,7 @@ export default function AddressesDataList({
       return (
         <DataListAction>
           <Button variant="secondary" className="btn-sm" onClick={() => deleteAddress(id)}>
-            <MinusIcon />
+            Remove
           </Button>
         </DataListAction>
       );
@@ -118,6 +116,8 @@ export default function AddressesDataList({
     );
   };
 
+  const newAddressButtonText = addresses.length ? "Add another address" : "Add an address";
+
   return (
     <Stack className="data-list-form" hasGutter>
       <StackItem>
@@ -127,7 +127,7 @@ export default function AddressesDataList({
           </SplitItem>
           <SplitItem>
             <Button variant="primary" className="btn-sm" onClick={() => addAddress()}>
-              <PlusIcon />
+              {newAddressButtonText}
             </Button>
           </SplitItem>
         </Split>
