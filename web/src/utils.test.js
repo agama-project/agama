@@ -19,14 +19,33 @@
  * find current contact information at www.suse.com.
  */
 
-import { partition } from "./utils";
+import { partition, isValidIp, isValidIpPrefix } from "./utils";
 
 describe("partition", () => {
-  it("returns two groups of elements that do and do not satisfy provided filter", async () => {
+  it("returns two groups of elements that do and do not satisfy provided filter", () => {
     const numbers = [1, 2, 3, 4, 5, 6];
     const [odd, even] = partition(numbers, number => number % 2);
 
     expect(odd).toEqual([1, 3, 5]);
     expect(even).toEqual([2, 4, 6]);
+  });
+});
+
+describe("isValidIp", () => {
+  it("returns true when it is a valid IPv4 address", () => {
+    expect(isValidIp("192.168.122.1")).toEqual(true);
+    expect(isValidIp("192.168.122")).toEqual(false);
+    expect(isValidIp("my-ip")).toEqual(false);
+  });
+});
+
+describe("isValidIpPrefix", () => {
+  it("returns true when it is a valid prefix", () => {
+    expect(isValidIpPrefix("24")).toEqual(true);
+    expect(isValidIpPrefix("64.168.122")).toEqual(false);
+  });
+
+  it("returns true when it is a valid netmask", () => {
+    expect(isValidIpPrefix("255.255.255.0")).toEqual(true);
   });
 });

@@ -34,7 +34,6 @@ import {
   DataListItemCells,
   DataListCell,
   DataListAction,
-  TextInput,
   Stack,
   StackItem,
   Split,
@@ -44,6 +43,8 @@ import {
 import PlusIcon from "@patternfly/react-icons/dist/js/icons/plus-icon";
 import MinusIcon from "@patternfly/react-icons/dist/js/icons/minus-icon";
 import FormLabel from "./FormLabel";
+import IpAddressInput from "./IpAddressInput";
+import IpPrefixInput from "./IpPrefixInput";
 
 let index = 0;
 
@@ -90,15 +91,15 @@ export default function AddressesDataList({
 
     const cells = [
       <DataListCell key={`address-${id}-local`}>
-        <TextInput
+        <IpAddressInput
           defaultValue={address}
           onChange={value => updateAddress(id, "address", value)}
-          placeholder="Ip Address"
-          aria-label="Ip Address"
+          placeholder="IP Address"
+          aria-label="IP Address"
         />
       </DataListCell>,
       <DataListCell key={`address-${id}-label`}>
-        <TextInput
+        <IpPrefixInput
           defaultValue={prefix}
           onChange={value => updateAddress(id, "prefix", value)}
           placeholder="Prefix length or netmask"

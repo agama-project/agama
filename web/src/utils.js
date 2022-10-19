@@ -20,6 +20,7 @@
  */
 
 import { useEffect, useRef, useCallback } from "react";
+import ipaddr from "ipaddr.js";
 
 /**
  * Returns a new array with a given collection split into two groups, the first holding elements
@@ -120,7 +121,35 @@ function useCancellablePromise() {
   return { cancellablePromise };
 }
 
+/**
+ * Check if an IP is valid
+ *
+ * By now, only IPv4 is supported.
+ *
+ * @param {string} value - An IP Address
+ * @return {boolean} true if given IP is valid; false otherwise.
+ */
+const isValidIp = (value) => ipaddr.IPv4.isValidFourPartDecimal(value);
+
+/**
+ * Check if a value is a valid netmask or network prefix
+ *
+ * By now, only IPv4 is supported.
+ *
+ * @param {string} value - An IP Address
+ * @return {boolean} true if given IP is valid; false otherwise.
+ */
+const isValidIpPrefix = (value) => {
+  if (value.match(/^\d+$/)) {
+    return parseInt(value) <= 32;
+  } else {
+    return ipaddr.IPv4.isValidFourPartDecimal(value);
+  }
+};
+
 export {
   partition,
-  useCancellablePromise
+  useCancellablePromise,
+  isValidIp,
+  isValidIpPrefix
 };
