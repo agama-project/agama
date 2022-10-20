@@ -32,6 +32,8 @@ const NM_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Settings.Connection"
 const NM_ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Active";
 const NM_IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
 
+const NETWORK_IFACE = "org.opensuse.DInstaller.Network1";
+
 const CONNECTION_ADDED = "CONNECTIONS_ADDED";
 const CONNECTION_UPDATED = "CONNECTION_UPDATED";
 const CONNECTION_REMOVED = "CONNECTION_REMOVED";
@@ -121,22 +123,6 @@ class NetworkManagerAdapter {
    */
   constructor(dbusClient) {
     this.client = dbusClient || new DBusClient(NM_SERVICE_NAME);
-  }
-
-  /**
-   * Returns the active connections
-   *
-   * @returns { Promise.<Connection[]> }
-   */
-  async activeConnections() {
-    let connections = [];
-    const paths = await this.activeConnectionsPaths();
-
-    for (const path of paths) {
-      connections = [...connections, await this.connectionFromPath(path)];
-    }
-
-    return connections;
   }
 
   /**
@@ -236,21 +222,6 @@ class NetworkManagerAdapter {
     return proxy.ActivateConnection(connection.settings_path, connection.device_path, "/");
   }
 
-  /*
-   * Returns the list of active NM connections paths
-   *
-   * @private
-   * @returns {Promise<string[]>}
-   *
-   * Private method.
-   * See NM API documentation for details.
-   * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
-   */
-  async activeConnectionsPaths() {
-    const proxy = await this.client.proxy(NM_IFACE);
-    return proxy.ActiveConnections;
-  }
-
   /**
    * Builds a connection object from a Cockpit's proxy object
    *
@@ -280,17 +251,6 @@ class NetworkManagerAdapter {
       type: proxy.Type,
       state: proxy.State
     };
-  }
-
-  /**
-   * Builds a connection object from a D-Bus path.
-   *
-   * @param {string} path - Connection D-Bus path
-   * @returns {Promise.<Connection>}
-   */
-  async connectionFromPath(path) {
-    const proxy = await this.client.proxy(NM_ACTIVE_CONNECTION_IFACE, path);
-    return this.connectionFromProxy(proxy);
   }
 
   /**
@@ -342,9 +302,9 @@ class NetworkClient {
   /**
    * @param {NetworkAdapter} [adapter] - Network adapter. By default, it is set to
 o  *   NetworkManagerAdapter.
+   * @param {DBusClient} [dbusClient] - D-Bus client
    */
-  constructor(adapter) {
-    this.adapter = adapter || new NetworkManagerAdapter();
+  constructor(adapter, dbusClient) {
     /** @type {!boolean} */
     this.subscribed = false;
     /** @type {Handlers} */
@@ -353,6 +313,8 @@ o  *   NetworkManagerAdapter.
       connectionRemoved: [],
       connectionUpdated: []
     };
+    this.client = dbusClient || new DBusClient("org.opensuse.DInstaller");
+    this.adapter = adapter || new NetworkManagerAdapter(this.client);
   }
 
   /**
@@ -361,7 +323,7 @@ o  *   NetworkManagerAdapter.
    */
   async config() {
     return {
-      connections: await this.adapter.activeConnections(),
+      connections: await this.activeConnections(),
       addresses: await this.addresses(),
       hostname: await this.adapter.hostname()
     };
@@ -420,10 +382,25 @@ o  *   NetworkManagerAdapter.
   /**
    * Returns the active connections
    *
-   * @returns { Promise.<Connection[]> }
+   * @returns { Promise<Connection[]> }
    */
   async activeConnections() {
-    return this.adapter.activeConnections();
+    const proxy = await this.client.proxy(NETWORK_IFACE);
+    return proxy.ActiveConnections.map(conn => {
+      const { id, path, ipv4, state, type } = conn;
+      const { method, gateway } = ipv4.v;
+      const addresses = ipv4.v.addresses.v.map(({ v: { address, prefix } }) => {
+        return { address: address.v, prefix: prefix.v };
+      });
+      return {
+        id: id.v,
+        path: path.v,
+        state: state.v,
+        type: type.v,
+        ipv4: { method: method.v, gateway: gateway.v },
+        addresses
+      };
+    });
   }
 
   /**
@@ -445,7 +422,7 @@ o  *   NetworkManagerAdapter.
    * @return {Promise.<IPAddress[]>}
    */
   async addresses() {
-    const conns = await this.adapter.activeConnections();
+    const conns = await this.activeConnections();
     return conns.flatMap(c => c.addresses);
   }
 }
