@@ -1,4 +1,9 @@
 products:
+  ALP:
+    name: Adaptable Linux Platform
+    description: 'The Adaptable Linux Platform (ALP), the next generation of Linux,
+      allow users to focus on their workloads while abstracting from the hardware
+      and the application layer.'
   Tumbleweed:
     name: openSUSE Tumbleweed
     description: 'The Tumbleweed distribution is a pure rolling release version
@@ -22,7 +27,6 @@ web:
   ssl: null
   ssl_cert: null
   ssl_key: null
-
 
 Tumbleweed:
   software:
@@ -117,6 +121,89 @@ Tumbleweed:
       proposed_configurable: true
       disable_order: 2
 
+ALP:
+  software:
+    installation_repositories:
+      - https://download.opensuse.org/repositories/SUSE:/ALP/standard/
+    mandatory_patterns:
+      - alp_base
+      - alp_base_zypper
+      - alp_cockpit
+      - alp-container_runtime
+    optional_patterns: null # no optional pattern shared
+    base_product: ALP
+
+  security:
+    lsm: selinux
+    available_lsms:
+      # apparmor:
+      #   patterns:
+      #     - apparmor
+      selinux:
+        patterns:
+          - alp_selinux
+        policy: permissive
+      none:
+        patterns: null
+
+  storage:
+    volumes:
+    - mount_point: "/"
+      fs_type: btrfs
+      desired_size: 10 GiB
+      min_size: 5 GiB
+      max_size: unlimited
+      weight: 30
+
+      # There must always be a root
+      proposed_configurable: false
+
+      snapshots: true
+      snapshots_percentage: 250
+      snapshots_configurable: true
+      # Disable snapshots if there is not enough room
+      disable_order: 3
+
+      btrfs_default_subvolume: "@"
+      subvolumes:
+      - path: home
+      - path: opt
+      - path: root
+      - path: srv
+      - path: usr/local
+      - path: boot/writable
+      # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
+      - path: var
+        copy_on_write: false
+
+      # Architecture specific subvolumes
+      - path: boot/grub2/arm64-efi
+        archs: aarch64
+      - path: boot/grub2/arm-efi
+        archs: arm
+      - path: boot/grub2/i386-pc
+        archs: x86_64
+      - path: boot/grub2/powerpc-ieee1275
+        archs: ppc,!board_powernv
+      - path: boot/grub2/s390x-emu
+        archs: s390
+      - path: boot/grub2/x86_64-efi
+        archs: x86_64
+      - path: boot/grub2/riscv64-efi
+        archs: riscv64
+
+    - mount_point: "swap"
+      fs_type: swap
+      desired_size: 2 GiB
+      min_size: 1 GiB
+      max_size: 2 GiB
+      weight: 10
+
+      adjust_by_ram: false
+      adjust_by_ram_configurable: true
+
+      proposed_configurable: true
+      disable_order: 2
 Leap:
   software:
     installation_repositories:

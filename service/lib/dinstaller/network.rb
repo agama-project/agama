@@ -36,8 +36,9 @@ module DInstaller
       logger.info "Probing network"
       Yast::Lan.read_config
       settings = Y2Network::ProposalSettings.instance
-      settings.refresh_packages
       settings.apply_defaults
+      # force NetworkManager as we are not supporting other backends
+      settings.enable_network_manager!
     end
 
     # Writes the network configuration to the installed system
