@@ -189,6 +189,7 @@ class NetworkManagerAdapter {
     delete settings.ipv4.addresses;
     delete settings.ipv4["address-data"];
     delete settings.ipv4.gateway;
+    delete settings.ipv4.dns;
 
     const newSettings = {
       ...settings,
@@ -205,16 +206,18 @@ class NetworkManagerAdapter {
           }
         ))
         ),
+        dns: cockpit.variant("au", connection.ipv4.dns),
         method: cockpit.variant("s", connection.ipv4.method)
       }
     };
 
     // FIXME: find a better way to add gateway only if there are addresses. If not, a DBusError will
     // be raises "gateway cannot be set if there are no addresses configured".
-    if (newSettings.ipv4["address-data"].v.length !== 0) {
-      const gateway = newSettings.ipv4.method === "manual" ? newSettings.ipv4.gateway : "";
-      newSettings.ipv4.gateway = cockpit.variant("s", gateway);
+    if ((connection.ipv4.gateway) && (newSettings.ipv4["address-data"].v.length !== 0)) {
+      newSettings.ipv4.gateway = cockpit.variant("s", connection.ipv4.gateway);
     }
+
+    console.log(newSettings);
 
     await settingsObject.Update(newSettings);
     await this.activateConnection(connection);

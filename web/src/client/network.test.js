@@ -80,6 +80,10 @@ const ipv4SettingsMock = {
       ]
     ]
   },
+  dns: {
+    t: "au",
+    v: [67305985, 16843009]
+  },
   "dns-search": {
     t: "as",
     v: []
@@ -321,12 +325,12 @@ describe("NetworkClient", () => {
           };
         });
 
-        it("sends an empty gateway", async () => {
+        it("sends the configured gateway", async () => {
           await client.updateConnection(updatedConnection);
           expect(connectionSettingsMock.Update).toHaveBeenCalledWith(
             expect.objectContaining({
               ipv4: expect.objectContaining({
-                gateway: expect.objectContaining({ v: "" })
+                gateway: expect.objectContaining({ v: "192.168.1.1" })
               })
             })
           );
