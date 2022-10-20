@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, Text, TextInput } from "@patternfly/react-core";
+import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, TextInput } from "@patternfly/react-core";
 import { useInstallerClient } from "./context/installer";
 import AddressesDataList from "./AddressesDataList";
 import DnsDataList from "./DnsDataList";
