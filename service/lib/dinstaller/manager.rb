@@ -149,7 +149,7 @@ module DInstaller
     #
     # @return [Network]
     def network
-      @network ||= Network.new(logger)
+      @network ||= Network::Manager.new(logger)
     end
 
     # Storage manager

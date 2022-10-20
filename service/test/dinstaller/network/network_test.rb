@@ -20,10 +20,10 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require "dinstaller/network"
+require "dinstaller/network/manager"
 require "dinstaller/progress"
 
-describe DInstaller::Network do
+describe DInstaller::Network::Manager do
   subject(:network) { described_class.new(logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
