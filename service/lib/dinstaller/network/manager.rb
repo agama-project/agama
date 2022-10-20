@@ -20,16 +20,26 @@
 # find current contact information at www.suse.com.
 
 require "singleton"
+require "forwardable"
 require "yast"
 require "y2network/proposal_settings"
+require "dinstaller/dbus/clients/network_manager"
 Yast.import "Lan"
 
 module DInstaller
   module Network
     # Backend class to handle network configuration
     class Manager
+      extend Forwardable
+
+        def_delegators :@nm_client, :active_connections
+
+        # Constructor
+        #
+        # @param logger [Logger]
       def initialize(logger)
         @logger = logger
+        @nm_client = DInstaller::DBus::Clients::NetworkManager.new
       end
 
       # Probes the network configuration

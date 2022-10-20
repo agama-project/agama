@@ -23,6 +23,7 @@ require "dbus"
 require "dinstaller/manager"
 require "dinstaller/cockpit_manager"
 require "dinstaller/dbus/manager"
+require "dinstaller/dbus/network"
 require "dinstaller/dbus/storage/proposal"
 
 module DInstaller
@@ -101,12 +102,19 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          manager_dbus
+          manager_dbus,
+          network_dbus
         ]
       end
 
+      # @return [Manager]
       def manager_dbus
         @manager_dbus ||= DInstaller::DBus::Manager.new(manager, logger)
+      end
+
+      # @return [Network]
+      def network_dbus
+        @network_dbus ||= DInstaller::DBus::Network.new(manager.network, logger)
       end
     end
   end
