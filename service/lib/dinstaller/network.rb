@@ -19,36 +19,12 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "singleton"
-require "yast"
-require "y2network/proposal_settings"
-Yast.import "Lan"
-
 module DInstaller
-  # Backend class to handle network configuration
-  class Network
-    def initialize(logger)
-      @logger = logger
-    end
-
-    # Probes the network configuration
-    def probe
-      logger.info "Probing network"
-      Yast::Lan.read_config
-      settings = Y2Network::ProposalSettings.instance
-      settings.apply_defaults
-      # force NetworkManager as we are not supporting other backends
-      settings.enable_network_manager!
-    end
-
-    # Writes the network configuration to the installed system
-    def install
-      Yast::WFM.CallFunction("save_network", [])
-    end
-
-  private
-
-    # @return [Logger]
-    attr_reader :logger
+  # Namespace for network backend
+  module Network
   end
 end
+
+require "dinstaller/network/manager"
+require "dinstaller/network/connection"
+require "dinstaller/network/ip_config"
