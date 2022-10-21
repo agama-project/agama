@@ -34,10 +34,6 @@ const NM_IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
 
 const NETWORK_IFACE = "org.opensuse.DInstaller.Network1";
 
-const CONNECTION_ADDED = "CONNECTIONS_ADDED";
-const CONNECTION_UPDATED = "CONNECTION_UPDATED";
-const CONNECTION_REMOVED = "CONNECTION_REMOVED";
-
 /**
  * Enum for the active connection state values
  *
@@ -66,18 +62,15 @@ const CONNECTION_TYPES = {
  */
 
 /**
- * @typedef {object} Connection
+ * @typedef {object} ActiveConnection
  * @property {string} id
- * @property {string} path
- * @property {string} settings_path
- * @property {string} device_path
  * @property {string} type
  * @property {number} state
- * @property {object} ipv4
  * @property {IPAddress[]} addresses
+ * @property {IPAddress} gateway
  */
 
-/** @typedef {(conns: Connection[]) => void} ConnectionFn */
+/** @typedef {(conns: ActiveConnection[]) => void} ConnectionFn */
 /** @typedef {(conns: string[]) => void} ConnectionPathsFn */
 
 /**
@@ -91,7 +84,7 @@ const CONNECTION_TYPES = {
  * @typedef {object} NetworkAdapter
  * @property {function} activeConnections
  * @property {(handler: (event: NetworkEvent) => void) => void} subscribe
- * @property {(connection: Connection) => Promise<any>} updateConnection
+ * @property {(connection: ActiveConnection) => Promise<any>} updateConnection
  * @property {() => Promise<string>} hostname
  */
 
@@ -126,47 +119,11 @@ class NetworkManagerAdapter {
   }
 
   /**
-   * Subscribes to network events
-   *
-   * Registers a handler for changes in /org/freedesktop/NetworkManager/ActiveConnection/*.
-   * The handler recevies a NetworkEvent object.
-   *
-   * @param {(event: NetworkEvent) => void} handler - Event handler function
-   */
-  async subscribe(handler) {
-    const proxies = await this.client.proxies(
-      "org.freedesktop.NetworkManager.Connection.Active",
-      "/org/freedesktop/NetworkManager/ActiveConnection",
-      { watch: true }
-    );
-
-    proxies.addEventListener("added", (_event, proxy) => {
-      proxy.wait(() => {
-        this.connectionFromProxy(proxy).then(connection => {
-          handler({ type: CONNECTION_ADDED, payload: connection });
-        });
-      });
-    });
-
-    proxies.addEventListener("changed", (_event, proxy) => {
-      proxy.wait(() => {
-        this.connectionFromProxy(proxy).then(connection => {
-          handler({ type: CONNECTION_UPDATED, payload: connection });
-        });
-      });
-    });
-
-    proxies.addEventListener("removed", (_event, proxy) => {
-      handler({ type: CONNECTION_REMOVED, payload: proxy.path });
-    });
-  }
-
-  /**
    * Updates the connection
    *
    * @fixme improve it.
    *
-   * @param {Connection} connection - Connection to update
+   * @param {ActiveConnection} connection - Connection to update
    */
   async updateConnection(connection) {
     const settingsObject = await this.client.proxy(NM_CONNECTION_IFACE, connection.settings_path);
@@ -213,7 +170,7 @@ class NetworkManagerAdapter {
    * Reactivate the given connection
    *
    * @private
-   * @param {Connection} connection
+   * @param {ActiveConnection} connection
    * See NM API documentation for details.
    * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
    */
@@ -358,49 +315,32 @@ o  *   NetworkManagerAdapter.
   async subscribe() {
     // TODO: refactor this method
     this.subscribed = true;
-
-    this.adapter.subscribe(({ type, payload }) => {
-      switch (type) {
-        case CONNECTION_ADDED: {
-          this.handlers.connectionAdded.forEach(handler => handler(payload));
-          break;
-        }
-
-        case CONNECTION_UPDATED: {
-          this.handlers.connectionUpdated.forEach(handler => handler(payload));
-          break;
-        }
-
-        case CONNECTION_REMOVED: {
-          this.handlers.connectionRemoved.forEach(handler => handler(payload.path));
-          break;
-        }
-      }
+    const networkProxy = await this.client.proxy("org.opensuse.DInstaller.Network1");
+    networkProxy.addEventListener("ConnectionAdded", (event, conn) => {
+      this.handlers.connectionAdded.forEach(handler =>
+        handler(this.activeConnectionFromDBus(conn))
+      );
+    });
+    networkProxy.addEventListener("ConnectionUpdated", (event, conn) => {
+      this.handlers.connectionUpdated.forEach(handler =>
+        handler(this.activeConnectionFromDBus(conn))
+      );
+    });
+    networkProxy.addEventListener("ConnectionRemoved", (event, conn) => {
+      this.handlers.connectionRemoved.forEach(handler =>
+        handler(this.activeConnectionFromDBus(conn))
+      );
     });
   }
 
   /**
    * Returns the active connections
    *
-   * @returns { Promise<Connection[]> }
+   * @returns { Promise<ActiveConnection[]> }
    */
   async activeConnections() {
     const proxy = await this.client.proxy(NETWORK_IFACE);
-    return proxy.ActiveConnections.map(conn => {
-      const { id, path, ipv4, state, type } = conn;
-      const { method, gateway } = ipv4.v;
-      const addresses = ipv4.v.addresses.v.map(({ v: { address, prefix } }) => {
-        return { address: address.v, prefix: prefix.v };
-      });
-      return {
-        id: id.v,
-        path: path.v,
-        state: state.v,
-        type: type.v,
-        ipv4: { method: method.v, gateway: gateway.v },
-        addresses
-      };
-    });
+    return proxy.ActiveConnections.map(this.activeConnectionFromDBus);
   }
 
   /**
@@ -408,7 +348,7 @@ o  *   NetworkManagerAdapter.
    *
    * It uses the 'path' to match the connection in the backend.
    *
-   * @param {Connection} connection - Connection to update
+   * @param {ActiveConnection} connection - Connection to update
    */
   async updateConnection(connection) {
     return this.adapter.updateConnection(connection);
@@ -424,6 +364,26 @@ o  *   NetworkManagerAdapter.
   async addresses() {
     const conns = await this.activeConnections();
     return conns.flatMap(c => c.addresses);
+  }
+
+  /**
+   * Converts an active connection from D-Bus to a proper ActiveConnection object
+   *
+   * @param {object} conn - Connection as it comes from Cockpit
+   * @return {ActiveConnection}
+   */
+  activeConnectionFromDBus(conn) {
+    const { id, state, type, gateway } = conn;
+    const addresses = conn.addresses.v.map(({ v: { address, prefix } }) => {
+      return { address: address.v, prefix: prefix.v };
+    });
+    return {
+      id: id.v,
+      state: state.v,
+      type: type.v,
+      addresses,
+      gateway: gateway.v
+    };
   }
 }
 

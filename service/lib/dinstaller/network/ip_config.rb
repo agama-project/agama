@@ -49,7 +49,7 @@ module DInstaller
         {
           "method" => method,
           "addresses" => addresses,
-          "gateway" => gateway
+          "gateway" => gateway.to_s
         }
       end
     end

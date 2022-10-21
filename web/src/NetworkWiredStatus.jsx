@@ -29,7 +29,7 @@ import { CONNECTION_STATE } from "./client/network";
  * D-Installer component to show status of wired network connections
  *
  * @todo evaluate if it should be "merged" into NetworkWifiStatus
- * @param {import ("client/network").Connection[]} connections
+ * @param {import ("client/network").ActiveConnection[]} connections
  */
 export default function NetworkWiredStatus({ connections }) {
   const [connection, setConnection] = useState(null);

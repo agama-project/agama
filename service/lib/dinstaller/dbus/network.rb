@@ -35,6 +35,7 @@ module DInstaller
       def initialize(backend, logger)
         super(PATH, logger: logger)
         @backend = backend
+        register_callbacks
       end
 
       NETWORK_INTERFACE = "org.opensuse.DInstaller.Network1"
@@ -42,6 +43,9 @@ module DInstaller
 
       dbus_interface NETWORK_INTERFACE do
         dbus_reader :active_connections, "aa{sv}"
+        dbus_signal(:ConnectionAdded, "conn:a{sv}")
+        dbus_signal(:ConnectionUpdated, "conn:a{sv}")
+        dbus_signal(:ConnectionRemoved, "conn:a{sv}")
       end
 
       # Returns the list of active connections
@@ -50,6 +54,20 @@ module DInstaller
       def active_connections
         @backend.active_connections.map do |conn|
           conn.to_dbus
+        end
+      end
+
+      def register_callbacks
+        @backend.on_connection_added do |conn|
+          ConnectionAdded(conn.to_dbus)
+        end
+
+        @backend.on_connection_updated do |conn|
+          ConnectionUpdated(conn.to_dbus)
+        end
+
+        @backend.on_connection_removed do |conn|
+          ConnectionRemoved(conn.to_dbus)
         end
       end
     end

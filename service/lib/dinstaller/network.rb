@@ -26,5 +26,5 @@ module DInstaller
 end
 
 require "dinstaller/network/manager"
-require "dinstaller/network/connection"
+require "dinstaller/network/active_connection"
 require "dinstaller/network/ip_config"

@@ -24,7 +24,7 @@ module DInstaller
     # Represents a network connection
     #
     # It contains just the relevant parts for D-Installer.
-    class Connection < Struct.new("Connection", :id, :path, :type, :state, :ipv4)
+    class ActiveConnection < Struct.new("Connection", :id, :type, :state, :addresses, :gateway)
       module TYPE
         ETHERNET = "802-3-ethernet",
         WIFI = "802-11-wireless"
@@ -41,9 +41,6 @@ module DInstaller
       # @!attribute [r] id
       #   @return [String] Connection ID
       #
-      # @!attribute [r] path
-      #   @return [String] Connection path in D-Bus (FIXME: do not expose the path)
-      #
       # @!attribute [r] type
       #   @return [String] Connection type
       #   @see TYPE
@@ -52,15 +49,14 @@ module DInstaller
       #   @return [String] Connection state
       #   @see STATE
       #
-      # @!attribute [r] ipv4
-      #   @return [IPConfig]
+      # @!attribute [r] addresses
+      #   @return [Array<Hash>] Assigned addresses
 
       # Determines whether two connection objects are equivalent
       #
       # @param other [Connection] Object to compare with
       def ==(other)
-        id == other.id && path == other.path && type == other.type &&
-        state == other.state && ipv4 == other.ipv4
+        id == other.id && type == other.type && state == other.state
       end
 
       # Returns a hash representation to be used in D-Bus
@@ -69,10 +65,10 @@ module DInstaller
       def to_dbus
         {
           "id" => id,
-          "path" => path,
           "type" => type,
           "state" => state,
-          "ipv4" => ipv4.to_dbus
+          "addresses" => addresses,
+          "gateway" => gateway.to_s
         }
       end
     end

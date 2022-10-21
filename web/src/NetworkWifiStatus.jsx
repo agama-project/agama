@@ -29,7 +29,7 @@ import ConnectionsDataList from "./ConnectionsDataList";
  *
  * @todo evaluate if it should be "merged" into NetworkWiredStatus
  * @todo display link for setting up a WiFi connection when possible
- * @param {import ("client/network").Connection[]} connections
+ * @param {import ("client/network").ActiveConnection[]} connections
  */
 export default function NetworkWiFiStatus({ connections }) {
   const conns = connections.filter(c => c.state === CONNECTION_STATE.ACTIVATED);
