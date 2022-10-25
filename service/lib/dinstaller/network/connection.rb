@@ -21,25 +21,33 @@
 
 module DInstaller
   module Network
-    # Represents the IP configuration
-    class IPConfig < Struct.new("IPConfig", :method, :addresses, :gateway)
-      module METHODS
-        AUTO = "auto" # DHCP
-        STATIC = "static"
+    # Represents the configuration (profile) for a network connection
+    class Connection
+      # @return [String] Connection ID (e.g., an UUID)
+      attr_reader :id
+
+      # @return [String] Connection name (e.g., "Wired connection")
+      attr_reader :name
+
+      # @return [IPv4] IPv4 settings
+      attr_reader :ipv4
+
+      class << self
+        # @param id [String] Connection ID
+        # @param name [String] Connection name
+        # @param ipv4 [Hash] IPv4 configuration data
+        def from_dbus(data)
+          new(data["id"], data["name"], ipv4: IPv4.from_dbus(data["ipv4"]))
+        end
       end
 
-      # @!attribute [r] method
-      #   @return [String] Configuration method
-      #   @see METHODS
-      #
-      # @!attribute [r]
-      #   @return [String] IP Address
-
-      # Determines whether two connection objects are equivalent
-      #
-      # @param other [IPConfig] Object to compare with
-      def ==(other)
-        method == other.method && addresses == other.addresses && gateway == other.gateway
+      # @param id [String] Connection ID
+      # @param name [String] Connection name
+      # @param ipv4 [IPv4] IPv4 settings
+      def initialize(id, name, ipv4: IPv4.new)
+        @id = id
+        @name = name
+        @ipv4 = ipv4
       end
 
       # Returns a hash representation to be used in D-Bus
@@ -47,9 +55,9 @@ module DInstaller
       # @return [Hash]
       def to_dbus
         {
-          "method" => method,
-          "addresses" => addresses,
-          "gateway" => gateway.to_s
+          "id"   => id,
+          "name" => name,
+          "ipv4" => ipv4.to_dbus
         }
       end
     end

@@ -19,13 +19,30 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module DInstaller
-  # Namespace for network backend
-  module Network
+require_relative "../../test_helper"
+require "dinstaller/network/connection"
+
+describe DInstaller::Network::Connection do
+  subject do
+    DInstaller::Network::Connection.new("1234", "Wired")
+  end
+
+  describe ".from_dbus" do
+    it "returns a Connection instance" do
+      connection = described_class.from_dbus(
+        "id"   => "1234",
+        "name" => "Wired",
+        "ipv4" => { "method" => "manual" }
+      )
+      expect(connection.id).to eq("1234")
+      expect(connection.name).to eq("Wired")
+      expect(connection.ipv4.meth).to eq(DInstaller::Network::ConnectionMethod::MANUAL)
+    end
+  end
+
+  describe "#to_dbus" do
+    it "returns a hash containing the information to send over D-Bus" do
+      expect(subject.to_dbus)
+    end
   end
 end
-
-require "dinstaller/network/manager"
-require "dinstaller/network/active_connection"
-require "dinstaller/network/connection"
-require "dinstaller/network/ipv4"

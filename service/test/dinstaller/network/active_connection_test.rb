@@ -19,13 +19,27 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module DInstaller
-  # Namespace for network backend
-  module Network
+require_relative "../../test_helper"
+require "dinstaller/network/active_connection"
+
+describe DInstaller::Network::ActiveConnection do
+  describe "#==" do
+    subject { described_class.new("1234", "Wired") }
+
+    context "when the given connection has the same values" do
+      let(:other) { described_class.new("1234", "Wired") }
+
+      it "returns true" do
+        expect(subject).to eq(other)
+      end
+    end
+
+    context "when the given connection has different values" do
+      let(:other) { described_class.new("1234", "Wireless") }
+
+      it "returns false" do
+        expect(subject).to_not eq(other)
+      end
+    end
   end
 end
-
-require "dinstaller/network/manager"
-require "dinstaller/network/active_connection"
-require "dinstaller/network/connection"
-require "dinstaller/network/ipv4"

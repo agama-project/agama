@@ -19,44 +19,43 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "dinstaller/network/connection_type"
+require "dinstaller/network/connection_state"
+
 module DInstaller
   module Network
-    # Represents a network connection
+    # Represents an active network connection
     #
     # It contains just the relevant parts for D-Installer.
-    class ActiveConnection < Struct.new("Connection", :id, :type, :state, :addresses, :gateway)
-      module TYPE
-        ETHERNET = "802-3-ethernet",
-        WIFI = "802-11-wireless"
-      end
+    class ActiveConnection
+      # @return [String] Connection ID (e.g., an UUID)
+      attr_reader :id
 
-      module STATE
-        UNKWOWN = 0
-        ACTIVATING = 1
-        ACTIVATED = 2
-        DEACTIVATING = 3
-        DEACTIVATED = 4
-      end
+      # @return [String] Connection name (e.g., "Wired connection")
+      attr_reader :name
 
-      # @!attribute [r] id
-      #   @return [String] Connection ID
-      #
-      # @!attribute [r] type
-      #   @return [String] Connection type
-      #   @see TYPE
-      #
-      # @!attribute [r] state
-      #   @return [String] Connection state
-      #   @see STATE
-      #
-      # @!attribute [r] addresses
-      #   @return [Array<Hash>] Assigned addresses
+      # @return [ConnectionType] Connection type
+      attr_reader :type
+
+      # @return [ConnectionState] Connection state
+      attr_reader :state
+
+      # @return [Array<Hash>] Assigned addresses
+      attr_reader :addresses
+
+      def initialize(id, name, type: nil, state: nil, addresses: [])
+        @id = id
+        @name = name
+        @type = type || ConnectionType::ETHERNET
+        @state = state || ConnectionState::UNKNOWN
+        @addresses = addresses
+      end
 
       # Determines whether two connection objects are equivalent
       #
       # @param other [Connection] Object to compare with
       def ==(other)
-        id == other.id && type == other.type && state == other.state
+        id == other.id && name == other.name && type == other.type && state == other.state
       end
 
       # Returns a hash representation to be used in D-Bus
@@ -64,11 +63,11 @@ module DInstaller
       # @return [Hash]
       def to_dbus
         {
-          "id" => id,
-          "type" => type,
-          "state" => state,
-          "addresses" => addresses,
-          "gateway" => gateway.to_s
+          "id"        => id,
+          "name"      => name,
+          "type"      => type.id,
+          "state"     => state.id,
+          "addresses" => addresses
         }
       end
     end

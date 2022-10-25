@@ -19,13 +19,27 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module DInstaller
-  # Namespace for network backend
-  module Network
+require_relative "../../test_helper"
+require "ipaddr"
+require "dinstaller/network/ipv4"
+
+describe DInstaller::Network::IPv4 do
+  describe ".from_dbus" do
+    it "returns an IPv4 object from a hash from D-Bus" do
+      dbus_ipv4 = described_class.from_dbus(
+        "method"      => "auto",
+        "addresses"   => [{ "address" => "192.168.122.1", "prefix" => 24 }],
+        "gateway"     => "192.168.122.1",
+        "nameServers" => ["192.168.122.10"]
+      )
+
+      ipv4 = described_class.new(
+        meth:        DInstaller::Network::ConnectionMethod::AUTO,
+        addresses:   [{ address: "192.168.122.1", prefix: 24 }],
+        gateway:     IPAddr.new("192.168.122.1"),
+        nameservers: [IPAddr.new("192.168.122.10")]
+      )
+      expect(ipv4).to eq(dbus_ipv4)
+    end
   end
 end
-
-require "dinstaller/network/manager"
-require "dinstaller/network/active_connection"
-require "dinstaller/network/connection"
-require "dinstaller/network/ipv4"
