@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { partition, isValidIp, isValidIpPrefix } from "./utils";
+import { partition } from "./utils";
 
 describe("partition", () => {
   it("returns two groups of elements that do and do not satisfy provided filter", () => {
