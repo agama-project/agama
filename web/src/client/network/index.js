@@ -75,7 +75,7 @@ const ConnectionTypes = Object.freeze({
  * @typedef {object} IPv4
  * @property {string} method
  * @property {IPAddress[]} addresses
- * @property {IPAddress[]} nameServers
+ * @property {string[]} nameServers
  * @property {IPAddress} gateway
  */
 

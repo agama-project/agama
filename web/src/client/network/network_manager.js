@@ -23,7 +23,7 @@
 //
 import { DBusClient } from "../dbus";
 import cockpit from "../../lib/cockpit";
-import { int_to_text, ip4_from_text } from "../../utils";
+import { intToIPString, stringToIPInt } from "./utils";
 import { NetworkEventTypes, ConnectionState } from "./index";
 
 const NM_SERVICE_NAME = "org.freedesktop.NetworkManager";
@@ -80,7 +80,7 @@ class NetworkManagerAdapter {
           return { address: address.v, prefix: prefix.v };
         }),
         // FIXME: handle different byte-order (little-endian vs big-endian)
-        nameServers: ipv4.dns?.v.map(int_to_text) || [],
+        nameServers: ipv4.dns?.v.map(intToIPString) || [],
         method: ipv4.method.v,
         gateway: ipv4.gateway?.v
       }
@@ -114,7 +114,7 @@ class NetworkManagerAdapter {
           }
         ))
         ),
-        dns: cockpit.variant("au", connection.ipv4.nameServers.map(ip4_from_text)),
+        dns: cockpit.variant("au", connection.ipv4.nameServers.map(stringToIPInt)),
         method: cockpit.variant("s", connection.ipv4.method)
       }
     };
