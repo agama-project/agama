@@ -26,4 +26,5 @@ gemspec
 
 group :development do
   gem "byebug"
+  gem "rubocop", "1.24.1"
 end
