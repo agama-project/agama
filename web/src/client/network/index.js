@@ -189,6 +189,7 @@ o  *   NetworkManagerAdapter.
         }
 
         case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
+          console.log("removed", payload);
           this.handlers.connectionRemoved.forEach(handler => handler(payload.path));
           break;
         }
@@ -234,5 +235,5 @@ o  *   NetworkManagerAdapter.
 }
 
 export {
-  ConnectionState, ConnectionTypes, formatIp, NetworkClient, NetworkManagerAdapter, NetworkEventTypes 
+  ConnectionState, ConnectionTypes, formatIp, NetworkClient, NetworkManagerAdapter, NetworkEventTypes
 };
