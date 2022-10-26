@@ -58,10 +58,10 @@ const ConnectionTypes = Object.freeze({
 /**
  * @typedef {object} ActiveConnection
  * @property {string} id
+ * @property {string} name
  * @property {string} type
  * @property {number} state
  * @property {IPAddress[]} addresses
- * @property {string} gateway
  */
 
 /**
@@ -91,10 +91,10 @@ const ConnectionTypes = Object.freeze({
 
 /**
  * @typedef {object} NetworkAdapter
- * @property {function} activeConnections
+ * @property {() => Promise<ActiveConnection[]>} activeConnections
  * @property {(handler: (event: NetworkEvent) => void) => void} subscribe
  * @property {(id: string) => Promise<Connection>} getConnection
- * @property {(connection: ActiveConnection) => Promise<any>} updateConnection
+ * @property {(connection: Connection) => Promise<any>} updateConnection
  * @property {() => Promise<string>} hostname
  */
 
@@ -110,7 +110,7 @@ const formatIp = addr => `${addr.address}/${addr.prefix}`;
  * Network event
  *
  * @typedef {object} NetworkEvent
- * @property {symbol} type
+ * @property {string} type
  * @property {object} payload
  */
 
@@ -136,7 +136,7 @@ o  *   NetworkManagerAdapter.
 
   /**
    * Returns IP config overview - addresses, connections and hostname
-   * @return {Promise<{ addresses: IPAddress[], hostname: string, connections: Connection[]}>}
+   * @return {Promise<{ addresses: IPAddress[], hostname: string, connections: ActiveConnection[]}>}
    */
   async config() {
     return {
@@ -199,7 +199,7 @@ o  *   NetworkManagerAdapter.
   /**
    * Returns the active connections
    *
-   * @returns { Promise.<Connection[]> }
+   * @returns { Promise.<ActiveConnection[]> }
    */
   async activeConnections() {
     return this.adapter.activeConnections();
