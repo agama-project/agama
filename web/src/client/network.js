@@ -70,6 +70,21 @@ const CONNECTION_TYPES = {
  * @property {IPAddress} gateway
  */
 
+/**
+ * @typedef {object} Connection
+ * @property {string} id
+ * @property {string} name
+ * @property {IPv4} ipv4
+ */
+
+/**
+ * @typedef {object} IPv4
+ * @property {string} method
+ * @property {IPAddress[]} addresses
+ * @property {IPAddress[]} nameServers
+ * @property {IPAddress} gateway
+ */
+
 /** @typedef {(conns: ActiveConnection[]) => void} ConnectionFn */
 /** @typedef {(conns: string[]) => void} ConnectionPathsFn */
 
@@ -326,10 +341,8 @@ o  *   NetworkManagerAdapter.
         handler(this.activeConnectionFromDBus(conn))
       );
     });
-    networkProxy.addEventListener("ConnectionRemoved", (event, conn) => {
-      this.handlers.connectionRemoved.forEach(handler =>
-        handler(this.activeConnectionFromDBus(conn))
-      );
+    networkProxy.addEventListener("ConnectionRemoved", (event, id) => {
+      this.handlers.connectionRemoved.forEach(handler => handler(id));
     });
   }
 
@@ -344,14 +357,24 @@ o  *   NetworkManagerAdapter.
   }
 
   /**
+   * Returns a connection with the given ID
+   */
+  async getConnection(id) {
+    const proxy = await this.client.proxy(NETWORK_IFACE);
+    const conn = await proxy.GetConnection(id);
+    return this.connectionFromDBus(conn);
+  }
+
+  /**
    * Updates the connection
    *
    * It uses the 'path' to match the connection in the backend.
    *
-   * @param {ActiveConnection} connection - Connection to update
+   * @param {Connection} connection - Connection to update
    */
   async updateConnection(connection) {
-    return this.adapter.updateConnection(connection);
+    const proxy = await this.client.proxy(NETWORK_IFACE);
+    return proxy.UpdateConnection(this.connectionToDBus(connection));
   }
 
   /*
@@ -373,16 +396,74 @@ o  *   NetworkManagerAdapter.
    * @return {ActiveConnection}
    */
   activeConnectionFromDBus(conn) {
-    const { id, state, type, gateway } = conn;
+    const { id, name, state, type } = conn;
     const addresses = conn.addresses.v.map(({ v: { address, prefix } }) => {
       return { address: address.v, prefix: prefix.v };
     });
     return {
       id: id.v,
+      name: name.v,
       state: state.v,
       type: type.v,
+      addresses
+    };
+  }
+
+  /**
+ * @property {string} id
+ * @property {string} type
+ * @property {number} state
+ * @property {IPAddress[]} addresses
+ * @property {IPAddress} gateway
+*/
+  connectionToDBus({ id, name, ipv4 }) {
+    const addressesDBus = ipv4.addresses.map(a => {
+      return cockpit.variant("a{sv}", {
+        address: cockpit.variant("s", a.address),
+        prefix: cockpit.variant("u", parseInt(a.prefix))
+      });
+    });
+    const nameServersDBus = ipv4.nameServers.map(a => cockpit.variant("s", a.address));
+    const ipv4DBus = {
+      addresses: cockpit.variant("av", addressesDBus),
+      nameServers: cockpit.variant("av", nameServersDBus),
+      gateway: cockpit.variant("s", ipv4.gateway),
+      method: cockpit.variant("s", ipv4.method)
+    };
+    const updatedConn = {
+      id: cockpit.variant("s", id),
+      name: cockpit.variant("s", name),
+      ipv4: cockpit.variant("a{sv}", ipv4DBus)
+    };
+    return updatedConn;
+  }
+
+  /**
+   * Converts a connection from D-Bus to a proper Connection object
+   *
+   * @param {object} conn - Connection as it comes from Cockpit
+   * @return {Connection}
+   */
+  connectionFromDBus(conn) {
+    console.log("Connection from D-Bus", conn);
+    const { id, name, ipv4 } = conn;
+    const {
+      addresses: addrs, nameservers: ns, method, gateway
+    } = ipv4.v;
+    const addresses = addrs.v.map(({ v: { address, prefix } }) => {
+      return { address: address.v, prefix: prefix.v };
+    });
+    const nameServers = ns.v.map((a, idx) => { return { address: a.v, id: idx } });
+    const ipv4_settings = {
+      method: method.v,
+      gateway: gateway.v,
       addresses,
-      gateway: gateway.v
+      nameServers
+    };
+    return {
+      id: id.v,
+      name: name.v,
+      ipv4: ipv4_settings,
     };
   }
 }

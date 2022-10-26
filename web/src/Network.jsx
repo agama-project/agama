@@ -45,7 +45,7 @@ export default function Network() {
   }, [client.network]);
 
   useEffect(() => {
-    const onConnectionRemoved = ({ id }) => {
+    const onConnectionRemoved = id => {
       setConnections(conns => conns.filter(c => c.id !== id));
     };
 

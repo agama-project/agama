@@ -147,76 +147,9 @@ const isValidIpPrefix = (value) => {
   }
 };
 
-/**
-*  Converts an IP given in decimal format to text format
-*
-* @param {integer} address - An IP Address in Decimal format
-* @return {string} the address given as a string
-*/
-const int_to_text = (address) => {
-  const ip = ipaddr.parse(address.toString());
-
-  return ip.octets.reverse().join(".");
-};
-
-/**
- *
- * Returns a list of nameservers from the given Connection Ip settings
- *
- * @param {object} config
- * @return { { address: string }[] } list of nameservers in IP format
- *
- */
-const dnsFromIpConfig = (config) => {
-  const dns = config.dns.v || [];
-
-  return dns.map((address) => ({ address: int_to_text(address) }));
-};
-
-/**
- *
- * Returns a list of nameservers from the given Connection Ip settings
- *
- * @param {object} config
- * @return { { address: string, prefix: string }[] } list of nameservers in IP format
- *
- */
-const addressesFromIpConfig = (config) => {
-  const addresses = config["address-data"]?.v || [];
-
-  return addresses.map((address) => ({ address: address.address.v, prefix: address.prefix.v }));
-};
-
-/** Convert a IP address from text to network-byte-order integer
-*
-* FIXME: Currently it is assumed 'le' ordering which should be read from NetworkManager State
-*
-* @param {string} IPv4 address
-* @return {integer} IP address as network byte order integer
-*
-*/
-const ip4_from_text = (text) => {
-  if (text === "")
-    return 0;
-
-  console.log(text);
-
-  const parts = text.split(".");
-  const bytes = parts.map((s) => parseInt(s.trim()));
-
-  let num = 0;
-  const shift = (b) => 0x100 * num + b;
-  for (const n of bytes.reverse()) { num = shift(n) }
-
-  return num;
-};
-
 export {
   partition,
   useCancellablePromise,
   isValidIp,
-  isValidIpPrefix,
-  dnsFromIpConfig,
-  addressesFromIpConfig,
-  ip4_from_text
+  isValidIpPrefix
 };
