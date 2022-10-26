@@ -50,8 +50,8 @@ export default function TargetIpsPopup() {
   }, [client.network]);
 
   useEffect(() => {
-    const onConnectionRemoved = connectionPath => {
-      setConnections(conns => conns.filter(c => c.path !== connectionPath));
+    const onConnectionRemoved = id => {
+      setConnections(conns => conns.filter(c => c.id !== id));
     };
 
     return client.network.listen("connectionRemoved", onConnectionRemoved);
@@ -60,7 +60,7 @@ export default function TargetIpsPopup() {
   useEffect(() => {
     const onConnectionUpdated = updatedConnection => {
       setConnections(conns => {
-        const newConnections = conns.filter(c => c.path !== updatedConnection.path);
+        const newConnections = conns.filter(c => c.id !== updatedConnection.id);
         return [...newConnections, updatedConnection];
       });
     };

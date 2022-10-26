@@ -136,7 +136,7 @@ o  *   NetworkManagerAdapter.
 
   /**
    * Returns IP config overview - addresses, connections and hostname
-   * @return {Promise<{ addresses: IPAddress[], hostname: string, connections: ActiveConnection[]}>}
+   * @return {Promise<{addresses: IPAddress[], hostname: string, connections: ActiveConnection[]}>}
    */
   async config() {
     return {
@@ -149,7 +149,7 @@ o  *   NetworkManagerAdapter.
   /**
    * Registers a callback to run when a given event happens
    *
-   * @param {"connectionAdded" | "connectionRemoved" | "connectionUpdated"} eventType - event type
+   * @param {"connectionAdded" | "connectionUpdated" | "connectionRemoved"} eventType - event type
    * @param {ConnectionFn} handler - the callback to be executed
    * @return {function} a function to remove the callback
    */
@@ -189,7 +189,6 @@ o  *   NetworkManagerAdapter.
         }
 
         case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
-          console.log("removed", payload);
           this.handlers.connectionRemoved.forEach(handler => handler(payload.path));
           break;
         }

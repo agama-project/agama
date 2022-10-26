@@ -45,6 +45,8 @@ class NetworkManagerAdapter {
    */
   constructor(dbusClient) {
     this.client = dbusClient || new DBusClient(NM_SERVICE_NAME);
+    /** @type {{[k: string]: string}} */
+    this.connectionIds = {};
   }
 
   /**
@@ -147,6 +149,7 @@ class NetworkManagerAdapter {
     proxies.addEventListener("added", (_event, proxy) => {
       proxy.wait(() => {
         this.activeConnectionFromProxy(proxy).then(connection => {
+          this.connectionIds[proxy.path] = connection.id;
           handler({ type: NetworkEventTypes.ACTIVE_CONNECTION_ADDED, payload: connection });
         });
       });
@@ -161,7 +164,9 @@ class NetworkManagerAdapter {
     });
 
     proxies.addEventListener("removed", (_event, proxy) => {
-      handler({ type: NetworkEventTypes.ACTIVE_CONNECTION_REMOVED, payload: proxy.path });
+      const connectionId = this.connectionIds[proxy.path];
+      delete this.connectionIds[proxy.path];
+      handler({ type: NetworkEventTypes.ACTIVE_CONNECTION_REMOVED, payload: connectionId });
     });
   }
 
