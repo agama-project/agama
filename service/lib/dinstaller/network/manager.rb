@@ -32,8 +32,9 @@ module DInstaller
     class Manager
       extend Forwardable
 
-      def_delegators :@nm_client, :active_connections, :connections, :find_connection, :update_connection,
-        :on_active_connection_added, :on_active_connection_updated, :on_active_connection_removed
+      def_delegators :@nm_client, :active_connections, :connections, :find_connection,
+        :update_connection, :on_active_connection_added, :on_active_connection_updated,
+        :on_active_connection_removed
 
       # Constructor
       #

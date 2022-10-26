@@ -25,6 +25,7 @@ require "dinstaller/network/connection"
 
 module DInstaller
   module DBus
+    # D-Bus object to manage network configuration (/org/opensuse/DInstaller/Network1)
     class Network < BaseObject
       PATH = "/org/opensuse/DInstaller/Network1"
       private_constant :PATH
