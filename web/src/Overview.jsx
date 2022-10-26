@@ -47,7 +47,7 @@ const ChangeProductButton = () => {
   const { products } = useSoftware();
   const navigate = useNavigate();
 
-  if (products.length === 1) {
+  if (products === undefined || products.length === 1) {
     return "";
   }
 
@@ -129,7 +129,7 @@ function Overview() {
 
   return (
     <>
-      <Title>{selectedProduct.name}</Title>
+      <Title>{selectedProduct && selectedProduct.name}</Title>
       <PageIcon><OverviewIcon /></PageIcon>
       <PageActions><ChangeProductButton /></PageActions>
       <MainActions><InstallButton /></MainActions>
