@@ -21,6 +21,7 @@
 
 require "dbus"
 require "dinstaller/dbus/base_object"
+require "dinstaller/network/connection"
 
 module DInstaller
   module DBus
@@ -43,31 +44,51 @@ module DInstaller
 
       dbus_interface NETWORK_INTERFACE do
         dbus_reader :active_connections, "aa{sv}"
+        dbus_reader :connections, "aa{sv}"
+        dbus_method :GetConnection, "in Id:s, out Result:a{sv}" do |id|
+          conn = backend.find_connection(id)
+          [conn.to_dbus]
+        end
+        dbus_method :UpdateConnection, "in data:a{sv}, out result:u" do |data|
+          conn = DInstaller::Network::Connection.from_dbus(data)
+          result = backend.update_connection(conn)
+          result ? 0 : 1
+        end
         dbus_signal(:ConnectionAdded, "conn:a{sv}")
         dbus_signal(:ConnectionUpdated, "conn:a{sv}")
-        dbus_signal(:ConnectionRemoved, "conn:a{sv}")
+        dbus_signal(:ConnectionRemoved, "id:s")
       end
 
       # Returns the list of active connections
       #
       # @return [Array<Hash>]
       def active_connections
-        @backend.active_connections.map do |conn|
-          conn.to_dbus
-        end
+        backend.active_connections.map(&:to_dbus)
       end
 
+      # Returns the list of connections
+      #
+      # @return [Array<Hash>]
+      def connections
+        backend.connections.map(&:to_dbus)
+      end
+
+    private
+
+      # @return [DInstaller::Software]
+      attr_reader :backend
+
       def register_callbacks
-        @backend.on_connection_added do |conn|
+        backend.on_active_connection_added do |conn|
           ConnectionAdded(conn.to_dbus)
         end
 
-        @backend.on_connection_updated do |conn|
+        backend.on_active_connection_updated do |conn|
           ConnectionUpdated(conn.to_dbus)
         end
 
-        @backend.on_connection_removed do |conn|
-          ConnectionRemoved(conn.to_dbus)
+        backend.on_active_connection_removed do |id|
+          ConnectionRemoved(id)
         end
       end
     end

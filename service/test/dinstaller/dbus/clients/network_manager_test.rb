@@ -44,11 +44,10 @@ describe DInstaller::DBus::Clients::NetworkManager do
     allow(connection_iface).to receive(:[]) { |k| connection_data[k] }
   end
 
-
   let(:bus) { instance_double(::DBus::SystemBus, service: service) }
   let(:service) { instance_double(::DBus::Service) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
-  let(:network_iface) { instance_double(::DBus::ProxyObjectInterface, ) }
+  let(:network_iface) { instance_double(::DBus::ProxyObjectInterface) }
   let(:settings_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
   let(:connection_object) { instance_double(::DBus::ProxyObject) }
@@ -57,22 +56,22 @@ describe DInstaller::DBus::Clients::NetworkManager do
     { "Id" => "enp1s0", "Type" => "802-3-ethernet", "State" => 2, "Connection" => settings_path }
   end
 
-  let(:settings_object) { instance_double(::DBus::ProxyObject) }
+  let(:settings_object) { double(::DBus::ProxyObject, ListConnections: [[settings_path]]) }
   let(:settings_iface) { double(::DBus::ProxyObjectInterface, GetSettings: [settings_data]) }
   let(:settings_data) do
     { "ipv4" => { "method" => "auto", "address-data" => addresses, "gateway" => "192.168.122.1" } }
   end
   let(:addresses) do
-  [ { "address" => "192.168.122.10", "prefix" => 24 }]
+    [{ "address" => "192.168.122.10", "prefix" => 24 }]
   end
 
   let(:active_connection_path) { "/org/freedesktop/NetworkManager/ActiveConnection/1" }
   let(:active_connections) { [active_connection_path] }
   let(:settings_path) { "/org/freedesktop/NetworkManager/Settings/1" }
 
-  describe "#active_connections" do
+  describe "#connections" do
     it "returns an array of NetworkManager active connections" do
-      connections = subject.active_connections
+      connections = subject.connections
       expected_connection = DInstaller::Network::Connection.new(
         connection_data["Id"],
         active_connection_path,

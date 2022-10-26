@@ -32,15 +32,15 @@ module DInstaller
     class Manager
       extend Forwardable
 
-        def_delegators :@nm_client, :active_connections, :on_connection_added,
-          :on_connection_updated, :on_connection_removed
+      def_delegators :@nm_client, :active_connections, :connections, :find_connection, :update_connection,
+        :on_active_connection_added, :on_active_connection_updated, :on_active_connection_removed
 
-        # Constructor
-        #
-        # @param logger [Logger]
+      # Constructor
+      #
+      # @param logger [Logger]
       def initialize(logger)
         @logger = logger
-        @nm_client = DInstaller::DBus::Clients::NetworkManager.new
+        @nm_client = DInstaller::DBus::Clients::NetworkManager.new(logger)
       end
 
       # Probes the network configuration

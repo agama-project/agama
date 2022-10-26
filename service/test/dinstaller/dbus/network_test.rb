@@ -48,12 +48,11 @@ describe DInstaller::DBus::Network do
     it "returns an array of a hash-based representation of the connections" do
       expect(subject.active_connections).to eq(
         [
-          { "id" => "enp1s0",
-            "ipv4" => { "addresses" => [], "gateway" => "192.168.122.1", "method" => "auto" },
-            "path" => "/org/freedesktop/NetworkManager/ActiveConnection/1",
+          { "id"    => "enp1s0",
+            "ipv4"  => { "addresses" => [], "gateway" => "192.168.122.1", "method" => "auto" },
+            "path"  => "/org/freedesktop/NetworkManager/ActiveConnection/1",
             "state" => 2,
-            "type" => "802-3-ethernet"
-          }
+            "type"  => "802-3-ethernet" }
         ]
       )
     end
