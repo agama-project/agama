@@ -62,7 +62,7 @@ export default function ConnectionsDataList({ conns, onSelect }) {
 
     return (
       <Button variant="link" isInline onClick={() => onClick(connection)}>
-        {connection.id}
+        {connection.name}
       </Button>
     );
   };
@@ -71,7 +71,7 @@ export default function ConnectionsDataList({ conns, onSelect }) {
     <DataList isCompact gridBreakpoint="none" className="connections-datalist">
       {conns.map(conn => {
         return (
-          <DataListItem key={conn.path}>
+          <DataListItem key={conn.id}>
             <DataListItemRow>
               <DataListItemCells
                 dataListCells={[

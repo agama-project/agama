@@ -24,6 +24,7 @@
 import { DBusClient } from "./dbus";
 
 import cockpit from "../lib/cockpit";
+import { int_to_text, ip4_from_text } from "../utils";
 
 const NM_SERVICE_NAME = "org.freedesktop.NetworkManager";
 const NM_IFACE = "org.freedesktop.NetworkManager";
@@ -64,18 +65,30 @@ const CONNECTION_TYPES = {
  */
 
 /**
- * @typedef {object} Connection
+ * @typedef {object} ActiveConnection
  * @property {string} id
- * @property {string} path
- * @property {string} settings_path
- * @property {string} device_path
  * @property {string} type
  * @property {number} state
- * @property {object} ipv4
  * @property {IPAddress[]} addresses
+ * @property {string} gateway
  */
 
-/** @typedef {(conns: Connection[]) => void} ConnectionFn */
+/**
+ * @typedef {object} Connection
+ * @property {string} id
+ * @property {string} name
+ * @property {IPv4} ipv4
+ */
+
+/**
+ * @typedef {object} IPv4
+ * @property {string} method
+ * @property {IPAddress[]} addresses
+ * @property {IPAddress[]} nameServers
+ * @property {IPAddress} gateway
+ */
+
+/** @typedef {(conns: ActiveConnection[]) => void} ConnectionFn */
 /** @typedef {(conns: string[]) => void} ConnectionPathsFn */
 
 /**
@@ -89,7 +102,8 @@ const CONNECTION_TYPES = {
  * @typedef {object} NetworkAdapter
  * @property {function} activeConnections
  * @property {(handler: (event: NetworkEvent) => void) => void} subscribe
- * @property {(connection: Connection) => Promise<any>} updateConnection
+ * @property {(id: string) => Promise<Connection>} getConnection
+ * @property {(connection: ActiveConnection) => Promise<any>} updateConnection
  * @property {() => Promise<string>} hostname
  */
 
@@ -126,7 +140,7 @@ class NetworkManagerAdapter {
   /**
    * Returns the active connections
    *
-   * @returns { Promise.<Connection[]> }
+   * @returns { Promise<ActiveConnection[]> }
    */
   async activeConnections() {
     let connections = [];
@@ -137,6 +151,31 @@ class NetworkManagerAdapter {
     }
 
     return connections;
+  }
+
+  /**
+   * Returns the connection with the given ID
+   *
+   * @param {string} id - Connection ID
+   * @return {Promise<Connection>}
+   */
+  async getConnection(id) {
+    const proxy = await this.client.proxy(NM_SETTINGS_IFACE);
+    const path = await proxy.GetConnectionByUuid(id);
+    const settingsProxy = await this.client.proxy("org.freedesktop.NetworkManager.Settings.Connection", path);
+    const { connection, ipv4 } = await settingsProxy.GetSettings();
+    return {
+      id: connection.uuid.v,
+      name: connection.id.v,
+      ipv4: {
+        addresses: ipv4["address-data"].v.map(({ address, prefix }) => {
+          return { address: address.v, prefix: prefix.v };
+        }),
+        nameServers: ipv4.dns.v.map(int_to_text),
+        method: ipv4.method.v,
+        gateway: ipv4.gateway?.v
+      }
+    };
   }
 
   /**
@@ -156,7 +195,7 @@ class NetworkManagerAdapter {
 
     proxies.addEventListener("added", (_event, proxy) => {
       proxy.wait(() => {
-        this.connectionFromProxy(proxy).then(connection => {
+        this.activeConnectionFromProxy(proxy).then(connection => {
           handler({ type: CONNECTION_ADDED, payload: connection });
         });
       });
@@ -164,7 +203,7 @@ class NetworkManagerAdapter {
 
     proxies.addEventListener("changed", (_event, proxy) => {
       proxy.wait(() => {
-        this.connectionFromProxy(proxy).then(connection => {
+        this.activeConnectionFromProxy(proxy).then(connection => {
           handler({ type: CONNECTION_UPDATED, payload: connection });
         });
       });
@@ -183,7 +222,9 @@ class NetworkManagerAdapter {
    * @param {Connection} connection - Connection to update
    */
   async updateConnection(connection) {
-    const settingsObject = await this.client.proxy(NM_CONNECTION_IFACE, connection.settings_path);
+    const proxy = await this.client.proxy(NM_SETTINGS_IFACE);
+    const path = await proxy.GetConnectionByUuid(connection.id);
+    const settingsObject = await this.client.proxy(NM_CONNECTION_IFACE, path);
     const settings = await settingsObject.GetSettings();
 
     delete settings.ipv4.addresses;
@@ -195,7 +236,7 @@ class NetworkManagerAdapter {
       ...settings,
       connection: {
         ...settings.connection,
-        id: cockpit.variant("s", connection.id)
+        id: cockpit.variant("s", connection.name)
       },
       ipv4: {
         ...settings.ipv4,
@@ -206,7 +247,7 @@ class NetworkManagerAdapter {
           }
         ))
         ),
-        dns: cockpit.variant("au", connection.ipv4.dns),
+        dns: cockpit.variant("au", connection.ipv4.nameServers.map(ip4_from_text)),
         method: cockpit.variant("s", connection.ipv4.method)
       }
     };
@@ -217,23 +258,23 @@ class NetworkManagerAdapter {
       newSettings.ipv4.gateway = cockpit.variant("s", connection.ipv4.gateway);
     }
 
-    console.log(newSettings);
+    console.log("Updated connection:", newSettings);
 
     await settingsObject.Update(newSettings);
-    await this.activateConnection(connection);
+    await this.activateConnection(path);
   }
 
   /**
    * Reactivate the given connection
    *
    * @private
-   * @param {Connection} connection
+   * @param {string} path - connection path
    * See NM API documentation for details.
    * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
    */
-  async activateConnection(connection) {
+  async activateConnection(path) {
     const proxy = await this.client.proxy(NM_IFACE);
-    return proxy.ActivateConnection(connection.settings_path, connection.device_path, "/");
+    return proxy.ActivateConnection(path, "/", "/");
   }
 
   /*
@@ -258,11 +299,10 @@ class NetworkManagerAdapter {
    *
    * @private
    * @param {object} proxy - Proxy object from /org/freedesktop/NetworkManager/ActiveConnection/*
-   * @return Promise<Connection>
+   * @return Promise<ActiveConnection>
    */
-  async connectionFromProxy(proxy) {
-    const settings = await this.connectionSettings(proxy.Connection);
-    const { ipv4 } = settings;
+  async activeConnectionFromProxy(proxy) {
+    // const settings = await this.connectionSettings(proxy.Connection);
     let addresses = [];
 
     if (proxy.State === CONNECTION_STATE.ACTIVATED) {
@@ -271,11 +311,8 @@ class NetworkManagerAdapter {
     }
 
     return {
-      id: proxy.Id,
-      path: proxy.Connection,
-      settings_path: proxy.Connection,
-      device_path: proxy.Devices[0],
-      ipv4,
+      id: proxy.Uuid,
+      name: proxy.Id,
       addresses,
       type: proxy.Type,
       state: proxy.State
@@ -290,7 +327,7 @@ class NetworkManagerAdapter {
    */
   async connectionFromPath(path) {
     const proxy = await this.client.proxy(NM_ACTIVE_CONNECTION_IFACE, path);
-    return this.connectionFromProxy(proxy);
+    return this.activeConnectionFromProxy(proxy);
   }
 
   /**
@@ -424,6 +461,10 @@ o  *   NetworkManagerAdapter.
    */
   async activeConnections() {
     return this.adapter.activeConnections();
+  }
+
+  async getConnection(id) {
+    return this.adapter.getConnection(id);
   }
 
   /**

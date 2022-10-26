@@ -45,8 +45,8 @@ export default function Network() {
   }, [client.network]);
 
   useEffect(() => {
-    const onConnectionRemoved = connectionPath => {
-      setConnections(conns => conns.filter(c => c.path !== connectionPath));
+    const onConnectionRemoved = id => {
+      setConnections(conns => conns.filter(c => c.id !== id));
     };
 
     return client.network.listen("connectionRemoved", onConnectionRemoved);
@@ -55,7 +55,7 @@ export default function Network() {
   useEffect(() => {
     const onConnectionUpdated = connection => {
       setConnections(conns => {
-        const newConnections = conns.filter(c => c.path !== connection.path);
+        const newConnections = conns.filter(c => c.id !== connection.id);
         return [...newConnections, connection];
       });
     };

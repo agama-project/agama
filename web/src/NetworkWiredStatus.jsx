@@ -22,6 +22,7 @@
 import React, { useState } from "react";
 import IpSettingsForm from "./IpSettingsForm";
 import ConnectionsDataList from "./ConnectionsDataList";
+import { useInstallerClient } from "./context/installer";
 
 import { CONNECTION_STATE } from "./client/network";
 
@@ -29,16 +30,20 @@ import { CONNECTION_STATE } from "./client/network";
  * D-Installer component to show status of wired network connections
  *
  * @todo evaluate if it should be "merged" into NetworkWifiStatus
- * @param {import ("client/network").Connection[]} connections
+ * @param {import ("client/network").ActiveConnection[]} connections
  */
 export default function NetworkWiredStatus({ connections }) {
+  const client = useInstallerClient();
   const [connection, setConnection] = useState(null);
 
   const conns = connections.filter(c => c.state === CONNECTION_STATE.ACTIVATED);
+  const selectConnection = ({ id }) => {
+    client.network.getConnection(id).then(setConnection);
+  };
 
   return (
     <>
-      <ConnectionsDataList conns={conns} onSelect={setConnection} />
+      <ConnectionsDataList conns={conns} onSelect={selectConnection} />
       { connection && <IpSettingsForm connection={connection} onClose={() => setConnection(null)} /> }
     </>
   );

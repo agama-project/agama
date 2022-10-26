@@ -218,5 +218,6 @@ export {
   isValidIpPrefix,
   dnsFromIpConfig,
   addressesFromIpConfig,
-  ip4_from_text
+  ip4_from_text,
+  int_to_text
 };

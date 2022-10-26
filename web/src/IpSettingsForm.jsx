@@ -25,7 +25,6 @@ import { useInstallerClient } from "./context/installer";
 import AddressesDataList from "./AddressesDataList";
 import DnsDataList from "./DnsDataList";
 import Popup from "./Popup";
-import { addressesFromIpConfig, dnsFromIpConfig, ip4_from_text } from "./utils";
 
 const METHODS = {
   MANUAL: "manual",
@@ -37,11 +36,12 @@ const usingDHCP = (method) => method === METHODS.AUTO;
 export default function IpSettingsForm({ connection, onClose }) {
   const client = useInstallerClient();
   const { ipv4 = {} } = connection;
-  const [addresses, setAddresses] = useState(addressesFromIpConfig(ipv4));
-  // TODO: fill initial DNS Servers value from connection object
-  const [nameServers, setNameServers] = useState(dnsFromIpConfig(ipv4));
-  const [method, setMethod] = useState(ipv4.method?.v || "auto");
-  const [gateway, setGateway] = useState(ipv4.gateway?.v || "");
+  const [addresses, setAddresses] = useState(ipv4.addresses);
+  const [nameServers, setNameServers] = useState(ipv4.nameServers.map(a => {
+    return { address: a };
+  }));
+  const [method, setMethod] = useState(ipv4.method || "auto");
+  const [gateway, setGateway] = useState(ipv4.gateway || "");
   const [errors, setErrors] = useState({});
 
   const isSetAsInvalid = field => Object.keys(errors).includes(field);
@@ -104,7 +104,7 @@ export default function IpSettingsForm({ connection, onClose }) {
         addresses: sanitizedAddresses,
         method,
         gateway,
-        dns: sanitizedNameServers.map((s) => ip4_from_text(s.address))
+        nameServers: sanitizedNameServers.map(s => s.address)
       }
     };
 
@@ -123,7 +123,7 @@ export default function IpSettingsForm({ connection, onClose }) {
   };
 
   return (
-    <Popup isOpen height="medium" title={`Edit "${connection.id}" connection`}>
+    <Popup isOpen height="medium" title={`Edit "${connection.name}" connection`}>
       {/* FIXME: use a real onSubmit callback */}
       <Form id="edit-connection" onSubmit={onSubmit}>
         <FormGroup fieldId="method" label="Mode" isRequired>
