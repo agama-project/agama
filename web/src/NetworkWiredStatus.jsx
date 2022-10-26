@@ -24,7 +24,7 @@ import IpSettingsForm from "./IpSettingsForm";
 import ConnectionsDataList from "./ConnectionsDataList";
 import { useInstallerClient } from "./context/installer";
 
-import { CONNECTION_STATE } from "./client/network";
+import { ConnectionState } from "./client/network";
 
 /**
  * D-Installer component to show status of wired network connections
@@ -36,7 +36,7 @@ export default function NetworkWiredStatus({ connections }) {
   const client = useInstallerClient();
   const [connection, setConnection] = useState(null);
 
-  const conns = connections.filter(c => c.state === CONNECTION_STATE.ACTIVATED);
+  const conns = connections.filter(c => c.state === ConnectionState.ACTIVATED);
   const selectConnection = ({ id }) => {
     client.network.getConnection(id).then(setConnection);
   };

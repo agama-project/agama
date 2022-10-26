@@ -23,7 +23,7 @@ import React, { useEffect, useState } from "react";
 import { Stack, StackItem } from "@patternfly/react-core";
 import { useInstallerClient } from "./context/installer";
 import { useCancellablePromise } from "./utils";
-import { CONNECTION_TYPES } from "./client/network";
+import { ConnectionTypes } from "./client/network";
 import NetworkWiredStatus from "./NetworkWiredStatus";
 import NetworkWifiStatus from "./NetworkWifiStatus";
 
@@ -65,8 +65,8 @@ export default function Network() {
 
   if (!connections.length) return null;
 
-  const activeWiredConnections = connections.filter(c => c.type === CONNECTION_TYPES.ETHERNET);
-  const activeWifiConnections = connections.filter(c => c.type === CONNECTION_TYPES.WIFI);
+  const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
+  const activeWifiConnections = connections.filter(c => c.type === ConnectionTypes.WIFI);
 
   return (
     <Stack className="overview-network">
