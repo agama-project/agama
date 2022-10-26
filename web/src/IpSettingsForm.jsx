@@ -124,7 +124,6 @@ export default function IpSettingsForm({ connection, onClose }) {
 
   return (
     <Popup isOpen height="medium" title={`Edit "${connection.name}" connection`}>
-      {/* FIXME: use a real onSubmit callback */}
       <Form id="edit-connection" onSubmit={onSubmit}>
         <FormGroup fieldId="method" label="Mode" isRequired>
           <FormSelect
@@ -165,7 +164,6 @@ export default function IpSettingsForm({ connection, onClose }) {
 
       <Popup.Actions>
         <Popup.Confirm form="edit-connection" type="submit" />
-        {/* FIXME: use a real onClick callback */}
         <Popup.Cancel onClick={onClose} />
       </Popup.Actions>
     </Popup>
