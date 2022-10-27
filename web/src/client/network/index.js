@@ -206,7 +206,7 @@ o  *   NetworkManagerAdapter.
   }
 
   /**
-   * Returns the connection witht the given ID
+   * Returns the connection with the given ID
    *
    * @param {string} id - Connection ID
    * @return {Promise<Connection>}

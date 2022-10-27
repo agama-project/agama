@@ -121,8 +121,9 @@ class NetworkManagerAdapter {
       }
     };
 
-    // FIXME: find a better way to add gateway only if there are addresses. If not, a DBusError will
-    // be raises "gateway cannot be set if there are no addresses configured".
+    // FIXME: find a better way to add the gateway only if there are addresses. Otherwise,
+    // NetworkManager raises the following D-Bus error: "gateway cannot be set if there are
+    // no addresses configured".
     if ((connection.ipv4.gateway) && (newSettings.ipv4["address-data"].v.length !== 0)) {
       newSettings.ipv4.gateway = cockpit.variant("s", connection.ipv4.gateway);
     }
