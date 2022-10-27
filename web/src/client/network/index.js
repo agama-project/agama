@@ -22,62 +22,19 @@
 // @ts-check
 
 import { NetworkManagerAdapter } from "./network_manager";
+import { ConnectionTypes, ConnectionState } from "./model";
+
+/**
+ * @typedef {import("./model").Connection} Connection
+ * @typedef {import("./model").ActiveConnection} ActiveConnection
+ * @typedef {import("./model").IPAddress} IPAddress
+ */
 
 const NetworkEventTypes = Object.freeze({
   ACTIVE_CONNECTION_ADDED: "active_connection_added",
   ACTIVE_CONNECTION_UPDATED: "active_connection_updated",
   ACTIVE_CONNECTION_REMOVED: "active_connection_removed"
 });
-
-/**
- * Enum for the active connection state values
- *
- * @readonly
- * @enum { number }
- * https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMActiveConnectionState
- */
-const ConnectionState = Object.freeze({
-  UNKWOWN: 0,
-  ACTIVATING: 1,
-  ACTIVATED: 2,
-  DEACTIVATING: 3,
-  DEACTIVATED: 4
-});
-
-const ConnectionTypes = Object.freeze({
-  ETHERNET: "802-3-ethernet",
-  WIFI: "802-11-wireless"
-});
-
-/**
- * @typedef {object} IPAddress
- * @property {string} address - like "129.168.1.2"
- * @property {string} prefix - like "16"
- */
-
-/**
- * @typedef {object} ActiveConnection
- * @property {string} id
- * @property {string} name
- * @property {string} type
- * @property {number} state
- * @property {IPAddress[]} addresses
- */
-
-/**
- * @typedef {object} Connection
- * @property {string} id
- * @property {string} name
- * @property {IPv4} ipv4
- */
-
-/**
- * @typedef {object} IPv4
- * @property {string} method
- * @property {IPAddress[]} addresses
- * @property {string[]} nameServers
- * @property {IPAddress} gateway
- */
 
 /** @typedef {(conns: ActiveConnection[]) => void} ConnectionFn */
 /** @typedef {(conns: string[]) => void} ConnectionPathsFn */
