@@ -20,25 +20,20 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Button, List, ListItem, Text } from "@patternfly/react-core";
-import Popup from "./Popup";
-
+import { Stack, StackItem } from "@patternfly/react-core";
 import { useInstallerClient } from "./context/installer";
 import { useCancellablePromise } from "./utils";
-import { formatIp } from "./client/network";
+import { ConnectionTypes } from "./client/network";
+import NetworkWiredStatus from "./NetworkWiredStatus";
+import NetworkWifiStatus from "./NetworkWifiStatus";
 
-export default function TargetIpsPopup() {
+export default function Network() {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [connections, setConnections] = useState([]);
-  const [hostname, setHostname] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    cancellablePromise(client.network.config()).then(config => {
-      setConnections(config.connections);
-      setHostname(config.hostname);
-    });
+    cancellablePromise(client.network.activeConnections()).then(setConnections);
   }, [client.network, cancellablePromise]);
 
   useEffect(() => {
@@ -58,44 +53,29 @@ export default function TargetIpsPopup() {
   }, [client.network]);
 
   useEffect(() => {
-    const onConnectionUpdated = updatedConnection => {
+    const onConnectionUpdated = connection => {
       setConnections(conns => {
-        const newConnections = conns.filter(c => c.id !== updatedConnection.id);
-        return [...newConnections, updatedConnection];
+        const newConnections = conns.filter(c => c.id !== connection.id);
+        return [...newConnections, connection];
       });
     };
 
     return client.network.listen("connectionUpdated", onConnectionUpdated);
   }, [client.network]);
 
-  if (connections.length === 0) return null;
+  if (!connections.length) return null;
 
-  const ips = connections.flatMap(conn => conn.addresses.map(formatIp));
-  const [firstIp] = ips;
-
-  if (ips.length === 0) return null;
-
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
+  const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
+  const activeWifiConnections = connections.filter(c => c.type === ConnectionTypes.WIFI);
 
   return (
-    <>
-      <Button variant="link" onClick={open} isDisabled={ips.length === 1}>
-        {firstIp} {hostname && <Text component="small">({hostname})</Text>}
-      </Button>
-
-      <Popup isOpen={isOpen} title="Ip Addresses">
-        <List>
-          {ips.map(ip => (
-            <ListItem key={ip}>{ip}</ListItem>
-          ))}
-        </List>
-        <Popup.Actions>
-          <Popup.Confirm onClick={close} autoFocus>
-            Close
-          </Popup.Confirm>
-        </Popup.Actions>
-      </Popup>
-    </>
+    <Stack className="overview-network">
+      <StackItem>
+        <NetworkWiredStatus connections={activeWiredConnections} />
+      </StackItem>
+      <StackItem>
+        <NetworkWifiStatus connections={activeWifiConnections} />
+      </StackItem>
+    </Stack>
   );
 }

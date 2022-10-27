@@ -121,7 +121,7 @@ class QuestionsClient {
   /**
    * Return all the questions
    *
-   * @return {Promise.<Array.<Object>>}
+   * @return {Promise<Array<object>>}
    */
   async getQuestions() {
     const dbusQuestions = await this.client.call(

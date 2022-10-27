@@ -45,7 +45,7 @@ class StorageBaseClient {
   /**
    * Returns the actions for the current proposal
    *
-   * @return {Promise.<Array.<Object>>}
+   * @return {Promise<object[]>}
    */
   async getStorageActions() {
     const proxy = await this.client.proxy(STORAGE_PROPOSAL_IFACE);
@@ -58,7 +58,7 @@ class StorageBaseClient {
   /**
    * Returns storage proposal settings
    *
-   * @return {Promise.<Object>}
+   * @return {Promise<object>}
    */
   async getStorageProposal() {
     const proxy = await this.client.proxy(STORAGE_PROPOSAL_IFACE);

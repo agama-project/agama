@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import { createClient } from "./client";
 
@@ -29,20 +29,29 @@ import TargetIpsPopup from "./TargetIpsPopup";
 
 jest.mock("./client");
 
+const conn0 = {
+  id: "7a9470b5-aa0e-4e20-b48e-3eee105543e9",
+  addresses: [
+    { address: "1.2.3.4", prefix: 24 },
+    { address: "5.6.7.8", prefix: 16 },
+  ],
+};
+
 describe("TargetIpsPopup", () => {
+  let callbacks;
   const hostname = "example.net";
 
   beforeEach(() => {
+    callbacks = {};
+    const listenFn = (event, cb) => { callbacks[event] = cb };
     createClient.mockImplementation(() => {
       return {
         network: {
+          listen: listenFn,
           config: () => Promise.resolve({
-            addresses: [
-              { address: "1.2.3.4", prefix: 24 },
-              { address: "5.6.7.8", prefix: 16 },
-            ],
+            connections: [conn0],
             hostname
-          })
+          }),
         }
       };
     });
@@ -56,7 +65,7 @@ describe("TargetIpsPopup", () => {
 
     const dialog = await screen.findByRole("dialog");
 
-    within(dialog).getByText(/example.net/);
+    within(dialog).getByText(/Ip Addresses/);
     within(dialog).getByText("5.6.7.8/16");
 
     const closeButton = within(dialog).getByRole("button", { name: /Close/i });
@@ -65,5 +74,35 @@ describe("TargetIpsPopup", () => {
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
+  });
+
+  it("updates the IP if the connection changes", async () => {
+    installerRender(<TargetIpsPopup />);
+    await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });
+    const updatedConn = {
+      ...conn0,
+      addresses: [{ address: "5.6.7.8", prefix: 24 }]
+    };
+
+    act(() => {
+      callbacks.connectionUpdated(updatedConn);
+    });
+    await screen.findByRole("button", { name: /5.6.7.8\/24 \(example.net\)/i });
+  });
+
+  it("updates the IP if the connection is replaced", async () => {
+    installerRender(<TargetIpsPopup />);
+    await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });
+    const conn1 = {
+      ...conn0,
+      id: "2f1b1c0d-c835-479d-ae7d-e828bb4a75fa",
+      addresses: [{ address: "5.6.7.8", prefix: 24 }]
+    };
+
+    act(() => {
+      callbacks.connectionAdded(conn1);
+      callbacks.connectionRemoved(conn0.id);
+    });
+    await screen.findByRole("button", { name: /5.6.7.8\/24 \(example.net\)/i });
   });
 });

@@ -36,13 +36,6 @@
   box-shadow: 0 0 0 1px branding.$eos-bc-cerulean-500;
 }
 
-// Adds a tiny "padding" when focusing a primary or secondary action to avoid
-// https://github.com/yast/d-installer/issues/115#issuecomment-1087375598
-.pf-c-button.pf-m-primary:focus-visible,
-.pf-c-button.pf-m-secondary:focus-visible {
-  box-shadow: 0 0 0 1px white, 0 0 0 2px branding.$eos-bc-cerulean-500;
-}
-
 // NOTE: commented it out because looks like those
 // sizes makes the headings too big
 // // See "eos-ds/dist/scss/eos-base/variables/titles.scss";
@@ -186,4 +179,45 @@ p {
 .host-ip {
   vertical-align: middle;
   color: branding.$eos-bc-gray-900;
+}
+
+ul.connections-datalist {
+  border: 0;
+  li {
+    border: 0;
+    // TODO: get rid of this nested overrides once the network overview UI is better defined
+    .pf-c-data-list__item-row {
+      padding-inline: 0;
+      .pf-c-data-list__item-content {
+        padding-block-end: 0;
+      }
+    }
+  }
+}
+
+.auto-modal-popup {
+  block-size: auto;
+}
+
+.medium-modal-popup {
+  min-block-size: 55vh;
+  max-block-size: 55vh;
+}
+
+.large-modal-popup {
+  min-block-size: 85vh;
+  max-block-size: 85vh;
+}
+
+// *DataLists custom styles
+li.pf-c-data-list__item {
+  border-block-end-width: thin;
+}
+
+div.pf-c-data-list__item-row:has(button.remove-link:hover) {
+  background-color: #FAFAFA;
+}
+
+button.remove-link:hover {
+  color: var(--pf-c-button--m-danger--BackgroundColor);
 }

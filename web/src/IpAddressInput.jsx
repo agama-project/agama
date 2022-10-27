@@ -19,14 +19,31 @@
  * find current contact information at www.suse.com.
  */
 
-import { partition } from "./utils";
+import React, { useState } from 'react';
+import { isValidIp } from './client/network/utils';
+import { TextInput, ValidatedOptions } from '@patternfly/react-core';
 
-describe("partition", () => {
-  it("returns two groups of elements that do and do not satisfy provided filter", () => {
-    const numbers = [1, 2, 3, 4, 5, 6];
-    const [odd, even] = partition(numbers, number => number % 2);
+const IpAddressInput = ({ placeholder, onError = () => null, ...props }) => {
+  const [validated, setValidated] = useState("default");
 
-    expect(odd).toEqual([1, 3, 5]);
-    expect(even).toEqual([2, 4, 6]);
-  });
-});
+  return (
+    <TextInput
+      placeholder={ placeholder || "IP Address"}
+      validated={ValidatedOptions[validated]}
+      onFocus={() => setValidated("default")}
+      onBlur={e => {
+        const value = e.target.value;
+
+        if (value === "" || isValidIp(value)) {
+          return;
+        }
+
+        setValidated("error");
+        onError(value);
+      }}
+      {...props}
+    />
+  );
+};
+
+export default IpAddressInput;

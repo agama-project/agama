@@ -19,14 +19,22 @@
  * find current contact information at www.suse.com.
  */
 
-import { partition } from "./utils";
+import React from "react";
+import { ConnectionState } from "./client/network";
 
-describe("partition", () => {
-  it("returns two groups of elements that do and do not satisfy provided filter", () => {
-    const numbers = [1, 2, 3, 4, 5, 6];
-    const [odd, even] = partition(numbers, number => number % 2);
+import ConnectionsDataList from "./ConnectionsDataList";
 
-    expect(odd).toEqual([1, 3, 5]);
-    expect(even).toEqual([2, 4, 6]);
-  });
-});
+/**
+ * D-Installer component to show status of wireless network connections
+ *
+ * @todo evaluate if it should be "merged" into NetworkWiredStatus
+ * @todo display link for setting up a WiFi connection when possible
+ * @param {import ("client/network").ActiveConnection[]} connections
+ */
+export default function NetworkWiFiStatus({ connections }) {
+  const conns = connections.filter(c => c.state === ConnectionState.ACTIVATED);
+
+  return (
+    <ConnectionsDataList conns={conns} />
+  );
+}

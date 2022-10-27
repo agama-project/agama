@@ -122,5 +122,5 @@ function useCancellablePromise() {
 
 export {
   partition,
-  useCancellablePromise
+  useCancellablePromise,
 };
