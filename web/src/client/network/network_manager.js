@@ -254,7 +254,7 @@ class NetworkManagerAdapter {
   /**
    * Returns the computer's hostname
    *
-   * @returns { Promise.<string> }
+   * @returns {Promise<string>}
    *
    * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.Settings.html
    */

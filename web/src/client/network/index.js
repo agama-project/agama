@@ -199,12 +199,18 @@ o  *   NetworkManagerAdapter.
   /**
    * Returns the active connections
    *
-   * @returns { Promise.<ActiveConnection[]> }
+   * @returns {Promise<ActiveConnection[]>}
    */
   async activeConnections() {
     return this.adapter.activeConnections();
   }
 
+  /**
+   * Returns the connection witht the given ID
+   *
+   * @param {string} id - Connection ID
+   * @return {Promise<Connection>}
+   */
   async getConnection(id) {
     return this.adapter.getConnection(id);
   }
@@ -225,7 +231,7 @@ o  *   NetworkManagerAdapter.
    *
    * @todo remove duplicates
    * @private
-   * @return {Promise.<IPAddress[]>}
+   * @return {Promise<IPAddress[]>}
    */
   async addresses() {
     const conns = await this.adapter.activeConnections();

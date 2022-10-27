@@ -69,7 +69,7 @@ class ManagerBaseClient {
   /**
    * Return the installer status
    *
-   * @return {Promise.<number>}
+   * @return {Promise<number>}
    */
   async getPhase() {
     const proxy = await this.client.proxy(MANAGER_IFACE);
