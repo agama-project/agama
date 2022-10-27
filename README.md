@@ -66,6 +66,11 @@ $ cd d-installer
 $ ./setup.h
 ~~~
 
+Start the d-installer service
+~~~
+cd service; sudo bundle exec bin/d-installer
+~~~
+
 Then point your browser to http://localhost:9090/cockpit/@localhost/d-installer/index.html and that's all.
 
 Note that the [setup.sh](./setup.sh) script installs the required dependencies to build and run the project and it also configures the D-Installer services and cockpit. Alternatively, just go through the following instructions if you want to configure it manually:
