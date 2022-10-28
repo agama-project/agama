@@ -34,6 +34,58 @@ const NM_ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Ac
 const NM_IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
 
 /**
+ * @param {Connection} connection - Connection to convert
+ */
+const connectionToCockpit = (connection) => {
+  const { ipv4 } = connection;
+  const settings = {
+    connection: {
+      id: cockpit.variant("s", connection.name)
+    },
+    ipv4: {
+      "address-data": cockpit.variant("aa{sv}", ipv4.addresses.map(addr => (
+        {
+          address: cockpit.variant("s", addr.address),
+          prefix: cockpit.variant("u", parseInt(addr.prefix.toString()))
+        }
+      ))),
+      dns: cockpit.variant("au", ipv4.nameServers.map(stringToIPInt)),
+      method: cockpit.variant("s", ipv4.method)
+    }
+  };
+
+  if (ipv4.gateway && connection.ipv4.addresses.length !== 0) {
+    settings.ipv4.gateway = cockpit.variant("s", ipv4.gateway);
+  }
+
+  return settings;
+};
+
+/**
+ * It merges the information from a connection into a D-Bus settings object
+ *
+ * @param {object} settings - Settings from the GetSettings D-Bus method
+ * @param {Connection} connection - Connection containing the information to update
+ * @return {object} Object to be used with the UpdateConnection D-Bus method
+ */
+const mergeConnectionSettings = (settings, connection) => {
+  const { addresses, gateway, ...cleanIPv4 } = settings.ipv4 || {};
+  const { connection: conn, ipv4 } = connectionToCockpit(connection);
+
+  return {
+    ...settings,
+    connection: {
+      ...settings.connection,
+      ...conn
+    },
+    ipv4: {
+      ...cleanIPv4,
+      ...ipv4
+    }
+  };
+};
+
+/**
  * NetworkClient adapter for NetworkManager
  *
  * This class is responsible for providing an interface to interact with NetworkManager through
@@ -99,35 +151,7 @@ class NetworkManagerAdapter {
   async updateConnection(connection) {
     const settingsProxy = await this.connectionSettingsObject(connection.id);
     const settings = await settingsProxy.GetSettings();
-
-    delete settings.ipv4.addresses;
-    delete settings.ipv4["address-data"];
-    delete settings.ipv4.gateway;
-    delete settings.ipv4.dns;
-
-    const newSettings = {
-      ...settings,
-      ipv4: {
-        ...settings.ipv4,
-        "address-data": cockpit.variant("aa{sv}", connection.ipv4.addresses.map(addr => (
-          {
-            address: cockpit.variant("s", addr.address),
-            prefix: cockpit.variant("u", parseInt(addr.prefix))
-          }
-        ))
-        ),
-        dns: cockpit.variant("au", connection.ipv4.nameServers.map(stringToIPInt)),
-        method: cockpit.variant("s", connection.ipv4.method)
-      }
-    };
-
-    // FIXME: find a better way to add the gateway only if there are addresses. Otherwise,
-    // NetworkManager raises the following D-Bus error: "gateway cannot be set if there are
-    // no addresses configured".
-    if ((connection.ipv4.gateway) && (newSettings.ipv4["address-data"].v.length !== 0)) {
-      newSettings.ipv4.gateway = cockpit.variant("s", connection.ipv4.gateway);
-    }
-
+    const newSettings = mergeConnectionSettings(settings, connection);
     await settingsProxy.Update(newSettings);
     await this.activateConnection(settingsProxy.path);
   }
@@ -260,4 +284,4 @@ class NetworkManagerAdapter {
   }
 }
 
-export { NetworkManagerAdapter };
+export { NetworkManagerAdapter, mergeConnectionSettings };

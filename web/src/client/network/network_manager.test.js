@@ -19,7 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
-import { NetworkManagerAdapter } from "./network_manager";
+import { mergeConnectionSettings, NetworkManagerAdapter } from "./network_manager";
+import { createConnection } from "./model";
 import { ConnectionState, ConnectionTypes } from "./index";
 import { DBusClient } from "../dbus";
 import cockpit from "../../lib/cockpit";
@@ -194,5 +195,51 @@ describe("NetworkManagerAdapter", () => {
       ));
       expect(client.activateConnection).toHaveBeenCalled();
     });
+  });
+});
+
+describe("mergeConnectionSettings", () => {
+  it("returns an object merging the original settings and the ones from the connection", () => {
+    const settings = {
+      uuid: cockpit.variant("s", "ba2b14db-fc6c-40a7-b275-77ef9341880c"),
+      id: cockpit.variant("s", "Wired connection 1"),
+      ipv4: {
+        addresses: cockpit.variant("aau", [[3232266754, 24, 3232266753]]),
+        "routes-data": cockpit.variant("aau", [])
+      },
+      proxy: {}
+
+    };
+
+    const connection = createConnection({
+      name: "Wired connection 2",
+      ipv4: {
+        addresses: [{ address: "192.168.1.2", prefix: 24 }],
+        gateway: "192.168.1.1"
+      }
+    });
+
+    const newSettings = mergeConnectionSettings(settings, connection);
+
+    expect(newSettings.connection.id).toEqual(cockpit.variant("s", connection.name));
+    const expectedIpv4 = ({
+      gateway: cockpit.variant("s", "192.168.1.1"),
+      "address-data": cockpit.variant("aa{sv}", [{
+        address: cockpit.variant("s", "192.168.1.2"),
+        prefix: cockpit.variant("u", 24)
+      }]),
+      dns: cockpit.variant("au", []),
+      method: cockpit.variant("s", "auto"),
+      "routes-data": cockpit.variant("aau", [])
+    });
+    expect(newSettings.ipv4).toEqual(expect.objectContaining(expectedIpv4));
+    expect(newSettings.proxy).not.toBeUndefined();
+  });
+
+  it("does not set a gateway if there are not addresses", () => {
+    const connection = createConnection({ name: "Wired connection" });
+    const settings = {};
+    const newSettings = mergeConnectionSettings(settings, connection);
+    expect(newSettings.gateway).toBeUndefined();
   });
 });
