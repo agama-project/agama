@@ -179,6 +179,16 @@ class NetworkManagerAdapter {
   }
 
   /**
+   * Adds a new connection
+   *
+   * @param {Connection} connection - Connection to add
+   */
+  async addConnection(connection) {
+    const proxy = await this.client.proxy(NM_IFACE);
+    await proxy.AddAndActivateConnection(connectionToCockpit(connection));
+  }
+
+  /**
    * Updates the connection
    *
    * @fixme improve it.

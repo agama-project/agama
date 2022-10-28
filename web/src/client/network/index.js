@@ -53,6 +53,7 @@ const NetworkEventTypes = Object.freeze({
  * @property {() => AccessPoint[]} accessPoints
  * @property {(handler: (event: NetworkEvent) => void) => void} subscribe
  * @property {(id: string) => Promise<Connection>} getConnection
+ * @property {(connection: Connection) => Promise<any>} addConnection
  * @property {(connection: Connection) => Promise<any>} updateConnection
  * @property {() => Promise<string>} hostname
  * @property {() => void} setUp
@@ -179,6 +180,15 @@ o  *   NetworkManagerAdapter.
    */
   accessPoints() {
     return this.adapter.accessPoints();
+  }
+
+  /**
+   * Adds a new connection
+   *
+   * @param {Connection} connection - Connection to add
+   */
+  async addConnection(connection) {
+    return this.adapter.addConnection(connection);
   }
 
   /**
