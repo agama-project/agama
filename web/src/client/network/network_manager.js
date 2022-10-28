@@ -116,7 +116,7 @@ const connectionToCockpit = (connection) => {
     settings.connection.type = cockpit.variant("s", "802-11-wireless");
     settings["802-11-wireless"] = {
       mode: cockpit.variant("s", "infrastructure"),
-      ssid: cockpit.variant("au", cockpit.byte_array(wireless.ssid)),
+      ssid: cockpit.variant("ay", cockpit.byte_array(wireless.ssid)),
     };
 
     settings["802-11-wireless-security"] = {
@@ -243,9 +243,12 @@ class NetworkManagerAdapter {
    * @param {Connection} connection - Connection to add
    */
   async addConnection(connection) {
-    const proxy = await this.client.proxy(NM_IFACE);
+    const proxy = await this.client.proxy(NM_SETTINGS_IFACE);
+    // const proxy = await this.client.proxy(NM_IFACE);
     const connCockpit = connectionToCockpit(connection);
-    await proxy.AddAndActivateConnection(connCockpit);
+    // await proxy.AddAndActivateConnection(connCockpit, "/", "/");
+    const path = await proxy.AddConnection(connCockpit);
+    await this.activateConnection(path);
   }
 
   /**
