@@ -41,6 +41,13 @@ const ConnectionTypes = Object.freeze({
   WIFI: "802-11-wireless"
 });
 
+const SecurityProtocols = Object.freeze({
+  WEP: "WEP",
+  WPA: "WPA1",
+  RSN: "WPA2",
+  _8021X: "802.1X"
+});
+
 /**
  * @typedef {object} IPAddress
  * @property {string} address - like "129.168.1.2"
@@ -146,4 +153,10 @@ const createAccessPoint = ({ ssid, hwAddress, strength, security }) => (
   }
 );
 
-export { createConnection, createAccessPoint, ConnectionState, ConnectionTypes };
+export {
+  createConnection,
+  createAccessPoint,
+  ConnectionState,
+  ConnectionTypes,
+  SecurityProtocols
+};

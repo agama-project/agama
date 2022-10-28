@@ -25,7 +25,7 @@ import { DBusClient } from "../dbus";
 import cockpit from "../../lib/cockpit";
 import { intToIPString, stringToIPInt } from "./utils";
 import { NetworkEventTypes, ConnectionState } from "./index";
-import { createAccessPoint } from "./model";
+import { createAccessPoint, SecurityProtocols } from "./model";
 
 /**
  * @typedef {import("./model").Connection} Connection
@@ -63,13 +63,6 @@ const ApSecurityFlags = Object.freeze({
   GROUP_CCMP: 0x00000080,
   KEY_MGMT_PSK: 0x00000100,
   KEY_MGMT_8021_X: 0x00000200,
-});
-
-const SecurityProtocols = Object.freeze({
-  WEP: "WEP",
-  WPA: "WPA1",
-  RSN: "WPA2",
-  _8021X: "802.1X"
 });
 
 /**
