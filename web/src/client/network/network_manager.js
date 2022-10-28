@@ -43,6 +43,55 @@ const NM_IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
 const AP_IFACE = "org.freedesktop.NetworkManager.AccessPoint";
 const AP_NAMESPACE = "/org/freedesktop/NetworkManager/AccessPoint";
 
+const ApFlags = Object.freeze({
+  NONE: 0x00000000,
+  PRIVACY: 0x00000001,
+  WPS: 0x00000002,
+  WPS_PBC: 0x00000004,
+  WPS_PIN: 0x00000008
+});
+
+const ApSecurityFlags = Object.freeze({
+  NONE: 0x00000000,
+  PAIR_WEP40: 0x00000001,
+  PAIR_WEP104: 0x00000002,
+  PAIR_TKIP: 0x00000004,
+  PAIR_CCMP: 0x00000008,
+  GROUP_WEP40: 0x00000010,
+  GROUP_WEP104: 0x00000020,
+  GROUP_TKIP: 0x00000040,
+  GROUP_CCMP: 0x00000080,
+  KEY_MGMT_PSK: 0x00000100,
+  KEY_MGMT_8021_X: 0x00000200,
+});
+
+const SecurityProtocols = Object.freeze({
+  WEP: "WEP",
+  WPA: "WPA1",
+  RSN: "WPA2"
+});
+
+/**
+* @param {AccessPoint} access_point
+* @return {string[]} security protocols supported
+*/
+const security_from_flags = (access_point) => {
+  const { flags, wpa_flags, rsn_flags } = access_point;
+  const security = [];
+
+  if ((flags & ApFlags.PRIVACY) && (wpa_flags === 0) && (rsn_flags === 0))
+    security.push("WEP");
+
+  if (wpa_flags > 0)
+    security.push("WPA1");
+  if (rsn_flags > 0)
+    security.push("WPA2");
+  if ((wpa_flags & ApSecurityFlags.KEY_MGMT_8021_X) || (rsn_flags & ApSecurityFlags.KEY_MGMT_8021_X))
+    security.push("802.1X");
+
+  return security;
+};
+
 /**
  * @param {Connection} connection - Connection to convert
  */
@@ -149,7 +198,10 @@ class NetworkManagerAdapter {
       return createAccessPoint({
         ssid: window.atob(ap.Ssid),
         hwAddress: ap.HwAddress,
-        strength: ap.Strength
+        strength: ap.Strength,
+        flags: ap.Flags,
+        wpa_flags: ap.WpaFlags,
+        rsn_flags: ap.RsnFlags
       });
     });
   }
