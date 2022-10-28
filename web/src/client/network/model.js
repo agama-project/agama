@@ -91,13 +91,12 @@ const ConnectionTypes = Object.freeze({
  * @param {string} [props.gateway]
  * @return {IPv4}
  */
-const createIPv4 = (props) => {
+const createIPv4 = ({ method, addresses, nameServers, gateway }) => {
   return {
-    method: "auto",
-    addresses: [],
-    nameServers: [],
-    gateway: "",
-    ...props
+    method: method || "auto",
+    addresses: addresses || [],
+    nameServers: nameServers || [],
+    gateway: gateway || "",
   };
 };
 
@@ -110,12 +109,13 @@ const createIPv4 = (props) => {
  * @param {string} [options.id] - Connection ID
  * @param {string} [options.name] - Connection name
  * @param {object} [options.ipv4]
+ * @return {Connection}
  */
 const createConnection = ({ id, name, ipv4 }) => {
   return {
     id,
     name,
-    ipv4: createIPv4(ipv4),
+    ipv4: createIPv4(ipv4 || {}),
   };
 };
 

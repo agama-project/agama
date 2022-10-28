@@ -25,6 +25,7 @@ import { createConnection } from "./model";
 
 describe("createConnection", () => {
   it("creates a connection with the default values", () => {
+    /** type {Connection} */
     const connection = createConnection({ name: "Wired connection" });
     expect(connection).toEqual({
       id: undefined,
@@ -32,9 +33,9 @@ describe("createConnection", () => {
       ipv4: {
         method: "auto",
         addresses: [],
-        nameServers: []
-      },
-      wireless: {}
+        nameServers: [],
+        gateway: ""
+      }
     });
   });
 
@@ -45,7 +46,7 @@ describe("createConnection", () => {
       method: "auto",
       addresses,
       nameServers: [],
-      testing: 1
+      gateway: ""
     });
   });
 });
