@@ -98,7 +98,11 @@ class DBusClient {
    * @return {Promise<any>} DBusProxies object
    */
   async proxies(iface, path_namespace, options) {
-    return this.client.proxies(iface, path_namespace, options);
+    const all = await this.client.proxies(
+      iface, path_namespace, { watch: true, ...options }
+    );
+    await all.wait();
+    return all;
   }
 
   /**

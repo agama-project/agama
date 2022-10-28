@@ -143,24 +143,19 @@ class NetworkManagerAdapter {
   async subscribe(handler) {
     const proxies = await this.client.proxies(
       NM_ACTIVE_CONNECTION_IFACE,
-      "/org/freedesktop/NetworkManager/ActiveConnection",
-      { watch: true }
+      "/org/freedesktop/NetworkManager/ActiveConnection"
     );
 
     proxies.addEventListener("added", (_event, proxy) => {
-      proxy.wait(() => {
-        this.activeConnectionFromProxy(proxy).then(connection => {
-          this.connectionIds[proxy.path] = connection.id;
-          handler({ type: NetworkEventTypes.ACTIVE_CONNECTION_ADDED, payload: connection });
-        });
+      this.activeConnectionFromProxy(proxy).then(connection => {
+        this.connectionIds[proxy.path] = connection.id;
+        handler({ type: NetworkEventTypes.ACTIVE_CONNECTION_ADDED, payload: connection });
       });
     });
 
     proxies.addEventListener("changed", (_event, proxy) => {
-      proxy.wait(() => {
-        this.activeConnectionFromProxy(proxy).then(connection => {
-          handler({ type: NetworkEventTypes.ACTIVE_CONNECTION_UPDATED, payload: connection });
-        });
+      this.activeConnectionFromProxy(proxy).then(connection => {
+        handler({ type: NetworkEventTypes.ACTIVE_CONNECTION_UPDATED, payload: connection });
       });
     });
 
