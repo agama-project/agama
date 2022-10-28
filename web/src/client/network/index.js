@@ -93,6 +93,7 @@ o  *   NetworkManagerAdapter.
       connectionRemoved: [],
       connectionUpdated: []
     };
+    this.setUpDone = false;
   }
 
   /**
@@ -130,6 +131,8 @@ o  *   NetworkManagerAdapter.
    * Set up the client
    */
   async setup() {
+    if (this.setUpDone) return;
+
     return this.adapter.setUp();
   }
 
