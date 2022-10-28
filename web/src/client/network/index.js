@@ -28,6 +28,7 @@ import { ConnectionTypes, ConnectionState } from "./model";
  * @typedef {import("./model").Connection} Connection
  * @typedef {import("./model").ActiveConnection} ActiveConnection
  * @typedef {import("./model").IPAddress} IPAddress
+ * @typedef {import("./model").AccessPoint} AccessPoint
  */
 
 const NetworkEventTypes = Object.freeze({
@@ -49,10 +50,12 @@ const NetworkEventTypes = Object.freeze({
 /**
  * @typedef {object} NetworkAdapter
  * @property {() => Promise<ActiveConnection[]>} activeConnections
+ * @property {() => AccessPoint[]} accessPoints
  * @property {(handler: (event: NetworkEvent) => void) => void} subscribe
  * @property {(id: string) => Promise<Connection>} getConnection
  * @property {(connection: Connection) => Promise<any>} updateConnection
  * @property {() => Promise<string>} hostname
+ * @property {() => void} setUp
  */
 
 /**
@@ -123,6 +126,13 @@ o  *   NetworkManagerAdapter.
   }
 
   /**
+   * Set up the client
+   */
+  async setup() {
+    return this.adapter.setUp();
+  }
+
+  /**
    * FIXME: improve this documentation
    * Starts listening changes on active connections
    *
@@ -160,6 +170,15 @@ o  *   NetworkManagerAdapter.
    */
   async activeConnections() {
     return this.adapter.activeConnections();
+  }
+
+  /**
+   * Returns the list of available wireless access points (AP)
+   *
+   * @return {AccessPoint[]}
+   */
+  accessPoints() {
+    return this.adapter.accessPoints();
   }
 
   /**

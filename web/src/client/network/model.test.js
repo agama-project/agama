@@ -21,11 +21,10 @@
 
 // @ts-check
 
-import { createConnection } from "./model";
+import { createConnection, createAccessPoint } from "./model";
 
 describe("createConnection", () => {
   it("creates a connection with the default values", () => {
-    /** type {Connection} */
     const connection = createConnection({ name: "Wired connection" });
     expect(connection).toEqual({
       id: undefined,
@@ -47,6 +46,22 @@ describe("createConnection", () => {
       addresses,
       nameServers: [],
       gateway: ""
+    });
+  });
+});
+
+describe("createConnection", () => {
+  it("creates an AccessPoint using the given values", () => {
+    const ap = createAccessPoint({
+      ssid: "WIFI1",
+      hwAddress: "11:22:33:44:55:66",
+      strength: 90
+    });
+
+    expect(ap).toEqual({
+      ssid: "WIFI1",
+      hwAddress: "11:22:33:44:55:66",
+      strength: 90
     });
   });
 });

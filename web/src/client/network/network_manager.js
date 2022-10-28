@@ -25,6 +25,14 @@ import { DBusClient } from "../dbus";
 import cockpit from "../../lib/cockpit";
 import { intToIPString, stringToIPInt } from "./utils";
 import { NetworkEventTypes, ConnectionState } from "./index";
+import { createAccessPoint } from "./model";
+
+/**
+ * @typedef {import("./model").Connection} Connection
+ * @typedef {import("./model").ActiveConnection} ActiveConnection
+ * @typedef {import("./model").IPAddress} IPAddress
+ * @typedef {import("./model").AccessPoint} AccessPoint
+ */
 
 const NM_SERVICE_NAME = "org.freedesktop.NetworkManager";
 const NM_IFACE = "org.freedesktop.NetworkManager";
@@ -99,6 +107,18 @@ class NetworkManagerAdapter {
     this.client = dbusClient || new DBusClient(NM_SERVICE_NAME);
     /** @type {{[k: string]: string}} */
     this.connectionIds = {};
+    this.proxies = {
+      accessPoints: {}
+    };
+  }
+
+  /**
+   * Builds proxies and starts listening to them
+   */
+  async setUp() {
+    this.proxies = {
+      accessPoints: await this.client.proxies(AP_IFACE, AP_NAMESPACE)
+    };
   }
 
   /**
@@ -115,6 +135,21 @@ class NetworkManagerAdapter {
       connections = [...connections, await this.activeConnectionFromPath(path)];
     }
     return connections;
+  }
+
+  /**
+   * Returns the list of available wireless access points (AP)
+   *
+   * @return {AccessPoint[]}
+   */
+  accessPoints() {
+    return Object.values(this.proxies.accessPoints).map(ap => {
+      return createAccessPoint({
+        ssid: window.atob(ap.Ssid),
+        hwAddress: ap.HwAddress,
+        strength: ap.Strength
+      });
+    });
   }
 
   /**

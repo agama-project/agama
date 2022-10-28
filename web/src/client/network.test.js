@@ -32,11 +32,14 @@ const conn = {
 };
 
 const adapter = {
+  setUp: jest.fn(),
   activeConnections: jest.fn().mockResolvedValue([conn]),
   hostname: jest.fn().mockResolvedValue("localhost"),
   subscribe: jest.fn(),
   getConnection: jest.fn(),
-  updateConnection: jest.fn()
+  addConnection: jest.fn(),
+  updateConnection: jest.fn(),
+  accessPoints: jest.fn()
 };
 
 describe("NetworkClient", () => {

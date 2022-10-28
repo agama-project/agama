@@ -79,6 +79,13 @@ const ConnectionTypes = Object.freeze({
  */
 
 /**
+ * @typedef {object} AccessPoint
+ * @property {string} ssid
+ * @property {number} strength
+ * @property {string} hwAddress
+ */
+
+/**
  * Returns an IPv4 configuration object
  *
  * Defaults values can be overriden
@@ -119,4 +126,21 @@ const createConnection = ({ id, name, ipv4 }) => {
   };
 };
 
-export { createConnection, ConnectionState, ConnectionTypes };
+/**
+ * Returns an acces point object
+ *
+ * @param {object} options
+ * @param {string} options.ssid - Network SSID
+ * @param {string} options.hwAddress - AP hardware address
+ * @param {number} options.strength - Signal strength
+ * @return {AccessPoint}
+ */
+const createAccessPoint = ({ ssid, hwAddress, strength }) => (
+  {
+    ssid,
+    hwAddress,
+    strength
+  }
+);
+
+export { createConnection, createAccessPoint, ConnectionState, ConnectionTypes };
