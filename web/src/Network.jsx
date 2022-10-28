@@ -20,17 +20,21 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Stack, StackItem } from "@patternfly/react-core";
+import { Button, Stack, StackItem } from "@patternfly/react-core";
 import { useInstallerClient } from "./context/installer";
 import { useCancellablePromise } from "./utils";
 import { ConnectionTypes } from "./client/network";
 import NetworkWiredStatus from "./NetworkWiredStatus";
 import NetworkWifiStatus from "./NetworkWifiStatus";
+import WirelessSelector from "./WirelessSelector";
 
 export default function Network() {
   const client = useInstallerClient();
+  const [initialized, setInitialized] = useState(false);
   const { cancellablePromise } = useCancellablePromise();
   const [connections, setConnections] = useState([]);
+  const [accessPoints, setAccessPoints] = useState([]);
+  const [openWirelessSelector, setOpenWirelessSelector] = useState(false);
 
   useEffect(() => {
     cancellablePromise(client.network.activeConnections()).then(setConnections);
@@ -63,6 +67,17 @@ export default function Network() {
     return client.network.listen("connectionUpdated", onConnectionUpdated);
   }, [client.network]);
 
+  useEffect(() => {
+    client.network.setUp().then(() => setInitialized(true));
+  }, [client.network]);
+
+  useEffect(() => {
+    if (!initialized) return;
+
+    setAccessPoints(client.network.accessPoints());
+  }, [client.network, initialized]);
+
+  if (!initialized) return null;
   if (!connections.length) return null;
 
   const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
@@ -75,6 +90,10 @@ export default function Network() {
       </StackItem>
       <StackItem>
         <NetworkWifiStatus connections={activeWifiConnections} />
+      </StackItem>
+      <StackItem>
+        <Button variant="link" onClick={() => setOpenWirelessSelector(true)}>Connect to a wireless network</Button>
+        { openWirelessSelector && <WirelessSelector accessPoints={accessPoints} onClose={() => setOpenWirelessSelector(false)} /> }
       </StackItem>
     </Stack>
   );
