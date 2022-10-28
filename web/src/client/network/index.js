@@ -130,7 +130,7 @@ o  *   NetworkManagerAdapter.
   /**
    * Set up the client
    */
-  async setup() {
+  async setUp() {
     if (this.setUpDone) return;
 
     return this.adapter.setUp();
