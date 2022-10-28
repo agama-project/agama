@@ -83,9 +83,7 @@ const ConnectionTypes = Object.freeze({
  * @property {string} ssid
  * @property {number} strength
  * @property {string} hwAddress
- * @property {number} flags
- * @property {number} wpa_flags
- * @property {number} rsn_flags
+ * @property {string[]} security
  */
 
 /**
@@ -136,19 +134,15 @@ const createConnection = ({ id, name, ipv4 }) => {
  * @param {string} options.ssid - Network SSID
  * @param {string} options.hwAddress - AP hardware address
  * @param {number} options.strength - Signal strength
- * @param {number} options.flags - Flags
- * @param {number} options.wpa_flags - WPA1 flags
- * @param {number} options.rsn_flags - Robust Secure Network or WPA2 flags
+ * @param {string[]} options.security - Supported security protocols
  * @return {AccessPoint}
  */
-const createAccessPoint = ({ ssid, hwAddress, strength, flags, wpa_flags, rsn_flags }) => (
+const createAccessPoint = ({ ssid, hwAddress, strength, security }) => (
   {
     ssid,
     hwAddress,
     strength,
-    flags,
-    wpa_flags,
-    rsn_flags
+    security
   }
 );
 

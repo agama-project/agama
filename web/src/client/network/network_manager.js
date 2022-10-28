@@ -68,26 +68,28 @@ const ApSecurityFlags = Object.freeze({
 const SecurityProtocols = Object.freeze({
   WEP: "WEP",
   WPA: "WPA1",
-  RSN: "WPA2"
+  RSN: "WPA2",
+  _8021X: "802.1X"
 });
 
 /**
-* @param {AccessPoint} access_point
+* @param {number} flags - AP flags
+* @param {number} wpa_flags - AP WPA1 flags
+* @param {number} rsn_flags - AP WPA2 flags
 * @return {string[]} security protocols supported
 */
-const security_from_flags = (access_point) => {
-  const { flags, wpa_flags, rsn_flags } = access_point;
+const securityFromFlags = (flags, wpa_flags, rsn_flags) => {
   const security = [];
 
   if ((flags & ApFlags.PRIVACY) && (wpa_flags === 0) && (rsn_flags === 0))
-    security.push("WEP");
+    security.push(SecurityProtocols.WEP);
 
   if (wpa_flags > 0)
-    security.push("WPA1");
+    security.push(SecurityProtocols.WPA);
   if (rsn_flags > 0)
-    security.push("WPA2");
+    security.push(SecurityProtocols.RSN);
   if ((wpa_flags & ApSecurityFlags.KEY_MGMT_8021_X) || (rsn_flags & ApSecurityFlags.KEY_MGMT_8021_X))
-    security.push("802.1X");
+    security.push(SecurityProtocols._8021X);
 
   return security;
 };
@@ -199,9 +201,7 @@ class NetworkManagerAdapter {
         ssid: window.atob(ap.Ssid),
         hwAddress: ap.HwAddress,
         strength: ap.Strength,
-        flags: ap.Flags,
-        wpa_flags: ap.WpaFlags,
-        rsn_flags: ap.RsnFlags
+        security: securityFromFlags(ap.Flags, ap.WpaFlags, ap.RsnFlags)
       });
     });
   }
