@@ -51,7 +51,7 @@ function WirelessSelectorForm({ accessPoints, onClose, onSubmit }) {
           <Radio
             id={n.ssid}
             label={n.ssid}
-            description={`Strength: ${n.strength}%`}
+            description={`Security: ${n.security.join(',')}, Strength: ${n.strength}%`}
             isChecked={isSelected(n)}
             onClick={() => setSelected(n.ssid)}
           />
@@ -130,7 +130,7 @@ function WirelessSelector({ accessPoints, onClose }) {
   };
 
   const connectNetwork = ({ password }) => {
-    const wireless = { ssid, password };
+    const wireless = { ssid, password, authMode: "wpa-psk", authAlg: "open" };
     const connection = createConnection({
       name: ssid,
       wireless

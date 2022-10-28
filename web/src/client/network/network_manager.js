@@ -91,7 +91,7 @@ const securityFromFlags = (flags, wpa_flags, rsn_flags) => {
  * @param {Connection} connection - Connection to convert
  */
 const connectionToCockpit = (connection) => {
-  const { ipv4 } = connection;
+  const { ipv4, wireless } = connection;
   const settings = {
     connection: {
       id: cockpit.variant("s", connection.name)
@@ -110,6 +110,20 @@ const connectionToCockpit = (connection) => {
 
   if (ipv4.gateway && connection.ipv4.addresses.length !== 0) {
     settings.ipv4.gateway = cockpit.variant("s", ipv4.gateway);
+  }
+
+  if (wireless) {
+    settings.connection.type = cockpit.variant("s", "802-11-wireless");
+    settings["802-11-wireless"] = {
+      mode: cockpit.variant("s", "infrastructure"),
+      ssid: cockpit.variant("au", cockpit.byte_array(wireless.ssid)),
+    };
+
+    settings["802-11-wireless-security"] = {
+      "key-mgmt": cockpit.variant("s", wireless.authMode),
+      "auth-alg": cockpit.variant("s", wireless.authAlg),
+      psk: cockpit.variant("s", wireless.password)
+    };
   }
 
   return settings;
@@ -230,7 +244,8 @@ class NetworkManagerAdapter {
    */
   async addConnection(connection) {
     const proxy = await this.client.proxy(NM_IFACE);
-    await proxy.AddAndActivateConnection(connectionToCockpit(connection));
+    const connCockpit = connectionToCockpit(connection);
+    await proxy.AddAndActivateConnection(connCockpit);
   }
 
   /**

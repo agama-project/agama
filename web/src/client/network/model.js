@@ -75,6 +75,8 @@ const SecurityProtocols = Object.freeze({
  * @typedef {object} Wireless
  * @property {string} password
  * @property {string} ssid
+ * @property {string} authMode
+ * @property {string} authAlg
  */
 
 /**
@@ -123,15 +125,20 @@ const createIPv4 = ({ method, addresses, nameServers, gateway }) => {
  * @param {object} options
  * @param {string} [options.id] - Connection ID
  * @param {string} [options.name] - Connection name
- * @param {object} [options.ipv4]
+ * @param {object} [options.ipv4] IPv4 Settings
+ * @param {object} [options.wireless] Wireless Settings
  * @return {Connection}
  */
-const createConnection = ({ id, name, ipv4 }) => {
-  return {
+const createConnection = ({ id, name, ipv4, wireless }) => {
+  const connection = {
     id,
     name,
     ipv4: createIPv4(ipv4 || {}),
   };
+
+  if (wireless) connection.wireless = wireless;
+
+  return connection;
 };
 
 /**
@@ -141,7 +148,7 @@ const createConnection = ({ id, name, ipv4 }) => {
  * @param {string} options.ssid - Network SSID
  * @param {string} options.hwAddress - AP hardware address
  * @param {number} options.strength - Signal strength
- * @param {string[]} options.security - Supported security protocols
+ * @param {string[]} [options.security] - Supported security protocols
  * @return {AccessPoint}
  */
 const createAccessPoint = ({ ssid, hwAddress, strength, security }) => (
@@ -149,7 +156,7 @@ const createAccessPoint = ({ ssid, hwAddress, strength, security }) => (
     ssid,
     hwAddress,
     strength,
-    security
+    security: security || []
   }
 );
 

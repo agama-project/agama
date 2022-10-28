@@ -36,6 +36,7 @@ describe("createConnection", () => {
         gateway: ""
       }
     });
+    expect(connection.wireless).toBeUndefined();
   });
 
   it("merges given properties", () => {
@@ -48,20 +49,27 @@ describe("createConnection", () => {
       gateway: ""
     });
   });
+
+  it("adds a wireless key when given", () => {
+    const wireless = { ssid: "MY_WIRELESS" };
+    const connection = createConnection({ name: "Wireless 1", wireless });
+    expect(connection.wireless).toEqual(wireless);
+  });
 });
 
-describe("createConnection", () => {
+describe("createAccessPoint", () => {
   it("creates an AccessPoint using the given values", () => {
     const ap = createAccessPoint({
       ssid: "WIFI1",
       hwAddress: "11:22:33:44:55:66",
-      strength: 90
+      strength: 90,
     });
 
     expect(ap).toEqual({
       ssid: "WIFI1",
       hwAddress: "11:22:33:44:55:66",
-      strength: 90
+      strength: 90,
+      security: []
     });
   });
 });
