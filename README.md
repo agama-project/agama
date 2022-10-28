@@ -63,7 +63,7 @@ You can run D-Installer from its sources by cloning and configuring the project:
 ~~~
 $ git clone https://github.com/yast/d-installer
 $ cd d-installer
-$ ./setup.h
+$ ./setup.sh
 ~~~
 
 Start the d-installer service
