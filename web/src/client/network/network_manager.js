@@ -40,6 +40,8 @@ const NM_SETTINGS_IFACE = "org.freedesktop.NetworkManager.Settings";
 const NM_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Settings.Connection";
 const NM_ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Active";
 const NM_IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
+const AP_IFACE = "org.freedesktop.NetworkManager.AccessPoint";
+const AP_NAMESPACE = "/org/freedesktop/NetworkManager/AccessPoint";
 
 /**
  * @param {Connection} connection - Connection to convert
