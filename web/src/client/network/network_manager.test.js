@@ -71,18 +71,18 @@ const addressesData = {
   }
 };
 
-const AddAndActivateConnectionFn = jest.fn();
 const networkProxy = () => ({
   wait: jest.fn(),
   ActivateConnection: jest.fn(),
-  ActiveConnections: Object.keys(activeConnections),
-  AddAndActivateConnection: AddAndActivateConnectionFn
+  ActiveConnections: Object.keys(activeConnections)
 });
 
+const AddConnectionFn = jest.fn();
 const networkSettingsProxy = () => ({
   wait: jest.fn(),
   Hostname: "testing-machine",
-  GetConnectionByUuid: () => "/org/freedesktop/NetworkManager/Settings/1"
+  GetConnectionByUuid: () => "/org/freedesktop/NetworkManager/Settings/1",
+  AddConnection: AddConnectionFn
 });
 
 const activeConnectionProxy = path => activeConnections[path];
@@ -174,7 +174,7 @@ describe("NetworkManagerAdapter", () => {
       const client = new NetworkManagerAdapter(dbusClient);
       const connection = createConnection({ name: "Wired connection 1" });
       await client.addConnection(connection);
-      expect(AddAndActivateConnectionFn).toHaveBeenCalledWith(
+      expect(AddConnectionFn).toHaveBeenCalledWith(
         expect.objectContaining({
           connection: expect.objectContaining({ id: cockpit.variant("s", connection.name) })
         })

@@ -244,9 +244,7 @@ class NetworkManagerAdapter {
    */
   async addConnection(connection) {
     const proxy = await this.client.proxy(NM_SETTINGS_IFACE);
-    // const proxy = await this.client.proxy(NM_IFACE);
     const connCockpit = connectionToCockpit(connection);
-    // await proxy.AddAndActivateConnection(connCockpit, "/", "/");
     const path = await proxy.AddConnection(connCockpit);
     await this.activateConnection(path);
   }
