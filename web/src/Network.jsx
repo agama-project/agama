@@ -22,7 +22,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Stack, StackItem } from "@patternfly/react-core";
 import { useInstallerClient } from "./context/installer";
-import { useCancellablePromise } from "./utils";
 import { ConnectionTypes } from "./client/network";
 import NetworkWiredStatus from "./NetworkWiredStatus";
 import NetworkWifiStatus from "./NetworkWifiStatus";
@@ -31,14 +30,13 @@ import WirelessSelector from "./WirelessSelector";
 export default function Network() {
   const client = useInstallerClient();
   const [initialized, setInitialized] = useState(false);
-  const { cancellablePromise } = useCancellablePromise();
   const [connections, setConnections] = useState([]);
   const [accessPoints, setAccessPoints] = useState([]);
   const [openWirelessSelector, setOpenWirelessSelector] = useState(false);
 
   useEffect(() => {
-    cancellablePromise(client.network.activeConnections()).then(setConnections);
-  }, [client.network, cancellablePromise]);
+    setConnections(client.network.activeConnections());
+  }, [client.network]);
 
   useEffect(() => {
     const onConnectionAdded = addedConnection => {

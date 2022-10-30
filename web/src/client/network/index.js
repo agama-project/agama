@@ -49,7 +49,7 @@ const NetworkEventTypes = Object.freeze({
 
 /**
  * @typedef {object} NetworkAdapter
- * @property {() => Promise<ActiveConnection[]>} activeConnections
+ * @property {() => ActiveConnection[]} activeConnections
  * @property {() => AccessPoint[]} accessPoints
  * @property {(handler: (event: NetworkEvent) => void) => void} subscribe
  * @property {(id: string) => Promise<Connection>} getConnection
@@ -102,7 +102,7 @@ o  *   NetworkManagerAdapter.
    */
   async config() {
     return {
-      connections: await this.adapter.activeConnections(),
+      connections: this.adapter.activeConnections(),
       addresses: await this.addresses(),
       hostname: await this.adapter.hostname()
     };
@@ -170,9 +170,9 @@ o  *   NetworkManagerAdapter.
   /**
    * Returns the active connections
    *
-   * @returns {Promise<ActiveConnection[]>}
+   * @returns {ActiveConnection[]}
    */
-  async activeConnections() {
+  activeConnections() {
     return this.adapter.activeConnections();
   }
 

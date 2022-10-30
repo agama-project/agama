@@ -39,6 +39,7 @@ const NM_IFACE = "org.freedesktop.NetworkManager";
 const NM_SETTINGS_IFACE = "org.freedesktop.NetworkManager.Settings";
 const NM_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Settings.Connection";
 const NM_ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Active";
+const NM_ACTIVE_CONNECTION_NAMESPACE = "/org/freedesktop/NetworkManager/ActiveConnection";
 const NM_IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
 const AP_IFACE = "org.freedesktop.NetworkManager.AccessPoint";
 const AP_NAMESPACE = "/org/freedesktop/NetworkManager/AccessPoint";
@@ -168,7 +169,8 @@ class NetworkManagerAdapter {
     /** @type {{[k: string]: string}} */
     this.connectionIds = {};
     this.proxies = {
-      accessPoints: {}
+      accessPoints: {},
+      activeConnections: {}
     };
   }
 
@@ -177,24 +179,23 @@ class NetworkManagerAdapter {
    */
   async setUp() {
     this.proxies = {
-      accessPoints: await this.client.proxies(AP_IFACE, AP_NAMESPACE)
+      accessPoints: await this.client.proxies(AP_IFACE, AP_NAMESPACE),
+      activeConnections: await this.client.proxies(
+        NM_ACTIVE_CONNECTION_IFACE, NM_ACTIVE_CONNECTION_NAMESPACE
+      )
     };
   }
 
   /**
    * Returns the list of active connections
    *
-   * @return {Promise<import("./index").ActiveConnection[]>}
+   * @return {ActiveConnection[]}
    * @see https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
    */
-  async activeConnections() {
-    const proxy = await this.client.proxy(NM_IFACE);
-    let connections = [];
-    const paths = await proxy.ActiveConnections;
-    for (const path of paths) {
-      connections = [...connections, await this.activeConnectionFromPath(path)];
-    }
-    return connections;
+  activeConnections() {
+    return Object.values(this.proxies.activeConnections).map(proxy => {
+      return this.activeConnectionFromProxy(proxy);
+    });
   }
 
   /**
