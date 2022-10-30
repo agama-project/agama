@@ -122,7 +122,7 @@ function WirelessSelector({ accessPoints, onClose }) {
   const [ssid, setSsid] = useState(null);
   const client = useInstallerClient();
 
-  if (accessPoints.length === 0) return;
+  if (accessPoints.length === 0) return null;
 
   const selectNetwork = (ssid) => {
     setSelectingNetwork(false);
