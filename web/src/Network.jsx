@@ -92,8 +92,10 @@ export default function Network() {
         <NetworkWifiStatus connections={activeWifiConnections} />
       </StackItem>
       <StackItem>
-        <Button variant="link" onClick={() => setOpenWirelessSelector(true)}>Connect to a wireless network</Button>
-        { openWirelessSelector && <WirelessSelector accessPoints={accessPoints} onClose={() => setOpenWirelessSelector(false)} /> }
+        { accessPoints && accessPoints.length > 0 &&
+          <Button variant="link" onClick={() => setOpenWirelessSelector(true)}>Connect to a wireless network</Button> }
+        { openWirelessSelector &&
+          <WirelessSelector accessPoints={accessPoints} onClose={() => setOpenWirelessSelector(false)} /> }
       </StackItem>
     </Stack>
   );
