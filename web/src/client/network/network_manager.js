@@ -32,6 +32,7 @@ import { createAccessPoint, SecurityProtocols } from "./model";
  * @typedef {import("./model").ActiveConnection} ActiveConnection
  * @typedef {import("./model").IPAddress} IPAddress
  * @typedef {import("./model").AccessPoint} AccessPoint
+ * @typedef {import("./index").NetworkEventFn} NetworkEventFn
  */
 
 const NM_SERVICE_NAME = "org.freedesktop.NetworkManager";
@@ -172,18 +173,23 @@ class NetworkManagerAdapter {
       accessPoints: {},
       activeConnections: {}
     };
+    this.eventsHandler = null;
   }
 
   /**
    * Builds proxies and starts listening to them
+   *
+   * @param {NetworkEventFn} handler - Events handler
    */
-  async setUp() {
+  async setUp(handler) {
+    this.eventsHandler = handler;
     this.proxies = {
       accessPoints: await this.client.proxies(AP_IFACE, AP_NAMESPACE),
       activeConnections: await this.client.proxies(
         NM_ACTIVE_CONNECTION_IFACE, NM_ACTIVE_CONNECTION_NAMESPACE
       )
     };
+    this.subscribeToEvents();
   }
 
   /**
@@ -271,32 +277,22 @@ class NetworkManagerAdapter {
    * Registers a handler for changes in /org/freedesktop/NetworkManager/ActiveConnection/*.
    * The handler recevies a NetworkEvent object.
    *
-   * @param {(event: import("./index").NetworkEvent) => void} handler - Event handler function
+   * @private
    */
-  async subscribe(handler) {
-    const proxies = await this.client.proxies(
-      NM_ACTIVE_CONNECTION_IFACE,
-      "/org/freedesktop/NetworkManager/ActiveConnection"
-    );
+  async subscribeToEvents() {
+    const proxies = this.proxies.activeConnections;
 
-    proxies.addEventListener("added", (_event, proxy) => {
+    /** @type {(eventType: string) => NetworkEventFn} */
+    const handleWrapper = (eventType) => (_event, proxy) => {
       this.activeConnectionFromProxy(proxy).then(connection => {
-        this.connectionIds[proxy.path] = connection.id;
-        handler({ type: NetworkEventTypes.ACTIVE_CONNECTION_ADDED, payload: connection });
+        this.eventsHandler({ type: eventType, payload: connection });
       });
-    });
+    };
 
-    proxies.addEventListener("changed", (_event, proxy) => {
-      this.activeConnectionFromProxy(proxy).then(connection => {
-        handler({ type: NetworkEventTypes.ACTIVE_CONNECTION_UPDATED, payload: connection });
-      });
-    });
-
-    proxies.addEventListener("removed", (_event, proxy) => {
-      const connectionId = this.connectionIds[proxy.path];
-      delete this.connectionIds[proxy.path];
-      handler({ type: NetworkEventTypes.ACTIVE_CONNECTION_REMOVED, payload: connectionId });
-    });
+    // FIXME: do not build a map (eventTypesMap), just inject the type here
+    proxies.addEventListener("added", handleWrapper(NetworkEventTypes.ACTIVE_CONNECTION_ADDED));
+    proxies.addEventListener("changed", handleWrapper(NetworkEventTypes.ACTIVE_CONNECTION_UPDATED));
+    proxies.addEventListener("removed", handleWrapper(NetworkEventTypes.ACTIVE_CONNECTION_REMOVED));
   }
 
   /**

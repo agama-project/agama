@@ -22,7 +22,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Stack, StackItem } from "@patternfly/react-core";
 import { useInstallerClient } from "./context/installer";
-import { ConnectionTypes } from "./client/network";
+import { ConnectionTypes, NetworkEventTypes } from "./client/network";
 import NetworkWiredStatus from "./NetworkWiredStatus";
 import NetworkWifiStatus from "./NetworkWifiStatus";
 import WirelessSelector from "./WirelessSelector";
@@ -35,35 +35,33 @@ export default function Network() {
   const [openWirelessSelector, setOpenWirelessSelector] = useState(false);
 
   useEffect(() => {
+    if (!initialized) return;
+
     setConnections(client.network.activeConnections());
-  }, [client.network]);
+  }, [client.network, initialized]);
 
   useEffect(() => {
-    const onConnectionAdded = addedConnection => {
-      setConnections(conns => [...conns, addedConnection]);
-    };
+    return client.network.onNetworkEvent(({ type, payload }) => {
+      switch (type) {
+        case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
+          setConnections(conns => [...conns, payload]);
+          break;
+        }
 
-    return client.network.listen("connectionAdded", onConnectionAdded);
-  }, [client.network]);
+        case NetworkEventTypes.ACTIVE_CONNECTION_UPDATED: {
+          setConnections(conns => {
+            const newConnections = conns.filter(c => c.id !== payload.id);
+            return [...newConnections, payload];
+          });
+          break;
+        }
 
-  useEffect(() => {
-    const onConnectionRemoved = id => {
-      setConnections(conns => conns.filter(c => c.id !== id));
-    };
-
-    return client.network.listen("connectionRemoved", onConnectionRemoved);
-  }, [client.network]);
-
-  useEffect(() => {
-    const onConnectionUpdated = connection => {
-      setConnections(conns => {
-        const newConnections = conns.filter(c => c.id !== connection.id);
-        return [...newConnections, connection];
-      });
-    };
-
-    return client.network.listen("connectionUpdated", onConnectionUpdated);
-  }, [client.network]);
+        case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
+          setConnections(conns => conns.filter(c => c.id !== payload.id));
+        }
+      }
+    });
+  });
 
   useEffect(() => {
     client.network.setUp().then(() => setInitialized(true));

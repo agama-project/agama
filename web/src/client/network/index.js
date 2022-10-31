@@ -76,6 +76,12 @@ const formatIp = addr => `${addr.address}/${addr.prefix}`;
  */
 
 /**
+ * Network event handler
+ *
+ * @typedef {(event: NetworkEvent) => void} NetworkEventFn
+ */
+
+/**
  * Network client
  */
 class NetworkClient {
@@ -87,13 +93,9 @@ o  *   NetworkManagerAdapter.
     this.adapter = adapter || new NetworkManagerAdapter();
     /** @type {!boolean} */
     this.subscribed = false;
-    /** @type {Handlers} */
-    this.handlers = {
-      connectionAdded: [],
-      connectionRemoved: [],
-      connectionUpdated: []
-    };
     this.setUpDone = false;
+    /** @type {NetworkEventFn[]} */
+    this.handlers = [];
   }
 
   /**
@@ -109,21 +111,17 @@ o  *   NetworkManagerAdapter.
   }
 
   /**
-   * Registers a callback to run when a given event happens
+   * Adds a callback to run when a network event happens (a connection is added,
+   * updated, removed, etc.).
    *
-   * @param {"connectionAdded" | "connectionUpdated" | "connectionRemoved"} eventType - event type
-   * @param {ConnectionFn} handler - the callback to be executed
-   * @return {function} a function to remove the callback
+   * @param {NetworkEventFn} handler - Callback function
+   * @return {() => void} Function to remove the handler
    */
-  listen(eventType, handler) {
-    if (!this.subscribed) {
-      // FIXME: when/where should we unsubscribe?
-      this.subscribe();
-    }
-
-    this.handlers[eventType].push(handler);
+  onNetworkEvent(handler) {
+    const position = this.handlers.length;
+    this.handlers.push(handler);
     return () => {
-      this.handlers[eventType].filter(h => h !== handler);
+      this.handlers.splice(position, 1);
     };
   }
 
@@ -133,38 +131,7 @@ o  *   NetworkManagerAdapter.
   async setUp() {
     if (this.setUpDone) return;
 
-    return this.adapter.setUp();
-  }
-
-  /**
-   * FIXME: improve this documentation
-   * Starts listening changes on active connections
-   *
-   * @private
-   * @return {Promise<any>} function to disable the callback
-   */
-  async subscribe() {
-    // TODO: refactor this method
-    this.subscribed = true;
-
-    this.adapter.subscribe(({ type, payload }) => {
-      switch (type) {
-        case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
-          this.handlers.connectionAdded.forEach(handler => handler(payload));
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_UPDATED: {
-          this.handlers.connectionUpdated.forEach(handler => handler(payload));
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
-          this.handlers.connectionRemoved.forEach(handler => handler(payload.path));
-          break;
-        }
-      }
-    });
+    return this.adapter.setUp(e => this.handlers.forEach(f => f(e)));
   }
 
   /**
