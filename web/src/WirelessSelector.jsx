@@ -39,7 +39,7 @@ function WirelessSelectorForm({ accessPoints, onClose, onSubmit }) {
   const networks = accessPoints.sort((a, b) => b.strength - a.strength);
   const ssids = networks.map(a => a.ssid);
   const filtered = networks.filter((ap, index) => {
-    return (ap.ssid !== "" && ssids.indexOf(ap.ssid) <= index);
+    return (ap.ssid !== "" && ssids.indexOf(ap.ssid) >= index);
   });
 
   const isSelected = (network) => selected === network.ssid;
