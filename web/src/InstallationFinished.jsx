@@ -26,8 +26,7 @@ import {
   Text,
   EmptyState,
   EmptyStateIcon,
-  EmptyStateBody,
-  EmptyStateSecondaryActions
+  EmptyStateBody
 } from "@patternfly/react-core";
 
 import { Title as SectionTitle, PageIcon, MainActions } from "./Layout";
@@ -67,11 +66,6 @@ function InstallationFinished() {
               </Text>
               <Text>Have a lot of fun! Your openSUSE Development Team.</Text>
             </div>
-            <EmptyStateSecondaryActions>
-              <Button component="a" href="https://www.opensuse.org" target="_blank" variant="link">
-                www.opensuse.org
-              </Button>
-            </EmptyStateSecondaryActions>
           </EmptyStateBody>
         </EmptyState>
       </Center>

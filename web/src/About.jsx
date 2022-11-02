@@ -45,8 +45,7 @@ export default function About() {
           to give it a try, we recommend to use a virtual machine to prevent any possible data loss.
         </Text>
         <Text>
-          For more information, check{" "}
-          <a href="https://github.com/yast/d-installer">the project's repository</a>.
+          For more information, please visit the project's repository at https://github.com/yast/d-installer.
         </Text>
         <Popup.Actions>
           <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
