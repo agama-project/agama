@@ -106,10 +106,10 @@ o  *   NetworkManagerAdapter.
    * @return {() => void} Function to remove the handler
    */
   onNetworkEvent(handler) {
-    const position = this.handlers.length;
     this.handlers.push(handler);
     return () => {
-      this.handlers.splice(position, 1);
+      const position = this.handlers.indexOf(handler);
+      if (position > -1) this.handlers.splice(position, 1);
     };
   }
 
