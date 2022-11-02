@@ -37,16 +37,6 @@ const NetworkEventTypes = Object.freeze({
   ACTIVE_CONNECTION_REMOVED: "active_connection_removed"
 });
 
-/** @typedef {(conns: ActiveConnection[]) => void} ConnectionFn */
-/** @typedef {(conns: string[]) => void} ConnectionPathsFn */
-
-/**
- * @typedef {object} Handlers
- * @property {ConnectionFn[]} connectionAdded
- * @property {ConnectionFn[]} connectionRemoved
- * @property {ConnectionFn[]} connectionUpdated
- */
-
 /**
  * @typedef {object} NetworkAdapter
  * @property {() => ActiveConnection[]} activeConnections
