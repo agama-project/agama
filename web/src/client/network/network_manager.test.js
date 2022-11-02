@@ -27,9 +27,9 @@ import cockpit from "../../lib/cockpit";
 
 const NM_IFACE = "org.freedesktop.NetworkManager";
 const NM_SETTINGS_IFACE = "org.freedesktop.NetworkManager.Settings";
-const NM_ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Active";
-const NM_IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
+const IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
 const NM_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Settings.Connection";
+const ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Active";
 
 const dbusClient = new DBusClient("");
 
@@ -47,8 +47,13 @@ const activeConnections = {
     State: ConnectionState.ACTIVATED,
     Type: ConnectionTypes.ETHERNET,
     Ip4Config: "/ip4Config/1"
-  }
+  },
+
 };
+
+Object.defineProperties(activeConnections, {
+  addEventListener: { value: jest.fn(), enumerable: false }
+});
 
 const addressesData = {
   "/ip4Config/1": {
@@ -85,10 +90,6 @@ const networkSettingsProxy = () => ({
   AddConnection: AddConnectionFn
 });
 
-const activeConnectionProxy = path => activeConnections[path];
-
-const ipConfigProxy = path => addressesData[path];
-
 const connectionSettingsMock = {
   wait: jest.fn(),
   GetSettings: () => ({
@@ -118,19 +119,24 @@ const connectionSettingsProxy = () => connectionSettingsMock;
 
 describe("NetworkManagerAdapter", () => {
   beforeEach(() => {
-    dbusClient.proxy = jest.fn().mockImplementation((iface, path) => {
+    dbusClient.proxy = jest.fn().mockImplementation(iface => {
       if (iface === NM_IFACE) return networkProxy();
       if (iface === NM_SETTINGS_IFACE) return networkSettingsProxy();
-      if (iface === NM_ACTIVE_CONNECTION_IFACE) return activeConnectionProxy(path);
-      if (iface === NM_IP4CONFIG_IFACE) return ipConfigProxy(path);
       if (iface === NM_CONNECTION_IFACE) return connectionSettingsProxy();
+    });
+
+    dbusClient.proxies = jest.fn().mockImplementation(iface => {
+      if (iface === ACTIVE_CONNECTION_IFACE) return activeConnections;
+      if (iface === IP4CONFIG_IFACE) return addressesData;
+      return {};
     });
   });
 
   describe("#activeConnections", () => {
     it("returns the list of active connections", async () => {
       const client = new NetworkManagerAdapter(dbusClient);
-      const availableConnections = await client.activeConnections();
+      await client.setUp();
+      const availableConnections = client.activeConnections();
 
       expect(availableConnections.length).toEqual(2);
       const [wireless, ethernet] = availableConnections;

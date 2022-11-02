@@ -29,29 +29,25 @@ import TargetIpsPopup from "./TargetIpsPopup";
 
 jest.mock("./client");
 
-const conn0 = {
-  id: "7a9470b5-aa0e-4e20-b48e-3eee105543e9",
-  addresses: [
-    { address: "1.2.3.4", prefix: 24 },
-    { address: "5.6.7.8", prefix: 16 },
-  ],
-};
+const addresses = [
+  { address: "1.2.3.4", prefix: 24 },
+  { address: "5.6.7.8", prefix: 16 },
+];
+const addressFn = jest.fn().mockReturnValue(addresses);
+const hostnameFn = jest.fn().mockReturnValue("example.net");
 
 describe("TargetIpsPopup", () => {
   let callbacks;
-  const hostname = "example.net";
-
   beforeEach(() => {
-    callbacks = {};
-    const listenFn = (event, cb) => { callbacks[event] = cb };
+    callbacks = [];
+    const onNetworkEventFn = (cb) => { callbacks.push(cb) };
     createClient.mockImplementation(() => {
       return {
         network: {
-          listen: listenFn,
-          config: () => Promise.resolve({
-            connections: [conn0],
-            hostname
-          }),
+          onNetworkEvent: onNetworkEventFn,
+          addresses: addressFn,
+          hostname: hostnameFn,
+          setUp: jest.fn().mockResolvedValue()
         }
       };
     });
@@ -65,7 +61,7 @@ describe("TargetIpsPopup", () => {
 
     const dialog = await screen.findByRole("dialog");
 
-    within(dialog).getByText(/Ip Addresses/);
+    within(dialog).getByText(/IP Addresses/);
     within(dialog).getByText("5.6.7.8/16");
 
     const closeButton = within(dialog).getByRole("button", { name: /Close/i });
@@ -76,33 +72,15 @@ describe("TargetIpsPopup", () => {
     });
   });
 
-  it("updates the IP if the connection changes", async () => {
+  it("updates address and hostname if they change", async () => {
     installerRender(<TargetIpsPopup />);
     await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });
-    const updatedConn = {
-      ...conn0,
-      addresses: [{ address: "5.6.7.8", prefix: 24 }]
-    };
 
+    addressFn.mockReturnValue([{ address: "5.6.7.8", prefix: 24 }]);
+    hostnameFn.mockReturnValue("localhost.localdomain");
     act(() => {
-      callbacks.connectionUpdated(updatedConn);
+      callbacks.forEach(cb => cb());
     });
-    await screen.findByRole("button", { name: /5.6.7.8\/24 \(example.net\)/i });
-  });
-
-  it("updates the IP if the connection is replaced", async () => {
-    installerRender(<TargetIpsPopup />);
-    await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });
-    const conn1 = {
-      ...conn0,
-      id: "2f1b1c0d-c835-479d-ae7d-e828bb4a75fa",
-      addresses: [{ address: "5.6.7.8", prefix: 24 }]
-    };
-
-    act(() => {
-      callbacks.connectionAdded(conn1);
-      callbacks.connectionRemoved(conn0.id);
-    });
-    await screen.findByRole("button", { name: /5.6.7.8\/24 \(example.net\)/i });
+    await screen.findByRole("button", { name: /5.6.7.8\/24 \(localhost.localdomain\)/i });
   });
 });

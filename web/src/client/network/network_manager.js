@@ -24,7 +24,7 @@
 import { DBusClient } from "../dbus";
 import cockpit from "../../lib/cockpit";
 import { intToIPString, stringToIPInt } from "./utils";
-import { NetworkEventTypes, ConnectionState } from "./index";
+import { NetworkEventTypes } from "./index";
 import { createAccessPoint, SecurityProtocols } from "./model";
 
 /**
@@ -35,13 +35,14 @@ import { createAccessPoint, SecurityProtocols } from "./model";
  * @typedef {import("./index").NetworkEventFn} NetworkEventFn
  */
 
-const NM_SERVICE_NAME = "org.freedesktop.NetworkManager";
-const NM_IFACE = "org.freedesktop.NetworkManager";
-const NM_SETTINGS_IFACE = "org.freedesktop.NetworkManager.Settings";
-const NM_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Settings.Connection";
-const NM_ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Active";
-const NM_ACTIVE_CONNECTION_NAMESPACE = "/org/freedesktop/NetworkManager/ActiveConnection";
-const NM_IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
+const SERVICE_NAME = "org.freedesktop.NetworkManager";
+const IFACE = "org.freedesktop.NetworkManager";
+const SETTINGS_IFACE = "org.freedesktop.NetworkManager.Settings";
+const CONNECTION_IFACE = "org.freedesktop.NetworkManager.Settings.Connection";
+const ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Active";
+const ACTIVE_CONNECTION_NAMESPACE = "/org/freedesktop/NetworkManager/ActiveConnection";
+const IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
+const IP4CONFIG_NAMESPACE = "/org/freedesktop/NetworkManager/IP4Config";
 const AP_IFACE = "org.freedesktop.NetworkManager.AccessPoint";
 const AP_NAMESPACE = "/org/freedesktop/NetworkManager/AccessPoint";
 
@@ -166,12 +167,14 @@ class NetworkManagerAdapter {
    * @param {DBusClient} [dbusClient] - D-Bus client
    */
   constructor(dbusClient) {
-    this.client = dbusClient || new DBusClient(NM_SERVICE_NAME);
+    this.client = dbusClient || new DBusClient(SERVICE_NAME);
     /** @type {{[k: string]: string}} */
     this.connectionIds = {};
     this.proxies = {
       accessPoints: {},
-      activeConnections: {}
+      activeConnections: {},
+      ip4Configs: {},
+      settings: null
     };
     this.eventsHandler = null;
   }
@@ -186,8 +189,10 @@ class NetworkManagerAdapter {
     this.proxies = {
       accessPoints: await this.client.proxies(AP_IFACE, AP_NAMESPACE),
       activeConnections: await this.client.proxies(
-        NM_ACTIVE_CONNECTION_IFACE, NM_ACTIVE_CONNECTION_NAMESPACE
-      )
+        ACTIVE_CONNECTION_IFACE, ACTIVE_CONNECTION_NAMESPACE
+      ),
+      ip4Configs: await this.client.proxies(IP4CONFIG_IFACE, IP4CONFIG_NAMESPACE),
+      settings: await this.client.proxy(SETTINGS_IFACE)
     };
     this.subscribeToEvents();
   }
@@ -250,7 +255,7 @@ class NetworkManagerAdapter {
    * @param {Connection} connection - Connection to add
    */
   async addConnection(connection) {
-    const proxy = await this.client.proxy(NM_SETTINGS_IFACE);
+    const proxy = await this.client.proxy(SETTINGS_IFACE);
     const connCockpit = connectionToCockpit(connection);
     const path = await proxy.AddConnection(connCockpit);
     await this.activateConnection(path);
@@ -284,9 +289,8 @@ class NetworkManagerAdapter {
 
     /** @type {(eventType: string) => NetworkEventFn} */
     const handleWrapper = (eventType) => (_event, proxy) => {
-      this.activeConnectionFromProxy(proxy).then(connection => {
-        this.eventsHandler({ type: eventType, payload: connection });
-      });
+      const connection = this.activeConnectionFromProxy(proxy);
+      this.eventsHandler({ type: eventType, payload: connection });
     };
 
     // FIXME: do not build a map (eventTypesMap), just inject the type here
@@ -304,7 +308,7 @@ class NetworkManagerAdapter {
    * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
    */
   async activateConnection(path) {
-    const proxy = await this.client.proxy(NM_IFACE);
+    const proxy = await this.client.proxy(IFACE);
     return proxy.ActivateConnection(path, "/", "/");
   }
 
@@ -315,13 +319,12 @@ class NetworkManagerAdapter {
    *
    * @private
    * @param {object} proxy - Proxy object from /org/freedesktop/NetworkManager/ActiveConnection/*
-   * @return {Promise<import("./index").ActiveConnection>}
+   * @return {ActiveConnection}
    */
-  async activeConnectionFromProxy(proxy) {
+  activeConnectionFromProxy(proxy) {
+    const ip4Config = this.proxies.ip4Configs[proxy.Ip4Config];
     let addresses = [];
-
-    if (proxy.State === ConnectionState.ACTIVATED) {
-      const ip4Config = await this.client.proxy(NM_IP4CONFIG_IFACE, proxy.Ip4Config);
+    if (ip4Config) {
       addresses = ip4Config.AddressData.map(this.connectionIPAddress);
     }
 
@@ -335,18 +338,6 @@ class NetworkManagerAdapter {
   }
 
   /**
-   * Builds a connection object from a D-Bus path.
-   *
-   * @private
-   * @param {string} path - Connection D-Bus path
-   * @returns {Promise<import("./index").ActiveConnection>}
-   */
-  async activeConnectionFromPath(path) {
-    const proxy = await this.client.proxy(NM_ACTIVE_CONNECTION_IFACE, path);
-    return this.activeConnectionFromProxy(proxy);
-  }
-
-  /**
    *
    * Returns connection settings for the given connection
    *
@@ -355,9 +346,9 @@ class NetworkManagerAdapter {
    * @return {Promise<any>}
    */
   async connectionSettingsObject(id) {
-    const proxy = await this.client.proxy(NM_SETTINGS_IFACE);
+    const proxy = await this.client.proxy(SETTINGS_IFACE);
     const path = await proxy.GetConnectionByUuid(id);
-    return await this.client.proxy(NM_CONNECTION_IFACE, path);
+    return await this.client.proxy(CONNECTION_IFACE, path);
   }
 
   /*
@@ -379,13 +370,14 @@ class NetworkManagerAdapter {
   /**
    * Returns the computer's hostname
    *
-   * @returns {Promise<string>}
+   * @return {string}
    *
    * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.Settings.html
    */
-  async hostname() {
-    const proxy = await this.client.proxy(NM_SETTINGS_IFACE);
-    return proxy.Hostname;
+  hostname() {
+    if (!this.proxies.settings) return "";
+
+    return this.proxies.settings.Hostname;
   }
 }
 

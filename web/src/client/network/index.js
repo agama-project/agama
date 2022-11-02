@@ -55,7 +55,7 @@ const NetworkEventTypes = Object.freeze({
  * @property {(id: string) => Promise<Connection>} getConnection
  * @property {(connection: Connection) => Promise<any>} addConnection
  * @property {(connection: Connection) => Promise<any>} updateConnection
- * @property {() => Promise<string>} hostname
+ * @property {() => string} hostname
  * @property {() => void} setUp
  */
 
@@ -96,18 +96,6 @@ o  *   NetworkManagerAdapter.
     this.setUpDone = false;
     /** @type {NetworkEventFn[]} */
     this.handlers = [];
-  }
-
-  /**
-   * Returns IP config overview - addresses, connections and hostname
-   * @return {Promise<{addresses: IPAddress[], hostname: string, connections: ActiveConnection[]}>}
-   */
-  async config() {
-    return {
-      connections: this.adapter.activeConnections(),
-      addresses: await this.addresses(),
-      hostname: await this.adapter.hostname()
-    };
   }
 
   /**
@@ -189,9 +177,18 @@ o  *   NetworkManagerAdapter.
    * @private
    * @return {Promise<IPAddress[]>}
    */
-  async addresses() {
-    const conns = await this.adapter.activeConnections();
+  addresses() {
+    const conns = this.adapter.activeConnections();
     return conns.flatMap(c => c.addresses);
+  }
+
+  /**
+   * Returns the computer's hostname
+   *
+   * @return {string}
+   */
+  hostname() {
+    return this.adapter.hostname();
   }
 }
 

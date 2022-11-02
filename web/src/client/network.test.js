@@ -33,8 +33,8 @@ const conn = {
 
 const adapter = {
   setUp: jest.fn(),
-  activeConnections: jest.fn().mockResolvedValue([conn]),
-  hostname: jest.fn().mockResolvedValue("localhost"),
+  activeConnections: jest.fn().mockReturnValue([conn]),
+  hostname: jest.fn().mockReturnValue("localhost.localdomain"),
   subscribe: jest.fn(),
   getConnection: jest.fn(),
   addConnection: jest.fn(),
@@ -43,16 +43,25 @@ const adapter = {
 };
 
 describe("NetworkClient", () => {
-  describe("#config", () => {
-    it("returns an object containing the hostname, known IPv4 addresses, and active connections", async () => {
+  describe("#activeConnections", () => {
+    it("retuns the list of active connections from the adapter", () => {
       const client = new NetworkClient(adapter);
-      const config = await client.config();
+      const connections = client.activeConnections();
+      expect(connections).toEqual([conn]);
+    });
+  });
 
-      expect(config.hostname).toEqual("localhost");
-      expect(config.addresses).toEqual([
-        { address: "192.168.122.1", prefix: 24 }
-      ]);
-      expect(config.connections).toEqual([conn]);
+  describe("#addresses", () => {
+    it("returns the list of addresses", () => {
+      const client = new NetworkClient(adapter);
+      expect(client.addresses()).toEqual([{ address: "192.168.122.1", prefix: 24 }]);
+    });
+  });
+
+  describe("#hostname", () => {
+    it("returns the hostname from the adapter", () => {
+      const client = new NetworkClient(adapter);
+      expect(client.hostname()).toEqual("localhost.localdomain");
     });
   });
 });

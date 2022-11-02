@@ -30,64 +30,45 @@ import { formatIp } from "./client/network";
 export default function TargetIpsPopup() {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const [connections, setConnections] = useState([]);
-  const [hostname, setHostname] = useState("");
+  const [addresses, setAddresses] = useState([]);
+  const [initialized, setInitialized] = useState(false);
+  const [hostname, setHostname] = useState();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    cancellablePromise(client.network.config()).then(config => {
-      setConnections(config.connections);
-      setHostname(config.hostname);
-    });
+    cancellablePromise(client.network.setUp()).then(() => setInitialized(true));
   }, [client.network, cancellablePromise]);
 
   useEffect(() => {
-    const onConnectionAdded = addedConnection => {
-      setConnections(conns => [...conns, addedConnection]);
+    if (!initialized) return;
+
+    const refreshState = () => {
+      setAddresses(client.network.addresses());
+      setHostname(client.network.hostname());
     };
 
-    return client.network.listen("connectionAdded", onConnectionAdded);
-  }, [client.network]);
+    refreshState();
+    return client.network.onNetworkEvent(() => {
+      refreshState();
+    });
+  }, [client.network, initialized]);
 
-  useEffect(() => {
-    const onConnectionRemoved = id => {
-      setConnections(conns => conns.filter(c => c.id !== id));
-    };
-
-    return client.network.listen("connectionRemoved", onConnectionRemoved);
-  }, [client.network]);
-
-  useEffect(() => {
-    const onConnectionUpdated = updatedConnection => {
-      setConnections(conns => {
-        const newConnections = conns.filter(c => c.id !== updatedConnection.id);
-        return [...newConnections, updatedConnection];
-      });
-    };
-
-    return client.network.listen("connectionUpdated", onConnectionUpdated);
-  }, [client.network]);
-
-  if (connections.length === 0) return null;
-
-  const ips = connections.flatMap(conn => conn.addresses.map(formatIp));
-  const [firstIp] = ips;
-
-  if (ips.length === 0) return null;
+  if (addresses.length === 0) return null;
+  const [firstIp] = addresses;
 
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
 
   return (
     <>
-      <Button variant="link" onClick={open} isDisabled={ips.length === 1}>
-        {firstIp} {hostname && <Text component="small">({hostname})</Text>}
+      <Button variant="link" onClick={open} isDisabled={addresses.length === 1}>
+        {formatIp(firstIp)} {hostname && <Text component="small">({hostname})</Text>}
       </Button>
 
-      <Popup isOpen={isOpen} title="Ip Addresses">
+      <Popup isOpen={isOpen} title="IP Addresses">
         <List>
-          {ips.map(ip => (
-            <ListItem key={ip}>{ip}</ListItem>
+          {addresses.map((ip, index) => (
+            <ListItem key={index}>{formatIp(ip)}</ListItem>
           ))}
         </List>
         <Popup.Actions>
