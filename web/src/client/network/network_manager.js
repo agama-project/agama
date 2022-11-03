@@ -43,8 +43,8 @@ const ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Activ
 const ACTIVE_CONNECTION_NAMESPACE = "/org/freedesktop/NetworkManager/ActiveConnection";
 const IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
 const IP4CONFIG_NAMESPACE = "/org/freedesktop/NetworkManager/IP4Config";
-const AP_IFACE = "org.freedesktop.NetworkManager.AccessPoint";
-const AP_NAMESPACE = "/org/freedesktop/NetworkManager/AccessPoint";
+const ACCESS_POINT_IFACE = "org.freedesktop.NetworkManager.AccessPoint";
+const ACCESS_POINT_NAMESPACE = "/org/freedesktop/NetworkManager/AccessPoint";
 
 const ApFlags = Object.freeze({
   NONE: 0x00000000,
@@ -187,7 +187,7 @@ class NetworkManagerAdapter {
   async setUp(handler) {
     this.eventsHandler = handler;
     this.proxies = {
-      accessPoints: await this.client.proxies(AP_IFACE, AP_NAMESPACE),
+      accessPoints: await this.client.proxies(ACCESS_POINT_IFACE, ACCESS_POINT_NAMESPACE),
       activeConnections: await this.client.proxies(
         ACTIVE_CONNECTION_IFACE, ACTIVE_CONNECTION_NAMESPACE
       ),
