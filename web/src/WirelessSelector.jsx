@@ -165,7 +165,7 @@ function WirelessSelector({ accessPoints, onClose }) {
   const height = filtered.length < 5 ? "medium" : "large";
 
   return (
-    <Popup isOpen height={height} title="Available networks">
+    <Popup isOpen height={height} title="WiFi Networks">
       {renderFilteredNetworks()}
 
       <Popup.Actions>
