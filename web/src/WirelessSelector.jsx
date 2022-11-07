@@ -22,69 +22,24 @@
 import React, { useState } from "react";
 import Popup from "./Popup";
 import {
+  Alert,
   Card,
   CardBody,
   Form,
   FormGroup,
-  FormSelect, FormSelectOption,
+  FormSelect,
+  FormSelectOption,
   Radio,
   TextInput
 } from "@patternfly/react-core";
 
 import { useInstallerClient } from "./context/installer";
-import { createConnection } from "./client/network/model";
 
-function WirelessSelectorForm({ accessPoints, onClose, onSubmit }) {
-  const [selected, setSelected] = useState(null);
+const CONNECTION_FORM_ID = "chosen-network";
 
-  const networks = accessPoints.sort((a, b) => b.strength - a.strength);
-  const ssids = networks.map(a => a.ssid);
-  const filtered = networks.filter((ap, index) => {
-    return (ap.ssid !== "" && ssids.indexOf(ap.ssid) >= index);
-  });
-
-  const isSelected = (network) => selected === network.ssid;
-
-  const buildOptions = (networks) => {
-    return networks.map(n => (
-      <Card key={n.ssid}>
-        <CardBody>
-          <Radio
-            id={n.ssid}
-            label={n.ssid}
-            description={`Security: ${n.security.join(',')}, Strength: ${n.strength}%`}
-            isChecked={isSelected(n)}
-            onClick={() => setSelected(n.ssid)}
-          />
-        </CardBody>
-      </Card>
-    ));
-  };
-
-  const accept = (e) => {
-    e.preventDefault();
-    onSubmit(selected);
-  };
-
-  return (
-    <Popup isOpen height="medium" title="Available networks">
-      <Form id="select-network" onSubmit={accept}>
-        <FormGroup isStack role="radiogroup">
-          {buildOptions(filtered)}
-        </FormGroup>
-      </Form>
-
-      <Popup.Actions>
-        <Popup.Confirm form="select-network" type="submit">
-          Connect
-        </Popup.Confirm>
-        <Popup.Cancel onClick={onClose} />
-      </Popup.Actions>
-    </Popup>
-  );
-}
-
-function WirelessConnectionForm({ onClose, onSubmit }) {
+function WirelessConnectionForm({ network, setSubmittingData, onClose }) {
+  const client = useInstallerClient();
+  const [error, setError] = useState(false);
   const [password, setPassword] = useState("");
   const [security, setSecurity] = useState("none");
 
@@ -98,79 +53,125 @@ function WirelessConnectionForm({ onClose, onSubmit }) {
     <FormSelectOption key={security.value} value={security.value} label={security.label} />
   ));
 
-  const accept = e => {
-    e.preventDefault();
-
-    onSubmit({ password, security });
-    onClose();
+  const connectNetwork = async () => {
+    await client.network.connectTo(network.ssid, { security, password });
   };
+
+  const accept = async e => {
+    e.preventDefault();
+    setError(false);
+    setSubmittingData(true);
+
+    connectNetwork()
+      .then(() => onClose())
+      .catch(() => {
+        setError(true);
+        setSubmittingData(false);
+      });
+  };
+
   return (
-    <Popup isOpen height="medium" title="Connection details">
-      <Form id="connect-network" onSubmit={accept}>
-        <FormGroup fieldId="security" label="Security">
-          <FormSelect
-            id="security"
-            aria-label="security"
-            value={security}
-            onChange={setSecurity}
-          >
-            {selectorOptions}
-          </FormSelect>
-        </FormGroup>
-        { security === "wpa-psk" &&
-          <FormGroup fieldId="password" label="WPA Password">
-            <TextInput
-              id="password"
-              name="password"
-              aria-label="Password"
-              value={password}
-              label="Password"
-              onChange={setPassword}
-            />
-          </FormGroup> }
-      </Form>
-      <Popup.Actions>
-        <Popup.Confirm form="connect-network" type="submit">
-          Connect
-        </Popup.Confirm>
-        <Popup.Cancel onClick={onClose} />
-      </Popup.Actions>
-    </Popup>
+    <Form id={CONNECTION_FORM_ID} onSubmit={accept}>
+      { error &&
+        <Alert variant="warning" isInline title="Something went wrong">
+          <p>Please, review provided settings and try again.</p>
+        </Alert> }
+      <FormGroup fieldId="security" label="Security">
+        <FormSelect
+          id="security"
+          aria-label="security"
+          value={security}
+          onChange={setSecurity}
+        >
+          {selectorOptions}
+        </FormSelect>
+      </FormGroup>
+      { security === "wpa-psk" &&
+        <FormGroup fieldId="password" label="WPA Password">
+          <TextInput
+            id="password"
+            name="password"
+            aria-label="Password"
+            value={password}
+            label="Password"
+            onChange={setPassword}
+          />
+        </FormGroup> }
+    </Form>
   );
 }
 
 function WirelessSelector({ accessPoints, onClose }) {
-  const [selectingNetwork, setSelectingNetwork] = useState(true);
-  const [ssid, setSsid] = useState(null);
-  const client = useInstallerClient();
+  const [selected, setSelected] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [actionsDisabled, setActionsDisabled] = useState(false);
 
-  if (accessPoints.length === 0) return null;
+  const networks = accessPoints.sort((a, b) => b.strength - a.strength);
+  const ssids = networks.map(a => a.ssid);
+  const filtered = networks.filter((ap, index) => {
+    return (ap.ssid !== "" && ssids.indexOf(ap.ssid) >= index);
+  });
 
-  const selectNetwork = (ssid) => {
-    setSelectingNetwork(false);
-    setSsid(ssid);
+  const setSubmittingData = (value) => {
+    setIsLoading(value);
+    setActionsDisabled(value);
   };
 
-  const connectNetwork = ({ password }) => {
-    const wireless = { ssid, password, authMode: "wpa-psk", authAlg: "open" };
-    const connection = createConnection({
-      name: ssid,
-      wireless
+  const isSelected = (network) => selected === network.ssid;
+
+  const renderFilteredNetworks = () => {
+    return filtered.map(n => {
+      const selected = isSelected(n);
+      const description = `Security: ${n.security.join(',')}, Strength: ${n.strength}%`;
+
+      let className = "available-network";
+      if (selected) className += " selected-network";
+
+      return (
+        <Card key={n.ssid} className={className}>
+          <CardBody>
+            <div className="header">
+              <Radio
+                id={n.ssid}
+                label={n.ssid}
+                description={description}
+                isChecked={selected}
+                onClick={() => setSelected(n.ssid)}
+              />
+            </div>
+            { selected &&
+              <div className="content">
+                <WirelessConnectionForm
+                  network={n}
+                  setSubmittingData={setSubmittingData}
+                  onClose={onClose}
+                />
+              </div> }
+          </CardBody>
+        </Card>
+      );
     });
-    client.network.addConnection(connection);
   };
 
-  if (selectingNetwork) {
-    return (
-      <WirelessSelectorForm
-        accessPoints={accessPoints} onSubmit={selectNetwork} onClose={onClose}
-      />
-    );
-  } else {
-    return (
-      <WirelessConnectionForm onSubmit={connectNetwork} onClose={onClose} />
-    );
-  }
+  const height = filtered.length < 5 ? "medium" : "large";
+
+  return (
+    <Popup isOpen height={height} title="Available networks">
+      {renderFilteredNetworks()}
+
+      <Popup.Actions>
+        <Popup.Confirm
+          type="submit"
+          form={CONNECTION_FORM_ID}
+          isDisabled={actionsDisabled || !selected}
+          isLoading={isLoading}
+        >
+          { isLoading ? "Connecting" : "Connect" }
+        </Popup.Confirm>
+        <Popup.Cancel onClick={onClose} isDisabled={actionsDisabled} />
+      </Popup.Actions>
+    </Popup>
+  );
 }
 
 export default WirelessSelector;
