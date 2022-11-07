@@ -32,6 +32,21 @@ Dir.chdir(__dir__) do
 end
 require "dinstaller/dbus/service_runner"
 
+# Set up a {Logger} suitable either for terminal (started manually)
+# or syslog (D-Bus activated)
+# @return [Logger]
+def logger_for(name)
+  if $stdout.tty?
+    formatter = Logger::Formatter.new # the default
+  else
+    # going via syslog which will provide time and progname already
+    formatter = ->(severity, _time, _progname, msg) { "#{severity}: #{msg}\n" }
+    $stdout.sync = true
+  end
+
+  Logger.new($stdout, progname: name.to_s, formatter: formatter)
+end
+
 # Runs the service with the given name
 #
 # @param name [Symbol] Service name
@@ -41,8 +56,7 @@ def start_service(name)
   module_y2dir = File.expand_path("../lib/dinstaller/dbus/y2dir/#{name}", __dir__)
   ENV["Y2DIR"] = "#{module_y2dir}:#{general_y2dir}"
 
-  logger = Logger.new($stdout, progname: name.to_s)
-  service_runner = DInstaller::DBus::ServiceRunner.new(name, logger: logger)
+  service_runner = DInstaller::DBus::ServiceRunner.new(name, logger: logger_for(name))
   service_runner.run
 end
 
