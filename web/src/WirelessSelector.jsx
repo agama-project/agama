@@ -33,6 +33,11 @@ import {
   TextInput
 } from "@patternfly/react-core";
 
+import {
+  EOS_LOCK as LockIcon,
+  EOS_SIGNAL_CELLULAR_ALT as SignalIcon
+} from "eos-icons-react";
+
 import { useInstallerClient } from "./context/installer";
 
 const CONNECTION_FORM_ID = "chosen-network";
@@ -122,7 +127,6 @@ function WirelessSelector({ accessPoints, onClose }) {
   const renderFilteredNetworks = () => {
     return filtered.map(n => {
       const selected = isSelected(n);
-      const description = `Security: ${n.security.join(',')}, Strength: ${n.strength}%`;
 
       let className = "available-network";
       if (selected) className += " selected-network";
@@ -134,7 +138,12 @@ function WirelessSelector({ accessPoints, onClose }) {
               <Radio
                 id={n.ssid}
                 label={n.ssid}
-                description={description}
+                description={
+                  <>
+                    <LockIcon size="10" color="grey" /> {n.security.join(", ")}{" "}
+                    <SignalIcon size="10" color="grey" /> {n.strength}
+                  </>
+                }
                 isChecked={selected}
                 onClick={() => setSelected(n.ssid)}
               />
