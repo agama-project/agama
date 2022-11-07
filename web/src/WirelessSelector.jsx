@@ -26,6 +26,7 @@ import {
   CardBody,
   Form,
   FormGroup,
+  FormSelect, FormSelectOption,
   Radio,
   TextInput
 } from "@patternfly/react-core";
@@ -85,27 +86,48 @@ function WirelessSelectorForm({ accessPoints, onClose, onSubmit }) {
 
 function WirelessConnectionForm({ onClose, onSubmit }) {
   const [password, setPassword] = useState("");
+  const [security, setSecurity] = useState("none");
+
+  const security_options = [
+    { value: "", label: "None" },
+    { value: "wpa-psk", label: "WPA & WPA2 Personal" },
+    { value: "wpa-eap", label: "WPA & WPA2 Enterprise" }
+  ];
+
+  const selectorOptions = security_options.map(security => (
+    <FormSelectOption key={security.value} value={security.value} label={security.label} />
+  ));
 
   const accept = e => {
     e.preventDefault();
 
-    onSubmit({ password });
+    onSubmit({ password, security });
     onClose();
   };
-
   return (
     <Popup isOpen height="medium" title="Connection details">
       <Form id="connect-network" onSubmit={accept}>
-        <FormGroup fieldId="password" label="WPA Password">
-          <TextInput
-            id="password"
-            name="password"
-            aria-label="Password"
-            value={password}
-            label="Password"
-            onChange={setPassword}
-          />
+        <FormGroup fieldId="security" label="Security">
+          <FormSelect
+            id="security"
+            aria-label="security"
+            value={security}
+            onChange={setSecurity}
+          >
+            {selectorOptions}
+          </FormSelect>
         </FormGroup>
+        { security === "wpa-psk" &&
+          <FormGroup fieldId="password" label="WPA Password">
+            <TextInput
+              id="password"
+              name="password"
+              aria-label="Password"
+              value={password}
+              label="Password"
+              onChange={setPassword}
+            />
+          </FormGroup> }
       </Form>
       <Popup.Actions>
         <Popup.Confirm form="connect-network" type="submit">
