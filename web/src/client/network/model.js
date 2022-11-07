@@ -75,8 +75,7 @@ const SecurityProtocols = Object.freeze({
  * @typedef {object} Wireless
  * @property {string} password
  * @property {string} ssid
- * @property {string} authMode
- * @property {string} authAlg
+ * @property {string} security
  */
 
 /**

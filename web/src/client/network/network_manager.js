@@ -122,11 +122,12 @@ const connectionToCockpit = (connection) => {
       ssid: cockpit.variant("ay", cockpit.byte_array(wireless.ssid)),
     };
 
-    settings["802-11-wireless-security"] = {
-      "key-mgmt": cockpit.variant("s", wireless.authMode),
-      "auth-alg": cockpit.variant("s", wireless.authAlg),
-      psk: cockpit.variant("s", wireless.password)
-    };
+    if (wireless.security) {
+      settings["802-11-wireless-security"] = {
+        "key-mgmt": cockpit.variant("s", wireless.security),
+        psk: cockpit.variant("s", wireless.password)
+      };
+    }
   }
 
   return settings;
