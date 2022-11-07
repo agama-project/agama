@@ -205,7 +205,7 @@ function WirelessSelector({ accessPoints, onClose }) {
 
     return (
       <Center>
-        <Button variant="link" onClick={() => setSelected(baseHiddenNetwork)}>Connect to a hidden AP</Button>
+        <Button variant="link" onClick={() => setSelected(baseHiddenNetwork)}>Connect to a hidden network</Button>
       </Center>
     );
   };
