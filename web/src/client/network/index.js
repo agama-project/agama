@@ -43,6 +43,7 @@ const NetworkEventTypes = Object.freeze({
  * @property {() => AccessPoint[]} accessPoints
  * @property {(handler: (event: NetworkEvent) => void) => void} subscribe
  * @property {(id: string) => Promise<Connection>} getConnection
+ * @property {(ssid: string, options: object) => boolean} connectTo
  * @property {(connection: Connection) => Promise<any>} addConnection
  * @property {(connection: Connection) => Promise<any>} updateConnection
  * @property {() => string} hostname
@@ -128,6 +129,16 @@ o  *   NetworkManagerAdapter.
    */
   accessPoints() {
     return this.adapter.accessPoints();
+  }
+
+  /**
+   * Connects to given Wireless network
+   *
+   * @param {string} ssid - Network id
+   * @param {object} options - connection options
+   */
+  async connectTo(ssid, options) {
+    return this.adapter.connectTo(ssid, options);
   }
 
   /**

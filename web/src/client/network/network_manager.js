@@ -25,7 +25,7 @@ import { DBusClient } from "../dbus";
 import cockpit from "../../lib/cockpit";
 import { intToIPString, stringToIPInt } from "./utils";
 import { NetworkEventTypes } from "./index";
-import { createAccessPoint, SecurityProtocols } from "./model";
+import { createAccessPoint, createConnection, SecurityProtocols } from "./model";
 
 /**
  * @typedef {import("./model").Connection} Connection
@@ -247,6 +247,25 @@ class NetworkManagerAdapter {
         gateway: ipv4.gateway?.v
       }
     };
+  }
+
+  /**
+   * Connects to given Wireless network
+   *
+   * @param {string} ssid - Network id
+   * @param {object} options - connection options
+   */
+  async connectTo(ssid, options) {
+    const wireless = {};
+    if (options.security) wireless.security = options.security;
+    if (options.password) wireless.password = options.password;
+
+    const connection = createConnection({
+      name: ssid,
+      wireless
+    });
+
+    await this.addConnection(connection);
   }
 
   /**
