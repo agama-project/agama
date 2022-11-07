@@ -26,7 +26,10 @@
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
 require "rubygems"
-require "bundler/setup"
+# find Gemfile when D-Bus activates a git checkout
+Dir.chdir(__dir__) do
+  require "bundler/setup"
+end
 require "dinstaller/dbus/service_runner"
 
 # Runs the service with the given name

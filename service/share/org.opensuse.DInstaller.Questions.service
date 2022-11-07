@@ -1,0 +1,6 @@
+[D-BUS Service]
+Name=org.opensuse.DInstaller.Questions
+Exec=/usr/bin/d-installer questions
+User=root
+# TODO: is this needed?
+# SystemdService=
