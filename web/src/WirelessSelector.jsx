@@ -23,6 +23,7 @@ import React, { useState } from "react";
 import Popup from "./Popup";
 import {
   Alert,
+  Button,
   Card,
   CardBody,
   Form,
@@ -38,13 +39,17 @@ import {
   EOS_SIGNAL_CELLULAR_ALT as SignalIcon
 } from "eos-icons-react";
 
+import Center from "./Center";
+
 import { useInstallerClient } from "./context/installer";
 
 const CONNECTION_FORM_ID = "chosen-network";
+const baseHiddenNetwork = { ssid: "", hidden: true };
 
 function WirelessConnectionForm({ network, setSubmittingData, onClose }) {
   const client = useInstallerClient();
   const [error, setError] = useState(false);
+  const [ssid, setSsid] = useState(network.ssid);
   const [password, setPassword] = useState("");
   const [security, setSecurity] = useState("none");
 
@@ -59,7 +64,7 @@ function WirelessConnectionForm({ network, setSubmittingData, onClose }) {
   ));
 
   const connectNetwork = async () => {
-    await client.network.connectTo(network.ssid, { security, password });
+    await client.network.connectTo(ssid, { security, password });
   };
 
   const accept = async e => {
@@ -81,6 +86,19 @@ function WirelessConnectionForm({ network, setSubmittingData, onClose }) {
         <Alert variant="warning" isInline title="Something went wrong">
           <p>Please, review provided settings and try again.</p>
         </Alert> }
+
+      { network.hidden &&
+        <FormGroup fieldId="ssid" label="SSID">
+          <TextInput
+            id="ssid"
+            name="ssid"
+            label="SSID"
+            aria-label="ssid"
+            value={ssid}
+            onChange={setSsid}
+          />
+        </FormGroup> }
+
       <FormGroup fieldId="security" label="Security">
         <FormSelect
           id="security"
@@ -162,11 +180,43 @@ function WirelessSelector({ accessPoints, onClose }) {
     });
   };
 
+  const renderHiddenNetworkForm = () => {
+    return (
+      <Card>
+        <CardBody>
+          <WirelessConnectionForm
+            network={selected}
+            setSubmittingData={setSubmittingData}
+            onClose={onClose}
+          />
+        </CardBody>
+      </Card>
+    );
+  };
+
+  const renderSwitchFormLink = () => {
+    if (selected?.hidden) {
+      return (
+        <Center>
+          <Button variant="link" onClick={() => setSelected(null)}>Choose a visible network instead</Button>
+        </Center>
+      );
+    }
+
+    return (
+      <Center>
+        <Button variant="link" onClick={() => setSelected(baseHiddenNetwork)}>Connect to a hidden AP</Button>
+      </Center>
+    );
+  };
+
   const height = filtered.length < 5 ? "medium" : "large";
 
   return (
-    <Popup isOpen height={height} title="WiFi Networks">
-      {renderFilteredNetworks()}
+    <Popup isOpen height={height} title="Connect to Wi-Fi network">
+
+      {selected?.hidden ? renderHiddenNetworkForm() : renderFilteredNetworks()}
+      { renderSwitchFormLink() }
 
       <Popup.Actions>
         <Popup.Confirm
