@@ -58,7 +58,7 @@ export default function ConnectionsDataList({ conns, onSelect }) {
   };
 
   const renderConnectionId = (connection, onClick) => {
-    if (typeof onClick !== "function") return connection.id;
+    if (typeof onClick !== "function") return connection.name || connection.id;
 
     return (
       <Button variant="link" isInline onClick={() => onClick(connection)}>
