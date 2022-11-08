@@ -62,20 +62,24 @@ end
 
 ORDERED_SERVICES = [:questions, :language, :software, :storage, :users, :manager].freeze
 
-# Starts all the services
+# Normally the services are started by D-Bus activation.
+# This starts all the services sequentially without relying on that.
+# This is useful during development to have their log output on the terminal,
+# not mixed with other syslog/journal messages.
+# The downside is relying on an arbitrary delay, and a manually maintained ordering.
 #
-# @return [Array<Integer>] PIDs
+# @return [void]
 # @see ORDERED_SERVICES
 def start_all_services
   ORDERED_SERVICES.map do |name|
+    puts "Starting #{name}:"
     fork { exec("#{__FILE__} #{name}") }
-    # TODO: implement a better mechanism to check whether the service is running
-    sleep(1)
+    sleep(7)
   end
 end
 
 if ARGV.empty?
-  pids = start_all_services
+  start_all_services
   Signal.trap("SIGINT") do
     puts "Stopping all services..."
     exit
