@@ -2,5 +2,4 @@
 Name=org.opensuse.DInstaller
 Exec=/usr/bin/d-installer manager
 User=root
-# TODO: is this needed?
-# SystemdService=
+SystemdService=d-installer.service

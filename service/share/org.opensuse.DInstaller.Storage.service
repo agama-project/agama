@@ -2,5 +2,3 @@
 Name=org.opensuse.DInstaller.Storage
 Exec=/usr/bin/d-installer storage
 User=root
-# TODO: is this needed?
-# SystemdService=

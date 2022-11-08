@@ -2,5 +2,3 @@
 Name=org.opensuse.DInstaller.Users
 Exec=/usr/bin/d-installer users
 User=root
-# TODO: is this needed?
-# SystemdService=
