@@ -85,6 +85,22 @@ if ARGV.empty?
     exit
   end
   Process.wait
+elsif ["-h", "--help"].include?(ARGV[0])
+  me = $PROGRAM_NAME
+  puts "Usage:"
+  puts "#{me} -h|--help"
+  puts "#{me} -s|--status"
+  puts "#{me} -k|--kill"
+  puts "#{me} #{ORDERED_SERVICES.sort.join("|")}"
+elsif ["-s", "--status"].include?(ARGV[0])
+  # The .[a-z] ensures matching the forked processes
+  # which can be distinguished by having a non-option argument
+  system "pgrep -fl bin/d-installer.[a-z]"
+  # busctl is prettier but will find nothing until the service files are installed,
+  # hence the pgrep above
+  system "busctl | grep -E '^NAME|DInstaller'"
+elsif ["-k", "--kill"].include?(ARGV[0])
+  system "pkill -f bin/d-installer.[a-z]"
 else
   name = ARGV[0]
   Signal.trap("SIGINT") do
