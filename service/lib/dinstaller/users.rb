@@ -24,6 +24,7 @@ require "y2users"
 require "y2users/linux" # FIXME: linux is not in y2users file
 require "yast2/execute"
 require "dinstaller/helpers"
+require "dinstaller/validation_error"
 
 module DInstaller
   # Backend class using YaST code.
@@ -104,9 +105,27 @@ module DInstaller
       end
     end
 
+    # Validates the users configuration
+    #
+    # @return [Array<ValidationError>] List of validation errors
+    def validate
+      return [] if root_password? || first_user?
+
+      [
+        ValidationError.new("Defining a user or setting the root password is required")
+      ]
+    end
+
   private
 
     attr_reader :logger
+
+    # Determines whether a first user is defined or not
+    #
+    # @return [Boolean]
+    def first_user?
+      config.users.reject(&:root?).any?
+    end
 
     def without_run_mount(&block)
       Yast::Execute.locally!("/usr/bin/umount", "/mnt/run")
