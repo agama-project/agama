@@ -24,7 +24,7 @@ cd service; bundle config set --local path 'vendor/bundle'; bundle install; cd -
 
 # set up the web UI
 cd web; make devel-install; cd -
-sudo ln -s `pwd`/web/dist /usr/share/cockpit/d-installer
+sudo ln -snf `pwd`/web/dist /usr/share/cockpit/d-installer
 
 # Start the installer
 echo -e "\nStart the d-installer service:\n  cd service; sudo bundle exec bin/d-installer\n"
