@@ -27,5 +27,9 @@ cd web; make devel-install; cd -
 sudo ln -snf `pwd`/web/dist /usr/share/cockpit/d-installer
 
 # Start the installer
-echo -e "\nStart the d-installer service:\n  cd service; sudo bundle exec bin/d-installer\n"
-echo -e "Visit http://localhost:9090/cockpit/@localhost/d-installer/index.html"
+echo
+echo "D-Bus will start the services, see journalctl for their logs."
+echo "To start the services manually, logging to the terminal:"
+echo "  cd service; sudo bundle exec bin/d-installer"
+echo
+echo "Visit http://localhost:9090/cockpit/@localhost/d-installer/index.html"
