@@ -24,6 +24,7 @@ require "dinstaller/users"
 require "dinstaller/dbus/base_object"
 require "dinstaller/dbus/with_service_status"
 require "dinstaller/dbus/interfaces/service_status"
+require "dinstaller/dbus/interfaces/validation"
 
 module DInstaller
   module DBus
@@ -31,6 +32,7 @@ module DInstaller
     class Users < BaseObject
       include WithServiceStatus
       include Interfaces::ServiceStatus
+      include Interfaces::Validation
 
       PATH = "/org/opensuse/DInstaller/Users1"
       private_constant :PATH
@@ -64,6 +66,7 @@ module DInstaller
           backend.assign_root_password(value, encrypted)
 
           dbus_properties_changed(USERS_INTERFACE, { "RootPasswordSet" => !value.empty? }, [])
+          update_validation
           0
         end
 
@@ -73,6 +76,7 @@ module DInstaller
 
           dbus_properties_changed(USERS_INTERFACE, { "RootPasswordSet" => backend.root_password? },
             [])
+          update_validation
           0
         end
 
@@ -81,6 +85,7 @@ module DInstaller
           backend.root_ssh_key = (value)
 
           dbus_properties_changed(USERS_INTERFACE, { "RootSSHKey" => value }, [])
+          update_validation
           0
         end
 
@@ -90,6 +95,7 @@ module DInstaller
           backend.assign_first_user(full_name, user_name, password, auto_login, data)
 
           dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => first_user }, [])
+          update_validation
           0
         end
 
@@ -98,6 +104,7 @@ module DInstaller
           backend.remove_first_user
 
           dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => first_user }, [])
+          update_validation
           0
         end
 
