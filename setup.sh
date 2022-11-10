@@ -8,6 +8,12 @@ sudo zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel 
 
 sudo systemctl start cockpit
 
+# Like "sed -e $1 < $2 > $3" but $3 is a system file owned by root
+sudosed() {
+  echo "$2 -> $3"
+  sed -e "$1" "$2" | sudo tee "$3" > /dev/null
+}
+
 # set up the d-installer service
 MYDIR=$(realpath $(dirname $0))
 sudo cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf
@@ -16,9 +22,11 @@ sudo cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensus
   cd $MYDIR/service/share
   DBUSDIR=/usr/share/dbus-1/system-services
   for SVC in org.opensuse.DInstaller*.service; do
-    echo '->' $DBUSDIR/$SVC
-    sed -e "s@Exec=/usr/bin/@Exec=$MYDIR/service/bin/@" $SVC | sudo tee $DBUSDIR/$SVC > /dev/null
+    sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/service/bin/@" $SVC $DBUSDIR/$SVC
   done
+  sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/service/bin/@" \
+          systemd.service /usr/lib/systemd/system/d-installer.service
+  sudo systemctl daemon-reload
 )
 cd service; bundle config set --local path 'vendor/bundle'; bundle install; cd -
 
