@@ -45,6 +45,7 @@ const IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
 const IP4CONFIG_NAMESPACE = "/org/freedesktop/NetworkManager/IP4Config";
 const ACCESS_POINT_IFACE = "org.freedesktop.NetworkManager.AccessPoint";
 const ACCESS_POINT_NAMESPACE = "/org/freedesktop/NetworkManager/AccessPoint";
+const SETTINGS_NAMESPACE = "/org/freedesktop/NetworkManager/Settings";
 
 const ApFlags = Object.freeze({
   NONE: 0x00000000,
@@ -175,7 +176,8 @@ class NetworkManagerAdapter {
       accessPoints: {},
       activeConnections: {},
       ip4Configs: {},
-      settings: null
+      settings: null,
+      connections: {}
     };
     this.eventsHandler = null;
   }
@@ -193,7 +195,8 @@ class NetworkManagerAdapter {
         ACTIVE_CONNECTION_IFACE, ACTIVE_CONNECTION_NAMESPACE
       ),
       ip4Configs: await this.client.proxies(IP4CONFIG_IFACE, IP4CONFIG_NAMESPACE),
-      settings: await this.client.proxy(SETTINGS_IFACE)
+      settings: await this.client.proxy(SETTINGS_IFACE),
+      connections: await this.client.proxies(CONNECTION_IFACE, SETTINGS_NAMESPACE)
     };
     this.subscribeToEvents();
   }
@@ -208,6 +211,18 @@ class NetworkManagerAdapter {
     return Object.values(this.proxies.activeConnections).map(proxy => {
       return this.activeConnectionFromProxy(proxy);
     });
+  }
+
+  /**
+   * Returns the list of active connections
+   *
+   * @return {ActiveConnection[]}
+   * @see https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
+   */
+  async connections() {
+    return await Promise.all(Object.values(this.proxies.connections).map(async proxy => {
+      return await this.connectionFromProxy(proxy);
+    }));
   }
 
   /**
@@ -226,6 +241,34 @@ class NetworkManagerAdapter {
     });
   }
 
+  connectionFromSettings(settings) {
+    const { connection, ipv4, "802-11-wireless": wireless } = settings;
+    const conn = {
+      id: connection.uuid.v,
+      name: connection.id.v
+    };
+
+    if (ipv4) {
+      conn.ipv4 = {
+        addresses: ipv4["address-data"].v.map(({ address, prefix }) => {
+          return { address: address.v, prefix: prefix.v };
+        }),
+        // FIXME: handle different byte-order (little-endian vs big-endian)
+        nameServers: ipv4.dns?.v.map(intToIPString) || [],
+        method: ipv4.method.v,
+        gateway: ipv4.gateway?.v
+      };
+    }
+
+    if (wireless) {
+      conn.wireless = {
+        ssid: window.atob(wireless.ssid.v)
+      };
+    }
+
+    return conn;
+  }
+
   /**
    * Returns the connection with the given ID
    *
@@ -234,20 +277,9 @@ class NetworkManagerAdapter {
    */
   async getConnection(id) {
     const settingsProxy = await this.connectionSettingsObject(id);
-    const { connection, ipv4 } = await settingsProxy.GetSettings();
-    return {
-      id: connection.uuid.v,
-      name: connection.id.v,
-      ipv4: {
-        addresses: ipv4["address-data"].v.map(({ address, prefix }) => {
-          return { address: address.v, prefix: prefix.v };
-        }),
-        // FIXME: handle different byte-order (little-endian vs big-endian)
-        nameServers: ipv4.dns?.v.map(intToIPString) || [],
-        method: ipv4.method.v,
-        gateway: ipv4.gateway?.v
-      }
-    };
+    const settings = await settingsProxy.GetSettings();
+
+    return this.connectionFromSettings(settings);
   }
 
   /**
@@ -257,7 +289,7 @@ class NetworkManagerAdapter {
    * @param {object} options - connection options
    */
   async connectTo(ssid, options) {
-    const wireless = {};
+    const wireless = { ssid };
     if (options.security) wireless.security = options.security;
     if (options.password) wireless.password = options.password;
 
@@ -267,6 +299,7 @@ class NetworkManagerAdapter {
     });
 
     await this.addConnection(connection);
+    this.proxies.connections = await this.client.proxies(CONNECTION_IFACE, SETTINGS_NAMESPACE);
   }
 
   /**
@@ -294,6 +327,17 @@ class NetworkManagerAdapter {
     const newSettings = mergeConnectionSettings(settings, connection);
     await settingsProxy.Update(newSettings);
     await this.activateConnection(settingsProxy.path);
+  }
+
+  /**
+  * Deletes the given connection
+  *
+   * @param {import("./index").Connection} connection - Connection to delete
+  */
+  async deleteConnection(connection) {
+    const settingsProxy = await this.connectionSettingsObject(connection.id);
+    await settingsProxy.Delete();
+    this.proxies.connections = await this.client.proxies(CONNECTION_IFACE, SETTINGS_NAMESPACE);
   }
 
   /**
@@ -330,6 +374,20 @@ class NetworkManagerAdapter {
   async activateConnection(path) {
     const proxy = await this.client.proxy(IFACE);
     return proxy.ActivateConnection(path, "/", "/");
+  }
+
+  /**
+   * Builds a connection object from a Cockpit's proxy object
+   *
+   * It retrieves additional information like IPv4 settings.
+   *
+   * @private
+   * @param {object} proxy - Proxy object from /org/freedesktop/NetworkManager/Settings/*
+   * @return {Connection}
+   */
+  async connectionFromProxy(proxy) {
+    const settings = await proxy.GetSettings();
+    return this.connectionFromSettings(settings);
   }
 
   /**

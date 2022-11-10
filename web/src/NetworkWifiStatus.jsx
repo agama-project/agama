@@ -20,8 +20,6 @@
  */
 
 import React from "react";
-import { ConnectionState } from "./client/network";
-
 import ConnectionsDataList from "./ConnectionsDataList";
 
 /**
@@ -32,9 +30,7 @@ import ConnectionsDataList from "./ConnectionsDataList";
  * @param {import ("client/network").ActiveConnection[]} connections
  */
 export default function NetworkWiFiStatus({ connections }) {
-  const conns = connections.filter(c => c.state === ConnectionState.ACTIVATED);
-
   return (
-    <ConnectionsDataList conns={conns} />
+    <ConnectionsDataList conns={connections} />
   );
 }

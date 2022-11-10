@@ -31,6 +31,7 @@ export default function Network() {
   const client = useInstallerClient();
   const [initialized, setInitialized] = useState(false);
   const [connections, setConnections] = useState([]);
+  const [settings, setSettings] = useState([]);
   const [accessPoints, setAccessPoints] = useState([]);
   const [openWirelessSelector, setOpenWirelessSelector] = useState(false);
 
@@ -38,6 +39,7 @@ export default function Network() {
     if (!initialized) return;
 
     setConnections(client.network.activeConnections());
+    client.network.connections().then(setSettings);
   }, [client.network, initialized]);
 
   useEffect(() => {
@@ -45,6 +47,7 @@ export default function Network() {
       switch (type) {
         case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
           setConnections(conns => [...conns, payload]);
+          client.network.connections().then(setSettings);
           break;
         }
 
@@ -58,6 +61,7 @@ export default function Network() {
 
         case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
           setConnections(conns => conns.filter(c => c.id !== payload.id));
+          client.network.connections().then(setSettings);
         }
       }
     });
@@ -91,7 +95,7 @@ export default function Network() {
         { accessPoints && accessPoints.length > 0 &&
           <Button variant="link" onClick={() => setOpenWirelessSelector(true)}>Connect to a wireless network</Button> }
         { openWirelessSelector &&
-          <WirelessSelector accessPoints={accessPoints} onClose={() => setOpenWirelessSelector(false)} /> }
+          <WirelessSelector activeConnections={activeWifiConnections} connections={settings} accessPoints={accessPoints} onClose={() => setOpenWirelessSelector(false)} /> }
       </StackItem>
     </Stack>
   );

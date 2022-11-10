@@ -25,7 +25,12 @@ import {
   Alert,
   Button,
   Card,
+  CardActions,
   CardBody,
+  CardHeader,
+  CardTitle,
+  DropDown,
+  DropDownItem,
   Form,
   FormGroup,
   FormSelect,
@@ -124,7 +129,8 @@ function WirelessConnectionForm({ network, setSubmittingData, onClose }) {
   );
 }
 
-function WirelessSelector({ accessPoints, onClose }) {
+function WirelessSelector({ activeConnections, connections, accessPoints, onClose }) {
+  const client = useInstallerClient();
   const [selected, setSelected] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [actionsDisabled, setActionsDisabled] = useState(false);
@@ -141,13 +147,26 @@ function WirelessSelector({ accessPoints, onClose }) {
   };
 
   const isSelected = (network) => selected === network.ssid;
+  const isConnected = (network) => activeConnections.find((n) => n.name === network.ssid);
+  const isConfigured = (network) => connections.find((n) => n.wireless?.ssid === network.ssid);
+
+  const deleteConnection = (ssid) => {
+    const conn = connections.find((n) => n.name === ssid);
+
+    client.network.deleteConnection(conn);
+  };
+
 
   const renderFilteredNetworks = () => {
     return filtered.map(n => {
       const selected = isSelected(n);
+      const configured = isConfigured(n);
+      const connected = isConnected(n);
 
       let className = "available-network";
+      let label = n.ssid;
       if (selected) className += " selected-network";
+      if (connected) label += " (Connected)";
 
       return (
         <Card key={n.ssid} className={className}>
@@ -155,11 +174,12 @@ function WirelessSelector({ accessPoints, onClose }) {
             <div className="header">
               <Radio
                 id={n.ssid}
-                label={n.ssid}
+                label={label}
                 description={
                   <>
                     <LockIcon size="10" color="grey" /> {n.security.join(", ")}{" "}
                     <SignalIcon size="10" color="grey" /> {n.strength}
+                    { configured && <Button variant="button" onClick={() => deleteConnection(n.ssid)}>Forget Connection</Button>}
                   </>
                 }
                 isChecked={selected}
@@ -214,9 +234,9 @@ function WirelessSelector({ accessPoints, onClose }) {
 
   return (
     <Popup isOpen height={height} title="Connect to Wi-Fi network">
-
-      {selected?.hidden ? renderHiddenNetworkForm() : renderFilteredNetworks()}
+      { renderFilteredNetworks() }
       { renderSwitchFormLink() }
+      {selected?.hidden && renderHiddenNetworkForm()}
 
       <Popup.Actions>
         <Popup.Confirm

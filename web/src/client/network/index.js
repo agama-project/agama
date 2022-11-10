@@ -46,6 +46,7 @@ const NetworkEventTypes = Object.freeze({
  * @property {(ssid: string, options: object) => boolean} connectTo
  * @property {(connection: Connection) => Promise<any>} addConnection
  * @property {(connection: Connection) => Promise<any>} updateConnection
+ * @property {(connection: Connection) => void} deleteConnection
  * @property {() => string} hostname
  * @property {() => void} setUp
  */
@@ -123,6 +124,15 @@ o  *   NetworkManagerAdapter.
   }
 
   /**
+   * Returns the connection settings
+   *
+   * @returns {connection[]}
+   */
+  connections() {
+    return this.adapter.connections();
+  }
+
+  /**
    * Returns the list of available wireless access points (AP)
    *
    * @return {AccessPoint[]}
@@ -169,6 +179,17 @@ o  *   NetworkManagerAdapter.
    */
   async updateConnection(connection) {
     return this.adapter.updateConnection(connection);
+  }
+
+  /**
+   * Deletes the connection
+   *
+   * It uses the 'path' to match the connection in the backend.
+   *
+   * @param {Connection} connection - Connection to delete
+   */
+  async deleteConnection(connection) {
+    return this.adapter.deleteConnection(connection);
   }
 
   /*
