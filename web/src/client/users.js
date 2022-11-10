@@ -22,6 +22,7 @@
 // @ts-check
 
 import { DBusClient } from "./dbus";
+import { WithValidation } from "./mixins";
 
 const USERS_SERVICE = "org.opensuse.DInstaller.Users";
 const USERS_IFACE = "org.opensuse.DInstaller.Users1";
@@ -44,8 +45,10 @@ const USERS_PATH = "/org/opensuse/DInstaller/Users1";
 
 /**
  * Users client
+ *
+ * @ignore
  */
-class UsersClient {
+class UsersBaseClient {
   /**
    * @param {DBusClient} [dbusClient] - D-Bus client
    */
@@ -169,5 +172,7 @@ class UsersClient {
     });
   }
 }
+
+class UsersClient extends WithValidation(UsersBaseClient, USERS_PATH) {}
 
 export { UsersClient };
