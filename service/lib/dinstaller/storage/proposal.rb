@@ -24,6 +24,7 @@ require "y2storage/guided_proposal"
 require "y2storage/proposal_settings"
 require "y2storage/dialogs/guided_setup/helpers/disk"
 require "dinstaller/with_progress"
+require "dinstaller/validation_error"
 
 module DInstaller
   module Storage
@@ -129,6 +130,19 @@ module DInstaller
         @actions ||= Actions.new(logger)
       end
 
+      # Validates the storage proposal
+      #
+      # @return [Array<ValidationError>] List of validation errors
+      def validate
+        return [] if proposal.nil?
+
+        [
+          validate_proposal,
+          validate_available_devices,
+          validate_candidate_devices
+        ].compact
+      end
+
     private
 
       # @return [Logger]
@@ -194,6 +208,28 @@ module DInstaller
 
       def storage_manager
         Y2Storage::StorageManager.instance
+      end
+
+      def validate_proposal
+        return if candidate_devices.empty? || !proposal.failed?
+
+        message = format(
+          "Could not create a storage proposal using %{devices}",
+          devices: candidate_devices.join(", ")
+        )
+        ValidationError.new(message)
+      end
+
+      def validate_available_devices
+        return if available_devices.any?
+
+        ValidationError.new("Could not find a suitable device for installation")
+      end
+
+      def validate_candidate_devices
+        return if available_devices.empty? || candidate_devices.any?
+
+        ValidationError.new("No devices are selected for installation")
       end
     end
   end

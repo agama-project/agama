@@ -191,7 +191,7 @@ module DInstaller
     #
     # @return [Boolean]
     def valid?
-      [users].all?(&:valid?)
+      [storage, users].all?(&:valid?)
     end
 
   private

@@ -53,7 +53,7 @@ describe DInstaller::Manager do
   let(:storage) do
     instance_double(
       DInstaller::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
-      on_service_status_change: nil
+      on_service_status_change: nil, valid?: true
     )
   end
   let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
@@ -181,6 +181,16 @@ describe DInstaller::Manager do
     context "when the users configuration is not valid" do
       before do
         allow(users).to receive(:valid?).and_return(false)
+      end
+
+      it "returns false" do
+        expect(subject.valid?).to eq(false)
+      end
+    end
+
+    context "when the storage configuration is not valid" do
+      before do
+        allow(storage).to receive(:valid?).and_return(false)
       end
 
       it "returns false" do

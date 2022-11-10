@@ -96,6 +96,13 @@ module DInstaller
         @proposal ||= Proposal.new(logger, config)
       end
 
+      # Validates the storage configuration
+      #
+      # @return [Array<ValidationError>] List of validation errors
+      def validate
+        proposal.validate
+      end
+
     private
 
       PROPOSAL_ID = "storage_proposal"
