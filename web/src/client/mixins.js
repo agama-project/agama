@@ -87,7 +87,7 @@ const WithStatus = (superclass, object_path) => class extends superclass {
 const PROGRESS_IFACE = "org.opensuse.DInstaller.Progress1";
 
 /**
- * Extends the given class with methods go get and track the progress over D-Bus
+ * Extends the given class with methods to get and track the progress over D-Bus
  * @param {string} object_path - object_path
  * @param {T} superclass - superclass to extend
  * @template {!WithDBusClient} T
