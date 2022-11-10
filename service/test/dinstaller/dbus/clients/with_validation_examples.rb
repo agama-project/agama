@@ -19,27 +19,29 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module DInstaller
-  # Represents a validation error
-  #
-  # These are errors related to the logic of the backends. For instance,
-  # not defining neither a first user nor a root authentication method might
-  # be a problem.
-  class ValidationError
-    # @return [String] Error message
-    attr_reader :message
+require_relative "../../../test_helper"
 
-    # @param message [String] Error message
-    def initialize(message)
-      @message = message
+shared_examples "validation" do
+  before do
+    allow(dbus_object).to receive(:path).and_return("/org/opensuse/DInstaller/Test")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Validation1")
+      .and_return(validation_properties)
+  end
+
+  let(:validation_properties) do
+    double(::DBus::ProxyObjectInterface, ValidationErrors: ["An error"], IsValid: false)
+  end
+
+  describe "#validation_errors" do
+    it "returns the validation errors" do
+      expect(subject.validation_errors).to eq([DInstaller::ValidationError.new("An error")])
     end
+  end
 
-    # Determines whether two errors are equivalent
-    #
-    # @param other [ValidationError] Validation error to compare to
-    # @return [Boolean]
-    def ==(other)
-      @message == other.message
+  describe "#valid?" do
+    it "returns whether the service settings are valid or not" do
+      expect(subject.valid?).to eq(false)
     end
   end
 end
+

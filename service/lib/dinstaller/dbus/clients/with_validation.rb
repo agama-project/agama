@@ -19,27 +19,30 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "dinstaller/validation_error"
+
 module DInstaller
-  # Represents a validation error
-  #
-  # These are errors related to the logic of the backends. For instance,
-  # not defining neither a first user nor a root authentication method might
-  # be a problem.
-  class ValidationError
-    # @return [String] Error message
-    attr_reader :message
+  module DBus
+    # Mixin to include in the clients of services that implement the Validation1 interface
+    module WithValidation
+      VALIDATION_IFACE = "org.opensuse.DInstaller.Validation1"
+      private_constant :VALIDATION_IFACE
 
-    # @param message [String] Error message
-    def initialize(message)
-      @message = message
-    end
+      # Returns the validation errors
+      #
+      # @return [Array<ValidationError>] Validation errors
+      def validation_errors
+        dbus_object[VALIDATION_IFACE].ValidationErrors.map do |message|
+          DInstaller::ValidationError.new(message)
+        end
+      end
 
-    # Determines whether two errors are equivalent
-    #
-    # @param other [ValidationError] Validation error to compare to
-    # @return [Boolean]
-    def ==(other)
-      @message == other.message
+      # Determines whether the service settings are valid or not
+      #
+      # @return [Boolean] true if the service has valid data; false otherwise
+      def valid?
+        dbus_object[VALIDATION_IFACE].IsValid
+      end
     end
   end
 end
