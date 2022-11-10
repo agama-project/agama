@@ -42,7 +42,7 @@ const selectorOptions = security_options.map(security => (
   <FormSelectOption key={security.value} value={security.value} label={security.label} />
 ));
 
-export default function WifiConnectionForm({ network, onCancel, formRef }) {
+export default function WifiConnectionForm({ network, onCancel }) {
   const client = useInstallerClient();
   const [error, setError] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -55,7 +55,7 @@ export default function WifiConnectionForm({ network, onCancel, formRef }) {
     setError(false);
     setIsConnecting(true);
 
-    client.network.connectTo(ssid, { security, password })
+    client.network.addAndConnectTo(ssid, { security, password })
       .then(() => console.log("Connected successfully to", network))
       .catch(() => {
         setError(true);
@@ -79,7 +79,6 @@ export default function WifiConnectionForm({ network, onCancel, formRef }) {
             aria-label="ssid"
             value={ssid}
             onChange={setSsid}
-            innerRef={formRef}
           />
         </FormGroup> }
 
