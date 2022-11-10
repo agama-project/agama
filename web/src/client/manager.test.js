@@ -36,6 +36,7 @@ const managerProxy = {
   wait: jest.fn(),
   Commit: jest.fn(),
   Probe: jest.fn(),
+  CanInstall: jest.fn(),
   CurrentInstallationPhase: 0
 };
 
@@ -118,5 +119,31 @@ describe("#rebootSystem", () => {
     const reboot = await client.rebootSystem();
     expect(cockpit.spawn).toHaveBeenCalledWith(["/usr/sbin/shutdown", "-r", "now"]);
     expect(reboot).toEqual(true);
+  });
+});
+
+describe("#canInstall", () => {
+  describe("when the system can be installed", () => {
+    beforeEach(() => {
+      managerProxy.CanInstall = jest.fn().mockResolvedValue(true);
+    });
+
+    it("returns true", async () => {
+      const client = new ManagerClient(dbusClient);
+      const install = await client.canInstall();
+      expect(install).toEqual(true);
+    });
+  });
+
+  describe("when the system cannot be installed", () => {
+    beforeEach(() => {
+      managerProxy.CanInstall = jest.fn().mockResolvedValue(false);
+    });
+
+    it("returns false", async () => {
+      const client = new ManagerClient(dbusClient);
+      const install = await client.canInstall();
+      expect(install).toEqual(false);
+    });
   });
 });

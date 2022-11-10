@@ -67,6 +67,19 @@ class ManagerBaseClient {
   }
 
   /**
+   * Checks whether it is possible to start the installation
+   *
+   * It might happen that there are some validation errors. In that case,
+   * it is not possible to proceed with the installation.
+   *
+   * @return {Promise<boolean>}
+   */
+  async canInstall() {
+    const proxy = await this.client.proxy(MANAGER_IFACE);
+    return proxy.CanInstall();
+  }
+
+  /**
    * Return the installer status
    *
    * @return {Promise<number>}
