@@ -209,4 +209,26 @@ describe DInstaller::DBus::Manager do
       expect(subject.busy_services).to contain_exactly("org.opensuse.DInstaller.Users")
     end
   end
+
+  describe "#can_install?" do
+    before do
+      allow(backend).to receive(:valid?).and_return(valid?)
+    end
+
+    context "when installation settings are valid" do
+      let(:valid?) { true }
+
+      it "returns true" do
+        expect(subject.can_install?).to eq(true)
+      end
+    end
+
+    context "when installation settings are valid" do
+      let(:valid?) { false }
+
+      it "returns false" do
+        expect(subject.can_install?).to eq(false)
+      end
+    end
+  end
 end

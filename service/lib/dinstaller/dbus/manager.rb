@@ -59,6 +59,7 @@ module DInstaller
       dbus_interface MANAGER_INTERFACE do
         dbus_method(:Probe, "") { config_phase }
         dbus_method(:Commit, "") { install_phase }
+        dbus_method(:CanInstall, "out result:b") { can_install? }
         dbus_reader :installation_phases, "aa{sv}"
         dbus_reader :current_installation_phase, "u"
         dbus_reader :busy_services, "as"
@@ -73,9 +74,18 @@ module DInstaller
 
       # Runs the install phase
       def install_phase
+        raise ::DBus::Error, "Installation settings are invalid" unless valid?
+
         safe_run do
           busy_while { backend.install_phase }
         end
+      end
+
+      # Determines whether the installation can start
+      #
+      # @return [Boolean]
+      def can_install?
+        backend.valid?
       end
 
       # Description of all possible installation phase values

@@ -43,7 +43,10 @@ describe DInstaller::Manager do
     )
   end
   let(:users) do
-    instance_double(DInstaller::DBus::Clients::Users, write: nil, on_service_status_change: nil)
+    instance_double(
+      DInstaller::DBus::Clients::Users,
+      write: nil, on_service_status_change: nil, valid?: true
+    )
   end
   let(:language) { instance_double(DInstaller::DBus::Clients::Language, finish: nil) }
   let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
@@ -165,6 +168,24 @@ describe DInstaller::Manager do
     it "runs the config phase" do
       expect(subject).to receive(:config_phase)
       subject.select_product("Leap")
+    end
+  end
+
+  describe "#valid?" do
+    context "when there are not validation problems" do
+      it "returns true" do
+        expect(subject.valid?).to eq(true)
+      end
+    end
+
+    context "when the users configuration is not valid" do
+      before do
+        allow(users).to receive(:valid?).and_return(false)
+      end
+
+      it "returns false" do
+        expect(subject.valid?).to eq(false)
+      end
     end
   end
 end
