@@ -235,11 +235,9 @@ button.remove-link:hover {
 }
 .available-network .pf-c-card__body .header {
   border-block-end: 1px solid #eee;
-  padding: 1rem;
+  padding: fonts.$size-base;
 }
 
-.available-network .pf-c-card__body .header {
-}
 .available-network .pf-c-card__body .content {
   padding: 2rem;
 }
@@ -259,4 +257,15 @@ button.remove-link:hover {
 .selected-network .pf-c-radio label {
   font-size: calc(var(--pf-c-radio__label--FontSize) * 1.3);
   font-weight: bold;
+}
+
+.danger-action {
+  color: var(--pf-global--danger-color--200);
+  svg {
+    fill: var(--pf-global--danger-color--200);
+  }
+}
+
+.wifi-network-menu button.pf-c-dropdown__toggle {
+  padding-right: 0;
 }

@@ -20,7 +20,6 @@
  */
 
 import React, { useState } from "react";
-import Popup from "./Popup";
 import {
   Alert,
   Button,
@@ -36,6 +35,8 @@ import {
   FormSelect,
   FormSelectOption,
   Radio,
+  Split,
+  SplitItem,
   TextInput
 } from "@patternfly/react-core";
 
@@ -44,7 +45,9 @@ import {
   EOS_SIGNAL_CELLULAR_ALT as SignalIcon
 } from "eos-icons-react";
 
+import Popup from "./Popup";
 import Center from "./Center";
+import WifiNetworkMenu from "./WifiNetworkMenu";
 
 import { useInstallerClient } from "./context/installer";
 
@@ -171,29 +174,38 @@ function WirelessSelector({ activeConnections, connections, accessPoints, onClos
       return (
         <Card key={n.ssid} className={className}>
           <CardBody>
-            <div className="header">
-              <Radio
-                id={n.ssid}
-                label={label}
-                description={
-                  <>
-                    <LockIcon size="10" color="grey" /> {n.security.join(", ")}{" "}
-                    <SignalIcon size="10" color="grey" /> {n.strength}
-                    { configured && <Button variant="button" onClick={() => deleteConnection(n.ssid)}>Forget Connection</Button>}
-                  </>
-                }
-                isChecked={selected}
-                onClick={() => setSelected(n.ssid)}
-              />
-            </div>
-            { selected &&
-              <div className="content">
-                <WirelessConnectionForm
-                  network={n}
-                  setSubmittingData={setSubmittingData}
-                  onClose={onClose}
+            <Split hasGutter className="header">
+              <SplitItem isFilled>
+                <Radio
+                  id={n.ssid}
+                  label={label}
+                  description={
+                    <>
+                      <LockIcon size="10" color="grey" /> {n.security.join(", ")}{" "}
+                      <SignalIcon size="10" color="grey" /> {n.strength}
+                    </>
+                  }
+                  isChecked={selected}
+                  onClick={() => setSelected(n.ssid)}
                 />
-              </div> }
+              </SplitItem>
+              { (connected || configured) &&
+                <SplitItem>
+                  <Center>
+                    <WifiNetworkMenu network={n} />
+                  </Center>
+                </SplitItem> }
+            </Split>
+            { selected &&
+              <Split hasGutter>
+                <SplitItem isFilled className="content">
+                  <WirelessConnectionForm
+                    network={n}
+                    setSubmittingData={setSubmittingData}
+                    onClose={onClose}
+                  />
+                </SplitItem>
+              </Split> }
           </CardBody>
         </Card>
       );
