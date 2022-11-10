@@ -232,10 +232,8 @@ function WirelessSelector({ activeConnections, connections, accessPoints, onClos
     );
   };
 
-  const height = filtered.length < 5 ? "medium" : "large";
-
   return (
-    <Popup isOpen height={height} title="Connect to Wi-Fi network">
+    <Popup isOpen height="large" title="Connect to Wi-Fi network">
       { renderFilteredNetworks() }
       { renderHiddenNetworkForm() }
 
