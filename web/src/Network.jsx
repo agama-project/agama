@@ -45,9 +45,26 @@ export default function Network() {
   useEffect(() => {
     return client.network.onNetworkEvent(({ type, payload }) => {
       switch (type) {
+        case NetworkEventTypes.CONNECTION_ADDED: {
+          setSettings(conns => [...conns, payload]);
+          break;
+        }
+
+        case NetworkEventTypes.CONNECTION_UPDATED: {
+          setSettings(conns => {
+            const newConnections = conns.filter(c => c.id !== payload.id);
+            return [...newConnections, payload];
+          });
+          break;
+        }
+
+        case NetworkEventTypes.CONNECTION_REMOVED: {
+          setSettings(conns => conns.filter(c => c.path !== payload.path));
+          break;
+        }
+
         case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
           setConnections(conns => [...conns, payload]);
-          client.network.connections().then(setSettings);
           break;
         }
 
@@ -61,7 +78,6 @@ export default function Network() {
 
         case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
           setConnections(conns => conns.filter(c => c.id !== payload.id));
-          client.network.connections().then(setSettings);
         }
       }
     });

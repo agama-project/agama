@@ -67,7 +67,7 @@ function WirelessConnectionForm({ network, setSubmittingData, onClose }) {
   ));
 
   const connectNetwork = async () => {
-    await client.network.connectTo(ssid, { security, password });
+    await client.network.addAndConnectTo(ssid, { security, password });
   };
 
   const accept = async e => {
@@ -146,7 +146,6 @@ function WirelessSelector({ activeConnections, connections, accessPoints, onClos
 
   const isSelected = (network) => selected === network.ssid;
   const isConnected = (network) => activeConnections.find((n) => n.name === network.ssid);
-  const isConfigured = (network) => connections.find((n) => n.wireless?.ssid === network.ssid);
 
   const deleteConnection = (ssid) => {
     const conn = connections.find((n) => n.name === ssid);
@@ -154,11 +153,11 @@ function WirelessSelector({ activeConnections, connections, accessPoints, onClos
     client.network.deleteConnection(conn);
   };
 
-
   const renderFilteredNetworks = () => {
     return filtered.map(n => {
+      const settings = connections.find((conn) => conn.wireless?.ssid === n.ssid);
       const selected = isSelected(n);
-      const configured = isConfigured(n);
+      const configured = !!settings;
       const connected = isConnected(n);
 
       let className = "available-network";
@@ -184,10 +183,10 @@ function WirelessSelector({ activeConnections, connections, accessPoints, onClos
                   onClick={() => setSelected(n.ssid)}
                 />
               </SplitItem>
-              { (connected || configured) &&
+              { configured &&
                 <SplitItem>
                   <Center>
-                    <WifiNetworkMenu network={n} />
+                    <WifiNetworkMenu settings={settings} />
                   </Center>
                 </SplitItem> }
             </Split>

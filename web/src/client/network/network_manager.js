@@ -242,10 +242,11 @@ class NetworkManagerAdapter {
   }
 
   connectionFromSettings(settings) {
-    const { connection, ipv4, "802-11-wireless": wireless } = settings;
+    const { connection, ipv4, "802-11-wireless": wireless, path } = settings;
     const conn = {
       id: connection.uuid.v,
-      name: connection.id.v
+      name: connection.id.v,
+      path: path
     };
 
     if (ipv4) {
@@ -265,6 +266,8 @@ class NetworkManagerAdapter {
         ssid: window.atob(wireless.ssid.v)
       };
     }
+
+    console.log(conn);
 
     return conn;
   }
@@ -288,7 +291,19 @@ class NetworkManagerAdapter {
    * @param {string} ssid - Network id
    * @param {object} options - connection options
    */
-  async connectTo(ssid, options) {
+  async connectTo(settings) {
+    console.log(settings);
+    const settingsProxy = await this.connectionSettingsObject(settings.id);
+    await this.activateConnection(settingsProxy.path);
+  }
+
+  /**
+   * Connects to given Wireless network
+   *
+   * @param {string} ssid - Network id
+   * @param {object} options - connection options
+   */
+  async addAndConnectTo(ssid, options) {
     const wireless = { ssid };
     if (options.security) wireless.security = options.security;
     if (options.password) wireless.password = options.password;
@@ -299,7 +314,6 @@ class NetworkManagerAdapter {
     });
 
     await this.addConnection(connection);
-    this.proxies.connections = await this.client.proxies(CONNECTION_IFACE, SETTINGS_NAMESPACE);
   }
 
   /**
@@ -337,7 +351,6 @@ class NetworkManagerAdapter {
   async deleteConnection(connection) {
     const settingsProxy = await this.connectionSettingsObject(connection.id);
     await settingsProxy.Delete();
-    this.proxies.connections = await this.client.proxies(CONNECTION_IFACE, SETTINGS_NAMESPACE);
   }
 
   /**
@@ -349,18 +362,37 @@ class NetworkManagerAdapter {
    * @private
    */
   async subscribeToEvents() {
-    const proxies = this.proxies.activeConnections;
+    const activeConnectionProxies = this.proxies.activeConnections;
+    const connectionProxies = this.proxies.connections;
 
     /** @type {(eventType: string) => NetworkEventFn} */
-    const handleWrapper = (eventType) => (_event, proxy) => {
+    const handleWrapperActiveConnection = (eventType) => (_event, proxy) => {
       const connection = this.activeConnectionFromProxy(proxy);
       this.eventsHandler({ type: eventType, payload: connection });
     };
 
+    /** @type {(eventType: string) => NetworkEventFn} */
+    const handleWrapperConnection = (eventType) => async (_event, proxy) => {
+      let connection;
+
+      if (eventType === NetworkEventTypes.CONNECTION_REMOVED) {
+        connection = { id: proxy.id, path: proxy.path };
+      } else {
+        connection = await this.connectionFromProxy(proxy);
+      }
+
+      this.eventsHandler({ type: eventType, payload: connection });
+    };
+
     // FIXME: do not build a map (eventTypesMap), just inject the type here
-    proxies.addEventListener("added", handleWrapper(NetworkEventTypes.ACTIVE_CONNECTION_ADDED));
-    proxies.addEventListener("changed", handleWrapper(NetworkEventTypes.ACTIVE_CONNECTION_UPDATED));
-    proxies.addEventListener("removed", handleWrapper(NetworkEventTypes.ACTIVE_CONNECTION_REMOVED));
+    connectionProxies.addEventListener("added", handleWrapperConnection(NetworkEventTypes.CONNECTION_ADDED));
+    connectionProxies.addEventListener("changed", handleWrapperConnection(NetworkEventTypes.CONNECTION_UPDATED));
+    connectionProxies.addEventListener("removed", handleWrapperConnection(NetworkEventTypes.CONNECTION_REMOVED));
+
+    // FIXME: do not build a map (eventTypesMap), just inject the type here
+    activeConnectionProxies.addEventListener("added", handleWrapperActiveConnection(NetworkEventTypes.ACTIVE_CONNECTION_ADDED));
+    activeConnectionProxies.addEventListener("changed", handleWrapperActiveConnection(NetworkEventTypes.ACTIVE_CONNECTION_UPDATED));
+    activeConnectionProxies.addEventListener("removed", handleWrapperActiveConnection(NetworkEventTypes.ACTIVE_CONNECTION_REMOVED));
   }
 
   /**
@@ -387,6 +419,7 @@ class NetworkManagerAdapter {
    */
   async connectionFromProxy(proxy) {
     const settings = await proxy.GetSettings();
+    settings.path = proxy.path;
     return this.connectionFromSettings(settings);
   }
 

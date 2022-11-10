@@ -34,7 +34,10 @@ import { ConnectionTypes, ConnectionState } from "./model";
 const NetworkEventTypes = Object.freeze({
   ACTIVE_CONNECTION_ADDED: "active_connection_added",
   ACTIVE_CONNECTION_UPDATED: "active_connection_updated",
-  ACTIVE_CONNECTION_REMOVED: "active_connection_removed"
+  ACTIVE_CONNECTION_REMOVED: "active_connection_removed",
+  CONNECTION_ADDED: "connection_added",
+  CONNECTION_UPDATED: "connection_updated",
+  CONNECTION_REMOVED: "connection_removed"
 });
 
 /**
@@ -43,7 +46,8 @@ const NetworkEventTypes = Object.freeze({
  * @property {() => AccessPoint[]} accessPoints
  * @property {(handler: (event: NetworkEvent) => void) => void} subscribe
  * @property {(id: string) => Promise<Connection>} getConnection
- * @property {(ssid: string, options: object) => boolean} connectTo
+ * @property {(ssid: string, options: object) => boolean} addAndConnectTo
+ * @property {(connection: Connection) => boolean} connectTo
  * @property {(connection: Connection) => Promise<any>} addConnection
  * @property {(connection: Connection) => Promise<any>} updateConnection
  * @property {(connection: Connection) => void} deleteConnection
@@ -126,7 +130,7 @@ o  *   NetworkManagerAdapter.
   /**
    * Returns the connection settings
    *
-   * @returns {connection[]}
+   * @returns {Connection[]}
    */
   connections() {
     return this.adapter.connections();
@@ -144,11 +148,20 @@ o  *   NetworkManagerAdapter.
   /**
    * Connects to given Wireless network
    *
+   * @param {Connection} connection - connection to be activated
+   */
+  async connectTo(connection) {
+    return this.adapter.connectTo(connection);
+  }
+
+  /**
+   * Add the connection for the given Wireless network and activate it
+   *
    * @param {string} ssid - Network id
    * @param {object} options - connection options
    */
-  async connectTo(ssid, options) {
-    return this.adapter.connectTo(ssid, options);
+  async addAndConnectTo(ssid, options) {
+    return this.adapter.addAndConnectTo(ssid, options);
   }
 
   /**
