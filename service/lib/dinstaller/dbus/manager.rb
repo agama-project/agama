@@ -74,7 +74,7 @@ module DInstaller
 
       # Runs the install phase
       def install_phase
-        raise ::DBus::Error, "Installation settings are invalid" unless valid?
+        raise ::DBus::Error, "Installation settings are invalid" unless backend.valid?
 
         safe_run do
           busy_while { backend.install_phase }

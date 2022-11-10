@@ -34,7 +34,8 @@ describe DInstaller::DBus::Manager do
     instance_double(DInstaller::Manager,
       installation_phase:        installation_phase,
       software:                  software_client,
-      on_services_status_change: nil)
+      on_services_status_change: nil,
+      valid?:                    true)
   end
 
   let(:installation_phase) { DInstaller::InstallationPhase.new }
@@ -132,6 +133,16 @@ describe DInstaller::DBus::Manager do
         expect(subject.service_status).to receive(:idle)
 
         subject.install_phase
+      end
+    end
+
+    context "when services configuration is invalid" do
+      before do
+        allow(backend).to receive(:valid?).and_return(false)
+      end
+
+      it "raises a DBus::Error" do
+        expect { subject.install_phase }.to raise_error(DBus::Error)
       end
     end
 
