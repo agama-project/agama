@@ -22,10 +22,11 @@
 // @ts-check
 
 import { DBusClient } from "./dbus";
-import { WithStatus } from "./mixins";
+import { WithStatus, WithValidation } from "./mixins";
 import cockpit from "../lib/cockpit";
 
 const STORAGE_SERVICE = "org.opensuse.DInstaller.Storage";
+const STORAGE_PATH = "/org/opensuse/DInstaller/Storage1";
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 const STORAGE_PROPOSAL_PATH = "/org/opensuse/DInstaller/Storage/Proposal1";
 
@@ -114,6 +115,8 @@ class StorageBaseClient {
 /**
  * Allows interacting with the storage settings
  */
-class StorageClient extends WithStatus(StorageBaseClient, STORAGE_PROPOSAL_PATH) {}
+class StorageClient extends WithValidation(
+  WithStatus(StorageBaseClient, STORAGE_PROPOSAL_PATH), STORAGE_PATH
+) {}
 
 export { StorageClient };
