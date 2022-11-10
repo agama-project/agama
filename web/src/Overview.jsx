@@ -62,11 +62,62 @@ const ChangeProductButton = () => {
   );
 };
 
-const InstallButton = () => {
+const InstallConfirmationPopup = ({ onAccept, onClose }) => (
+  <Popup
+    title="Confirm Installation"
+    isOpen="true"
+  >
+    <Text>
+      If you continue, partitions on your hard disk will be modified according to the
+      installation settings in the previous dialog.
+    </Text>
+    <Text>
+      Please, cancel and check the settings if you are unsure.
+    </Text>
+
+    <Popup.Actions>
+      <Popup.Confirm onClick={onAccept}>Install</Popup.Confirm>
+      <Popup.Cancel onClick={onClose} autoFocus />
+    </Popup.Actions>
+  </Popup>
+);
+
+const CannotInstallPopup = ({ onClose }) => (
+  <Popup
+    title="Confirm Installation"
+    isOpen="true"
+  >
+    <Text>
+      Some problems were detected when trying to start the installation.
+      Please, have a look to the reported issues and try again after addressing them.
+    </Text>
+
+    <Popup.Actions>
+      <Popup.Cancel onClick={onClose} autoFocus />
+    </Popup.Actions>
+  </Popup>
+);
+
+const renderPopup = (error, { onAccept, onClose }) => {
+  if (error) {
+    return <CannotInstallPopup onClose={onClose} />;
+  } else {
+    return <InstallConfirmationPopup onClose={onClose} onAccept={onAccept} />;
+  }
+};
+
+const InstallButton = ({ onClick }) => {
   const client = useInstallerClient();
   const [isOpen, setIsOpen] = useState(false);
+  const [error, setError] = useState(false);
 
-  const open = () => setIsOpen(true);
+  const open = () => {
+    onClick();
+    client.manager.canInstall().then(ok => {
+      setError(!ok);
+      setIsOpen(true);
+    });
+  };
   const close = () => setIsOpen(false);
   const install = () => client.manager.startInstallation();
 
@@ -76,29 +127,14 @@ const InstallButton = () => {
         Install
       </Button>
 
-      <Popup
-        title="Confirm Installation"
-        isOpen={isOpen}
-      >
-        <Text>
-          If you continue, partitions on your hard disk will be modified according to the
-          installation settings in the previous dialog.
-        </Text>
-        <Text>
-          Please, cancel and check the settings if you are unsure.
-        </Text>
-
-        <Popup.Actions>
-          <Popup.Confirm onClick={install}>Install</Popup.Confirm>
-          <Popup.Cancel onClick={close} autoFocus />
-        </Popup.Actions>
-      </Popup>
+      { isOpen && renderPopup(error, { onAccept: install, onClose: close }) }
     </>
   );
 };
 
 function Overview() {
   const { selectedProduct } = useSoftware();
+  const [showErrors, setShowErrors] = useState(false);
 
   if (selectedProduct === null) {
     return <Navigate to="/products" />;
@@ -115,7 +151,7 @@ function Overview() {
       <Storage />
     </Category>,
     <Category key="users" title="Users" icon={UsersIcon}>
-      <Users />
+      <Users showErrors={showErrors} />
     </Category>
   ];
 
@@ -132,7 +168,7 @@ function Overview() {
       <Title>{selectedProduct && selectedProduct.name}</Title>
       <PageIcon><OverviewIcon /></PageIcon>
       <PageActions><ChangeProductButton /></PageActions>
-      <MainActions><InstallButton /></MainActions>
+      <MainActions><InstallButton onClick={() => setShowErrors(true)}/></MainActions>
       <Flex direction={{ default: "column" }}>{renderCategories()}</Flex>
     </>
   );
