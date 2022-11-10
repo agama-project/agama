@@ -148,7 +148,7 @@ function Overview() {
       <Network />
     </Category>,
     <Category key="storage" title="Storage" icon={HardDriveIcon}>
-      <Storage />
+      <Storage showErrors />
     </Category>,
     <Category key="users" title="Users" icon={UsersIcon}>
       <Users showErrors={showErrors} />
@@ -168,7 +168,7 @@ function Overview() {
       <Title>{selectedProduct && selectedProduct.name}</Title>
       <PageIcon><OverviewIcon /></PageIcon>
       <PageActions><ChangeProductButton /></PageActions>
-      <MainActions><InstallButton onClick={() => setShowErrors(true)}/></MainActions>
+      <MainActions><InstallButton onClick={() => setShowErrors(true)} /></MainActions>
       <Flex direction={{ default: "column" }}>{renderCategories()}</Flex>
     </>
   );
