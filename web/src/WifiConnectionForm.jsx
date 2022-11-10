@@ -42,13 +42,21 @@ const selectorOptions = security_options.map(security => (
   <FormSelectOption key={security.value} value={security.value} label={security.label} />
 ));
 
+const securityFrom = (supported) => {
+  if (supported.includes("WPA2"))
+    return "wpa-psk";
+  if (supported.includes("WPA1"))
+    return "wpa-psk";
+  return "";
+};
+
 export default function WifiConnectionForm({ network, onCancel }) {
   const client = useInstallerClient();
   const [error, setError] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [ssid, setSsid] = useState(network?.ssid);
   const [password, setPassword] = useState("");
-  const [security, setSecurity] = useState("none");
+  const [security, setSecurity] = useState(securityFrom(network?.security || []));
 
   const accept = async e => {
     e.preventDefault();
