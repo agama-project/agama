@@ -47,7 +47,7 @@ module DInstaller
       #   end
       #
       # @note This mixin is expected to be included in a class that inherits from {DBus::BaseObject}
-      #   and it requires a #backend method that returns an object that implements a #validate method.
+      # and it requires a #backend method that returns an object that implements a #validate method.
       module Validation
         VALIDATION_INTERFACE = "org.opensuse.DInstaller.Validation1"
 

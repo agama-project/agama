@@ -44,4 +44,3 @@ shared_examples "validation" do
     end
   end
 end
-
