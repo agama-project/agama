@@ -32,7 +32,7 @@ module DInstaller
       #
       # @return [Array<ValidationError>] Validation errors
       def validation_errors
-        dbus_object[VALIDATION_IFACE].ValidationErrors.map do |message|
+        dbus_object[VALIDATION_IFACE]["ValidationErrors"].map do |message|
           DInstaller::ValidationError.new(message)
         end
       end
@@ -41,7 +41,7 @@ module DInstaller
       #
       # @return [Boolean] true if the service has valid data; false otherwise
       def valid?
-        dbus_object[VALIDATION_IFACE].IsValid
+        dbus_object[VALIDATION_IFACE]["IsValid"]
       end
     end
   end

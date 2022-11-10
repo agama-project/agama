@@ -29,7 +29,7 @@ shared_examples "validation" do
   end
 
   let(:validation_properties) do
-    double(::DBus::ProxyObjectInterface, ValidationErrors: ["An error"], IsValid: false)
+    { "ValidationErrors" => ["An error"], "IsValid" => false }
   end
 
   describe "#validation_errors" do
