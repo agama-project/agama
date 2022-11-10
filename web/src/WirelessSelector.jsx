@@ -52,7 +52,7 @@ const baseHiddenNetwork = { ssid: "", hidden: true };
 function WirelessConnectionForm({ network, setSubmittingData, onClose }) {
   const client = useInstallerClient();
   const [error, setError] = useState(false);
-  const [ssid, setSsid] = useState(network.ssid);
+  const [ssid, setSsid] = useState(network?.ssid);
   const [password, setPassword] = useState("");
   const [security, setSecurity] = useState("none");
 
@@ -90,7 +90,7 @@ function WirelessConnectionForm({ network, setSubmittingData, onClose }) {
           <p>Please, review provided settings and try again.</p>
         </Alert> }
 
-      { network.hidden &&
+      { network?.hidden &&
         <FormGroup fieldId="ssid" label="SSID">
           <TextInput
             id="ssid"
@@ -209,31 +209,26 @@ function WirelessSelector({ activeConnections, connections, accessPoints, onClos
 
   const renderHiddenNetworkForm = () => {
     return (
-      <Card>
-        <CardBody>
-          <WirelessConnectionForm
-            network={selected}
-            setSubmittingData={setSubmittingData}
-            onClose={onClose}
-          />
-        </CardBody>
-      </Card>
-    );
-  };
-
-  const renderSwitchFormLink = () => {
-    if (selected?.hidden) {
-      return (
-        <Center>
-          <Button variant="link" onClick={() => setSelected(null)}>Choose a visible network instead</Button>
-        </Center>
-      );
-    }
-
-    return (
-      <Center>
-        <Button variant="link" onClick={() => setSelected(baseHiddenNetwork)}>Connect to a hidden network</Button>
-      </Center>
+      <>
+        <Card className={selected?.hidden ? "available-network selected-network" : "available-network collapsed"}>
+          <CardBody>
+            <Split hasGutter className="content">
+              <SplitItem isFilled>
+                <WirelessConnectionForm
+                  network={selected}
+                  setSubmittingData={setSubmittingData}
+                  onClose={onClose}
+                />
+                <Button variant="link" onClick={() => setSelected(null)}>Cancel</Button>
+              </SplitItem>
+            </Split>
+          </CardBody>
+        </Card>
+        { !selected?.hidden &&
+          <Center>
+            <Button variant="link" onClick={() => setSelected(baseHiddenNetwork)}>Add network manually</Button>
+          </Center> }
+      </>
     );
   };
 
@@ -242,8 +237,7 @@ function WirelessSelector({ activeConnections, connections, accessPoints, onClos
   return (
     <Popup isOpen height={height} title="Connect to Wi-Fi network">
       { renderFilteredNetworks() }
-      { renderSwitchFormLink() }
-      {selected?.hidden && renderHiddenNetworkForm()}
+      { renderHiddenNetworkForm() }
 
       <Popup.Actions>
         <Popup.Confirm
