@@ -36,6 +36,18 @@ const ConnectionState = Object.freeze({
   DEACTIVATED: 4
 });
 
+/**
+ * Returns a human readable connection state
+ *
+ * @property {number} state
+ * @return {string}
+ */
+const connectionHumanState = (state) => {
+  const stateIndex = Object.values(ConnectionState).indexOf(state);
+  const stateKey = Object.keys(ConnectionState)[stateIndex];
+  return stateKey.toLowerCase();
+};
+
 const ConnectionTypes = Object.freeze({
   ETHERNET: "802-3-ethernet",
   WIFI: "802-11-wireless"
@@ -162,6 +174,7 @@ const createAccessPoint = ({ ssid, hwAddress, strength, security }) => (
 export {
   createConnection,
   createAccessPoint,
+  connectionHumanState,
   ConnectionState,
   ConnectionTypes,
   SecurityProtocols

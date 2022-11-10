@@ -25,6 +25,7 @@ import {
   Card,
   CardBody,
   Radio,
+  Spinner,
   Split,
   SplitItem,
 } from "@patternfly/react-core";
@@ -38,33 +39,40 @@ import Popup from "./Popup";
 import Center from "./Center";
 import WifiNetworkMenu from "./WifiNetworkMenu";
 import WifiConnectionForm from "./WifiConnectionForm";
+import { useInstallerClient } from "./context/installer";
+import { ConnectionState, connectionHumanState } from "./client/network/model";
 
 const baseHiddenNetwork = { ssid: "", hidden: true };
 
 function WirelessSelector({ activeConnections, connections, accessPoints, onClose }) {
+  const client = useInstallerClient();
   const [selected, setSelected] = useState(null);
   const unsetSelected = () => setSelected(null);
+  const networks = accessPoints.sort((a, b) => b.strength - a.strength).map((ap) => (
+    {
+      ...ap,
+      settings: connections.find((conn) => conn.wireless?.ssid === ap.ssid),
+      connection: activeConnections.find((conn) => conn.name === ap.ssid)
+    }
+  ));
 
-  const networks = accessPoints.sort((a, b) => b.strength - a.strength);
-  const ssids = networks.map(a => a.ssid);
+  const ssids = networks.map(n => n.ssid);
   const filtered = networks.filter((ap, index) => {
     return (ap.ssid !== "" && ssids.indexOf(ap.ssid) >= index);
   });
 
-  const isSelected = (network) => selected === network.ssid;
-  const isConnected = (network) => activeConnections.find((n) => n.name === network.ssid);
+  const connected = filtered.filter((n) => n.connection);
+  const configured = filtered.filter((n) => n.settings && !n.connection);
+  const rest = filtered.filter((n) => !n.settings && !n.connection);
 
-  const renderFilteredNetworks = () => {
-    return filtered.map(n => {
-      const settings = connections.find((conn) => conn.wireless?.ssid === n.ssid);
-      const selected = isSelected(n);
-      const configured = !!settings;
-      const connected = isConnected(n);
+  const isSelected = (network) => selected?.ssid === network.ssid;
+
+  const renderFilteredNetworks = (networks) => {
+    return networks.map(n => {
+      const chosen = isSelected(n);
 
       let className = "available-network";
-      let label = n.ssid;
-      if (selected) className += " selected-network";
-      if (connected) label += " (Connected)";
+      if (chosen) className += " selected-network";
 
       return (
         <Card key={n.ssid} className={className}>
@@ -73,25 +81,41 @@ function WirelessSelector({ activeConnections, connections, accessPoints, onClos
               <SplitItem isFilled>
                 <Radio
                   id={n.ssid}
-                  label={label}
+                  label={n.ssid}
                   description={
                     <>
                       <LockIcon size="10" color="grey" /> {n.security.join(", ")}{" "}
                       <SignalIcon size="10" color="grey" /> {n.strength}
                     </>
                   }
-                  isChecked={selected}
-                  onClick={() => setSelected(n.ssid)}
+                  isChecked={chosen}
+                  onClick={() => {
+                    if (chosen) return;
+                    setSelected(n);
+                    if (n.settings && !n.connection) client.network.connectTo(n.settings);
+                  }}
                 />
               </SplitItem>
-              { configured &&
+              { n.connection &&
                 <SplitItem>
                   <Center>
-                    <WifiNetworkMenu settings={settings} />
+                    {n.connection.state !== 0 && connectionHumanState(n.connection.state)}
+                  </Center>
+                </SplitItem> }
+              { n.connection?.state === ConnectionState.ACTIVATING &&
+                <SplitItem>
+                  <Center>
+                    <Spinner isSVG size="md" aria-label={`Activating ${n.ssid} connection`} />
+                  </Center>
+                </SplitItem> }
+              { n.settings &&
+                <SplitItem>
+                  <Center>
+                    <WifiNetworkMenu settings={n.settings} />
                   </Center>
                 </SplitItem> }
             </Split>
-            { selected &&
+            { chosen && !n.settings &&
               <Split hasGutter>
                 <SplitItem isFilled className="content">
                   <WifiConnectionForm network={n} onCancel={unsetSelected} />
@@ -130,7 +154,9 @@ function WirelessSelector({ activeConnections, connections, accessPoints, onClos
 
   return (
     <Popup isOpen height="large" title="Connect to Wi-Fi network">
-      { renderFilteredNetworks() }
+      { renderFilteredNetworks(connected) }
+      { renderFilteredNetworks(configured) }
+      { renderFilteredNetworks(rest) }
       { renderHiddenNetworkForm() }
 
       <Popup.Actions>
