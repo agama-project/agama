@@ -167,7 +167,7 @@ function WirelessSelector({ isOpen = false, onClose }) {
                       <SignalIcon size="10" color="grey" /> {n.strength}
                     </>
                   }
-                  isChecked={isChecked || currentlyActive }
+                  isChecked={isChecked || currentlyActive || false}
                   onClick={() => {
                     if (isChecked) return;
                     setSelected(n);
