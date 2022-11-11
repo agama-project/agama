@@ -75,7 +75,7 @@ jobs:
 
     - name: Git Checkout
       uses: actions/checkout@v2
-    
+
     - name: Install Ruby development files
       run: zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel npm augeas-devel
 
@@ -116,6 +116,37 @@ jobs:
 
     - name: Rubocop
       run: /usr/bin/rubocop.*-1.24.1
+
+  backend_doc:
+    runs-on: ubuntu-latest
+    env:
+      COVERAGE: 1
+
+    defaults:
+      run:
+        working-directory: ./service
+
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [ "tumbleweed" ]
+
+    container:
+      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v2
+
+    - name: Install Ruby development files
+      run: zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel npm augeas-devel
+
+    - name: Install RubyGems dependencies
+      run: bundle config set --local with 'development' && bundle install
+
+    - name: Generate doc
+      run: bundle exec yardoc --fail-on-warning
 
   cli_tests:
     runs-on: ubuntu-latest
