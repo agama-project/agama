@@ -233,7 +233,7 @@ function WirelessSelector({ isOpen = false, onClose }) {
   };
 
   return (
-    <Popup isOpen={isOpen} height="large" title="Connect to Wi-Fi network">
+    <Popup isOpen={isOpen} height="large" title="Connect to a Wi-Fi network">
       { renderFilteredNetworks(Object.values(networks).flat()) }
       { renderHiddenNetworkForm() }
 

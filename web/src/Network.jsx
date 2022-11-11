@@ -25,7 +25,7 @@ import { useInstallerClient } from "./context/installer";
 import { ConnectionTypes, NetworkEventTypes } from "./client/network";
 import NetworkWiredStatus from "./NetworkWiredStatus";
 import NetworkWifiStatus from "./NetworkWifiStatus";
-import WirelessSelector from "./WirelessSelector";
+import WifiSelector from "./WifiSelector";
 
 export default function Network() {
   const client = useInstallerClient();
@@ -84,7 +84,7 @@ export default function Network() {
       </StackItem>
       <StackItem>
         <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a wireless network</Button>
-        <WirelessSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
+        <WifiSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
       </StackItem>
     </Stack>
   );
