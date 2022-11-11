@@ -88,6 +88,7 @@ const SecurityProtocols = Object.freeze({
  * @property {string} password
  * @property {string} ssid
  * @property {string} security
+ * @property {boolean} hidden
  */
 
 /**

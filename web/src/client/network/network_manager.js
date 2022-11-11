@@ -121,6 +121,7 @@ const connectionToCockpit = (connection) => {
     settings["802-11-wireless"] = {
       mode: cockpit.variant("s", "infrastructure"),
       ssid: cockpit.variant("ay", cockpit.byte_array(wireless.ssid)),
+      hidden: cockpit.variant("b", !!wireless.hidden)
     };
 
     if (wireless.security) {
@@ -286,8 +287,7 @@ class NetworkManagerAdapter {
   /**
    * Connects to given Wireless network
    *
-   * @param {string} ssid - Network id
-   * @param {object} options - connection options
+   * @param {object} settings - connection options
    */
   async connectTo(settings) {
     const settingsProxy = await this.connectionSettingsObject(settings.id);
@@ -300,8 +300,8 @@ class NetworkManagerAdapter {
    * @param {string} ssid - Network id
    * @param {object} options - connection options
    */
-  async addAndConnectTo(ssid, options) {
-    const wireless = { ssid };
+  async addAndConnectTo(ssid, options = {}) {
+    const wireless = { ssid, hidden: options.hidden };
     if (options.security) wireless.security = options.security;
     if (options.password) wireless.password = options.password;
 

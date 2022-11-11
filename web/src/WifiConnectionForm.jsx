@@ -24,6 +24,7 @@ import {
   ActionGroup,
   Alert,
   Button,
+  Checkbox,
   Form,
   FormGroup,
   FormSelect,
@@ -50,12 +51,13 @@ const securityFrom = (supported) => {
   return "";
 };
 
-export default function WifiConnectionForm({ network, onCancel, onSubmit }) {
+export default function WifiConnectionForm({ network, showHiddenOption = false, onCancel, onSubmit }) {
   const client = useInstallerClient();
   const [error, setError] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [ssid, setSsid] = useState(network?.ssid);
-  const [password, setPassword] = useState("");
+  const [ssid, setSsid] = useState(network?.ssid || "");
+  const [hidden, setHidden] = useState(showHiddenOption);
+  const [password, setPassword] = useState(network?.password || "");
   const [security, setSecurity] = useState(securityFrom(network?.security || []));
 
   const accept = async e => {
@@ -65,7 +67,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmit }) {
 
     if (typeof onSubmit === "function") onSubmit({ ssid, password, security: [security] });
 
-    client.network.addAndConnectTo(ssid, { security, password })
+    client.network.addAndConnectTo(ssid, { security, password, hidden })
       .catch(() => setError(true))
       .finally(() => setIsConnecting(false));
   };
@@ -108,6 +110,16 @@ export default function WifiConnectionForm({ network, onCancel, onSubmit }) {
             value={password}
             label="Password"
             onChange={setPassword}
+          />
+        </FormGroup> }
+      { showHiddenOption &&
+        <FormGroup fieldId="hidden" label="">
+          <Checkbox
+            label="Hidden network"
+            isChecked={hidden}
+            onChange={setHidden}
+            id="hidden"
+            name="hidden"
           />
         </FormGroup> }
       <ActionGroup>
