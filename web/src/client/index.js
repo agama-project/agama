@@ -35,7 +35,21 @@ import { NetworkClient } from "./network";
 const SERVICE_NAME = "org.opensuse.DInstaller";
 
 /**
+ * @typedef {object} InstallerClient
+ * @property {LanguageClient} language - language client
+ * @property {ManagerClient} manager - manager client
+ * @property {Monitor} monitor - service monitor
+ * @property {NetworkClient} network - network client
+ * @property {SoftwareClient} software - software client
+ * @property {StorageClient} storage - storage client
+ * @property {UsersClient} users - users client
+ * @property {QuestionsClient} questions - questions client
+ */
+
+/**
  * Creates a D-Installer client
+ *
+ * @return {InstallerClient}
  */
 const createClient = () => {
   const client = new DBusClient(SERVICE_NAME);
