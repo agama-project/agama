@@ -229,7 +229,7 @@ function WifiSelector({ isOpen = false, onClose }) {
           <CardBody>
             <Split hasGutter className="content">
               <SplitItem isFilled>
-                <WifiConnectionForm network={selected} onCancel={unsetSelected} />
+                <WifiConnectionForm network={selected} onCancel={unsetSelected} onSubmit={setSelected} />
               </SplitItem>
             </Split>
           </CardBody>
