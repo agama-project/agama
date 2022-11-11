@@ -191,7 +191,7 @@ module.exports = {
   transformIgnorePatterns: [
     //   "/node_modules/",
     //   "\\.pnp\\.[^\\/]+$"
-    "/node_modules/(?!(react-teleporter)/)"
+    "/node_modules/(?!(react-teleporter|@patternfly/react-icons)/)",
   ],
 
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them

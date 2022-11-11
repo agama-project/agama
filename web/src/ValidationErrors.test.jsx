@@ -20,21 +20,34 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { plainRender } from "./test-utils";
-import ErrorsList from "./ErrorsList";
+import ValidationErrors from "./ValidationErrors";
 
-describe("ErrorsList", () => {
+describe("when there is a single error", () => {
   it("renders a list containing the given errors", () => {
+    const errors = [
+      { severity: 0, message: "It is wrong" },
+    ];
+    plainRender(<ValidationErrors title="Errors" errors={errors} />);
+
+    expect(screen.queryByText("It is wrong")).toBeInTheDocument();
+  });
+});
+
+describe("when there are multiple errors", () => {
+  it("renders a list containing the given errors", async () => {
     const errors = [
       { severity: 0, message: "It is wrong" },
       { severity: 1, message: "It might be better" }
     ];
-    plainRender(<ErrorsList errors={errors} />);
 
-    const rows = screen.getAllByRole("listitem");
-    expect(rows.length).toEqual(2);
-    expect(rows[0]).toHaveTextContent(errors[0].message);
-    expect(rows[1]).toHaveTextContent(errors[1].message);
+    const { user } = plainRender(<ValidationErrors title="Errors" errors={errors} />);
+    const button = await screen.findByRole("link", { name: "2 errors found" });
+    await user.click(button);
+
+    await waitFor(() => {
+      expect(screen.queryByText(/It is wrong/)).toBeInTheDocument();
+    });
   });
 });
