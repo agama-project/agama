@@ -28,6 +28,7 @@ import {
   Spinner,
   Split,
   SplitItem,
+  Text
 } from "@patternfly/react-core";
 
 import {
@@ -75,6 +76,7 @@ function WirelessSelector({ isOpen = false, onClose }) {
             connection: activeConnections.find(c => c.name === ap.ssid)
           };
 
+          // Group networks
           if (network.connection) {
             networks.connected.push(network);
           } else if (network.settings) {
@@ -128,6 +130,7 @@ function WirelessSelector({ isOpen = false, onClose }) {
 
         case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
           setActiveConnections(conns => conns.filter(c => c.id !== payload.id));
+          if (selected?.settings?.id === payload.id) unsetSelected();
           break;
         }
       }
@@ -144,6 +147,7 @@ function WirelessSelector({ isOpen = false, onClose }) {
     return networks.map(n => {
       const isChecked = isSelected(n);
       const currentlyActive = !selected && n.connection;
+      const showSpinner = (isChecked && n.settings && !n.connection) || isStateChanging(n);
 
       let className = "selection-list-item";
       if (isChecked || currentlyActive) className += " selection-list-checked-item";
@@ -171,18 +175,19 @@ function WirelessSelector({ isOpen = false, onClose }) {
                   }}
                 />
               </SplitItem>
-              { isStateChanging(n) &&
-                <SplitItem>
-                  <Center>
-                    <Spinner isSVG size="md" aria-label={`${n.ssid} connection is waiting for an state change`} />
-                  </Center>
-                </SplitItem> }
-              { n.connection &&
-                <SplitItem>
-                  <Center>
-                    {n.connection.state !== 0 && connectionHumanState(n.connection.state)}
-                  </Center>
-                </SplitItem> }
+              <SplitItem>
+                <Center>
+                  {showSpinner && <Spinner isSVG size="md" aria-label={`${n.ssid} connection is waiting for an state change`} /> }
+                </Center>
+              </SplitItem>
+              <SplitItem>
+                <Center>
+                  <Text className="keep-words">
+                    { showSpinner && !n.connection && "connecting" }
+                    { n.connection && n.connection.state !== 0 && connectionHumanState(n.connection.state)}
+                  </Text>
+                </Center>
+              </SplitItem>
               { n.settings &&
                 <SplitItem>
                   <Center>
@@ -190,7 +195,7 @@ function WirelessSelector({ isOpen = false, onClose }) {
                   </Center>
                 </SplitItem> }
             </Split>
-            { isChecked && !n.settings &&
+            { isChecked && (!n.settings || n.settings.error) &&
               <Split hasGutter>
                 <SplitItem isFilled className="content">
                   <WifiConnectionForm network={n} onCancel={unsetSelected} />
