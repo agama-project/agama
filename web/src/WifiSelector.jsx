@@ -61,7 +61,7 @@ const networkState = (state) => {
   }
 };
 
-function WirelessSelector({ isOpen = false, onClose }) {
+function WifiSelector({ isOpen = false, onClose }) {
   const client = useInstallerClient();
   const [networks, setNetworks] = useState([]);
   const [connections, setConnections] = useState([]);
@@ -259,4 +259,4 @@ function WirelessSelector({ isOpen = false, onClose }) {
   );
 }
 
-export default WirelessSelector;
+export default WifiSelector;
