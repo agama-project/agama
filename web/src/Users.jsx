@@ -25,8 +25,12 @@ import { Stack, StackItem } from "@patternfly/react-core";
 import FirstUser from "./FirstUser";
 import RootPassword from "./RootPassword";
 import RootSSHKey from "./RootSSHKey";
-import ErrorsList from "./ErrorsList";
+import Category from "./Category";
 import { useInstallerClient } from "./context/installer";
+
+import {
+  EOS_MANAGE_ACCOUNTS as UsersIcon,
+} from "eos-icons-react";
 
 export default function Users({ showErrors }) {
   const [errors, setErrors] = useState([]);
@@ -39,18 +43,19 @@ export default function Users({ showErrors }) {
 
   return (
     <>
-      { showErrors && <ErrorsList errors={errors} />}
-      <Stack className="overview-users">
-        <StackItem>
-          <RootPassword />
-        </StackItem>
-        <StackItem>
-          <RootSSHKey />
-        </StackItem>
-        <StackItem>
-          <FirstUser />
-        </StackItem>
-      </Stack>
+      <Category key="users" title="Users" icon={UsersIcon} errors={showErrors ? errors : []}>
+        <Stack className="overview-users">
+          <StackItem>
+            <RootPassword />
+          </StackItem>
+          <StackItem>
+            <RootSSHKey />
+          </StackItem>
+          <StackItem>
+            <FirstUser />
+          </StackItem>
+        </Stack>
+      </Category>
     </>
   );
 }

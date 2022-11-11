@@ -32,6 +32,8 @@ import {
   TextVariants
 } from "@patternfly/react-core";
 
+import ValidationErrors from "./ValidationErrors";
+
 /**
  * Displays an installation section
  *
@@ -43,9 +45,10 @@ import {
  * @param {object} props
  * @param {React.FunctionComponent} props.icon - Category icon
  * @param {string} props.title - Category title
+ * @param {import("./client/mixins").ValidationError[]} props.errors - Validation errors
  * @param {JSX.Element} props.children - Category content
  */
-export default function Category({ icon, title, children }) {
+export default function Category({ icon, title, errors, children }) {
   const Icon = icon;
 
   return (
@@ -57,7 +60,10 @@ export default function Category({ icon, title, children }) {
         <Stack>
           <StackItem>
             <TextContent>
-              <Text component={TextVariants.h2}>{title}</Text>
+              <Text component={TextVariants.h2}>
+                {title}
+                <ValidationErrors errors={errors} title={`${title} errors`} />
+              </Text>
             </TextContent>
           </StackItem>
           <StackItem>{children}</StackItem>

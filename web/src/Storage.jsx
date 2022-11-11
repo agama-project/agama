@@ -27,7 +27,9 @@ import { BUSY } from "./client/status";
 import TargetSelector from "./TargetSelector";
 import Proposal from "./Proposal";
 import InstallerSkeleton from "./InstallerSkeleton";
-import ErrorsList from "./ErrorsList";
+import Category from "./Category";
+
+import { EOS_VOLUME as HardDriveIcon } from "eos-icons-react";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -141,14 +143,15 @@ export default function Storage({ showErrors }) {
 
   return (
     <>
-      { showErrors && <ErrorsList errors={errors} />}
-      {targets.length > 0 &&
-        <TargetSelector
-          target={target || "Select device to install into"}
-          targets={targets}
-          onAccept={onAccept}
-        />}
-      <Proposal data={actions} />
+      <Category key="users" title="Storage" icon={HardDriveIcon} errors={showErrors ? errors : []}>
+        {targets.length > 0 &&
+          <TargetSelector
+            target={target || "Select device to install into"}
+            targets={targets}
+            onAccept={onAccept}
+          />}
+        <Proposal data={actions} />
+      </Category>
     </>
   );
 }

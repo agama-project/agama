@@ -36,9 +36,7 @@ import InstallButton from "./InstallButton";
 import {
   EOS_SOFTWARE as OverviewIcon,
   EOS_TRANSLATE as LanguagesSelectionIcon,
-  EOS_VOLUME as HardDriveIcon,
   EOS_SETTINGS_ETHERNET as NetworkIcon,
-  EOS_MANAGE_ACCOUNTS as UsersIcon,
   EOS_MODE_EDIT as ModeEditIcon
 } from "eos-icons-react";
 
@@ -76,17 +74,13 @@ function Overview() {
     <Category key="network" title="Network" icon={NetworkIcon}>
       <Network />
     </Category>,
-    <Category key="storage" title="Storage" icon={HardDriveIcon}>
-      <Storage showErrors />
-    </Category>,
-    <Category key="users" title="Users" icon={UsersIcon}>
-      <Users showErrors={showErrors} />
-    </Category>
+    <Storage key="storage" showErrors />,
+    <Users key="users" showErrors={showErrors} />
   ];
 
   const renderCategories = () => {
-    return categories.map(category => (
-      <FlexItem key={category.props.title} className="installation-overview-section">
+    return categories.map((category, i) => (
+      <FlexItem key={i} className="installation-overview-section">
         {category}
       </FlexItem>
     ));
