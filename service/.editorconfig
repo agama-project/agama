@@ -4,6 +4,6 @@
 root = true
 
 # 2 space indentation
-[*.rb]
+[{*.rb,bin/d-installer}]
 indent_style = space
 indent_size = 2

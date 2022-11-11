@@ -8,14 +8,36 @@ sudo zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel 
 
 sudo systemctl start cockpit
 
+# Like "sed -e $1 < $2 > $3" but $3 is a system file owned by root
+sudosed() {
+  echo "$2 -> $3"
+  sed -e "$1" "$2" | sudo tee "$3" > /dev/null
+}
+
 # set up the d-installer service
-sudo cp service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf
+MYDIR=$(realpath $(dirname $0))
+sudo cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf
+(
+  # D-Bus service activation
+  cd $MYDIR/service/share
+  DBUSDIR=/usr/share/dbus-1/system-services
+  for SVC in org.opensuse.DInstaller*.service; do
+    sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/service/bin/@" $SVC $DBUSDIR/$SVC
+  done
+  sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/service/bin/@" \
+          systemd.service /usr/lib/systemd/system/d-installer.service
+  sudo systemctl daemon-reload
+)
 cd service; bundle config set --local path 'vendor/bundle'; bundle install; cd -
 
 # set up the web UI
 cd web; make devel-install; cd -
-sudo ln -s `pwd`/web/dist /usr/share/cockpit/d-installer
+sudo ln -snf `pwd`/web/dist /usr/share/cockpit/d-installer
 
 # Start the installer
-echo -e "\nStart the d-installer service:\n  cd service; sudo bundle exec bin/d-installer\n"
-echo -e "Visit http://localhost:9090/cockpit/@localhost/d-installer/index.html"
+echo
+echo "D-Bus will start the services, see journalctl for their logs."
+echo "To start the services manually, logging to the terminal:"
+echo "  cd service; sudo bundle exec bin/d-installer"
+echo
+echo "Visit http://localhost:9090/cockpit/@localhost/d-installer/index.html"
