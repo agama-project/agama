@@ -43,7 +43,10 @@ export default function Network() {
     return client.network.onNetworkEvent(({ type, payload }) => {
       switch (type) {
         case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
-          setConnections(conns => [...conns, payload]);
+          setConnections(conns => {
+            const newConnections = conns.filter(c => c.id !== payload.id);
+            return [...newConnections, payload];
+          });
           break;
         }
 
