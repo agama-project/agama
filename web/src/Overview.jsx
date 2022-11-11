@@ -84,12 +84,12 @@ const InstallConfirmationPopup = ({ onAccept, onClose }) => (
 
 const CannotInstallPopup = ({ onClose }) => (
   <Popup
-    title="Confirm Installation"
+    title="Problems Found"
     isOpen="true"
   >
     <Text>
-      Some problems were detected when trying to start the installation.
-      Please, have a look to the reported issues and try again after addressing them.
+      Some problems were found when trying to start the installation.
+      Please, have a look to the reported issues and try again after.
     </Text>
 
     <Popup.Actions>
@@ -114,8 +114,8 @@ const InstallButton = ({ onClick }) => {
   const open = () => {
     onClick();
     client.manager.canInstall().then(ok => {
-      setError(!ok);
       setIsOpen(true);
+      setError(!ok);
     });
   };
   const close = () => setIsOpen(false);
