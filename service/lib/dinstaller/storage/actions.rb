@@ -39,7 +39,7 @@ module DInstaller
 
     private
 
-      # @param [Logger]
+      # @return [Logger]
       attr_reader :logger
 
       # Sorted main actions (everything except subvolume actions)

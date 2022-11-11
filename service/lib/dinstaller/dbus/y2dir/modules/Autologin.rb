@@ -97,8 +97,8 @@ module Yast
     end
 
     # Write autologin settings
-    # @param [Boolean] write_only when true, suseconfig script will not be run
-    # @return written anything?
+    # @param _write_only [Boolean] when true, suseconfig script will not be run
+    # @return [Boolean]
     def Write(_write_only)
       return false if !available || !@modified
 

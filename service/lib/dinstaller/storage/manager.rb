@@ -74,7 +74,7 @@ module DInstaller
         end
       end
 
-      # Umounts the target file system
+      # Unmounts the target file system
       def finish
         start_progress(3)
 

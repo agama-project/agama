@@ -39,7 +39,7 @@ module DInstaller
 
         # Constructor
         #
-        # @param backend [DInstaller::Software]
+        # @param backend [DInstaller::Storage::Manager]
         # @param logger [Logger]
         def initialize(backend, logger)
           super(PATH, logger: logger)
