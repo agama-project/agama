@@ -31,38 +31,17 @@ export default function Network() {
   const client = useInstallerClient();
   const [initialized, setInitialized] = useState(false);
   const [connections, setConnections] = useState([]);
-  const [settings, setSettings] = useState([]);
-  const [accessPoints, setAccessPoints] = useState([]);
-  const [openWirelessSelector, setOpenWirelessSelector] = useState(false);
+  const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
 
   useEffect(() => {
     if (!initialized) return;
 
     setConnections(client.network.activeConnections());
-    client.network.connections().then(setSettings);
   }, [client.network, initialized]);
 
   useEffect(() => {
     return client.network.onNetworkEvent(({ type, payload }) => {
       switch (type) {
-        case NetworkEventTypes.CONNECTION_ADDED: {
-          setSettings(conns => [...conns, payload]);
-          break;
-        }
-
-        case NetworkEventTypes.CONNECTION_UPDATED: {
-          setSettings(conns => {
-            const newConnections = conns.filter(c => c.id !== payload.id);
-            return [...newConnections, payload];
-          });
-          break;
-        }
-
-        case NetworkEventTypes.CONNECTION_REMOVED: {
-          setSettings(conns => conns.filter(c => c.path !== payload.path));
-          break;
-        }
-
         case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
           setConnections(conns => [...conns, payload]);
           break;
@@ -87,14 +66,7 @@ export default function Network() {
     client.network.setUp().then(() => setInitialized(true));
   }, [client.network]);
 
-  useEffect(() => {
-    if (!initialized) return;
-
-    setAccessPoints(client.network.accessPoints());
-  }, [client.network, initialized]);
-
   if (!initialized) return null;
-  if (!connections.length) return null;
 
   const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
   const activeWifiConnections = connections.filter(c => c.type === ConnectionTypes.WIFI);
@@ -108,10 +80,8 @@ export default function Network() {
         <NetworkWifiStatus connections={activeWifiConnections} />
       </StackItem>
       <StackItem>
-        { accessPoints && accessPoints.length > 0 &&
-          <Button variant="link" onClick={() => setOpenWirelessSelector(true)}>Connect to a wireless network</Button> }
-        { openWirelessSelector &&
-          <WirelessSelector activeConnections={activeWifiConnections} connections={settings} accessPoints={accessPoints} onClose={() => setOpenWirelessSelector(false)} /> }
+        <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a wireless network</Button>
+        <WirelessSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
       </StackItem>
     </Stack>
   );

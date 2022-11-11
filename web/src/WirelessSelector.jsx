@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -41,38 +41,113 @@ import WifiNetworkMenu from "./WifiNetworkMenu";
 import WifiConnectionForm from "./WifiConnectionForm";
 import { useInstallerClient } from "./context/installer";
 import { ConnectionState, connectionHumanState } from "./client/network/model";
+import { NetworkEventTypes } from "./client/network";
 
 const baseHiddenNetwork = { ssid: "", hidden: true };
 
-function WirelessSelector({ activeConnections, connections, accessPoints, onClose }) {
+function WirelessSelector({ isOpen = false, onClose }) {
   const client = useInstallerClient();
+  const [networks, setNetworks] = useState([]);
+  const [connections, setConnections] = useState([]);
+  const [activeConnections, setActiveConnections] = useState(client.network.activeConnections());
   const [selected, setSelected] = useState(null);
   const unsetSelected = () => setSelected(null);
-  const networks = accessPoints.sort((a, b) => b.strength - a.strength).map((ap) => (
-    {
-      ...ap,
-      settings: connections.find((conn) => conn.wireless?.ssid === ap.ssid),
-      connection: activeConnections.find((conn) => conn.name === ap.ssid)
-    }
-  ));
 
-  const ssids = networks.map(n => n.ssid);
-  const filtered = networks.filter((ap, index) => {
-    return (ap.ssid !== "" && ssids.indexOf(ap.ssid) >= index);
+  useEffect(() => {
+    client.network.connections().then(setConnections);
+  }, [client.network]);
+
+  useEffect(() => {
+    const loadNetworks = async () => {
+      const knownSsids = [];
+
+      return client.network.accessPoints()
+        .sort((a, b) => b.strength - a.strength)
+        .reduce((networks, ap) => {
+          // Do not include networks without SSID
+          if (!ap.ssid || ap.ssid === "") return networks;
+          // Do not include "duplicates"
+          if (knownSsids.includes(ap.ssid)) return networks;
+
+          const network = {
+            ...ap,
+            settings: connections.find(c => c.wireless?.ssid === ap.ssid),
+            connection: activeConnections.find(c => c.name === ap.ssid)
+          };
+
+          if (network.connection) {
+            networks.connected.push(network);
+          } else if (network.settings) {
+            networks.configured.push(network);
+          } else {
+            networks.others.push(network);
+          }
+
+          knownSsids.push(network.ssid);
+
+          return networks;
+        }, { connected: [], configured: [], others: [] });
+    };
+
+    loadNetworks().then(setNetworks);
+  }, [client.network, connections, activeConnections]);
+
+  useEffect(() => {
+    return client.network.onNetworkEvent(({ type, payload }) => {
+      switch (type) {
+        case NetworkEventTypes.CONNECTION_ADDED: {
+          setConnections(conns => [...conns, payload]);
+          break;
+        }
+
+        case NetworkEventTypes.CONNECTION_UPDATED: {
+          setConnections(conns => {
+            const newConnections = conns.filter(c => c.id !== payload.id);
+            return [...newConnections, payload];
+          });
+          break;
+        }
+
+        case NetworkEventTypes.CONNECTION_REMOVED: {
+          setConnections(conns => conns.filter(c => c.path !== payload.path));
+          break;
+        }
+
+        case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
+          setActiveConnections(conns => [...conns, payload]);
+          break;
+        }
+
+        case NetworkEventTypes.ACTIVE_CONNECTION_UPDATED: {
+          setActiveConnections(conns => {
+            const newConnections = conns.filter(c => c.id !== payload.id);
+            return [...newConnections, payload];
+          });
+          break;
+        }
+
+        case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
+          setActiveConnections(conns => conns.filter(c => c.id !== payload.id));
+          break;
+        }
+      }
+    });
   });
 
-  const connected = filtered.filter((n) => n.connection);
-  const configured = filtered.filter((n) => n.settings && !n.connection);
-  const rest = filtered.filter((n) => !n.settings && !n.connection);
-
   const isSelected = (network) => selected?.ssid === network.ssid;
+  const isStateChanging = (network) => {
+    const state = network.connection?.state;
+    return state === ConnectionState.ACTIVATING || state === ConnectionState.DEACTIVATING;
+  };
 
   const renderFilteredNetworks = (networks) => {
     return networks.map(n => {
-      const chosen = isSelected(n);
+      const isChecked = isSelected(n);
+      const currentlyActive = !selected && n.connection;
 
-      let className = "available-network";
-      if (chosen) className += " selected-network";
+      let className = "selection-list-item";
+      if (isChecked || currentlyActive) className += " selection-list-checked-item";
+      if (isChecked && !n.settings) className += " selection-list-focused-item";
 
       return (
         <Card key={n.ssid} className={className}>
@@ -88,24 +163,24 @@ function WirelessSelector({ activeConnections, connections, accessPoints, onClos
                       <SignalIcon size="10" color="grey" /> {n.strength}
                     </>
                   }
-                  isChecked={chosen}
+                  isChecked={isChecked || currentlyActive }
                   onClick={() => {
-                    if (chosen) return;
+                    if (isChecked) return;
                     setSelected(n);
                     if (n.settings && !n.connection) client.network.connectTo(n.settings);
                   }}
                 />
               </SplitItem>
+              { isStateChanging(n) &&
+                <SplitItem>
+                  <Center>
+                    <Spinner isSVG size="md" aria-label={`${n.ssid} connection is waiting for an state change`} />
+                  </Center>
+                </SplitItem> }
               { n.connection &&
                 <SplitItem>
                   <Center>
                     {n.connection.state !== 0 && connectionHumanState(n.connection.state)}
-                  </Center>
-                </SplitItem> }
-              { n.connection?.state === ConnectionState.ACTIVATING &&
-                <SplitItem>
-                  <Center>
-                    <Spinner isSVG size="md" aria-label={`Activating ${n.ssid} connection`} />
                   </Center>
                 </SplitItem> }
               { n.settings &&
@@ -115,7 +190,7 @@ function WirelessSelector({ activeConnections, connections, accessPoints, onClos
                   </Center>
                 </SplitItem> }
             </Split>
-            { chosen && !n.settings &&
+            { isChecked && !n.settings &&
               <Split hasGutter>
                 <SplitItem isFilled className="content">
                   <WifiConnectionForm network={n} onCancel={unsetSelected} />
@@ -130,7 +205,7 @@ function WirelessSelector({ activeConnections, connections, accessPoints, onClos
   const renderHiddenNetworkForm = () => {
     return (
       <>
-        <Card className={selected?.hidden ? "available-network selected-network" : "available-network collapsed"}>
+        <Card className={selected?.hidden ? "selection-list-item selection-list-focused-item" : "selection-list-item collapsed"}>
           <CardBody>
             <Split hasGutter className="content">
               <SplitItem isFilled>
@@ -153,10 +228,8 @@ function WirelessSelector({ activeConnections, connections, accessPoints, onClos
   };
 
   return (
-    <Popup isOpen height="large" title="Connect to Wi-Fi network">
-      { renderFilteredNetworks(connected) }
-      { renderFilteredNetworks(configured) }
-      { renderFilteredNetworks(rest) }
+    <Popup isOpen={isOpen} height="large" title="Connect to Wi-Fi network">
+      { renderFilteredNetworks(Object.values(networks).flat()) }
       { renderHiddenNetworkForm() }
 
       <Popup.Actions>

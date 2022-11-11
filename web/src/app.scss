@@ -226,7 +226,7 @@ button.remove-link:hover {
   color: var(--pf-c-button--m-danger--BackgroundColor);
 }
 
-.available-network {
+.selection-list-item {
   transition:
     font-size .15s ease-in-out,
     font-weight .25s ease-in-out,
@@ -234,31 +234,29 @@ button.remove-link:hover {
     box-shadow .35s ease-in-out;
 }
 
-.available-network .pf-c-card__body {
+.selection-list-item .pf-c-card__body {
   padding: 0;
 }
-.available-network .pf-c-card__body .header {
+.selection-list-item .pf-c-card__body .header {
   border-block-end: 1px solid #eee;
   padding: fonts.$size-base;
 }
 
-.available-network .pf-c-card__body .content {
+.selection-list-item .pf-c-card__body .content {
   padding: calc(fonts.$size-base * 2);
 }
 
-.selected-network {
+.selection-list-focused-item {
   margin-block: 20px;
   box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
 }
 
-.selected-network .pf-c-radio {
-}
-
-.selected-network .pf-c-radio input {
+.selection-list-focused-item .pf-c-radio input {
   // Keep input vertically aligned with the label
   margin-top: calc(var(--pf-c-radio__label--FontSize) * 0.3);
 }
-.selected-network .pf-c-radio label {
+.selection-list-checked-item .pf-c-radio label,
+.selection-list-focused-item .pf-c-radio label {
   font-size: calc(var(--pf-c-radio__label--FontSize) * 1.3);
   font-weight: bold;
 }
