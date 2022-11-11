@@ -41,7 +41,7 @@ module DInstaller
       #
       # @return [Boolean] true if the service has valid data; false otherwise
       def valid?
-        dbus_object[VALIDATION_IFACE]["IsValid"]
+        dbus_object[VALIDATION_IFACE]["Valid"]
       end
     end
   end

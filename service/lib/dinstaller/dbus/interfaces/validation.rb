@@ -82,7 +82,7 @@ module DInstaller
           base.class_eval do
             dbus_interface VALIDATION_INTERFACE do
               dbus_reader :validation_errors, "as", dbus_name: "ValidationErrors"
-              dbus_reader :valid?, "b", dbus_name: "IsValid"
+              dbus_reader :valid?, "b", dbus_name: "Valid"
             end
           end
         end
