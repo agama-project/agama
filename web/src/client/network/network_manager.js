@@ -267,8 +267,6 @@ class NetworkManagerAdapter {
       };
     }
 
-    console.log(conn);
-
     return conn;
   }
 
@@ -292,7 +290,6 @@ class NetworkManagerAdapter {
    * @param {object} options - connection options
    */
   async connectTo(settings) {
-    console.log(settings);
     const settingsProxy = await this.connectionSettingsObject(settings.id);
     await this.activateConnection(settingsProxy.path);
   }
