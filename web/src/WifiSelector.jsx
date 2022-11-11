@@ -41,10 +41,25 @@ import Center from "./Center";
 import WifiNetworkMenu from "./WifiNetworkMenu";
 import WifiConnectionForm from "./WifiConnectionForm";
 import { useInstallerClient } from "./context/installer";
-import { ConnectionState, connectionHumanState } from "./client/network/model";
+import { ConnectionState } from "./client/network/model";
 import { NetworkEventTypes } from "./client/network";
 
 const baseHiddenNetwork = { ssid: "", hidden: true };
+
+const networkState = (state) => {
+  switch (state) {
+    case ConnectionState.ACTIVATING:
+      return 'Connecting';
+    case ConnectionState.ACTIVATED:
+      return 'Connected';
+    case ConnectionState.DEACTIVATING:
+      return 'Disconnecting';
+    case ConnectionState.DEACTIVATED:
+      return 'Disconnected';
+    default:
+      return "";
+  }
+};
 
 function WirelessSelector({ isOpen = false, onClose }) {
   const client = useInstallerClient();
@@ -183,8 +198,8 @@ function WirelessSelector({ isOpen = false, onClose }) {
               <SplitItem>
                 <Center>
                   <Text className="keep-words">
-                    { showSpinner && !n.connection && "connecting" }
-                    { n.connection && n.connection.state !== 0 && connectionHumanState(n.connection.state)}
+                    { showSpinner && !n.connection && "Connecting" }
+                    { networkState(n.connection?.state)}
                   </Text>
                 </Center>
               </SplitItem>
