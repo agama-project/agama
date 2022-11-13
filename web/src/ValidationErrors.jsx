@@ -25,10 +25,23 @@
 import React, { useState } from "react";
 import {
   Button,
+  List,
+  ListItem,
   Popover
 } from "@patternfly/react-core";
 
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon';
+
+/**
+ * @param {import("./client/mixins").ValidationError[]} errors - Validation errors
+ * @return React.JSX
+ */
+const popoverContent = (errors) => {
+  const items = errors.map((e, i) => <ListItem key={i}>{e.message}</ListItem>);
+  return (
+    <List>{items}</List>
+  );
+};
 
 /**
  * Displays a list of validation errors
@@ -69,7 +82,7 @@ const ValidationErrors = ({ title = "Errors", errors }) => {
             shouldOpen={() => setPopoverVisible(true)}
             aria-label="Basic popover"
             headerContent={title}
-            bodyContent={errors.map(e => e.message).join("\n")}
+            bodyContent={popoverContent(errors)}
           >
             <Button className="hidden-popover-button" variant="link" />
           </Popover>
