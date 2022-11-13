@@ -37,6 +37,7 @@ let onStorageProposalChangeFn = jest.fn();
 let calculateStorageProposalFn;
 const getStatusFn = jest.fn().mockResolvedValue(IDLE);
 const getValidationErrorsFn = jest.fn().mockResolvedValue([]);
+const onValidationChangeFn = jest.fn();
 
 const storageMock = {
   getStorageProposal: () => Promise.resolve(proposalSettings),
@@ -63,7 +64,7 @@ beforeEach(() => {
         getStatus: getStatusFn.mockResolvedValue(IDLE),
         onStatusChange: jest.fn(),
         getValidationErrors: getValidationErrorsFn,
-        onValidationChange: jest.fn()
+        onValidationChange: onValidationChangeFn
       },
       manager: {
         getStatus: jest.fn().mockResolvedValue(IDLE),
@@ -132,15 +133,28 @@ describe("when the storage actions change", () => {
   });
 });
 
-describe("display errors is showError is set to true", () => {
+describe("when showError is set to true", () => {
   beforeEach(() => {
     getValidationErrorsFn.mockResolvedValue([{ message: "Could not make a proposal" }]);
   });
 
-  it("displays the proposal", async () => {
+  it("displays the list of errors", async () => {
     installerRender(<Storage showErrors />);
     await waitFor(() => {
       expect(screen.queryByText(/Could not make a proposal/)).toBeInTheDocument();
+    });
+  });
+
+  it("refreshes the list of errors when they change", async () => {
+    let callback;
+    onValidationChangeFn.mockImplementation(cb => { callback = cb });
+
+    installerRender(<Storage showErrors />);
+    act(() => {
+      callback([{ message: "Could not find a suitable device" }]);
+    });
+    await waitFor(() => {
+      expect(screen.queryByText(/Could not find a suitable device/)).toBeInTheDocument();
     });
   });
 });
