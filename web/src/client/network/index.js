@@ -44,6 +44,7 @@ const NetworkEventTypes = Object.freeze({
  * @typedef {object} NetworkAdapter
  * @property {() => ActiveConnection[]} activeConnections
  * @property {() => AccessPoint[]} accessPoints
+ * @property {() => Promise<Connection[]>} connections
  * @property {(handler: (event: NetworkEvent) => void) => void} subscribe
  * @property {(id: string) => Promise<Connection>} getConnection
  * @property {(ssid: string, options: object) => boolean} addAndConnectTo
@@ -121,7 +122,7 @@ o  *   NetworkManagerAdapter.
   /**
    * Returns the active connections
    *
-   * @returns {ActiveConnection[]}
+   * @return {ActiveConnection[]}
    */
   activeConnections() {
     return this.adapter.activeConnections();
@@ -130,7 +131,7 @@ o  *   NetworkManagerAdapter.
   /**
    * Returns the connection settings
    *
-   * @returns {Connection[]}
+   * @return {Promise<Connection[]>}
    */
   connections() {
     return this.adapter.connections();

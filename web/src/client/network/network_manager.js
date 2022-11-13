@@ -215,9 +215,9 @@ class NetworkManagerAdapter {
   }
 
   /**
-   * Returns the list of active connections
+   * Returns the list of configured connections
    *
-   * @return {ActiveConnection[]}
+   * @return {Promise<Connection[]>}
    * @see https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
    */
   async connections() {
@@ -242,6 +242,13 @@ class NetworkManagerAdapter {
     });
   }
 
+  /**
+   * Returns a Connection given the nm-settings given by DBUS
+   *
+   * @param {object} settings - connection options
+   * @return {Connection}
+   *
+   */
   connectionFromSettings(settings) {
     const { connection, ipv4, "802-11-wireless": wireless, path } = settings;
     const conn = {
@@ -412,7 +419,7 @@ class NetworkManagerAdapter {
    *
    * @private
    * @param {object} proxy - Proxy object from /org/freedesktop/NetworkManager/Settings/*
-   * @return {Connection}
+   * @return {Promise<import("./index").Connection>}
    */
   async connectionFromProxy(proxy) {
     const settings = await proxy.GetSettings();

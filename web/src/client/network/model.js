@@ -79,7 +79,7 @@ const SecurityProtocols = Object.freeze({
  * @typedef {object} Connection
  * @property {string} id
  * @property {string} name
- * @property {IPv4} ipv4
+ * @property {IPv4} [ipv4]
  * @property {Wireless} [wireless]
  */
 

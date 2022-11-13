@@ -23,7 +23,7 @@
 
 import { NetworkClient, ConnectionTypes, ConnectionState } from "./network";
 
-const conn = {
+const active_conn = {
   id: "uuid-wired",
   name: "Wired connection 1",
   type: ConnectionTypes.ETHERNET,
@@ -31,15 +31,26 @@ const conn = {
   addresses: [{ address: "192.168.122.1", prefix: 24 }]
 };
 
+const conn = {
+  id: "uuid-wired",
+  name: "Wired connection 1",
+  type: ConnectionTypes.ETHERNET,
+  addresses: [{ address: "192.168.122.1", prefix: 24 }]
+};
+
 const adapter = {
   setUp: jest.fn(),
-  activeConnections: jest.fn().mockReturnValue([conn]),
+  activeConnections: jest.fn().mockReturnValue([active_conn]),
+  connections: jest.fn().mockReturnValue([conn]),
   hostname: jest.fn().mockReturnValue("localhost.localdomain"),
   subscribe: jest.fn(),
   getConnection: jest.fn(),
   addConnection: jest.fn(),
   updateConnection: jest.fn(),
-  accessPoints: jest.fn()
+  deleteConnection: jest.fn(),
+  accessPoints: jest.fn(),
+  connectTo: jest.fn(),
+  addAndConnectTo: jest.fn()
 };
 
 describe("NetworkClient", () => {
@@ -47,7 +58,7 @@ describe("NetworkClient", () => {
     it("retuns the list of active connections from the adapter", () => {
       const client = new NetworkClient(adapter);
       const connections = client.activeConnections();
-      expect(connections).toEqual([conn]);
+      expect(connections).toEqual([active_conn]);
     });
   });
 
