@@ -112,7 +112,9 @@ module DInstaller
       return [] if root_password? || first_user?
 
       [
-        ValidationError.new("Defining a user or setting the root password is required")
+        ValidationError.new(
+          "Defining a user, setting the root password or a SSH public key is required"
+        )
       ]
     end
 
