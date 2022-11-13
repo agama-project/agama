@@ -51,9 +51,23 @@ const activeConnections = {
 
 };
 
+const connections = {
+  "/org/freedesktop/NetworkManager/Settings/1": {
+    Id: "active-wired-connection",
+    Uuid: "uuid-wired-1",
+    Type: ConnectionTypes.ETHERNET,
+    Ip4Config: "/ip4Config/1"
+  }
+};
+
 Object.defineProperties(activeConnections, {
   addEventListener: { value: jest.fn(), enumerable: false }
 });
+
+Object.defineProperties(connections, {
+  addEventListener: { value: jest.fn(), enumerable: false }
+});
+
 
 const addressesData = {
   "/ip4Config/1": {
@@ -79,7 +93,8 @@ const addressesData = {
 const networkProxy = () => ({
   wait: jest.fn(),
   ActivateConnection: jest.fn(),
-  ActiveConnections: Object.keys(activeConnections)
+  ActiveConnections: Object.keys(activeConnections),
+  Connections: Object.keys(connections)
 });
 
 const AddConnectionFn = jest.fn();
@@ -127,6 +142,7 @@ describe("NetworkManagerAdapter", () => {
 
     dbusClient.proxies = jest.fn().mockImplementation(iface => {
       if (iface === ACTIVE_CONNECTION_IFACE) return activeConnections;
+      if (iface === NM_CONNECTION_IFACE) return connections;
       if (iface === IP4CONFIG_IFACE) return addressesData;
       return {};
     });
