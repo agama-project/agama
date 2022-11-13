@@ -52,7 +52,7 @@ const CannotInstallPopup = ({ onClose }) => (
   >
     <Text>
       Some problems were found when trying to start the installation.
-      Please, have a look to the reported issues and try again after.
+      Please, have a look to the reported issues and try again.
     </Text>
 
     <Popup.Actions>
