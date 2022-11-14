@@ -19,8 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
+import IpSettingsForm from "./IpSettingsForm";
 import ConnectionsDataList from "./ConnectionsDataList";
+import { useInstallerClient } from "./context/installer";
 
 /**
  * D-Installer component to show status of wireless network connections
@@ -30,7 +32,17 @@ import ConnectionsDataList from "./ConnectionsDataList";
  * @param {import ("client/network").ActiveConnection[]} connections
  */
 export default function NetworkWiFiStatus({ connections }) {
+  const client = useInstallerClient();
+  const [connection, setConnection] = useState(null);
+
+  const selectConnection = ({ id }) => {
+    client.network.getConnection(id).then(setConnection);
+  };
+
   return (
-    <ConnectionsDataList conns={connections} />
+    <>
+      <ConnectionsDataList conns={connections} onSelect={selectConnection} />
+      { connection && <IpSettingsForm connection={connection} onClose={() => setConnection(null)} /> }
+    </>
   );
 }
