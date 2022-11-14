@@ -25,7 +25,6 @@ require "dinstaller/dbus/interfaces/service_status"
 require "dinstaller/storage/proposal"
 require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/volume"
-require "dinstaller/storage/actions"
 require "y2storage"
 
 describe DInstaller::DBus::Storage::Proposal do
@@ -269,10 +268,8 @@ describe DInstaller::DBus::Storage::Proposal do
       allow(backend).to receive(:actions).and_return(actions)
     end
 
-    let(:actions) { instance_double(DInstaller::Storage::Actions, all: all_actions) }
-
     context "if there are no actions" do
-      let(:all_actions) { [] }
+      let(:actions) { [] }
 
       it "returns an empty list" do
         expect(subject.actions).to eq([])
@@ -280,7 +277,7 @@ describe DInstaller::DBus::Storage::Proposal do
     end
 
     context "if there are actions" do
-      let(:all_actions) { [action1, action2] }
+      let(:actions) { [action1, action2] }
 
       let(:action1) do
         instance_double(Y2Storage::CompoundAction,

@@ -135,14 +135,13 @@ module DInstaller
         !proposal.failed?
       end
 
-      # Storage actions manager
+      # Storage actions
       #
-      # FIXME: this method should directly return the actions
-      #
-      # @return [Storage::Actions]
+      # @return [Array<Y2Storage::CompoundAction>]
       def actions
-        # FIXME: this class could receive the actiongraph associated to the current proposal
-        @actions ||= Actions.new(logger)
+        return [] unless proposal&.devices
+
+        Actions.new(logger, proposal.devices.actiongraph).all
       end
 
     private

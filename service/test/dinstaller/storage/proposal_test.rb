@@ -181,36 +181,45 @@ describe DInstaller::Storage::Proposal do
   end
 
   describe "#actions" do
-    let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, staging: staging) }
-    let(:staging) { instance_double(Y2Storage::Devicegraph, actiongraph: actiongraph) }
-    let(:actiongraph) do
-      instance_double(Y2Storage::Actiongraph, compound_actions: y2storage_actions)
+    before do
+      allow(subject).to receive(:proposal).and_return(y2storage_proposal)
     end
 
-    before { allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager) }
+    context "when there is no proposal" do
+      let(:y2storage_proposal) { nil }
 
-    context "with an empty actiongraph" do
-      let(:y2storage_actions) { [] }
-
-      it "returns an empty set of actions" do
-        expect(proposal.actions).to be_a DInstaller::Storage::Actions
-        expect(proposal.actions.all).to eq []
+      it "returns an empty list" do
+        expect(subject.actions).to eq([])
       end
     end
 
-    context "with an non-empty actiongraph" do
-      let(:y2storage_actions) { [fs_action, subvol_action] }
-      let(:fs_action) { instance_double(Y2Storage::CompoundAction, delete?: false) }
-      let(:subvol_action) { instance_double(Y2Storage::CompoundAction, delete?: false) }
+    context "when there is a proposal" do
+      let(:y2storage_proposal) { instance_double(Y2Storage::MinGuidedProposal, devices: devices) }
 
-      before do
-        allow(fs_action).to receive(:device_is?).with(:btrfs_subvolume).and_return false
-        allow(subvol_action).to receive(:device_is?).with(:btrfs_subvolume).and_return true
+      context "and the proposal failed" do
+        let(:devices) { nil }
+
+        it "returns an empty list" do
+          expect(subject.actions).to eq([])
+        end
       end
 
-      it "returns the set of actions from the actiongraph" do
-        expect(proposal.actions).to be_a DInstaller::Storage::Actions
-        expect(proposal.actions.all).to contain_exactly(fs_action, subvol_action)
+      context "and the proposal was successful" do
+        let(:devices) { instance_double(Y2Storage::Devicegraph, actiongraph: actiongraph) }
+        let(:actiongraph) { instance_double(Y2Storage::Actiongraph, compound_actions: actions) }
+
+        let(:actions) { [fs_action, subvol_action] }
+        let(:fs_action) { instance_double(Y2Storage::CompoundAction, delete?: false) }
+        let(:subvol_action) { instance_double(Y2Storage::CompoundAction, delete?: false) }
+
+        before do
+          allow(fs_action).to receive(:device_is?).with(:btrfs_subvolume).and_return false
+          allow(subvol_action).to receive(:device_is?).with(:btrfs_subvolume).and_return true
+        end
+
+        it "returns the actions from the actiongraph" do
+          expect(proposal.actions).to contain_exactly(fs_action, subvol_action)
+        end
       end
     end
   end

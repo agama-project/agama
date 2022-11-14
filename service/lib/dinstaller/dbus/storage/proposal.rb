@@ -137,7 +137,7 @@ module DInstaller
         #
         # @return [Array<Hash>]
         def actions
-          backend.actions.all.map { |a| to_dbus_action(a) }
+          backend.actions.map { |a| to_dbus_action(a) }
         end
 
         # Calculates a new proposal
