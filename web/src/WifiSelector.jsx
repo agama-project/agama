@@ -229,7 +229,7 @@ function WifiSelector({ isOpen = false, onClose }) {
           <CardBody>
             <Split hasGutter className="content">
               <SplitItem isFilled>
-                <WifiConnectionForm network={selected} showHiddenOption onCancel={unsetSelected} onSubmit={setSelected} />
+                <WifiConnectionForm network={selected} onCancel={unsetSelected} onSubmitCallback={setSelected} />
               </SplitItem>
             </Split>
           </CardBody>
@@ -240,7 +240,7 @@ function WifiSelector({ isOpen = false, onClose }) {
               variant="link"
               onClick={() => setSelected(baseHiddenNetwork)}
             >
-              Add network manually
+              Connect to hidden network
             </Button>
           </Center> }
       </>
