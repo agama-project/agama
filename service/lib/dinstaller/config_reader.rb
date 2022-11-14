@@ -39,6 +39,7 @@ module DInstaller
     # Default DInstaller configuration which should define all the possible values
     SYSTEM_PATH = "/etc/d-installer.yaml"
     GIT_PATH = File.expand_path("#{__dir__}/../../etc/d-installer.yaml")
+    GIT_DIR = File.expand_path("#{__dir__}/../../../.git")
     REMOTE_BOOT_CONFIG = "d-installer_boot.yaml"
 
     PATHS = [
@@ -63,6 +64,7 @@ module DInstaller
     def config_from_file(path = nil)
       raise "Missing config file at #{path}" unless File.exist?(path)
 
+      logger.info "Reading configuration from #{path}"
       Config.from_file(path)
     end
 
@@ -135,7 +137,7 @@ module DInstaller
     end
 
     def default_path
-      File.exist?(GIT_PATH) ? GIT_PATH : SYSTEM_PATH
+      Dir.exist?(GIT_DIR) ? GIT_PATH : SYSTEM_PATH
     end
 
     def config_paths
