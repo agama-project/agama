@@ -93,23 +93,12 @@ describe DInstaller::DBus::Storage::Proposal do
   end
 
   describe "#candidate_devices" do
-    context "if a proposal has not been calculated yet" do
-      let(:settings) { nil }
-
-      it "returns an empty list" do
-        expect(subject.candidate_devices).to eq([])
-      end
+    before do
+      allow(backend).to receive(:candidate_devices).and_return(["/dev/vda", "/dev/vdb"])
     end
 
-    context "if a proposal has been calculated" do
-      let(:settings) do
-        instance_double(DInstaller::Storage::ProposalSettings,
-          candidate_devices: ["/dev/vda", "/dev/vdb"])
-      end
-
-      it "return the candidate devices" do
-        expect(subject.candidate_devices).to contain_exactly("/dev/vda", "/dev/vdb")
-      end
+    it "return the candidate devices" do
+      expect(subject.candidate_devices).to contain_exactly("/dev/vda", "/dev/vdb")
     end
   end
 
