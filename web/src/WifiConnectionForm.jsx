@@ -60,9 +60,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
   const hidden = network?.hidden || false;
 
   useEffect(() => {
-    setTimeout(() => {
-      formRef.current.scrollIntoView({ behavior: "smooth" });
-    }, 200);
+    setTimeout(() => { formRef.current?.scrollIntoView({ behavior: "smooth" }) }, 200);
   }, []);
 
   const accept = async e => {
@@ -80,7 +78,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
   };
 
   return (
-    <Form id={`${ssid}-connection-form`} onSubmit={accept}>
+    <Form id={`${ssid}-connection-form`} onSubmit={accept} innerRef={formRef}>
       { error &&
         <Alert variant="warning" isInline title="Something went wrong">
           <p>Please, review provided settings and try again.</p>
@@ -124,7 +122,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
         <Button type="submit" variant="primary" isLoading={isConnecting} isDisabled={isConnecting}>
           Connect
         </Button>
-        <Button variant="link" isDisabled={isConnecting} onClick={onCancel} innerRef={formRef}>Cancel</Button>
+        <Button variant="link" isDisabled={isConnecting} onClick={onCancel}>Cancel</Button>
       </ActionGroup>
     </Form>
   );

@@ -44,7 +44,8 @@ import { useInstallerClient } from "./context/installer";
 import { ConnectionState } from "./client/network/model";
 import { NetworkEventTypes } from "./client/network";
 
-const baseHiddenNetwork = { ssid: "", hidden: true };
+const networksFromValues = (networks) => Object.values(networks).flat();
+const baseHiddenNetwork = { ssid: undefined, hidden: true };
 
 const networkState = (state) => {
   switch (state) {
@@ -66,8 +67,14 @@ function WifiSelector({ isOpen = false, onClose }) {
   const [networks, setNetworks] = useState([]);
   const [connections, setConnections] = useState([]);
   const [activeConnections, setActiveConnections] = useState(client.network.activeConnections());
-  const [selected, setSelected] = useState(null);
-  const unsetSelected = () => setSelected(null);
+  const [selectedNetwork, setSelectedNetwork] = useState(null);
+  const [activeNetwork, setActiveNetwork] = useState(null);
+  const [showHiddenForm, setShowHiddenForm] = useState(false);
+
+  const switchSelectedNetwork = (network) => {
+    setShowHiddenForm(network === baseHiddenNetwork);
+    setSelectedNetwork(network);
+  };
 
   useEffect(() => {
     client.network.connections().then(setConnections);
@@ -106,7 +113,10 @@ function WifiSelector({ isOpen = false, onClose }) {
         }, { connected: [], configured: [], others: [] });
     };
 
-    loadNetworks().then(setNetworks);
+    loadNetworks().then((data) => {
+      setNetworks(data);
+      setActiveNetwork(networksFromValues(data).find(d => d.connection));
+    });
   }, [client.network, connections, activeConnections]);
 
   useEffect(() => {
@@ -145,14 +155,13 @@ function WifiSelector({ isOpen = false, onClose }) {
 
         case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
           setActiveConnections(conns => conns.filter(c => c.id !== payload.id));
-          if (selected?.settings?.id === payload.id) unsetSelected();
+          if (selectedNetwork?.settings?.id === payload.id) switchSelectedNetwork(null);
           break;
         }
       }
     });
   });
 
-  const isSelected = (network) => selected?.ssid === network.ssid;
   const isStateChanging = (network) => {
     const state = network.connection?.state;
     return state === ConnectionState.ACTIVATING || state === ConnectionState.DEACTIVATING;
@@ -160,12 +169,12 @@ function WifiSelector({ isOpen = false, onClose }) {
 
   const renderFilteredNetworks = (networks) => {
     return networks.map(n => {
-      const isChecked = isSelected(n);
-      const currentlyActive = !selected && n.connection;
+      const isChecked = n.ssid === selectedNetwork?.ssid;
+      const showAsChecked = !selectedNetwork && n.ssid === activeNetwork?.ssid;
       const showSpinner = (isChecked && n.settings && !n.connection) || isStateChanging(n);
 
       let className = "selection-list-item";
-      if (isChecked || currentlyActive) className += " selection-list-checked-item";
+      if (isChecked || showAsChecked) className += " selection-list-checked-item";
       if (isChecked && !n.settings) className += " selection-list-focused-item";
 
       return (
@@ -182,10 +191,10 @@ function WifiSelector({ isOpen = false, onClose }) {
                       <SignalIcon size="10" color="grey" /> {n.strength}
                     </>
                   }
-                  isChecked={isChecked || currentlyActive || false}
+                  isChecked={isChecked || showAsChecked || false}
                   onClick={() => {
                     if (isChecked) return;
-                    setSelected(n);
+                    switchSelectedNetwork(n);
                     if (n.settings && !n.connection) client.network.connectTo(n.settings);
                   }}
                 />
@@ -197,7 +206,7 @@ function WifiSelector({ isOpen = false, onClose }) {
               </SplitItem>
               <SplitItem>
                 <Center>
-                  <Text className="keep-words">
+                  <Text component="small" className="keep-words">
                     { showSpinner && !n.connection && "Connecting" }
                     { networkState(n.connection?.state)}
                   </Text>
@@ -213,7 +222,7 @@ function WifiSelector({ isOpen = false, onClose }) {
             { isChecked && (!n.settings || n.settings.error) &&
               <Split hasGutter>
                 <SplitItem isFilled className="content">
-                  <WifiConnectionForm network={n} onCancel={unsetSelected} />
+                  <WifiConnectionForm network={n} onCancel={() => switchSelectedNetwork(activeNetwork)} />
                 </SplitItem>
               </Split> }
           </CardBody>
@@ -225,20 +234,25 @@ function WifiSelector({ isOpen = false, onClose }) {
   const renderHiddenNetworkForm = () => {
     return (
       <>
-        <Card className={selected?.hidden ? "selection-list-item selection-list-focused-item" : "selection-list-item collapsed"}>
+        <Card className={showHiddenForm ? "selection-list-item selection-list-focused-item" : "selection-list-item collapsed"}>
           <CardBody>
             <Split hasGutter className="content">
               <SplitItem isFilled>
-                { selected?.hidden && <WifiConnectionForm network={selected} onCancel={unsetSelected} onSubmitCallback={setSelected} /> }
+                { showHiddenForm &&
+                  <WifiConnectionForm
+                    network={selectedNetwork}
+                    onCancel={() => switchSelectedNetwork(activeNetwork)}
+                    onSubmitCallback={switchSelectedNetwork}
+                  /> }
               </SplitItem>
             </Split>
           </CardBody>
         </Card>
-        { !selected?.hidden &&
+        { !showHiddenForm &&
           <Center>
             <Button
               variant="link"
-              onClick={() => setSelected(baseHiddenNetwork)}
+              onClick={() => switchSelectedNetwork(baseHiddenNetwork)}
             >
               Connect to hidden network
             </Button>
@@ -249,7 +263,7 @@ function WifiSelector({ isOpen = false, onClose }) {
 
   return (
     <Popup isOpen={isOpen} height="large" title="Connect to a Wi-Fi network">
-      { renderFilteredNetworks(Object.values(networks).flat()) }
+      { renderFilteredNetworks(networksFromValues(networks)) }
       { renderHiddenNetworkForm() }
 
       <Popup.Actions>
