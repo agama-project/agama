@@ -244,6 +244,7 @@ button.remove-link:hover {
 button.hidden-popover-button {
   visibility: hidden;
   display: inline;
+}
 
 // Custom selection list
 .selection-list-item {
@@ -299,7 +300,9 @@ button.hidden-popover-button {
 
 .wifi-network-menu{
   button.toggler {
-    vertical-align: middle;
     padding-inline-start: 0;
+    svg {
+      vertical-align: middle;
+    }
   }
 }
