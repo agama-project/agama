@@ -65,9 +65,9 @@
     "webpack-cli": "^4.9.1"
   },
   "dependencies": {
-    "@patternfly/patternfly": "4.192.1",
-    "@patternfly/react-core": "4.207.0",
-    "@patternfly/react-table": "^4.61.15",
+    "@patternfly/patternfly": "^4.219.2",
+    "@patternfly/react-core": "^4.261.0",
+    "@patternfly/react-table": "^4.111.33",
     "core-js": "^3.21.1",
     "eos-ds": "^5.0.0",
     "eos-icons-react": "^2.3.0",
