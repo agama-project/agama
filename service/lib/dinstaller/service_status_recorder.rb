@@ -32,8 +32,10 @@ module DInstaller
 
     # Saves the status of the given service and runs the callbacks if the status has changed
     #
+    # @see ServiceStatus
+    #
     # @param service_name [String]
-    # @param status [String] see {ServiceStatus}
+    # @param status [String]
     def save(service_name, status)
       return if @statuses[service_name] == status
 

@@ -30,7 +30,7 @@ module DInstaller
 
     # Constructor
     #
-    # @params logger [Logger]
+    # @param logger [Logger]
     def initialize(logger)
       @logger = logger
       @questions = []

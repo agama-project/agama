@@ -100,7 +100,7 @@ module DInstaller
 
     # Returns a new {Config} with the merge of the given ones
     #
-    # @params config [Config, Hash]
+    # @param config [Config, Hash]
     # @return [Config] new Configuration with the merge of the given ones
     def merge(config)
       Config.new(simple_merge(data, config.data))

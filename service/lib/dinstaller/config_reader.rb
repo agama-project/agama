@@ -68,11 +68,11 @@ module DInstaller
       Config.from_file(path)
     end
 
-    # Return an {Array} with the different {Config} objects read from the different locations
+    # Return an arry with the different {Config} objects read from the different locations
     #
     # TODO: handle precedence correctly
     #
-    # @returm [Array<Config>] an array with all the configurations read from the system
+    # @return [Array<Config>] an array with all the configurations read from the system
     def configs
       return @configs if @configs
 
