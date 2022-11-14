@@ -20,11 +20,10 @@
  */
 
 import React, { useState } from "react";
-import { useInstallerClient } from "./context/installer";
 import { useSoftware } from "./context/software";
 import { useNavigate, Navigate } from "react-router-dom";
 
-import { Button, Flex, FlexItem, Text } from "@patternfly/react-core";
+import { Button, Flex, FlexItem } from "@patternfly/react-core";
 
 import { Title, PageIcon, PageActions, MainActions } from "./Layout";
 import Category from "./Category";
@@ -32,14 +31,12 @@ import LanguageSelector from "./LanguageSelector";
 import Storage from "./Storage";
 import Users from "./Users";
 import Network from "./Network";
-import Popup from "./Popup";
+import InstallButton from "./InstallButton";
 
 import {
   EOS_SOFTWARE as OverviewIcon,
   EOS_TRANSLATE as LanguagesSelectionIcon,
-  EOS_VOLUME as HardDriveIcon,
   EOS_SETTINGS_ETHERNET as NetworkIcon,
-  EOS_MANAGE_ACCOUNTS as UsersIcon,
   EOS_MODE_EDIT as ModeEditIcon
 } from "eos-icons-react";
 
@@ -62,43 +59,9 @@ const ChangeProductButton = () => {
   );
 };
 
-const InstallButton = () => {
-  const client = useInstallerClient();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
-  const install = () => client.manager.startInstallation();
-
-  return (
-    <>
-      <Button isLarge variant="primary" onClick={open}>
-        Install
-      </Button>
-
-      <Popup
-        title="Confirm Installation"
-        isOpen={isOpen}
-      >
-        <Text>
-          If you continue, partitions on your hard disk will be modified according to the
-          installation settings in the previous dialog.
-        </Text>
-        <Text>
-          Please, cancel and check the settings if you are unsure.
-        </Text>
-
-        <Popup.Actions>
-          <Popup.Confirm onClick={install}>Install</Popup.Confirm>
-          <Popup.Cancel onClick={close} autoFocus />
-        </Popup.Actions>
-      </Popup>
-    </>
-  );
-};
-
 function Overview() {
   const { selectedProduct } = useSoftware();
+  const [showErrors, setShowErrors] = useState(false);
 
   if (selectedProduct === null) {
     return <Navigate to="/products" />;
@@ -111,17 +74,13 @@ function Overview() {
     <Category key="network" title="Network" icon={NetworkIcon}>
       <Network />
     </Category>,
-    <Category key="storage" title="Storage" icon={HardDriveIcon}>
-      <Storage />
-    </Category>,
-    <Category key="users" title="Users" icon={UsersIcon}>
-      <Users />
-    </Category>
+    <Storage key="storage" showErrors />,
+    <Users key="users" showErrors={showErrors} />
   ];
 
   const renderCategories = () => {
-    return categories.map(category => (
-      <FlexItem key={category.props.title} className="installation-overview-section">
+    return categories.map((category, i) => (
+      <FlexItem key={i} className="installation-overview-section">
         {category}
       </FlexItem>
     ));
@@ -132,7 +91,7 @@ function Overview() {
       <Title>{selectedProduct && selectedProduct.name}</Title>
       <PageIcon><OverviewIcon /></PageIcon>
       <PageActions><ChangeProductButton /></PageActions>
-      <MainActions><InstallButton /></MainActions>
+      <MainActions><InstallButton onClick={() => setShowErrors(true)} /></MainActions>
       <Flex direction={{ default: "column" }}>{renderCategories()}</Flex>
     </>
   );

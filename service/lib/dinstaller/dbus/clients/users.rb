@@ -21,6 +21,7 @@
 
 require "dinstaller/dbus/clients/base"
 require "dinstaller/dbus/clients/with_service_status"
+require "dinstaller/dbus/clients/with_validation"
 
 module DInstaller
   module DBus
@@ -28,6 +29,7 @@ module DInstaller
       # D-Bus client for users configuration
       class Users < Base
         include WithServiceStatus
+        include WithValidation
 
         def initialize
           super

@@ -19,25 +19,43 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Stack, StackItem } from "@patternfly/react-core";
 
 import FirstUser from "./FirstUser";
 import RootPassword from "./RootPassword";
 import RootSSHKey from "./RootSSHKey";
+import Category from "./Category";
+import { useInstallerClient } from "./context/installer";
 
-export default function Users() {
+import {
+  EOS_MANAGE_ACCOUNTS as UsersIcon,
+} from "eos-icons-react";
+
+export default function Users({ showErrors }) {
+  const [errors, setErrors] = useState([]);
+  const { users: usersClient } = useInstallerClient();
+
+  useEffect(() => {
+    usersClient.getValidationErrors().then(setErrors);
+    return usersClient.onValidationChange(setErrors);
+  }, [usersClient]);
+
   return (
-    <Stack className="overview-users">
-      <StackItem>
-        <RootPassword />
-      </StackItem>
-      <StackItem>
-        <RootSSHKey />
-      </StackItem>
-      <StackItem>
-        <FirstUser />
-      </StackItem>
-    </Stack>
+    <>
+      <Category key="users" title="Users" icon={UsersIcon} errors={showErrors ? errors : []}>
+        <Stack className="overview-users">
+          <StackItem>
+            <RootPassword />
+          </StackItem>
+          <StackItem>
+            <RootSSHKey />
+          </StackItem>
+          <StackItem>
+            <FirstUser />
+          </StackItem>
+        </Stack>
+      </Category>
+    </>
   );
 }

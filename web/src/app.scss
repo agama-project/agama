@@ -88,8 +88,6 @@ p {
 }
 
 .installation-overview-section {
-  padding-block-end: 1rem;
-
   // FIXME: look for a better approach about this.
   // It overrides inline paddings for "button links" since using "isInline" prop
   // is not an option becaue it removes block margins too.
@@ -220,4 +218,25 @@ div.pf-c-data-list__item-row:has(button.remove-link:hover) {
 
 button.remove-link:hover {
   color: var(--pf-c-button--m-danger--BackgroundColor);
+}
+
+.warning-text {
+  color: var(--pf-global--warning-color--200);
+  font-size: calc(fonts.$size-base - 2px);
+
+  a, small {
+    text-decoration: underline;
+    margin-inline: 4px;
+    color: var(--pf-global--warning-color--200);
+    font-size: calc(fonts.$size-base - 2px);
+  }
+
+  svg {
+    fill: var(--pf-global--warning-color--200);
+  }
+}
+
+button.hidden-popover-button {
+  visibility: hidden;
+  display: inline;
 }

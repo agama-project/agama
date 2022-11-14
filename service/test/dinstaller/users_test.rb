@@ -159,5 +159,34 @@ describe DInstaller::Users do
 
       subject.write
     end
+
+    describe "#validate" do
+      context "when a root password is set" do
+        before do
+          subject.assign_root_password("123456", true)
+        end
+
+        it "returns an empty list" do
+          expect(subject.validate).to be_empty
+        end
+      end
+
+      context "when a first user is defined" do
+        before do
+          subject.assign_first_user("Jane Doe", "jdoe", "123456", false, {})
+        end
+
+        it "returns an empty list" do
+          expect(subject.validate).to be_empty
+        end
+      end
+
+      context "when neither a first user is defined nor the root password is set" do
+        it "returns the problem" do
+          error = subject.validate.first
+          expect(error.message).to match(/Defining a user/)
+        end
+      end
+    end
   end
 end

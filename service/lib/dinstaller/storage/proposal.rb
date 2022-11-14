@@ -22,6 +22,7 @@
 require "y2storage"
 require "y2storage/dialogs/guided_setup/helpers/disk"
 require "dinstaller/with_progress"
+require "dinstaller/validation_error"
 require "dinstaller/storage/actions"
 require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/proposal_settings_converter"
@@ -68,6 +69,13 @@ module DInstaller
       # @return [Array<Y2Storage::Device>]
       def available_devices
         disk_analyzer.candidate_disks
+      end
+
+      # Name of devices where to perform the installation
+      #
+      # @return [Array<String>]
+      def candidate_devices
+        proposal.settings.candidate_devices
       end
 
       # Label that should be used to represent the given disk in the UI
@@ -142,6 +150,19 @@ module DInstaller
         return [] unless proposal&.devices
 
         Actions.new(logger, proposal.devices.actiongraph).all
+      end
+
+      # Validates the storage proposal
+      #
+      # @return [Array<ValidationError>] List of validation errors
+      def validate
+        return [] if proposal.nil?
+
+        [
+          validate_proposal,
+          validate_available_devices,
+          validate_candidate_devices
+        ].compact
       end
 
     private
@@ -232,6 +253,28 @@ module DInstaller
 
       def storage_manager
         Y2Storage::StorageManager.instance
+      end
+
+      def validate_proposal
+        return if candidate_devices.empty? || !proposal.failed?
+
+        message = format(
+          "Could not create a storage proposal using %{devices}",
+          devices: candidate_devices.join(", ")
+        )
+        ValidationError.new(message)
+      end
+
+      def validate_available_devices
+        return if available_devices.any?
+
+        ValidationError.new("Could not find a suitable device for installation")
+      end
+
+      def validate_candidate_devices
+        return if available_devices.empty? || candidate_devices.any?
+
+        ValidationError.new("No devices are selected for installation")
       end
 
       # Helper class to generate volumes from volume specs

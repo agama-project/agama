@@ -23,6 +23,7 @@ require_relative "../../../test_helper"
 require "dinstaller/dbus/clients/users"
 require "dinstaller/dbus/service_status"
 require "dinstaller/dbus/interfaces/service_status"
+require_relative "with_validation_examples"
 require "dbus"
 
 describe DInstaller::DBus::Clients::Users do
@@ -156,4 +157,6 @@ describe DInstaller::DBus::Clients::Users do
       subject.write
     end
   end
+
+  include_examples "validation"
 end

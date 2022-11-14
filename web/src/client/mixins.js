@@ -37,6 +37,12 @@ const STATUS_IFACE = "org.opensuse.DInstaller.ServiceStatus1";
  */
 
 /**
+ * @callback ValidationErrorsHandler
+ * @param {ValidationError[]} errors - validation errors
+ * @return {void}
+ */
+
+/**
  * @typedef {new(...args: any[]) => T} GConstructor
  * @template {object} T
  */
@@ -81,7 +87,7 @@ const WithStatus = (superclass, object_path) => class extends superclass {
 const PROGRESS_IFACE = "org.opensuse.DInstaller.Progress1";
 
 /**
- * Extends the given class with methods go get and track the progress over D-Bus
+ * Extends the given class with methods to get and track the progress over D-Bus
  * @param {string} object_path - object_path
  * @param {T} superclass - superclass to extend
  * @template {!WithDBusClient} T
@@ -121,4 +127,49 @@ const WithProgress = (superclass, object_path) => class extends superclass {
   }
 };
 
-export { WithStatus, WithProgress };
+/**
+ * @typedef {object} ValidationError
+ * @property {string} message - Error message
+ */
+
+/**
+ *
+ * @param {string} message - Error message
+ */
+const createError = (message) => {
+  return { message };
+};
+
+const VALIDATION_IFACE = "org.opensuse.DInstaller.Validation1";
+
+/**
+ * Extends the given class with methods to get validation errors over D-Bus
+ * @param {string} object_path - object_path
+ * @param {T} superclass - superclass to extend
+ * @template {!WithDBusClient} T
+ */
+const WithValidation = (superclass, object_path) => class extends superclass {
+  /**
+   * Returns the validation errors
+   *
+   * @return {Promise<ValidationError[]>}
+   */
+  async getValidationErrors() {
+    const proxy = await this.client.proxy(VALIDATION_IFACE, object_path);
+    return proxy.Errors.map(createError);
+  }
+
+  /**
+   * Register a callback to run when the validation changes
+   *
+   * @param {ValidationErrorsHandler} handler - callback function
+   * @return {import ("./dbus").RemoveFn} function to disable the callback
+   */
+  onValidationChange(handler) {
+    return this.client.onObjectChanged(object_path, VALIDATION_IFACE, () => {
+      this.getValidationErrors().then(handler);
+    });
+  }
+};
+
+export { WithStatus, WithProgress, WithValidation };

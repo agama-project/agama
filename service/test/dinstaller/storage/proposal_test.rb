@@ -49,10 +49,12 @@ describe DInstaller::Storage::Proposal do
     ]
   end
 
+  let(:y2storage_proposal) do
+    instance_double(Y2Storage::MinGuidedProposal, propose: true, failed?: failed)
+  end
+  let(:failed) { false }
+
   describe "#calculate" do
-    let(:y2storage_proposal) do
-      instance_double(Y2Storage::MinGuidedProposal, propose: true, failed?: false)
-    end
 
     before { allow(Y2Storage::StorageManager.instance).to receive(:proposal=) }
 
@@ -290,6 +292,64 @@ describe DInstaller::Storage::Proposal do
     it "returns the settings previously passed to #calculate" do
       proposal.calculate(settings)
       expect(proposal.settings).to eq settings
+    end
+  end
+
+  describe "#validate" do
+    let(:sda) { instance_double(Y2Storage::Device, display_name: "/dev/sda") }
+    let(:available_devices) { [sda] }
+    let(:candidate_devices) { ["/dev/sda"] }
+
+    before do
+      allow(subject).to receive(:available_devices).and_return(available_devices)
+      allow(subject).to receive(:candidate_devices).and_return(candidate_devices)
+      allow(subject).to receive(:proposal).and_return(y2storage_proposal)
+    end
+
+    context "when the proposal was successful" do
+      let(:failed) { false }
+
+      it "returns an empty list" do
+        expect(subject.validate).to eq([])
+      end
+    end
+
+    context "when the proposal does not exist yet" do
+      let(:y2storage_proposal) { nil }
+
+      it "returns an empty list" do
+        expect(subject.validate).to be_empty
+      end
+    end
+
+    context "when there are not available storage devices" do
+      let(:available_devices) { [] }
+
+      it "returns an error" do
+        errors = subject.validate
+        expect(errors.size).to eq(1)
+        expect(errors.first.message).to include("not find a suitable device")
+      end
+    end
+
+    context "when the proposal failed" do
+      let(:failed) { true }
+
+      it "returns an error" do
+        errors = subject.validate
+        expect(errors.size).to eq(1)
+        expect(errors.first.message).to include("not create a storage proposal using /dev/sda")
+      end
+    end
+
+    context "when no candidate devices are selected" do
+      let(:candidate_devices) { [] }
+
+      it "returns an error" do
+        errors = subject.validate
+        expect(errors.size).to eq(1)
+        expect(errors.first.message).to include("No devices are selected for installation")
+      end
     end
   end
 end

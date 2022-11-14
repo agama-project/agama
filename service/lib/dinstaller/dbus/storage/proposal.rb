@@ -94,9 +94,7 @@ module DInstaller
         #
         # @return [Array<String>]
         def candidate_devices
-          return [] unless backend.settings
-
-          backend.settings.candidate_devices
+          backend.candidate_devices
         end
 
         # Whether the proposal creates logical volumes
