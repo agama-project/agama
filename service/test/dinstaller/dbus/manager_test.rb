@@ -34,7 +34,8 @@ describe DInstaller::DBus::Manager do
     instance_double(DInstaller::Manager,
       installation_phase:        installation_phase,
       software:                  software_client,
-      on_services_status_change: nil)
+      on_services_status_change: nil,
+      valid?:                    true)
   end
 
   let(:installation_phase) { DInstaller::InstallationPhase.new }
@@ -135,6 +136,16 @@ describe DInstaller::DBus::Manager do
       end
     end
 
+    context "when services configuration is invalid" do
+      before do
+        allow(backend).to receive(:valid?).and_return(false)
+      end
+
+      it "raises a DBus::Error" do
+        expect { subject.install_phase }.to raise_error(DBus::Error)
+      end
+    end
+
     context "when the service is busy" do
       before do
         subject.service_status.busy
@@ -207,6 +218,28 @@ describe DInstaller::DBus::Manager do
 
     it "returns the names of the busy services" do
       expect(subject.busy_services).to contain_exactly("org.opensuse.DInstaller.Users")
+    end
+  end
+
+  describe "#can_install?" do
+    before do
+      allow(backend).to receive(:valid?).and_return(valid?)
+    end
+
+    context "when installation settings are valid" do
+      let(:valid?) { true }
+
+      it "returns true" do
+        expect(subject.can_install?).to eq(true)
+      end
+    end
+
+    context "when installation settings are valid" do
+      let(:valid?) { false }
+
+      it "returns false" do
+        expect(subject.can_install?).to eq(false)
+      end
     end
   end
 end

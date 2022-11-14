@@ -19,10 +19,17 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
 
-const InstallerClientContext = React.createContext();
+const InstallerClientContext = React.createContext(undefined);
 
+/**
+ * Returns the D-Bus installer client
+ *
+ * @return {import("../client").InstallerClient}
+ */
 function useInstallerClient() {
   const context = React.useContext(InstallerClientContext);
   if (!context) {

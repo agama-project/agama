@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import Overview from "./Overview";
 import { createClient } from "./client";
@@ -54,6 +54,7 @@ jest.mock("./LanguageSelector", () => () => "Language Selector");
 jest.mock("./Storage", () => () => "Storage Configuration");
 jest.mock("./Network", () => () => "Network Configuration");
 jest.mock("./Users", () => () => "Users Configuration");
+jest.mock("./InstallButton", () => () => "Install Button");
 
 beforeEach(() => {
   mockProduct = { id: "openSUSE", name: "openSUSE Tumbleweed" };
@@ -100,7 +101,7 @@ describe("if there is only one product", () => {
   });
 });
 
-test("renders the Overview", async () => {
+test("renders the Overview and the Install button", async () => {
   installerRender(<Overview />);
   const title = screen.getByText(/openSUSE Tumbleweed/i);
   expect(title).toBeInTheDocument();
@@ -109,50 +110,5 @@ test("renders the Overview", async () => {
   await screen.findByText("Network Configuration");
   await screen.findByText("Storage Configuration");
   await screen.findByText("Users Configuration");
-});
-
-describe("when the user clicks 'Install'", () => {
-  const prepareScenario = async () => {
-    const { user } = installerRender(<Overview />);
-
-    // TODO: we should have some UI element to tell the user we have finished
-    // with loading data.
-    await screen.findByText("Language Selector");
-
-    await user.click(screen.getByRole("button", { name: /Install/ }));
-
-    const dialog = await screen.findByRole("dialog");
-
-    return {
-      user,
-      dialog
-    };
-  };
-
-  it("asks for confirmation", async () => {
-    const { dialog } = await prepareScenario();
-    const title = within(dialog).getByText(/Confirm Installation/i);
-
-    expect(title).toBeDefined();
-  });
-
-  it("starts the installation if the user confirms", async () => {
-    const { dialog, user } = await prepareScenario();
-    const button = within(dialog).getByRole("button", { name: /Install/i });
-    await user.click(button);
-
-    expect(startInstallationFn).toBeCalled();
-  });
-
-  it("does not start the installation if the user cancels", async () => {
-    const { dialog, user } = await prepareScenario();
-    const button = within(dialog).getByRole("button", { name: /Cancel/i });
-    await user.click(button);
-
-    expect(startInstallationFn).not.toBeCalled();
-
-    await waitFor(() => {
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    });
-  });
+  await screen.findByText("Install Button");
 });

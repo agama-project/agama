@@ -187,6 +187,13 @@ module DInstaller
       service_status_recorder.on_service_status_change(&block)
     end
 
+    # Determines whether the configuration is valid and the system is ready for installation
+    #
+    # @return [Boolean]
+    def valid?
+      [storage, users].all?(&:valid?)
+    end
+
   private
 
     attr_reader :config

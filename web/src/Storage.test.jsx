@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { act, screen } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import { installerRender } from "./test-utils";
 import Storage from "./Storage";
 import { createClient } from "./client";
@@ -36,6 +36,8 @@ let onActionsChangeFn = jest.fn();
 let onStorageProposalChangeFn = jest.fn();
 let calculateStorageProposalFn;
 const getStatusFn = jest.fn().mockResolvedValue(IDLE);
+const getValidationErrorsFn = jest.fn().mockResolvedValue([]);
+const onValidationChangeFn = jest.fn();
 
 const storageMock = {
   getStorageProposal: () => Promise.resolve(proposalSettings),
@@ -60,31 +62,15 @@ beforeEach(() => {
         onActionsChange: onActionsChangeFn,
         onStorageProposalChange: onStorageProposalChangeFn,
         getStatus: getStatusFn.mockResolvedValue(IDLE),
-        onStatusChange: jest.fn()
+        onStatusChange: jest.fn(),
+        getValidationErrors: getValidationErrorsFn,
+        onValidationChange: onValidationChangeFn
       },
       manager: {
         getStatus: jest.fn().mockResolvedValue(IDLE),
         onStatusChange: jest.fn()
       }
     };
-  });
-});
-
-describe("when there is a proposal", () => {
-  it("displays the proposal", async () => {
-    installerRender(<Storage />);
-    await screen.findByText("Mount /dev/sda1 as root");
-  });
-});
-
-describe("when there is no proposal", () => {
-  beforeEach(() => {
-    storageActions = [];
-  });
-
-  it("reports an error", async () => {
-    installerRender(<Storage />);
-    await screen.findByText("Cannot make a proposal for /dev/sda");
   });
 });
 
@@ -127,7 +113,7 @@ describe("when the storage proposal changes", () => {
   });
 });
 
-describe("when the storage actions changes", () => {
+describe("when the storage actions change", () => {
   let callbacks;
 
   beforeEach(() => {
@@ -145,29 +131,30 @@ describe("when the storage actions changes", () => {
     });
     await screen.findByText("Mount /dev/sdb1 as root");
   });
-
-  it("reports an error when there are no actions", async () => {
-    installerRender(<Storage />);
-    await screen.findByText("Mount /dev/sda1 as root");
-
-    const [cb] = callbacks;
-    act(() => cb([]));
-    await screen.findByText("Cannot make a proposal for /dev/sda");
-  });
 });
 
-describe("when there are not devices for installation", () => {
+describe("when showError is set to true", () => {
   beforeEach(() => {
-    storageActions = [];
-    proposalSettings = {
-      availableDevices: [],
-      candidateDevices: [],
-      lvm: false
-    };
+    getValidationErrorsFn.mockResolvedValue([{ message: "Could not make a proposal" }]);
   });
 
-  it("reports an error", async() => {
-    installerRender(<Storage />);
-    await screen.findByText("Cannot find a suitable storage device for installation");
+  it("displays the list of errors", async () => {
+    installerRender(<Storage showErrors />);
+    await waitFor(() => {
+      expect(screen.queryByText(/Could not make a proposal/)).toBeInTheDocument();
+    });
+  });
+
+  it("refreshes the list of errors when they change", async () => {
+    let callback;
+    onValidationChangeFn.mockImplementation(cb => { callback = cb });
+
+    installerRender(<Storage showErrors />);
+    act(() => {
+      callback([{ message: "Could not find a suitable device" }]);
+    });
+    await waitFor(() => {
+      expect(screen.queryByText(/Could not find a suitable device/)).toBeInTheDocument();
+    });
   });
 });

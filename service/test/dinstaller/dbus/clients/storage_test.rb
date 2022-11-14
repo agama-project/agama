@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
+require_relative "with_validation_examples"
 require "dinstaller/dbus/clients/storage"
 require "dbus"
 
@@ -159,5 +160,7 @@ describe DInstaller::DBus::Clients::Storage do
       expect(subject.actions).to include(/Create partition \/dev\/vdc2/)
       expect(subject.actions).to include(/Create partition \/dev\/vdc3/)
     end
+
+    include_examples "validation"
   end
 end

@@ -24,6 +24,7 @@ require "dinstaller/dbus/base_object"
 require "dinstaller/dbus/with_service_status"
 require "dinstaller/dbus/interfaces/progress"
 require "dinstaller/dbus/interfaces/service_status"
+require "dinstaller/dbus/interfaces/validation"
 
 module DInstaller
   module DBus
@@ -33,17 +34,19 @@ module DInstaller
         include WithServiceStatus
         include Interfaces::Progress
         include Interfaces::ServiceStatus
+        include Interfaces::Validation
 
         PATH = "/org/opensuse/DInstaller/Storage1"
         private_constant :PATH
 
         # Constructor
         #
-        # @param backend [DInstaller::Software]
+        # @param backend [DInstaller::Storage::Manager]
         # @param logger [Logger]
         def initialize(backend, logger)
           super(PATH, logger: logger)
           @backend = backend
+          register_proposal_callbacks
           register_progress_callbacks
           register_service_status_callbacks
         end
@@ -73,6 +76,10 @@ module DInstaller
 
         # @return [DInstaller::Software::Manager]
         attr_reader :backend
+
+        def register_proposal_callbacks
+          backend.proposal.on_calculate { update_validation }
+        end
       end
     end
   end

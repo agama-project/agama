@@ -26,8 +26,10 @@ module DInstaller
     # Backend class to get the list of actions over the storage devices
     class Actions
       # @param logger [Logger]
-      def initialize(logger)
+      # param actiongraph [Y2Storage::Actiongraph]
+      def initialize(logger, actiongraph)
         @logger = logger
+        @actiongraph = actiongraph
       end
 
       # All actions properly sorted
@@ -39,8 +41,11 @@ module DInstaller
 
     private
 
-      # @param [Logger]
+      # @return [Logger]
       attr_reader :logger
+
+      # @return [Y2Storage::Actiongraph]
+      attr_reader :actiongraph
 
       # Sorted main actions (everything except subvolume actions)
       #
@@ -62,10 +67,6 @@ module DInstaller
       #
       # @return [Array<Y2Storage::CompoundAction>]
       def actions
-        actiongraph = Y2Storage::StorageManager.instance.staging.actiongraph
-
-        return [] unless actiongraph
-
         actiongraph.compound_actions
       end
 

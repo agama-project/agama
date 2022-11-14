@@ -74,7 +74,7 @@ module DInstaller
         end
       end
 
-      # Umounts the target file system
+      # Unmounts the target file system
       def finish
         start_progress(3)
 
@@ -83,7 +83,7 @@ module DInstaller
           progress.step("Installing bootloader") do
             ::Bootloader::FinishClient.new.write
           end
-          progress.step("Umounting storage devices") do
+          progress.step("Unmounting storage devices") do
             Yast::WFM.CallFunction("umount_finish", ["Write"])
           end
         end
@@ -94,6 +94,13 @@ module DInstaller
       # @return [Storage::Proposal]
       def proposal
         @proposal ||= Proposal.new(logger, config)
+      end
+
+      # Validates the storage configuration
+      #
+      # @return [Array<ValidationError>] List of validation errors
+      def validate
+        proposal.validate
       end
 
     private

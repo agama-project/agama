@@ -19,21 +19,23 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useState } from "react";
 import { useCancellablePromise } from "./utils";
 import { useInstallerClient } from "./context/installer";
 import { BUSY } from "./client/status";
 
-import { Alert } from "@patternfly/react-core";
 import TargetSelector from "./TargetSelector";
 import Proposal from "./Proposal";
 import InstallerSkeleton from "./InstallerSkeleton";
+import Category from "./Category";
+
+import { EOS_VOLUME as HardDriveIcon } from "eos-icons-react";
 
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOAD": {
-      const { targets, target, actions, error } = action.payload;
-      return { ...state, targets, target, actions, error };
+      const { targets, target, actions } = action.payload;
+      return { ...state, targets, target, actions };
     }
 
     case "CHANGE_TARGET": {
@@ -42,8 +44,8 @@ const reducer = (state, action) => {
     }
 
     case "UPDATE_ACTIONS": {
-      const { actions, error } = action.payload;
-      return { ...state, actions, error };
+      const { actions } = action.payload;
+      return { ...state, actions };
     }
 
     case "CHANGE_STATUS": {
@@ -56,16 +58,16 @@ const reducer = (state, action) => {
   }
 };
 
-export default function Storage() {
+export default function Storage({ showErrors }) {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
+  const [errors, setErrors] = useState([]);
   const [state, dispatch] = useReducer(reducer, {
     targets: [],
     target: undefined,
     actions: [],
-    error: false
   });
-  const { target, targets, actions, error } = state;
+  const { target, targets, actions } = state;
 
   const onAccept = selected =>
     client.storage.calculateStorageProposal({ candidateDevices: [selected] }).then(() => {
@@ -81,10 +83,9 @@ export default function Storage() {
       } = await cancellablePromise(client.storage.getStorageProposal());
       const actions = await cancellablePromise(client.storage.getStorageActions());
       const targetDeviceId = candidateDeviceId || availableDevices[0]?.id;
-      const error = actions.length === 0;
       dispatch({
         type: "LOAD",
-        payload: { target: targetDeviceId, targets: availableDevices, actions, error }
+        payload: { target: targetDeviceId, targets: availableDevices, actions }
       });
     };
 
@@ -93,8 +94,7 @@ export default function Storage() {
 
   useEffect(() => {
     return client.storage.onActionsChange(actions => {
-      const error = actions.length === 0;
-      dispatch({ type: "UPDATE_ACTIONS", payload: { actions, error } });
+      dispatch({ type: "UPDATE_ACTIONS", payload: { actions } });
     });
   }, [client.storage]);
 
@@ -130,15 +130,10 @@ export default function Storage() {
     });
   }, [client.manager]);
 
-  const errorMessage = () => {
-    if (targets.length === 0) {
-      return "Cannot find a suitable storage device for installation";
-    } else if (target) {
-      return `Cannot make a proposal for ${target}`;
-    } else {
-      return "Something went wrong when trying to come up with an storage proposal";
-    }
-  };
+  useEffect(() => {
+    client.storage.getValidationErrors().then(setErrors);
+    return client.storage.onValidationChange(setErrors);
+  }, [client.storage]);
 
   if (state.status === BUSY) {
     return (
@@ -148,14 +143,15 @@ export default function Storage() {
 
   return (
     <>
-      {targets.length > 0 &&
-        <TargetSelector
-          target={target || "Select device to install into"}
-          targets={targets}
-          onAccept={onAccept}
-        />}
-      {error && <Alert variant="danger" isPlain isInline title={errorMessage()} />}
-      <Proposal data={actions} />
+      <Category key="users" title="Storage" icon={HardDriveIcon} errors={showErrors ? errors : []}>
+        {targets.length > 0 &&
+          <TargetSelector
+            target={target || "Select device to install into"}
+            targets={targets}
+            onAccept={onAccept}
+          />}
+        <Proposal data={actions} />
+      </Category>
     </>
   );
 }

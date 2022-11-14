@@ -113,4 +113,19 @@ describe DInstaller::Storage::Manager do
       storage.finish
     end
   end
+
+  describe "#validate" do
+    let(:errors) { [double("error 1")] }
+    let(:proposal) do
+      instance_double(DInstaller::Storage::Proposal, validate: errors)
+    end
+
+    before do
+      allow(DInstaller::Storage::Proposal).to receive(:new).and_return(proposal)
+    end
+
+    it "returns the proposal errors" do
+      expect(storage.validate).to eq(errors)
+    end
+  end
 end

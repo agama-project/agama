@@ -19,36 +19,49 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2storage/storage_manager"
-require "y2storage/guided_proposal"
-require "y2storage/proposal_settings"
+require "y2storage"
 require "y2storage/dialogs/guided_setup/helpers/disk"
 require "dinstaller/with_progress"
+require "dinstaller/validation_error"
+require "dinstaller/storage/actions"
+require "dinstaller/storage/proposal_settings"
+require "dinstaller/storage/proposal_settings_converter"
+require "dinstaller/storage/volume_converter"
 
 module DInstaller
   module Storage
     # Backend class to calculate a storage proposal
+    #
+    # @example
+    #   proposal = Proposal.new(logger, config)
+    #   proposal.on_calculate { puts "proposal calculated" }
+    #   proposal.calculated_volumes   #=> []
+    #
+    #   settings = ProposalSettings.new
+    #
+    #   proposal.calculate(settings)  #=> true
+    #   proposal.calculated_volumes   #=> [Volume, Volume]
     class Proposal
       include WithProgress
 
-      class NoProposalError < StandardError; end
+      # Settings that were used to calculate the proposal
+      #
+      # @return [ProposalSettings, nil]
+      attr_reader :settings
 
       # Constructor
       #
       # @param logger [Logger]
-      # @param config [Config]
+      # @param config [Config] D-Installer config
       def initialize(logger, config)
         @logger = logger
         @config = config
-        @listeners = []
+        @on_calculate_callbacks = []
       end
 
-      def add_on_change_listener(&block)
-        @listeners << block
-      end
-
-      def changed!
-        @listeners.each(&:call)
+      # Stores callbacks to be call after calculating a proposal
+      def on_calculate(&block)
+        @on_calculate_callbacks << block
       end
 
       # Available devices for installation
@@ -56,6 +69,13 @@ module DInstaller
       # @return [Array<Y2Storage::Device>]
       def available_devices
         disk_analyzer.candidate_disks
+      end
+
+      # Name of devices where to perform the installation
+      #
+      # @return [Array<String>]
+      def candidate_devices
+        proposal.settings.candidate_devices
       end
 
       # Label that should be used to represent the given disk in the UI
@@ -76,57 +96,73 @@ module DInstaller
         disk_helper.label(device)
       end
 
-      # Name of devices where to perform the installation
+      # Volume definitions to be used as templates in the interface
       #
-      # @raise [NoProposalError] if no proposal yet
+      # Based on the configuration and/or on Y2Storage internals, these volumes may really
+      # exist or not in the real context of the proposal and its settings.
       #
-      # @return [Array<String>]
-      def candidate_devices
-        raise NoProposalError unless proposal
-
-        proposal.settings.candidate_devices
+      # @return [Array<Volumes>]
+      def volume_templates
+        VolumesGenerator.new(default_specs).volumes
       end
 
-      # Whether the proposal should create LVM devices
+      # Volumes from the specs used during the calculation of the storage proposal
       #
-      # @raise [NoProposalError] if no proposal yet
+      # Not to be confused with settings.volumes, which are used as starting point for creating the
+      # volume specs for the storage proposal.
       #
-      # @return [Boolean]
-      def lvm?
-        raise NoProposalError unless proposal
+      # @return [Array<Volumes>]
+      def calculated_volumes
+        return [] unless proposal
 
-        proposal.settings.use_lvm
+        generator = VolumesGenerator.new(specs_from_proposal,
+          planned_devices: proposal.planned_devices)
+        volumes = generator.volumes(only_proposed: true)
+
+        # FIXME: setting this should be a responsibility of VolumesGenerator or any other component,
+        # but this is good enough until we implement fine-grained control on encryption
+        volumes.each { |v| v.encrypted = proposal.settings.use_encryption }
+
+        volumes
       end
 
       # Calculates a new proposal
       #
-      # @param settings [Hash] settings to calculate the proposal
-      #   (e.g., { "use_lvm" => true, "candidate_devices" => ["/dev/sda"]}). Note that keys should
-      #   match with a public setter.
-      #
+      # @param settings [ProposalSettings] settings to calculate the proposal
       # @return [Boolean] whether the proposal was correctly calculated
-      def calculate(settings = {})
-        proposal_settings = generate_proposal_settings(settings)
+      def calculate(settings = nil)
+        @settings = settings || ProposalSettings.new
+        @settings.freeze
+        proposal_settings = to_y2storage_settings(@settings)
 
-        @proposal = Y2Storage::GuidedProposal.initial(
-          settings:      proposal_settings,
-          devicegraph:   probed_devicegraph,
-          disk_analyzer: disk_analyzer
-        )
-        save
-        changed!
+        @proposal = new_proposal(proposal_settings)
+        storage_manager.proposal = proposal
+
+        @on_calculate_callbacks.each(&:call)
 
         !proposal.failed?
       end
 
-      # Storage actions manager
+      # Storage actions
       #
-      # @fixme this method should directly return the actions
-      #
-      # @return [Storage::Actions]
+      # @return [Array<Y2Storage::CompoundAction>]
       def actions
-        # FIXME: this class could receive the storage manager instance
-        @actions ||= Actions.new(logger)
+        return [] unless proposal&.devices
+
+        Actions.new(logger, proposal.devices.actiongraph).all
+      end
+
+      # Validates the storage proposal
+      #
+      # @return [Array<ValidationError>] List of validation errors
+      def validate
+        return [] if proposal.nil?
+
+        [
+          validate_proposal,
+          validate_available_devices,
+          validate_candidate_devices
+        ].compact
       end
 
     private
@@ -137,40 +173,63 @@ module DInstaller
       # @return [Config]
       attr_reader :config
 
-      # @return [Y2Storage::InitialGuidedProposal]
+      # @return [Y2Storage::MinGuidedProposal]
       attr_reader :proposal
 
-      # Generates proposal settings from the given values
+      # Instantiates and executes a Y2Storage proposal with the given settings
       #
-      # @param settings [Hash]
-      # @return [Y2Storage::ProposalSettings]
-      def generate_proposal_settings(settings)
-        proposal_settings = Y2Storage::ProposalSettings.new_for_current_product
-
-        config_volumes = read_config_volumes
-        # If no volumes are specified, just leave the default ones (hardcoded at Y2Storage)
-        proposal_settings.volumes = config_volumes unless config_volumes.empty?
-
-        settings.each { |k, v| proposal_settings.public_send("#{k}=", v) }
-
-        proposal_settings
+      # @param proposal_settings [Y2Storage::ProposalSettings]
+      # @return [Y2Storage::GuidedProposal]
+      def new_proposal(proposal_settings)
+        guided = Y2Storage::MinGuidedProposal.new(
+          settings:      proposal_settings,
+          devicegraph:   probed_devicegraph,
+          disk_analyzer: disk_analyzer
+        )
+        guided.propose
+        guided
       end
 
-      # Reads the list of volumes from the D-Installer configuration
+      # Volume specs to use by default
+      #
+      # These specs are used for generating volume templates and also for calculating the storage
+      # proposal settings.
+      #
+      # @see #volume_templates
+      # @see ProposalSettingsGenerator
       #
       # @return [Array<Y2Storage::VolumeSpecification>]
-      def read_config_volumes
-        vols = config.data.fetch("storage", {}).fetch("volumes", [])
-        vols.map { |v| Y2Storage::VolumeSpecification.new(v) }
+      def default_specs
+        specs = specs_from_config
+        return specs if specs.any?
+
+        Y2Storage::ProposalSettings.new_for_current_product.volumes
       end
 
-      # Saves the proposal or restores initial devices if a proposal was not calculated
-      def save
-        if proposal.failed?
-          storage_manager.staging = probed_devicegraph.dup
-        else
-          storage_manager.proposal = proposal
-        end
+      # Volume specs from the D-Installer config file
+      #
+      # @return [Array<Y2Storage::VolumeSpecification>]
+      def specs_from_config
+        config_volumes = config.data.fetch("storage", {}).fetch("volumes", [])
+        config_volumes.map { |v| Y2Storage::VolumeSpecification.new(v) }
+      end
+
+      # Volume specs from the setting used for the storage proposal
+      #
+      # @return [Array<Y2Storage::VolumeSpecification>]
+      def specs_from_proposal
+        return [] unless proposal
+
+        proposal.settings.volumes
+      end
+
+      # Converts a DInstaller::Storage::ProposalSettings object to its equivalent
+      # Y2Storage::ProposalSettings one
+      #
+      # @param settings [ProposalSettings]
+      # @return [Y2Storage::ProposalSettings]
+      def to_y2storage_settings(settings)
+        ProposalSettingsConverter.new(default_specs: default_specs).to_y2storage(settings)
       end
 
       # @return [Y2Storage::DiskAnalyzer]
@@ -194,6 +253,68 @@ module DInstaller
 
       def storage_manager
         Y2Storage::StorageManager.instance
+      end
+
+      def validate_proposal
+        return if candidate_devices.empty? || !proposal.failed?
+
+        message = format(
+          "Could not create a storage proposal using %{devices}",
+          devices: candidate_devices.join(", ")
+        )
+        ValidationError.new(message)
+      end
+
+      def validate_available_devices
+        return if available_devices.any?
+
+        ValidationError.new("Could not find a suitable device for installation")
+      end
+
+      def validate_candidate_devices
+        return if available_devices.empty? || candidate_devices.any?
+
+        ValidationError.new("No devices are selected for installation")
+      end
+
+      # Helper class to generate volumes from volume specs
+      class VolumesGenerator
+        # Constructor
+        #
+        # @param specs [Array<Y2Storage::VolumeSpecification>]
+        # @param planned_devices [Array<Y2Storage::Planned::Device>]
+        def initialize(specs, planned_devices: [])
+          @specs = specs
+          @planned_devices = planned_devices
+        end
+
+        # Generates volumes
+        #
+        # @param only_proposed [Boolean] Whether to generate volumes only for specs with proposed
+        #   equal to true.
+        # @return [Array<Volume>]
+        def volumes(only_proposed: false)
+          specs = self.specs
+          specs = specs.select(&:proposed?) if only_proposed
+          specs.map { |s| converter.to_dinstaller(s, devices: planned_devices) }
+        end
+
+      private
+
+        # Volume specs used for generating volumes
+        #
+        # @return [Array<Y2Storage::VolumeSpecification>]
+        attr_reader :specs
+
+        # Planned devices used for completing some volume settings
+        #
+        # @return [Array<Y2Storage::Planned::Device>]
+        attr_reader :planned_devices
+
+        # Object to perform the conversion of the volumes
+        def converter
+          @converter ||= VolumeConverter.new(default_specs: specs)
+        end
       end
     end
   end

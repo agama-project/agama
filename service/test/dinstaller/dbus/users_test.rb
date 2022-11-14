@@ -31,16 +31,20 @@ describe DInstaller::DBus::Users do
 
   let(:backend) { instance_double(DInstaller::Users) }
 
-  let(:service_status_interface) do
-    DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
-  end
-
   before do
     allow_any_instance_of(described_class).to receive(:register_service_status_callbacks)
   end
 
   it "defines ServiceStatus D-Bus interface" do
-    expect(subject.intfs.keys).to include(service_status_interface)
+    expect(subject.intfs.keys).to include(
+      DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
+    )
+  end
+
+  it "defines Validation D-Bus interface" do
+    expect(subject.intfs.keys).to include(
+      DInstaller::DBus::Interfaces::Validation::VALIDATION_INTERFACE
+    )
   end
 
   describe ".new" do
