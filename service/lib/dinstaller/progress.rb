@@ -75,7 +75,7 @@ module DInstaller
 
     # Constructor
     #
-    # @param toal_steps [Integer] total number of steps
+    # @param total_steps [Integer] total number of steps
     def initialize(total_steps)
       @total_steps = total_steps
       @current_step = nil

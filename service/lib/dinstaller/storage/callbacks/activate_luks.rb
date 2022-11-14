@@ -82,7 +82,7 @@ module DInstaller
 
         # Generates a formatted representation of the size
         #
-        # @param size [Y2Storage::DiskSize]
+        # @param value [Y2Storage::DiskSize]
         # @return [String]
         def formatted_size(value)
           Y2Storage::DiskSize.new(value).to_human_string

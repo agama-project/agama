@@ -113,93 +113,65 @@ Iface: o.o.YaST.Installer1.Software
 
 ## Storage
 
-### Iface: o.o.YaST.Installer1.Storage
+### org.opensuse.DInstaller.Storage1
 
-#### methods:
+#### Methods
 
--  MarkForUse(array(o.o.YaST.Installer1.Storage.BlockDevice Device)) -> void
-    set objects for use of installation. it means erase content of that devices
-    example:
+- Probe -> void
 
-      MarkForUse([disk1,disk2partition2]) -> ()
+- Install -> void
 
--  MarkForShrinking(array(o.o.YaST.Installer1.Storage.BlockDevice Device)) -> void
-    set objects to allow shrink of them. it means keep content and reduce its free space.
-    example:
+- Finish -> void
 
-      MarkForShrink([disk1,disk2partition2]) -> ()
+### org.opensuse.DInstaller.Proposal1
 
-#### Properties (all read only):
+** Making space is not covered yet**
 
--  Drives -> array(o.o.YaST.Installer1.Storage.Drive)  # an object\_path whose object implements this interface
-    List of all disks.
-    Example:
+#### Properties
 
-      Drives -> [disk1, disk2]
+- AvailableDevices -> a(ssa{sv}) (r)
+  e.g., ["/dev/sda", "/dev/sda, 8.00 GiB, USB", {}]
 
--  Partitions -> array(o.o.YaST.Installer1.Storage.Partition)
-    List of all partitions.
-    Example:
+- CandidateDevices -> as (r)
 
-      Disks -> [disk1partition1, disk1partition2, disk2partition1]
+- LVM -> b (r)
 
--  DevicesToUse -> array(o.o.YaST.Installer1.Storage.BlockDevice)
-    Devices that will be fully used by installation
-    Example:
+- EncryptionPassword -> s (r)
 
-      DevicesToUse -> [disk1,disk2partition2]
+- VolumeTemplates -> aa{sv} (r)
+  Struct keys and values: see Volumes
 
--  DevicesToShrink -> array(o.o.YaST.Installer1.Storage.BlockDevice)
-    Devices that will be shrinked to make space for installation
-    Example:
+- Volumes -> aa{sv} (r)
+  Struct keys and values:
+  - DeviceType -> s
+  e.g., "partition", "lvm_lv"
+  - Optional -> b
+  - Encrypted -> b
+  - MountPoint -> s
+  - FixedSizeLimits -> b
+  - AdaptativeSizes -> b
+  - MinSize -> s
+  - MaxSize -> s
+  - FsTypes -> as
+    e.g., ["Btrfs", "XFS"]
+  - FsType -> s
+  - Snapshots -> b
+  - SnapshotsConfigurable -> b
+  - SnapshotsAffectSizes -> b
+  - VolumesWithFallbackSizes -> as
+    e.g., ["/home", "/var"]
 
-      DevicesToShrink -> [disk1,disk2partition2]
+- Actions -> aa{sv} (r)
+  Struct keys and values:
+  - Text -> s (r)
+  - Subvol -> b (r)
+  - Delete -> b (r)
 
-#### Signals:
+#### Methods
 
-  PropertiesChanged ( only standard one from org.freedesktop.DBus.Properties interface )
+- Calculate(aa{sv}) -> u (0 success, 1 fail)
+  Calculates a new proposal with the given properties (see proposal properties).
 
-### Iface: o.o.YaST.Installer1.Storage.BlockDevice
-
-Inspired by Udisks2.Block
-
-#### Properties (all read only):
-
--  Device -> string DevPath
-    Block device name in /dev like "/dev/sda"
-
--  Size -> uint64 SizeInBytes
-    Size of devices in bytes
-
--  ReadOnly -> boolean
-    if device is read only
-
-### Iface: o.o.YaST.Installer1.Storage.Drive
-
-Inspired by Udisks2.Drive
-
-#### Properties (all read only):
-
--  Vendor -> string
-    Vendor of device or empty string if not known like "Fujitsu"
-
--  Model -> string
-    Device model or empty string if not known
-
--  Removable -> boolean
-    if device is removable like usb sticks
-
--  Partitions -> array(o.o.YaST.Installer1.Storage.Partition)
-    partitions on given drive
-
-### Iface: o.o.YaST.Installer1.Storage.Partition
-
-Inspired by Udisks2.Partition
-
-#### Properties (all read only):
-
--  Drive -> o.o.YaST.Installer1.Storage.Drive
-    where partitions live
 
 ## Users
 

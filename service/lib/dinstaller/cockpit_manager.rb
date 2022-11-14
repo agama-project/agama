@@ -48,7 +48,6 @@ module DInstaller
     #
     # If the given section does not exist, it returns an empty one
     #
-    # @param name [String] section name
     # @return [AugeasTree]
     def web_service
       data["WebService"] ||= CFA::AugeasTree.new
@@ -78,7 +77,7 @@ module DInstaller
     #
     # If all arguments are nil, the configuration is not modified and the process is not restarted.
     #
-    # @param config [Hash]
+    # @param options [Hash]
     #   @option ssl [Boolean,nil] SSL is enabled
     #   @option ssl_cert [String,nil] SSL/TLS certificate URL
     #   @option ssl_key  [String,nil] SSL/TLS key URL

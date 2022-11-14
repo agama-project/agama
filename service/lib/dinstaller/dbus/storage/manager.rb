@@ -41,7 +41,7 @@ module DInstaller
 
         # Constructor
         #
-        # @param backend [DInstaller::Software]
+        # @param backend [DInstaller::Storage::Manager]
         # @param logger [Logger]
         def initialize(backend, logger)
           super(PATH, logger: logger)
@@ -78,7 +78,7 @@ module DInstaller
         attr_reader :backend
 
         def register_proposal_callbacks
-          backend.proposal.add_on_change_listener { update_validation }
+          backend.proposal.on_calculate { update_validation }
         end
       end
     end
