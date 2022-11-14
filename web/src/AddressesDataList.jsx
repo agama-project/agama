@@ -126,7 +126,7 @@ export default function AddressesDataList({
             <FormLabel isRequired={!allowEmpty}>Addresses</FormLabel>
           </SplitItem>
           <SplitItem>
-            <Button isSmall variant="primary" className="btn-sm" onClick={() => addAddress()}>
+            <Button isSmall variant="secondary" className="btn-sm" onClick={() => addAddress()}>
               {newAddressButtonText}
             </Button>
           </SplitItem>
