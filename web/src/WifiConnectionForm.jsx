@@ -34,8 +34,7 @@ import { useInstallerClient } from "./context/installer";
 
 const security_options = [
   { value: "", label: "None" },
-  { value: "wpa-psk", label: "WPA & WPA2 Personal" },
-  { value: "wpa-eap", label: "WPA & WPA2 Enterprise" }
+  { value: "wpa-psk", label: "WPA & WPA2 Personal" }
 ];
 
 const selectorOptions = security_options.map(security => (
