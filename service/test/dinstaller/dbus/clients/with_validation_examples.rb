@@ -29,12 +29,12 @@ shared_examples "validation" do
   end
 
   let(:validation_properties) do
-    { "ValidationErrors" => ["An error"], "Valid" => false }
+    { "Errors" => ["An error"], "Valid" => false }
   end
 
   describe "#validation_errors" do
     it "returns the validation errors" do
-      expect(subject.validation_errors).to eq([DInstaller::ValidationError.new("An error")])
+      expect(subject.errors).to eq([DInstaller::ValidationError.new("An error")])
     end
   end
 

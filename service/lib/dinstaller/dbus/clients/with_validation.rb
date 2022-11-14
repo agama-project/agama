@@ -31,8 +31,8 @@ module DInstaller
       # Returns the validation errors
       #
       # @return [Array<ValidationError>] Validation errors
-      def validation_errors
-        dbus_object[VALIDATION_IFACE]["ValidationErrors"].map do |message|
+      def errors
+        dbus_object[VALIDATION_IFACE]["Errors"].map do |message|
           DInstaller::ValidationError.new(message)
         end
       end

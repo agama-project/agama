@@ -60,28 +60,28 @@ module DInstaller
 
         # Updates the validation and raise the `PropertiesChanged` signal
         def update_validation
-          @validation_errors = nil
+          @errors = nil
           dbus_properties_changed(VALIDATION_INTERFACE, validation_properties, [])
         end
 
         # Returns the validation errors
         #
         # @return [Array<String>] Validation error messages
-        def validation_errors
-          @validation_errors ||= backend.validate.map(&:message)
+        def errors
+          @errors ||= backend.validate.map(&:message)
         end
 
         # Determines whether the service settings are valid or not
         #
         # @return [Boolean] true if the service has valid data; false otherwise
         def valid?
-          validation_errors.empty?
+          errors.empty?
         end
 
         def self.included(base)
           base.class_eval do
             dbus_interface VALIDATION_INTERFACE do
-              dbus_reader :validation_errors, "as", dbus_name: "ValidationErrors"
+              dbus_reader :errors, "as", dbus_name: "Errors"
               dbus_reader :valid?, "b", dbus_name: "Valid"
             end
           end

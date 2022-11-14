@@ -42,10 +42,10 @@ describe DInstaller::DBus::Interfaces::Validation do
   let(:errors) { [] }
   let(:error1) { DInstaller::ValidationError.new("Some error") }
 
-  describe "#validation_errors" do
+  describe "#errors" do
     context "when there are not validation errors" do
       it "returns an empty array" do
-        expect(subject.validation_errors).to eq([])
+        expect(subject.errors).to eq([])
       end
     end
 
@@ -53,7 +53,7 @@ describe DInstaller::DBus::Interfaces::Validation do
       let(:errors) { [error1] }
 
       it "returns the error messages" do
-        expect(subject.validation_errors).to eq(["Some error"])
+        expect(subject.errors).to eq(["Some error"])
       end
     end
   end
@@ -69,7 +69,7 @@ describe DInstaller::DBus::Interfaces::Validation do
       let(:errors) { [error1] }
 
       it "returns the error messages" do
-        expect(subject.validation_errors).to eq(["Some error"])
+        expect(subject.errors).to eq(["Some error"])
       end
 
       it "returns true" do
@@ -89,7 +89,7 @@ describe DInstaller::DBus::Interfaces::Validation do
       expect(subject).to receive(:dbus_properties_changed)
         .once.with("org.opensuse.DInstaller.Validation1", Hash, [])
       expect { subject.update_validation }
-        .to change { subject.validation_errors.size }
+        .to change { subject.errors.size }
         .from(1).to(2)
     end
   end

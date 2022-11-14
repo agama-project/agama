@@ -184,7 +184,7 @@ describe DInstaller::Users do
       context "when neither a first user is defined nor the root password is set" do
         it "returns the problem" do
           error = subject.validate.first
-          expect(error.message).to match(/a user or setting the root password/)
+          expect(error.message).to match(/Defining a user/)
         end
       end
     end

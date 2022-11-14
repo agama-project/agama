@@ -340,7 +340,7 @@ any issue that might block the installation.
 
 ### org.opensuse.DInstaller.Validation1
 
-- ValidationErrors: array of strings (as)
+- Errors: array of strings (as)
   List of validation errors.
 
 - Valid: boolean (b)
