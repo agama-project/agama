@@ -156,7 +156,7 @@ const WithValidation = (superclass, object_path) => class extends superclass {
    */
   async getValidationErrors() {
     const proxy = await this.client.proxy(VALIDATION_IFACE, object_path);
-    return proxy.ValidationErrors.map(createError);
+    return proxy.Errors.map(createError);
   }
 
   /**
