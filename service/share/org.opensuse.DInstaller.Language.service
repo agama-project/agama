@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.opensuse.DInstaller.Language
+Exec=/usr/bin/d-installer language
+User=root

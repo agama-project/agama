@@ -26,8 +26,26 @@
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
 require "rubygems"
-require "bundler/setup"
+# find Gemfile when D-Bus activates a git checkout
+Dir.chdir(__dir__) do
+  require "bundler/setup"
+end
 require "dinstaller/dbus/service_runner"
+
+# Set up a {Logger} suitable either for terminal (started manually)
+# or syslog (D-Bus activated)
+# @return [Logger]
+def logger_for(name)
+  if $stdout.tty?
+    formatter = Logger::Formatter.new # the default
+  else
+    # going via syslog which will provide time and progname already
+    formatter = ->(severity, _time, _progname, msg) { "#{severity}: #{msg}\n" }
+    $stdout.sync = true
+  end
+
+  Logger.new($stdout, progname: name.to_s, formatter: formatter)
+end
 
 # Runs the service with the given name
 #
@@ -38,32 +56,51 @@ def start_service(name)
   module_y2dir = File.expand_path("../lib/dinstaller/dbus/y2dir/#{name}", __dir__)
   ENV["Y2DIR"] = "#{module_y2dir}:#{general_y2dir}"
 
-  logger = Logger.new($stdout, progname: name.to_s)
-  service_runner = DInstaller::DBus::ServiceRunner.new(name, logger: logger)
+  service_runner = DInstaller::DBus::ServiceRunner.new(name, logger: logger_for(name))
   service_runner.run
 end
 
 ORDERED_SERVICES = [:questions, :language, :software, :storage, :users, :manager].freeze
 
-# Starts all the services
+# Normally the services are started by D-Bus activation.
+# This starts all the services sequentially without relying on that.
+# This is useful during development to have their log output on the terminal,
+# not mixed with other syslog/journal messages.
+# The downside is relying on an arbitrary delay, and a manually maintained ordering.
 #
-# @return [Array<Integer>] PIDs
+# @return [void]
 # @see ORDERED_SERVICES
 def start_all_services
   ORDERED_SERVICES.map do |name|
+    puts "Starting #{name}:"
     fork { exec("#{__FILE__} #{name}") }
-    # TODO: implement a better mechanism to check whether the service is running
-    sleep(1)
+    sleep(7)
   end
 end
 
 if ARGV.empty?
-  pids = start_all_services
+  start_all_services
   Signal.trap("SIGINT") do
     puts "Stopping all services..."
     exit
   end
   Process.wait
+elsif ["-h", "--help"].include?(ARGV[0])
+  me = $PROGRAM_NAME
+  puts "Usage:"
+  puts "#{me} -h|--help"
+  puts "#{me} -s|--status"
+  puts "#{me} -k|--kill"
+  puts "#{me} #{ORDERED_SERVICES.sort.join("|")}"
+elsif ["-s", "--status"].include?(ARGV[0])
+  # The .[a-z] ensures matching the forked processes
+  # which can be distinguished by having a non-option argument
+  system "pgrep -fl bin/d-installer.[a-z]"
+  # busctl is prettier but will find nothing until the service files are installed,
+  # hence the pgrep above
+  system "busctl | grep -E '^NAME|DInstaller'"
+elsif ["-k", "--kill"].include?(ARGV[0])
+  system "pkill -f bin/d-installer.[a-z]"
 else
   name = ARGV[0]
   Signal.trap("SIGINT") do

@@ -101,8 +101,11 @@ $ make devel-install
 $ cd -
 ~~~
 
-* Start the services: beware that D-Installer must run as root (like YaST does) to do hardware probing, partition the disks, install the software and so on.
-
+* Start the services:
+    * beware that D-Installer must run as root (like YaST does) to do
+      hardware probing, partition the disks, install the software and so on.
+    * Note that `setup.sh` sets up D-Bus activation so starting manually is
+      only needed when you prefer to see the log output upfront.
 ~~~
 $ cd service
 $ sudo bundle exec bin/d-installer
