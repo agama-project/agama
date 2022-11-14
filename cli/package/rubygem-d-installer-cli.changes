@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Nov 18 16:27:50 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.5.0:
+  * Move the storage client to the service gem
+    (related to gh#yast/d-installer#248).
+
+-------------------------------------------------------------------
 Thu Jul 28 08:15:39 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.4.2:
