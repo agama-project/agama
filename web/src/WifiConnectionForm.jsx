@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ActionGroup,
   Alert,
@@ -51,12 +51,19 @@ const securityFrom = (supported) => {
 
 export default function WifiConnectionForm({ network, onCancel, onSubmitCallback }) {
   const client = useInstallerClient();
+  const formRef = useRef();
   const [error, setError] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [ssid, setSsid] = useState(network?.ssid || "");
   const [password, setPassword] = useState(network?.password || "");
   const [security, setSecurity] = useState(securityFrom(network?.security || []));
   const hidden = network?.hidden || false;
+
+  useEffect(() => {
+    setTimeout(() => {
+      formRef.current.scrollIntoView({ behavior: "smooth" });
+    }, 200);
+  }, []);
 
   const accept = async e => {
     e.preventDefault();
@@ -117,7 +124,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
         <Button type="submit" variant="primary" isLoading={isConnecting} isDisabled={isConnecting}>
           Connect
         </Button>
-        <Button variant="link" isDisabled={isConnecting} onClick={onCancel}>Cancel</Button>
+        <Button variant="link" isDisabled={isConnecting} onClick={onCancel} innerRef={formRef}>Cancel</Button>
       </ActionGroup>
     </Form>
   );

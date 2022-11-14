@@ -229,7 +229,7 @@ function WifiSelector({ isOpen = false, onClose }) {
           <CardBody>
             <Split hasGutter className="content">
               <SplitItem isFilled>
-                <WifiConnectionForm network={selected} onCancel={unsetSelected} onSubmitCallback={setSelected} />
+                { selected?.hidden && <WifiConnectionForm network={selected} onCancel={unsetSelected} onSubmitCallback={setSelected} /> }
               </SplitItem>
             </Split>
           </CardBody>
@@ -253,7 +253,7 @@ function WifiSelector({ isOpen = false, onClose }) {
       { renderHiddenNetworkForm() }
 
       <Popup.Actions>
-        <Popup.PrimaryAction onClick={onClose}>Close</Popup.PrimaryAction>
+        <Popup.SecondaryAction onClick={onClose}>Close</Popup.SecondaryAction>
       </Popup.Actions>
     </Popup>
   );
