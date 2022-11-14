@@ -32,7 +32,7 @@ export default function KebabMenu({ items, position = "right", id = Date.now(), 
     <Dropdown
       onSelect={toggle}
       toggle={
-        <DropdownToggle id={`${id}-toggler`} toggleIndicator={null} onToggle={toggle}>
+        <DropdownToggle id={`${id}-toggler`} className="toggler" toggleIndicator={null} onToggle={toggle}>
           <MenuIcon />
         </DropdownToggle>
       }

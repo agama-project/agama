@@ -276,3 +276,10 @@ button.remove-link:hover {
 .keep-words {
   word-break: keep-all;
 }
+
+.wifi-network-menu{
+  button.toggler {
+    vertical-align: middle;
+    padding-inline-start: 0;
+  }
+}
