@@ -2,4 +2,3 @@
 Name=org.opensuse.DInstaller
 Exec=/usr/bin/d-installer manager
 User=root
-SystemdService=d-installer.service
