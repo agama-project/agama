@@ -30,6 +30,16 @@ require "dinstaller/storage/volume_converter"
 module DInstaller
   module Storage
     # Backend class to calculate a storage proposal
+    #
+    # @example
+    #   proposal = Proposal.new(logger, config)
+    #   proposal.on_calculate { puts "proposal calculated" }
+    #   proposal.calculated_volumes   #=> []
+    #
+    #   settings = ProposalSettings.new
+    #
+    #   proposal.calculate(settings)  #=> true
+    #   proposal.calculated_volumes   #=> [Volume, Volume]
     class Proposal
       include WithProgress
 
