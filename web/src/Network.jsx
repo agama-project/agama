@@ -83,7 +83,7 @@ export default function Network() {
         <NetworkWifiStatus connections={activeWifiConnections} />
       </StackItem>
       <StackItem>
-        <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a wireless network</Button>
+        <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a Wi-Fi network</Button>
         <WifiSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
       </StackItem>
     </Stack>
