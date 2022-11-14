@@ -81,7 +81,7 @@ module DInstaller
         def self.included(base)
           base.class_eval do
             dbus_interface VALIDATION_INTERFACE do
-              dbus_reader :errors, "as", dbus_name: "Errors"
+              dbus_reader :errors, "as"
               dbus_reader :valid?, "b", dbus_name: "Valid"
             end
           end
