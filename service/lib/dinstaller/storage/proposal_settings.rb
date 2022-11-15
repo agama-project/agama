@@ -29,19 +29,18 @@ module DInstaller
 
       # Whether to use LVM
       #
-      # @return [Boolean]
-      attr_accessor :use_lvm
-      alias_method :use_lvm?, :use_lvm
+      # @return [Boolean, nil] nil if undetermined
+      attr_accessor :lvm
 
       # @!attribute encryption_password
       #   Password to use when creating new encryption devices
-      #   @return [String]
+      #   @return [String, nil] nil if undetermined
       secret_attr :encryption_password
 
       # Device names of the disks that can be used for the installation. If nil, the proposal will
       # try find suitable devices
       #
-      # @return [Array<String>, nil]
+      # @return [Array<String>]
       attr_accessor :candidate_devices
 
       # Set of volumes to create
@@ -53,7 +52,7 @@ module DInstaller
       attr_accessor :volumes
 
       def initialize
-        @use_lvm = false
+        @candidate_devices = []
         @volumes = []
       end
     end
