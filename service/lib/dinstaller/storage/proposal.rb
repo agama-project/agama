@@ -135,6 +135,12 @@ module DInstaller
         @settings.freeze
         proposal_settings = to_y2storage_settings(@settings)
 
+        # FIXME: by now, use only one disk
+        if proposal_settings.candidate_devices.nil?
+          first_disk = available_devices.first&.name
+          proposal_settings.candidate_devices = [first_disk] if first_disk
+        end
+
         @proposal = new_proposal(proposal_settings)
         storage_manager.proposal = proposal
 
