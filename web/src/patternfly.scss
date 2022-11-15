@@ -129,3 +129,8 @@
   --pf-c-form__label--hover--Cursor: default;
   --pf-c-form__label--m-disabled--hover--Cursor: default;
 }
+
+// Do not use thick border-top for data lists
+.pf-c-data-list {
+  --pf-c-data-list--BorderTopWidth: 2px;
+}

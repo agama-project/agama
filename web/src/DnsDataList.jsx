@@ -103,7 +103,7 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
             <FormLabel>DNS</FormLabel>
           </SplitItem>
           <SplitItem>
-            <Button isSmall variant="primary" className="btn-sm" onClick={() => addServer()}>
+            <Button isSmall variant="secondary" className="btn-sm" onClick={() => addServer()}>
               {newDnsButtonText}
             </Button>
           </SplitItem>
