@@ -15,6 +15,7 @@ systemctl enable sshd.service
 systemctl enable NetworkManager.service
 systemctl enable d-installer.service
 systemctl enable x11-autologin.service
+systemctl enable spice-vdagent.service
 
 # default target
 systemctl set-default graphical.target
