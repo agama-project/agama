@@ -1,0 +1,3 @@
+#! /bin/sh
+
+BROWSER="firefox --kiosk" /usr/libexec/cockpit-desktop /cockpit/@localhost/d-installer/index.html
