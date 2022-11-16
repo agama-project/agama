@@ -30,6 +30,7 @@ require "dinstaller/with_progress"
 require "dinstaller/can_ask_question"
 require "dinstaller/security"
 require "dinstaller/dbus/clients/questions_manager"
+require "dinstaller/dbus/clients/software"
 require "dinstaller/helpers"
 
 Yast.import "PackagesProposal"
@@ -50,6 +51,7 @@ module DInstaller
       # Probes storage devices and performs an initial proposal
       def probe
         start_progress(4)
+        config.pick_product(software.selected_product)
         progress.step("Activating storage devices") { activate_devices }
         progress.step("Probing storage devices") { probe_devices }
         progress.step("Calculating the storage proposal") { calculate_proposal }
@@ -160,6 +162,13 @@ module DInstaller
       # @return [DInstaller::DBus::Clients::QuestionsManager]
       def questions_manager
         @questions_manager ||= DInstaller::DBus::Clients::QuestionsManager.new
+      end
+
+      # Returns the client to ask the software service
+      #
+      # @return [DInstaller::DBus::Clients::Software]
+      def software
+        @software ||= DBus::Clients::Software.new
       end
     end
   end
