@@ -151,7 +151,9 @@ module DInstaller
             settings.candidate_devices = y2storage_settings.candidate_devices
             settings.lvm = y2storage_settings.lvm
             settings.encryption_password = y2storage_settings.encryption_password
-            settings.volumes = y2storage_settings.volumes.map { |v| convert_volume(v) }
+
+            specs = y2storage_settings.volumes.select(&:proposed?)
+            settings.volumes = specs.map { |s| to_volume(s) }
           end
         end
 
@@ -173,7 +175,7 @@ module DInstaller
         #
         # @param spec [Y2Storage::VolumeSpecification]
         # @return [Volume]
-        def convert_volume(spec)
+        def to_volume(spec)
           volume_converter.to_dinstaller(spec, devices: devices).tap do |volume|
             volume.encrypted = y2storage_settings.use_encryption
           end

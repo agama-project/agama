@@ -112,11 +112,7 @@ module DInstaller
       def calculated_settings
         return nil unless proposal
 
-        settings = proposal.settings.dup
-        settings.volumes = settings.volumes.select(&:proposed?)
-
-        to_dinstaller_settings(settings,
-          default_specs: proposal.settings.volumes, devices: proposal.planned_devices)
+        to_dinstaller_settings(proposal.settings, devices: proposal.planned_devices)
       end
 
       # Calculates a new proposal
@@ -220,11 +216,10 @@ module DInstaller
       # DInstaller::Storage::ProposalSettings one
       #
       # @param settings [Y2Storage::ProposalSettings]
-      # @param default_specs [Array<Y2Storage::VolumeSpecification>]
       # @param devices [Array<Y2Storage::Planned::Device>]
       #
       # @return [ProposalSettings]
-      def to_dinstaller_settings(settings, default_specs: [], devices: [])
+      def to_dinstaller_settings(settings, devices: [])
         converter = ProposalSettingsConverter.new(default_specs: default_specs)
         converter.to_dinstaller(settings, devices: devices)
       end
