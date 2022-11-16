@@ -1,0 +1,20 @@
+<services>
+  <service name="obs_scm" mode="manual">
+    <param name="url">http://github.com/yast/d-installer.git</param>
+    <param name="scm">git</param>
+    <param name="revision">master</param>
+    <param name="without-version">enable</param>
+    <param name="filename">d-installer</param>
+  </service>
+  <service mode="buildtime" name="tar">
+    <param name="obsinfo">d-installer.obsinfo</param>
+    <param name="subdir">image/extrastuff/root</param>
+    <param name="filename">root</param>
+  </service>
+  <service mode="buildtime" name="tar">
+    <param name="obsinfo">d-installer.obsinfo</param>
+    <param name="subdir">image/extrastuff/etc</param>
+    <param name="filename">etc</param>
+  </service>
+</services>
+
