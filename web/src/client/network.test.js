@@ -55,7 +55,7 @@ const adapter = {
 
 describe("NetworkClient", () => {
   describe("#activeConnections", () => {
-    it("retuns the list of active connections from the adapter", () => {
+    it("returns the list of active connections from the adapter", () => {
       const client = new NetworkClient(adapter);
       const connections = client.activeConnections();
       expect(connections).toEqual([active_conn]);
