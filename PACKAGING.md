@@ -66,11 +66,13 @@ flows in the upcoming 2.7 release](https://openbuildservice.org/2016/04/08/new_g
 
 The ISO is built in
 [YaST:Head:D-Installer/d-installer-live](https://build.opensuse.org/package/show/YaST:Head:D-Installer/d-installer-live).
-Once the rest of the packages are ready, it is just a matter of bumping the version in the
-`preferences` section of the
-[kiwi](https://build.opensuse.org/package/view_file/YaST:Head:D-Installer/d-installer-live/d-installer-live.kiwi?expand=1)
-file.
+Once a package is rebuilt, the ISO image gets refreshed too. If you want to release
+a new version, follow these steps:
 
-```xml
-<version>0.4</version>
-```
+1. Bump the version in the `preferences` section of the [kiwi](./image/d-installer-live.kiwi) file
+   through a pull request.
+2. Once the pull request is merged, checkout (or branch) the OBS package.
+3. Run `osc service manualrun` in your checkout to update the sources.
+4. Commit the changes.
+
+See [image/README.md](./image/README.md) for more details about how the Live ISO is built.
