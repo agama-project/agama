@@ -57,14 +57,6 @@ const NetworkEventTypes = Object.freeze({
  */
 
 /**
- * Returns given IP address in the X.X.X.X/YY format
- *
- * @param {IPAddress} addr
- * @return {string}
- */
-const formatIp = addr => `${addr.address}/${addr.prefix}`;
-
-/**
  * Network event
  *
  * @typedef {object} NetworkEvent
@@ -229,5 +221,5 @@ o  *   NetworkManagerAdapter.
 }
 
 export {
-  ConnectionState, ConnectionTypes, formatIp, NetworkClient, NetworkManagerAdapter, NetworkEventTypes
+  ConnectionState, ConnectionTypes, NetworkClient, NetworkManagerAdapter, NetworkEventTypes
 };

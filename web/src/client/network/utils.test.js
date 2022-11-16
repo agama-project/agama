@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import { isValidIp, isValidIpPrefix, intToIPString, stringToIPInt } from "./utils";
+import { isValidIp, isValidIpPrefix, intToIPString, stringToIPInt, formatIp } from "./utils";
 
 describe("#isValidIp", () => {
   it("returns true when the IP is valid", () => {
@@ -58,5 +58,11 @@ describe("#intToIPString", () => {
 describe("#ip4_from_text", () => {
   it("returns the IP as network byte-order", () => {
     expect(stringToIPInt("1.2.3.4")).toEqual(67305985);
+  });
+});
+
+describe("formatIp", () => {
+  it("returns the given IPv4 address in the X.X.X.X/YY format", () => {
+    expect(formatIp({ address: "1.2.3.4", prefix: 24})).toEqual("1.2.3.4/24");
   });
 });

@@ -24,6 +24,10 @@
 import ipaddr from "ipaddr.js";
 
 /**
+ * @typedef {import("./model").IPAddress} IPAddress
+ */
+
+/**
  * Check if an IP is valid
  *
  * By now, only IPv4 is supported.
@@ -87,9 +91,18 @@ const stringToIPInt = (text) => {
   return num;
 };
 
+/**
+ * Returns given IP address in the X.X.X.X/YY format
+ *
+ * @param {IPAddress} addr
+ * @return {string}
+ */
+const formatIp = addr => `${addr.address}/${addr.prefix}`;
+
 export {
   isValidIp,
   isValidIpPrefix,
   intToIPString,
-  stringToIPInt
+  stringToIPInt,
+  formatIp
 };
