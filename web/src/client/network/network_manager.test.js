@@ -90,7 +90,7 @@ const connections = {
       },
       "802-11-wireless-security": {
         "key-mgmt": cockpit.variant("s", "wpa-psk")
-       }
+      }
     })
   }
 };
@@ -102,7 +102,6 @@ Object.defineProperties(activeConnections, {
 Object.defineProperties(connections, {
   addEventListener: { value: jest.fn(), enumerable: false }
 });
-
 
 const addressesData = {
   "/ip4Config/1": {
@@ -230,7 +229,6 @@ describe("NetworkManagerAdapter", () => {
     });
   });
 
-
   describe("#connections", () => {
     it("returns the list of settings (profiles)", async () => {
       const client = new NetworkManagerAdapter(dbusClient);
@@ -249,7 +247,6 @@ describe("NetworkManagerAdapter", () => {
       });
     });
   });
-
 
   describe("#getConnection", () => {
     it("returns the connection with the given ID", async () => {
@@ -325,13 +322,12 @@ describe("NetworkManagerAdapter", () => {
     it("activates the given connection", async () => {
       const client = new NetworkManagerAdapter(dbusClient);
       await client.setUp();
-      const [wifi] = await client.connections();
       client.addConnection = jest.fn();
       await client.addAndConnectTo("Testing", { security: "wpa-psk", password: "testing.1234" });
 
       expect(client.addConnection).toHaveBeenCalledWith(
-        createConnection({ 
-          name: "Testing", 
+        createConnection({
+          name: "Testing",
           wireless: { ssid: "Testing", security: "wpa-psk", password: "testing.1234" }
         })
       );
@@ -357,7 +353,6 @@ describe("NetworkManagerAdapter", () => {
     });
   });
 });
-
 
 describe("securityFromFlags", () => {
   it("returns an array with the security protocols supported by the given AP flags", () => {

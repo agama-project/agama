@@ -63,6 +63,6 @@ describe("#ip4_from_text", () => {
 
 describe("formatIp", () => {
   it("returns the given IPv4 address in the X.X.X.X/YY format", () => {
-    expect(formatIp({ address: "1.2.3.4", prefix: 24})).toEqual("1.2.3.4/24");
+    expect(formatIp({ address: "1.2.3.4", prefix: 24 })).toEqual("1.2.3.4/24");
   });
 });
