@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import { createConnection, createAccessPoint } from "./model";
+import { createConnection, createAccessPoint, connectionHumanState } from "./model";
 
 describe("createConnection", () => {
   it("creates a connection with the default values", () => {
@@ -71,5 +71,15 @@ describe("createAccessPoint", () => {
       strength: 90,
       security: []
     });
+  });
+});
+
+describe("connectionHumanState", () => {
+  it("returns a human readable connection state", () => {
+    expect(connectionHumanState(0)).toEqual("unknown");
+    expect(connectionHumanState(1)).toEqual("activating");
+    expect(connectionHumanState(2)).toEqual("activated");
+    expect(connectionHumanState(3)).toEqual("deactivating");
+    expect(connectionHumanState(4)).toEqual("deactivated");
   });
 });

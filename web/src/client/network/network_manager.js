@@ -254,8 +254,10 @@ class NetworkManagerAdapter {
     const conn = {
       id: connection.uuid.v,
       name: connection.id.v,
-      path: path
+      type: connection.type.v
     };
+
+    if (path) conn.path = path;
 
     if (ipv4) {
       conn.ipv4 = {
@@ -265,13 +267,14 @@ class NetworkManagerAdapter {
         // FIXME: handle different byte-order (little-endian vs big-endian)
         nameServers: ipv4.dns?.v.map(intToIPString) || [],
         method: ipv4.method.v,
-        gateway: ipv4.gateway?.v
       };
+      if (ipv4.gateway?.v) conn.ipv4.gateway = ipv4.gateway.v;
     }
 
     if (wireless) {
       conn.wireless = {
-        ssid: window.atob(wireless.ssid.v)
+        ssid: window.atob(wireless.ssid.v),
+        hidden: wireless.hidden?.v || false
       };
     }
 
@@ -308,9 +311,10 @@ class NetworkManagerAdapter {
    * @param {object} options - connection options
    */
   async addAndConnectTo(ssid, options = {}) {
-    const wireless = { ssid, hidden: options.hidden };
+    const wireless = { ssid };
     if (options.security) wireless.security = options.security;
     if (options.password) wireless.password = options.password;
+    if (options.hidden) wireless.hidden = options.hidden;
 
     const connection = createConnection({
       name: ssid,
@@ -496,4 +500,4 @@ class NetworkManagerAdapter {
   }
 }
 
-export { NetworkManagerAdapter, mergeConnectionSettings };
+export { NetworkManagerAdapter, mergeConnectionSettings, securityFromFlags };

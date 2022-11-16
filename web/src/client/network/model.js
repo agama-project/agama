@@ -29,7 +29,7 @@
  * https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMActiveConnectionState
  */
 const ConnectionState = Object.freeze({
-  UNKWOWN: 0,
+  UNKNOWN: 0,
   ACTIVATING: 1,
   ACTIVATED: 2,
   DEACTIVATING: 3,
