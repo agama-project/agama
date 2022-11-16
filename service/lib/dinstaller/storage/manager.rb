@@ -24,6 +24,7 @@ require "bootloader/proposal_client"
 require "bootloader/finish_client"
 require "y2storage/storage_manager"
 require "dinstaller/storage/proposal"
+require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/callbacks"
 require "dinstaller/with_progress"
 require "dinstaller/can_ask_question"
@@ -51,7 +52,7 @@ module DInstaller
         start_progress(4)
         progress.step("Activating storage devices") { activate_devices }
         progress.step("Probing storage devices") { probe_devices }
-        progress.step("Calculating the storage proposal") { proposal.calculate }
+        progress.step("Calculating the storage proposal") { calculate_proposal }
         progress.step("Selecting Linux Security Modules") { security.probe }
       end
 
@@ -125,6 +126,16 @@ module DInstaller
       def probe_devices
         # TODO: probe callbacks
         Y2Storage::StorageManager.instance.probe
+      end
+
+      # Calculates the default proposal
+      def calculate_proposal
+        settings = ProposalSettings.new
+        # FIXME: by now, the UI only allows to select one disk
+        device = proposal.available_devices.first&.name
+        settings.candidate_devices << device if device
+
+        proposal.calculate(settings)
       end
 
       # Adds the required packages to the list of resolvables to install

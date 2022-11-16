@@ -260,38 +260,33 @@ describe DInstaller::Storage::Proposal do
     end
   end
 
-  describe "#calculated_volumes" do
-    it "returns an empty array if #calculate has not being called" do
-      expect(proposal.calculated_volumes).to eq []
+  describe "#calculated_settings" do
+    context "if #calculate has not been called yet" do
+      it "returns nil" do
+        expect(proposal.calculated_settings).to be_nil
+      end
     end
 
-    context "with volumes that are disabled by default" do
-      let(:config_volumes) do
-        [
-          { "mount_point" => "/", "fs_type" => "btrfs", "min_size" => "10 GiB" },
-          { "mount_point" => "/enabled", "min_size" => "5 GiB" },
-          { "mount_point" => "/disabled", "proposed" => false, "min_size" => "5 GiB" }
-        ]
-      end
-
-      # Note that calling #calculate without settings means "reset to default volumes"
-      it "returns only the volumes enabled by default if #calculate was called with no settings" do
+    context "if #calculate was called without settings" do
+      before do
         proposal.calculate
-        expect(proposal.calculated_volumes.map(&:mount_point)).to contain_exactly("/", "/enabled")
       end
-    end
-  end
 
-  describe "#settings" do
-    let(:settings) { DInstaller::Storage::ProposalSettings.new }
+      context "and the config has disabled volumes" do
+        let(:config_volumes) do
+          [
+            { "mount_point" => "/", "fs_type" => "btrfs", "min_size" => "10 GiB" },
+            { "mount_point" => "/enabled", "min_size" => "5 GiB" },
+            { "mount_point" => "/disabled", "proposed" => false, "min_size" => "5 GiB" }
+          ]
+        end
 
-    it "returns nil if #calculate has not being called" do
-      expect(proposal.settings).to be_nil
-    end
-
-    it "returns the settings previously passed to #calculate" do
-      proposal.calculate(settings)
-      expect(proposal.settings).to eq settings
+        # Note that calling #calculate without settings means "reset to default"
+        it "returns settings with only the volumes enabled by default" do
+          expect(proposal.calculated_settings.volumes.map(&:mount_point))
+            .to contain_exactly("/", "/enabled")
+        end
+      end
     end
   end
 

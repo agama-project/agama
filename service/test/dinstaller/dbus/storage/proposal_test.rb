@@ -33,7 +33,7 @@ describe DInstaller::DBus::Storage::Proposal do
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:backend) do
-    instance_double(DInstaller::Storage::Proposal, on_calculate: nil, settings: settings)
+    instance_double(DInstaller::Storage::Proposal, on_calculate: nil, calculated_settings: settings)
   end
 
   let(:settings) { nil }
@@ -93,12 +93,23 @@ describe DInstaller::DBus::Storage::Proposal do
   end
 
   describe "#candidate_devices" do
-    before do
-      allow(backend).to receive(:candidate_devices).and_return(["/dev/vda", "/dev/vdb"])
+    context "if a proposal has not been calculated yet" do
+      let(:settings) { nil }
+
+      it "returns an empty list" do
+        expect(subject.candidate_devices).to eq([])
+      end
     end
 
-    it "return the candidate devices" do
-      expect(subject.candidate_devices).to contain_exactly("/dev/vda", "/dev/vdb")
+    context "if a proposal has been calculated" do
+      let(:settings) do
+        instance_double(DInstaller::Storage::ProposalSettings,
+          candidate_devices: ["/dev/vda", "/dev/vdb"])
+      end
+
+      it "returns the candidate devices used by the proposal" do
+        expect(subject.candidate_devices).to contain_exactly("/dev/vda", "/dev/vdb")
+      end
     end
   end
 
@@ -113,7 +124,7 @@ describe DInstaller::DBus::Storage::Proposal do
 
     context "if a proposal has been calculated" do
       let(:settings) do
-        instance_double(DInstaller::Storage::ProposalSettings, use_lvm?: true)
+        instance_double(DInstaller::Storage::ProposalSettings, lvm: true)
       end
 
       it "return whether LVM was used" do
@@ -213,11 +224,11 @@ describe DInstaller::DBus::Storage::Proposal do
   end
 
   describe "#volumes" do
-    before do
-      allow(backend).to receive(:calculated_volumes).and_return(calculated_volumes)
+    let(:settings) do
+      DInstaller::Storage::ProposalSettings.new.tap { |s| s.volumes = calculated_volumes }
     end
 
-    context "if there are no calulated volumes" do
+    context "if the calculated settings has no volumes" do
       let(:calculated_volumes) { [] }
 
       it "returns an empty list" do
@@ -225,7 +236,7 @@ describe DInstaller::DBus::Storage::Proposal do
       end
     end
 
-    context "if there are calculated volume" do
+    context "if the calculated settings has volumes" do
       let(:calculated_volumes) { [calculated_volume1, calculated_volume2] }
 
       let(:calculated_volume1) do
@@ -320,7 +331,7 @@ describe DInstaller::DBus::Storage::Proposal do
       expect(backend).to receive(:calculate) do |settings|
         expect(settings).to be_a(DInstaller::Storage::ProposalSettings)
         expect(settings.candidate_devices).to contain_exactly("/dev/vda")
-        expect(settings.use_lvm?).to eq(true)
+        expect(settings.lvm).to eq(true)
         expect(settings.encryption_password).to eq("n0ts3cr3t")
         expect(settings.volumes).to contain_exactly(
           an_object_having_attributes(mount_point: "/"),
@@ -337,10 +348,10 @@ describe DInstaller::DBus::Storage::Proposal do
       it "calculates a proposal with settings having default values for the missing settings" do
         expect(backend).to receive(:calculate) do |settings|
           expect(settings).to be_a(DInstaller::Storage::ProposalSettings)
-          expect(settings.candidate_devices).to be_nil
-          expect(settings.use_lvm?).to eq(false)
+          expect(settings.candidate_devices).to eq([])
+          expect(settings.lvm).to be_nil
           expect(settings.encryption_password).to be_nil
-          expect(settings.volumes).to be_empty
+          expect(settings.volumes).to eq([])
         end
 
         subject.calculate(dbus_settings)

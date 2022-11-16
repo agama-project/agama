@@ -154,7 +154,7 @@ module DInstaller
 
     # Storage manager
     #
-    # @return [Storage::Manager]
+    # @return [DBus::Clients::Storage]
     def storage
       @storage ||= DBus::Clients::Storage.new.tap do |client|
         client.on_service_status_change do |status|

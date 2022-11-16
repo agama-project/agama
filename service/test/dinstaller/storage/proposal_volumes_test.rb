@@ -144,11 +144,11 @@ describe DInstaller::Storage::Proposal do
       end
     end
 
-    describe "#calculated_volumes" do
-      it "returns the correct set of volumes" do
+    describe "#calculated_settings" do
+      it "returns settings with the correct set of volumes" do
         proposal.calculate(settings)
 
-        expect(proposal.calculated_volumes).to contain_exactly(
+        expect(proposal.calculated_settings.volumes).to contain_exactly(
           an_object_having_attributes(
             mount_point: "/", optional: false, encrypted: false, device_type: :partition,
             fs_type: fs_type(:btrfs), fs_types: [fs_type(:btrfs), fs_type(:ext4)],
@@ -179,11 +179,11 @@ describe DInstaller::Storage::Proposal do
       end
     end
 
-    describe "#calculated_volumes" do
-      it "returns the correct set of mandatory volumes" do
+    describe "#calculated_settings" do
+      it "returns settings with the correct set of mandatory volumes" do
         proposal.calculate(settings)
 
-        expect(proposal.calculated_volumes).to contain_exactly(
+        expect(proposal.calculated_settings.volumes).to contain_exactly(
           an_object_having_attributes(
             mount_point: "/", optional: false, snapshots: false,
             fs_type: fs_type(:btrfs), fs_types: [fs_type(:btrfs), fs_type(:ext4)],
@@ -209,11 +209,11 @@ describe DInstaller::Storage::Proposal do
       end
     end
 
-    describe "#calculated_volumes" do
-      it "returns the correct set of volumes" do
+    describe "#calculated_settings" do
+      it "returns settings with the correct set of volumes" do
         proposal.calculate(settings)
 
-        expect(proposal.calculated_volumes).to contain_exactly(
+        expect(proposal.calculated_settings.volumes).to contain_exactly(
           an_object_having_attributes(
             mount_point: "/", optional: false, snapshots: true,
             fs_type: fs_type(:btrfs), fs_types: [fs_type(:btrfs), fs_type(:ext4)]
@@ -241,11 +241,11 @@ describe DInstaller::Storage::Proposal do
       end
     end
 
-    describe "#calculated_volumes" do
-      it "returns a set of volumes with fixed limits and adjusted sizes" do
+    describe "#calculated_settings" do
+      it "returns settings with a set of volumes with fixed limits and adjusted sizes" do
         proposal.calculate(settings)
 
-        expect(proposal.calculated_volumes).to contain_exactly(
+        expect(proposal.calculated_settings.volumes).to contain_exactly(
           an_object_having_attributes(
             mount_point: "/", snapshots: false, fixed_size_limits: false,
             size_relevant_volumes: ["/two"], min_size: Y2Storage::DiskSize.GiB(15)
@@ -272,11 +272,11 @@ describe DInstaller::Storage::Proposal do
       end
     end
 
-    describe "#calculated_volumes" do
-      it "returns a set of volumes with fixed limits and adjusted sizes" do
+    describe "#calculated_settings" do
+      it "returns settings with a set of volumes with fixed limits and adjusted sizes" do
         proposal.calculate(settings)
 
-        expect(proposal.calculated_volumes).to contain_exactly(
+        expect(proposal.calculated_settings.volumes).to contain_exactly(
           an_object_having_attributes(
             mount_point: "/", snapshots: true, fixed_size_limits: false,
             min_size: Y2Storage::DiskSize.GiB(40)
@@ -304,11 +304,11 @@ describe DInstaller::Storage::Proposal do
       end
     end
 
-    describe "#calculated_volumes" do
-      it "returns a set of volumes with fixed limits and adjusted sizes" do
+    describe "#calculated_settings" do
+      it "returns settings with a set of volumes with fixed limits and adjusted sizes" do
         proposal.calculate(settings)
 
-        expect(proposal.calculated_volumes).to contain_exactly(
+        expect(proposal.calculated_settings.volumes).to contain_exactly(
           an_object_having_attributes(
             mount_point: "/", snapshots: true, fixed_size_limits: false,
             size_relevant_volumes: ["/two"], min_size: Y2Storage::DiskSize.GiB(60)
@@ -337,11 +337,11 @@ describe DInstaller::Storage::Proposal do
       end
     end
 
-    describe "#calculated_volumes" do
-      it "returns a set of volumes with fixed limits and adjusted sizes" do
+    describe "#calculated_settings" do
+      it "returns settings with a set of volumes with fixed limits and adjusted sizes" do
         proposal.calculate(settings)
 
-        expect(proposal.calculated_volumes).to contain_exactly(
+        expect(proposal.calculated_settings.volumes).to contain_exactly(
           an_object_having_attributes(
             mount_point: "/", snapshots: true, fixed_size_limits: true,
             size_relevant_volumes: ["/two"], min_size: Y2Storage::DiskSize.GiB(6)

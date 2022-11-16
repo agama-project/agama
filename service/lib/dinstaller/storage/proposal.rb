@@ -44,11 +44,6 @@ module DInstaller
     class Proposal
       include WithProgress
 
-      # Settings that were used to calculate the proposal
-      #
-      # @return [ProposalSettings, nil]
-      attr_reader :settings
-
       # Constructor
       #
       # @param logger [Logger]
@@ -103,27 +98,21 @@ module DInstaller
       #
       # @return [Array<Volumes>]
       def volume_templates
-        VolumesGenerator.new(default_specs).volumes
+        converter = VolumeConverter.new(default_specs: default_specs)
+
+        default_specs.map { |s| converter.to_dinstaller(s) }
       end
 
-      # Volumes from the specs used during the calculation of the storage proposal
+      # Settings with the data used during the calculation of the storage proposal
       #
-      # Not to be confused with settings.volumes, which are used as starting point for creating the
-      # volume specs for the storage proposal.
+      # Not to be confused with the settings passed to {#calculate}, which are used as starting
+      # point for creating the settings for the storage proposal.
       #
-      # @return [Array<Volumes>]
-      def calculated_volumes
-        return [] unless proposal
+      # @return [ProposalSettings]
+      def calculated_settings
+        return nil unless proposal
 
-        generator = VolumesGenerator.new(specs_from_proposal,
-          planned_devices: proposal.planned_devices)
-        volumes = generator.volumes(only_proposed: true)
-
-        # FIXME: setting this should be a responsibility of VolumesGenerator or any other component,
-        # but this is good enough until we implement fine-grained control on encryption
-        volumes.each { |v| v.encrypted = proposal.settings.use_encryption }
-
-        volumes
+        to_dinstaller_settings(proposal.settings, devices: proposal.planned_devices)
       end
 
       # Calculates a new proposal
@@ -131,9 +120,9 @@ module DInstaller
       # @param settings [ProposalSettings] settings to calculate the proposal
       # @return [Boolean] whether the proposal was correctly calculated
       def calculate(settings = nil)
-        @settings = settings || ProposalSettings.new
-        @settings.freeze
-        proposal_settings = to_y2storage_settings(@settings)
+        settings ||= ProposalSettings.new
+        settings.freeze
+        proposal_settings = to_y2storage_settings(settings)
 
         @proposal = new_proposal(proposal_settings)
         storage_manager.proposal = proposal
@@ -214,15 +203,6 @@ module DInstaller
         config_volumes.map { |v| Y2Storage::VolumeSpecification.new(v) }
       end
 
-      # Volume specs from the setting used for the storage proposal
-      #
-      # @return [Array<Y2Storage::VolumeSpecification>]
-      def specs_from_proposal
-        return [] unless proposal
-
-        proposal.settings.volumes
-      end
-
       # Converts a DInstaller::Storage::ProposalSettings object to its equivalent
       # Y2Storage::ProposalSettings one
       #
@@ -230,6 +210,18 @@ module DInstaller
       # @return [Y2Storage::ProposalSettings]
       def to_y2storage_settings(settings)
         ProposalSettingsConverter.new(default_specs: default_specs).to_y2storage(settings)
+      end
+
+      # Converts a Y2Storage::ProposalSettings object to its equivalent
+      # DInstaller::Storage::ProposalSettings one
+      #
+      # @param settings [Y2Storage::ProposalSettings]
+      # @param devices [Array<Y2Storage::Planned::Device>]
+      #
+      # @return [ProposalSettings]
+      def to_dinstaller_settings(settings, devices: [])
+        converter = ProposalSettingsConverter.new(default_specs: default_specs)
+        converter.to_dinstaller(settings, devices: devices)
       end
 
       # @return [Y2Storage::DiskAnalyzer]
@@ -275,46 +267,6 @@ module DInstaller
         return if available_devices.empty? || candidate_devices.any?
 
         ValidationError.new("No devices are selected for installation")
-      end
-
-      # Helper class to generate volumes from volume specs
-      class VolumesGenerator
-        # Constructor
-        #
-        # @param specs [Array<Y2Storage::VolumeSpecification>]
-        # @param planned_devices [Array<Y2Storage::Planned::Device>]
-        def initialize(specs, planned_devices: [])
-          @specs = specs
-          @planned_devices = planned_devices
-        end
-
-        # Generates volumes
-        #
-        # @param only_proposed [Boolean] Whether to generate volumes only for specs with proposed
-        #   equal to true.
-        # @return [Array<Volume>]
-        def volumes(only_proposed: false)
-          specs = self.specs
-          specs = specs.select(&:proposed?) if only_proposed
-          specs.map { |s| converter.to_dinstaller(s, devices: planned_devices) }
-        end
-
-      private
-
-        # Volume specs used for generating volumes
-        #
-        # @return [Array<Y2Storage::VolumeSpecification>]
-        attr_reader :specs
-
-        # Planned devices used for completing some volume settings
-        #
-        # @return [Array<Y2Storage::Planned::Device>]
-        attr_reader :planned_devices
-
-        # Object to perform the conversion of the volumes
-        def converter
-          @converter ||= VolumeConverter.new(default_specs: specs)
-        end
       end
     end
   end

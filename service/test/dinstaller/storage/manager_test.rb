@@ -48,11 +48,18 @@ describe DInstaller::Storage::Manager do
   let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
 
   describe "#probe" do
-    let(:proposal) { instance_double(DInstaller::Storage::Proposal, calculate: nil) }
-
     before do
       allow(DInstaller::Storage::Proposal).to receive(:new).and_return(proposal)
     end
+
+    let(:proposal) do
+      instance_double(DInstaller::Storage::Proposal, calculate: nil, available_devices: devices)
+    end
+
+    let(:devices) { [disk1, disk2] }
+
+    let(:disk1) { instance_double(Y2Storage::Disk, name: "/dev/vda") }
+    let(:disk2) { instance_double(Y2Storage::Disk, name: "/dev/vdb") }
 
     it "probes the storage devices and calculates a proposal" do
       expect(y2storage_manager).to receive(:activate) do |callbacks|
