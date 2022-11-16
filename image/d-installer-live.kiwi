@@ -82,7 +82,6 @@
         <package name="cockpit-ws"/>
         <package name="ruby3.1-rubygem-d-installer"/>
         <package name="ruby3.1-rubygem-d-installer-cli"/>
-        <package name="ALP-build-key"/>
         <package name="openSUSE-build-key"/>
         <package name="staging-build-key"/>
         <package name="ALP-build-key"/>
