@@ -20,47 +20,16 @@
  */
 
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Card,
-  CardBody,
-  Radio,
-  Spinner,
-  Split,
-  SplitItem,
-  Text
-} from "@patternfly/react-core";
 
-import {
-  EOS_LOCK as LockIcon,
-  EOS_SIGNAL_CELLULAR_ALT as SignalIcon
-} from "eos-icons-react";
+import { useInstallerClient } from "./context/installer";
+import { NetworkEventTypes } from "./client/network";
 
 import Popup from "./Popup";
-import Center from "./Center";
-import WifiNetworkMenu from "./WifiNetworkMenu";
-import WifiConnectionForm from "./WifiConnectionForm";
-import { useInstallerClient } from "./context/installer";
-import { ConnectionState } from "./client/network/model";
-import { NetworkEventTypes } from "./client/network";
+import NetworksList from "./NetworksList";
+import HiddenNetworkForm from "./HiddenNetworkForm";
 
 const networksFromValues = (networks) => Object.values(networks).flat();
 const baseHiddenNetwork = { ssid: undefined, hidden: true };
-
-const networkState = (state) => {
-  switch (state) {
-    case ConnectionState.ACTIVATING:
-      return 'Connecting';
-    case ConnectionState.ACTIVATED:
-      return 'Connected';
-    case ConnectionState.DEACTIVATING:
-      return 'Disconnecting';
-    case ConnectionState.DEACTIVATED:
-      return 'Disconnected';
-    default:
-      return "";
-  }
-};
 
 function WifiSelector({ isOpen = false, onClose }) {
   const client = useInstallerClient();
@@ -162,110 +131,28 @@ function WifiSelector({ isOpen = false, onClose }) {
     });
   });
 
-  const isStateChanging = (network) => {
-    const state = network.connection?.state;
-    return state === ConnectionState.ACTIVATING || state === ConnectionState.DEACTIVATING;
-  };
-
-  const renderFilteredNetworks = (networks) => {
-    return networks.map(n => {
-      const isChecked = n.ssid === selectedNetwork?.ssid;
-      const showAsChecked = !selectedNetwork && n.ssid === activeNetwork?.ssid;
-      const showSpinner = (isChecked && n.settings && !n.connection) || isStateChanging(n);
-
-      let className = "selection-list-item";
-      if (isChecked || showAsChecked) className += " selection-list-checked-item";
-      if (isChecked && !n.settings) className += " selection-list-focused-item";
-
-      return (
-        <Card key={n.ssid} className={className}>
-          <CardBody>
-            <Split hasGutter className="header">
-              <SplitItem isFilled>
-                <Radio
-                  id={n.ssid}
-                  label={n.ssid}
-                  description={
-                    <>
-                      <LockIcon size="10" color="grey" /> {n.security.join(", ")}{" "}
-                      <SignalIcon size="10" color="grey" /> {n.strength}
-                    </>
-                  }
-                  isChecked={isChecked || showAsChecked || false}
-                  onClick={() => {
-                    if (isChecked) return;
-                    switchSelectedNetwork(n);
-                    if (n.settings && !n.connection) client.network.connectTo(n.settings);
-                  }}
-                />
-              </SplitItem>
-              <SplitItem>
-                <Center>
-                  {showSpinner && <Spinner isSVG size="md" aria-label={`${n.ssid} connection is waiting for an state change`} /> }
-                </Center>
-              </SplitItem>
-              <SplitItem>
-                <Center>
-                  <Text component="small" className="keep-words">
-                    { showSpinner && !n.connection && "Connecting" }
-                    { networkState(n.connection?.state)}
-                  </Text>
-                </Center>
-              </SplitItem>
-              { n.settings &&
-                <SplitItem>
-                  <Center>
-                    <WifiNetworkMenu settings={n.settings} />
-                  </Center>
-                </SplitItem> }
-            </Split>
-            { isChecked && (!n.settings || n.settings.error) &&
-              <Split hasGutter>
-                <SplitItem isFilled className="content">
-                  <WifiConnectionForm network={n} onCancel={() => switchSelectedNetwork(activeNetwork)} />
-                </SplitItem>
-              </Split> }
-          </CardBody>
-        </Card>
-      );
-    });
-  };
-
-  const renderHiddenNetworkForm = () => {
-    return (
-      <>
-        <Card className={showHiddenForm ? "selection-list-item selection-list-focused-item" : "selection-list-item collapsed"}>
-          <CardBody>
-            <Split hasGutter className="content">
-              <SplitItem isFilled>
-                { showHiddenForm &&
-                  <WifiConnectionForm
-                    network={selectedNetwork}
-                    onCancel={() => switchSelectedNetwork(activeNetwork)}
-                    onSubmitCallback={switchSelectedNetwork}
-                  /> }
-              </SplitItem>
-            </Split>
-          </CardBody>
-        </Card>
-        { !showHiddenForm &&
-          <Center>
-            <Button
-              variant="link"
-              onClick={() => switchSelectedNetwork(baseHiddenNetwork)}
-            >
-              Connect to hidden network
-            </Button>
-          </Center> }
-      </>
-    );
-  };
-
   return (
     <Popup isOpen={isOpen} height="large" title="Connect to a Wi-Fi network">
-      { renderFilteredNetworks(networksFromValues(networks)) }
-      { renderHiddenNetworkForm() }
-
+      <NetworksList
+        networks={networksFromValues(networks)}
+        activeNetwork={activeNetwork}
+        selectedNetwork={selectedNetwork}
+        availableNetworks={networks}
+        onSelectionCallback={(network) => {
+          switchSelectedNetwork(network);
+          if (network.settings && !network.connection) {
+            client.network.connectTo(network.settings);
+          }
+        }}
+        onCancelSelectionCallback={() => switchSelectedNetwork(activeNetwork) }
+      />
+      <HiddenNetworkForm
+        network={selectedNetwork}
+        expanded={showHiddenForm}
+        onClick={() => switchSelectedNetwork(baseHiddenNetwork)}
+        onCancel={() => switchSelectedNetwork(activeNetwork)}
+        onSubmitCallback={switchSelectedNetwork}
+      />
       <Popup.Actions>
         <Popup.SecondaryAction onClick={onClose}>Close</Popup.SecondaryAction>
       </Popup.Actions>
