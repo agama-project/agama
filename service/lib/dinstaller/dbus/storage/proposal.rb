@@ -94,25 +94,27 @@ module DInstaller
         #
         # @return [Array<String>]
         def candidate_devices
-          backend.candidate_devices
+          return [] unless backend.calculated_settings
+
+          backend.calculated_settings.candidate_devices
         end
 
         # Whether the proposal creates logical volumes
         #
         # @return [Boolean]
         def lvm
-          return false unless backend.settings
+          return false unless backend.calculated_settings
 
-          backend.settings.use_lvm?
+          backend.calculated_settings.lvm
         end
 
-        # Whether the proposal encrypts devices
+        # Password for encrypting devices
         #
-        # @return [Boolean]
+        # @return [String]
         def encryption_password
-          return "" unless backend.settings
+          return "" unless backend.calculated_settings
 
-          backend.settings.encryption_password
+          backend.calculated_settings.encryption_password
         end
 
         # Volumes used as template for creating a new volume
@@ -126,7 +128,9 @@ module DInstaller
         #
         # @return [Hash]
         def volumes
-          backend.calculated_volumes.map { |v| to_dbus_volume(v) }
+          return [] unless backend.calculated_settings
+
+          backend.calculated_settings.volumes.map { |v| to_dbus_volume(v) }
         end
 
         # List of sorted actions in D-Bus format
@@ -167,7 +171,7 @@ module DInstaller
         # D-Bus value to the value expected by the ProposalSettings setter.
         SETTINGS_CONVERSIONS = {
           "CandidateDevices"   => ["candidate_devices=", proc { |v| v }],
-          "LVM"                => ["use_lvm=", proc { |v| v }],
+          "LVM"                => ["lvm=", proc { |v| v }],
           "EncryptionPassword" => ["encryption_password=", proc { |v| v }],
           "Volumes"            => ["volumes=", proc { |v, o| o.send(:to_proposal_volumes, v) }]
         }.freeze
