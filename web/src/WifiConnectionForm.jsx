@@ -32,6 +32,10 @@ import {
 } from "@patternfly/react-core";
 import { useInstallerClient } from "./context/installer";
 
+/*
+* FIXME: it should be moved to the SecurityProtocols enum that already exists or to a class based
+* enum pattern in the network_manager adapter.
+*/
 const security_options = [
   { value: "", label: "None" },
   { value: "wpa-psk", label: "WPA & WPA2 Personal" }
