@@ -50,7 +50,9 @@ const adapter = {
   deleteConnection: jest.fn(),
   accessPoints: jest.fn(),
   connectTo: jest.fn(),
-  addAndConnectTo: jest.fn()
+  addAndConnectTo: jest.fn(),
+  wirelessEnabled: jest.fn().mockReturnValue(true),
+  wifiHardwareEnabled: jest.fn().mockReturnValue(true)
 };
 
 describe("NetworkClient", () => {
@@ -73,6 +75,20 @@ describe("NetworkClient", () => {
     it("returns the hostname from the adapter", () => {
       const client = new NetworkClient(adapter);
       expect(client.hostname()).toEqual("localhost.localdomain");
+    });
+  });
+
+  describe("#wirelessEnabled", () => {
+    it("returns whether the wireless is currently enabled or not from the adapter", () => {
+      const client = new NetworkClient(adapter);
+      expect(client.wirelessEnabled()).toEqual(true);
+    });
+  });
+
+  describe("#wifiHardwareEnabled", () => {
+    it("returns whether the wireless hardware is currently enabled or not from the adapter", () => {
+      const client = new NetworkClient(adapter);
+      expect(client.wifiHardwareEnabled()).toEqual(true);
     });
   });
 });

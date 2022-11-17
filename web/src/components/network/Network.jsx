@@ -31,12 +31,14 @@ export default function Network() {
   const [initialized, setInitialized] = useState(false);
   const [connections, setConnections] = useState([]);
   const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
+  const [wirelessEnabled, setWirelessEnabled] = useState(false);
 
   useEffect(() => {
     if (!initialized) return;
 
+    setWirelessEnabled(client.network.wirelessEnabled());
     setConnections(client.network.activeConnections());
-  }, [client.network, initialized]);
+  }, [client.network, initialized, wirelessEnabled]);
 
   useEffect(() => {
     return client.network.onNetworkEvent(({ type, payload }) => {
@@ -81,10 +83,11 @@ export default function Network() {
       <StackItem>
         <NetworkWifiStatus connections={activeWifiConnections} />
       </StackItem>
-      <StackItem>
-        <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a Wi-Fi network</Button>
-        <WifiSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
-      </StackItem>
+      { wirelessEnabled &&
+        <StackItem>
+          <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a Wi-Fi network</Button>
+          <WifiSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
+        </StackItem> }
     </Stack>
   );
 }

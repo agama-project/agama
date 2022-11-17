@@ -52,6 +52,8 @@ const NetworkEventTypes = Object.freeze({
  * @property {(connection: Connection) => Promise<any>} addConnection
  * @property {(connection: Connection) => Promise<any>} updateConnection
  * @property {(connection: Connection) => void} deleteConnection
+ * @property {() => string} wirelessEnabled
+ * @property {() => string} wifiHardwareEnabled
  * @property {() => string} hostname
  * @property {() => void} setUp
  */
@@ -208,6 +210,24 @@ o  *   NetworkManagerAdapter.
   addresses() {
     const conns = this.adapter.activeConnections();
     return conns.flatMap(c => c.addresses);
+  }
+
+  /*
+   * Returns whether wifi hardware is enabled or not
+   *
+   * @return {boolean}
+   */
+  wirelessEnabled() {
+    return this.adapter.wirelessEnabled();
+  }
+
+  /*
+   * Returns whether wifi hardware is enabled or not
+   *
+   * @return {boolean}
+   */
+  wifiHardwareEnabled() {
+    return this.adapter.wifiHardwareEnabled();
   }
 
   /**

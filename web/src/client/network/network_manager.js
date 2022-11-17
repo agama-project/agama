@@ -177,6 +177,7 @@ class NetworkManagerAdapter {
       accessPoints: {},
       activeConnections: {},
       ip4Configs: {},
+      manager: null,
       settings: null,
       connections: {}
     };
@@ -196,10 +197,15 @@ class NetworkManagerAdapter {
         ACTIVE_CONNECTION_IFACE, ACTIVE_CONNECTION_NAMESPACE
       ),
       ip4Configs: await this.client.proxies(IP4CONFIG_IFACE, IP4CONFIG_NAMESPACE),
+      manager: await this.client.proxy(IFACE),
       settings: await this.client.proxy(SETTINGS_IFACE),
       connections: await this.client.proxies(CONNECTION_IFACE, SETTINGS_NAMESPACE)
     };
     this.subscribeToEvents();
+  }
+
+  wirelessHardware() {
+    return !!this.proxies.manager?.WirelessHardwareEnabled;
   }
 
   /**
@@ -484,6 +490,26 @@ class NetworkManagerAdapter {
    */
   connectionIPAddress(data) {
     return { address: data.address.v, prefix: parseInt(data.prefix.v) };
+  }
+
+  /**
+  *
+  * Returns whether WiFi hardware is enabled or not
+  *
+  * @return [boolean] true if it enabled; false otherwise
+  */
+  wirelessEnabled() {
+    return !!this.proxies.manager?.WirelessEnabled;
+  }
+
+  /**
+  *
+  * Returns whether WiFi hardware is enabled or not
+  *
+  * @return [boolean] true if it enabled; false otherwise
+  */
+  wifiHardwareEnabled() {
+    return !!this.proxies.manager?.WifiHardwareEnabled;
   }
 
   /**

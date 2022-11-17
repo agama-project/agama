@@ -125,10 +125,15 @@ const addressesData = {
 };
 
 const ActivateConnectionFn = jest.fn();
+const WirelessEnabled = false;
+const WifiHardwareEnabled = true;
+
 const networkProxy = () => ({
   wait: jest.fn(),
   ActivateConnection: ActivateConnectionFn,
   ActiveConnections: Object.keys(activeConnections),
+  WirelessEnabled: WirelessEnabled,
+  WifiHardwareEnabled: WifiHardwareEnabled
 });
 
 const AddConnectionFn = jest.fn();
@@ -350,6 +355,22 @@ describe("NetworkManagerAdapter", () => {
       const client = new NetworkManagerAdapter(dbusClient);
       await client.setUp();
       expect(client.hostname()).toEqual("testing-machine");
+    });
+  });
+
+  describe("#wirelessEnabled", () => {
+    it("returns whether wireless is currently enabled or not", async() => {
+      const client = new NetworkManagerAdapter(dbusClient);
+      await client.setUp();
+      expect(client.wirelessEnabled()).toEqual(false);
+    });
+  });
+
+  describe("#wifiHardwareEnabled", () => {
+    it("returns whether wireless hardware is currently enabled or not", async() => {
+      const client = new NetworkManagerAdapter(dbusClient);
+      await client.setUp();
+      expect(client.wifiHardwareEnabled()).toEqual(true);
     });
   });
 });

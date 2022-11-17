@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen, within, waitFor } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
 import Network from "@components/network/Network";
 import { createClient } from "@client";
@@ -28,6 +28,8 @@ import { createClient } from "@client";
 jest.mock("@client");
 jest.mock("@components/network/NetworkWiredStatus", () => () => "Wired Connections");
 jest.mock("@components/network/NetworkWifiStatus", () => () => "WiFi Connections");
+
+let wirelessEnabled = false;
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
@@ -37,6 +39,7 @@ beforeEach(() => {
         activeConnections: () => [],
         connections: () => Promise.resolve([]),
         accessPoints: () => [],
+        wirelessEnabled: jest.fn(wirelessEnabled),
         onNetworkEvent: jest.fn()
       }
     };
@@ -44,25 +47,52 @@ beforeEach(() => {
 });
 
 describe("Network", () => {
-  it("shows a link to open the WiFi selector", async () => {
-    installerRender(<Network />);
-    await screen.findByRole("button", { name: "Connect to a Wi-Fi network" });
+  describe("when it has not been initialized", () => {
+    it("renders nothing", async () => {
+      const { container } = installerRender(<Network />, { usingLayout: false });
+      waitFor(() => expect(container).toBeEmptyDOMElement());
+    });
   });
 
-  it("renders a summary for wired and wifi connections", async () => {
-    installerRender(<Network />);
+  describe("when it has been initialized", () => {
+    it("renders nothing", async () => {
+      const { container } = installerRender(<Network />, { usingLayout: false });
+      waitFor(() => expect(container).toBeEmptyDOMElement());
+    });
 
-    await screen.findByText("Wired Connections");
-    await screen.findByText("WiFi Connections");
-  });
+    it("renders a summary for wired and wifi connections", async () => {
+      installerRender(<Network />);
 
-  describe("when the user clicks on connect to a Wi-Fi", () => {
-    it("opens the WiFi selector dialog", async () => {
-      const { user } = installerRender(<Network />);
-      const link = await screen.findByRole("button", { name: "Connect to a Wi-Fi network" });
-      await user.click(link);
-      const wifiDialog = await screen.findByRole("dialog");
-      within(wifiDialog).getByText("Connect to a Wi-Fi network");
+      await screen.findByText("Wired Connections");
+      await screen.findByText("WiFi Connections");
+    });
+
+    describe("when Wireless is currently not enabled", () => {
+      it("does not show a link to open the WiFi selector", async () => {
+        installerRender(<Network />);
+        await screen.findByRole("button", { name: "Connect to a Wi-Fi network" });
+      });
+    });
+
+    describe("when Wireless is currently enabled", () => {
+      beforeEach(() => {
+        wirelessEnabled = true;
+      });
+
+      it("shows a link to open the WiFi selector", async () => {
+        installerRender(<Network />);
+        await screen.findByRole("button", { name: "Connect to a Wi-Fi network" });
+      });
+
+      describe("when the user clicks on connect to a Wi-Fi", () => {
+        it("opens the WiFi selector dialog", async () => {
+          const { user } = installerRender(<Network />);
+          const link = await screen.findByRole("button", { name: "Connect to a Wi-Fi network" });
+          await user.click(link);
+          const wifiDialog = await screen.findByRole("dialog");
+          within(wifiDialog).getByText("Connect to a Wi-Fi network");
+        });
+      });
     });
   });
 });
