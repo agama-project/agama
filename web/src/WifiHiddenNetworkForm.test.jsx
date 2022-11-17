@@ -22,45 +22,45 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { installerRender } from "./test-utils";
+import { plainRender } from "./test-utils";
 
 import WifiHiddenNetworkForm from "./WifiHiddenNetworkForm";
-
-const beforeDisplayingFn = jest.fn();
 
 jest.mock("./WifiConnectionForm", () => () => "WifiConnectionForm mock");
 
 describe("WifiHiddenNetworkForm", () => {
   describe("when it is visible", () => {
-    it("renders the WifiConnectionForm", async () => {
-      installerRender(<WifiHiddenNetworkForm visible />);
-      await screen.findByText("WifiConnectionForm mock");
+    it("renders the WifiConnectionForm", () => {
+      plainRender(<WifiHiddenNetworkForm visible />);
+
+      screen.getByText("WifiConnectionForm mock");
     });
 
-    it("does not render the link for connecting to a hidden network", async () => {
-      installerRender(<WifiHiddenNetworkForm visible />);
+    it("does not render the link for connecting to a hidden network", () => {
+      plainRender(<WifiHiddenNetworkForm visible />);
       expect(screen.queryByText(/Connect to hidden network/i)).not.toBeInTheDocument();
     });
   });
 
   describe("when it is not visible", () => {
-    it("does not render the WifiConnectionForm", async () => {
-      installerRender(<WifiHiddenNetworkForm visible={false} />);
+    it("does not render the WifiConnectionForm", () => {
+      plainRender(<WifiHiddenNetworkForm visible={false} />);
       expect(screen.queryByText("WifiConnectionForm mock")).not.toBeInTheDocument();
     });
 
-    it("renders the link for connecting to a hidden network", async () => {
-      installerRender(<WifiHiddenNetworkForm visible={false} />);
-      await screen.findByText(/Connect to hidden network/i);
+    it("renders the link for connecting to a hidden network", () => {
+      plainRender(<WifiHiddenNetworkForm visible={false} />);
+      screen.findByText(/Connect to hidden network/i);
     });
 
     describe("and the user clicks on the opening link", () => {
       it("triggers the beforeDisplaying callback", async () => {
-        const { user } = installerRender(
+        const beforeDisplayingFn = jest.fn();
+        const { user } = plainRender(
           <WifiHiddenNetworkForm visible={false} beforeDisplaying={beforeDisplayingFn} />
         );
 
-        const link = await screen.findByRole("button", { name: "Connect to hidden network" });
+        const link = screen.getByRole("button", { name: "Connect to hidden network" });
         await user.click(link);
 
         expect(beforeDisplayingFn).toHaveBeenCalled();
