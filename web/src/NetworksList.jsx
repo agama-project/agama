@@ -21,30 +21,31 @@
 
 import React from "react";
 
-import { ConnectionState } from "./client/network/model";
+/**
+ * Component for displaying a list of available Wi-Fi networks
+ *
+ * @param {object} props - component props
+ * @param {object[]} [props.networks=[]] - list of networks to show
+ * @param {object} [props.activeNetwork] - the active network
+ * @param {object} [props.selectedNetwork] - the selected network (not necessarily the same as active)
+ * @param {function} props.onSelectionCallback - the function to trigger when user selects a network
+ * @param {function} props.onCancelCallback - the function to trigger when user cancel dismiss before connecting to a network
+ */
 import NetworkListItem from "./NetworkListItem";
 
-function NetworksList({ networks, activeNetwork, selectedNetwork, onSelectionCallback, onCancelSelectionCallback }) {
-  const isStateChanging = (network) => {
-    const state = network.connection?.state;
-    return state === ConnectionState.ACTIVATING || state === ConnectionState.DEACTIVATING;
-  };
-
+function NetworksList({ networks = [], activeNetwork, selectedNetwork, onSelectionCallback, onCancelSelectionCallback }) {
   return networks.map(n => {
-    const isChecked = n.ssid === selectedNetwork?.ssid;
-    const showAsChecked = !selectedNetwork && n.ssid === activeNetwork?.ssid;
-    const showSpinner = (isChecked && n.settings && !n.connection) || isStateChanging(n);
+    const isSelected = n.ssid === selectedNetwork?.ssid;
+    const isActive = !selectedNetwork && n.ssid === activeNetwork?.ssid;
 
     return (
       <NetworkListItem
         key={n.ssid}
         network={n}
-        isChecked={isChecked}
-        isFocused={isChecked && !n.settings}
-        showAsChecked={showAsChecked}
-        showSpinner={showSpinner}
+        isSelected={isSelected}
+        isActive={isActive}
         onSelect={() => {
-          if (!isChecked) onSelectionCallback(n);
+          if (!isSelected) onSelectionCallback(n);
         }}
         onCancel={onCancelSelectionCallback}
       />

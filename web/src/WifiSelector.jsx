@@ -148,9 +148,9 @@ function WifiSelector({ isOpen = false, onClose }) {
       />
       <HiddenNetworkForm
         network={selectedNetwork}
-        expanded={showHiddenForm}
-        onClick={() => switchSelectedNetwork(baseHiddenNetwork)}
-        onCancel={() => switchSelectedNetwork(activeNetwork)}
+        visible={showHiddenForm}
+        beforeDisplaying={() => switchSelectedNetwork(baseHiddenNetwork)}
+        beforeHiding={() => switchSelectedNetwork(activeNetwork)}
         onSubmitCallback={switchSelectedNetwork}
       />
       <Popup.Actions>

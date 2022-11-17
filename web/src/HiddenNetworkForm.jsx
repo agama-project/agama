@@ -32,31 +32,40 @@ import {
 import Center from "./Center";
 import WifiConnectionForm from "./WifiConnectionForm";
 
-function HiddenNetworkForm({ network, expanded, onClick, onCancel, onSubmitCallback }) {
+/**
+ * Component to render a form for connecting to a hidden Wi-Fi Network
+ *
+ * @param {object} props - component props
+ * @param {object} props.network - a basic network object
+ * @param {boolean} props.visible - whether the form should be displayed
+ * @param {function} props.beforeDisplaying - callback to trigger before displaying the form
+ * @param {function} props.beforeHiding - callback to trigger before hiding the form
+ */
+function HiddenNetworkForm({ network, visible, beforeDisplaying, beforeHiding, onSubmitCallback }) {
   return (
     <>
       <Card className={[
         "selection-list-item",
-        expanded && "selection-list-focused-item",
-        !expanded && "collapsed"
+        visible && "selection-list-focused-item",
+        !visible && "collapsed"
       ].join(" ")}
       >
         <CardBody>
           <Split hasGutter className="content">
             <SplitItem isFilled>
-              { expanded &&
+              { visible &&
                 <WifiConnectionForm
                   network={network}
-                  onCancel={onCancel}
+                  onCancel={beforeHiding}
                   onSubmitCallback={onSubmitCallback}
                 /> }
             </SplitItem>
           </Split>
         </CardBody>
       </Card>
-      { !expanded &&
+      { !visible &&
         <Center>
-          <Button variant="link" onClick={onClick}>
+          <Button variant="link" onClick={beforeDisplaying}>
             Connect to hidden network
           </Button>
         </Center> }

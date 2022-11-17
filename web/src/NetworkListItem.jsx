@@ -57,14 +57,34 @@ const networkState = (state) => {
   }
 };
 
-function NetworkListItem ({ network, isChecked, isFocused, showAsChecked, showSpinner, onSelect, onCancel }) {
+const isStateChanging = (network) => {
+  const state = network.connection?.state;
+  return state === ConnectionState.ACTIVATING || state === ConnectionState.DEACTIVATING;
+};
+
+/**
+ * Component for displaying a Wi-Fi network within a NetowrkList
+ *
+ * @param {object} props - component props
+ * @param {object} props.networks - the ap/configured network to be displayed
+ * @param {boolean} [props.isSelected] - whether the network has been selected by the user
+ * @param {boolean} [props.isActive] - whether the network is currently active
+ * @param {function} props.onSelect - function to execute when the network is selected
+ * @param {function} props.onCancel - function to execute when the selection is cancelled
+ */
+function NetworkListItem ({ network, isSelected, isActive, onSelect, onCancel }) {
+  // Do not wait until receive the next D-Bus network event to have the connection object available
+  // and display the spinner as soon as possible. I.e., renders it inmmediately when the user clicks
+  // on an already configured network.
+  const showSpinner = (isSelected && network.settings && !network.connection) || isStateChanging(network);
+
   return (
     <Card
       key={network.ssid}
       className={[
         "selection-list-item",
-        (isChecked || showAsChecked) && "selection-list-checked-item",
-        isFocused && "selection-list-focused-item"
+        (isSelected || isActive) && "selection-list-checked-item",
+        isSelected && !network.settings && "selection-list-focused-item"
       ].join(" ")}
     >
       <CardBody>
@@ -79,7 +99,7 @@ function NetworkListItem ({ network, isChecked, isFocused, showAsChecked, showSp
                   <SignalIcon size="10" color="grey" /> {network.strength}
                 </>
               }
-              isChecked={isChecked || showAsChecked || false}
+              isChecked={isSelected || isActive || false}
               onClick={onSelect}
             />
           </SplitItem>
@@ -103,7 +123,7 @@ function NetworkListItem ({ network, isChecked, isFocused, showAsChecked, showSp
               </Center>
             </SplitItem> }
         </Split>
-        { isChecked && (!network.settings || network.settings.error) &&
+        { isSelected && (!network.settings || network.settings.error) &&
           <Split hasGutter>
             <SplitItem isFilled className="content">
               <WifiConnectionForm network={network} onCancel={onCancel} />

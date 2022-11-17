@@ -26,30 +26,43 @@ import { installerRender } from "./test-utils";
 
 import HiddenNetworkForm from "./HiddenNetworkForm";
 
+const beforeDisplayingFn = jest.fn();
+
 jest.mock("./WifiConnectionForm", () => () => "WifiConnectionForm mock");
 
 describe("HiddenNetworkForm", () => {
-  describe("when it is expanded", () => {
+  describe("when it is visible", () => {
     it("renders the WifiConnectionForm", async () => {
-      installerRender(<HiddenNetworkForm expanded />);
+      installerRender(<HiddenNetworkForm visible />);
       await screen.findByText("WifiConnectionForm mock");
     });
 
     it("does not render the link for connecting to a hidden network", async () => {
-      installerRender(<HiddenNetworkForm expanded />);
+      installerRender(<HiddenNetworkForm visible />);
       expect(screen.queryByText(/Connect to hidden network/i)).not.toBeInTheDocument();
     });
   });
 
-  describe("when it is not expanded", () => {
+  describe("when it is not visible", () => {
     it("does not render the WifiConnectionForm", async () => {
-      installerRender(<HiddenNetworkForm expanded={false} />);
+      installerRender(<HiddenNetworkForm visible={false} />);
       expect(screen.queryByText("WifiConnectionForm mock")).not.toBeInTheDocument();
     });
 
     it("renders the link for connecting to a hidden network", async () => {
-      installerRender(<HiddenNetworkForm expanded={false} />);
+      installerRender(<HiddenNetworkForm visible={false} />);
       await screen.findByText(/Connect to hidden network/i);
+    });
+
+    describe("and the user clicks on the opening link", () => {
+      it("triggers the beforeDisplaying callback", async () => {
+        const { user } = installerRender(<HiddenNetworkForm visible={false} beforeDisplaying={beforeDisplayingFn} />);
+
+        const link = await screen.findByRole("button", { name: "Connect to hidden network" });
+        await user.click(link);
+
+        expect(beforeDisplayingFn).toHaveBeenCalled();
+      });
     });
   });
 });

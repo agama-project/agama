@@ -49,42 +49,33 @@ describe("NetworkListItem", () => {
     await screen.findByRole("radio", { name: fakeNetwork.ssid, checked: false });
   });
 
-  describe("when isChecked prop is true", () => {
+  describe("when isSelected prop is true", () => {
     it("renders network as selected", async () => {
-      installerRender(<NetworkListItem network={fakeNetwork} isChecked />);
+      installerRender(<NetworkListItem network={fakeNetwork} isSelected />);
 
       const wrapper = await screen.findByRole("article");
       expect(wrapper.classList.contains("selection-list-checked-item")).toBe(true);
     });
 
     it("renders the input radio as checked", async () => {
-      installerRender(<NetworkListItem network={fakeNetwork} isChecked />);
+      installerRender(<NetworkListItem network={fakeNetwork} isSelected />);
 
       await screen.findByRole("radio", { name: fakeNetwork.ssid, checked: true });
     });
   });
 
-  describe("when showAsSelected prop is true", () => {
+  describe("when isActive prop is true", () => {
     it("renders network as selected", async () => {
-      installerRender(<NetworkListItem network={fakeNetwork} showAsChecked />);
+      installerRender(<NetworkListItem network={fakeNetwork} isActive />);
 
       const wrapper = await screen.findByRole("article");
       expect(wrapper.classList.contains("selection-list-checked-item")).toBe(true);
     });
 
     it("renders the input radio as checked", async () => {
-      installerRender(<NetworkListItem network={fakeNetwork} showAsChecked />);
+      installerRender(<NetworkListItem network={fakeNetwork} isActive />);
 
       await screen.findByRole("radio", { name: fakeNetwork.ssid, checked: true });
-    });
-  });
-
-  describe("when isFocused prop is true", () => {
-    it("renders network as focused", async () => {
-      installerRender(<NetworkListItem network={fakeNetwork} isFocused />);
-
-      const wrapper = await screen.findByRole("article");
-      expect(wrapper.classList.contains("selection-list-focused-item")).toBe(true);
     });
   });
 
@@ -96,24 +87,31 @@ describe("NetworkListItem", () => {
       await screen.findByText("WifiNetworkMenu mock");
     });
 
-    describe("and it is checked", () => {
+    describe("and it is selected", () => {
       it("does not render the WifiConnectionForm", async () => {
-        installerRender(<NetworkListItem network={network} isChecked />);
+        installerRender(<NetworkListItem network={network} isSelected />);
         expect(screen.queryByText("WifiConnectionForm mock")).not.toBeInTheDocument();
       });
     });
   });
 
-  describe("when given network has no settings", () => {
+  describe("when given network does not have settings", () => {
     it("does not render the WifiNetworkMenu", async () => {
       installerRender(<NetworkListItem network={fakeNetwork} />);
       expect(screen.queryByText("WifiNetworkMenu mock")).not.toBeInTheDocument();
     });
 
-    describe("and it is checked", () => {
+    describe("and it is selected", () => {
       it("renders the WifiConnectionForm", async () => {
-        installerRender(<NetworkListItem network={fakeNetwork} isChecked />);
+        installerRender(<NetworkListItem network={fakeNetwork} isSelected />);
         await screen.findByText("WifiConnectionForm mock");
+      });
+
+      it("renders network as focused", async () => {
+        installerRender(<NetworkListItem network={fakeNetwork} isSelected />);
+
+        const wrapper = await screen.findByRole("article");
+        expect(wrapper.classList.contains("selection-list-focused-item")).toBe(true);
       });
     });
   });
