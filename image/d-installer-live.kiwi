@@ -80,6 +80,7 @@
         <package name="cockpit-storaged"/>
         <package name="cockpit-system"/>
         <package name="cockpit-ws"/>
+        <package name="ruby3.1-rubygem-byebug"/>
         <package name="ruby3.1-rubygem-d-installer"/>
         <package name="ruby3.1-rubygem-d-installer-cli"/>
         <package name="openSUSE-build-key"/>
