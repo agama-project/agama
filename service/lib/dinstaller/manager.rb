@@ -63,8 +63,7 @@ module DInstaller
     # Runs the startup phase
     def startup_phase
       installation_phase.startup
-
-      probe_single_product unless config.multi_product?
+      config_phase if software.selected_product
 
       logger.info("Startup phase done")
     end
@@ -163,14 +162,6 @@ module DInstaller
       end
     end
 
-    # Actions to perform when a product is selected
-    #
-    # @note The config phase is executed.
-    def select_product(product)
-      config.pick_product(product)
-      config_phase
-    end
-
     # Name of busy services
     #
     # @see ServiceStatusRecorder
@@ -204,17 +195,6 @@ module DInstaller
     # Copy the logs to the target system
     def copy_logs
       Yast::WFM.CallFunction("copy_logs_finish", ["Write"])
-    end
-
-    # Runs the config phase for the first product found
-    #
-    # Adjust the configuration and run the config phase.
-    #
-    # This method is expected to be used on single-product scenarios.
-    def probe_single_product
-      selected = config.data["products"].keys.first
-      config.pick_product(selected)
-      config_phase
     end
   end
 end

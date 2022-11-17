@@ -146,9 +146,9 @@ module DInstaller
           dbus_properties_changed(MANAGER_INTERFACE, { "BusyServices" => busy_services }, [])
         end
 
-        backend.software.on_product_selected do |product|
+        backend.software.on_product_selected do |_product|
           safe_run do
-            busy_while { backend.select_product(product) }
+            busy_while { backend.config_phase }
           end
         end
       end

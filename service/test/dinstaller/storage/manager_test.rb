@@ -37,6 +37,8 @@ describe DInstaller::Storage::Manager do
     allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
     allow(DInstaller::DBus::Clients::QuestionsManager).to receive(:new)
       .and_return(questions_manager)
+    allow(DInstaller::DBus::Clients::Software).to receive(:new)
+      .and_return(software)
     allow(Bootloader::FinishClient).to receive(:new)
       .and_return(bootloader_finish)
     allow(DInstaller::Security).to receive(:new).and_return(security)
@@ -44,6 +46,9 @@ describe DInstaller::Storage::Manager do
 
   let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
   let(:questions_manager) { instance_double(DInstaller::DBus::Clients::QuestionsManager) }
+  let(:software) do
+    instance_double(DInstaller::DBus::Clients::Software, selected_product: "ALP")
+  end
   let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
   let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
 
@@ -62,6 +67,7 @@ describe DInstaller::Storage::Manager do
     let(:disk2) { instance_double(Y2Storage::Disk, name: "/dev/vdb") }
 
     it "probes the storage devices and calculates a proposal" do
+      expect(config).to receive(:pick_product).with("ALP")
       expect(y2storage_manager).to receive(:activate) do |callbacks|
         expect(callbacks).to be_a(DInstaller::Storage::Callbacks::Activate)
       end

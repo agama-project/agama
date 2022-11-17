@@ -24,7 +24,7 @@ require "dinstaller/manager"
 require "dinstaller/config"
 require "dinstaller/question"
 require "dinstaller/dbus/service_status"
-require "dinstaller/dbus/clients/questions_manager"
+require "dinstaller/questions_manager"
 
 describe DInstaller::Manager do
   subject { described_class.new(config, logger) }
@@ -39,7 +39,7 @@ describe DInstaller::Manager do
     instance_double(
       DInstaller::DBus::Clients::Software,
       probe: nil, install: nil, propose: nil, finish: nil, on_product_selected: nil,
-      on_service_status_change: nil
+      on_service_status_change: nil, selected_product: product
     )
   end
   let(:users) do
@@ -57,6 +57,8 @@ describe DInstaller::Manager do
     )
   end
   let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
+
+  let(:product) { nil }
 
   before do
     allow(DInstaller::Network).to receive(:new).and_return(network)
@@ -77,12 +79,19 @@ describe DInstaller::Manager do
       expect(subject.installation_phase.startup?).to eq(true)
     end
 
-    context "when only one product is defined" do
-      let(:config_path) do
-        File.join(FIXTURES_PATH, "d-installer-single.yaml")
-      end
+    context "when there is no selected product" do
+      let(:product) { nil }
 
-      it "adjusts the configuration and runs the config phase" do
+      it "does not run the config phase" do
+        expect(subject).to_not receive(:config_phase)
+        subject.startup_phase
+      end
+    end
+
+    context "when there is a selected product" do
+      let(:product) { "Tumbleweed" }
+
+      it "runs the config phase" do
         expect(subject).to receive(:config_phase)
         subject.startup_phase
       end
@@ -155,19 +164,6 @@ describe DInstaller::Manager do
 
       expect(logger).to receive(:info).with(/change status/)
       service_status_recorder.save("org.opensuse.DInstaller.Test", busy)
-    end
-  end
-
-  describe "#select_product" do
-    it "configures the given product as selected product" do
-      subject.select_product("Leap")
-      expect(config.data["software"]["base_product"]).to eq("Leap")
-      expect(config.pure_data["software"]).to be_nil
-    end
-
-    it "runs the config phase" do
-      expect(subject).to receive(:config_phase)
-      subject.select_product("Leap")
     end
   end
 
