@@ -25,8 +25,8 @@ import { useInstallerClient } from "./context/installer";
 import { NetworkEventTypes } from "./client/network";
 
 import Popup from "./Popup";
-import NetworksList from "./NetworksList";
-import HiddenNetworkForm from "./HiddenNetworkForm";
+import WifiNetworksList from "./WifiNetworksList";
+import WifiHiddenNetworkForm from "./WifiHiddenNetworkForm";
 
 const networksFromValues = (networks) => Object.values(networks).flat();
 const baseHiddenNetwork = { ssid: undefined, hidden: true };
@@ -133,7 +133,7 @@ function WifiSelector({ isOpen = false, onClose }) {
 
   return (
     <Popup isOpen={isOpen} height="large" title="Connect to a Wi-Fi network">
-      <NetworksList
+      <WifiNetworksList
         networks={networksFromValues(networks)}
         activeNetwork={activeNetwork}
         selectedNetwork={selectedNetwork}
@@ -146,7 +146,7 @@ function WifiSelector({ isOpen = false, onClose }) {
         }}
         onCancelSelectionCallback={() => switchSelectedNetwork(activeNetwork) }
       />
-      <HiddenNetworkForm
+      <WifiHiddenNetworkForm
         network={selectedNetwork}
         visible={showHiddenForm}
         beforeDisplaying={() => switchSelectedNetwork(baseHiddenNetwork)}

@@ -21,6 +21,8 @@
 
 import React from "react";
 
+import WifiNetworkListItem from "./WifiNetworkListItem";
+
 /**
  * Component for displaying a list of available Wi-Fi networks
  *
@@ -31,15 +33,13 @@ import React from "react";
  * @param {function} props.onSelectionCallback - the function to trigger when user selects a network
  * @param {function} props.onCancelCallback - the function to trigger when user cancel dismiss before connecting to a network
  */
-import NetworkListItem from "./NetworkListItem";
-
-function NetworksList({ networks = [], activeNetwork, selectedNetwork, onSelectionCallback, onCancelSelectionCallback }) {
+function WifiNetworksList({ networks = [], activeNetwork, selectedNetwork, onSelectionCallback, onCancelSelectionCallback }) {
   return networks.map(n => {
     const isSelected = n.ssid === selectedNetwork?.ssid;
     const isActive = !selectedNetwork && n.ssid === activeNetwork?.ssid;
 
     return (
-      <NetworkListItem
+      <WifiNetworkListItem
         key={n.ssid}
         network={n}
         isSelected={isSelected}
@@ -53,4 +53,4 @@ function NetworksList({ networks = [], activeNetwork, selectedNetwork, onSelecti
   });
 }
 
-export default NetworksList;
+export default WifiNetworksList;

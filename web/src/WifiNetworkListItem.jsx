@@ -72,7 +72,7 @@ const isStateChanging = (network) => {
  * @param {function} props.onSelect - function to execute when the network is selected
  * @param {function} props.onCancel - function to execute when the selection is cancelled
  */
-function NetworkListItem ({ network, isSelected, isActive, onSelect, onCancel }) {
+function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCancel }) {
   // Do not wait until receive the next D-Bus network event to have the connection object available
   // and display the spinner as soon as possible. I.e., renders it inmmediately when the user clicks
   // on an already configured network.
@@ -134,4 +134,4 @@ function NetworkListItem ({ network, isSelected, isActive, onSelect, onCancel })
   );
 }
 
-export default NetworkListItem;
+export default WifiNetworkListItem;
