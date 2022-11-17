@@ -20,8 +20,8 @@
  */
 
 import React from "react";
-import { screen, waitFor } from "@testing-library/react";
-import { installerRender } from "./test-utils";
+import { screen } from "@testing-library/react";
+import { plainRender } from "./test-utils";
 import ConnectionsDataList from "./ConnectionsDataList";
 import { ConnectionTypes } from "./client/network";
 
@@ -40,28 +40,34 @@ const wiFiConnection = {
   addresses: [{ address: "192.168.69.200", prefix: 24 }]
 };
 
-let conns = [];
+const conns = [wiredConnection, wiFiConnection];
 
 describe("ConnectionsDataList", () => {
   describe("when no connections are given", () => {
-    it("renders nothing", async () => {
-      const { container } = installerRender(<ConnectionsDataList conns={conns} />, { usingLayout: false });
-      await waitFor(() => expect(container).toBeEmptyDOMElement());
+    it("renders nothing", () => {
+      const { container } = plainRender(<ConnectionsDataList conns={[]} />, { usingLayout: false });
+      expect(container).toBeEmptyDOMElement();
     });
   });
 
   describe("when a list of connections are given", () => {
-    beforeEach(() => {
-      conns = [wiredConnection, wiFiConnection];
+    it("renders a list with the name and the IPv4 addresses of each connection", () => {
+      plainRender(<ConnectionsDataList conns={conns} />, { usingLayout: false });
+
+      screen.getByText("Wired 1");
+      screen.getByText("WiFi 1");
+      screen.getByText("192.168.122.20/24");
+      screen.getByText("192.168.69.200/24");
     });
+  });
 
-    it("renders a list with the name and the IPv4 addresses of each connection", async () => {
-      installerRender(<ConnectionsDataList conns={conns} />, { usingLayout: false });
-
-      await screen.findByText("Wired 1");
-      await screen.findByText("WiFi 1");
-      await screen.findByText("192.168.122.20/24");
-      await screen.findByText("192.168.69.200/24");
+  describe("when the user clicks on a connection", () => {
+    it("calls the onSelect function", async () => {
+      const onSelect = jest.fn();
+      const { user } = plainRender(<ConnectionsDataList conns={conns} onSelect={onSelect} />, { usingLayout: false });
+      const connection = screen.getByRole("button", { name: "WiFi 1" });
+      await user.click(connection);
+      expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ id: "wifi-1" }));
     });
   });
 });
