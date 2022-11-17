@@ -22,89 +22,39 @@
 // @ts-check
 
 import { NetworkManagerAdapter } from "./network_manager";
+import { ConnectionTypes, ConnectionState } from "./model";
+
+/**
+ * @typedef {import("./model").Connection} Connection
+ * @typedef {import("./model").ActiveConnection} ActiveConnection
+ * @typedef {import("./model").IPAddress} IPAddress
+ * @typedef {import("./model").AccessPoint} AccessPoint
+ */
 
 const NetworkEventTypes = Object.freeze({
   ACTIVE_CONNECTION_ADDED: "active_connection_added",
   ACTIVE_CONNECTION_UPDATED: "active_connection_updated",
-  ACTIVE_CONNECTION_REMOVED: "active_connection_removed"
+  ACTIVE_CONNECTION_REMOVED: "active_connection_removed",
+  CONNECTION_ADDED: "connection_added",
+  CONNECTION_UPDATED: "connection_updated",
+  CONNECTION_REMOVED: "connection_removed"
 });
-
-/**
- * Enum for the active connection state values
- *
- * @readonly
- * @enum { number }
- * https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMActiveConnectionState
- */
-const ConnectionState = Object.freeze({
-  UNKWOWN: 0,
-  ACTIVATING: 1,
-  ACTIVATED: 2,
-  DEACTIVATING: 3,
-  DEACTIVATED: 4
-});
-
-const ConnectionTypes = Object.freeze({
-  ETHERNET: "802-3-ethernet",
-  WIFI: "802-11-wireless"
-});
-
-/**
- * @typedef {object} IPAddress
- * @property {string} address - like "129.168.1.2"
- * @property {string} prefix - like "16"
- */
-
-/**
- * @typedef {object} ActiveConnection
- * @property {string} id
- * @property {string} name
- * @property {string} type
- * @property {number} state
- * @property {IPAddress[]} addresses
- */
-
-/**
- * @typedef {object} Connection
- * @property {string} id
- * @property {string} name
- * @property {IPv4} ipv4
- */
-
-/**
- * @typedef {object} IPv4
- * @property {string} method
- * @property {IPAddress[]} addresses
- * @property {string[]} nameServers
- * @property {IPAddress} gateway
- */
-
-/** @typedef {(conns: ActiveConnection[]) => void} ConnectionFn */
-/** @typedef {(conns: string[]) => void} ConnectionPathsFn */
-
-/**
- * @typedef {object} Handlers
- * @property {ConnectionFn[]} connectionAdded
- * @property {ConnectionFn[]} connectionRemoved
- * @property {ConnectionFn[]} connectionUpdated
- */
 
 /**
  * @typedef {object} NetworkAdapter
- * @property {() => Promise<ActiveConnection[]>} activeConnections
+ * @property {() => ActiveConnection[]} activeConnections
+ * @property {() => AccessPoint[]} accessPoints
+ * @property {() => Promise<Connection[]>} connections
  * @property {(handler: (event: NetworkEvent) => void) => void} subscribe
  * @property {(id: string) => Promise<Connection>} getConnection
+ * @property {(ssid: string, options: object) => boolean} addAndConnectTo
+ * @property {(connection: Connection) => boolean} connectTo
+ * @property {(connection: Connection) => Promise<any>} addConnection
  * @property {(connection: Connection) => Promise<any>} updateConnection
- * @property {() => Promise<string>} hostname
+ * @property {(connection: Connection) => void} deleteConnection
+ * @property {() => string} hostname
+ * @property {() => void} setUp
  */
-
-/**
- * Returns given IP address in the X.X.X.X/YY format
- *
- * @param {IPAddress} addr
- * @return {string}
- */
-const formatIp = addr => `${addr.address}/${addr.prefix}`;
 
 /**
  * Network event
@@ -112,6 +62,12 @@ const formatIp = addr => `${addr.address}/${addr.prefix}`;
  * @typedef {object} NetworkEvent
  * @property {string} type
  * @property {object} payload
+ */
+
+/**
+ * Network event handler
+ *
+ * @typedef {(event: NetworkEvent) => void} NetworkEventFn
  */
 
 /**
@@ -126,83 +82,88 @@ o  *   NetworkManagerAdapter.
     this.adapter = adapter || new NetworkManagerAdapter();
     /** @type {!boolean} */
     this.subscribed = false;
-    /** @type {Handlers} */
-    this.handlers = {
-      connectionAdded: [],
-      connectionRemoved: [],
-      connectionUpdated: []
-    };
+    this.setUpDone = false;
+    /** @type {NetworkEventFn[]} */
+    this.handlers = [];
   }
 
   /**
-   * Returns IP config overview - addresses, connections and hostname
-   * @return {Promise<{addresses: IPAddress[], hostname: string, connections: ActiveConnection[]}>}
-   */
-  async config() {
-    return {
-      connections: await this.adapter.activeConnections(),
-      addresses: await this.addresses(),
-      hostname: await this.adapter.hostname()
-    };
-  }
-
-  /**
-   * Registers a callback to run when a given event happens
+   * Adds a callback to run when a network event happens (a connection is added,
+   * updated, removed, etc.).
    *
-   * @param {"connectionAdded" | "connectionUpdated" | "connectionRemoved"} eventType - event type
-   * @param {ConnectionFn} handler - the callback to be executed
-   * @return {function} a function to remove the callback
+   * @param {NetworkEventFn} handler - Callback function
+   * @return {() => void} Function to remove the handler
    */
-  listen(eventType, handler) {
-    if (!this.subscribed) {
-      // FIXME: when/where should we unsubscribe?
-      this.subscribe();
-    }
-
-    this.handlers[eventType].push(handler);
+  onNetworkEvent(handler) {
+    this.handlers.push(handler);
     return () => {
-      this.handlers[eventType].filter(h => h !== handler);
+      const position = this.handlers.indexOf(handler);
+      if (position > -1) this.handlers.splice(position, 1);
     };
   }
 
   /**
-   * FIXME: improve this documentation
-   * Starts listening changes on active connections
-   *
-   * @private
-   * @return {Promise<any>} function to disable the callback
+   * Set up the client
    */
-  async subscribe() {
-    // TODO: refactor this method
-    this.subscribed = true;
+  async setUp() {
+    if (this.setUpDone) return;
 
-    this.adapter.subscribe(({ type, payload }) => {
-      switch (type) {
-        case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
-          this.handlers.connectionAdded.forEach(handler => handler(payload));
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_UPDATED: {
-          this.handlers.connectionUpdated.forEach(handler => handler(payload));
-          break;
-        }
-
-        case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
-          this.handlers.connectionRemoved.forEach(handler => handler(payload.path));
-          break;
-        }
-      }
-    });
+    return this.adapter.setUp(e => this.handlers.forEach(f => f(e)));
   }
 
   /**
    * Returns the active connections
    *
-   * @returns {Promise<ActiveConnection[]>}
+   * @return {ActiveConnection[]}
    */
-  async activeConnections() {
+  activeConnections() {
     return this.adapter.activeConnections();
+  }
+
+  /**
+   * Returns the connection settings
+   *
+   * @return {Promise<Connection[]>}
+   */
+  connections() {
+    return this.adapter.connections();
+  }
+
+  /**
+   * Returns the list of available wireless access points (AP)
+   *
+   * @return {AccessPoint[]}
+   */
+  accessPoints() {
+    return this.adapter.accessPoints();
+  }
+
+  /**
+   * Connects to given Wireless network
+   *
+   * @param {Connection} connection - connection to be activated
+   */
+  async connectTo(connection) {
+    return this.adapter.connectTo(connection);
+  }
+
+  /**
+   * Add the connection for the given Wireless network and activate it
+   *
+   * @param {string} ssid - Network id
+   * @param {object} options - connection options
+   */
+  async addAndConnectTo(ssid, options) {
+    return this.adapter.addAndConnectTo(ssid, options);
+  }
+
+  /**
+   * Adds a new connection
+   *
+   * @param {Connection} connection - Connection to add
+   */
+  async addConnection(connection) {
+    return this.adapter.addConnection(connection);
   }
 
   /**
@@ -226,6 +187,17 @@ o  *   NetworkManagerAdapter.
     return this.adapter.updateConnection(connection);
   }
 
+  /**
+   * Deletes the connection
+   *
+   * It uses the 'path' to match the connection in the backend.
+   *
+   * @param {Connection} connection - Connection to delete
+   */
+  async deleteConnection(connection) {
+    return this.adapter.deleteConnection(connection);
+  }
+
   /*
    * Returns list of IP addresses for all active NM connections
    *
@@ -233,12 +205,21 @@ o  *   NetworkManagerAdapter.
    * @private
    * @return {Promise<IPAddress[]>}
    */
-  async addresses() {
-    const conns = await this.adapter.activeConnections();
+  addresses() {
+    const conns = this.adapter.activeConnections();
     return conns.flatMap(c => c.addresses);
+  }
+
+  /**
+   * Returns the computer's hostname
+   *
+   * @return {string}
+   */
+  hostname() {
+    return this.adapter.hostname();
   }
 }
 
 export {
-  ConnectionState, ConnectionTypes, formatIp, NetworkClient, NetworkManagerAdapter, NetworkEventTypes
+  ConnectionState, ConnectionTypes, NetworkClient, NetworkManagerAdapter, NetworkEventTypes
 };

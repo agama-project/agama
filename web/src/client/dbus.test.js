@@ -30,6 +30,7 @@ const proxyObject = {
 
 const cockpitDBusClient = {
   proxy: jest.fn().mockReturnValue(proxyObject),
+  proxies: jest.fn().mockReturnValue(proxyObject),
   call: jest.fn().mockReturnValue(true)
 };
 
@@ -49,6 +50,17 @@ describe("DBusClient", () => {
         { watch: true }
       );
       expect(proxy).toBe(proxyObject);
+    });
+  });
+
+  describe("#proxies", () => {
+    it("returns a DBusProxies for the given iface and namespace", async () => {
+      const iface = "org.freedesktop.NetworkManager.Device";
+      const path = "/org/freedesktop/NetworkManager/Device";
+      const client = new DBusClient("org.opensuse.DInstaller");
+      const proxies = await client.proxies(iface, path);
+      expect(cockpitDBusClient.proxies).toHaveBeenCalledWith(iface, path, { watch: true });
+      expect(proxies).toBe(proxyObject);
     });
   });
 

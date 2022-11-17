@@ -19,26 +19,28 @@
  * find current contact information at www.suse.com.
  */
 
-import { classNames, partition } from "./utils";
+import React, { useState } from "react";
+import { Dropdown, DropdownToggle } from "@patternfly/react-core";
+import { EOS_MORE_VERT as MenuIcon } from "eos-icons-react";
 
-describe("partition", () => {
-  it("returns two groups of elements that do and do not satisfy provided filter", () => {
-    const numbers = [1, 2, 3, 4, 5, 6];
-    const [odd, even] = partition(numbers, number => number % 2);
+export default function KebabMenu({ items, position = "right", id = Date.now(), ...props }) {
+  const [isOpen, setIsOpen] = useState(false);
 
-    expect(odd).toEqual([1, 3, 5]);
-    expect(even).toEqual([2, 4, 6]);
-  });
-});
+  const toggle = () => setIsOpen(!isOpen);
 
-describe("classNames", () => {
-  it("join given arguments, ignoring falsy values", () => {
-    expect(classNames(
-      "bg-yellow",
-      false && "h-24",
-      undefined,
-      null,
-      true && "w-24",
-    )).toEqual("bg-yellow w-24");
-  });
-});
+  return (
+    <Dropdown
+      onSelect={toggle}
+      toggle={
+        <DropdownToggle id={`${id}-toggler`} className="toggler" toggleIndicator={null} onToggle={toggle}>
+          <MenuIcon />
+        </DropdownToggle>
+      }
+      isPlain
+      isOpen={isOpen}
+      position={position}
+      {...props}
+      dropdownItems={items}
+    />
+  );
+}

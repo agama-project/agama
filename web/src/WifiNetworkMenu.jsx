@@ -19,30 +19,30 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-import IpSettingsForm from "./IpSettingsForm";
-import ConnectionsDataList from "./ConnectionsDataList";
+import React from "react";
+import { DropdownItem } from "@patternfly/react-core";
+import { EOS_DELETE as DeleteIcon } from "eos-icons-react";
+import KebabMenu from "./KebabMenu";
 import { useInstallerClient } from "./context/installer";
 
-/**
- * D-Installer component to show status of wireless network connections
- *
- * @todo evaluate if it should be "merged" into NetworkWiredStatus
- * @todo display link for setting up a WiFi connection when possible
- * @param {import ("client/network").ActiveConnection[]} connections
- */
-export default function NetworkWiFiStatus({ connections }) {
+export default function WifiNetworkMenu({ settings, position = "right" }) {
   const client = useInstallerClient();
-  const [connection, setConnection] = useState(null);
-
-  const selectConnection = ({ id }) => {
-    client.network.getConnection(id).then(setConnection);
-  };
 
   return (
-    <>
-      <ConnectionsDataList conns={connections} onSelect={selectConnection} />
-      { connection && <IpSettingsForm connection={connection} onClose={() => setConnection(null)} /> }
-    </>
+    <KebabMenu
+      id={`network-${settings.ssid}-menu`}
+      position={position}
+      className="wifi-network-menu"
+      items={[
+        <DropdownItem
+          key="forget-network"
+          onClick={() => client.network.deleteConnection(settings)}
+          icon={<DeleteIcon />}
+          className="danger-action"
+        >
+          Forget network
+        </DropdownItem>
+      ]}
+    />
   );
 }

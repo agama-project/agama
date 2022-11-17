@@ -35,7 +35,8 @@ import {
   EOS_WIFI as WifiIcon
 } from "eos-icons-react";
 
-import { ConnectionTypes, formatIp } from "./client/network";
+import { ConnectionTypes } from "./client/network";
+import { formatIp } from "./client/network/utils";
 
 export default function ConnectionsDataList({ conns, onSelect }) {
   if (conns.length === 0) return null;
@@ -58,7 +59,7 @@ export default function ConnectionsDataList({ conns, onSelect }) {
   };
 
   const renderConnectionId = (connection, onClick) => {
-    if (typeof onClick !== "function") return connection.id;
+    if (typeof onClick !== "function") return connection.name || connection.id;
 
     return (
       <Button variant="link" isInline onClick={() => onClick(connection)}>

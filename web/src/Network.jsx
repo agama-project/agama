@@ -20,50 +20,56 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Stack, StackItem } from "@patternfly/react-core";
+import { Button, Stack, StackItem } from "@patternfly/react-core";
 import { useInstallerClient } from "./context/installer";
-import { useCancellablePromise } from "./utils";
-import { ConnectionTypes } from "./client/network";
+import { ConnectionTypes, NetworkEventTypes } from "./client/network";
 import NetworkWiredStatus from "./NetworkWiredStatus";
 import NetworkWifiStatus from "./NetworkWifiStatus";
+import WifiSelector from "./WifiSelector";
 
 export default function Network() {
   const client = useInstallerClient();
-  const { cancellablePromise } = useCancellablePromise();
+  const [initialized, setInitialized] = useState(false);
   const [connections, setConnections] = useState([]);
+  const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
 
   useEffect(() => {
-    cancellablePromise(client.network.activeConnections()).then(setConnections);
-  }, [client.network, cancellablePromise]);
+    if (!initialized) return;
+
+    setConnections(client.network.activeConnections());
+  }, [client.network, initialized]);
 
   useEffect(() => {
-    const onConnectionAdded = addedConnection => {
-      setConnections(conns => [...conns, addedConnection]);
-    };
+    return client.network.onNetworkEvent(({ type, payload }) => {
+      switch (type) {
+        case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
+          setConnections(conns => {
+            const newConnections = conns.filter(c => c.id !== payload.id);
+            return [...newConnections, payload];
+          });
+          break;
+        }
 
-    return client.network.listen("connectionAdded", onConnectionAdded);
+        case NetworkEventTypes.ACTIVE_CONNECTION_UPDATED: {
+          setConnections(conns => {
+            const newConnections = conns.filter(c => c.id !== payload.id);
+            return [...newConnections, payload];
+          });
+          break;
+        }
+
+        case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
+          setConnections(conns => conns.filter(c => c.id !== payload.id));
+        }
+      }
+    });
+  });
+
+  useEffect(() => {
+    client.network.setUp().then(() => setInitialized(true));
   }, [client.network]);
 
-  useEffect(() => {
-    const onConnectionRemoved = id => {
-      setConnections(conns => conns.filter(c => c.id !== id));
-    };
-
-    return client.network.listen("connectionRemoved", onConnectionRemoved);
-  }, [client.network]);
-
-  useEffect(() => {
-    const onConnectionUpdated = connection => {
-      setConnections(conns => {
-        const newConnections = conns.filter(c => c.id !== connection.id);
-        return [...newConnections, connection];
-      });
-    };
-
-    return client.network.listen("connectionUpdated", onConnectionUpdated);
-  }, [client.network]);
-
-  if (!connections.length) return null;
+  if (!initialized) return null;
 
   const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
   const activeWifiConnections = connections.filter(c => c.type === ConnectionTypes.WIFI);
@@ -75,6 +81,10 @@ export default function Network() {
       </StackItem>
       <StackItem>
         <NetworkWifiStatus connections={activeWifiConnections} />
+      </StackItem>
+      <StackItem>
+        <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a Wi-Fi network</Button>
+        <WifiSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
       </StackItem>
     </Stack>
   );
