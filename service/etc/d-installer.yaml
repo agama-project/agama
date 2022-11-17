@@ -148,62 +148,51 @@ ALP:
 
   storage:
     volumes:
-    - mount_point: "/"
-      fs_type: btrfs
-      desired_size: 10 GiB
-      min_size: 5 GiB
-      max_size: unlimited
-      weight: 30
-
-      # There must always be a root
-      proposed_configurable: false
-
-      snapshots: true
-      snapshots_percentage: 250
-      snapshots_configurable: true
-      # Disable snapshots if there is not enough room
-      disable_order: 3
-
-      btrfs_default_subvolume: "@"
-      subvolumes:
-      - path: home
-      - path: opt
-      - path: root
-      - path: srv
-      - path: usr/local
-      - path: boot/writable
-      # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
-      - path: var
-        copy_on_write: false
-
-      # Architecture specific subvolumes
-      - path: boot/grub2/arm64-efi
-        archs: aarch64
-      - path: boot/grub2/arm-efi
-        archs: arm
-      - path: boot/grub2/i386-pc
-        archs: x86_64
-      - path: boot/grub2/powerpc-ieee1275
-        archs: ppc,!board_powernv
-      - path: boot/grub2/s390x-emu
-        archs: s390
-      - path: boot/grub2/x86_64-efi
-        archs: x86_64
-      - path: boot/grub2/riscv64-efi
-        archs: riscv64
-
-    - mount_point: "swap"
-      fs_type: swap
-      desired_size: 2 GiB
-      min_size: 1 GiB
-      max_size: 2 GiB
-      weight: 10
-
-      adjust_by_ram: false
-      adjust_by_ram_configurable: true
-
-      proposed_configurable: true
-      disable_order: 2
+      - mount_point: "/"
+        fs_type: btrfs
+        desired_size: 20 GiB
+        min_size: 5 GiB
+        max_size: 20 GiB
+        fs_types:
+          - btrfs
+        weight: 20
+        snapshots: true
+        snapshots_configurable: false
+        proposed_configurable: false
+        btrfs_default_subvolume: "@"
+        btrfs_read_only: true
+        subvolumes:
+        - path: root
+        - path: home
+        - path: opt
+        - path: srv
+        - path: root
+        - path: boot/writable
+        - path: usr/local
+        - path: boot/grub2/arm64-efi
+          archs: aarch64
+        - path: boot/grub2/i386-pc
+          archs: x86_64
+        - path: boot/grub2/powerpc-ieee1275
+          archs: ppc,!board_powernv
+        - path: boot/grub2/s390x-emu
+          archs: s390
+        - path: boot/grub2/x86_64-efi
+          archs: x86_64
+      - mount_point: "/var"
+        fs_type: btrfs
+        fs_types:
+          - btrfs
+        desired_size: 19 GiB
+        min_size: 5 GiB
+        max_size: unlimited
+        weight: 40
+        snapshots: false
+        snapshots_configurable: false
+        disable_order: 1
+        fallback_for_desired_size: "/"
+        fallback_for_max_size: "/"
+        fallback_for_weight: "/"
 Leap:
   software:
     installation_repositories:
