@@ -71,11 +71,23 @@ describe DInstaller::DBus::Clients::Software do
 
   describe "#selected_product" do
     before do
-      allow(software_iface).to receive(:[]).with("SelectedBaseProduct").and_return("Tumbleweed")
+      allow(software_iface).to receive(:[]).with("SelectedBaseProduct").and_return(product)
     end
 
-    it "returns the name of the selected product" do
-      expect(subject.selected_product).to eq("Tumbleweed")
+    context "when there is no selected product" do
+      let(:product) { "" }
+
+      it "returns nil" do
+        expect(subject.selected_product).to be_nil
+      end
+    end
+
+    context "when there is a selected product" do
+      let(:product) { "Tumbleweed" }
+
+      it "returns the name of the selected product" do
+        expect(subject.selected_product).to eq("Tumbleweed")
+      end
     end
   end
 

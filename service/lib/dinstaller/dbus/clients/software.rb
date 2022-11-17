@@ -60,9 +60,12 @@ module DInstaller
 
         # Product selected to install
         #
-        # @return [String] name of the product
+        # @return [String, nil] name of the product
         def selected_product
-          dbus_object["org.opensuse.DInstaller.Software1"]["SelectedBaseProduct"]
+          product = dbus_object["org.opensuse.DInstaller.Software1"]["SelectedBaseProduct"]
+          return nil if product.empty?
+
+          product
         end
 
         # Selects the product to install
