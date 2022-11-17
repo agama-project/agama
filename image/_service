@@ -6,6 +6,14 @@
     <param name="without-version">enable</param>
     <param name="filename">d-installer</param>
   </service>
+  <service mode="manual" name="download_url">
+    <param name="url">https://raw.githubusercontent.com/yast/d-installer/master/image/d-installer-live.kiwi</param>
+    <param name="filename">d-installer-live.kiwi</param>
+  </service>
+  <service mode="manual" name="download_url">
+    <param name="url">https://raw.githubusercontent.com/yast/d-installer/master/image/config.sh</param>
+    <param name="filename">config.sh</param>
+  </service>
   <service mode="buildtime" name="tar">
     <param name="obsinfo">d-installer.obsinfo</param>
     <param name="subdir">image/extrastuff/root</param>
@@ -15,15 +23,5 @@
     <param name="obsinfo">d-installer.obsinfo</param>
     <param name="subdir">image/extrastuff/etc</param>
     <param name="filename">etc</param>
-  </service>
-  <service mode="buildtime" name="tar">
-    <param name="obsinfo">d-installer.obsinfo</param>
-    <param name="subdir">image</param>
-    <param name="filename">image</param>
-  </service>
-  <service mode="buildtime" name="extract_file">
-    <param name="archive">image.tar</param>
-    <param name="file">image/d-installer-live.kiwi</param>
-    <param name="file">image/config.sh</param>
   </service>
 </services>
