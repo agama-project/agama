@@ -29,6 +29,7 @@ import {
   SplitItem,
 } from "@patternfly/react-core";
 
+import { classNames } from "./utils";
 import Center from "./Center";
 import WifiConnectionForm from "./WifiConnectionForm";
 
@@ -44,11 +45,11 @@ import WifiConnectionForm from "./WifiConnectionForm";
 function HiddenNetworkForm({ network, visible, beforeDisplaying, beforeHiding, onSubmitCallback }) {
   return (
     <>
-      <Card className={[
+      <Card className={classNames(
         "selection-list-item",
         visible && "selection-list-focused-item",
         !visible && "collapsed"
-      ].join(" ")}
+      )}
       >
         <CardBody>
           <Split hasGutter className="content">

@@ -36,6 +36,7 @@ import {
   EOS_SIGNAL_CELLULAR_ALT as SignalIcon
 } from "eos-icons-react";
 
+import { classNames } from "./utils";
 import { ConnectionState } from "./client/network/model";
 
 import Center from "./Center";
@@ -81,11 +82,11 @@ function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCance
   return (
     <Card
       key={network.ssid}
-      className={[
+      className={classNames(
         "selection-list-item",
         (isSelected || isActive) && "selection-list-checked-item",
         isSelected && !network.settings && "selection-list-focused-item"
-      ].join(" ")}
+      )}
     >
       <CardBody>
         <Split hasGutter className="header">

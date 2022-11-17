@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { partition } from "./utils";
+import { classNames, partition } from "./utils";
 
 describe("partition", () => {
   it("returns two groups of elements that do and do not satisfy provided filter", () => {
@@ -28,5 +28,17 @@ describe("partition", () => {
 
     expect(odd).toEqual([1, 3, 5]);
     expect(even).toEqual([2, 4, 6]);
+  });
+});
+
+describe("classNames", () => {
+  it("join given arguments, ignoring falsy values", () => {
+    expect(classNames(
+      "bg-yellow",
+      false && "h-24",
+      undefined,
+      null,
+      true && "w-24",
+    )).toEqual("bg-yellow w-24");
   });
 });

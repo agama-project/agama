@@ -41,6 +41,22 @@ const partition = (collection, filter) => {
 };
 
 /**
+ * Simple utility function to help building className conditionally
+ *
+ * @example
+ * // returns "bg-yellow w-24"
+ * classNames("bg-yellow", true && "w-24", false && "h-24");
+ *
+ * @todo Use https://github.com/JedWatson/classnames instead?
+ *
+ * @param {...*} CSS classes to join
+ * @returns {String} CSS classes joined together after ignoring falsy values
+ */
+function classNames(...classes) {
+  return classes.filter((item) => !!item).join(' ');
+}
+
+/**
  * @typedef {Object} cancellableWrapper
  * @property {Promise} promise - Cancellable promise
  * @property {function} cancel - Function for canceling the promise
@@ -122,5 +138,6 @@ function useCancellablePromise() {
 
 export {
   partition,
+  classNames,
   useCancellablePromise,
 };
