@@ -50,6 +50,10 @@ module DInstaller
       !!root_user.password_content
     end
 
+    def root_ssh_key?
+      !root_ssh_key.empty?
+    end
+
     def assign_root_password(value, encrypted)
       pwd = if encrypted
         Y2Users::Password.create_encrypted(value)
@@ -109,7 +113,7 @@ module DInstaller
     #
     # @return [Array<ValidationError>] List of validation errors
     def validate
-      return [] if root_password? || first_user?
+      return [] if root_password? || root_ssh_key? || first_user?
 
       [
         ValidationError.new(
