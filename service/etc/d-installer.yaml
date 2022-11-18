@@ -1,6 +1,6 @@
 products:
   ALP:
-    name: Adaptable Linux Platform
+    name: SUSE Adaptable Linux Platform Host OS
     description: 'The Adaptable Linux Platform (ALP), the next generation of Linux,
       allow users to focus on their workloads while abstracting from the hardware
       and the application layer.'
