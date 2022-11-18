@@ -166,7 +166,6 @@ ALP:
         - path: home
         - path: opt
         - path: srv
-        - path: root
         - path: boot/writable
         - path: usr/local
         - path: boot/grub2/arm64-efi
@@ -179,20 +178,9 @@ ALP:
           archs: s390
         - path: boot/grub2/x86_64-efi
           archs: x86_64
-      - mount_point: "/var"
-        fs_type: btrfs
-        fs_types:
-          - btrfs
-        desired_size: 19 GiB
-        min_size: 5 GiB
-        max_size: unlimited
-        weight: 40
-        snapshots: false
-        snapshots_configurable: false
-        disable_order: 1
-        fallback_for_desired_size: "/"
-        fallback_for_max_size: "/"
-        fallback_for_weight: "/"
+        - path: var
+          copy_on_write: false
+
 Leap:
   software:
     installation_repositories:
