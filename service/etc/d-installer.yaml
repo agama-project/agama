@@ -279,7 +279,7 @@ Leap:
 Leap Micro:
   software:
     installation_repositories:
-      - https://download.opensuse.org/distribution/leap-micro/5.2/product/repo/Leap-Micro-5.2-x86_64-Media/
+      - https://download.opensuse.org/distribution/leap-micro/5.3/product/repo/Leap-Micro-5.3-x86_64-Media/
     mandatory_patterns:
       - microos-base
       - microos-hardware
