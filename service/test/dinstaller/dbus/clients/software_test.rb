@@ -134,6 +134,27 @@ describe DInstaller::DBus::Clients::Software do
     end
   end
 
+  describe "#package_installed?" do
+    let(:dbus_object) { double(::DBus::ProxyObject, IsPackageInstalled: installed?) }
+    let(:package) { "NetworkManager" }
+
+    context "when the package is installed" do
+      let(:installed?) { true }
+
+      it "returns true" do
+        expect(subject.package_installed?(package)).to eq(true)
+      end
+    end
+
+    context "when the package is installed" do
+      let(:installed?) { false }
+
+      it "returns false" do
+        expect(subject.package_installed?(package)).to eq(false)
+      end
+    end
+  end
+
   describe "#on_product_selected" do
     before do
       allow(dbus_object).to receive(:path).and_return("/org/opensuse/DInstaller/Test")

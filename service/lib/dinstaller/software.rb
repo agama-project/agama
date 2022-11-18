@@ -26,6 +26,7 @@ require "dinstaller/config"
 require "dinstaller/with_progress"
 require "y2packager/product"
 
+Yast.import "Package"
 Yast.import "PackageInstallation"
 Yast.import "Pkg"
 Yast.import "Stage"
@@ -147,6 +148,14 @@ module DInstaller
     # @return [Boolean] true if it is provided; false otherwise
     def provision_selected?(tag)
       Yast::Pkg.IsSelected(tag) || Yast::Pkg.IsProvided(tag)
+    end
+
+    # Determines whether a package is installed
+    #
+    # @param name [String] Package name
+    # @return [Boolean] true if it is installed; false otherwise
+    def package_installed?(name)
+      Yast::Package.Installed(name, target: :system)
     end
 
   private

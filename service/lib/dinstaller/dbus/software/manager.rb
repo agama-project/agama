@@ -74,6 +74,10 @@ module DInstaller
             [provisions.map { |p| backend.provision_selected?(p) }]
           end
 
+          dbus_method :IsPackageInstalled, "in Name:s, out Result:b" do |name|
+            backend.package_installed?(name)
+          end
+
           dbus_method(:Probe) { probe }
           dbus_method(:Propose) { propose }
           dbus_method(:Install) { install }

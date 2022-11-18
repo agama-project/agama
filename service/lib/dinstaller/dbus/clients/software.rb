@@ -118,6 +118,13 @@ module DInstaller
           dbus_object.ProvisionsSelected(tags)
         end
 
+        # Determines whether a package with the given name is installed
+        #
+        # @param name [String] Package name
+        def package_installed?(name)
+          dbus_object.IsPackageInstalled(name)
+        end
+
         # Add the given list of resolvables to the packages proposal
         #
         # @param unique_id [String] Unique identifier for the resolvables list
