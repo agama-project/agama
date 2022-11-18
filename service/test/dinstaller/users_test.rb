@@ -181,7 +181,17 @@ describe DInstaller::Users do
         end
       end
 
-      context "when neither a first user is defined nor the root password is set" do
+      context "when a root SSH key is set" do
+        before do
+          subject.root_ssh_key = "ssh-rsa ..."
+        end
+
+        it "returns an empty list" do
+          expect(subject.validate).to be_empty
+        end
+      end
+
+      context "when neither a first user is defined nor the root password/SSH key is set" do
         it "returns the problem" do
           error = subject.validate.first
           expect(error.message).to match(/Defining a user/)
