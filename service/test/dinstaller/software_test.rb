@@ -152,11 +152,11 @@ describe DInstaller::Software do
     let(:commit_result) { [250, [], [], [], []] }
 
     before do
-      allow(Yast::PackageInstallation).to receive(:Commit).and_return(commit_result)
+      allow(Yast::Pkg).to receive(:Commit).and_return(commit_result)
     end
 
     it "installs the packages" do
-      expect(Yast::PackageInstallation).to receive(:Commit).with({})
+      expect(Yast::Pkg).to receive(:Commit).with({})
         .and_return(commit_result)
       subject.install
     end

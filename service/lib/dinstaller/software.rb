@@ -27,7 +27,7 @@ require "dinstaller/with_progress"
 require "y2packager/product"
 
 Yast.import "Package"
-Yast.import "PackageInstallation"
+Yast.import "Packages"
 Yast.import "Pkg"
 Yast.import "Stage"
 
@@ -120,7 +120,7 @@ module DInstaller
       PackageCallbacks.setup(count_packages, progress)
 
       # TODO: error handling
-      commit_result = Yast::PackageInstallation.Commit({})
+      commit_result = Yast::Pkg.Commit({})
 
       if commit_result.nil? || commit_result.empty?
         logger.error("Commit failed")
