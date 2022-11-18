@@ -35,8 +35,8 @@ import {
   EOS_WIFI as WifiIcon
 } from "eos-icons-react";
 
-import { ConnectionTypes } from "./client/network";
-import { formatIp } from "./client/network/utils";
+import { ConnectionTypes } from "@client/network";
+import { formatIp } from "@client/network/utils";
 
 export default function ConnectionsDataList({ conns, onSelect }) {
   if (conns.length === 0) return null;

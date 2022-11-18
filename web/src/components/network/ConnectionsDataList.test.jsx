@@ -21,11 +21,11 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "./test-utils";
-import ConnectionsDataList from "./ConnectionsDataList";
-import { ConnectionTypes } from "./client/network";
+import { plainRender } from "@/test-utils";
+import ConnectionsDataList from "@components/network/ConnectionsDataList";
+import { ConnectionTypes } from "@client/network";
 
-jest.mock("./client");
+jest.mock("@client");
 
 const wiredConnection = {
   id: "wired-1",
