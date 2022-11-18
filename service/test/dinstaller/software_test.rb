@@ -203,4 +203,29 @@ describe DInstaller::Software do
       expect(File).to exist(File.join(repos_dir, "example.repo"))
     end
   end
+
+  describe "#package_installed?" do
+    before do
+      allow(Yast::Package).to receive(:Installed).with(package, target: :system)
+        .and_return(installed?)
+    end
+
+    let(:package) { "NetworkManager" }
+
+    context "when the package is installed" do
+      let(:installed?) { true }
+
+      it "returns true" do
+        expect(subject.package_installed?(package)).to eq(true)
+      end
+    end
+
+    context "when the package is not installed" do
+      let(:installed?) { false }
+
+      it "returns false" do
+        expect(subject.package_installed?(package)).to eq(false)
+      end
+    end
+  end
 end

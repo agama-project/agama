@@ -18,6 +18,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "dinstaller/dbus/clients/software"
 
 # :nodoc:
 module Yast
@@ -27,6 +28,7 @@ module Yast
   class PackageClass < Module
     def main
       puts "Loading mocked module #{__FILE__}"
+      @client = DInstaller::DBus::Clients::Software.new
     end
 
     # Determines whether the package is available
@@ -41,9 +43,13 @@ module Yast
     #
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/packages/src/modules/Package.rb#L121
     # @todo Perform a real D-Bus call.
-    def Installed(_package_name, target: nil)
-      false
+    def Installed(package_name, target: nil)
+      client.package_installed?(package_name)
     end
+
+  private
+
+    attr_reader :client
   end
 
   Package = PackageClass.new
