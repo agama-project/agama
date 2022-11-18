@@ -1,9 +1,30 @@
 -------------------------------------------------------------------
+Fri Nov 18 16:27:43 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.5.0:
+  * Use D-Bus activation instead of explicit service starting
+    (gh#yast/d-installer#287).
+  * Load the configuration from /etc/d-installer.yaml
+    (gh#yast/d-installer#301).
+  * Move D-Bus configuration to /usr/share (gh#yast/d-installer#254).
+  * Extract questions and storage handling to separate services
+    (gh#yast/d-installer#248).
+  * Add a mechanism to report problems found in the configuration
+    (gh#yast/d-installer#299).
+  * Extend the D-Bus API for the storage proposal
+    (gh#yast/d-installer#268).
+  * Do not block after software installation if a package cannot
+    be installed (gh#yast/d-installer#322).
+  * Add support to install the Adaptable Linux Platform Host OS
+    (gh#yast/d-installer#265).
+  * Update Leap Micro to version 5.3 (gh#yast/d-installer#318).
+
+-------------------------------------------------------------------
 Thu Jul 28 08:20:21 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.4.2:
   * Prevent the installation from being blocked when the user
-    changes the language (gh#yast/yast-dinstaller#239 and
+    changes the language (gh#yast/d-installer#239 and
     gh#yast/yast-dinstaller#240).
   * Add a new service org.opensuse.DInstaller.Language to handle
     yast2-country related logic.

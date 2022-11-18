@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Fri Nov 18 16:27:26 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.5.0:
+  * Add support for basic network configuration, based on
+    NetworkManager (gh#yast/d-installer#260, gh#yast/d-installer#292).
+  * Improve the usability of the LUKS activation dialog
+    (gh#yast/d-installer#253).
+  * Prevent starting the installation with incomplete or wrong
+    configuration (gh#yast/d-installer#299).
+
+-------------------------------------------------------------------
 Thu Jul 28 08:17:06 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.4.2:

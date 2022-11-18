@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.email = "yast-devel@opensuse.org"
   spec.homepage = "https://github.com/yast/d-installer"
   spec.license = "GPL-2.0-only"
-  spec.files = Dir["lib/**/*.rb", "bin/*", "share/*", "etc/*", "[A-Z]*"]
+  spec.files = Dir["lib/**/*.rb", "bin/*", "share/*", "etc/*"]
   spec.executables << "dinstallerctl"
   spec.metadata = { "rubygems_mfa_required" => "true" }
 
