@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": "./",
     "isolatedModules": true,
     "noEmit": true,
     "target": "esnext",
@@ -7,6 +8,15 @@
     "allowJs": true,
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@/*": ["src/*"],
+      "@assets/*": ["src/assets/*"],
+      "@client": ["src/client/index.js"],
+      "@client/*": ["src/client/*"],
+      "@components/*": ["src/components/*"],
+      "@context/*": ["src/context/*"],
+      "@lib/*": ["src/lib/*"]
+    }
   },
   "include": [
     "src"

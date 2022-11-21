@@ -9,6 +9,7 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
 const CockpitPoPlugin = require("./src/lib/cockpit-po-plugin");
 const CockpitRsyncPlugin = require("./src/lib/cockpit-rsync-plugin");
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 /* A standard nodejs and webpack pattern */
 const production = process.env.NODE_ENV === 'production';
@@ -48,7 +49,7 @@ module.exports = {
   mode: production ? 'production' : 'development',
   resolve: {
     modules: ["node_modules", path.resolve(__dirname, 'src/lib')],
-    alias: { 'font-awesome': 'font-awesome-sass/assets/stylesheets' },
+    plugins: [new TsconfigPathsPlugin({ extensions: [".js", ".jsx", ".json"] })],
     extensions: ['', '.js', '.json', '.jsx']
   },
   resolveLoader: {
