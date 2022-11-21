@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "@/test-utils";
 
-import DBusError from "@components/layout/DBusError";
+import { DBusError } from "@components/layout";
 
 jest.mock("@components/network/TargetIpsPopup", () => () => "IP Mock");
 

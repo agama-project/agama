@@ -23,11 +23,11 @@ import React from "react";
 import { Button, Title, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
 
 import {
-  Title as PageTitle,
+  Center,
+  MainActions,
   PageIcon,
-  MainActions
-} from "@components/layout/Layout";
-import Center from "@components/layout/Center";
+  Title as PageTitle,
+} from "@components/layout";
 
 import {
   EOS_ANNOUNCEMENT as Icon,

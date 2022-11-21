@@ -26,9 +26,7 @@ import { useInstallerClient } from "@context/installer";
 import { STARTUP, INSTALL } from "@client/phase";
 import { BUSY } from "@client/status";
 
-import Layout, { Title, AdditionalInfo } from "@components/layout/Layout";
-import LoadingEnvironment from "@components/layout/LoadingEnvironment";
-import DBusError from "@components/layout/DBusError";
+import { Layout, Title, AdditionalInfo, LoadingEnvironment, DBusError } from "@components/layout";
 import About from "@components/core/About";
 import InstallationProgress from "@components/core/InstallationProgress";
 import InstallationFinished from "@components/core/InstallationFinished.jsx";

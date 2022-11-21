@@ -29,8 +29,7 @@ import {
   EmptyStateBody
 } from "@patternfly/react-core";
 
-import { Title as SectionTitle, PageIcon, MainActions } from "@components/layout/Layout";
-import Center from "@components/layout/Center";
+import { Center, Title as SectionTitle, PageIcon, MainActions } from "@components/layout";
 import { useInstallerClient } from "@context/installer";
 
 import {

@@ -39,7 +39,7 @@ import {
 import { classNames } from "@/utils";
 import { ConnectionState } from "@client/network/model";
 
-import Center from "@components/layout/Center";
+import { Center } from "@components/layout";
 import WifiNetworkMenu from "./WifiNetworkMenu";
 import WifiConnectionForm from "./WifiConnectionForm";
 

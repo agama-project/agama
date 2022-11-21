@@ -23,7 +23,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInstallerClient } from "@context/installer";
 import { useSoftware } from "@context/software";
-import LoadingEnvironment from "@components/layout/LoadingEnvironment";
+import { LoadingEnvironment } from "@components/layout";
 
 import {
   Button,

@@ -25,7 +25,7 @@ import { useSoftware } from "@context/software";
 
 import { Button, Flex, FlexItem } from "@patternfly/react-core";
 
-import { Title, PageIcon, PageActions, MainActions } from "@components/layout/Layout";
+import { Title, PageIcon, PageActions, MainActions } from "@components/layout";
 import Category from "@components/core/Category";
 import LanguageSelector from "@components/language/LanguageSelector";
 import Storage from "@components/storage/Storage";

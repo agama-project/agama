@@ -30,7 +30,7 @@ import {
 } from "@patternfly/react-core";
 
 import { classNames } from "@/utils";
-import Center from "@components/layout/Center";
+import { Center } from "@components/layout";
 import WifiConnectionForm from "./WifiConnectionForm";
 
 /**

@@ -19,24 +19,9 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Title, EmptyState, EmptyStateIcon } from "@patternfly/react-core";
-
-import { Center } from "@components/layout";
-
-import { EOS_THREE_DOTS_LOADING_ANIMATED as LoadingIcon } from "eos-icons-react";
-
-function LoadingEnvironment({ text = "Loading installation environment, please wait." }) {
-  return (
-    <Center>
-      <EmptyState>
-        <EmptyStateIcon icon={LoadingIcon} />
-        <Title headingLevel="h4" size="lg">
-          { text }
-        </Title>
-      </EmptyState>
-    </Center>
-  );
-}
-
-export default LoadingEnvironment;
+export * from "./Layout";
+export { default } from "./Layout";
+export { default as Layout } from "./Layout";
+export { default as Center } from "./Center";
+export { default as DBusError } from "./DBusError";
+export { default as LoadingEnvironment } from "./LoadingEnvironment";
