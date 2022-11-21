@@ -30,7 +30,7 @@ import Category from "@components/core/Category";
 import LanguageSelector from "@components/language/LanguageSelector";
 import Storage from "@components/storage/Storage";
 import Users from "@components/users/Users";
-import Network from "@components/network/Network";
+import Network from "@components/network";
 import InstallButton from "@components/core/InstallButton";
 
 import {

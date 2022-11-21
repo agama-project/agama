@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import WifiNetworkListItem from "./WifiNetworkListItem";
+import { WifiNetworkListItem } from "@components/network";
 
 /**
  * Component for displaying a list of available Wi-Fi networks

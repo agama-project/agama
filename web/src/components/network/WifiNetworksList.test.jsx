@@ -24,7 +24,7 @@ import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
 
-import WifiNetworksList from "./WifiNetworksList";
+import { WifiNetworksList } from "@components/network";
 
 const onSelectionCallback = jest.fn();
 

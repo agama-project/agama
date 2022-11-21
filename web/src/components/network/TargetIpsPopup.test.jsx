@@ -25,7 +25,7 @@ import { act, screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
 import { createClient } from "@client";
 
-import TargetIpsPopup from "@components/network/TargetIpsPopup";
+import { TargetIpsPopup } from "@components/network";
 
 jest.mock("@client");
 

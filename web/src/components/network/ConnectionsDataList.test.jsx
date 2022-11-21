@@ -22,8 +22,9 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "@/test-utils";
-import ConnectionsDataList from "@components/network/ConnectionsDataList";
+
 import { ConnectionTypes } from "@client/network";
+import ConnectionsDataList from "@components/network/ConnectionsDataList";
 
 jest.mock("@client");
 

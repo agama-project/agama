@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "@/test-utils";
 
-import WifiHiddenNetworkForm from "./WifiHiddenNetworkForm";
+import { WifiHiddenNetworkForm } from "@components/network";
 
 jest.mock("@components/network/WifiConnectionForm", () => () => "WifiConnectionForm mock");
 

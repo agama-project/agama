@@ -23,10 +23,8 @@ import React, { useEffect, useState } from "react";
 
 import { useInstallerClient } from "@context/installer";
 import { NetworkEventTypes } from "@client/network";
-
 import Popup from "@components/core/Popup";
-import WifiNetworksList from "./WifiNetworksList";
-import WifiHiddenNetworkForm from "./WifiHiddenNetworkForm";
+import { WifiNetworksList, WifiHiddenNetworkForm } from "@components/network";
 
 const networksFromValues = (networks) => Object.values(networks).flat();
 const baseHiddenNetwork = { ssid: undefined, hidden: true };

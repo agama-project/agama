@@ -30,7 +30,7 @@ import { Layout, Title, AdditionalInfo, LoadingEnvironment, DBusError } from "@c
 import About from "@components/core/About";
 import InstallationProgress from "@components/core/InstallationProgress";
 import InstallationFinished from "@components/core/InstallationFinished.jsx";
-import TargetIpsPopup from "@components/network/TargetIpsPopup";
+import { TargetIpsPopup } from "@components/network";
 
 function App() {
   const client = useInstallerClient();
