@@ -22,12 +22,12 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { installerRender } from "./test-utils";
-import { createClient } from "./client";
+import { installerRender } from "@/test-utils";
+import { createClient } from "@client";
 
 import InstallationFinished from "./InstallationFinished";
 
-jest.mock("./client");
+jest.mock("@client");
 
 const rebootSystemFn = jest.fn();
 

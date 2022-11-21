@@ -21,13 +21,13 @@
 
 import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
-import { installerRender } from "./test-utils";
-import Storage from "./Storage";
-import { createClient } from "./client";
-import { IDLE } from "./client/status";
+import { installerRender } from "@/test-utils";
+import Storage from "@components/storage/Storage";
+import { createClient } from "@client";
+import { IDLE } from "@client/status";
 
-jest.mock("./client");
-jest.mock("./InstallerSkeleton", () => () => "Loading storage");
+jest.mock("@client");
+jest.mock("@components/core/InstallerSkeleton", () => () => "Loading storage");
 
 let proposalSettings;
 let storageActions;

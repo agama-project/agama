@@ -20,11 +20,11 @@
  */
 
 import React, { useState } from "react";
-import IpSettingsForm from "./IpSettingsForm";
-import ConnectionsDataList from "./ConnectionsDataList";
-import { useInstallerClient } from "./context/installer";
+import IpSettingsForm from "@components/network/IpSettingsForm";
+import ConnectionsDataList from "@components/network/ConnectionsDataList";
+import { useInstallerClient } from "@context/installer";
 
-import { ConnectionState } from "./client/network";
+import { ConnectionState } from "@client/network";
 
 /**
  * D-Installer component to show status of wired network connections

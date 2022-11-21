@@ -36,10 +36,10 @@ import {
   EOS_SIGNAL_CELLULAR_ALT as SignalIcon
 } from "eos-icons-react";
 
-import { classNames } from "./utils";
-import { ConnectionState } from "./client/network/model";
+import { classNames } from "@/utils";
+import { ConnectionState } from "@client/network/model";
 
-import Center from "./Center";
+import Center from "@components/layout/Center";
 import WifiNetworkMenu from "./WifiNetworkMenu";
 import WifiConnectionForm from "./WifiConnectionForm";
 

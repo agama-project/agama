@@ -21,9 +21,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useInstallerClient } from "./context/installer";
-import { useSoftware } from "./context/software";
-import LoadingEnvironment from "./LoadingEnvironment";
+import { useInstallerClient } from "@context/installer";
+import { useSoftware } from "@context/software";
+import LoadingEnvironment from "@components/layout/LoadingEnvironment";
 
 import {
   Button,
@@ -36,7 +36,7 @@ import {
 
 import { EOS_PRODUCT_SUBSCRIPTIONS as Icon } from "eos-icons-react";
 
-import { Title, PageIcon, MainActions } from "./Layout";
+import { Title, PageIcon, MainActions } from "@components/layout/Layout";
 
 function ProductSelectionPage() {
   const client = useInstallerClient();

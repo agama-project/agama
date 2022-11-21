@@ -20,11 +20,11 @@
  */
 
 import React, { useState, useEffect, useCallback } from "react";
-import { useInstallerClient } from "./context/installer";
-import { useCancellablePromise } from "./utils";
+import { useInstallerClient } from "@context/installer";
+import { useCancellablePromise } from "@/utils";
 
-import GenericQuestion from "./GenericQuestion";
-import LuksActivationQuestion from "./LuksActivationQuestion";
+import GenericQuestion from "@components/core/GenericQuestion";
+import LuksActivationQuestion from "@components/storage/LuksActivationQuestion";
 
 const QUESTION_TYPES = {
   generic: GenericQuestion,

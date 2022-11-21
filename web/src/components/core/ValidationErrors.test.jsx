@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { plainRender } from "./test-utils";
+import { plainRender } from "@/test-utils";
 import ValidationErrors from "./ValidationErrors";
 
 describe("when there is a single error", () => {

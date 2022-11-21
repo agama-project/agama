@@ -20,8 +20,8 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { useCancellablePromise } from "./utils";
-import { useInstallerClient } from "./context/installer";
+import { useCancellablePromise } from "@/utils";
+import { useInstallerClient } from "@context/installer";
 
 import { Progress, Stack, StackItem, Text } from "@patternfly/react-core";
 

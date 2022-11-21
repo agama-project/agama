@@ -21,10 +21,10 @@
 
 import React, { useEffect, useState } from "react";
 
-import { useInstallerClient } from "./context/installer";
-import { NetworkEventTypes } from "./client/network";
+import { useInstallerClient } from "@context/installer";
+import { NetworkEventTypes } from "@client/network";
 
-import Popup from "./Popup";
+import Popup from "@components/core/Popup";
 import WifiNetworksList from "./WifiNetworksList";
 import WifiHiddenNetworkForm from "./WifiHiddenNetworkForm";
 

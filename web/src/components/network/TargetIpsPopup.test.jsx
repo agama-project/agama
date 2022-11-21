@@ -22,12 +22,12 @@
 import React from "react";
 
 import { act, screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "./test-utils";
-import { createClient } from "./client";
+import { installerRender } from "@/test-utils";
+import { createClient } from "@client";
 
-import TargetIpsPopup from "./TargetIpsPopup";
+import TargetIpsPopup from "@components/network/TargetIpsPopup";
 
-jest.mock("./client");
+jest.mock("@client");
 
 const addresses = [
   { address: "1.2.3.4", prefix: 24 },

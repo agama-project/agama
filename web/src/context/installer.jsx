@@ -28,7 +28,7 @@ const InstallerClientContext = React.createContext(undefined);
 /**
  * Returns the D-Bus installer client
  *
- * @return {import("../client").InstallerClient}
+ * @return {import("@client").InstallerClient}
  */
 function useInstallerClient() {
   const context = React.useContext(InstallerClientContext);

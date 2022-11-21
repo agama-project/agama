@@ -22,11 +22,11 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { plainRender } from "./test-utils";
+import { plainRender } from "@/test-utils";
 
 import WifiHiddenNetworkForm from "./WifiHiddenNetworkForm";
 
-jest.mock("./WifiConnectionForm", () => () => "WifiConnectionForm mock");
+jest.mock("@components/network/WifiConnectionForm", () => () => "WifiConnectionForm mock");
 
 describe("WifiHiddenNetworkForm", () => {
   describe("when it is visible", () => {

@@ -29,9 +29,9 @@ import {
   EmptyStateBody
 } from "@patternfly/react-core";
 
-import { Title as SectionTitle, PageIcon, MainActions } from "./Layout";
-import Center from "./Center";
-import { useInstallerClient } from "./context/installer";
+import { Title as SectionTitle, PageIcon, MainActions } from "@components/layout/Layout";
+import Center from "@components/layout/Center";
+import { useInstallerClient } from "@context/installer";
 
 import {
   EOS_TASK_ALT as InstallationFinishedIcon,

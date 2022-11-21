@@ -21,8 +21,8 @@
 
 import React from "react";
 
-import Center from "./Center";
-import { Title, PageIcon } from "./Layout";
+import Center from "@components/layout/Center";
+import { Title, PageIcon } from "@components/layout/Layout";
 import ProgressReport from "./ProgressReport";
 
 import { EOS_DOWNLOADING as Icon } from "eos-icons-react";

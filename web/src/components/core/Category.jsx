@@ -32,7 +32,7 @@ import {
   TextVariants
 } from "@patternfly/react-core";
 
-import ValidationErrors from "./ValidationErrors";
+import ValidationErrors from "@components/core/ValidationErrors";
 
 /**
  * Displays an installation section
@@ -45,7 +45,7 @@ import ValidationErrors from "./ValidationErrors";
  * @param {object} props
  * @param {React.FunctionComponent} props.icon - Category icon
  * @param {string} props.title - Category title
- * @param {import("./client/mixins").ValidationError[]} props.errors - Validation errors
+ * @param {import("@client/mixins").ValidationError[]} props.errors - Validation errors
  * @param {JSX.Element} props.children - Category content
  */
 export default function Category({ icon, title, errors, children }) {

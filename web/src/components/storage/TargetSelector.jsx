@@ -29,7 +29,7 @@ import {
   FormSelectOption,
 } from "@patternfly/react-core";
 
-import Popup from './Popup';
+import Popup from '@components/core/Popup';
 
 export default function TargetSelector({ target, targets, onAccept }) {
   const [value, setValue] = useState("");

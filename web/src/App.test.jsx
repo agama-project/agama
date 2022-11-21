@@ -21,23 +21,23 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender } from "./test-utils";
-import { createClient } from "./client";
+import { installerRender } from "@/test-utils";
+import { createClient } from "@client";
 import App from "./App";
-import { STARTUP, CONFIG, INSTALL } from "./client/phase";
-import { IDLE, BUSY } from "./client/status";
+import { STARTUP, CONFIG, INSTALL } from "@client/phase";
+import { IDLE, BUSY } from "@client/status";
 
-jest.mock("./client");
+jest.mock("@client");
 
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
 
-jest.mock("./Questions", () => () => <div>Questions Mock</div>);
-jest.mock("./DBusError", () => () => <div>D-BusError Mock</div>);
-jest.mock("./InstallationProgress", () => () => "InstallationProgress Mock");
-jest.mock("./InstallationFinished", () => () => "InstallationFinished Mock");
-jest.mock("./LoadingEnvironment", () => () => "LoadingEnvironment Mock");
-jest.mock("./TargetIpsPopup", () => () => "Target IPs Mock");
+jest.mock("@components/core/Questions", () => () => <div>Questions Mock</div>);
+jest.mock("@components/layout/DBusError", () => () => <div>D-BusError Mock</div>);
+jest.mock("@components/layout/LoadingEnvironment", () => () => "LoadingEnvironment Mock");
+jest.mock("@components/core/InstallationProgress", () => () => "InstallationProgress Mock");
+jest.mock("@components/core/InstallationFinished", () => () => "InstallationFinished Mock");
+jest.mock("@components/network/TargetIpsPopup", () => () => "Target IPs Mock");
 jest.mock('react-router-dom', () => ({
   Outlet: () => <div>Content</div>,
 }));

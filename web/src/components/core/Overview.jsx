@@ -20,18 +20,18 @@
  */
 
 import React, { useState } from "react";
-import { useSoftware } from "./context/software";
 import { useNavigate, Navigate } from "react-router-dom";
+import { useSoftware } from "@context/software";
 
 import { Button, Flex, FlexItem } from "@patternfly/react-core";
 
-import { Title, PageIcon, PageActions, MainActions } from "./Layout";
-import Category from "./Category";
-import LanguageSelector from "./LanguageSelector";
-import Storage from "./Storage";
-import Users from "./Users";
-import Network from "./Network";
-import InstallButton from "./InstallButton";
+import { Title, PageIcon, PageActions, MainActions } from "@components/layout/Layout";
+import Category from "@components/core/Category";
+import LanguageSelector from "@components/language/LanguageSelector";
+import Storage from "@components/storage/Storage";
+import Users from "@components/users/Users";
+import Network from "@components/network/Network";
+import InstallButton from "@components/core/InstallButton";
 
 import {
   EOS_SOFTWARE as OverviewIcon,

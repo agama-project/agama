@@ -22,7 +22,7 @@
 import React from "react";
 
 import "./layout.scss";
-import logo from "./assets/suse-horizontal-logo.svg";
+import logo from "@assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
 
 const PageTitle = createTeleporter();

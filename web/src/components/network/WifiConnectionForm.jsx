@@ -30,7 +30,7 @@ import {
   FormSelectOption,
   TextInput
 } from "@patternfly/react-core";
-import { useInstallerClient } from "./context/installer";
+import { useInstallerClient } from "@context/installer";
 
 /*
 * FIXME: it should be moved to the SecurityProtocols enum that already exists or to a class based

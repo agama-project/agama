@@ -22,7 +22,7 @@
 import React from "react";
 import { Title, EmptyState, EmptyStateIcon } from "@patternfly/react-core";
 
-import Center from "./Center";
+import Center from "@components/layout/Center";
 
 import { EOS_THREE_DOTS_LOADING_ANIMATED as LoadingIcon } from "eos-icons-react";
 

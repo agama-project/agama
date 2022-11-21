@@ -41,7 +41,7 @@ import {
 } from "@patternfly/react-core";
 
 import FormLabel from "@components/core/FormLabel";
-import IpAddressInput from "./IpAddressInput";
+import IpAddressInput from "@components/network/IpAddressInput";
 
 let index = 0;
 

@@ -20,8 +20,8 @@
  */
 
 import React, { useReducer, useEffect } from "react";
-import { useCancellablePromise } from "./utils";
-import { useInstallerClient } from "./context/installer";
+import { useCancellablePromise } from "@/utils";
+import { useInstallerClient } from "@context/installer";
 
 import {
   Button,
@@ -31,7 +31,7 @@ import {
   FormSelectOption
 } from "@patternfly/react-core";
 
-import Popup from './Popup';
+import Popup from '@components/core/Popup';
 
 const reducer = (state, action) => {
   switch (action.type) {

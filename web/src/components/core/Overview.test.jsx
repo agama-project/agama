@@ -21,9 +21,9 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "./test-utils";
+import { installerRender } from "@/test-utils";
 import Overview from "./Overview";
-import { createClient } from "./client";
+import { createClient } from "@client";
 
 let mockProduct;
 let mockProducts = [
@@ -32,10 +32,10 @@ let mockProducts = [
 ];
 const startInstallationFn = jest.fn();
 
-jest.mock("./client");
+jest.mock("@client");
 
-jest.mock("./context/software", () => ({
-  ...jest.requireActual("./context/software"),
+jest.mock("@context/software", () => ({
+  ...jest.requireActual("@context/software"),
   useSoftware: () => {
     return {
       products: mockProducts,
@@ -50,11 +50,11 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn()
 }));
 
-jest.mock("./LanguageSelector", () => () => "Language Selector");
-jest.mock("./Storage", () => () => "Storage Configuration");
-jest.mock("./Network", () => () => "Network Configuration");
-jest.mock("./Users", () => () => "Users Configuration");
-jest.mock("./InstallButton", () => () => "Install Button");
+jest.mock("@components/language/LanguageSelector", () => () => "Language Selector");
+jest.mock("@components/storage/Storage", () => () => "Storage Configuration");
+jest.mock("@components/network/Network", () => () => "Network Configuration");
+jest.mock("@components/users/Users", () => () => "Users Configuration");
+jest.mock("@components/core/InstallButton", () => () => "Install Button");
 
 beforeEach(() => {
   mockProduct = { id: "openSUSE", name: "openSUSE Tumbleweed" };

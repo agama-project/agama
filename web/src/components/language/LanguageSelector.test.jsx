@@ -21,11 +21,11 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender } from "./test-utils";
-import LanguageSelector from "./LanguageSelector";
-import { createClient } from "./client";
+import { installerRender } from "@/test-utils";
+import LanguageSelector from "@components/language/LanguageSelector";
+import { createClient } from "@client";
 
-jest.mock("./client");
+jest.mock("@client");
 
 const languages = [
   { id: "en_US", name: "English" },

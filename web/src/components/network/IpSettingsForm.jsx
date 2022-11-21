@@ -21,10 +21,10 @@
 
 import React, { useState } from "react";
 import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, TextInput } from "@patternfly/react-core";
-import { useInstallerClient } from "./context/installer";
+import { useInstallerClient } from "@context/installer";
 import AddressesDataList from "./AddressesDataList";
-import DnsDataList from "./DnsDataList";
-import Popup from "./Popup";
+import DnsDataList from "@components/network/DnsDataList";
+import Popup from "@components/core/Popup";
 
 const METHODS = {
   MANUAL: "manual",

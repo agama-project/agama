@@ -21,13 +21,13 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "./test-utils";
-import Network from "./Network";
-import { createClient } from "./client";
+import { installerRender } from "@/test-utils";
+import Network from "@components/network/Network";
+import { createClient } from "@client";
 
-jest.mock("./client");
-jest.mock("./NetworkWiredStatus", () => () => "Wired Connections");
-jest.mock("./NetworkWifiStatus", () => () => "WiFi Connections");
+jest.mock("@client");
+jest.mock("@components/network/NetworkWiredStatus", () => () => "Wired Connections");
+jest.mock("@components/network/NetworkWifiStatus", () => () => "WiFi Connections");
 
 beforeEach(() => {
   createClient.mockImplementation(() => {

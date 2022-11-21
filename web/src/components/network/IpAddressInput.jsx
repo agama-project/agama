@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from 'react';
-import { isValidIp } from './client/network/utils';
+import { isValidIp } from '@client/network/utils';
 import { TextInput, ValidatedOptions } from '@patternfly/react-core';
 
 const IpAddressInput = ({ placeholder, onError = () => null, ...props }) => {

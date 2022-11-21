@@ -26,8 +26,8 @@ import {
   Title as PageTitle,
   PageIcon,
   MainActions
-} from "./Layout";
-import Center from "./Center";
+} from "@components/layout/Layout";
+import Center from "@components/layout/Center";
 
 import {
   EOS_ANNOUNCEMENT as Icon,

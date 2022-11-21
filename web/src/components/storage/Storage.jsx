@@ -20,14 +20,14 @@
  */
 
 import React, { useReducer, useEffect, useState } from "react";
-import { useCancellablePromise } from "./utils";
-import { useInstallerClient } from "./context/installer";
-import { BUSY } from "./client/status";
+import { useCancellablePromise } from "@/utils";
+import { useInstallerClient } from "@context/installer";
+import { BUSY } from "@client/status";
 
 import TargetSelector from "./TargetSelector";
 import Proposal from "./Proposal";
-import InstallerSkeleton from "./InstallerSkeleton";
-import Category from "./Category";
+import InstallerSkeleton from "@components/core/InstallerSkeleton";
+import Category from "@components/core/Category";
 
 import { EOS_VOLUME as HardDriveIcon } from "eos-icons-react";
 

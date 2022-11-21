@@ -21,8 +21,8 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "./test-utils";
-import LuksActivationQuestion from "./LuksActivationQuestion";
+import { installerRender } from "@/test-utils";
+import LuksActivationQuestion from "@components/storage/LuksActivationQuestion";
 
 let question;
 const answerFn = jest.fn();

@@ -21,8 +21,8 @@
 
 import React, { useState } from "react";
 import { Alert, Form, FormGroup, Stack, StackItem, Text, TextInput } from "@patternfly/react-core";
-import Popup from "./Popup";
-import QuestionActions from "./QuestionActions";
+import Popup from "@components/core/Popup";
+import QuestionActions from "@components/core/QuestionActions";
 
 import { EOS_LOCK as Icon } from "eos-icons-react";
 

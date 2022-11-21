@@ -22,11 +22,11 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { plainRender } from "./test-utils";
+import { plainRender } from "@/test-utils";
 
-import DBusError from "./DBusError";
+import DBusError from "@components/layout/DBusError";
 
-jest.mock("./TargetIpsPopup", () => () => "IP Mock");
+jest.mock("@components/network/TargetIpsPopup", () => () => "IP Mock");
 
 describe("DBusError", () => {
   it("includes a generic D-Bus connection problem message", () => {
