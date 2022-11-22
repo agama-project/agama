@@ -133,7 +133,14 @@ ALP:
       - alp_cockpit
       - alp-container_runtime
     optional_patterns: null # no optional pattern shared
-    mandatory_packages: null
+    mandatory_packages:
+      - device-mapper
+      - system-user-tss
+      - libtss2-fapi1
+      - libtss2-tcti-device0
+      - tpm2.0-tools 
+      - tpm2-0-tss
+      - fde-tools
     optional_packages: null
     base_product: ALP
 
