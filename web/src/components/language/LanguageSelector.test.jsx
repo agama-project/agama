@@ -22,7 +22,7 @@
 import React from "react";
 import { act, screen } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
-import LanguageSelector from "@components/language/LanguageSelector";
+import { LanguageSelector } from "@components/language";
 import { createClient } from "@client";
 
 jest.mock("@client");
