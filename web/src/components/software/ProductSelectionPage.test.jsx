@@ -22,7 +22,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
-import ProductSelectionPage from "./ProductSelectionPage";
+import { ProductSelectionPage } from "@components/software";
 import { createClient } from "@client";
 
 const products = [
