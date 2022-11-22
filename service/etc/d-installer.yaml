@@ -11,7 +11,7 @@ products:
       instead of relying on rigid periodic release cycles. The project does
       this for users that want the newest stable software.'
   Leap Micro:
-    name: openSUSE Leap Micro 5.2
+    name: openSUSE Leap Micro 5.3
     description: 'Leap Micro is an ultra-reliable, lightweight operating system
       built for containerized and virtualized workloads. This community version
       is based on SUSE Linux Enterprise Micro, which leverages the enterprise
