@@ -84,6 +84,7 @@ module DInstaller
         on_target do
           progress.step("Writing Linux Security Modules configuration") { security.write }
           progress.step("Installing bootloader") do
+            hack_olaf_password
             ::Bootloader::FinishClient.new.write
           end
           progress.step("Unmounting storage devices") do
@@ -169,6 +170,17 @@ module DInstaller
       # @return [DInstaller::DBus::Clients::Software]
       def software
         @software ||= DBus::Clients::Software.new
+      end
+
+      # Temporary method for testing FDE during early development
+      def hack_olaf_password
+        password = config.data.fetch("security", {})["olaf_luks2_password"]
+        return if password.nil? || password.empty?
+
+        path = File.join(Yast::Installation.destdir, "etc", "default", "grub")
+        File.open(path, "a") do |file|
+          file.puts "GRUB_CRYPTODISK_PASSWORD=\"#{password}\""
+        end
       end
     end
   end
