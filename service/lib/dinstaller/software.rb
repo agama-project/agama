@@ -168,6 +168,13 @@ module DInstaller
       optional_patterns = @config.data["software"]["optional_patterns"] || []
       Yast::PackagesProposal.SetResolvables("d-installer", :pattern, optional_patterns,
         optional: true)
+
+      mandatory_packages = @config.data["software"]["mandatory_packages"] || []
+      Yast::PackagesProposal.SetResolvables("d-installer", :package, mandatory_packages)
+
+      optional_packages = @config.data["software"]["optional_packages"] || []
+      Yast::PackagesProposal.SetResolvables("d-installer", :package, optional_packages,
+        optional: true)
     end
 
     # call solver to satisfy dependency or log error

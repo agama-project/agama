@@ -37,6 +37,8 @@ Tumbleweed:
     mandatory_patterns:
       - enhanced_base # only pattern that is shared among all roles on TW
     optional_patterns: null # no optional pattern shared
+    mandatory_packages: null
+    optional_packages: null
     base_product: openSUSE
 
   security:
@@ -131,6 +133,8 @@ ALP:
       - alp_cockpit
       - alp-container_runtime
     optional_patterns: null # no optional pattern shared
+    mandatory_packages: null
+    optional_packages: null
     base_product: ALP
 
   security:
@@ -194,6 +198,8 @@ Leap:
     mandatory_patterns:
       - enhanced_base # For now lets pick some minimal one
     optional_patterns: null # no optional pattern shared
+    mandatory_packages: null
+    optional_packages: null
     base_product: Leap
 
   security:
@@ -287,6 +293,8 @@ Leap Micro:
       - microos-defaults
       - microos-basesystem
     optional_patterns: null # no optional pattern shared
+    mandatory_packages: null
+    optional_packages: null
     base_product: Leap-Micro
 
   security:

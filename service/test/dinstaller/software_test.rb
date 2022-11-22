@@ -139,11 +139,15 @@ describe DInstaller::Software do
       subject.propose
     end
 
-    it "adds the packages to install" do
+    it "adds the patterns and packages to install" do
       expect(Yast::PackagesProposal).to receive(:SetResolvables)
         .with("d-installer", :pattern, ["enhanced_base"])
       expect(Yast::PackagesProposal).to receive(:SetResolvables)
         .with("d-installer", :pattern, ["optional_base"], optional: true)
+      expect(Yast::PackagesProposal).to receive(:SetResolvables)
+        .with("d-installer", :package, ["mandatory_pkg"])
+      expect(Yast::PackagesProposal).to receive(:SetResolvables)
+        .with("d-installer", :package, ["optional_pkg"], optional: true)
       subject.propose
     end
   end
