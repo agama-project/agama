@@ -123,6 +123,7 @@ module DInstaller
         settings ||= ProposalSettings.new
         settings.freeze
         proposal_settings = to_y2storage_settings(settings)
+        hack_olaf_password(proposal_settings)
 
         @proposal = new_proposal(proposal_settings)
         storage_manager.proposal = proposal
@@ -267,6 +268,18 @@ module DInstaller
         return if available_devices.empty? || candidate_devices.any?
 
         ValidationError.new("No devices are selected for installation")
+      end
+
+      # Temporary method for testing FDE during early development
+      #
+      # @param settings [Y2Storage::ProposalSettings]
+      def hack_olaf_password(settings)
+        password = config.data.fetch("security", {})["olaf_luks2_password"]
+        return if password.nil? || password.empty?
+
+        settings.encryption_password = "1234"
+        settings.encryption_method = Y2Storage::EncryptionMethod::LUKS2
+        settings.encryption_pbkdf = Y2Storage::PbkdFunction::PBKDF2
       end
     end
   end
