@@ -34,6 +34,10 @@ Tumbleweed:
       - enhanced_base # only pattern that is shared among all roles on TW
     optional_patterns:
       - optional_base
+    mandatory_packages:
+      - mandatory_pkg
+    optional_packages:
+      - optional_pkg
     base_product: openSUSE
 
   security:
