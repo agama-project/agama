@@ -177,9 +177,32 @@ module DInstaller
         password = config.data.fetch("security", {})["olaf_luks2_password"]
         return if password.nil? || password.empty?
 
-        path = File.join(Yast::Installation.destdir, "etc", "default", "grub")
-        File.open(path, "a") do |file|
+        grub_path = File.join(Yast::Installation.destdir, "etc", "default", "grub")
+        File.open(grub_path, "a") do |file|
           file.puts "GRUB_CRYPTODISK_PASSWORD=\"#{password}\""
+        end
+
+        hack_jeos_firstboot
+      end
+
+      # @see #hack_olaf_password
+      #
+      # This assumes the package jeos-firstboot has been installed
+      def hack_jeos_firstboot
+        require "yast2/systemd/service"
+        require "fileutils"
+        destdir = Yast::Installation.destdir
+
+        service = Yast2::Systemd::Service.find("jeos-firstboot")
+        service&.enable
+
+        reconfig_path = File.join(destdir, "var", "lib", "YaST2")
+        FileUtils.mkdir_p(reconfig_path)
+        FileUtils.touch(File.join(reconfig_path, "reconfig_system"))
+
+        jeos_path = File.join(destdir, "etc", "jeos-firstboot.conf")
+        File.open(jeos_path, "a") do |file|
+          file.puts "JEOS_PASSWORD_ALREADY_SET='yes'"
         end
       end
     end
