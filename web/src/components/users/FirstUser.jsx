@@ -33,7 +33,7 @@ import {
   TextInput
 } from "@patternfly/react-core";
 
-import Popup from '@components/core/Popup';
+import { Popup } from '@components/core';
 
 const initialUser = {
   userName: "",

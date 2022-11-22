@@ -22,8 +22,8 @@
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
-import InstallButton from "@components/core/InstallButton";
 import { createClient } from "@client";
+import { InstallButton } from "@components/core";
 
 const startInstallationFn = jest.fn().mockName("startInstallation");
 

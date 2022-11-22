@@ -32,7 +32,7 @@ import {
   TextVariants
 } from "@patternfly/react-core";
 
-import ValidationErrors from "@components/core/ValidationErrors";
+import { ValidationErrors } from "@components/core";
 
 /**
  * Displays an installation section

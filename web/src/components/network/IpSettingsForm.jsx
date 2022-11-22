@@ -23,7 +23,7 @@ import React, { useState } from "react";
 import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, TextInput } from "@patternfly/react-core";
 
 import { useInstallerClient } from "@context/installer";
-import Popup from "@components/core/Popup";
+import { Popup } from "@components/core";
 import { AddressesDataList, DnsDataList } from "@components/network";
 
 const METHODS = {

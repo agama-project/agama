@@ -26,7 +26,7 @@ import { useCancellablePromise } from "@/utils";
 import { useInstallerClient } from "@context/installer";
 import { formatIp } from "@client/network/utils";
 
-import Popup from "@components/core/Popup";
+import { Popup } from "@components/core";
 
 export default function TargetIpsPopup() {
   const client = useInstallerClient();

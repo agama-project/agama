@@ -27,9 +27,7 @@ import { STARTUP, INSTALL } from "@client/phase";
 import { BUSY } from "@client/status";
 
 import { Layout, Title, AdditionalInfo, LoadingEnvironment, DBusError } from "@components/layout";
-import About from "@components/core/About";
-import InstallationProgress from "@components/core/InstallationProgress";
-import InstallationFinished from "@components/core/InstallationFinished.jsx";
+import { About, InstallationProgress, InstallationFinished } from "@components/core";
 import { TargetIpsPopup } from "@components/network";
 
 function App() {

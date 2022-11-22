@@ -31,7 +31,7 @@ import {
   FormSelectOption
 } from "@patternfly/react-core";
 
-import Popup from '@components/core/Popup';
+import { Popup } from '@components/core';
 
 const reducer = (state, action) => {
   switch (action.type) {

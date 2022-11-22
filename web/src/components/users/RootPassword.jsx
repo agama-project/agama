@@ -32,7 +32,7 @@ import {
   TextInput
 } from "@patternfly/react-core";
 
-import Popup from '@components/core/Popup';
+import { Popup } from '@components/core';
 
 export default function RootPassword() {
   const client = useInstallerClient();

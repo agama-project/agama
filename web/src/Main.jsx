@@ -21,7 +21,7 @@
 
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Questions from "@components/core/Questions";
+import { Questions } from "@components/core";
 
 function Main() {
   return (

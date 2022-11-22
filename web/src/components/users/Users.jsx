@@ -22,11 +22,11 @@
 import React, { useEffect, useState } from "react";
 import { Stack, StackItem } from "@patternfly/react-core";
 
+import { useInstallerClient } from "@context/installer";
 import FirstUser from "@components/users/FirstUser";
 import RootPassword from "@components/users/RootPassword";
 import RootSSHKey from "@components/users/RootSSHKey";
-import Category from "@components/core/Category";
-import { useInstallerClient } from "@context/installer";
+import { Category } from "@components/core";
 
 import {
   EOS_MANAGE_ACCOUNTS as UsersIcon,

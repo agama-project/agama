@@ -23,7 +23,7 @@ import React, { useEffect, useState } from "react";
 
 import { useInstallerClient } from "@context/installer";
 import { NetworkEventTypes } from "@client/network";
-import Popup from "@components/core/Popup";
+import { Popup } from "@components/core";
 import { WifiNetworksList, WifiHiddenNetworkForm } from "@components/network";
 
 const networksFromValues = (networks) => Object.values(networks).flat();

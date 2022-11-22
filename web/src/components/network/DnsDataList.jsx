@@ -40,7 +40,7 @@ import {
   SplitItem
 } from "@patternfly/react-core";
 
-import FormLabel from "@components/core/FormLabel";
+import { FormLabel } from "@components/core";
 import { IpAddressInput } from "@components/network";
 
 let index = 0;

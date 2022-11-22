@@ -26,12 +26,11 @@ import { useSoftware } from "@context/software";
 import { Button, Flex, FlexItem } from "@patternfly/react-core";
 
 import { Title, PageIcon, PageActions, MainActions } from "@components/layout";
-import Category from "@components/core/Category";
+import { Category, InstallButton } from "@components/core";
 import LanguageSelector from "@components/language/LanguageSelector";
 import Storage from "@components/storage/Storage";
 import Users from "@components/users/Users";
 import Network from "@components/network";
-import InstallButton from "@components/core/InstallButton";
 
 import {
   EOS_SOFTWARE as OverviewIcon,

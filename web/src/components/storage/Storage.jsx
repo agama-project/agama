@@ -26,8 +26,7 @@ import { BUSY } from "@client/status";
 
 import TargetSelector from "./TargetSelector";
 import Proposal from "./Proposal";
-import InstallerSkeleton from "@components/core/InstallerSkeleton";
-import Category from "@components/core/Category";
+import { InstallerSkeleton, Category } from "@components/core";
 
 import { EOS_VOLUME as HardDriveIcon } from "eos-icons-react";
 

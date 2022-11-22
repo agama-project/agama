@@ -22,8 +22,8 @@
 import React from "react";
 import { DropdownItem } from "@patternfly/react-core";
 import { EOS_DELETE as DeleteIcon } from "eos-icons-react";
-import KebabMenu from "@components/core/KebabMenu";
 import { useInstallerClient } from "@context/installer";
+import { KebabMenu } from "@components/core";
 
 export default function WifiNetworkMenu({ settings, position = "right" }) {
   const client = useInstallerClient();

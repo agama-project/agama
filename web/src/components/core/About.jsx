@@ -21,7 +21,7 @@
 
 import React, { useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
-import Popup from "@components/core/Popup";
+import { Popup } from "@components/core";
 
 export default function About() {
   const [isOpen, setIsOpen] = useState(false);

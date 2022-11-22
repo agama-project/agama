@@ -25,7 +25,7 @@ import { act, screen } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
 import { createClient } from "@client";
 
-import ProgressReport from "@components/core/ProgressReport";
+import { ProgressReport } from "@components/core";
 
 jest.mock("@client");
 

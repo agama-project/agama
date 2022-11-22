@@ -25,7 +25,7 @@ import { act, screen, waitFor } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
 import { createClient } from "@client";
 
-import Questions from "@components/core/Questions";
+import { Questions } from "@components/core";
 
 jest.mock("@client");
 jest.mock("@components/core/GenericQuestion", () => () => "A Generic question mock");

@@ -34,7 +34,7 @@ import { createClient } from "./client";
 import App from "./App";
 import Main from "./Main";
 import ProductSelectionPage from "@components/software/ProductSelectionPage";
-import Overview from "@components/core/Overview";
+import { Overview } from "@components/core";
 
 /*
  * PF4 overrides need to come after the JSX components imports because

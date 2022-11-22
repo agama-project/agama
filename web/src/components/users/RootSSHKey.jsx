@@ -31,7 +31,7 @@ import {
   FileUpload
 } from "@patternfly/react-core";
 
-import Popup from '@components/core/Popup';
+import { Popup } from '@components/core';
 
 export default function RootSSHKey() {
   const client = useInstallerClient();
