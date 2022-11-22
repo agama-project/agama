@@ -24,9 +24,8 @@ import { useCancellablePromise } from "@/utils";
 import { useInstallerClient } from "@context/installer";
 import { BUSY } from "@client/status";
 
-import TargetSelector from "./TargetSelector";
-import Proposal from "./Proposal";
 import { InstallerSkeleton, Category } from "@components/core";
+import { TargetSelector, Proposal } from "@components/storage";
 
 import { EOS_VOLUME as HardDriveIcon } from "eos-icons-react";
 

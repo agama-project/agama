@@ -22,7 +22,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
-import LuksActivationQuestion from "@components/storage/LuksActivationQuestion";
+import { LuksActivationQuestion } from "@components/storage";
 
 let question;
 const answerFn = jest.fn();

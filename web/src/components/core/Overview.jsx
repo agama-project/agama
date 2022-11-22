@@ -28,7 +28,7 @@ import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import { Title, PageIcon, PageActions, MainActions } from "@components/layout";
 import { Category, InstallButton } from "@components/core";
 import LanguageSelector from "@components/language/LanguageSelector";
-import Storage from "@components/storage/Storage";
+import { Storage } from "@components/storage";
 import Users from "@components/users/Users";
 import Network from "@components/network";
 

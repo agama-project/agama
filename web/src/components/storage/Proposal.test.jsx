@@ -22,7 +22,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
-import Proposal from "./Proposal";
+import { Proposal } from "@components/storage";
 
 const subvolAction = {
   text: "Create subvolume @ on /dev/sda1",

@@ -22,9 +22,9 @@
 import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
-import Storage from "@components/storage/Storage";
 import { createClient } from "@client";
 import { IDLE } from "@client/status";
+import { Storage } from "@components/storage";
 
 jest.mock("@client");
 jest.mock("@components/core/InstallerSkeleton", () => () => "Loading storage");

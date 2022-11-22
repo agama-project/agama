@@ -24,7 +24,7 @@ import { useInstallerClient } from "@context/installer";
 import { useCancellablePromise } from "@/utils";
 
 import { GenericQuestion } from "@components/core";
-import LuksActivationQuestion from "@components/storage/LuksActivationQuestion";
+import { LuksActivationQuestion } from "@components/storage";
 
 const QUESTION_TYPES = {
   generic: GenericQuestion,
