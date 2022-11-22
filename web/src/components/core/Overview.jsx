@@ -29,7 +29,7 @@ import { Title, PageIcon, PageActions, MainActions } from "@components/layout";
 import { Category, InstallButton } from "@components/core";
 import { LanguageSelector } from "@components/language";
 import { Storage } from "@components/storage";
-import Users from "@components/users/Users";
+import { Users } from "@components/users";
 import Network from "@components/network";
 
 import {

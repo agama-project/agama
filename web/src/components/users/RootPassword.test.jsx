@@ -25,7 +25,7 @@ import { act, screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
 import { createClient } from "@client";
 
-import RootPassword from "./RootPassword";
+import { RootPassword } from "@components/users";
 
 jest.mock("@client");
 

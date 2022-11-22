@@ -24,7 +24,7 @@ import React from "react";
 import { act, screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
 import { createClient } from "@client";
-import RootSSHKey from "./RootSSHKey";
+import { RootSSHKey } from "@components/users";
 
 jest.mock("@client");
 
