@@ -32,7 +32,7 @@ jest.mock("@client");
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
 
-jest.mock("@components/core/Questions", () => () => <div>Questions Mock</div>);
+jest.mock("@components/questions/Questions", () => () => <div>Questions Mock</div>);
 jest.mock("@components/layout/DBusError", () => () => <div>D-BusError Mock</div>);
 jest.mock("@components/layout/LoadingEnvironment", () => () => "LoadingEnvironment Mock");
 jest.mock("@components/core/InstallationProgress", () => () => "InstallationProgress Mock");

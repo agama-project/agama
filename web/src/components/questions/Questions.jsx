@@ -23,8 +23,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useInstallerClient } from "@context/installer";
 import { useCancellablePromise } from "@/utils";
 
-import { GenericQuestion } from "@components/core";
-import { LuksActivationQuestion } from "@components/storage";
+import { GenericQuestion, LuksActivationQuestion } from "@components/questions";
 
 const QUESTION_TYPES = {
   generic: GenericQuestion,

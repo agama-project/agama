@@ -19,28 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Text } from "@patternfly/react-core";
-import { Popup, QuestionActions } from "@components/core";
-
-export default function GenericQuestion({ question, answerCallback }) {
-  const actionCallback = (option) => {
-    question.answer = option;
-    answerCallback(question);
-  };
-
-  return (
-    <Popup isOpen aria-label="Question">
-      <Text>
-        { question.text }
-      </Text>
-      <Popup.Actions>
-        <QuestionActions
-          actions={question.options}
-          defaultAction={question.defaultOption}
-          actionCallback={actionCallback}
-        />
-      </Popup.Actions>
-    </Popup>
-  );
-}
+export { default as QuestionActions } from "./QuestionActions";
+export { default as GenericQuestion } from "./GenericQuestion";
+export { default as LuksActivationQuestion } from "./LuksActivationQuestion";
+export { default as Questions } from "./Questions";

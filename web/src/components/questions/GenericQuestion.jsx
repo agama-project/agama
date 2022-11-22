@@ -19,6 +19,29 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as Proposal } from "./Proposal";
-export { default as Storage } from "./Storage";
-export { default as TargetSelector } from "./TargetSelector";
+import React from "react";
+import { Text } from "@patternfly/react-core";
+import { Popup } from "@components/core";
+import { QuestionActions } from "@components/questions";
+
+export default function GenericQuestion({ question, answerCallback }) {
+  const actionCallback = (option) => {
+    question.answer = option;
+    answerCallback(question);
+  };
+
+  return (
+    <Popup isOpen aria-label="Question">
+      <Text>
+        { question.text }
+      </Text>
+      <Popup.Actions>
+        <QuestionActions
+          actions={question.options}
+          defaultAction={question.defaultOption}
+          actionCallback={actionCallback}
+        />
+      </Popup.Actions>
+    </Popup>
+  );
+}

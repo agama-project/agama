@@ -22,7 +22,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
-import { GenericQuestion } from "@components/core";
+import { GenericQuestion } from "@components/questions";
 
 const question = {
   id: 1,

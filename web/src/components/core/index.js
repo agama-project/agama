@@ -30,7 +30,4 @@ export { default as KebabMenu } from "./KebabMenu";
 export { default as Overview } from "./Overview";
 export { default as Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";
-export { default as QuestionActions } from "./QuestionActions";
-export { default as GenericQuestion } from "./GenericQuestion";
-export { default as Questions } from "./Questions";
 export { default as ValidationErrors } from "./ValidationErrors";

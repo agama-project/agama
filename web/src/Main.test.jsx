@@ -25,7 +25,7 @@ import { installerRender } from "@/test-utils";
 
 import Main from "@/Main";
 
-jest.mock("@components/core/Questions", () => () => <div>Questions Mock</div>);
+jest.mock("@components/questions/Questions", () => () => <div>Questions Mock</div>);
 jest.mock('react-router-dom', () => ({
   Outlet: () => <div>Content</div>,
 }));
