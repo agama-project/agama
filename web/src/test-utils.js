@@ -23,9 +23,9 @@ import React from "react";
 import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
 
-import { InstallerClientProvider } from "@context/installer";
-import Layout from "@components/layout";
 import { createClient } from "@client/index";
+import { InstallerClientProvider } from "@context/installer";
+import { Layout } from "@components/layout";
 
 const InstallerProvider = ({ children }) => {
   const client = createClient();

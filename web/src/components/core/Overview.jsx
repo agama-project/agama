@@ -30,7 +30,7 @@ import { Category, InstallButton } from "@components/core";
 import { LanguageSelector } from "@components/language";
 import { Storage } from "@components/storage";
 import { Users } from "@components/users";
-import Network from "@components/network";
+import { Network } from "@components/network";
 
 import {
   EOS_SOFTWARE as OverviewIcon,

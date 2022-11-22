@@ -19,7 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-export { default } from "./Network";
 export { default as Network } from "./Network";
 export { default as AddressesDataList } from "./AddressesDataList";
 export { default as ConnectionsDataList } from "./ConnectionsDataList";

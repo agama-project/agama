@@ -20,7 +20,6 @@
  */
 
 export * from "./Layout";
-export { default } from "./Layout";
 export { default as Layout } from "./Layout";
 export { default as Center } from "./Center";
 export { default as DBusError } from "./DBusError";
