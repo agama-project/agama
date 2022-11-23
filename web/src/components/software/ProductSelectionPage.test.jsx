@@ -50,7 +50,7 @@ jest.mock("@context/software", () => ({
   ...jest.requireActual("@context/software"),
   useSoftware: () => {
     return {
-      products: products,
+      products,
       selectedProduct: products[0]
     };
   }
