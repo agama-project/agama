@@ -21,16 +21,14 @@
 
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import Layout, { Title, AdditionalInfo } from "./Layout";
-import About from "./About";
-import TargetIpsPopup from "./TargetIpsPopup";
-import LoadingEnvironment from "./LoadingEnvironment";
-import DBusError from "./DBusError";
-import InstallationProgress from "./InstallationProgress";
-import InstallationFinished from "./InstallationFinished";
-import { useInstallerClient } from "./context/installer";
-import { STARTUP, INSTALL } from "./client/phase";
-import { BUSY } from "./client/status";
+
+import { useInstallerClient } from "@context/installer";
+import { STARTUP, INSTALL } from "@client/phase";
+import { BUSY } from "@client/status";
+
+import { Layout, Title, AdditionalInfo, LoadingEnvironment, DBusError } from "@components/layout";
+import { About, InstallationProgress, InstallationFinished } from "@components/core";
+import { TargetIpsPopup } from "@components/network";
 
 function App() {
   const client = useInstallerClient();
