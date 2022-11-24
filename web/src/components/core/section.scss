@@ -1,0 +1,20 @@
+@use "eos-ds/dist/scss/eos-base/variables/branding.scss";
+
+.section-icon {
+  min-width: 32px;
+}
+
+.section-action {
+  padding-inline: 5px;
+  svg {
+    fill: branding.$eos-bc-green-500;
+    :hover {
+      fill: branding.$eos-bc-pine-500;
+    }
+  }
+}
+
+.with-gradient-separator {
+  border-bottom: 1px solid #efefef;
+  border-image: linear-gradient(45deg, #efefef 20%, transparent) 1;
+}
