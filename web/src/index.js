@@ -20,7 +20,7 @@
  */
 
 import React, { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import ReactDOM from "react-dom";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
@@ -47,10 +47,8 @@ import "./patternfly.scss";
 import "./app.scss";
 
 const client = createClient();
-const container = document.getElementById("root");
-const root = createRoot(container);
 
-root.render(
+ReactDOM.render(
   <StrictMode>
     <InstallerClientProvider client={client}>
       <SoftwareProvider>
@@ -67,5 +65,6 @@ root.render(
         </HashRouter>
       </SoftwareProvider>
     </InstallerClientProvider>
-  </StrictMode>
+  </StrictMode>,
+  document.getElementById("root")
 );
