@@ -108,7 +108,7 @@ export default function Section({
     if (typeof onActionClick !== 'function') return null;
 
     const Action = () => (
-      <Button variant="plain" className="section-action" isInline onClick={onActionClick}>
+      <Button variant="plain" className="d-installer-section-action" isInline onClick={onActionClick}>
         <ActionIcon />
       </Button>
     );
@@ -116,20 +116,20 @@ export default function Section({
     if (!actionTooltip) return <Action />;
 
     return (
-      <Tooltip content={actionTooltip} position="right">
+      <Tooltip content={actionTooltip} position="right" entryDelay={200} exitDelay={200}>
         <Action />
       </Tooltip>
     );
   };
 
   const titleClassNames = classNames(
-    "section-title",
-    usingSeparator && "with-gradient-separator"
+    "d-installer-section-title",
+    usingSeparator && "using-separator"
   );
 
   return (
-    <Split hasGutter {...otherProps}>
-      <SplitItem className="section-icon">
+    <Split className="d-installer-section" hasGutter {...otherProps}>
+      <SplitItem className="d-installer-section-icon">
         <Icon size="32" />
       </SplitItem>
       <SplitItem isFilled>
