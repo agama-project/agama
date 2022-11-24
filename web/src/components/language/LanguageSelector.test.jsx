@@ -21,7 +21,7 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender, createCallbackMock } from "@/test-utils";
 import { LanguageSelector } from "@components/language";
 import { createClient } from "@client";
 
@@ -111,14 +111,10 @@ describe("when the user changes the language AND THEN cancels", () => {
 });
 
 describe("when the Language Selection changes", () => {
-  let callbacks;
-
-  beforeEach(() => {
-    callbacks = [];
-    onLanguageChangeFn = cb => callbacks.push(cb);
-  });
-
   it("updates the proposal", async () => {
+    const [mockFunction, callbacks] = createCallbackMock();
+    onLanguageChangeFn = mockFunction;
+
     installerRender(<LanguageSelector />);
     await screen.findByRole("button", { name: "English" });
 

@@ -22,7 +22,7 @@
 import React from "react";
 
 import { act, screen } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender, createCallbackMock } from "@/test-utils";
 import { createClient } from "@client";
 
 import { ProgressReport } from "@components/core";
@@ -60,15 +60,18 @@ describe("ProgressReport", () => {
 
   describe("when there is progress information available", () => {
     beforeEach(() => {
-      callbacks = { manager: [], software: [] };
-      onManagerProgressChange = cb => callbacks.manager.push(cb);
-      onSoftwareProgressChange = cb => callbacks.software.push(cb);
+      const [onManagerProgress, managerCallbacks] = createCallbackMock();
+      const [onSoftwareProgress, softwareCallbacks] = createCallbackMock();
+      onManagerProgressChange = onManagerProgress;
+      onSoftwareProgressChange = onSoftwareProgress;
+      callbacks = { manager: managerCallbacks, software: softwareCallbacks };
     });
 
     it("shows the main progress bar", async () => {
       installerRender(<ProgressReport />);
 
       await screen.findByText(/Waiting/i);
+      await screen.findByText(/Reading/i);
 
       // NOTE: there can be more than one susbcriptions to the
       // manager#onProgressChange. We're interested in the latest one here.

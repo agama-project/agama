@@ -64,4 +64,24 @@ const plainRender = (ui, options = { usingLayout: true }) => {
   );
 };
 
-export { installerRender, plainRender };
+/**
+ * Creates a function to register callbacks
+ *
+ * It can be useful to mock functions that might receive a callback that you can
+ * execute on-demand during the test.
+ *
+ * @return a tuple with the mocked function and the list of callbacks.
+ */
+const createCallbackMock = () => {
+  const callbacks = [];
+  const on = (callback) => {
+    callbacks.push(callback);
+    return () => {
+      const position = callbacks.indexOf(callback);
+      if (position > -1) callbacks.splice(position, 1);
+    };
+  };
+  return [on, callbacks];
+};
+
+export { installerRender, plainRender, createCallbackMock };

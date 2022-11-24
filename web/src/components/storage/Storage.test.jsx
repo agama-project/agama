@@ -21,7 +21,7 @@
 
 import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender, createCallbackMock } from "@/test-utils";
 import { createClient } from "@client";
 import { IDLE } from "@client/status";
 import { Storage } from "@components/storage";
@@ -97,8 +97,9 @@ describe("when the storage proposal changes", () => {
   let callbacks;
 
   beforeEach(() => {
-    callbacks = [];
-    onStorageProposalChangeFn = cb => callbacks.push(cb);
+    const [mockedFn, callbacksList] = createCallbackMock();
+    callbacks = callbacksList;
+    onStorageProposalChangeFn = mockedFn;
   });
 
   it("updates the proposal", async () => {
@@ -117,8 +118,9 @@ describe("when the storage actions change", () => {
   let callbacks;
 
   beforeEach(() => {
-    callbacks = [];
-    onActionsChangeFn = cb => callbacks.push(cb);
+    const [mockedFn, callbacksList] = createCallbackMock();
+    callbacks = callbacksList;
+    onActionsChangeFn = mockedFn;
   });
 
   it("updates the proposal", async () => {

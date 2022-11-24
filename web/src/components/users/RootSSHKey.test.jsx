@@ -22,7 +22,7 @@
 import React from "react";
 
 import { act, screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender, createCallbackMock } from "@/test-utils";
 import { createClient } from "@client";
 import { RootSSHKey } from "@components/users";
 
@@ -121,15 +121,11 @@ describe("when the SSH public key is set", () => {
 });
 
 describe("when the Users change", () => {
-  let callbacks;
-
-  beforeEach(() => {
-    callbacks = [];
-    onUsersChangeFn = cb => callbacks.push(cb);
-  });
-
   describe("and the RootSSHKey has been modified", () => {
     it("updates the proposal root SSH Key description", async () => {
+      const [mockFunction, callbacks] = createCallbackMock();
+      onUsersChangeFn = mockFunction;
+
       installerRender(<RootSSHKey />);
       let rootSSHKey = await screen.findByText(/Root SSH public key/i);
       within(rootSSHKey).getByRole("button", { name: "is not set" });

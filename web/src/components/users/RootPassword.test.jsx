@@ -22,7 +22,7 @@
 import React from "react";
 
 import { act, screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender, createCallbackMock } from "@/test-utils";
 import { createClient } from "@client";
 
 import { RootPassword } from "@components/users";
@@ -151,15 +151,11 @@ describe("when an error happens while changing the password", () => {
 });
 
 describe("when the Users change", () => {
-  let callbacks;
-
-  beforeEach(() => {
-    callbacks = [];
-    onUsersChangeFn = cb => callbacks.push(cb);
-  });
-
   describe("and the RootPassword has been modified", () => {
     it("updates the proposal root password description", async () => {
+      const [mockFunction, callbacks] = createCallbackMock();
+      onUsersChangeFn = mockFunction;
+
       installerRender(<RootPassword />);
       let rootPassword = await screen.findByText(/Root password/i);
       within(rootPassword).getByRole("button", { name: "is not set" });
