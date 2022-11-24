@@ -20,7 +20,7 @@
  */
 
 export { default as About } from "./About";
-export { default as Category } from "./Category";
+export { default as Section } from "./Section";
 export { default as FormLabel } from "./FormLabel";
 export { default as InstallationFinished } from "./InstallationFinished";
 export { default as InstallationProgress } from "./InstallationProgress";

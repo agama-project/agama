@@ -26,7 +26,7 @@ import { useSoftware } from "@context/software";
 import { Button, Flex, FlexItem } from "@patternfly/react-core";
 
 import { Title, PageIcon, PageActions, MainActions } from "@components/layout";
-import { Category, InstallButton } from "@components/core";
+import { Section, InstallButton } from "@components/core";
 import { LanguageSelector } from "@components/language";
 import { Storage } from "@components/storage";
 import { Users } from "@components/users";
@@ -67,12 +67,12 @@ function Overview() {
   }
 
   const categories = [
-    <Category key="language" title="Language" icon={LanguagesSelectionIcon}>
+    <Section key="language" title="Language" icon={LanguagesSelectionIcon}>
       <LanguageSelector />
-    </Category>,
-    <Category key="network" title="Network" icon={NetworkIcon}>
+    </Section>,
+    <Section key="network" title="Network" icon={NetworkIcon}>
       <Network />
-    </Category>,
+    </Section>,
     <Storage key="storage" showErrors />,
     <Users key="users" showErrors={showErrors} />
   ];

@@ -24,7 +24,7 @@ import { useCancellablePromise } from "@/utils";
 import { useInstallerClient } from "@context/installer";
 import { BUSY } from "@client/status";
 
-import { InstallerSkeleton, Category } from "@components/core";
+import { InstallerSkeleton, Section } from "@components/core";
 import { TargetSelector, Proposal } from "@components/storage";
 
 import { EOS_VOLUME as HardDriveIcon } from "eos-icons-react";
@@ -141,7 +141,7 @@ export default function Storage({ showErrors }) {
 
   return (
     <>
-      <Category key="users" title="Storage" icon={HardDriveIcon} errors={showErrors ? errors : []}>
+      <Section key="users" title="Storage" icon={HardDriveIcon} errors={showErrors ? errors : []}>
         {targets.length > 0 &&
           <TargetSelector
             target={target || "Select device to install into"}
@@ -149,7 +149,7 @@ export default function Storage({ showErrors }) {
             onAccept={onAccept}
           />}
         <Proposal data={actions} />
-      </Category>
+      </Section>
     </>
   );
 }
