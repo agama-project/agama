@@ -81,14 +81,14 @@ const EmptyIcon = () => null;
  *
  * @param {object} props
  * @param {string} props.title - The title for the section
- * @param {boolean} [props.usingSeparator] - whehter or not a thin border should be shown between title and content
+ * @param {boolean} [props.usingSeparator] - whether or not a thin border should be shown between title and content
  * @param {React.FunctionComponent} [props.icon=EmptyIcon] - An icon for the section. Empty by default
  * @param {import("@client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title
  * @param {React.FunctionComponent|React.ComponentClass} [props.actionIcon=CogIcon] - An icon to be used for section actions
  * @param {React.ReactNode} [props.actionTooltip] - text to be shown as a tooltip when user hovers action icon, if present
  * @param {React.MouseEventHandler} [props.onActionClick] - callback to be triggered when user clicks on action icon, if present
  * @param {JSX.Element} [props.children] - the section content
- * @param {...object} [otherProps] PF4/Split props, see {@link https://www.patternfly.org/v4/layouts/split#props}
+ * @param {object} [props.otherProps] PF4/Split props, see {@link https://www.patternfly.org/v4/layouts/split#props}
  */
 export default function Section({
   title,
