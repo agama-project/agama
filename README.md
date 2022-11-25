@@ -54,7 +54,16 @@ There are two ways of running this project: a) by using a D-Installer live ISO i
 
 ### Live ISO Image
 
-The easiest way to give D-Installer a try is to grab a [live ISO image](https://build.opensuse.org/package/binaries/YaST:Head:D-Installer/d-installer-live/images) and boot it in a virtual machine. This is also the recommended way if you only want to play and see it in action. If you want to have a closer look, then clone and configure the project as explained in the next section.
+The easiest way to give D-Installer a try is to grab a live ISO image and boot it in a virtual
+machine. This is also the recommended way if you only want to play and see it in action. If you want
+to have a closer look, then clone and configure the project as explained in the next section.
+
+* [multi-product](https://build.opensuse.org/package/binaries/YaST:Head:D-Installer/d-installer-live:default/images):
+  it can be used to install different products, like *openSUSE Tumbleweed*, *Leap*, *Leap Micro* or
+  an experimental version of the *Adaptable Linux Platform Host OS*.
+* [ALP only](https://build.opensuse.org/package/binaries/YaST:Head:D-Installer/d-installer-live:ALP/images):
+  it only contains the definition for the experimental *Adaptable Linux Platform Host OS*, although
+  the rest of the content is pretty much the same than the multi-product version.
 
 ### Manual Configuration
 
