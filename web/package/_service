@@ -6,6 +6,7 @@
     <param name="revision">master</param>
     <param name="subdir">web</param>
     <param name="extract">package-lock.json</param>
+    <param name="extract">package/cockpit-d-installer.changes</param>
     <param name="extract">package/cockpit-d-installer.spec</param>
   </service>
   <service name="node_modules">
