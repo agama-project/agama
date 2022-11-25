@@ -112,9 +112,7 @@ module DInstaller
         #
         # @return [String]
         def encryption_password
-          return "" unless backend.calculated_settings
-
-          backend.calculated_settings.encryption_password
+          backend.calculated_settings&.encryption_password || ""
         end
 
         # Volumes used as template for creating a new volume
@@ -172,7 +170,7 @@ module DInstaller
         SETTINGS_CONVERSIONS = {
           "CandidateDevices"   => ["candidate_devices=", proc { |v| v }],
           "LVM"                => ["lvm=", proc { |v| v }],
-          "EncryptionPassword" => ["encryption_password=", proc { |v| v }],
+          "EncryptionPassword" => ["encryption_password=", proc { |v| v.empty? ? nil : v }],
           "Volumes"            => ["volumes=", proc { |v, o| o.send(:to_proposal_volumes, v) }]
         }.freeze
         private_constant :SETTINGS_CONVERSIONS
