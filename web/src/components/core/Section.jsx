@@ -123,7 +123,7 @@ export default function Section({
     if (!actionTooltip) return <Action />;
 
     return (
-      <Tooltip content={actionTooltip} position="right" entryDelay={200} exitDelay={200}>
+      <Tooltip content={actionTooltip} position="right" distance={10} entryDelay={200} exitDelay={200}>
         <Action />
       </Tooltip>
     );
