@@ -54,7 +54,7 @@ const reducer = (state, action) => {
   }
 };
 
-export default function OverviewSection({ showErrors }) {
+export default function StorageSection ({ showErrors }) {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const navigate = useNavigate();

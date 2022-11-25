@@ -28,7 +28,7 @@ import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import { Title, PageIcon, PageActions, MainActions } from "@components/layout";
 import { Section, InstallButton } from "@components/core";
 import { LanguageSelector } from "@components/language";
-import { OverviewSection as Storage } from "@components/storage";
+import { StorageSection } from "@components/overview";
 import { Users } from "@components/users";
 import { Network } from "@components/network";
 
@@ -73,7 +73,7 @@ function Overview() {
     <Section key="network" title="Network" icon={NetworkIcon}>
       <Network />
     </Section>,
-    <Storage key="storage" showErrors />,
+    <StorageSection key="storage" showErrors />,
     <Users key="users" showErrors={showErrors} />
   ];
 

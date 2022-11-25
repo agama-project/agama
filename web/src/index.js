@@ -33,7 +33,7 @@ import { createClient } from "@/client";
 
 import App from "@/App";
 import Main from "@/Main";
-import { Overview } from "@components/core";
+import { Overview } from "@components/overview";
 import { ProductSelectionPage } from "@components/software";
 import { ProposalPage as StoragePage } from "@components/storage";
 
