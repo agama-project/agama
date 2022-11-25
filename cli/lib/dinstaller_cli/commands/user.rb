@@ -32,10 +32,17 @@ module DInstallerCli
       option :autologin, type: :boolean, default: false,
         desc: "Enable/disable user autologin (disabled by default)"
       def set(name)
-        client.create_first_user(name,
-          fullname:  options[:fullname],
-          password:  options[:password],
-          autologin: options[:autologin])
+        fullname = options[:fullname]
+        password = options[:password]
+
+        if client.valid_user?(name, fullname: fullname, password: password)
+          client.create_first_user(name,
+            fullname:  fullname,
+            password:  password,
+            autologin: options[:autologin])
+        else
+          say("User #{name} is not a valid user")
+        end
       end
 
       desc "show", "Show the user configuration"

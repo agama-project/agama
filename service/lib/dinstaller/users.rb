@@ -78,12 +78,23 @@ module DInstaller
       root_user.password = nil
     end
 
+    def validate_user(full_name, user_name, password)
+      user = Y2Users::User.new(user_name)
+      user.gecos = [full_name]
+      user.password = Y2Users::Password.create_plain(password)
+
+      user.issues
+    end
+
     def assign_first_user(full_name, user_name, password, auto_login, _data)
       remove_first_user
 
       user = Y2Users::User.new(user_name)
       user.gecos = [full_name]
       user.password = Y2Users::Password.create_plain(password)
+
+      return user.issues unless user.issues.empty?
+
       config.attach(user)
       config.login ||= Y2Users::LoginConfig.new
       config.login.autologin_user = auto_login ? user : nil

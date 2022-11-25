@@ -55,6 +55,15 @@ module DInstaller
         # @param name [String]
         # @param fullname [String, nil]
         # @param password [String, nil]
+        def valid_user?(name, fullname: nil, password: nil)
+          dbus_object.ValidateUser(fullname.to_s, name, password.to_s)
+        end
+
+        # Configures the first user to create during the installation
+        #
+        # @param name [String]
+        # @param fullname [String, nil]
+        # @param password [String, nil]
         # @param autologin [Boolean]
         def create_first_user(name, fullname: nil, password: nil, autologin: false)
           dbus_object.SetFirstUser(fullname.to_s, name, password.to_s, !!autologin, {})
