@@ -4,17 +4,22 @@ D-Installer packages are available in the [YaST:Head:D-Installer project in
 OBS](https://build.opensuse.org/project/show/YaST:Head:D-Installer). This document summarizes the
 process we follow to build those packages.
 
-## Update release information
+The process to build the Ruby-based ones (`rubygem-d-installer` and `rubygem-d-installer-cli`) is
+different from the one we use to build the web UI (`cockpit-d-installer`). The former packages are
+built in the same way that other YaST packages (through Rake tasks), while the latter package is
+automatically built in the Open Build Service.
 
-Before releasing a new version, you are expected to update the version and the changelogs
-and commit those changes to the repository.
+## Releasing a new version
 
-* `VERSION` contains the version number for the Ruby packages (the service and the CLI). This value
-  is read and injected in the corresponding `gemspec` files when building the Ruby gems. Do not
-  forget to run `bundle` to update the version in the `Gemfile.lock` file.
-* `web/package/_service` defines the configuration of the build service. The version
-  number is specified as a param of the `set_version` service.
-* The changes files are included in the corresponding `package` directories.
+In order to release a new version, we need to:
+
+* Update the version number in the `VERSION` file. This file is read by the Ruby-based packages
+  when building the gems.
+* Tag the repository with the proper number. The process to build `cockpit-d-installer` uses this
+  information to infer the version. You can set the tag with something like:
+
+      git tag --sign 0.5 --message "Version 0.5"
+      git push --tags
 
 ## Building the packages
 
@@ -23,41 +28,38 @@ to update the packages in the build service.
 
 ### Service and CLI
 
-The process to release new version of the service and the CLI is pretty much the same. You can check
-the current packages in
+You can check the current packages in
 [YaST:Head:D-Installer/rubygem-d-installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/rubygem-d-installer)
 and
 [YaST:Head:D-Installer/rubygem-d-installer-cli](https://build.opensuse.org/package/show/YaST:Head:D-Installer/rubygem-d-installer-cli).
 
-Given that you are in the `service` or the `cli` directories, the process to release a new version
-can be summarized in these steps:
+Given that you are in the `service` or the `cli` directory, just type the following command to
+update the packages in the build service:
 
-1. Build the `gem` by running `gem build d-installer.gemspec` or `gem build
-   d-installer-cli.gemspec`.
-2. Update the `spec` file using the `gem2rpm` tool. The configuration is [included in the
-   repository](./service/package/gem2rpm.yml). To regenerate the spec, you might type something
-   like:
+      rake osc:commit
 
-       gem2rpm --config package/gem2rpm.yml d-installer-0.1.gem > package/rubygem-d-installer.spec
+If you just want to build the package locally, run:
 
-3. Checkout the OBS package and copy the `gem`, the `spec` and the `changes` files from the
-   repository.
-4. Commit the changes.
+      rake osc:build
 
 ### The Cockpit module
 
 The current package is
 [YaST:Head:D-Installer/cockpit-d-installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/cockpit-d-installer).
-You can figure out most details by checking the [_service](_./web/package/_service) file. It might
-happen that you get out of RAM when building the package, so in this case, it is better to build it
-remotely.
+It relies on [OBS Source
+Services](https://openbuildservice.org/help/manuals/obs-user-guide/cha.obs.source_service.html) to
+fetch the sources (including the dependencies), set the version and build the package. You can
+figure out most details by checking the [_service](_./web/package/_service) file. 
 
-Given that you are in the `web` directory, the process to update the package is:
+To update the package in the build service, you just need to type:
 
-1. Checkout the OBS package and copy `package/*` and `package-lock.json` files from the repository.
-2. In your package checkout, run `osc service manualrun`. It will update D-Installer sources and
-   dependencies (`node_modules`).
-3. Commit the changes.
+      osc rebuild YaST:Head:D-Installer cockpit-d-installer
+
+If you want to build the pacakge locally, just checkout (or branch) the package and run `osc build`.
+
+The version number is inferred from the repository tags (see [Releasing a new
+version](#releasing-a-new-version)): it uses the latest tag and the abbreviated hash of the last
+commit (e.g., `0.5.49e6a2a`).
 
 You can read more about the overall approach of this package in the following article: [Git work
 flows in the upcoming 2.7 release](https://openbuildservice.org/2016/04/08/new_git_in_27/).
