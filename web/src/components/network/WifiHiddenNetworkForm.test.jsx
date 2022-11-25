@@ -52,19 +52,5 @@ describe("WifiHiddenNetworkForm", () => {
       plainRender(<WifiHiddenNetworkForm visible={false} />);
       screen.findByText(/Connect to hidden network/i);
     });
-
-    describe("and the user clicks on the opening link", () => {
-      it("triggers the beforeDisplaying callback", async () => {
-        const beforeDisplayingFn = jest.fn();
-        const { user } = plainRender(
-          <WifiHiddenNetworkForm visible={false} beforeDisplaying={beforeDisplayingFn} />
-        );
-
-        const link = screen.getByRole("button", { name: "Connect to hidden network" });
-        await user.click(link);
-
-        expect(beforeDisplayingFn).toHaveBeenCalled();
-      });
-    });
   });
 });

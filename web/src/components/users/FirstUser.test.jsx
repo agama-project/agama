@@ -22,7 +22,7 @@
 import React from "react";
 
 import { act, screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender, createCallbackMock } from "@/test-utils";
 import { createClient } from "@client";
 import { FirstUser } from "@components/users";
 
@@ -130,15 +130,11 @@ describe("when the first user is already defined", () => {
 });
 
 describe("when the Users change", () => {
-  let callbacks;
-
-  beforeEach(() => {
-    callbacks = [];
-    onUsersChangeFn = cb => callbacks.push(cb);
-  });
-
   describe("and the FirstUser has been modified", () => {
     it("updates the proposal first User description", async () => {
+      const [mockFunction, callbacks] = createCallbackMock();
+      onUsersChangeFn = mockFunction;
+
       installerRender(<FirstUser />);
 
       let firstUser = await screen.findByText(/A user/i);
