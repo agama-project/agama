@@ -16,7 +16,10 @@ In order to release a new version, we need to:
 * Update the version number in the `VERSION` file. This file is read by the Ruby-based packages
   when building the gems.
 * Tag the repository with the proper number. The process to build `cockpit-d-installer` uses this
-  information to set the version.
+  information to infer the version. You can set the tag with something like:
+
+      git tag -s 0.5 -m "Version 0.5"
+      git push --tags
 
 ## Building the packages
 
