@@ -42,11 +42,25 @@ import { CogIcon } from '@patternfly/react-icons';
 import "./section.scss";
 
 /**
- * Dummy component to be used as a fallback when building a section without icon
+ * Helper method for rendering section react-icons
  *
- * @component
+ * @param {React.FunctionComponent|React.ComponentClass} icon
+ * @param {string} ariaLabel
+ * @param {number} [size=32]
+ *
+ * @return {React.ReactNode}
  */
-const EmptyIcon = () => null;
+const renderIcon = (icon, ariaLabel, size = 32) => {
+  if (!icon) return null;
+
+  const Icon = icon;
+
+  return (
+    <figure aria-label={ariaLabel}>
+      <Icon size={size} />
+    </figure>
+  );
+};
 
 /**
  *
@@ -88,7 +102,7 @@ const EmptyIcon = () => null;
  * @param {string} props.title - The title for the section
  * @param {string} [props.description] - A tiny description for the section
  * @param {boolean} [props.usingSeparator] - whether or not a thin border should be shown between title and content
- * @param {React.FunctionComponent} [props.icon=EmptyIcon] - An icon for the section. Empty by default
+ * @param {React.FunctionComponent} [props.icon] - An icon for the section
  * @param {import("@client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title
  * @param {React.FunctionComponent|React.ComponentClass} [props.actionIcon=CogIcon] - An icon to be used for section actions
  * @param {React.ReactNode} [props.actionTooltip] - text to be shown as a tooltip when user hovers action icon, if present
@@ -100,7 +114,7 @@ export default function Section({
   title,
   description,
   usingSeparator,
-  icon = EmptyIcon,
+  icon,
   errors,
   actionIcon = CogIcon,
   actionTooltip,
@@ -108,15 +122,12 @@ export default function Section({
   children,
   ...otherProps
 }) {
-  const Icon = icon;
-  const ActionIcon = actionIcon;
-
   const renderAction = () => {
     if (typeof onActionClick !== 'function') return null;
 
     const Action = () => (
       <Button variant="plain" className="d-installer-section-action" isInline onClick={onActionClick}>
-        <ActionIcon />
+        {renderIcon(actionIcon, `${title} section action icon`)}
       </Button>
     );
 
@@ -137,7 +148,7 @@ export default function Section({
   return (
     <Split className="d-installer-section" hasGutter {...otherProps}>
       <SplitItem className="d-installer-section-icon">
-        <Icon size="32" />
+        {renderIcon(icon, `${title} section icon`, 32)}
       </SplitItem>
       <SplitItem isFilled>
         <Stack hasGutter>
