@@ -20,7 +20,7 @@
  */
 
 export { default as About } from "./About";
-export { default as Category } from "./Category";
+export { default as Section } from "./Section";
 export { default as FormLabel } from "./FormLabel";
 export { default as Fieldset } from "./Fieldset";
 export { default as InstallationFinished } from "./InstallationFinished";

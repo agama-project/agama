@@ -1,0 +1,37 @@
+@use "@assets/fonts.scss";
+@use "eos-ds/dist/scss/eos-base/variables/branding.scss";
+
+.d-installer-section {
+  .d-installer-section-icon {
+    min-width: 32px;
+  }
+
+  .d-installer-section-title.using-separator {
+    border-bottom: 1px solid #efefef;
+    border-image: linear-gradient(45deg, branding.$eos-bc-gray-50, transparent) 1;
+  }
+
+  .d-installer-section-action {
+    padding-inline: calc(fonts.$size-base / 2);
+    transition: all 0.2s ease-in-out;
+
+    svg {
+      fill: branding.$eos-bc-green-500;
+    }
+
+    &:hover {
+      transform: scale(1.4);
+
+      svg {
+        fill: branding.$eos-bc-pine-500;
+      }
+    }
+  }
+
+  .d-installer-section-description {
+    margin-block-start: calc(
+      calc(var(--pf-l-stack--m-gutter--MarginBottom) * -1) +
+      calc(fonts.$size-base / 2)
+    );
+  }
+}

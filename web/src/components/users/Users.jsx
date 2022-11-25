@@ -23,7 +23,7 @@ import React, { useEffect, useState } from "react";
 import { Stack, StackItem } from "@patternfly/react-core";
 
 import { useInstallerClient } from "@context/installer";
-import { Category } from "@components/core";
+import { Section } from "@components/core";
 import { FirstUser, RootPassword, RootSSHKey } from "@components/users";
 
 import {
@@ -41,7 +41,7 @@ export default function Users({ showErrors }) {
 
   return (
     <>
-      <Category key="users" title="Users" icon={UsersIcon} errors={showErrors ? errors : []}>
+      <Section key="users" title="Users" icon={UsersIcon} errors={showErrors ? errors : []}>
         <Stack className="overview-users">
           <StackItem>
             <RootPassword />
@@ -53,7 +53,7 @@ export default function Users({ showErrors }) {
             <FirstUser />
           </StackItem>
         </Stack>
-      </Category>
+      </Section>
     </>
   );
 }
