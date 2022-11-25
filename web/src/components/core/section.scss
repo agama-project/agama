@@ -28,4 +28,10 @@
     }
   }
 
+  .d-installer-section-description {
+    margin-block-start: calc(
+      calc(var(--pf-l-stack--m-gutter--MarginBottom) * -1) +
+      calc(fonts.$size-base / 2)
+    );
+  }
 }

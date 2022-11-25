@@ -58,6 +58,11 @@ const EmptyIcon = () => null;
  *     <UserSectionContent />
  *   </Section>
  *
+ * @example <caption>A section with a description</caption>
+ *   <Section title="Users" icon={UsersIcon} description="Use this section for setting the user data">
+ *     <UserSectionContent />
+ *   </Section>
+ *
  * @example <caption>A section without icon but settings action with tooltip</caption>
  *   <Section
  *     key="language"
@@ -81,6 +86,7 @@ const EmptyIcon = () => null;
  *
  * @param {object} props
  * @param {string} props.title - The title for the section
+ * @param {string} [props.description] - A tiny description for the section
  * @param {boolean} [props.usingSeparator] - whether or not a thin border should be shown between title and content
  * @param {React.FunctionComponent} [props.icon=EmptyIcon] - An icon for the section. Empty by default
  * @param {import("@client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title
@@ -92,6 +98,7 @@ const EmptyIcon = () => null;
  */
 export default function Section({
   title,
+  description,
   usingSeparator,
   icon = EmptyIcon,
   errors,
@@ -141,6 +148,14 @@ export default function Section({
               </Text>
             </TextContent>
           </StackItem>
+          { description && description !== "" &&
+          <StackItem className="d-installer-section-description">
+            <TextContent>
+              <Text component={TextVariants.small}>
+                {description}
+              </Text>
+            </TextContent>
+          </StackItem> }
           { errors &&
           <StackItem>
             <ValidationErrors errors={errors} title={`${title} errors`} />
