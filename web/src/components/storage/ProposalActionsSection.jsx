@@ -21,14 +21,12 @@
 
 import React from "react";
 
-import { EOS_VOLUME as Icon } from "eos-icons-react";
-
 import { Section } from "@components/core";
 import { ProposalActions } from "@components/storage";
 
 export default function ProposalActionsSection({ proposal }) {
   return (
-    <Section title="Actions" icon={Icon}>
+    <Section title="Actions" usingSeparator>
       <ProposalActions actions={proposal.actions} />
     </Section>
   );

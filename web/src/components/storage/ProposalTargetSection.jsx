@@ -22,14 +22,8 @@
 import React, { useState } from "react";
 
 import {
-  Button,
   Text
 } from "@patternfly/react-core";
-
-import {
-  EOS_VOLUME as SectionIcon,
-  EOS_SETTINGS as EditIcon
-} from "eos-icons-react";
 
 import { Section, Popup } from "@components/core";
 import { ProposalTargetForm } from "@components/storage";
@@ -42,14 +36,7 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
   };
 
   return (
-    <Section title="Target" icon={SectionIcon}>
-      <Button
-        isSmall
-        variant="plain"
-        icon={<EditIcon />}
-        aria-label="Change target"
-        onClick={() => setIsOpen(true)}
-      />
+    <Section title="Target" onActionClick={() => setIsOpen(true)} usingSeparator>
       <Text>
         Install using disk {proposal.candidateDevices.join(", ")} and deleting all its content
       </Text>

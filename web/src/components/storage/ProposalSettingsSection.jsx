@@ -21,15 +21,6 @@
 
 import React, { useState } from "react";
 
-import {
-  Button,
-} from "@patternfly/react-core";
-
-import {
-  EOS_VOLUME as SectionIcon,
-  EOS_SETTINGS as EditIcon
-} from "eos-icons-react";
-
 import { Section, Popup } from "@components/core";
 import { ProposalSettingsForm, ProposalVolumes } from "@components/storage";
 
@@ -45,14 +36,7 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
   };
 
   return (
-    <Section title="Settings" icon={SectionIcon}>
-      <Button
-        isSmall
-        variant="plain"
-        icon={<EditIcon />}
-        aria-label="settings"
-        onClick={() => setIsOpen(true)}
-      />
+    <Section title="Settings" onActionClick={() => setIsOpen(true)} usingSeparator>
       <Popup title="Edit proposal settings" isOpen={isOpen}>
         <ProposalSettingsForm id="settings-form" proposal={proposal} onSubmit={onSettingsChange} />
         <Popup.Actions>
