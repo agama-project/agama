@@ -19,13 +19,24 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as OverviewSection } from "./OverviewSection";
-export { default as ProposalPage } from "./ProposalPage";
-export { default as ProposalTargetSection } from "./ProposalTargetSection";
-export { default as ProposalSettingsSection } from "./ProposalSettingsSection";
-export { default as ProposalActionsSection } from "./ProposalActionsSection";
-export { default as ProposalTargetForm } from "./ProposalTargetForm";
-export { default as ProposalSettingsForm } from "./ProposalSettingsForm";
-export { default as DeviceSelector } from "./DeviceSelector";
-export { default as ProposalVolumes } from "./ProposalVolumes";
-export { default as ProposalActions } from "./ProposalActions";
+import React from "react";
+
+import {
+  FormGroup,
+  FormSelect,
+  FormSelectOption,
+} from "@patternfly/react-core";
+
+export default function DeviceSelector({ value, options, onChange }) {
+  const selectorOptions = options.map(option => {
+    return <FormSelectOption key={option.id} value={option.id} label={option.label} />;
+  });
+
+  return (
+    <FormGroup fieldId="device" label="Device to install into">
+      <FormSelect id="device" value={value} onChange={onChange} aria-label="device">
+        {selectorOptions}
+      </FormSelect>
+    </FormGroup>
+  );
+}

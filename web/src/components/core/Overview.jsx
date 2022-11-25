@@ -28,7 +28,7 @@ import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import { Title, PageIcon, PageActions, MainActions } from "@components/layout";
 import { Section, InstallButton } from "@components/core";
 import { LanguageSelector } from "@components/language";
-import { Storage } from "@components/storage";
+import { OverviewSection as Storage } from "@components/storage";
 import { Users } from "@components/users";
 import { Network } from "@components/network";
 

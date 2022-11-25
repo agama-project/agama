@@ -22,26 +22,31 @@
 import React, { useState } from "react";
 import { List, ListItem, ExpandableSection } from "@patternfly/react-core";
 
-const renderActionsList = actions => {
-  const items = actions.map((a, i) => {
+// Some actions (e.g., deleting a LV) are reported as several actions joined by a line break
+const actionItems = (action, id) => {
+  return action.text.split("\n").map((text, index) => {
     return (
-      <ListItem key={i} className={a.delete ? "proposal-action--delete" : null}>
-        {a.text}
+      <ListItem key={`${id}-${index}`} className={action.delete ? "proposal-action--delete" : null}>
+        {text}
       </ListItem>
     );
   });
+};
+
+const renderActionsList = actions => {
+  const items = actions.map(actionItems).flat();
   return <List className="proposal-actions">{items}</List>;
 };
 
-const Proposal = ({ data = [] }) => {
+export default function ProposalActions ({ actions = [] }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  if (data.length === 0) {
+  if (actions.length === 0) {
     return null;
   }
 
-  const generalActions = data.filter(a => !a.subvol);
-  const subvolActions = data.filter(a => a.subvol);
+  const generalActions = actions.filter(a => !a.subvol);
+  const subvolActions = actions.filter(a => a.subvol);
   const userAction = isExpanded ? "Hide" : "Show";
   const toggleText = `${userAction} ${subvolActions.length} subvolumes actions`;
 
@@ -61,6 +66,4 @@ const Proposal = ({ data = [] }) => {
       )}
     </>
   );
-};
-
-export default Proposal;
+}

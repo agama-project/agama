@@ -44,38 +44,89 @@ class StorageBaseClient {
   }
 
   /**
-   * Returns the actions for the current proposal
+   * Returns storage proposal values
    *
-   * @return {Promise<object[]>}
+   * @return {Promise<object>}
    */
-  async getStorageActions() {
+  async getProposal() {
     const proxy = await this.client.proxy(STORAGE_PROPOSAL_IFACE);
-    return proxy.Actions.map(action => {
-      const { Text: { v: textVar }, Subvol: { v: subvolVar }, Delete: { v: deleteVar } } = action;
+
+    const volume = dbusVolume => {
+      const valueFrom = dbusValue => dbusValue?.v;
+
+      const valuesFrom = (dbusValues) => {
+        if (dbusValues === undefined) return [];
+        return dbusValues.v.map(valueFrom);
+      };
+
+      return {
+        mountPoint: valueFrom(dbusVolume.MountPoint),
+        optional: valueFrom(dbusVolume.Optional),
+        deviceType: valueFrom(dbusVolume.DeviceType),
+        encrypted: valueFrom(dbusVolume.Encrypted),
+        fsTypes: valuesFrom(dbusVolume.FsTypes),
+        fsType: valueFrom(dbusVolume.FsType),
+        minSize: valueFrom(dbusVolume.MinSize),
+        maxSize: valueFrom(dbusVolume.MaxSize),
+        fixedSizeLimits: valueFrom(dbusVolume.FixedSizeLimits),
+        adaptiveSizes: valueFrom(dbusVolume.AdaptiveSizes),
+        snapshots: valueFrom(dbusVolume.Snapshots),
+        snapshotsConfigurable: valueFrom(dbusVolume.SnapshotsConfigurable),
+        snapshotsAffectSizes: valueFrom(dbusVolume.SnapshotsAffectSizes),
+        sizeRelevantVolumes: valueFrom(dbusVolume.SizeRelevantVolumes)
+      };
+    };
+
+    const action = dbusAction => {
+      const { Text: { v: textVar }, Subvol: { v: subvolVar }, Delete: { v: deleteVar } } = dbusAction;
       return { text: textVar, subvol: subvolVar, delete: deleteVar };
+    };
+
+    return {
+      availableDevices: proxy.AvailableDevices.map(([id, label]) => ({ id, label })),
+      candidateDevices: proxy.CandidateDevices,
+      lvm: proxy.LVM,
+      encryptionPassword: proxy.EncryptionPassword,
+      volumes: proxy.Volumes.map(volume),
+      actions: proxy.Actions.map(action)
+    };
+  }
+
+  // FIXME do not send undefined values
+  async calculateProposal({ candidateDevices, encryptionPassword, lvm, volumes }) {
+    const proxy = await this.client.proxy(STORAGE_PROPOSAL_IFACE);
+
+    const dbusVolume = volume => {
+      return {
+        MountPoint: cockpit.variant("s", volume.mountPoint),
+        Encrypted: cockpit.variant("b", volume.encrypted),
+        FsType: cockpit.variant("s", volume.fsType),
+        MinSize: cockpit.variant("x", volume.minSize),
+        MaxSize: cockpit.variant("x", volume.maxSize),
+        FixedSizeLimits: cockpit.variant("b", volume.fixedSizeLimits),
+        Snapshots: cockpit.variant("b", volume.snapshots)
+      };
+    };
+
+    return proxy.Calculate({
+      CandidateDevices: cockpit.variant("as", candidateDevices),
+      EncryptionPassword: cockpit.variant("s", encryptionPassword),
+      LVM: cockpit.variant("b", lvm),
+      Volumes: cockpit.variant("aa{sv}", volumes.map(dbusVolume))
     });
   }
 
   /**
-   * Returns storage proposal settings
+   * Registers a callback to run when properties in the Storage Proposal object change
    *
-   * @return {Promise<object>}
+   * @param {function} handler - callback function
    */
-  async getStorageProposal() {
-    const proxy = await this.client.proxy(STORAGE_PROPOSAL_IFACE);
-    return {
-      availableDevices: proxy.AvailableDevices.map(([id, label]) => {
-        return { id, label };
-      }),
-      candidateDevices: proxy.CandidateDevices,
-      lvm: proxy.LVM
-    };
-  }
-
-  async calculateStorageProposal({ candidateDevices }) {
-    const proxy = await this.client.proxy(STORAGE_PROPOSAL_IFACE);
-    return proxy.Calculate({
-      CandidateDevices: cockpit.variant("as", candidateDevices)
+  onProposalChange(handler) {
+    return this.client.onObjectChanged(STORAGE_PROPOSAL_PATH, STORAGE_PROPOSAL_IFACE, changes => {
+      if (Array.isArray(changes.CandidateDevices.v)) {
+        // FIXME return the proposal object (see getProposal)
+        handler({ candidateDevices: changes.CandidateDevices.v });
+      }
     });
   }
 
@@ -93,20 +144,6 @@ class StorageBaseClient {
           return { text: textVar.v, subvol: subvolVar.v, delete: deleteVar.v };
         });
         handler(newActions);
-      }
-    });
-  }
-
-  /**
-   * Registers a callback to run when properties in the Storage Proposal object change
-   *
-   * @param {function} handler - callback function
-   */
-  onStorageProposalChange(handler) {
-    return this.client.onObjectChanged(STORAGE_PROPOSAL_PATH, STORAGE_PROPOSAL_IFACE, changes => {
-      if (Array.isArray(changes.CandidateDevices.v)) {
-        const [selected] = changes.CandidateDevices.v;
-        handler(selected);
       }
     });
   }

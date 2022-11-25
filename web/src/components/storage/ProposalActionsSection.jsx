@@ -19,13 +19,17 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as OverviewSection } from "./OverviewSection";
-export { default as ProposalPage } from "./ProposalPage";
-export { default as ProposalTargetSection } from "./ProposalTargetSection";
-export { default as ProposalSettingsSection } from "./ProposalSettingsSection";
-export { default as ProposalActionsSection } from "./ProposalActionsSection";
-export { default as ProposalTargetForm } from "./ProposalTargetForm";
-export { default as ProposalSettingsForm } from "./ProposalSettingsForm";
-export { default as DeviceSelector } from "./DeviceSelector";
-export { default as ProposalVolumes } from "./ProposalVolumes";
-export { default as ProposalActions } from "./ProposalActions";
+import React from "react";
+
+import { EOS_VOLUME as Icon } from "eos-icons-react";
+
+import { Section } from "@components/core";
+import { ProposalActions } from "@components/storage";
+
+export default function ProposalActionsSection({ proposal }) {
+  return (
+    <Section title="Actions" icon={Icon}>
+      <ProposalActions actions={proposal.actions} />
+    </Section>
+  );
+}
