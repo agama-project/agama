@@ -133,7 +133,8 @@ ALP:
       - alp_cockpit
       - alp-container_runtime
     optional_patterns: null # no optional pattern shared
-    mandatory_packages: null
+    mandatory_packages:
+      - device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
     optional_packages: null
     base_product: ALP
 
