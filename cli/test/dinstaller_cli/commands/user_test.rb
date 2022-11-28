@@ -31,13 +31,27 @@ describe DInstallerCli::Commands::User do
     allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(client)
   end
 
-  let(:client) { instance_double(DInstaller::DBus::Clients::Users) }
+  let(:create_result) { { "result" => 0 } }
+
+  let(:client) do
+    instance_double(DInstaller::DBus::Clients::Users, create_first_user: create_result)
+  end
 
   describe "#set" do
     it "sets the first user config" do
       expect(client).to receive(:create_first_user).with("test", anything)
+      expect(subject).to_not receive(:say)
 
       subject.set("test")
+    end
+
+    context "if there is some issue adding the first user" do
+      let(:create_result) { { "result" => 1, "issues" => ["Error"] } }
+      it "shows the errors" do
+        expect(subject).to receive(:say).with("Error")
+
+        subject.set("root")
+      end
     end
   end
 
