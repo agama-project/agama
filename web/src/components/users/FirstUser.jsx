@@ -24,6 +24,7 @@ import { useCancellablePromise } from "@/utils";
 
 import { useInstallerClient } from "@context/installer";
 import {
+  Alert,
   Button,
   Checkbox,
   Form,
@@ -41,12 +42,13 @@ const initialUser = {
   autologin: false,
   password: ""
 };
-export default function Users() {
+export default function FirstUser() {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [user, setUser] = useState(null);
   const [formValues, setFormValues] = useState(initialUser);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [errors, setErrors] = useState([]);
 
   useEffect(() => {
     cancellablePromise(client.users.getUser()).then(userValues => {
@@ -76,12 +78,12 @@ export default function Users() {
 
   const accept = async (e) => {
     e.preventDefault();
+    setErrors([]);
     const result = await client.users.setUser(formValues);
-
-    if (result) {
-      setUser(formValues);
-    }
-    setIsFormOpen(false);
+    setUser(formValues);
+    setErrors(result.issues);
+    if (result.result === 0)
+      setIsFormOpen(false);
   };
 
   const remove = async () => {
@@ -115,12 +117,19 @@ export default function Users() {
     }
   };
 
+  const showErrors = () => ((errors || []).length > 0);
+
   return (
     <>
       {renderLink()}
 
       <Popup isOpen={isFormOpen} title="User account">
         <Form id="first-user" onSubmit={accept}>
+          { showErrors() &&
+            <Alert variant="warning" isInline title="Something went wrong">
+              { errors.map((e, i) => <p key={`error_${i}`}>{e}</p>) }
+            </Alert> }
+
           <FormGroup fieldId="userFullName" label="Full name">
             <TextInput
               id="userFullName"

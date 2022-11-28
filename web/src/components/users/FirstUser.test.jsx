@@ -35,7 +35,9 @@ const emptyUser = {
   autologin: false
 };
 
-const setUserFn = jest.fn();
+const setUserResult = { result: 0, issues: [] };
+
+const setUserFn = jest.fn().mockResolvedValue(setUserResult);
 const removeUserFn = jest.fn();
 let onUsersChangeFn = jest.fn();
 

@@ -70,7 +70,7 @@ class UsersBaseClient {
   /**
    * Returns true if the root password is set
    *
-   * @return {Promise<Boolean>}
+   * @return {Promise<boolean>}
    */
   async isRootPasswordSet() {
     const proxy = await this.client.proxy(USERS_IFACE);
@@ -78,10 +78,10 @@ class UsersBaseClient {
   }
 
   /**
-   * Sets the languages to install
+   * Sets the first user
    *
    * @param {User} user - object with full name, user name, password and boolean for autologin
-   * @return {Promise<boolean>} whether the operation was successful or not
+   * @return {Promise<object>} returns an object with the result and the issues found if error
    */
   async setUser(user) {
     const proxy = await this.client.proxy(USERS_IFACE);
@@ -92,7 +92,11 @@ class UsersBaseClient {
       user.autologin,
       {}
     );
-    return result === 0;
+
+    return {
+      result: result.result.v,
+      issues: result.issues.v.map(i => i.v)
+    };
   }
 
   /**
