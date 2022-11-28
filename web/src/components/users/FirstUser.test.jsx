@@ -35,9 +35,9 @@ const emptyUser = {
   autologin: false
 };
 
-const setUserResult = { result: 0, issues: [] };
+let setUserResult = { result: 0, issues: [] };
 
-const setUserFn = jest.fn().mockResolvedValue(setUserResult);
+let setUserFn = jest.fn().mockResolvedValue(setUserResult);
 const removeUserFn = jest.fn();
 let onUsersChangeFn = jest.fn();
 
@@ -102,6 +102,41 @@ it("does not change anything if the user cancels", async () => {
   expect(setUserFn).not.toHaveBeenCalled();
   await waitFor(() => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+});
+
+describe("when there is some issue with the user config provided", () => {
+  beforeEach(() => {
+    setUserResult = { result: 1, issues: ["There is an error"] };
+    setUserFn = jest.fn().mockResolvedValue(setUserResult);
+  });
+
+  it("shows the issues found", async () => {
+    const { user } = installerRender(<FirstUser />);
+    const firstUser = await screen.findByText(/A user/);
+    const button = within(firstUser).getByRole("button", { name: "is not defined" });
+    await user.click(button);
+
+    await screen.findByRole("dialog");
+
+    const usernameInput = screen.getByLabelText("Username");
+    await user.type(usernameInput, "root");
+
+    const confirmButton = screen.getByRole("button", { name: /Confirm/i });
+    expect(confirmButton).toBeEnabled();
+    await user.click(confirmButton);
+
+    expect(setUserFn).toHaveBeenCalledWith({
+      fullName: "",
+      userName: "root",
+      password: "",
+      autologin: false
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText(/Something went wrong/i)).toBeInTheDocument();
+      expect(screen.queryByText(/There is an error/i)).toBeInTheDocument();
+    });
   });
 });
 
