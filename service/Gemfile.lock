@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    d-installer (0.4.2)
+    d-installer (0.5)
       cfa (~> 1.0.2)
       cfa_grub2 (~> 2.0.0)
       cheetah (~> 1.0.0)
@@ -27,10 +27,10 @@ GEM
     eventmachine (1.2.7)
     fast_gettext (2.2.0)
     mini_portile2 (2.8.0)
-    nokogiri (1.13.8)
+    nokogiri (1.13.9)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
-    nokogiri (1.13.8-x86_64-linux)
+    nokogiri (1.13.9-x86_64-linux)
       racc (~> 1.4)
     packaging_rake_tasks (1.5.1)
       rake
@@ -77,3 +77,6 @@ DEPENDENCIES
   simplecov (~> 0.21.2)
   simplecov-lcov (~> 0.8.0)
   yard (~> 0.9.0)
+
+BUNDLED WITH
+   2.3.24

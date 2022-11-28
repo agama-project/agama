@@ -91,24 +91,18 @@ module DInstaller
         end
 
         dbus_method :SetFirstUser,
-          FUSER_SIG + ", out result:u" do |full_name, user_name, password, auto_login, data|
+          FUSER_SIG + ", out result:a{sv}" do |full_name, user_name, password, auto_login, data|
           logger.info "Setting first user #{full_name}"
           issues = backend.assign_first_user(full_name, user_name, password, auto_login, data)
-          (raise ::DBus::Error, issues) unless issues.empty?
 
-          dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => first_user }, [])
-          update_validation
-          0
-        end
+          if issues.empty?
+            dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => first_user }, [])
+            update_validation
+          else
+            logger.info "First user fatal issues detected: #{issues.map(&:message)}"
+          end
 
-        dbus_method :ValidateUser,
-          FUSER_VALIDATE_SIG + ", out result:u" do |full_name, user_name, password|
-          logger.info "Validating first user #{full_name}"
-
-          issues = backend.validate_user(full_name, user_name, password)
-          issues.each { |i| logger.info "Issue: #{i.message}" }
-
-          issues.empty? ? 0 : 1
+          [{ "result" => issues.empty? ? 0 : 1, "issues" => issues.map(&:message) }]
         end
 
         dbus_method :RemoveFirstUser, "out result:u" do
