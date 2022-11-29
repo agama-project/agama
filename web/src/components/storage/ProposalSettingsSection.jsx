@@ -31,20 +31,23 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
     calculateProposal({ lvm, encryptionPassword });
   };
 
-  const onVolumesChange = volumes => {
-    calculateProposal({ volumes });
-  };
+  const description = "Use this section for configuring the volumes to create.";
 
   return (
-    <Section title="Settings" onActionClick={() => setIsOpen(true)} usingSeparator>
-      <Popup title="Edit proposal settings" isOpen={isOpen}>
+    <Section
+      title="Proposal settings"
+      onActionClick={() => setIsOpen(true)}
+      usingSeparator
+      description={description}
+    >
+      <Popup title="Proposal settings" isOpen={isOpen}>
         <ProposalSettingsForm id="settings-form" proposal={proposal} onSubmit={onSettingsChange} />
         <Popup.Actions>
           <Popup.Confirm form="settings-form" type="submit">Accept</Popup.Confirm>
           <Popup.Cancel onClick={() => setIsOpen(false)} autoFocus />
         </Popup.Actions>
       </Popup>
-      <ProposalVolumes volumes={proposal.volumes} onChange={onVolumesChange} />
+      <ProposalVolumes volumes={proposal.volumes} />
     </Section>
   );
 }

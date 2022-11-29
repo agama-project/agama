@@ -124,7 +124,7 @@ export default function ProposalPage() {
 
   return (
     <>
-      <Title>Storage Configuration</Title>
+      <Title>Storage</Title>
       <PageIcon><Icon /></PageIcon>
       <MainActions>
         <Button isLarge variant="primary" form="storage-config" onClick={() => navigate("/")}>

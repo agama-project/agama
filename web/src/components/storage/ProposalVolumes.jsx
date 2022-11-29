@@ -21,6 +21,8 @@
 
 import React from "react";
 
+import { filesize } from "filesize";
+
 import {
   TableComposable,
   Thead,
@@ -31,15 +33,13 @@ import {
 } from '@patternfly/react-table';
 
 import {
-  Button,
+  Label,
+  Split,
+  SplitItem,
 } from "@patternfly/react-core";
+import { LockIcon } from '@patternfly/react-icons';
 
-export default function ProposalVolumes({ volumes, onChange }) {
-  const removeVolume = volume => {
-    const newVolumes = volumes.filter(v => v.mountPoint !== volume.mountPoint);
-    onChange(newVolumes);
-  };
-
+export default function ProposalVolumes({ volumes }) {
   const columns = {
     volume: "Volume",
     details: "Details",
@@ -47,11 +47,45 @@ export default function ProposalVolumes({ volumes, onChange }) {
     actions: "Actions"
   };
 
-  const actions = (volume) => {
+  const Details = ({ volume }) => {
+    const isLv = volume.deviceType === "lvm_lv";
+    const hasSnapshots = volume.fsType === "Btrfs" && volume.snapshots;
+
+    const text = `${volume.fsType} ${isLv ? "logical volume" : "partition"}`;
+
     return (
-      <Button variant="link" isDanger onClick={() => removeVolume(volume)}>
-        Remove
-      </Button>
+      <Split>
+        <SplitItem>{text}</SplitItem>
+        {volume.encrypted &&
+          <SplitItem>
+            <Label icon={<LockIcon />} isCompact>encrypted</Label>
+          </SplitItem>}
+        {hasSnapshots &&
+          <SplitItem>
+            <Label isCompact>with snapshots</Label>
+          </SplitItem>}
+      </Split>
+    );
+  };
+
+  const SizeLimits = ({ volume }) => {
+    const sizeText = (size) => {
+      if (size === -1) return "Unlimited";
+
+      return filesize(size, { base: 2 });
+    };
+
+    const limits = `${sizeText(volume.minSize)} - ${sizeText(volume.maxSize)}`;
+    const isAuto = volume.adaptiveSizes && !volume.fixedSizeLimits;
+
+    return (
+      <Split>
+        <SplitItem>{limits}</SplitItem>
+        {isAuto &&
+          <SplitItem>
+            <Label isCompact>auto-calculated</Label>
+          </SplitItem>}
+      </Split>
     );
   };
 
@@ -62,16 +96,14 @@ export default function ProposalVolumes({ volumes, onChange }) {
           <Th>{columns.volume}</Th>
           <Th>{columns.details}</Th>
           <Th>{columns.size}</Th>
-          <Th>{columns.actions}</Th>
         </Tr>
       </Thead>
       <Tbody>
         {volumes.map(volume =>
           <Tr key={volume.mountPoint}>
             <Td dataLabel={columns.volume}>{volume.mountPoint}</Td>
-            <Td dataLabel={columns.details}>{volume.fsType}</Td>
-            <Td dataLabel={columns.size}>{volume.minSize}-{volume.maxSize}</Td>
-            <Td dataLabel={columns.actions}>{actions(volume)}</Td>
+            <Td dataLabel={columns.details}><Details volume={volume} /></Td>
+            <Td dataLabel={columns.size}><SizeLimits volume={volume} /></Td>
           </Tr>
         )}
       </Tbody>

@@ -36,9 +36,9 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
   };
 
   return (
-    <Section title="Target" onActionClick={() => setIsOpen(true)} usingSeparator>
+    <Section title="Device selection" onActionClick={() => setIsOpen(true)} usingSeparator>
       <Text>
-        Install using disk {proposal.candidateDevices.join(", ")} and deleting all its content
+        Install using device {proposal.candidateDevices[0]} and deleting all its content
       </Text>
       <Popup title="Device selection" isOpen={isOpen}>
         <ProposalTargetForm id="target-form" proposal={proposal} onSubmit={calculate} />
