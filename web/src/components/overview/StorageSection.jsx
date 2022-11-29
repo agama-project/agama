@@ -33,10 +33,16 @@ import { InstallerSkeleton, Section } from "@components/core";
 
 import { EOS_VOLUME as HardDriveIcon } from "eos-icons-react";
 
+const initialState = {
+  busy: false,
+  proposal: undefined,
+  errors: []
+};
+
 const reducer = (state, action) => {
   switch (action.type) {
     case "UPDATE_STATUS" : {
-      return { ...state, busy: action.payload.status === BUSY };
+      return { ...initialState, busy: action.payload.status === BUSY };
     }
 
     case "UPDATE_PROPOSAL": {
@@ -58,11 +64,7 @@ export default function StorageSection ({ showErrors }) {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const navigate = useNavigate();
-  const [state, dispatch] = useReducer(reducer, {
-    busy: false,
-    proposal: undefined,
-    errors: []
-  });
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     const updateStatus = (status) => {
@@ -79,20 +81,16 @@ export default function StorageSection ({ showErrors }) {
       dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal } });
     };
 
-    cancellablePromise(client.storage.getProposal()).then(updateProposal);
-
-    return client.storage.onProposalChange(updateProposal);
-  }, [client.storage, cancellablePromise]);
+    if (!state.busy) cancellablePromise(client.storage.getProposal()).then(updateProposal);
+  }, [client.storage, cancellablePromise, state.busy]);
 
   useEffect(() => {
     const updateErrors = (errors) => {
       dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
     };
 
-    client.storage.getValidationErrors().then(updateErrors);
-
-    return client.storage.onValidationChange(updateErrors);
-  }, [client.storage]);
+    if (!state.busy) cancellablePromise(client.storage.getValidationErrors()).then(updateErrors);
+  }, [client.storage, cancellablePromise, state.busy]);
 
   const errors = showErrors ? state.errors : [];
 
