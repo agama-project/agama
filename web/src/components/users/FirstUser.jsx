@@ -162,6 +162,7 @@ export default function FirstUser() {
               type="password"
               aria-label="User password"
               value={formValues.password}
+              required
               onChange={handleInputChange}
             />
           </FormGroup>
@@ -177,7 +178,7 @@ export default function FirstUser() {
         </Form>
 
         <Popup.Actions>
-          <Popup.Confirm form="first-user" type="submit" isDisabled={formValues.userName === ""} />
+          <Popup.Confirm form="first-user" type="submit" isDisabled={formValues.userName === "" || formValues.password === ""} />
           <Popup.Cancel onClick={cancel} />
           <Popup.AncillaryAction onClick={remove} isDisabled={!userIsDefined} key="unset">
             Do not create a user

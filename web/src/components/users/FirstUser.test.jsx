@@ -88,6 +88,20 @@ it("allows defining a new user", async () => {
   });
 });
 
+it("doest not allow to confirm the settings if the user name and the password are not provided", async () => {
+  const { user } = installerRender(<FirstUser />);
+  const firstUser = await screen.findByText(/A user/);
+  const button = within(firstUser).getByRole("button", { name: "is not defined" });
+  await user.click(button);
+
+  await screen.findByRole("dialog");
+
+  const usernameInput = screen.getByLabelText("Username");
+  await user.type(usernameInput, "jane");
+  const confirmButton = screen.getByRole("button", { name: /Confirm/i });
+  expect(confirmButton).toBeDisabled();
+});
+
 it("does not change anything if the user cancels", async () => {
   const { user } = installerRender(<FirstUser />);
   const firstUser = await screen.findByText(/A user/);
@@ -122,6 +136,9 @@ describe("when there is some issue with the user config provided", () => {
     const usernameInput = screen.getByLabelText("Username");
     await user.type(usernameInput, "root");
 
+    const passwordInput = screen.getByLabelText("Password");
+    await user.type(passwordInput, "12345");
+
     const confirmButton = screen.getByRole("button", { name: /Confirm/i });
     expect(confirmButton).toBeEnabled();
     await user.click(confirmButton);
@@ -129,7 +146,7 @@ describe("when there is some issue with the user config provided", () => {
     expect(setUserFn).toHaveBeenCalledWith({
       fullName: "",
       userName: "root",
-      password: "",
+      password: "12345",
       autologin: false
     });
 
