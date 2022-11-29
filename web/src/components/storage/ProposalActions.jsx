@@ -20,7 +20,14 @@
  */
 
 import React, { useState } from "react";
-import { List, ListItem, ExpandableSection } from "@patternfly/react-core";
+import {
+  Stack,
+  StackItem,
+  List,
+  ListItem,
+  ExpandableSection,
+  Text
+} from "@patternfly/react-core";
 
 // Some actions (e.g., deleting a LV) are reported as several actions joined by a line break
 const actionItems = (action, id) => {
@@ -51,19 +58,26 @@ export default function ProposalActions ({ actions = [] }) {
   const toggleText = `${userAction} ${subvolActions.length} subvolumes actions`;
 
   return (
-    <>
-      {renderActionsList(generalActions)}
-      {subvolActions.length > 0 && (
-        <ExpandableSection
-          isIndented
-          isExpanded={isExpanded}
-          onToggle={() => setIsExpanded(!isExpanded)}
-          toggleText={toggleText}
-          className="expandable-actions"
-        >
-          {renderActionsList(subvolActions)}
-        </ExpandableSection>
-      )}
-    </>
+    <Stack hasGutter>
+      <StackItem>
+        <Text>
+          Actions to peform in the system for creating the file systems.
+        </Text>
+      </StackItem>
+      <StackItem>
+        {renderActionsList(generalActions)}
+        {subvolActions.length > 0 && (
+          <ExpandableSection
+            isIndented
+            isExpanded={isExpanded}
+            onToggle={() => setIsExpanded(!isExpanded)}
+            toggleText={toggleText}
+            className="expandable-actions"
+          >
+            {renderActionsList(subvolActions)}
+          </ExpandableSection>
+        )}
+      </StackItem>
+    </Stack>
   );
 }

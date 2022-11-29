@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-
+import { Label, List, ListItem } from '@patternfly/react-core';
 import { Section, Popup } from "@components/core";
 import { ProposalSettingsForm } from "@components/storage";
 
@@ -31,22 +31,39 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
     calculateProposal({ lvm, encryptionPassword });
   };
 
-  const description = "Use this section for configuring the volumes to create.";
+  const ProposalDescription = () => {
+    let settingsText = "Create file systems over";
+    if (proposal.encryptionPassword.length > 0) settingsText += " encrypted";
+    settingsText += proposal.lvm ? " logical volumes" : " partitions";
+
+    return (
+      <List>
+        <ListItem>{settingsText}</ListItem>
+        <ListItem className="volumes-list">
+          Create the following file systems: {proposal.volumes.map(v => (
+            <Label key={v.mountPoint} isCompact>
+              {v.mountPoint}
+            </Label>
+          ))}
+        </ListItem>
+      </List>
+    );
+  };
 
   return (
     <Section
-      title="Proposal settings"
+      title="Settings"
       onActionClick={() => setIsOpen(true)}
       usingSeparator
-      description={description}
     >
-      <Popup title="Proposal settings" isOpen={isOpen}>
+      <Popup title="Settings" isOpen={isOpen}>
         <ProposalSettingsForm id="settings-form" proposal={proposal} onSubmit={onSettingsChange} />
         <Popup.Actions>
           <Popup.Confirm form="settings-form" type="submit">Accept</Popup.Confirm>
           <Popup.Cancel onClick={() => setIsOpen(false)} autoFocus />
         </Popup.Actions>
       </Popup>
+      <ProposalDescription />
     </Section>
   );
 }

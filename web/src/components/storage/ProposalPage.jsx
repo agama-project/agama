@@ -23,12 +23,15 @@ import React, { useReducer, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
+  Alert,
   Button,
   Flex,
   FlexItem,
   Text,
   TextVariants
 } from "@patternfly/react-core";
+
+import { InfoCircleIcon } from '@patternfly/react-icons';
 
 import { EOS_VOLUME as Icon } from "eos-icons-react";
 
@@ -114,6 +117,9 @@ export default function ProposalPage() {
 
     return (
       <Flex direction={{ default: "column" }}>
+        <FlexItem>
+          <Alert isInline customIcon={<InfoCircleIcon />} title="Devices will not be modified until installation starts." />
+        </FlexItem>
         {categories.map((category, i) => (
           <FlexItem key={i} className="installation-overview-section">
             {category}

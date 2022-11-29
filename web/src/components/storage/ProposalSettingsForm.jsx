@@ -88,6 +88,7 @@ export default function ProposalSettingsForm({ id, proposal, onSubmit }) {
         onChange={onLvmChange}
       />
       <Fieldset
+        isDisabled={!state.encryption}
         legend={
           <Switch
             id="encryption"
@@ -98,11 +99,10 @@ export default function ProposalSettingsForm({ id, proposal, onSubmit }) {
           />
         }
       >
-        <FormGroup fieldId="encryptionPassword" label="Encryption password">
+        <FormGroup fieldId="encryptionPassword" label="Password">
           <TextInput
             id="encryptionPassword"
             type="password"
-            isDisabled={!state.encryption}
             aria-label="password"
             value={state.encryptionPassword}
             onChange={onPasswordChange}

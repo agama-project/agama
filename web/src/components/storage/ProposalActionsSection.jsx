@@ -25,16 +25,10 @@ import { Section } from "@components/core";
 import { ProposalActions } from "@components/storage";
 
 export default function ProposalActionsSection({ proposal, errors }) {
-  const description = `
-    Actions to peform in the system for creating the volumes defined above into
-    the selected devices
-  `;
-
   return (
     <Section
       title="Result"
       usingSeparator
-      description={description}
       errors={errors}
     >
       <ProposalActions actions={proposal.actions} />
