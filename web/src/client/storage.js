@@ -153,7 +153,7 @@ class StorageBaseClient {
  * Allows interacting with the storage settings
  */
 class StorageClient extends WithValidation(
-  WithStatus(StorageBaseClient, STORAGE_PROPOSAL_PATH), STORAGE_PATH
+  WithStatus(StorageBaseClient, STORAGE_PATH), STORAGE_PATH
 ) {}
 
 export { StorageClient };
