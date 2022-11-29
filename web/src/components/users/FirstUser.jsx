@@ -73,17 +73,19 @@ export default function FirstUser() {
   };
 
   const cancel = () => {
+    setErrors([]);
     setIsFormOpen(false);
   };
 
   const accept = async (e) => {
     e.preventDefault();
     setErrors([]);
-    const result = await client.users.setUser(formValues);
-    setUser(formValues);
-    setErrors(result.issues);
-    if (result.result === 0)
+    const { result, issues = [] } = await client.users.setUser(formValues);
+    setErrors(issues);
+    if (result) {
+      setUser(formValues);
       setIsFormOpen(false);
+    }
   };
 
   const remove = async () => {

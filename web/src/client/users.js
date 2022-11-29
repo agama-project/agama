@@ -85,7 +85,7 @@ class UsersBaseClient {
    */
   async setUser(user) {
     const proxy = await this.client.proxy(USERS_IFACE);
-    const result = await proxy.SetFirstUser(
+    const [result, issues] = await proxy.SetFirstUser(
       user.fullName,
       user.userName,
       user.password,
@@ -93,10 +93,7 @@ class UsersBaseClient {
       {}
     );
 
-    return {
-      result: result.result.v,
-      issues: result.issues.v.map(i => i.v)
-    };
+    return { result, issues };
   }
 
   /**

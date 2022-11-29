@@ -85,14 +85,12 @@ module DInstaller
       user.gecos = [full_name]
       user.password = Y2Users::Password.create_plain(password)
       fatal_issues = user.issues.map.select(&:error?)
+      return fatal_issues.map(&:message) unless fatal_issues.empty?
 
-      if fatal_issues.empty?
-        config.attach(user)
-        config.login ||= Y2Users::LoginConfig.new
-        config.login.autologin_user = auto_login ? user : nil
-      end
-
-      fatal_issues
+      config.attach(user)
+      config.login ||= Y2Users::LoginConfig.new
+      config.login.autologin_user = auto_login ? user : nil
+      []
     end
 
     # Removes the first user

@@ -23,16 +23,12 @@
 
 import { DBusClient } from "./dbus";
 import { UsersClient } from "./users";
-import cockpit from "../lib/cockpit";
 
 const USERS_IFACE = "org.opensuse.DInstaller.Users1";
 
 const dbusClient = new DBusClient("");
 
-let setFirstUserResult = {
-  result: cockpit.variant("u", 0),
-  issues: cockpit.variant("as", [])
-};
+let setFirstUserResult = [true, []];
 
 const usersProxy = {
   wait: jest.fn(),
@@ -105,15 +101,12 @@ describe("#setUser", () => {
     });
 
     expect(usersProxy.SetFirstUser).toHaveBeenCalledWith("Jane Doe", "jane", "12345", false, {});
-    expect(result).toEqual({ result: 0, issues: [] });
+    expect(result).toEqual({ result: true, issues: [] });
   });
 
   describe("when setting the user fails because some issue", () => {
     beforeEach(() => {
-      setFirstUserResult = {
-        result: cockpit.variant("u", 1),
-        issues: cockpit.variant("av", [cockpit.variant("s", "There is an error")])
-      };
+      setFirstUserResult = [false, ["There is an error"]];
       usersProxy.SetFirstUser = jest.fn().mockResolvedValue(setFirstUserResult);
     });
 
@@ -126,7 +119,7 @@ describe("#setUser", () => {
         autologin: false
       });
 
-      expect(result).toEqual({ result: 1, issues: ["There is an error"] });
+      expect(result).toEqual({ result: false, issues: ["There is an error"] });
     });
   });
 });

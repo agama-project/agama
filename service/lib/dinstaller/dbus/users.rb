@@ -51,8 +51,7 @@ module DInstaller
       private_constant :USERS_INTERFACE
 
       FUSER_SIG = "in FullName:s, in UserName:s, in Password:s, in AutoLogin:b, in data:a{sv}"
-      FUSER_VALIDATE_SIG = "in FullName:s, in UserName:s, in Password:s"
-      private_constant :FUSER_SIG, :FUSER_VALIDATE_SIG
+      private_constant :FUSER_SIG
 
       dbus_interface USERS_INTERFACE do
         dbus_reader :root_password_set, "b"
@@ -91,7 +90,7 @@ module DInstaller
         end
 
         dbus_method :SetFirstUser,
-          FUSER_SIG + ", out result:a{sv}" do |full_name, user_name, password, auto_login, data|
+          FUSER_SIG + ", out result:(bas)" do |full_name, user_name, password, auto_login, data|
           logger.info "Setting first user #{full_name}"
           issues = backend.assign_first_user(full_name, user_name, password, auto_login, data)
 
@@ -99,10 +98,10 @@ module DInstaller
             dbus_properties_changed(USERS_INTERFACE, { "FirstUser" => first_user }, [])
             update_validation
           else
-            logger.info "First user fatal issues detected: #{issues.map(&:message)}"
+            logger.info "First user fatal issues detected: #{issues}"
           end
 
-          [{ "result" => issues.empty? ? 0 : 1, "issues" => issues.map(&:message) }]
+          [[issues.empty?, issues]]
         end
 
         dbus_method :RemoveFirstUser, "out result:u" do

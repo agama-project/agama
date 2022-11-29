@@ -31,7 +31,7 @@ describe DInstallerCli::Commands::User do
     allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(client)
   end
 
-  let(:create_result) { { "result" => 0 } }
+  let(:create_result) { [true, []] }
 
   let(:client) do
     instance_double(DInstaller::DBus::Clients::Users, create_first_user: create_result)
@@ -46,7 +46,7 @@ describe DInstallerCli::Commands::User do
     end
 
     context "if there is some issue adding the first user" do
-      let(:create_result) { { "result" => 1, "issues" => ["Error"] } }
+      let(:create_result) { [false, ["Error"]] }
       it "shows the errors" do
         expect(subject).to receive(:say).with("Error")
 

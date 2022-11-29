@@ -35,7 +35,7 @@ const emptyUser = {
   autologin: false
 };
 
-let setUserResult = { result: 0, issues: [] };
+let setUserResult = { result: true, issues: [] };
 
 let setUserFn = jest.fn().mockResolvedValue(setUserResult);
 const removeUserFn = jest.fn();
@@ -107,7 +107,7 @@ it("does not change anything if the user cancels", async () => {
 
 describe("when there is some issue with the user config provided", () => {
   beforeEach(() => {
-    setUserResult = { result: 1, issues: ["There is an error"] };
+    setUserResult = { result: false, issues: ["There is an error"] };
     setUserFn = jest.fn().mockResolvedValue(setUserResult);
   });
 
@@ -136,6 +136,7 @@ describe("when there is some issue with the user config provided", () => {
     await waitFor(() => {
       expect(screen.queryByText(/Something went wrong/i)).toBeInTheDocument();
       expect(screen.queryByText(/There is an error/i)).toBeInTheDocument();
+      expect(screen.queryByText(/is not defined/i)).toBeInTheDocument();
     });
   });
 });
