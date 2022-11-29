@@ -90,6 +90,8 @@ module DInstaller
         end
 
         dbus_method :SetFirstUser,
+          # It returns an Struct with the first field with the result of the operation as a boolean
+          # and the second parameter as an array of issues found in case of failure
           FUSER_SIG + ", out result:(bas)" do |full_name, user_name, password, auto_login, data|
           logger.info "Setting first user #{full_name}"
           issues = backend.assign_first_user(full_name, user_name, password, auto_login, data)

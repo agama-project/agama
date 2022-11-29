@@ -78,6 +78,15 @@ module DInstaller
       root_user.password = nil
     end
 
+    # It adds the user with the given parameters to the login config only if there are no error
+    # issues detected like no user_name or no password given.
+    #
+    # @param full_name [String]
+    # @param user_name [String]
+    # @param password [String]
+    # @param auto_login [Boolean]
+    # @param _data [Hash]
+    # @return [Array] the list of fatal issues found
     def assign_first_user(full_name, user_name, password, auto_login, _data)
       remove_first_user
 
