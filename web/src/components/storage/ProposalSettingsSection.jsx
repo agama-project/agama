@@ -22,7 +22,7 @@
 import React, { useState } from "react";
 
 import { Section, Popup } from "@components/core";
-import { ProposalSettingsForm, ProposalVolumes } from "@components/storage";
+import { ProposalSettingsForm } from "@components/storage";
 
 export default function ProposalSettingsSection({ proposal, calculateProposal }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,7 +47,6 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
           <Popup.Cancel onClick={() => setIsOpen(false)} autoFocus />
         </Popup.Actions>
       </Popup>
-      <ProposalVolumes volumes={proposal.volumes} />
     </Section>
   );
 }

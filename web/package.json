@@ -76,7 +76,6 @@
     "core-js": "^3.21.1",
     "eos-ds": "^5.0.0",
     "eos-icons-react": "^2.3.0",
-    "filesize": "^10.0.5",
     "ipaddr.js": "^2.0.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
