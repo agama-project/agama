@@ -42,6 +42,12 @@ import {
   ProposalActionsSection
 } from "@components/storage";
 
+const initialState = {
+  busy: false,
+  proposal: undefined,
+  errors: []
+};
+
 const reducer = (state, action) => {
   switch (action.type) {
     case "SET_BUSY" : {
@@ -49,11 +55,12 @@ const reducer = (state, action) => {
     }
 
     case "LOAD": {
-      return { proposal: action.payload.proposal, busy: false };
+      const { proposal, errors } = action.payload;
+      return { ...state, proposal, errors, busy: false };
     }
 
     case "CALCULATE": {
-      return { proposal: undefined, busy: false };
+      return initialState;
     }
 
     default: {
@@ -66,20 +73,18 @@ export default function ProposalPage() {
   const client = useInstallerClient();
   const navigate = useNavigate();
   const { cancellablePromise } = useCancellablePromise();
-  const [state, dispatch] = useReducer(reducer, {
-    busy: false,
-    proposal: undefined
-  });
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     const loadProposal = async () => {
       dispatch({ type: "SET_BUSY" });
 
       const proposal = await cancellablePromise(client.storage.getProposal());
+      const errors = await client.storage.getValidationErrors();
 
       dispatch({
         type: "LOAD",
-        payload: { proposal }
+        payload: { proposal, errors }
       });
     };
 
@@ -104,7 +109,7 @@ export default function ProposalPage() {
     const categories = [
       <ProposalTargetSection key="target" proposal={state.proposal} calculateProposal={calculateProposal} />,
       <ProposalSettingsSection key="settings" proposal={state.proposal} calculateProposal={calculateProposal} />,
-      <ProposalActionsSection key="actions" proposal={state.proposal} />,
+      <ProposalActionsSection key="actions" proposal={state.proposal} errors={state.errors} />,
     ];
 
     return (
