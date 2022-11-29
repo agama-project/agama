@@ -152,6 +152,9 @@ ALP:
         patterns: null
 
   storage:
+    encryption:
+      method: luks2
+      pbkdf: pbkdf2
     volumes:
       - mount_point: "/"
         fs_type: btrfs

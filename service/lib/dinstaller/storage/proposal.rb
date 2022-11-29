@@ -210,7 +210,11 @@ module DInstaller
       # @param settings [ProposalSettings]
       # @return [Y2Storage::ProposalSettings]
       def to_y2storage_settings(settings)
-        ProposalSettingsConverter.new(default_specs: default_specs).to_y2storage(settings)
+        y2storage_settings =
+          ProposalSettingsConverter.new(default_specs: default_specs).to_y2storage(settings)
+        adjust_encryption(y2storage_settings)
+        force_cleanup(y2storage_settings)
+        y2storage_settings
       end
 
       # Converts a Y2Storage::ProposalSettings object to its equivalent
@@ -270,6 +274,33 @@ module DInstaller
         ValidationError.new("No devices are selected for installation")
       end
 
+      # Adjusts the encryption-related settings of the given Y2Storage::ProposalSettings object
+      #
+      # @param settings [Y2Storage::ProposalSettings]
+      def adjust_encryption(settings)
+        enc_config = config.data.fetch("storage", {}).fetch("encryption", {})
+
+        method = Y2Storage::EncryptionMethod.find(enc_config["method"] || "")
+        settings.encryption_method = method if method
+
+        pbkdf = Y2Storage::PbkdFunction.find(enc_config["pbkdf"])
+        settings.encryption_pbkdf = pbkdf if pbkdf
+      end
+
+      # Temporary method to enforce a destructive proposal
+      #
+      # TODO: there is still no way to define which partitions or LVM structures should be kept
+      # or reused, so let's enforce a clean install for now.
+      #
+      # @param settings [Y2Storage::ProposalSettings]
+      def force_cleanup(settings)
+        settings.windows_delete_mode = :all
+        settings.linux_delete_mode = :all
+        settings.other_delete_mode = :all
+        # Setting #linux_delete_mode to :all is not enough to prevent VG reusing in all cases
+        settings.lvm_vg_reuse = false
+      end
+
       # Temporary method for testing FDE during early development
       #
       # @param settings [Y2Storage::ProposalSettings]
@@ -277,9 +308,7 @@ module DInstaller
         password = config.data.fetch("security", {})["olaf_luks2_password"]
         return if password.nil? || password.empty?
 
-        settings.encryption_password = "1234"
-        settings.encryption_method = Y2Storage::EncryptionMethod::LUKS2
-        settings.encryption_pbkdf = Y2Storage::PbkdFunction::PBKDF2
+        settings.encryption_password = password
       end
     end
   end
