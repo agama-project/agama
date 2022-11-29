@@ -61,15 +61,15 @@ it("allows defining a new user", async () => {
   const button = within(firstUser).getByRole("button", { name: "is not defined" });
   await user.click(button);
 
-  await screen.findByRole("dialog");
+  const dialog = await screen.findByRole("dialog");
 
-  const fullNameInput = screen.getByLabelText("Full name");
+  const fullNameInput = within(dialog).getByLabelText("Full name");
   await user.type(fullNameInput, "Jane Doe");
 
-  const usernameInput = screen.getByLabelText("Username");
+  const usernameInput = within(dialog).getByLabelText(/Username/);
   await user.type(usernameInput, "jane");
 
-  const passwordInput = screen.getByLabelText("Password");
+  const passwordInput = within(dialog).getByLabelText(/Password/);
   await user.type(passwordInput, "12345");
 
   const confirmButton = screen.getByRole("button", { name: /Confirm/i });
@@ -94,11 +94,11 @@ it("doest not allow to confirm the settings if the user name and the password ar
   const button = within(firstUser).getByRole("button", { name: "is not defined" });
   await user.click(button);
 
-  await screen.findByRole("dialog");
+  const dialog = await screen.findByRole("dialog");
 
-  const usernameInput = screen.getByLabelText("Username");
+  const usernameInput = within(dialog).getByLabelText(/Username/);
   await user.type(usernameInput, "jane");
-  const confirmButton = screen.getByRole("button", { name: /Confirm/i });
+  const confirmButton = within(dialog).getByRole("button", { name: /Confirm/i });
   expect(confirmButton).toBeDisabled();
 });
 
@@ -108,9 +108,9 @@ it("does not change anything if the user cancels", async () => {
   const button = within(firstUser).getByRole("button", { name: "is not defined" });
   await user.click(button);
 
-  await screen.findByRole("dialog");
+  const dialog = await screen.findByRole("dialog");
 
-  const cancelButton = screen.getByRole("button", { name: /Cancel/i });
+  const cancelButton = within(dialog).getByRole("button", { name: /Cancel/i });
   await user.click(cancelButton);
 
   expect(setUserFn).not.toHaveBeenCalled();
@@ -131,15 +131,15 @@ describe("when there is some issue with the user config provided", () => {
     const button = within(firstUser).getByRole("button", { name: "is not defined" });
     await user.click(button);
 
-    await screen.findByRole("dialog");
+    const dialog = await screen.findByRole("dialog");
 
-    const usernameInput = screen.getByLabelText("Username");
+    const usernameInput = within(dialog).getByLabelText("Username");
     await user.type(usernameInput, "root");
 
-    const passwordInput = screen.getByLabelText("Password");
+    const passwordInput = within(dialog).getByLabelText(/Password/);
     await user.type(passwordInput, "12345");
 
-    const confirmButton = screen.getByRole("button", { name: /Confirm/i });
+    const confirmButton = within(dialog).getByRole("button", { name: /Confirm/i });
     expect(confirmButton).toBeEnabled();
     await user.click(confirmButton);
 
@@ -172,9 +172,9 @@ describe("when the first user is already defined", () => {
     const button = await screen.findByRole("button", { name: "jdoe" });
     await user.click(button);
 
-    await screen.findByRole("dialog");
+    const dialog = await screen.findByRole("dialog");
 
-    const removeButton = screen.getByRole("button", { name: "Do not create a user" });
+    const removeButton = within(dialog).getByRole("button", { name: "Do not create a user" });
     await user.click(removeButton);
 
     expect(removeUserFn).toHaveBeenCalled();

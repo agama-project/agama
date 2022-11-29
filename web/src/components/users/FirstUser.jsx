@@ -143,26 +143,26 @@ export default function FirstUser() {
             />
           </FormGroup>
 
-          <FormGroup fieldId="userName" label="Username">
+          <FormGroup fieldId="userName" label="Username" isRequired>
             <TextInput
               id="userName"
               name="userName"
               aria-label="Username"
               value={formValues.userName}
               label="Username"
-              required
+              isRequired
               onChange={handleInputChange}
             />
           </FormGroup>
 
-          <FormGroup fieldId="userPassword" label="Password">
+          <FormGroup fieldId="userPassword" label="Password" isRequired>
             <TextInput
               id="userPassword"
               name="password"
               type="password"
               aria-label="User password"
               value={formValues.password}
-              required
+              isRequired
               onChange={handleInputChange}
             />
           </FormGroup>

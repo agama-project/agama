@@ -91,7 +91,7 @@ describe("#getRootSSHKey", () => {
 });
 
 describe("#setUser", () => {
-  it("sets the values of the first user and returns whether succeded or not an errors found", async () => {
+  it("sets the values of the first user and returns whether succeeded or not an errors found", async () => {
     const client = new UsersClient(dbusClient);
     const result = await client.setUser({
       fullName: "Jane Doe",
@@ -110,7 +110,7 @@ describe("#setUser", () => {
       usersProxy.SetFirstUser = jest.fn().mockResolvedValue(setFirstUserResult);
     });
 
-    it("returns an object with the result as 1 and the issues found", async () => {
+    it("returns an object with the result as false and the issues found", async () => {
       const client = new UsersClient(dbusClient);
       const result = await client.setUser({
         fullName: "Jane Doe",
