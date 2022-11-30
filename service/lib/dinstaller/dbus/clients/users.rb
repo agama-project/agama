@@ -56,6 +56,7 @@ module DInstaller
         # @param fullname [String, nil]
         # @param password [String, nil]
         # @param autologin [Boolean]
+        # @return [Array]
         def create_first_user(name, fullname: nil, password: nil, autologin: false)
           dbus_object.SetFirstUser(fullname.to_s, name, password.to_s, !!autologin, {})
         end

@@ -78,15 +78,28 @@ module DInstaller
       root_user.password = nil
     end
 
+    # It adds the user with the given parameters to the login config only if there are no error
+    # issues detected like no user_name or no password given.
+    #
+    # @param full_name [String]
+    # @param user_name [String]
+    # @param password [String]
+    # @param auto_login [Boolean]
+    # @param _data [Hash]
+    # @return [Array] the list of fatal issues found
     def assign_first_user(full_name, user_name, password, auto_login, _data)
       remove_first_user
 
       user = Y2Users::User.new(user_name)
       user.gecos = [full_name]
       user.password = Y2Users::Password.create_plain(password)
+      fatal_issues = user.issues.map.select(&:error?)
+      return fatal_issues.map(&:message) unless fatal_issues.empty?
+
       config.attach(user)
       config.login ||= Y2Users::LoginConfig.new
       config.login.autologin_user = auto_login ? user : nil
+      []
     end
 
     # Removes the first user

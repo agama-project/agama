@@ -28,10 +28,12 @@ const USERS_IFACE = "org.opensuse.DInstaller.Users1";
 
 const dbusClient = new DBusClient("");
 
+let setFirstUserResult = [true, []];
+
 const usersProxy = {
   wait: jest.fn(),
   FirstUser: ["Jane Doe", "jane", false, {}],
-  SetFirstUser: jest.fn().mockResolvedValue(0),
+  SetFirstUser: jest.fn().mockResolvedValue(setFirstUserResult),
   RemoveFirstUser: jest.fn().mockResolvedValue(0),
   SetRootPassword: jest.fn().mockResolvedValue(0),
   RemoveRootPassword: jest.fn().mockResolvedValue(0),
@@ -89,7 +91,7 @@ describe("#getRootSSHKey", () => {
 });
 
 describe("#setUser", () => {
-  it("sets the values of the first user and returns true", async () => {
+  it("sets the values of the first user and returns whether succeeded or not an errors found", async () => {
     const client = new UsersClient(dbusClient);
     const result = await client.setUser({
       fullName: "Jane Doe",
@@ -97,14 +99,18 @@ describe("#setUser", () => {
       password: "12345",
       autologin: false
     });
+
     expect(usersProxy.SetFirstUser).toHaveBeenCalledWith("Jane Doe", "jane", "12345", false, {});
-    expect(result).toEqual(true);
+    expect(result).toEqual({ result: true, issues: [] });
   });
 
-  describe("when setting the user fails", () => {
-    beforeEach(() => (usersProxy.SetFirstUser = jest.fn().mockResolvedValue(1)));
+  describe("when setting the user fails because some issue", () => {
+    beforeEach(() => {
+      setFirstUserResult = [false, ["There is an error"]];
+      usersProxy.SetFirstUser = jest.fn().mockResolvedValue(setFirstUserResult);
+    });
 
-    it("returns false", async () => {
+    it("returns an object with the result as false and the issues found", async () => {
       const client = new UsersClient(dbusClient);
       const result = await client.setUser({
         fullName: "Jane Doe",
@@ -112,7 +118,8 @@ describe("#setUser", () => {
         password: "12345",
         autologin: false
       });
-      expect(result).toEqual(false);
+
+      expect(result).toEqual({ result: false, issues: ["There is an error"] });
     });
   });
 });
