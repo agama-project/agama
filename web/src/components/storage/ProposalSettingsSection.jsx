@@ -34,7 +34,7 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
   const ProposalDescription = () => {
     let settingsText = "Create file systems over";
     if (proposal.encryptionPassword.length > 0) settingsText += " encrypted";
-    settingsText += proposal.lvm ? " logical volumes" : " partitions";
+    settingsText += proposal.lvm ? " LVM volumes" : " partitions";
 
     return (
       <List>
