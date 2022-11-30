@@ -58,6 +58,19 @@ describe DInstaller::Storage::Proposal do
 
     before { allow(Y2Storage::StorageManager.instance).to receive(:proposal=) }
 
+    RSpec.shared_examples "y2storage proposal with clean-up settings" do
+      it "runs the Y2Storage proposal with settings that destroy the previous content" do
+        expect(Y2Storage::MinGuidedProposal).to receive(:new) do |**args|
+          expect(args[:settings].linux_delete_mode).to eq :all
+          expect(args[:settings].windows_delete_mode).to eq :all
+          expect(args[:settings].lvm_vg_reuse).to eq false
+          y2storage_proposal
+        end
+
+        proposal.calculate
+      end
+    end
+
     RSpec.shared_examples "y2storage proposal with no candidates" do
       it "runs the Y2Storage proposal with no candidate devices" do
         expect(Y2Storage::MinGuidedProposal).to receive(:new) do |**args|
@@ -117,16 +130,19 @@ describe DInstaller::Storage::Proposal do
       end
 
       include_examples "y2storage proposal with no candidates"
+      include_examples "y2storage proposal with clean-up settings"
     end
 
     context "with undefined settings" do
       include_examples "y2storage proposal from config"
+      include_examples "y2storage proposal with clean-up settings"
     end
 
     context "with the default settings" do
       let(:settings) { DInstaller::Storage::ProposalSettings.new }
 
       include_examples "y2storage proposal from config"
+      include_examples "y2storage proposal with clean-up settings"
     end
 
     context "with settings defining a list of candidate devices" do
@@ -135,6 +151,8 @@ describe DInstaller::Storage::Proposal do
         settings.candidate_devices = devices
         settings
       end
+
+      include_examples "y2storage proposal with clean-up settings"
 
       context "if the defined list is empty" do
         let(:devices) { [] }
@@ -178,6 +196,36 @@ describe DInstaller::Storage::Proposal do
 
         expect(proposal.calculate).to eq false
         expect(manager.proposal.failed?).to eq true
+      end
+    end
+
+    context "with no encryption settings in the config" do
+      let(:config_data) { {} }
+
+      it "runs the Y2Storage proposal with default encryption settings" do
+        expect(Y2Storage::MinGuidedProposal).to receive(:new) do |**args|
+          expect(args[:settings].encryption_method).to eq Y2Storage::EncryptionMethod::LUKS1
+          expect(args[:settings].encryption_pbkdf).to be_nil
+          y2storage_proposal
+        end
+
+        proposal.calculate
+      end
+    end
+
+    context "with encryption settings in the config" do
+      let(:config_data) do
+        { "storage" => { "encryption" => { "method" => "luks2", "pbkdf" => "pbkdf2" } } }
+      end
+
+      it "runs the Y2Storage proposal with default encryption settings" do
+        expect(Y2Storage::MinGuidedProposal).to receive(:new) do |**args|
+          expect(args[:settings].encryption_method).to eq Y2Storage::EncryptionMethod::LUKS2
+          expect(args[:settings].encryption_pbkdf).to eq Y2Storage::PbkdFunction::PBKDF2
+          y2storage_proposal
+        end
+
+        proposal.calculate
       end
     end
   end
