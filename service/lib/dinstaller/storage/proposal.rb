@@ -255,17 +255,13 @@ module DInstaller
       def validate_proposal
         return if candidate_devices.empty? || !proposal.failed?
 
-        message = format(
-          "Could not create a storage proposal using %{devices}",
-          devices: candidate_devices.join(", ")
-        )
-        ValidationError.new(message)
+        ValidationError.new("Cannot accommodate the required file systems for installation")
       end
 
       def validate_available_devices
         return if available_devices.any?
 
-        ValidationError.new("Could not find a suitable device for installation")
+        ValidationError.new("There is no suitable device for installation")
       end
 
       def validate_candidate_devices
