@@ -21,13 +21,8 @@
 
 import React, { useState } from "react";
 
-import {
-  Label,
-  Text
-} from "@patternfly/react-core";
-
 import { Section, Popup } from "@components/core";
-import { ProposalTargetForm } from "@components/storage";
+import { ProposalTargetForm, ProposalSummary } from "@components/storage";
 
 export default function ProposalTargetSection({ proposal, calculateProposal }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,21 +31,9 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
     calculateProposal({ candidateDevices });
   };
 
-  const DeviceLabel = () => {
-    const device = proposal.availableDevices.find(d => d.id === proposal.candidateDevices[0]);
-
-    return (
-      <Label isCompact>
-        {device.label}
-      </Label>
-    );
-  };
-
   return (
     <Section title="Device" onActionClick={() => setIsOpen(true)} usingSeparator>
-      <Text>
-        Install using device <DeviceLabel /> and deleting all its content
-      </Text>
+      <ProposalSummary proposal={proposal} />
       <Popup aria-label="Device selection" isOpen={isOpen}>
         <ProposalTargetForm id="target-form" proposal={proposal} onSubmit={calculate} />
         <Popup.Actions>

@@ -22,14 +22,11 @@
 import React, { useReducer, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import {
-  Button,
-} from "@patternfly/react-core";
-
 import { useCancellablePromise } from "@/utils";
 import { useInstallerClient } from "@context/installer";
 import { BUSY } from "@client/status";
 import { InstallerSkeleton, Section } from "@components/core";
+import { ProposalSummary } from "@components/storage";
 
 import { EOS_VOLUME as HardDriveIcon } from "eos-icons-react";
 
@@ -94,30 +91,17 @@ export default function StorageSection ({ showErrors }) {
 
   const errors = showErrors ? state.errors : [];
 
-  const content = () => {
+  const SectionContent = () => {
     if (state.busy || !state.proposal) return <InstallerSkeleton lines={1} />;
 
-    const linkText = () => {
-      const { candidateDevices, availableDevices } = state.proposal;
-
-      if (candidateDevices.length === 0) return "No device selected yet";
-
-      const selectedDevice = availableDevices.find(i => i.id === candidateDevices[0]);
-      return selectedDevice?.label;
-    };
-
     return (
-      <Button variant="link" onClick={() => navigate("/storage")}>
-        {linkText()}
-      </Button>
+      <ProposalSummary proposal={state.proposal} onClick={() => navigate("/storage")} />
     );
   };
 
   return (
-    <>
-      <Section key="users" title="Storage" icon={HardDriveIcon} errors={errors}>
-        {content()}
-      </Section>
-    </>
+    <Section key="users" title="Storage" icon={HardDriveIcon} errors={errors}>
+      <SectionContent />
+    </Section>
   );
 }

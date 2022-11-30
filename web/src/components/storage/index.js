@@ -27,3 +27,4 @@ export { default as ProposalTargetForm } from "./ProposalTargetForm";
 export { default as ProposalSettingsForm } from "./ProposalSettingsForm";
 export { default as DeviceSelector } from "./DeviceSelector";
 export { default as ProposalActions } from "./ProposalActions";
+export { default as ProposalSummary } from "./ProposalSummary";
