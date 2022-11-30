@@ -50,12 +50,11 @@ const reducer = (state, action) => {
     }
 
     case "UPDATE_PROPOSAL": {
-      const proposal = state.proposal || {};
-      return { ...state, proposal: { ...proposal, ...action.payload.proposal } };
-    }
+      if (state.busy) return state;
 
-    case "UPDATE_ERRORS": {
-      return { ...state, errors: action.payload.errors };
+      const { proposal, errors } = action.payload;
+
+      return { ...state, proposal, errors };
     }
 
     default: {
@@ -81,19 +80,14 @@ export default function StorageSection ({ showErrors }) {
   }, [client.storage, cancellablePromise]);
 
   useEffect(() => {
-    const updateProposal = (proposal) => {
-      dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal } });
+    const updateProposal = async () => {
+      const proposal = await cancellablePromise(client.storage.getProposal());
+      const errors = await cancellablePromise(client.storage.getValidationErrors());
+
+      dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
     };
 
-    if (!state.busy) cancellablePromise(client.storage.getProposal()).then(updateProposal);
-  }, [client.storage, cancellablePromise, state.busy]);
-
-  useEffect(() => {
-    const updateErrors = (errors) => {
-      dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
-    };
-
-    if (!state.busy) cancellablePromise(client.storage.getValidationErrors()).then(updateErrors);
+    updateProposal();
   }, [client.storage, cancellablePromise, state.busy]);
 
   const errors = showErrors ? state.errors : [];
