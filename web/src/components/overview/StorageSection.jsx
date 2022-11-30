@@ -74,7 +74,9 @@ export default function StorageSection ({ showErrors }) {
       dispatch({ type: "UPDATE_STATUS", payload: { status } });
     };
 
-    cancellablePromise(client.storage.getStatus()).then(updateStatus);
+    cancellablePromise(client.storage.getStatus()).then((result) => {
+      updateStatus(result);
+    });
 
     return client.storage.onStatusChange(updateStatus);
   }, [client.storage, cancellablePromise]);
