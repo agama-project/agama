@@ -22,12 +22,11 @@
 import React from "react";
 
 import {
-  Button,
   Label,
   Text
 } from "@patternfly/react-core";
 
-export default function ProposalSummary({ proposal, onClick }) {
+export default function ProposalSummary({ proposal }) {
   const DeviceLabel = ({ device }) => {
     return (
       <Label isCompact>
@@ -36,29 +35,13 @@ export default function ProposalSummary({ proposal, onClick }) {
     );
   };
 
-  const DeviceButton = ({ device, onClick }) => {
-    return (
-      <Button variant="link" onClick={onClick}>
-        {device.label}
-      </Button>
-    );
-  };
-
-  const DeviceSummary = ({ device, onClick }) => {
-    if (onClick) return <DeviceButton device={device} onClick={onClick} />;
-
-    return <DeviceLabel device={device} />;
-  };
-
   const device = proposal.availableDevices.find(d => d.id === proposal.candidateDevices[0]);
 
   if (!device) return <Text>Device not selected yet</Text>;
 
-  const deviceSummary = <DeviceSummary device={device} onClick={onClick} />;
-
   return (
     <Text>
-      Install using device {deviceSummary} and deleting all its content
+      Install using device <DeviceLabel device={device} /> and deleting all its content
     </Text>
   );
 }

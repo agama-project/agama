@@ -22,6 +22,12 @@
 import React, { useReducer, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+import {
+  Button,
+  Stack,
+  StackItem
+} from '@patternfly/react-core';
+
 import { useCancellablePromise } from "@/utils";
 import { useInstallerClient } from "@context/installer";
 import { BUSY } from "@client/status";
@@ -29,6 +35,7 @@ import { InstallerSkeleton, Section } from "@components/core";
 import { ProposalSummary } from "@components/storage";
 
 import { EOS_VOLUME as HardDriveIcon } from "eos-icons-react";
+import { PencilAltIcon as EditIcon } from '@patternfly/react-icons';
 
 const initialState = {
   busy: false,
@@ -95,12 +102,21 @@ export default function StorageSection ({ showErrors }) {
     if (state.busy || !state.proposal) return <InstallerSkeleton lines={1} />;
 
     return (
-      <ProposalSummary proposal={state.proposal} onClick={() => navigate("/storage")} />
+      <Stack hasGutter>
+        <StackItem>
+          <ProposalSummary proposal={state.proposal} />
+        </StackItem>
+        <StackItem>
+          <Button variant="link" icon={<EditIcon />} onClick={() => navigate("/storage")}>
+            Edit storage settings
+          </Button>
+        </StackItem>
+      </Stack>
     );
   };
 
   return (
-    <Section key="users" title="Storage" icon={HardDriveIcon} errors={errors}>
+    <Section key="storage-section" title="Storage" icon={HardDriveIcon} errors={errors}>
       <SectionContent />
     </Section>
   );
