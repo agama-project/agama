@@ -40,6 +40,9 @@ const actionItems = (action, id) => {
   });
 };
 
+// TODO: would be nice adding an aria-description to these lists, but aria-description still in
+// draft yet and aria-describedby should be used... which id not ideal right now
+// https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-description
 const renderActionsList = actions => {
   const items = actions.map(actionItems).flat();
   return <List className="proposal-actions">{items}</List>;
