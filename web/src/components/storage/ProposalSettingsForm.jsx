@@ -53,7 +53,7 @@ const reducer = (state, action) => {
 export default function ProposalSettingsForm({ id, proposal, onSubmit }) {
   const [state, dispatch] = useReducer(reducer, {
     lvm: proposal.lvm,
-    encryption: proposal.encryptionPassword.length !== 0,
+    encryption: proposal.encryptionPassword?.length !== 0,
     encryptionPassword: proposal.encryptionPassword
   });
 
@@ -103,7 +103,6 @@ export default function ProposalSettingsForm({ id, proposal, onSubmit }) {
           <TextInput
             id="encryptionPassword"
             type="password"
-            aria-label="password"
             value={state.encryptionPassword}
             onChange={onPasswordChange}
           />
