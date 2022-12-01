@@ -61,7 +61,7 @@ export default function ProposalActions ({ actions = [] }) {
     <Stack hasGutter>
       <StackItem>
         <Text>
-          Actions to peform for creating the file systems and for ensuring the system boots.
+          Actions to perform for creating the file systems and for ensuring the system boots.
         </Text>
       </StackItem>
       <StackItem>
