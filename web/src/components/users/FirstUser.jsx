@@ -24,6 +24,7 @@ import { useCancellablePromise } from "@/utils";
 
 import { useInstallerClient } from "@context/installer";
 import {
+  Alert,
   Button,
   Checkbox,
   Form,
@@ -41,12 +42,13 @@ const initialUser = {
   autologin: false,
   password: ""
 };
-export default function Users() {
+export default function FirstUser() {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [user, setUser] = useState(null);
   const [formValues, setFormValues] = useState(initialUser);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [errors, setErrors] = useState([]);
 
   useEffect(() => {
     cancellablePromise(client.users.getUser()).then(userValues => {
@@ -71,17 +73,19 @@ export default function Users() {
   };
 
   const cancel = () => {
+    setErrors([]);
     setIsFormOpen(false);
   };
 
   const accept = async (e) => {
     e.preventDefault();
-    const result = await client.users.setUser(formValues);
-
+    setErrors([]);
+    const { result, issues = [] } = await client.users.setUser(formValues);
+    setErrors(issues);
     if (result) {
       setUser(formValues);
+      setIsFormOpen(false);
     }
-    setIsFormOpen(false);
   };
 
   const remove = async () => {
@@ -115,12 +119,19 @@ export default function Users() {
     }
   };
 
+  const showErrors = () => ((errors || []).length > 0);
+
   return (
     <>
       {renderLink()}
 
       <Popup isOpen={isFormOpen} title="User account">
         <Form id="first-user" onSubmit={accept}>
+          { showErrors() &&
+            <Alert variant="warning" isInline title="Something went wrong">
+              { errors.map((e, i) => <p key={`error_${i}`}>{e}</p>) }
+            </Alert> }
+
           <FormGroup fieldId="userFullName" label="Full name">
             <TextInput
               id="userFullName"
@@ -132,25 +143,26 @@ export default function Users() {
             />
           </FormGroup>
 
-          <FormGroup fieldId="userName" label="Username">
+          <FormGroup fieldId="userName" label="Username" isRequired>
             <TextInput
               id="userName"
               name="userName"
               aria-label="Username"
               value={formValues.userName}
               label="Username"
-              required
+              isRequired
               onChange={handleInputChange}
             />
           </FormGroup>
 
-          <FormGroup fieldId="userPassword" label="Password">
+          <FormGroup fieldId="userPassword" label="Password" isRequired>
             <TextInput
               id="userPassword"
               name="password"
               type="password"
               aria-label="User password"
               value={formValues.password}
+              isRequired
               onChange={handleInputChange}
             />
           </FormGroup>
@@ -166,7 +178,7 @@ export default function Users() {
         </Form>
 
         <Popup.Actions>
-          <Popup.Confirm form="first-user" type="submit" isDisabled={formValues.userName === ""} />
+          <Popup.Confirm form="first-user" type="submit" isDisabled={formValues.userName === "" || formValues.password === ""} />
           <Popup.Cancel onClick={cancel} />
           <Popup.AncillaryAction onClick={remove} isDisabled={!userIsDefined} key="unset">
             Do not create a user

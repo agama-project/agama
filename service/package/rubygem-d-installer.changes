@@ -7,6 +7,16 @@ Thu Dec  1 16:22:58 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
   (gh#yast/d-installer#279)
 
 -------------------------------------------------------------------
+Wed Nov 30 12:41:26 UTC 2022 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Encryption method and pbkdf are now configurable per-product, set
+  to LUKS2 and PBKDF2 for ALP (gh#yast/d-installer#340).
+- Improved selection of packages for ALP to boot from encrypted
+  devices and LVM (gh#yast/d-installer#338).
+- Temporarily adjusted storage proposal to delete all existing
+  partitions and to never reuse LVM (gh#yast/d-installer#340).
+
+-------------------------------------------------------------------
 Fri Nov 18 16:27:43 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.5.0:
