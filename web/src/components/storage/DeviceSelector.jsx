@@ -34,7 +34,12 @@ export default function DeviceSelector({ value, options, onChange }) {
 
   return (
     <FormGroup fieldId="device" label="Device to install into">
-      <FormSelect id="device" value={value} onChange={onChange} aria-label="device">
+      <FormSelect
+        id="device"
+        value={value}
+        aria-label="Storage device selector"
+        onChange={onChange}
+      >
         {selectorOptions}
       </FormSelect>
     </FormGroup>
