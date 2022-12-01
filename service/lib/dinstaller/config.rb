@@ -88,7 +88,7 @@ module DInstaller
     # list of available base products for current architecture
     def products
       return @products if @products
-      return [] unless @pure_data["products"]
+      return [] unless @pure_data && @pure_data["products"]
 
       # cannot use `data` here to avoid endless loop as in data we use
       # pick_product that select product from products
