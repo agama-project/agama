@@ -27,8 +27,6 @@ import {
   Button,
   Flex,
   FlexItem,
-  Text,
-  TextVariants
 } from "@patternfly/react-core";
 
 import { InfoCircleIcon } from '@patternfly/react-icons';
@@ -83,7 +81,7 @@ export default function ProposalPage() {
       dispatch({ type: "SET_BUSY" });
 
       const proposal = await cancellablePromise(client.storage.getProposal());
-      const errors = await client.storage.getValidationErrors();
+      const errors = await cancellablePromise(client.storage.getValidationErrors());
 
       dispatch({
         type: "LOAD",
@@ -100,30 +98,36 @@ export default function ProposalPage() {
     dispatch({ type: "CALCULATE" });
   };
 
-  const content = () => {
-    if (state.busy) return <InstallerSkeleton lines={3} />;
-
-    if (!state.proposal) return (
-      <Text component={TextVariants.h5}>
-        No proposal yet
-      </Text>
-    );
-
-    const categories = [
-      <ProposalTargetSection key="target" proposal={state.proposal} calculateProposal={calculateProposal} />,
-      <ProposalSettingsSection key="settings" proposal={state.proposal} calculateProposal={calculateProposal} />,
-      <ProposalActionsSection key="actions" proposal={state.proposal} errors={state.errors} />,
-    ];
+  const PageContent = () => {
+    if (state.busy || !state.proposal) return <InstallerSkeleton lines={3} />;
 
     return (
       <Flex direction={{ default: "column" }}>
         <FlexItem>
-          <Alert isInline customIcon={<InfoCircleIcon />} title="Devices will not be modified until installation starts." />
+          <Alert
+            isInline
+            customIcon={<InfoCircleIcon />}
+            title="Devices will not be modified until installation starts."
+          />
         </FlexItem>
-        {categories.map((category, i) => (
-          <FlexItem key={i} className="installation-overview-section">
-            {category}
-          </FlexItem>))}
+        <FlexItem key="target" className="installation-overview-section">
+          <ProposalTargetSection
+            proposal={state.proposal}
+            calculateProposal={calculateProposal}
+          />
+        </FlexItem>
+        <FlexItem key="settings" className="installation-overview-section">
+          <ProposalSettingsSection
+            proposal={state.proposal}
+            calculateProposal={calculateProposal}
+          />
+        </FlexItem>
+        <FlexItem key="actions" className="installation-overview-section">
+          <ProposalActionsSection
+            proposal={state.proposal}
+            errors={state.errors}
+          />
+        </FlexItem>
       </Flex>
     );
   };
@@ -137,8 +141,7 @@ export default function ProposalPage() {
           Accept
         </Button>
       </MainActions>
-
-      {content()}
+      <PageContent />
     </>
   );
 }
