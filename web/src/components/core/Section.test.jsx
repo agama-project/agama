@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { act, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
 import { Section } from "@components/core";
 
@@ -84,7 +84,8 @@ describe("Section", () => {
       expect(inputText).not.toBeInTheDocument();
 
       const actionIcon = screen.getByRole("figure", { name: "Awesome settings section action icon" });
-      await act(async () => user.click(actionIcon));
+
+      await user.click(actionIcon);
 
       inputText = screen.queryByRole("textbox", { name: "Awesome input" });
       expect(inputText).toBeInTheDocument();

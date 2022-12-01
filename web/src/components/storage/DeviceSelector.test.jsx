@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { act, screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
 import { DeviceSelector } from "@components/storage";
 
@@ -78,7 +78,7 @@ describe("DeviceSelector", () => {
       expect(screen.queryByText("Selected device: /dev/sdc")).not.toBeInTheDocument();
     });
 
-    await act(async () => user.selectOptions(selector, option));
+    await user.selectOptions(selector, option);
 
     await screen.findByText("Selected device: /dev/sdc");
   });
