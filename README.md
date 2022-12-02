@@ -60,9 +60,9 @@ to have a closer look, then clone and configure the project as explained in the 
 
 * [multi-product](https://build.opensuse.org/package/binaries/YaST:Head:D-Installer/d-installer-live:default/images):
   it can be used to install different products, like *openSUSE Tumbleweed*, *Leap*, *Leap Micro* or
-  an experimental version of the *Adaptable Linux Platform Host OS*.
+  an experimental version of the *SUSE ALP ContainerHost OS*.
 * [ALP only](https://build.opensuse.org/package/binaries/YaST:Head:D-Installer/d-installer-live:ALP/images):
-  it only contains the definition for the experimental *Adaptable Linux Platform Host OS*, although
+  it only contains the definition for the experimental *SUSE ALP ContainerHost OS*, although
   the rest of the content is pretty much the same than the multi-product version.
 
 ### Manual Configuration
