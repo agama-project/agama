@@ -26,10 +26,8 @@ import { useInstallerClient } from "@context/installer";
 import {
   Button,
   Form,
-  FormGroup,
   Skeleton,
   Text,
-  TextInput
 } from "@patternfly/react-core";
 
 import { PasswordAndConfirmationInput, Popup } from '@components/core';
