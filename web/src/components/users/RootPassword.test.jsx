@@ -66,8 +66,10 @@ it("allows changing the password ", async () => {
 
   await screen.findByRole("dialog");
 
-  const passwordInput = await screen.findByLabelText("New root password");
+  const passwordInput = await screen.findByLabelText("Password");
   await user.type(passwordInput, password);
+  const passwordConfirmationInput = await screen.findByLabelText("Password confirmation");
+  await user.type(passwordConfirmationInput, password);
 
   const confirmButton = await screen.findByRole("button", { name: /Confirm/i });
   expect(confirmButton).toBeEnabled();

@@ -121,7 +121,7 @@ export default function FirstUser() {
   };
 
   const showErrors = () => ((errors || []).length > 0);
-
+  const buttonDisabled = formValues.userName === "" || formValues.password === "" || !validPassword;
   return (
     <>
       {renderLink()}
@@ -176,7 +176,7 @@ export default function FirstUser() {
         </Form>
 
         <Popup.Actions>
-          <Popup.Confirm form="first-user" type="submit" isDisabled={formValues.userName === "" || !validPassword} />
+          <Popup.Confirm form="first-user" type="submit" isDisabled={buttonDisabled} />
           <Popup.Cancel onClick={cancel} />
           <Popup.AncillaryAction onClick={remove} isDisabled={!userIsDefined} key="unset">
             Do not create a user

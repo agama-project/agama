@@ -69,8 +69,11 @@ it("allows defining a new user", async () => {
   const usernameInput = within(dialog).getByLabelText(/Username/);
   await user.type(usernameInput, "jane");
 
-  const passwordInput = within(dialog).getByLabelText(/Password/);
+  const passwordInput = within(dialog).getByLabelText("Password");
   await user.type(passwordInput, "12345");
+
+  const passwordConfirmationInput = within(dialog).getByLabelText("Password confirmation");
+  await user.type(passwordConfirmationInput, "12345");
 
   const confirmButton = screen.getByRole("button", { name: /Confirm/i });
   expect(confirmButton).toBeEnabled();
@@ -136,8 +139,11 @@ describe("when there is some issue with the user config provided", () => {
     const usernameInput = within(dialog).getByLabelText("Username");
     await user.type(usernameInput, "root");
 
-    const passwordInput = within(dialog).getByLabelText(/Password/);
+    const passwordInput = within(dialog).getByLabelText("Password");
     await user.type(passwordInput, "12345");
+
+    const passwordConfirmationInput = within(dialog).getByLabelText("Password confirmation");
+    await user.type(passwordConfirmationInput, "12345");
 
     const confirmButton = within(dialog).getByRole("button", { name: /Confirm/i });
     expect(confirmButton).toBeEnabled();
