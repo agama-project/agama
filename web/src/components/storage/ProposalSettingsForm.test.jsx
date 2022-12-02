@@ -30,6 +30,7 @@ const proposal = {
   encryptionPassword: ""
 };
 const onSubmitFn = jest.fn();
+const onValidateFn = jest.fn();
 
 describe("ProposalSettingsForm", () => {
   it("renders an input for changing LVM settings", () => {
@@ -101,7 +102,10 @@ describe("ProposalSettingsForm", () => {
 
     it("changes its state when user clicks on it", async () => {
       const { user } = installerRender(
-        <ProposalSettingsForm proposal={proposal} />
+        <ProposalSettingsForm
+          proposal={proposal}
+          onValidate={onValidateFn}
+        />
       );
 
       const encryptionOptionsCheckbox = screen.getByRole("checkbox", { name: "Encrypt devices" });
@@ -115,7 +119,10 @@ describe("ProposalSettingsForm", () => {
   describe("Input for entering an encryption password", () => {
     it("changes its state when user types on it", async () => {
       const { user } = installerRender(
-        <ProposalSettingsForm proposal={{ encryptionPassword: "s3cr3t" }} />
+        <ProposalSettingsForm
+          proposal={{ encryptionPassword: "s3cr3t" }}
+          onValidate={onValidateFn}
+        />
       );
 
       const encryptionPasswordInput = screen.getByLabelText("Password");
@@ -129,14 +136,19 @@ describe("ProposalSettingsForm", () => {
 
   describe("#onSubmit", () => {
     it("executes given onSubmit function with form settings", async () => {
-      // FIXME: our forms do not have submit forms because they are submitted
+      // FIXME: our forms do not have submit button because they are submitted
       // from outside (usually from the popup buttons). That's why we have the id prop.
       // Ideally, we should add a prop for choosing when a child submit button
       // should be rendered and when not.
       const FormWrapper = () => {
         return (
           <>
-            <ProposalSettingsForm id="the-form" proposal={proposal} onSubmit={onSubmitFn} />
+            <ProposalSettingsForm
+              id="the-form"
+              proposal={proposal}
+              onSubmit={onSubmitFn}
+              onValidate={onValidateFn}
+            />
             <button type="submit" form="the-form">Submit the form</button>
           </>
         );
@@ -164,7 +176,12 @@ describe("ProposalSettingsForm", () => {
         const FormWrapper = () => {
           return (
             <>
-              <ProposalSettingsForm id="the-form" proposal={proposal} onSubmit={onSubmitFn} />
+              <ProposalSettingsForm
+                id="the-form"
+                proposal={proposal}
+                onSubmit={onSubmitFn}
+                onValidate={onValidateFn}
+              />
               <button type="submit" form="the-form">Submit the form</button>
             </>
           );

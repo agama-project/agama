@@ -26,6 +26,7 @@ import { ProposalSettingsForm } from "@components/storage";
 
 export default function ProposalSettingsSection({ proposal, calculateProposal }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isValid, setIsValid] = useState(true);
 
   const onSettingsChange = ({ lvm, encryptionPassword }) => {
     setIsOpen(false);
@@ -62,9 +63,14 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
       usingSeparator
     >
       <Popup title="Settings" isOpen={isOpen}>
-        <ProposalSettingsForm id="settings-form" proposal={proposal} onSubmit={onSettingsChange} />
+        <ProposalSettingsForm
+          id="settings-form"
+          proposal={proposal}
+          onSubmit={onSettingsChange}
+          onValidate={setIsValid}
+        />
         <Popup.Actions>
-          <Popup.Confirm form="settings-form" type="submit">Accept</Popup.Confirm>
+          <Popup.Confirm form="settings-form" type="submit" isDisabled={!isValid}>Accept</Popup.Confirm>
           <Popup.Cancel onClick={() => setIsOpen(false)} autoFocus />
         </Popup.Actions>
       </Popup>

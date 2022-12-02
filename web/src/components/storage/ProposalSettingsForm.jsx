@@ -23,12 +23,10 @@ import React, { useReducer } from "react";
 
 import {
   Form,
-  FormGroup,
-  Switch,
-  TextInput
+  Switch
 } from "@patternfly/react-core";
 
-import { Fieldset } from "@components/core";
+import { Fieldset, PasswordAndConfirmationInput } from "@components/core";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -50,7 +48,7 @@ const reducer = (state, action) => {
   }
 };
 
-export default function ProposalSettingsForm({ id, proposal, onSubmit }) {
+export default function ProposalSettingsForm({ id, proposal, onSubmit, onValidate }) {
   const [state, dispatch] = useReducer(reducer, {
     lvm: proposal.lvm,
     encryption: proposal.encryptionPassword?.length !== 0,
@@ -61,7 +59,12 @@ export default function ProposalSettingsForm({ id, proposal, onSubmit }) {
     dispatch({ type: "LVM_CHANGE", payload: { lvm: value } });
   };
 
+  const onEncryptionValidate = (value) => {
+    onValidate(value);
+  };
+
   const onEncryptionChange = (value) => {
+    if (!value) onEncryptionValidate(true);
     dispatch({ type: "ENCRYPTION_CHANGE", payload: { encryption: value } });
   };
 
@@ -99,14 +102,12 @@ export default function ProposalSettingsForm({ id, proposal, onSubmit }) {
           />
         }
       >
-        <FormGroup fieldId="encryptionPassword" label="Password">
-          <TextInput
-            id="encryptionPassword"
-            type="password"
-            value={state.encryptionPassword}
-            onChange={onPasswordChange}
-          />
-        </FormGroup>
+        <PasswordAndConfirmationInput
+          id="encryptionPassword"
+          value={state.encryptionPassword}
+          onChange={onPasswordChange}
+          onValidation={onEncryptionValidate}
+        />
       </Fieldset>
     </Form>
   );
