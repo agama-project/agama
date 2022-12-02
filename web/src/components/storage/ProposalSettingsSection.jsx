@@ -33,13 +33,17 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
   };
 
   const ProposalDescription = () => {
-    let settingsText = "Create file systems over";
-    if (proposal.encryptionPassword.length > 0) settingsText += " encrypted";
-    settingsText += proposal.lvm ? " LVM volumes" : " partitions";
+    const settingsText = (proposal) => {
+      let text = "Create file systems over";
+      if (proposal.encryptionPassword.length > 0) text += " encrypted";
+      text += proposal.lvm ? " LVM volumes" : " partitions";
+
+      return text;
+    };
 
     return (
       <List>
-        <ListItem>{settingsText}</ListItem>
+        <ListItem>{settingsText(proposal)}</ListItem>
         <ListItem className="volumes-list">
           Create the following file systems: {proposal.volumes.map(v => (
             <Label key={v.mountPoint} isCompact>
