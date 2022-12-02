@@ -27,7 +27,7 @@ import {
   Button,
   Form,
   Skeleton,
-  Text,
+  Text
 } from "@patternfly/react-core";
 
 import { PasswordAndConfirmationInput, Popup } from '@components/core';
