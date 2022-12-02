@@ -186,7 +186,6 @@ ALP:
         fs_type: btrfs
         desired_size: 20 GiB
         min_size: 5 GiB
-        max_size: 20 GiB
         fs_types:
           - btrfs
         weight: 20
