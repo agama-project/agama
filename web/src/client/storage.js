@@ -92,7 +92,17 @@ class StorageBaseClient {
     };
   }
 
-  // FIXME do not send undefined values
+  /**
+   * Calculates a new proposal
+   *
+   * @todo Do not send undefined values
+   *
+   * @param {?string[]} candidateDevices - Devices to use for the proposal
+   * @param {?string} encryptionPassword - Password for encrypting devices
+   * @param {?boolean} lvm - Whether to calculate the proposal with LVM volumes
+   * @param {?object[]} volumes - Volumes to create
+   * @return {Promise<number>} - 0 success, other for failure
+   */
   async calculateProposal({ candidateDevices, encryptionPassword, lvm, volumes }) {
     const proxy = await this.client.proxy(STORAGE_PROPOSAL_IFACE);
 
