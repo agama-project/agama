@@ -28,6 +28,7 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const calculate = ({ candidateDevices }) => {
+    setIsOpen(false);
     calculateProposal({ candidateDevices });
   };
 

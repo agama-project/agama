@@ -28,6 +28,7 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
   const [isOpen, setIsOpen] = useState(false);
 
   const onSettingsChange = ({ lvm, encryptionPassword }) => {
+    setIsOpen(false);
     calculateProposal({ lvm, encryptionPassword });
   };
 
