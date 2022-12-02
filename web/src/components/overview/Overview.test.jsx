@@ -51,7 +51,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 jest.mock("@components/language/LanguageSelector", () => () => "Language Selector");
-jest.mock("@components/storage/Storage", () => () => "Storage Configuration");
+jest.mock("@components/overview/StorageSection", () => () => "Storage Section");
 jest.mock("@components/network/Network", () => () => "Network Configuration");
 jest.mock("@components/users/Users", () => () => "Users Configuration");
 jest.mock("@components/core/InstallButton", () => () => "Install Button");
@@ -108,7 +108,7 @@ test("renders the Overview and the Install button", async () => {
 
   await screen.findByText("Language Selector");
   await screen.findByText("Network Configuration");
-  await screen.findByText("Storage Configuration");
+  await screen.findByText("Storage Section");
   await screen.findByText("Users Configuration");
   await screen.findByText("Install Button");
 });
