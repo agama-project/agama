@@ -1,6 +1,7 @@
 products:
   ALP:
     name: SUSE ALP ContainerHost OS
+    archs: x86_64,aarch64
     description: 'The Adaptable Linux Platform (ALP), the next generation of Linux,
       allow users to focus on their workloads while abstracting from the hardware
       and the application layer. The preview of ContainerHost OS is one of the
@@ -13,6 +14,7 @@ products:
       this for users that want the newest stable software.'
   Leap Micro:
     name: openSUSE Leap Micro 5.3
+    archs: x86_64,aarch64
     description: 'Leap Micro is an ultra-reliable, lightweight operating system
       built for containerized and virtualized workloads. This community version
       is based on SUSE Linux Enterprise Micro, which leverages the enterprise
@@ -32,9 +34,29 @@ web:
 Tumbleweed:
   software:
     installation_repositories:
-      - https://download.opensuse.org/tumbleweed/repo/oss/
-      - https://download.opensuse.org/tumbleweed/repo/non-oss/
-      - https://download.opensuse.org/update/tumbleweed/
+      - url: https://download.opensuse.org/tumbleweed/repo/oss/
+        archs: x86_64
+      - url: https://download.opensuse.org/ports/aarch64/tumbleweed/repo/oss/
+        archs: aarch64
+      - url: https://download.opensuse.org/ports/zsystems/tumbleweed/repo/oss/
+        archs: s390
+      - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/oss/
+        archs: ppc
+      - url: https://download.opensuse.org/tumbleweed/repo/non-oss/
+        archs: x86_64
+      # aarch64 does not have non-oss ports. Keep eye if it change
+      - url: https://download.opensuse.org/ports/zsystems/tumbleweed/repo/non-oss/
+        archs: s390
+      - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/non-oss/
+        archs: ppc
+      - url: https://download.opensuse.org/update/tumbleweed/
+        archs: x86_64
+      - url: https://download.opensuse.org/ports/aarch64/update/tumbleweed/
+        archs: aarch64
+      - url: https://download.opensuse.org/ports/zsystems/update/tumbleweed/
+        archs: s390
+      - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/oss/
+        archs: ppc
     mandatory_patterns:
       - enhanced_base # only pattern that is shared among all roles on TW
     optional_patterns: null # no optional pattern shared
@@ -127,7 +149,10 @@ Tumbleweed:
 ALP:
   software:
     installation_repositories:
-      - https://download.opensuse.org/repositories/SUSE:/ALP/standard/
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/ToTest/images/repo/ALP-0.1-x86_64-Media1/
+        archs: x86_64
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/ToTest/images/repo/ALP-0.1-aarch64-Media1/
+        archs: aarch64
     mandatory_patterns:
       - alp_base
       - alp_base_zypper
@@ -290,7 +315,10 @@ Leap:
 Leap Micro:
   software:
     installation_repositories:
-      - https://download.opensuse.org/distribution/leap-micro/5.3/product/repo/Leap-Micro-5.3-x86_64-Media/
+      - url: https://download.opensuse.org/distribution/leap-micro/5.3/product/repo/Leap-Micro-5.3-x86_64-Media/
+        archs: x86_64
+      - url: https://download.opensuse.org/distribution/leap-micro/5.3/product/repo/Leap-Micro-5.3-aarch64-Media/
+        archs: aarch64
     mandatory_patterns:
       - microos-base
       - microos-hardware

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Dec  1 16:22:58 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to define products architectures and architecture specific
+  installation repositories
+- Adapt default d-installer.yml to fix installation on other archs
+  (gh#yast/d-installer#279)
+
+-------------------------------------------------------------------
 Wed Nov 30 12:41:26 UTC 2022 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Encryption method and pbkdf are now configurable per-product, set

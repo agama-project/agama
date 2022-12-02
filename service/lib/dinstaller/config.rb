@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yaml"
+require "yast2/arch_filter"
 require "dinstaller/config_reader"
 
 module DInstaller
@@ -76,7 +77,7 @@ module DInstaller
       return @data if @data
 
       @data = @pure_data.dup || {}
-      pick_product(@data["products"].keys.first) if @data["products"]
+      pick_product(products.keys.first) unless products.empty?
       @data
     end
 
@@ -84,11 +85,24 @@ module DInstaller
       data.merge!(data[product])
     end
 
+    # list of available base products for current architecture
+    def products
+      return @products if @products
+      return [] unless @pure_data && @pure_data["products"]
+
+      # cannot use `data` here to avoid endless loop as in data we use
+      # pick_product that select product from products
+      @products = @pure_data["products"].select do |_key, value|
+        value["archs"].nil? ||
+          Yast2::ArchFilter.from_string(value["archs"]).match?
+      end
+    end
+
     # Whether there are more than one product
     #
     # @return [Boolean] false if there is only one product; true otherwise
     def multi_product?
-      data["products"].size > 1
+      products.size > 1
     end
 
     # Returns a copy of this Object

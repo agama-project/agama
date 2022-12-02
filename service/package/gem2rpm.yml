@@ -12,6 +12,8 @@
   Requires:       yast2-proxy
   Requires:       yast2-storage-ng
   Requires:       yast2-users
+  # yast2 with ArchFilter
+  Requires:       yast2 >= 4.5.20
 # ## used by gem2rpm
 :post_install: |-
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/dbus.conf %{buildroot}%{_datadir}/dbus-1/system.d/org.opensuse.DInstaller.conf

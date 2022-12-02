@@ -25,6 +25,7 @@ require "dinstaller/package_callbacks"
 require "dinstaller/config"
 require "dinstaller/with_progress"
 require "y2packager/product"
+require "yast2/arch_filter"
 
 Yast.import "Package"
 Yast.import "Packages"
@@ -56,7 +57,7 @@ module DInstaller
       @config = config
       @logger = logger
       @languages = DEFAULT_LANGUAGES
-      @products = @config.data["products"]
+      @products = @config.products
       if @config.multi_product?
         @product = nil
       else
@@ -206,7 +207,14 @@ module DInstaller
 
     def add_base_repo
       @config.data["software"]["installation_repositories"].each do |repo|
-        Yast::Pkg.SourceCreate(repo, "/") # TODO: having that dir also in config?
+        if repo.is_a?(Hash)
+          url = repo["url"]
+          # skip if repo is not for current arch
+          next if repo["archs"] && !Yast2::ArchFilter.from_string(repo["archs"]).match?
+        else
+          url = repo
+        end
+        Yast::Pkg.SourceCreate(url, "/") # TODO: having that dir also in config?
       end
 
       Yast::Pkg.SourceSaveAll

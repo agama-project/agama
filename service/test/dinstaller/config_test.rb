@@ -89,6 +89,13 @@ describe DInstaller::Config do
     end
   end
 
+  describe "#products" do
+    it "returns products available for current hardware" do
+      subject = described_class.from_file(File.join(FIXTURES_PATH, "d-installer-archs.yaml"))
+      expect(subject.products.size).to eq 2
+    end
+  end
+
   describe "#multi_product?" do
     context "when more than one product is defined" do
       subject do
