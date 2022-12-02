@@ -36,3 +36,15 @@ describe("when the passwords do not match", () => {
     await screen.findByText("Passwords do not match");
   });
 });
+
+it("uses the given password value for confirmation too", async () => {
+  const { user } = plainRender(
+    <PasswordAndConfirmationInput value={"12345"} />
+  );
+
+  const passwordInput = screen.getByLabelText("Password");
+  const confirmationInput = screen.getByLabelText("Password confirmation");
+
+  expect(passwordInput.value).toEqual("12345");
+  expect(passwordInput.value).toEqual(confirmationInput.value);
+});

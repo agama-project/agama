@@ -26,7 +26,7 @@ import {
 } from "@patternfly/react-core";
 
 const PasswordAndConfirmationInput = ({ value, onChange, onValidation }) => {
-  const [confirmation, setConfirmation] = useState("");
+  const [confirmation, setConfirmation] = useState(value || "");
   const [error, setError] = useState("");
 
   const validate = (password, passwordConfirmation) => {
