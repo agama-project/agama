@@ -139,7 +139,7 @@ export default function FirstUser() {
               name="fullName"
               aria-label="User fullname"
               value={formValues.fullName}
-              label="User full Name"
+              label="User full name"
               onChange={handleInputChange}
             />
           </FormGroup>
