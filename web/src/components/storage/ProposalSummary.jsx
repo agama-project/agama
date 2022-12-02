@@ -19,12 +19,29 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ProposalPage } from "./ProposalPage";
-export { default as ProposalTargetSection } from "./ProposalTargetSection";
-export { default as ProposalSettingsSection } from "./ProposalSettingsSection";
-export { default as ProposalActionsSection } from "./ProposalActionsSection";
-export { default as ProposalTargetForm } from "./ProposalTargetForm";
-export { default as ProposalSettingsForm } from "./ProposalSettingsForm";
-export { default as DeviceSelector } from "./DeviceSelector";
-export { default as ProposalActions } from "./ProposalActions";
-export { default as ProposalSummary } from "./ProposalSummary";
+import React from "react";
+
+import {
+  Label,
+  Text
+} from "@patternfly/react-core";
+
+export default function ProposalSummary({ proposal }) {
+  const DeviceLabel = ({ device }) => {
+    return (
+      <Label isCompact>
+        {device.label}
+      </Label>
+    );
+  };
+
+  const device = proposal.availableDevices.find(d => d.id === proposal.candidateDevices[0]);
+
+  if (!device) return <Text>Device not selected yet</Text>;
+
+  return (
+    <Text>
+      Install using device <DeviceLabel device={device} /> and deleting all its content
+    </Text>
+  );
+}

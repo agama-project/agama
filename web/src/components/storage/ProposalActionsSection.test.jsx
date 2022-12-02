@@ -22,30 +22,16 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
-import { Proposal } from "@components/storage";
+import { ProposalActionsSection } from "@components/storage";
 
-const subvolAction = {
-  text: "Create subvolume @ on /dev/sda1",
-  subvol: true,
-  delete: false
-};
+jest.mock("@components/storage/ProposalActions", () => () => "ProposalActions content");
 
-const generalAction = {
-  text: "Mount /dev/sda1 as root",
-  subvol: false,
-  delete: false
-};
+const proposal = {};
 
-it("displays the actions showing/hiding the subvolume actions on user request", async () => {
-  const { user } = installerRender(<Proposal data={[generalAction, subvolAction]} />);
-  expect(screen.getByText(generalAction.text)).toBeVisible();
-  expect(screen.getByText(subvolAction.text)).not.toBeVisible();
+describe("ProposalActionsSection", () => {
+  it("renders the proposal actions", async () => {
+    installerRender(<ProposalActionsSection proposal={proposal} />);
 
-  const showButton = screen.getByRole("button", { name: /Show/ });
-  await user.click(showButton);
-  expect(screen.getByText(subvolAction.text)).toBeVisible();
-
-  const hideButton = screen.getByRole("button", { name: /Hide/ });
-  await user.click(hideButton);
-  expect(screen.getByText(subvolAction.text)).not.toBeVisible();
+    screen.getByText("ProposalActions content");
+  });
 });

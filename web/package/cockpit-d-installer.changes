@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Dec  2 13:41:41 UTC 2022 - José Iván López González <jlopez@suse.com>
+
+- Add new UI for storage proposal offering LVM and encyption
+  options (gh#yast/d-installer#321).
+
+-------------------------------------------------------------------
 Fri Nov 18 16:27:26 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.5.0:

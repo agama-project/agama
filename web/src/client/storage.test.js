@@ -34,6 +34,10 @@ const storageProposalProxy = {
   ],
   CandidateDevices: ["/dev/sda"],
   LVM: true,
+  Volumes: [
+    { MountPoint: { t: "s", v: "/test1" } },
+    { MountPoint: { t: "s", v: "/test2" } }
+  ],
   Actions: [
     {
       Text: { t: "s", v: "Mount /dev/sdb1 as root" },
@@ -49,25 +53,21 @@ beforeEach(() => {
   });
 });
 
-describe("#getStorageProposal", () => {
-  it("returns the storage proposal settings", async () => {
+describe("#getProposal", () => {
+  it("returns the storage proposal settings and actions", async () => {
     const client = new StorageClient(dbusClient);
-    const proposal = await client.getStorageProposal();
-    expect(proposal).toEqual({
-      availableDevices: [
-        { id: "/dev/sda", label: "/dev/sda, 950 GiB, Windows" },
-        { id: "/dev/sdb", label: "/dev/sdb, 500 GiB" }
-      ],
-      candidateDevices: ["/dev/sda"],
-      lvm: true
-    });
-  });
-});
+    const proposal = await client.getProposal();
+    expect(proposal.availableDevices).toEqual([
+      { id: "/dev/sda", label: "/dev/sda, 950 GiB, Windows" },
+      { id: "/dev/sdb", label: "/dev/sdb, 500 GiB" }
+    ]);
+    expect(proposal.candidateDevices).toEqual(["/dev/sda"]);
+    expect(proposal.lvm).toBeTruthy();
+    expect(proposal.actions).toEqual([
+      { text: "Mount /dev/sdb1 as root", subvol: false, delete: false }
+    ]);
 
-describe("#getStorageActions", () => {
-  it("returns the storage actions", async () => {
-    const client = new StorageClient(dbusClient);
-    const actions = await client.getStorageActions();
-    expect(actions).toEqual([{ text: "Mount /dev/sdb1 as root", subvol: false, delete: false }]);
+    expect(proposal.volumes[0].mountPoint).toEqual("/test1");
+    expect(proposal.volumes[1].mountPoint).toEqual("/test2");
   });
 });

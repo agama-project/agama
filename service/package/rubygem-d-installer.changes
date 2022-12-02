@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Dec  2 14:52:36 UTC 2022 - José Iván López González <jlopez@suse.com>
+
+- Improve messages of storage validation errors.
+- Do not encrypt devices when receiving an empty password from
+  D-Bus (gh#yast/d-installer#321).
+
+-------------------------------------------------------------------
 Thu Dec  1 16:22:58 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow to define products architectures and architecture specific

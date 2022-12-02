@@ -27,14 +27,15 @@ import "regenerator-runtime/runtime";
 import "@patternfly/patternfly/patternfly-base.scss";
 
 import { HashRouter, Routes, Route } from "react-router-dom";
-import { InstallerClientProvider } from "./context/installer";
-import { SoftwareProvider } from "./context/software";
-import { createClient } from "./client";
+import { InstallerClientProvider } from "@context/installer";
+import { SoftwareProvider } from "@context/software";
+import { createClient } from "@/client";
 
-import App from "./App";
-import Main from "./Main";
-import { Overview } from "@components/core";
+import App from "@/App";
+import Main from "@/Main";
+import { Overview } from "@components/overview";
 import { ProductSelectionPage } from "@components/software";
+import { ProposalPage as StoragePage } from "@components/storage";
 
 /*
  * PF4 overrides need to come after the JSX components imports because
@@ -58,6 +59,7 @@ ReactDOM.render(
               <Route path="/" element={<Main />}>
                 <Route index element={<Overview />} />
                 <Route path="/overview" element={<Overview />} />
+                <Route path="/storage" element={<StoragePage />} />
               </Route>
               <Route path="products" element={<ProductSelectionPage />} />
             </Route>

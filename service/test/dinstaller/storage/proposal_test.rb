@@ -371,7 +371,7 @@ describe DInstaller::Storage::Proposal do
       it "returns an error" do
         errors = subject.validate
         expect(errors.size).to eq(1)
-        expect(errors.first.message).to include("not find a suitable device")
+        expect(errors.first.message).to include("There is no suitable device")
       end
     end
 
@@ -381,7 +381,7 @@ describe DInstaller::Storage::Proposal do
       it "returns an error" do
         errors = subject.validate
         expect(errors.size).to eq(1)
-        expect(errors.first.message).to include("not create a storage proposal using /dev/sda")
+        expect(errors.first.message).to include("Cannot accommodate")
       end
     end
 

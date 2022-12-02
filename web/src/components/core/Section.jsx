@@ -167,7 +167,7 @@ export default function Section({
               </Text>
             </TextContent>
           </StackItem> }
-          { errors &&
+          { errors?.length > 0 &&
           <StackItem>
             <ValidationErrors errors={errors} title={`${title} errors`} />
           </StackItem> }

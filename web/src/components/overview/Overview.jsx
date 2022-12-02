@@ -28,7 +28,7 @@ import { Button, Flex, FlexItem } from "@patternfly/react-core";
 import { Title, PageIcon, PageActions, MainActions } from "@components/layout";
 import { Section, InstallButton } from "@components/core";
 import { LanguageSelector } from "@components/language";
-import { Storage } from "@components/storage";
+import { StorageSection } from "@components/overview";
 import { Users } from "@components/users";
 import { Network } from "@components/network";
 
@@ -66,21 +66,21 @@ function Overview() {
     return <Navigate to="/products" />;
   }
 
-  const categories = [
+  const sections = [
     <Section key="language" title="Language" icon={LanguagesSelectionIcon}>
       <LanguageSelector />
     </Section>,
     <Section key="network" title="Network" icon={NetworkIcon}>
       <Network />
     </Section>,
-    <Storage key="storage" showErrors />,
+    <StorageSection key="storage" showErrors />,
     <Users key="users" showErrors={showErrors} />
   ];
 
-  const renderCategories = () => {
-    return categories.map((category, i) => (
+  const Sections = () => {
+    return sections.map((section, i) => (
       <FlexItem key={i} className="installation-overview-section">
-        {category}
+        {section}
       </FlexItem>
     ));
   };
@@ -91,7 +91,7 @@ function Overview() {
       <PageIcon><OverviewIcon /></PageIcon>
       <PageActions><ChangeProductButton /></PageActions>
       <MainActions><InstallButton onClick={() => setShowErrors(true)} /></MainActions>
-      <Flex direction={{ default: "column" }}>{renderCategories()}</Flex>
+      <Flex direction={{ default: "column" }}><Sections /></Flex>
     </>
   );
 }

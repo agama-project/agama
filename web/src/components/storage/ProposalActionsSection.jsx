@@ -19,12 +19,19 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ProposalPage } from "./ProposalPage";
-export { default as ProposalTargetSection } from "./ProposalTargetSection";
-export { default as ProposalSettingsSection } from "./ProposalSettingsSection";
-export { default as ProposalActionsSection } from "./ProposalActionsSection";
-export { default as ProposalTargetForm } from "./ProposalTargetForm";
-export { default as ProposalSettingsForm } from "./ProposalSettingsForm";
-export { default as DeviceSelector } from "./DeviceSelector";
-export { default as ProposalActions } from "./ProposalActions";
-export { default as ProposalSummary } from "./ProposalSummary";
+import React from "react";
+
+import { Section } from "@components/core";
+import { ProposalActions } from "@components/storage";
+
+export default function ProposalActionsSection({ proposal, errors }) {
+  return (
+    <Section
+      title="Result"
+      usingSeparator
+      errors={errors}
+    >
+      <ProposalActions actions={proposal.actions} />
+    </Section>
+  );
+}
