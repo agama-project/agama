@@ -25,7 +25,7 @@ import { installerRender } from "@/test-utils";
 import { createClient } from "@client";
 import { ProposalPage } from "@components/storage";
 
-const ProposalTargetSection = ({ calculateProposal }) => {
+const FakeProposalTargetSection = ({ calculateProposal }) => {
   return (
     <>
       Target section
@@ -41,7 +41,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("@components/core/InstallerSkeleton", () => () => "Loading proposal");
-jest.mock("@components/storage/ProposalTargetSection", () => ProposalTargetSection);
+jest.mock("@components/storage/ProposalTargetSection", () => FakeProposalTargetSection);
 
 jest.mock("@components/storage/ProposalSettingsSection", () => () => "Settings section");
 jest.mock("@components/storage/ProposalActionsSection", () => () => "Actions section");
