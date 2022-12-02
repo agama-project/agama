@@ -27,7 +27,7 @@ import { ProposalTargetForm, ProposalSummary } from "@components/storage";
 export default function ProposalTargetSection({ proposal, calculateProposal }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const calculate = ({ candidateDevices }) => {
+  const onTargetChange = ({ candidateDevices }) => {
     setIsOpen(false);
     calculateProposal({ candidateDevices });
   };
@@ -36,7 +36,7 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
     <Section title="Device" onActionClick={() => setIsOpen(true)} usingSeparator>
       <ProposalSummary proposal={proposal} />
       <Popup aria-label="Device selection" isOpen={isOpen}>
-        <ProposalTargetForm id="target-form" proposal={proposal} onSubmit={calculate} />
+        <ProposalTargetForm id="target-form" proposal={proposal} onSubmit={onTargetChange} />
         <Popup.Actions>
           <Popup.Confirm form="target-form" type="submit">Accept</Popup.Confirm>
           <Popup.Cancel onClick={() => setIsOpen(false)} autoFocus />
