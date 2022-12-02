@@ -26,13 +26,11 @@ import { useInstallerClient } from "@context/installer";
 import {
   Button,
   Form,
-  FormGroup,
   Skeleton,
   Text,
-  TextInput
 } from "@patternfly/react-core";
 
-import { Popup } from '@components/core';
+import { PasswordAndConfirmationInput, Popup } from '@components/core';
 
 export default function RootPassword() {
   const client = useInstallerClient();
@@ -40,6 +38,7 @@ export default function RootPassword() {
   const [isRootPasswordSet, setIsRootPasswordSet] = useState(null);
   const [rootPassword, setRootPassword] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [validPassword, setValidPassword] = useState(true);
 
   useEffect(() => {
     cancellablePromise(client.users.isRootPasswordSet())
@@ -99,22 +98,18 @@ export default function RootPassword() {
 
       <Popup
         isOpen={isFormOpen}
-        aria-label="Set new root password"
+        title="Root password"
       >
         <Form id="root-password" onSubmit={accept}>
-          <FormGroup fieldId="rootPassword" label="New root password">
-            <TextInput
-              id="rootPassword"
-              type="password"
-              aria-label="root password"
-              value={rootPassword}
-              onChange={setRootPassword}
-            />
-          </FormGroup>
+          <PasswordAndConfirmationInput
+            value={rootPassword}
+            onChange={setRootPassword}
+            onValidation={isValid => setValidPassword(isValid)}
+          />
         </Form>
 
         <Popup.Actions>
-          <Popup.Confirm form="root-password" type="submit" isDisabled={rootPassword === ""} />
+          <Popup.Confirm form="root-password" type="submit" isDisabled={rootPassword === "" || !validPassword} />
           <Popup.Cancel onClick={close} />
           <Popup.AncillaryAction onClick={remove} isDisabled={!isRootPasswordSet} key="unset">
             Do not use a password

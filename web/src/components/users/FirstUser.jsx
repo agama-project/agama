@@ -34,7 +34,7 @@ import {
   TextInput
 } from "@patternfly/react-core";
 
-import { Popup } from '@components/core';
+import { PasswordAndConfirmationInput, Popup } from '@components/core';
 
 const initialUser = {
   userName: "",
@@ -49,6 +49,7 @@ export default function FirstUser() {
   const [formValues, setFormValues] = useState(initialUser);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [errors, setErrors] = useState([]);
+  const [validPassword, setValidPassword] = useState(true);
 
   useEffect(() => {
     cancellablePromise(client.users.getUser()).then(userValues => {
@@ -138,7 +139,7 @@ export default function FirstUser() {
               name="fullName"
               aria-label="User fullname"
               value={formValues.fullName}
-              label="User full Name"
+              label="User full name"
               onChange={handleInputChange}
             />
           </FormGroup>
@@ -155,17 +156,14 @@ export default function FirstUser() {
             />
           </FormGroup>
 
-          <FormGroup fieldId="userPassword" label="Password" isRequired>
-            <TextInput
-              id="userPassword"
-              name="password"
-              type="password"
-              aria-label="User password"
-              value={formValues.password}
-              isRequired
-              onChange={handleInputChange}
-            />
-          </FormGroup>
+          <PasswordAndConfirmationInput
+            value={formValues.password}
+            onChange={(value, event) => {
+              if (value === "") setValidPassword(true);
+              handleInputChange(value, event);
+            }}
+            onValidation={isValid => setValidPassword(isValid)}
+          />
 
           <Checkbox
             aria-label="user autologin"
@@ -178,7 +176,7 @@ export default function FirstUser() {
         </Form>
 
         <Popup.Actions>
-          <Popup.Confirm form="first-user" type="submit" isDisabled={formValues.userName === "" || formValues.password === ""} />
+          <Popup.Confirm form="first-user" type="submit" isDisabled={formValues.userName === "" || !validPassword} />
           <Popup.Cancel onClick={cancel} />
           <Popup.AncillaryAction onClick={remove} isDisabled={!userIsDefined} key="unset">
             Do not create a user
