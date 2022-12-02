@@ -1,14 +1,30 @@
 -------------------------------------------------------------------
+Fri Dec  2 16:02:12 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.6.0
+
+-------------------------------------------------------------------
 Fri Dec  2 15:46:46 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for password confirmation
   (related to gh#yast/d-installer#297)
 
 -------------------------------------------------------------------
+Fri Dec 2 10:48:14 UTC 2022 - Josef Reidinger <jreidinger@suse.cz>
+
+- Add support for adapting the configuration depending on the
+  architecture (gh#yast/d-installer#339)
+
+-------------------------------------------------------------------
 Fri Dec  2 13:41:41 UTC 2022 - José Iván López González <jlopez@suse.com>
 
 - Add new UI for storage proposal offering LVM and encyption
   options (gh#yast/d-installer#321).
+
+-------------------------------------------------------------------
+Wed Nov 30 08:16:42 UTC 2022 - Knut Alejandro Anderssen González <kanderssen@suse.de>
+
+- Add validation for the first user creation (gh#yast/d-installer#337)
 
 -------------------------------------------------------------------
 Fri Nov 18 16:27:26 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

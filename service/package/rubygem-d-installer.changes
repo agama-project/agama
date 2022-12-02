@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Dec  2 16:04:36 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update to version 0.6.0
+
+-------------------------------------------------------------------
 Fri Dec  2 14:52:36 UTC 2022 - José Iván López González <jlopez@suse.com>
 
 - Improve messages of storage validation errors.
@@ -12,6 +17,11 @@ Thu Dec  1 16:22:58 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
   installation repositories
 - Adapt default d-installer.yml to fix installation on other archs
   (gh#yast/d-installer#279)
+
+-------------------------------------------------------------------
+Wed Nov 30 08:16:42 UTC 2022 - Knut Alejandro Anderssen González <kanderssen@suse.de>
+
+- Add validation for the first user creation (gh#yast/d-installer#337)
 
 -------------------------------------------------------------------
 Wed Nov 30 12:41:26 UTC 2022 - Ancor Gonzalez Sosa <ancor@suse.com>
