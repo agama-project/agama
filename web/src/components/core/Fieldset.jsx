@@ -38,27 +38,14 @@ import "./fieldset.scss";
  *     <EncryptionPassword />
  *   </Fieldset>
  *
- * @example <caption>Using a complex legend and isDisabled prop</caption>
- *   <Fieldset
- *     legend={
- *       <Switch label="Use Encryption" isChecked={isChecked} onChange={handleChange} isReversed />
- *     }
- *     isDisabled={!encryptionAllowed}
- *   >
- *     <EncryptionType />
- *     <EncryptionPassword />
- *   </Fieldset>
- *
  * @param {object} props
  * @param {React.ReactNode} props.legend - The lengend
- * @param {boolean} [props.isDisabled=false] - whether the descendant form controls, except any inside legend, are disable
  * @param {string} [props.className] - additionally CSS class names
  * @param {JSX.Element} [props.children] - the section content
  * @param {object} [props.otherProps] fieldset element attributes, see {@link https://html.spec.whatwg.org/#the-fieldset-element}
  */
 export default function Fieldset({
   legend,
-  isDisabled,
   className,
   children,
   ...otherProps
@@ -66,7 +53,6 @@ export default function Fieldset({
   return (
     <fieldset
       className={classNames("d-installer-fieldset", className)}
-      disabled={isDisabled}
       {...otherProps}
     >
       {legend && <legend>{legend}</legend>}

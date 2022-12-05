@@ -51,25 +51,4 @@ describe("Fieldset", () => {
     const checkbox = within(fieldset).getByRole("checkbox");
     expect(checkbox).toBeInTheDocument();
   });
-
-  it("sets children (except legend) as disabled when isDisabled prop is given", () => {
-    installerRender(
-      <Fieldset legend={<ComplexLegend />} isDisabled>
-        <label htmlFor="username">Username</label>
-        <input type="text" id="username" />
-        <label htmlFor="superuser">Superuser</label>
-        <input type="checkbox" id="superuser" />
-      </Fieldset>
-    );
-
-    const fieldset = screen.getByRole("group", { name: /Using a checkbox/i });
-    const legendCheckbox = within(fieldset).getByRole("checkbox", { name: "Using a checkbox in the legend" });
-    const inputText = within(fieldset).getByRole("textbox", { name: "Username" });
-    const checkbox = within(fieldset).getByRole("checkbox", { name: "Superuser" });
-
-    expect(fieldset).toHaveAttribute("disabled");
-    expect(legendCheckbox).not.toBeDisabled();
-    expect(inputText).toBeDisabled();
-    expect(checkbox).toBeDisabled();
-  });
 });
