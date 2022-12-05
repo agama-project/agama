@@ -91,7 +91,6 @@ export default function ProposalSettingsForm({ id, proposal, onSubmit, onValidat
         onChange={onLvmChange}
       />
       <Fieldset
-        isDisabled={!state.encryption}
         legend={
           <Switch
             id="encryption"
@@ -105,6 +104,7 @@ export default function ProposalSettingsForm({ id, proposal, onSubmit, onValidat
         <PasswordAndConfirmationInput
           id="encryptionPassword"
           value={state.encryptionPassword}
+          isDisabled={!state.encryption}
           onChange={onPasswordChange}
           onValidation={onEncryptionValidate}
         />
