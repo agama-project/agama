@@ -79,13 +79,16 @@ module DInstaller
 
       # Unmounts the target file system
       def finish
-        start_progress(3)
+        start_progress(4)
 
         on_target do
           progress.step("Writing Linux Security Modules configuration") { security.write }
           progress.step("Installing bootloader") do
             hack_olaf_password
             ::Bootloader::FinishClient.new.write
+          end
+          progress.step("Configuring file systems snapshots") do
+            Yast::WFM.CallFunction("snapshots_finish", ["Write"])
           end
           progress.step("Unmounting storage devices") do
             Yast::WFM.CallFunction("umount_finish", ["Write"])
