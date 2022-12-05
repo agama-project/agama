@@ -1,5 +1,5 @@
 ---
 :sourceurl: "%{mod_full_name}.gem"
 :preamble: |-
-  BuildRequires:  libdbus-1-3
-  Requires:       libdbus-1-3
+  BuildRequires:  pkgconfig(dbus-1)
+  Requires:       pkgconfig(dbus-1)
