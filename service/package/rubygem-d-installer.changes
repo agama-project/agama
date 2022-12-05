@@ -1,6 +1,7 @@
 -------------------------------------------------------------------
-Fri Dec  2 16:04:36 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Mon Dec  5 13:17:56 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
+- Write snapshots configuration (gh#yast/d-installer#350).
 - Update to version 0.6.0
 
 -------------------------------------------------------------------
