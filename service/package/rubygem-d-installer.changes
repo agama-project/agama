@@ -20,7 +20,7 @@ Thu Dec  1 16:22:58 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
   (gh#yast/d-installer#279)
 
 -------------------------------------------------------------------
-Wed Nov 30 08:16:42 UTC 2022 - Knut Alejandro Anderssen González <kanderssen@suse.de>
+Wed Nov 30 12:42:42 UTC 2022 - Knut Alejandro Anderssen González <kanderssen@suse.de>
 
 - Add validation for the first user creation (gh#yast/d-installer#337)
 
