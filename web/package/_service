@@ -1,5 +1,5 @@
 <services>
-  <service name="obs_scm">
+  <service name="obs_scm" mode="manual">
     <param name="versionformat">@PARENT_TAG@.%h</param>
     <param name="url">http://github.com/yast/d-installer.git</param>
     <param name="scm">git</param>
@@ -9,7 +9,7 @@
     <param name="extract">package/cockpit-d-installer.changes</param>
     <param name="extract">package/cockpit-d-installer.spec</param>
   </service>
-  <service name="node_modules">
+  <service name="node_modules" mode="manual">
     <param name="cpio">node_modules.obscpio</param>
     <param name="output">node_modules.spec.inc</param>
     <param name="source-offset">1000</param>
