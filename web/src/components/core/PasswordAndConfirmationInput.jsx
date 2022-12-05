@@ -25,7 +25,7 @@ import {
   TextInput
 } from "@patternfly/react-core";
 
-const PasswordAndConfirmationInput = ({ value, onChange, onValidation }) => {
+const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisabled }) => {
   const [confirmation, setConfirmation] = useState(value || "");
   const [error, setError] = useState("");
 
@@ -61,6 +61,7 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation }) => {
           type="password"
           aria-label="User password"
           value={value}
+          isDisabled={isDisabled}
           onChange={onChangeValue}
           onBlur={() => validate(value, confirmation)}
         />
@@ -77,6 +78,7 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation }) => {
           type="password"
           aria-label="User password confirmation"
           value={confirmation}
+          isDisabled={isDisabled}
           onChange={onChangeConfirmation}
           onBlur={() => validate(value, confirmation)}
           validated={error === "" ? "default" : "error"}

@@ -38,8 +38,8 @@ describe("when the passwords do not match", () => {
 });
 
 it("uses the given password value for confirmation too", async () => {
-  const { user } = plainRender(
-    <PasswordAndConfirmationInput value={"12345"} />
+  plainRender(
+    <PasswordAndConfirmationInput value="12345" />
   );
 
   const passwordInput = screen.getByLabelText("Password");
@@ -47,4 +47,16 @@ it("uses the given password value for confirmation too", async () => {
 
   expect(passwordInput.value).toEqual("12345");
   expect(passwordInput.value).toEqual(confirmationInput.value);
+});
+
+it("disables both, password and confirmation, when isDisabled prop is given", async () => {
+  plainRender(
+    <PasswordAndConfirmationInput value="12345" isDisabled />
+  );
+
+  const passwordInput = screen.getByLabelText("Password");
+  const confirmationInput = screen.getByLabelText("Password confirmation");
+
+  expect(passwordInput).toBeDisabled();
+  expect(confirmationInput).toBeDisabled();
 });
