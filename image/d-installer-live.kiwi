@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- OBS-ExclusiveArch: aarch64 x86_64 -->
+<!-- OBS-Profiles: @BUILD_FLAVOR@ -->
 
 <image schemaversion="7.5" name="d-installer-live">
     <description type="system">
@@ -7,8 +8,12 @@
         <contact>yast2-maintainers@suse.de</contact>
         <specification>D-Installer Live ISO</specification>
     </description>
+    <profiles>
+        <profile name="default" description="Default multiproduct image" import="true" />
+        <profile name="ALP" description="ALP-only image" />
+    </profiles>
     <preferences>
-        <version>0.5</version>
+        <version>0.6</version>
         <packagemanager>zypper</packagemanager>
         <locale>en_US</locale>
         <keytable>us</keytable>
@@ -17,7 +22,7 @@
         <rpm-check-signatures>false</rpm-check-signatures>
         <bootsplash-theme>bgrt</bootsplash-theme>
         <bootloader-theme>openSUSE</bootloader-theme>
-        <type image="iso" flags="overlay" firmware="efi" hybridpersistent_filesystem="ext4" hybridpersistent="true" mediacheck="true">
+        <type image="iso" flags="overlay" firmware="uefi" hybridpersistent_filesystem="ext4" hybridpersistent="true" mediacheck="true">
             <bootloader name="grub2" timeout="10"/>
         </type>
     </preferences>
@@ -51,6 +56,14 @@
         <package name="dhcp-client"/>
         <package name="which"/>
         <package name="kernel-default"/>
+        <package name="kernel-firmware"/>
+        <package name="adaptec-firmware"/>
+        <package name="atmel-firmware"/>
+        <package name="bluez-firmware"/>
+        <package name="ipw-firmware"/>
+        <package name="mpt-firmware"/>
+        <package name="zd1211-firmware"/>
+        <package name="alsa-firmware"/>
         <package name="shim"/>
         <package name="timezone"/>
         <package name="dracut-kiwi-live"/>
@@ -94,6 +107,9 @@
         <package name="spice-vdagent"/>
         <archive name="root.tar"/>
         <archive name="etc.tar"/>
+    </packages>
+    <packages type="image" profiles="ALP">
+        <archive name="alp.tar.xz"/>
     </packages>
     <packages type="bootstrap">
         <package name="udev"/>
