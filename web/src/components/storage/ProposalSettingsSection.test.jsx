@@ -35,16 +35,11 @@ const FakeProposalSettingsForm = ({ id, onSubmit }) => {
 
 jest.mock("@components/storage/ProposalSettingsForm", () => FakeProposalSettingsForm);
 
-let candidateDevices = ["/dev/sda"];
-let encryptionPassword = "";
-let lvm = false;
-let volumes = [{ mountPoint: "/test1" }, { mountPoint: "/test2" }];
-
-const proposal = {
-  candidateDevices,
-  encryptionPassword,
-  lvm,
-  volumes
+let proposal = {
+  candidateDevices: ["/dev/sda"],
+  encryptionPassword: "",
+  lvm: false,
+  volumes: [{ mountPoint: "/test1" }, { mountPoint: "/test2" }]
 };
 
 it("renders the list of the volumes to create", () => {
@@ -111,16 +106,54 @@ it("closes the popup and submits the form when accept is clicked", async () => {
   expect(calculateFn).toHaveBeenCalled();
 });
 
-describe("when lvm and encryption are not selected", () => {
+describe("when neither lvm nor encryption are selected", () => {
   beforeEach(() => {
-    lvm = false;
-    encryptionPassword = "";
+    proposal.lvm = false;
+    proposal.encryptionPassword = "";
   });
 
-  it("renders the proper description for the selected settings", () => {
+  it("renders the proper description for the current settings", () => {
     installerRender(<ProposalSettingsSection proposal={proposal} />);
 
     screen.getByText(/Create file systems over partitions/);
   });
 });
 
+describe("when lvm is selected", () => {
+  beforeEach(() => {
+    proposal.lvm = true;
+    proposal.encryptionPassword = "";
+  });
+
+  it("renders the proper description for the current settings", () => {
+    installerRender(<ProposalSettingsSection proposal={proposal} />);
+
+    screen.getByText(/Create file systems over LVM volumes/);
+  });
+});
+
+describe("when encryption is selected", () => {
+  beforeEach(() => {
+    proposal.lvm = false;
+    proposal.encryptionPassword = "12345"
+  });
+
+  it("renders the proper description for the current settings", () => {
+    installerRender(<ProposalSettingsSection proposal={proposal} />);
+
+    screen.getByText(/Create file systems over encrypted partitions/);
+  });
+});
+
+describe("when LVM and encryption are selected", () => {
+  beforeEach(() => {
+    proposal.lvm = true;
+    proposal.encryptionPassword = "12345"
+  });
+
+  it("renders the proper description for the current settings", () => {
+    installerRender(<ProposalSettingsSection proposal={proposal} />);
+
+    screen.getByText(/Create file systems over encrypted LVM volumes/);
+  });
+});
