@@ -119,10 +119,11 @@ describe DInstaller::Storage::Manager do
   end
 
   describe "#finish" do
-    it "installs the bootloader, sets up the snapshots and umounts the file systems" do
+    it "installs the bootloader, sets up the snapshots, copy logs, and umounts the file systems" do
       expect(security).to receive(:write)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("snapshots_finish", ["Write"])
+      expect(Yast::WFM).to receive(:CallFunction).with("copy_logs_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
       storage.finish
     end

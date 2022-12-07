@@ -86,7 +86,7 @@ module DInstaller
     def install_phase
       installation_phase.install
 
-      start_progress(9)
+      start_progress(8)
 
       progress.step("Reading software repositories") do
         software.probe
@@ -107,7 +107,6 @@ module DInstaller
         progress.step("Writing Network Configuration") { network.install }
         progress.step("Saving Language Settings") { language.finish }
         progress.step("Writing repositories information") { software.finish }
-        progress.step("Copying logs") { copy_logs }
         progress.step("Finishing storage configuration") { storage.finish }
       end
 
@@ -191,10 +190,5 @@ module DInstaller
 
     # @return [ServiceStatusRecorder]
     attr_reader :service_status_recorder
-
-    # Copy the logs to the target system
-    def copy_logs
-      Yast::WFM.CallFunction("copy_logs_finish", ["Write"])
-    end
   end
 end
