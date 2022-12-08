@@ -3,224 +3,311 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  frontend_build:
+  # frontend_build:
+  #   runs-on: ubuntu-latest
+
+  #   defaults:
+  #     run:
+  #       working-directory: ./web
+
+  #   strategy:
+  #     matrix:
+  #       node-version: [16.x]
+  #       # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+  #   steps:
+  #   - uses: actions/checkout@v2
+
+  #   - name: Use Node.js ${{ matrix.node-version }}
+  #     uses: actions/setup-node@v2
+  #     with:
+  #       node-version: ${{ matrix.node-version }}
+  #       cache: 'npm'
+  #       cache-dependency-path: 'web/package-lock.json'
+
+  #   - name: Install dependencies
+  #     run: npm install
+
+  #   - name: Build the application
+  #     run: make
+
+  #   - name: Check types
+  #     run: npm run check-types
+
+  #   - name: Run the tests and generate coverage report
+  #     run: npm test -- --coverage
+
+  #   - name: Coveralls GitHub Action
+  #     uses: coverallsapp/github-action@1.1.3
+  #     with:
+  #       github-token: ${{ secrets.GITHUB_TOKEN }}
+  #       base-path: ./web
+  #       path-to-lcov: ./web/coverage/lcov.info
+  #       flag-name: frontend
+  #       parallel: true
+
+  #   - name: Build JSDoc Documentation
+  #     run: npm run jsdoc
+
+  #   - name: Publish JSDoc Documentation
+  #     if: ${{ github.ref == 'refs/heads/master' }}
+  #     run: npx surge jsdoc.out/ ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
+
+
+  # backend_tests:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     COVERAGE: 1
+
+  #   defaults:
+  #     run:
+  #       working-directory: ./service
+
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       distro: [ "tumbleweed" ]
+
+  #   container:
+  #     image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+
+  #   steps:
+
+  #   - name: Git Checkout
+  #     uses: actions/checkout@v2
+
+  #   - name: Install Ruby development files
+  #     run: zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel npm augeas-devel
+
+  #   - name: Install RubyGems dependencies
+  #     run: bundle config set --local with 'development' && bundle install
+
+  #   - name: Run the tests and generate coverage report
+  #     run: bundle exec rspec
+
+  #   - name: Coveralls GitHub Action
+  #     uses: coverallsapp/github-action@1.1.3
+  #     with:
+  #       github-token: ${{ secrets.GITHUB_TOKEN }}
+  #       base-path: ./service
+  #       path-to-lcov: ./service/coverage/lcov.info
+  #       flag-name: backend
+  #       parallel: true
+
+  # backend_linter:
+  #   runs-on: ubuntu-latest
+
+  #   defaults:
+  #     run:
+  #       working-directory: ./service
+
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       distro: [ "leap_latest" ]
+
+  #   container:
+  #     image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+
+  #   steps:
+
+  #   - name: Git Checkout
+  #     uses: actions/checkout@v2
+
+  #   - name: Rubocop
+  #     run: /usr/bin/rubocop.*-1.24.1
+
+  # backend_doc:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     COVERAGE: 1
+
+  #   defaults:
+  #     run:
+  #       working-directory: ./service
+
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       distro: [ "tumbleweed" ]
+
+  #   container:
+  #     image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+
+  #   steps:
+
+  #   - name: Git Checkout
+  #     uses: actions/checkout@v2
+
+  #   - name: Install Ruby development files
+  #     run: zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel npm augeas-devel
+
+  #   - name: Install RubyGems dependencies
+  #     run: bundle config set --local with 'development' && bundle install
+
+  #   - name: Generate doc
+  #     run: bundle exec yardoc --fail-on-warning
+
+  # cli_tests:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     COVERAGE: 1
+
+  #   defaults:
+  #     run:
+  #       working-directory: ./cli
+
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       distro: [ "tumbleweed" ]
+
+  #   container:
+  #     image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+
+  #   steps:
+
+  #   - name: Git Checkout
+  #     uses: actions/checkout@v2
+
+  #   - name: Install Ruby development files
+  #     run: zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel npm augeas-devel
+
+  #   - name: Install RubyGems dependencies
+  #     run: bundle config set --local with 'development' && bundle install
+
+  #   - name: Run the tests and generate coverage report
+  #     run: bundle exec rspec
+
+  #   - name: Coveralls GitHub Action
+  #     uses: coverallsapp/github-action@1.1.3
+  #     with:
+  #       github-token: ${{ secrets.GITHUB_TOKEN }}
+  #       base-path: ./cli
+  #       path-to-lcov: ./cli/coverage/lcov.info
+  #       flag-name: cli
+  #       parallel: true
+
+  # cli_linter:
+  #   runs-on: ubuntu-latest
+
+  #   defaults:
+  #     run:
+  #       working-directory: ./cli
+
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       distro: [ "leap_latest" ]
+
+  #   container:
+  #     image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+
+  #   steps:
+
+  #   - name: Git Checkout
+  #     uses: actions/checkout@v2
+
+  #   - name: Rubocop
+  #     run: /usr/bin/rubocop.*-1.24.1
+
+  integration-tests:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./web
-
-    strategy:
-      matrix:
-        node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: 'web/package-lock.json'
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Build the application
-      run: make
-
-    - name: Check types
-      run: npm run check-types
-
-    - name: Run the tests and generate coverage report
-      run: npm test -- --coverage
-
-    - name: Coveralls GitHub Action
-      uses: coverallsapp/github-action@1.1.3
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        base-path: ./web
-        path-to-lcov: ./web/coverage/lcov.info
-        flag-name: frontend
-        parallel: true
-
-    - name: Build JSDoc Documentation
-      run: npm run jsdoc
-
-    - name: Publish JSDoc Documentation
-      if: ${{ github.ref == 'refs/heads/master' }}
-      run: npx surge jsdoc.out/ ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
-
-
-  backend_tests:
-    runs-on: ubuntu-latest
-    env:
-      COVERAGE: 1
-
-    defaults:
-      run:
-        working-directory: ./service
 
     strategy:
       fail-fast: false
       matrix:
+        # TW is needed because of the Cockpit packages
         distro: [ "tumbleweed" ]
 
     container:
       image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+      # this option should avoid crashing the Chromium browser...
+      options: --ipc=host
 
     steps:
 
+    # TODO: Reuse/share building the frontend and backend with the other steps
+    # TODO: Cache the Ruby gems and node packages
+
     - name: Git Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Install Ruby development files
-      run: zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel npm augeas-devel
+    - name: Install packages
+      # TODO: check which fonts are really needed
+      run:  zypper --non-interactive install --no-recommends gcc gcc-c++ make openssl-devel ruby-devel
+            npm augeas-devel cockpit dbus-1 xorg-x11-server libgtk-3-0
+            adobe-sourcesans3-fonts gnu-unifont-bitmap-fonts google-opensans-fonts
 
-    - name: Install RubyGems dependencies
-      run: bundle config set --local with 'development' && bundle install
+    - name: Install Ruby gems
+      run:  cd service && bundle config set --local path 'vendor/bundle' && bundle install && cd -
 
-    - name: Run the tests and generate coverage report
-      run: bundle exec rspec
+    - name: Install the D-Installer D-Bus configuration
+      run:  cp service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf
 
-    - name: Coveralls GitHub Action
-      uses: coverallsapp/github-action@1.1.3
+    - name: Set a testing D-Installer configuration
+      # copy a simplified ALP config file, it skips the product selection at the beginning
+      run:  cp playwright/fixtures/d-installer.yaml service/etc/d-installer.yaml
+
+    - name: Start the D-Bus service
+      run:  dbus-daemon --system --print-address
+
+    - name: Start the D-Installer D-Bus services
+      # TODO: here is a potential race condition, but as building the frontend
+      # and installing Playwright takes quite long time it should never happen™
+      run:  cd service && (bundle exec bin/d-installer > service.log 2>&1 &) && cd -
+
+    - name: Build the frontend
+      run:  cd web && npm install && make && cd -
+
+    - name: Show the D-Bus services log
+      run:  cat service/service.log
+
+    - name: Install the frontend
+      run:  ln -snfv `pwd`/web/dist /usr/share/cockpit/d-installer
+
+    - name: Start Cockpit service
+      run:  /usr/libexec/cockpit-ws --local-session=/usr/bin/cockpit-bridge &
+
+    - name: Install Playwright
+      run:  cd playwright && npm install && npx playwright --version && cd -
+
+    - name: Install Playwright browsers
+      # TODO: it downloads Chromium, Firefox and Webkit from a special repository
+      # it would be nice to use the system browsers
+      run:  cd playwright && npx playwright install && cd -
+
+    - name: Run the D-Installer smoke test
+      run:  curl http://localhost:9090/cockpit/@localhost/d-installer/index.html
+
+    - name: Run the Playwright tests
+      run:  cd playwright && npx playwright test --trace on && cd -
+      env:
+        # user authentication is not required when cockpit runs a local session
+        SKIP_LOGIN: true
+
+    - name: Upload the test results
+      uses: actions/upload-artifact@v3
+      # run even when the previous step fails
+      if: always()
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        base-path: ./service
-        path-to-lcov: ./service/coverage/lcov.info
-        flag-name: backend
-        parallel: true
+        name: test-results
+        retention-days: 30
+        path: |
+          playwright/test-results/**/*
 
-  backend_linter:
-    runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./service
+  # finish:
+  #   runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [ "leap_latest" ]
+  #   needs: [frontend_build, backend_tests, cli_tests]
 
-    container:
-      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+  #   steps:
 
-    steps:
-
-    - name: Git Checkout
-      uses: actions/checkout@v2
-
-    - name: Rubocop
-      run: /usr/bin/rubocop.*-1.24.1
-
-  backend_doc:
-    runs-on: ubuntu-latest
-    env:
-      COVERAGE: 1
-
-    defaults:
-      run:
-        working-directory: ./service
-
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [ "tumbleweed" ]
-
-    container:
-      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
-
-    steps:
-
-    - name: Git Checkout
-      uses: actions/checkout@v2
-
-    - name: Install Ruby development files
-      run: zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel npm augeas-devel
-
-    - name: Install RubyGems dependencies
-      run: bundle config set --local with 'development' && bundle install
-
-    - name: Generate doc
-      run: bundle exec yardoc --fail-on-warning
-
-  cli_tests:
-    runs-on: ubuntu-latest
-    env:
-      COVERAGE: 1
-
-    defaults:
-      run:
-        working-directory: ./cli
-
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [ "tumbleweed" ]
-
-    container:
-      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
-
-    steps:
-
-    - name: Git Checkout
-      uses: actions/checkout@v2
-
-    - name: Install Ruby development files
-      run: zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel npm augeas-devel
-
-    - name: Install RubyGems dependencies
-      run: bundle config set --local with 'development' && bundle install
-
-    - name: Run the tests and generate coverage report
-      run: bundle exec rspec
-
-    - name: Coveralls GitHub Action
-      uses: coverallsapp/github-action@1.1.3
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        base-path: ./cli
-        path-to-lcov: ./cli/coverage/lcov.info
-        flag-name: cli
-        parallel: true
-
-  cli_linter:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./cli
-
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [ "leap_latest" ]
-
-    container:
-      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
-
-    steps:
-
-    - name: Git Checkout
-      uses: actions/checkout@v2
-
-    - name: Rubocop
-      run: /usr/bin/rubocop.*-1.24.1
-
-  finish:
-    runs-on: ubuntu-latest
-
-    needs: [frontend_build, backend_tests, cli_tests]
-
-    steps:
-
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@1.1.3
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        parallel-finished: true
+  #   - name: Coveralls Finished
+  #     uses: coverallsapp/github-action@1.1.3
+  #     with:
+  #       github-token: ${{ secrets.GITHUB_TOKEN }}
+  #       parallel-finished: true
 

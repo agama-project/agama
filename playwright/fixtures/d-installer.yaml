@@ -1,0 +1,73 @@
+products:
+  ALP:
+    name: SUSE Adaptable Linux Platform Host OS
+    description: 'The Adaptable Linux Platform (ALP), the next generation of Linux,
+      allow users to focus on their workloads while abstracting from the hardware
+      and the application layer.'
+
+web:
+  ssl: null
+  ssl_cert: null
+  ssl_key: null
+
+ALP:
+  software:
+    installation_repositories:
+      - https://download.opensuse.org/repositories/SUSE:/ALP/standard/
+    mandatory_patterns:
+      - alp_base
+      - alp_base_zypper
+      - alp_cockpit
+      - alp-container_runtime
+    optional_patterns: null # no optional pattern shared
+    mandatory_packages: null
+    optional_packages: null
+    base_product: ALP
+
+  security:
+    lsm: selinux
+    available_lsms:
+      # apparmor:
+      #   patterns:
+      #     - apparmor
+      selinux:
+        patterns:
+          - alp_selinux
+        policy: permissive
+      none:
+        patterns: null
+
+  storage:
+    volumes:
+      - mount_point: "/"
+        fs_type: btrfs
+        desired_size: 20 GiB
+        min_size: 5 GiB
+        max_size: 20 GiB
+        fs_types:
+          - btrfs
+        weight: 20
+        snapshots: true
+        snapshots_configurable: false
+        proposed_configurable: false
+        btrfs_default_subvolume: "@"
+        btrfs_read_only: true
+        subvolumes:
+        - path: root
+        - path: home
+        - path: opt
+        - path: srv
+        - path: boot/writable
+        - path: usr/local
+        - path: boot/grub2/arm64-efi
+          archs: aarch64
+        - path: boot/grub2/i386-pc
+          archs: x86_64
+        - path: boot/grub2/powerpc-ieee1275
+          archs: ppc,!board_powernv
+        - path: boot/grub2/s390x-emu
+          archs: s390
+        - path: boot/grub2/x86_64-efi
+          archs: x86_64
+        - path: var
+          copy_on_write: false
