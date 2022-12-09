@@ -1,5 +1,2 @@
 ---
 :sourceurl: "%{mod_full_name}.gem"
-:preamble: |-
-  BuildRequires:  pkgconfig(dbus-1)
-  Requires:       pkgconfig(dbus-1)

@@ -1,8 +1,8 @@
 ---
 :sourceurl: "%{mod_full_name}.gem"
 :preamble: |-
-  BuildRequires:  pkgconfig(dbus-1)
-  Requires:       pkgconfig(dbus-1)
+  BuildRequires:  dbus-1-common
+  Requires:       dbus-1-common
   Requires:       snapper
   Requires:       yast2-bootloader
   Requires:       yast2-country

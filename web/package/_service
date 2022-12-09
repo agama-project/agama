@@ -5,6 +5,7 @@
     <param name="scm">git</param>
     <param name="revision">master</param>
     <param name="subdir">web</param>
+    <param name="without-version">enable</param>
     <param name="extract">package-lock.json</param>
     <param name="extract">package/cockpit-d-installer.changes</param>
     <param name="extract">package/cockpit-d-installer.spec</param>
@@ -16,6 +17,7 @@
   </service>
   <service mode="buildtime" name="tar">
     <param name="obsinfo">d-installer.obsinfo</param>
+    <param name="filename">d-installer</param>
   </service>
   <service mode="buildtime" name="set_version">
     <param name="basename">d-installer</param>
