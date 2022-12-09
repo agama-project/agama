@@ -79,7 +79,7 @@ module DInstaller
 
       # Unmounts the target file system
       def finish
-        start_progress(4)
+        start_progress(5)
 
         on_target do
           progress.step("Writing Linux Security Modules configuration") { security.write }
@@ -89,6 +89,9 @@ module DInstaller
           end
           progress.step("Configuring file systems snapshots") do
             Yast::WFM.CallFunction("snapshots_finish", ["Write"])
+          end
+          progress.step("Copying logs") do
+            Yast::WFM.CallFunction("copy_logs_finish", ["Write"])
           end
           progress.step("Unmounting storage devices") do
             Yast::WFM.CallFunction("umount_finish", ["Write"])
