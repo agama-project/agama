@@ -4,11 +4,30 @@
 
 D-Installer is a new Linux installer born in the core of the YaST team. It is designed to offer re-usability, integration with third party tools and the possibility of building advanced user interfaces over it.
 
+| Product selection | Installation overview |
+|-|-|
+| ![Product selection](./doc/images/screenshots/product-selection.png) | ![Installation overview](./doc/images/screenshots/overview.png) |
+
+<details>
+<summary>Click to show/hide more screenshots</summary>
+
+---
+
+
+| Storage page | Storage settings |
+|-|-|
+| ![Storage page](./doc/images/screenshots/storage-page.png) | ![Storage settings](./doc/images/screenshots/storage-settings.png) |
+
+| Installing | Installation finished |
+|-|-|
+| ![Installing](./doc/images/screenshots/installing.png) | ![Installation finished](./doc/images/screenshots/finished.png) |
+
+</details>
+
 ## Table of Content
 
 * [Why a New Installer](#why-a-new-installer)
 * [Architecture](#architecture)
-* [Screenshots](#screenshots)
 * [How to Run](#how-to-run)
   * [Live ISO Image](#live-iso-image)
   * [Manual Configuration](#manual-configuration)
@@ -44,20 +63,6 @@ D-Installer consists on a set of D-Bus services and a web client (an experimenta
 * Questions service: helper service used for requesting information from clients.
 
 D-Installer offers a web interface and its UI process uses the [Cockpit's infrastructure](https://cockpit-project.org/) to communicate with the D-Bus services.
-
-## Screenshots
-
-<details>
-  <summary>Click to show/hide some screenshots</summary>
-
-  ---
-
-  |||
-  |-|-|
-  |![Product selection](./doc/images/screenshots/product-selection.png) |![Installation overview](./doc/images/screenshots/overview.png) |
-  |![Storage page](./doc/images/screenshots/storage-page.png) |![Storage settings](./doc/images/screenshots/storage-settings.png) |
-  ![Installing](./doc/images/screenshots/installing.png) |![Installation finished](./doc/images/screenshots/finished.png) |
-</details>
 
 ## How to run
 
