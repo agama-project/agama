@@ -95,8 +95,6 @@ class StorageBaseClient {
   /**
    * Calculates a new proposal
    *
-   * @todo Do not send undefined values
-   *
    * @param {object} settings - proposal settings
    * @param {?string[]} [settings.candidateDevices] - Devices to use for the proposal
    * @param {?string} [settings.encryptionPassword] - Password for encrypting devices
@@ -107,24 +105,47 @@ class StorageBaseClient {
   async calculateProposal({ candidateDevices, encryptionPassword, lvm, volumes }) {
     const proxy = await this.client.proxy(STORAGE_PROPOSAL_IFACE);
 
-    const dbusVolume = volume => {
-      return {
-        MountPoint: cockpit.variant("s", volume.mountPoint),
-        Encrypted: cockpit.variant("b", volume.encrypted),
-        FsType: cockpit.variant("s", volume.fsType),
-        MinSize: cockpit.variant("x", volume.minSize),
-        MaxSize: cockpit.variant("x", volume.maxSize),
-        FixedSizeLimits: cockpit.variant("b", volume.fixedSizeLimits),
-        Snapshots: cockpit.variant("b", volume.snapshots)
-      };
+    // Builds a new object without undefined attributes
+    const cleanObject = (object) => {
+      const newObject = { ...object };
+
+      Object.keys(newObject).forEach(key => newObject[key] === undefined && delete newObject[key]);
+      return newObject;
     };
 
-    return proxy.Calculate({
-      CandidateDevices: cockpit.variant("as", candidateDevices),
-      EncryptionPassword: cockpit.variant("s", encryptionPassword),
-      LVM: cockpit.variant("b", lvm),
-      Volumes: cockpit.variant("aa{sv}", volumes.map(dbusVolume))
+    // Builds the cockpit object or returns undefined if there is no value
+    const cockpitValue = (type, value) => {
+      if (value === undefined) return undefined;
+
+      return cockpit.variant(type, value);
+    };
+
+    const dbusVolume = (volume) => {
+      return cleanObject({
+        MountPoint: cockpitValue("s", volume.mountPoint),
+        Encrypted: cockpitValue("b", volume.encrypted),
+        FsType: cockpitValue("s", volume.fsType),
+        MinSize: cockpitValue("x", volume.minSize),
+        MaxSize: cockpitValue("x", volume.maxSize),
+        FixedSizeLimits: cockpitValue("b", volume.fixedSizeLimits),
+        Snapshots: cockpitValue("b", volume.snapshots)
+      });
+    };
+
+    const dbusVolumes = (volumes) => {
+      if (!volumes) return undefined;
+
+      return volumes.map(dbusVolume);
+    };
+
+    const settings = cleanObject({
+      CandidateDevices: cockpitValue("as", candidateDevices),
+      EncryptionPassword: cockpitValue("s", encryptionPassword),
+      LVM: cockpitValue("b", lvm),
+      Volumes: cockpitValue("aa{sv}", dbusVolumes(volumes))
     });
+
+    return proxy.Calculate(settings);
   }
 
   /**
