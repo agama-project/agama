@@ -39,7 +39,7 @@ ALP:
       selinux:
         patterns:
           - alp_selinux
-        policy: permissive
+        policy: enforcing
       none:
         patterns: null
 
