@@ -84,7 +84,6 @@ module DInstaller
         on_target do
           progress.step("Writing Linux Security Modules configuration") { security.write }
           progress.step("Installing bootloader") do
-            hack_olaf_password
             ::Bootloader::FinishClient.new.write
           end
           progress.step("Configuring file systems snapshots") do
@@ -176,40 +175,6 @@ module DInstaller
       # @return [DInstaller::DBus::Clients::Software]
       def software
         @software ||= DBus::Clients::Software.new
-      end
-
-      # Temporary method for testing FDE during early development
-      def hack_olaf_password
-        password = config.data.fetch("security", {})["olaf_luks2_password"]
-        return if password.nil? || password.empty?
-
-        grub_path = File.join(Yast::Installation.destdir, "etc", "default", "grub")
-        File.open(grub_path, "a") do |file|
-          file.puts "GRUB_CRYPTODISK_PASSWORD=\"#{password}\""
-        end
-
-        hack_jeos_firstboot
-      end
-
-      # @see #hack_olaf_password
-      #
-      # This assumes the package jeos-firstboot has been installed
-      def hack_jeos_firstboot
-        require "yast2/systemd/service"
-        require "fileutils"
-        destdir = Yast::Installation.destdir
-
-        service = Yast2::Systemd::Service.find("jeos-firstboot")
-        service&.enable
-
-        reconfig_path = File.join(destdir, "var", "lib", "YaST2")
-        FileUtils.mkdir_p(reconfig_path)
-        FileUtils.touch(File.join(reconfig_path, "reconfig_system"))
-
-        jeos_path = File.join(destdir, "etc", "jeos-firstboot.conf")
-        File.open(jeos_path, "a") do |file|
-          file.puts "JEOS_PASSWORD_ALREADY_SET='yes'"
-        end
       end
     end
   end

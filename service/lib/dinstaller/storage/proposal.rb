@@ -123,7 +123,6 @@ module DInstaller
         settings ||= ProposalSettings.new
         settings.freeze
         proposal_settings = to_y2storage_settings(settings)
-        hack_olaf_password(proposal_settings)
 
         @proposal = new_proposal(proposal_settings)
         storage_manager.proposal = proposal
@@ -295,16 +294,6 @@ module DInstaller
         settings.other_delete_mode = :all
         # Setting #linux_delete_mode to :all is not enough to prevent VG reusing in all cases
         settings.lvm_vg_reuse = false
-      end
-
-      # Temporary method for testing FDE during early development
-      #
-      # @param settings [Y2Storage::ProposalSettings]
-      def hack_olaf_password(settings)
-        password = config.data.fetch("security", {})["olaf_luks2_password"]
-        return if password.nil? || password.empty?
-
-        settings.encryption_password = password
       end
     end
   end
