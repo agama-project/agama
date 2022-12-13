@@ -26,6 +26,7 @@ require "dinstaller/config"
 require "dinstaller/with_progress"
 require "y2packager/product"
 require "yast2/arch_filter"
+require "dinstaller/software/callbacks/progress"
 
 Yast.import "Package"
 Yast.import "Packages"
@@ -119,7 +120,7 @@ module DInstaller
 
       def install
         start_progress(count_packages)
-        PackageCallbacks.setup(count_packages, progress)
+        Callbacks::Progress.setup(count_packages, progress)
 
         # TODO: error handling
         commit_result = Yast::Pkg.Commit({})

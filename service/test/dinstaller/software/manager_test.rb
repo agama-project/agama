@@ -166,7 +166,7 @@ describe DInstaller::Software::Manager do
     end
 
     it "sets up the package callbacks" do
-      expect(DInstaller::PackageCallbacks).to receive(:setup)
+      expect(DInstaller::Software::Callbacks::Progress).to receive(:setup)
       subject.install
     end
 
