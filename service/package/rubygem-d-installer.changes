@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec 14 22:38:24 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement AcceptUnsignedFile and MediaChange libzypp callbacks
+  (gh#yast/d-installer#369).
+
+-------------------------------------------------------------------
 Wed Dec 14 15:29:12 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Switch the SELinux policy for ALP to "enforcing"
