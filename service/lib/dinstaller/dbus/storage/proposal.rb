@@ -144,6 +144,8 @@ module DInstaller
         #
         # @param dbus_settings [DInstaller::Storage::ProposalSettings]
         def calculate(dbus_settings)
+          logger.info("Calculating storage proposal from D-Bus settings: #{dbus_settings}")
+
           backend.calculate(to_proposal_settings(dbus_settings))
         end
 
