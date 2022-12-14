@@ -21,6 +21,7 @@
 
 require "dinstaller/dbus/clients/base"
 require "dinstaller/dbus/clients/question"
+require "dinstaller/luks_activation_question"
 
 module DInstaller
   module DBus

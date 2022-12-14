@@ -28,6 +28,9 @@ module DInstaller
       # Its interface is a subset of {DInstaller::Question}
       # so it can be used in the block of {DInstaller::CanAskQuestion#ask}.
       class Question < Base
+        LUKS_ACTIVATION_IFACE = "org.opensuse.DInstaller.Question.LuksActivation1"
+        private_constant :LUKS_ACTIVATION_IFACE
+
         # @return [::DBus::ProxyObject]
         attr_reader :dbus_object
 
@@ -38,7 +41,9 @@ module DInstaller
           @dbus_object = service[object_path]
           @dbus_iface = @dbus_object["org.opensuse.DInstaller.Question1"]
           # one D-Bus client for all kinds of questions
-          @luks_iface = @dbus_object["org.opensuse.DInstaller.Question.LuksActivation1"]
+          return unless @dbus_object.has_iface?(LUKS_ACTIVATION_IFACE)
+
+          @luks_iface = @dbus_object[LUKS_ACTIVATION_IFACE]
         end
 
         # @return [String]
@@ -58,8 +63,10 @@ module DInstaller
           @dbus_iface["Answer"].to_sym
         end
 
-        # @return [String]
+        # @return [String,nil] Password or nil if there is no LUKS interface
         def password
+          return nil unless @luks_iface
+
           @luks_iface["Password"]
         end
 
