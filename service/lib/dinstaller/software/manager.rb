@@ -21,7 +21,6 @@
 
 require "yast"
 require "fileutils"
-require "dinstaller/package_callbacks"
 require "dinstaller/config"
 require "dinstaller/with_progress"
 require "y2packager/product"
