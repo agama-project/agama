@@ -37,6 +37,10 @@ module Yast
       DInstaller::Software::Callbacks::Signature.new(
         questions_manager, logger
       ).setup
+
+      DInstaller::Software::Callbacks::Media.new(
+        questions_manager, logger
+      ).setup
     end
   end
 
