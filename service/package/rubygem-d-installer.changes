@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Dec 14 13:25:22 UTC 2022 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Removed previous temporary setting "olaf_luks2_password" and all
+  the code supporting it.
+- Added new temporary setting "tpm_luks_open" to try to configure
+  TPM-based unlocking of the LUKS devices during the first system
+  boot (gh#yast/d-installer#363).
+
+-------------------------------------------------------------------
 Mon Dec  5 13:17:56 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Write snapshots configuration (gh#yast/d-installer#350).
