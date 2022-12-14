@@ -25,10 +25,11 @@ require "dinstaller/config"
 require "dinstaller/with_progress"
 require "y2packager/product"
 require "yast2/arch_filter"
-require "dinstaller/software/callbacks/progress"
+require "dinstaller/software/callbacks"
 
 Yast.import "Package"
 Yast.import "Packages"
+Yast.import "PackageCallbacks"
 Yast.import "Pkg"
 Yast.import "Stage"
 
@@ -96,6 +97,7 @@ module DInstaller
       end
 
       def initialize_target_repos
+        Yast::PackageCallbacks.InitPackageCallbacks(logger)
         Yast::Pkg.TargetInitialize("/")
         import_gpg_keys
       end

@@ -34,20 +34,20 @@ describe DInstaller::Software::Callbacks::Signature do
     let(:asked_question) do
       instance_double(DInstaller::Question, text: "Better safe than sorry", answer: answer) 
     end
-    let(:answer) { "Yes" }
+    let(:answer) { :Yes }
 
     before do
       allow(subject).to receive(:ask).and_yield(asked_question)
     end
 
-    context "when the user answers 'Yes'" do
+    context "when the user answers :Yes" do
       it "returns true" do
         expect(subject.accept_unsigned_file("repomd.xml", -1)).to eq(true)
       end
     end
 
-    context "when the user answers 'No'" do
-      let(:answer) { "No" }
+    context "when the user answers :No" do
+      let(:answer) { :No }
 
       it "returns false" do
         expect(subject.accept_unsigned_file("repomd.xml", -1)).to eq(false)

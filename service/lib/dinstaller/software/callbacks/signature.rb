@@ -67,11 +67,11 @@ module DInstaller
           )
 
           question = DInstaller::Question.new(
-            message, options: ["Yes", "No"], default_option: "Yes"
+            message, options: [:Yes, :No], default_option: :No
           )
           ask(question) do |q|
             logger.info "#{q.text} #{q.answer}"
-            q.answer == "Yes"
+            q.answer == :Yes
           end
         end
 
