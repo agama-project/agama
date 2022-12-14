@@ -18,6 +18,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "logger"
 require "dinstaller/software/callbacks"
 require "dinstaller/dbus/clients/questions_manager"
 
@@ -33,7 +34,7 @@ module Yast
     end
 
     # @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L183
-    def InitPackageCallbacks(logger = Logger.new($stdout))
+    def InitPackageCallbacks(logger = ::Logger.new($stdout))
       DInstaller::Software::Callbacks::Signature.new(
         questions_manager, logger
       ).setup
