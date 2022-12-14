@@ -27,5 +27,6 @@ module DInstaller
   end
 end
 
+require "dinstaller/software/callbacks/media"
 require "dinstaller/software/callbacks/progress"
 require "dinstaller/software/callbacks/signature"
