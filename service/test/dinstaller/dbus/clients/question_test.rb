@@ -33,6 +33,7 @@ describe DInstaller::DBus::Clients::Question do
       .and_return(question_iface)
     allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Question.LuksActivation1")
       .and_return(luks_iface)
+    allow(dbus_object).to receive(:has_iface?).with(/LuksActivation1/).and_return(luks_iface?)
   end
 
   let(:bus) { instance_double(::DBus::SystemBus) }
@@ -40,6 +41,7 @@ describe DInstaller::DBus::Clients::Question do
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:question_iface) { instance_double(::DBus::ProxyObjectInterface) }
   let(:luks_iface) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:luks_iface?) { true }
 
   subject { described_class.new("/org/opensuse/DInstaller/Questions1/23") }
 
@@ -61,6 +63,14 @@ describe DInstaller::DBus::Clients::Question do
     it "returns the appropriate property of the luks interface" do
       expect(luks_iface).to receive(:[]).with("Password").and_return("the password")
       expect(subject.password).to eq "the password"
+    end
+
+    context "when the luks interface is missing" do
+      let(:luks_iface?) { false }
+
+      it "returns nil" do
+        expect(subject.password).to be_nil
+      end
     end
   end
 end
