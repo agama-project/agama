@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec 14 15:29:12 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix generic questions handling (gh#yast/d-installer#362)
+- Version 0.6.1
+
+-------------------------------------------------------------------
 Wed Dec 14 13:25:22 UTC 2022 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Removed previous temporary setting "olaf_luks2_password" and all
