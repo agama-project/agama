@@ -32,7 +32,7 @@ describe DInstaller::Software::Callbacks::Signature do
 
   describe "#accept_unsigned_file" do
     let(:asked_question) do
-      instance_double(DInstaller::Question, text: "Better safe than sorry", answer: answer) 
+      instance_double(DInstaller::Question, text: "Better safe than sorry", answer: answer)
     end
     let(:answer) { :Yes }
 

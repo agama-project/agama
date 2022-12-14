@@ -54,6 +54,7 @@ module DInstaller
         #
         # @return [String]
         # @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
+        # rubocop:disable Metrics/ParameterLists
         def media_change(_error_code, error, _url, _product, _current, _current_label, _wanted,
           _wanted_label, _double_sided, _devices, _current_device)
           question = DInstaller::Question.new(
@@ -65,6 +66,7 @@ module DInstaller
             (q.answer == :Retry) ? "" : "S"
           end
         end
+      # rubocop:enable Metrics/ParameterLists
 
       private
 
