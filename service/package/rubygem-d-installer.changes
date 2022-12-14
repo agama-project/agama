@@ -1,6 +1,8 @@
 -------------------------------------------------------------------
 Wed Dec 14 15:29:12 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
+- Switch the SELinux policy for ALP to "enforcing"
+  (gh#yast/d-installer#360).
 - Fix generic questions handling (gh#yast/d-installer#362)
 - Version 0.6.1
 
