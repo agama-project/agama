@@ -22,7 +22,7 @@
 
 Gem::Specification.new do |spec|
   spec.name = "d-installer"
-  spec.version = File.read(File.expand_path("VERSION", File.join(__dir__, ".."))).chomp
+  spec.version = File.read("VERSION").chomp
   spec.summary = "D-Installer Service"
   spec.description = "System service for D-Installer, an experimental YaST-based installer."
   spec.author = "YaST Team"

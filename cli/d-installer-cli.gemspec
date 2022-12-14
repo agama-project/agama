@@ -21,7 +21,7 @@
 
 Gem::Specification.new do |spec|
   spec.name = "d-installer-cli"
-  spec.version = File.read(File.expand_path("VERSION", File.join(__dir__, ".."))).chomp
+  spec.version = File.read("VERSION").chomp
   spec.summary = "D-Installer CLI"
   spec.description = "Command line interface for D-Installer service"
   spec.author = "YaST Team"
