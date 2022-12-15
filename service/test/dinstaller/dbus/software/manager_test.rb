@@ -30,7 +30,7 @@ describe DInstaller::DBus::Software::Manager do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:backend) { instance_double(DInstaller::Software) }
+  let(:backend) { instance_double(DInstaller::Software::Manager) }
 
   let(:progress_interface) { DInstaller::DBus::Interfaces::Progress::PROGRESS_INTERFACE }
 

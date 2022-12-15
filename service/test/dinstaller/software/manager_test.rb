@@ -19,11 +19,14 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../test_helper"
+require_relative "../../test_helper"
+require_relative File.join(
+  SRC_PATH, "dinstaller", "dbus", "y2dir", "software", "modules", "PackageCallbacks.rb"
+)
 require "dinstaller/config"
-require "dinstaller/software"
+require "dinstaller/software/manager"
 
-describe DInstaller::Software do
+describe DInstaller::Software::Manager do
   subject { described_class.new(config, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
@@ -39,6 +42,10 @@ describe DInstaller::Software do
     DInstaller::Config.new(YAML.safe_load(File.read(config_path)))
   end
 
+  let(:questions_manager) do
+    instance_double(DInstaller::DBus::Clients::QuestionsManager)
+  end
+
   before do
     allow(Yast::Pkg).to receive(:TargetInitialize)
     allow(Yast::Pkg).to receive(:ImportGPGKey)
@@ -48,6 +55,8 @@ describe DInstaller::Software do
       .and_return(base_url)
     allow(Yast::Pkg).to receive(:SourceCreate)
     allow(Yast::Installation).to receive(:destdir).and_return(destdir)
+    allow(DInstaller::DBus::Clients::QuestionsManager).to receive(:new)
+      .and_return(questions_manager)
   end
 
   describe "#probe" do
@@ -56,8 +65,8 @@ describe DInstaller::Software do
     let(:backup_repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d.backup") }
 
     before do
-      stub_const("DInstaller::Software::REPOS_DIR", repos_dir)
-      stub_const("DInstaller::Software::REPOS_BACKUP", backup_repos_dir)
+      stub_const("DInstaller::Software::Manager::REPOS_DIR", repos_dir)
+      stub_const("DInstaller::Software::Manager::REPOS_BACKUP", backup_repos_dir)
       FileUtils.mkdir_p(repos_dir)
     end
 
@@ -166,7 +175,7 @@ describe DInstaller::Software do
     end
 
     it "sets up the package callbacks" do
-      expect(DInstaller::PackageCallbacks).to receive(:setup)
+      expect(DInstaller::Software::Callbacks::Progress).to receive(:setup)
       subject.install
     end
 
@@ -185,8 +194,8 @@ describe DInstaller::Software do
     let(:backup_repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d.backup") }
 
     before do
-      stub_const("DInstaller::Software::REPOS_DIR", repos_dir)
-      stub_const("DInstaller::Software::REPOS_BACKUP", backup_repos_dir)
+      stub_const("DInstaller::Software::Manager::REPOS_DIR", repos_dir)
+      stub_const("DInstaller::Software::Manager::REPOS_BACKUP", backup_repos_dir)
       FileUtils.mkdir_p(repos_dir)
       FileUtils.mkdir_p(backup_repos_dir)
       FileUtils.touch(File.join(backup_repos_dir, "example.repo"))

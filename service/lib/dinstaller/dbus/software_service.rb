@@ -43,7 +43,7 @@ module DInstaller
       def initialize(config, logger = nil)
         @logger = logger || Logger.new($stdout)
         @bus = ::DBus::SystemBus.instance
-        @backend = DInstaller::Software.new(config, logger)
+        @backend = DInstaller::Software::Manager.new(config, logger)
         @backend.on_progress_change { dispatch }
       end
 

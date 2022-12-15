@@ -20,9 +20,13 @@
 # find current contact information at www.suse.com.
 
 module DInstaller
-  # Namespace for software backend
   module Software
+    # Namespace for software callbacks
+    module Callbacks
+    end
   end
 end
 
-require "dinstaller/software/manager"
+require "dinstaller/software/callbacks/media"
+require "dinstaller/software/callbacks/progress"
+require "dinstaller/software/callbacks/signature"
