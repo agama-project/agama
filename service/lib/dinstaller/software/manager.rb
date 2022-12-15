@@ -85,6 +85,7 @@ module DInstaller
         Yast::Stage.Set("normal")
 
         start_progress(3)
+        Yast::PackageCallbacks.InitPackageCallbacks(logger)
         progress.step("Initialize target repositories") { initialize_target_repos }
         progress.step("Initialize sources") { add_base_repo }
         progress.step("Making the initial proposal") do
@@ -96,7 +97,6 @@ module DInstaller
       end
 
       def initialize_target_repos
-        Yast::PackageCallbacks.InitPackageCallbacks(logger)
         Yast::Pkg.TargetInitialize("/")
         import_gpg_keys
       end
