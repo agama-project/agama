@@ -27,7 +27,10 @@ require "dinstaller/question"
 describe DInstaller::Software::Callbacks::Signature do
   subject { described_class.new(questions_manager, logger) }
 
-  let(:questions_manager) { DInstaller::DBus::Clients::QuestionsManager.new }
+  let(:questions_manager) do
+    instance_double(DInstaller::DBus::Clients::QuestionsManager)
+  end
+
   let(:logger) { Logger.new($stdout) }
 
   describe "#accept_unsigned_file" do
