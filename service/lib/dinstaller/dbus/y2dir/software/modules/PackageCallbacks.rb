@@ -26,11 +26,8 @@ require "dinstaller/dbus/clients/questions_manager"
 module Yast
   # Replacement for the Yast::PackageCallbacks module.
   class PackageCallbacksClass < Module
-    attr_reader :questions_manager
-
     def main
       puts "Loading mocked module #{__FILE__}"
-      @questions_manager = DInstaller::DBus::Clients::QuestionsManager.new
     end
 
     # @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L183
@@ -42,6 +39,10 @@ module Yast
       DInstaller::Software::Callbacks::Media.new(
         questions_manager, logger
       ).setup
+    end
+
+    def questions_manager
+      @questions_manager ||= DInstaller::DBus::Clients::QuestionsManager.new 
     end
   end
 
