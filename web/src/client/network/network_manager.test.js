@@ -28,6 +28,7 @@ import cockpit from "../../lib/cockpit";
 const NM_IFACE = "org.freedesktop.NetworkManager";
 const NM_SETTINGS_IFACE = "org.freedesktop.NetworkManager.Settings";
 const IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
+const DEVICE_IFACE = "org.freedesktop.NetworkManager.Device";
 const NM_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Settings.Connection";
 const ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Active";
 const ACCESS_POINT_IFACE = "org.freedesktop.NetworkManager.AccessPoint";
@@ -191,6 +192,7 @@ describe("NetworkManagerAdapter", () => {
     dbusClient.proxies = jest.fn().mockImplementation(iface => {
       if (iface === ACCESS_POINT_IFACE) return accessPoints;
       if (iface === ACTIVE_CONNECTION_IFACE) return activeConnections;
+      if (iface === DEVICE_IFACE) return devices;
       if (iface === NM_CONNECTION_IFACE) return connections;
       if (iface === IP4CONFIG_IFACE) return addressesData;
       return {};
