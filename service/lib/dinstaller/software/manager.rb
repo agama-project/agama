@@ -132,6 +132,9 @@ module DInstaller
         end
 
         logger.info "Commit result #{commit_result}"
+      rescue DInstaller::WithProgress::NotFinishedProgress => e
+        logger.error "There is an unfinished progress: #{e.inspect}"
+        finish_progress
       end
 
       # Writes the repositories information to the installed system
