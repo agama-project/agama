@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    d-installer (0.6)
+    d-installer (0.6.2)
       cfa (~> 1.0.2)
       cfa_grub2 (~> 2.0.0)
       cheetah (~> 1.0.0)
@@ -26,11 +26,11 @@ GEM
     docile (1.4.0)
     eventmachine (1.2.7)
     fast_gettext (2.2.0)
-    nokogiri (1.13.9-x86_64-linux)
+    nokogiri (1.13.10-x86_64-linux)
       racc (~> 1.4)
     packaging_rake_tasks (1.5.1)
       rake
-    racc (1.6.0)
+    racc (1.6.1)
     rake (13.0.6)
     rexml (3.2.5)
     rspec (3.11.0)
@@ -61,8 +61,8 @@ GEM
       webrick (~> 1.7.0)
 
 PLATFORMS
-  ruby
   x86_64-linux
+  x86_64-linux-gnu
 
 DEPENDENCIES
   byebug

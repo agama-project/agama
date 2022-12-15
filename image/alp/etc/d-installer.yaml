@@ -27,10 +27,13 @@ ALP:
     optional_patterns: null # no optional pattern shared
     mandatory_packages:
       - device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
+      - fde-tools # Needed for FDE with TPM, hardcoded here temporarily
+      - libtss2-tcti-device0 # Same than fde-tools
     optional_packages: null
     base_product: ALP
 
   security:
+    tpm_luks_open: true
     lsm: selinux
     available_lsms:
       # apparmor:

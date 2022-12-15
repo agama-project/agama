@@ -3,6 +3,7 @@ Thu Dec 15 13:15:10 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Implement the ImportGpgKey libzypp callback
   (gh#yast/d-installer#371)
+- Version 0.6.2
 
 -------------------------------------------------------------------
 Wed Dec 14 22:38:24 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

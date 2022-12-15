@@ -3,6 +3,7 @@ Thu Dec 15 10:14:22 UTC 2022 - Knut Anderssen <kanderssen@suse.com>
 
 - Do not show the link to configure wifi networks when wireless is
   not enabled (gh#yast/d-installer#323).
+- Version 0.6.2
 
 -------------------------------------------------------------------
 Thu Dec 15 08:55:02 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
