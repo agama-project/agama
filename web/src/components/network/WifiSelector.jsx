@@ -84,7 +84,7 @@ function WifiSelector({ isOpen = false, onClose }) {
       setNetworks(data);
       setActiveNetwork(networksFromValues(data).find(d => d.connection));
     });
-  }, [client.network, connections, activeConnections]);
+  }, [client.network, connections, activeConnections, isOpen]);
 
   useEffect(() => {
     return client.network.onNetworkEvent(({ type, payload }) => {
