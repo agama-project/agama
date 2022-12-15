@@ -54,7 +54,8 @@ describe WithProgressTest do
       end
 
       it "raises an error" do
-        expect { subject.start_progress(1) }.to raise_error(/unfinished progress/)
+        expect { subject.start_progress(1) }
+          .to raise_error(DInstaller::WithProgress::NotFinishedProgress)
       end
     end
 
@@ -87,6 +88,38 @@ describe WithProgressTest do
 
         subject.start_progress(1)
         subject.progress.finish
+      end
+    end
+  end
+
+  describe "#finish" do
+    context "when the current progress is not finished" do
+      before do
+        subject.start_progress(1)
+      end
+
+      it "finishes the current progress" do
+        expect { subject.finish_progress }
+          .to change { subject.progress.finished? }
+          .from(false).to(true)
+      end
+    end
+
+    context "when the current progress is already finished" do
+      before do
+        subject.start_progress(1)
+        subject.progress.step("") { nil }
+      end
+
+      it "does not crash" do
+        expect(subject.progress).to_not receive(:finish)
+        subject.finish_progress
+      end
+    end
+
+    context "when there is no progress" do
+      it "does not crash" do
+        subject.finish_progress
       end
     end
   end

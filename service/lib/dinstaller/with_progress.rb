@@ -24,6 +24,9 @@ require "dinstaller/progress"
 module DInstaller
   # Mixin that allows to start a progress and configure callbacks
   module WithProgress
+    # There is an unfinished progress
+    class NotFinishedProgress < StandardError; end
+
     # @return [Progress, nil]
     attr_reader :progress
 
@@ -33,7 +36,7 @@ module DInstaller
     #
     # @param total_steps [Integer] total number of the steps for the progress.
     def start_progress(total_steps)
-      raise "There already is an unfinished progress" if progress && !progress.finished?
+      raise NotFinishedProgress if progress && !progress.finished?
 
       on_change_callbacks = @on_progress_change_callbacks || []
       on_finish_callbacks = @on_progress_finish_callbacks || []
@@ -42,6 +45,13 @@ module DInstaller
         progress.on_change { on_change_callbacks.each(&:call) }
         progress.on_finish { on_finish_callbacks.each(&:call) }
       end
+    end
+
+    # Finish the current progress
+    def finish_progress
+      return if progress.nil? || progress.finished?
+
+      progress.finish
     end
 
     # Registers an on_change callback to be added to the progress
