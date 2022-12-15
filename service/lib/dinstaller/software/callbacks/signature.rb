@@ -44,6 +44,9 @@ module DInstaller
           Yast::Pkg.CallbackAcceptUnsignedFile(
             Yast::FunRef.new(method(:accept_unsigned_file), "boolean (string, integer)")
           )
+          Yast::Pkg.CallbackImportGpgKey(
+            Yast::FunRef.new(method(:import_gpg_key), "boolean (map <string, any>, integer)")
+          )
         end
 
         # Callback to handle unsigned files
@@ -62,7 +65,7 @@ module DInstaller
           end
 
           message = format(
-            "%{source} is not digitally signed. The origin and integrity of the file cannot be "\
+            "%{source} is not digitally signed. The origin and integrity of the file cannot be " \
             "verified. Use it anyway?", source: source
           )
 
@@ -72,6 +75,28 @@ module DInstaller
           ask(question) do |q|
             logger.info "#{q.text} #{q.answer}"
             q.answer == :Yes
+          end
+        end
+
+        # Callback to handle signature verification failures
+        #
+        # @param key [Hash] GPG key data (id, name, fingerprint, etc.)
+        # @param _repo_id [Integer] Repository ID
+        def import_gpg_key(key, _repo_id)
+          fingerprint = key["fingerprint"].scan(/.{4}/).join(" ")
+          message = format(
+            "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. " \
+            "Do you want to trust this key?",
+            id: key["id"], name: key["name"], fingerprint: fingerprint
+          )
+
+          question = DInstaller::Question.new(
+            message, options: [:Trust, :Skip], default_option: :Skip
+          )
+
+          ask(question) do |q|
+            logger.info "#{q.text} #{q.answer}"
+            q.answer == :Trust
           end
         end
 
