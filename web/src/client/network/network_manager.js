@@ -28,6 +28,7 @@ import { NetworkEventTypes } from "./index";
 import { createAccessPoint, createConnection, SecurityProtocols } from "./model";
 
 /**
+ * @typedef {import("./model").NetworkSettings} NetworkSettings
  * @typedef {import("./model").Connection} Connection
  * @typedef {import("./model").ActiveConnection} ActiveConnection
  * @typedef {import("./model").IPAddress} IPAddress
@@ -378,6 +379,8 @@ class NetworkManagerAdapter {
   async subscribeToEvents() {
     const activeConnectionProxies = this.proxies.activeConnections;
     const connectionProxies = this.proxies.connections;
+    const managerProxy = this.proxies.manager;
+    const settingsProxy = this.proxies.settings;
 
     /** @type {(eventType: string) => NetworkEventFn} */
     const handleWrapperActiveConnection = (eventType) => (_event, proxy) => {
@@ -398,6 +401,12 @@ class NetworkManagerAdapter {
       this.eventsHandler({ type: eventType, payload: connection });
     };
 
+    const handleWrapperSettings = (eventType) => () => {
+      const settings = this.settingsFromProxies(managerProxy, settingsProxy);
+
+      this.eventsHandler({ type: eventType, payload: settings });
+    };
+
     // FIXME: do not build a map (eventTypesMap), just inject the type here
     connectionProxies.addEventListener("added", handleWrapperConnection(NetworkEventTypes.CONNECTION_ADDED));
     connectionProxies.addEventListener("changed", handleWrapperConnection(NetworkEventTypes.CONNECTION_UPDATED));
@@ -407,6 +416,9 @@ class NetworkManagerAdapter {
     activeConnectionProxies.addEventListener("added", handleWrapperActiveConnection(NetworkEventTypes.ACTIVE_CONNECTION_ADDED));
     activeConnectionProxies.addEventListener("changed", handleWrapperActiveConnection(NetworkEventTypes.ACTIVE_CONNECTION_UPDATED));
     activeConnectionProxies.addEventListener("removed", handleWrapperActiveConnection(NetworkEventTypes.ACTIVE_CONNECTION_REMOVED));
+
+    managerProxy.addEventListener("changed", handleWrapperSettings(NetworkEventTypes.SETTINGS_UPDATED));
+    settingsProxy.addEventListener("changed", handleWrapperSettings(NetworkEventTypes.SETTINGS_UPDATED));
   }
 
   /**
@@ -492,37 +504,19 @@ class NetworkManagerAdapter {
     return { address: data.address.v, prefix: parseInt(data.prefix.v) };
   }
 
-  /**
-  *
-  * Returns whether WiFi hardware is enabled or not
-  *
-  * @return [boolean] true if it enabled; false otherwise
-  */
-  wirelessEnabled() {
-    return !!this.proxies.manager?.WirelessEnabled;
+  settingsFromProxies(manager, settings) {
+    return {
+      wireless: !!(manager?.WirelessEnabled && manager?.WirelessHardwareEnabled),
+      hostname: settings?.Hostname || ""
+    };
   }
 
-  /**
-  *
-  * Returns whether WiFi hardware is enabled or not
-  *
-  * @return [boolean] true if it enabled; false otherwise
+  /*
+  * Returns NetworkManager general settings
+  * @return {NetworkSettings}
   */
-  wifiHardwareEnabled() {
-    return !!this.proxies.manager?.WifiHardwareEnabled;
-  }
-
-  /**
-   * Returns the computer's hostname
-   *
-   * @return {string}
-   *
-   * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.Settings.html
-   */
-  hostname() {
-    if (!this.proxies.settings) return "";
-
-    return this.proxies.settings.Hostname;
+  settings() {
+    return this.settingsFromProxies(this.proxies.manager, this.proxies.settings);
   }
 }
 

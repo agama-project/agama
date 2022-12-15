@@ -38,11 +38,15 @@ const conn = {
   addresses: [{ address: "192.168.122.1", prefix: 24 }]
 };
 
+const settings = {
+  wireless: true,
+  hostname: "localhost.localdomain"
+};
+
 const adapter = {
   setUp: jest.fn(),
   activeConnections: jest.fn().mockReturnValue([active_conn]),
   connections: jest.fn().mockReturnValue([conn]),
-  hostname: jest.fn().mockReturnValue("localhost.localdomain"),
   subscribe: jest.fn(),
   getConnection: jest.fn(),
   addConnection: jest.fn(),
@@ -51,8 +55,7 @@ const adapter = {
   accessPoints: jest.fn(),
   connectTo: jest.fn(),
   addAndConnectTo: jest.fn(),
-  wirelessEnabled: jest.fn().mockReturnValue(true),
-  wifiHardwareEnabled: jest.fn().mockReturnValue(true)
+  settings: jest.fn().mockReturnValue(settings),
 };
 
 describe("NetworkClient", () => {
@@ -71,24 +74,11 @@ describe("NetworkClient", () => {
     });
   });
 
-  describe("#hostname", () => {
-    it("returns the hostname from the adapter", () => {
+  describe("#settings", () => {
+    it("returns network general settings", () => {
       const client = new NetworkClient(adapter);
-      expect(client.hostname()).toEqual("localhost.localdomain");
-    });
-  });
-
-  describe("#wirelessEnabled", () => {
-    it("returns whether the wireless is currently enabled or not from the adapter", () => {
-      const client = new NetworkClient(adapter);
-      expect(client.wirelessEnabled()).toEqual(true);
-    });
-  });
-
-  describe("#wifiHardwareEnabled", () => {
-    it("returns whether the wireless hardware is currently enabled or not from the adapter", () => {
-      const client = new NetworkClient(adapter);
-      expect(client.wifiHardwareEnabled()).toEqual(true);
+      expect(client.settings().hostname).toEqual("localhost.localdomain");
+      expect(client.settings().wireless).toEqual(true);
     });
   });
 });

@@ -128,20 +128,30 @@ const ActivateConnectionFn = jest.fn();
 const WirelessEnabled = false;
 const WifiHardwareEnabled = true;
 
-const networkProxy = () => ({
+const networkProxyFn = () => ({
   wait: jest.fn(),
   ActivateConnection: ActivateConnectionFn,
   ActiveConnections: Object.keys(activeConnections),
-  WirelessEnabled: WirelessEnabled,
-  WifiHardwareEnabled: WifiHardwareEnabled
+  WirelessEnabled,
+  WifiHardwareEnabled
 });
 
 const AddConnectionFn = jest.fn();
-const networkSettingsProxy = () => ({
+const networkSettingsProxyFn = () => ({
   wait: jest.fn(),
   Hostname: "testing-machine",
   GetConnectionByUuid: () => "/org/freedesktop/NetworkManager/Settings/1",
-  AddConnection: AddConnectionFn
+  AddConnection: AddConnectionFn,
+});
+const networkSettingsProxy = networkSettingsProxyFn();
+const networkProxy = networkProxyFn();
+
+Object.defineProperties(networkSettingsProxy, {
+  addEventListener: { value: jest.fn(), enumerable: false }
+});
+
+Object.defineProperties(networkProxy, {
+  addEventListener: { value: jest.fn(), enumerable: false }
 });
 
 const connectionSettingsMock = {
@@ -177,8 +187,8 @@ const connectionSettingsProxy = () => connectionSettingsMock;
 describe("NetworkManagerAdapter", () => {
   beforeEach(() => {
     dbusClient.proxy = jest.fn().mockImplementation(iface => {
-      if (iface === NM_IFACE) return networkProxy();
-      if (iface === NM_SETTINGS_IFACE) return networkSettingsProxy();
+      if (iface === NM_IFACE) return networkProxy;
+      if (iface === NM_SETTINGS_IFACE) return networkSettingsProxy;
       if (iface === NM_CONNECTION_IFACE) return connectionSettingsProxy();
     });
 
@@ -350,27 +360,12 @@ describe("NetworkManagerAdapter", () => {
     });
   });
 
-  describe("#hostname", () => {
+  describe("#settings", () => {
     it("returns the Network Manager settings hostname", async() => {
       const client = new NetworkManagerAdapter(dbusClient);
       await client.setUp();
-      expect(client.hostname()).toEqual("testing-machine");
-    });
-  });
-
-  describe("#wirelessEnabled", () => {
-    it("returns whether wireless is currently enabled or not", async() => {
-      const client = new NetworkManagerAdapter(dbusClient);
-      await client.setUp();
-      expect(client.wirelessEnabled()).toEqual(false);
-    });
-  });
-
-  describe("#wifiHardwareEnabled", () => {
-    it("returns whether wireless hardware is currently enabled or not", async() => {
-      const client = new NetworkManagerAdapter(dbusClient);
-      await client.setUp();
-      expect(client.wifiHardwareEnabled()).toEqual(true);
+      expect(client.settings().hostname).toEqual("testing-machine");
+      expect(client.settings().wireless).toEqual(false);
     });
   });
 });

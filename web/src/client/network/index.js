@@ -25,6 +25,7 @@ import { NetworkManagerAdapter } from "./network_manager";
 import { ConnectionTypes, ConnectionState } from "./model";
 
 /**
+ * @typedef {import("./model").NetworkSettings} NetworkSettings
  * @typedef {import("./model").Connection} Connection
  * @typedef {import("./model").ActiveConnection} ActiveConnection
  * @typedef {import("./model").IPAddress} IPAddress
@@ -37,7 +38,8 @@ const NetworkEventTypes = Object.freeze({
   ACTIVE_CONNECTION_REMOVED: "active_connection_removed",
   CONNECTION_ADDED: "connection_added",
   CONNECTION_UPDATED: "connection_updated",
-  CONNECTION_REMOVED: "connection_removed"
+  CONNECTION_REMOVED: "connection_removed",
+  SETTINGS_UPDATED: "settings_updated"
 });
 
 /**
@@ -52,9 +54,7 @@ const NetworkEventTypes = Object.freeze({
  * @property {(connection: Connection) => Promise<any>} addConnection
  * @property {(connection: Connection) => Promise<any>} updateConnection
  * @property {(connection: Connection) => void} deleteConnection
- * @property {() => string} wirelessEnabled
- * @property {() => string} wifiHardwareEnabled
- * @property {() => string} hostname
+ * @property {() => NetworkSettings} settings
  * @property {() => void} setUp
  */
 
@@ -213,30 +213,10 @@ o  *   NetworkManagerAdapter.
   }
 
   /*
-   * Returns whether wifi hardware is enabled or not
-   *
-   * @return {boolean}
-   */
-  wirelessEnabled() {
-    return this.adapter.wirelessEnabled();
-  }
-
-  /*
-   * Returns whether wifi hardware is enabled or not
-   *
-   * @return {boolean}
-   */
-  wifiHardwareEnabled() {
-    return this.adapter.wifiHardwareEnabled();
-  }
-
-  /**
-   * Returns the computer's hostname
-   *
-   * @return {string}
-   */
-  hostname() {
-    return this.adapter.hostname();
+  * Returns network general settings
+  */
+  settings() {
+    return this.adapter.settings();
   }
 }
 

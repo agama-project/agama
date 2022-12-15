@@ -30,6 +30,7 @@ jest.mock("@components/network/NetworkWiredStatus", () => () => "Wired Connectio
 jest.mock("@components/network/NetworkWifiStatus", () => () => "WiFi Connections");
 
 let wirelessEnabled = false;
+const networkSettings = { wireless: wirelessEnabled, hostname: "test" };
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
@@ -39,8 +40,8 @@ beforeEach(() => {
         activeConnections: () => [],
         connections: () => Promise.resolve([]),
         accessPoints: () => [],
-        wirelessEnabled: jest.fn(wirelessEnabled),
-        onNetworkEvent: jest.fn()
+        onNetworkEvent: jest.fn(),
+        settings: jest.fn().mockReturnValue(networkSettings)
       }
     };
   });

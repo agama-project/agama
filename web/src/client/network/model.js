@@ -108,6 +108,11 @@ const SecurityProtocols = Object.freeze({
  */
 
 /**
+* @typedef {object} NetworkSettings
+* @property {boolean} wireless
+* @property {string} hostname
+
+/**
  * Returns an IPv4 configuration object
  *
  * Defaults values can be overriden
