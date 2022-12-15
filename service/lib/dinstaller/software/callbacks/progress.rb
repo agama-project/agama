@@ -23,7 +23,6 @@ require "yast"
 
 Yast.import "Pkg"
 
-# YaST specific code lives under this namespace
 module DInstaller
   module Software
     module Callbacks

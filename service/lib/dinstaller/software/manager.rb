@@ -33,7 +33,6 @@ Yast.import "PackageCallbacks"
 Yast.import "Pkg"
 Yast.import "Stage"
 
-# YaST specific code lives under this namespace
 module DInstaller
   module Software
     # This class is responsible for software handling

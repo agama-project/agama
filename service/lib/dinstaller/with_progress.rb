@@ -47,7 +47,7 @@ module DInstaller
       end
     end
 
-    # Finish the current progress
+    # Finishes the current progress
     def finish_progress
       return if progress.nil? || progress.finished?
 
