@@ -72,7 +72,7 @@ describe DInstaller::Software::Callbacks::Signature do
     end
 
     context "when the repo information is not available"
-    it "includes a generic message containing " do
+    it "includes a generic message containing the filename" do
       expect(subject).to receive(:ask) do |question|
         expect(question.text).to include("repomd.xml")
       end
