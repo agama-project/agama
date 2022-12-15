@@ -34,7 +34,8 @@ const addresses = [
   { address: "5.6.7.8", prefix: 16 },
 ];
 const addressFn = jest.fn().mockReturnValue(addresses);
-const hostnameFn = jest.fn().mockReturnValue("example.net");
+const networkSettings = { wireless: false, hostname: "example.net" };
+const settingsFn = jest.fn().mockReturnValue(networkSettings);
 
 describe("TargetIpsPopup", () => {
   let callbacks;
@@ -46,7 +47,7 @@ describe("TargetIpsPopup", () => {
         network: {
           onNetworkEvent: onNetworkEventFn,
           addresses: addressFn,
-          hostname: hostnameFn,
+          settings: settingsFn,
           setUp: jest.fn().mockResolvedValue()
         }
       };
@@ -77,7 +78,7 @@ describe("TargetIpsPopup", () => {
     await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });
 
     addressFn.mockReturnValue([{ address: "5.6.7.8", prefix: 24 }]);
-    hostnameFn.mockReturnValue("localhost.localdomain");
+    settingsFn.mockReturnValue({ wireless: false, hostname: "localhost.localdomain" });
     act(() => {
       callbacks.forEach(cb => cb());
     });
