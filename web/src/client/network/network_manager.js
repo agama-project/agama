@@ -205,10 +205,6 @@ class NetworkManagerAdapter {
     this.subscribeToEvents();
   }
 
-  wirelessHardware() {
-    return !!this.proxies.manager?.WirelessHardwareEnabled;
-  }
-
   /**
    * Returns the list of active connections
    *
