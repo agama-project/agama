@@ -71,8 +71,21 @@ describe DInstaller::Software::Callbacks::Signature do
       end
     end
 
-    context "when the repo information is not available"
-    it "includes a generic message containing the filename" do
+    context "when the repo information is not available" do
+      before do
+        allow(Yast::Pkg).to receive(:SourceGeneralData).with(1)
+          .and_return(nil)
+      end
+
+      it "includes a generic message containing the filename" do
+        expect(subject).to receive(:ask) do |question|
+          expect(question.text).to include("repomd.xml")
+        end
+        expect(subject.accept_unsigned_file("repomd.xml", 1))
+      end
+    end
+  end
+
       expect(subject).to receive(:ask) do |question|
         expect(question.text).to include("repomd.xml")
       end
