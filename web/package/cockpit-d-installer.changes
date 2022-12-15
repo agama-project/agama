@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Dec 15 08:55:02 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Display questions during the software installation (related to
+  gh#yast/d-installer#369).
+- Update to version 0.6.1
+
+-------------------------------------------------------------------
 Mon Dec  5 13:18:37 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.6.0
