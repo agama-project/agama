@@ -95,12 +95,15 @@ const connections = {
   }
 };
 
+// Reminder: by default, properties added using Object.defineProperties() are not enumerable.
+// We use #defineProperties here, so it doesn't show up as a "connection" in these objects.
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties#enumerable
 Object.defineProperties(activeConnections, {
-  addEventListener: { value: jest.fn(), enumerable: false }
+  addEventListener: { value: jest.fn() }
 });
 
 Object.defineProperties(connections, {
-  addEventListener: { value: jest.fn(), enumerable: false }
+  addEventListener: { value: jest.fn() }
 });
 
 const addressesData = {
@@ -125,30 +128,23 @@ const addressesData = {
 };
 
 const ActivateConnectionFn = jest.fn();
-const WirelessEnabled = false;
-const WifiHardwareEnabled = true;
 
-const networkProxyFn = () => ({
+const networkProxy = {
   wait: jest.fn(),
   ActivateConnection: ActivateConnectionFn,
   ActiveConnections: Object.keys(activeConnections),
-  WirelessEnabled,
-  WifiHardwareEnabled
-});
+  WirelessEnabled: false,
+  WifiHardwareEnabled: true
+};
 
 const AddConnectionFn = jest.fn();
-const networkSettingsProxyFn = () => ({
+const networkSettingsProxy = {
   wait: jest.fn(),
   Hostname: "testing-machine",
   GetConnectionByUuid: () => "/org/freedesktop/NetworkManager/Settings/1",
   AddConnection: AddConnectionFn,
-});
-const networkSettingsProxy = networkSettingsProxyFn();
-const networkProxy = networkProxyFn();
-
-Object.defineProperties(networkSettingsProxy, {
-  addEventListener: { value: jest.fn(), enumerable: false }
-});
+  addEventListener: () => ({ value: jest.fn(), enumerable: false })
+};
 
 Object.defineProperties(networkProxy, {
   addEventListener: { value: jest.fn(), enumerable: false }
