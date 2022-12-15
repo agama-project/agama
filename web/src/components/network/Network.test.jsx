@@ -29,8 +29,8 @@ jest.mock("@client");
 jest.mock("@components/network/NetworkWiredStatus", () => () => "Wired Connections");
 jest.mock("@components/network/NetworkWifiStatus", () => () => "WiFi Connections");
 
-let wirelessEnabled = false;
-const networkSettings = { wireless: wirelessEnabled, hostname: "test" };
+const networkSettings = { wireless: false, hostname: "test" };
+let settingsFn = jest.fn().mockReturnValue(networkSettings);
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
@@ -41,7 +41,7 @@ beforeEach(() => {
         connections: () => Promise.resolve([]),
         accessPoints: () => [],
         onNetworkEvent: jest.fn(),
-        settings: jest.fn().mockReturnValue(networkSettings)
+        settings: settingsFn
       }
     };
   });
@@ -51,16 +51,11 @@ describe("Network", () => {
   describe("when it has not been initialized", () => {
     it("renders nothing", async () => {
       const { container } = installerRender(<Network />, { usingLayout: false });
-      waitFor(() => expect(container).toBeEmptyDOMElement());
+      await waitFor(() => expect(container).toBeEmptyDOMElement());
     });
   });
 
   describe("when it has been initialized", () => {
-    it("renders nothing", async () => {
-      const { container } = installerRender(<Network />, { usingLayout: false });
-      waitFor(() => expect(container).toBeEmptyDOMElement());
-    });
-
     it("renders a summary for wired and wifi connections", async () => {
       installerRender(<Network />);
 
@@ -70,14 +65,14 @@ describe("Network", () => {
 
     describe("when Wireless is currently not enabled", () => {
       it("does not show a link to open the WiFi selector", async () => {
-        installerRender(<Network />);
-        await screen.findByRole("button", { name: "Connect to a Wi-Fi network" });
+        installerRender(<Network />, { usingLayout: false });
+        await waitFor(() => expect(screen.queryByRole("button", { name: "Connect to a Wi-Fi network" })).not.toBeInTheDocument());
       });
     });
 
     describe("when Wireless is currently enabled", () => {
       beforeEach(() => {
-        wirelessEnabled = true;
+        settingsFn = jest.fn().mockReturnValue({ ...networkSettings, wireless: true });
       });
 
       it("shows a link to open the WiFi selector", async () => {
