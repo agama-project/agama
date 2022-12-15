@@ -35,6 +35,50 @@ const ACCESS_POINT_IFACE = "org.freedesktop.NetworkManager.AccessPoint";
 
 const dbusClient = new DBusClient("");
 
+const devices = {
+  "/org/freedesktop/NetworkManager/Devices/17": {
+    ActiveConnection: "/",
+    NmPluginMissing: false,
+    Real: true,
+    InterfaceFlags: 1,
+    DeviceType: 2,
+    Mtu: 1500,
+    Ports: [],
+    IpInterface: "",
+    DriverVersion: "6.0.12-1-default",
+    State: 30,
+    Ip6Config: "/org/freedesktop/NetworkManager/IP6Config/17",
+    Metered: 0,
+    Ip4Address: 0,
+    LldpNeighbors: [],
+    Interface: "wlp0s20u5",
+    FirmwareMissing: false,
+    Ip6Connectivity: 1,
+    Driver: "mt7601u",
+    PhysicalPortId: "",
+    Capabilities: 1,
+    Dhcp4Config: "/",
+    AvailableConnections: [
+      "/org/freedesktop/NetworkManager/Settings/3",
+      "/org/freedesktop/NetworkManager/Settings/4",
+      "/org/freedesktop/NetworkManager/Settings/5"
+    ],
+    HwAddress: "BA:FB:BE:AB:00:5B",
+    Managed: true,
+    StateReason: [
+      30,
+      42
+    ],
+    FirmwareVersion: "N/A",
+    Ip4Config: "/org/freedesktop/NetworkManager/IP4Config/17",
+    Udi: "/sys/devices/pci0000:00/0000:00:14.0/usb2/2-5/2-5:1.0/net/wlp0s20u5",
+    Autoconnect: true,
+    Ip4Connectivity: 1,
+    Path: "pci-0000:00:14.0-usb-0:5:1.0",
+    Dhcp6Config: "/"
+  }
+};
+
 const accessPoints = {
   "/org/freedesktop/NetworkManager/AccessPoint/11" : {
     Flags: 3,
@@ -134,8 +178,8 @@ const networkProxy = {
   wait: jest.fn(),
   ActivateConnection: ActivateConnectionFn,
   ActiveConnections: Object.keys(activeConnections),
-  WirelessEnabled: false,
-  WifiHardwareEnabled: true
+  WirelessEnabled: true,
+  WirelessHardwareEnabled: true
 };
 
 const AddConnectionFn = jest.fn();
@@ -359,11 +403,11 @@ describe("NetworkManagerAdapter", () => {
   });
 
   describe("#settings", () => {
-    it("returns the Network Manager settings hostname", async() => {
+    it("returns the Network Manager settings", async() => {
       const client = new NetworkManagerAdapter(dbusClient);
       await client.setUp();
       expect(client.settings().hostname).toEqual("testing-machine");
-      expect(client.settings().wireless).toEqual(false);
+      expect(client.settings().wireless).toEqual(true);
     });
   });
 });

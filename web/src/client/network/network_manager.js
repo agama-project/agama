@@ -502,6 +502,12 @@ class NetworkManagerAdapter {
     return { address: data.address.v, prefix: parseInt(data.prefix.v) };
   }
 
+  /*
+  * Returns whether the system is able to scan wifi networks based on rfkill and the presence of
+  * some wifi device
+  *
+  * @return {boolean}
+  */
   wirelessScanSupported() {
     const wEnabled = !!(this.proxies.manager?.WirelessEnabled && this.proxies.manager?.WirelessHardwareEnabled);
     const wifiDevice = Object.values(this.proxies.devices).filter(d => d.DeviceType === NM_DEVICE_TYPE_WIFI);
@@ -511,6 +517,7 @@ class NetworkManagerAdapter {
 
   /*
   * Returns NetworkManager general settings
+  *
   * @return {NetworkSettings}
   */
   settings() {
