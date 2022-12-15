@@ -45,7 +45,7 @@ export default function TargetIpsPopup() {
 
     const refreshState = () => {
       setAddresses(client.network.addresses());
-      setHostname(client.network.hostname());
+      setHostname(client.network.settings().hostname);
     };
 
     refreshState();

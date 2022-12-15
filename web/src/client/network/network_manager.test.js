@@ -95,12 +95,15 @@ const connections = {
   }
 };
 
+// Reminder: by default, properties added using Object.defineProperties() are not enumerable.
+// We use #defineProperties here, so it doesn't show up as a "connection" in these objects.
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties#enumerable
 Object.defineProperties(activeConnections, {
-  addEventListener: { value: jest.fn(), enumerable: false }
+  addEventListener: { value: jest.fn() }
 });
 
 Object.defineProperties(connections, {
-  addEventListener: { value: jest.fn(), enumerable: false }
+  addEventListener: { value: jest.fn() }
 });
 
 const addressesData = {
@@ -125,18 +128,26 @@ const addressesData = {
 };
 
 const ActivateConnectionFn = jest.fn();
-const networkProxy = () => ({
+
+const networkProxy = {
   wait: jest.fn(),
   ActivateConnection: ActivateConnectionFn,
   ActiveConnections: Object.keys(activeConnections),
-});
+  WirelessEnabled: false,
+  WifiHardwareEnabled: true
+};
 
 const AddConnectionFn = jest.fn();
-const networkSettingsProxy = () => ({
+const networkSettingsProxy = {
   wait: jest.fn(),
   Hostname: "testing-machine",
   GetConnectionByUuid: () => "/org/freedesktop/NetworkManager/Settings/1",
-  AddConnection: AddConnectionFn
+  AddConnection: AddConnectionFn,
+  addEventListener: () => ({ value: jest.fn(), enumerable: false })
+};
+
+Object.defineProperties(networkProxy, {
+  addEventListener: { value: jest.fn(), enumerable: false }
 });
 
 const connectionSettingsMock = {
@@ -172,8 +183,8 @@ const connectionSettingsProxy = () => connectionSettingsMock;
 describe("NetworkManagerAdapter", () => {
   beforeEach(() => {
     dbusClient.proxy = jest.fn().mockImplementation(iface => {
-      if (iface === NM_IFACE) return networkProxy();
-      if (iface === NM_SETTINGS_IFACE) return networkSettingsProxy();
+      if (iface === NM_IFACE) return networkProxy;
+      if (iface === NM_SETTINGS_IFACE) return networkSettingsProxy;
       if (iface === NM_CONNECTION_IFACE) return connectionSettingsProxy();
     });
 
@@ -345,11 +356,12 @@ describe("NetworkManagerAdapter", () => {
     });
   });
 
-  describe("#hostname", () => {
+  describe("#settings", () => {
     it("returns the Network Manager settings hostname", async() => {
       const client = new NetworkManagerAdapter(dbusClient);
       await client.setUp();
-      expect(client.hostname()).toEqual("testing-machine");
+      expect(client.settings().hostname).toEqual("testing-machine");
+      expect(client.settings().wireless).toEqual(false);
     });
   });
 });
