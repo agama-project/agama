@@ -34,7 +34,7 @@ const addresses = [
   { address: "5.6.7.8", prefix: 16 },
 ];
 const addressFn = jest.fn().mockReturnValue(addresses);
-const networkSettings = { wireless: false, hostname: "example.net" };
+const networkSettings = { wifiScanSupported: false, hostname: "example.net" };
 const settingsFn = jest.fn().mockReturnValue(networkSettings);
 
 describe("TargetIpsPopup", () => {
@@ -78,7 +78,7 @@ describe("TargetIpsPopup", () => {
     await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });
 
     addressFn.mockReturnValue([{ address: "5.6.7.8", prefix: 24 }]);
-    settingsFn.mockReturnValue({ wireless: false, hostname: "localhost.localdomain" });
+    settingsFn.mockReturnValue({ wifiScanSupported: false, hostname: "localhost.localdomain" });
     act(() => {
       callbacks.forEach(cb => cb());
     });

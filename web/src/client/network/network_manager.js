@@ -180,6 +180,7 @@ class NetworkManagerAdapter {
     this.proxies = {
       accessPoints: {},
       activeConnections: {},
+      devices: {},
       ip4Configs: {},
       manager: null,
       settings: null,
@@ -503,16 +504,27 @@ class NetworkManagerAdapter {
   }
 
   /*
+  * Returns the list of WiFi devices available in the system
+  *
+  * @return {object[]} list of available WiFi devices
+  */
+  availableWifiDevices() {
+    return Object.values(this.proxies.devices).filter(d => d.DeviceType === NM_DEVICE_TYPE_WIFI);
+  }
+
+  /*
   * Returns whether the system is able to scan wifi networks based on rfkill and the presence of
   * some wifi device
   *
   * @return {boolean}
   */
-  wirelessScanSupported() {
-    const wEnabled = !!(this.proxies.manager?.WirelessEnabled && this.proxies.manager?.WirelessHardwareEnabled);
-    const wifiDevice = Object.values(this.proxies.devices).filter(d => d.DeviceType === NM_DEVICE_TYPE_WIFI);
+  wifiScanSupported() {
+    const { manager } = this.proxies;
 
-    return wEnabled && (wifiDevice.length > 0);
+    if (!manager) return false;
+    if (!(manager.WirelessEnabled && manager.WirelessHardwareEnabled)) return false;
+
+    return this.availableWifiDevices().length > 0;
   }
 
   /*
@@ -522,7 +534,7 @@ class NetworkManagerAdapter {
   */
   settings() {
     return {
-      wireless: this.wirelessScanSupported(),
+      wifiScanSupported: this.wifiScanSupported(),
       hostname: this.proxies.settings?.Hostname || ""
     };
   }

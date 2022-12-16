@@ -29,7 +29,7 @@ jest.mock("@client");
 jest.mock("@components/network/NetworkWiredStatus", () => () => "Wired Connections");
 jest.mock("@components/network/NetworkWifiStatus", () => () => "WiFi Connections");
 
-const networkSettings = { wireless: false, hostname: "test" };
+const networkSettings = { wifiScanSupported: false, hostname: "test" };
 let settingsFn = jest.fn().mockReturnValue(networkSettings);
 
 beforeEach(() => {
@@ -72,7 +72,7 @@ describe("Network", () => {
 
     describe("when Wireless is currently enabled", () => {
       beforeEach(() => {
-        settingsFn = jest.fn().mockReturnValue({ ...networkSettings, wireless: true });
+        settingsFn = jest.fn().mockReturnValue({ ...networkSettings, wifiScanSupported: true });
       });
 
       it("shows a link to open the WiFi selector", async () => {

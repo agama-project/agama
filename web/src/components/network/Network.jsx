@@ -31,12 +31,12 @@ export default function Network() {
   const [initialized, setInitialized] = useState(false);
   const [connections, setConnections] = useState([]);
   const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
-  const [wireless, setWireless] = useState(false);
+  const [wifiScanSupported, setWifiScanSupported] = useState(false);
 
   useEffect(() => {
     if (!initialized) return;
 
-    setWireless(client.network.settings().wireless);
+    setWifiScanSupported(client.network.settings().wifiScanSupported);
     setConnections(client.network.activeConnections());
   }, [client.network, initialized]);
 
@@ -65,7 +65,7 @@ export default function Network() {
         }
 
         case NetworkEventTypes.SETTINGS_UPDATED: {
-          setWireless(payload.wireless);
+          setWifiScanSupported(payload.wifiScanSupported);
         }
       }
     });
@@ -88,7 +88,7 @@ export default function Network() {
       <StackItem>
         <NetworkWifiStatus connections={activeWifiConnections} />
       </StackItem>
-      { wireless &&
+      { wifiScanSupported &&
         <StackItem>
           <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a Wi-Fi network</Button>
           <WifiSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
