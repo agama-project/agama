@@ -1,7 +1,11 @@
 {
   "name": "d-installer",
-  "description": "Scaffolding for a cockpit module",
-  "repository": "git@github.com:cockpit/starter-kit.git",
+  "description": "A Service-based Linux Installer",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/yast/d-installer.git",
+    "directory": "web"
+  },
   "author": "",
   "license": "LGPL-2.1",
   "scripts": {
