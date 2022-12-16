@@ -184,6 +184,18 @@ module DInstaller
       [storage, users].all?(&:valid?)
     end
 
+    # Stores compressed tarball with logs on system for given system user
+    #
+    # @param user [String] local username who will own archive
+    # @return [String] path to created archive. Name will be unique
+    def provide_logs(user)
+      output = Yast::Execute.locally!("save_y2logs", stdout: :capture)
+      path = output[/^.* (\/tmp\/y2log-\S*)/, 1]
+      Yast::Execute.locally!("chown", "#{user}:", path)
+
+      path
+    end
+
   private
 
     attr_reader :config
