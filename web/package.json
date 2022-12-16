@@ -13,6 +13,7 @@
     "jsdoc": "npx typedoc src src/client && echo Tip: && echo xdg-open jsdoc.out/index.html",
     "test": "jest"
   },
+  "engines": { "node": ">=18" },
   "devDependencies": {
     "@babel/core": "^7.5.4",
     "@babel/eslint-parser": "^7.13.14",
