@@ -25,6 +25,7 @@ require "dinstaller/dbus/with_service_status"
 require "dinstaller/dbus/clients/language"
 require "dinstaller/dbus/interfaces/progress"
 require "dinstaller/dbus/interfaces/service_status"
+require "dinstaller/dbus/interfaces/validation"
 
 module DInstaller
   module DBus
@@ -34,6 +35,7 @@ module DInstaller
         include WithServiceStatus
         include Interfaces::Progress
         include Interfaces::ServiceStatus
+        include Interfaces::Validation
 
         PATH = "/org/opensuse/DInstaller/Software1"
         private_constant :PATH
@@ -63,6 +65,7 @@ module DInstaller
 
             select_product(product_id)
             dbus_properties_changed(SOFTWARE_INTERFACE, { "SelectedBaseProduct" => product_id }, [])
+            update_validation # as different product means different software selection
           end
 
           # TODO: just for performance comparison (see `perf.rb`)
@@ -78,8 +81,8 @@ module DInstaller
             backend.package_installed?(name)
           end
 
-          dbus_method(:Probe) { probe }
-          dbus_method(:Propose) { propose }
+          dbus_method(:Probe) {probe}
+          dbus_method(:Propose) {propose}
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
         end
@@ -103,10 +106,15 @@ module DInstaller
 
         def probe
           busy_while { backend.probe }
+
+          update_validation # probe do force proposal
         end
 
         def propose
           busy_while { backend.propose }
+          update_validation
+
+            nil # explicit nil as return value
         end
 
         def install

@@ -23,6 +23,7 @@ require "yast"
 require "fileutils"
 require "dinstaller/config"
 require "dinstaller/with_progress"
+require "dinstaller/validation_error"
 require "y2packager/product"
 require "yast2/arch_filter"
 require "dinstaller/software/callbacks"
@@ -112,10 +113,14 @@ module DInstaller
         proposal = Yast::Packages.Proposal(force_reset = false, reinit = false, _simple = true)
         logger.info "proposal #{proposal["raw_proposal"]}"
 
-        solve_dependencies
+        deps_result = solve_dependencies
 
-        # do not return proposal hash, so intentional nil here
-        nil
+        proposal_result(proposal, deps_result)
+      end
+
+      def validate
+        msgs = propose
+        msgs.map { |m| ValidationError.new(m) }
       end
 
       def install
@@ -188,11 +193,23 @@ module DInstaller
         res = Yast::Pkg.PkgSolve(unused = true)
         logger.info "solver run #{res.inspect}"
 
-        return if res
+        return true if res
 
         logger.error "Solver failed: #{Yast::Pkg.LastError}"
         logger.error "Details: #{Yast::Pkg.LastErrorDetails}"
         logger.error "Solving issues: #{Yast::Pkg.PkgSolveErrors}"
+
+        false
+      end
+
+      # messages with reason why solver failed
+      def solve_messages
+        last_error = Yast::Pkg.LastError
+        solve_errors = Yast::Pkg.PkgSolveErrors
+        res = []
+        res << last_error unless last_error.empty?
+        res << "Found #{solve_errors} dependency issues." if solve_errors > 0
+        res
       end
 
       # @return [Logger]
@@ -256,6 +273,15 @@ module DInstaller
         FileUtils.rm_rf(REPOS_DIR)
         logger.info "moving #{REPOS_BACKUP} to #{REPOS_DIR}"
         FileUtils.mv(REPOS_BACKUP, REPOS_DIR)
+      end
+
+      def proposal_result(proposal, deps_result)
+        result = []
+        # TODO: find if there is a better way to get proposal issue as list
+        result.concat(proposal["warning"].split("<br>")) if proposal["warning_level"] == :blocker
+        result.concat(solve_messages) if !deps_result
+
+        result
       end
     end
   end

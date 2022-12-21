@@ -74,6 +74,7 @@ module DInstaller
 
       storage.probe
       network.probe
+      software.probe
 
       logger.info("Config phase done")
     rescue StandardError => e
@@ -89,7 +90,6 @@ module DInstaller
       start_progress(8)
 
       progress.step("Reading software repositories") do
-        software.probe
         Yast::Installation.destdir = "/mnt"
       end
 
@@ -181,7 +181,7 @@ module DInstaller
     #
     # @return [Boolean]
     def valid?
-      [storage, users].all?(&:valid?)
+      [storage, users, software].all?(&:valid?)
     end
 
   private

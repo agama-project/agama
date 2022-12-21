@@ -29,6 +29,7 @@ import { Icon, Title, PageIcon, PageActions, MainActions } from "@components/lay
 import { Section, InstallButton } from "@components/core";
 import { LanguageSelector } from "@components/language";
 import { StorageSection } from "@components/overview";
+import { SoftwareSection } from "@components/software";
 import { Users } from "@components/users";
 import { Network } from "@components/network";
 
@@ -72,6 +73,7 @@ function Overview() {
         <Network />
       </Section>
       <StorageSection key="storage" showErrors />
+      <SoftwareSection key="software" showErrors />,
       <Users key="users" showErrors={showErrors} />
     </>
   );
