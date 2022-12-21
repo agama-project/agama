@@ -14,12 +14,12 @@
     <param name="url">https://raw.githubusercontent.com/yast/d-installer/master/image/config.sh</param>
     <param name="filename">config.sh</param>
   </service>
-  <service mode="buildtime" name="tar">
+  <service mode="manual" name="tar">
     <param name="obsinfo">d-installer.obsinfo</param>
     <param name="subdir">image/extrastuff/root</param>
     <param name="filename">root</param>
   </service>
-  <service mode="buildtime" name="tar">
+  <service mode="manual" name="tar">
     <param name="obsinfo">d-installer.obsinfo</param>
     <param name="subdir">image/extrastuff/etc</param>
     <param name="filename">etc</param>
