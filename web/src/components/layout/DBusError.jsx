@@ -29,10 +29,7 @@ import {
   Title as PageTitle,
 } from "@components/layout";
 
-import {
-  EOS_ANNOUNCEMENT as Icon,
-  EOS_ENDPOINTS_DISCONNECTED as DisconnectionIcon
-} from "eos-icons-react";
+import { ProblemIcon, ErrorIcon } from "@components/layout/icons";
 
 // TODO: an example
 const ReloadAction = () => (
@@ -45,12 +42,12 @@ function DBusError() {
   return (
     <>
       <PageTitle>D-Bus Error</PageTitle>
-      <PageIcon><Icon /></PageIcon>
+      <PageIcon><ProblemIcon width="32" height="32" /></PageIcon>
       <MainActions><ReloadAction /></MainActions>
 
       <Center>
         <EmptyState>
-          <EmptyStateIcon icon={DisconnectionIcon} />
+          <EmptyStateIcon icon={ErrorIcon} />
           <Title headingLevel="h4" size="lg">
             Cannot connect to D-Bus
           </Title>

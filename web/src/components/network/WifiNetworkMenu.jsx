@@ -21,7 +21,7 @@
 
 import React from "react";
 import { DropdownItem } from "@patternfly/react-core";
-import { EOS_DELETE as DeleteIcon } from "eos-icons-react";
+import { DeleteIcon } from "@components/layout/icons";
 import { useInstallerClient } from "@context/installer";
 import { KebabMenu } from "@components/core";
 
@@ -37,7 +37,7 @@ export default function WifiNetworkMenu({ settings, position = "right" }) {
         <DropdownItem
           key="forget-network"
           onClick={() => client.network.deleteConnection(settings)}
-          icon={<DeleteIcon />}
+          icon={<DeleteIcon width="24" height="24" />}
           className="danger-action"
         >
           Forget network

@@ -33,9 +33,9 @@ import { Center, Title as SectionTitle, PageIcon, MainActions } from "@component
 import { useInstallerClient } from "@context/installer";
 
 import {
-  EOS_TASK_ALT as InstallationFinishedIcon,
-  EOS_CHECK_CIRCLE as SectionIcon
-} from "eos-icons-react";
+  CheckCircleIcon as InstallationFinishedIcon,
+  TaskDoneIcon as SectionIcon
+} from "@components/layout/icons";
 
 function InstallationFinished() {
   const client = useInstallerClient();
@@ -44,7 +44,7 @@ function InstallationFinished() {
   return (
     <>
       <SectionTitle>Installation Finished</SectionTitle>
-      <PageIcon><SectionIcon /></PageIcon>
+      <PageIcon><SectionIcon width="32" height="32" /></PageIcon>
       <MainActions>
         <Button isLarge variant="primary" onClick={onRebootAction}>
           Reboot

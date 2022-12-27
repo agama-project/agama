@@ -23,8 +23,7 @@ import React from "react";
 import { Title, EmptyState, EmptyStateIcon } from "@patternfly/react-core";
 
 import { Center } from "@components/layout";
-
-import { EOS_THREE_DOTS_LOADING_ANIMATED as LoadingIcon } from "eos-icons-react";
+import { LoadingIcon } from "@components/layout/icons";
 
 function LoadingEnvironment({ text = "Loading installation environment, please wait." }) {
   return (

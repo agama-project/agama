@@ -31,10 +31,7 @@ import {
   Text
 } from "@patternfly/react-core";
 
-import {
-  EOS_LOCK as LockIcon,
-  EOS_SIGNAL_CELLULAR_ALT as SignalIcon
-} from "eos-icons-react";
+import { LockIcon, SignalIcon } from "@components/layout/icons";
 
 import { classNames } from "@/utils";
 import { ConnectionState } from "@client/network/model";
@@ -95,8 +92,8 @@ function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCance
               label={network.ssid}
               description={
                 <>
-                  <LockIcon size="10" color="grey" /> {network.security.join(", ")}{" "}
-                  <SignalIcon size="10" color="grey" /> {network.strength}
+                  <LockIcon width="10" height="10" color="grey" /> {network.security.join(", ")}{" "}
+                  <SignalIcon width="10" height="10" color="grey" /> {network.strength}
                 </>
               }
               isChecked={isSelected || isActive || false}

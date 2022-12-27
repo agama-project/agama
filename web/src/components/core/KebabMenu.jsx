@@ -21,7 +21,7 @@
 
 import React, { useState } from "react";
 import { Dropdown, DropdownToggle } from "@patternfly/react-core";
-import { EOS_MORE_VERT as MenuIcon } from "eos-icons-react";
+import { MoreVerticalIcon as MenuIcon } from "@components/layout/icons";
 
 export default function KebabMenu({ items, position = "right", id = Date.now(), ...props }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +33,7 @@ export default function KebabMenu({ items, position = "right", id = Date.now(), 
       onSelect={toggle}
       toggle={
         <DropdownToggle id={`${id}-toggler`} className="toggler" toggleIndicator={null} onToggle={toggle}>
-          <MenuIcon />
+          <MenuIcon width="24" height="24" />
         </DropdownToggle>
       }
       isPlain

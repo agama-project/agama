@@ -25,13 +25,13 @@ import ProgressReport from "./ProgressReport";
 import { Center, Title, PageIcon } from "@components/layout";
 import { Questions } from "@components/questions";
 
-import { EOS_DOWNLOADING as Icon } from "eos-icons-react";
+import { DownloadingIcon as Icon } from "@components/layout/icons";
 
 function InstallationProgress() {
   return (
     <>
       <Title>Installing</Title>
-      <PageIcon><Icon /></PageIcon>
+      <PageIcon><Icon weight="32" height="32" /></PageIcon>
       <Center><ProgressReport /></Center>
       <Questions />
     </>

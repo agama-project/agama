@@ -25,10 +25,7 @@ import { Stack, StackItem } from "@patternfly/react-core";
 import { useInstallerClient } from "@context/installer";
 import { Section } from "@components/core";
 import { FirstUser, RootPassword, RootSSHKey } from "@components/users";
-
-import {
-  EOS_MANAGE_ACCOUNTS as UsersIcon,
-} from "eos-icons-react";
+import { UsersIcon } from "@components/layout/icons";
 
 export default function Users({ showErrors }) {
   const [errors, setErrors] = useState([]);

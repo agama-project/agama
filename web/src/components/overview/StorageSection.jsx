@@ -34,8 +34,7 @@ import { BUSY } from "@client/status";
 import { InstallerSkeleton, Section } from "@components/core";
 import { ProposalSummary } from "@components/storage";
 
-import { EOS_VOLUME as HardDriveIcon } from "eos-icons-react";
-import { PencilAltIcon as EditIcon } from '@patternfly/react-icons';
+import { PencilIcon, StorageIcon } from "@components/layout/icons";
 
 const initialState = {
   busy: false,
@@ -101,7 +100,7 @@ export default function StorageSection ({ showErrors }) {
           <ProposalSummary proposal={state.proposal} />
         </StackItem>
         <StackItem>
-          <Button variant="link" icon={<EditIcon />} onClick={() => navigate("/storage")}>
+          <Button variant="link" icon={<PencilIcon width="16" height="16" />} onClick={() => navigate("/storage")}>
             Edit storage settings
           </Button>
         </StackItem>
@@ -110,7 +109,7 @@ export default function StorageSection ({ showErrors }) {
   };
 
   return (
-    <Section key="storage-section" title="Storage" icon={HardDriveIcon} errors={errors}>
+    <Section key="storage-section" title="Storage" icon={StorageIcon} errors={errors}>
       <SectionContent />
     </Section>
   );

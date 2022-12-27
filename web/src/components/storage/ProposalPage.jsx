@@ -29,9 +29,7 @@ import {
   FlexItem,
 } from "@patternfly/react-core";
 
-import { InfoCircleIcon } from '@patternfly/react-icons';
-
-import { EOS_VOLUME as Icon } from "eos-icons-react";
+import { StorageIcon as Icon, InfoIcon } from "@components/layout/icons";
 
 import { useInstallerClient } from "@context/installer";
 import { useCancellablePromise } from "@/utils";
@@ -106,7 +104,7 @@ export default function ProposalPage() {
         <FlexItem>
           <Alert
             isInline
-            customIcon={<InfoCircleIcon />}
+            customIcon={<InfoIcon width="16" height="16" />}
             title="Devices will not be modified until installation starts."
           />
         </FlexItem>
@@ -135,7 +133,7 @@ export default function ProposalPage() {
   return (
     <>
       <Title>Storage</Title>
-      <PageIcon><Icon /></PageIcon>
+      <PageIcon><Icon width="32" height="32" /></PageIcon>
       <MainActions>
         <Button isLarge variant="primary" form="storage-config" onClick={() => navigate("/")}>
           Accept

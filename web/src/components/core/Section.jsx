@@ -37,7 +37,7 @@ import {
 import { classNames } from "@/utils";
 import { ValidationErrors } from "@components/core";
 
-import { CogIcon } from '@patternfly/react-icons';
+import { SettingsIcon } from '@components/layout/icons';
 
 import "./section.scss";
 
@@ -57,7 +57,7 @@ const renderIcon = (icon, ariaLabel, size = 32) => {
 
   return (
     <figure aria-label={ariaLabel}>
-      <Icon size={size} />
+      <Icon width={size} height={size} />
     </figure>
   );
 };
@@ -116,7 +116,7 @@ export default function Section({
   usingSeparator,
   icon,
   errors,
-  actionIcon = CogIcon,
+  actionIcon = SettingsIcon,
   actionTooltip,
   onActionClick,
   children,
@@ -127,7 +127,7 @@ export default function Section({
 
     const Action = () => (
       <Button variant="plain" className="d-installer-section-action" isInline onClick={onActionClick}>
-        {renderIcon(actionIcon, `${title} section action icon`)}
+        {renderIcon(actionIcon, `${title} section action icon`, 16)}
       </Button>
     );
 

@@ -34,9 +34,8 @@ import {
   Radio
 } from "@patternfly/react-core";
 
-import { EOS_PRODUCT_SUBSCRIPTIONS as Icon } from "eos-icons-react";
-
 import { Title, PageIcon, MainActions } from "@components/layout/Layout";
+import { ProductSelectionIcon as Icon } from "@components/layout/icons";
 
 function ProductSelectionPage() {
   const client = useInstallerClient();
