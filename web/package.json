@@ -75,6 +75,7 @@
     "webpack-cli": "^5.0.0"
   },
   "dependencies": {
+    "@material-symbols/svg-400": "^0.4.2",
     "@patternfly/patternfly": "^4.219.2",
     "@patternfly/react-core": "^4.261.0",
     "@patternfly/react-table": "^4.111.33",
