@@ -30,7 +30,7 @@ import {
   Popover
 } from "@patternfly/react-core";
 
-import { WarningIcon } from '@components/layout/icons';
+import { Icon } from '@components/layout';
 
 /**
  * @param {import("@client/mixins").ValidationError[]} errors - Validation errors
@@ -63,17 +63,19 @@ const ValidationErrors = ({ title = "Errors", errors }) => {
 
   if (!errors || errors.length === 0) return null;
 
+  const warningIcon = <Icon name="warning" size="16" />;
+
   if (errors.length === 1) {
     return (
       <>
-        <div className="warning-text"><WarningIcon width="16" height="16" /> {errors[0].message}</div>
+        <div className="warning-text">{warningIcon} {errors[0].message}</div>
       </>
     );
   } else {
     return (
       <>
         <div className="warning-text">
-          <WarningIcon width="16" height="16" />
+          { warningIcon }
           <a href="#" onClick={() => setPopoverVisible(true)}>{`${errors.length} errors found`}</a>
           <Popover
             isVisible={popoverVisible}

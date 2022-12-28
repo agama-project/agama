@@ -22,16 +22,14 @@
 import React from "react";
 
 import ProgressReport from "./ProgressReport";
-import { Center, Title, PageIcon } from "@components/layout";
+import { Center, Icon, Title, PageIcon } from "@components/layout";
 import { Questions } from "@components/questions";
-
-import { DownloadingIcon as Icon } from "@components/layout/icons";
 
 function InstallationProgress() {
   return (
     <>
       <Title>Installing</Title>
-      <PageIcon><Icon weight="32" height="32" /></PageIcon>
+      <PageIcon><Icon name="downloading" /></PageIcon>
       <Center><ProgressReport /></Center>
       <Questions />
     </>

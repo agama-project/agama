@@ -31,12 +31,10 @@ import {
   Text
 } from "@patternfly/react-core";
 
-import { LockIcon, SignalIcon } from "@components/layout/icons";
-
 import { classNames } from "@/utils";
 import { ConnectionState } from "@client/network/model";
 
-import { Center } from "@components/layout";
+import { Center, Icon } from "@components/layout";
 import { WifiNetworkMenu, WifiConnectionForm } from "@components/network";
 
 const networkState = (state) => {
@@ -92,8 +90,8 @@ function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCance
               label={network.ssid}
               description={
                 <>
-                  <LockIcon width="10" height="10" color="grey" /> {network.security.join(", ")}{" "}
-                  <SignalIcon width="10" height="10" color="grey" /> {network.strength}
+                  <Icon name="lock" size="10" fill="grey" /> {network.security.join(", ")}{" "}
+                  <Icon name="signal_cellular_alt" size="10" fill="grey" /> {network.strength}
                 </>
               }
               isChecked={isSelected || isActive || false}

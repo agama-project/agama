@@ -34,15 +34,16 @@ import {
   Tooltip
 } from "@patternfly/react-core";
 
-import { classNames } from "@/utils";
+import { Icon } from '@components/layout';
 import { ValidationErrors } from "@components/core";
-
-import { SettingsIcon } from '@components/layout/icons';
+import { classNames } from "@/utils";
 
 import "./section.scss";
 
+const SettingsIcon = ({ ...props }) => <Icon name="settings" {...props} />;
+
 /**
- * Helper method for rendering section react-icons
+ * Helper method for rendering section icon
  *
  * @param {React.FunctionComponent|React.ComponentClass} icon
  * @param {string} ariaLabel
@@ -53,11 +54,11 @@ import "./section.scss";
 const renderIcon = (icon, ariaLabel, size = 32) => {
   if (!icon) return null;
 
-  const Icon = icon;
+  const SectionIcon = icon;
 
   return (
     <figure aria-label={ariaLabel}>
-      <Icon width={size} height={size} />
+      <SectionIcon size={size} />
     </figure>
   );
 };
@@ -104,7 +105,7 @@ const renderIcon = (icon, ariaLabel, size = 32) => {
  * @param {boolean} [props.usingSeparator] - whether or not a thin border should be shown between title and content
  * @param {React.FunctionComponent} [props.icon] - An icon for the section
  * @param {import("@client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title
- * @param {React.FunctionComponent|React.ComponentClass} [props.actionIcon=CogIcon] - An icon to be used for section actions
+ * @param {React.FunctionComponent|React.ComponentClass} [props.actionIcon=SettingsIcon] - An icon component to be used for section actions
  * @param {React.ReactNode} [props.actionTooltip] - text to be shown as a tooltip when user hovers action icon, if present
  * @param {React.MouseEventHandler} [props.onActionClick] - callback to be triggered when user clicks on action icon, if present
  * @param {JSX.Element} [props.children] - the section content

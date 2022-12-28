@@ -29,13 +29,8 @@ import {
   EmptyStateBody
 } from "@patternfly/react-core";
 
-import { Center, Title as SectionTitle, PageIcon, MainActions } from "@components/layout";
+import { Icon, Center, Title as SectionTitle, PageIcon, MainActions } from "@components/layout";
 import { useInstallerClient } from "@context/installer";
-
-import {
-  CheckCircleIcon as InstallationFinishedIcon,
-  TaskDoneIcon as SectionIcon
-} from "@components/layout/icons";
 
 function InstallationFinished() {
   const client = useInstallerClient();
@@ -44,7 +39,7 @@ function InstallationFinished() {
   return (
     <>
       <SectionTitle>Installation Finished</SectionTitle>
-      <PageIcon><SectionIcon width="32" height="32" /></PageIcon>
+      <PageIcon><Icon name="task_alt" /></PageIcon>
       <MainActions>
         <Button isLarge variant="primary" onClick={onRebootAction}>
           Reboot
@@ -53,7 +48,7 @@ function InstallationFinished() {
 
       <Center>
         <EmptyState>
-          <EmptyStateIcon icon={InstallationFinishedIcon} className="success-icon" />
+          <EmptyStateIcon icon={() => <Icon name="check_circle" />} className="success-icon" />
           <Title headingLevel="h2" size="4xl">
             Congratulations!
           </Title>

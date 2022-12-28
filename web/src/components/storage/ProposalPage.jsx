@@ -29,11 +29,9 @@ import {
   FlexItem,
 } from "@patternfly/react-core";
 
-import { StorageIcon as Icon, InfoIcon } from "@components/layout/icons";
-
 import { useInstallerClient } from "@context/installer";
 import { useCancellablePromise } from "@/utils";
-import { Title, PageIcon, MainActions } from "@components/layout";
+import { Icon, Title, PageIcon, MainActions } from "@components/layout";
 import { InstallerSkeleton } from "@components/core";
 import {
   ProposalTargetSection,
@@ -104,7 +102,7 @@ export default function ProposalPage() {
         <FlexItem>
           <Alert
             isInline
-            customIcon={<InfoIcon width="16" height="16" />}
+            customIcon={<Icon name="info" size="16" />}
             title="Devices will not be modified until installation starts."
           />
         </FlexItem>
@@ -133,7 +131,7 @@ export default function ProposalPage() {
   return (
     <>
       <Title>Storage</Title>
-      <PageIcon><Icon width="32" height="32" /></PageIcon>
+      <PageIcon><Icon name="hard_drive" /></PageIcon>
       <MainActions>
         <Button isLarge variant="primary" form="storage-config" onClick={() => navigate("/")}>
           Accept

@@ -22,14 +22,13 @@
 import React from "react";
 import { Title, EmptyState, EmptyStateIcon } from "@patternfly/react-core";
 
-import { Center } from "@components/layout";
-import { LoadingIcon } from "@components/layout/icons";
+import { Icon, Center } from "@components/layout";
 
 function LoadingEnvironment({ text = "Loading installation environment, please wait." }) {
   return (
     <Center>
       <EmptyState>
-        <EmptyStateIcon icon={LoadingIcon} />
+        <EmptyStateIcon icon={() => <Icon name="loading" />} />
         <Title headingLevel="h4" size="lg">
           { text }
         </Title>

@@ -31,10 +31,9 @@ import {
 import { useCancellablePromise } from "@/utils";
 import { useInstallerClient } from "@context/installer";
 import { BUSY } from "@client/status";
+import { Icon } from "@components/layout";
 import { InstallerSkeleton, Section } from "@components/core";
 import { ProposalSummary } from "@components/storage";
-
-import { PencilIcon, StorageIcon } from "@components/layout/icons";
 
 const initialState = {
   busy: false,
@@ -100,7 +99,11 @@ export default function StorageSection ({ showErrors }) {
           <ProposalSummary proposal={state.proposal} />
         </StackItem>
         <StackItem>
-          <Button variant="link" icon={<PencilIcon width="16" height="16" />} onClick={() => navigate("/storage")}>
+          <Button
+            variant="link"
+            icon={<Icon name="edit" size="16" />}
+            onClick={() => navigate("/storage")}
+          >
             Edit storage settings
           </Button>
         </StackItem>
@@ -109,7 +112,7 @@ export default function StorageSection ({ showErrors }) {
   };
 
   return (
-    <Section key="storage-section" title="Storage" icon={StorageIcon} errors={errors}>
+    <Section key="storage-section" title="Storage" icon={() => <Icon name="hard_drive" />} errors={errors}>
       <SectionContent />
     </Section>
   );

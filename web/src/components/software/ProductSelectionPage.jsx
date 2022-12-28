@@ -23,7 +23,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInstallerClient } from "@context/installer";
 import { useSoftware } from "@context/software";
-import { LoadingEnvironment } from "@components/layout";
 
 import {
   Button,
@@ -34,8 +33,8 @@ import {
   Radio
 } from "@patternfly/react-core";
 
+import { Icon, LoadingEnvironment } from "@components/layout";
 import { Title, PageIcon, MainActions } from "@components/layout/Layout";
-import { ProductSelectionIcon as Icon } from "@components/layout/icons";
 
 function ProductSelectionPage() {
   const client = useInstallerClient();
@@ -90,7 +89,7 @@ function ProductSelectionPage() {
   return (
     <>
       <Title>Product selection</Title>
-      <PageIcon><Icon /></PageIcon>
+      <PageIcon><Icon name="home_storage" /></PageIcon>
       <MainActions>
         <Button isLarge variant="primary" form="product-selector" type="submit">
           Select

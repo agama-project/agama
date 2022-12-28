@@ -23,13 +23,12 @@ import React from "react";
 import { Button, Title, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
 
 import {
+  Icon,
   Center,
   MainActions,
   PageIcon,
   Title as PageTitle,
 } from "@components/layout";
-
-import { ProblemIcon, ErrorIcon } from "@components/layout/icons";
 
 // TODO: an example
 const ReloadAction = () => (
@@ -42,12 +41,12 @@ function DBusError() {
   return (
     <>
       <PageTitle>D-Bus Error</PageTitle>
-      <PageIcon><ProblemIcon width="32" height="32" /></PageIcon>
+      <PageIcon><Icon name="problem" /></PageIcon>
       <MainActions><ReloadAction /></MainActions>
 
       <Center>
         <EmptyState>
-          <EmptyStateIcon icon={ErrorIcon} />
+          <EmptyStateIcon icon={() => <Icon name="error" />} />
           <Title headingLevel="h4" size="lg">
             Cannot connect to D-Bus
           </Title>
