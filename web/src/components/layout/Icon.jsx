@@ -23,30 +23,30 @@ import React from 'react';
 
 // NOTE: "~icons" is an alias to use a shorter path to real icons location.
 //       Check the tsconfig.json file to see its value.
-import Inventory from "~icons/inventory_2.svg";
-import Translate from "~icons/translate.svg";
-import SettingsEthernet from "~icons/settings_ethernet.svg";
-import EditSquare from "~icons/edit_square.svg";
-import Edit from "~icons/edit.svg";
-import HardDrive from "~icons/hard_drive.svg";
-import ManageAccounts from "~icons/manage_accounts.svg";
-import HomeStorage from "~icons/home_storage.svg";
-import Problem from "~icons/problem.svg";
-import Error from "~icons/error.svg";
-import CheckCircle from "~icons/check_circle.svg";
-import TaskAlt from "~icons/task_alt.svg";
-import Downloading from "~icons/downloading.svg";
-import MoreVert from "~icons/more_vert.svg";
-import Wifi from "~icons/wifi.svg";
-import Lan from "~icons/lan.svg";
-import Lock from "~icons/lock.svg";
-import SignalCellularAlt from "~icons/signal_cellular_alt.svg";
-import SettingsFill from "~icons/settings-fill.svg";
-import SettingsApplications from "~icons/settings_applications.svg";
-import Info from "~icons/info.svg";
-import Delete from "~icons/delete.svg";
-import Warning from "~icons/warning.svg";
-import Loading from "./three-dots-loader-icon.svg";
+import Inventory from "~icons/inventory_2.svg?component";
+import Translate from "~icons/translate.svg?component";
+import SettingsEthernet from "~icons/settings_ethernet.svg?component";
+import EditSquare from "~icons/edit_square.svg?component";
+import Edit from "~icons/edit.svg?component";
+import HardDrive from "~icons/hard_drive.svg?component";
+import ManageAccounts from "~icons/manage_accounts.svg?component";
+import HomeStorage from "~icons/home_storage.svg?component";
+import Problem from "~icons/problem.svg?component";
+import Error from "~icons/error.svg?component";
+import CheckCircle from "~icons/check_circle.svg?component";
+import TaskAlt from "~icons/task_alt.svg?component";
+import Downloading from "~icons/downloading.svg?component";
+import MoreVert from "~icons/more_vert.svg?component";
+import Wifi from "~icons/wifi.svg?component";
+import Lan from "~icons/lan.svg?component";
+import Lock from "~icons/lock.svg?component";
+import SignalCellularAlt from "~icons/signal_cellular_alt.svg?component";
+import SettingsFill from "~icons/settings-fill.svg?component";
+import SettingsApplications from "~icons/settings_applications.svg?component";
+import Info from "~icons/info.svg?component";
+import Delete from "~icons/delete.svg?component";
+import Warning from "~icons/warning.svg?component";
+import Loading from "./three-dots-loader-icon.svg?component";
 
 const icons = {
   check_circle: CheckCircle,
