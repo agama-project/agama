@@ -46,8 +46,8 @@ function DBusError() {
 
       <Center>
         <EmptyState>
-          <EmptyStateIcon icon={() => <Icon name="error" />} />
-          <Title headingLevel="h4" size="lg">
+          <EmptyStateIcon icon={({ ...props }) => <Icon name="error" { ...props } />} />
+          <Title headingLevel="h2" size="4xl">
             Cannot connect to D-Bus
           </Title>
           <EmptyStateBody>

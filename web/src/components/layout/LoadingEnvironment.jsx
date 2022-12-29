@@ -28,8 +28,8 @@ function LoadingEnvironment({ text = "Loading installation environment, please w
   return (
     <Center>
       <EmptyState>
-        <EmptyStateIcon icon={() => <Icon name="loading" />} />
-        <Title headingLevel="h4" size="lg">
+        <EmptyStateIcon icon={({ ...props }) => <Icon name="loading" {...props} />} />
+        <Title headingLevel="h2" size="4xl">
           { text }
         </Title>
       </EmptyState>
