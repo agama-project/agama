@@ -57,6 +57,7 @@ module DInstaller
 
       def initialize(config, logger)
         @config = config
+        @probed = false
         @logger = logger
         @languages = DEFAULT_LANGUAGES
         @products = @config.products
@@ -74,6 +75,7 @@ module DInstaller
 
         @config.pick_product(name)
         @product = name
+        @probed = false # reset probing when product changed
       end
 
       def probe
@@ -94,6 +96,7 @@ module DInstaller
           logger.info "proposal #{proposal["raw_proposal"]}"
         end
 
+        @probed = true
         Yast::Stage.Set("initial")
       end
 
@@ -119,6 +122,9 @@ module DInstaller
       end
 
       def validate
+        # validation without probing does not make sense and product false errors
+        return [] unless @probed
+        
         msgs = propose
         msgs.map { |m| ValidationError.new(m) }
       end
