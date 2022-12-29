@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/dbus/bus"
 require "dinstaller/dbus/storage"
 require "dinstaller/storage"
 
@@ -42,7 +43,7 @@ module DInstaller
       # @param logger [Logger]
       def initialize(config, logger = nil)
         @logger = logger || Logger.new($stdout)
-        @bus = ::DBus::SystemBus.instance
+        @bus = Bus.current
         @backend = DInstaller::Storage::Manager.new(config, logger)
         @backend.on_progress_change { dispatch }
       end
