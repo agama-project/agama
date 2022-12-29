@@ -103,6 +103,9 @@ elsif ["-s", "--status"].include?(ARGV[0])
   system "busctl | grep -E '^NAME|DInstaller'"
 elsif ["-k", "--kill"].include?(ARGV[0])
   system "pkill -f bin/d-installer.[a-z]"
+  # stop the d-bus daemon
+  # FIXME: use the ServerManager (or the Bus.current instance) to stop the bus
+  system "cat /run/d-installer/bus.pid | xargs kill -9"
 else
   name = ARGV[0]
   Signal.trap("SIGINT") do
