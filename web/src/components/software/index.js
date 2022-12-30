@@ -20,4 +20,3 @@
  */
 
 export { default as ProductSelectionPage } from "./ProductSelectionPage";
-export { default as SoftwareSection } from "./SoftwareSection";

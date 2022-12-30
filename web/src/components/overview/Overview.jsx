@@ -28,8 +28,7 @@ import { Button } from "@patternfly/react-core";
 import { Icon, Title, PageIcon, PageActions, MainActions } from "@components/layout";
 import { Section, InstallButton } from "@components/core";
 import { LanguageSelector } from "@components/language";
-import { StorageSection } from "@components/overview";
-import { SoftwareSection } from "@components/software";
+import { SoftwareSection, StorageSection } from "@components/overview";
 import { Users } from "@components/users";
 import { Network } from "@components/network";
 
