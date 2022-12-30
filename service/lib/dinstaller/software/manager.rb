@@ -124,7 +124,7 @@ module DInstaller
       def validate
         # validation without probing does not make sense and product false errors
         return [] unless @probed
-        
+
         msgs = propose
         msgs.map { |m| ValidationError.new(m) }
       end

@@ -81,8 +81,8 @@ module DInstaller
             backend.package_installed?(name)
           end
 
-          dbus_method(:Probe) {probe}
-          dbus_method(:Propose) {propose}
+          dbus_method(:Probe) { probe }
+          dbus_method(:Propose) { propose }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
         end
@@ -114,7 +114,7 @@ module DInstaller
           busy_while { backend.propose }
           update_validation
 
-            nil # explicit nil as return value
+          nil # explicit nil as return value
         end
 
         def install
