@@ -171,7 +171,7 @@ class NetworkManagerAdapter {
    * @param {DBusClient} [dbusClient] - D-Bus client
    */
   constructor(dbusClient) {
-    this.client = dbusClient || new DBusClient(SERVICE_NAME);
+    this.client = dbusClient || new DBusClient(SERVICE_NAME, "system");
     /** @type {{[k: string]: string}} */
     this.connectionIds = {};
     this.proxies = {
