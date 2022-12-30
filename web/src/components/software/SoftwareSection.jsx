@@ -26,8 +26,6 @@ import { useInstallerClient } from "@context/installer";
 import { BUSY } from "@client/status";
 import { InstallerSkeleton, Section } from "@components/core";
 
-import { EOS_VOLUME as HardDriveIcon } from "eos-icons-react";
-
 const initialState = {
   busy: false,
   errors: [],
@@ -92,7 +90,7 @@ export default function SoftwareSection ({ showErrors }) {
   };
 
   return (
-    <Section key="software-section" title="Software" icon={HardDriveIcon} errors={errors}>
+    <Section key="software-section" title="Software" errors={errors}>
       <SectionContent />
     </Section>
   );
