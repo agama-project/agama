@@ -22,7 +22,7 @@
 import React from "react";
 
 import "./layout.scss";
-import logo from "@assets/suse-horizontal-logo.svg";
+import logoUrl from "@assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
 
 const PageTitle = createTeleporter();
@@ -77,7 +77,7 @@ function Layout({ children }) {
 
       <div className="layout__footer">
         <div className="layout__footer-info-area">
-          <img src={logo} alt="Logo of SUSE" className="company-logo" />
+          <img src={logoUrl} alt="Logo of SUSE" className="company-logo" />
           <FooterInfoArea.Target />
         </div>
         <FooterActions.Target

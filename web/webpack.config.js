@@ -130,8 +130,15 @@ module.exports = {
       },
       // Load SVG files
       {
-        test: /\.svg/,
-        type: 'asset/inline',
+        test: /\.svg$/i,
+        type: 'asset',
+        resourceQuery: { not: [/component/] } // exclude file import includes ""?component"
+      },
+      {
+        test: /\.svg$/i,
+        issuer: /\.jsx?$/,
+        resourceQuery: /component/, // *.svg?component
+        use: ['@svgr/webpack']
       }
     ]
   },

@@ -23,16 +23,12 @@ import React from "react";
 import { Button, Title, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
 
 import {
+  Icon,
   Center,
   MainActions,
   PageIcon,
   Title as PageTitle,
 } from "@components/layout";
-
-import {
-  EOS_ANNOUNCEMENT as Icon,
-  EOS_ENDPOINTS_DISCONNECTED as DisconnectionIcon
-} from "eos-icons-react";
 
 // TODO: an example
 const ReloadAction = () => (
@@ -45,13 +41,13 @@ function DBusError() {
   return (
     <>
       <PageTitle>D-Bus Error</PageTitle>
-      <PageIcon><Icon /></PageIcon>
+      <PageIcon><Icon name="problem" /></PageIcon>
       <MainActions><ReloadAction /></MainActions>
 
       <Center>
         <EmptyState>
-          <EmptyStateIcon icon={DisconnectionIcon} />
-          <Title headingLevel="h4" size="lg">
+          <EmptyStateIcon icon={({ ...props }) => <Icon name="error" { ...props } />} />
+          <Title headingLevel="h2" size="4xl">
             Cannot connect to D-Bus
           </Title>
           <EmptyStateBody>

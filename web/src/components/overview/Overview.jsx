@@ -25,19 +25,12 @@ import { useSoftware } from "@context/software";
 
 import { Button, Flex, FlexItem } from "@patternfly/react-core";
 
-import { Title, PageIcon, PageActions, MainActions } from "@components/layout";
+import { Icon, Title, PageIcon, PageActions, MainActions } from "@components/layout";
 import { Section, InstallButton } from "@components/core";
 import { LanguageSelector } from "@components/language";
 import { StorageSection } from "@components/overview";
 import { Users } from "@components/users";
 import { Network } from "@components/network";
-
-import {
-  EOS_SOFTWARE as OverviewIcon,
-  EOS_TRANSLATE as LanguagesSelectionIcon,
-  EOS_SETTINGS_ETHERNET as NetworkIcon,
-  EOS_MODE_EDIT as ModeEditIcon
-} from "eos-icons-react";
 
 const ChangeProductButton = () => {
   const { products } = useSoftware();
@@ -51,7 +44,7 @@ const ChangeProductButton = () => {
     <Button
       isSmall
       variant="plain"
-      icon={<ModeEditIcon />}
+      icon={<Icon name="edit_square" size="24" />}
       aria-label="Change selected product"
       onClick={() => navigate("/products")}
     />
@@ -67,10 +60,10 @@ function Overview() {
   }
 
   const sections = [
-    <Section key="language" title="Language" icon={LanguagesSelectionIcon}>
+    <Section key="language" title="Language" icon={() => <Icon name="translate" />}>
       <LanguageSelector />
     </Section>,
-    <Section key="network" title="Network" icon={NetworkIcon}>
+    <Section key="network" title="Network" icon={() => <Icon name="settings_ethernet" />}>
       <Network />
     </Section>,
     <StorageSection key="storage" showErrors />,
@@ -88,7 +81,7 @@ function Overview() {
   return (
     <>
       <Title>{selectedProduct && selectedProduct.name}</Title>
-      <PageIcon><OverviewIcon /></PageIcon>
+      <PageIcon><Icon name="inventory_2" /></PageIcon>
       <PageActions><ChangeProductButton /></PageActions>
       <MainActions><InstallButton onClick={() => setShowErrors(true)} /></MainActions>
       <Flex direction={{ default: "column" }}><Sections /></Flex>
