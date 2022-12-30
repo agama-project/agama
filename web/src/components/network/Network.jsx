@@ -79,15 +79,20 @@ export default function Network() {
 
   const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
   const activeWifiConnections = connections.filter(c => c.type === ConnectionTypes.WIFI);
+  const showNetwork = (activeWiredConnections.length > 0 || activeWifiConnections.length > 0);
 
   return (
     <Stack className="overview-network">
-      <StackItem>
-        <NetworkWiredStatus connections={activeWiredConnections} />
-      </StackItem>
-      <StackItem>
-        <NetworkWifiStatus connections={activeWifiConnections} />
-      </StackItem>
+      { showNetwork &&
+        <>
+          <StackItem>
+            <NetworkWiredStatus connections={activeWiredConnections} />
+          </StackItem>
+          <StackItem>
+            <NetworkWifiStatus connections={activeWifiConnections} />
+          </StackItem>
+        </> }
+      { !showNetwork && <StackItem>No network connection was detected</StackItem> }
       { wifiScanSupported &&
         <StackItem>
           <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a Wi-Fi network</Button>
