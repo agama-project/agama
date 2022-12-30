@@ -46,9 +46,11 @@ import SettingsApplications from "~icons/settings_applications.svg?component";
 import Info from "~icons/info.svg?component";
 import Delete from "~icons/delete.svg?component";
 import Warning from "~icons/warning.svg?component";
+import Apps from "~icons/apps.svg?component";
 import Loading from "./three-dots-loader-icon.svg?component";
 
 const icons = {
+  apps: Apps,
   check_circle: CheckCircle,
   delete: Delete,
   downloading: Downloading,
