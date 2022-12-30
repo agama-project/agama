@@ -83,11 +83,9 @@ export default function SoftwareSection ({ showErrors }) {
   const errors = showErrors ? state.errors : [];
 
   const SectionContent = () => {
-    if (state.busy) return <InstallerSkeleton lines={1} />;
-
-    return (
-      <br />
-    );
+    return state.busy
+      ? <InstallerSkeleton lines={1} />
+      : null;
   };
 
   return (
