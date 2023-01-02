@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Jan  2 11:46:37 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not show the link to configure wifi networks when there are no
+  wifi devices and also inform the user when no network connection
+  was detected. (gh#yast/d-installer#323).
+- Version 0.6.3
+
+-------------------------------------------------------------------
 Mon Jan  2 10:03:18 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Ensure custom fonts are including in the build
