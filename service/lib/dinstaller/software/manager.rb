@@ -180,8 +180,8 @@ module DInstaller
       # @note Reimplementation of Yast::Package.CountSizeToBeInstalled
       def used_disk_space
         return "" unless @probed
-        
-        size = Yast::Pkg.PkgMediaSizes.each_with_object(0) do |media_size, res|
+
+        size = Yast::Pkg.PkgMediaSizes.reduce(0) do |res, media_size|
           media_size.reduce(res, :+)
         end
 
