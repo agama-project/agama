@@ -31,12 +31,12 @@ export default function Network() {
   const [initialized, setInitialized] = useState(false);
   const [connections, setConnections] = useState([]);
   const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
-  const [wireless, setWireless] = useState(false);
+  const [wifiScanSupported, setWifiScanSupported] = useState(false);
 
   useEffect(() => {
     if (!initialized) return;
 
-    setWireless(client.network.settings().wireless);
+    setWifiScanSupported(client.network.settings().wifiScanSupported);
     setConnections(client.network.activeConnections());
   }, [client.network, initialized]);
 
@@ -65,7 +65,7 @@ export default function Network() {
         }
 
         case NetworkEventTypes.SETTINGS_UPDATED: {
-          setWireless(payload.wireless);
+          setWifiScanSupported(payload.wifiScanSupported);
         }
       }
     });
@@ -79,16 +79,21 @@ export default function Network() {
 
   const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
   const activeWifiConnections = connections.filter(c => c.type === ConnectionTypes.WIFI);
+  const showNetwork = (activeWiredConnections.length > 0 || activeWifiConnections.length > 0);
 
   return (
     <Stack className="overview-network">
-      <StackItem>
-        <NetworkWiredStatus connections={activeWiredConnections} />
-      </StackItem>
-      <StackItem>
-        <NetworkWifiStatus connections={activeWifiConnections} />
-      </StackItem>
-      { wireless &&
+      { showNetwork &&
+        <>
+          <StackItem>
+            <NetworkWiredStatus connections={activeWiredConnections} />
+          </StackItem>
+          <StackItem>
+            <NetworkWifiStatus connections={activeWifiConnections} />
+          </StackItem>
+        </> }
+      { !showNetwork && <StackItem>No network connection was detected</StackItem> }
+      { wifiScanSupported &&
         <StackItem>
           <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a Wi-Fi network</Button>
           <WifiSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
