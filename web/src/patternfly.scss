@@ -1,18 +1,18 @@
-// @import "eos-ds/dist/scss/eos-base/index.scss";
-@use "eos-ds/dist/scss/eos-base/variables/branding.scss";
+@use "@assets/_variables.scss" as branding;
+
+$bc-gray-50: #f2f2f2; //rgb(242, 242, 242);
+$bc-green-500: #30ba78; //rgb(48, 186, 120);
+$bc-green-900: #0e7e3c; //rgb(14, 126, 60);
+$bc-pine-500: #0c322c; //rgb(12, 50, 44);
+
 // See https://github.com/patternfly/patternfly/pull/4297
 @use "@patternfly/react-styles/css/utilities/Sizing/sizing.css";
 // D-Installer fonts
 @use "assets/fonts.scss";
 
 :root {
-  // Overrides some PatternFly CSS variables for using values
-  // provided or suggested by EOS Design System.
-  //
-  // See more at
-  //   - https://eosdesignsystem.herokuapp.com
-  //   - https://gitlab.com/SUSE-UIUX/eos-ds-npm/
-  //   - https://github.com/mcoker/patternfly/blob/main/src/patternfly/base/_variables.scss
+  // Overrides some PatternFly CSS variables using values
+  // from brand.suse.com
 
   // Font families
   --pf-global--FontFamily--sans-serif: #{fonts.$base};
@@ -28,8 +28,6 @@
   --pf-global--FontFamily--overpass--monospace: #{fonts.$code};
 
   // Font size
-  // Based on sizes of EOS headings.
-  // See "eos-ds/dist/scss/eos-base/variables/titles.scss";
   --pf-global--FontSize--4xl: 2em;
   --pf-global--FontSize--3xl: 1.75em;
   --pf-global--FontSize--2xl: 1.5em;
@@ -51,26 +49,26 @@
   --pf-global--FontWeight--overpass--bold: 700;
 
   // Colors
-  --pf-global--primary-color--100: #{branding.$eos-bc-green-500};
-  --pf-global--primary-color--200: #{branding.$eos-bc-green-900};
+  --pf-global--primary-color--100: #{branding.$bc-green-500};
+  --pf-global--primary-color--200: #{branding.$bc-green-900};
   --pf-global--link--Color: var(--pf-global--primary-color--100);
   --pf-global--link--Color--hover: var(--pf-global--primary-color--200);
-  --pf-global--BackgroundColor--dark-100: #{branding.$eos-bc-pine-500};
+  --pf-global--BackgroundColor--dark-100: #{branding.$bc-pine-500};
 
 }
 
 .pf-c-button.pf-m-link {
   // Colors for buttons mofidiers
-  --pf-c-button--m-link--Color: #{branding.$eos-bc-green-500};
-  --pf-c-button--m-link--Color--hover: #{branding.$eos-bc-green-900};
-  --pf-c-button--m-link--m-inline--hover--Color: #{branding.$eos-bc-green-900};
+  --pf-c-button--m-link--Color: #{branding.$bc-green-500};
+  --pf-c-button--m-link--Color--hover: #{branding.$bc-green-900};
+  --pf-c-button--m-link--m-inline--hover--Color: #{branding.$bc-green-900};
 }
 
 // Adds a tiny "padding" when focusing a primary or secondary action to avoid
 // https://github.com/yast/d-installer/issues/115#issuecomment-1087375598
 .pf-c-button.pf-m-primary:focus-visible,
 .pf-c-button.pf-m-secondary:focus-visible {
-  box-shadow: 0 0 0 1px white, 0 0 0 2px branding.$eos-bc-cerulean-500;
+  box-shadow: 0 0 0 1px white, 0 0 0 2px branding.$bc-cerulean-500;
 }
 
 // PatternFly overrides for using CSS Logical Properties
@@ -106,8 +104,7 @@
 
 .pf-c-form__actions,
 .pf-c-modal-box__footer {
-  // EOS prefers buttons placed at the right
-  // Read https://eosdesignsystem.herokuapp.com/buttons/positioning
+  // We prefer buttons placed at the right
   flex-direction: row-reverse;
 
   // Overrides buttons margins. In row-reverse mode, we need margin

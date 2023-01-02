@@ -1,8 +1,7 @@
 // See https://github.com/patternfly/patternfly/pull/4297
 @use "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow.css";
 @use "@patternfly/react-styles/css/utilities/Text/text.css";
-
-@use "eos-ds/dist/scss/eos-base/variables/branding";
+@use "@assets/_variables.scss" as branding;
 
 .layout {
   --header-block-size: 8ex;
@@ -31,7 +30,7 @@
   z-index: 100;
   inset-block-start: 0;
 
-  background-color: branding.$eos-bc-pine-500;
+  background-color: branding.$bc-pine-500;
   color: white;
 
   block-size: var(--header-block-size);
@@ -42,13 +41,6 @@
   justify-content: space-between;
   gap: 0.5rem;
 
-  // Centers the section title.
-  // In a certain way it contradicts recommendations for headings given at
-  // https://eosdesignsystem.herokuapp.com/typography#headline-margins
-  // but it's more inline with the "branding" alignment at
-  // https://eosdesignsystem.herokuapp.com/layout
-  //
-  // See global heading styles at src/app.scss
   h1 {
     margin-block-start: 10px;
   }

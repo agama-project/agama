@@ -1,29 +1,9 @@
-// NOTE: eos-base/index imports a lot of styles not needed by now.
-// What is more, EOS is using @import instead of @use, which is the
-// preferred one. Read "What's Wrong With @import?" at
-// https://sass-lang.com/documentation/at-rules/import
-// This block us from importing them granularly as needed because some
-// SCSS EOS modules contains variables from others, making the tools
-// fail. For example, it's the case of titles.scss, which uses a variable
-// from branding.scss. Although we use @use here, the titles.scss
-// can't find the variable because it is namespaced with "branding.".
-//
-// So, by now we will do our best, and maybe send a fix to mainstream.
-//
-// Another option is to investigate if there is a way to purge or
-// "tree-shake" CSS while building to import the whole package without
-// worrying about packaging more than needed. This, however, might not help
-// while working in development mode.
-
-// @import "eos-ds/dist/scss/eos-base/index.scss";
-@use "eos-ds/dist/scss/eos-base/variables/branding.scss";
+@use "@assets/_variables.scss" as branding;
 
 // D-Installer fonts
 @use "assets/fonts.scss";
 
-// Style focus as proposed by EOS
-// https://eosdesignsystem.herokuapp.com/focus#scss-code
-// but making use of :focus-visible, see https://matthiasott.com/notes/focus-visible-is-here
+// Style focus making use of :focus-visible
 *:focus {
   outline: none;
 }
@@ -33,34 +13,12 @@
 }
 
 *:focus-visible {
-  box-shadow: 0 0 0 1px branding.$eos-bc-cerulean-500;
+  box-shadow: 0 0 0 1px branding.$bc-cerulean-500;
 }
-
-// NOTE: commented it out because looks like those
-// sizes makes the headings too big
-// // See "eos-ds/dist/scss/eos-base/variables/titles.scss";
-// // and comment at the begining
-// $eos-h1-font-size: 2em;
-// $eos-h2-font-size: 1.75em;
-// $eos-h3-font-size: 1.5em;
-// $eos-h4-font-size: 1.3em;
-// $eos-h5-font-size: 1.15em;
-// $eos-h6-font-size: 1em;
-// $eos-font-weight-headers-bold: 500;
-
-// .pf-c-content {
-//   // Content headings size
-//   --pf-c-content--h1--FontSize: #{$eos-h1-font-size};
-//   --pf-c-content--h2--FontSize: #{$eos-h2-font-size};
-//   --pf-c-content--h3--FontSize: #{$eos-h3-font-size};
-//   --pf-c-content--h4--FontSize: #{$eos-h4-font-size};
-//   --pf-c-content--h5--FontSize: #{$eos-h5-font-size};
-//   --pf-c-content--h6--FontSize: #{$eos-h6-font-size};
-// }
 
 body {
   text-align: start;
-  color: branding.$eos-bc-gray-1000;
+  color: branding.$bc-gray-1000;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -84,7 +42,7 @@ p {
 
 #root {
   min-block-size: 100vh;
-  background-color: branding.$eos-bc-gray-50;
+  background-color: branding.$bc-gray-50;
 }
 
 .installation-overview-section {
@@ -110,7 +68,7 @@ p {
 }
 
 .success-icon {
-  fill: branding.$eos-bc-green-500;
+  fill: branding.$bc-green-500;
 }
 
 // Make proposal actiosn compact
@@ -147,22 +105,22 @@ p {
 //   - https://drafts.csswg.org/selectors/#relational
 //   - https://caniuse.com/css-has
 .pf-c-card.selected-product {
-  //border: 1px solid branding.$eos-bc-green-500;
+  //border: 1px solid branding.$bc-green-500;
   --pf-c-card--BoxShadow: var(--pf-global--BoxShadow--md);
 
   .pf-c-radio {
     // https://drafts.csswg.org/css-ui/#widget-accent
     // https://caniuse.com/mdn-css_properties_accent-color
-    accent-color: branding.$eos-bc-pine-500;
+    accent-color: branding.$bc-pine-500;
   }
 
   .pf-c-radio__label {
-    color: branding.$eos-bc-green-500;
+    color: branding.$bc-green-500;
     font-weight: bold;
   }
 
   .pf-c-radio__description {
-    color: branding.$eos-bc-pine-500;
+    color: branding.$bc-pine-500;
   }
 }
 
@@ -180,7 +138,7 @@ p {
 
 .host-ip {
   vertical-align: middle;
-  color: branding.$eos-bc-gray-900;
+  color: branding.$bc-gray-900;
 }
 
 ul.connections-datalist {

@@ -1,11 +1,11 @@
 @use "@assets/fonts.scss";
-@use "eos-ds/dist/scss/eos-base/variables/branding.scss";
+@use "@assets/_variables.scss" as branding;
 
 fieldset.d-installer-fieldset {
   padding: fonts.$size-base;
   border: 0;
-  border-top: 1px solid branding.$eos-bc-gray-50;
-  border-image: linear-gradient(45deg, branding.$eos-bc-gray-50, transparent) 1;
+  border-top: 1px solid branding.$bc-gray-50;
+  border-image: linear-gradient(45deg, branding.$bc-gray-50, transparent) 1;
 
   legend {
     padding-inline-end: fonts.$size-base;
