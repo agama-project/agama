@@ -37,6 +37,9 @@ import { Overview } from "@components/overview";
 import { ProductSelectionPage } from "@components/software";
 import { ProposalPage as StoragePage } from "@components/storage";
 
+// D-Installer fonts
+import "@assets/fonts.scss";
+
 /*
  * PF4 overrides need to come after the JSX components imports because
  * these are importing CSS stylesheets that we are overriding
