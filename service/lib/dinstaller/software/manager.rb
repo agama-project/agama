@@ -175,6 +175,20 @@ module DInstaller
         Yast::Package.Installed(name, target: :system)
       end
 
+      # Counts how much disk space installation will use.
+      # @return [String]
+      # @note Reimplementation of Yast::Package.CountSizeToBeInstalled
+      def used_disk_space
+        return "" unless @probed
+        
+        size = Yast::Pkg.PkgMediaSizes.each_with_object(0) do |media_size, res|
+          media_size.reduce(res, :+)
+        end
+
+        # FormatSizeWithPrecision(bytes, precision, omit_zeroes)
+        Yast::String.FormatSizeWithPrecision(size, 1, true)
+      end
+
     private
 
       # adds resolvables from yaml config for given product

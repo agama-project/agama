@@ -30,7 +30,8 @@ import { InstallerSkeleton, Section } from "@components/core";
 const initialState = {
   busy: false,
   errors: [],
-  errorsRead: false
+  errorsRead: false,
+  size: ""
 };
 
 const reducer = (state, action) => {
@@ -42,11 +43,11 @@ const reducer = (state, action) => {
     case "UPDATE_PROPOSAL": {
       if (state.busy) return state;
 
-      const { errors } = action.payload;
+      const { errors, size } = action.payload;
 
       console.log("errors:", errors);
 
-      return { ...state, errors, errorsRead: true };
+      return { ...state, errors, size, errorsRead: true };
     }
 
     default: {
@@ -73,8 +74,9 @@ export default function SoftwareSection ({ showErrors }) {
   useEffect(() => {
     const updateProposal = async () => {
       const errors = await cancellablePromise(client.software.getValidationErrors());
+      const size = await cancellablePromise(client.software.getUsedSpace());
 
-      dispatch({ type: "UPDATE_PROPOSAL", payload: { errors } });
+      dispatch({ type: "UPDATE_PROPOSAL", payload: { errors, size } });
     };
 
     updateProposal();
@@ -82,10 +84,26 @@ export default function SoftwareSection ({ showErrors }) {
 
   const errors = showErrors ? state.errors : [];
 
+  const UsedSize = () => {
+    if (state.size === "") {
+      return (
+        <>
+          Computing ...
+        </>
+      );
+    } else {
+      return (
+        <>
+          Installation will take {state.size}.
+        </>
+      );
+    }
+  };
+
   const SectionContent = () => {
     return state.busy
       ? <InstallerSkeleton lines={1} />
-      : null;
+      : <UsedSize />;
   };
 
   return (

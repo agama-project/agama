@@ -62,6 +62,16 @@ class SoftwareBaseClient {
   }
 
   /**
+   * Returns how much space installation takes on disk
+   *
+   * @return {Promise<Array<Product>>}
+   */
+  async getUsedSpace() {
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    return proxy.UsedDiskSpace();
+  }
+
+  /**
    * Returns the selected product
    *
    * @return {Promise<Product|null>}
