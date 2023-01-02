@@ -24,6 +24,8 @@ const packageJson = JSON.parse(fs.readFileSync('package.json'));
 const copy_files = [
   "./src/index.html",
   "./src/manifest.json",
+  // TODO: consider using something more complete like https://github.com/jantimon/favicons-webpack-plugin
+  "./src/assets/favicon.svg",
 ];
 
 const plugins = [
