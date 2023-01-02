@@ -81,7 +81,7 @@ module DInstaller
             backend.package_installed?(name)
           end
 
-          dbus_method :UsedDiskSpace, "out SpaceSize:s" { backend.used_disk_space }
+          dbus_method(:UsedDiskSpace, "out SpaceSize:s") { backend.used_disk_space }
 
           dbus_method(:Probe) { probe }
           dbus_method(:Propose) { propose }
