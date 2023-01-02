@@ -5,3 +5,20 @@ $bc-gray-1000: #141823; //rgb(20, 24, 35);
 $bc-green-500: #30ba78; //rgb(48, 186, 120);
 $bc-green-900: #0e7e3c; //rgb(14, 126, 60);
 $bc-pine-500: #0c322c; //rgb(12, 50, 44);
+
+:root {
+  --color-core-brand: #30BA78; // Jungle Green
+  --color-core-primary: #0C322C; // Pine Green
+  --color-core-secondary: #192072; // Midnight Blue
+  --color-core-tertiary: #90EBCD; // Midnight Blue
+
+  --color-background-primary: var(--color-core-primary);
+  --color-background-secondary: #EFEFEF; // Fog
+
+  --color-text-primary: var(--color-core-primary);
+  --color-text-secondary: #EFEFEF;
+
+  --space-s: .5em;
+  --space-m: 1em;
+  --space-l: 1.5em;
+}

@@ -22,27 +22,13 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
+  margin: 0;
   font-family: fonts.$headlines;
   font-weight: 500;
 }
 
-h1, h2, h3 {
-  margin-block-start: 20px;
-  margin-block-end: 10px;
-}
-
-h4, h5, h6 {
-  margin-block-start: 10px;
-  margin-block-end: 10px;
-}
-
 p {
   margin-block-start: fonts.$size-base;
-}
-
-#root {
-  min-block-size: 100vh;
-  background-color: branding.$bc-gray-50;
 }
 
 .installation-overview-section {

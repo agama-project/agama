@@ -1,135 +1,71 @@
 // See https://github.com/patternfly/patternfly/pull/4297
-@use "@patternfly/react-styles/css/utilities/BoxShadow/box-shadow.css";
-@use "@assets/_variables.scss" as branding;
 
-.layout {
-  --header-block-size: 8ex;
-  --footer-block-size: calc(1.5 * var(--header-block-size));
-  --min-layout-content-block-size: calc(100vh - var(--header-block-size));
-  --layout-content-padding: 1.3rem;
-  --layout-content-padding-block-end: calc(
-    var(--layout-content-padding)
-    + var(--footer-block-size)
-  );
-
-  @extend .pf-u-box-shadow-md;
-
-  background-color: white;
-  margin-inline: auto;
-
-  // Needed for "telling" the fixed footer its (inherited) inline-size.
-  inline-size: 100%;
+h1, h2, h3, h4, h5 {
+  margin: 0;
 }
 
-.layout__header {
-  @extend .pf-u-box-shadow-md-bottom;
-
-  // Note: "position: fixed" + "width: inherit" does not work here. Sticky is enough for the header
-  position: sticky;
-  z-index: 100;
-  inset-block-start: 0;
-
-  background-color: branding.$bc-pine-500;
-  color: white;
-
-  block-size: var(--header-block-size);
-  padding: 0.5rem;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-
-  h1 {
-    margin-block-start: 10px;
-  }
+body {
+  background: #ccc;
 }
 
-.layout__header-section-actions {
-  button {
-    vertical-align: text-top;
-  }
+#d-installer {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: 
+    'header'
+    'content'
+    'footer'
+  ;
+  overflow: hidden;
+  height: 100dvb;
+  block-size: 100dvb;
+  background: white;
 
   svg {
-    fill: white;
+    fill: currentColor;
     vertical-align: middle;
   }
 }
 
-.layout__header-action-icon {
-  fill: white;
-  block-size: 1.5rem;
-  inline-size: 1.5rem;
-  vertical-align: middle;
+#d-installer > * {
+  padding: var(--space-m) var(--space-s);
 }
 
-.layout__header-section-title {
-  font-size: 1.5rem;
-}
-
-.layout__header-section-title-icon > svg {
-  fill: white;
-  // Sadly, we can't use font-size with SVG icons
-  block-size: 1em;
-  inline-size: 1em;
-  vertical-align: sub;
-  margin-inline-end: 0.5em;
-}
-
-.layout__content {
-  padding: var(--layout-content-padding);
-  padding-block-end: var(--layout-content-padding-block-end);
-  min-block-size: var(--min-layout-content-block-size);
-}
-
-// Needed because a block-size: 100% is not an option when the parent does not
-// have an explicit block-size (it has a min-block-size instead).
-// See https://stackoverflow.com/a/8468131 and https://www.w3.org/TR/CSS22/visudet.html#the-height-property
-.layout__content-child--filling-block-size {
-  // NOTE: "min-block-size: inherit;" does not work for us. It produces padding
-  // that we do not want unless necessary. Moreover, the .layout__content
-  // container element already produce needed padding.
-  min-block-size: calc(
-    var(--min-layout-content-block-size)
-    - var(--layout-content-padding)
-    - var(--layout-content-padding-block-end)
-  );
-}
-
-.layout__footer {
-  @extend .pf-u-box-shadow-sm-top;
-
-  position: fixed;
-  inset-block-end: 0;
-
-  background-color: white;
-
-  block-size: var(--footer-block-size);
-  inline-size: inherit;
-  padding: 1rem;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  gap: 1rem 1rem;
-}
-
-.layout__footer-info-area {
-  display: flex;
-  align-items: center;
-
-  .company-logo {
-    width: 120px;
-    margin-inline-start: -1rem;
+@media (width > 50em) {
+  #d-installer {
+    max-inline-size: 50em;
+    margin-inline: auto;
   }
 }
 
-.layout__footer-actions-area {
-  align-self: center;
-  text-align: center;
+// utility, stand for "margin-inline-end-small";
+.mie-s {
+  margin-inline-end: var(--space-s);
+}
 
+#d-installer > header {
+  grid-area: header;
+  background: var(--color-background-primary);
+  color: var(--color-text-secondary);
+}
+
+#d-installer > main {
+  grid-area: content;
+  overflow-y: auto; // Sadly, only Firefox supports oerflow-block at this moment (Jan 2023)
+  overflow-block: auto;
+  padding: var(--space-l);
+}
+
+#d-installer > footer {
+  grid-area: footer;
+}
+
+.flow-flex-row {
   display: flex;
-  justify-content: end;
-  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flow-flex-row[data-state='reversed'] {
+  flex-direction: row-reverse;
 }
