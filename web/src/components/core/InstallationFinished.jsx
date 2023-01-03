@@ -29,7 +29,7 @@ import {
   EmptyStateBody
 } from "@patternfly/react-core";
 
-import { Icon, Center, Title as SectionTitle, PageIcon, MainActions } from "@components/layout";
+import { Icon, Title as SectionTitle, PageIcon, MainActions } from "@components/layout";
 import { useInstallerClient } from "@context/installer";
 
 function InstallationFinished() {
@@ -46,23 +46,21 @@ function InstallationFinished() {
         </Button>
       </MainActions>
 
-      <Center>
-        <EmptyState>
-          <EmptyStateIcon icon={() => <Icon name="check_circle" />} className="success-icon" />
-          <Title headingLevel="h2" size="4xl">
-            Congratulations!
-          </Title>
-          <EmptyStateBody className="pf-c-content">
-            <div>
-              <Text>The installation on your machine is complete.</Text>
-              <Text>
-                At this point you can 'Reboot' the machine to log in to the new system.
-              </Text>
-              <Text>Have a lot of fun! Your openSUSE Development Team.</Text>
-            </div>
-          </EmptyStateBody>
-        </EmptyState>
-      </Center>
+      <EmptyState className="vertically-centered">
+        <EmptyStateIcon icon={() => <Icon name="check_circle" />} className="success-icon" />
+        <Title headingLevel="h2" size="4xl">
+          Congratulations!
+        </Title>
+        <EmptyStateBody className="pf-c-content">
+          <div>
+            <Text>The installation on your machine is complete.</Text>
+            <Text>
+              At this point you can 'Reboot' the machine to log in to the new system.
+            </Text>
+            <Text>Have a lot of fun! Your openSUSE Development Team.</Text>
+          </div>
+        </EmptyStateBody>
+      </EmptyState>
     </>
   );
 }

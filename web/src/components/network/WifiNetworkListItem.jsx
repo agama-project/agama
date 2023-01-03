@@ -26,15 +26,13 @@ import {
   CardBody,
   Radio,
   Spinner,
-  Split,
-  SplitItem,
   Text
 } from "@patternfly/react-core";
 
 import { classNames } from "@/utils";
 import { ConnectionState } from "@client/network/model";
 
-import { Center, Icon } from "@components/layout";
+import { Icon } from "@components/layout";
 import { WifiNetworkMenu, WifiConnectionForm } from "@components/network";
 
 const networkState = (state) => {
@@ -83,47 +81,31 @@ function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCance
       )}
     >
       <CardBody>
-        <Split hasGutter className="header">
-          <SplitItem isFilled>
-            <Radio
-              id={network.ssid}
-              label={network.ssid}
-              description={
-                <>
-                  <Icon name="lock" size="10" fill="grey" /> {network.security.join(", ")}{" "}
-                  <Icon name="signal_cellular_alt" size="10" fill="grey" /> {network.strength}
-                </>
-              }
-              isChecked={isSelected || isActive || false}
-              onClick={onSelect}
-            />
-          </SplitItem>
-          <SplitItem>
-            <Center>
-              {showSpinner && <Spinner isSVG size="md" aria-label={`${network.ssid} connection is waiting for an state change`} /> }
-            </Center>
-          </SplitItem>
-          <SplitItem>
-            <Center>
-              <Text component="small" className="keep-words">
-                { showSpinner && !network.connection && "Connecting" }
-                { networkState(network.connection?.state)}
-              </Text>
-            </Center>
-          </SplitItem>
-          { network.settings &&
-            <SplitItem>
-              <Center>
-                <WifiNetworkMenu settings={network.settings} />
-              </Center>
-            </SplitItem> }
-        </Split>
+        <div className="header flow-flex-row">
+          <Radio
+            id={network.ssid}
+            label={network.ssid}
+            description={
+              <>
+                <Icon name="lock" size="10" fill="grey" /> {network.security.join(", ")}{" "}
+                <Icon name="signal_cellular_alt" size="10" fill="grey" /> {network.strength}
+              </>
+            }
+            isChecked={isSelected || isActive || false}
+            onClick={onSelect}
+          />
+          <div className="flow-flex-row has-gutter">
+            {showSpinner && <Spinner isSVG size="md" aria-label={`${network.ssid} connection is waiting for an state change`} /> }
+            <Text component="small" className="keep-words">
+              { showSpinner && !network.connection && "Connecting" }
+              { networkState(network.connection?.state)}
+            </Text>
+            { network.settings &&
+              <WifiNetworkMenu settings={network.settings} /> }
+          </div>
+        </div>
         { isSelected && (!network.settings || network.settings.error) &&
-          <Split hasGutter>
-            <SplitItem isFilled className="content">
-              <WifiConnectionForm network={network} onCancel={onCancel} />
-            </SplitItem>
-          </Split> }
+          <WifiConnectionForm network={network} onCancel={onCancel} /> }
       </CardBody>
     </Card>
   );

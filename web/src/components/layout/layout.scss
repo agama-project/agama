@@ -54,6 +54,8 @@ body {
   overflow-y: auto; // Sadly, only Firefox supports oerflow-block at this moment (Jan 2023)
   overflow-block: auto;
   padding: var(--space-l);
+
+  display: grid; // Sadly, only Firefox allow native subgrids.
 }
 
 #d-installer > footer {
@@ -68,4 +70,26 @@ body {
 
 .flow-flex-row[data-state='reversed'] {
   flex-direction: row-reverse;
+}
+
+.vertically-centered {
+  align-self: center;
+}
+
+.horizontally-centered {
+  inline-size: 100%;
+  margin-inline: 0 auto;
+  text-align: center;
+}
+
+.has-gutter {
+  gap: var(--space-s);
+}
+
+.has-gutter-size-1 {
+  gap: var(--space-m);
+}
+
+.pad-size-1 {
+  padding: var(--space-m)
 }

@@ -24,10 +24,6 @@
 import React from "react";
 import {
   Button,
-  Split,
-  SplitItem,
-  Stack,
-  StackItem,
   Text,
   TextContent,
   TextVariants,
@@ -109,7 +105,6 @@ const renderIcon = (icon, ariaLabel, size = 32) => {
  * @param {React.ReactNode} [props.actionTooltip] - text to be shown as a tooltip when user hovers action icon, if present
  * @param {React.MouseEventHandler} [props.onActionClick] - callback to be triggered when user clicks on action icon, if present
  * @param {JSX.Element} [props.children] - the section content
- * @param {object} [props.otherProps] PF4/Split props, see {@link https://www.patternfly.org/v4/layouts/split#props}
  */
 export default function Section({
   title,
@@ -121,7 +116,6 @@ export default function Section({
   actionTooltip,
   onActionClick,
   children,
-  ...otherProps
 }) {
   const renderAction = () => {
     if (typeof onActionClick !== 'function') return null;
@@ -147,34 +141,22 @@ export default function Section({
   );
 
   return (
-    <Split className="d-installer-section" hasGutter {...otherProps}>
-      <SplitItem className="d-installer-section-icon">
-        {renderIcon(icon, `${title} section icon`, 32)}
-      </SplitItem>
-      <SplitItem isFilled>
-        <Stack hasGutter>
-          <StackItem>
-            <TextContent>
-              <Text component={TextVariants.h2} className={titleClassNames}>
-                {title} {renderAction()}
-              </Text>
-            </TextContent>
-          </StackItem>
-          { description && description !== "" &&
-          <StackItem className="d-installer-section-description">
-            <TextContent>
-              <Text component={TextVariants.small}>
-                {description}
-              </Text>
-            </TextContent>
-          </StackItem> }
-          { errors?.length > 0 &&
-          <StackItem>
-            <ValidationErrors errors={errors} title={`${title} errors`} />
-          </StackItem> }
-          <StackItem>{children}</StackItem>
-        </Stack>
-      </SplitItem>
-    </Split>
+    <div className="d-installer-section">
+      {renderIcon(icon, `${title} section icon`, 32)}
+      <TextContent>
+        <Text component={TextVariants.h2} className={titleClassNames}>
+          {title} {renderAction()}
+        </Text>
+      </TextContent>
+      { description && description !== "" &&
+        <TextContent>
+          <Text component={TextVariants.small}>
+            {description}
+          </Text>
+        </TextContent> }
+      { errors?.length > 0 &&
+        <ValidationErrors errors={errors} title={`${title} errors`} /> }
+      {children}
+    </div>
   );
 }

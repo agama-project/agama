@@ -20,7 +20,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Button, Stack, StackItem } from "@patternfly/react-core";
+import { Button } from "@patternfly/react-core";
 
 import { useInstallerClient } from "@context/installer";
 import { ConnectionTypes, NetworkEventTypes } from "@client/network";
@@ -30,7 +30,6 @@ export default function Network() {
   const client = useInstallerClient();
   const [initialized, setInitialized] = useState(false);
   const [connections, setConnections] = useState([]);
-  const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
   const [wifiScanSupported, setWifiScanSupported] = useState(false);
 
   useEffect(() => {
@@ -81,23 +80,34 @@ export default function Network() {
   const activeWifiConnections = connections.filter(c => c.type === ConnectionTypes.WIFI);
   const showNetwork = (activeWiredConnections.length > 0 || activeWifiConnections.length > 0);
 
+  const Content = () => {
+    if (!showNetwork) {
+      return "No network connection was detected";
+    }
+
+    return (
+      <>
+        <NetworkWiredStatus connections={activeWiredConnections} />
+        <NetworkWifiStatus connections={activeWifiConnections} />
+      </>
+    );
+  };
+
+  const WifiOptions = () => {
+    const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
+
+    return (
+      <>
+        <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a Wi-Fi network</Button>
+        <WifiSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
+      </>
+    );
+  };
+
   return (
-    <Stack className="overview-network">
-      { showNetwork &&
-        <>
-          <StackItem>
-            <NetworkWiredStatus connections={activeWiredConnections} />
-          </StackItem>
-          <StackItem>
-            <NetworkWifiStatus connections={activeWifiConnections} />
-          </StackItem>
-        </> }
-      { !showNetwork && <StackItem>No network connection was detected</StackItem> }
-      { wifiScanSupported &&
-        <StackItem>
-          <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a Wi-Fi network</Button>
-          <WifiSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
-        </StackItem> }
-    </Stack>
+    <>
+      <Content />
+      { wifiScanSupported && <WifiOptions /> }
+    </>
   );
 }

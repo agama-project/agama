@@ -22,7 +22,7 @@
 import React from "react";
 
 import ProgressReport from "./ProgressReport";
-import { Center, Icon, Title, PageIcon } from "@components/layout";
+import { Icon, Title, PageIcon } from "@components/layout";
 import { Questions } from "@components/questions";
 
 function InstallationProgress() {
@@ -30,7 +30,7 @@ function InstallationProgress() {
     <>
       <Title>Installing</Title>
       <PageIcon><Icon name="downloading" /></PageIcon>
-      <Center><ProgressReport /></Center>
+      <ProgressReport />
       <Questions />
     </>
   );

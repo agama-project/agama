@@ -23,7 +23,7 @@ import React, { useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useSoftware } from "@context/software";
 
-import { Button, Flex, FlexItem } from "@patternfly/react-core";
+import { Button } from "@patternfly/react-core";
 
 import { Icon, Title, PageIcon, PageActions, MainActions } from "@components/layout";
 import { Section, InstallButton } from "@components/core";
@@ -59,32 +59,20 @@ function Overview() {
     return <Navigate to="/products" />;
   }
 
-  const sections = [
-    <Section key="language" title="Language" icon={() => <Icon name="translate" />}>
-      <LanguageSelector />
-    </Section>,
-    <Section key="network" title="Network" icon={() => <Icon name="settings_ethernet" />}>
-      <Network />
-    </Section>,
-    <StorageSection key="storage" showErrors />,
-    <Users key="users" showErrors={showErrors} />
-  ];
-
-  const Sections = () => {
-    return sections.map((section, i) => (
-      <FlexItem key={i} className="installation-overview-section">
-        {section}
-      </FlexItem>
-    ));
-  };
-
   return (
     <>
       <Title>{selectedProduct && selectedProduct.name}</Title>
       <PageIcon><Icon name="inventory_2" /></PageIcon>
       <PageActions><ChangeProductButton /></PageActions>
       <MainActions><InstallButton onClick={() => setShowErrors(true)} /></MainActions>
-      <Flex direction={{ default: "column" }}><Sections /></Flex>
+      <Section key="language" title="Language" icon={() => <Icon name="translate" />}>
+        <LanguageSelector />
+      </Section>
+      <Section key="network" title="Network" icon={() => <Icon name="settings_ethernet" />}>
+        <Network />
+      </Section>
+      <StorageSection key="storage" showErrors />
+      <Users key="users" showErrors={showErrors} />
     </>
   );
 }

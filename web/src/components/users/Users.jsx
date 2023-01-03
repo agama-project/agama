@@ -20,7 +20,6 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Stack, StackItem } from "@patternfly/react-core";
 
 import { useInstallerClient } from "@context/installer";
 import { Section } from "@components/core";
@@ -44,17 +43,9 @@ export default function Users({ showErrors }) {
         icon={() => <Icon name="manage_accounts" />}
         errors={showErrors ? errors : []}
       >
-        <Stack className="overview-users">
-          <StackItem>
-            <RootPassword />
-          </StackItem>
-          <StackItem>
-            <RootSSHKey />
-          </StackItem>
-          <StackItem>
-            <FirstUser />
-          </StackItem>
-        </Stack>
+        <RootPassword />
+        <RootSSHKey />
+        <FirstUser />
       </Section>
     </>
   );

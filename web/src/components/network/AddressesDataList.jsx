@@ -34,8 +34,6 @@ import {
   DataListItemCells,
   DataListCell,
   DataListAction,
-  Stack,
-  StackItem,
   Split,
   SplitItem
 } from "@patternfly/react-core";
@@ -118,24 +116,20 @@ export default function AddressesDataList({
   const newAddressButtonText = addresses.length ? "Add another address" : "Add an address";
 
   return (
-    <Stack className="data-list-form" hasGutter>
-      <StackItem>
-        <Split hasGutter>
-          <SplitItem isFilled>
-            <FormLabel isRequired={!allowEmpty}>Addresses</FormLabel>
-          </SplitItem>
-          <SplitItem>
-            <Button isSmall variant="secondary" className="btn-sm" onClick={() => addAddress()}>
-              {newAddressButtonText}
-            </Button>
-          </SplitItem>
-        </Split>
-      </StackItem>
-      <StackItem>
-        <DataList isCompact gridBreakpoint="none" title="Addresses data list">
-          {addresses.map(address => renderAddress(address))}
-        </DataList>
-      </StackItem>
-    </Stack>
+    <>
+      <Split hasGutter>
+        <SplitItem isFilled>
+          <FormLabel isRequired={!allowEmpty}>Addresses</FormLabel>
+        </SplitItem>
+        <SplitItem>
+          <Button isSmall variant="secondary" className="btn-sm" onClick={() => addAddress()}>
+            {newAddressButtonText}
+          </Button>
+        </SplitItem>
+      </Split>
+      <DataList isCompact gridBreakpoint="none" title="Addresses data list">
+        {addresses.map(address => renderAddress(address))}
+      </DataList>
+    </>
   );
 }

@@ -25,8 +25,6 @@ import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Button,
-  Flex,
-  FlexItem,
 } from "@patternfly/react-core";
 
 import { useInstallerClient } from "@context/installer";
@@ -98,33 +96,25 @@ export default function ProposalPage() {
     if (state.busy || !state.proposal) return <InstallerSkeleton lines={3} />;
 
     return (
-      <Flex direction={{ default: "column" }}>
-        <FlexItem>
-          <Alert
-            isInline
-            customIcon={<Icon name="info" size="16" />}
-            title="Devices will not be modified until installation starts."
-          />
-        </FlexItem>
-        <FlexItem key="target" className="installation-overview-section">
-          <ProposalTargetSection
-            proposal={state.proposal}
-            calculateProposal={calculateProposal}
-          />
-        </FlexItem>
-        <FlexItem key="settings" className="installation-overview-section">
-          <ProposalSettingsSection
-            proposal={state.proposal}
-            calculateProposal={calculateProposal}
-          />
-        </FlexItem>
-        <FlexItem key="actions" className="installation-overview-section">
-          <ProposalActionsSection
-            proposal={state.proposal}
-            errors={state.errors}
-          />
-        </FlexItem>
-      </Flex>
+      <>
+        <Alert
+          isInline
+          customIcon={<Icon name="info" size="16" />}
+          title="Devices will not be modified until installation starts."
+        />
+        <ProposalTargetSection
+          proposal={state.proposal}
+          calculateProposal={calculateProposal}
+        />
+        <ProposalSettingsSection
+          proposal={state.proposal}
+          calculateProposal={calculateProposal}
+        />
+        <ProposalActionsSection
+          proposal={state.proposal}
+          errors={state.errors}
+        />
+      </>
     );
   };
 

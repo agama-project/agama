@@ -24,13 +24,10 @@ import React from "react";
 import {
   Button,
   Card,
-  CardBody,
-  Split,
-  SplitItem,
+  CardBody
 } from "@patternfly/react-core";
 
 import { classNames } from "@/utils";
-import { Center } from "@components/layout";
 import WifiConnectionForm from "./WifiConnectionForm";
 
 /**
@@ -52,24 +49,18 @@ function HiddenNetworkForm({ network, visible, beforeDisplaying, beforeHiding, o
       )}
       >
         <CardBody>
-          <Split hasGutter className="content">
-            <SplitItem isFilled>
-              { visible &&
-                <WifiConnectionForm
-                  network={network}
-                  onCancel={beforeHiding}
-                  onSubmitCallback={onSubmitCallback}
-                /> }
-            </SplitItem>
-          </Split>
+          { visible &&
+            <WifiConnectionForm
+              network={network}
+              onCancel={beforeHiding}
+              onSubmitCallback={onSubmitCallback}
+            /> }
         </CardBody>
       </Card>
       { !visible &&
-        <Center>
-          <Button variant="link" onClick={beforeDisplaying}>
-            Connect to hidden network
-          </Button>
-        </Center> }
+        <Button variant="link" className="horizontally-centered" onClick={beforeDisplaying}>
+          Connect to hidden network
+        </Button> }
     </>
   );
 }
