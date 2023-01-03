@@ -92,11 +92,7 @@ export default function SoftwareSection ({ showErrors }) {
         </>
       );
     } else {
-      return (
-        <>
-          Installation will take {state.size}.
-        </>
-      );
+      return <InstallerSkeleton lines={1} />;
     }
   };
 
