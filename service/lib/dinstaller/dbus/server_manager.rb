@@ -30,11 +30,6 @@ module DInstaller
     #   manager = DBusManager.new
     #   manager.find_or_start_server
     class ServerManager
-      # @return [String] Command to start the D-Bus server
-      START_CMD = "/usr/bin/dbus-daemon --print-address " \
-                  "--config-file %{config} --fork --systemd-activation"
-      private_constant :START_CMD
-
       # @return [String] Default run directory path
       DEFAULT_RUN_DIRECTORY = "/run/d-installer"
       private_constant :DEFAULT_RUN_DIRECTORY
