@@ -40,6 +40,8 @@ const SERVICE_NAME = "org.freedesktop.NetworkManager";
 const IFACE = "org.freedesktop.NetworkManager";
 const SETTINGS_IFACE = "org.freedesktop.NetworkManager.Settings";
 const CONNECTION_IFACE = "org.freedesktop.NetworkManager.Settings.Connection";
+const DEVICE_IFACE = "org.freedesktop.NetworkManager.Device";
+const DEVICES_NAMESPACE = "/org/freedesktop/NetworkManager/Devices";
 const ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Active";
 const ACTIVE_CONNECTION_NAMESPACE = "/org/freedesktop/NetworkManager/ActiveConnection";
 const IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
@@ -47,6 +49,7 @@ const IP4CONFIG_NAMESPACE = "/org/freedesktop/NetworkManager/IP4Config";
 const ACCESS_POINT_IFACE = "org.freedesktop.NetworkManager.AccessPoint";
 const ACCESS_POINT_NAMESPACE = "/org/freedesktop/NetworkManager/AccessPoint";
 const SETTINGS_NAMESPACE = "/org/freedesktop/NetworkManager/Settings";
+const NM_DEVICE_TYPE_WIFI = 2;
 
 const ApFlags = Object.freeze({
   NONE: 0x00000000,
@@ -177,6 +180,7 @@ class NetworkManagerAdapter {
     this.proxies = {
       accessPoints: {},
       activeConnections: {},
+      devices: {},
       ip4Configs: {},
       manager: null,
       settings: null,
@@ -197,6 +201,7 @@ class NetworkManagerAdapter {
       activeConnections: await this.client.proxies(
         ACTIVE_CONNECTION_IFACE, ACTIVE_CONNECTION_NAMESPACE
       ),
+      devices: await this.client.proxies(DEVICE_IFACE, DEVICES_NAMESPACE),
       ip4Configs: await this.client.proxies(IP4CONFIG_IFACE, IP4CONFIG_NAMESPACE),
       manager: await this.client.proxy(IFACE),
       settings: await this.client.proxy(SETTINGS_IFACE),
@@ -398,9 +403,7 @@ class NetworkManagerAdapter {
     };
 
     const handleWrapperSettings = (eventType) => () => {
-      const settings = this.settingsFromProxies(managerProxy, settingsProxy);
-
-      this.eventsHandler({ type: eventType, payload: settings });
+      this.eventsHandler({ type: eventType, payload: this.settings() });
     };
 
     // FIXME: do not build a map (eventTypesMap), just inject the type here
@@ -500,19 +503,40 @@ class NetworkManagerAdapter {
     return { address: data.address.v, prefix: parseInt(data.prefix.v) };
   }
 
-  settingsFromProxies(manager, settings) {
-    return {
-      wireless: !!(manager?.WirelessEnabled && manager?.WirelessHardwareEnabled),
-      hostname: settings?.Hostname || ""
-    };
+  /*
+  * Returns the list of WiFi devices available in the system
+  *
+  * @return {object[]} list of available WiFi devices
+  */
+  availableWifiDevices() {
+    return Object.values(this.proxies.devices).filter(d => d.DeviceType === NM_DEVICE_TYPE_WIFI);
+  }
+
+  /*
+  * Returns whether the system is able to scan wifi networks based on rfkill and the presence of
+  * some wifi device
+  *
+  * @return {boolean}
+  */
+  wifiScanSupported() {
+    const { manager } = this.proxies;
+
+    if (!manager) return false;
+    if (!(manager.WirelessEnabled && manager.WirelessHardwareEnabled)) return false;
+
+    return this.availableWifiDevices().length > 0;
   }
 
   /*
   * Returns NetworkManager general settings
+  *
   * @return {NetworkSettings}
   */
   settings() {
-    return this.settingsFromProxies(this.proxies.manager, this.proxies.settings);
+    return {
+      wifiScanSupported: this.wifiScanSupported(),
+      hostname: this.proxies.settings?.Hostname || ""
+    };
   }
 }
 

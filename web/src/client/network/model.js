@@ -109,7 +109,7 @@ const SecurityProtocols = Object.freeze({
 
 /**
 * @typedef {object} NetworkSettings
-* @property {boolean} wireless
+* @property {boolean} wifiScanSupported
 * @property {string} hostname
 
 /**

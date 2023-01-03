@@ -1,7 +1,7 @@
 PATH
   remote: ../service
   specs:
-    d-installer (0.6.1)
+    d-installer (0.6.2)
       cfa (~> 1.0.2)
       cfa_grub2 (~> 2.0.0)
       cheetah (~> 1.0.0)
@@ -39,7 +39,7 @@ GEM
       racc (~> 1.4)
     packaging_rake_tasks (1.5.1)
       rake
-    racc (1.6.1)
+    racc (1.6.2)
     rake (13.0.6)
     rexml (3.2.5)
     rspec (3.11.0)
@@ -81,4 +81,4 @@ DEPENDENCIES
   simplecov-lcov (~> 0.8.0)
 
 BUNDLED WITH
-   2.3.24
+   2.3.26
