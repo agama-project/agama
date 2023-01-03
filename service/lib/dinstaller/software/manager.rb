@@ -298,10 +298,16 @@ module DInstaller
       def proposal_result(proposal, deps_result)
         result = []
         # TODO: find if there is a better way to get proposal issue as list
-        result.concat(proposal["warning"].split("<br>")) if proposal["warning_level"] == :blocker
+        result.concat(process_warnings(proposal)) if proposal["warning_level"] == :blocker
         result.concat(solve_messages) if !deps_result
 
         result
+      end
+
+      def process_warnings(proposal)
+        proposal["warning"]
+          .split("<br>")
+          .grep_v(/Please manually select .*/)
       end
     end
   end
