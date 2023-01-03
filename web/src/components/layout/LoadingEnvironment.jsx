@@ -22,16 +22,18 @@
 import React from "react";
 import { Title, EmptyState, EmptyStateIcon } from "@patternfly/react-core";
 
-import { Icon } from "@components/layout";
+import { Center, Icon } from "@components/layout";
 
 function LoadingEnvironment({ text = "Loading installation environment, please wait." }) {
   return (
-    <EmptyState className="vertically-centered">
-      <EmptyStateIcon icon={({ ...props }) => <Icon name="loading" {...props} />} />
-      <Title headingLevel="h2" size="4xl">
-        { text }
-      </Title>
-    </EmptyState>
+    <Center>
+      <EmptyState>
+        <EmptyStateIcon icon={({ ...props }) => <Icon name="loading" {...props} />} />
+        <Title headingLevel="h2" size="4xl">
+          { text }
+        </Title>
+      </EmptyState>
+    </Center>
   );
 }
 

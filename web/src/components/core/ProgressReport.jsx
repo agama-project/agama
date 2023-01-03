@@ -54,10 +54,10 @@ const ProgressReport = () => {
     });
   }, [client.software]);
 
-  if (!progress.steps) return <Text className="vertically-centered horizontally-centered">Waiting for progress status...</Text>;
+  if (!progress.steps) return <Text>Waiting for progress status...</Text>;
 
   return (
-    <div className="flow vertically-centered">
+    <>
       <Progress
         min={0}
         max={progress.steps}
@@ -79,7 +79,7 @@ const ProgressReport = () => {
         aria-label={subProgress?.message || " "}
         aria-hidden={!subProgress}
       />
-    </div>
+    </>
   );
 };
 

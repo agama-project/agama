@@ -68,7 +68,7 @@ function Layout({ children }) {
         <HeaderActions.Target as="span" />
       </header>
 
-      <main>{children}</main>
+      <main className="">{children}</main>
 
       <footer className="flow-flex-row" data-state="reversed">
         <FooterActions.Target

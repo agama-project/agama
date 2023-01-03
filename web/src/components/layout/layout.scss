@@ -72,8 +72,22 @@ body {
   flex-direction: row-reverse;
 }
 
+// Sadly, Firefox does not support :has pseudo-selector yet.
+// See @components/layout/Center documentation.
+//
+// main:has(.vertically-centered) {
+//   display: grid;
+//   place-items: center;
+//   block-size: 100%;
+// }
 .vertically-centered {
-  align-self: center;
+  display: grid;
+  place-items: center;
+  block-size: 100%;
+}
+
+.vertically-centered > div {
+  inline-size: 100%;
 }
 
 .horizontally-centered {

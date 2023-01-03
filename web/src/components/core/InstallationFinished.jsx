@@ -29,7 +29,7 @@ import {
   EmptyStateBody
 } from "@patternfly/react-core";
 
-import { Icon, Title as SectionTitle, PageIcon, MainActions } from "@components/layout";
+import { Center, Icon, Title as SectionTitle, PageIcon, MainActions } from "@components/layout";
 import { useInstallerClient } from "@context/installer";
 
 function InstallationFinished() {
@@ -37,7 +37,7 @@ function InstallationFinished() {
   const onRebootAction = () => client.manager.rebootSystem();
 
   return (
-    <>
+    <Center>
       <SectionTitle>Installation Finished</SectionTitle>
       <PageIcon><Icon name="task_alt" /></PageIcon>
       <MainActions>
@@ -46,7 +46,7 @@ function InstallationFinished() {
         </Button>
       </MainActions>
 
-      <EmptyState className="vertically-centered">
+      <EmptyState>
         <EmptyStateIcon icon={() => <Icon name="check_circle" />} className="success-icon" />
         <Title headingLevel="h2" size="4xl">
           Congratulations!
@@ -61,7 +61,7 @@ function InstallationFinished() {
           </div>
         </EmptyStateBody>
       </EmptyState>
-    </>
+    </Center>
   );
 }
 
