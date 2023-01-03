@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jan  2 12:53:50 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Add missing favicon (gh#yast/d-installer#387).
+
+-------------------------------------------------------------------
 Mon Jan  2 11:46:37 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Do not show the link to configure wifi networks when there are no
