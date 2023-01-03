@@ -47,7 +47,7 @@ function InstallationFinished() {
       </MainActions>
 
       <EmptyState>
-        <EmptyStateIcon icon={() => <Icon name="check_circle" />} className="success-icon" />
+        <EmptyStateIcon icon={({ ...props }) => <Icon name="check_circle" { ...props } />} className="success-icon" />
         <Title headingLevel="h2" size="4xl">
           Congratulations!
         </Title>
