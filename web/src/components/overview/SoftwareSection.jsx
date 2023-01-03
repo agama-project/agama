@@ -86,13 +86,13 @@ export default function SoftwareSection ({ showErrors }) {
 
   const UsedSize = () => {
     if (state.size === "") {
+      return <InstallerSkeleton lines={1} />;
+    } else {
       return (
         <>
-          Computing ...
+          Installation will take {state.size}.
         </>
       );
-    } else {
-      return <InstallerSkeleton lines={1} />;
     }
   };
 
