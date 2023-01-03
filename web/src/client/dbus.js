@@ -73,7 +73,9 @@ const DEFAULT_DBUS_ADDRESS = "unix:path=/run/d-installer/bus";
 class DBusClient {
   /**
    * @param {string} service - service name
-   * @param {string|undefined} bus - bus name ("system" or undefined)
+   * @param {string|undefined} bus - bus name ("system" or undefined);
+   *   undefined means use the bus where D-Installer lives (a dedicated one)
+   *   "system" is for other services like NetworkManager
    */
   constructor(service, bus = undefined) {
     this.client = cockpit.dbus(service, {

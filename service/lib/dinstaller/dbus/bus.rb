@@ -24,7 +24,7 @@ require "dinstaller/dbus/server_manager"
 
 module DInstaller
   module DBus
-    # Represents the D-Installer bus
+    # Represents the D-Installer bus, a distinct one from the system and session buses.
     class Bus < ::DBus::Connection
       class << self
         # Returns the current D-Bus connection
@@ -43,7 +43,9 @@ module DInstaller
         end
       end
 
-      def initialize(address = nil)
+      # @param address [String] a connectable address
+      # @see https://dbus.freedesktop.org/doc/dbus-specification.html#addresses
+      def initialize(address)
         super(address)
         send_hello
       end
