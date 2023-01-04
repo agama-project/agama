@@ -44,7 +44,6 @@ const reducer = (state, action) => {
       if (state.busy) return state;
 
       const { errors, size } = action.payload;
-
       console.log("errors:", errors);
 
       return { ...state, errors, size, errorsRead: true };

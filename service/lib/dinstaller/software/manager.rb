@@ -122,7 +122,7 @@ module DInstaller
       end
 
       def validate
-        # validation without probing does not make sense and product false errors
+        # validation without probing does not make sense and produces false errors
         return [] unless @probed
 
         msgs = propose
@@ -299,7 +299,7 @@ module DInstaller
         result = []
         # TODO: find if there is a better way to get proposal issue as list
         result.concat(process_warnings(proposal)) if proposal["warning_level"] == :blocker
-        result.concat(solve_messages) if !deps_result
+        result.concat(solve_messages) unless deps_result
 
         result
       end

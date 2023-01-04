@@ -2,6 +2,7 @@
 Tue Jan 10 11:06:23 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Implement validation of software proposal
+  (gh#yast/d-installer#381)
 
 -------------------------------------------------------------------
 Tue Jan 10 10:29:00 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
