@@ -80,6 +80,17 @@ class ManagerBaseClient {
   }
 
   /**
+   * Returns a path where logs are stored
+   *
+   *
+   * @return {Promise<string>}
+   */
+  async provideLogs() {
+    const proxy = await this.client.proxy(MANAGER_IFACE);
+    return proxy.ProvideLogs("root"); // lets hardcode root here
+  }
+
+  /**
    * Return the installer status
    *
    * @return {Promise<number>}
