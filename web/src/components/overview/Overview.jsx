@@ -26,7 +26,7 @@ import { useSoftware } from "@context/software";
 import { Button } from "@patternfly/react-core";
 
 import { Icon, Title, PageIcon, PageActions, MainActions } from "@components/layout";
-import { Section, InstallButton } from "@components/core";
+import { Section, InstallButton, LogsButton } from "@components/core";
 import { LanguageSelector } from "@components/language";
 import { StorageSection } from "@components/overview";
 import { Users } from "@components/users";
@@ -64,7 +64,10 @@ function Overview() {
       <Title>{selectedProduct && selectedProduct.name}</Title>
       <PageIcon><Icon name="inventory_2" /></PageIcon>
       <PageActions><ChangeProductButton /></PageActions>
-      <MainActions><InstallButton onClick={() => setShowErrors(true)} /></MainActions>
+      <MainActions>
+        <InstallButton onClick={() => setShowErrors(true)} />
+        <LogsButton />
+      </MainActions>
       <Section key="language" title="Language" iconName="translate">
         <LanguageSelector />
       </Section>

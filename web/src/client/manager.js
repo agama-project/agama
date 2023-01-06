@@ -91,6 +91,17 @@ class ManagerBaseClient {
   }
 
   /**
+   * Returns a content of log file
+   *
+   * @return {Promise<Uint8Array>}
+   */
+  async logsContent() {
+    const path = await this.provideLogs();
+    const file = cockpit.file(path, { binary: true });
+    return file.read();
+  }
+
+  /**
    * Return the installer status
    *
    * @return {Promise<number>}
