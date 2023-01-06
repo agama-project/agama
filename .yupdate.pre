@@ -1,0 +1,79 @@
+#! /bin/bash
+
+#
+# This is a hook script for the yupdate tool, it is automatically executed
+# before running "rake install" command.
+#
+# This script prepares the live system for compiling and installing new
+# D-Installer code.
+#
+# The script does several tasks:
+# - it checks if there is enough RAM, if there is not enough RAM the system
+#   might freeze completely
+# - installs some packages required for compilations (mainly make, npm and nodejs),
+# - if there is no package repository configured it adds the main OSS repository
+#   automatically
+# - optionally caches the installed NPM packages, this is useful if you want to
+#   run the yupdate script several times
+#
+
+# the needed packages for compiling the d-installer cockpit module
+PACKAGES=(appstream-glib-devel make npm)
+
+# add repositories
+function add_repos() {
+  # only if no repository is defined
+  if zypper lr | grep -q "No repositories defined"; then
+    SYSTEM=$(. /etc/os-release && echo "$ID")
+
+    # check the installed system, add the proper repo for TW or Leap
+    if [ "$SYSTEM" = "opensuse-tumbleweed" ]; then
+      URL="http://download.opensuse.org/tumbleweed/repo/oss"
+    elif [ "$SYSTEM" = "opensuse-leap" ]; then
+      URL="http://download.opensuse.org/distribution/leap/\${releasever}/repo/oss/"
+    else
+      echo "Unsupported system: $SYSTEM"
+      exit 1
+    fi
+
+    zypper addrepo "$URL" main-repo
+    zypper --gpg-auto-import-keys refresh
+  fi
+}
+
+function install_packages() {
+  add_repos
+  zypper --non-interactive install --no-recommends "${PACKAGES[@]}"
+}
+
+# restore the NPM cache if it is present
+function load_npm_cache() {
+  CACHEDIR="$HOME/.cache/d-installer-devel/"
+
+  if [ -d "$CACHEDIR/node_modules" ]; then
+    echo "Restoring NPM cache..."
+    MYDIR=$(realpath "$(dirname "$0")")
+    cp -aR "$CACHEDIR/node_modules" "$MYDIR/web/"
+  fi
+}
+
+# memory check, with not enough memory the system freezes
+RAM=$(grep "MemTotal:" /proc/meminfo | sed -e "s/MemTotal:[[:space:]]*\([0-9]\+\) kB/\\1/")
+# less than ~4GB RAM
+if [ "$RAM" -lt 4000000 ] && [ "$SKIP_MEM_CHECK" != "1" ]; then
+  echo >&2
+  echo "ERROR: The system has too low memory ($RAM kB) for applying the update." >&2
+  echo "The system could completely freeze and become unresposible." >&2
+  echo "You can skip this check with SKIP_MEM_CHECK=1 environment variable." >&2
+  echo >&2
+
+  exit 1
+fi
+
+# check if all needed packages are installed, if not then install them
+rpm -q --whatprovides "${PACKAGES[@]}" > /dev/null || install_packages
+
+# optionally restore the cached NPM packages
+if [ "$NPM_CACHE" = "1" ] ; then
+  load_npm_cache
+fi

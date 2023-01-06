@@ -1,0 +1,85 @@
+# Patching the D-Installer on a Live Medium
+
+The D-installer allows patching itself directly from the GitHub sources
+or from your local Git checkout using the [yupdate script](
+https://github.com/yast/yast-installation/blob/master/bin/yupdate).
+See more details in the [yupdate documentation](
+https://github.com/yast/yast-installation/blob/master/doc/yupdate.md).
+
+This patching only works when running from a live medium. You can also patch
+the standard YaST modules included in the installer if needed.
+
+The goal is to provide an easy way for testing fixes or new features for the
+end users or testers.
+
+## Patching from GitHub
+
+```
+yupdate patch yast/d-installer master
+```
+
+You can replace the `master` branch with any branch containing a fix or a new feature.
+
+## Patching from a Local Git Checkout
+
+First you need to run the `rake server` command in your D-Installer Git checkout.
+
+Then run this command:
+
+```
+yupdate patch 192.168.1.2:8000
+```
+
+Replace the IP address with the IP address of your machine running the
+`rake server` command. Port 8000 is the default port used, modify it if you use
+a different port number.
+
+## Options
+
+You can modify the update process with these environment variables:
+
+- `NPM_CACHE=1` - The installed NPM packages will be saved to a local cache
+  and will be reused in the next run. This can speed up the patching process
+  if you need to patch the installer several times. On the other hand this
+  increases the amount of needed RAM memory.
+  The cache is stored in `$HOME/.cache/d-installer-devel/` directory,
+  if you need to refresh the content of the cache then delete this directory.
+
+## Notes
+
+For compiling the Javascript code and SCSS files the yupdate installs several
+RPM and NPM packages. Because the live medium is completely running in a RAM
+disk all downloaded files are stored in the RAM memory.
+
+That means the machine should have enough memory for this process. If there
+is not enough memory the system becomes completely frozen and might not respond
+to any input event.
+
+Currently the minimum for a safe operation is around 4GB RAM. If you use the
+`NPM_CACHE=1` option then recommended minimum is around 5GB.
+
+## Activating the Changes
+
+After patching the files the DBus service is restarted if any related file
+has been changed. That means the configured settings will be lost.
+
+To activate the changes in the web frontend you need to reload the page in the
+browser.
+
+:warning: *In the FireFox browser you need to use the `Ctrl+F5` combination
+for reloading the page, this uses full reload ignoring the cache. Plain `F5`
+uses cached files and will not reflect the update on the server!*
+
+In some special cases you might need to do some additional actions manually,
+the update script might not handle all corner cases.
+
+## Implementation Details
+
+The support is implemented in the main [Rakefile](../Rakefile) and in the
+[.yupdate.pre](../.yupdate.pre) and [.yupdate.post](../.yupdate.post) hook
+scripts.
+
+- The `.yupdate.pre` script prepares the system for compiling and installing
+  new D-Installer files.
+- The `Rakefile` code builds and installs both backend and frontend parts.
+- The `.yupdate.pre` script activates the changes, it restarts the backend if needed.

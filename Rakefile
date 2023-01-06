@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "shellwords"
+require "fileutils"
 require "yast/rake"
 
 # Infers the gem name from the source code
@@ -79,5 +81,38 @@ task package: [] do
     gem2rpm = File.join(package_dir, "gem2rpm.yml")
     sh "gem2rpm --config #{gem2rpm} --template opensuse #{gem} > package/#{package_name}.spec"
     FileUtils.mv(gem, package_dir)
+  end
+end
+
+# support for patching by the yupdate script,
+# only when running in the inst-sys or live medium
+if File.exist?("/.packages.initrd") || `mount`.match?(/^[\w]+ on \/ type overlay/)
+  Rake::Task["install"].clear
+  task :install do
+    destdir = ENV["DESTDIR"] || "/"
+
+    puts "Installing the DBus service..."
+    Dir.chdir("service") do
+      sh "gem build d-installer.gemspec"
+      sh "gem install --local --force --no-format-exec --no-doc --build-root #{destdir.shellescape} d-installer-*.gem"
+
+      # update the DBus configuration files
+      sh "cp share/org.opensuse.DInstaller*.service /usr/share/dbus-1/system-services"
+      sh "cp share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf"
+
+      # update the systemd service file
+      source_file = "share/systemd.service"
+      target_file = "/usr/lib/systemd/system/d-installer.service"
+
+      unless FileUtils.identical?(source_file, target_file)
+        FileUtils.cp(source_file, target_file)
+        sh "systemctl daemon-reload"
+      end
+    end
+
+    puts "Installing the Web frontend..."
+    Dir.chdir("web") do
+      sh "NODE_ENV=production make install"
+    end
   end
 end
