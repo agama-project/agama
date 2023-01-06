@@ -88,7 +88,7 @@ const LogsButton = () => {
     case states.download: {
       const blob = new Blob([state.file]);
       const url = window.URL.createObjectURL(blob);
-      return <Button isLarge component="a" href={url}>Download TODO</Button>;
+      return <Button isLarge component="a" href={url} download="y2logs.tar.xz">Download Logs</Button>;
     }
   }
 };
