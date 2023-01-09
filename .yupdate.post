@@ -1,0 +1,48 @@
+#! /bin/bash
+
+#
+# This is a hook script for the yupdate tool, it is automatically executed
+# after running "rake install" command.
+#
+# The script does several tasks:
+# - it restarts the DBus service when any file in the d-installer ruby gem
+#   was updated
+# - saves the installed NPM packages to a cache so they can be reused in the
+#   next yupdate run
+#
+
+# restart the D-Installer service if needed
+function restart_service() {
+  # get the service start time
+  SERVICE_START=$(systemctl show d-installer | grep "^ExecMainStartTimestamp=" | sed -e "s/^ExecMainStartTimestamp=\(.*\)\$/\\1/")
+
+  if [ -n "$SERVICE_START" ]; then
+    SERVICE_START_UNIX_TIME=$(date -d "$SERVICE_START" +"%s")
+    # find the date of the latest file in the d-installer gem
+    # the regexp is used to ignore the d-installer-cli files
+    NEWEST_FILE_TIME=$(find /usr/lib*/ruby/gems/*/gems -type f -regex '\(.*/\)?d-installer-[0-9].*\(/.*\)?' -exec stat --format '%Y' "{}" \; | sort -nr | head -n 1)
+
+    # when a file is newer than the start time then restart the service
+    if [ -n "$NEWEST_FILE_TIME" ] && [ "$SERVICE_START_UNIX_TIME" -lt "$NEWEST_FILE_TIME" ]; then
+      echo "Restarting D-Installer service..."
+      systemctl restart d-installer
+    fi
+  fi
+}
+
+# copy installed NPM packages to cache
+function save_npm_cache() {
+  echo "Saving NPM cache..."
+  CACHEDIR="$HOME/.cache/d-installer-devel/"
+  mkdir -p "$CACHEDIR"
+
+  MYDIR=$(realpath "$(dirname "$0")")
+  cp -aR "$MYDIR/web/node_modules" "$CACHEDIR"
+}
+
+restart_service
+
+# cache the installed NPM packages
+if [ "$NPM_CACHE" = "1" ] ; then
+  save_npm_cache
+fi

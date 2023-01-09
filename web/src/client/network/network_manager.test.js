@@ -30,9 +30,55 @@ jest.mock("../dbus");
 const NM_IFACE = "org.freedesktop.NetworkManager";
 const NM_SETTINGS_IFACE = "org.freedesktop.NetworkManager.Settings";
 const IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
+const DEVICE_IFACE = "org.freedesktop.NetworkManager.Device";
 const NM_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Settings.Connection";
 const ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Active";
 const ACCESS_POINT_IFACE = "org.freedesktop.NetworkManager.AccessPoint";
+
+let devices;
+const defaultDevices = {
+  "/org/freedesktop/NetworkManager/Devices/17": {
+    ActiveConnection: "/",
+    NmPluginMissing: false,
+    Real: true,
+    InterfaceFlags: 1,
+    DeviceType: 2,
+    Mtu: 1500,
+    Ports: [],
+    IpInterface: "",
+    DriverVersion: "6.0.12-1-default",
+    State: 30,
+    Ip6Config: "/org/freedesktop/NetworkManager/IP6Config/17",
+    Metered: 0,
+    Ip4Address: 0,
+    LldpNeighbors: [],
+    Interface: "wlp0s20u5",
+    FirmwareMissing: false,
+    Ip6Connectivity: 1,
+    Driver: "mt7601u",
+    PhysicalPortId: "",
+    Capabilities: 1,
+    Dhcp4Config: "/",
+    AvailableConnections: [
+      "/org/freedesktop/NetworkManager/Settings/3",
+      "/org/freedesktop/NetworkManager/Settings/4",
+      "/org/freedesktop/NetworkManager/Settings/5"
+    ],
+    HwAddress: "BA:FB:BE:AB:00:5B",
+    Managed: true,
+    StateReason: [
+      30,
+      42
+    ],
+    FirmwareVersion: "N/A",
+    Ip4Config: "/org/freedesktop/NetworkManager/IP4Config/17",
+    Udi: "/sys/devices/pci0000:00/0000:00:14.0/usb2/2-5/2-5:1.0/net/wlp0s20u5",
+    Autoconnect: true,
+    Ip4Connectivity: 1,
+    Path: "pci-0000:00:14.0-usb-0:5:1.0",
+    Dhcp6Config: "/"
+  }
+};
 
 const accessPoints = {
   "/org/freedesktop/NetworkManager/AccessPoint/11" : {
@@ -129,15 +175,8 @@ const addressesData = {
 
 const ActivateConnectionFn = jest.fn();
 
-const networkProxy = {
-  wait: jest.fn(),
-  ActivateConnection: ActivateConnectionFn,
-  ActiveConnections: Object.keys(activeConnections),
-  WirelessEnabled: false,
-  WifiHardwareEnabled: true
-};
-
 const AddConnectionFn = jest.fn();
+let networkProxy;
 const networkSettingsProxy = {
   wait: jest.fn(),
   Hostname: "testing-machine",
@@ -145,10 +184,6 @@ const networkSettingsProxy = {
   AddConnection: AddConnectionFn,
   addEventListener: () => ({ value: jest.fn(), enumerable: false })
 };
-
-Object.defineProperties(networkProxy, {
-  addEventListener: { value: jest.fn(), enumerable: false }
-});
 
 const connectionSettingsMock = {
   wait: jest.fn(),
@@ -182,6 +217,17 @@ const connectionSettingsProxy = () => connectionSettingsMock;
 
 describe("NetworkManagerAdapter", () => {
   beforeEach(() => {
+    networkProxy = {
+      wait: jest.fn(),
+      ActivateConnection: ActivateConnectionFn,
+      ActiveConnections: Object.keys(activeConnections),
+      WirelessEnabled: true,
+      WirelessHardwareEnabled: true,
+      addEventListener: jest.fn()
+    };
+
+    devices = defaultDevices;
+
     DBusClient.mockImplementation(() => {
       return {
         proxy: (iface) => {
@@ -192,6 +238,7 @@ describe("NetworkManagerAdapter", () => {
         proxies: (iface) => {
           if (iface === ACCESS_POINT_IFACE) return accessPoints;
           if (iface === ACTIVE_CONNECTION_IFACE) return activeConnections;
+          if (iface === DEVICE_IFACE) return devices;
           if (iface === NM_CONNECTION_IFACE) return connections;
           if (iface === IP4CONFIG_IFACE) return addressesData;
           return {};
@@ -359,12 +406,61 @@ describe("NetworkManagerAdapter", () => {
     });
   });
 
+  describe("#availableWifiDevices", () => {
+    it("returns the list of WiFi devices", async () => {
+      const client = new NetworkManagerAdapter();
+      await client.setUp();
+
+      expect(client.availableWifiDevices().length).toEqual(1);
+      expect(client.availableWifiDevices()[0].Interface).toEqual("wlp0s20u5");
+    });
+  });
+
+  describe("#wifiScanSupported", () => {
+    describe("when wireless devices are disabled by software", () => {
+      it("returns false", async () => {
+        const client = new NetworkManagerAdapter();
+        networkProxy.WirelessEnabled = false;
+        await client.setUp();
+        expect(client.wifiScanSupported()).toEqual(false);
+      });
+    });
+
+    describe("when wireless devices are disabled by hardware", () => {
+      it("returns false", async () => {
+        const client = new NetworkManagerAdapter();
+        networkProxy.WirelessHardwareEnabled = false;
+        await client.setUp();
+        expect(client.wifiScanSupported()).toEqual(false);
+      });
+    });
+
+    describe("when wireless devices are enabled", () => {
+      describe("but there are no WiFi devices", () => {
+        it("returns false", async () => {
+          const client = new NetworkManagerAdapter();
+          devices = {};
+          await client.setUp();
+          expect(client.wifiScanSupported()).toEqual(false);
+        });
+      });
+
+      describe("and at least a WiFi devices is present in the system", () => {
+        it("returns true", async () => {
+          const client = new NetworkManagerAdapter();
+          await client.setUp();
+          expect(client.wifiScanSupported()).toEqual(true);
+        });
+      });
+    });
+  });
+
   describe("#settings", () => {
-    it("returns the Network Manager settings hostname", async() => {
+    it("returns the Network Manager settings", async() => {
       const client = new NetworkManagerAdapter();
       await client.setUp();
       expect(client.settings().hostname).toEqual("testing-machine");
-      expect(client.settings().wireless).toEqual(false);
+      expect(client.settings().wifiScanSupported).toEqual(true);
     });
   });
 });

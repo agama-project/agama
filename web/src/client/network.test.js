@@ -39,7 +39,7 @@ const conn = {
 };
 
 const settings = {
-  wireless: true,
+  wifiScanSupported: true,
   hostname: "localhost.localdomain"
 };
 
@@ -78,7 +78,7 @@ describe("NetworkClient", () => {
     it("returns network general settings", () => {
       const client = new NetworkClient(adapter);
       expect(client.settings().hostname).toEqual("localhost.localdomain");
-      expect(client.settings().wireless).toEqual(true);
+      expect(client.settings().wifiScanSupported).toEqual(true);
     });
   });
 });
