@@ -64,6 +64,7 @@ end
 
 ORDERED_SERVICES = [:questions, :language, :software, :storage, :users, :manager].freeze
 BUS_ADDRESS_FILE = "/run/d-installer/bus.address"
+BUS_PID_FILE = "/run/d-installer/bus.pid"
 
 # Normally the services are started by D-Bus activation.
 # This starts all the services sequentially without relying on that.
@@ -109,7 +110,10 @@ elsif ["-k", "--kill"].include?(ARGV[0])
   system "pkill -f bin/d-installer.[a-z]"
   # stop the d-bus daemon
   # FIXME: use the ServerManager (or the Bus.current instance) to stop the bus
-  system "cat /run/d-installer/bus.pid | xargs kill -9"
+  exit unless File.exist?(BUS_PID_FILE)
+
+  pid = File.read(BUS_PID_FILE)
+  Process.kill("KILL", pid.to_i)
 else
   name = ARGV[0]
   Signal.trap("SIGINT") do
