@@ -63,6 +63,7 @@ def start_service(name)
 end
 
 ORDERED_SERVICES = [:questions, :language, :software, :storage, :users, :manager].freeze
+BUS_ADDRESS_FILE = "/run/d-installer/bus.address"
 
 # Normally the services are started by D-Bus activation.
 # This starts all the services sequentially without relying on that.
@@ -100,7 +101,10 @@ elsif ["-s", "--status"].include?(ARGV[0])
   system "pgrep -fl bin/d-installer.[a-z]"
   # busctl is prettier but will find nothing until the service files are installed,
   # hence the pgrep above
-  system "busctl | grep -E '^NAME|DInstaller'"
+  exit unless File.exist?(BUS_ADDRESS_FILE)
+
+  address = File.read(BUS_ADDRESS_FILE)
+  system "busctl --address #{address} | grep -E '^NAME|DInstaller'"
 elsif ["-k", "--kill"].include?(ARGV[0])
   system "pkill -f bin/d-installer.[a-z]"
   # stop the d-bus daemon
