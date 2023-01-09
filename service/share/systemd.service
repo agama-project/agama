@@ -7,6 +7,7 @@ After=network-online.target
 Type=dbus
 BusName=org.opensuse.DInstaller
 ExecStart=/usr/bin/d-installer manager
+ExecStop=/usr/bin/d-installer -k
 User=root
 TimeoutStopSec=5
 
