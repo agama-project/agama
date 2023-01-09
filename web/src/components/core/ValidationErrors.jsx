@@ -30,7 +30,7 @@ import {
   Popover
 } from "@patternfly/react-core";
 
-import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon';
+import { Icon } from '@components/layout';
 
 /**
  * @param {import("@client/mixins").ValidationError[]} errors - Validation errors
@@ -63,17 +63,19 @@ const ValidationErrors = ({ title = "Errors", errors }) => {
 
   if (!errors || errors.length === 0) return null;
 
+  const warningIcon = <Icon name="warning" size="16" />;
+
   if (errors.length === 1) {
     return (
       <>
-        <div className="warning-text"><ExclamationTriangleIcon /> {errors[0].message}</div>
+        <div className="warning-text">{warningIcon} {errors[0].message}</div>
       </>
     );
   } else {
     return (
       <>
         <div className="warning-text">
-          <ExclamationTriangleIcon />
+          { warningIcon }
           <a href="#" onClick={() => setPopoverVisible(true)}>{`${errors.length} errors found`}</a>
           <Popover
             isVisible={popoverVisible}

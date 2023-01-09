@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Mon Jan  2 10:03:18 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Ensure custom fonts are including in the build
+  (gh#yast/d-installer#385).
+
+-------------------------------------------------------------------
+Fri Dec 30 11:56:46 UTC 2022 - David Diaz <dgonzalez@suse.com>
+
+- Switch to Material Symbols icon set and refactor how icons
+  are imported (gh#yast/d-installer#383).
+
+-------------------------------------------------------------------
 Thu Dec 15 10:14:22 UTC 2022 - Knut Anderssen <kanderssen@suse.com>
 
 - Do not show the link to configure wifi networks when wireless is

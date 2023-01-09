@@ -29,11 +29,7 @@ import {
   DataListItemCells
 } from "@patternfly/react-core";
 
-import {
-  // EOS_LAN icon does not work
-  EOS_ENDPOINTS_CONNECTED as EthernetIcon,
-  EOS_WIFI as WifiIcon
-} from "eos-icons-react";
+import { Icon } from "@components/layout";
 
 import { ConnectionTypes } from "@client/network";
 import { formatIp } from "@client/network/utils";
@@ -42,20 +38,20 @@ export default function ConnectionsDataList({ conns, onSelect }) {
   if (conns.length === 0) return null;
 
   const renderConnectionIcon = (connectionType) => {
-    let Icon;
+    let iconName;
 
     switch (connectionType) {
       case ConnectionTypes.ETHERNET:
-        Icon = EthernetIcon;
+        iconName = "lan";
         break;
       case ConnectionTypes.WIFI:
-        Icon = WifiIcon;
+        iconName = "wifi";
         break;
       default:
-        Icon = () => null;
+        return null;
     }
 
-    return <Icon size="16" />;
+    return <Icon name={iconName} size="16" />;
   };
 
   const renderConnectionId = (connection, onClick) => {

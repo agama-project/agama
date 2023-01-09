@@ -15,7 +15,8 @@
       "@client/*": ["src/client/*"],
       "@components/*": ["src/components/*"],
       "@context/*": ["src/context/*"],
-      "@lib/*": ["src/lib/*"]
+      "@lib/*": ["src/lib/*"],
+      "~icons/*": ["node_modules/@material-symbols/svg-400/outlined/*"]
     }
   },
   "include": [

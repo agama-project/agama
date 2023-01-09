@@ -89,6 +89,7 @@ module.exports = {
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   // moduleNameMapper: {},
   moduleNameMapper: {
+    "\\.svg\\?component$": "<rootDir>/__mocks__/svg.js",
     ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
     "\\.(css|scss)$": "identity-obj-proxy",
   },

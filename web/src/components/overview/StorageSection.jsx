@@ -31,11 +31,9 @@ import {
 import { useCancellablePromise } from "@/utils";
 import { useInstallerClient } from "@context/installer";
 import { BUSY } from "@client/status";
+import { Icon } from "@components/layout";
 import { InstallerSkeleton, Section } from "@components/core";
 import { ProposalSummary } from "@components/storage";
-
-import { EOS_VOLUME as HardDriveIcon } from "eos-icons-react";
-import { PencilAltIcon as EditIcon } from '@patternfly/react-icons';
 
 const initialState = {
   busy: false,
@@ -101,7 +99,11 @@ export default function StorageSection ({ showErrors }) {
           <ProposalSummary proposal={state.proposal} />
         </StackItem>
         <StackItem>
-          <Button variant="link" icon={<EditIcon />} onClick={() => navigate("/storage")}>
+          <Button
+            variant="link"
+            icon={<Icon name="edit" size="16" />}
+            onClick={() => navigate("/storage")}
+          >
             Edit storage settings
           </Button>
         </StackItem>
@@ -110,7 +112,7 @@ export default function StorageSection ({ showErrors }) {
   };
 
   return (
-    <Section key="storage-section" title="Storage" icon={HardDriveIcon} errors={errors}>
+    <Section key="storage-section" title="Storage" icon={() => <Icon name="hard_drive" />} errors={errors}>
       <SectionContent />
     </Section>
   );

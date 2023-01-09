@@ -21,10 +21,9 @@
 
 import React, { useState } from "react";
 import { Alert, Form, FormGroup, Stack, StackItem, Text, TextInput } from "@patternfly/react-core";
+import { Icon } from "@components/layout";
 import { Popup } from "@components/core";
 import { QuestionActions } from "@components/questions";
-
-import { EOS_LOCK as Icon } from "eos-icons-react";
 
 const renderAlert = (attempt) => {
   if (!attempt || attempt === 1) return null;
@@ -59,7 +58,7 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       isOpen
       title="Encrypted Device"
       aria-label="Question"
-      titleIconVariant={() => <Icon size="24" />}
+      titleIconVariant={() => <Icon name="lock" size="24" />}
     >
       <Stack hasGutter>
         { renderAlert(question.attempt) }
