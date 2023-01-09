@@ -20,7 +20,7 @@
  */
 
 // @ts-check
-import { DBusClient } from "./dbus";
+import DBusClient from "./dbus";
 
 const LANGUAGE_SERVICE = "org.opensuse.DInstaller.Language";
 const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
@@ -37,10 +37,10 @@ const LANGUAGE_PATH = "/org/opensuse/DInstaller/Language1";
  */
 class LanguageClient {
   /**
-   * @param {DBusClient} [dbusClient] - D-Bus client
+   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
    */
-  constructor(dbusClient) {
-    this.client = dbusClient || new DBusClient(LANGUAGE_SERVICE);
+  constructor(address = undefined) {
+    this.client = new DBusClient(LANGUAGE_SERVICE, address);
   }
 
   /**

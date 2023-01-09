@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 const InstallerClientContext = React.createContext(undefined);
 
@@ -40,8 +40,22 @@ function useInstallerClient() {
 }
 
 function InstallerClientProvider({ client, children }) {
+  const [value, setValue] = useState(null);
+
+  useEffect(() => {
+    if (typeof client === "function") {
+      client().then(setValue);
+    } else {
+      setValue(client);
+    }
+  }, [client]);
+
+  if (!value) {
+    return null;
+  }
+
   return (
-    <InstallerClientContext.Provider value={client}>{children}</InstallerClientContext.Provider>
+    <InstallerClientContext.Provider value={value}>{children}</InstallerClientContext.Provider>
   );
 }
 

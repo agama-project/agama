@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import { DBusClient } from "./dbus";
+import DBusClient from "./dbus";
 import { WithStatus, WithProgress } from "./mixins";
 
 const SOFTWARE_SERVICE = "org.opensuse.DInstaller.Software";
@@ -42,10 +42,10 @@ const SOFTWARE_PATH = "/org/opensuse/DInstaller/Software1";
  */
 class SoftwareBaseClient {
   /**
-   * @param {DBusClient} [dbusClient] - D-Bus client
+   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
    */
-  constructor(dbusClient) {
-    this.client = dbusClient || new DBusClient(SOFTWARE_SERVICE);
+  constructor(address = undefined) {
+    this.client = new DBusClient(SOFTWARE_SERVICE, address);
   }
 
   /**

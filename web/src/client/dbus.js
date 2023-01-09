@@ -66,24 +66,24 @@ import cockpit from "../lib/cockpit";
  * @property {string} [arg0] - First element of the D-Bus message
  */
 
-/* TODO: get the real address from the system */
-const DEFAULT_DBUS_ADDRESS = "unix:path=/run/d-installer/bus";
-
 /** Wrapper class around cockpit D-Bus client */
 class DBusClient {
   /**
    * @param {string} service - service name
-   * @param {string|undefined} bus - bus name ("system" or undefined);
-   *   undefined means use the bus where D-Installer lives (a dedicated one)
-   *   "system" is for other services like NetworkManager
+   * @param {string|undefined} address - D-Bus address. If no address is given, it connects
+   *   to the "system" bus.
    */
-  constructor(service, bus = undefined) {
-    this.client = cockpit.dbus(service, {
-      bus: bus || "none",
-      address: bus === undefined ? DEFAULT_DBUS_ADDRESS : undefined,
+  constructor(service, address = undefined) {
+    const options = {
+      bus: address === undefined ? "system" : "none",
       superuser: "try"
+    };
+
+    if (address) {
+      options.address = address;
     }
-    );
+
+    this.client = cockpit.dbus(service, options);
   }
 
   /**
@@ -167,4 +167,4 @@ class DBusClient {
   }
 }
 
-export { DBusClient };
+export default DBusClient;

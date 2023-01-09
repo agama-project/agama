@@ -21,7 +21,6 @@
 
 // @ts-check
 
-import { DBusClient } from "./dbus";
 import { LanguageClient } from "./language";
 import { ManagerClient } from "./manager";
 import { Monitor } from "./monitor";
@@ -31,6 +30,7 @@ import { UsersClient } from "./users";
 import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
+import cockpit from "../lib/cockpit";
 
 const SERVICE_NAME = "org.opensuse.DInstaller";
 
@@ -49,20 +49,21 @@ const SERVICE_NAME = "org.opensuse.DInstaller";
 /**
  * Creates a D-Installer client
  *
- * @return {InstallerClient}
+ * @return {Promise<InstallerClient>}
  */
-const createClient = () => {
-  const client = new DBusClient(SERVICE_NAME);
+const createClient = async () => {
+  const file = cockpit.file("/run/d-installer/bus.address", { binary: false });
+  const address = await file.read();
 
   return {
-    language: new LanguageClient(),
-    manager: new ManagerClient(client),
-    monitor: new Monitor(client, SERVICE_NAME),
+    language: new LanguageClient(address),
+    manager: new ManagerClient(address),
+    monitor: new Monitor(address, SERVICE_NAME),
     network: new NetworkClient(),
-    software: new SoftwareClient(),
-    storage: new StorageClient(),
-    users: new UsersClient(),
-    questions: new QuestionsClient()
+    software: new SoftwareClient(address),
+    storage: new StorageClient(address),
+    users: new UsersClient(address),
+    questions: new QuestionsClient(address)
   };
 };
 

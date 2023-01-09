@@ -48,7 +48,7 @@ const STATUS_IFACE = "org.opensuse.DInstaller.ServiceStatus1";
  */
 
 /**
- * @typedef {GConstructor<{ client: import("./dbus").DBusClient }>} WithDBusClient
+ * @typedef {GConstructor<{ client: import("./dbus").default }>} WithDBusClient
  */
 
 /**

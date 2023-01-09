@@ -47,11 +47,9 @@ import { ProposalPage as StoragePage } from "@components/storage";
 import "./patternfly.scss";
 import "./app.scss";
 
-const client = createClient();
-
 ReactDOM.render(
   <StrictMode>
-    <InstallerClientProvider client={client}>
+    <InstallerClientProvider client={createClient}>
       <SoftwareProvider>
         <HashRouter>
           <Routes>

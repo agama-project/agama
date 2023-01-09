@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import { DBusClient } from "./dbus";
+import DBusClient from "./dbus";
 import { WithStatus, WithValidation } from "./mixins";
 import cockpit from "../lib/cockpit";
 
@@ -37,10 +37,10 @@ const STORAGE_PROPOSAL_PATH = "/org/opensuse/DInstaller/Storage/Proposal1";
  */
 class StorageBaseClient {
   /**
-   * @param {DBusClient} [dbusClient] - D-Bus client
+   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
    */
-  constructor(dbusClient) {
-    this.client = dbusClient || new DBusClient(STORAGE_SERVICE);
+  constructor(address = undefined) {
+    this.client = new DBusClient(STORAGE_SERVICE, address);
   }
 
   /**

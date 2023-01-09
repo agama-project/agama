@@ -19,15 +19,18 @@
  * find current contact information at www.suse.com.
  */
 
-import { DBusClient } from "./dbus";
+// @ts-check
+
+import DBusClient from "./dbus";
 import { StorageClient } from "./storage";
+
+jest.mock("./dbus");
 
 // NOTE: should we export them?
 const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
 
 const calculateFn = jest.fn();
 
-const dbusClient = new DBusClient("");
 const storageProposalProxy = {
   wait: jest.fn(),
   AvailableDevices: [
@@ -68,14 +71,19 @@ const storageProposalProxy = {
 };
 
 beforeEach(() => {
-  dbusClient.proxy = jest.fn().mockImplementation(iface => {
-    if (iface === STORAGE_PROPOSAL_IFACE) return storageProposalProxy;
+  // @ts-ignore
+  DBusClient.mockImplementation(() => {
+    return {
+      proxy: (iface) => {
+        if (iface === STORAGE_PROPOSAL_IFACE) return storageProposalProxy;
+      }
+    };
   });
 });
 
 describe("#getProposal", () => {
   it("returns the storage proposal settings and actions", async () => {
-    const client = new StorageClient(dbusClient);
+    const client = new StorageClient();
     const proposal = await client.getProposal();
     expect(proposal.availableDevices).toEqual([
       { id: "/dev/sda", label: "/dev/sda, 950 GiB, Windows" },
@@ -109,14 +117,14 @@ describe("#getProposal", () => {
 
 describe("#calculate", () => {
   it("calculates a default proposal when no settings are given", async () => {
-    const client = new StorageClient(dbusClient);
+    const client = new StorageClient();
     await client.calculateProposal({});
 
     expect(calculateFn).toHaveBeenCalledWith({});
   });
 
   it("calculates a proposal with the given settings", async () => {
-    const client = new StorageClient(dbusClient);
+    const client = new StorageClient();
     await client.calculateProposal({
       candidateDevices: ["/dev/vda"],
       encryptionPassword: "12345",

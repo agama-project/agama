@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import { DBusClient } from "./dbus";
+import DBusClient from "./dbus";
 
 const DBUS_SERVICE = "org.freedesktop.DBus";
 const MATCHER = { interface: DBUS_SERVICE, member: "NameOwnerChanged" };
@@ -31,12 +31,12 @@ const MATCHER = { interface: DBUS_SERVICE, member: "NameOwnerChanged" };
  */
 class Monitor {
   /**
-   * @param {DBusClient} dbusClient - D-Bus client
+   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
    * @param {string} serviceName - name of the service to monitor
    */
-  constructor(dbusClient, serviceName) {
+  constructor(address, serviceName) {
     this.serviceName = serviceName;
-    this.client = dbusClient || new DBusClient("org.freedesktop.DBus");
+    this.client = new DBusClient("org.freedesktop.DBus", address);
   }
 
   /**
