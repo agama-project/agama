@@ -30,6 +30,10 @@ describe DInstaller::DBus::ServerManager do
 
   let(:tmpdir) { Dir.mktmpdir }
 
+  before do
+    allow(Cheetah).to receive(:run).and_return("9999")
+  end
+
   after do
     FileUtils.remove_entry(tmpdir)
   end
