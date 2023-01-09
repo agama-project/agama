@@ -63,6 +63,7 @@ module DInstaller
           "--print-pid",
           stdout: :capture
         )
+        File.write(address_file, address)
         pid = output.strip
         File.write(pid_file, pid)
         pid.to_i
@@ -108,8 +109,18 @@ module DInstaller
         "/usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf"
       end
 
+      # Returns the path to the file containing the PID
+      #
+      # @return [String]
       def pid_file
         @pid_file ||= File.join(run_directory, "bus.pid")
+      end
+
+      # Returns the path to the file containing the D-Bus address
+      #
+      # @return [String]
+      def address_file
+        @address_file ||= File.join(run_directory, "bus.address")
       end
     end
   end

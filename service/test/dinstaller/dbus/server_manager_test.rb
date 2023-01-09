@@ -64,6 +64,12 @@ describe DInstaller::DBus::ServerManager do
         .and_return("1000")
       expect(subject.start_server).to eq(1000)
     end
+
+    it "writes the address to a file in the /run directory" do
+      subject.start_server
+      address = File.read(File.join(tmpdir, "bus.address"))
+      expect(address).to eq("unix:path=#{tmpdir}/bus")
+    end
   end
 
   describe "#find_server" do
