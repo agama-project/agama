@@ -31,7 +31,7 @@ const FakeProposalTargetForm = ({ id, onSubmit }) => {
   };
 
   return <form id={id} onSubmit={accept} aria-label="Target form" />;
-}
+};
 
 jest.mock("@components/storage/ProposalSummary", () => () => "Proposal summary");
 jest.mock("@components/storage/ProposalTargetForm", () => FakeProposalTargetForm);

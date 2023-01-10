@@ -31,11 +31,11 @@ const FakeProposalSettingsForm = ({ id, onSubmit }) => {
   };
 
   return <form id={id} onSubmit={accept} aria-label="Settings form" />;
-}
+};
 
 jest.mock("@components/storage/ProposalSettingsForm", () => FakeProposalSettingsForm);
 
-let proposal = {
+const proposal = {
   candidateDevices: ["/dev/sda"],
   encryptionPassword: "",
   lvm: false,
@@ -135,7 +135,7 @@ describe("when lvm is selected", () => {
 describe("when encryption is selected", () => {
   beforeEach(() => {
     proposal.lvm = false;
-    proposal.encryptionPassword = "12345"
+    proposal.encryptionPassword = "12345";
   });
 
   it("renders the proper description for the current settings", () => {
@@ -148,7 +148,7 @@ describe("when encryption is selected", () => {
 describe("when LVM and encryption are selected", () => {
   beforeEach(() => {
     proposal.lvm = true;
-    proposal.encryptionPassword = "12345"
+    proposal.encryptionPassword = "12345";
   });
 
   it("renders the proper description for the current settings", () => {

@@ -41,7 +41,7 @@ function useInstallerClient() {
   return context;
 }
 
-const BUS_ADDRESS_FILE = "/run/d-installer/bus.address"
+const BUS_ADDRESS_FILE = "/run/d-installer/bus.address";
 
 /**
   * @param {object} props

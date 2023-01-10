@@ -23,7 +23,7 @@ import React from "react";
 import { screen, within, waitFor } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
 import Network from "@components/network/Network";
-import { ConnectionState, ConnectionTypes } from "@client/network";
+import { ConnectionTypes } from "@client/network";
 import { createClient } from "@client";
 
 jest.mock("@client");

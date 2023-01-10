@@ -70,7 +70,6 @@ describe("when there is no proposal yet", () => {
 
     await screen.findByText("Loading proposal");
   });
-
 });
 
 describe("when there is a proposal", () => {

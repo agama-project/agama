@@ -45,7 +45,7 @@ const storageProposalProxy = {
       Optional: { t: "b", v: true },
       DeviceType: { t: "s", v: "partition" },
       Encrypted: { t: "b", v: false },
-      FsTypes: { t: "as", v: [{ t: "s" , v: "Btrfs"} , { t: "s", v: "Ext3"}] },
+      FsTypes: { t: "as", v: [{ t: "s", v: "Btrfs" }, { t: "s", v: "Ext3" }] },
       FsType: { t: "s", v: "Btrfs" },
       MinSize: { t: "x", v: 1024 },
       MaxSize: { t: "x", v: 2048 },
@@ -150,21 +150,24 @@ describe("#calculate", () => {
       CandidateDevices: { t: "as", v: ["/dev/vda"] },
       EncryptionPassword: { t: "s", v: "12345" },
       LVM: { t: "b", v: true },
-      Volumes: { t: "aa{sv}", v: [
-        {
-          MountPoint: { t: "s", v: "/test1" },
-          Encrypted: { t: "b", v: false },
-          FsType: { t: "s", v: "Btrfs" },
-          MinSize: { t: "x", v: 1024 },
-          MaxSize: { t: "x", v: 2048 },
-          FixedSizeLimits: { t: "b", v: false },
-          Snapshots: { t: "b", v: true }
-        },
-        {
-          MountPoint: { t: "s", v: "/test2"  },
-          MinSize: { t: "x", v: 1024 }
-        }
-      ]}
+      Volumes: {
+        t: "aa{sv}",
+        v: [
+          {
+            MountPoint: { t: "s", v: "/test1" },
+            Encrypted: { t: "b", v: false },
+            FsType: { t: "s", v: "Btrfs" },
+            MinSize: { t: "x", v: 1024 },
+            MaxSize: { t: "x", v: 2048 },
+            FixedSizeLimits: { t: "b", v: false },
+            Snapshots: { t: "b", v: true }
+          },
+          {
+            MountPoint: { t: "s", v: "/test2" },
+            MinSize: { t: "x", v: 1024 }
+          }
+        ]
+      }
     });
   });
 });
