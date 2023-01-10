@@ -27,8 +27,8 @@ import { ConnectionTypes } from "@client/network";
 import { createClient } from "@client";
 
 jest.mock("@client");
-jest.mock("@components/network/NetworkWiredStatus", () => () => "Wired Connections");
-jest.mock("@components/network/NetworkWifiStatus", () => () => "WiFi Connections");
+jest.mock("@components/network/NetworkWiredStatus", () => () => <div>Wired Connections</div>);
+jest.mock("@components/network/NetworkWifiStatus", () => () => <div>WiFi Connections</div>);
 
 const networkSettings = { wifiScanSupported: false, hostname: "test" };
 let settingsFn = jest.fn().mockReturnValue(networkSettings);

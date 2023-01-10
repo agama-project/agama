@@ -109,7 +109,13 @@ export default function Section({
     if (typeof onActionClick !== 'function') return null;
 
     const Action = () => (
-      <Button isInline variant="link" className="transform-on-hover" onClick={onActionClick}>
+      <Button
+        isInline
+        variant="link"
+        className="transform-on-hover"
+        onClick={onActionClick}
+        aria-label="Section settings"
+      >
         {renderIcon(actionIconName, 16)}
       </Button>
     );

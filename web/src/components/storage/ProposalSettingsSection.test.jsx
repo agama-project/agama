@@ -53,7 +53,7 @@ it("renders the list of the volumes to create", () => {
 it("renders an icon for configuring the settings", () => {
   installerRender(<ProposalSettingsSection proposal={proposal} />);
 
-  screen.getByRole("button", { name: "Settings section action icon" });
+  screen.getByRole("button", { name: "Section settings" });
 });
 
 it("does not show the popup by default", async () => {
@@ -67,7 +67,7 @@ it("does not show the popup by default", async () => {
 it("shows the popup with the form when the icon is clicked", async () => {
   const { user } = installerRender(<ProposalSettingsSection proposal={proposal} />);
 
-  const button = screen.getByRole("button", { name: "Settings section action icon" });
+  const button = screen.getByRole("button", { name: "Section settings" });
   await user.click(button);
 
   await screen.findByRole("dialog");
@@ -79,7 +79,7 @@ it("closes the popup without submitting the form when cancel is clicked", async 
 
   const { user } = installerRender(<ProposalSettingsSection proposal={proposal} calculateProposal={calculateFn} />);
 
-  const button = screen.getByRole("button", { name: "Settings section action icon" });
+  const button = screen.getByRole("button", { name: "Section settings" });
   await user.click(button);
 
   const popup = await screen.findByRole("dialog");
@@ -95,7 +95,7 @@ it("closes the popup and submits the form when accept is clicked", async () => {
 
   const { user } = installerRender(<ProposalSettingsSection proposal={proposal} calculateProposal={calculateFn} />);
 
-  const button = screen.getByRole("button", { name: "Settings section action icon" });
+  const button = screen.getByRole("button", { name: "Section settings" });
   await user.click(button);
 
   const popup = await screen.findByRole("dialog");

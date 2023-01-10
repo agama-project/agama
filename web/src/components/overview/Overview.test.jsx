@@ -51,7 +51,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 jest.mock("@components/language/LanguageSelector", () => () => "Language Selector");
-jest.mock("@components/overview/StorageSection", () => () => "Storage Section");
+jest.mock("@components/overview/StorageSection", () => () => <div>Storage Section</div>);
 jest.mock("@components/network/Network", () => () => "Network Configuration");
 jest.mock("@components/users/Users", () => () => "Users Configuration");
 jest.mock("@components/core/InstallButton", () => () => "Install Button");
