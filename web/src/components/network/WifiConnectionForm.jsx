@@ -82,7 +82,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
   };
 
   return (
-    <Form id={`${ssid}-connection-form`} onSubmit={accept} innerRef={formRef} className="pad-size-1">
+    <Form id={`${ssid}-connection-form`} onSubmit={accept} innerRef={formRef}>
       { error &&
         <Alert variant="warning" isInline title="Something went wrong">
           <p>Please, review provided settings and try again.</p>

@@ -22,14 +22,11 @@
 import React from "react";
 
 import {
-  Card,
-  CardBody,
   Radio,
   Spinner,
   Text
 } from "@patternfly/react-core";
 
-import { classNames } from "@/utils";
 import { ConnectionState } from "@client/network/model";
 
 import { Icon } from "@components/layout";
@@ -72,42 +69,37 @@ function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCance
   const showSpinner = (isSelected && network.settings && !network.connection) || isStateChanging(network);
 
   return (
-    <Card
+    <li
       key={network.ssid}
-      className={classNames(
-        "selection-list-item",
-        (isSelected || isActive) && "selection-list-checked-item",
-        isSelected && !network.settings && "selection-list-focused-item"
-      )}
     >
-      <CardBody>
-        <div className="header flow-flex-row">
-          <Radio
-            id={network.ssid}
-            label={network.ssid}
-            description={
-              <>
-                <Icon name="lock" size="10" fill="grey" /> {network.security.join(", ")}{" "}
-                <Icon name="signal_cellular_alt" size="10" fill="grey" /> {network.strength}
-              </>
-            }
-            isChecked={isSelected || isActive || false}
-            onClick={onSelect}
-          />
-          <div className="flow-flex-row has-gutter">
-            {showSpinner && <Spinner isSVG size="md" aria-label={`${network.ssid} connection is waiting for an state change`} /> }
-            <Text component="small" className="keep-words">
-              { showSpinner && !network.connection && "Connecting" }
-              { networkState(network.connection?.state)}
-            </Text>
-            { network.settings &&
-              <WifiNetworkMenu settings={network.settings} /> }
-          </div>
+      <div>
+        <Radio
+          id={network.ssid}
+          label={network.ssid}
+          description={
+            <>
+              <Icon name="lock" size="10" fill="grey" /> {network.security.join(", ")}{" "}
+              <Icon name="signal_cellular_alt" size="10" fill="grey" /> {network.strength}
+            </>
+          }
+          isChecked={isSelected || isActive || false}
+          onClick={onSelect}
+        />
+        <div>
+          {showSpinner && <Spinner isSVG size="md" aria-label={`${network.ssid} connection is waiting for an state change`} /> }
+          <Text component="small" className="keep-words">
+            { showSpinner && !network.connection && "Connecting" }
+            { networkState(network.connection?.state)}
+          </Text>
+          { network.settings &&
+            <WifiNetworkMenu settings={network.settings} /> }
         </div>
-        { isSelected && (!network.settings || network.settings.error) &&
-          <WifiConnectionForm network={network} onCancel={onCancel} /> }
-      </CardBody>
-    </Card>
+      </div>
+      { isSelected && (!network.settings || network.settings.error) &&
+        <div>
+          <WifiConnectionForm network={network} onCancel={onCancel} />
+        </div>}
+    </li>
   );
 }
 

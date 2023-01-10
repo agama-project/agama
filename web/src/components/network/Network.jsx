@@ -24,6 +24,7 @@ import { Button } from "@patternfly/react-core";
 
 import { useInstallerClient } from "@context/installer";
 import { ConnectionTypes, NetworkEventTypes } from "@client/network";
+import { Icon } from "@components/layout";
 import { NetworkWifiStatus, NetworkWiredStatus, WifiSelector } from "@components/network";
 
 export default function Network() {

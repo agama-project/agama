@@ -24,7 +24,7 @@ import React, { useEffect, useState } from "react";
 import { useInstallerClient } from "@context/installer";
 import { NetworkEventTypes } from "@client/network";
 import { Popup } from "@components/core";
-import { WifiNetworksList, WifiHiddenNetworkForm } from "@components/network";
+import { WifiNetworksList } from "@components/network";
 
 const networksFromValues = (networks) => Object.values(networks).flat();
 const baseHiddenNetwork = { ssid: undefined, hidden: true };
@@ -133,7 +133,9 @@ function WifiSelector({ isOpen = false, onClose }) {
     <Popup isOpen={isOpen} height="large" title="Connect to a Wi-Fi network">
       <WifiNetworksList
         networks={networksFromValues(networks)}
+        hiddenNetwork={baseHiddenNetwork}
         activeNetwork={activeNetwork}
+        showHiddenForm={showHiddenForm}
         selectedNetwork={selectedNetwork}
         availableNetworks={networks}
         onSelectionCallback={(network) => {
@@ -143,13 +145,6 @@ function WifiSelector({ isOpen = false, onClose }) {
           }
         }}
         onCancelSelectionCallback={() => switchSelectedNetwork(activeNetwork) }
-      />
-      <WifiHiddenNetworkForm
-        network={selectedNetwork}
-        visible={showHiddenForm}
-        beforeDisplaying={() => switchSelectedNetwork(baseHiddenNetwork)}
-        beforeHiding={() => switchSelectedNetwork(activeNetwork)}
-        onSubmitCallback={switchSelectedNetwork}
       />
       <Popup.Actions>
         <Popup.SecondaryAction onClick={onClose}>Close</Popup.SecondaryAction>

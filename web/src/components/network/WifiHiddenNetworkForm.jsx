@@ -21,13 +21,8 @@
 
 import React from "react";
 
-import {
-  Button,
-  Card,
-  CardBody
-} from "@patternfly/react-core";
+import { Button } from "@patternfly/react-core";
 
-import { classNames } from "@/utils";
 import WifiConnectionForm from "./WifiConnectionForm";
 
 /**
@@ -39,24 +34,15 @@ import WifiConnectionForm from "./WifiConnectionForm";
  * @param {function} props.beforeDisplaying - callback to trigger before displaying the form
  * @param {function} props.beforeHiding - callback to trigger before hiding the form
  */
-function HiddenNetworkForm({ network, visible, beforeDisplaying, beforeHiding, onSubmitCallback }) {
+function WifiHiddenNetworkForm({ network, visible, beforeDisplaying, beforeHiding, onSubmitCallback }) {
   return (
     <>
-      <Card className={classNames(
-        "selection-list-item",
-        visible && "selection-list-focused-item",
-        !visible && "collapsed"
-      )}
-      >
-        <CardBody>
-          { visible &&
-            <WifiConnectionForm
-              network={network}
-              onCancel={beforeHiding}
-              onSubmitCallback={onSubmitCallback}
-            /> }
-        </CardBody>
-      </Card>
+      { visible &&
+        <WifiConnectionForm
+          network={network}
+          onCancel={beforeHiding}
+          onSubmitCallback={onSubmitCallback}
+        /> }
       { !visible &&
         <Button variant="link" className="horizontally-centered" onClick={beforeDisplaying}>
           Connect to hidden network
@@ -65,4 +51,4 @@ function HiddenNetworkForm({ network, visible, beforeDisplaying, beforeHiding, o
   );
 }
 
-export default HiddenNetworkForm;
+export default WifiHiddenNetworkForm;
