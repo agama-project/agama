@@ -30,7 +30,6 @@ import { UsersClient } from "./users";
 import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
-import cockpit from "../lib/cockpit";
 
 const SERVICE_NAME = "org.opensuse.DInstaller";
 
@@ -49,12 +48,9 @@ const SERVICE_NAME = "org.opensuse.DInstaller";
 /**
  * Creates a D-Installer client
  *
- * @return {Promise<InstallerClient>}
+ * @return {InstallerClient}
  */
-const createClient = async () => {
-  const file = cockpit.file("/run/d-installer/bus.address", { binary: false });
-  const address = await file.read();
-
+const createClient = (address = "unix:path=/run/d-installer/bus") => {
   return {
     language: new LanguageClient(address),
     manager: new ManagerClient(address),
