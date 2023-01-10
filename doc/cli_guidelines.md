@@ -24,6 +24,8 @@ Moreover, the CLI also offers sub-commands for these actions:
 
 ### Sub-commands and Verbs
 
+In the following commands `<key>` represents a YAML key from the config structure and `<value>` is the value associated to the given key. Nested keys are dot-separated (e.g., `user.name`).
+
 This is the list of all sub-commands and verbs:
 
 ~~~
@@ -55,10 +57,10 @@ $ dinstaller config reset [<key>]
 Sets the default value for the given <key>. If no key is given, then the whole config is reset.
 
 $ dinstaller config add <list-key> [<key>=]<value> ...
-Adds a new entry with all the given key-value pairs to a config list. The key is omitted for a list of scalar values (e.g., languages).
+Adds a new entry with all the given key-value pairs to a config list. The `<key>=` part is omitted for a list of scalar values (e.g., languages).
 
 $ dinstaller config delete <list-key> [<key>=]<value> ...
-Deletes any entry matching all the given key-value pairs from a config list. The key is omitted for a list of scalar values.
+Deletes any entry matching all the given key-value pairs from a config list. The `<key>=` part is omitted for a list of scalar values.
 
 $ dinstaller config check
 Validates the config and prints errors
@@ -73,8 +75,6 @@ $ dinstaller questions
 Prints questions and allows to answer them.
 
 ~~~
-
-In those commands `<key>` represents a YAML key from the config structure and `<value>` is the value associated to the given key.
 
 ### YAML Config
 
@@ -91,12 +91,12 @@ languages:
 user:
   name: "test"
   fullname: "User Test"
-  password: "n0ts3cr3t"
+  password: "12345"
   autologin: true
 
 root:
   ssh_key: "1234abcd"
-  password: "n0ts3cr3t"
+  password: "12345"
 
 storage:
   candidate_devices:
@@ -110,8 +110,6 @@ storage:
       fstype: ext4
       minsize: 10GiB
 ~~~
-
-Nested keys are referenced in commands by joining them with dots (e.g., `user.name`).
 
 ### Examples
 
@@ -162,6 +160,9 @@ $ dinstaller config info languages
 
 # Show info of a specific value
 $ dinstaller config info storage.candidate_devices /dev/sda
+
+# Show the storage actions to perform in the system
+$ dinstaller summary storage
 ~~~
 
 ## Product Selection
