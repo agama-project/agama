@@ -59,7 +59,7 @@ function Layout({ children }) {
   return (
     <>
       <header className="split justify-between">
-        <h1>
+        <h1 className="split">
           <HeaderIcon.Target as="span" />
           <PageTitle.Target as="span" />
         </h1>
