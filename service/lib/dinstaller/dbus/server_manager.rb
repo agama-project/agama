@@ -89,6 +89,14 @@ module DInstaller
         end
       end
 
+      # Stops the running server
+      def stop_server
+        pid = find_server
+        return unless pid
+
+        Process.kill("KILL", pid.to_i)
+      end
+
       # Returns the D-Bus address
       #
       # @return [String]

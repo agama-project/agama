@@ -63,16 +63,7 @@ def start_service(name)
   service_runner.run
 end
 
-# Finds the D-Bus server or starts a new instance if it is not running
-#
-# @return [Fixnum] PID
-def find_or_start_dbus_server
-  DInstaller::DBus::ServerManager.new.find_or_start_server
-end
-
 ORDERED_SERVICES = [:questions, :language, :software, :storage, :users, :manager].freeze
-BUS_ADDRESS_FILE = "/run/d-installer/bus.address"
-BUS_PID_FILE = "/run/d-installer/bus.pid"
 
 # Normally the services are started by D-Bus activation.
 # This starts all the services sequentially without relying on that.
@@ -89,6 +80,8 @@ def start_all_services
     sleep(7)
   end
 end
+
+dbus_server_manager = DInstaller::DBus::ServerManager.new
 
 if ARGV.empty?
   start_all_services
@@ -111,23 +104,16 @@ elsif ["-s", "--status"].include?(ARGV[0])
   system "pgrep -fl bin/d-installer.[a-z]"
   # busctl is prettier but will find nothing until the service files are installed,
   # hence the pgrep above
-  exit unless File.exist?(BUS_ADDRESS_FILE)
-
-  address = File.read(BUS_ADDRESS_FILE)
-  system "busctl --address #{address} | grep -E '^NAME|DInstaller'"
+  system "busctl --address #{dbus_server_manager.address} | grep -E '^NAME|DInstaller'"
 elsif ["-k", "--kill"].include?(ARGV[0])
   system "pkill -f bin/d-installer.[a-z]"
   # stop the d-bus daemon
-  # FIXME: use the ServerManager (or the Bus.current instance) to stop the bus
-  exit unless File.exist?(BUS_PID_FILE)
-
-  pid = File.read(BUS_PID_FILE)
-  Process.kill("KILL", pid.to_i)
+  dbus_server_manager.stop_server
 elsif ["-d", "--daemon"].include?(ARGV[0])
-  pid = find_or_start_dbus_server # start the D-Bus server (service will start on demand)
+  pid = dbus_server_manager.find_or_start_server # start the D-Bus server (service will start on demand)
   puts pid
 else
-  find_or_start_dbus_server # make sure that the D-Bus server is running
+  dbus_server_manager.find_or_start_server
   name = ARGV[0]
   Signal.trap("SIGINT") do
     puts "Stopping #{name} service..."

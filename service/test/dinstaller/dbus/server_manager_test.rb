@@ -76,6 +76,30 @@ describe DInstaller::DBus::ServerManager do
     end
   end
 
+  describe "#stop_server" do
+    before do
+      allow(subject).to receive(:find_server).and_return(pid)
+    end
+
+    context "when a D-Bus server is running" do
+      let(:pid) { 1000 }
+
+      it "stops the process" do
+        expect(Process).to receive(:kill).with("KILL", pid)
+        subject.stop_server
+      end
+    end
+
+    context "when no D-Bus server is running" do
+      let(:pid) { nil }
+
+      it "does not try to stop the process" do
+        expect(Process).to_not receive(:kill)
+        subject.stop_server
+      end
+    end
+  end
+
   describe "#find_server" do
     context "when a PID file exists" do
       let(:pid_file_content) { "1000" }
