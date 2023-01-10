@@ -34,8 +34,6 @@ import {
   DataListItemCells,
   DataListCell,
   DataListAction,
-  Split,
-  SplitItem
 } from "@patternfly/react-core";
 
 import { FormLabel } from "@components/core";
@@ -117,16 +115,12 @@ export default function AddressesDataList({
 
   return (
     <>
-      <Split hasGutter>
-        <SplitItem isFilled>
-          <FormLabel isRequired={!allowEmpty}>Addresses</FormLabel>
-        </SplitItem>
-        <SplitItem>
-          <Button isSmall variant="secondary" className="btn-sm" onClick={() => addAddress()}>
-            {newAddressButtonText}
-          </Button>
-        </SplitItem>
-      </Split>
+      <div>
+        <FormLabel isRequired={!allowEmpty}>Addresses</FormLabel>
+        <Button isSmall variant="secondary" className="btn-sm" onClick={() => addAddress()}>
+          {newAddressButtonText}
+        </Button>
+      </div>
       <DataList isCompact gridBreakpoint="none" title="Addresses data list">
         {addresses.map(address => renderAddress(address))}
       </DataList>
