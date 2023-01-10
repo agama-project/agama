@@ -49,7 +49,8 @@ SUSE is working on its next generation operating system called ALP (Adaptable Li
 
 ## Architecture
 
-This project is designed as a service-client system, using D-Bus for process communication.
+This project is designed as a service-client system, using a dedicated D-Bus server for process
+communication.
 
 ![Architecture](./doc/images/architecture.png)
 
