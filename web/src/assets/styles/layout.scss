@@ -42,3 +42,7 @@
 #d-installer > footer {
   grid-area: footer;
 }
+
+#d-installer > footer >img {
+  max-inline-size: 150px;
+}
