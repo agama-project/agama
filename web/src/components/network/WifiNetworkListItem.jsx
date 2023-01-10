@@ -71,8 +71,9 @@ function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCance
   return (
     <li
       key={network.ssid}
+      data-state={(isSelected && !network.settings && "focused") || null}
     >
-      <div>
+      <div className="header split justify-between">
         <Radio
           id={network.ssid}
           label={network.ssid}
@@ -85,7 +86,7 @@ function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCance
           isChecked={isSelected || isActive || false}
           onClick={onSelect}
         />
-        <div>
+        <div className="split">
           {showSpinner && <Spinner isSVG size="md" aria-label={`${network.ssid} connection is waiting for an state change`} /> }
           <Text component="small" className="keep-words">
             { showSpinner && !network.connection && "Connecting" }
@@ -96,7 +97,7 @@ function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCance
         </div>
       </div>
       { isSelected && (!network.settings || network.settings.error) &&
-        <div>
+        <div className="content">
           <WifiConnectionForm network={network} onCancel={onCancel} />
         </div>}
     </li>

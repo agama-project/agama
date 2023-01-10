@@ -32,11 +32,11 @@ const baseHiddenNetwork = { ssid: undefined, hidden: true };
 function WifiSelector({ isOpen = false, onClose }) {
   const client = useInstallerClient();
   const [networks, setNetworks] = useState([]);
+  const [showHiddenForm, setShowHiddenForm] = useState(false);
   const [connections, setConnections] = useState([]);
   const [activeConnections, setActiveConnections] = useState(client.network.activeConnections());
   const [selectedNetwork, setSelectedNetwork] = useState(null);
   const [activeNetwork, setActiveNetwork] = useState(null);
-  const [showHiddenForm, setShowHiddenForm] = useState(false);
 
   const switchSelectedNetwork = (network) => {
     setShowHiddenForm(network === baseHiddenNetwork);

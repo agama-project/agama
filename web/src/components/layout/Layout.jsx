@@ -59,18 +59,18 @@ const FooterInfoArea = createTeleporter();
 function Layout({ children }) {
   return (
     <>
-      <header className="flow-flex-row">
+      <header className="split justify-between">
         <h1>
-          <HeaderIcon.Target as="span" className="mie-s" />
+          <HeaderIcon.Target as="span" />
           <PageTitle.Target as="span" />
         </h1>
 
         <HeaderActions.Target as="span" />
       </header>
 
-      <main className="">{children}</main>
+      <main className="stack">{children}</main>
 
-      <footer className="flow-flex-row" data-state="reversed">
+      <footer className="split justify-between" data-state="reversed">
         <FooterActions.Target
           role="navigation"
           aria-label="Installer Actions"

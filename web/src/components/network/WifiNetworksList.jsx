@@ -63,10 +63,10 @@ function WifiNetworksList({
   };
 
   return (
-    <ul>
+    <ul className="selection-list">
       {renderElements()}
-      <li>
-        <div>
+      <li data-state={showHiddenForm ? "focused" : "unstyled" }>
+        <div className="content">
           <WifiHiddenNetworkForm
             network={hiddenNetwork}
             visible={showHiddenForm}

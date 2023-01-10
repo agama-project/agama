@@ -1,0 +1,52 @@
+// Standar section
+section {
+  display: grid;
+  grid-template-columns: var(--icon-size-m) 1fr;
+  grid-template-areas:
+    "icon title"
+    ".... content"
+  ;
+  gap: var(--spacer-small);
+}
+
+section > svg {
+  grid-aread: icon;
+}
+
+section > h2 {
+  grid-area: title;
+}
+
+section > .content {
+  grid-area: content;
+}
+
+// Custom selection list
+.selection-list > * {
+  border: 1px solid #eee;
+  transition:
+    font-size .15s ease-in-out,
+    font-weight .25s ease-in-out,
+    margin-block .15s ease-in-out,
+    box-shadow .35s ease-in-out;
+
+  margin-block-start: -2px;
+}
+
+.selection-list .header {
+  border-block-end: 1px solid #eee;
+  padding: var(--spacer-normal);
+}
+
+.selection-list .content {
+  padding: var(--spacer-normal);
+}
+
+.selection-list [data-state="focused"] {
+  margin-block: 20px;
+  box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
+}
+
+.selection-list [data-state="unstyled"] {
+  border: 0;
+}

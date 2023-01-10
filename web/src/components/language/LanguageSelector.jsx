@@ -134,7 +134,7 @@ export default function LanguageSelector() {
 
   return (
     <>
-      <Button variant="link" onClick={open}>
+      <Button isInline variant="link" onClick={open}>
         {label()}
       </Button>
 

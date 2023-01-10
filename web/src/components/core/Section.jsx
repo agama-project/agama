@@ -32,31 +32,19 @@ import {
 
 import { Icon } from '@components/layout';
 import { ValidationErrors } from "@components/core";
-import { classNames } from "@/utils";
-
-import "./section.scss";
-
-const SettingsIcon = ({ ...props }) => <Icon name="settings" {...props} />;
 
 /**
  * Helper method for rendering section icon
  *
- * @param {React.FunctionComponent|React.ComponentClass} icon
- * @param {string} ariaLabel
+ * @param {string} name
  * @param {number} [size=32]
  *
  * @return {React.ReactNode}
  */
-const renderIcon = (icon, ariaLabel, size = 32) => {
-  if (!icon) return null;
+const renderIcon = (name, size = 32) => {
+  if (!name) return null;
 
-  const SectionIcon = icon;
-
-  return (
-    <figure aria-label={ariaLabel}>
-      <SectionIcon size={size} />
-    </figure>
-  );
+  return <Icon name={name} size={size} aria-hidden />;
 };
 
 /**
@@ -98,31 +86,31 @@ const renderIcon = (icon, ariaLabel, size = 32) => {
  * @param {object} props
  * @param {string} props.title - The title for the section
  * @param {string} [props.description] - A tiny description for the section
- * @param {boolean} [props.usingSeparator] - whether or not a thin border should be shown between title and content
- * @param {React.FunctionComponent} [props.icon] - An icon for the section
- * @param {import("@client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title
- * @param {React.FunctionComponent|React.ComponentClass} [props.actionIcon=SettingsIcon] - An icon component to be used for section actions
+ * @param {boolean} [props.hasSeparator] - whether or not a thin border should be shown between title and content
+ * @param {string} [props.iconName] - the name of the icon section, if any
+ * @param {string} [props.actionIconName="settings"] - name for the icon for linking to section settings, when needed
  * @param {React.ReactNode} [props.actionTooltip] - text to be shown as a tooltip when user hovers action icon, if present
  * @param {React.MouseEventHandler} [props.onActionClick] - callback to be triggered when user clicks on action icon, if present
+ * @param {import("@client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title
  * @param {JSX.Element} [props.children] - the section content
  */
 export default function Section({
   title,
   description,
-  usingSeparator,
-  icon,
-  errors,
-  actionIcon = SettingsIcon,
+  hasSeparator,
+  iconName,
+  actionIconName = "settings",
   actionTooltip,
   onActionClick,
+  errors,
   children,
 }) {
   const renderAction = () => {
     if (typeof onActionClick !== 'function') return null;
 
     const Action = () => (
-      <Button variant="plain" className="d-installer-section-action" isInline onClick={onActionClick}>
-        {renderIcon(actionIcon, `${title} section action icon`, 16)}
+      <Button isInline variant="link" className="transform-on-hover" onClick={onActionClick}>
+        {renderIcon(actionIconName, 16)}
       </Button>
     );
 
@@ -135,28 +123,29 @@ export default function Section({
     );
   };
 
-  const titleClassNames = classNames(
-    "d-installer-section-title",
-    usingSeparator && "using-separator"
-  );
+  let headerClassNames = "split";
+  if (hasSeparator) headerClassNames += " gradient-border-bottom";
 
   return (
-    <div className="d-installer-section">
-      {renderIcon(icon, `${title} section icon`, 32)}
-      <TextContent>
-        <Text component={TextVariants.h2} className={titleClassNames}>
-          {title} {renderAction()}
-        </Text>
-      </TextContent>
-      { description && description !== "" &&
-        <TextContent>
-          <Text component={TextVariants.small}>
-            {description}
-          </Text>
-        </TextContent> }
-      { errors?.length > 0 &&
-        <ValidationErrors errors={errors} title={`${title} errors`} /> }
-      {children}
-    </div>
+    <section>
+      {renderIcon(iconName, 32)}
+
+      <Text component={TextVariants.h2} className={headerClassNames}>
+        {title}
+        {renderAction()}
+      </Text>
+
+      <div className="stack content">
+        { description && description !== "" &&
+          <TextContent>
+            <Text component={TextVariants.small}>
+              {description}
+            </Text>
+          </TextContent> }
+        { errors?.length > 0 &&
+          <ValidationErrors errors={errors} title={`${title} errors`} /> }
+        {children}
+      </div>
+    </section>
   );
 }

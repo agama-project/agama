@@ -93,6 +93,7 @@ export default function StorageSection ({ showErrors }) {
       <>
         <ProposalSummary proposal={state.proposal} />
         <Button
+          isInline
           variant="link"
           icon={<Icon name="edit" size="16" />}
           onClick={() => navigate("/storage")}
@@ -104,7 +105,13 @@ export default function StorageSection ({ showErrors }) {
   };
 
   return (
-    <Section key="storage-section" title="Storage" icon={() => <Icon name="hard_drive" />} errors={errors}>
+    <Section
+      key="storage-section"
+      title="Storage"
+      path="/storage"
+      iconName="hard_drive"
+      errors={errors}
+    >
       <SectionContent />
     </Section>
   );

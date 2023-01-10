@@ -46,7 +46,7 @@ import React from "react";
  */
 const Center = ({ children }) => (
   <div className="vertically-centered">
-    <div>
+    <div className="full-width stack">
       {children}
     </div>
   </div>

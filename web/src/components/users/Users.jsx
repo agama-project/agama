@@ -24,7 +24,6 @@ import React, { useEffect, useState } from "react";
 import { useInstallerClient } from "@context/installer";
 import { Section } from "@components/core";
 import { FirstUser, RootPassword, RootSSHKey } from "@components/users";
-import { Icon } from "@components/layout";
 
 export default function Users({ showErrors }) {
   const [errors, setErrors] = useState([]);
@@ -40,7 +39,7 @@ export default function Users({ showErrors }) {
       <Section
         key="users"
         title="Users"
-        icon={() => <Icon name="manage_accounts" />}
+        iconName="manage_accounts"
         errors={showErrors ? errors : []}
       >
         <RootPassword />

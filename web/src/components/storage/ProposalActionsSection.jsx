@@ -28,7 +28,7 @@ export default function ProposalActionsSection({ proposal, errors }) {
   return (
     <Section
       title="Result"
-      usingSeparator
+      hasSeparator
       errors={errors}
     >
       <ProposalActions actions={proposal.actions} />

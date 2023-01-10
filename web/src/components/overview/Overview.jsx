@@ -65,10 +65,10 @@ function Overview() {
       <PageIcon><Icon name="inventory_2" /></PageIcon>
       <PageActions><ChangeProductButton /></PageActions>
       <MainActions><InstallButton onClick={() => setShowErrors(true)} /></MainActions>
-      <Section key="language" title="Language" icon={() => <Icon name="translate" />}>
+      <Section key="language" title="Language" iconName="translate">
         <LanguageSelector />
       </Section>
-      <Section key="network" title="Network" icon={() => <Icon name="settings_ethernet" />}>
+      <Section key="network" title="Network" iconName="settings_ethernet">
         <Network />
       </Section>
       <StorageSection key="storage" showErrors />
