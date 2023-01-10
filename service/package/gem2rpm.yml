@@ -16,14 +16,15 @@
   Requires:       yast2 >= 4.5.20
 # ## used by gem2rpm
 :post_install: |-
-  install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/dbus.conf %{buildroot}%{_datadir}/dbus-1/system.d/org.opensuse.DInstaller.conf
-  install --directory %{buildroot}%{_datadir}/dbus-1/system-services
-  install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/system-services %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/org.opensuse.DInstaller*.service
+  install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/dbus.conf %{buildroot}%{_datadir}/dbus-1/d-installer.conf
+  install --directory %{buildroot}%{_datadir}/dbus-1/d-installer-services
+  install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/d-installer-services %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/org.opensuse.DInstaller*.service
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/systemd.service %{buildroot}%{_unitdir}/d-installer.service
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/etc/d-installer.yaml %{buildroot}%{_sysconfdir}/d-installer.yaml
 # ## used by gem_packages
 :main:
-  :filelist: "%{_datadir}/dbus-1/system.d/org.opensuse.DInstaller.conf\n
-    %{_datadir}/dbus-1/system-services/org.opensuse.DInstaller*.service\n
+  :filelist: "%{_datadir}/dbus-1/d-installer.conf\n
+    %dir %{_datadir}/dbus-1/d-installer-services\n
+    %{_datadir}/dbus-1/d-installer-services/org.opensuse.DInstaller*.service\n
     %{_unitdir}/d-installer.service\n
     %{_sysconfdir}/d-installer.yaml\n"

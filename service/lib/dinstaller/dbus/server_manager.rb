@@ -106,7 +106,7 @@ module DInstaller
         file = File.join(Dir.pwd, "share", "dbus.conf")
         return file if File.exist?(file)
 
-        "/usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf"
+        "/usr/share/dbus-1/d-installer.conf"
       end
 
       # Returns the path to the file containing the PID
