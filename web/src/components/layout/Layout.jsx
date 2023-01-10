@@ -21,7 +21,6 @@
 
 import React from "react";
 
-import "./layout.scss";
 import logoUrl from "@assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
 
