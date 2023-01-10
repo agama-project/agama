@@ -33,6 +33,7 @@ Dir.chdir(__dir__) do
   require "bundler/setup"
 end
 require "dinstaller/dbus/service_runner"
+require "dinstaller/dbus/server_manager"
 
 # Set up a {Logger} suitable either for terminal (started manually)
 # or syslog (D-Bus activated)
@@ -60,6 +61,13 @@ def start_service(name)
 
   service_runner = DInstaller::DBus::ServiceRunner.new(name, logger: logger_for(name))
   service_runner.run
+end
+
+# Finds the D-Bus server or starts a new instance if it is not running
+#
+# @return [Fixnum] PID
+def find_or_start_dbus_server
+  DInstaller::DBus::ServerManager.new.find_or_start_server
 end
 
 ORDERED_SERVICES = [:questions, :language, :software, :storage, :users, :manager].freeze
@@ -95,6 +103,7 @@ elsif ["-h", "--help"].include?(ARGV[0])
   puts "#{me} -h|--help"
   puts "#{me} -s|--status"
   puts "#{me} -k|--kill"
+  puts "#{me} -d|--daemon"
   puts "#{me} #{ORDERED_SERVICES.sort.join("|")}"
 elsif ["-s", "--status"].include?(ARGV[0])
   # The .[a-z] ensures matching the forked processes
@@ -114,7 +123,11 @@ elsif ["-k", "--kill"].include?(ARGV[0])
 
   pid = File.read(BUS_PID_FILE)
   Process.kill("KILL", pid.to_i)
+elsif ["-d", "--daemon"].include?(ARGV[0])
+  pid = find_or_start_dbus_server # start the D-Bus server (service will start on demand)
+  puts pid
 else
+  find_or_start_dbus_server # make sure that the D-Bus server is running
   name = ARGV[0]
   Signal.trap("SIGINT") do
     puts "Stopping #{name} service..."
