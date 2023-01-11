@@ -70,9 +70,20 @@ import cockpit from "../lib/cockpit";
 class DBusClient {
   /**
    * @param {string} service - service name
+   * @param {string|undefined} address - D-Bus address. If no address is given, it connects
+   *   to the "system" bus.
    */
-  constructor(service) {
-    this.client = cockpit.dbus(service, { bus: "system", superuser: "try" });
+  constructor(service, address = undefined) {
+    const options = { superuser: "try" };
+
+    if (address) {
+      options.bus = "none";
+      options.address = address;
+    } else {
+      options.bus = "system";
+    }
+
+    this.client = cockpit.dbus(service, options);
   }
 
   /**
@@ -156,4 +167,4 @@ class DBusClient {
   }
 }
 
-export { DBusClient };
+export default DBusClient;

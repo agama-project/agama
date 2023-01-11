@@ -84,6 +84,8 @@ task package: [] do
   end
 end
 
+SERVICES_DIR = "/usr/share/dbus-1/d-installer-services"
+
 # support for patching by the yupdate script,
 # only when running in the inst-sys or live medium
 if File.exist?("/.packages.initrd") || `mount`.match?(/^[\w]+ on \/ type overlay/)
@@ -97,8 +99,9 @@ if File.exist?("/.packages.initrd") || `mount`.match?(/^[\w]+ on \/ type overlay
       sh "gem install --local --force --no-format-exec --no-doc --build-root #{destdir.shellescape} d-installer-*.gem"
 
       # update the DBus configuration files
-      sh "cp share/org.opensuse.DInstaller*.service /usr/share/dbus-1/system-services"
-      sh "cp share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf"
+      FileUtils.mkdir_p(SERVICES_DIR)
+      sh "cp share/org.opensuse.DInstaller*.service #{SERVICES_DIR}"
+      sh "cp share/dbus.conf /usr/share/dbus-1/d-installer.conf"
 
       # update the systemd service file
       source_file = "share/systemd.service"

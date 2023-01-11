@@ -21,7 +21,6 @@
 
 // @ts-check
 
-import { DBusClient } from "./dbus";
 import { LanguageClient } from "./language";
 import { ManagerClient } from "./manager";
 import { Monitor } from "./monitor";
@@ -51,18 +50,16 @@ const SERVICE_NAME = "org.opensuse.DInstaller";
  *
  * @return {InstallerClient}
  */
-const createClient = () => {
-  const client = new DBusClient(SERVICE_NAME);
-
+const createClient = (address = "unix:path=/run/d-installer/bus") => {
   return {
-    language: new LanguageClient(),
-    manager: new ManagerClient(client),
-    monitor: new Monitor(client, SERVICE_NAME),
+    language: new LanguageClient(address),
+    manager: new ManagerClient(address),
+    monitor: new Monitor(address, SERVICE_NAME),
     network: new NetworkClient(),
-    software: new SoftwareClient(),
-    storage: new StorageClient(),
-    users: new UsersClient(),
-    questions: new QuestionsClient()
+    software: new SoftwareClient(address),
+    storage: new StorageClient(address),
+    users: new UsersClient(address),
+    questions: new QuestionsClient(address)
   };
 };
 

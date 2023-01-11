@@ -22,6 +22,7 @@
 require "dbus"
 require "dinstaller/manager"
 require "dinstaller/cockpit_manager"
+require "dinstaller/dbus/bus"
 require "dinstaller/dbus/manager"
 require "dinstaller/dbus/storage/proposal"
 
@@ -54,7 +55,7 @@ module DInstaller
         @config = config
         @manager = DInstaller::Manager.new(config, logger)
         @logger = logger || Logger.new($stdout)
-        @bus = ::DBus::SystemBus.instance
+        @bus = Bus.current
       end
 
       # Initializes and exports the D-Bus API

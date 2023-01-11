@@ -21,7 +21,7 @@
 
 // @ts-check
 //
-import { DBusClient } from "../dbus";
+import DBusClient from "../dbus";
 import cockpit from "../../lib/cockpit";
 import { intToIPString, stringToIPInt } from "./utils";
 import { NetworkEventTypes } from "./index";
@@ -170,11 +170,8 @@ const mergeConnectionSettings = (settings, connection) => {
  * D-Bus. Its interface is modeled to serve NetworkClient requirements.
  */
 class NetworkManagerAdapter {
-  /**
-   * @param {DBusClient} [dbusClient] - D-Bus client
-   */
-  constructor(dbusClient) {
-    this.client = dbusClient || new DBusClient(SERVICE_NAME);
+  constructor() {
+    this.client = new DBusClient(SERVICE_NAME);
     /** @type {{[k: string]: string}} */
     this.connectionIds = {};
     this.proxies = {

@@ -19,8 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import { DBusClient } from "./dbus";
+import DBusClient from "./dbus";
 import { QuestionsClient } from "./questions";
+
+jest.mock("./dbus");
 
 // NOTE: should we export them?
 const QUESTION_IFACE = "org.opensuse.DInstaller.Question1";
@@ -98,20 +100,18 @@ const proxies = {
   [LUKS_ACTIVATION_IFACE]: luksActivationProxy
 };
 
-// const dbusClient = {
-//   call: () => getManagedObjectsMock
-// };
-
-const dbusClient = new DBusClient("");
-
 beforeEach(() => {
-  dbusClient.proxy = jest.fn().mockImplementation(iface => proxies[iface]);
-  dbusClient.call = () => getManagedObjectsMock;
+  DBusClient.mockImplementation(() => {
+    return {
+      proxy: (iface) => proxies[iface],
+      call: () => getManagedObjectsMock
+    };
+  });
 });
 
 describe("#getQuestions", () => {
   it("returns pending questions", async () => {
-    const client = new QuestionsClient(dbusClient);
+    const client = new QuestionsClient();
     const questions = await client.getQuestions();
     expect(questions).toEqual(expectedQuestions);
   });
@@ -125,7 +125,7 @@ describe("#answer", () => {
   });
 
   it("sets given answer", async () => {
-    const client = new QuestionsClient(dbusClient);
+    const client = new QuestionsClient();
     await client.answer(question);
 
     expect(questionsProxy).toMatchObject({ Answer: 'the-answer' });
@@ -137,7 +137,7 @@ describe("#answer", () => {
     });
 
     it("sets given password", async () => {
-      const client = new QuestionsClient(dbusClient);
+      const client = new QuestionsClient();
       await client.answer(question);
 
       expect(luksActivationProxy).toMatchObject({ Password: "notSecret" });

@@ -49,7 +49,8 @@ SUSE is working on its next generation operating system called ALP (Adaptable Li
 
 ## Architecture
 
-This project is designed as a service-client system, using D-Bus for process communication.
+This project is designed as a service-client system, using a dedicated D-Bus server for process
+communication.
 
 ![Architecture](./doc/images/architecture.png)
 
@@ -109,8 +110,8 @@ $ sudo zypper in gcc gcc-c++ make openssl-devel ruby-devel augeas-devel npm cock
 * Setup the D-Installer services:
 
 ~~~
-$ sudo cp service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf
-$ cd service;
+$ sudo cp service/share/dbus.conf /usr/share/dbus-1/d-installer.conf
+$ cd service
 $ bundle config set --local path 'vendor/bundle';
 $ bundle install
 $ cd -

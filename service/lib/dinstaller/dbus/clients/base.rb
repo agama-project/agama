@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/dbus/bus"
 require "abstract_method"
 
 module DInstaller
@@ -63,7 +64,7 @@ module DInstaller
         end
 
         def bus
-          @bus ||= ::DBus::SystemBus.instance
+          @bus ||= Bus.current
         end
       end
     end

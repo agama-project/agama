@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import { DBusClient } from "./dbus";
+import DBusClient from "./dbus";
 import { WithValidation } from "./mixins";
 
 const USERS_SERVICE = "org.opensuse.DInstaller.Users";
@@ -56,10 +56,10 @@ const USERS_PATH = "/org/opensuse/DInstaller/Users1";
  */
 class UsersBaseClient {
   /**
-   * @param {DBusClient} [dbusClient] - D-Bus client
+   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
    */
-  constructor(dbusClient) {
-    this.client = dbusClient || new DBusClient(USERS_SERVICE);
+  constructor(address = undefined) {
+    this.client = new DBusClient(USERS_SERVICE, address);
   }
 
   /**

@@ -21,8 +21,10 @@
 
 // @ts-check
 
-import { DBusClient } from "./dbus";
+import DBusClient from "./dbus";
 import { SoftwareClient } from "./software";
+
+jest.mock("./dbus");
 
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
 
@@ -35,16 +37,20 @@ const softProxy = {
   SelectedBaseProduct: "MicroOS"
 };
 
-const dbusClient = new DBusClient("");
 beforeEach(() => {
-  dbusClient.proxy = jest.fn().mockImplementation(iface => {
-    if (iface === SOFTWARE_IFACE) return softProxy;
+  // @ts-ignore
+  DBusClient.mockImplementation(() => {
+    return {
+      proxy: (iface) => {
+        if (iface === SOFTWARE_IFACE) return softProxy;
+      }
+    };
   });
 });
 
 describe("#getProducts", () => {
   it("returns the list of available products", async () => {
-    const client = new SoftwareClient(dbusClient);
+    const client = new SoftwareClient();
     const availableProducts = await client.getProducts();
     expect(availableProducts).toEqual([
       { id: "MicroOS", name: "openSUSE MicroOS" },
@@ -55,7 +61,7 @@ describe("#getProducts", () => {
 
 describe('#getSelectedProduct', () => {
   it("returns the selected product", async () => {
-    const client = new SoftwareClient(dbusClient);
+    const client = new SoftwareClient();
     const selectedProduct = await client.getSelectedProduct();
     expect(selectedProduct).toEqual(
       { id: "MicroOS", name: "openSUSE MicroOS" }

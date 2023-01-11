@@ -29,7 +29,7 @@ describe DInstaller::DBus::ManagerService do
   let(:config) { DInstaller::Config.new }
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:manager) { DInstaller::Manager.new(config, logger) }
-  let(:bus) { instance_double(::DBus::SystemBus) }
+  let(:bus) { instance_double(DInstaller::DBus::Bus) }
   let(:bus_service) do
     instance_double(::DBus::Service, export: nil)
   end
@@ -39,7 +39,7 @@ describe DInstaller::DBus::ManagerService do
   end
 
   before do
-    allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
+    allow(DInstaller::DBus::Bus).to receive(:current).and_return(bus)
     allow(bus).to receive(:request_service).and_return(bus_service)
     allow(DInstaller::Manager).to receive(:new).with(config, logger).and_return(manager)
     allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
