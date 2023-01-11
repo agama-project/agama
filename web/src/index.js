@@ -31,6 +31,8 @@ import { InstallerClientProvider } from "@context/installer";
 import { SoftwareProvider } from "@context/software";
 import { createClient } from "@/client";
 
+import "@assets/fonts.scss";
+
 import App from "@/App";
 import Main from "@/Main";
 import { Overview } from "@components/overview";
