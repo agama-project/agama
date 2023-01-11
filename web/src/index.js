@@ -24,22 +24,20 @@ import ReactDOM from "react-dom";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
-import "@patternfly/patternfly/patternfly-base.scss";
-
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { InstallerClientProvider } from "@context/installer";
 import { SoftwareProvider } from "@context/software";
 import { createClient } from "@/client";
 
 import "@assets/fonts.css";
+import "@patternfly/patternfly/patternfly-base.scss";
+import "@assets/styles/index.scss";
 
 import App from "@/App";
 import Main from "@/Main";
 import { Overview } from "@components/overview";
 import { ProductSelectionPage } from "@components/software";
 import { ProposalPage as StoragePage } from "@components/storage";
-
-import "@assets/styles/index.scss";
 
 ReactDOM.render(
   <StrictMode>
