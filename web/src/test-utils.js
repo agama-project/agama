@@ -84,4 +84,18 @@ const createCallbackMock = () => {
   return [on, callbacks];
 };
 
-export { installerRender, plainRender, createCallbackMock };
+/**
+ * Returns fake component with given content
+ *
+ * @param {React.ReactNode} content - content for the fake component
+ * @param {object} [options] - Options for building the fake component
+ * @param {string} [options.wrapper="div"] - the HTML element to be used for wrapping given content
+ *
+ * @return a function component
+ */
+const mockComponent = (content, { wrapper } = { wrapper: "div" }) => {
+  const Wrapper = wrapper;
+  return () => <Wrapper>{content}</Wrapper>;
+};
+
+export { installerRender, plainRender, createCallbackMock, mockComponent };
