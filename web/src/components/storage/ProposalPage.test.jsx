@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, waitForElementToBeRemoved } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender, mockComponent } from "@/test-utils";
 import { createClient } from "@client";
 import { ProposalPage } from "@components/storage";
 
@@ -40,11 +40,11 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => jest.fn()
 }));
 
-jest.mock("@components/core/InstallerSkeleton", () => () => "Loading proposal");
+jest.mock("@components/core/InstallerSkeleton", () => mockComponent("Loading proposal"));
 jest.mock("@components/storage/ProposalTargetSection", () => FakeProposalTargetSection);
 
-jest.mock("@components/storage/ProposalSettingsSection", () => () => <div>Settings section</div>);
-jest.mock("@components/storage/ProposalActionsSection", () => () => <div>Actions section</div>);
+jest.mock("@components/storage/ProposalSettingsSection", () => mockComponent("Settings section"));
+jest.mock("@components/storage/ProposalActionsSection", () => mockComponent("Actions section"));
 
 let proposal;
 

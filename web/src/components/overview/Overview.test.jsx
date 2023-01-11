@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender, mockComponent } from "@/test-utils";
 import Overview from "./Overview";
 import { createClient } from "@client";
 
@@ -50,11 +50,11 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn()
 }));
 
-jest.mock("@components/language/LanguageSelector", () => () => "Language Selector");
-jest.mock("@components/overview/StorageSection", () => () => <div>Storage Section</div>);
-jest.mock("@components/network/Network", () => () => "Network Configuration");
-jest.mock("@components/users/Users", () => () => "Users Configuration");
-jest.mock("@components/core/InstallButton", () => () => "Install Button");
+jest.mock("@components/language/LanguageSelector", () => mockComponent("Language Selector"));
+jest.mock("@components/overview/StorageSection", () => mockComponent("Storage Section"));
+jest.mock("@components/network/Network", () => mockComponent("Network Configuration"));
+jest.mock("@components/users/Users", () => mockComponent("Users Configuration"));
+jest.mock("@components/core/InstallButton", () => mockComponent("Install Button"));
 
 beforeEach(() => {
   mockProduct = { id: "openSUSE", name: "openSUSE Tumbleweed" };

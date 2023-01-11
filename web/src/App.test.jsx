@@ -21,26 +21,26 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
-import { createClient } from "@client";
+import { installerRender, mockComponent } from "@/test-utils";
 import App from "./App";
+import { createClient } from "@client";
 import { STARTUP, CONFIG, INSTALL } from "@client/phase";
 import { IDLE, BUSY } from "@client/status";
 
 jest.mock("@client");
 
+jest.mock('react-router-dom', () => ({
+  Outlet: mockComponent("Content"),
+}));
+
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
-
-jest.mock("@components/questions/Questions", () => () => <div>Questions Mock</div>);
-jest.mock("@components/layout/DBusError", () => () => <div>D-BusError Mock</div>);
+jest.mock("@components/layout/DBusError", () => () => "D-BusError Mock");
 jest.mock("@components/layout/LoadingEnvironment", () => () => "LoadingEnvironment Mock");
-jest.mock("@components/core/InstallationProgress", () => () => "InstallationProgress Mock");
-jest.mock("@components/core/InstallationFinished", () => () => "InstallationFinished Mock");
-jest.mock("@components/network/TargetIpsPopup", () => () => "Target IPs Mock");
-jest.mock('react-router-dom', () => ({
-  Outlet: () => <div>Content</div>,
-}));
+jest.mock("@components/questions/Questions", () => mockComponent("Questions Mock"));
+jest.mock("@components/core/InstallationProgress", () => mockComponent("InstallationProgress Mock"));
+jest.mock("@components/core/InstallationFinished", () => mockComponent("InstallationFinished Mock"));
+jest.mock("@components/network/TargetIpsPopup", () => mockComponent("Target IPs Mock"));
 
 const callbacks = {};
 const getStatusFn = jest.fn();
