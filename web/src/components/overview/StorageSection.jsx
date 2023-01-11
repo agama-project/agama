@@ -22,11 +22,7 @@
 import React, { useReducer, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import {
-  Button,
-  Stack,
-  StackItem
-} from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core';
 
 import { useCancellablePromise } from "@/utils";
 import { useInstallerClient } from "@context/installer";
@@ -94,25 +90,28 @@ export default function StorageSection ({ showErrors }) {
     if (state.busy || !state.proposal) return <InstallerSkeleton lines={1} />;
 
     return (
-      <Stack hasGutter>
-        <StackItem>
-          <ProposalSummary proposal={state.proposal} />
-        </StackItem>
-        <StackItem>
-          <Button
-            variant="link"
-            icon={<Icon name="edit" size="16" />}
-            onClick={() => navigate("/storage")}
-          >
-            Edit storage settings
-          </Button>
-        </StackItem>
-      </Stack>
+      <>
+        <ProposalSummary proposal={state.proposal} />
+        <Button
+          isInline
+          variant="link"
+          icon={<Icon name="edit" size="16" />}
+          onClick={() => navigate("/storage")}
+        >
+          Edit storage settings
+        </Button>
+      </>
     );
   };
 
   return (
-    <Section key="storage-section" title="Storage" icon={() => <Icon name="hard_drive" />} errors={errors}>
+    <Section
+      key="storage-section"
+      title="Storage"
+      path="/storage"
+      iconName="hard_drive"
+      errors={errors}
+    >
       <SectionContent />
     </Section>
   );

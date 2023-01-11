@@ -29,7 +29,7 @@ import {
   EmptyStateBody
 } from "@patternfly/react-core";
 
-import { Icon, Center, Title as SectionTitle, PageIcon, MainActions } from "@components/layout";
+import { Center, Icon, Title as SectionTitle, PageIcon, MainActions } from "@components/layout";
 import { useInstallerClient } from "@context/installer";
 
 function InstallationFinished() {
@@ -37,7 +37,7 @@ function InstallationFinished() {
   const onRebootAction = () => client.manager.rebootSystem();
 
   return (
-    <>
+    <Center>
       <SectionTitle>Installation Finished</SectionTitle>
       <PageIcon><Icon name="task_alt" /></PageIcon>
       <MainActions>
@@ -46,24 +46,22 @@ function InstallationFinished() {
         </Button>
       </MainActions>
 
-      <Center>
-        <EmptyState>
-          <EmptyStateIcon icon={() => <Icon name="check_circle" />} className="success-icon" />
-          <Title headingLevel="h2" size="4xl">
-            Congratulations!
-          </Title>
-          <EmptyStateBody className="pf-c-content">
-            <div>
-              <Text>The installation on your machine is complete.</Text>
-              <Text>
-                At this point you can 'Reboot' the machine to log in to the new system.
-              </Text>
-              <Text>Have a lot of fun! Your openSUSE Development Team.</Text>
-            </div>
-          </EmptyStateBody>
-        </EmptyState>
-      </Center>
-    </>
+      <EmptyState>
+        <EmptyStateIcon icon={({ ...props }) => <Icon name="check_circle" { ...props } />} className="color-success" />
+        <Title headingLevel="h2" size="4xl">
+          Congratulations!
+        </Title>
+        <EmptyStateBody className="pf-c-content">
+          <div>
+            <Text>The installation on your machine is complete.</Text>
+            <Text>
+              At this point you can 'Reboot' the machine to log in to the new system.
+            </Text>
+            <Text>Have a lot of fun! Your openSUSE Development Team.</Text>
+          </div>
+        </EmptyStateBody>
+      </EmptyState>
+    </Center>
   );
 }
 

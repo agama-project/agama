@@ -44,9 +44,9 @@ const otherNetwork = {
 const networksMock = [myNetwork, otherNetwork];
 
 describe("WifiNetworksList", () => {
-  it("renders nothing when no networks are given", async () => {
-    const { container } = installerRender(<WifiNetworksList networks={[]} />, { usingLayout: false });
-    await waitFor(() => expect(container).toBeEmptyDOMElement());
+  it("renders link for connect to a hidden network", () => {
+    installerRender(<WifiNetworksList networks={[]} />, { usingLayout: false });
+    screen.getByRole("button", { name: "Connect to hidden network" });
   });
 
   it("displays networks information", async () => {

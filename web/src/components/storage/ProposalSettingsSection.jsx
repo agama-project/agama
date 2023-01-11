@@ -60,7 +60,7 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
     <Section
       title="Settings"
       onActionClick={() => setIsOpen(true)}
-      usingSeparator
+      hasSeparator
     >
       <Popup title="Settings" isOpen={isOpen}>
         <ProposalSettingsForm

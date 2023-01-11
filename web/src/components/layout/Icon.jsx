@@ -99,6 +99,6 @@ export default function Icon({ name, size = 32, ...otherProps }) {
   const IconComponent = icons[name];
 
   return (IconComponent)
-    ? <IconComponent width={size} height={size} {...otherProps} />
+    ? <IconComponent className={`icon-size-${size}`} {...otherProps} />
     : <em>`icon ${name} not found!`</em>;
 }

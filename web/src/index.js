@@ -24,31 +24,20 @@ import ReactDOM from "react-dom";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
-import "@patternfly/patternfly/patternfly-base.scss";
-
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { InstallerClientProvider } from "@context/installer";
 import { SoftwareProvider } from "@context/software";
 import { createClient } from "@/client";
+
+import "@assets/fonts.css";
+import "@patternfly/patternfly/patternfly-base.scss";
+import "@assets/styles/index.scss";
 
 import App from "@/App";
 import Main from "@/Main";
 import { Overview } from "@components/overview";
 import { ProductSelectionPage } from "@components/software";
 import { ProposalPage as StoragePage } from "@components/storage";
-
-// D-Installer fonts
-import "@assets/fonts.scss";
-
-/*
- * PF4 overrides need to come after the JSX components imports because
- * these are importing CSS stylesheets that we are overriding
- * Having the overrides here will ensure that when mini-css-extract-plugin will extract the CSS
- * out of the dist/index.js and since it will maintain the order of the imported CSS,
- * the overrides will be correctly in the end of our stylesheet.
- */
-import "./patternfly.scss";
-import "./app.scss";
 
 ReactDOM.render(
   <StrictMode>

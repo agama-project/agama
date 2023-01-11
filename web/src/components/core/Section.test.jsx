@@ -24,8 +24,6 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "@/test-utils";
 import { Section } from "@components/core";
 
-const FakeIcon = () => "FI";
-
 describe("Section", () => {
   it("renders given title", () => {
     installerRender(<Section title="Awesome settings" />);
@@ -41,12 +39,6 @@ describe("Section", () => {
     screen.getByText("Intended to perform awesome tweaks");
   });
 
-  it("renders given icon", () => {
-    installerRender(<Section title="Awesome settings" icon={FakeIcon} />);
-
-    screen.getByRole("figure", { name: "Awesome settings section icon" });
-  });
-
   it("renders given errors", () => {
     installerRender(
       <Section title="Awesome settings" errors={[{ message: "Something went wrong" }]} />
@@ -56,12 +48,12 @@ describe("Section", () => {
   });
 
   describe("when onActionClick callback is given", () => {
-    it("renders an action icon", () => {
+    it("renders a link for section settings", () => {
       installerRender(
         <Section title="Awesome settings" onActionClick={() => null} />
       );
 
-      screen.getByRole("figure", { name: "Awesome settings section action icon" });
+      screen.getByLabelText("Section settings");
     });
 
     it("triggers the action when user clicks on it", async () => {
@@ -83,9 +75,9 @@ describe("Section", () => {
       let inputText = screen.queryByRole("textbox", { name: "Awesome input" });
       expect(inputText).not.toBeInTheDocument();
 
-      const actionIcon = screen.getByRole("figure", { name: "Awesome settings section action icon" });
+      const actionLink = screen.getByLabelText("Section settings");
 
-      await user.click(actionIcon);
+      await user.click(actionLink);
 
       inputText = screen.queryByRole("textbox", { name: "Awesome input" });
       expect(inputText).toBeInTheDocument();

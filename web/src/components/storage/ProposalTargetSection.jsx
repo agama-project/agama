@@ -33,7 +33,7 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
   };
 
   return (
-    <Section title="Device" onActionClick={() => setIsOpen(true)} usingSeparator>
+    <Section title="Device" onActionClick={() => setIsOpen(true)} hasSeparator>
       <ProposalSummary proposal={proposal} />
       <Popup aria-label="Device selection" isOpen={isOpen}>
         <ProposalTargetForm id="target-form" proposal={proposal} onSubmit={onTargetChange} />

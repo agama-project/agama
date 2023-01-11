@@ -21,7 +21,6 @@
 
 import React from "react";
 
-import "./layout.scss";
 import logoUrl from "@assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
 
@@ -57,35 +56,27 @@ const FooterInfoArea = createTeleporter();
  *
  */
 function Layout({ children }) {
-  const responsiveWidthRules = "pf-u-w-66-on-lg pf-u-w-50-on-xl pf-u-w-33-on-2xl";
-  const className = `layout ${responsiveWidthRules}`;
-
   return (
-    <div className={className}>
-      <div className="layout__header">
-        <div className="layout__header-section-title">
-          <h1>
-            <HeaderIcon.Target as="span" className="layout__header-section-title-icon" />
-            <PageTitle.Target as="span" />
-          </h1>
-        </div>
+    <div className="wrapper shadow">
+      <header className="split justify-between bottom-shadow">
+        <h1 className="split">
+          <HeaderIcon.Target as="span" />
+          <PageTitle.Target as="span" />
+        </h1>
 
-        <HeaderActions.Target className="layout__header-section-actions" />
-      </div>
+        <HeaderActions.Target as="span" />
+      </header>
 
-      <main className="layout__content">{children}</main>
+      <main className="stack">{children}</main>
 
-      <div className="layout__footer">
-        <div className="layout__footer-info-area">
-          <img src={logoUrl} alt="Logo of SUSE" className="company-logo" />
-          <FooterInfoArea.Target />
-        </div>
+      <footer className="split justify-between top-shadow" data-state="reversed">
         <FooterActions.Target
-          className="layout__footer-actions-area"
           role="navigation"
           aria-label="Installer Actions"
         />
-      </div>
+        <FooterInfoArea.Target />
+        <img src={logoUrl} alt="Logo of SUSE" />
+      </footer>
     </div>
   );
 }

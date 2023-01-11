@@ -1,0 +1,14 @@
+// .stack > * + * {
+.stack > :where(:not(:first-child)) {
+  margin-block-start: var(--stack-gutter);
+}
+
+.split {
+  display: flex;
+  align-items: center;
+  gap: var(--split-gutter);
+}
+
+[data-state="reversed"] {
+  flex-direction: row-reverse;
+}

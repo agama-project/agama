@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import { WifiNetworkListItem } from "@components/network";
+import { WifiNetworkListItem, WifiHiddenNetworkForm } from "@components/network";
 
 /**
  * Component for displaying a list of available Wi-Fi networks
@@ -33,24 +33,51 @@ import { WifiNetworkListItem } from "@components/network";
  * @param {function} props.onSelectionCallback - the function to trigger when user selects a network
  * @param {function} props.onCancelCallback - the function to trigger when user cancel dismiss before connecting to a network
  */
-function WifiNetworksList({ networks = [], activeNetwork, selectedNetwork, onSelectionCallback, onCancelSelectionCallback }) {
-  return networks.map(n => {
-    const isSelected = n.ssid === selectedNetwork?.ssid;
-    const isActive = !selectedNetwork && n.ssid === activeNetwork?.ssid;
+function WifiNetworksList({
+  networks = [],
+  hiddenNetwork,
+  activeNetwork,
+  selectedNetwork,
+  onSelectionCallback,
+  onCancelSelectionCallback,
+  showHiddenForm
+}) {
+  const renderElements = () => {
+    return networks.map(n => {
+      const isSelected = n.ssid === selectedNetwork?.ssid;
+      const isActive = !selectedNetwork && n.ssid === activeNetwork?.ssid;
 
-    return (
-      <WifiNetworkListItem
-        key={n.ssid}
-        network={n}
-        isSelected={isSelected}
-        isActive={isActive}
-        onSelect={() => {
-          if (!isSelected) onSelectionCallback(n);
-        }}
-        onCancel={onCancelSelectionCallback}
-      />
-    );
-  });
+      return (
+        <WifiNetworkListItem
+          key={n.ssid}
+          network={n}
+          isSelected={isSelected}
+          isActive={isActive}
+          onSelect={() => {
+            if (!isSelected) onSelectionCallback(n);
+          }}
+          onCancel={onCancelSelectionCallback}
+        />
+      );
+    });
+  };
+
+  return (
+    <ul className="selection-list">
+      {renderElements()}
+      <li data-state={showHiddenForm ? "focused" : "unstyled" }>
+        <div className="content">
+          <WifiHiddenNetworkForm
+            network={hiddenNetwork}
+            visible={showHiddenForm}
+            beforeDisplaying={() => onSelectionCallback(hiddenNetwork)}
+            beforeHiding={() => onSelectionCallback(activeNetwork)}
+            onSubmitCallback={onSelectionCallback}
+          />
+        </div>
+      </li>
+    </ul>
+  );
 }
 
 export default WifiNetworksList;

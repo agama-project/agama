@@ -93,7 +93,7 @@ module.exports = {
       },
       {
         test: /\.s?css$/,
-        exclude: [/fonts.scss/],
+        exclude: [/fonts.css/],
         use: [
           Extract.loader,
           {
@@ -117,7 +117,7 @@ module.exports = {
       },
       // Load D-Intaller fonts
       {
-        test: /fonts.scss/,
+        test: /fonts.css/,
         use: [
           { loader: 'css-loader' },
           { loader: 'sass-loader' }

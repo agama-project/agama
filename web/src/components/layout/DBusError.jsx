@@ -23,8 +23,8 @@ import React from "react";
 import { Button, Title, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
 
 import {
-  Icon,
   Center,
+  Icon,
   MainActions,
   PageIcon,
   Title as PageTitle,
@@ -39,23 +39,21 @@ const ReloadAction = () => (
 
 function DBusError() {
   return (
-    <>
+    <Center>
       <PageTitle>D-Bus Error</PageTitle>
       <PageIcon><Icon name="problem" /></PageIcon>
       <MainActions><ReloadAction /></MainActions>
 
-      <Center>
-        <EmptyState>
-          <EmptyStateIcon icon={({ ...props }) => <Icon name="error" { ...props } />} />
-          <Title headingLevel="h2" size="4xl">
-            Cannot connect to D-Bus
-          </Title>
-          <EmptyStateBody>
-            Could not connect to the D-Bus service. Please, check whether it is running.
-          </EmptyStateBody>
-        </EmptyState>
-      </Center>
-    </>
+      <EmptyState>
+        <EmptyStateIcon icon={({ ...props }) => <Icon name="error" { ...props } />} />
+        <Title headingLevel="h2" size="4xl">
+          Cannot connect to D-Bus
+        </Title>
+        <EmptyStateBody>
+          Could not connect to the D-Bus service. Please, check whether it is running.
+        </EmptyStateBody>
+      </EmptyState>
+    </Center>
   );
 }
 

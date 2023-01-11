@@ -67,14 +67,12 @@ const ValidationErrors = ({ title = "Errors", errors }) => {
 
   if (errors.length === 1) {
     return (
-      <>
-        <div className="warning-text">{warningIcon} {errors[0].message}</div>
-      </>
+      <div className="color-warn">{warningIcon} {errors[0].message}</div>
     );
   } else {
     return (
       <>
-        <div className="warning-text">
+        <div className="color-warn">
           { warningIcon }
           <a href="#" onClick={() => setPopoverVisible(true)}>{`${errors.length} errors found`}</a>
           <Popover

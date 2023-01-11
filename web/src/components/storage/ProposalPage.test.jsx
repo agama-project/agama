@@ -27,10 +27,10 @@ import { ProposalPage } from "@components/storage";
 
 const FakeProposalTargetSection = ({ calculateProposal }) => {
   return (
-    <>
+    <div>
       Target section
       <a href="#" onClick={calculateProposal}>Calculate</a>
-    </>
+    </div>
   );
 };
 
@@ -43,8 +43,8 @@ jest.mock("react-router-dom", () => ({
 jest.mock("@components/core/InstallerSkeleton", () => () => "Loading proposal");
 jest.mock("@components/storage/ProposalTargetSection", () => FakeProposalTargetSection);
 
-jest.mock("@components/storage/ProposalSettingsSection", () => () => "Settings section");
-jest.mock("@components/storage/ProposalActionsSection", () => () => "Actions section");
+jest.mock("@components/storage/ProposalSettingsSection", () => () => <div>Settings section</div>);
+jest.mock("@components/storage/ProposalActionsSection", () => () => <div>Actions section</div>);
 
 let proposal;
 

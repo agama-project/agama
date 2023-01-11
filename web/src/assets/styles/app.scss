@@ -1,0 +1,171 @@
+.loading-screen-icon {
+  text-align: center;
+
+  svg {
+    block-size: 10rem;
+    inline-size: 10rem;
+  }
+}
+
+// Make proposal actiosn compact
+.proposal-actions li + li {
+  margin-block-start: 0;
+}
+
+.proposal-action--delete {
+  font-weight: bold
+}
+
+// Align the expandable-actions with the actions list
+// See https://www.patternfly.org/v4/components/list#css-variables
+.expandable-actions {
+  margin-inline-start: calc(
+    var(--pf-global--spacer--lg) // --pf-c-list--PaddingLeft
+    - var(--pf-global--spacer--sm) // --pf-c-list--nested--MarginLeft
+    - var(--pf-global--icon--FontSize--sm) // --pf-c-list--m-icon-lg__item-icon-MinWidth
+  );
+}
+
+.expandable-actions > div {
+  margin-block-start: 0;
+}
+
+.overview-users > div {
+  margin-block-start: 0.5ex;
+}
+
+// Using a "selected-product" CSS class because sadly we cannot use
+// ".pf-c-card:has(> input[type="radio"]:checked)" yet
+//
+// See:
+//   - https://drafts.csswg.org/selectors/#relational
+//   - https://caniuse.com/css-has
+.pf-c-card.selected-product {
+  //border: 1px solid branding.$bc-green-500;
+  --pf-c-card--BoxShadow: var(--pf-global--BoxShadow--md);
+
+  .pf-c-radio {
+    // https://drafts.csswg.org/css-ui/#widget-accent
+    // https://caniuse.com/mdn-css_properties_accent-color
+    accent-color: var(--color-primary-darkest);
+  }
+
+  .pf-c-radio__label {
+    color: var(--color-primary);
+    font-weight: bold;
+  }
+
+  .pf-c-radio__description {
+    color: var(--color-primary-darkest);
+  }
+}
+
+.installer-skeleton {
+  margin-block-start: 1em;
+}
+
+.collapsed {
+  height: 0;
+  overflow: hidden;
+}
+.hidden {
+  visibility: hidden;
+}
+
+.host-ip {
+  vertical-align: middle;
+  color: var(--color-gray);
+}
+
+ul.connections-datalist {
+  border: 0;
+  li {
+    border: 0;
+    // TODO: get rid of this nested overrides once the network overview UI is better defined
+    .pf-c-data-list__item-row {
+      padding-inline: 0;
+      .pf-c-data-list__item-content {
+        padding-block-end: 0;
+      }
+    }
+  }
+}
+
+.auto-modal-popup {
+  block-size: auto;
+}
+
+.medium-modal-popup {
+  min-block-size: 55vh;
+  max-block-size: 55vh;
+}
+
+.large-modal-popup {
+  min-block-size: 85vh;
+  max-block-size: 85vh;
+}
+
+// *DataLists custom styles
+li.pf-c-data-list__item {
+  border-block-end-width: thin;
+}
+
+div.pf-c-data-list__item-row:has(button.remove-link:hover) {
+  background-color: #FAFAFA;
+}
+
+button.remove-link:hover {
+  color: var(--pf-c-button--m-danger--BackgroundColor);
+}
+
+// Custom styles for summary warnings
+.warning-text {
+  color: var(--pf-global--warning-color--200);
+  font-size: calc(var(--fs-base) - 2px);
+
+  a, small {
+    text-decoration: underline;
+    margin-inline: 4px;
+    color: var(--pf-global--warning-color--200);
+    font-size: calc(var(--fs-base) - 2px);
+  }
+
+  svg {
+    fill: var(--pf-global--warning-color--200);
+  }
+}
+
+button.hidden-popover-button {
+  visibility: hidden;
+  display: inline;
+}
+
+.danger-action {
+  color: var(--pf-global--danger-color--200);
+  svg {
+    fill: var(--pf-global--danger-color--200);
+  }
+}
+
+.wifi-network-menu button.pf-c-dropdown__toggle {
+  padding-right: 0;
+}
+
+.keep-words {
+  word-break: keep-all;
+}
+
+.wifi-network-menu{
+  button.toggler {
+    padding-inline-start: 0;
+    svg {
+      vertical-align: middle;
+    }
+  }
+}
+
+.volumes-list {
+  .pf-c-label {
+    margin-inline-end: 5px;
+  }
+}

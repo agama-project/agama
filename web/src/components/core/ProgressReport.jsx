@@ -23,7 +23,7 @@ import React, { useState, useEffect } from "react";
 import { useCancellablePromise } from "@/utils";
 import { useInstallerClient } from "@context/installer";
 
-import { Progress, Stack, StackItem, Text } from "@patternfly/react-core";
+import { Progress, Text } from "@patternfly/react-core";
 
 const ProgressReport = () => {
   const client = useInstallerClient();
@@ -57,33 +57,29 @@ const ProgressReport = () => {
   if (!progress.steps) return <Text>Waiting for progress status...</Text>;
 
   return (
-    <Stack hasGutter className="pf-u-w-100">
-      <StackItem>
-        <Progress
-          min={0}
-          max={progress.steps}
-          value={progress.step}
-          title={progress.message}
-          label={" "}
-          aria-label={progress.message}
-        />
-      </StackItem>
+    <>
+      <Progress
+        min={0}
+        max={progress.steps}
+        value={progress.step}
+        title={progress.message}
+        label={" "}
+        aria-label={progress.message}
+      />
 
-      <StackItem>
-        <Progress
-          size="sm"
-          min={0}
-          max={subProgress?.steps}
-          value={subProgress?.step}
-          title={subProgress?.message}
-          label={" "}
-          measureLocation="none"
-          className={!subProgress && 'hidden'}
-          aria-label={subProgress?.message || " "}
-          aria-hidden={!subProgress}
-        />
-      </StackItem>
-    </Stack>
+      <Progress
+        size="sm"
+        min={0}
+        max={subProgress?.steps}
+        value={subProgress?.step}
+        title={subProgress?.message}
+        label={" "}
+        measureLocation="none"
+        className={!subProgress && 'hidden'}
+        aria-label={subProgress?.message || " "}
+        aria-hidden={!subProgress}
+      />
+    </>
   );
 };
 
