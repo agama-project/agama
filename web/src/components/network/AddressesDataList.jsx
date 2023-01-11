@@ -117,7 +117,7 @@ export default function AddressesDataList({
     <>
       <div className="split justify-between">
         <FormLabel isRequired={!allowEmpty}>Addresses</FormLabel>
-        <Button isSmall variant="secondary" className="btn-sm" onClick={() => addAddress()}>
+        <Button isSmall variant="secondary" onClick={addAddress}>
           {newAddressButtonText}
         </Button>
       </div>

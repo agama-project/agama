@@ -15,18 +15,13 @@
   --pf-global--FontFamily--overpass--sans-serif: var(--ff);
   --pf-global--FontFamily--overpass--monospace: var(--ff-code);
 
-  // Font size
+  // Font sizes
   --pf-global--FontSize--4xl: 2em;
   --pf-global--FontSize--3xl: 1.75em;
   --pf-global--FontSize--2xl: 1.5em;
   --pf-global--FontSize--xl: 1.3em;
   --pf-global--FontSize--lg: 1.15em;
   --pf-global--FontSize--md: var(--fs-base);
-  // TODO: find better equivalences for sm and xs
-  // --pf-global--FontSize--xs: #{$pf-global--FontSize--xs};
-  // --pf-global--FontSize--sm: #{$pf-global--FontSize--sm};
-  // --pf-global--FontSize--sm: #{fonts.$size-base - 1px};
-  // --pf-global--FontSize--xs: #{fonts.$size-base - 2px};
 
   // Font weight
   --pf-global--FontWeight--light: var(--fw-light);
@@ -43,7 +38,6 @@
   --pf-global--link--Color--hover: var(--color-link-hover);
   --pf-global--BackgroundColor--dark-100: var(--color-primary); //#{branding.$bc-pine-500};
   --pf-global--BackgroundColor--dark-100: var(--color-primary); //#{branding.$bc-pine-500};
-
 }
 
 .pf-c-button.pf-m-primary {

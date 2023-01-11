@@ -94,7 +94,7 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
   return (
     <>
       <FormLabel>DNS</FormLabel>
-      <Button isSmall variant="secondary" className="btn-sm" onClick={() => addServer()}>
+      <Button isSmall variant="secondary" onClick={addServer}>
         {newDnsButtonText}
       </Button>
       <DataList isCompact gridBreakpoint="none" title="Addresses data list">

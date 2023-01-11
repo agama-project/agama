@@ -36,7 +36,7 @@ import React from "react";
  *   .vertically-centered { inline-size: 100%; }
  *
  *   We can use \@support CSS at rule and use a workaround when :has not available, but somehow
- *   prefer waiting until Firefox get support.
+ *   prefer waiting until Firefox gets support.
  *
  *   To know more, read
  *     - https://www.w3.org/TR/selectors-4/#relational
