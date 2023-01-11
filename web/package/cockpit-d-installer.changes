@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 11 20:37:26 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Testing: use a mocking function to make mocked components
+  consistent across the test suite (gh#yast/d-installer#392).
+
+-------------------------------------------------------------------
 Wed Jan 11 11:54:29 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Rework UI internals by using plain CSS as much as possible for
