@@ -84,7 +84,7 @@ module DInstaller
         begin
           Process.getpgid(pid)
           pid
-        rescue Errno::ESRCH
+        rescue Errno::ESRCH # the process is not found
           nil
         end
       end

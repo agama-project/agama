@@ -74,13 +74,13 @@ class DBusClient {
    *   to the "system" bus.
    */
   constructor(service, address = undefined) {
-    const options = {
-      bus: address === undefined ? "system" : "none",
-      superuser: "try"
-    };
+    const options = { superuser: "try" };
 
     if (address) {
+      options.bus = "none";
       options.address = address;
+    } else {
+      options.bus = "system";
     }
 
     this.client = cockpit.dbus(service, options);
