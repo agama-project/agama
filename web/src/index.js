@@ -58,5 +58,5 @@ ReactDOM.render(
       </SoftwareProvider>
     </InstallerClientProvider>
   </StrictMode>,
-  document.getElementById("d-installer")
+  document.getElementById("root")
 );

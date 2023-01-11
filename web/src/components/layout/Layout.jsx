@@ -57,7 +57,7 @@ const FooterInfoArea = createTeleporter();
  */
 function Layout({ children }) {
   return (
-    <>
+    <div className="wrapper">
       <header className="split justify-between">
         <h1 className="split">
           <HeaderIcon.Target as="span" />
@@ -77,7 +77,7 @@ function Layout({ children }) {
         <FooterInfoArea.Target />
         <img src={logoUrl} alt="Logo of SUSE" />
       </footer>
-    </>
+    </div>
   );
 }
 
