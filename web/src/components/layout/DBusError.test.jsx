@@ -22,8 +22,7 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { mockComponent } from "@test-utils/mocks";
-import { plainRender } from "@test-utils/renderers";
+import { plainRender, mockComponent } from "@/test-utils";
 
 import { DBusError } from "@components/layout";
 

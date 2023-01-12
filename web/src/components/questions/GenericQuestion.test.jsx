@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "@test-utils/renderers";
+import { installerRender } from "@/test-utils";
 import { GenericQuestion } from "@components/questions";
 
 const question = {

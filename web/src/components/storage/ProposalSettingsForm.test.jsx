@@ -22,7 +22,7 @@
 import React from "react";
 
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "@test-utils/renderers";
+import { installerRender } from "@/test-utils";
 import { ProposalSettingsForm } from "@components/storage";
 
 const proposal = {

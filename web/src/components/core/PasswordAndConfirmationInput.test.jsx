@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "@test-utils/renderers";
+import { plainRender } from "@/test-utils";
 import PasswordAndConfirmationInput from "./PasswordAndConfirmationInput";
 
 describe("when the passwords do not match", () => {

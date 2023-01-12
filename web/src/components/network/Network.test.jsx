@@ -21,8 +21,7 @@
 
 import React from "react";
 import { screen, within, waitFor } from "@testing-library/react";
-import { mockComponent } from "@test-utils/mocks";
-import { installerRender } from "@test-utils/renderers";
+import { installerRender, mockComponent } from "@/test-utils";
 import Network from "@components/network/Network";
 import { ConnectionTypes } from "@client/network";
 import { createClient } from "@client";

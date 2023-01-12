@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { installerRender } from "@test-utils/renderers";
+import { installerRender } from "@/test-utils";
 import { createClient } from "@client";
 import { InstallButton } from "@components/core";
 
