@@ -21,10 +21,10 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender, mockComponent } from "@/test-utils";
 import { ProposalActionsSection } from "@components/storage";
 
-jest.mock("@components/storage/ProposalActions", () => () => "ProposalActions content");
+jest.mock("@components/storage/ProposalActions", () => mockComponent("ProposalActions content"));
 
 const proposal = {};
 
