@@ -35,8 +35,8 @@ jest.mock('react-router-dom', () => ({
 
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
-jest.mock("@components/layout/DBusError", () => () => "D-BusError Mock");
-jest.mock("@components/layout/LoadingEnvironment", () => () => "LoadingEnvironment Mock");
+jest.mock("@components/layout/DBusError", () => mockComponent("D-BusError Mock"));
+jest.mock("@components/layout/LoadingEnvironment", () => mockComponent("LoadingEnvironment Mock"));
 jest.mock("@components/questions/Questions", () => mockComponent("Questions Mock"));
 jest.mock("@components/core/InstallationProgress", () => mockComponent("InstallationProgress Mock"));
 jest.mock("@components/core/InstallationFinished", () => mockComponent("InstallationFinished Mock"));
