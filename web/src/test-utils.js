@@ -25,7 +25,7 @@ import { render } from "@testing-library/react";
 
 import { createClient } from "@client/index";
 import { InstallerClientProvider } from "@context/installer";
-import { Layout } from "@components/layout";
+import Layout from "@components/layout/Layout";
 
 const InstallerProvider = ({ children }) => {
   const client = createClient();
