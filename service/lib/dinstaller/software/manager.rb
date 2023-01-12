@@ -22,6 +22,7 @@
 require "yast"
 require "fileutils"
 require "dinstaller/config"
+require "dinstaller/helpers"
 require "dinstaller/with_progress"
 require "y2packager/product"
 require "yast2/arch_filter"
@@ -37,6 +38,7 @@ module DInstaller
   module Software
     # This class is responsible for software handling
     class Manager
+      include Helpers
       include WithProgress
 
       GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
@@ -161,7 +163,7 @@ module DInstaller
       # @param name [String] Package name
       # @return [Boolean] true if it is installed; false otherwise
       def package_installed?(name)
-        Yast::Package.Installed(name, target: :system)
+        on_target { Yast::Package.Installed(name, target: :system) }
       end
 
     private
