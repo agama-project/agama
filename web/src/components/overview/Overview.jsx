@@ -72,7 +72,7 @@ function Overview() {
         <Network />
       </Section>
       <StorageSection key="storage" showErrors />
-      <SoftwareSection key="software" showErrors />,
+      <SoftwareSection key="software" showErrors />
       <Users key="users" showErrors={showErrors} />
     </>
   );
