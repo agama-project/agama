@@ -22,14 +22,14 @@
 import React from "react";
 
 import { act, screen, waitFor } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender, mockComponent } from "@/test-utils";
 import { createClient } from "@client";
 
 import { Questions } from "@components/questions";
 
 jest.mock("@client");
-jest.mock("@components/questions/GenericQuestion", () => () => "A Generic question mock");
-jest.mock("@components/questions/LuksActivationQuestion", () => () => "A LUKS activation question mock");
+jest.mock("@components/questions/GenericQuestion", () => mockComponent("A Generic question mock"));
+jest.mock("@components/questions/LuksActivationQuestion", () => mockComponent("A LUKS activation question mock"));
 
 const handlers = {};
 const genericQuestion = { id: 1, type: 'generic' };

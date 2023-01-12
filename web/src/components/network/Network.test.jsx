@@ -21,14 +21,14 @@
 
 import React from "react";
 import { screen, within, waitFor } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender, mockComponent } from "@/test-utils";
 import Network from "@components/network/Network";
 import { ConnectionTypes } from "@client/network";
 import { createClient } from "@client";
 
 jest.mock("@client");
-jest.mock("@components/network/NetworkWiredStatus", () => () => <div>Wired Connections</div>);
-jest.mock("@components/network/NetworkWifiStatus", () => () => <div>WiFi Connections</div>);
+jest.mock("@components/network/NetworkWiredStatus", () => mockComponent("Wired Connections"));
+jest.mock("@components/network/NetworkWifiStatus", () => mockComponent("WiFi Connections"));
 
 const networkSettings = { wifiScanSupported: false, hostname: "test" };
 let settingsFn = jest.fn().mockReturnValue(networkSettings);
