@@ -22,7 +22,7 @@
 import React from "react";
 
 import { act, screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender } from "@test-utils/renderers";
 import { createClient } from "@client";
 
 import { TargetIpsPopup } from "@components/network";

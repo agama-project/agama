@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender } from "@test-utils/renderers";
 import { ProposalSettingsSection } from "@components/storage";
 
 const FakeProposalSettingsForm = ({ id, onSubmit }) => {

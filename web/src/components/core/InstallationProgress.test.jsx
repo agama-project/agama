@@ -22,7 +22,8 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "@/test-utils";
+import { mockComponent } from "@test-utils/mocks";
+import { installerRender } from "@test-utils/renderers";
 
 import InstallationProgress from "./InstallationProgress";
 

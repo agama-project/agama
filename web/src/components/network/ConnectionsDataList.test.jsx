@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "@/test-utils";
+import { plainRender } from "@test-utils/renderers";
 
 import { ConnectionTypes } from "@client/network";
 import ConnectionsDataList from "@components/network/ConnectionsDataList";

@@ -21,7 +21,7 @@
 
 import React, { useState } from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender } from "@test-utils/renderers";
 import { DeviceSelector } from "@components/storage";
 
 const availableDevices = [

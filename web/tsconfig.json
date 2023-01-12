@@ -16,6 +16,7 @@
       "@components/*": ["src/components/*"],
       "@context/*": ["src/context/*"],
       "@lib/*": ["src/lib/*"],
+      "@test-utils/*": ["src/test-utils/*"],
       "~icons/*": ["node_modules/@material-symbols/svg-400/outlined/*"]
     }
   },

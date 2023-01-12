@@ -21,7 +21,8 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "@/test-utils";
+import { mockComponent } from "@test-utils/mocks";
+import { installerRender } from "@test-utils/renderers";
 import App from "./App";
 import { createClient } from "@client";
 import { STARTUP, CONFIG, INSTALL } from "@client/phase";

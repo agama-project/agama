@@ -21,7 +21,8 @@
 
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender, mockComponent } from "@/test-utils";
+import { mockComponent } from "@test-utils/mocks";
+import { installerRender } from "@test-utils/renderers";
 import { ProposalTargetSection } from "@components/storage";
 
 const FakeProposalTargetForm = ({ id, onSubmit }) => {

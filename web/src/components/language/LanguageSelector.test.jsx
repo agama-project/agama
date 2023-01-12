@@ -21,7 +21,8 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender, createCallbackMock } from "@/test-utils";
+import { createCallbackMock } from "@test-utils/mocks";
+import { installerRender } from "@test-utils/renderers";
 import { LanguageSelector } from "@components/language";
 import { createClient } from "@client";
 

@@ -22,7 +22,8 @@
 import React from "react";
 
 import { act, screen, waitFor, within } from "@testing-library/react";
-import { installerRender, createCallbackMock } from "@/test-utils";
+import { createCallbackMock } from "@test-utils/mocks";
+import { installerRender } from "@test-utils/renderers";
 import { createClient } from "@client";
 
 import { RootPassword } from "@components/users";
