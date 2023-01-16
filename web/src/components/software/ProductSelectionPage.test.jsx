@@ -38,7 +38,6 @@ const products = [
   }
 ];
 jest.mock("@client");
-jest.mock("@components/network/TargetIpsPopup", () => mockComponent("Target IPs Mock"));
 
 const mockUseNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({

@@ -40,7 +40,6 @@ jest.mock("@components/layout/LoadingEnvironment", () => mockComponent("LoadingE
 jest.mock("@components/questions/Questions", () => mockComponent("Questions Mock"));
 jest.mock("@components/core/InstallationProgress", () => mockComponent("InstallationProgress Mock"));
 jest.mock("@components/core/InstallationFinished", () => mockComponent("InstallationFinished Mock"));
-jest.mock("@components/network/TargetIpsPopup", () => mockComponent("Target IPs Mock"));
 
 const callbacks = {};
 const getStatusFn = jest.fn();
@@ -176,11 +175,6 @@ describe("App", () => {
     it("renders the application's content", async () => {
       installerRender(<App />);
       await screen.findByText("Content");
-    });
-
-    it("renders IP address and hostname", async () => {
-      installerRender(<App />);
-      await screen.findByText("Target IPs Mock");
     });
   });
 });
