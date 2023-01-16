@@ -26,6 +26,7 @@ import { noop, useCancellablePromise } from "@/utils";
 import { useInstallerClient } from "@context/installer";
 import { formatIp } from "@client/network/utils";
 
+import { Icon } from "@components/layout";
 import { Popup } from "@components/core";
 
 export default function TargetIpsPopup({ onClickCallback = noop }) {
@@ -66,7 +67,12 @@ export default function TargetIpsPopup({ onClickCallback = noop }) {
 
   return (
     <>
-      <Button variant="link" onClick={open} isDisabled={addresses.length === 1}>
+      <Button
+        variant="link"
+        onClick={open}
+        isDisabled={addresses.length === 1}
+        icon={<Icon name="info" size="24" />}
+      >
         {formatIp(firstIp)} {hostname && <Text component="small">({hostname})</Text>}
       </Button>
 

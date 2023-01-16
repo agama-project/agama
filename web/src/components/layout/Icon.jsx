@@ -30,6 +30,7 @@ import EditSquare from "~icons/edit_square.svg?component";
 import Edit from "~icons/edit.svg?component";
 import Download from "~icons/download.svg?component";
 import HardDrive from "~icons/hard_drive.svg?component";
+import Help from "~icons/help.svg?component";
 import ManageAccounts from "~icons/manage_accounts.svg?component";
 import Menu from "~icons/menu.svg?component";
 import MenuOpen from "~icons/menu_open.svg?component";
@@ -60,6 +61,7 @@ const icons = {
   edit_square: EditSquare,
   error: Error,
   hard_drive: HardDrive,
+  help: Help,
   home_storage: HomeStorage,
   info: Info,
   inventory_2: Inventory,
