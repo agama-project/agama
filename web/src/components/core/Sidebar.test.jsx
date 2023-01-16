@@ -26,7 +26,7 @@ import { Sidebar } from "@components/core";
 
 jest.mock("@components/layout/Layout", () => mockLayout());
 jest.mock("@components/core/About", () => mockComponent("About Mock"));
-jest.mock("@components/core/ChangeProductButton", () => () => "ChangeProductButton Mock");
+jest.mock("@components/core/ChangeProductButton", () => mockComponent("ChangeProductButton Mock"));
 jest.mock("@components/core/LogsButton", () => mockComponent("LogsButton Mock"));
 jest.mock("@components/network/TargetIpsPopup", () => mockComponent("Host Ips Mock"));
 
