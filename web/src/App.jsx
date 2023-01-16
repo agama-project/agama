@@ -27,7 +27,7 @@ import { STARTUP, INSTALL } from "@client/phase";
 import { BUSY } from "@client/status";
 
 import { Layout, Title, AdditionalInfo, LoadingEnvironment, DBusError } from "@components/layout";
-import { About, InstallationProgress, InstallationFinished } from "@components/core";
+import { InstallationProgress, InstallationFinished } from "@components/core";
 import { TargetIpsPopup } from "@components/network";
 
 function App() {
@@ -80,7 +80,6 @@ function App() {
       <Title>D-Installer</Title>
       <Content />
       <AdditionalInfo>
-        <About />
         <TargetIpsPopup />
       </AdditionalInfo>
     </Layout>

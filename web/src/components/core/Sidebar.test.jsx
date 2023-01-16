@@ -25,6 +25,7 @@ import { plainRender, mockComponent } from "@/test-utils";
 import { Sidebar } from "@components/core";
 
 jest.mock("@components/core/ChangeProductButton", () => () => "ChangeProductButton Mock");
+jest.mock("@components/core/About", () => mockComponent("About Mock"));
 
 jest.mock("@components/layout/Layout", () => ({
   PageActions: ({ children }) => children
@@ -66,5 +67,11 @@ describe("Sidebar content", () => {
     plainRender(<Sidebar />, { usingLayout: false });
     const nav = await screen.findByRole("navigation", { name: /options/i });
     await within(nav).findByText("ChangeProductButton Mock");
+  });
+
+  it("contains the output of component for displaying the 'About' information", async () => {
+    plainRender(<Sidebar />, { usingLayout: false });
+    const nav = await screen.findByRole("navigation", { name: /options/i });
+    await within(nav).findByText("About Mock");
   });
 });

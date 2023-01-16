@@ -21,7 +21,7 @@
 
 import React, { useState } from "react";
 import { Icon, PageActions } from "@components/layout";
-import { ChangeProductButton } from "@components/core";
+import { About, ChangeProductButton } from "@components/core";
 
 /**
  * D-Installer sidebar navigation
@@ -55,6 +55,7 @@ export default function Sidebar() {
 
         <div className="flex-stack">
           <ChangeProductButton onClickCallback={close} />
+          <About onClickCallback={close} />
         </div>
 
         <footer className="split" data-state="reversed">
