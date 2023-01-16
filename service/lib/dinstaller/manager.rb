@@ -86,12 +86,9 @@ module DInstaller
     # rubocop:disable Metrics/AbcSize
     def install_phase
       installation_phase.install
+      start_progress(7)
 
-      start_progress(8)
-
-      progress.step("Reading software repositories") do
-        Yast::Installation.destdir = "/mnt"
-      end
+      Yast::Installation.destdir = "/mnt"
 
       progress.step("Partitioning") do
         storage.install
