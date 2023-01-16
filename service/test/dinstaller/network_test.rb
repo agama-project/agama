@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
+require "tmpdir"
 require "dinstaller/network"
 require "dinstaller/progress"
 
@@ -55,9 +56,53 @@ describe DInstaller::Network do
   end
 
   describe "#install" do
-    it "runs the save_network client" do
-      expect(Yast::WFM).to receive(:CallFunction).with("save_network", [])
-      network.install
+    let(:rootdir) { Dir.mktmpdir }
+    let(:etcdir) do
+      File.join(rootdir, "etc", "NetworkManager", "system-connections")
+    end
+    let(:targetdir) { File.join(rootdir, "mnt") }
+
+    before do
+      allow(Yast::Installation).to receive(:destdir).and_return(targetdir)
+      stub_const("DInstaller::Network::ETC_NM_DIR", etcdir)
+    end
+
+    after do
+      FileUtils.remove_entry(rootdir)
+    end
+
+    context "when NetworkManager configuration files are present" do
+      before do
+        FileUtils.mkdir_p(File.join(etcdir, "system-connections"))
+        FileUtils.touch(File.join(etcdir, "system-connections", "wired.nmconnection"))
+      end
+
+      it "copies the configuration files" do
+        network.install
+        expect(File).to exist(
+          File.join(targetdir, etcdir, "system-connections", "wired.nmconnection")
+        )
+      end
+    end
+
+    context "when NetworkManager configuration files are not available" do
+      it "does not try to copy any file" do
+        expect(FileUtils).to_not receive(:cp_r)
+        network.install
+      end
+    end
+
+    context "when NetworkManager connections are not defined" do
+      before do
+        FileUtils.mkdir_p(etcdir)
+      end
+
+      it "does not try to copy any file" do
+        network.install
+        expect(Dir).to_not exist(
+          File.join(targetdir, etcdir, "system-connections")
+        )
+      end
     end
   end
 end

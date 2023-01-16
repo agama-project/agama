@@ -23,6 +23,7 @@ require "singleton"
 require "yast"
 require "y2network/proposal_settings"
 Yast.import "Lan"
+Yast.import "Installation"
 
 module DInstaller
   # Backend class to handle network configuration
@@ -43,12 +44,34 @@ module DInstaller
 
     # Writes the network configuration to the installed system
     def install
-      Yast::WFM.CallFunction("save_network", [])
+      return unless Dir.exist?(ETC_NM_DIR)
+
+      copy_directory(
+        File.join(ETC_NM_DIR, "system-connections"),
+        File.join(Yast::Installation.destdir, ETC_NM_DIR, "system-connections")
+      )
     end
 
   private
 
     # @return [Logger]
     attr_reader :logger
+
+    ETC_NM_DIR = "/etc/NetworkManager"
+    private_constant :ETC_NM_DIR
+
+    # Copies a directory
+    #
+    # This method checks whether the source directory exists. If preserves the target directory if
+    # it exists (otherwise, it creates the directory).
+    #
+    # @param source [String] source directory
+    # @param target [String] target directory
+    def copy_directory(source, target)
+      return unless Dir.exist?(source)
+
+      FileUtils.mkdir_p(target)
+      FileUtils.cp(Dir.glob(File.join(source, "*")), target)
+    end
   end
 end
