@@ -36,14 +36,14 @@ export default function ChangeProductButton({ onClickCallback = noop }) {
 
   return (
     <Button
-      isSmall
-      variant="plain"
+      variant="link"
+      icon={<Icon name="edit_square" size="24" />}
       onClick={() => {
         navigate("/products");
         onClickCallback();
       }}
     >
-      <Icon name="edit_square" size="24" /> Change selected product
+      Change selected product
     </Button>
   );
 }
