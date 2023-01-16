@@ -28,32 +28,6 @@ describe DInstaller::Network do
   subject(:network) { described_class.new(logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
-  let(:proposal) do
-    instance_double(Y2Network::ProposalSettings,
-      apply_defaults: nil, refresh_packages: nil, enable_network_manager!: true)
-  end
-
-  describe "#probe" do
-    before do
-      allow(Yast::Lan).to receive(:read_config)
-      allow(Y2Network::ProposalSettings).to receive(:instance).and_return(proposal)
-    end
-
-    it "reads the network configuration" do
-      expect(Yast::Lan).to receive(:read_config)
-      network.probe
-    end
-
-    it "apply the defaults" do
-      expect(proposal).to receive(:apply_defaults)
-      network.probe
-    end
-
-    it "forces a selection of NetworkManager as the backend to be used" do
-      expect(proposal).to receive(:enable_network_manager!)
-      network.probe
-    end
-  end
 
   describe "#install" do
     let(:rootdir) { Dir.mktmpdir }

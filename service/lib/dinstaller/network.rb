@@ -24,7 +24,6 @@ require "yast"
 require "yast2/systemd/service"
 require "y2network/proposal_settings"
 
-Yast.import "Lan"
 Yast.import "Installation"
 
 module DInstaller
@@ -32,16 +31,6 @@ module DInstaller
   class Network
     def initialize(logger)
       @logger = logger
-    end
-
-    # Probes the network configuration
-    def probe
-      logger.info "Probing network"
-      Yast::Lan.read_config
-      settings = Y2Network::ProposalSettings.instance
-      settings.apply_defaults
-      # force NetworkManager as we are not supporting other backends
-      settings.enable_network_manager!
     end
 
     # Writes the network configuration to the installed system

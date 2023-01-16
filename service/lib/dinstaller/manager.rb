@@ -73,8 +73,6 @@ module DInstaller
       installation_phase.config
 
       storage.probe
-      network.probe
-
       logger.info("Config phase done")
     rescue StandardError => e
       logger.error "Startup error: #{e.inspect}. Backtrace: #{e.backtrace}"

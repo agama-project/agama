@@ -49,7 +49,7 @@ describe DInstaller::Manager do
     )
   end
   let(:language) { instance_double(DInstaller::DBus::Clients::Language, finish: nil) }
-  let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
+  let(:network) { instance_double(DInstaller::Network, install: nil) }
   let(:storage) do
     instance_double(
       DInstaller::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
@@ -105,7 +105,6 @@ describe DInstaller::Manager do
     end
 
     it "calls #probe method of each module" do
-      expect(network).to receive(:probe)
       expect(storage).to receive(:probe)
       subject.config_phase
     end
