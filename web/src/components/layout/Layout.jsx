@@ -23,6 +23,7 @@ import React from "react";
 
 import logoUrl from "@assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
+import { Sidebar } from "@components/core";
 
 const PageTitle = createTeleporter();
 const HeaderActions = createTeleporter();
@@ -67,7 +68,11 @@ function Layout({ children }) {
         <HeaderActions.Target as="span" />
       </header>
 
-      <main className="stack">{children}</main>
+      <Sidebar />
+
+      <main className="stack">
+        {children}
+      </main>
 
       <footer className="split justify-between top-shadow" data-state="reversed">
         <FooterActions.Target

@@ -20,6 +20,7 @@
  */
 
 export { default as About } from "./About";
+export { default as Sidebar } from "./Sidebar";
 export { default as Section } from "./Section";
 export { default as FormLabel } from "./FormLabel";
 export { default as Fieldset } from "./Fieldset";

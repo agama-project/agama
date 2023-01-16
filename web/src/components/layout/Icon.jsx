@@ -30,6 +30,8 @@ import EditSquare from "~icons/edit_square.svg?component";
 import Edit from "~icons/edit.svg?component";
 import HardDrive from "~icons/hard_drive.svg?component";
 import ManageAccounts from "~icons/manage_accounts.svg?component";
+import Menu from "~icons/menu.svg?component";
+import MenuOpen from "~icons/menu_open.svg?component";
 import HomeStorage from "~icons/home_storage.svg?component";
 import Problem from "~icons/problem.svg?component";
 import Error from "~icons/error.svg?component";
@@ -63,6 +65,8 @@ const icons = {
   loading: Loading,
   lock: Lock,
   manage_accounts: ManageAccounts,
+  menu: Menu,
+  menu_open: MenuOpen,
   more_vert: MoreVert,
   problem: Problem,
   settings: SettingsFill,

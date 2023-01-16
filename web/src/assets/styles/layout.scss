@@ -46,3 +46,7 @@
 .wrapper > footer > img {
   max-inline-size: 150px;
 }
+
+[data-variant="flip-X"] {
+  transform: scaleX(-1);
+}
