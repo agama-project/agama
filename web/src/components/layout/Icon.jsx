@@ -28,6 +28,7 @@ import Translate from "~icons/translate.svg?component";
 import SettingsEthernet from "~icons/settings_ethernet.svg?component";
 import EditSquare from "~icons/edit_square.svg?component";
 import Edit from "~icons/edit.svg?component";
+import Download from "~icons/download.svg?component";
 import HardDrive from "~icons/hard_drive.svg?component";
 import ManageAccounts from "~icons/manage_accounts.svg?component";
 import Menu from "~icons/menu.svg?component";
@@ -53,6 +54,7 @@ import Loading from "./three-dots-loader-icon.svg?component";
 const icons = {
   check_circle: CheckCircle,
   delete: Delete,
+  download: Download,
   downloading: Downloading,
   edit: Edit,
   edit_square: EditSquare,

@@ -56,9 +56,9 @@ export default function Sidebar() {
 
         <div className="flex-stack">
           <ChangeProductButton onClickCallback={close} />
-          <LogsButton />
           <About onClickCallback={close} />
           <TargetIpsPopup onClickCallback={close} />
+          <LogsButton />
         </div>
 
         <footer className="split" data-state="reversed">

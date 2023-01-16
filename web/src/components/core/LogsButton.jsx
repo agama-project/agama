@@ -22,8 +22,8 @@
 import React, { useReducer } from "react";
 import { useInstallerClient } from "@context/installer";
 import { useCancellablePromise } from "@/utils";
-
-import { Button } from "@patternfly/react-core";
+import { Button as VendorButton } from "@patternfly/react-core";
+import { Icon } from "@components/layout";
 
 const states = {
   initial: 0,
@@ -64,10 +64,22 @@ const reducer = (state, action) => {
  *
  * @param {object} props
  */
-const LogsButton = () => {
+const LogsButton = ({ className }) => {
   const client = useInstallerClient();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { cancellablePromise } = useCancellablePromise();
+
+  const Button = ({ children, ...props }) => (
+    <VendorButton
+      isPlain
+      variant="link"
+      className={className}
+      icon={props.isLoading ? null : <Icon name="download" size="24" />}
+      {...props}
+    >
+      {children}
+    </VendorButton>
+  );
 
   switch (state.status) {
     case states.initial: {
@@ -80,15 +92,15 @@ const LogsButton = () => {
 
         return dispatch({ type: "COLLECT" });
       };
-      return <Button isLarge onClick={open}>Collect Logs</Button>;
+      return <Button onClick={open}>Collect Logs</Button>;
     }
     case states.collecting: {
-      return <Button isLoading isLarge>Collecting Logs</Button>;
+      return <Button isLoading>Collecting Logs</Button>;
     }
     case states.download: {
       const blob = new Blob([state.file], { type: "application/x-xz" });
       const url = window.URL.createObjectURL(blob);
-      return <Button isLarge component="a" href={url} download="y2logs.tar.xz">Download Logs</Button>;
+      return <Button component="a" href={url} download="y2logs.tar.xz">Download Logs</Button>;
     }
   }
 };
