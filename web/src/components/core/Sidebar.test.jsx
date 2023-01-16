@@ -24,6 +24,8 @@ import { screen, within } from "@testing-library/react";
 import { plainRender, mockComponent } from "@/test-utils";
 import { Sidebar } from "@components/core";
 
+jest.mock("@components/core/ChangeProductButton", () => () => "ChangeProductButton Mock");
+
 jest.mock("@components/layout/Layout", () => ({
   PageActions: ({ children }) => children
 }));
@@ -57,4 +59,12 @@ it("renders a link for changing the sidebar to hidden", async () => {
   expect(nav).toHaveAttribute("data-state", "visible");
   await user.click(closeLink);
   expect(nav).toHaveAttribute("data-state", "hidden");
+});
+
+describe("Sidebar content", () => {
+  it("contains the output of component for changing the selected product", async () => {
+    plainRender(<Sidebar />, { usingLayout: false });
+    const nav = await screen.findByRole("navigation", { name: /options/i });
+    await within(nav).findByText("ChangeProductButton Mock");
+  });
 });
