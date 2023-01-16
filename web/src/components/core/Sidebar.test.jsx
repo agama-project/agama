@@ -25,8 +25,9 @@ import { plainRender, mockComponent, mockLayout } from "@/test-utils";
 import { Sidebar } from "@components/core";
 
 jest.mock("@components/layout/Layout", () => mockLayout());
-jest.mock("@components/core/ChangeProductButton", () => () => "ChangeProductButton Mock");
 jest.mock("@components/core/About", () => mockComponent("About Mock"));
+jest.mock("@components/core/ChangeProductButton", () => () => "ChangeProductButton Mock");
+jest.mock("@components/core/LogsButton", () => mockComponent("LogsButton Mock"));
 jest.mock("@components/network/TargetIpsPopup", () => mockComponent("Host Ips Mock"));
 
 it("renders the sidebar initially hidden", async () => {
@@ -77,5 +78,11 @@ describe("Sidebar content", () => {
     plainRender(<Sidebar />);
     const nav = await screen.findByRole("navigation", { name: /options/i });
     await within(nav).findByText("Host Ips Mock");
+  });
+
+  it("contains the LogsButton component's output", async () => {
+    plainRender(<Sidebar />);
+    const nav = await screen.findByRole("navigation", { name: /options/i });
+    await within(nav).findByText("LogsButton Mock");
   });
 });

@@ -21,7 +21,7 @@
 
 import React, { useState } from "react";
 import { Icon, PageActions } from "@components/layout";
-import { About, ChangeProductButton } from "@components/core";
+import { About, ChangeProductButton, LogsButton } from "@components/core";
 import { TargetIpsPopup } from "@components/network";
 
 /**
@@ -56,6 +56,7 @@ export default function Sidebar() {
 
         <div className="flex-stack">
           <ChangeProductButton onClickCallback={close} />
+          <LogsButton />
           <About onClickCallback={close} />
           <TargetIpsPopup onClickCallback={close} />
         </div>

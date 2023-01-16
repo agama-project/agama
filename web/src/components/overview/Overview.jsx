@@ -24,7 +24,7 @@ import { useSoftware } from "@context/software";
 import { Navigate } from "react-router-dom";
 
 import { Icon, Title, PageIcon, MainActions } from "@components/layout";
-import { Section, InstallButton, LogsButton } from "@components/core";
+import { Section, InstallButton } from "@components/core";
 import { LanguageSelector } from "@components/language";
 import { StorageSection } from "@components/overview";
 import { Users } from "@components/users";
@@ -44,7 +44,6 @@ function Overview() {
       <PageIcon><Icon name="inventory_2" /></PageIcon>
       <MainActions>
         <InstallButton onClick={() => setShowErrors(true)} />
-        <LogsButton />
       </MainActions>
       <Section key="language" title="Language" iconName="translate">
         <LanguageSelector />
