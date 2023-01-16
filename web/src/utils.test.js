@@ -19,7 +19,14 @@
  * find current contact information at www.suse.com.
  */
 
-import { classNames, partition } from "./utils";
+import { classNames, partition, noop } from "./utils";
+
+describe("noop", () => {
+  it("returns undefined", () => {
+    const result = noop();
+    expect(result).toBeUndefined();
+  });
+});
 
 describe("partition", () => {
   it("returns two groups of elements that do and do not satisfy provided filter", () => {

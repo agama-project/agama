@@ -22,6 +22,13 @@
 import { useEffect, useRef, useCallback } from "react";
 
 /**
+ * Returns an empty function useful to be used as a default callback.
+ *
+ * @return {function} empty function
+ */
+const noop = () => undefined;
+
+/**
  * Returns a new array with a given collection split into two groups, the first holding elements
  * satisfying the filter and the second with those which do not.
  *
@@ -137,6 +144,7 @@ function useCancellablePromise() {
 }
 
 export {
+  noop,
   partition,
   classNames,
   useCancellablePromise,
