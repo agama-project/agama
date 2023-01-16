@@ -22,17 +22,13 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender, mockLayout } from "@/test-utils";
 import { createClient } from "@client";
 
 import InstallationFinished from "./InstallationFinished";
 
 jest.mock("@client");
-jest.mock("@components/layout/Layout", () => ({
-  MainActions: ({ children }) => children,
-  PageIcon: ({ children }) => children,
-  Title: ({ children }) => children,
-}));
+jest.mock("@components/layout/Layout", () => mockLayout());
 
 const rebootSystemFn = jest.fn();
 

@@ -22,15 +22,11 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { plainRender, mockComponent } from "@/test-utils";
+import { plainRender, mockLayout } from "@/test-utils";
 
 import { DBusError } from "@components/layout";
 
-jest.mock("@components/layout/Layout", () => ({
-  MainActions: ({ children }) => children,
-  PageIcon: ({ children }) => children,
-  Title: ({ children }) => children,
-}));
+jest.mock("@components/layout/Layout", () => mockLayout());
 
 describe("DBusError", () => {
   it("includes a generic D-Bus connection problem message", () => {

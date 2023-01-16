@@ -87,4 +87,22 @@ const mockComponent = (content, { wrapper } = { wrapper: "div" }) => {
   return () => <Wrapper>{content}</Wrapper>;
 };
 
-export { installerRender, plainRender, createCallbackMock, mockComponent };
+/**
+ * Returns fake component for mocking the Layout and its slots
+ *
+ * Useful to be used when testing a component that uses either, the Layout itself or any of its
+ * slots (a.k.a. portals)
+ *
+ * @return a function component to mock the Layout
+ */
+const mockLayout = () => ({
+  __esModule: true,
+  default: ({ children }) => children,
+  Title: ({ children }) => children,
+  PageIcon: ({ children }) => children,
+  PageActions: ({ children }) => children,
+  MainActions: ({ children }) => children,
+  AdditionalInfo: ({ children }) => children,
+});
+
+export { installerRender, plainRender, createCallbackMock, mockComponent, mockLayout };

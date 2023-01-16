@@ -21,7 +21,7 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "@/test-utils";
+import { installerRender, mockComponent, mockLayout } from "@/test-utils";
 import App from "./App";
 import { createClient } from "@client";
 import { STARTUP, CONFIG, INSTALL } from "@client/phase";
@@ -33,11 +33,7 @@ jest.mock('react-router-dom', () => ({
   Outlet: mockComponent("Content"),
 }));
 
-jest.mock("@components/layout/Layout", () => ({
-  __esModule: true,
-  default: ({ children }) => children,
-  Title: ({ children }) => children,
-}));
+jest.mock("@components/layout/Layout", () => mockLayout());
 
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export

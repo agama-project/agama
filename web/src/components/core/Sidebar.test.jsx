@@ -21,16 +21,13 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender, mockComponent } from "@/test-utils";
+import { plainRender, mockComponent, mockLayout } from "@/test-utils";
 import { Sidebar } from "@components/core";
 
+jest.mock("@components/layout/Layout", () => mockLayout());
 jest.mock("@components/core/ChangeProductButton", () => () => "ChangeProductButton Mock");
 jest.mock("@components/core/About", () => mockComponent("About Mock"));
 jest.mock("@components/network/TargetIpsPopup", () => mockComponent("Host Ips Mock"));
-
-jest.mock("@components/layout/Layout", () => ({
-  PageActions: ({ children }) => children
-}));
 
 it("renders the sidebar initially hidden", async () => {
   plainRender(<Sidebar />);

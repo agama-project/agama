@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "@/test-utils";
+import { installerRender, mockComponent, mockLayout } from "@/test-utils";
 import Overview from "./Overview";
 import { createClient } from "@client";
 
@@ -49,12 +49,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn()
 }));
 
-jest.mock("@components/layout/Layout", () => ({
-  Title: ({ children }) => children,
-  PageIcon: ({ children }) => children,
-  MainActions: ({ children }) => children,
-}));
-
+jest.mock("@components/layout/Layout", () => mockLayout());
 jest.mock("@components/language/LanguageSelector", () => mockComponent("Language Selector"));
 jest.mock("@components/overview/StorageSection", () => mockComponent("Storage Section"));
 jest.mock("@components/network/Network", () => mockComponent("Network Configuration"));

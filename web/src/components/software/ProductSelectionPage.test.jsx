@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "@/test-utils";
+import { installerRender, mockLayout } from "@/test-utils";
 import { ProductSelectionPage } from "@components/software";
 import { createClient } from "@client";
 
@@ -55,11 +55,7 @@ jest.mock("@context/software", () => ({
   }
 }));
 
-jest.mock("@components/layout/Layout", () => ({
-  MainActions: ({ children }) => children,
-  PageIcon: ({ children }) => children,
-  Title: ({ children }) => children,
-}));
+jest.mock("@components/layout/Layout", () => mockLayout());
 
 const softwareMock = {
   getProducts: () => Promise.resolve(products),
