@@ -21,7 +21,9 @@
 
 require "singleton"
 require "yast"
+require "yast2/systemd/service"
 require "y2network/proposal_settings"
+
 Yast.import "Lan"
 Yast.import "Installation"
 
@@ -43,13 +45,13 @@ module DInstaller
     end
 
     # Writes the network configuration to the installed system
+    #
+    # * Copies the connections configuration for NetworkManager, as D-Installer is not
+    #   performing further configuration of the network.
+    # * Enables the NetworkManager service.
     def install
-      return unless Dir.exist?(ETC_NM_DIR)
-
-      copy_directory(
-        File.join(ETC_NM_DIR, "system-connections"),
-        File.join(Yast::Installation.destdir, ETC_NM_DIR, "system-connections")
-      )
+      copy_files
+      enable_service
     end
 
   private
@@ -59,6 +61,26 @@ module DInstaller
 
     ETC_NM_DIR = "/etc/NetworkManager"
     private_constant :ETC_NM_DIR
+
+    def enable_service
+      service = Yast2::Systemd::Service.find("NetworkManager")
+      if service.nil?
+        logger.error "NetworkManager service was not found"
+        return
+      end
+
+      service.enable
+    end
+
+    # Copies NetworkManager configuration files
+    def copy_files
+      return unless Dir.exist?(ETC_NM_DIR)
+
+      copy_directory(
+        File.join(ETC_NM_DIR, "system-connections"),
+        File.join(Yast::Installation.destdir, ETC_NM_DIR, "system-connections")
+      )
+    end
 
     # Copies a directory
     #
