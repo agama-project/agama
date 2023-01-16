@@ -45,7 +45,7 @@ const networksMock = [myNetwork, otherNetwork];
 
 describe("WifiNetworksList", () => {
   it("renders link for connect to a hidden network", () => {
-    installerRender(<WifiNetworksList networks={[]} />, { usingLayout: false });
+    installerRender(<WifiNetworksList networks={[]} />);
     screen.getByRole("button", { name: "Connect to hidden network" });
   });
 

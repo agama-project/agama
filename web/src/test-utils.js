@@ -25,7 +25,6 @@ import { render } from "@testing-library/react";
 
 import { createClient } from "@client/index";
 import { InstallerClientProvider } from "@context/installer";
-import Layout from "@components/layout/Layout";
 
 const InstallerProvider = ({ children }) => {
   const client = createClient();
@@ -36,30 +35,20 @@ const InstallerProvider = ({ children }) => {
   );
 };
 
-const content = (ui, usingLayout) => {
-  if (!usingLayout) return ui;
-
-  return <Layout>{ui}</Layout>;
-};
-
-const installerRender = (ui, options = { usingLayout: true }) => {
-  const { usingLayout, ...testingLibraryOptions } = options;
-
+const installerRender = (ui, options = {}) => {
   return (
     {
       user: userEvent.setup(),
-      ...render(content(ui, usingLayout), { wrapper: InstallerProvider, ...testingLibraryOptions })
+      ...render(ui, { wrapper: InstallerProvider, ...options })
     }
   );
 };
 
-const plainRender = (ui, options = { usingLayout: true }) => {
-  const { usingLayout, ...testingLibraryOptions } = options;
-
+const plainRender = (ui, options = {}) => {
   return (
     {
       user: userEvent.setup(),
-      ...render(content(ui, usingLayout), testingLibraryOptions)
+      ...render(ui, options)
     }
   );
 };

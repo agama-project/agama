@@ -26,7 +26,11 @@ import { plainRender, mockComponent } from "@/test-utils";
 
 import { DBusError } from "@components/layout";
 
-jest.mock("@components/network/TargetIpsPopup", () => mockComponent("IP Mock"));
+jest.mock("@components/layout/Layout", () => ({
+  MainActions: ({ children }) => children,
+  PageIcon: ({ children }) => children,
+  Title: ({ children }) => children,
+}));
 
 describe("DBusError", () => {
   it("includes a generic D-Bus connection problem message", () => {

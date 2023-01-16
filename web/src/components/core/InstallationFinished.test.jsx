@@ -28,6 +28,11 @@ import { createClient } from "@client";
 import InstallationFinished from "./InstallationFinished";
 
 jest.mock("@client");
+jest.mock("@components/layout/Layout", () => ({
+  MainActions: ({ children }) => children,
+  PageIcon: ({ children }) => children,
+  Title: ({ children }) => children,
+}));
 
 const rebootSystemFn = jest.fn();
 

@@ -55,6 +55,12 @@ jest.mock("@context/software", () => ({
   }
 }));
 
+jest.mock("@components/layout/Layout", () => ({
+  MainActions: ({ children }) => children,
+  PageIcon: ({ children }) => children,
+  Title: ({ children }) => children,
+}));
+
 const softwareMock = {
   getProducts: () => Promise.resolve(products),
   getSelectedProduct: jest.fn(() => Promise.resolve(products[0])),

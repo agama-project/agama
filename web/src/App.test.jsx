@@ -33,6 +33,12 @@ jest.mock('react-router-dom', () => ({
   Outlet: mockComponent("Content"),
 }));
 
+jest.mock("@components/layout/Layout", () => ({
+  __esModule: true,
+  default: ({ children }) => children,
+  Title: ({ children }) => children,
+}));
+
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
 jest.mock("@components/layout/DBusError", () => mockComponent("D-BusError Mock"));

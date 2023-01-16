@@ -60,7 +60,7 @@ describe("ChangeProductButton", () => {
     });
 
     it("renders nothing", async () => {
-      const { container } = plainRender(<ChangeProductButton />, { usingLayout: false });
+      const { container } = plainRender(<ChangeProductButton />);
       await waitFor(() => expect(container).toBeEmptyDOMElement());
     });
   });
@@ -74,13 +74,13 @@ describe("ChangeProductButton", () => {
     });
 
     it("renders a button for changing the selected product", async () => {
-      plainRender(<ChangeProductButton />, { usingLayout: false });
+      plainRender(<ChangeProductButton />);
 
       await screen.findByRole("button", { name: "Change selected product" });
     });
 
     it("navigates to products route when users clicks on rendered button", async () => {
-      const { user } = plainRender(<ChangeProductButton />, { usingLayout: false });
+      const { user } = plainRender(<ChangeProductButton />);
       const changeProductButton = await screen.findByRole("button", { name: "Change selected product" });
 
       await user.click(changeProductButton);
@@ -90,7 +90,7 @@ describe("ChangeProductButton", () => {
     it("triggers given callback when user clicks on rendered button", async () => {
       const onClickCallback = jest.fn();
 
-      const { user } = plainRender(<ChangeProductButton onClickCallback={onClickCallback} />, { usingLayout: false });
+      const { user } = plainRender(<ChangeProductButton onClickCallback={onClickCallback} />);
       const changeProductButton = await screen.findByRole("button", { name: "Change selected product" });
 
       await user.click(changeProductButton);

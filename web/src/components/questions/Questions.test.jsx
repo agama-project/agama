@@ -63,14 +63,14 @@ describe("Questions", () => {
     });
 
     it("renders nothing", async () => {
-      const { container } = installerRender(<Questions />, { usingLayout: false });
+      const { container } = installerRender(<Questions />);
       await waitFor(() => expect(container).toBeEmptyDOMElement());
     });
   });
 
   describe("when a new question is added", () => {
     it("push it into the pending queue", async () => {
-      const { container } = installerRender(<Questions />, { usingLayout: false });
+      const { container } = installerRender(<Questions />);
       expect(container).toBeEmptyDOMElement();
 
       // Manually triggers the handler given for the onQuestionAdded signal
@@ -86,7 +86,7 @@ describe("Questions", () => {
     });
 
     it("removes it from the queue", async () => {
-      installerRender(<Questions />, { usingLayout: false });
+      installerRender(<Questions />);
       await screen.findByText("A Generic question mock");
 
       // Manually triggers the handler given for the onQuestionRemoved signal
@@ -103,7 +103,7 @@ describe("Questions", () => {
     });
 
     it("renders a GenericQuestion component", async () => {
-      installerRender(<Questions />, { usingLayout: false });
+      installerRender(<Questions />);
 
       await screen.findByText("A Generic question mock");
     });
@@ -115,7 +115,7 @@ describe("Questions", () => {
     });
 
     it("renders a LuksActivationQuestion component", async () => {
-      installerRender(<Questions />, { usingLayout: false });
+      installerRender(<Questions />);
 
       await screen.findByText("A LUKS activation question mock");
     });

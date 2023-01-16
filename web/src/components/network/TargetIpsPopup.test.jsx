@@ -55,7 +55,7 @@ describe("TargetIpsPopup", () => {
   });
 
   it("lists target IPs in hostname labeled popup", async () => {
-    const { user } = installerRender(<TargetIpsPopup />, { usingLayout: false });
+    const { user } = installerRender(<TargetIpsPopup />);
 
     const button = await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });
     await user.click(button);
@@ -76,7 +76,7 @@ describe("TargetIpsPopup", () => {
   it("triggers onClickCallback function when popup is open", async () => {
     const onClickCallback = jest.fn();
 
-    const { user } = installerRender(<TargetIpsPopup onClickCallback={onClickCallback} />, { usingLayout: false });
+    const { user } = installerRender(<TargetIpsPopup onClickCallback={onClickCallback} />);
 
     const button = await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });
     await user.click(button);
@@ -84,7 +84,7 @@ describe("TargetIpsPopup", () => {
   });
 
   it("updates address and hostname if they change", async () => {
-    installerRender(<TargetIpsPopup />, { usingLayout: false });
+    installerRender(<TargetIpsPopup />);
     await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });
 
     addressFn.mockReturnValue([{ address: "5.6.7.8", prefix: 24 }]);

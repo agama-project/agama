@@ -26,6 +26,12 @@ import { installerRender, mockComponent } from "@/test-utils";
 
 import InstallationProgress from "./InstallationProgress";
 
+jest.mock("@components/layout/Layout", () => ({
+  MainActions: ({ children }) => children,
+  PageIcon: ({ children }) => children,
+  Title: ({ children }) => children,
+}));
+
 jest.mock("@components/core/ProgressReport", () => mockComponent("ProgressReport Mock"));
 
 describe("InstallationProgress", () => {

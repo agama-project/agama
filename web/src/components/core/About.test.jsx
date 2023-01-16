@@ -28,7 +28,7 @@ import About from "./About";
 
 describe("About", () => {
   it("allows user to read 'About D-Installer'", async () => {
-    const { user } = plainRender(<About />, { usingLayout: false });
+    const { user } = plainRender(<About />);
 
     const button = screen.getByRole("button", { name: /About/i });
     await user.click(button);
@@ -48,7 +48,7 @@ describe("About", () => {
   it("triggers given onClickCallback function when opening the dialog", async () => {
     const onClickCallback = jest.fn();
 
-    const { user } = plainRender(<About onClickCallback={onClickCallback} />, { usingLayout: false });
+    const { user } = plainRender(<About onClickCallback={onClickCallback} />);
     const button = screen.getByRole("button", { name: /About/i });
 
     await user.click(button);

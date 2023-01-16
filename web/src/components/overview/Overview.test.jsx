@@ -62,7 +62,7 @@ jest.mock("@components/users/Users", () => mockComponent("Users Configuration"))
 jest.mock("@components/core/InstallButton", () => mockComponent("Install Button"));
 
 it("renders the Overview and the Install button", async () => {
-  installerRender(<Overview />, { usingLayout: false });
+  installerRender(<Overview />);
   const title = screen.getByText(/openSUSE Tumbleweed/i);
   expect(title).toBeInTheDocument();
 
@@ -93,7 +93,7 @@ describe("when no product is selected", () => {
   });
 
   it("redirects to the product selection page", async () => {
-    installerRender(<Overview />, { usingLayout: false });
+    installerRender(<Overview />);
 
     await screen.findByText("Navigate");
   });
@@ -105,7 +105,7 @@ describe("if there is only one product", () => {
   });
 
   it("does not show the action for changing the selected product", async () => {
-    installerRender(<Overview />, { usingLayout: false });
+    installerRender(<Overview />);
 
     await screen.findByText("openSUSE Tumbleweed");
     expect(screen.queryByLabelText("Change selected product")).not.toBeInTheDocument();
