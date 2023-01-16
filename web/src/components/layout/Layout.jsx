@@ -79,7 +79,6 @@ function Layout({ children }) {
           role="navigation"
           aria-label="Installer Actions"
         />
-        <FooterInfoArea.Target />
         <img src={logoUrl} alt="Logo of SUSE" />
       </footer>
     </div>
