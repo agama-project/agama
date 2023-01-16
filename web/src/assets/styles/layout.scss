@@ -1,6 +1,6 @@
 .wrapper {
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: var(--header-block-size) 1fr var(--footer-block-size);
   grid-template-areas: 
     'header'
     'content'
