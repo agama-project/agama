@@ -20,4 +20,5 @@
  */
 
 export { default as Overview } from "./Overview";
+export { default as SoftwareSection } from "./SoftwareSection";
 export { default as StorageSection } from "./StorageSection";

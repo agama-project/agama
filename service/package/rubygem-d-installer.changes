@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 17 10:06:23 UT0 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Implement validation of software proposal
+  (gh#yast/d-installer#381)
+
+-------------------------------------------------------------------
 Mon Jan 16 17:02:21 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Check for installed packages in the target system, instead of the

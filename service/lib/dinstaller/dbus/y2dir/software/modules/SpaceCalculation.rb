@@ -31,7 +31,10 @@ module Yast
     def GetPartitionInfo; end
 
     # @see https://github.com/yast/yast-packager/blob/master/src/modules/SpaceCalculation.rb#L860
-    def CheckDiskSize; end
+    def CheckDiskSize; true; end
+
+    # @see https://github.com/yast/yast-packager/blob/master/src/modules/SpaceCalculation.rb#L894
+    def CheckDiskFreeSpace(*_args); []; end
 
     # @see https://github.com/yast/yast-packager/blob/master/src/modules/SpaceCalculation.rb#L60
     def GetFailedMounts

@@ -23,6 +23,7 @@ require_relative "../../../test_helper"
 require "dinstaller/dbus/software/manager"
 require "dinstaller/dbus/interfaces/progress"
 require "dinstaller/dbus/interfaces/service_status"
+require "dinstaller/dbus/interfaces/validation"
 require "dinstaller/software"
 
 describe DInstaller::DBus::Software::Manager do
@@ -38,6 +39,8 @@ describe DInstaller::DBus::Software::Manager do
     DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
   end
 
+  let(:validation_interface) { DInstaller::DBus::Interfaces::Validation::VALIDATION_INTERFACE }
+
   before do
     allow_any_instance_of(described_class).to receive(:register_callbacks)
     allow_any_instance_of(described_class).to receive(:register_progress_callbacks)
@@ -52,6 +55,10 @@ describe DInstaller::DBus::Software::Manager do
     expect(subject.intfs.keys).to include(service_status_interface)
   end
 
+  it "defines Validation D-Bus interface" do
+    expect(subject.intfs.keys).to include(validation_interface)
+  end
+
   it "configures callbacks from Progress interface" do
     expect_any_instance_of(described_class).to receive(:register_progress_callbacks)
     subject
@@ -63,6 +70,11 @@ describe DInstaller::DBus::Software::Manager do
   end
 
   describe "#probe" do
+    before do
+      allow(subject).to receive(:update_validation)
+      allow(backend).to receive(:probe)
+    end
+
     it "runs the probing, setting the service as busy meanwhile" do
       expect(subject.service_status).to receive(:busy)
       expect(backend).to receive(:probe)
@@ -70,13 +82,30 @@ describe DInstaller::DBus::Software::Manager do
 
       subject.probe
     end
+
+    it "updates validation" do
+      expect(subject).to receive(:update_validation)
+
+      subject.probe
+    end
   end
 
   describe "#propose" do
+    before do
+      allow(subject).to receive(:update_validation)
+      allow(backend).to receive(:propose)
+    end
+
     it "calculates the proposal, setting the service as busy meanwhile" do
       expect(subject.service_status).to receive(:busy)
       expect(backend).to receive(:propose)
       expect(subject.service_status).to receive(:idle)
+
+      subject.propose
+    end
+
+    it "updates validation" do
+      expect(subject).to receive(:update_validation)
 
       subject.propose
     end
