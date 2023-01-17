@@ -1,8 +1,21 @@
 -------------------------------------------------------------------
-Tue Jan 10 11:06:23 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+Tue Jan 17 10:06:23 UT0 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Implement validation of software proposal
   (gh#yast/d-installer#381)
+
+-------------------------------------------------------------------
+Mon Jan 16 17:02:21 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Check for installed packages in the target system, instead of the
+  installation medium (gh#yast/d-installer#393).
+
+-------------------------------------------------------------------
+Mon Jan 16 14:57:59 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Simplify the network configuration to just copying the
+  NetworkManager connections and enabling the service
+  (gh#yast/d-installer#397).
 
 -------------------------------------------------------------------
 Tue Jan 10 10:29:00 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

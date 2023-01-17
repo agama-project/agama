@@ -73,7 +73,6 @@ module DInstaller
       installation_phase.config
 
       storage.probe
-      network.probe
       software.probe
 
       logger.info("Config phase done")
