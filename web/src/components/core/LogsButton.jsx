@@ -19,90 +19,102 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer } from "react";
+import React, { useState } from "react";
 import { useInstallerClient } from "@context/installer";
 import { useCancellablePromise } from "@/utils";
-import { Button as VendorButton } from "@patternfly/react-core";
+
+import { Alert, Button } from "@patternfly/react-core";
 import { Icon } from "@components/layout";
 
-const states = {
-  initial: 0,
-  collecting: 1,
-  download: 2
-};
-
-const initialState = {
-  file: undefined,
-  status: states.initial
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "COLLECT" : {
-      return { ...initialState, status: states.collecting };
-    }
-
-    case "READY": {
-      const { file } = action.payload;
-
-      return { ...state, status: states.download, file };
-    }
-
-    default: {
-      return state;
-    }
-  }
-};
+const FILENAME = "y2logs.tar.xz";
+const FILETYPE = "application/x-xz";
 
 /**
- * Button to get logs
+ * Button for collecting and donwloading YaST logs
  *
- * It collects a logs and then it allows to download them.
-*
  * @component
- *
  *
  * @param {object} props
  */
-const LogsButton = ({ className }) => {
+const LogsButton = ({ ...props }) => {
   const client = useInstallerClient();
-  const [state, dispatch] = useReducer(reducer, initialState);
   const { cancellablePromise } = useCancellablePromise();
+  const [isCollecting, setIsCollecting] = useState(false);
+  const [error, setError] = useState(null);
 
-  const Button = ({ children, ...props }) => (
-    <VendorButton
-      isPlain
-      variant="link"
-      className={className}
-      icon={props.isLoading ? null : <Icon name="download" size="24" />}
-      {...props}
-    >
-      {children}
-    </VendorButton>
+  /**
+   * Helper function for creating the blob and triggering the download automatically
+   *
+   * @note Based on the article "Programmatic file downloads in the browser" fount at
+   *       https://blog.logrocket.com/programmatic-file-downloads-in-the-browser-9a5186298d5c
+   *
+   * @param {Uint8Array} data - binary data for creating a {@link https://developer.mozilla.org/en-US/docs/Web/API/Blob Blob}
+   */
+  const download = (data) => {
+    const blob = new Blob([data], { type: FILETYPE });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = FILENAME;
+
+    // Click handler that releases the object URL after the element has been clicked
+    // This is required to let the browser know not to keep the reference to the file any longer
+    // See https://developer.mozilla.org/en-US/docs/Web/API/URL/revokeObjectURL
+    const clickHandler = () => {
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        a.removeEventListener('click', clickHandler);
+      }, 150);
+    };
+
+    // Add the click event listener on the anchor element
+    a.addEventListener('click', clickHandler, false);
+
+    // Programmatically trigger a click on the anchor element
+    // Needed for make the download to happen automatically without attaching the anchor element to
+    // the DOM
+    a.click();
+  };
+
+  const collectAndDownload = () => {
+    setError(null);
+    setIsCollecting(true);
+    cancellablePromise(client.manager.logsContent())
+      .then(download)
+      .catch(setError)
+      .finally(() => setIsCollecting(false));
+  };
+
+  return (
+    <>
+      <Button
+        variant="link"
+        onClick={collectAndDownload}
+        isLoading={isCollecting}
+        isDisabled={isCollecting}
+        icon={isCollecting ? null : <Icon name="download" size="24" />}
+        {...props}
+      >
+        {isCollecting ? "Collecting logs..." : "Download logs"}
+      </Button>
+
+      { isCollecting &&
+        <Alert
+          isInline
+          isPlain
+          variant="info"
+          title="The browser will run the logs download as soon as they are ready. Please, be patient."
+        /> }
+
+      { error &&
+        <Alert
+          isInline
+          isPlain
+          variant="warning"
+          title="Something went wrong while collecting logs. Please, try again."
+        /> }
+    </>
   );
-
-  switch (state.status) {
-    case states.initial: {
-      const open = () => {
-        const makeReady = (file) => {
-          dispatch({ type: "READY", payload: { file } });
-        };
-
-        cancellablePromise(client.manager.logsContent()).then(makeReady);
-
-        return dispatch({ type: "COLLECT" });
-      };
-      return <Button onClick={open}>Collect Logs</Button>;
-    }
-    case states.collecting: {
-      return <Button isLoading>Collecting Logs</Button>;
-    }
-    case states.download: {
-      const blob = new Blob([state.file], { type: "application/x-xz" });
-      const url = window.URL.createObjectURL(blob);
-      return <Button component="a" href={url} download="y2logs.tar.xz">Download Logs</Button>;
-    }
-  }
 };
 
 export default LogsButton;
