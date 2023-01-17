@@ -46,6 +46,7 @@ module DInstaller
         # @param logger [Logger]
         def initialize(logger)
           @logger = logger
+          @on_change_callbacks = []
 
           super(PATH)
         end
@@ -54,6 +55,7 @@ module DInstaller
           dbus_method :AddResolvables,
             "in Id:s, in Type:y, in Resolvables:as, in Optional:b" do |id, type, resolvables, opt|
             Yast::PackagesProposal.AddResolvables(id, TYPES[type], resolvables, optional: opt)
+            notify_change!
           end
 
           dbus_method :GetResolvables,
@@ -64,18 +66,28 @@ module DInstaller
           dbus_method :SetResolvables,
             "in Id:s, in Type:y, in Resolvables:as, in Optional:b" do |id, type, resolvables, opt|
             Yast::PackagesProposal.SetResolvables(id, TYPES[type], resolvables, optional: opt)
+            notify_change!
           end
 
           dbus_method :RemoveResolvables,
             "in Id:s, in Type:y, in Resolvables:as, in Optional:b" do |id, type, resolvables, opt|
             Yast::PackagesProposal.RemoveResolvables(id, TYPES[type], resolvables, optional: opt)
+            notify_change!
           end
+        end
+
+        def on_change(&block)
+          @on_change_callbacks << block
         end
 
       private
 
         # @return [Logger]
         attr_reader :logger
+
+        def notify_change!
+          @on_change_callbacks.each(&:call)
+        end
       end
     end
   end

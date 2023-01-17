@@ -74,7 +74,9 @@ module DInstaller
       def dbus_objects
         @dbus_objects ||= [
           dbus_software_manager,
-          DInstaller::DBus::Software::Proposal.new(logger)
+          DInstaller::DBus::Software::Proposal.new(logger).tap do |proposal|
+            proposal.on_change { dbus_software_manager.update_validation }
+          end
         ]
       end
 

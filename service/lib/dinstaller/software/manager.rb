@@ -22,7 +22,9 @@
 require "yast"
 require "fileutils"
 require "dinstaller/config"
+require "dinstaller/helpers"
 require "dinstaller/with_progress"
+require "dinstaller/validation_error"
 require "y2packager/product"
 require "yast2/arch_filter"
 require "dinstaller/software/callbacks"
@@ -37,6 +39,7 @@ module DInstaller
   module Software
     # This class is responsible for software handling
     class Manager
+      include Helpers
       include WithProgress
 
       GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
@@ -56,6 +59,7 @@ module DInstaller
 
       def initialize(config, logger)
         @config = config
+        @probed = false
         @logger = logger
         @languages = DEFAULT_LANGUAGES
         @products = @config.products
@@ -73,6 +77,7 @@ module DInstaller
 
         @config.pick_product(name)
         @product = name
+        @probed = false # reset probing when product changed
       end
 
       def probe
@@ -93,6 +98,7 @@ module DInstaller
           logger.info "proposal #{proposal["raw_proposal"]}"
         end
 
+        @probed = true
         Yast::Stage.Set("initial")
       end
 
@@ -112,10 +118,17 @@ module DInstaller
         proposal = Yast::Packages.Proposal(force_reset = false, reinit = false, _simple = true)
         logger.info "proposal #{proposal["raw_proposal"]}"
 
-        solve_dependencies
+        deps_result = solve_dependencies
 
-        # do not return proposal hash, so intentional nil here
-        nil
+        proposal_result(proposal, deps_result)
+      end
+
+      def validate
+        # validation without probing does not make sense and produces false errors
+        return [] unless @probed
+
+        msgs = propose
+        msgs.map { |m| ValidationError.new(m) }
       end
 
       def install
@@ -161,7 +174,21 @@ module DInstaller
       # @param name [String] Package name
       # @return [Boolean] true if it is installed; false otherwise
       def package_installed?(name)
-        Yast::Package.Installed(name, target: :system)
+        on_target { Yast::Package.Installed(name, target: :system) }
+      end
+
+      # Counts how much disk space installation will use.
+      # @return [String]
+      # @note Reimplementation of Yast::Package.CountSizeToBeInstalled
+      def used_disk_space
+        return "" unless @probed
+
+        size = Yast::Pkg.PkgMediaSizes.reduce(0) do |res, media_size|
+          media_size.reduce(res, :+)
+        end
+
+        # FormatSizeWithPrecision(bytes, precision, omit_zeroes)
+        Yast::String.FormatSizeWithPrecision(size, 1, true)
       end
 
     private
@@ -188,11 +215,23 @@ module DInstaller
         res = Yast::Pkg.PkgSolve(unused = true)
         logger.info "solver run #{res.inspect}"
 
-        return if res
+        return true if res
 
         logger.error "Solver failed: #{Yast::Pkg.LastError}"
         logger.error "Details: #{Yast::Pkg.LastErrorDetails}"
         logger.error "Solving issues: #{Yast::Pkg.PkgSolveErrors}"
+
+        false
+      end
+
+      # messages with reason why solver failed
+      def solve_messages
+        last_error = Yast::Pkg.LastError
+        solve_errors = Yast::Pkg.PkgSolveErrors
+        res = []
+        res << last_error unless last_error.empty?
+        res << "Found #{solve_errors} dependency issues." if solve_errors > 0
+        res
       end
 
       # @return [Logger]
@@ -256,6 +295,21 @@ module DInstaller
         FileUtils.rm_rf(REPOS_DIR)
         logger.info "moving #{REPOS_BACKUP} to #{REPOS_DIR}"
         FileUtils.mv(REPOS_BACKUP, REPOS_DIR)
+      end
+
+      def proposal_result(proposal, deps_result)
+        result = []
+        # TODO: find if there is a better way to get proposal issue as list
+        result.concat(process_warnings(proposal)) if proposal["warning_level"] == :blocker
+        result.concat(solve_messages) unless deps_result
+
+        result
+      end
+
+      def process_warnings(proposal)
+        proposal["warning"]
+          .split("<br>")
+          .grep_v(/Please manually select .*/)
       end
     end
   end

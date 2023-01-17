@@ -39,7 +39,7 @@ describe DInstaller::Manager do
     instance_double(
       DInstaller::DBus::Clients::Software,
       probe: nil, install: nil, propose: nil, finish: nil, on_product_selected: nil,
-      on_service_status_change: nil, selected_product: product
+      on_service_status_change: nil, selected_product: product, valid?: true
     )
   end
   let(:users) do
@@ -49,7 +49,7 @@ describe DInstaller::Manager do
     )
   end
   let(:language) { instance_double(DInstaller::DBus::Clients::Language, finish: nil) }
-  let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
+  let(:network) { instance_double(DInstaller::Network, install: nil) }
   let(:storage) do
     instance_double(
       DInstaller::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
@@ -105,8 +105,8 @@ describe DInstaller::Manager do
     end
 
     it "calls #probe method of each module" do
-      expect(network).to receive(:probe)
       expect(storage).to receive(:probe)
+      expect(software).to receive(:probe)
       subject.config_phase
     end
   end
@@ -120,7 +120,6 @@ describe DInstaller::Manager do
     it "calls #install (or #write) method of each module" do
       expect(network).to receive(:install)
       expect(software).to receive(:install)
-      expect(software).to receive(:probe)
       expect(software).to receive(:finish)
       expect(language).to receive(:finish)
       expect(storage).to receive(:install)
@@ -187,6 +186,16 @@ describe DInstaller::Manager do
     context "when the storage configuration is not valid" do
       before do
         allow(storage).to receive(:valid?).and_return(false)
+      end
+
+      it "returns false" do
+        expect(subject.valid?).to eq(false)
+      end
+    end
+
+    context "when the software configuration is not valid" do
+      before do
+        allow(software).to receive(:valid?).and_return(false)
       end
 
       it "returns false" do

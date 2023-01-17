@@ -73,7 +73,7 @@ module DInstaller
       installation_phase.config
 
       storage.probe
-      network.probe
+      software.probe
 
       logger.info("Config phase done")
     rescue StandardError => e
@@ -85,13 +85,9 @@ module DInstaller
     # rubocop:disable Metrics/AbcSize
     def install_phase
       installation_phase.install
+      start_progress(7)
 
-      start_progress(8)
-
-      progress.step("Reading software repositories") do
-        software.probe
-        Yast::Installation.destdir = "/mnt"
-      end
+      Yast::Installation.destdir = "/mnt"
 
       progress.step("Partitioning") do
         storage.install
@@ -181,7 +177,7 @@ module DInstaller
     #
     # @return [Boolean]
     def valid?
-      [storage, users].all?(&:valid?)
+      [storage, users, software].all?(&:valid?)
     end
 
     # Stores compressed tarball with logs on system for given system user

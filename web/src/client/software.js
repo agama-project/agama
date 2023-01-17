@@ -22,7 +22,7 @@
 // @ts-check
 
 import DBusClient from "./dbus";
-import { WithStatus, WithProgress } from "./mixins";
+import { WithStatus, WithProgress, WithValidation } from "./mixins";
 
 const SOFTWARE_SERVICE = "org.opensuse.DInstaller.Software";
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
@@ -59,6 +59,16 @@ class SoftwareBaseClient {
       const [id, name, meta] = product;
       return { id, name, description: meta.description?.v };
     });
+  }
+
+  /**
+   * Returns how much space installation takes on disk
+   *
+   * @return {Promise<Array<Product>>}
+   */
+  async getUsedSpace() {
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    return proxy.UsedDiskSpace();
   }
 
   /**
@@ -103,6 +113,10 @@ class SoftwareBaseClient {
 /**
  * Allows getting the list the available products and selecting one for installation.
  */
-class SoftwareClient extends WithProgress(WithStatus(SoftwareBaseClient, SOFTWARE_PATH), SOFTWARE_PATH) {}
+class SoftwareClient extends WithValidation(
+  WithProgress(
+    WithStatus(SoftwareBaseClient, SOFTWARE_PATH), SOFTWARE_PATH
+  ), SOFTWARE_PATH
+) {}
 
 export { SoftwareClient };

@@ -54,6 +54,7 @@ jest.mock("@components/language/LanguageSelector", () => mockComponent("Language
 jest.mock("@components/overview/StorageSection", () => mockComponent("Storage Section"));
 jest.mock("@components/network/Network", () => mockComponent("Network Configuration"));
 jest.mock("@components/users/Users", () => mockComponent("Users Configuration"));
+jest.mock("@components/overview/SoftwareSection", () => mockComponent("Software Section"));
 jest.mock("@components/core/InstallButton", () => mockComponent("Install Button"));
 
 it("renders the Overview and the Install button", async () => {
@@ -105,4 +106,17 @@ describe("if there is only one product", () => {
     await screen.findByText("openSUSE Tumbleweed");
     expect(screen.queryByLabelText("Change selected product")).not.toBeInTheDocument();
   });
+});
+
+test("renders the Overview and the Install button", async () => {
+  installerRender(<Overview />);
+  const title = screen.getByText(/openSUSE Tumbleweed/i);
+  expect(title).toBeInTheDocument();
+
+  await screen.findByText("Language Selector");
+  await screen.findByText("Network Configuration");
+  await screen.findByText("Storage Section");
+  await screen.findByText("Users Configuration");
+  await screen.findByText("Software Section");
+  await screen.findByText("Install Button");
 });
