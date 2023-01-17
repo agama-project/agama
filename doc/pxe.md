@@ -13,21 +13,29 @@ The process can be summarized in these steps:
 
 ## Set up the TFTP tree
 
-The TFTP files are available in the `tftpboot-installation-openSUSE-Tumbleweed-ARCH` packages. They
-are placed in `/usr/share/tftpboot-installation`, but you should copy them (or at least the `net`
-subdirectory) to customize them. In the example below we are just copying all of them.
+The TFTP tree should contain the SYSLINUX boot loader. You can copy the required files from the
+`syslinux` package.
 
-    zypper in tftpboot-installation-openSUSE-Tumbleweed-x86_64
+    zypper in syslinux
     mkdir /srv/tftpboot
-    cp -a /usr/share/tftpboot-installation/openSUSE-Tumbleweed-x86_64 /srv/tftpboot
+    cp /usr/share/syslinux/pxelinux.0 /srv/tftpboot
+    mkdir /srv/tftpboot/pxelinux.cfg
 
-To define a boot option to run D-Installer, edit the `net/pxelinux.cfg/default` to include:
+To define a boot option to run D-Installer, add a `/srv/tftpboot/pxelinux.cfg/default` file with the
+following content:
 
 ```
+default iguana
+
 label iguana
   ipappend 2
-  kernel boot/x86_64/loader/iguana-new/vmlinuz-iguana
-  append initrd=boot/x86_64/loader/initrd-iguana rd.iguana.control_url=tftp://192.168.122.1/net/d-installer.yaml rd.iguana.debug=1 rd.neednet=1
+  kernel vmlinuz-iguana
+  append initrd=initrd-iguana rd.iguana.control_url=tftp://192.168.122.1/d-installer.yaml rd.iguana.debug=1
+
+display		message
+implicit	1
+prompt		1
+timeout		50
 ```
 
 Do not worry about the kernel, the initrd or the `d-installer.yaml` file, we will jump into it
@@ -51,10 +59,10 @@ it accordingly. Here is an example:
   <bridge name='virbr0' stp='on' delay='0'/>
   <mac address='52:54:00:fb:7c:8e'/>
   <ip address='192.168.122.1' netmask='255.255.255.0'>
-    <tftp root='/srv/tftpboot/openSUSE-Tumbleweed-x86_64'/>
+    <tftp root='/srv/tftpboot'/>
     <dhcp>
       <range start='192.168.122.2' end='192.168.122.254'/>
-      <bootp file='net/pxelinux.0'/>
+      <bootp file='pxelinux.0'/>
     </dhcp>
   </ip>
 </network>
@@ -107,5 +115,6 @@ element to `<os>` section:
  </os>
 ```
 
-After starting the machine, you should choose the option to boot from PXE and introduce `iguana` in
-the `boot:` prompt (or the name you chose in the `pxelinux.cfg/default` file).
+Now your virtual machine should be ready to boot from PXE and start Iguana/D-Installer. Once the
+system boots and the services are started, you should be able to access D-Installer with a browser
+on port 9090.
