@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen, within, createEvent, fireEvent } from "@testing-library/react";
 import { plainRender, mockComponent, mockLayout } from "@/test-utils";
 import { Sidebar } from "@components/core";
 
@@ -45,6 +45,18 @@ it("renders a link for changing the sidebar to visible", async () => {
   expect(nav).toHaveAttribute("data-state", "hidden");
   await user.click(link);
   expect(nav).toHaveAttribute("data-state", "visible");
+});
+
+// Test that opening the sidebar does not navigate to the initial route
+// This is achive by preventing the default link click behavior
+// Read https://testing-library.com/docs/dom-testing-library/api-events#fireevent and
+// https://developer.mozilla.org/en-US/docs/Web/API/Event/defaultPrevented
+it("prevents the default event when the user click on the open link", async () => {
+  plainRender(<Sidebar />);
+  const link = await screen.findByLabelText(/Open/i);
+  const clickEvent = createEvent.click(link);
+  fireEvent(link, clickEvent);
+  expect(clickEvent.defaultPrevented).toBe(true);
 });
 
 it("renders a link for changing the sidebar to hidden", async () => {

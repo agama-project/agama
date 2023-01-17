@@ -30,7 +30,12 @@ import { TargetIpsPopup } from "@components/network";
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const open = () => setIsOpen(true);
+  const open = (e) => {
+    // Avoid the link navigating to the initial route
+    e.preventDefault();
+
+    setIsOpen(true);
+  };
   const close = () => setIsOpen(false);
 
   return (
