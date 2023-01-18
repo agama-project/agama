@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jan 18 08:06:05 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow user downloading logs (gh#yast/d-installer#379)
+
+-------------------------------------------------------------------
 Thu Jan 12 16:23:54 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Implement validation of software proposal to early detect
