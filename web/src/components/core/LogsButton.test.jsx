@@ -30,7 +30,7 @@ jest.mock("@client");
 const originalCreateElement = document.createElement;
 
 const executor = jest.fn();
-const logsContentFn = jest.fn().mockImplementation(() => new Promise(executor));
+const fetchLogsFn = jest.fn().mockImplementation(() => new Promise(executor));
 
 beforeEach(() => {
   window.URL.createObjectURL = jest.fn(() => "fake-blob-url");
@@ -39,7 +39,7 @@ beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       manager: {
-        logsContent: logsContentFn,
+        fetchLogs: fetchLogsFn,
       }
     };
   });
@@ -62,7 +62,7 @@ describe("LogsButton", () => {
       const { user } = installerRender(<LogsButton />);
       const button = screen.getByRole("button", "Download logs");
       await user.click(button);
-      expect(logsContentFn).toHaveBeenCalled();
+      expect(fetchLogsFn).toHaveBeenCalled();
     });
 
     it("changes button text, puts it as disabled, and displays an informative alert", async () => {
@@ -88,7 +88,7 @@ describe("LogsButton", () => {
       beforeEach(() => {
         // new TextEncoder().encode("Hello logs!")
         const data = new Uint8Array([72, 101, 108, 108, 111, 32, 108, 111, 103, 115, 33]);
-        logsContentFn.mockResolvedValue(data);
+        fetchLogsFn.mockResolvedValue(data);
       });
 
       it("triggers the download", async () => {
@@ -129,7 +129,7 @@ describe("LogsButton", () => {
 
     describe("but the process fails", () => {
       beforeEach(() => {
-        logsContentFn.mockRejectedValue("Sorry, something went wrong");
+        fetchLogsFn.mockRejectedValue("Sorry, something went wrong");
       });
 
       it("displays a warning alert along with the Download logs button", async () => {

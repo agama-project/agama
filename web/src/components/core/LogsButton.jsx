@@ -79,7 +79,7 @@ const LogsButton = ({ ...props }) => {
   const collectAndDownload = () => {
     setError(null);
     setIsCollecting(true);
-    cancellablePromise(client.manager.logsContent())
+    cancellablePromise(client.manager.fetchLogs())
       .then(download)
       .catch(setError)
       .finally(() => setIsCollecting(false));

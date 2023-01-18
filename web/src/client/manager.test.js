@@ -37,6 +37,7 @@ const managerProxy = {
   Commit: jest.fn(),
   Probe: jest.fn(),
   CanInstall: jest.fn(),
+  CollectLogs: jest.fn(),
   CurrentInstallationPhase: 0
 };
 
@@ -146,5 +147,19 @@ describe("#canInstall", () => {
       const install = await client.canInstall();
       expect(install).toEqual(false);
     });
+  });
+});
+
+describe("#fetchLogs", () => {
+  beforeEach(() => {
+    managerProxy.CollectLogs = jest.fn(() => "/tmp/y2log-hWBn95.tar.xz");
+    cockpit.file = jest.fn(() => ({ read: () => "fake-binary-data" }));
+  });
+
+  it("returns the logs file binary content", async () => {
+    const client = new ManagerClient();
+    const logsContent = await client.fetchLogs();
+    expect(logsContent).toEqual("fake-binary-data");
+    expect(cockpit.file).toHaveBeenCalledWith("/tmp/y2log-hWBn95.tar.xz", { binary: true });
   });
 });

@@ -80,23 +80,13 @@ class ManagerBaseClient {
   }
 
   /**
-   * Returns a path where logs are stored
-   *
-   *
-   * @return {Promise<string>}
-   */
-  async provideLogs() {
-    const proxy = await this.client.proxy(MANAGER_IFACE);
-    return proxy.ProvideLogs("root"); // lets hardcode root here
-  }
-
-  /**
-   * Returns a content of log file
+   * Returns the binary content of the YaST logs file
    *
    * @return {Promise<Uint8Array>}
    */
-  async logsContent() {
-    const path = await this.provideLogs();
+  async fetchLogs() {
+    const proxy = await this.client.proxy(MANAGER_IFACE);
+    const path = proxy.CollectLogs("root");
     const file = cockpit.file(path, { binary: true });
     return file.read();
   }
