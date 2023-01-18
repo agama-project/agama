@@ -19,6 +19,12 @@
  * find current contact information at www.suse.com.
  */
 
+/**
+ * A module for providing utility functions for testing
+ *
+ * @module test-utils
+ */
+
 import React from "react";
 import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
