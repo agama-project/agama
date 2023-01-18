@@ -37,7 +37,7 @@ const FooterInfoArea = createTeleporter();
  *
  * It displays the content in a single column with a fixed header and footer.
  *
- * To achieve an {@link https://gregberge.com/blog/react-scalable-layout scalable layout},
+ * To achieve a {@link https://gregberge.com/blog/react-scalable-layout scalable layout},
  * it uses {@link https://reactjs.org/docs/portals.html React Portals} through
  * {@link https://github.com/gregberge/react-teleporter react-teleporter}. In other words,
  * it is mounted only once and gets influenced by other components by using the created

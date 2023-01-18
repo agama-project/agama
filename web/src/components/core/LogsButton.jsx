@@ -45,7 +45,7 @@ const LogsButton = ({ ...props }) => {
   /**
    * Helper function for creating the blob and triggering the download automatically
    *
-   * @note Based on the article "Programmatic file downloads in the browser" fount at
+   * @note Based on the article "Programmatic file downloads in the browser" found at
    *       https://blog.logrocket.com/programmatic-file-downloads-in-the-browser-9a5186298d5c
    *
    * @param {Uint8Array} data - binary data for creating a {@link https://developer.mozilla.org/en-US/docs/Web/API/Blob Blob}

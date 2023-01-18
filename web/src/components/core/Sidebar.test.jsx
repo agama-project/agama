@@ -36,7 +36,7 @@ it("renders the sidebar initially hidden", async () => {
   expect(nav).toHaveAttribute("data-state", "hidden");
 });
 
-it("renders a link for changing the sidebar to visible", async () => {
+it("renders a link for displaying the sidebar", async () => {
   const { user } = plainRender(<Sidebar />);
 
   const link = await screen.findByLabelText(/Open/i);
@@ -59,7 +59,7 @@ it("prevents the default event when the user click on the open link", async () =
   expect(clickEvent.defaultPrevented).toBe(true);
 });
 
-it("renders a link for changing the sidebar to hidden", async () => {
+it("renders a link for hidding the sidebar", async () => {
   const { user } = plainRender(<Sidebar />);
 
   const openLink = await screen.findByLabelText(/Open/i);
@@ -74,25 +74,25 @@ it("renders a link for changing the sidebar to hidden", async () => {
 });
 
 describe("Sidebar content", () => {
-  it("contains the output of component for changing the selected product", async () => {
+  it("contains the component for changing the selected product", async () => {
     plainRender(<Sidebar />);
     const nav = await screen.findByRole("navigation", { name: /options/i });
     await within(nav).findByText("ChangeProductButton Mock");
   });
 
-  it("contains the output of component for displaying the 'About' information", async () => {
+  it("contains the component for displaying the 'About' information", async () => {
     plainRender(<Sidebar />);
     const nav = await screen.findByRole("navigation", { name: /options/i });
     await within(nav).findByText("About Mock");
   });
 
-  it("contains the output of component for displaying the 'Host Ips' information", async () => {
+  it("contains the component for displaying the 'Host Ips' information", async () => {
     plainRender(<Sidebar />);
     const nav = await screen.findByRole("navigation", { name: /options/i });
     await within(nav).findByText("Host Ips Mock");
   });
 
-  it("contains the LogsButton component's output", async () => {
+  it("contains the components for downloading the logs", async () => {
     plainRender(<Sidebar />);
     const nav = await screen.findByRole("navigation", { name: /options/i });
     await within(nav).findByText("LogsButton Mock");

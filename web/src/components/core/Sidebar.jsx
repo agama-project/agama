@@ -68,7 +68,7 @@ export default function Sidebar() {
 
         <footer className="split" data-state="reversed">
           <a onClick={close}>
-            Close options <Icon size="16" name="menu_open" data-variant="flip-X" />
+            Close <Icon size="16" name="menu_open" data-variant="flip-X" />
           </a>
         </footer>
       </nav>
