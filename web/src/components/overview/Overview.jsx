@@ -20,36 +20,15 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
 import { useSoftware } from "@context/software";
+import { Navigate } from "react-router-dom";
 
-import { Button } from "@patternfly/react-core";
-
-import { Icon, Title, PageIcon, PageActions, MainActions } from "@components/layout";
+import { Icon, Title, PageIcon, MainActions } from "@components/layout";
 import { Section, InstallButton } from "@components/core";
 import { LanguageSelector } from "@components/language";
 import { SoftwareSection, StorageSection } from "@components/overview";
 import { Users } from "@components/users";
 import { Network } from "@components/network";
-
-const ChangeProductButton = () => {
-  const { products } = useSoftware();
-  const navigate = useNavigate();
-
-  if (products === undefined || products.length === 1) {
-    return "";
-  }
-
-  return (
-    <Button
-      isSmall
-      variant="plain"
-      icon={<Icon name="edit_square" size="24" />}
-      aria-label="Change selected product"
-      onClick={() => navigate("/products")}
-    />
-  );
-};
 
 function Overview() {
   const { selectedProduct } = useSoftware();
@@ -63,8 +42,9 @@ function Overview() {
     <>
       <Title>{selectedProduct && selectedProduct.name}</Title>
       <PageIcon><Icon name="inventory_2" /></PageIcon>
-      <PageActions><ChangeProductButton /></PageActions>
-      <MainActions><InstallButton onClick={() => setShowErrors(true)} /></MainActions>
+      <MainActions>
+        <InstallButton onClick={() => setShowErrors(true)} />
+      </MainActions>
       <Section key="language" title="Language" iconName="translate">
         <LanguageSelector />
       </Section>

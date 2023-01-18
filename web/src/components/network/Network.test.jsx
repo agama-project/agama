@@ -69,7 +69,7 @@ describe("Network", () => {
 
   describe("when it has not been initialized", () => {
     it("renders nothing", async () => {
-      const { container } = installerRender(<Network />, { usingLayout: false });
+      const { container } = installerRender(<Network />);
       await waitFor(() => expect(container).toBeEmptyDOMElement());
     });
   });
@@ -98,7 +98,7 @@ describe("Network", () => {
 
     describe("when Wireless is currently not enabled", () => {
       it("does not show a link to open the WiFi selector", async () => {
-        installerRender(<Network />, { usingLayout: false });
+        installerRender(<Network />);
         await waitFor(() => expect(screen.queryByRole("button", { name: "Connect to a Wi-Fi network" })).not.toBeInTheDocument());
       });
     });

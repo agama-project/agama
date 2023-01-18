@@ -23,6 +23,7 @@ import React from "react";
 
 import logoUrl from "@assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
+import { Sidebar } from "@components/core";
 
 const PageTitle = createTeleporter();
 const HeaderActions = createTeleporter();
@@ -31,10 +32,20 @@ const FooterActions = createTeleporter();
 const FooterInfoArea = createTeleporter();
 
 /**
- * D-Installer main layout component.
  *
- * It displays the content in a single vertical responsive column with fixed
- * header and footer.
+ * The D-Installer main layout component.
+ *
+ * It displays the content in a single column with a fixed header and footer.
+ *
+ * To achieve a {@link https://gregberge.com/blog/react-scalable-layout scalable layout},
+ * it uses {@link https://reactjs.org/docs/portals.html React Portals} through
+ * {@link https://github.com/gregberge/react-teleporter react-teleporter}. In other words,
+ * it is mounted only once and gets influenced by other components by using the created
+ * slots (Title, PageIcon, MainActions, etc).
+ *
+ * So, please ensure that {@link test-utils!mockLayout } gets updated when adding or deleting
+ * slots here. It's needed in order to allow testing the output of components that interact
+ * with the layout using that mechanism.
  *
  * @example
  *   <Layout>
@@ -67,14 +78,17 @@ function Layout({ children }) {
         <HeaderActions.Target as="span" />
       </header>
 
-      <main className="stack">{children}</main>
+      <Sidebar />
+
+      <main className="stack">
+        {children}
+      </main>
 
       <footer className="split justify-between top-shadow" data-state="reversed">
         <FooterActions.Target
           role="navigation"
           aria-label="Installer Actions"
         />
-        <FooterInfoArea.Target />
         <img src={logoUrl} alt="Logo of SUSE" />
       </footer>
     </div>

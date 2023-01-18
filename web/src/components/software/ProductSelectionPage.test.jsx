@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "@/test-utils";
+import { installerRender, mockLayout } from "@/test-utils";
 import { ProductSelectionPage } from "@components/software";
 import { createClient } from "@client";
 
@@ -38,7 +38,6 @@ const products = [
   }
 ];
 jest.mock("@client");
-jest.mock("@components/network/TargetIpsPopup", () => mockComponent("Target IPs Mock"));
 
 const mockUseNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -55,6 +54,8 @@ jest.mock("@context/software", () => ({
     };
   }
 }));
+
+jest.mock("@components/layout/Layout", () => mockLayout());
 
 const softwareMock = {
   getProducts: () => Promise.resolve(products),

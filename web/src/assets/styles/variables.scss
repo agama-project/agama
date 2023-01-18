@@ -24,8 +24,12 @@
   --stack-gutter: var(--spacer-normal);
   --split-gutter: var(--spacer-small);
 
+  --wrapper-padding: var(--spacer-normal);
+  --wrapper-background: white;
+
   --color-primary: #30BA78;
   --color-primary-darkest: #0C322C;
+  --color-gray-light: #FCFCFC;
   --color-gray: #F2F2F2;
   --color-gray-dark: #EFEFEF; // Fog
   --color-gray-darker: #999999;
@@ -55,4 +59,7 @@
   --gradient-border-end-color: transparent;
 
   --icon-size-m: 32px;
+
+  --header-block-size: 6vh;
+  --footer-block-size: 8vh;
 }

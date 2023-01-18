@@ -20,6 +20,7 @@
  */
 
 export { default as About } from "./About";
+export { default as Sidebar } from "./Sidebar";
 export { default as Section } from "./Section";
 export { default as FormLabel } from "./FormLabel";
 export { default as Fieldset } from "./Fieldset";
@@ -28,7 +29,9 @@ export { default as InstallationProgress } from "./InstallationProgress";
 export { default as InstallButton } from "./InstallButton";
 export { default as InstallerSkeleton } from "./InstallerSkeleton";
 export { default as KebabMenu } from "./KebabMenu";
+export { default as LogsButton } from "./LogsButton";
 export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmationInput";
 export { default as Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";
+export { default as ChangeProductButton } from "./ChangeProductButton";
 export { default as ValidationErrors } from "./ValidationErrors";

@@ -21,7 +21,7 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "@/test-utils";
+import { installerRender, mockComponent, mockLayout } from "@/test-utils";
 import App from "./App";
 import { createClient } from "@client";
 import { STARTUP, CONFIG, INSTALL } from "@client/phase";
@@ -33,6 +33,8 @@ jest.mock('react-router-dom', () => ({
   Outlet: mockComponent("Content"),
 }));
 
+jest.mock("@components/layout/Layout", () => mockLayout());
+
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
 jest.mock("@components/layout/DBusError", () => mockComponent("D-BusError Mock"));
@@ -40,7 +42,6 @@ jest.mock("@components/layout/LoadingEnvironment", () => mockComponent("LoadingE
 jest.mock("@components/questions/Questions", () => mockComponent("Questions Mock"));
 jest.mock("@components/core/InstallationProgress", () => mockComponent("InstallationProgress Mock"));
 jest.mock("@components/core/InstallationFinished", () => mockComponent("InstallationFinished Mock"));
-jest.mock("@components/network/TargetIpsPopup", () => mockComponent("Target IPs Mock"));
 
 const callbacks = {};
 const getStatusFn = jest.fn();
@@ -176,11 +177,6 @@ describe("App", () => {
     it("renders the application's content", async () => {
       installerRender(<App />);
       await screen.findByText("Content");
-    });
-
-    it("renders IP address and hostname", async () => {
-      installerRender(<App />);
-      await screen.findByText("Target IPs Mock");
     });
   });
 });

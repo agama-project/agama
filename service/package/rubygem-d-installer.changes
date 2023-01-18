@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 18 08:03:40 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Save logs and provide the path to the file
+  (gh#yast/d-installer#379)
+
+-------------------------------------------------------------------
 Tue Jan 17 10:06:23 UT0 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Implement validation of software proposal

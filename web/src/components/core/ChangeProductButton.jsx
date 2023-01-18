@@ -20,25 +20,30 @@
  */
 
 import React from "react";
+import { Button } from "@patternfly/react-core";
+import { useNavigate } from "react-router-dom";
+import { useSoftware } from "@context/software";
+import { Icon } from "@components/layout";
+import { noop } from "@/utils";
 
-import { screen } from "@testing-library/react";
-import { installerRender, mockComponent, mockLayout } from "@/test-utils";
+export default function ChangeProductButton({ onClickCallback = noop }) {
+  const { products } = useSoftware();
+  const navigate = useNavigate();
 
-import InstallationProgress from "./InstallationProgress";
+  if (products === undefined || products.length === 1) {
+    return null;
+  }
 
-jest.mock("@components/layout/Layout", () => mockLayout());
-jest.mock("@components/core/ProgressReport", () => mockComponent("ProgressReport Mock"));
-
-describe("InstallationProgress", () => {
-  it("uses 'Installing' as title", async () => {
-    installerRender(<InstallationProgress />);
-
-    await screen.findByText("Installing");
-  });
-
-  it("renders progress report", async () => {
-    installerRender(<InstallationProgress />);
-
-    await screen.findByText("ProgressReport Mock");
-  });
-});
+  return (
+    <Button
+      variant="link"
+      icon={<Icon name="edit_square" size="24" />}
+      onClick={() => {
+        navigate("/products");
+        onClickCallback();
+      }}
+    >
+      Change selected product
+    </Button>
+  );
+}

@@ -180,6 +180,18 @@ module DInstaller
       [storage, users, software].all?(&:valid?)
     end
 
+    # Collects the logs and stores them into an archive
+    #
+    # @param user [String] local username who will own archive
+    # @return [String] path to created archive
+    def collect_logs(user)
+      output = Yast::Execute.locally!("save_y2logs", stderr: :capture)
+      path = output[/^.* (\/tmp\/y2log-\S*)/, 1]
+      Yast::Execute.locally!("chown", "#{user}:", path)
+
+      path
+    end
+
   private
 
     attr_reader :config

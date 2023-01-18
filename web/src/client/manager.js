@@ -80,6 +80,18 @@ class ManagerBaseClient {
   }
 
   /**
+   * Returns the binary content of the YaST logs file
+   *
+   * @return {Promise<Uint8Array>}
+   */
+  async fetchLogs() {
+    const proxy = await this.client.proxy(MANAGER_IFACE);
+    const path = proxy.CollectLogs("root");
+    const file = cockpit.file(path, { binary: true });
+    return file.read();
+  }
+
+  /**
    * Return the installer status
    *
    * @return {Promise<number>}

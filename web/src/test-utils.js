@@ -19,13 +19,18 @@
  * find current contact information at www.suse.com.
  */
 
+/**
+ * A module for providing utility functions for testing
+ *
+ * @module test-utils
+ */
+
 import React from "react";
 import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
 
 import { createClient } from "@client/index";
 import { InstallerClientProvider } from "@context/installer";
-import Layout from "@components/layout/Layout";
 
 const InstallerProvider = ({ children }) => {
   const client = createClient();
@@ -36,30 +41,20 @@ const InstallerProvider = ({ children }) => {
   );
 };
 
-const content = (ui, usingLayout) => {
-  if (!usingLayout) return ui;
-
-  return <Layout>{ui}</Layout>;
-};
-
-const installerRender = (ui, options = { usingLayout: true }) => {
-  const { usingLayout, ...testingLibraryOptions } = options;
-
+const installerRender = (ui, options = {}) => {
   return (
     {
       user: userEvent.setup(),
-      ...render(content(ui, usingLayout), { wrapper: InstallerProvider, ...testingLibraryOptions })
+      ...render(ui, { wrapper: InstallerProvider, ...options })
     }
   );
 };
 
-const plainRender = (ui, options = { usingLayout: true }) => {
-  const { usingLayout, ...testingLibraryOptions } = options;
-
+const plainRender = (ui, options = {}) => {
   return (
     {
       user: userEvent.setup(),
-      ...render(content(ui, usingLayout), testingLibraryOptions)
+      ...render(ui, options)
     }
   );
 };
@@ -98,4 +93,22 @@ const mockComponent = (content, { wrapper } = { wrapper: "div" }) => {
   return () => <Wrapper>{content}</Wrapper>;
 };
 
-export { installerRender, plainRender, createCallbackMock, mockComponent };
+/**
+ * Returns fake component for mocking the Layout and its slots
+ *
+ * Useful to be used when testing a component that uses either, the Layout itself or any of its
+ * slots (a.k.a. portals)
+ *
+ * @return a function component to mock the Layout
+ */
+const mockLayout = () => ({
+  __esModule: true,
+  default: ({ children }) => children,
+  Title: ({ children }) => children,
+  PageIcon: ({ children }) => children,
+  PageActions: ({ children }) => children,
+  MainActions: ({ children }) => children,
+  AdditionalInfo: ({ children }) => children,
+});
+
+export { installerRender, plainRender, createCallbackMock, mockComponent, mockLayout };

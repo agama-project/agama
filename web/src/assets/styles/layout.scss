@@ -1,6 +1,6 @@
 .wrapper {
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: var(--header-block-size) 1fr var(--footer-block-size);
   grid-template-areas: 
     'header'
     'content'
@@ -11,7 +11,7 @@
   block-size: 100dvb;
   max-inline-size: 1024px;
   margin-inline: auto;
-  background: white;
+  background: var(--wrapper-background);
 
   svg {
     fill: currentColor;
@@ -20,7 +20,7 @@
 }
 
 .wrapper > * {
-  padding: var(--spacer-normal);
+  padding: var(--wrapper-padding);
 }
 
 .wrapper > header {
@@ -28,7 +28,7 @@
   --color-button-plain-link-hover: #fcfcfc;
 
   grid-area: header;
-  background: var(--color-primary-darkest);
+  background: var(--color-background-primary);
   color: var(--color-text-secondary);
 }
 
@@ -45,4 +45,8 @@
 
 .wrapper > footer > img {
   max-inline-size: 150px;
+}
+
+[data-variant="flip-X"] {
+  transform: scaleX(-1);
 }

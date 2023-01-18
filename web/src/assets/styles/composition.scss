@@ -3,6 +3,13 @@
   margin-block-start: var(--stack-gutter);
 }
 
+.flex-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  @extend .stack;
+}
+
 .split {
   display: flex;
   align-items: center;

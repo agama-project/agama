@@ -50,7 +50,7 @@ const destructiveAction = { text: 'Delete ext4 on /dev/vdc', subvol: false, dele
 describe("ProposalActions", () => {
   describe("when there is none action", () => {
     it("renders nothing", async () => {
-      const { container } = installerRender(<ProposalActions actions={[]} />, { usingLayout: false });
+      const { container } = installerRender(<ProposalActions actions={[]} />);
 
       await waitFor(() => expect(container).toBeEmptyDOMElement());
     });

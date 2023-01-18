@@ -52,3 +52,37 @@ section > .content {
 .selection-list [data-state="unstyled"] {
   border: 0;
 }
+
+.sidebar {
+  --color-background-primary: var(--color-primary);
+  --wrapper-background: var(--color-gray-light);
+
+  position: absolute;
+  padding: 0;
+  right: 0;
+  z-index: 1;
+  inline-size: 70%;
+  box-shadow: 0px 0px 20px 10px var(--color-primary-darkest);
+}
+
+.sidebar footer {
+  border-top: 1px solid var(--color-gray);
+}
+
+// Remove not wanted PatternFly padding left on a loading link
+.sidebar button.pf-m-progress {
+  --pf-c-button--m-progress--PaddingLeft: var(--pf-global--spacer--md);
+}
+.sidebar button.pf-m-progress + div {
+  padding-inline-start: calc(var(--pf-global--spacer--md));
+}
+
+.sidebar[data-state="hidden"] {
+  transition: all 0.04s ease-in-out;
+  inline-size: 0;
+  box-shadow: none;
+}
+
+.sidebar[data-state="visible"] {
+  transition: all 0.2s ease-in-out;
+}

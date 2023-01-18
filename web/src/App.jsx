@@ -26,9 +26,8 @@ import { useInstallerClient } from "@context/installer";
 import { STARTUP, INSTALL } from "@client/phase";
 import { BUSY } from "@client/status";
 
-import { Layout, Title, AdditionalInfo, LoadingEnvironment, DBusError } from "@components/layout";
-import { About, InstallationProgress, InstallationFinished } from "@components/core";
-import { TargetIpsPopup } from "@components/network";
+import { Layout, Title, LoadingEnvironment, DBusError } from "@components/layout";
+import { InstallationProgress, InstallationFinished } from "@components/core";
 
 function App() {
   const client = useInstallerClient();
@@ -79,10 +78,6 @@ function App() {
     <Layout>
       <Title>D-Installer</Title>
       <Content />
-      <AdditionalInfo>
-        <About />
-        <TargetIpsPopup />
-      </AdditionalInfo>
     </Layout>
   );
 }
