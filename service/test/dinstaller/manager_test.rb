@@ -203,4 +203,17 @@ describe DInstaller::Manager do
       end
     end
   end
+
+  describe "#collect_logs" do
+    it "collects the logs and returns the path to the archive" do
+      expect(Yast::Execute).to receive(:locally!)
+        .with("save_y2logs", stderr: :capture)
+        .and_return("Saving YaST logs to /tmp/y2log-hWBn95.tar.xz")
+      expect(Yast::Execute).to receive(:locally!)
+        .with("chown", "ytm:", /y2log-hWBn95/)
+
+      path = subject.collect_logs("ytm")
+      expect(path).to eq("/tmp/y2log-hWBn95.tar.xz")
+    end
+  end
 end
