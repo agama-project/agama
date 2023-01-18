@@ -21,14 +21,14 @@
 
 import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
-import { installerRender, createCallbackMock, mockComponent } from "@/test-utils";
-import { createClient } from "@client";
-import { BUSY, IDLE } from "@client/status";
-import { StorageSection } from "@components/overview";
+import { installerRender, createCallbackMock, mockComponent } from "~/test-utils";
+import { createClient } from "~/client";
+import { BUSY, IDLE } from "~/client/status";
+import { StorageSection } from "~/components/overview";
 
 const mockUseNavigate = jest.fn();
-jest.mock("@client");
-jest.mock("@components/core/InstallerSkeleton", () => mockComponent("Loading storage"));
+jest.mock("~/client");
+jest.mock("~/components/core/InstallerSkeleton", () => mockComponent("Loading storage"));
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockUseNavigate

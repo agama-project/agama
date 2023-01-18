@@ -21,7 +21,7 @@
 
 import React, { useState } from "react";
 import { Dropdown, DropdownToggle } from "@patternfly/react-core";
-import { Icon } from "@components/layout";
+import { Icon } from "~/components/layout";
 
 export default function KebabMenu({ items, position = "right", id = Date.now(), ...props }) {
   const [isOpen, setIsOpen] = useState(false);

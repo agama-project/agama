@@ -22,9 +22,9 @@
 import React from "react";
 
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender } from "~/test-utils";
 
-import { Popup } from "@components/core";
+import { Popup } from "~/components/core";
 
 let isOpen;
 const confirmFn = jest.fn();

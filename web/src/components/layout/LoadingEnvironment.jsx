@@ -22,7 +22,7 @@
 import React from "react";
 import { Title, EmptyState, EmptyStateIcon } from "@patternfly/react-core";
 
-import { Center, Icon } from "@components/layout";
+import { Center, Icon } from "~/components/layout";
 
 function LoadingEnvironment({ text = "Loading installation environment, please wait." }) {
   return (

@@ -21,16 +21,16 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { plainRender } from "@/test-utils";
-import { createClient } from "@client";
-import { ChangeProductButton } from "@components/core";
+import { plainRender } from "~/test-utils";
+import { createClient } from "~/client";
+import { ChangeProductButton } from "~/components/core";
 
 let mockProducts;
 const mockNavigateFn = jest.fn();
 
-jest.mock("@client");
-jest.mock("@context/software", () => ({
-  ...jest.requireActual("@context/software"),
+jest.mock("~/client");
+jest.mock("~/context/software", () => ({
+  ...jest.requireActual("~/context/software"),
   useSoftware: () => {
     return {
       products: mockProducts,

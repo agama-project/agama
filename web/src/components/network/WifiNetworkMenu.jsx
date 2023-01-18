@@ -21,9 +21,9 @@
 
 import React from "react";
 import { DropdownItem } from "@patternfly/react-core";
-import { Icon } from "@components/layout";
-import { KebabMenu } from "@components/core";
-import { useInstallerClient } from "@context/installer";
+import { Icon } from "~/components/layout";
+import { KebabMenu } from "~/components/core";
+import { useInstallerClient } from "~/context/installer";
 
 export default function WifiNetworkMenu({ settings, position = "right" }) {
   const client = useInstallerClient();

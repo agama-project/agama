@@ -21,11 +21,11 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "@/test-utils";
+import { installerRender, mockComponent } from "~/test-utils";
 
-import Main from "@/Main";
+import Main from "~/Main";
 
-jest.mock("@components/questions/Questions", () => mockComponent("Questions Mock"));
+jest.mock("~/components/questions/Questions", () => mockComponent("Questions Mock"));
 jest.mock('react-router-dom', () => ({
   Outlet: mockComponent("Content"),
 }));

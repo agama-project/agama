@@ -20,10 +20,10 @@
  */
 
 import React, { useState } from "react";
-import { useInstallerClient } from "@context/installer";
+import { useInstallerClient } from "~/context/installer";
 
 import { Button, Text } from "@patternfly/react-core";
-import { Popup } from "@components/core";
+import { Popup } from "~/components/core";
 
 const InstallConfirmationPopup = ({ onAccept, onClose }) => (
   <Popup

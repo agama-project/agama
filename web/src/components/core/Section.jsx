@@ -30,8 +30,8 @@ import {
   Tooltip
 } from "@patternfly/react-core";
 
-import { Icon } from '@components/layout';
-import { ValidationErrors } from "@components/core";
+import { Icon } from '~/components/layout';
+import { ValidationErrors } from "~/components/core";
 
 /**
  * Helper method for rendering section icon
@@ -91,7 +91,7 @@ const renderIcon = (name, size = 32) => {
  * @param {string} [props.actionIconName="settings"] - name for the icon for linking to section settings, when needed
  * @param {React.ReactNode} [props.actionTooltip] - text to be shown as a tooltip when user hovers action icon, if present
  * @param {React.MouseEventHandler} [props.onActionClick] - callback to be triggered when user clicks on action icon, if present
- * @param {import("@client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title
+ * @param {import("~/client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title
  * @param {JSX.Element} [props.children] - the section content
  */
 export default function Section({

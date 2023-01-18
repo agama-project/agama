@@ -22,7 +22,7 @@
 import React from "react";
 
 import { screen, waitFor, within } from "@testing-library/react";
-import { plainRender } from "@/test-utils";
+import { plainRender } from "~/test-utils";
 
 import About from "./About";
 

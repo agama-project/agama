@@ -20,10 +20,10 @@
  */
 
 import React, { useState } from "react";
-import { noop } from "@/utils";
+import { noop } from "~/utils";
 import { Button, Text } from "@patternfly/react-core";
-import { Icon } from "@components/layout";
-import { Popup } from "@components/core";
+import { Icon } from "~/components/layout";
+import { Popup } from "~/components/core";
 
 export default function About({ onClickCallback = noop }) {
   const [isOpen, setIsOpen] = useState(false);

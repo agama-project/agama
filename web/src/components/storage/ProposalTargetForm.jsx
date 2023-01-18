@@ -25,7 +25,7 @@ import {
   Form,
 } from "@patternfly/react-core";
 
-import { DeviceSelector } from "@components/storage";
+import { DeviceSelector } from "~/components/storage";
 
 export default function ProposalTargetForm({ id, proposal, onSubmit }) {
   const [candidateDevices, setCandidateDevices] = useState(proposal.candidateDevices);

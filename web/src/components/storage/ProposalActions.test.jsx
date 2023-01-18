@@ -21,8 +21,8 @@
 
 import React from "react";
 import { screen, waitFor, within, waitForElementToBeRemoved } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
-import { ProposalActions } from "@components/storage";
+import { installerRender } from "~/test-utils";
+import { ProposalActions } from "~/components/storage";
 
 const actions = [
   { text: 'Create GPT on /dev/vdc', subvol: false, delete: false },

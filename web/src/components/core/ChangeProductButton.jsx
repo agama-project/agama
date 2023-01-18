@@ -22,9 +22,9 @@
 import React from "react";
 import { Button } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
-import { useSoftware } from "@context/software";
-import { Icon } from "@components/layout";
-import { noop } from "@/utils";
+import { useSoftware } from "~/context/software";
+import { Icon } from "~/components/layout";
+import { noop } from "~/utils";
 
 export default function ChangeProductButton({ onClickCallback = noop }) {
   const { products } = useSoftware();

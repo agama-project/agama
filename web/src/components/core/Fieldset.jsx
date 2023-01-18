@@ -22,7 +22,7 @@
 // @ts-check
 
 import React from "react";
-import { classNames } from "@/utils";
+import { classNames } from "~/utils";
 
 import "./fieldset.scss";
 

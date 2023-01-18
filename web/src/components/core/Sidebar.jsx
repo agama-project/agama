@@ -20,9 +20,9 @@
  */
 
 import React, { useState } from "react";
-import { Icon, PageActions } from "@components/layout";
-import { About, ChangeProductButton, LogsButton } from "@components/core";
-import { TargetIpsPopup } from "@components/network";
+import { Icon, PageActions } from "~/components/layout";
+import { About, ChangeProductButton, LogsButton } from "~/components/core";
+import { TargetIpsPopup } from "~/components/network";
 
 /**
  * D-Installer sidebar navigation

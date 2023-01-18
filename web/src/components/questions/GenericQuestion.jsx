@@ -21,8 +21,8 @@
 
 import React from "react";
 import { Text } from "@patternfly/react-core";
-import { Popup } from "@components/core";
-import { QuestionActions } from "@components/questions";
+import { Popup } from "~/components/core";
+import { QuestionActions } from "~/components/questions";
 
 export default function GenericQuestion({ question, answerCallback }) {
   const actionCallback = (option) => {

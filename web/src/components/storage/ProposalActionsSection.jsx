@@ -21,8 +21,8 @@
 
 import React from "react";
 
-import { Section } from "@components/core";
-import { ProposalActions } from "@components/storage";
+import { Section } from "~/components/core";
+import { ProposalActions } from "~/components/storage";
 
 export default function ProposalActionsSection({ proposal, errors }) {
   return (

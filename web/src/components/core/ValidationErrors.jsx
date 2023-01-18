@@ -30,10 +30,10 @@ import {
   Popover
 } from "@patternfly/react-core";
 
-import { Icon } from '@components/layout';
+import { Icon } from '~/components/layout';
 
 /**
- * @param {import("@client/mixins").ValidationError[]} errors - Validation errors
+ * @param {import("~/client/mixins").ValidationError[]} errors - Validation errors
  * @return React.JSX
  */
 const popoverContent = (errors) => {
@@ -56,7 +56,7 @@ const popoverContent = (errors) => {
  *
  * @param {object} props
  * @param {string} props.title - A title for the Popover
- * @param {import("@client/mixins").ValidationError[]} props.errors - Validation errors
+ * @param {import("~/client/mixins").ValidationError[]} props.errors - Validation errors
  */
 const ValidationErrors = ({ title = "Errors", errors }) => {
   const [popoverVisible, setPopoverVisible] = useState(false);

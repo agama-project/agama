@@ -22,12 +22,12 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
-import { useInstallerClient } from "@context/installer";
-import { STARTUP, INSTALL } from "@client/phase";
-import { BUSY } from "@client/status";
+import { useInstallerClient } from "~/context/installer";
+import { STARTUP, INSTALL } from "~/client/phase";
+import { BUSY } from "~/client/status";
 
-import { Layout, Title, LoadingEnvironment, DBusError } from "@components/layout";
-import { InstallationProgress, InstallationFinished } from "@components/core";
+import { Layout, Title, LoadingEnvironment, DBusError } from "~/components/layout";
+import { InstallationProgress, InstallationFinished } from "~/components/core";
 
 function App() {
   const client = useInstallerClient();

@@ -21,8 +21,8 @@
 
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
-import { ProposalSettingsSection } from "@components/storage";
+import { installerRender } from "~/test-utils";
+import { ProposalSettingsSection } from "~/components/storage";
 
 const FakeProposalSettingsForm = ({ id, onSubmit }) => {
   const accept = (e) => {
@@ -33,7 +33,7 @@ const FakeProposalSettingsForm = ({ id, onSubmit }) => {
   return <form id={id} onSubmit={accept} aria-label="Settings form" />;
 };
 
-jest.mock("@components/storage/ProposalSettingsForm", () => FakeProposalSettingsForm);
+jest.mock("~/components/storage/ProposalSettingsForm", () => FakeProposalSettingsForm);
 
 const proposal = {
   candidateDevices: ["/dev/sda"],

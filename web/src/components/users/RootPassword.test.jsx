@@ -22,12 +22,12 @@
 import React from "react";
 
 import { act, screen, waitFor, within } from "@testing-library/react";
-import { installerRender, createCallbackMock } from "@/test-utils";
-import { createClient } from "@client";
+import { installerRender, createCallbackMock } from "~/test-utils";
+import { createClient } from "~/client";
 
-import { RootPassword } from "@components/users";
+import { RootPassword } from "~/components/users";
 
-jest.mock("@client");
+jest.mock("~/client");
 
 let isRootPasswordSetFn;
 let setRootPasswordFn = jest.fn();

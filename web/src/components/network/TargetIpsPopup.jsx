@@ -22,12 +22,12 @@
 import React, { useEffect, useState } from "react";
 import { Button, List, ListItem, Text } from "@patternfly/react-core";
 
-import { noop, useCancellablePromise } from "@/utils";
-import { useInstallerClient } from "@context/installer";
-import { formatIp } from "@client/network/utils";
+import { noop, useCancellablePromise } from "~/utils";
+import { useInstallerClient } from "~/context/installer";
+import { formatIp } from "~/client/network/utils";
 
-import { Icon } from "@components/layout";
-import { Popup } from "@components/core";
+import { Icon } from "~/components/layout";
+import { Popup } from "~/components/core";
 
 export default function TargetIpsPopup({ onClickCallback = noop }) {
   const client = useInstallerClient();

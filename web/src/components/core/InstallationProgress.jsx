@@ -22,8 +22,8 @@
 import React from "react";
 
 import ProgressReport from "./ProgressReport";
-import { Center, Icon, Title, PageIcon } from "@components/layout";
-import { Questions } from "@components/questions";
+import { Center, Icon, Title, PageIcon } from "~/components/layout";
+import { Questions } from "~/components/questions";
 
 function InstallationProgress() {
   return (

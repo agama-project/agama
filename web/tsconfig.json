@@ -9,14 +9,14 @@
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@/*": ["src/*"],
-      "@assets/*": ["src/assets/*"],
-      "@client": ["src/client/index.js"],
-      "@client/*": ["src/client/*"],
-      "@components/*": ["src/components/*"],
-      "@context/*": ["src/context/*"],
-      "@lib/*": ["src/lib/*"],
-      "~icons/*": ["node_modules/@material-symbols/svg-400/outlined/*"]
+      "~/*": ["src/*"],
+      "~/assets/*": ["src/assets/*"],
+      "~/client": ["src/client/index.js"],
+      "~/client/*": ["src/client/*"],
+      "~/components/*": ["src/components/*"],
+      "~/context/*": ["src/context/*"],
+      "~/lib/*": ["src/lib/*"],
+      "@icons/*": ["node_modules/@material-symbols/svg-400/outlined/*"]
     }
   },
   "include": [

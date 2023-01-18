@@ -20,7 +20,7 @@
  */
 
 import React, { useEffect } from "react";
-import { useCancellablePromise } from "@/utils";
+import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "./installer";
 
 const SoftwareContext = React.createContext();

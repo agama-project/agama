@@ -20,11 +20,11 @@
  */
 
 import React, { useState } from "react";
-import { useInstallerClient } from "@context/installer";
-import { useCancellablePromise } from "@/utils";
+import { useInstallerClient } from "~/context/installer";
+import { useCancellablePromise } from "~/utils";
 
 import { Alert, Button } from "@patternfly/react-core";
-import { Icon } from "@components/layout";
+import { Icon } from "~/components/layout";
 
 const FILENAME = "y2logs.tar.xz";
 const FILETYPE = "application/x-xz";

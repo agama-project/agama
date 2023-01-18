@@ -24,12 +24,12 @@ import { useNavigate } from "react-router-dom";
 
 import { Button } from '@patternfly/react-core';
 
-import { useCancellablePromise } from "@/utils";
-import { useInstallerClient } from "@context/installer";
-import { BUSY } from "@client/status";
-import { Icon } from "@components/layout";
-import { InstallerSkeleton, Section } from "@components/core";
-import { ProposalSummary } from "@components/storage";
+import { useCancellablePromise } from "~/utils";
+import { useInstallerClient } from "~/context/installer";
+import { BUSY } from "~/client/status";
+import { Icon } from "~/components/layout";
+import { InstallerSkeleton, Section } from "~/components/core";
+import { ProposalSummary } from "~/components/storage";
 
 const initialState = {
   busy: false,

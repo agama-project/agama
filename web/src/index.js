@@ -25,19 +25,19 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 
 import { HashRouter, Routes, Route } from "react-router-dom";
-import { InstallerClientProvider } from "@context/installer";
-import { SoftwareProvider } from "@context/software";
-import { createClient } from "@/client";
+import { InstallerClientProvider } from "~/context/installer";
+import { SoftwareProvider } from "~/context/software";
+import { createClient } from "~/client";
 
-import "@assets/fonts.css";
+import "~/assets/fonts.css";
 import "@patternfly/patternfly/patternfly-base.scss";
-import "@assets/styles/index.scss";
+import "~/assets/styles/index.scss";
 
-import App from "@/App";
-import Main from "@/Main";
-import { Overview } from "@components/overview";
-import { ProductSelectionPage } from "@components/software";
-import { ProposalPage as StoragePage } from "@components/storage";
+import App from "~/App";
+import Main from "~/Main";
+import { Overview } from "~/components/overview";
+import { ProductSelectionPage } from "~/components/software";
+import { ProposalPage as StoragePage } from "~/components/storage";
 
 ReactDOM.render(
   <StrictMode>
