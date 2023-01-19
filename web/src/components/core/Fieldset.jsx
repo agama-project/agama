@@ -47,7 +47,7 @@ export default function Fieldset({
   ...otherProps
 }) {
   return (
-    <fieldset {...otherProps}>
+    <fieldset className="stack" {...otherProps}>
       {legend && <legend>{legend}</legend>}
       {children}
     </fieldset>
