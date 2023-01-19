@@ -89,16 +89,8 @@ tree](#set-up-the-tftp-tree) section).
 
 ### Booting from PXE
 
-To boot from PXE, you need to enable the boot menu for your VM. You can do it easily by using
-`virt-manager` and marking the `Enable boot menu` option in the `Boot options` section of your
-virtual machine. Alternatively, you can edit the XML definition (`virsh edit NAME`) and add the `bootmenu`
-element to `<os>` section:
-
-```xml
- <os>
-   <bootmenu enable='yes'/>
- </os>
-```
+To boot from PXE, you just need to set the network card as the first booting device. Alternatively,
+you can enable the boot menu so you can decide how to boot your system manually.
 
 Now your virtual machine should be ready to boot from PXE and start Iguana/D-Installer. Once the
 system boots and the services are started, you should be able to access D-Installer with a browser
