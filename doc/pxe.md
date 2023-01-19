@@ -108,7 +108,7 @@ on port 9090.
 
 ### Adding support for SSH
 
-**Please, build the initrd on a virtual machine to avoid messing up your system.**
+:warning: **Please, build the initrd on a virtual machine to avoid messing up your system.**
 
 For debugging purposes, you might be interested in connecting to the system and running commands
 like `podman` to inspect the situation. If that's the case, you can add SSH support to Iguana's
