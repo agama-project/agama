@@ -20,8 +20,8 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { useCancellablePromise } from "@/utils";
-import { useInstallerClient } from "@context/installer";
+import { useCancellablePromise } from "~/utils";
+import { useInstallerClient } from "~/context/installer";
 
 import {
   Button,
@@ -30,7 +30,7 @@ import {
   Text
 } from "@patternfly/react-core";
 
-import { PasswordAndConfirmationInput, Popup } from '@components/core';
+import { PasswordAndConfirmationInput, Popup } from '~/components/core';
 
 export default function RootPassword() {
   const client = useInstallerClient();

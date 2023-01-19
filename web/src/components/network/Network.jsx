@@ -22,9 +22,9 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@patternfly/react-core";
 
-import { useInstallerClient } from "@context/installer";
-import { ConnectionTypes, NetworkEventTypes } from "@client/network";
-import { NetworkWifiStatus, NetworkWiredStatus, WifiSelector } from "@components/network";
+import { useInstallerClient } from "~/context/installer";
+import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
+import { NetworkWifiStatus, NetworkWiredStatus, WifiSelector } from "~/components/network";
 
 export default function Network() {
   const client = useInstallerClient();

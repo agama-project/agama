@@ -23,14 +23,14 @@
 
 import React, { useState, useEffect } from "react";
 import cockpit from "../lib/cockpit";
-import { createClient } from "@/client";
+import { createClient } from "~/client";
 
 const InstallerClientContext = React.createContext(undefined);
 
 /**
  * Returns the D-Bus installer client
  *
- * @return {import("@client").InstallerClient}
+ * @return {import("~/client").InstallerClient}
  */
 function useInstallerClient() {
   const context = React.useContext(InstallerClientContext);
@@ -45,7 +45,7 @@ const BUS_ADDRESS_FILE = "/run/d-installer/bus.address";
 
 /**
   * @param {object} props
-  * @param {import("@client").InstallerClient|undefined} [props.client] client to connect to
+  * @param {import("~/client").InstallerClient|undefined} [props.client] client to connect to
   *   D-Installer service; if it is undefined, it instantiates a new one using the address
   *   registered in /run/d-installer/bus.address.
   * @param {React.ReactNode} [props.children] - content to display within the provider

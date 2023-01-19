@@ -21,9 +21,9 @@
 
 import React, { useEffect, useState } from "react";
 
-import { useInstallerClient } from "@context/installer";
-import { Section } from "@components/core";
-import { FirstUser, RootPassword, RootSSHKey } from "@components/users";
+import { useInstallerClient } from "~/context/installer";
+import { Section } from "~/components/core";
+import { FirstUser, RootPassword, RootSSHKey } from "~/components/users";
 
 export default function Users({ showErrors }) {
   const [errors, setErrors] = useState([]);

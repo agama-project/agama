@@ -28,7 +28,7 @@ import {
   MainActions,
   PageIcon,
   Title as PageTitle,
-} from "@components/layout";
+} from "~/components/layout";
 
 // TODO: an example
 const ReloadAction = () => (

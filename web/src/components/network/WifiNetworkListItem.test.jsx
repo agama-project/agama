@@ -22,12 +22,12 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "@/test-utils";
+import { installerRender, mockComponent } from "~/test-utils";
 
-import { WifiNetworkListItem } from "@components/network";
+import { WifiNetworkListItem } from "~/components/network";
 
-jest.mock("@components/network/WifiConnectionForm", () => mockComponent("WifiConnectionForm mock"));
-jest.mock("@components/network/WifiNetworkMenu", () => mockComponent("WifiNetworkMenu mock"));
+jest.mock("~/components/network/WifiConnectionForm", () => mockComponent("WifiConnectionForm mock"));
+jest.mock("~/components/network/WifiNetworkMenu", () => mockComponent("WifiNetworkMenu mock"));
 
 const onSelectCallback = jest.fn();
 const fakeNetwork = {

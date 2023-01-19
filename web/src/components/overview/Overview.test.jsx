@@ -21,9 +21,9 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockComponent, mockLayout } from "@/test-utils";
+import { installerRender, mockComponent, mockLayout } from "~/test-utils";
 import Overview from "./Overview";
-import { createClient } from "@client";
+import { createClient } from "~/client";
 
 let mockProduct;
 let mockProducts = [
@@ -32,10 +32,10 @@ let mockProducts = [
 ];
 const startInstallationFn = jest.fn();
 
-jest.mock("@client");
+jest.mock("~/client");
 
-jest.mock("@context/software", () => ({
-  ...jest.requireActual("@context/software"),
+jest.mock("~/context/software", () => ({
+  ...jest.requireActual("~/context/software"),
   useSoftware: () => {
     return {
       products: mockProducts,
@@ -49,13 +49,13 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn()
 }));
 
-jest.mock("@components/layout/Layout", () => mockLayout());
-jest.mock("@components/language/LanguageSelector", () => mockComponent("Language Selector"));
-jest.mock("@components/overview/StorageSection", () => mockComponent("Storage Section"));
-jest.mock("@components/network/Network", () => mockComponent("Network Configuration"));
-jest.mock("@components/users/Users", () => mockComponent("Users Configuration"));
-jest.mock("@components/overview/SoftwareSection", () => mockComponent("Software Section"));
-jest.mock("@components/core/InstallButton", () => mockComponent("Install Button"));
+jest.mock("~/components/layout/Layout", () => mockLayout());
+jest.mock("~/components/language/LanguageSelector", () => mockComponent("Language Selector"));
+jest.mock("~/components/overview/StorageSection", () => mockComponent("Storage Section"));
+jest.mock("~/components/network/Network", () => mockComponent("Network Configuration"));
+jest.mock("~/components/users/Users", () => mockComponent("Users Configuration"));
+jest.mock("~/components/overview/SoftwareSection", () => mockComponent("Software Section"));
+jest.mock("~/components/core/InstallButton", () => mockComponent("Install Button"));
 
 it("renders the Overview and the Install button", async () => {
   installerRender(<Overview />);

@@ -22,12 +22,12 @@
 import React from "react";
 
 import { act, screen } from "@testing-library/react";
-import { installerRender, createCallbackMock } from "@/test-utils";
-import { createClient } from "@client";
+import { installerRender, createCallbackMock } from "~/test-utils";
+import { createClient } from "~/client";
 
-import { ProgressReport } from "@components/core";
+import { ProgressReport } from "~/components/core";
 
-jest.mock("@client");
+jest.mock("~/client");
 
 let callbacks;
 let onManagerProgressChange = jest.fn();

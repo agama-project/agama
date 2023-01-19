@@ -21,8 +21,8 @@
 
 import React, { useState } from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
-import { Section } from "@components/core";
+import { installerRender } from "~/test-utils";
+import { Section } from "~/components/core";
 
 describe("Section", () => {
   it("renders given title", () => {

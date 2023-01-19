@@ -21,9 +21,9 @@
 
 import React from "react";
 import { screen, waitForElementToBeRemoved } from "@testing-library/react";
-import { installerRender, mockComponent } from "@/test-utils";
-import { createClient } from "@client";
-import { ProposalPage } from "@components/storage";
+import { installerRender, mockComponent } from "~/test-utils";
+import { createClient } from "~/client";
+import { ProposalPage } from "~/components/storage";
 
 const FakeProposalTargetSection = ({ calculateProposal }) => {
   return (
@@ -34,17 +34,17 @@ const FakeProposalTargetSection = ({ calculateProposal }) => {
   );
 };
 
-jest.mock("@client");
+jest.mock("~/client");
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => jest.fn()
 }));
 
-jest.mock("@components/core/InstallerSkeleton", () => mockComponent("Loading proposal"));
-jest.mock("@components/storage/ProposalTargetSection", () => FakeProposalTargetSection);
+jest.mock("~/components/core/InstallerSkeleton", () => mockComponent("Loading proposal"));
+jest.mock("~/components/storage/ProposalTargetSection", () => FakeProposalTargetSection);
 
-jest.mock("@components/storage/ProposalSettingsSection", () => mockComponent("Settings section"));
-jest.mock("@components/storage/ProposalActionsSection", () => mockComponent("Actions section"));
+jest.mock("~/components/storage/ProposalSettingsSection", () => mockComponent("Settings section"));
+jest.mock("~/components/storage/ProposalActionsSection", () => mockComponent("Actions section"));
 
 let proposal;
 

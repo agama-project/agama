@@ -21,8 +21,8 @@
 
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender, mockComponent } from "@/test-utils";
-import { ProposalTargetSection } from "@components/storage";
+import { installerRender, mockComponent } from "~/test-utils";
+import { ProposalTargetSection } from "~/components/storage";
 
 const FakeProposalTargetForm = ({ id, onSubmit }) => {
   const accept = (e) => {
@@ -33,8 +33,8 @@ const FakeProposalTargetForm = ({ id, onSubmit }) => {
   return <form id={id} onSubmit={accept} aria-label="Target form" />;
 };
 
-jest.mock("@components/storage/ProposalSummary", () => mockComponent("Proposal summary"));
-jest.mock("@components/storage/ProposalTargetForm", () => FakeProposalTargetForm);
+jest.mock("~/components/storage/ProposalSummary", () => mockComponent("Proposal summary"));
+jest.mock("~/components/storage/ProposalTargetForm", () => FakeProposalTargetForm);
 
 const proposal = {
   availableDevices: [{ id: "/dev/sda", label: "/dev/sda, 500 GiB" }],

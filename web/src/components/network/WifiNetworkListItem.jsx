@@ -27,10 +27,10 @@ import {
   Text
 } from "@patternfly/react-core";
 
-import { ConnectionState } from "@client/network/model";
+import { ConnectionState } from "~/client/network/model";
 
-import { Icon } from "@components/layout";
-import { WifiNetworkMenu, WifiConnectionForm } from "@components/network";
+import { Icon } from "~/components/layout";
+import { WifiNetworkMenu, WifiConnectionForm } from "~/components/network";
 
 const networkState = (state) => {
   switch (state) {

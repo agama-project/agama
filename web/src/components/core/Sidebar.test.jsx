@@ -21,14 +21,14 @@
 
 import React from "react";
 import { screen, within, createEvent, fireEvent } from "@testing-library/react";
-import { plainRender, mockComponent, mockLayout } from "@/test-utils";
-import { Sidebar } from "@components/core";
+import { plainRender, mockComponent, mockLayout } from "~/test-utils";
+import { Sidebar } from "~/components/core";
 
-jest.mock("@components/layout/Layout", () => mockLayout());
-jest.mock("@components/core/About", () => mockComponent("About Mock"));
-jest.mock("@components/core/ChangeProductButton", () => mockComponent("ChangeProductButton Mock"));
-jest.mock("@components/core/LogsButton", () => mockComponent("LogsButton Mock"));
-jest.mock("@components/network/TargetIpsPopup", () => mockComponent("Host Ips Mock"));
+jest.mock("~/components/layout/Layout", () => mockLayout());
+jest.mock("~/components/core/About", () => mockComponent("About Mock"));
+jest.mock("~/components/core/ChangeProductButton", () => mockComponent("ChangeProductButton Mock"));
+jest.mock("~/components/core/LogsButton", () => mockComponent("LogsButton Mock"));
+jest.mock("~/components/network/TargetIpsPopup", () => mockComponent("Host Ips Mock"));
 
 it("renders the sidebar initially hidden", async () => {
   plainRender(<Sidebar />);

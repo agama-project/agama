@@ -27,15 +27,15 @@ import {
   Button,
 } from "@patternfly/react-core";
 
-import { useInstallerClient } from "@context/installer";
-import { useCancellablePromise } from "@/utils";
-import { Icon, Title, PageIcon, MainActions } from "@components/layout";
-import { InstallerSkeleton } from "@components/core";
+import { useInstallerClient } from "~/context/installer";
+import { useCancellablePromise } from "~/utils";
+import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
+import { InstallerSkeleton } from "~/components/core";
 import {
   ProposalTargetSection,
   ProposalSettingsSection,
   ProposalActionsSection
-} from "@components/storage";
+} from "~/components/storage";
 
 const initialState = {
   busy: false,

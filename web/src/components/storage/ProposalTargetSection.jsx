@@ -21,8 +21,8 @@
 
 import React, { useState } from "react";
 
-import { Section, Popup } from "@components/core";
-import { ProposalTargetForm, ProposalSummary } from "@components/storage";
+import { Section, Popup } from "~/components/core";
+import { ProposalTargetForm, ProposalSummary } from "~/components/storage";
 
 export default function ProposalTargetSection({ proposal, calculateProposal }) {
   const [isOpen, setIsOpen] = useState(false);

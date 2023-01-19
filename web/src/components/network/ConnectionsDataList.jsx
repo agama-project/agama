@@ -29,10 +29,10 @@ import {
   DataListItemCells
 } from "@patternfly/react-core";
 
-import { Icon } from "@components/layout";
+import { Icon } from "~/components/layout";
 
-import { ConnectionTypes } from "@client/network";
-import { formatIp } from "@client/network/utils";
+import { ConnectionTypes } from "~/client/network";
+import { formatIp } from "~/client/network/utils";
 
 export default function ConnectionsDataList({ conns, onSelect }) {
   if (conns.length === 0) return null;

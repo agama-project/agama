@@ -29,8 +29,8 @@ import {
   EmptyStateBody
 } from "@patternfly/react-core";
 
-import { Center, Icon, Title as SectionTitle, PageIcon, MainActions } from "@components/layout";
-import { useInstallerClient } from "@context/installer";
+import { Center, Icon, Title as SectionTitle, PageIcon, MainActions } from "~/components/layout";
+import { useInstallerClient } from "~/context/installer";
 
 function InstallationFinished() {
   const client = useInstallerClient();

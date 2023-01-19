@@ -21,8 +21,8 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
-import { Fieldset } from "@components/core";
+import { installerRender } from "~/test-utils";
+import { Fieldset } from "~/components/core";
 
 const ComplexLegend = () => {
   return (

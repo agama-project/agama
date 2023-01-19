@@ -21,9 +21,9 @@
 
 import React, { useState } from "react";
 import { Alert, Form, FormGroup, Text, TextInput } from "@patternfly/react-core";
-import { Icon } from "@components/layout";
-import { Popup } from "@components/core";
-import { QuestionActions } from "@components/questions";
+import { Icon } from "~/components/layout";
+import { Popup } from "~/components/core";
+import { QuestionActions } from "~/components/questions";
 
 const renderAlert = (attempt) => {
   if (!attempt || attempt === 1) return null;

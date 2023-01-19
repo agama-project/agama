@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import { WifiNetworkListItem, WifiHiddenNetworkForm } from "@components/network";
+import { WifiNetworkListItem, WifiHiddenNetworkForm } from "~/components/network";
 
 /**
  * Component for displaying a list of available Wi-Fi networks

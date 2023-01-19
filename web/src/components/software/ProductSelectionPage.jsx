@@ -21,8 +21,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useInstallerClient } from "@context/installer";
-import { useSoftware } from "@context/software";
+import { useInstallerClient } from "~/context/installer";
+import { useSoftware } from "~/context/software";
 
 import {
   Button,
@@ -33,8 +33,8 @@ import {
   Radio
 } from "@patternfly/react-core";
 
-import { Icon, LoadingEnvironment } from "@components/layout";
-import { Title, PageIcon, MainActions } from "@components/layout/Layout";
+import { Icon, LoadingEnvironment } from "~/components/layout";
+import { Title, PageIcon, MainActions } from "~/components/layout/Layout";
 
 function ProductSelectionPage() {
   const client = useInstallerClient();

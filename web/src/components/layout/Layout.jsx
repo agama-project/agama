@@ -21,9 +21,9 @@
 
 import React from "react";
 
-import logoUrl from "@assets/suse-horizontal-logo.svg";
+import logoUrl from "~/assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
-import { Sidebar } from "@components/core";
+import { Sidebar } from "~/components/core";
 
 const PageTitle = createTeleporter();
 const HeaderActions = createTeleporter();

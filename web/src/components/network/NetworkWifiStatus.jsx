@@ -21,8 +21,8 @@
 
 import React, { useState } from "react";
 
-import { useInstallerClient } from "@context/installer";
-import { ConnectionsDataList, IpSettingsForm } from "@components/network";
+import { useInstallerClient } from "~/context/installer";
+import { ConnectionsDataList, IpSettingsForm } from "~/components/network";
 
 /**
  * D-Installer component to show status of wireless network connections

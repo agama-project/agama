@@ -36,8 +36,8 @@ import {
   DataListAction,
 } from "@patternfly/react-core";
 
-import { FormLabel } from "@components/core";
-import { IpAddressInput, IpPrefixInput } from "@components/network";
+import { FormLabel } from "~/components/core";
+import { IpAddressInput, IpPrefixInput } from "~/components/network";
 
 let index = 0;
 
