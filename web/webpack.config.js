@@ -93,14 +93,17 @@ module.exports = {
       },
       {
         test: /\.s?css$/,
-        exclude: [/fonts.css/],
         use: [
           Extract.loader,
           {
             loader: 'css-loader',
             options: {
               sourceMap: true,
-              url: false
+              url: {
+                // Only follow D-Installer fonts links to be processed by the next rule and place
+                // them in dist/fonts
+                filter: (url) => url.includes("./fonts/")
+              }
             }
           },
           {
@@ -113,14 +116,6 @@ module.exports = {
               },
             },
           },
-        ]
-      },
-      // Load D-Intaller fonts
-      {
-        test: /fonts.css/,
-        use: [
-          { loader: 'css-loader' },
-          { loader: 'sass-loader' }
         ]
       },
       {
