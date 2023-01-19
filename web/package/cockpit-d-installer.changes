@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 19 07:58:00 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Update aliases for using "~/" instead of "@"
+  (gh#yast/d-installer#400).
+
+-------------------------------------------------------------------
 Wed Jan 18 08:06:05 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow user downloading logs (gh#yast/d-installer#379)
