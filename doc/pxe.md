@@ -45,7 +45,7 @@ timeout		50
 Do not worry about the kernel, the initrd or the `d-installer.yaml` file, we will jump into it
 later.
 
-### Configure libvirt to server TFTP files
+### Configure libvirt to serve TFTP files
 
 To instruct libvirt to serve the TFTP files, you must add the `tftp` and `bootp` elements to the
 network configuration. Use the `virsh net-edit default` command to edit the configuration and adapt
