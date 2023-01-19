@@ -20,15 +20,12 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "dinstaller/can_ask_question"
 require "dinstaller/config"
 require "dinstaller/network"
-require "dinstaller/question"
 require "dinstaller/with_progress"
 require "dinstaller/installation_phase"
 require "dinstaller/service_status_recorder"
 require "dinstaller/dbus/clients/language"
-require "dinstaller/dbus/clients/questions_manager"
 require "dinstaller/dbus/clients/software"
 require "dinstaller/dbus/clients/storage"
 require "dinstaller/dbus/clients/users"
@@ -46,7 +43,6 @@ module DInstaller
   class Manager
     include WithProgress
     include Helpers
-    include CanAskQuestion
 
     # @return [Logger]
     attr_reader :logger
@@ -79,23 +75,10 @@ module DInstaller
       storage.probe
       software.probe
 
-      if ENV["DINSTALLER_TEST_QUESTIONS"] == "1"
-        testing_question
-        software.testing_question
-      end
-
       logger.info("Config phase done")
     rescue StandardError => e
       logger.error "Startup error: #{e.inspect}. Backtrace: #{e.backtrace}"
       # TODO: report errors
-    end
-
-    def testing_question
-      question = Question.new("What is your favourite colour?", options: [:blue, :yellow])
-      correct = ask(question) do |q|
-        q.answer == :blue
-      end
-      logger.info(correct ? "Off you go" : "Aaaaaugh!")
     end
 
     # Runs the install phase
@@ -215,9 +198,5 @@ module DInstaller
 
     # @return [ServiceStatusRecorder]
     attr_reader :service_status_recorder
-
-    def questions_manager
-      @questions_manager ||= DBus::Clients::QuestionsManager.new
-    end
   end
 end

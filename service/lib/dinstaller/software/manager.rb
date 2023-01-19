@@ -22,10 +22,7 @@
 require "yast"
 require "fileutils"
 require "dinstaller/config"
-require "dinstaller/can_ask_question"
-require "dinstaller/dbus/clients/questions_manager"
 require "dinstaller/helpers"
-require "dinstaller/question"
 require "dinstaller/with_progress"
 require "dinstaller/validation_error"
 require "y2packager/product"
@@ -44,7 +41,6 @@ module DInstaller
     class Manager
       include Helpers
       include WithProgress
-      include CanAskQuestion
 
       GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
       private_constant :GPG_KEYS_GLOB
@@ -79,22 +75,9 @@ module DInstaller
         return if name == @product
         raise ArgumentError unless @products[name]
 
-        # TODO: if a question is asked here, there is no web UI to handle it.
-        # Is it a problem?
-        # testing_question if ENV["DINSTALLER_TEST_QUESTIONS"] == "1"
-
         @config.pick_product(name)
         @product = name
         @probed = false # reset probing when product changed
-      end
-
-      def testing_question
-        question = Question.new("Software: What is the capital of Assyria?",
-          options: [:nineveh, :damascus])
-        correct = ask(question) do |q|
-          q.answer == :nineveh
-        end
-        logger.info(correct ? "Off you go" : "Aaaaaugh!")
       end
 
       def probe
@@ -312,10 +295,6 @@ module DInstaller
         FileUtils.rm_rf(REPOS_DIR)
         logger.info "moving #{REPOS_BACKUP} to #{REPOS_DIR}"
         FileUtils.mv(REPOS_BACKUP, REPOS_DIR)
-      end
-
-      def questions_manager
-        @questions_manager ||= DBus::Clients::QuestionsManager.new
       end
 
       def proposal_result(proposal, deps_result)

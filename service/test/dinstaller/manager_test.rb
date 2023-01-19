@@ -99,11 +99,6 @@ describe DInstaller::Manager do
   end
 
   describe "#config_phase" do
-    before do
-      allow(subject).to receive(:testing_question)
-      allow(software).to receive(:testing_question)
-    end
-
     it "sets the installation phase to config" do
       subject.config_phase
       expect(subject.installation_phase.config?).to eq(true)
