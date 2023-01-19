@@ -6,6 +6,6 @@ fieldset.d-installer-fieldset {
 
   legend {
     padding-inline-end: var(--fs-base);
-    margin-inline-start: -(var(--fs-base));
+    margin-inline-start: calc(var(--fs-base) * -1);
   }
 }
