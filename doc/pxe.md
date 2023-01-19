@@ -127,6 +127,6 @@ initrd following these steps:
 
 ### Accessing the serial console
 
-In case of problems, you should to inspect system messages. The best way is to enable the serial
+In case of problems, you should inspect system messages. The best way is to enable the serial
 console by adding `console=tty0 console=ttyS0,9600` to the `append` line. Then, you will be able to
 connect using `sudo virsh console DOMAIN`.
