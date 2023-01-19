@@ -41,6 +41,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "simplecov-lcov", "~> 0.8.0"
   spec.add_dependency "d-installer", "~> 0.6.0"
   spec.add_dependency "fast_gettext", "~> 2.2.0"
-  spec.add_dependency "ruby-dbus", "~> 0.18.1"
+  spec.add_dependency "ruby-dbus", "~> 0.19.0"
   spec.add_dependency "thor", "~> 1.2", ">= 1.2.1"
 end
