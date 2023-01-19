@@ -22,14 +22,11 @@
 // @ts-check
 
 import React from "react";
-import { classNames } from "~/utils";
-
-import "./fieldset.scss";
 
 /**
- *
  * Convenient component for grouping form fields in "sections"
  * by using the native formfield element
+ *
  * @component
  *
  * @example <caption>Simple usage</caption>
@@ -46,15 +43,11 @@ import "./fieldset.scss";
  */
 export default function Fieldset({
   legend,
-  className,
   children,
   ...otherProps
 }) {
   return (
-    <fieldset
-      className={classNames("d-installer-fieldset", className)}
-      {...otherProps}
-    >
+    <fieldset {...otherProps}>
       {legend && <legend>{legend}</legend>}
       {children}
     </fieldset>

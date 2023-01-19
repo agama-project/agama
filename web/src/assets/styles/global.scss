@@ -21,6 +21,18 @@ a {
   color: currentColor;
 }
 
+fieldset {
+  padding: var(--fs-base);
+  border: 0;
+  border-top: 1px solid var(--color-gray);
+  border-image: linear-gradient(45deg, var(--color-gray), transparent) 1;
+
+  legend {
+    padding-inline-end: var(--fs-base);
+    margin-inline-start: calc(var(--fs-base) * -1);
+  }
+}
+
 table {
   border-collapse: collapse;
 }
