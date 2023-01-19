@@ -41,7 +41,6 @@
 //   - https://drafts.csswg.org/selectors/#relational
 //   - https://caniuse.com/css-has
 .pf-c-card.selected-product {
-  //border: 1px solid branding.$bc-green-500;
   --pf-c-card--BoxShadow: var(--pf-global--BoxShadow--md);
 
   .pf-c-radio {
