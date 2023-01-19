@@ -70,37 +70,18 @@ it accordingly. Here is an example:
 
 ## initrd preparation
 
-**Please, build the initrd on a virtual machine to avoid messing up your system.**
+Iguana provides a universal initrd in which actual functionality is implemented in containers. This
+ramdisk and its corresponding kernel are included in the [`iguana`
+package](https://build.opensuse.org/package/show/home:oholecek:iguana/iguana).
 
-Iguana provides a universal initrd in which actual functionality is implemented in containers. Which
-containers to use and how to set them up is defined in a *workflow definition*. The [Iguana
+Which containers to use and how to set them up is defined in a *workflow definition*. The [Iguana
 repository](https://github.com/openSUSE/iguana) includes a [definition for
 D-Installer](https://github.com/openSUSE/iguana/blob/main/iguana-workflow/examples/d-installer.yaml).
 
-In the future, you should be able to get the kernel and the initrd files from the [Iguana
-package](https://build.opensuse.org/package/show/home:oholecek:iguana/iguana). However, for
-D-Installer to work, we need to do include an `/etc/NetworkManager` directory, so you need to
-rebuild the image by now.
-
-
-1. Install [dracut-iguana](https://github.com/openSUSE/iguana/tree/main/dracut-iguana) from
-[OBS](https://build.opensuse.org/package/show/home:oholecek:iguana/dracut-iguana).
-
-2. (Optional) For debugging purposes, you might want to add SSH support so you can connect to the
-   system. If that's the case, please install the `dracut-ssh` package and place your public SSH key
-   on `/root/.ssh/authorized_keys`.
-
-3. Create a `/etc/NetworkManager` directory to be included in the initrd:
-
-        mkdir -p rd.live.networkmanager/etc/NetworkManager
-
-4. Rebuild the image:
-
-       dracut --verbose --force --no-hostonly --no-hostonly-cmdline --no-hostonly-default-device --no-hostonly-i18n --reproducible --include rd.live.networkmanager / iguana-initrd
-
-5. Copy the kernel (`/boot/vmlinuz-VERSION`), the initrd and the workflow definition to the TFTP
-   tree. You must use the same paths specified in the `ìguana` boot option (see [Set up the TFTP
-   tree](#set-up-the-tftp-tree) section).
+After installing the `iguana` package, copy the kernel (`/usr/share/iguana/vmlinuz-VERSION`), the
+initrd (`/usr/share/iguana/iguana-initrd`) and the workflow definition to the TFTP tree. You must
+use the same paths specified in the `ìguana` boot option (see [Set up the TFTP
+tree](#set-up-the-tftp-tree) section).
 
 ## Booting from PXE
 
@@ -118,3 +99,22 @@ element to `<os>` section:
 Now your virtual machine should be ready to boot from PXE and start Iguana/D-Installer. Once the
 system boots and the services are started, you should be able to access D-Installer with a browser
 on port 9090.
+
+## Appendix: connecting through SSH
+
+**Please, build the initrd on a virtual machine to avoid messing up your system.**
+
+For debugging purposes, you might be interested in connecting to the system and running commands
+like `podman` to inspect the situation. If that's the case, you can add SSH support to Iguana's
+initrd following these steps:
+
+1. Install [dracut-iguana](https://github.com/openSUSE/iguana/tree/main/dracut-iguana) from
+[OBS](https://build.opensuse.org/package/show/home:oholecek:iguana/dracut-iguana).
+
+2. Install the `dracut-ssh` package and place your public SSH key on `/root/.ssh/authorized_keys`.
+
+3. Rebuild the image:
+
+       dracut --verbose --force --no-hostonly --no-hostonly-cmdline --no-hostonly-default-device --no-hostonly-i18n --reproducible iguana-initrd
+
+4. Copy the system's kernel (`/boot/vmlinuz-VERSION`) and the generated initrd to your TFTP tree.
