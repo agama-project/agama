@@ -1,8 +1,12 @@
 # Using PXE and Iguana
 
 This document explains how to run D-Installer on PXE with the help of Iguana. The described setup
-uses libvirt, but you can adapt the overall approach to other scenarios (like running your own
-TFTP server).
+uses libvirt, but you can adapt the overall approach to other scenarios (like running your TFTP
+server).
+
+Additionally, it offers some helpful tips for debugging D-Installer problems.
+
+## Set up
 
 The process can be summarized in these steps:
 
@@ -11,7 +15,7 @@ The process can be summarized in these steps:
 3. Prepare the initial ramdisk image (initrd), based on Iguana.
 4. Boot from PXE.
 
-## Set up the TFTP tree
+### Set up the TFTP tree
 
 The TFTP tree should contain the SYSLINUX boot loader. You can copy the required files from the
 `syslinux` package.
@@ -41,7 +45,7 @@ timeout		50
 Do not worry about the kernel, the initrd or the `d-installer.yaml` file, we will jump into it
 later.
 
-## Configure libvirt to server TFTP files
+### Configure libvirt to server TFTP files
 
 To instruct libvirt to serve the TFTP files, you must add the `tftp` and `bootp` elements to the
 network configuration. Use the `virsh net-edit default` command to edit the configuration and adapt
@@ -68,7 +72,7 @@ it accordingly. Here is an example:
 </network>
 ```
 
-## initrd preparation
+### initrd preparation
 
 Iguana provides a universal initrd in which actual functionality is implemented in containers. This
 ramdisk and its corresponding kernel are included in the [`iguana`
@@ -83,7 +87,7 @@ initrd (`/usr/share/iguana/iguana-initrd`) and the workflow definition to the TF
 use the same paths specified in the `ìguana` boot option (see [Set up the TFTP
 tree](#set-up-the-tftp-tree) section).
 
-## Booting from PXE
+### Booting from PXE
 
 To boot from PXE, you need to enable the boot menu for your VM. You can do it easily by using
 `virt-manager` and marking the `Enable boot menu` option in the `Boot options` section of your
@@ -100,7 +104,9 @@ Now your virtual machine should be ready to boot from PXE and start Iguana/D-Ins
 system boots and the services are started, you should be able to access D-Installer with a browser
 on port 9090.
 
-## Appendix: connecting through SSH
+## Tips
+
+### Adding support for SSH
 
 **Please, build the initrd on a virtual machine to avoid messing up your system.**
 
@@ -118,3 +124,9 @@ initrd following these steps:
        dracut --verbose --force --no-hostonly --no-hostonly-cmdline --no-hostonly-default-device --no-hostonly-i18n --reproducible iguana-initrd
 
 4. Copy the system's kernel (`/boot/vmlinuz-VERSION`) and the generated initrd to your TFTP tree.
+
+### Accessing the serial console
+
+In case of problems, you should to inspect system messages. The best way is to enable the serial
+console by adding `console=tty0 console=ttyS0,9600` to the `append` line. Then, you will be able to
+connect using `sudo virsh console DOMAIN`.
