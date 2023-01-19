@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,8 +22,7 @@
 module DInstaller
   # Manager for questions
   #
-  # Allows to configure callbacks with the actions to perform when adding, deleting or waiting for
-  # questions.
+  # Allows to configure callbacks with the actions to perform when adding or deleting questions.
   class QuestionsManager
     # @return [Array<Question>]
     attr_reader :questions
@@ -36,7 +35,6 @@ module DInstaller
       @questions = []
       @on_add_callbacks = []
       @on_delete_callbacks = []
-      @on_wait_callbacks = []
     end
 
     # Adds a question
@@ -73,23 +71,6 @@ module DInstaller
       question
     end
 
-    # Waits until all specified questions are answered.
-    # There may be other questions, asked from other services, which
-    # are waited for by remote question managers, so we ignore those.
-    #
-    # Callbacks are periodically called while waiting, see {#on_wait}.
-    # @param questions [Array<Question>]
-    def wait(questions)
-      logger.info "Waiting for questions to be answered"
-
-      loop do
-        on_wait_callbacks.each(&:call)
-        break if questions.all?(&:answered?)
-
-        sleep(0.1)
-      end
-    end
-
     # Registers a callback to be called when a new question is added
     #
     # @param block [Proc]
@@ -102,13 +83,6 @@ module DInstaller
     # @param block [Proc]
     def on_delete(&block)
       on_delete_callbacks << block
-    end
-
-    # Registers a callback to be called while waiting for questions be answered
-    #
-    # @param block [Proc]
-    def on_wait(&block)
-      on_wait_callbacks << block
     end
 
   private
@@ -125,11 +99,6 @@ module DInstaller
     #
     # @return [Array<Proc>]
     attr_reader :on_delete_callbacks
-
-    # Callbacks to be called when waiting for answers
-    #
-    # @return [Array<Proc>]
-    attr_reader :on_wait_callbacks
 
     # Whether a question with the same id as the given question is already in the list of questions
     #

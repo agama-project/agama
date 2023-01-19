@@ -74,7 +74,7 @@ module DInstaller
 
       private
 
-        # @return [DInstaller::Software::Manager]
+        # @return [DInstaller::Storage::Manager]
         attr_reader :backend
 
         def register_proposal_callbacks

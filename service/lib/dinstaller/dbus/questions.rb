@@ -128,9 +128,6 @@ module DInstaller
 
           @service.unexport(dbus_object) if dbus_object
         end
-
-        # Bus dispatches messages while waiting for questions to be answered
-        backend.on_wait { @service.bus.dispatch_message_queue }
       end
     end
   end

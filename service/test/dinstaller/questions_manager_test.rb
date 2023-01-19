@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require_relative "../test_helper"
 require "dinstaller/questions_manager"
 require "dinstaller/question"
+require "dinstaller/luks_activation_question"
 
 describe DInstaller::QuestionsManager do
   subject { described_class.new(logger) }
@@ -126,40 +127,6 @@ describe DInstaller::QuestionsManager do
       it "returns falsy value" do
         expect(subject.delete(question1)).to be_falsy
       end
-    end
-  end
-
-  describe "#wait" do
-    # This callback ensures that both questions are answered after calling it for third time
-    let(:callback) do
-      times = 0
-
-      proc do
-        times += 1
-        question1.answer = :yes if times == 2
-        question2.answer = :skip if times == 3
-      end
-    end
-
-    before do
-      subject.on_wait(&callback)
-
-      subject.add(question1)
-      subject.add(question2)
-
-      allow(subject).to receive(:sleep)
-    end
-
-    it "waits until all questions are answered" do
-      expect(subject).to receive(:sleep).exactly(2).times
-
-      subject.wait([question1, question2])
-    end
-
-    it "calls the #on_wait callbacks while waiting" do
-      expect(callback).to receive(:call).and_call_original.exactly(3).times
-
-      subject.wait([question1, question2])
     end
   end
 end
