@@ -83,9 +83,12 @@ repository](https://github.com/openSUSE/iguana) includes a [definition for
 D-Installer](https://github.com/openSUSE/iguana/blob/main/iguana-workflow/examples/d-installer.yaml).
 
 After installing the `iguana` package, copy the kernel (`/usr/share/iguana/vmlinuz-VERSION`), the
-initrd (`/usr/share/iguana/iguana-initrd`) and the workflow definition to the TFTP tree. You must
+initrd (`/usr/share/iguana/iguana-initrd`) and the workflow definition to the TFTP tree[^1]. You must
 use the same paths specified in the `ìguana` boot option (see [Set up the TFTP
 tree](#set-up-the-tftp-tree) section).
+
+[^1]: If you want to point always to the latest workflow definition, you can use a raw GitHub
+link: `rd.iguana.control_url=https://raw.githubusercontent.com/openSUSE/iguana/main/iguana-workflow/examples/d-installer.yaml`
 
 ### Booting from PXE
 
