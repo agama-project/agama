@@ -1,4 +1,4 @@
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -41,8 +41,11 @@ module Yast
       ).setup
     end
 
+    # Returns the client to ask questions
+    #
+    # @return [DInstaller::DBus::Clients::QuestionsManager]
     def questions_manager
-      @questions_manager ||= DInstaller::DBus::Clients::QuestionsManager.new 
+      @questions_manager ||= DInstaller::DBus::Clients::QuestionsManager.new(logger)
     end
   end
 

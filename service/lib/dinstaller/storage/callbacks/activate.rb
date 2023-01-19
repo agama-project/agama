@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -33,7 +33,7 @@ module DInstaller
 
         # Constructor
         #
-        # @param questions_manager [QuestionsManager]
+        # @param questions_manager [DInstaller::DBus::Clients::QuestionsManager]
         # @param logger [Logger]
         def initialize(questions_manager, logger)
           super()
@@ -79,7 +79,7 @@ module DInstaller
 
       private
 
-        # @return [QuestionsManager]
+        # @return [DInstaller::DBus::Clients::QuestionsManager]
         attr_reader :questions_manager
 
         # @return [Logger]

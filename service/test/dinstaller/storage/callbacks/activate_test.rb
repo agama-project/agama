@@ -21,12 +21,12 @@
 
 require_relative "../../../test_helper"
 require "dinstaller/storage/callbacks/activate"
-require "dinstaller/questions_manager"
+require "dinstaller/dbus/clients/questions_manager"
 
 describe DInstaller::Storage::Callbacks::Activate do
   subject { described_class.new(questions_manager, logger) }
 
-  let(:questions_manager) { DInstaller::QuestionsManager.new(logger) }
+  let(:questions_manager) { instance_double(DInstaller::DBus::Clients::QuestionsManager) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 

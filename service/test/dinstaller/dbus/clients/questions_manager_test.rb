@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -32,6 +32,10 @@ describe DInstaller::DBus::Clients::QuestionsManager do
       .and_return(dbus_object)
     allow(dbus_object).to receive(:default_iface=)
   end
+
+  subject { described_class.new(logger) }
+
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:bus) { instance_double(DInstaller::DBus::Bus) }
   let(:service) { instance_double(::DBus::Service) }

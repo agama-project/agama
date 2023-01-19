@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -62,7 +62,10 @@ module DInstaller
     private
 
       # @return [Logger]
-      attr_reader :logger, :backend
+      attr_reader :logger
+
+      # @return [DInstaller::QuestionsManager]
+      attr_reader :backend
 
       # @return [::DBus::Service]
       def service

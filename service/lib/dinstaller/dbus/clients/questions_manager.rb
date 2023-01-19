@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -27,10 +27,11 @@ module DInstaller
   module DBus
     module Clients
       # D-Bus client for asking a question.
-      # It has the same interface as {DInstaller::QuestionsManager}
-      # so it can be used for {DInstaller::CanAskQuestion}.
       class QuestionsManager < Base
-        def initialize
+        # Constructor
+        #
+        # @param logger [Logger]
+        def initialize(logger)
           super
 
           @dbus_object = service["/org/opensuse/DInstaller/Questions1"]
@@ -72,6 +73,8 @@ module DInstaller
         # @param questions [Array<DBus::Clients::Question>]
         # @return [void]
         def wait(questions)
+          logger.info "Waiting for questions to be answered"
+
           # TODO: detect if no UI showed up to display the questions and time out?
           # for example:
           # (0..Float::INFINITY).each { |i| break if i > 100 && !question.displayed; ... }
