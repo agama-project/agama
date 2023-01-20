@@ -24,7 +24,6 @@ import React, { useReducer, useEffect } from "react";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
-import { Icon } from "~/components/layout";
 import { InstallerSkeleton, Section } from "~/components/core";
 
 const initialState = {
@@ -105,7 +104,7 @@ export default function SoftwareSection ({ showErrors }) {
     <Section
       key="software-section"
       title="Software"
-      icon={() => <Icon name="apps" />}
+      iconName="apps"
       errors={errors}
     >
       <SectionContent />
