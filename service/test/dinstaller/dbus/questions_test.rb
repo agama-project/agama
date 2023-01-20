@@ -21,68 +21,22 @@
 
 require_relative "../../test_helper"
 require "dinstaller/dbus/questions"
-require "dinstaller/questions_manager"
 require "dinstaller/question"
 require "dinstaller/luks_activation_question"
 require "dbus"
 
 describe DInstaller::DBus::Questions do
-  subject { described_class.new(backend, logger) }
-
   before do
     subject.instance_variable_set(:@service, service)
   end
 
-  let(:backend) { DInstaller::QuestionsManager.new(logger) }
+  subject { described_class.new(logger: logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:service) { instance_double(DBus::Service, export: nil, unexport: nil, bus: system_bus) }
 
   let(:system_bus) { instance_double(DBus::SystemBus) }
-
-  it "configures callbacks for exporting a D-Bus question when a new question is added" do
-    question1 = DInstaller::Question.new("test1")
-    question2 = DInstaller::Question.new("test2")
-
-    expect(service).to receive(:export) do |dbus_object|
-      id = dbus_object.path.split("/").last.to_i
-      expect(id).to eq(question1.id)
-    end
-
-    expect(service).to receive(:export) do |dbus_object|
-      id = dbus_object.path.split("/").last.to_i
-      expect(id).to eq(question2.id)
-    end
-
-    backend.add(question1)
-    backend.add(question2)
-  end
-
-  it "configures callbacks for unexporting a D-Bus question when a question is deleted" do
-    dbus_objects = []
-    question1 = DInstaller::Question.new("test1")
-    question2 = DInstaller::Question.new("test2")
-
-    expect(service).to receive(:export).twice do |dbus_object|
-      dbus_objects << dbus_object
-    end
-
-    backend.add(question1)
-    backend.add(question2)
-
-    expect(service)
-      .to receive(:descendants_for)
-      .with("/org/opensuse/DInstaller/Questions1")
-      .and_return(dbus_objects)
-
-    expect(service).to receive(:unexport) do |dbus_object|
-      id = dbus_object.path.split("/").last.to_i
-      expect(id).to eq(question1.id)
-    end
-
-    backend.delete(question1)
-  end
 
   describe "Questions interface" do
     let(:interface) { "org.opensuse.DInstaller.Questions1" }
@@ -91,35 +45,71 @@ describe DInstaller::DBus::Questions do
     describe "#New" do
       let(:method_name) { "New" }
 
-      it "adds a question and returns its path" do
-        expect(backend).to receive(:add)
-        expect(subject.public_send(full_method_name, "How you doin?", ["fine", "great"], []))
-          .to start_with "/org/opensuse/DInstaller/Questions1/"
+      it "exports a question and returns its path" do
+        expect(service).to receive(:export) do |question|
+          expect(question).is_a?(DInstaller::DBus::Question)
+          expect(question.backend).is_a?(DInstaller::Question)
+          expect(question.text).to match(/How you doin/)
+        end
+
+        result = subject.public_send(full_method_name, "How you doin?", ["fine", "great"], [])
+
+        expect(result).to start_with("/org/opensuse/DInstaller/Questions1/")
       end
     end
 
     describe "#NewLuksActivation" do
       let(:method_name) { "NewLuksActivation" }
 
-      it "adds a question and returns its path" do
-        expect(backend).to receive(:add)
-        expect(subject.public_send(full_method_name, "/dev/tape1", "New games", "90 minutes", 1))
-          .to start_with "/org/opensuse/DInstaller/Questions1/"
+      it "exports a question and returns its path" do
+        expect(service).to receive(:export) do |question|
+          expect(question).is_a?(DInstaller::DBus::Question)
+          expect(question).is_a?(DInstaller::LuksActivationQuestion)
+        end
+
+        result = subject.public_send(full_method_name, "/dev/tape1", "New games", "90 minutes", 1)
+
+        expect(result).to start_with("/org/opensuse/DInstaller/Questions1/")
       end
     end
 
     describe "#Delete" do
       let(:method_name) { "Delete" }
 
-      it "deletes the question" do
-        q = DInstaller::Question.new("Huh?", options: [])
-        path = "/org/opensuse/DInstaller/Questions1/666"
-        dbus_q = DInstaller::DBus::Question.new(path, q, logger)
-        node = instance_double(DBus::Node, object: dbus_q)
+      before do
+        allow(service).to receive(:get_node).with(path).and_return(node)
+      end
 
-        expect(service).to receive(:get_node).with(path).and_return(node)
-        expect(backend).to receive(:delete).with(q)
-        expect { subject.public_send(full_method_name, path) }.to_not raise_error
+      context "when the given object path does not exist" do
+        let(:path) { "/org/opensuse/DInstaller/Questions1/666" }
+        let(:node) { nil }
+
+        it "raises an error" do
+          expect { subject.public_send(full_method_name, path) }.to raise_error(/not found/)
+        end
+      end
+
+      context "when the given object path is not a question" do
+        let(:path) { "/org/opensuse/DInstaller/Foo/1" }
+        let(:node) { instance_double(DBus::Node, object: dbus_object) }
+        let(:dbus_object) { "test" }
+
+        it "raises an error" do
+          expect { subject.public_send(full_method_name, path) }.to raise_error(/not a Question/)
+        end
+      end
+
+      context "when the given object path is a question" do
+        let(:path) { "/org/opensuse/DInstaller/Questions1/1" }
+        let(:node) { instance_double(DBus::Node, object: dbus_object) }
+        let(:dbus_object) { DInstaller::DBus::Question.new(path, question, logger) }
+        let(:question) { DInstaller::Question.new("Do you want to test?", options: [:yes, :no]) }
+
+        it "unexports the question" do
+          expect(service).to receive(:unexport).with(dbus_object)
+
+          subject.public_send(full_method_name, path)
+        end
       end
     end
   end
