@@ -115,7 +115,18 @@ if File.exist?("/.packages.initrd") || `mount`.match?(/^[\w]+ on \/ type overlay
 
     puts "Installing the Web frontend..."
     Dir.chdir("web") do
-      sh "NODE_ENV=production make install"
+      node_env = ENV["NODE_ENV"] || "production"
+      sh "NODE_ENV=#{node_env.shellescape} make install"
+
+      # clean up the extra files when switching the development/production mode
+      if node_env == "production"
+        # remove the uncompressed and development files
+        FileUtils.rm_f(Dir.glob("/usr/share/cockpit/d-installer/index.{css,html,js}"))
+        FileUtils.rm_f(Dir.glob("/usr/share/cockpit/d-installer/*.map"))
+      else
+        # remove the compressed files
+        FileUtils.rm_f(Dir.glob("/usr/share/cockpit/d-installer/*.gz"))
+      end
     end
   end
 end
