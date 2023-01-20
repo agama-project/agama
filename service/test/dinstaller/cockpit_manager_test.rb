@@ -28,7 +28,7 @@ Yast.import "Installation"
 describe DInstaller::CockpitManager do
   subject(:cockpit) { described_class.new(logger) }
 
-  let(:logger) { Logger.new($stdout) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   before do
     # Avoid problems with FileFromUrl side effects.

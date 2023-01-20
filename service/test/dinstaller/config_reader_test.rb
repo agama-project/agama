@@ -24,7 +24,8 @@ require "dinstaller/config_reader"
 
 describe DInstaller::ConfigReader do
   let(:workdir) { File.join(FIXTURES_PATH, "root_dir") }
-  subject { described_class.new(workdir: workdir) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
+  subject { described_class.new(logger: logger, workdir: workdir) }
   before do
     allow(Yast::Directory).to receive(:tmpdir).and_return(File.join(workdir, "tmpdir"))
     allow(subject).to receive(:copy_file)
