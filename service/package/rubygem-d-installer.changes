@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 20 12:25:56 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Use the upstream version of D-Bus ObjectManager
+  (gh#yast/d-installer#245)
+
+-------------------------------------------------------------------
 Wed Jan 18 08:03:40 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Save logs and provide the path to the file
