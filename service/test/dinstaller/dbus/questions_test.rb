@@ -55,33 +55,33 @@ describe DInstaller::DBus::Questions do
       expect(id).to eq(question2.id)
     end
 
-    expect(subject).to receive(:InterfacesAdded).twice
-
     backend.add(question1)
     backend.add(question2)
-
-    expect(subject.managed_objects.keys.size).to eq(2)
   end
 
   it "configures callbacks for unexporting a D-Bus question when a question is deleted" do
+    dbus_objects = []
     question1 = DInstaller::Question.new("test1")
     question2 = DInstaller::Question.new("test2")
 
-    allow(subject).to receive(:InterfacesAdded)
+    expect(service).to receive(:export).twice do |dbus_object|
+      dbus_objects << dbus_object
+    end
 
     backend.add(question1)
     backend.add(question2)
+
+    expect(service)
+      .to receive(:descendants_for)
+      .with("/org/opensuse/DInstaller/Questions1")
+      .and_return(dbus_objects)
 
     expect(service).to receive(:unexport) do |dbus_object|
       id = dbus_object.path.split("/").last.to_i
       expect(id).to eq(question1.id)
     end
 
-    expect(subject).to receive(:InterfacesRemoved).once
-
     backend.delete(question1)
-
-    expect(subject.managed_objects.keys.size).to eq(1)
   end
 
   it "configures callbacks to dispatch D-Bus messages while waiting for answers" do
@@ -92,45 +92,6 @@ describe DInstaller::DBus::Questions do
 
     question1 = DInstaller::Question.new("test1")
     backend.wait([question1])
-  end
-
-  describe "#managed_objects" do
-    before do
-      allow(subject).to receive(:InterfacesAdded)
-
-      backend.add(question1)
-      backend.add(question2)
-    end
-
-    let(:question1) { DInstaller::Question.new("test1") }
-    let(:question2) { DInstaller::LuksActivationQuestion.new("/dev/sda1") }
-
-    it "returns interfaces and properties for each exported question" do
-      result = subject.managed_objects
-
-      path1 = "/org/opensuse/DInstaller/Questions1/#{question1.id}"
-      path2 = "/org/opensuse/DInstaller/Questions1/#{question2.id}"
-
-      expect(result.keys).to contain_exactly(path1, path2)
-
-      expect(result[path1].keys).to contain_exactly(
-        "org.freedesktop.DBus.Properties",
-        "org.opensuse.DInstaller.Question1"
-      )
-
-      expect(result[path2].keys).to contain_exactly(
-        "org.freedesktop.DBus.Properties",
-        "org.opensuse.DInstaller.Question1",
-        "org.opensuse.DInstaller.Question.LuksActivation1"
-      )
-
-      expect(result[path1]["org.freedesktop.DBus.Properties"].keys).to be_empty
-      expect(result[path1]["org.opensuse.DInstaller.Question1"].keys).to contain_exactly(
-        "Id", "Text", "Options", "DefaultOption", "Answer"
-      )
-      expect(result[path2]["org.opensuse.DInstaller.Question.LuksActivation1"].keys)
-        .to contain_exactly("Attempt", "Password")
-    end
   end
 
   describe "Questions interface" do

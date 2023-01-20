@@ -9,7 +9,7 @@ PATH
       fast_gettext (~> 2.2.0)
       nokogiri (~> 1.13.1)
       rexml (~> 3.2.5)
-      ruby-dbus (~> 0.18.1)
+      ruby-dbus (~> 0.19.0)
 
 PATH
   remote: .
@@ -17,7 +17,7 @@ PATH
     d-installer-cli (0.6)
       d-installer (~> 0.6.0)
       fast_gettext (~> 2.2.0)
-      ruby-dbus (~> 0.18.1)
+      ruby-dbus (~> 0.19.0)
       thor (~> 1.2, >= 1.2.1)
 
 GEM
