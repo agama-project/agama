@@ -31,7 +31,7 @@ require "dinstaller/storage/callbacks"
 require "dinstaller/with_progress"
 require "dinstaller/can_ask_question"
 require "dinstaller/security"
-require "dinstaller/dbus/clients/questions_manager"
+require "dinstaller/dbus/clients/questions"
 require "dinstaller/dbus/clients/software"
 require "dinstaller/helpers"
 
@@ -133,7 +133,7 @@ module DInstaller
 
       # Activates the devices, calling activation callbacks if needed
       def activate_devices
-        callbacks = Callbacks::Activate.new(questions_manager, logger)
+        callbacks = Callbacks::Activate.new(questions_client, logger)
 
         Y2Storage::StorageManager.instance.activate(callbacks)
       end
@@ -173,9 +173,9 @@ module DInstaller
 
       # Returns the client to ask questions
       #
-      # @return [DInstaller::DBus::Clients::QuestionsManager]
-      def questions_manager
-        @questions_manager ||= DInstaller::DBus::Clients::QuestionsManager.new(logger)
+      # @return [DInstaller::DBus::Clients::Questions]
+      def questions_client
+        @questions_client ||= DInstaller::DBus::Clients::Questions.new(logger)
       end
 
       # Returns the client to ask the software service

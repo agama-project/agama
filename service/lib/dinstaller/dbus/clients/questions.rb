@@ -27,7 +27,7 @@ module DInstaller
   module DBus
     module Clients
       # D-Bus client for asking a question.
-      class QuestionsManager < Base
+      class Questions < Base
         # Constructor
         #
         # @param logger [Logger]

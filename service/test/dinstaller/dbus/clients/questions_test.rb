@@ -20,11 +20,11 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require "dinstaller/dbus/clients/questions_manager"
+require "dinstaller/dbus/clients/questions"
 require "dinstaller/question"
 require "dbus"
 
-describe DInstaller::DBus::Clients::QuestionsManager do
+describe DInstaller::DBus::Clients::Questions do
   before do
     allow(DInstaller::DBus::Bus).to receive(:current).and_return(bus)
     allow(bus).to receive(:service).with("org.opensuse.DInstaller.Questions").and_return(service)

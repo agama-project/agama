@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -24,7 +24,6 @@ require "dinstaller/manager"
 require "dinstaller/config"
 require "dinstaller/question"
 require "dinstaller/dbus/service_status"
-require "dinstaller/questions_manager"
 
 describe DInstaller::Manager do
   subject { described_class.new(config, logger) }
@@ -56,7 +55,6 @@ describe DInstaller::Manager do
       on_service_status_change: nil, valid?: true
     )
   end
-  let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
   let(:product) { nil }
 
@@ -66,7 +64,6 @@ describe DInstaller::Manager do
     allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(DInstaller::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(users)
-    allow(DInstaller::QuestionsManager).to receive(:new).and_return(questions_manager)
   end
 
   describe "#startup_phase" do

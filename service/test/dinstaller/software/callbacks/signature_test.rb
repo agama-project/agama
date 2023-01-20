@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,17 +21,15 @@
 
 require_relative "../../../test_helper"
 require "dinstaller/software/callbacks/signature"
-require "dinstaller/dbus/clients/questions_manager"
+require "dinstaller/dbus/clients/questions"
 require "dinstaller/question"
 
 describe DInstaller::Software::Callbacks::Signature do
-  subject { described_class.new(questions_manager, logger) }
+  subject { described_class.new(questions_client, logger) }
 
-  let(:questions_manager) do
-    instance_double(DInstaller::DBus::Clients::QuestionsManager)
-  end
+  let(:questions_client) { instance_double(DInstaller::DBus::Clients::Questions) }
 
-  let(:logger) { Logger.new($stdout) }
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#accept_unsigned_file" do
     let(:asked_question) do

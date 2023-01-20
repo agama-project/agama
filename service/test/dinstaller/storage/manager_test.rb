@@ -22,6 +22,7 @@
 require_relative "../../test_helper"
 require "dinstaller/storage/manager"
 require "dinstaller/config"
+require "dinstaller/dbus/clients/questions"
 
 describe DInstaller::Storage::Manager do
   subject(:storage) { described_class.new(config, logger) }
@@ -34,6 +35,7 @@ describe DInstaller::Storage::Manager do
 
   before do
     allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
+    allow(DInstaller::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(DInstaller::DBus::Clients::Software).to receive(:new)
       .and_return(software)
     allow(Bootloader::FinishClient).to receive(:new)
@@ -42,6 +44,7 @@ describe DInstaller::Storage::Manager do
   end
 
   let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
+  let(:questions_client) { instance_double(DInstaller::DBus::Clients::Questions) }
   let(:software) do
     instance_double(DInstaller::DBus::Clients::Software, selected_product: "ALP")
   end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,12 +21,12 @@
 
 require_relative "../../../test_helper"
 require "dinstaller/storage/callbacks/activate"
-require "dinstaller/dbus/clients/questions_manager"
+require "dinstaller/dbus/clients/questions"
 
 describe DInstaller::Storage::Callbacks::Activate do
-  subject { described_class.new(questions_manager, logger) }
+  subject { described_class.new(questions_client, logger) }
 
-  let(:questions_manager) { instance_double(DInstaller::DBus::Clients::QuestionsManager) }
+  let(:questions_client) { instance_double(DInstaller::DBus::Clients::Questions) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 

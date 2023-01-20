@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,9 +22,9 @@
 module DInstaller
   # Mixin providing a method to ask a question and wait
   module CanAskQuestion
-    # @!method questions_manager
-    #   @note Classes including this mixin must define a #questions_manager method
-    #   @return [QuestionsManager,DBus::Clients::QuestionsManager]
+    # @!method questions_client
+    #   @note Classes including this mixin must define a #questions_client method
+    #   @return [DBus::Clients::Questions]
 
     # Asks the given question and waits until the question is answered
     #
@@ -33,16 +33,14 @@ module DInstaller
     #   ask(question2) { |q| q.answer == :yes }  #=> Boolean
     #
     # @param question [Question]
-    # @yield [Question,DBus::Clients::Question] Gives the answered question to the block.
+    # @yield [DBus::Clients::Question] Gives the answered question to the block.
     # @return [Symbol, Object] The question answer, or the result of the block in case a block is
     #   given.
     def ask(question)
-      # asked_question has the same interface as question
-      # but it may be a D-Bus proxy, if our questions_manager is also one
-      asked_question = questions_manager.add(question)
-      questions_manager.wait([asked_question])
+      asked_question = questions_client.add(question)
+      questions_client.wait([asked_question])
       result = block_given? ? yield(asked_question) : asked_question.answer
-      questions_manager.delete(asked_question)
+      questions_client.delete(asked_question)
 
       result
     end
