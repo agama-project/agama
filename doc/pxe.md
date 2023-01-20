@@ -99,6 +99,9 @@ Now your virtual machine should be ready to boot from PXE and start Iguana/D-Ins
 system boots and the services are started, you should be able to access D-Installer with a browser
 on port 9090.
 
+:warning: 4GB RAM is the recommended memory for the virtual machine and using less could affect the
+boot proccess.
+
 ## Tips
 
 ### Adding support for SSH
@@ -112,7 +115,7 @@ initrd following these steps:
 1. Install [dracut-iguana](https://github.com/openSUSE/iguana/tree/main/dracut-iguana) from
 [OBS](https://build.opensuse.org/package/show/home:oholecek:iguana/dracut-iguana).
 
-2. Install the `dracut-ssh` package and place your public SSH key on `/root/.ssh/authorized_keys`.
+2. Install the `dracut-sshd` package and place your public SSH key on `/root/.ssh/authorized_keys`.
 
 3. Rebuild the image:
 
