@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,7 +21,6 @@
 
 require_relative "../../../test_helper"
 require "dinstaller/dbus/storage/proposal"
-require "dinstaller/dbus/interfaces/service_status"
 require "dinstaller/storage/proposal"
 require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/volume"
@@ -37,25 +36,6 @@ describe DInstaller::DBus::Storage::Proposal do
   end
 
   let(:settings) { nil }
-
-  let(:service_status_interface) do
-    DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
-  end
-
-  before do
-    allow_any_instance_of(described_class).to receive(:register_service_status_callbacks)
-  end
-
-  it "defines ServiceStatus D-Bus interface" do
-    expect(subject.intfs.keys).to include(service_status_interface)
-  end
-
-  describe ".new" do
-    it "configures callbacks from ServiceStatus interface" do
-      expect_any_instance_of(described_class).to receive(:register_service_status_callbacks)
-      subject
-    end
-  end
 
   describe "#available_devices" do
     before do

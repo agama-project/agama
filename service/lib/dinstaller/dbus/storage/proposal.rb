@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,8 +21,6 @@
 
 require "dbus"
 require "dinstaller/dbus/base_object"
-require "dinstaller/dbus/with_service_status"
-require "dinstaller/dbus/interfaces/service_status"
 require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/volume"
 
@@ -31,9 +29,6 @@ module DInstaller
     module Storage
       # D-Bus object to manage a storage proposal
       class Proposal < BaseObject
-        include WithServiceStatus
-        include Interfaces::ServiceStatus
-
         PATH = "/org/opensuse/DInstaller/Storage/Proposal1"
         private_constant :PATH
 
@@ -46,7 +41,6 @@ module DInstaller
           @backend = backend
 
           register_callbacks
-          register_service_status_callbacks
         end
 
         STORAGE_PROPOSAL_INTERFACE = "org.opensuse.DInstaller.Storage.Proposal1"
