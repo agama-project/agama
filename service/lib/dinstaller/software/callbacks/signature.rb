@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "dinstaller/can_ask_question"
 require "dinstaller/question"
 
 Yast.import "Pkg"
@@ -30,8 +29,8 @@ module DInstaller
     module Callbacks
       # Callbacks related to signatures handling
       class Signature
-        include CanAskQuestion
-
+        # Constructor
+        #
         # @param questions_client [DInstaller::DBus::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
@@ -72,9 +71,8 @@ module DInstaller
           question = DInstaller::Question.new(
             message, options: [:Yes, :No], default_option: :No
           )
-          ask(question) do |q|
-            logger.info "#{q.text} #{q.answer}"
-            q.answer == :Yes
+          questions_client.ask(question) do |question_client|
+            question_client.answer == :Yes
           end
         end
 
@@ -94,9 +92,8 @@ module DInstaller
             message, options: [:Trust, :Skip], default_option: :Skip
           )
 
-          ask(question) do |q|
-            logger.info "#{q.text} #{q.answer}"
-            q.answer == :Trust
+          questions_client.ask(question) do |question_client|
+            question_client.answer == :Trust
           end
         end
 

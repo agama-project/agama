@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "dinstaller/can_ask_question"
 require "dinstaller/question"
 
 Yast.import "Pkg"
@@ -30,8 +29,8 @@ module DInstaller
     module Callbacks
       # Callbacks related to media handling
       class Media
-        include CanAskQuestion
-
+        # Constructor
+        #
         # @param questions_client [DInstaller::DBus::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
@@ -60,10 +59,8 @@ module DInstaller
           question = DInstaller::Question.new(
             error, options: [:Retry, :Skip], default_option: :Retry
           )
-          ask(question) do |q|
-            logger.info "#{q.text}: #{q.answer}"
-
-            (q.answer == :Retry) ? "" : "S"
+          questions_client.ask(question) do |question_client|
+            (question_client.answer == :Retry) ? "" : "S"
           end
         end
       # rubocop:enable Metrics/ParameterLists

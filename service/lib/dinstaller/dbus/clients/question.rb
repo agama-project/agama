@@ -25,8 +25,6 @@ module DInstaller
   module DBus
     module Clients
       # D-Bus client for asking a question.
-      # Its interface is a subset of {DInstaller::Question}
-      # so it can be used in the block of {DInstaller::CanAskQuestion#ask}.
       class Question < Base
         LUKS_ACTIVATION_IFACE = "org.opensuse.DInstaller.Question.LuksActivation1"
         private_constant :LUKS_ACTIVATION_IFACE
@@ -50,8 +48,6 @@ module DInstaller
         def service_name
           @service_name ||= "org.opensuse.DInstaller.Questions"
         end
-
-        # TODO: what other methods are useful?
 
         # @return [String] Question text
         def text

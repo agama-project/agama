@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "dinstaller/luks_activation_question"
-require "dinstaller/can_ask_question"
 require "y2storage/disk_size"
 
 module DInstaller
@@ -28,8 +27,6 @@ module DInstaller
     module Callbacks
       # Callbacks for LUKS activation
       class ActivateLuks
-        include CanAskQuestion
-
         # Constructor
         #
         # @param questions_client [DInstaller::DBus::Clients::Questions]
@@ -52,11 +49,9 @@ module DInstaller
         def call(info, attempt)
           question = question(info, attempt)
 
-          ask(question) do |q|
-            logger.info("#{q.text} #{q.answer}")
-
-            activate = q.answer == :decrypt
-            password = q.password
+          questions_client.ask(question) do |question_client|
+            activate = question_client.answer == :decrypt
+            password = question_client.password
 
             [activate, password]
           end

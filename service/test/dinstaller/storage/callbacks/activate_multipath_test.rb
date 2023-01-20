@@ -22,6 +22,7 @@
 require_relative "../../../test_helper"
 require "dinstaller/storage/callbacks/activate_multipath"
 require "dinstaller/dbus/clients/questions"
+require "dinstaller/dbus/clients/question"
 
 describe DInstaller::Storage::Callbacks::ActivateMultipath do
   subject { described_class.new(questions_client, logger) }
@@ -31,11 +32,17 @@ describe DInstaller::Storage::Callbacks::ActivateMultipath do
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#call" do
+    before do
+      allow(questions_client).to receive(:ask).and_yield(question_client)
+    end
+
+    let(:question_client) { instance_double(DInstaller::DBus::Clients::Question) }
+
     context "if the devices do not look like real multipath" do
       let(:real_multipath) { false }
 
       it "does not ask a question" do
-        expect(subject).to_not receive(:ask)
+        expect(questions_client).to_not receive(:ask)
 
         subject.call(real_multipath)
       end
@@ -49,7 +56,7 @@ describe DInstaller::Storage::Callbacks::ActivateMultipath do
       let(:real_multipath) { true }
 
       it "asks a question to activate multipath" do
-        expect(subject).to receive(:ask) do |question|
+        expect(questions_client).to receive(:ask) do |question|
           expect(question.text).to match(/activate multipath\?/)
         end
 
@@ -58,11 +65,7 @@ describe DInstaller::Storage::Callbacks::ActivateMultipath do
 
       context "and the question is answered as :yes" do
         before do
-          allow(subject).to receive(:ask).and_yield(question)
-        end
-
-        let(:question) do
-          DInstaller::Question.new("test", options: [:yes, :no]).tap { |q| q.answer = :yes }
+          allow(question_client).to receive(:answer).and_return(:yes)
         end
 
         it "returns true" do
@@ -72,11 +75,7 @@ describe DInstaller::Storage::Callbacks::ActivateMultipath do
 
       context "and the question is answered as :no" do
         before do
-          allow(subject).to receive(:ask).and_yield(question)
-        end
-
-        let(:question) do
-          DInstaller::Question.new("test", options: [:yes, :no]).tap { |q| q.answer = :no }
+          allow(question_client).to receive(:answer).and_return(:no)
         end
 
         it "returns false" do

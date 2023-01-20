@@ -48,28 +48,22 @@ module DInstaller
         # @param question [DInstaller::Question]
         # @return [DBus::Clients::Question]
         def add(question)
-          q_path = add_dbus_question(question)
-          DBus::Clients::Question.new(q_path)
-        end
-
-        def add_dbus_question(question)
-          if question.is_a?(DInstaller::LuksActivationQuestion)
-            add_luks_activation_question(question)
-          else
-            add_generic_question(question)
-          end
+          dbus_path = add_question(question)
+          DBus::Clients::Question.new(dbus_path)
         end
 
         # Deletes the given question
         #
+        # @raise [::DBus::Error] if trying to delete a question twice
+        #
         # @param question [DBus::Clients::Question]
         # @return [void]
-        # @raise [::DBus::Error] if trying to delete a question twice
         def delete(question)
           @dbus_object.Delete(question.dbus_object.path)
         end
 
-        # Waits until specified questions are answered.
+        # Waits until specified questions are answered
+        #
         # @param questions [Array<DBus::Clients::Question>]
         # @return [void]
         def wait(questions)
@@ -89,11 +83,50 @@ module DInstaller
           end
         end
 
+        # Asks the given question and waits until the question is answered
+        #
+        # @example
+        #   ask(question1)                           #=> Symbol
+        #   ask(question2) { |q| q.answer == :yes }  #=> Boolean
+        #
+        # @param question [DInstaller::Question]
+        # @yield [DInstaller::DBus::Clients::Question] Gives the answered question to the block.
+        # @return [Symbol, Object] The question answer, or the result of the block in case a block
+        #   is given.
+        def ask(question)
+          question_client = add(question)
+          wait([question_client])
+
+          answer = question_client.answer
+          logger.info("#{question.text} #{answer}")
+
+          result = block_given? ? yield(question_client) : answer
+          delete(question_client)
+
+          result
+        end
+
       private
 
         # @return [::DBus::Object]
         attr_reader :dbus_object
 
+        # Adds a question using the proper D-Bus method according to the question type
+        #
+        # @param question [DInstaller::Question]
+        # @return [::DBus::ObjectPath]
+        def add_question(question)
+          if question.is_a?(DInstaller::LuksActivationQuestion)
+            add_luks_activation_question(question)
+          else
+            add_generic_question(question)
+          end
+        end
+
+        # Adds a generic question
+        #
+        # @param question [DInstaller::Question]
+        # @return [::DBus::ObjectPath]
         def add_generic_question(question)
           @dbus_object.New(
             question.text,
@@ -102,6 +135,10 @@ module DInstaller
           )
         end
 
+        # Adds a question for activating LUKS
+        #
+        # @param question [DInstaller::LuksActivationQuestion]
+        # @return [::DBus::ObjectPath]
         def add_luks_activation_question(question)
           @dbus_object.NewLuksActivation(
             question.device, question.label, question.size, question.attempt

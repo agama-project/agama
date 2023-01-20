@@ -20,15 +20,12 @@
 # find current contact information at www.suse.com.
 
 require "dinstaller/question"
-require "dinstaller/can_ask_question"
 
 module DInstaller
   module Storage
     module Callbacks
       # Callbacks for multipath activation
       class ActivateMultipath
-        include CanAskQuestion
-
         # Constructor
         #
         # @param questions_client [DInstaller::DBus::Clients::Questions]
@@ -47,10 +44,8 @@ module DInstaller
         def call(looks_like_real_multipath)
           return false unless looks_like_real_multipath
 
-          ask(question) do |q|
-            logger.info("#{q.text} #{q.answer}")
-
-            q.answer == :yes
+          questions_client.ask(question) do |question_client|
+            question_client.answer == :yes
           end
         end
 

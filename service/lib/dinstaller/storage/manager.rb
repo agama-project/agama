@@ -29,7 +29,6 @@ require "dinstaller/storage/proposal"
 require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/callbacks"
 require "dinstaller/with_progress"
-require "dinstaller/can_ask_question"
 require "dinstaller/security"
 require "dinstaller/dbus/clients/questions"
 require "dinstaller/dbus/clients/software"
@@ -42,7 +41,6 @@ module DInstaller
     # Manager to handle storage configuration
     class Manager
       include WithProgress
-      include CanAskQuestion
       include Helpers
 
       def initialize(config, logger)

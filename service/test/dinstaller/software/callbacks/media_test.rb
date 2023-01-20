@@ -22,7 +22,7 @@
 require_relative "../../../test_helper"
 require "dinstaller/software/callbacks/media"
 require "dinstaller/dbus/clients/questions"
-require "dinstaller/question"
+require "dinstaller/dbus/clients/question"
 
 describe DInstaller::Software::Callbacks::Media do
   subject { described_class.new(questions_client, logger) }
@@ -32,16 +32,16 @@ describe DInstaller::Software::Callbacks::Media do
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#media_changed" do
-    let(:asked_question) do
-      instance_double(DInstaller::Question, text: "Better safe than sorry", answer: answer)
-    end
-    let(:answer) { :Retry }
-
     before do
-      allow(subject).to receive(:ask).and_yield(asked_question)
+      allow(questions_client).to receive(:ask).and_yield(question_client)
+      allow(question_client).to receive(:answer).and_return(answer)
     end
+
+    let(:question_client) { instance_double(DInstaller::DBus::Clients::Question) }
 
     context "when the user answers :Retry" do
+      let(:answer) { :Retry }
+
       it "returns ''" do
         ret = subject.media_change(
           "NOT_FOUND", "Package not found", "", "", 0, "", 0, "", true, [], 0
