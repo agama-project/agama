@@ -84,45 +84,6 @@ describe DInstaller::DBus::Questions do
     backend.delete(question1)
   end
 
-  describe "#managed_objects" do
-    before do
-      allow(subject).to receive(:InterfacesAdded)
-
-      backend.add(question1)
-      backend.add(question2)
-    end
-
-    let(:question1) { DInstaller::Question.new("test1") }
-    let(:question2) { DInstaller::LuksActivationQuestion.new("/dev/sda1") }
-
-    it "returns interfaces and properties for each exported question" do
-      result = subject.managed_objects
-
-      path1 = "/org/opensuse/DInstaller/Questions1/#{question1.id}"
-      path2 = "/org/opensuse/DInstaller/Questions1/#{question2.id}"
-
-      expect(result.keys).to contain_exactly(path1, path2)
-
-      expect(result[path1].keys).to contain_exactly(
-        "org.freedesktop.DBus.Properties",
-        "org.opensuse.DInstaller.Question1"
-      )
-
-      expect(result[path2].keys).to contain_exactly(
-        "org.freedesktop.DBus.Properties",
-        "org.opensuse.DInstaller.Question1",
-        "org.opensuse.DInstaller.Question.LuksActivation1"
-      )
-
-      expect(result[path1]["org.freedesktop.DBus.Properties"].keys).to be_empty
-      expect(result[path1]["org.opensuse.DInstaller.Question1"].keys).to contain_exactly(
-        "Id", "Text", "Options", "DefaultOption", "Answer"
-      )
-      expect(result[path2]["org.opensuse.DInstaller.Question.LuksActivation1"].keys)
-        .to contain_exactly("Attempt", "Password")
-    end
-  end
-
   describe "Questions interface" do
     let(:interface) { "org.opensuse.DInstaller.Questions1" }
     let(:full_method_name) { described_class.make_method_name(interface, method_name) }
