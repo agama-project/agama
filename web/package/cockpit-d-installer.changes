@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Jan 20 09:03:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI fixes (gh#yast/d-installer#401):
+  * Add a fallback height for the layout
+  * Fix some miss-alignments
+  * Add missing icon
+  * Ensure tooling serving and loading fonts
+
+-------------------------------------------------------------------
 Thu Jan 19 07:58:00 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Update aliases for using "~/" instead of "@"
