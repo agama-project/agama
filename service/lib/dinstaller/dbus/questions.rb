@@ -52,7 +52,6 @@ module DInstaller
       def initialize(backend, logger)
         @backend = backend
         @logger = logger
-        @exported_questions = []
 
         register_callbacks
 
@@ -103,12 +102,7 @@ module DInstaller
       # @return [Logger]
       attr_reader :logger
 
-      # Currently exported questions
-      #
-      # @return [Array<DBus::Question>]
-      attr_reader :exported_questions
-
-      # Builds the question path (e.g., org.opensuse.DInstaller/Questions1/1)
+      # Builds the question path (e.g., /org/opensuse/DInstaller/Questions1/1)
       #
       # @param question [DInstaller::Question]
       # @return [::DBus::ObjectPath]
@@ -124,16 +118,15 @@ module DInstaller
         backend.on_add do |question|
           dbus_object = DBus::Question.new(path_for(question), question, logger)
           @service.export(dbus_object)
-          exported_questions << dbus_object
         end
 
         # When removing a question, the question is unexported from D-Bus.
         backend.on_delete do |question|
-          dbus_object = exported_questions.find { |q| q.id == question.id }
-          if dbus_object
-            @service.unexport(dbus_object)
-            exported_questions.delete(dbus_object)
+          dbus_object = @service.descendants_for(PATH).find do |q|
+            q.is_a?(DBus::Question) && q.id == question.id
           end
+
+          @service.unexport(dbus_object) if dbus_object
         end
 
         # Bus dispatches messages while waiting for questions to be answered
