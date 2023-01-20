@@ -99,7 +99,7 @@ Now your virtual machine should be ready to boot from PXE and start Iguana/D-Ins
 system boots and the services are started, you should be able to access D-Installer with a browser
 on port 9090.
 
-:warning: 4GB RAM is the recommended memory for the virtual machine and using less could affect the
+:warning: 4GB RAM is the minimum memory for the virtual machine and using less could affect the
 boot proccess.
 
 ## Tips
