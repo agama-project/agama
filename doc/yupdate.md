@@ -44,6 +44,10 @@ You can modify the update process with these environment variables:
   increases the amount of needed RAM memory.
   The cache is stored in `$HOME/.cache/d-installer-devel/` directory,
   if you need to refresh the content of the cache then delete this directory.
+- `NODE_ENV=development` - The web front-end will be built in the development
+  mode. The files will not be minimized and additional `*.map` files will be
+  generated. This helps with debugging in the browser, you can get the locations
+  in the original source files.
 
 ## Notes
 
