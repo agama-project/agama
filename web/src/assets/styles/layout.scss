@@ -1,4 +1,5 @@
 .wrapper {
+  position: relative;
   display: grid;
   grid-template-rows: var(--header-block-size) 1fr var(--footer-block-size);
   grid-template-areas: 
@@ -7,7 +8,11 @@
     'footer'
   ;
   overflow: hidden;
+  /** block-size fallbacks **/
+  height: 100vh;
   height: 100dvb;
+  block-size: 100vh;
+  /** END of block-size fallbacks **/
   block-size: 100dvb;
   max-inline-size: 1024px;
   margin-inline: auto;

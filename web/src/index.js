@@ -29,7 +29,6 @@ import { InstallerClientProvider } from "~/context/installer";
 import { SoftwareProvider } from "~/context/software";
 import { createClient } from "~/client";
 
-import "~/assets/fonts.css";
 import "@patternfly/patternfly/patternfly-base.scss";
 import "~/assets/styles/index.scss";
 

@@ -32,12 +32,12 @@
   --pf-global--FontWeight--overpass--bold: var(--fw-bold);
 
   // Colors
-  --pf-global--primary-color--100: var(--color-primary);//#{branding.$bc-green-500};
-  --pf-global--primary-color--200: var(--color-primary); //#{branding.$bc-green-900};
+  --pf-global--primary-color--100: var(--color-primary);
+  --pf-global--primary-color--200: var(--color-primary);
   --pf-global--link--Color: var(--color-link);
   --pf-global--link--Color--hover: var(--color-link-hover);
-  --pf-global--BackgroundColor--dark-100: var(--color-primary); //#{branding.$bc-pine-500};
-  --pf-global--BackgroundColor--dark-100: var(--color-primary); //#{branding.$bc-pine-500};
+  --pf-global--BackgroundColor--dark-100: var(--color-primary);
+  --pf-global--BackgroundColor--dark-100: var(--color-primary);
 }
 
 .pf-c-button.pf-m-primary {
@@ -47,9 +47,9 @@
 
 .pf-c-button.pf-m-link {
   // Colors for buttons mofidiers
-  --pf-c-button--m-link--Color: var(--color-link);//#{branding.$bc-green-500};
-  --pf-c-button--m-link--Color--hover: var(--color-link-hover);//#{branding.$bc-green-900};
-  --pf-c-button--m-link--m-inline--hover--Color: var(--link-color-hover);//#{branding.$bc-green-900};
+  --pf-c-button--m-link--Color: var(--color-link);
+  --pf-c-button--m-link--Color--hover: var(--color-link-hover);
+  --pf-c-button--m-link--m-inline--hover--Color: var(--link-color-hover);
 }
 
 .pf-c-button.pf-m-plain {

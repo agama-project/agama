@@ -1,6 +1,7 @@
-// .stack > * + * {
-.stack > :where(:not(:first-child)) {
-  margin-block-start: var(--stack-gutter);
+.stack > :where(
+  :not(legend):not(:last-child)
+) {
+  margin-block-end: var(--stack-gutter);
 }
 
 .flex-stack {
