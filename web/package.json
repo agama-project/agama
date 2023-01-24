@@ -9,6 +9,7 @@
   "author": "",
   "license": "LGPL-2.1",
   "scripts": {
+    "server": "webpack server",
     "watch": "webpack --watch --progress",
     "build": "webpack",
     "eslint": "eslint --ext .js --ext .jsx src/",
