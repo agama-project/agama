@@ -52,11 +52,13 @@ import Delete from "@icons/delete.svg?component";
 import Warning from "@icons/warning.svg?component";
 import Apps from "@icons/apps.svg?component";
 import Loading from "./three-dots-loader-icon.svg?component";
+import Description from "@icons/description.svg?component";
 
 const icons = {
   apps: Apps,
   check_circle: CheckCircle,
   delete: Delete,
+  description: Description,
   download: Download,
   downloading: Downloading,
   edit: Edit,

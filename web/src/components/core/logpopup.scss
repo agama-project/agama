@@ -1,0 +1,12 @@
+div.d-installer-logpopup {
+  word-break: break-all;
+  white-space: pre-wrap;
+  font-family: var(--pf-global--FontFamily--monospace);
+  font-size: 80%;
+}
+
+div.d-installer-logline {
+  &:hover {
+    background-color: var(--color-gray-dark);
+  }
+}
