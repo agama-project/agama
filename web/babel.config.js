@@ -3,4 +3,7 @@ module.exports = {
     '@babel/preset-react',
     ['@babel/preset-env', {targets: {node: 'current'}}]
   ],
+  plugins: [
+    'react-refresh/babel',
+  ]
 };
