@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -25,16 +25,18 @@ require "dinstaller/dbus/with_service_status"
 require "dinstaller/dbus/interfaces/progress"
 require "dinstaller/dbus/interfaces/service_status"
 require "dinstaller/dbus/interfaces/validation"
+require "dinstaller/dbus/storage/proposal_settings_converter"
+require "dinstaller/dbus/storage/volume_converter"
 
 module DInstaller
   module DBus
     module Storage
-      # D-Bus object to manage software installation
+      # D-Bus object to manage storage installation
       class Manager < BaseObject
         include WithServiceStatus
-        include Interfaces::Progress
-        include Interfaces::ServiceStatus
-        include Interfaces::Validation
+        include DBus::Interfaces::Progress
+        include DBus::Interfaces::ServiceStatus
+        include DBus::Interfaces::Validation
 
         PATH = "/org/opensuse/DInstaller/Storage1"
         private_constant :PATH
@@ -72,13 +74,65 @@ module DInstaller
           busy_while { backend.finish }
         end
 
+        PROPOSAL_CALCULATOR_INTERFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator"
+        private_constant :PROPOSAL_CALCULATOR_INTERFACE
+
+        dbus_interface PROPOSAL_CALCULATOR_INTERFACE do
+          dbus_reader :available_devices, "a(ssa{sv})"
+
+          dbus_reader :volume_templates, "aa{sv}"
+
+          # result: 0 success; 1 error
+          dbus_method :Calculate, "in settings:a{sv}, out result:u" do |settings|
+            busy_while { calculate_proposal(settings) }
+          end
+        end
+
+        # List of disks available for installation
+        #
+        # Each device is represented by an array containing the name of the device and the label to
+        # represent that device in the UI when further information is needed.
+        #
+        # @return [Array<String, String, Hash>]
+        def available_devices
+          proposal.available_devices.map do |dev|
+            [dev.name, proposal.device_label(dev), {}]
+          end
+        end
+
+        # Volumes used as template for creating a new proposal
+        #
+        # @return [Hash]
+        def volume_templates
+          converter = VolumeConverter.new
+          proposal.volume_templates.map { |v| converter.to_dbus(v) }
+        end
+
+        # Calculates a new proposal
+        #
+        # @param dbus_settings [Hash]
+        # @return [Integer] 0 success; 1 error
+        def calculate_proposal(dbus_settings)
+          logger.info("Calculating storage proposal from D-Bus settings: #{dbus_settings}")
+
+          converter = ProposalSettingsConverter.new
+          success = proposal.calculate(converter.to_dinstaller(dbus_settings))
+
+          success ? 0 : 1
+        end
+
       private
 
         # @return [DInstaller::Storage::Manager]
         attr_reader :backend
 
+        # @return [DInstaller::Storage::Proposal]
+        def proposal
+          backend.proposal
+        end
+
         def register_proposal_callbacks
-          backend.proposal.on_calculate { update_validation }
+          proposal.on_calculate { update_validation }
         end
       end
     end
