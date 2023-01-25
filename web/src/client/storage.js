@@ -151,38 +151,6 @@ class StorageBaseClient {
 
     return proxy.Calculate(settings);
   }
-
-  /**
-   * Registers a callback to run when properties in the Storage Proposal object change
-   *
-   * @param {function} handler - callback function
-   */
-  onProposalChange(handler) {
-    return this.client.onObjectChanged(STORAGE_PROPOSAL_PATH, STORAGE_PROPOSAL_IFACE, changes => {
-      if (Array.isArray(changes.CandidateDevices.v)) {
-        // FIXME return the proposal object (see getProposal)
-        handler({ candidateDevices: changes.CandidateDevices.v });
-      }
-    });
-  }
-
-  /**
-   * Registers a callback to run when properties in the Actions object change
-   *
-   * @param {function} handler - callback function
-   */
-  onActionsChange(handler) {
-    return this.client.onObjectChanged(STORAGE_PROPOSAL_PATH, STORAGE_PROPOSAL_IFACE, changes => {
-      const { Actions: actions } = changes;
-      if (actions !== undefined && Array.isArray(actions.v)) {
-        const newActions = actions.v.map(action => {
-          const { Text: textVar, Subvol: subvolVar, Delete: deleteVar } = action;
-          return { text: textVar.v, subvol: subvolVar.v, delete: deleteVar.v };
-        });
-        handler(newActions);
-      }
-    });
-  }
 }
 
 /**
