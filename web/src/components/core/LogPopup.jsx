@@ -33,7 +33,7 @@ export default function LogPopup({ className, log, onCloseCallback, title }) {
     if (onCloseCallback) onCloseCallback();
   };
 
-  const lines = log.split("\n").map((line, index) => {
+  const lines = (log || "").split("\n").map((line, index) => {
     return <div className="d-installer-logline" key={`log-line-${index}`}>{line}</div>;
   });
 
@@ -41,7 +41,7 @@ export default function LogPopup({ className, log, onCloseCallback, title }) {
     <>
       <Popup
         isOpen={isOpen}
-        title={title}
+        title={title || "Content"}
         variant="large"
       >
         <div className={classNames("d-installer-logpopup", className)}>

@@ -44,7 +44,6 @@ const ShowLogButton = (props) => {
     setIsLoading(true);
     cancellablePromise(cockpit.file(props.file).read())
       .then((content) => {
-        console.log(props.file, " size: ", content.length);
         if (props.onShowCallback) props.onShowCallback();
         setLog(content);
       })
