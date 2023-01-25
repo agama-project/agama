@@ -34,6 +34,7 @@ module DInstaller
       # D-Bus object to manage storage installation
       class Manager < BaseObject
         include WithServiceStatus
+        include ::DBus::ObjectManager
         include DBus::Interfaces::Progress
         include DBus::Interfaces::ServiceStatus
         include DBus::Interfaces::Validation
@@ -82,6 +83,8 @@ module DInstaller
 
           dbus_reader :volume_templates, "aa{sv}"
 
+          dbus_reader :result, "o"
+
           # result: 0 success; 1 error
           dbus_method :Calculate, "in settings:a{sv}, out result:u" do |settings|
             busy_while { calculate_proposal(settings) }
@@ -108,6 +111,13 @@ module DInstaller
           proposal.volume_templates.map { |v| converter.to_dbus(v) }
         end
 
+        # Path of the D-Bus object containing the calculated proposal
+        #
+        # @return [::DBus::ObjectPath] Proposal object path or root path if no exported proposal yet
+        def result
+          dbus_proposal&.path || ::DBus::ObjectPath.new("/")
+        end
+
         # Calculates a new proposal
         #
         # @param dbus_settings [Hash]
@@ -126,13 +136,31 @@ module DInstaller
         # @return [DInstaller::Storage::Manager]
         attr_reader :backend
 
+        # @return [DBus::Storage::Proposal, nil]
+        attr_reader :dbus_proposal
+
         # @return [DInstaller::Storage::Proposal]
         def proposal
           backend.proposal
         end
 
         def register_proposal_callbacks
-          proposal.on_calculate { update_validation }
+          proposal.on_calculate do
+            export_proposal
+            properties_changed
+            update_validation
+          end
+        end
+
+        def properties_changed
+          properties = interfaces_and_properties[PROPOSAL_CALCULATOR_INTERFACE]
+          dbus_properties_changed(PROPOSAL_CALCULATOR_INTERFACE, properties, [])
+        end
+
+        def export_proposal
+          @service.unexport(dbus_proposal) if dbus_proposal
+          @dbus_proposal = DBus::Storage::Proposal.new(proposal, logger)
+          @service.export(@dbus_proposal)
         end
       end
     end

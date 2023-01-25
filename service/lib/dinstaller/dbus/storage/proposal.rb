@@ -38,7 +38,6 @@ module DInstaller
         def initialize(backend, logger)
           super(PATH, logger: logger)
           @backend = backend
-          register_proposal_callbacks
         end
 
         STORAGE_PROPOSAL_INTERFACE = "org.opensuse.DInstaller.Storage1.Proposal"
@@ -107,13 +106,6 @@ module DInstaller
 
         # @return [Logger]
         attr_reader :logger
-
-        def register_proposal_callbacks
-          backend.on_calculate do
-            properties = interfaces_and_properties[STORAGE_PROPOSAL_INTERFACE]
-            dbus_properties_changed(STORAGE_PROPOSAL_INTERFACE, properties, [])
-          end
-        end
 
         # Converts an action to D-Bus format
         #

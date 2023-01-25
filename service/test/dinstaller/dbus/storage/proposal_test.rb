@@ -32,7 +32,7 @@ describe DInstaller::DBus::Storage::Proposal do
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:backend) do
-    instance_double(DInstaller::Storage::Proposal, on_calculate: nil, calculated_settings: settings)
+    instance_double(DInstaller::Storage::Proposal, calculated_settings: settings)
   end
 
   let(:settings) { nil }

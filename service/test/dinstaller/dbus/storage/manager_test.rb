@@ -21,11 +21,13 @@
 
 require_relative "../../../test_helper"
 require "dinstaller/dbus/storage/manager"
+require "dinstaller/dbus/storage/proposal"
 require "dinstaller/storage/manager"
 require "dinstaller/storage/proposal"
 require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/volume"
 require "y2storage"
+require "dbus"
 
 describe DInstaller::DBus::Storage::Manager do
   subject { described_class.new(backend, logger) }
@@ -146,6 +148,30 @@ describe DInstaller::DBus::Storage::Manager do
           "SnapshotsConfigurable" => false,
           "SnapshotsAffectSizes"  => false
         })
+      end
+    end
+  end
+
+  describe "#result" do
+    before do
+      allow(subject).to receive(:dbus_proposal).and_return(dbus_proposal)
+    end
+
+    context "when there is no exported proposal object yet" do
+      let(:dbus_proposal) { nil }
+
+      it "returns root path" do
+        expect(subject.result.to_s).to eq("/")
+      end
+    end
+
+    context "when there is an exported proposal object" do
+      let(:dbus_proposal) do
+        instance_double(DInstaller::DBus::Storage::Proposal, path: ::DBus::ObjectPath.new("/test"))
+      end
+
+      it "returns the proposal object path" do
+        expect(subject.result.to_s).to eq("/test")
       end
     end
   end

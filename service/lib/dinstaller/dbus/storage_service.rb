@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -73,8 +73,7 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          DInstaller::DBus::Storage::Manager.new(@backend, logger),
-          DInstaller::DBus::Storage::Proposal.new(@backend.proposal, logger)
+          DInstaller::DBus::Storage::Manager.new(@backend, logger)
         ]
       end
     end
