@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -33,20 +33,15 @@ module DInstaller
         include WithProgress
         include WithValidation
 
-        PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1"
+        STORAGE_IFACE = "org.opensuse.DInstaller.Storage1.Proposal"
+        private_constant :STORAGE_IFACE
+
+        PROPOSAL_CALCULATOR_IFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator"
+        private_constant :PROPOSAL_CALCULATOR_IFACE
+
+        PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage1.Proposal"
         private_constant :PROPOSAL_IFACE
 
-        def initialize
-          super
-
-          @dbus_object = service["/org/opensuse/DInstaller/Storage1"]
-          @dbus_object.introspect
-
-          @dbus_proposal = service.object("/org/opensuse/DInstaller/Storage/Proposal1")
-          @dbus_proposal.introspect
-        end
-
-        # @return [String]
         def service_name
           @service_name ||= "org.opensuse.DInstaller.Storage"
         end
@@ -75,7 +70,7 @@ module DInstaller
         #
         # @return [Array<String>] name of the devices
         def available_devices
-          dbus_proposal[PROPOSAL_IFACE]["AvailableDevices"]
+          dbus_object[PROPOSAL_CALCULATOR_IFACE]["AvailableDevices"]
             .map(&:first)
         end
 
@@ -83,6 +78,8 @@ module DInstaller
         #
         # @return [Array<String>] name of the devices
         def candidate_devices
+          return [] unless dbus_proposal
+
           dbus_proposal[PROPOSAL_IFACE]["CandidateDevices"]
         end
 
@@ -90,6 +87,8 @@ module DInstaller
         #
         # @return [Array<String>]
         def actions
+          return [] unless dbus_proposal
+
           dbus_proposal[PROPOSAL_IFACE]["Actions"].map do |a|
             a["Text"]
           end
@@ -99,16 +98,24 @@ module DInstaller
         #
         # @param candidate_devices [Array<String>] name of the new candidate devices
         def calculate(candidate_devices)
-          dbus_proposal.Calculate({ "CandidateDevices" => candidate_devices })
+          calculator_iface = dbus_object[PROPOSAL_CALCULATOR_IFACE]
+          calculator_iface.Calculate({ "CandidateDevices" => candidate_devices })
         end
 
       private
 
         # @return [::DBus::Object]
-        attr_reader :dbus_object
+        def dbus_object
+          @dbus_object ||= service["/org/opensuse/DInstaller/Storage1"].tap(&:introspect)
+        end
 
-        # @return [::DBus::Object]
-        attr_reader :dbus_proposal
+        # @return [::DBus::Object, nil]
+        def dbus_proposal
+          path = dbus_object["org.opensuse.DInstaller.Storage1.Proposal.Calculator"]["Result"]
+          return nil if path == "/"
+
+          service.object(path).tap(&:introspect)
+        end
       end
     end
   end
