@@ -1,7 +1,7 @@
 :root {
-  --ff: Lato, arial, helvetica, sans-serif;
-  --ff-headlines: Poppins, sans-serif;
-  --ff-code: 'Roboto Mono', monospace;
+  --ff: "Lato", arial, helvetica, sans-serif;
+  --ff-headlines: "Poppins", sans-serif;
+  --ff-code: "Roboto Mono", monospace;
 
   --fw-light: 300;
   --fw-normal: 400;
@@ -27,32 +27,32 @@
   --wrapper-padding: var(--spacer-normal);
   --wrapper-background: white;
 
-  --color-primary: #30BA78;
-  --color-primary-darkest: #0C322C;
-  --color-gray-light: #FCFCFC;
-  --color-gray: #F2F2F2;
-  --color-gray-dark: #EFEFEF; // Fog
-  --color-gray-darker: #999999;
+  --color-primary: #30ba78;
+  --color-primary-darkest: #0c322c;
+  --color-gray-light: #fcfcfc;
+  --color-gray: #f2f2f2;
+  --color-gray-dark: #efefef; // Fog
+  --color-gray-darker: #999;
 
-  --color-link: #30BA78;
-  --color-link-hover: #0C322C;
+  --color-link: #30ba78;
+  --color-link-hover: #0c322c;
 
-  --color-button-primary: #30BA78;
-  --color-button-primary-hover: #0C322C;
+  --color-button-primary: #30ba78;
+  --color-button-primary-hover: #0c322c;
 
-  --color-button-plain-link: #30BA78;
-  --color-button-plain-link-hover: #0C322C;
+  --color-button-plain-link: #30ba78;
+  --color-button-plain-link-hover: #0c322c;
 
   --color-background-primary: var(--color-primary-darkest);
   --color-background-secondary: var(--color-gray-dark);
 
   --color-text-primary: var(--color-primary-darkest);
-  --color-text-secondary:var(--color-gray-dark);
+  --color-text-secondary: var(--color-gray-dark);
 
-  --color-success: #30BA78;
-  --color-warn:  #d4351c; // #FE7C3F; // Persimmon
+  --color-success: #30ba78;
+  --color-warn: #d4351c; // #FE7C3F; // Persimmon
 
-  --focus-color: #00b2e2; //cerulean 500 
+  --focus-color: #00b2e2; //cerulean 500
 
   --gradient-border-angle: 45deg;
   --gradient-border-start-color: var(--color-gray);

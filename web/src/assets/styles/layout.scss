@@ -2,11 +2,10 @@
   position: relative;
   display: grid;
   grid-template-rows: var(--header-block-size) 1fr var(--footer-block-size);
-  grid-template-areas: 
-    'header'
-    'content'
-    'footer'
-  ;
+  grid-template-areas:
+    "header"
+    "content"
+    "footer";
   overflow: hidden;
   /** block-size fallbacks **/
   height: 100vh;
@@ -19,7 +18,7 @@
   background: var(--wrapper-background);
 
   svg {
-    fill: currentColor;
+    fill: currentcolor;
     vertical-align: middle;
   }
 }

@@ -1,6 +1,5 @@
 .stack > :where(
-  :not(legend):not(:last-child)
-) {
+  :not(legend, :last-child)) {
   margin-block-end: var(--stack-gutter);
 }
 
