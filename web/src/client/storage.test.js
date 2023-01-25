@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,16 +27,23 @@ import { StorageClient } from "./storage";
 jest.mock("./dbus");
 
 // NOTE: should we export them?
-const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
+const PROPOSAL_CALCULATOR_IFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator";
+const PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage1.Proposal";
 
 const calculateFn = jest.fn();
 
-const storageProposalProxy = {
+const storageProxy = {
   wait: jest.fn(),
   AvailableDevices: [
     ["/dev/sda", "/dev/sda, 950 GiB, Windows"],
     ["/dev/sdb", "/dev/sdb, 500 GiB"]
   ],
+  Calculate: calculateFn
+};
+
+const proposalProxy = {
+  valid: true,
+  wait: jest.fn(),
   CandidateDevices: ["/dev/sda"],
   LVM: true,
   Volumes: [
@@ -66,8 +73,7 @@ const storageProposalProxy = {
       Subvol: { t: "b", v: false },
       Delete: { t: "b", v: false }
     }
-  ],
-  Calculate: calculateFn
+  ]
 };
 
 beforeEach(() => {
@@ -75,7 +81,8 @@ beforeEach(() => {
   DBusClient.mockImplementation(() => {
     return {
       proxy: (iface) => {
-        if (iface === STORAGE_PROPOSAL_IFACE) return storageProposalProxy;
+        if (iface === PROPOSAL_CALCULATOR_IFACE) return storageProxy;
+        if (iface === PROPOSAL_IFACE) return proposalProxy;
       }
     };
   });
