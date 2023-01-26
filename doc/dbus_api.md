@@ -1,4 +1,4 @@
-# D-Bus API Document
+# D-Bus API Reference
 
 ## General Principles
 
@@ -111,67 +111,208 @@ Iface: o.o.YaST.Installer1.Software
 -  PropertiesChanged ( only standard one from org.freedesktop.DBus.Properties interface )
 
 
-## Storage
+## `org.opensuse.DInstaller.Storage` Service
 
-### org.opensuse.DInstaller.Storage1
+Service for managing storage devices.
 
-#### Methods
+### Overview
 
-- Probe -> void
+~~~
+/DInstaller/Storage1
+  .ObjectManager
+  .DInstaller.ServiceStatus1
+  .DInstaller.Progress1
+  .DInstaller.Validation1
+  .DInstaller.Storage1
+  .DInstaller.Storage1.Proposal.Calculator
+/DInstaller/Storage1/Proposal
+  .DInstaller.Storage1.Proposal
+~~~
 
-- Install -> void
+### D-Bus Objects
 
-- Finish -> void
+#### `/org/opensuse/DInstaller/Storage1` Object
 
-### org.opensuse.DInstaller.Proposal1
+~~~
+/DInstaller/Storage1
+  .ObjectManager
+  .DInstaller.ServiceStatus1
+  .DInstaller.Progress1
+  .DInstaller.Validation1
+  .DInstaller.Storage1
+  .DInstaller.Storage1.Proposal.Calculator
+~~~
 
-** Making space is not covered yet**
+Main object exported by the service `org.opensuse.DInstaller.Service`. This object implements the `org.freedesktop.DBus.ObjectManager` interface and should be used by clients to discover other objects.
 
-#### Properties
+This object also implements generic interfaces to manage the service status, progress and validation.
 
-- AvailableDevices -> a(ssa{sv}) (r)
-  e.g., ["/dev/sda", "/dev/sda, 8.00 GiB, USB", {}]
+Moreover, it implements interfaces to manipulate the global state (perform installation, create proposals, login sessions for iSCSI targets, etc).
 
-- CandidateDevices -> as (r)
+#### `/org/opensuse/DInstaller/Storage1/Proposal` Object
 
-- LVM -> b (r)
+~~~
+/DInstaller/Storage1/Proposal
+  .DInstaller.Storage1.Proposal
+~~~
 
-- EncryptionPassword -> s (r)
+This object is exported only if a proposal was already calculated (successful or not). It can be used to inspect the result of the calculated proposal.
 
-- VolumeTemplates -> aa{sv} (r)
-  Struct keys and values: see Volumes
+### D-Bus Interfaces
 
-- Volumes -> aa{sv} (r)
-  Struct keys and values:
-  - DeviceType -> s
-  e.g., "partition", "lvm_lv"
-  - Optional -> b
-  - Encrypted -> b
-  - MountPoint -> s
-  - FixedSizeLimits -> b
-  - AdaptativeSizes -> b
-  - MinSize -> s
-  - MaxSize -> s
-  - FsTypes -> as
-    e.g., ["Btrfs", "XFS"]
-  - FsType -> s
-  - Snapshots -> b
-  - SnapshotsConfigurable -> b
-  - SnapshotsAffectSizes -> b
-  - VolumesWithFallbackSizes -> as
-    e.g., ["/home", "/var"]
+#### `org.opensuse.DInstaller.Storage1` Interface
 
-- Actions -> aa{sv} (r)
-  Struct keys and values:
-  - Text -> s (r)
-  - Subvol -> b (r)
-  - Delete -> b (r)
+Offers methods for performing general installation actions.
 
-#### Methods
+##### Methods
 
-- Calculate(aa{sv}) -> u (0 success, 1 fail)
-  Calculates a new proposal with the given properties (see proposal properties).
+~~~
+Probe()
+Install()
+Finish()
+~~~
 
+#### `org.opensuse.DInstaller.Storage1.Proposal.Calculator` Interface
+
+Allows creating a storage proposal.
+
+##### Methods
+
+~~~
+Calculate(in  a{sv} settings,
+          out u     result)
+~~~
+
+##### Properties
+
+~~~
+AvailableDevices  readable  a(ssa{sv})
+VolumeTemplates   readable  aa{sv}
+Result            readable  o
+~~~
+
+##### Details
+
+###### `Calculate` method
+
+~~~
+Calculate(in  a{sv} settings,
+          out u     result)
+~~~
+
+Calculates a new proposal with the given settings. Allowed settings are defined by `org.opensuse.DInstaller.Storage1.Proposal` interface. A proposal object is exported when the proposal is calculated.
+
+Returns `0` on success and `1` on failure.
+
+###### `AvailableDevices` Property
+
+~~~
+AvailableDevices  readable a(ssa{sv})
+~~~
+
+Array in which each element has a device name, description, and extra data.
+
+Example: `1 "/dev/sda" "/dev/sda, 8.00 GiB, USB" 0`
+
+Extra data is not used yet.
+
+###### `VolumeTemplates` Property
+
+~~~
+VolumeTemplates   readable aa{sv}
+~~~
+
+Templates that can be used as starting point for the volumes of a new proposal. See `Volumes` property from `org.opensuse.DInstaller.Storage1.Proposal` interface.
+
+###### `Result` Property
+
+~~~
+Result            readable  o
+~~~
+
+Path of the object with the proposal result, typically `/org/opensuse/DInstaller/Storage1/Proposal`. If there is no proposal exported yet, then the path points to root `/`.
+
+#### `org.opensuse.DInstaller.Storage1.Proposal` Interface
+
+Information about the calculated storage proposal.
+
+##### Properties
+
+~~~
+CandidateDevices    readable as
+LVM                 readable b
+EncryptionPassword  readable s
+Volumes             readable aa{sv}
+Actions             readable aa{sv}
+~~~
+
+##### Details
+
+###### `Volumes` Property
+
+~~~
+Volumes             readable aa{sv}
+~~~
+
+List of volumes used for calculating the proposal.
+
+Each volume is defined by the following properties:
+
+~~~
+DeviceType                s
+Optional                  b
+Encrypted                 b
+MountPoint                s
+FixedSizeLimits           b
+AdaptativeSizes           b
+MinSize                   x
+MaxSize                   x
+FsTypes                   as
+FsType                    s
+Snapshots                 b
+SnapshotsConfigurable     b
+SnapshotsAffectSizes      b
+VolumesWithFallbackSizes  as
+~~~
+
+Example:
+
+~~~
+1 14 DeviceType s "partition" Optional b false Encrypted b false MountPoint s / FixedSizeLimit b false AdaptiveSizes b false MinSize x 1024 MaxSize x 2048 FsTypes as 3 Btrfs XFS EXT4 FsType Btrfs Snapshots b true SnapshotsConfigurable b true SnapshotsAffectSizes b false VolumeWithFallbackSizes as 1 /home
+~~~
+
+###### `Actions` Property
+
+~~~
+Actions             readable aa{sv}
+~~~
+
+Actions to perform in the system to create the proposal. If the proposal failed, then the list of actions is empty.
+
+Each action is defined by the following properties:
+
+~~~
+Text    readable s
+Subvol  readable b
+Delete  readable b
+~~~
+
+Example:
+
+~~~
+2 3 Text s "Create partition /dev/vdb1" Subvol b false Delete b false 3 Text s "Delete Btrfs subvolume @/var" Subvol b true Delete b true
+~~~
+
+## org.opensuse.DInstaller.Storage1.ISCSI.Initiator
+
+### Methods
+
+- Discover(s ip, i port, a{sv} options)
+  Performs targets discovery. Options:
+  - initiatorUsername (s): username for incoming authentication
+  - initiatorPassword (s): password for incoming authentication
+  - targetUsername (s): username for outgoing authentication
+  - targetPassword (s): password for outgoing authentication
 
 ## Users
 
