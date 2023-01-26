@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,8 +27,8 @@ import cockpit from "../lib/cockpit";
 
 const STORAGE_SERVICE = "org.opensuse.DInstaller.Storage";
 const STORAGE_PATH = "/org/opensuse/DInstaller/Storage1";
-const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
-const STORAGE_PROPOSAL_PATH = "/org/opensuse/DInstaller/Storage/Proposal1";
+const PROPOSAL_CALCULATOR_IFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator";
+const PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage1.Proposal";
 
 /**
  * Storage base client
@@ -49,7 +49,11 @@ class StorageBaseClient {
    * @return {Promise<object>}
    */
   async getProposal() {
-    const proxy = await this.client.proxy(STORAGE_PROPOSAL_IFACE);
+    const storageProxy = await this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_PATH);
+    const proposalProxy = await this.client.proxy(PROPOSAL_IFACE);
+
+    // Check whether proposal object is already exported
+    if (!proposalProxy.valid) return {};
 
     const volume = dbusVolume => {
       const valueFrom = dbusValue => dbusValue?.v;
@@ -83,12 +87,12 @@ class StorageBaseClient {
     };
 
     return {
-      availableDevices: proxy.AvailableDevices.map(([id, label]) => ({ id, label })),
-      candidateDevices: proxy.CandidateDevices,
-      lvm: proxy.LVM,
-      encryptionPassword: proxy.EncryptionPassword,
-      volumes: proxy.Volumes.map(volume),
-      actions: proxy.Actions.map(action)
+      availableDevices: storageProxy.AvailableDevices.map(([id, label]) => ({ id, label })),
+      candidateDevices: proposalProxy.CandidateDevices,
+      lvm: proposalProxy.LVM,
+      encryptionPassword: proposalProxy.EncryptionPassword,
+      volumes: proposalProxy.Volumes.map(volume),
+      actions: proposalProxy.Actions.map(action)
     };
   }
 
@@ -103,7 +107,7 @@ class StorageBaseClient {
    * @return {Promise<number>} - 0 success, other for failure
    */
   async calculateProposal({ candidateDevices, encryptionPassword, lvm, volumes }) {
-    const proxy = await this.client.proxy(STORAGE_PROPOSAL_IFACE);
+    const proxy = await this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_PATH);
 
     // Builds a new object without undefined attributes
     const cleanObject = (object) => {
@@ -146,38 +150,6 @@ class StorageBaseClient {
     });
 
     return proxy.Calculate(settings);
-  }
-
-  /**
-   * Registers a callback to run when properties in the Storage Proposal object change
-   *
-   * @param {function} handler - callback function
-   */
-  onProposalChange(handler) {
-    return this.client.onObjectChanged(STORAGE_PROPOSAL_PATH, STORAGE_PROPOSAL_IFACE, changes => {
-      if (Array.isArray(changes.CandidateDevices.v)) {
-        // FIXME return the proposal object (see getProposal)
-        handler({ candidateDevices: changes.CandidateDevices.v });
-      }
-    });
-  }
-
-  /**
-   * Registers a callback to run when properties in the Actions object change
-   *
-   * @param {function} handler - callback function
-   */
-  onActionsChange(handler) {
-    return this.client.onObjectChanged(STORAGE_PROPOSAL_PATH, STORAGE_PROPOSAL_IFACE, changes => {
-      const { Actions: actions } = changes;
-      if (actions !== undefined && Array.isArray(actions.v)) {
-        const newActions = actions.v.map(action => {
-          const { Text: textVar, Subvol: subvolVar, Delete: deleteVar } = action;
-          return { text: textVar.v, subvol: subvolVar.v, delete: deleteVar.v };
-        });
-        handler(newActions);
-      }
-    });
   }
 }
 

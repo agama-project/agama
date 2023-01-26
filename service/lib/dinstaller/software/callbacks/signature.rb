@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "dinstaller/can_ask_question"
 require "dinstaller/question"
 
 Yast.import "Pkg"
@@ -30,12 +29,12 @@ module DInstaller
     module Callbacks
       # Callbacks related to signatures handling
       class Signature
-        include CanAskQuestion
-
-        # @param questions_manager [DBus::Clients::QuestionsManager]
+        # Constructor
+        #
+        # @param questions_client [DInstaller::DBus::Clients::Questions]
         # @param logger [Logger]
-        def initialize(questions_manager, logger)
-          @questions_manager = questions_manager
+        def initialize(questions_client, logger)
+          @questions_client = questions_client
           @logger = logger
         end
 
@@ -72,9 +71,8 @@ module DInstaller
           question = DInstaller::Question.new(
             message, options: [:Yes, :No], default_option: :No
           )
-          ask(question) do |q|
-            logger.info "#{q.text} #{q.answer}"
-            q.answer == :Yes
+          questions_client.ask(question) do |question_client|
+            question_client.answer == :Yes
           end
         end
 
@@ -94,16 +92,15 @@ module DInstaller
             message, options: [:Trust, :Skip], default_option: :Skip
           )
 
-          ask(question) do |q|
-            logger.info "#{q.text} #{q.answer}"
-            q.answer == :Trust
+          questions_client.ask(question) do |question_client|
+            question_client.answer == :Trust
           end
         end
 
       private
 
-        # @return [DBus::Clients::QuestionsManager]
-        attr_reader :questions_manager
+        # @return [DInstaller::DBus::Clients::Questions]
+        attr_reader :questions_client
 
         # @return [Logger]
         attr_reader :logger

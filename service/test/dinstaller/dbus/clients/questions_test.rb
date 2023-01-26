@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,11 +20,11 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require "dinstaller/dbus/clients/questions_manager"
+require "dinstaller/dbus/clients/questions"
 require "dinstaller/question"
 require "dbus"
 
-describe DInstaller::DBus::Clients::QuestionsManager do
+describe DInstaller::DBus::Clients::Questions do
   before do
     allow(DInstaller::DBus::Bus).to receive(:current).and_return(bus)
     allow(bus).to receive(:service).with("org.opensuse.DInstaller.Questions").and_return(service)
@@ -32,6 +32,10 @@ describe DInstaller::DBus::Clients::QuestionsManager do
       .and_return(dbus_object)
     allow(dbus_object).to receive(:default_iface=)
   end
+
+  subject { described_class.new(logger: logger) }
+
+  let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:bus) { instance_double(DInstaller::DBus::Bus) }
   let(:service) { instance_double(::DBus::Service) }

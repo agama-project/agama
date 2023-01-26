@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -33,6 +33,13 @@ module DInstaller
         #   @return [String]
         abstract_method :service_name
 
+        # Constructor
+        #
+        # @param logger [Logger, nil]
+        def initialize(logger: nil)
+          @logger = logger || Logger.new($stdout)
+        end
+
         # D-Bus service
         #
         # @return [::DBus::Service]
@@ -41,6 +48,9 @@ module DInstaller
         end
 
       private
+
+        # @return [Logger]
+        attr_reader :logger
 
         # Registers callback to be called when the properties of the given object changes
         #

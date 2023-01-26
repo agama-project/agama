@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -25,6 +25,7 @@ require_relative File.join(
 )
 require "dinstaller/config"
 require "dinstaller/software/manager"
+require "dinstaller/dbus/clients/questions"
 
 describe DInstaller::Software::Manager do
   subject { described_class.new(config, logger) }
@@ -42,8 +43,8 @@ describe DInstaller::Software::Manager do
     DInstaller::Config.new(YAML.safe_load(File.read(config_path)))
   end
 
-  let(:questions_manager) do
-    instance_double(DInstaller::DBus::Clients::QuestionsManager)
+  let(:questions_client) do
+    instance_double(DInstaller::DBus::Clients::Questions)
   end
 
   before do
@@ -55,8 +56,7 @@ describe DInstaller::Software::Manager do
       .and_return(base_url)
     allow(Yast::Pkg).to receive(:SourceCreate)
     allow(Yast::Installation).to receive(:destdir).and_return(destdir)
-    allow(DInstaller::DBus::Clients::QuestionsManager).to receive(:new)
-      .and_return(questions_manager)
+    allow(DInstaller::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
   end
 
   describe "#probe" do

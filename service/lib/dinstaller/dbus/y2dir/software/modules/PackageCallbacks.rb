@@ -1,4 +1,4 @@
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,7 +20,7 @@
 require "yast"
 require "logger"
 require "dinstaller/software/callbacks"
-require "dinstaller/dbus/clients/questions_manager"
+require "dinstaller/dbus/clients/questions"
 
 # :nodoc:
 module Yast
@@ -31,19 +31,29 @@ module Yast
     end
 
     # @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L183
-    def InitPackageCallbacks(logger = ::Logger.new($stdout))
+    def InitPackageCallbacks(logger = nil)
+      @logger = logger || ::Logger.new($stdout)
+
       DInstaller::Software::Callbacks::Signature.new(
-        questions_manager, logger
+        questions_client, logger
       ).setup
 
       DInstaller::Software::Callbacks::Media.new(
-        questions_manager, logger
+        questions_client, logger
       ).setup
     end
 
-    def questions_manager
-      @questions_manager ||= DInstaller::DBus::Clients::QuestionsManager.new 
+    # Returns the client to ask questions
+    #
+    # @return [DInstaller::DBus::Clients::Questions]
+    def questions_client
+      @questions_client ||= DInstaller::DBus::Clients::Questions.new(logger: logger)
     end
+
+  private
+
+    # @return [Logger]
+    attr_reader :logger
   end
 
   PackageCallbacks = PackageCallbacksClass.new

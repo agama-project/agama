@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,17 +21,25 @@
 
 require_relative "../../../test_helper"
 require "dinstaller/storage/callbacks/activate_luks"
-require "dinstaller/questions_manager"
+require "dinstaller/luks_activation_question"
+require "dinstaller/dbus/clients/questions"
+require "dinstaller/dbus/clients/question"
 require "storage"
 
 describe DInstaller::Storage::Callbacks::ActivateLuks do
-  subject { described_class.new(questions_manager, logger) }
+  subject { described_class.new(questions_client, logger) }
 
-  let(:questions_manager) { DInstaller::QuestionsManager.new(logger) }
+  let(:questions_client) { instance_double(DInstaller::DBus::Clients::Questions) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#call" do
+    before do
+      allow(questions_client).to receive(:ask).and_yield(question_client)
+    end
+
+    let(:question_client) { instance_double(DInstaller::DBus::Clients::Question) }
+
     let(:luks_info) do
       instance_double(Storage::LuksInfo,
         device_name: "/dev/sda1",
@@ -42,7 +50,7 @@ describe DInstaller::Storage::Callbacks::ActivateLuks do
     let(:attempt) { 1 }
 
     it "asks a question to activate a LUKS device" do
-      expect(subject).to receive(:ask) do |question|
+      expect(questions_client).to receive(:ask) do |question|
         expect(question).to be_a(DInstaller::LuksActivationQuestion)
       end
 
@@ -51,14 +59,8 @@ describe DInstaller::Storage::Callbacks::ActivateLuks do
 
     context "when the question is answered as :skip" do
       before do
-        allow(subject).to receive(:ask).and_yield(question)
-      end
-
-      let(:question) do
-        DInstaller::LuksActivationQuestion.new("/dev/sda1").tap do |q|
-          q.answer = :skip
-          q.password = "notsecret"
-        end
+        allow(question_client).to receive(:answer).and_return(:skip)
+        allow(question_client).to receive(:password).and_return("notsecret")
       end
 
       it "returns a tuple containing false and the password" do
@@ -68,14 +70,8 @@ describe DInstaller::Storage::Callbacks::ActivateLuks do
 
     context "when the question is answered as :decrypt" do
       before do
-        allow(subject).to receive(:ask).and_yield(question)
-      end
-
-      let(:question) do
-        DInstaller::LuksActivationQuestion.new("/dev/sda1").tap do |q|
-          q.answer = :decrypt
-          q.password = "notsecret"
-        end
+        allow(question_client).to receive(:answer).and_return(:decrypt)
+        allow(question_client).to receive(:password).and_return("notsecret")
       end
 
       it "returns a tuple containing true and the password" do

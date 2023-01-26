@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,29 +21,29 @@
 
 require_relative "../../../test_helper"
 require "dinstaller/software/callbacks/signature"
-require "dinstaller/dbus/clients/questions_manager"
-require "dinstaller/question"
+require "dinstaller/dbus/clients/questions"
+require "dinstaller/dbus/clients/question"
 
 describe DInstaller::Software::Callbacks::Signature do
-  subject { described_class.new(questions_manager, logger) }
-
-  let(:questions_manager) do
-    instance_double(DInstaller::DBus::Clients::QuestionsManager)
+  before do
+    allow(questions_client).to receive(:ask).and_yield(question_client)
+    allow(question_client).to receive(:answer).and_return(answer)
   end
 
-  let(:logger) { Logger.new($stdout) }
+  let(:questions_client) { instance_double(DInstaller::DBus::Clients::Questions) }
+
+  let(:question_client) { instance_double(DInstaller::DBus::Clients::Question) }
+
+  let(:answer) { nil }
+
+  let(:logger) { Logger.new($stdout, level: :warn) }
+
+  subject { described_class.new(questions_client, logger) }
 
   describe "#accept_unsigned_file" do
-    let(:asked_question) do
-      instance_double(DInstaller::Question, text: "Better safe than sorry", answer: answer)
-    end
-    let(:answer) { :Yes }
-
-    before do
-      allow(subject).to receive(:ask).and_yield(asked_question)
-    end
-
     context "when the user answers :Yes" do
+      let(:answer) { :Yes }
+
       it "returns true" do
         expect(subject.accept_unsigned_file("repomd.xml", -1)).to eq(true)
       end
@@ -64,33 +64,30 @@ describe DInstaller::Software::Callbacks::Signature do
       end
 
       it "includes the name and the URL in the question" do
-        expect(subject).to receive(:ask) do |question|
+        expect(questions_client).to receive(:ask) do |question|
           expect(question.text).to include("OSS (http://localhost/repo)")
         end
+
         expect(subject.accept_unsigned_file("repomd.xml", 1))
       end
     end
 
     context "when the repo information is not available" do
       before do
-        allow(Yast::Pkg).to receive(:SourceGeneralData).with(1)
-          .and_return(nil)
+        allow(Yast::Pkg).to receive(:SourceGeneralData).with(1).and_return(nil)
       end
 
       it "includes a generic message containing the filename" do
-        expect(subject).to receive(:ask) do |question|
+        expect(questions_client).to receive(:ask) do |question|
           expect(question.text).to include("repomd.xml")
         end
+
         expect(subject.accept_unsigned_file("repomd.xml", 1))
       end
     end
   end
 
   describe "import_gpg_key" do
-    let(:asked_question) do
-      instance_double(DInstaller::Question, text: "Better safe than sorry", answer: answer)
-    end
-
     let(:answer) { :Trust }
 
     let(:key) do
@@ -99,10 +96,6 @@ describe DInstaller::Software::Callbacks::Signature do
         "fingerprint" => "2E2EA448C9DDD7A91BC28441AEE969E90F05DB9D",
         "name"        => "YaST:Head:D-Installer"
       }
-    end
-
-    before do
-      allow(subject).to receive(:ask).and_yield(asked_question)
     end
 
     context "when the user answers :Trust" do
@@ -122,7 +115,7 @@ describe DInstaller::Software::Callbacks::Signature do
     end
 
     it "includes a message" do
-      expect(subject).to receive(:ask) do |question|
+      expect(questions_client).to receive(:ask) do |question|
         expect(question.text).to include(key["id"])
         expect(question.text).to include(key["name"])
         expect(question.text).to include("2E2E A448 C9DD")
