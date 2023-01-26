@@ -29,6 +29,7 @@ require "y2packager/product"
 require "yast2/arch_filter"
 require "dinstaller/software/callbacks"
 require "dinstaller/software/proposal"
+require "dinstaller/software/repositories_manager"
 
 Yast.import "Package"
 Yast.import "Packages"
@@ -58,6 +59,8 @@ module DInstaller
       #   additional information in a hash
       attr_reader :products
 
+      attr_reader :repositories
+
       def initialize(config, logger)
         @config = config
         @probed = false
@@ -70,6 +73,7 @@ module DInstaller
           @product = @products.keys.first # use the available product as default
           @config.pick_product(@product)
         end
+        @repositories = RepositoriesManager.new
       end
 
       def select_product(name)
@@ -92,7 +96,7 @@ module DInstaller
         start_progress(3)
         Yast::PackageCallbacks.InitPackageCallbacks(logger)
         progress.step("Initialize target repositories") { initialize_target_repos }
-        progress.step("Initialize sources") { add_base_repo }
+        progress.step("Initialize sources") { add_base_repos }
         progress.step("Making the initial proposal") { propose }
 
         @probed = true
@@ -105,6 +109,8 @@ module DInstaller
       end
 
       def propose
+        return unless repositories.available?
+
         proposal.base_product = @product
         proposal.languages = languages
         select_resolvables
@@ -114,6 +120,8 @@ module DInstaller
       end
 
       def validate
+        return [ValidationError.new("No repositories are available")] unless repositories.available?
+
         proposal.errors
       end
 
@@ -199,8 +207,12 @@ module DInstaller
         end
       end
 
-      def add_base_repo
-        @config.data["software"]["installation_repositories"].each do |repo|
+      def installation_repositories
+        @config.data["software"]["installation_repositories"]
+      end
+
+      def add_base_repos
+        installation_repositories.each do |repo|
           if repo.is_a?(Hash)
             url = repo["url"]
             # skip if repo is not for current arch
@@ -209,8 +221,9 @@ module DInstaller
             url = repo
           end
           # TODO: report failing repositories
-          proposal.add_repository(url)
+          repositories.add(url)
         end
+        repositories.refresh_all
       end
 
       REPOS_BACKUP = "/etc/zypp/repos.d.dinstaller.backup"

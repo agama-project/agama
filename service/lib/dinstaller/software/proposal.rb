@@ -38,11 +38,12 @@ module DInstaller
     # repositories to use, the list of packages/patterns to install, etc.).
     #
     # @todo implement a reset mechanism to clear repositories, seleced packages/patterns, etc.
+    # @note you might expect that it receives a RepositoriesManager instance. However, as the state
+    #   is kept in the `Yast::Pkg` module, it is not needed at all.
     #
     # @example Calculate a proposal
     #   proposal = Proposal.new
     #   proposal.base_product = "openSUSE"
-    #   proposal.add_repository("https://example.net/my-repo") #=> true
     #   proposal.add_resolvables("d-installer", :pattern, ["enhanced_base"])
     #   proposal.languages = ["en_US", "de_DE"]
     #   proposal.calculate #=> true
@@ -64,15 +65,6 @@ module DInstaller
         @logger = logger || Logger.new($stdout)
         @errors = []
         @base_product = nil
-      end
-
-      # Adds the repository to the proposal
-      #
-      # @param url [String] Repository URL
-      # @return [Boolean] true if the operation was successful; false otherwise
-      def add_repository(url)
-        result = Yast::Pkg.SourceCreate(url, "/") # TODO: having that dir also in config?
-        result.zero?
       end
 
       # Adds the given list of resolvables to the proposal

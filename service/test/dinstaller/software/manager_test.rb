@@ -34,14 +34,21 @@ describe DInstaller::Software::Manager do
   let(:base_url) { "" }
   let(:destdir) { "/mnt" }
   let(:gpg_keys) { [] }
+  let(:repositories) do
+    instance_double(
+      DInstaller::Software::RepositoriesManager,
+      add:         nil,
+      refresh_all: nil,
+      available?:  true
+    )
+  end
   let(:proposal) do
     instance_double(
       DInstaller::Software::Proposal,
-      add_repository: true,
       :base_product= => nil,
-      calculate: nil,
-      :languages= => nil,
-      set_resolvables: nil
+      calculate:        nil,
+      :languages= =>    nil,
+      set_resolvables:  nil
     )
   end
 
@@ -67,6 +74,7 @@ describe DInstaller::Software::Manager do
     allow(Yast::Pkg).to receive(:SourceCreate)
     allow(Yast::Installation).to receive(:destdir).and_return(destdir)
     allow(DInstaller::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
+    allow(DInstaller::Software::RepositoriesManager).to receive(:new).and_return(repositories)
     allow(DInstaller::Software::Proposal).to receive(:new).and_return(proposal)
   end
 
@@ -105,8 +113,8 @@ describe DInstaller::Software::Manager do
     end
 
     it "registers the repository from config" do
-      expect(proposal).to receive(:add_repository)
-        .with(/tumbleweed/).and_return(true)
+      expect(repositories).to receive(:add).with(/tumbleweed/)
+      expect(repositories).to receive(:refresh_all)
       subject.probe
     end
   end

@@ -28,24 +28,6 @@ describe DInstaller::Software::Proposal do
 
   let(:logger) { Logger.new($stdout) }
 
-  describe "#add_repository" do
-    it "registers the repository in the packaging system" do
-      url = "https://example.net"
-      expect(Yast::Pkg).to receive(:SourceCreate).with(url, "/").and_return(0)
-      expect(proposal.add_repository(url)).to eq(true)
-    end
-
-    context "when it is not possible to register the repository" do
-      before do
-        allow(Yast::Pkg).to receive(:SourceCreate).and_return(1)
-      end
-
-      it "returns false" do
-        expect(proposal.add_repository("https://example.net/")).to eq(false)
-      end
-    end
-  end
-
   describe "#calculate" do
     let(:destdir) { "/mnt" }
     let(:result) { {} }
