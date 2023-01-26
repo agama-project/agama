@@ -35,8 +35,8 @@ module DInstaller
 
         # Constructor
         #
-        # @param logger [Logger]
-        def initialize(logger = nil)
+        # @param logger [Logger, nil]
+        def initialize(logger: nil)
           @logger = logger || Logger.new($stdout)
         end
 

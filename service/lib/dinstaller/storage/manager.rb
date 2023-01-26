@@ -173,7 +173,7 @@ module DInstaller
       #
       # @return [DInstaller::DBus::Clients::Questions]
       def questions_client
-        @questions_client ||= DInstaller::DBus::Clients::Questions.new(logger)
+        @questions_client ||= DInstaller::DBus::Clients::Questions.new(logger: logger)
       end
 
       # Returns the client to ask the software service

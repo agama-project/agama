@@ -33,7 +33,7 @@ describe DInstaller::DBus::Clients::Questions do
     allow(dbus_object).to receive(:default_iface=)
   end
 
-  subject { described_class.new(logger) }
+  subject { described_class.new(logger: logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 

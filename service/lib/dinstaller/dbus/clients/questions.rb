@@ -30,8 +30,8 @@ module DInstaller
       class Questions < Base
         # Constructor
         #
-        # @param logger [Logger]
-        def initialize(logger)
+        # @param logger [Logger, nil]
+        def initialize(logger: nil)
           super
 
           @dbus_object = service["/org/opensuse/DInstaller/Questions1"]

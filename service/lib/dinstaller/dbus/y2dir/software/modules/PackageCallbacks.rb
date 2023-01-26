@@ -47,7 +47,7 @@ module Yast
     #
     # @return [DInstaller::DBus::Clients::Questions]
     def questions_client
-      @questions_client ||= DInstaller::DBus::Clients::Questions.new(logger)
+      @questions_client ||= DInstaller::DBus::Clients::Questions.new(logger: logger)
     end
 
   private
