@@ -21,7 +21,6 @@
 
 require "y2storage"
 require "y2storage/dialogs/guided_setup/helpers/disk"
-require "dinstaller/with_progress"
 require "dinstaller/validation_error"
 require "dinstaller/storage/actions"
 require "dinstaller/storage/proposal_settings"
@@ -42,8 +41,6 @@ module DInstaller
     #   proposal.calculate(settings)  #=> true
     #   proposal.calculated_volumes   #=> [Volume, Volume]
     class Proposal
-      include WithProgress
-
       # Constructor
       #
       # @param logger [Logger]
