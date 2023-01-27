@@ -128,4 +128,25 @@ describe DInstaller::Software::Proposal do
   describe "#set_resolvables" do
     it "adds the list of packages/patterns to the proposal"
   end
+
+  describe "#packages_count" do
+    before do
+      allow(Yast::Pkg).to receive(:PkgMediaCount).and_return([[75], [50], [25], [0]])
+    end
+
+    it "returns the amount of packages to install" do
+      expect(subject.packages_count).to eq(150)
+    end
+  end
+
+  describe "#packages_size" do
+    before do
+      allow(Yast::Pkg).to receive(:PkgMediaSizes)
+        .and_return([[900000000], [0], [500000000]])
+    end
+
+    it "returns the size of packages to install" do
+      expect(subject.packages_size).to eq(1400000000)
+    end
+  end
 end

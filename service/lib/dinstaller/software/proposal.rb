@@ -94,6 +94,20 @@ module DInstaller
         @errors.empty?
       end
 
+      # Returns the count of packages to install
+      #
+      # @return [Integer] count of packages to install
+      def packages_count
+        Yast::Pkg.PkgMediaCount.reduce(0) { |sum, res| sum + res.reduce(0, :+) }
+      end
+
+      # Returns the size of the packages to install
+      def packages_size
+        Yast::Pkg.PkgMediaSizes.reduce(0) do |res, media_size|
+          media_size.reduce(res, :+)
+        end
+      end
+
     private
 
       # @return [Logger]

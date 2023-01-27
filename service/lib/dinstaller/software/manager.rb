@@ -126,8 +126,9 @@ module DInstaller
       end
 
       def install
-        start_progress(count_packages)
-        Callbacks::Progress.setup(count_packages, progress)
+        steps = proposal.packages_count
+        start_progress(steps)
+        Callbacks::Progress.setup(steps, progress)
 
         # TODO: error handling
         commit_result = Yast::Pkg.Commit({})
@@ -178,12 +179,8 @@ module DInstaller
       def used_disk_space
         return "" unless @probed
 
-        size = Yast::Pkg.PkgMediaSizes.reduce(0) do |res, media_size|
-          media_size.reduce(res, :+)
-        end
-
         # FormatSizeWithPrecision(bytes, precision, omit_zeroes)
-        Yast::String.FormatSizeWithPrecision(size, 1, true)
+        Yast::String.FormatSizeWithPrecision(proposal.packages_size, 1, true)
       end
 
     private
@@ -194,10 +191,6 @@ module DInstaller
 
       # @return [Logger]
       attr_reader :logger
-
-      def count_packages
-        Yast::Pkg.PkgMediaCount.reduce(0) { |sum, res| sum + res.reduce(0, :+) }
-      end
 
       def import_gpg_keys
         gpg_keys = Dir.glob(GPG_KEYS_GLOB).map(&:to_s)
