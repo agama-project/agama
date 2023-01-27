@@ -1,0 +1,56 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<!--
+sudo busctl -\-address unix:path=/run/agama/bus -\-xml-interface introspect org.opensuse.Agama1 /org/opensuse/Agama/Manager1
+-->
+<node name="/org/opensuse/Agama/Manager1"
+      xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
+  <interface name="org.opensuse.Agama.Manager1">
+    <method name="Probe">
+    </method>
+    <method name="Commit">
+    </method>
+    <method name="CanInstall">
+      <arg name="result" direction="out" type="b"/>
+    </method>
+    <method name="CollectLogs">
+      <arg name="user" direction="in" type="s"/>
+      <arg name="tarball_filesystem_path" direction="out" type="s"/>
+    </method>
+
+    <property type="aa{sv}" name="InstallationPhases" access="read">
+      <doc:doc>
+        <doc:description>
+          <doc:para>
+  All possible phases:
+  [
+    {"id" => 0, "label" => "startup"},
+    {"id" => 1, "label" => "config"},
+    {"id" => 2, "label" => "install"}
+  ]
+          </doc:para>
+        </doc:description>
+      </doc:doc>
+    </property>
+
+    <property type="u" name="CurrentInstallationPhase" access="read">
+      <doc:doc>
+        <doc:description>
+          <doc:para>
+            Id of the current phase.
+          </doc:para>
+        </doc:description>
+      </doc:doc>
+    </property>
+
+    <property type="as" name="BusyServices" access="read">
+      <doc:doc>
+        <doc:description>
+          <doc:para>
+            List of names of the currently busy services.
+          </doc:para>
+        </doc:description>
+      </doc:doc>
+    </property>
+  </interface>
+</node>
