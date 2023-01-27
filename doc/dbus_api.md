@@ -125,8 +125,11 @@ Service for managing storage devices.
   .DInstaller.Validation1
   .DInstaller.Storage1
   .DInstaller.Storage1.Proposal.Calculator
+  .DInstaller.Storage1.ISCSI.Initiator
 /DInstaller/Storage1/Proposal
   .DInstaller.Storage1.Proposal
+/DInstaller/Storage1/iscsi_nodes/[0-9]+
+  .DInstaller.Storage1.ISCSI.Node
 ~~~
 
 ### D-Bus Objects
@@ -141,13 +144,14 @@ Service for managing storage devices.
   .DInstaller.Validation1
   .DInstaller.Storage1
   .DInstaller.Storage1.Proposal.Calculator
+  .DInstaller.Storage1.ISCSI.Initiator
 ~~~
 
 Main object exported by the service `org.opensuse.DInstaller.Service`. This object implements the `org.freedesktop.DBus.ObjectManager` interface and should be used by clients to discover other objects.
 
 This object also implements generic interfaces to manage the service status, progress and validation.
 
-Moreover, it implements interfaces to manipulate the global state (perform installation, create proposals, login sessions for iSCSI targets, etc).
+Moreover, it implements interfaces to manipulate the global state (perform installation, create proposals, login sessions for iSCSI nodes, etc).
 
 #### `/org/opensuse/DInstaller/Storage1/Proposal` Object
 
@@ -157,6 +161,15 @@ Moreover, it implements interfaces to manipulate the global state (perform insta
 ~~~
 
 This object is exported only if a proposal was already calculated (successful or not). It can be used to inspect the result of the calculated proposal.
+
+#### `/org/opensuse/DInstaller/Storage1/iscsi_nodes/[0-9]+` Objects
+
+~~~
+/DInstaller/Storage1/iscsi_nodes/[0-9]+
+  .DInstaller.Storage1.ISCSI.Node
+~~~
+
+Objects representing iSCSI nodes are dynamically exported when a successful iSCSI discovery is performed, see `.org.opensuse.DInstaller.Storage1.ISCSI.Initiator` interface.
 
 ### D-Bus Interfaces
 
@@ -200,9 +213,12 @@ Calculate(in  a{sv} settings,
           out u     result)
 ~~~
 
-Calculates a new proposal with the given settings. Allowed settings are defined by `org.opensuse.DInstaller.Storage1.Proposal` interface. A proposal object is exported when the proposal is calculated.
+Calculates a new proposal with the given settings. A proposal object is exported when the proposal is calculated.
 
-Returns `0` on success and `1` on failure.
+Arguments:
+
+* `in a{sv} settings`: Allowed settings correspond to the properties defined by `org.opensuse.DInstaller.Storage1.Proposal` interface.
+* `out u result`: `0` on success and `1` on failure.
 
 ###### `AvailableDevices` Property
 
@@ -303,16 +319,120 @@ Example:
 2 3 Text s "Create partition /dev/vdb1" Subvol b false Delete b false 3 Text s "Delete Btrfs subvolume @/var" Subvol b true Delete b true
 ~~~
 
-## org.opensuse.DInstaller.Storage1.ISCSI.Initiator
+#### `org.opensuse.DInstaller.Storage1.ISCSI.Initiator` Interface
 
-### Methods
+Provides methods for configuring iSCSI initiator and for discovering nodes.
 
-- Discover(s ip, i port, a{sv} options)
-  Performs targets discovery. Options:
-  - initiatorUsername (s): username for incoming authentication
-  - initiatorPassword (s): password for incoming authentication
-  - targetUsername (s): username for outgoing authentication
-  - targetPassword (s): password for outgoing authentication
+##### Methods
+
+~~~
+Discover(in  s       address,
+         in  u       port,
+         in  a{sv}   options,
+         out u       result)
+Delete(in o  iscsi_node_path,
+       out u result)
+~~~
+
+##### Properties
+
+~~~
+IniciatorName readable,writable   s
+~~~
+
+##### Details
+
+###### `Discover` Method
+
+~~~
+Discover(in  s       address,
+         in  u       port,
+         in  a{sv}   options,
+         out u       result)
+~~~
+
+Performs nodes discovery. Discovered nodes are exported with the path `/org/opensuse/DInstaller/iscsi/node[0-9]+`.
+
+Arguments:
+
+* `in s address`: IP address of the iSCSI server.
+* `in u port`: Port of the iSCSI server.
+* `in a{sv} options`:
+  * `Username s`: Username for authentication by target.
+  * `Password s`: Password for authentication by target.
+  * `ReverseUsername s`: Username for authentication by initiator.
+  * `ReversePassword s`: Password for authentication by initiator.
+* `out u result`: `0` on success and `1` on failure.
+
+##### `Delete` Method
+
+~~~
+Delete(in o  iscsi_node_path,
+       out u result)
+~~~
+
+Deletes a discovered iSCSI node. The iSCSI node object is unexported. Note that connected nodes cannot be deleted.
+
+Arguments:
+
+* `in o iscsi_node_path`: Path of the iSCSI node to delete.
+* `out u result`: `0` on success and `1` on failure.
+
+#### `org.opensuse.DInstaller.Storage1.ISCSI.Node` Interface
+
+This interface is implemented by objects exported at `/org/opensuse/DInstaller/Storage1/iscsi_nodes/[0-9]+` path. It provides information about an iSCSI node and allows to perform login and logout.
+
+##### Methods
+
+~~~
+Login(in  a{sv}   options,
+      out u       result)
+Logout(out u result)
+~~~
+
+##### Properties
+
+~~~
+Target    readable s
+Address   readable s
+Port      readable u
+Interface readable s
+Startup   readable s
+~~~
+
+##### Details
+
+###### `Login` Method
+
+~~~
+Login(in  a{sv}   options,
+      out u       result)
+~~~
+
+Creates an iSCSI session. If the session is created, then a new iSCSI session object is exported with the path `/org/opensuse/DInstaller/Storage1/iscsi/session[0-9]+`.
+
+Arguments:
+
+* `in a{sv} options`:
+  * `Username s`: Username for authentication by target.
+  * `Password s`: Password for authentication by target.
+  * `ReverseUsername s`: Username for authentication by initiator.
+  * `ReversePassword s`: Password for authentication by initiator.
+  * `Startup s`: startup mode (`manual`, `onboot`, `automatic`).
+* `out u result`: `0` on success and `1` on failure.
+
+###### `Logout` Method
+
+~~~
+Logout(out u result)
+~~~
+
+Closes an iSCSI session.
+
+Arguments:
+
+* `out u result`: `0` on success and `1` on failure.
+
 
 ## Users
 
