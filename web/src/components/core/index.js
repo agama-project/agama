@@ -30,7 +30,7 @@ export { default as InstallButton } from "./InstallButton";
 export { default as InstallerSkeleton } from "./InstallerSkeleton";
 export { default as KebabMenu } from "./KebabMenu";
 export { default as LogsButton } from "./LogsButton";
-export { default as LogPopup } from "./LogPopup";
+export { default as FileViewer } from "./FileViewer";
 export { default as ShowLogButton } from "./ShowLogButton";
 export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmationInput";
 export { default as Popup } from "./Popup";

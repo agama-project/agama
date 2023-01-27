@@ -64,7 +64,7 @@ export default function Sidebar() {
           <About onClickCallback={close} />
           <TargetIpsPopup onClickCallback={close} />
           <LogsButton />
-          <ShowLogButton onShowCallback={close} file="/var/log/YaST2/y2log" title="YaST Logs" />
+          <ShowLogButton onClickCallback={close} />
         </div>
 
         <footer className="split" data-state="reversed">

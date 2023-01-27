@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,27 +20,11 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
-import cockpit from "../../lib/cockpit";
+import { screen } from "@testing-library/react";
+import { plainRender, mockComponent } from "~/test-utils";
 import { ShowLogButton } from "~/components/core";
 
-jest.mock("../../lib/cockpit");
-
-const executor = jest.fn();
-const loadLogsFn = jest.fn().mockImplementation(() => new Promise(executor));
-
-beforeEach(() => {
-  cockpit.file.mockImplementation(() => {
-    return {
-      read: loadLogsFn
-    }
-  });
-});
-
-afterEach(() => {
-  jest.restoreAllMocks();
-});
+jest.mock("~/components/core/FileViewer", () => mockComponent("FileViewer Mock"));
 
 describe("ShowLogButton", () => {
   it("renders a button for displaying logs", () => {
@@ -50,50 +34,11 @@ describe("ShowLogButton", () => {
   });
 
   describe("when user clicks on it", () => {
-    it("starts loading the log file", async () => {
+    it("displays the FileView component", async () => {
       const { user } = plainRender(<ShowLogButton />);
       const button = screen.getByRole("button", "Show Logs");
       await user.click(button);
-      expect(loadLogsFn).toHaveBeenCalled();
-    });
-  });
-
-  describe("when loading the log succeeds", () => {
-    const log = "Content of the YaST log file";
-
-    beforeEach(() => {
-      loadLogsFn.mockResolvedValue(log);
-    });
-
-    it("displays the log content", async () => {
-      const { user } = plainRender(<ShowLogButton />);
-      const button = screen.getByRole("button", "Show Logs");
-
-      await user.click(button);
-      const dialog = await screen.findByRole("dialog");
-      within(dialog).getByText(log);
-    });
-
-    it("triggers the on show callback", async () => {
-      const callback = jest.fn();
-      const { user } = plainRender(<ShowLogButton onShowCallback={callback}/>);
-      const button = screen.getByRole("button", "Show Logs");
-
-      await user.click(button);
-      expect(callback).toHaveBeenCalled();
-    });
-  });
-
-  describe("when loading the log fails", () => {
-    beforeEach(() => {
-      loadLogsFn.mockRejectedValue("Cannot read log");
-    });
-
-    it("displays a warning alert", async () => {
-      const { user } = plainRender(<ShowLogButton />);
-      const button = screen.getByRole("button", "Show Logs");
-      await user.click(button);
-      screen.getByRole("heading", { name: /cannot read the log file/i });
+      screen.getByText(/FileViewer Mock/);
     });
   });
 });

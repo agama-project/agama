@@ -20,64 +20,45 @@
  */
 
 import React, { useState } from "react";
-import { useCancellablePromise } from "~/utils";
-import { LogPopup } from "~/components/core";
+import { FileViewer } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { Alert, Button } from "@patternfly/react-core";
-import cockpit from "../../lib/cockpit";
+import { Button } from "@patternfly/react-core";
 
 /**
  * Button for displaying the YaST logs
  *
  * @component
  *
- * @param {object} props
+ * @param {function} onClickCallback callback triggered after clicking the button
  */
-const ShowLogButton = (props) => {
-  const { cancellablePromise } = useCancellablePromise();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [log, setLog] = useState(null);
+const ShowLogButton = ({ onClickCallback }) => {
+  const [isLogDisplayed, setIsLogDisplayed] = useState(false);
 
-  const loadLog = () => {
-    setError(null);
-    setIsLoading(true);
-    cancellablePromise(cockpit.file(props.file).read())
-      .then((content) => {
-        if (props.onShowCallback) props.onShowCallback();
-        setLog(content);
-      })
-      .catch(setError)
-      .finally(() => setIsLoading(false));
+  const onClick = () => {
+    if (onClickCallback) onClickCallback();
+    setIsLogDisplayed(true);
   };
 
-  const resetLog = () => setLog(null);
+  const onClose = () => {
+    setIsLogDisplayed(false);
+  };
 
   return (
     <>
       <Button
         variant="link"
-        onClick={loadLog}
-        isLoading={isLoading}
-        isDisabled={isLoading}
-        icon={isLoading ? null : <Icon name="description" size="24" />}
+        onClick={onClick}
+        isDisabled={isLogDisplayed}
+        icon={<Icon name="description" size="24" />}
       >
         Show Logs
       </Button>
 
-      { error &&
-        <Alert
-          isInline
-          isPlain
-          variant="warning"
-          title="Cannot read the log file."
-        /> }
-
-      { log &&
-        <LogPopup
-          title={props.title}
-          log={log}
-          onCloseCallback={resetLog}
+      { isLogDisplayed &&
+        <FileViewer
+          title="YaST Logs"
+          file="/var/log/YaST2/y2log"
+          onCloseCallback={onClose}
         /> }
     </>
   );
