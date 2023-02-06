@@ -86,3 +86,11 @@ section > .content {
 .sidebar[data-state="visible"] {
   transition: all 0.2s ease-in-out;
 }
+
+// raw file content with formatting similar to <pre>
+.filecontent {
+  font-family: var(--ff-code);
+  font-size: 90%;
+  word-break: break-all;
+  white-space: pre-wrap;
+}

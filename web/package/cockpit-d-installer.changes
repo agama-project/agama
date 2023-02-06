@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 24 09:32:13 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
+
+- Added a button for displaying the YaST logs
+  (related to gh#yast/d-installer#379)
+
+-------------------------------------------------------------------
 Fri Jan 20 09:03:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI fixes (gh#yast/d-installer#401):
