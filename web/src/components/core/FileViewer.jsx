@@ -21,7 +21,9 @@
 
 import React, { useState, useEffect } from "react";
 import { Popup } from "~/components/core";
-import { Alert, Bullseye, Spinner } from "@patternfly/react-core";
+import { Alert } from "@patternfly/react-core";
+import { LoadingEnvironment } from "~/components/layout";
+
 import cockpit from "../../lib/cockpit";
 
 import "./fileviewer.scss";
@@ -29,9 +31,7 @@ import "./fileviewer.scss";
 // file loading indicator
 const spinner = () => {
   return (
-    <Bullseye>
-      <Spinner size="xl" />
-    </Bullseye>
+    <LoadingEnvironment text="Reading file..." />
   );
 };
 
@@ -43,12 +43,9 @@ export default function FileViewer({ file, title, onCloseCallback }) {
   // the file content
   const [content, setContent] = useState("");
   // current state
-  const [state, setState] = useState("init");
+  const [state, setState] = useState("loading");
 
   useEffect(() => {
-    if (state !== "init") return;
-
-    setState("loading");
     // NOTE: reading non-existing files in cockpit does not fail, the result is null
     // see https://cockpit-project.org/guide/latest/cockpit-file
     cockpit.file(file).read()
@@ -60,7 +57,7 @@ export default function FileViewer({ file, title, onCloseCallback }) {
         setState("ready");
         setError(data.message);
       });
-  }, [file, state]);
+  }, [file]);
 
   const close = () => {
     setIsOpen(false);
