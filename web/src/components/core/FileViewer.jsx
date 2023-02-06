@@ -21,7 +21,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Popup } from "~/components/core";
-import { Alert, Spinner } from "@patternfly/react-core";
+import { Alert, Bullseye, Spinner } from "@patternfly/react-core";
 import cockpit from "../../lib/cockpit";
 
 import "./fileviewer.scss";
@@ -29,9 +29,9 @@ import "./fileviewer.scss";
 // file loading indicator
 const spinner = () => {
   return (
-    <div className="horizontally-centered">
+    <Bullseye>
       <Spinner size="xl" />
-    </div>
+    </Bullseye>
   );
 };
 
