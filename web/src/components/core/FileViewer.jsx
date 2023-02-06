@@ -65,30 +65,28 @@ export default function FileViewer({ file, title, onCloseCallback }) {
   };
 
   return (
-    <>
-      <Popup
-        isOpen={isOpen}
-        title={title || file}
-        variant="large"
-      >
-        { state === "loading" && spinner() }
-        { (content === null || error) &&
-          <Alert
-            isInline
-            isPlain
-            variant="warning"
-            title="Cannot read the file"
-          >
-            {error}
-          </Alert> }
-        <div className="filecontent">
-          {content}
-        </div>
+    <Popup
+      isOpen={isOpen}
+      title={title || file}
+      variant="large"
+    >
+      { state === "loading" && spinner() }
+      { (content === null || error) &&
+        <Alert
+          isInline
+          isPlain
+          variant="warning"
+          title="Cannot read the file"
+        >
+          {error}
+        </Alert> }
+      <div className="filecontent">
+        {content}
+      </div>
 
-        <Popup.Actions>
-          <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
-        </Popup.Actions>
-      </Popup>
-    </>
+      <Popup.Actions>
+        <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
+      </Popup.Actions>
+    </Popup>
   );
 }
