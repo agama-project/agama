@@ -98,3 +98,10 @@
 .bottom-shadow {
   box-shadow: 0px -3px 10px 0px var(--color-gray-darker);
 }
+
+.tallest {
+  /** block-size fallbacks **/
+  height: 95dvh;
+  /** END block-size fallbacks **/
+  block-size: 95dvh;
+}

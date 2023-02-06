@@ -26,18 +26,6 @@ import { LoadingEnvironment } from "~/components/layout";
 
 import cockpit from "../../lib/cockpit";
 
-import "./fileviewer.scss";
-
-// file loading indicator
-const spinner = () => {
-  return (
-    // set max. height to avoid resizing after the file is loaded (no "blinking")
-    <div style={{ height: "100vh" }}>
-      <LoadingEnvironment text="Reading file..." />
-    </div>
-  );
-};
-
 export default function FileViewer({ file, title, onCloseCallback }) {
   // the popup is visible
   const [isOpen, setIsOpen] = useState(true);
@@ -72,8 +60,9 @@ export default function FileViewer({ file, title, onCloseCallback }) {
       isOpen={isOpen}
       title={title || file}
       variant="large"
+      className="tallest"
     >
-      { state === "loading" && spinner() }
+      { state === "loading" && <LoadingEnvironment text="Reading file..." /> }
       { (content === null || error) &&
         <Alert
           isInline
