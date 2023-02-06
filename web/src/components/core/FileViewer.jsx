@@ -31,7 +31,10 @@ import "./fileviewer.scss";
 // file loading indicator
 const spinner = () => {
   return (
-    <LoadingEnvironment text="Reading file..." />
+    // set max. height to avoid resizing after the file is loaded (no "blinking")
+    <div style={{ height: "100vh" }}>
+      <LoadingEnvironment text="Reading file..." />
+    </div>
   );
 };
 
