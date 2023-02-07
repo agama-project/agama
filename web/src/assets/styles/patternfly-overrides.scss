@@ -37,12 +37,11 @@
   --pf-global--link--Color: var(--color-link);
   --pf-global--link--Color--hover: var(--color-link-hover);
   --pf-global--BackgroundColor--dark-100: var(--color-primary);
-  --pf-global--BackgroundColor--dark-100: var(--color-primary);
 }
 
 .pf-c-button.pf-m-primary {
   --pf-c-button--m-primary--BackgroundColor: var(--color-button-primary);
-  --pf-c-button--m-primary--hover--BackgroundColor: var(--color-button-primary-hover)
+  --pf-c-button--m-primary--hover--BackgroundColor: var(--color-button-primary-hover);
 }
 
 .pf-c-button.pf-m-link {
@@ -79,6 +78,7 @@
 .pf-c-modal-box__body {
   padding-block: var(--pf-c-modal-box__body--PaddingTop);
 }
+
 .pf-c-form__actions,
 .pf-c-modal-box__footer {
   // We prefer buttons placed at the right

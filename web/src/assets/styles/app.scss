@@ -13,17 +13,14 @@
 }
 
 .proposal-action--delete {
-  font-weight: bold
+  font-weight: bold;
 }
 
 // Align the expandable-actions with the actions list
 // See https://www.patternfly.org/v4/components/list#css-variables
 .expandable-actions {
-  margin-inline-start: calc(
-    var(--pf-global--spacer--lg) // --pf-c-list--PaddingLeft
-    - var(--pf-global--spacer--sm) // --pf-c-list--nested--MarginLeft
-    - var(--pf-global--icon--FontSize--sm) // --pf-c-list--m-icon-lg__item-icon-MinWidth
-  );
+  // --pf-c-list--PaddingLeft - --pf-c-list--nested--MarginLeft - --pf-c-list--m-icon-lg__item-icon-MinWidth
+  margin-inline-start: calc(var(--pf-global--spacer--lg) - var(--pf-global--spacer--sm) - var(--pf-global--icon--FontSize--sm));
 }
 
 .expandable-actions > div {
@@ -67,6 +64,7 @@
   height: 0;
   overflow: hidden;
 }
+
 .hidden {
   visibility: hidden;
 }
@@ -78,11 +76,13 @@
 
 ul.connections-datalist {
   border: 0;
+
   li {
     border: 0;
     // TODO: get rid of this nested overrides once the network overview UI is better defined
     .pf-c-data-list__item-row {
       padding-inline: 0;
+
       .pf-c-data-list__item-content {
         padding-block-end: 0;
       }
@@ -110,7 +110,7 @@ li.pf-c-data-list__item {
 }
 
 div.pf-c-data-list__item-row:has(button.remove-link:hover) {
-  background-color: #FAFAFA;
+  background-color: #fafafa;
 }
 
 button.remove-link:hover {
@@ -141,6 +141,7 @@ button.hidden-popover-button {
 
 .danger-action {
   color: var(--pf-global--danger-color--200);
+
   svg {
     fill: var(--pf-global--danger-color--200);
   }
@@ -154,9 +155,10 @@ button.hidden-popover-button {
   word-break: keep-all;
 }
 
-.wifi-network-menu{
+.wifi-network-menu {
   button.toggler {
     padding-inline-start: 0;
+
     svg {
       vertical-align: middle;
     }

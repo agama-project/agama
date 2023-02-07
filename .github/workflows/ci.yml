@@ -34,6 +34,12 @@ jobs:
     - name: Check types
       run: npm run check-types
 
+    - name: Run ESLint
+      run: npm run eslint
+
+    - name: Run Stylelint
+      run: npm run stylelint
+
     - name: Run the tests and generate coverage report
       run: npm test -- --coverage
 

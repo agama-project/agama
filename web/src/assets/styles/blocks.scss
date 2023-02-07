@@ -6,13 +6,12 @@ section {
   grid-template-columns: var(--icon-size-m) 1fr;
   grid-template-areas:
     "icon title"
-    ".... content"
-  ;
+    ".... content";
   gap: var(--spacer-small);
 }
 
 section > svg {
-  grid-aread: icon;
+  grid-area: icon;
 }
 
 section > h2 {
@@ -27,10 +26,10 @@ section > .content {
 .selection-list > * {
   border: 1px solid #eee;
   transition:
-    font-size .15s ease-in-out,
-    font-weight .25s ease-in-out,
-    margin-block .15s ease-in-out,
-    box-shadow .35s ease-in-out;
+    font-size 0.15s ease-in-out,
+    font-weight 0.25s ease-in-out,
+    margin-block 0.15s ease-in-out,
+    box-shadow 0.35s ease-in-out;
 
   margin-block-start: -2px;
 }
@@ -46,7 +45,7 @@ section > .content {
 
 .selection-list [data-state="focused"] {
   margin-block: 20px;
-  box-shadow: 0 0 6px rgba(0,0,0,.16),0 6px 12px rgba(0,0,0,.32);
+  box-shadow: 0 0 6px rgb(0 0 0 / 16%), 0 6px 12px rgb(0 0 0 / 32%);
 }
 
 .selection-list [data-state="unstyled"] {
@@ -62,7 +61,7 @@ section > .content {
   right: 0;
   z-index: 1;
   inline-size: 70%;
-  box-shadow: 0px 0px 20px 10px var(--color-primary-darkest);
+  box-shadow: 0 0 20px 10px var(--color-primary-darkest);
 }
 
 .sidebar footer {
@@ -73,6 +72,7 @@ section > .content {
 .sidebar button.pf-m-progress {
   --pf-c-button--m-progress--PaddingLeft: var(--pf-global--spacer--md);
 }
+
 .sidebar button.pf-m-progress + div {
   padding-inline-start: calc(var(--pf-global--spacer--md));
 }
