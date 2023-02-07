@@ -41,7 +41,7 @@ const storageProxy = {
   Calculate: calculateFn
 };
 
-const proposalProxy = {
+const validProposalProxy = {
   valid: true,
   wait: jest.fn(),
   CandidateDevices: ["/dev/sda"],
@@ -76,49 +76,103 @@ const proposalProxy = {
   ]
 };
 
+let proposalProxy;
+let proxy;
+
+/**
+ * Helper for mocking a proxy for given iface
+ *
+ * @param {string} iface - D-Bus iface
+ * @return {object} a cockpit DBusProxy mock
+ */
+const proxyMock = (iface) => {
+  /** @type {object} */
+  let result;
+
+  switch (iface) {
+    case PROPOSAL_CALCULATOR_IFACE:
+      result = storageProxy;
+      break;
+    case PROPOSAL_IFACE:
+      result = proposalProxy;
+      break;
+  }
+
+  return new Promise((resolve) => resolve(result));
+};
+
 beforeEach(() => {
+  proposalProxy = validProposalProxy;
+  proxy = proxyMock;
+
   // @ts-ignore
   DBusClient.mockImplementation(() => {
-    return {
-      proxy: (iface) => {
-        if (iface === PROPOSAL_CALCULATOR_IFACE) return storageProxy;
-        if (iface === PROPOSAL_IFACE) return proposalProxy;
-      }
-    };
+    return { proxy };
   });
 });
 
 describe("#getProposal", () => {
-  it("returns the storage proposal settings and actions", async () => {
-    const client = new StorageClient();
-    const proposal = await client.getProposal();
-    expect(proposal.availableDevices).toEqual([
-      { id: "/dev/sda", label: "/dev/sda, 950 GiB, Windows" },
-      { id: "/dev/sdb", label: "/dev/sdb, 500 GiB" }
-    ]);
-    expect(proposal.candidateDevices).toEqual(["/dev/sda"]);
-    expect(proposal.lvm).toBeTruthy();
-    expect(proposal.actions).toEqual([
-      { text: "Mount /dev/sdb1 as root", subvol: false, delete: false }
-    ]);
-
-    expect(proposal.volumes[0]).toEqual({
-      mountPoint: "/test1",
-      optional: true,
-      deviceType: "partition",
-      encrypted: false,
-      fsTypes: ["Btrfs", "Ext3"],
-      fsType: "Btrfs",
-      minSize: 1024,
-      maxSize:2048,
-      fixedSizeLimits: false,
-      adaptiveSizes: false,
-      snapshots: true,
-      snapshotsConfigurable: true,
-      snapshotsAffectSizes: false,
-      sizeRelevantVolumes: []
+  describe("when something is wrong at cockpit side (e.g., the requested Dbus iface does not exist)", () => {
+    beforeEach(() => {
+      // NOTE: when something is wrong in cockpit.dbus.proxy our Dbus#proxy returns undefined
+      proxy = jest.fn().mockResolvedValue(undefined);
     });
-    expect(proposal.volumes[1].mountPoint).toEqual("/test2");
+
+    it("returns an empty object", async() => {
+      const client = new StorageClient();
+      const proposal = await client.getProposal();
+
+      expect(proposal).toStrictEqual({});
+    });
+  });
+
+  describe("when cockpit returns a proxy", () => {
+    describe("but holding a not valid proposal", () => {
+      beforeEach(() => {
+        proposalProxy = { ...validProposalProxy, valid: false };
+      });
+
+      it("returns an empty object", async() => {
+        const client = new StorageClient();
+        const proposal = await client.getProposal();
+
+        expect(proposal).toStrictEqual({});
+      });
+    });
+
+    describe("with a valid proposal", () => {
+      it("returns the storage proposal settings and actions", async () => {
+        const client = new StorageClient();
+        const proposal = await client.getProposal();
+        expect(proposal.availableDevices).toEqual([
+          { id: "/dev/sda", label: "/dev/sda, 950 GiB, Windows" },
+          { id: "/dev/sdb", label: "/dev/sdb, 500 GiB" }
+        ]);
+        expect(proposal.candidateDevices).toEqual(["/dev/sda"]);
+        expect(proposal.lvm).toBeTruthy();
+        expect(proposal.actions).toEqual([
+          { text: "Mount /dev/sdb1 as root", subvol: false, delete: false }
+        ]);
+
+        expect(proposal.volumes[0]).toEqual({
+          mountPoint: "/test1",
+          optional: true,
+          deviceType: "partition",
+          encrypted: false,
+          fsTypes: ["Btrfs", "Ext3"],
+          fsType: "Btrfs",
+          minSize: 1024,
+          maxSize:2048,
+          fixedSizeLimits: false,
+          adaptiveSizes: false,
+          snapshots: true,
+          snapshotsConfigurable: true,
+          snapshotsAffectSizes: false,
+          sizeRelevantVolumes: []
+        });
+        expect(proposal.volumes[1].mountPoint).toEqual("/test2");
+      });
+    });
   });
 });
 
