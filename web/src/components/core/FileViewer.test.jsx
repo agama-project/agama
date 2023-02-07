@@ -28,19 +28,19 @@ import cockpit from "../../lib/cockpit";
 
 jest.mock("../../lib/cockpit");
 
-const readFn = jest.fn((arg) => new Promise(jest.fn()));
+const readFn = jest.fn(() => new Promise(jest.fn()));
 
 const fileFn = jest.fn();
 fileFn.mockImplementation(() => {
   return {
     read: readFn
-  }
+  };
 });
 
 cockpit.file.mockImplementation(fileFn);
 
 // testing data
-const file_name = "/testfile"
+const file_name = "/testfile";
 const content = "Read file content";
 const title = "YaST Logs";
 

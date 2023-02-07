@@ -21,7 +21,7 @@
 
 import React from "react";
 
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 
 import { WifiNetworksList } from "~/components/network";
