@@ -31,16 +31,16 @@ module DInstaller
     #
     # @see RepositoriesManager
     class Repository < Y2Packager::Repository
-      # Refreshes the repository metadata
-      def refresh
-        @available = Yast::Pkg.SourceRefreshNow(repo_id)
+      # Probes a repository
+      #
+      # @return [Boolean] true if the repository can be read; false otherwise
+      def probe
+        Yast::Pkg.RepositoryProbe(url.to_s, product_dir)
       end
 
-      # Determines whether a repository is available or not
-      #
-      # A repository is available when it is possible to read its metadata.
-      def available?
-        !!@available
+      # @return [Boolean]
+      def refresh
+        Yast::Pkg.SourceRefreshNow(repo_id)
       end
     end
   end

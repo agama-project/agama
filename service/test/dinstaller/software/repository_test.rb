@@ -37,37 +37,4 @@ describe DInstaller::Software::Repository do
       subject.refresh
     end
   end
-
-  describe "#available?" do
-    let(:refresh_result) { true }
-
-    before do
-      allow(Yast::Pkg).to receive(:SourceRefreshNow).with(1)
-        .and_return(refresh_result)
-    end
-
-    context "when the metadata was not read" do
-      it "returns false" do
-        expect(subject.available?).to eq(false)
-      end
-    end
-
-    context "when the metadata was successfully read" do
-      before { subject.refresh }
-
-      it "returns true" do
-        expect(subject.available?).to eq(true)
-      end
-    end
-
-    context "when it was not possible to read the metadata" do
-      let(:refresh_result) { false }
-
-      before { subject.refresh }
-
-      it "returns false" do
-        expect(subject.available?).to eq(false)
-      end
-    end
-  end
 end

@@ -37,9 +37,9 @@ describe DInstaller::Software::Manager do
   let(:repositories) do
     instance_double(
       DInstaller::Software::RepositoriesManager,
-      add:         nil,
-      refresh_all: nil,
-      available?:  true
+      add:    nil,
+      load:   nil,
+      empty?: true
     )
   end
   let(:proposal) do
@@ -48,7 +48,8 @@ describe DInstaller::Software::Manager do
       :base_product= => nil,
       calculate:        nil,
       :languages= =>    nil,
-      set_resolvables:  nil
+      set_resolvables:  nil,
+      packages_count:   "500 MB"
     )
   end
 
@@ -114,7 +115,7 @@ describe DInstaller::Software::Manager do
 
     it "registers the repository from config" do
       expect(repositories).to receive(:add).with(/tumbleweed/)
-      expect(repositories).to receive(:refresh_all)
+      expect(repositories).to receive(:load)
       subject.probe
     end
   end

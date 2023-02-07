@@ -135,8 +135,10 @@ module DInstaller
 
       # Returns the errors from the attempt to create a proposal
       #
-      # Apart from extracting the errors from the result, it checks the packaging
-      # system for errors of the last solver execution
+      # It collects errors from:
+      #
+      # * The proposal result
+      # * The last solver execution
       #
       # @param proposal_result [Hash] Proposal result; it might contain a "warning" key with warning
       #   messages.

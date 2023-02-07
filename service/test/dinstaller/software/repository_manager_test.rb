@@ -23,7 +23,15 @@ require_relative "../../test_helper"
 require "dinstaller/software/repositories_manager"
 
 describe DInstaller::Software::RepositoriesManager do
-  let(:repo) { instance_double(DInstaller::Software::Repository) }
+  let(:repo) do
+    instance_double(
+      DInstaller::Software::Repository, enable!: nil, probe: true, enabled?: true
+    )
+  end
+
+  let(:disabled_repo) do
+    instance_double(DInstaller::Software::Repository, enable!: nil, enabled?: false)
+  end
 
   describe "#add" do
     it "registers the repository in the packaging system" do
@@ -36,44 +44,54 @@ describe DInstaller::Software::RepositoriesManager do
     end
   end
 
-  describe "#refresh_all" do
-    before do
-      subject.repositories << repo
+  describe "#load" do
+    let(:repo1) do
+      instance_double(
+        DInstaller::Software::Repository, disable!: nil, probe: false
+      )
     end
 
-    it "refreshes all the repositories" do
-      expect(repo).to receive(:refresh)
-      subject.refresh_all
+    before do
+      subject.repositories << repo
+      subject.repositories << repo1
+      allow(Yast::Pkg).to receive(:SourceLoad)
+    end
+
+    it "enables the repositories that can be read" do
+      expect(repo).to receive(:enable!)
+      subject.load
+    end
+
+    it "disables the repositories that cannot be read" do
+      expect(repo1).to receive(:disable!)
+      subject.load
+    end
+
+    it "loads the repositories" do
+      expect(Yast::Pkg).to receive(:SourceLoad)
+      subject.load
     end
   end
 
-  describe "#available?" do
-    let(:repo1) do
-      instance_double(DInstaller::Software::Repository, available?: false)
-    end
-    let(:repo2) do
-      instance_double(DInstaller::Software::Repository, available?: false)
-    end
-
+  describe "#enabled" do
     before do
-      subject.repositories << repo1
-      subject.repositories << repo2
+      subject.repositories << repo
+      subject.repositories << disabled_repo
     end
 
-    context "when there no repositories available" do
-      it "returns false" do
-        expect(subject.available?).to eq(false)
-      end
+    it "returns the enabled repositories" do
+      expect(subject.enabled).to eq([repo])
+    end
+  end
+
+  describe "#disabled" do
+    before do
+      subject.repositories << repo
+      subject.repositories << disabled_repo
     end
 
-    context "when at least one repository is available" do
-      let(:repo1) do
-        instance_double(DInstaller::Software::Repository, available?: true)
-      end
-
-      it "returns true" do
-        expect(subject.available?).to eq(true)
-      end
+    it "returns the enabled repositories" do
+      expect(subject.disabled).to eq([disabled_repo])
     end
   end
 end

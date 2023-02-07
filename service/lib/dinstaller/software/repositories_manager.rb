@@ -34,22 +34,48 @@ module DInstaller
         @repositories = []
       end
 
+      # Adds a new repository
+      #
       # @param url [String] Repository URL
       def add(url)
         repositories << Repository.create(name: url, url: url)
       end
 
-      # Refreshes all the repositories
-      def refresh_all
-        repositories.each(&:refresh)
+      # Determines if there are registered repositories
+      #
+      # @return [Boolean] true if there are not repositories; false otherwise
+      def empty?
+        repositories.empty?
       end
 
-      # Determines whether some repository is available
+      # Returns the enabled repositories
       #
-      # @return [Boolean] true if at least one repository is available; false otherwise
-      # @see Repository#available?
-      def available?
-        repositories.any?(&:available?)
+      # @return [Array<Repository>]
+      def enabled
+        repositories.select(&:enabled?)
+      end
+
+      # Returns the disabled repositories
+      #
+      # @return [Array<Repository>]
+      def disabled
+        repositories.reject(&:enabled?)
+      end
+
+      # Loads the repository metadata
+      #
+      # As a side effect, it disables those repositories that cannot be read.
+      # The intentation is to prevent the proposal from trying to read them
+      # again.
+      def load
+        repositories.each do |repo|
+          if repo.probe
+            repo.enable!
+          else
+            repo.disable!
+          end
+        end
+        Yast::Pkg.SourceLoad
       end
     end
   end

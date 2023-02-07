@@ -88,18 +88,22 @@ module DInstaller
       def probe
         logger.info "Probing software"
 
-        store_original_repos
-
         # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
         Yast::Stage.Set("normal")
 
-        start_progress(3)
-        Yast::PackageCallbacks.InitPackageCallbacks(logger)
-        progress.step("Initialize target repositories") { initialize_target_repos }
-        progress.step("Initialize sources") { add_base_repos }
-        progress.step("Making the initial proposal") { propose }
+        if repositories.empty?
+          start_progress(4)
+          store_original_repos
+          Yast::PackageCallbacks.InitPackageCallbacks(logger)
+          progress.step("Initializing target repositories") { initialize_target_repos }
+          progress.step("Initializing sources") { add_base_repos }
+        else
+          start_progress(2)
+        end
 
-        @probed = true
+        progress.step("Refreshing repositories metadata") { repositories.load }
+        progress.step("Calculating the software proposal") { propose }
+
         Yast::Stage.Set("initial")
       end
 
@@ -108,9 +112,8 @@ module DInstaller
         import_gpg_keys
       end
 
+      # Updates the software proposal
       def propose
-        return unless repositories.available?
-
         proposal.base_product = @product
         proposal.languages = languages
         select_resolvables
@@ -119,10 +122,18 @@ module DInstaller
         result
       end
 
+      # Returns the errors related to the software proposal
+      #
+      # * Repositories that could not be probed are reported as errors
+      # * If none of the repositories could be probed, do not report missing patterns and packages
+      #   problems as it does not make sense.
       def validate
-        return [ValidationError.new("No repositories are available")] unless repositories.available?
+        errors = repositories.disabled.map do |repo|
+          ValidationError.new("Could not read the repository #{repo.name}")
+        end
+        return errors if repositories.enabled.empty?
 
-        proposal.errors
+        errors + proposal.errors
       end
 
       def install
@@ -213,10 +224,8 @@ module DInstaller
           else
             url = repo
           end
-          # TODO: report failing repositories
           repositories.add(url)
         end
-        repositories.refresh_all
       end
 
       REPOS_BACKUP = "/etc/zypp/repos.d.dinstaller.backup"
