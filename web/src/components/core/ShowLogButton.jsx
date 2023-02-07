@@ -20,9 +20,9 @@
  */
 
 import React, { useState } from "react";
-import { FileViewer } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { Button } from "@patternfly/react-core";
+import { Y2logViewer } from "~/components/core";
 
 /**
  * Button for displaying the YaST logs
@@ -55,11 +55,7 @@ const ShowLogButton = ({ onClickCallback }) => {
       </Button>
 
       { isLogDisplayed &&
-        <FileViewer
-          title="YaST Logs"
-          file="/var/log/YaST2/y2log"
-          onCloseCallback={onClose}
-        /> }
+        <Y2logViewer onCloseCallback={onClose} /> }
     </>
   );
 };

@@ -37,3 +37,4 @@ export { default as Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";
 export { default as ChangeProductButton } from "./ChangeProductButton";
 export { default as ValidationErrors } from "./ValidationErrors";
+export { default as Y2logViewer } from "./Y2logViewer";

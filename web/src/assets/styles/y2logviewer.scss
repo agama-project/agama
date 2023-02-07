@@ -1,0 +1,87 @@
+@use "sass:color";
+
+// TODO: get the base text color from the PatternFly SCSS
+$base-color: #151515;
+
+// lighter color for less important log values
+$faded-color: color.scale($base-color, $lightness: +40%);
+
+// colors for each log level
+$loglevel-0-color: color.scale($faded-color, $lightness: +20%);
+$loglevel-2-color: #fdd3a2;
+$loglevel-3-color: #ffb8b8;
+$loglevel-4-color: #bdc1ff;
+$loglevel-5-color: #ffadf8;
+
+.logview {
+  .logline {
+    // rendering and line wrapping like in a <pre>
+    word-break: break-all;
+    white-space: pre-wrap;
+    font-family: var(--ff-code);
+    font-size: 90%;
+    color: $faded-color;
+  }
+
+  .log-message {
+    color: $base-color;
+  }
+
+  .loglevel-0,
+  .loglevel-0 .log-message {
+    color: $loglevel-0-color;
+
+    &:hover {
+      background-color: color.scale($loglevel-0-color, $lightness: +80%);
+    }
+  }
+
+  .loglevel-1:hover {
+    background-color: #eeeeee;
+  }
+
+  .loglevel-2 {
+    background-color: $loglevel-2-color;
+
+    &:hover {
+      background-color: color.scale($loglevel-2-color, $lightness: -10%);
+    }
+  }
+
+  .loglevel-3 {
+    background-color: $loglevel-3-color;
+
+    &:hover {
+      background-color: color.scale($loglevel-3-color, $lightness: -10%);
+    }
+  }
+
+  .loglevel-4 {
+    background-color: $loglevel-4-color;
+
+    &:hover {
+      background-color: color.scale($loglevel-4-color, $lightness: -10%);
+    }
+  }
+
+  .loglevel-5 {
+    background-color: $loglevel-5-color;
+
+    &:hover {
+      background-color: color.scale($loglevel-5-color, $lightness: -10%);
+    }
+  }
+
+  // indent nested groups
+  details>.logline,
+  details>details {
+    margin-left: 2em;
+    border-left: dashed 1px #cbcbcb;
+    padding-left: 1em;
+  }
+
+  summary {
+    font-family: var(--ff-code);
+    margin-left: -1em;
+  }
+}

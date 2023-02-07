@@ -34,13 +34,13 @@ const fileFn = jest.fn();
 fileFn.mockImplementation(() => {
   return {
     read: readFn
-  }
+  };
 });
 
 cockpit.file.mockImplementation(fileFn);
 
 // testing data
-const file_name = "/testfile"
+const file_name = "/testfile";
 const content = "Read file content";
 const title = "YaST Logs";
 
