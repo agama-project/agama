@@ -191,8 +191,10 @@ module DInstaller
       #
       # @return [Array<String>] Error messages
       def solver_messages
-        last_error = Yast::Pkg.LastError
         solve_errors = Yast::Pkg.PkgSolveErrors
+        return [] if solve_errors.zero?
+
+        last_error = Yast::Pkg.LastError
         res = []
         res << last_error unless last_error.empty?
         res << "Found #{solve_errors} dependency issues." if solve_errors > 0
