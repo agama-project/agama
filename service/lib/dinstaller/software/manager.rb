@@ -188,7 +188,7 @@ module DInstaller
       # @note Reimplementation of Yast::Package.CountSizeToBeInstalled
       # @todo move to Software::Proposal
       def used_disk_space
-        return "" unless @probed
+        return "" unless proposal.valid?
 
         # FormatSizeWithPrecision(bytes, precision, omit_zeroes)
         Yast::String.FormatSizeWithPrecision(proposal.packages_size, 1, true)
