@@ -88,7 +88,6 @@ module DInstaller
         initialize_target
         select_base_product
         proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
-        logger.info "Software proposal: #{proposal.inspect}"
         solve_dependencies
 
         @calculated = true
