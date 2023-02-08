@@ -26,7 +26,7 @@ import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
 import { ProgressText, Section } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { Button } from "@patternfly/react-core";
+import { Button, Text } from "@patternfly/react-core";
 
 const initialState = {
   busy: true,
@@ -116,9 +116,9 @@ export default function SoftwareSection({ showErrors }) {
     if (state.size === "" || state.size === "0 B") return null;
 
     return (
-      <>
+      <Text>
         Installation will take {state.size}.
-      </>
+      </Text>
     );
   };
 
