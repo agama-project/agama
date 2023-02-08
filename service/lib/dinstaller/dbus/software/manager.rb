@@ -141,7 +141,9 @@ module DInstaller
           end
 
           nm_client = DInstaller::DBus::Clients::Network.new
-          nm_client.on_connection_changed { probe }
+          nm_client.on_connection_changed do |connected|
+            probe if connected
+          end
         end
       end
     end

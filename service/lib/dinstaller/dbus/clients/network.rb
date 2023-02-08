@@ -31,7 +31,7 @@ module DInstaller
         def initialize
           super
 
-          @dbus_object = service.object("/org/freedesktop/NetworkManager")
+          @dbus_object = service["/org/freedesktop/NetworkManager"]
           @dbus_object.introspect
           @nm_iface = @dbus_object["org.freedesktop.NetworkManager"]
         end
@@ -40,16 +40,25 @@ module DInstaller
           @service_name ||= "org.freedesktop.NetworkManager"
         end
 
+        CONNECTED_NM_STATE = 70
+        private_constant :CONNECTED_NM_STATE
+
+        # Registers a callback to call when connectivity state changes
+        #
+        # The block receives a boolean argument which is true then the network
+        # connection is working or false otherwise.
+        #
+        # @param [Proc] block
         def on_connection_changed(&block)
-          @nm_iface.on_signal("StateChanged") do |s|
-            block.call if s == 70
+          @nm_iface.on_signal("StateChanged") do |nm_state|
+            block.call(nm_state == CONNECTED_NM_STATE)
           end
         end
 
       private
 
         def bus
-          @bus ||= DBus::SystemBus.instance
+          @bus ||= ::DBus::SystemBus.instance
         end
       end
     end
