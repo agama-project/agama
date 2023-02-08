@@ -65,6 +65,7 @@ module DInstaller
         @logger = logger || Logger.new($stdout)
         @errors = []
         @base_product = nil
+        @calculated = false
       end
 
       # Adds the given list of resolvables to the proposal
@@ -90,8 +91,9 @@ module DInstaller
         logger.info "Software proposal: #{proposal.inspect}"
         solve_dependencies
 
+        @calculated = true
         @errors = find_errors(proposal)
-        @errors.empty?
+        valid?
       end
 
       # Returns the count of packages to install
@@ -106,6 +108,13 @@ module DInstaller
         Yast::Pkg.PkgMediaSizes.reduce(0) do |res, media_size|
           media_size.reduce(res, :+)
         end
+      end
+
+      # Determines whether the proposal is valid
+      #
+      # @return [Boolean]
+      def valid?
+        @calculated && @errors.empty?
       end
 
     private

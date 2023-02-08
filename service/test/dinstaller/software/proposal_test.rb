@@ -27,25 +27,24 @@ describe DInstaller::Software::Proposal do
   subject(:proposal) { described_class.new(logger: logger) }
 
   let(:logger) { Logger.new($stdout) }
+  let(:destdir) { "/mnt" }
+  let(:result) { {} }
+  let(:last_error) { "" }
+  let(:solve_errors) { 0 }
+
+  before do
+    allow(Yast::Pkg).to receive(:SourceSaveAll)
+    allow(Yast::Packages).to receive(:Proposal).and_return(result)
+    allow(Yast::Pkg).to receive(:TargetFinish)
+    allow(Yast::Pkg).to receive(:TargetInitialize)
+    allow(Yast::Pkg).to receive(:TargetLoad)
+    allow(Yast::Installation).to receive(:destdir).and_return(destdir)
+    allow(Yast::Pkg).to receive(:LastError).and_return(last_error)
+    allow(Yast::Pkg).to receive(:PkgSolveErrors).and_return(solve_errors)
+    allow(Yast::Pkg).to receive(:SetSolverFlags)
+  end
 
   describe "#calculate" do
-    let(:destdir) { "/mnt" }
-    let(:result) { {} }
-    let(:last_error) { "" }
-    let(:solve_errors) { 0 }
-
-    before do
-      allow(Yast::Pkg).to receive(:SourceSaveAll)
-      allow(Yast::Packages).to receive(:Proposal).and_return(result)
-      allow(Yast::Pkg).to receive(:TargetFinish)
-      allow(Yast::Pkg).to receive(:TargetInitialize)
-      allow(Yast::Pkg).to receive(:TargetLoad)
-      allow(Yast::Installation).to receive(:destdir).and_return(destdir)
-      allow(Yast::Pkg).to receive(:LastError).and_return(last_error)
-      allow(Yast::Pkg).to receive(:PkgSolveErrors).and_return(solve_errors)
-      allow(Yast::Pkg).to receive(:SetSolverFlags)
-    end
-
     it "initializes the packaging target" do
       expect(Yast::Pkg).to receive(:TargetFinish)
       expect(Yast::Pkg).to receive(:TargetInitialize).with(destdir)
@@ -147,6 +146,30 @@ describe DInstaller::Software::Proposal do
 
     it "returns the size of packages to install" do
       expect(subject.packages_size).to eq(1400000000)
+    end
+  end
+
+  describe "#valid?" do
+    context "when the proposal was calculated and there were no errors" do
+      it "returns true" do
+        subject.calculate
+        expect(subject.valid?).to eq(true)
+      end
+    end
+
+    context "when the proposal is not calculated yet" do
+      it "returns false" do
+        expect(subject.valid?).to eq(false)
+      end
+    end
+
+    context "when there are errors" do
+      let(:solve_errors) { 1 }
+
+      it "returns false" do
+        subject.calculate
+        expect(subject.valid?).to eq(false)
+      end
     end
   end
 end
