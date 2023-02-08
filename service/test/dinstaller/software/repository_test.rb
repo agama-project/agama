@@ -26,15 +26,39 @@ describe DInstaller::Software::Repository do
   subject do
     described_class.new(
       repo_id: 1, repo_alias: "tumbleweed", name: "openSUSE Tumbleweed",
-      url: "https://example.net/oss", enabled: true, autorefresh: true
+      url: "https://example.net/oss", enabled: true, autorefresh: true,
+      product_dir: "/"
     )
   end
 
-  describe "#refresh" do
-    it "refreshes the corresponding source" do
-      expect(Yast::Pkg).to receive(:SourceRefreshNow).with(1)
-        .and_return(true)
-      subject.refresh
+  describe "#probe" do
+    before do
+      allow(Yast::Pkg).to receive(:RepositoryProbe).with(/example.net/, "/")
+        .and_return(repo_type)
+    end
+
+    context "if the repository can be read" do
+      let(:repo_type) { "YUM" }
+
+      it "returns true" do
+        expect(subject.probe).to eq(true)
+      end
+    end
+
+    context "if the repository type cannot be inferred" do
+      let(:repo_type) { "NONE" }
+
+      it "returns false" do
+        expect(subject.probe).to eq(false)
+      end
+    end
+
+    context "if the repository cannot be red" do
+      let(:repo_type) { nil }
+
+      it "returns false" do
+        expect(subject.probe).to eq(false)
+      end
     end
   end
 end

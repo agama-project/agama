@@ -35,12 +35,8 @@ module DInstaller
       #
       # @return [Boolean] true if the repository can be read; false otherwise
       def probe
-        Yast::Pkg.RepositoryProbe(url.to_s, product_dir)
-      end
-
-      # @return [Boolean]
-      def refresh
-        Yast::Pkg.SourceRefreshNow(repo_id)
+        type = Yast::Pkg.RepositoryProbe(url.to_s, product_dir)
+        !!type && type != "NONE"
       end
     end
   end
