@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Feb  8 18:09:01 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Better handling of software repositories
+  (gh#yast/d-installer#414):
+  * Report issues when reading the software repositories.
+  * Inform the user about the software proposal progress.
+  * Do not try to calculate a proposal if there are no
+    repositories.
+
+-------------------------------------------------------------------
 Fri Jan 20 12:25:56 UTC 2023 - Martin Vidner <mvidner@suse.com>
 
 - Use the upstream version of D-Bus ObjectManager

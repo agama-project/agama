@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Feb  8 18:12:06 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Better handling of software repositories
+  (gh#yast/d-installer#414):
+  * Report issues when reading the software repositories.
+  * Inform the user about the software proposal progress.
+  * Add a button to reload the repositories
+    (gh#yast/d-installer#388).
+
+-------------------------------------------------------------------
 Tue Jan 24 09:32:13 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
 
 - Added a button for displaying the YaST logs
