@@ -49,6 +49,16 @@ class SoftwareBaseClient {
   }
 
   /**
+   * Asks the service to reload the repositories metadata
+   *
+   * @return {Promise<void>}
+   */
+  async probe() {
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    return proxy.Probe();
+  }
+
+  /**
    * Returns the list of available products
    *
    * @return {Promise<Array<Product>>}

@@ -53,6 +53,7 @@ import Warning from "@icons/warning.svg?component";
 import Apps from "@icons/apps.svg?component";
 import Loading from "./three-dots-loader-icon.svg?component";
 import Description from "@icons/description.svg?component";
+import Refresh from "@icons/refresh.svg?component";
 
 const icons = {
   apps: Apps,
@@ -85,6 +86,7 @@ const icons = {
   translate: Translate,
   warning: Warning,
   wifi: Wifi,
+  refresh: Refresh
 };
 
 /**

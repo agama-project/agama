@@ -25,6 +25,8 @@ import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
 import { ProgressText, Section } from "~/components/core";
+import { Icon } from "~/components/layout";
+import { Button } from "@patternfly/react-core";
 
 const initialState = {
   busy: true,
@@ -66,6 +68,8 @@ export default function SoftwareSection({ showErrors }) {
   const updateStatus = (status) => {
     dispatch({ type: "UPDATE_STATUS", payload: { status } });
   };
+
+  const probe = () => client.software.probe();
 
   useEffect(() => {
     cancellablePromise(client.software.getStatus()).then(updateStatus);
@@ -126,7 +130,19 @@ export default function SoftwareSection({ showErrors }) {
       );
     }
 
-    return <UsedSize />;
+    return (
+      <>
+        <UsedSize />
+        <Button
+          isInline
+          variant="link"
+          icon={<Icon name="refresh" size="16" />}
+          onClick={probe}
+        >
+          Refresh the repositories
+        </Button>
+      </>
+    );
   };
 
   return (
