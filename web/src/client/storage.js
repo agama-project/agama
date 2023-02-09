@@ -50,10 +50,16 @@ class StorageBaseClient {
    */
   async getProposal() {
     const storageProxy = await this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_PATH);
-    const proposalProxy = await this.client.proxy(PROPOSAL_IFACE);
+
+    let proposalProxy;
+    try {
+      proposalProxy = await this.client.proxy(PROPOSAL_IFACE);
+    } catch {
+      proposalProxy = {};
+    }
 
     // Check whether proposal object is already exported
-    if (!proposalProxy.valid) return {};
+    if (!proposalProxy?.valid) return {};
 
     const volume = dbusVolume => {
       const valueFrom = dbusValue => dbusValue?.v;
