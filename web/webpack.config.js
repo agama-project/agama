@@ -16,11 +16,14 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 /* A standard nodejs and webpack pattern */
 const production = process.env.NODE_ENV === 'production';
 
+/* A standard nodejs and webpack pattern */
+const development = process.env.NODE_ENV === 'development';
+
 /* development options for faster iteration */
 const eslint = process.env.ESLINT !== '0';
 
 /* Default to disable csslint for faster production builds */
-const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : !production;
+const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : development;
 
 // Obtain package name from package.json
 const packageJson = JSON.parse(fs.readFileSync('package.json'));
@@ -38,7 +41,7 @@ const plugins = [
   new Extract({ filename: "[name].css" }),
   new CockpitPoPlugin(),
   new CockpitRsyncPlugin({ dest: packageJson.name }),
-  !production && new ReactRefreshWebpackPlugin({ overlay: false }),
+  development && new ReactRefreshWebpackPlugin({ overlay: false }),
 ].filter(Boolean);
 
 if (eslint) {
@@ -118,7 +121,7 @@ module.exports = {
           {
             loader: "babel-loader",
             options: {
-              plugins: [!production && require.resolve('react-refresh/babel')].filter(Boolean),
+              plugins: [development && require.resolve('react-refresh/babel')].filter(Boolean),
             },
           }
         ]
@@ -141,7 +144,7 @@ module.exports = {
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: !production,
+              sourceMap: development,
               sassOptions: {
                 includePaths: ["node_modules"],
                 outputStyle: production ? 'compressed' : undefined,
