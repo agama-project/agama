@@ -62,8 +62,8 @@ export default function FileViewer({ file, title, onCloseCallback }) {
       variant="large"
       className="tallest"
     >
-      { state === "loading" && <LoadingEnvironment text="Reading file..." /> }
-      { (content === null || error) &&
+      {state === "loading" && <LoadingEnvironment text="Reading file..." />}
+      {(content === null || error) &&
         <Alert
           isInline
           isPlain
@@ -71,7 +71,7 @@ export default function FileViewer({ file, title, onCloseCallback }) {
           title="Cannot read the file"
         >
           {error}
-        </Alert> }
+        </Alert>}
       <div className="filecontent">
         {content}
       </div>

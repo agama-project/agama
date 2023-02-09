@@ -23,6 +23,7 @@ require "dbus"
 require "dinstaller/dbus/base_object"
 require "dinstaller/dbus/with_service_status"
 require "dinstaller/dbus/clients/language"
+require "dinstaller/dbus/clients/network"
 require "dinstaller/dbus/interfaces/progress"
 require "dinstaller/dbus/interfaces/service_status"
 require "dinstaller/dbus/interfaces/validation"
@@ -134,9 +135,14 @@ module DInstaller
 
         # Registers callback to be called
         def register_callbacks
-          client = DInstaller::DBus::Clients::Language.new
-          client.on_language_selected do |language_ids|
+          lang_client = DInstaller::DBus::Clients::Language.new
+          lang_client.on_language_selected do |language_ids|
             backend.languages = language_ids
+          end
+
+          nm_client = DInstaller::DBus::Clients::Network.new
+          nm_client.on_connection_changed do |connected|
+            probe if connected
           end
         end
       end

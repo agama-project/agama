@@ -21,6 +21,7 @@
 
 require "eventmachine"
 require "logger"
+require "dbus"
 
 module DInstaller
   module DBus
@@ -51,7 +52,10 @@ module DInstaller
         # which is equivalent to #export in most cases.
         service.respond_to?(:start) ? service.start : service.export
         EventMachine.run do
-          EventMachine::PeriodicTimer.new(0.1) { service.dispatch }
+          EventMachine::PeriodicTimer.new(0.1) do
+            service.dispatch
+            ::DBus::SystemBus.instance.dispatch_message_queue
+          end
         end
       end
 

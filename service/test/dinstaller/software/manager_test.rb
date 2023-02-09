@@ -34,6 +34,24 @@ describe DInstaller::Software::Manager do
   let(:base_url) { "" }
   let(:destdir) { "/mnt" }
   let(:gpg_keys) { [] }
+  let(:repositories) do
+    instance_double(
+      DInstaller::Software::RepositoriesManager,
+      add:    nil,
+      load:   nil,
+      empty?: true
+    )
+  end
+  let(:proposal) do
+    instance_double(
+      DInstaller::Software::Proposal,
+      :base_product= => nil,
+      calculate:        nil,
+      :languages= =>    nil,
+      set_resolvables:  nil,
+      packages_count:   "500 MB"
+    )
+  end
 
   let(:config_path) do
     File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
@@ -57,6 +75,8 @@ describe DInstaller::Software::Manager do
     allow(Yast::Pkg).to receive(:SourceCreate)
     allow(Yast::Installation).to receive(:destdir).and_return(destdir)
     allow(DInstaller::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
+    allow(DInstaller::Software::RepositoriesManager).to receive(:new).and_return(repositories)
+    allow(DInstaller::Software::Proposal).to receive(:new).and_return(proposal)
   end
 
   describe "#probe" do
@@ -89,14 +109,13 @@ describe DInstaller::Software::Manager do
     end
 
     it "creates a packages proposal" do
-      expect(Yast::Packages).to receive(:Proposal)
+      expect(proposal).to receive(:calculate)
       subject.probe
     end
 
     it "registers the repository from config" do
-      expect(Yast::Pkg).to receive(:SourceCreate)
-        .exactly(3).with(/tumbleweed/, "/")
-      expect(Yast::Pkg).to receive(:SourceSaveAll)
+      expect(repositories).to receive(:add).with(/tumbleweed/)
+      expect(repositories).to receive(:load)
       subject.probe
     end
   end
@@ -115,47 +134,25 @@ describe DInstaller::Software::Manager do
   end
 
   describe "#propose" do
-    let(:tw_prod) { instance_double(Y2Packager::Product, name: "openSUSE", select: nil) }
-    let(:leap_micro_prod) do
-      instance_double(Y2Packager::Product, name: "Leap-Micro")
-    end
-    let(:products) { [leap_micro_prod, tw_prod] }
-
     before do
-      allow(Y2Packager::Product).to receive(:available_base_products)
-        .and_return(products)
-      allow(Yast::Pkg).to receive(:TargetFinish)
-      allow(Yast::Pkg).to receive(:TargetLoad)
-
       subject.select_product("Tumbleweed")
     end
 
-    it "initializes the packaging target" do
-      expect(Yast::Pkg).to receive(:TargetFinish)
-      expect(Yast::Pkg).to receive(:TargetInitialize).with(destdir)
-      expect(Yast::Pkg).to receive(:TargetLoad)
-      subject.propose
-    end
-
-    it "selects the selected libzypp product" do
-      expect(tw_prod).to receive(:select)
-      subject.propose
-    end
-
-    it "selects the language packages" do
-      expect(Yast::Pkg).to receive(:SetAdditionalLocales).with(["de_DE"])
-      subject.languages = ["de_DE"]
+    it "creates a new proposal for the selected product" do
+      expect(proposal).to receive(:languages=).with(["en_US"])
+      expect(proposal).to receive(:base_product=).with("Tumbleweed")
+      expect(proposal).to receive(:calculate)
       subject.propose
     end
 
     it "adds the patterns and packages to install" do
-      expect(Yast::PackagesProposal).to receive(:SetResolvables)
+      expect(proposal).to receive(:set_resolvables)
         .with("d-installer", :pattern, ["enhanced_base"])
-      expect(Yast::PackagesProposal).to receive(:SetResolvables)
+      expect(proposal).to receive(:set_resolvables)
         .with("d-installer", :pattern, ["optional_base"], optional: true)
-      expect(Yast::PackagesProposal).to receive(:SetResolvables)
+      expect(proposal).to receive(:set_resolvables)
         .with("d-installer", :package, ["mandatory_pkg"])
-      expect(Yast::PackagesProposal).to receive(:SetResolvables)
+      expect(proposal).to receive(:set_resolvables)
         .with("d-installer", :package, ["optional_pkg"], optional: true)
       subject.propose
     end
@@ -184,6 +181,43 @@ describe DInstaller::Software::Manager do
 
       it "raises an exception" do
         expect { subject.install }.to raise_error(RuntimeError)
+      end
+    end
+  end
+
+  describe "#validate" do
+    before do
+      allow(repositories).to receive(:enabled).and_return(enabled_repos)
+      allow(repositories).to receive(:disabled).and_return(disabled_repos)
+      allow(proposal).to receive(:errors).and_return([proposal_error])
+    end
+
+    let(:enabled_repos) { [] }
+    let(:disabled_repos) { [] }
+    let(:proposal_error) { DInstaller::ValidationError.new("proposal error") }
+
+    context "when there are not enabled repositories" do
+      it "does not return the proposal errors" do
+        expect(subject.validate).to_not include(proposal_error)
+      end
+    end
+
+    context "when there are disabled repositories" do
+      let(:disabled_repos) do
+        [instance_double(DInstaller::Software::Repository, name: "Repo #1")]
+      end
+
+      it "returns an error for each disabled repository" do
+        expect(subject.validate.size).to eq(1)
+        error = subject.validate.first
+        expect(error.message).to match(/Could not read the repository/)
+      end
+    end
+
+    context "when there are enabled repositories" do
+      let(:enabled_repos) { [instance_double(DInstaller::Software::Repository)] }
+      it "returns the proposal errors" do
+        expect(subject.validate).to include(proposal_error)
       end
     end
   end

@@ -24,18 +24,26 @@ import React, { useReducer, useEffect } from "react";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
-import { InstallerSkeleton, Section } from "~/components/core";
+import { ProgressText, Section } from "~/components/core";
+import { Icon } from "~/components/layout";
+import { Button, Text } from "@patternfly/react-core";
 
 const initialState = {
-  busy: false,
+  busy: true,
   errors: [],
   errorsRead: false,
-  size: ""
+  size: "",
+  progress: { message: "Reading software repositories", current: 0, total: 0, finished: 0 }
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "UPDATE_STATUS" : {
+    case "UPDATE_PROGRESS": {
+      const { message, current, total, finished } = action.payload;
+      return { ...state, progress: { message, current, total, finished } };
+    }
+
+    case "UPDATE_STATUS": {
       return { ...initialState, busy: action.payload.status === BUSY };
     }
 
@@ -43,8 +51,6 @@ const reducer = (state, action) => {
       if (state.busy) return state;
 
       const { errors, size } = action.payload;
-      console.log("errors:", errors);
-
       return { ...state, errors, size, errorsRead: true };
     }
 
@@ -54,19 +60,25 @@ const reducer = (state, action) => {
   }
 };
 
-export default function SoftwareSection ({ showErrors }) {
+export default function SoftwareSection({ showErrors }) {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  useEffect(() => {
-    const updateStatus = (status) => {
-      dispatch({ type: "UPDATE_STATUS", payload: { status } });
-    };
+  const updateStatus = (status) => {
+    dispatch({ type: "UPDATE_STATUS", payload: { status } });
+  };
 
+  const probe = () => client.software.probe();
+
+  useEffect(() => {
     cancellablePromise(client.software.getStatus()).then(updateStatus);
 
     return client.software.onStatusChange(updateStatus);
+  }, [client.software, cancellablePromise]);
+
+  useEffect(() => {
+    cancellablePromise(client.software.getStatus()).then(updateStatus);
   }, [client.software, cancellablePromise]);
 
   useEffect(() => {
@@ -80,24 +92,58 @@ export default function SoftwareSection ({ showErrors }) {
     updateProposal();
   }, [client.software, cancellablePromise, state.busy]);
 
+  useEffect(() => {
+    cancellablePromise(client.software.getProgress()).then(({ message, current, total, finished }) => {
+      dispatch({
+        type: "UPDATE_PROGRESS",
+        payload: { message, current, total, finished }
+      });
+    });
+  }, [client.software, cancellablePromise]);
+
+  useEffect(() => {
+    return client.software.onProgressChange(({ message, current, total, finished }) => {
+      dispatch({
+        type: "UPDATE_PROGRESS",
+        payload: { message, current, total, finished }
+      });
+    });
+  }, [client.software, cancellablePromise]);
+
   const errors = showErrors ? state.errors : [];
 
   const UsedSize = () => {
-    if (state.size === "") {
-      return <InstallerSkeleton lines={1} />;
-    } else {
-      return (
-        <>
-          Installation will take {state.size}.
-        </>
-      );
-    }
+    if (state.size === "" || state.size === "0 B") return null;
+
+    return (
+      <Text>
+        Installation will take {state.size}.
+      </Text>
+    );
   };
 
   const SectionContent = () => {
-    return state.busy
-      ? <InstallerSkeleton lines={1} />
-      : <UsedSize />;
+    if (state.busy) {
+      const { message, current, total } = state.progress;
+      return (
+        <ProgressText message={message} current={current} total={total} />
+      );
+    }
+
+    return (
+      <>
+        <UsedSize />
+        {errors.length > 0 &&
+          <Button
+            isInline
+            variant="link"
+            icon={<Icon name="refresh" size="16" />}
+            onClick={probe}
+          >
+            Refresh the repositories
+          </Button>}
+      </>
+    );
   };
 
   return (

@@ -35,5 +35,6 @@ export { default as ShowLogButton } from "./ShowLogButton";
 export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmationInput";
 export { default as Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";
+export { default as ProgressText } from "./ProgressText";
 export { default as ChangeProductButton } from "./ChangeProductButton";
 export { default as ValidationErrors } from "./ValidationErrors";

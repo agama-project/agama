@@ -28,6 +28,8 @@ require "dinstaller/validation_error"
 require "y2packager/product"
 require "yast2/arch_filter"
 require "dinstaller/software/callbacks"
+require "dinstaller/software/proposal"
+require "dinstaller/software/repositories_manager"
 
 Yast.import "Package"
 Yast.import "Packages"
@@ -57,6 +59,8 @@ module DInstaller
       #   additional information in a hash
       attr_reader :products
 
+      attr_reader :repositories
+
       def initialize(config, logger)
         @config = config
         @probed = false
@@ -69,6 +73,7 @@ module DInstaller
           @product = @products.keys.first # use the available product as default
           @config.pick_product(@product)
         end
+        @repositories = RepositoriesManager.new
       end
 
       def select_product(name)
@@ -83,22 +88,22 @@ module DInstaller
       def probe
         logger.info "Probing software"
 
-        store_original_repos
-        Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false, "onlyRequires" => true)
-
         # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
         Yast::Stage.Set("normal")
 
-        start_progress(3)
-        Yast::PackageCallbacks.InitPackageCallbacks(logger)
-        progress.step("Initialize target repositories") { initialize_target_repos }
-        progress.step("Initialize sources") { add_base_repo }
-        progress.step("Making the initial proposal") do
-          proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
-          logger.info "proposal #{proposal["raw_proposal"]}"
+        if repositories.empty?
+          start_progress(4)
+          store_original_repos
+          Yast::PackageCallbacks.InitPackageCallbacks(logger)
+          progress.step("Initializing target repositories") { initialize_target_repos }
+          progress.step("Initializing sources") { add_base_repos }
+        else
+          start_progress(2)
         end
 
-        @probed = true
+        progress.step("Refreshing repositories metadata") { repositories.load }
+        progress.step("Calculating the software proposal") { propose }
+
         Yast::Stage.Set("initial")
       end
 
@@ -107,33 +112,36 @@ module DInstaller
         import_gpg_keys
       end
 
+      # Updates the software proposal
       def propose
-        Yast::Pkg.TargetFinish # ensure that previous target is closed
-        Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
-        Yast::Pkg.TargetLoad
-        Yast::Pkg.SetAdditionalLocales(languages)
-        select_base_product(@config.data["software"]["base_product"])
-
-        add_resolvables
-        proposal = Yast::Packages.Proposal(force_reset = false, reinit = false, _simple = true)
-        logger.info "proposal #{proposal["raw_proposal"]}"
-
-        deps_result = solve_dependencies
-
-        proposal_result(proposal, deps_result)
+        proposal.base_product = @product
+        proposal.languages = languages
+        select_resolvables
+        result = proposal.calculate
+        logger.info "Proposal result: #{result.inspect}"
+        result
       end
 
+      # Returns the errors related to the software proposal
+      #
+      # * Repositories that could not be probed are reported as errors.
+      # * If none of the repositories could be probed, do not report missing
+      #   patterns and/or packages. Those issues does not make any sense if there
+      #   are no repositories to install from.
       def validate
-        # validation without probing does not make sense and produces false errors
-        return [] unless @probed
+        errors = repositories.disabled.map do |repo|
+          ValidationError.new("Could not read the repository #{repo.name}")
+        end
+        return errors if repositories.enabled.empty?
 
-        msgs = propose
-        msgs.map { |m| ValidationError.new(m) }
+        errors + proposal.errors
       end
 
+      # Installs the packages to the target system
       def install
-        start_progress(count_packages)
-        Callbacks::Progress.setup(count_packages, progress)
+        steps = proposal.packages_count
+        start_progress(steps)
+        Callbacks::Progress.setup(steps, progress)
 
         # TODO: error handling
         commit_result = Yast::Pkg.Commit({})
@@ -180,66 +188,22 @@ module DInstaller
       # Counts how much disk space installation will use.
       # @return [String]
       # @note Reimplementation of Yast::Package.CountSizeToBeInstalled
+      # @todo move to Software::Proposal
       def used_disk_space
-        return "" unless @probed
-
-        size = Yast::Pkg.PkgMediaSizes.reduce(0) do |res, media_size|
-          media_size.reduce(res, :+)
-        end
+        return "" unless proposal.valid?
 
         # FormatSizeWithPrecision(bytes, precision, omit_zeroes)
-        Yast::String.FormatSizeWithPrecision(size, 1, true)
+        Yast::String.FormatSizeWithPrecision(proposal.packages_size, 1, true)
       end
 
     private
 
-      # adds resolvables from yaml config for given product
-      def add_resolvables
-        mandatory_patterns = @config.data["software"]["mandatory_patterns"] || []
-        Yast::PackagesProposal.SetResolvables("d-installer", :pattern, mandatory_patterns)
-
-        optional_patterns = @config.data["software"]["optional_patterns"] || []
-        Yast::PackagesProposal.SetResolvables("d-installer", :pattern, optional_patterns,
-          optional: true)
-
-        mandatory_packages = @config.data["software"]["mandatory_packages"] || []
-        Yast::PackagesProposal.SetResolvables("d-installer", :package, mandatory_packages)
-
-        optional_packages = @config.data["software"]["optional_packages"] || []
-        Yast::PackagesProposal.SetResolvables("d-installer", :package, optional_packages,
-          optional: true)
-      end
-
-      # call solver to satisfy dependency or log error
-      def solve_dependencies
-        res = Yast::Pkg.PkgSolve(unused = true)
-        logger.info "solver run #{res.inspect}"
-
-        return true if res
-
-        logger.error "Solver failed: #{Yast::Pkg.LastError}"
-        logger.error "Details: #{Yast::Pkg.LastErrorDetails}"
-        logger.error "Solving issues: #{Yast::Pkg.PkgSolveErrors}"
-
-        false
-      end
-
-      # messages with reason why solver failed
-      def solve_messages
-        last_error = Yast::Pkg.LastError
-        solve_errors = Yast::Pkg.PkgSolveErrors
-        res = []
-        res << last_error unless last_error.empty?
-        res << "Found #{solve_errors} dependency issues." if solve_errors > 0
-        res
+      def proposal
+        @proposal ||= Proposal.new
       end
 
       # @return [Logger]
       attr_reader :logger
-
-      def count_packages
-        Yast::Pkg.PkgMediaCount.reduce(0) { |sum, res| sum + res.reduce(0, :+) }
-      end
 
       def import_gpg_keys
         gpg_keys = Dir.glob(GPG_KEYS_GLOB).map(&:to_s)
@@ -249,8 +213,12 @@ module DInstaller
         end
       end
 
-      def add_base_repo
-        @config.data["software"]["installation_repositories"].each do |repo|
+      def installation_repositories
+        @config.data["software"]["installation_repositories"]
+      end
+
+      def add_base_repos
+        installation_repositories.each do |repo|
           if repo.is_a?(Hash)
             url = repo["url"]
             # skip if repo is not for current arch
@@ -258,18 +226,8 @@ module DInstaller
           else
             url = repo
           end
-          Yast::Pkg.SourceCreate(url, "/") # TODO: having that dir also in config?
+          repositories.add(url)
         end
-
-        Yast::Pkg.SourceSaveAll
-      end
-
-      def select_base_product(name)
-        base_product = Y2Packager::Product.available_base_products.find do |product|
-          product.name == name
-        end
-        logger.info "Base product to select: #{base_product&.name}"
-        base_product&.select
       end
 
       REPOS_BACKUP = "/etc/zypp/repos.d.dinstaller.backup"
@@ -297,19 +255,21 @@ module DInstaller
         FileUtils.mv(REPOS_BACKUP, REPOS_DIR)
       end
 
-      def proposal_result(proposal, deps_result)
-        result = []
-        # TODO: find if there is a better way to get proposal issue as list
-        result.concat(process_warnings(proposal)) if proposal["warning_level"] == :blocker
-        result.concat(solve_messages) unless deps_result
+      # adds resolvables from yaml config for given product
+      def select_resolvables
+        mandatory_patterns = @config.data["software"]["mandatory_patterns"] || []
+        proposal.set_resolvables("d-installer", :pattern, mandatory_patterns)
 
-        result
-      end
+        optional_patterns = @config.data["software"]["optional_patterns"] || []
+        proposal.set_resolvables("d-installer", :pattern, optional_patterns,
+          optional: true)
 
-      def process_warnings(proposal)
-        proposal["warning"]
-          .split("<br>")
-          .grep_v(/Please manually select .*/)
+        mandatory_packages = @config.data["software"]["mandatory_packages"] || []
+        proposal.set_resolvables("d-installer", :package, mandatory_packages)
+
+        optional_packages = @config.data["software"]["optional_packages"] || []
+        proposal.set_resolvables("d-installer", :package, optional_packages,
+          optional: true)
       end
     end
   end
