@@ -185,6 +185,43 @@ describe DInstaller::Software::Manager do
     end
   end
 
+  describe "#validate" do
+    before do
+      allow(repositories).to receive(:enabled).and_return(enabled_repos)
+      allow(repositories).to receive(:disabled).and_return(disabled_repos)
+      allow(proposal).to receive(:errors).and_return([proposal_error])
+    end
+
+    let(:enabled_repos) { [] }
+    let(:disabled_repos) { [] }
+    let(:proposal_error) { DInstaller::ValidationError.new("proposal error") }
+
+    context "when there are not enabled repositories" do
+      it "does not return the proposal errors" do
+        expect(subject.validate).to_not include(proposal_error)
+      end
+    end
+
+    context "when there are disabled repositories" do
+      let(:disabled_repos) do
+        [instance_double(DInstaller::Software::Repository, name: "Repo #1")]
+      end
+
+      it "returns an error for each disabled repository" do
+        expect(subject.validate.size).to eq(1)
+        error = subject.validate.first
+        expect(error.message).to match(/Could not read the repository/)
+      end
+    end
+
+    context "when there are enabled repositories" do
+      let(:enabled_repos) { [instance_double(DInstaller::Software::Repository)] }
+      it "returns the proposal errors" do
+        expect(subject.validate).to include(proposal_error)
+      end
+    end
+  end
+
   describe "#finish" do
     let(:rootdir) { Dir.mktmpdir }
     let(:repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d") }

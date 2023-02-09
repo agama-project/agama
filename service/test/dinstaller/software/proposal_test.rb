@@ -100,7 +100,7 @@ describe DInstaller::Software::Proposal do
       let(:last_error) { "Solving errors..." }
       let(:solve_errors) { 5 }
 
-      it "returns something" do
+      it "registers them as validation errors" do
         subject.calculate
         expect(subject.errors).to eq(
           [
@@ -109,18 +109,6 @@ describe DInstaller::Software::Proposal do
           ]
         )
       end
-    end
-  end
-
-  describe "#validate" do
-    context "when no proposal was calculated" do
-      it "returns an empty array" do
-        expect(subject.errors).to eq([])
-      end
-    end
-
-    context "when a blocking was reported" do
-      it "returns a validation error for the package/pattern"
     end
   end
 
