@@ -30,6 +30,7 @@ jest.mock("~/client");
 
 let getStatusFn = jest.fn().mockResolvedValue(IDLE);
 let getProgressFn = jest.fn().mockResolvedValue({});
+let getValidationErrorsFn = jest.fn().mockResolvedValue([]);
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
@@ -37,7 +38,7 @@ beforeEach(() => {
       software: {
         getStatus: getStatusFn,
         getProgress: getProgressFn,
-        getValidationErrors: jest.fn().mockResolvedValue([]),
+        getValidationErrors: getValidationErrorsFn,
         onStatusChange: jest.fn().mockResolvedValue(),
         onProgressChange: jest.fn(),
         getUsedSpace: jest.fn().mockResolvedValue("500 MB")
@@ -56,9 +57,15 @@ describe("when there proposal is calculated", () => {
     await screen.findByText("Installation will take 500 MB.");
   });
 
-  it("renders a button to refresh the repositories", async () => {
-    installerRender(<SoftwareSection showErrors />);
-    await screen.findByRole("button", { name: /Refresh/ });
+  describe("and there are errors", () => {
+    beforeEach(() => {
+      getValidationErrorsFn = jest.fn().mockResolvedValue([{ message: "Could not install..." }]);
+    });
+
+    it("renders a button to refresh the repositories", async () => {
+      installerRender(<SoftwareSection showErrors />);
+      await screen.findByRole("button", { name: /Refresh/ });
+    });
   });
 });
 

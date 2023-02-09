@@ -133,14 +133,15 @@ export default function SoftwareSection({ showErrors }) {
     return (
       <>
         <UsedSize />
-        <Button
-          isInline
-          variant="link"
-          icon={<Icon name="refresh" size="16" />}
-          onClick={probe}
-        >
-          Refresh the repositories
-        </Button>
+        {errors.length > 0 &&
+          <Button
+            isInline
+            variant="link"
+            icon={<Icon name="refresh" size="16" />}
+            onClick={probe}
+          >
+            Refresh the repositories
+          </Button>}
       </>
     );
   };
