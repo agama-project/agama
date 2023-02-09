@@ -77,51 +77,41 @@ const validProposalProxy = {
 };
 
 let proposalProxy;
-let proxy;
 
-/**
- * Helper for mocking a proxy for given iface
- *
- * @param {string} iface - D-Bus iface
- * @return {object} a cockpit DBusProxy mock
- */
-const proxyMock = (iface) => {
-  /** @type {object} */
-  let result;
-
+const proxies = (iface) => {
   switch (iface) {
-    case PROPOSAL_CALCULATOR_IFACE:
-      result = storageProxy;
-      break;
-    case PROPOSAL_IFACE:
-      result = proposalProxy;
-      break;
+    case PROPOSAL_CALCULATOR_IFACE: return storageProxy;
+    case PROPOSAL_IFACE: return proposalProxy;
   }
-
-  return new Promise((resolve) => resolve(result));
 };
 
 beforeEach(() => {
-  proposalProxy = validProposalProxy;
-  proxy = proxyMock;
+  proposalProxy = { ...validProposalProxy };
 
   // @ts-ignore
   DBusClient.mockImplementation(() => {
-    return { proxy };
+    return { proxy: (iface) => proxies(iface) };
   });
 });
 
 describe("#getProposal", () => {
   describe("when something is wrong at cockpit side (e.g., the requested Dbus iface does not exist)", () => {
     beforeEach(() => {
-      // NOTE: when something is wrong in cockpit.dbus.proxy our Dbus#proxy returns undefined
-      proxy = jest.fn().mockResolvedValue(undefined);
+      // @ts-ignore
+      DBusClient.mockImplementation(() => {
+        return {
+          proxy: (iface) => {
+            if (iface === PROPOSAL_IFACE) throw new Error("Wrong!");
+
+            return proxies(iface);
+          }
+        };
+      });
     });
 
-    it("returns an empty object", async() => {
+    it("returns an empty object", async () => {
       const client = new StorageClient();
       const proposal = await client.getProposal();
-
       expect(proposal).toStrictEqual({});
     });
   });
