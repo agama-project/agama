@@ -113,7 +113,11 @@ describe DInstaller::Software::Proposal do
   end
 
   describe "#set_resolvables" do
-    it "adds the list of packages/patterns to the proposal"
+    it "adds the list of packages/patterns to the proposal" do
+      expect(Yast::PackagesProposal).to receive(:SetResolvables)
+        .with("d-installer", :pattern, "alp_base", optional: false)
+      subject.set_resolvables("d-installer", :pattern, "alp_base", optional: false)
+    end
   end
 
   describe "#packages_count" do
