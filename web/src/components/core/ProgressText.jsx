@@ -22,7 +22,8 @@
 // @ts-check
 
 import React from "react";
-import { Spinner, Text } from "@patternfly/react-core";
+import { Text } from "@patternfly/react-core";
+import { Icon } from "~/components/layout";
 
 /**
  * Progress description
@@ -38,7 +39,7 @@ export default function ProgressText({ message, current, total }) {
   const text = (current === 0) ? message : `${message} (${current}/${total})`;
   return (
     <div className="split">
-      <Spinner size="md" aria-label="Progress indicator" />
+      <Icon name="loading" size="24" />
       <Text>
         {text}
       </Text>
