@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb  9 15:29:58 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Add live reloading feature for easing the front-end development
+  process (gh#yast/d-installer#419).
+
+-------------------------------------------------------------------
 Thu Feb  9 14:16:09 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Fix storage section crashing when proposal is not ready
