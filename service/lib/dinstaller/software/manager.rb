@@ -124,9 +124,10 @@ module DInstaller
 
       # Returns the errors related to the software proposal
       #
-      # * Repositories that could not be probed are reported as errors
-      # * If none of the repositories could be probed, do not report missing patterns and packages
-      #   problems as it does not make sense.
+      # * Repositories that could not be probed are reported as errors.
+      # * If none of the repositories could be probed, do not report missing
+      #   patterns and/or packages. Those issues does not make any sense if there
+      #   are no repositories to install from.
       def validate
         errors = repositories.disabled.map do |repo|
           ValidationError.new("Could not read the repository #{repo.name}")
@@ -136,6 +137,7 @@ module DInstaller
         errors + proposal.errors
       end
 
+      # Installs the packages to the target system
       def install
         steps = proposal.packages_count
         start_progress(steps)

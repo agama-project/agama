@@ -26,7 +26,10 @@ module DInstaller
     module Clients
       # D-Bus client for the network service
       #
-      # It is based on NetworkManager
+      # This client is intended to be used to watch for changes in
+      # NetworkManager because D-Installer does not implement its own network
+      # service. The configuration is done directly in the UI or through
+      # `nmcli`.
       class Network < Base
         def initialize
           super
@@ -45,7 +48,7 @@ module DInstaller
 
         # Registers a callback to call when connectivity state changes
         #
-        # The block receives a boolean argument which is true then the network
+        # The block receives a boolean argument which is true when the network
         # connection is working or false otherwise.
         #
         # @param [Proc] block

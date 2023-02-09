@@ -26,8 +26,8 @@ module DInstaller
   module Software
     # This class represents a software repository
     #
-    # It extends the `Y2Packager::Repository` with some useful methods in the context of
-    # D-Installer (e.g., #refresh and #available?)
+    # It extends the `Y2Packager::Repository` with some methods in the context
+    # of D-Installer.
     #
     # @see RepositoriesManager
     class Repository < Y2Packager::Repository

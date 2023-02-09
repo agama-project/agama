@@ -103,6 +103,8 @@ module DInstaller
       end
 
       # Returns the size of the packages to install
+      #
+      # @return [Integer] size of the installation in bytes
       def packages_size
         Yast::Pkg.PkgMediaSizes.reduce(0) do |res, media_size|
           media_size.reduce(res, :+)
@@ -137,8 +139,13 @@ module DInstaller
         base_product = Y2Packager::Product.available_base_products.find do |product|
           product.name == @base_product
         end
-        logger.info "Base product to select: #{base_product&.name}"
-        base_product&.select
+
+        if base_product.nil?
+          logger.error "Could not select the base product '#{@base_product}'"
+        else
+          logger.info "Selecting the base product '#{base_product.name}'"
+          base_product&.select
+        end
       end
 
       # Returns the errors from the attempt to create a proposal
