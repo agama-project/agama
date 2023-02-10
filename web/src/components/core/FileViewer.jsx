@@ -22,7 +22,7 @@
 import React, { useState, useEffect } from "react";
 import { Popup } from "~/components/core";
 import { Alert } from "@patternfly/react-core";
-import { LoadingEnvironment } from "~/components/layout";
+import { Loading } from "~/components/layout";
 
 import cockpit from "../../lib/cockpit";
 
@@ -62,7 +62,7 @@ export default function FileViewer({ file, title, onCloseCallback }) {
       variant="large"
       className="tallest"
     >
-      {state === "loading" && <LoadingEnvironment text="Reading file..." />}
+      {state === "loading" && <Loading text="Reading file..." />}
       {(content === null || error) &&
         <Alert
           isInline

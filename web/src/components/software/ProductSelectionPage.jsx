@@ -33,7 +33,7 @@ import {
   Radio
 } from "@patternfly/react-core";
 
-import { Icon, LoadingEnvironment } from "~/components/layout";
+import { Icon, Loading } from "~/components/layout";
 import { Title, PageIcon, MainActions } from "~/components/layout/Layout";
 
 function ProductSelectionPage() {
@@ -64,7 +64,7 @@ function ProductSelectionPage() {
   };
 
   if (!products) return (
-    <LoadingEnvironment text="Loading available products, please wait..." />
+    <Loading text="Loading available products, please wait..." />
   );
 
   const buildOptions = () => {

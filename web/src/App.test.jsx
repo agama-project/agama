@@ -38,7 +38,7 @@ jest.mock("~/components/layout/Layout", () => mockLayout());
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
 jest.mock("~/components/layout/DBusError", () => mockComponent("D-BusError Mock"));
-jest.mock("~/components/layout/LoadingEnvironment", () => mockComponent("LoadingEnvironment Mock"));
+jest.mock("~/components/layout/Loading", () => mockComponent("Loading Mock"));
 jest.mock("~/components/questions/Questions", () => mockComponent("Questions Mock"));
 jest.mock("~/components/core/InstallationProgress", () => mockComponent("InstallationProgress Mock"));
 jest.mock("~/components/core/InstallationFinished", () => mockComponent("InstallationFinished Mock"));
@@ -128,10 +128,10 @@ describe("App", () => {
       getStatusFn.mockResolvedValue(BUSY);
     });
 
-    it("renders the LoadingEnvironment component", async () => {
+    it("renders the Loading component", async () => {
       installerRender(<App />);
 
-      await screen.findByText("LoadingEnvironment Mock");
+      await screen.findByText("Loading Mock");
     });
   });
 

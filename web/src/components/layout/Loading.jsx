@@ -20,16 +20,21 @@
  */
 
 import React from "react";
+import { Title, EmptyState, EmptyStateIcon } from "@patternfly/react-core";
 
-import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { Center, Icon } from "~/components/layout";
 
-import LoadingEnvironment from "./LoadingEnvironment";
+function Loading({ text = "Loading installation environment, please wait." }) {
+  return (
+    <Center>
+      <EmptyState>
+        <EmptyStateIcon icon={({ ...props }) => <Icon name="loading" {...props} />} />
+        <Title headingLevel="h2" size="4xl">
+          { text }
+        </Title>
+      </EmptyState>
+    </Center>
+  );
+}
 
-describe("LoadingEnvironment", () => {
-  it("shows a loading message", async () => {
-    installerRender(<LoadingEnvironment />);
-
-    await screen.findByText(/Loading installation environment/i);
-  });
-});
+export default Loading;

@@ -26,7 +26,7 @@ import { useInstallerClient } from "~/context/installer";
 import { STARTUP, INSTALL } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
-import { Layout, Title, LoadingEnvironment, DBusError } from "~/components/layout";
+import { Layout, Title, Loading, DBusError } from "~/components/layout";
 import { InstallationProgress, InstallationFinished } from "~/components/core";
 
 function App() {
@@ -64,7 +64,7 @@ function App() {
     if (error) return <DBusError />;
 
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
-      return <LoadingEnvironment />;
+      return <Loading />;
     }
 
     if (phase === INSTALL) {
