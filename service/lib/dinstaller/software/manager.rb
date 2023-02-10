@@ -63,7 +63,6 @@ module DInstaller
 
       def initialize(config, logger)
         @config = config
-        @probed = false
         @logger = logger
         @languages = DEFAULT_LANGUAGES
         @products = @config.products
@@ -82,7 +81,6 @@ module DInstaller
 
         @config.pick_product(name)
         @product = name
-        @probed = false # reset probing when product changed
         repositories.delete_all
       end
 
