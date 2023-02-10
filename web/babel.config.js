@@ -6,7 +6,7 @@ const presets = [
 ];
 const plugins = [];
 
-if (NODE_ENV === 'development') {
+if (!['production', 'test'].includes(NODE_ENV)) {
   plugins.push('react-refresh/babel');
 }
 

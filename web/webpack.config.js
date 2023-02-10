@@ -15,9 +15,7 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 
 /* A standard nodejs and webpack pattern */
 const production = process.env.NODE_ENV === 'production';
-
-/* A standard nodejs and webpack pattern */
-const development = process.env.NODE_ENV === 'development';
+const development = !production;
 
 /* development options for faster iteration */
 const eslint = process.env.ESLINT !== '0';
