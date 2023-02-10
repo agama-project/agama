@@ -11,15 +11,17 @@ const CockpitPoPlugin = require("./src/lib/cockpit-po-plugin");
 const CockpitRsyncPlugin = require("./src/lib/cockpit-rsync-plugin");
 const StylelintPlugin = require('stylelint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 /* A standard nodejs and webpack pattern */
 const production = process.env.NODE_ENV === 'production';
+const development = !production;
 
 /* development options for faster iteration */
 const eslint = process.env.ESLINT !== '0';
 
 /* Default to disable csslint for faster production builds */
-const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : !production;
+const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : development;
 
 // Obtain package name from package.json
 const packageJson = JSON.parse(fs.readFileSync('package.json'));
@@ -37,7 +39,8 @@ const plugins = [
   new Extract({ filename: "[name].css" }),
   new CockpitPoPlugin(),
   new CockpitRsyncPlugin({ dest: packageJson.name }),
-];
+  development && new ReactRefreshWebpackPlugin({ overlay: false }),
+].filter(Boolean);
 
 if (eslint) {
   plugins.push(new ESLintPlugin({ extensions: ["js", "jsx"], failOnWarning: true, }));
@@ -71,10 +74,21 @@ module.exports = {
     ignored: /node_modules/,
   },
   entry: {
-    index: "./src/index.js",
+    reactRefreshSetup: '@pmmmwh/react-refresh-webpack-plugin/client/ReactRefreshEntry.js',
+    index: ["./src/index.js"],
   },
   // cockpit.js gets included via <script>, everything else should be bundled
   externals: { cockpit: "cockpit" },
+  devServer: {
+    allowedHosts: "all",
+    hot: true,
+    client: {
+      webSocketURL: "ws://localhost:8080/ws"
+    },
+    devMiddleware: {
+      writeToDisk: true,
+    },
+  },
   devtool: "source-map",
   stats: "errors-warnings",
   // always regenerate dist/, so make rules work
@@ -99,9 +113,16 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: "babel-loader",
-        test: /\.(js|jsx)$/
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              plugins: [development && require.resolve('react-refresh/babel')].filter(Boolean),
+            },
+          }
+        ]
       },
       {
         test: /\.s?css$/,
@@ -121,7 +142,7 @@ module.exports = {
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: !production,
+              sourceMap: development,
               sassOptions: {
                 includePaths: ["node_modules"],
                 outputStyle: production ? 'compressed' : undefined,

@@ -17,15 +17,21 @@ link your build folder (`dist`) or just rely on the `devel-install` task:
 Bear in mind that if something goes wrong while building the application (e.g., the linter fails),
 the link will not be created.
 
-While working on the code, you might want to run the following command to refresh the build
-everytime you save a change:
+While working on the code, you might want to run the [webpack-dev-server](https://github.com/webpack/webpack-dev-server) to get the [Hot Module Replacement](https://webpack.js.org/concepts/hot-module-replacement/) enabled.
+
+```
+    npm run server
+```
+
+Or simply run the Webpack watcher for refreshing the build every time you save a change **BUT** reloading
+the code in your browser by yourself.
 
 ```
     npm run watch
 ```
 
-However, there is no live or hot reloading feature, so you need to reload the code in your browser.
-You can visit the module through the following URL:
+Whichever option you choose, you can visit the D-installer module through the following URL:
+
 http://localhost:9090/cockpit/@localhost/d-installer/index.html.
 
 ## JSDoc Documentation
