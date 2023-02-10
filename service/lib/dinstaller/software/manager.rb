@@ -83,6 +83,7 @@ module DInstaller
         @config.pick_product(name)
         @product = name
         @probed = false # reset probing when product changed
+        repositories.delete_all
       end
 
       def probe

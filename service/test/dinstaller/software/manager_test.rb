@@ -37,9 +37,10 @@ describe DInstaller::Software::Manager do
   let(:repositories) do
     instance_double(
       DInstaller::Software::RepositoriesManager,
-      add:    nil,
-      load:   nil,
-      empty?: true
+      add:        nil,
+      load:       nil,
+      delete_all: nil,
+      empty?:     true
     )
   end
   let(:proposal) do
