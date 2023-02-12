@@ -37,9 +37,10 @@ describe DInstaller::Software::Manager do
   let(:repositories) do
     instance_double(
       DInstaller::Software::RepositoriesManager,
-      add:    nil,
-      load:   nil,
-      empty?: true
+      add:        nil,
+      load:       nil,
+      delete_all: nil,
+      empty?:     true
     )
   end
   let(:proposal) do
@@ -140,7 +141,7 @@ describe DInstaller::Software::Manager do
 
     it "creates a new proposal for the selected product" do
       expect(proposal).to receive(:languages=).with(["en_US"])
-      expect(proposal).to receive(:base_product=).with("Tumbleweed")
+      expect(proposal).to receive(:base_product=).with("openSUSE")
       expect(proposal).to receive(:calculate)
       subject.propose
     end

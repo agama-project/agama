@@ -63,7 +63,6 @@ module DInstaller
 
       def initialize(config, logger)
         @config = config
-        @probed = false
         @logger = logger
         @languages = DEFAULT_LANGUAGES
         @products = @config.products
@@ -82,7 +81,7 @@ module DInstaller
 
         @config.pick_product(name)
         @product = name
-        @probed = false # reset probing when product changed
+        repositories.delete_all
       end
 
       def probe
@@ -114,7 +113,7 @@ module DInstaller
 
       # Updates the software proposal
       def propose
-        proposal.base_product = @product
+        proposal.base_product = selected_base_product
         proposal.languages = languages
         select_resolvables
         result = proposal.calculate
@@ -215,6 +214,10 @@ module DInstaller
 
       def installation_repositories
         @config.data["software"]["installation_repositories"]
+      end
+
+      def selected_base_product
+        @config.data["software"]["base_product"]
       end
 
       def add_base_repos

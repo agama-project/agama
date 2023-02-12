@@ -73,6 +73,19 @@ describe DInstaller::Software::RepositoriesManager do
     end
   end
 
+  describe "#delete_all" do
+    before do
+      subject.repositories << repo
+      subject.repositories << disabled_repo
+    end
+
+    it "deletes all the repositories" do
+      expect(repo).to receive(:delete!)
+      expect(disabled_repo).to receive(:delete!)
+      subject.delete_all
+    end
+  end
+
   describe "#enabled" do
     before do
       subject.repositories << repo

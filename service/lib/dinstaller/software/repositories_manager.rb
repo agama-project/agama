@@ -77,6 +77,12 @@ module DInstaller
         end
         Yast::Pkg.SourceLoad
       end
+
+      # Deletes all the repositories
+      def delete_all
+        repositories.each(&:delete!)
+        repositories.clear
+      end
     end
   end
 end
