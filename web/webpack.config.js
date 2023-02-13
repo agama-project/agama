@@ -29,7 +29,10 @@ const packageJson = JSON.parse(fs.readFileSync('package.json'));
 // Non-JS files which are copied verbatim to dist/
 const copy_files = [
   "./src/index.html",
-  "./src/manifest.json",
+  {
+    from: production ? "./src/manifest.json" : "./src/manifest.dev.json",
+    to: "manifest.json"
+  },
   // TODO: consider using something more complete like https://github.com/jantimon/favicons-webpack-plugin
   "./src/assets/favicon.svg",
 ];
