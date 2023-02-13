@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 13 14:32:01 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 0.7:
+  * Update dependency on ruby-dbus to match the one in
+    rubygem-d-installer (gh#yast/d-installer#245).
+
+-------------------------------------------------------------------
 Mon Dec  5 13:18:24 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.6.0
