@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,17 +19,20 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useInstallerClient } from "~/context/installer";
+import { InstallationProgress, InstallationFinished } from "~/components/core";
+import { IDLE } from "~/client/status";
 
-import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+function Installation() {
+  const client = useInstallerClient();
+  const [status, setStatus] = useState(undefined);
 
-import LoadingEnvironment from "./LoadingEnvironment";
+  useEffect(() =>
+    client.manager.onStatusChange(setStatus), [client.manager]
+  );
 
-describe("LoadingEnvironment", () => {
-  it("shows a loading message", async () => {
-    installerRender(<LoadingEnvironment />);
+  return (status === IDLE) ? <InstallationFinished /> : <InstallationProgress />;
+}
 
-    await screen.findByText(/Loading installation environment/i);
-  });
-});
+export default Installation;

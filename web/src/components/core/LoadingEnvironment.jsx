@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,9 +19,25 @@
  * find current contact information at www.suse.com.
  */
 
-export * from "./Layout";
-export { default as Layout } from "./Layout";
-export { default as Icon } from "./Icon";
-export { default as Center } from "./Center";
-export { default as DBusError } from "./DBusError";
-export { default as Loading } from "./Loading";
+import React, { useEffect } from "react";
+import { Loading } from "~/components/layout";
+import { useInstallerClient } from "~/context/installer";
+
+/**
+ * Loading indicator for a phase
+ *
+ * @component
+ *
+ * @param {function} onStatusChange callback triggered when the status changes
+ */
+function LoadingEnvironment({ onStatusChange }) {
+  const client = useInstallerClient();
+
+  useEffect(() =>
+    client.manager.onStatusChange(onStatusChange), [client.manager, onStatusChange]
+  );
+
+  return <Loading />;
+}
+
+export default LoadingEnvironment;

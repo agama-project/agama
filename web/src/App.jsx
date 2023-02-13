@@ -26,8 +26,8 @@ import { useInstallerClient } from "~/context/installer";
 import { STARTUP, INSTALL } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
-import { Layout, Title, LoadingEnvironment, DBusError } from "~/components/layout";
-import { InstallationProgress, InstallationFinished } from "~/components/core";
+import { Layout, Title, DBusError } from "~/components/layout";
+import { Installation, LoadingEnvironment } from "~/components/core";
 
 function App() {
   const client = useInstallerClient();
@@ -51,10 +51,6 @@ function App() {
   }, [client.manager, setPhase]);
 
   useEffect(() => {
-    return client.manager.onStatusChange(setStatus);
-  }, [client.manager, setStatus]);
-
-  useEffect(() => {
     return client.monitor.onConnectionChange(connected => {
       connected ? location.reload() : setError(true);
     });
@@ -64,11 +60,11 @@ function App() {
     if (error) return <DBusError />;
 
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
-      return <LoadingEnvironment />;
+      return <LoadingEnvironment onStatusChange={setStatus} />;
     }
 
     if (phase === INSTALL) {
-      return (status === BUSY) ? <InstallationProgress /> : <InstallationFinished />;
+      return <Installation />;
     }
 
     return <Outlet />;

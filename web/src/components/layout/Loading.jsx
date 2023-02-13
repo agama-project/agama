@@ -19,9 +19,22 @@
  * find current contact information at www.suse.com.
  */
 
-export * from "./Layout";
-export { default as Layout } from "./Layout";
-export { default as Icon } from "./Icon";
-export { default as Center } from "./Center";
-export { default as DBusError } from "./DBusError";
-export { default as Loading } from "./Loading";
+import React from "react";
+import { Title, EmptyState, EmptyStateIcon } from "@patternfly/react-core";
+
+import { Center, Icon } from "~/components/layout";
+
+function Loading({ text = "Loading installation environment, please wait." }) {
+  return (
+    <Center>
+      <EmptyState>
+        <EmptyStateIcon icon={({ ...props }) => <Icon name="loading" {...props} />} />
+        <Title headingLevel="h2" size="4xl">
+          { text }
+        </Title>
+      </EmptyState>
+    </Center>
+  );
+}
+
+export default Loading;
