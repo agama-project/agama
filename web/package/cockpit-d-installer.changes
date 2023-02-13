@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Feb 13 14:30:56 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 0.7
+
+-------------------------------------------------------------------
 Thu Feb  9 15:29:58 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Add live reloading feature for easing the front-end development
