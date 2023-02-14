@@ -111,8 +111,7 @@ elsif ["-k", "--kill"].include?(ARGV[0])
   dbus_server_manager.stop_server
 elsif ["-d", "--daemon"].include?(ARGV[0])
   # start the D-Bus server
-  pid = dbus_server_manager.find_or_start_server
-  puts pid
+  dbus_server_manager.find_or_start_server
 else
   dbus_server_manager.find_or_start_server
   name = ARGV[0]
