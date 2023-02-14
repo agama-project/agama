@@ -21,10 +21,10 @@
 
 import React from "react";
 
-import { screen, waitFor } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { screen } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
 
-import { WifiNetworksList } from "@components/network";
+import { WifiNetworksList } from "~/components/network";
 
 const onSelectionCallback = jest.fn();
 
@@ -44,9 +44,9 @@ const otherNetwork = {
 const networksMock = [myNetwork, otherNetwork];
 
 describe("WifiNetworksList", () => {
-  it("renders nothing when no networks are given", async () => {
-    const { container } = installerRender(<WifiNetworksList networks={[]} />, { usingLayout: false });
-    await waitFor(() => expect(container).toBeEmptyDOMElement());
+  it("renders link for connect to a hidden network", () => {
+    installerRender(<WifiNetworksList networks={[]} />);
+    screen.getByRole("button", { name: "Connect to hidden network" });
   });
 
   it("displays networks information", async () => {

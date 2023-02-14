@@ -26,7 +26,7 @@ import {
   Switch
 } from "@patternfly/react-core";
 
-import { Fieldset, PasswordAndConfirmationInput } from "@components/core";
+import { Fieldset, PasswordAndConfirmationInput } from "~/components/core";
 
 const reducer = (state, action) => {
   switch (action.type) {

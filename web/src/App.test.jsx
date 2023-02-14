@@ -21,40 +21,35 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
-import { createClient } from "@client";
+import { installerRender, mockComponent, mockLayout } from "~/test-utils";
 import App from "./App";
-import { STARTUP, CONFIG, INSTALL } from "@client/phase";
-import { IDLE, BUSY } from "@client/status";
+import { createClient } from "~/client";
+import { STARTUP, CONFIG, INSTALL } from "~/client/phase";
+import { IDLE, BUSY } from "~/client/status";
 
-jest.mock("@client");
+jest.mock("~/client");
+
+jest.mock('react-router-dom', () => ({
+  Outlet: mockComponent("Content"),
+}));
+
+jest.mock("~/components/layout/Layout", () => mockLayout());
 
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
+jest.mock("~/components/layout/DBusError", () => mockComponent("D-BusError Mock"));
+jest.mock("~/components/core/LoadingEnvironment", () => mockComponent("LoadingEnvironment Mock"));
+jest.mock("~/components/questions/Questions", () => mockComponent("Questions Mock"));
+jest.mock("~/components/core/Installation", () => mockComponent("Installation Mock"));
 
-jest.mock("@components/questions/Questions", () => () => <div>Questions Mock</div>);
-jest.mock("@components/layout/DBusError", () => () => <div>D-BusError Mock</div>);
-jest.mock("@components/layout/LoadingEnvironment", () => () => "LoadingEnvironment Mock");
-jest.mock("@components/core/InstallationProgress", () => () => "InstallationProgress Mock");
-jest.mock("@components/core/InstallationFinished", () => () => "InstallationFinished Mock");
-jest.mock("@components/network/TargetIpsPopup", () => () => "Target IPs Mock");
-jest.mock('react-router-dom', () => ({
-  Outlet: () => <div>Content</div>,
-}));
-
+// this object holds the mocked callbacks
 const callbacks = {};
 const getStatusFn = jest.fn();
 const getPhaseFn = jest.fn();
 
-// capture the latest subscription to the manager#onStatusChange for triggering it manually
-const onStatusChangeFn = cb => { callbacks.onStatusChange = cb };
-
 // capture the latest subscription to the manager#onPhaseChange for triggering it manually
 const onPhaseChangeFn = cb => { callbacks.onPhaseChange = cb };
-
 const onConnectionChangeFn = cb => { callbacks.onConnectionChange = cb };
-
-const changeStatusTo = status => act(() => callbacks.onStatusChange(status));
 const changePhaseTo = phase => act(() => callbacks.onPhaseChange(phase));
 const changeConnectionTo = connected => act(() => callbacks.onConnectionChange(connected));
 
@@ -66,7 +61,6 @@ describe("App", () => {
           getStatus: getStatusFn,
           getPhase: getPhaseFn,
           onPhaseChange: onPhaseChangeFn,
-          onStatusChange: onStatusChangeFn
         },
         monitor: {
           onConnectionChange: onConnectionChangeFn
@@ -121,6 +115,18 @@ describe("App", () => {
     });
   });
 
+  describe("on the startup phase", () => {
+    beforeEach(() => {
+      getPhaseFn.mockResolvedValue(STARTUP);
+      getStatusFn.mockResolvedValue(BUSY);
+    });
+
+    it("renders the LoadingEnvironment theme", async () => {
+      installerRender(<App />);
+      await screen.findByText("LoadingEnvironment Mock");
+    });
+  });
+
   describe("when the D-Bus service is busy during startup", () => {
     beforeEach(() => {
       getPhaseFn.mockResolvedValue(STARTUP);
@@ -134,36 +140,38 @@ describe("App", () => {
     });
   });
 
-  describe("when D-Bus service status or phase change", () => {
+  describe("on the CONFIG phase", () => {
     beforeEach(() => {
-      getStatusFn.mockResolvedValue(BUSY);
+      getPhaseFn.mockResolvedValue(CONFIG);
     });
 
-    it("renders InstallationProgress component when INSTALLING", async () => {
+    it("renders the application content", async () => {
       installerRender(<App />);
-      await screen.findByText(/Loading.*environment/i);
-
-      changePhaseTo(INSTALL);
-      changeStatusTo(BUSY);
-      await screen.findByText("InstallationProgress Mock");
-    });
-
-    it("renders InstallationFinished component when INSTALLED", async () => {
-      installerRender(<App />);
-      await screen.findByText(/Loading.*environment/i);
-
-      changePhaseTo(INSTALL);
-      changeStatusTo(IDLE);
-      await screen.findByText("InstallationFinished Mock");
-    });
-
-    it("renders the application's content when the config phase is done", async () => {
-      installerRender(<App />);
-      await screen.findByText(/Loading.*environment/i);
-
-      changePhaseTo(CONFIG);
-      changeStatusTo(IDLE);
       await screen.findByText("Content");
+    });
+  });
+
+  describe("on the INSTALL phase", () => {
+    beforeEach(() => {
+      getPhaseFn.mockResolvedValue(INSTALL);
+    });
+
+    it("renders the application content", async () => {
+      installerRender(<App />);
+      await screen.findByText("Installation Mock");
+    });
+  });
+
+  describe("when D-Bus service phase changes", () => {
+    beforeEach(() => {
+      getPhaseFn.mockResolvedValue(CONFIG);
+    });
+
+    it("renders the Installation component on the INSTALL phase", async () => {
+      installerRender(<App />);
+      await screen.findByText("Content");
+      changePhaseTo(INSTALL);
+      await screen.findByText("Installation Mock");
     });
   });
 
@@ -176,11 +184,6 @@ describe("App", () => {
     it("renders the application's content", async () => {
       installerRender(<App />);
       await screen.findByText("Content");
-    });
-
-    it("renders IP address and hostname", async () => {
-      installerRender(<App />);
-      await screen.findByText("Target IPs Mock");
     });
   });
 });

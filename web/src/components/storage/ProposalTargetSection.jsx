@@ -21,8 +21,8 @@
 
 import React, { useState } from "react";
 
-import { Section, Popup } from "@components/core";
-import { ProposalTargetForm, ProposalSummary } from "@components/storage";
+import { Section, Popup } from "~/components/core";
+import { ProposalTargetForm, ProposalSummary } from "~/components/storage";
 
 export default function ProposalTargetSection({ proposal, calculateProposal }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +33,7 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
   };
 
   return (
-    <Section title="Device" onActionClick={() => setIsOpen(true)} usingSeparator>
+    <Section title="Device" onActionClick={() => setIsOpen(true)} hasSeparator>
       <ProposalSummary proposal={proposal} />
       <Popup aria-label="Device selection" isOpen={isOpen}>
         <ProposalTargetForm id="target-form" proposal={proposal} onSubmit={onTargetChange} />

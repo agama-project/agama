@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -24,7 +24,6 @@ require "dinstaller/manager"
 require "dinstaller/config"
 require "dinstaller/question"
 require "dinstaller/dbus/service_status"
-require "dinstaller/questions_manager"
 
 describe DInstaller::Manager do
   subject { described_class.new(config, logger) }
@@ -39,7 +38,7 @@ describe DInstaller::Manager do
     instance_double(
       DInstaller::DBus::Clients::Software,
       probe: nil, install: nil, propose: nil, finish: nil, on_product_selected: nil,
-      on_service_status_change: nil, selected_product: product
+      on_service_status_change: nil, selected_product: product, valid?: true
     )
   end
   let(:users) do
@@ -49,14 +48,13 @@ describe DInstaller::Manager do
     )
   end
   let(:language) { instance_double(DInstaller::DBus::Clients::Language, finish: nil) }
-  let(:network) { instance_double(DInstaller::Network, probe: nil, install: nil) }
+  let(:network) { instance_double(DInstaller::Network, install: nil) }
   let(:storage) do
     instance_double(
       DInstaller::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
       on_service_status_change: nil, valid?: true
     )
   end
-  let(:questions_manager) { instance_double(DInstaller::QuestionsManager) }
 
   let(:product) { nil }
 
@@ -66,7 +64,6 @@ describe DInstaller::Manager do
     allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(DInstaller::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(users)
-    allow(DInstaller::QuestionsManager).to receive(:new).and_return(questions_manager)
   end
 
   describe "#startup_phase" do
@@ -105,8 +102,8 @@ describe DInstaller::Manager do
     end
 
     it "calls #probe method of each module" do
-      expect(network).to receive(:probe)
       expect(storage).to receive(:probe)
+      expect(software).to receive(:probe)
       subject.config_phase
     end
   end
@@ -120,7 +117,6 @@ describe DInstaller::Manager do
     it "calls #install (or #write) method of each module" do
       expect(network).to receive(:install)
       expect(software).to receive(:install)
-      expect(software).to receive(:probe)
       expect(software).to receive(:finish)
       expect(language).to receive(:finish)
       expect(storage).to receive(:install)
@@ -192,6 +188,29 @@ describe DInstaller::Manager do
       it "returns false" do
         expect(subject.valid?).to eq(false)
       end
+    end
+
+    context "when the software configuration is not valid" do
+      before do
+        allow(software).to receive(:valid?).and_return(false)
+      end
+
+      it "returns false" do
+        expect(subject.valid?).to eq(false)
+      end
+    end
+  end
+
+  describe "#collect_logs" do
+    it "collects the logs and returns the path to the archive" do
+      expect(Yast::Execute).to receive(:locally!)
+        .with("save_y2logs", stderr: :capture)
+        .and_return("Saving YaST logs to /tmp/y2log-hWBn95.tar.xz")
+      expect(Yast::Execute).to receive(:locally!)
+        .with("chown", "ytm:", /y2log-hWBn95/)
+
+      path = subject.collect_logs("ytm")
+      expect(path).to eq("/tmp/y2log-hWBn95.tar.xz")
     end
   end
 end

@@ -1,0 +1,21 @@
+.stack > :where(
+  :not(legend, :last-child)) {
+  margin-block-end: var(--stack-gutter);
+}
+
+.flex-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  @extend .stack;
+}
+
+.split {
+  display: flex;
+  align-items: center;
+  gap: var(--split-gutter);
+}
+
+[data-state="reversed"] {
+  flex-direction: row-reverse;
+}

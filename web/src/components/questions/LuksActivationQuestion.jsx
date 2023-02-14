@@ -20,19 +20,16 @@
  */
 
 import React, { useState } from "react";
-import { Alert, Form, FormGroup, Stack, StackItem, Text, TextInput } from "@patternfly/react-core";
-import { Popup } from "@components/core";
-import { QuestionActions } from "@components/questions";
-
-import { EOS_LOCK as Icon } from "eos-icons-react";
+import { Alert, Form, FormGroup, Text, TextInput } from "@patternfly/react-core";
+import { Icon } from "~/components/layout";
+import { Popup } from "~/components/core";
+import { QuestionActions } from "~/components/questions";
 
 const renderAlert = (attempt) => {
   if (!attempt || attempt === 1) return null;
 
   return (
-    <StackItem>
-      <Alert variant="warning" isInline isPlain title="Given encryption password didn't work" />
-    </StackItem>
+    <Alert variant="warning" isInline isPlain title="Given encryption password didn't work" />
   );
 };
 
@@ -59,29 +56,23 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       isOpen
       title="Encrypted Device"
       aria-label="Question"
-      titleIconVariant={() => <Icon size="24" />}
+      titleIconVariant={() => <Icon name="lock" size="24" />}
     >
-      <Stack hasGutter>
-        { renderAlert(question.attempt) }
-        <StackItem>
-          <Text>
-            { question.text }
-          </Text>
-        </StackItem>
-        <StackItem>
-          <Form onSubmit={triggerDefaultAction}>
-            <FormGroup label="Encryption Password" fieldId="luks-password">
-              <TextInput
-                autoFocus
-                id="luks-password"
-                value={password}
-                type="password"
-                onChange={setPassword}
-              />
-            </FormGroup>
-          </Form>
-        </StackItem>
-      </Stack>
+      { renderAlert(question.attempt) }
+      <Text>
+        { question.text }
+      </Text>
+      <Form onSubmit={triggerDefaultAction}>
+        <FormGroup label="Encryption Password" fieldId="luks-password">
+          <TextInput
+            autoFocus
+            id="luks-password"
+            value={password}
+            type="password"
+            onChange={setPassword}
+          />
+        </FormGroup>
+      </Form>
 
       <Popup.Actions>
         <QuestionActions

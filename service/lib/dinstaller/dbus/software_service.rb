@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/dbus/bus"
 require "dinstaller/dbus/software"
 require "dinstaller/software"
 
@@ -42,8 +43,8 @@ module DInstaller
       # @param logger [Logger]
       def initialize(config, logger = nil)
         @logger = logger || Logger.new($stdout)
-        @bus = ::DBus::SystemBus.instance
-        @backend = DInstaller::Software.new(config, logger)
+        @bus = Bus.current
+        @backend = DInstaller::Software::Manager.new(config, logger)
         @backend.on_progress_change { dispatch }
       end
 
@@ -73,7 +74,9 @@ module DInstaller
       def dbus_objects
         @dbus_objects ||= [
           dbus_software_manager,
-          DInstaller::DBus::Software::Proposal.new(logger)
+          DInstaller::DBus::Software::Proposal.new(logger).tap do |proposal|
+            proposal.on_change { dbus_software_manager.update_validation }
+          end
         ]
       end
 

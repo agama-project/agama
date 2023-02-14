@@ -1,0 +1,108 @@
+:root {
+  // Overrides some PatternFly CSS variables using values
+  // from brand.suse.com
+
+  // Font families
+  --pf-global--FontFamily--sans-serif: var(--ff);
+  --pf-global--FontFamily--heading--sans-serif: var(--ff-headings);
+  --pf-global--FontFamily--monospace: var(--ff-code);
+  --pf-global--FontFamily--redhat-updated--sans-serif: var(--ff);
+  --pf-global--FontFamily--redhat-updated--heading--sans-serif: var(--ff-headings);
+  --pf-global--FontFamily--redhat--monospace: var(--ff-code);
+  --pf-global--FontFamily--redhatVF--sans-serif: var(--ff);
+  --pf-global--FontFamily--redhatVF--heading--sans-serif: var(--ff-headings);
+  --pf-global--FontFamily--redhatVF--monospace: var(--ff-code);
+  --pf-global--FontFamily--overpass--sans-serif: var(--ff);
+  --pf-global--FontFamily--overpass--monospace: var(--ff-code);
+
+  // Font sizes
+  --pf-global--FontSize--4xl: 2em;
+  --pf-global--FontSize--3xl: 1.75em;
+  --pf-global--FontSize--2xl: 1.5em;
+  --pf-global--FontSize--xl: 1.3em;
+  --pf-global--FontSize--lg: 1.15em;
+  --pf-global--FontSize--md: var(--fs-base);
+
+  // Font weight
+  --pf-global--FontWeight--light: var(--fw-light);
+  --pf-global--FontWeight--normal: var(--fw-normal);
+  --pf-global--FontWeight--semi-bold: var(--fw-medium);
+  --pf-global--FontWeight--overpass--semi-bold: var(--fw-medium);
+  --pf-global--FontWeight--bold: var(--fw-bold);
+  --pf-global--FontWeight--overpass--bold: var(--fw-bold);
+
+  // Colors
+  --pf-global--primary-color--100: var(--color-primary);
+  --pf-global--primary-color--200: var(--color-primary);
+  --pf-global--link--Color: var(--color-link);
+  --pf-global--link--Color--hover: var(--color-link-hover);
+  --pf-global--BackgroundColor--dark-100: var(--color-primary);
+}
+
+.pf-c-button.pf-m-primary {
+  --pf-c-button--m-primary--BackgroundColor: var(--color-button-primary);
+  --pf-c-button--m-primary--hover--BackgroundColor: var(--color-button-primary-hover);
+}
+
+.pf-c-button.pf-m-link {
+  // Colors for buttons mofidiers
+  --pf-c-button--m-link--Color: var(--color-link);
+  --pf-c-button--m-link--Color--hover: var(--color-link-hover);
+  --pf-c-button--m-link--m-inline--hover--Color: var(--link-color-hover);
+}
+
+.pf-c-button.pf-m-plain {
+  --pf-c-button--m-plain--Color: var(--color-button-plain-link);
+  --pf-c-button--m-plain--hover--Color: var(--color-button-plain-link-hover);
+}
+
+// Adds a tiny "padding" when focusing a primary or secondary action to avoid
+// https://github.com/yast/d-installer/issues/115#issuecomment-1087375598
+.pf-c-button.pf-m-primary:focus-visible,
+.pf-c-button.pf-m-secondary:focus-visible {
+  box-shadow: 0 0 0 1px white, 0 0 0 2px var(--focus-color);
+}
+
+// SVG icons does not obey font-size
+.pf-c-empty-state__icon {
+  inline-size: 10rem;
+  block-size: 10rem;
+}
+
+// Fix single-line subprogress missaligment
+.pf-c-progress.pf-m-singleline .pf-c-progress__bar {
+  grid-row: 1/3;
+  grid-column: 1/3;
+}
+
+.pf-c-modal-box__body {
+  padding-block: var(--pf-c-modal-box__body--PaddingTop);
+}
+
+.pf-c-form__actions,
+.pf-c-modal-box__footer {
+  // We prefer buttons placed at the right
+  flex-direction: row-reverse;
+
+  // Overrides buttons margins. In row-reverse mode, we need margin
+  // for the :last-child too.
+  // See https://github.com/patternfly/patternfly/blob/9c8cb7c8609613ab53eef3fe05addda16bc63233/src/patternfly/components/ModalBox/modal-box.scss#L211
+  > .pf-c-button {
+    margin-inline-end: var(--pf-c-modal-box__footer--c-button--MarginRight);
+  }
+}
+
+// Do not change the default cursor for labels forms because it is confusing
+//
+// See:
+//  * https://github.com/yast/d-installer/issues/115#issuecomment-1090205696
+//  * https://github.com/patternfly/patternfly/issues/4777#issuecomment-1092090484
+.pf-c-form__label {
+  --pf-c-form__label--hover--Cursor: default;
+  --pf-c-form__label--m-disabled--hover--Cursor: default;
+}
+
+// Do not use thick border-top for data lists
+.pf-c-data-list {
+  --pf-c-data-list--BorderTopWidth: 2px;
+}

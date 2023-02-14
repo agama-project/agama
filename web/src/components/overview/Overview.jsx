@@ -20,43 +20,15 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
-import { useSoftware } from "@context/software";
+import { useSoftware } from "~/context/software";
+import { Navigate } from "react-router-dom";
 
-import { Button, Flex, FlexItem } from "@patternfly/react-core";
-
-import { Title, PageIcon, PageActions, MainActions } from "@components/layout";
-import { Section, InstallButton } from "@components/core";
-import { LanguageSelector } from "@components/language";
-import { StorageSection } from "@components/overview";
-import { Users } from "@components/users";
-import { Network } from "@components/network";
-
-import {
-  EOS_SOFTWARE as OverviewIcon,
-  EOS_TRANSLATE as LanguagesSelectionIcon,
-  EOS_SETTINGS_ETHERNET as NetworkIcon,
-  EOS_MODE_EDIT as ModeEditIcon
-} from "eos-icons-react";
-
-const ChangeProductButton = () => {
-  const { products } = useSoftware();
-  const navigate = useNavigate();
-
-  if (products === undefined || products.length === 1) {
-    return "";
-  }
-
-  return (
-    <Button
-      isSmall
-      variant="plain"
-      icon={<ModeEditIcon />}
-      aria-label="Change selected product"
-      onClick={() => navigate("/products")}
-    />
-  );
-};
+import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
+import { Section, InstallButton } from "~/components/core";
+import { LanguageSelector } from "~/components/language";
+import { SoftwareSection, StorageSection } from "~/components/overview";
+import { Users } from "~/components/users";
+import { Network } from "~/components/network";
 
 function Overview() {
   const { selectedProduct } = useSoftware();
@@ -66,32 +38,22 @@ function Overview() {
     return <Navigate to="/products" />;
   }
 
-  const sections = [
-    <Section key="language" title="Language" icon={LanguagesSelectionIcon}>
-      <LanguageSelector />
-    </Section>,
-    <Section key="network" title="Network" icon={NetworkIcon}>
-      <Network />
-    </Section>,
-    <StorageSection key="storage" showErrors />,
-    <Users key="users" showErrors={showErrors} />
-  ];
-
-  const Sections = () => {
-    return sections.map((section, i) => (
-      <FlexItem key={i} className="installation-overview-section">
-        {section}
-      </FlexItem>
-    ));
-  };
-
   return (
     <>
       <Title>{selectedProduct && selectedProduct.name}</Title>
-      <PageIcon><OverviewIcon /></PageIcon>
-      <PageActions><ChangeProductButton /></PageActions>
-      <MainActions><InstallButton onClick={() => setShowErrors(true)} /></MainActions>
-      <Flex direction={{ default: "column" }}><Sections /></Flex>
+      <PageIcon><Icon name="inventory_2" /></PageIcon>
+      <MainActions>
+        <InstallButton onClick={() => setShowErrors(true)} />
+      </MainActions>
+      <Section key="language" title="Language" iconName="translate">
+        <LanguageSelector />
+      </Section>
+      <Section key="network" title="Network" iconName="settings_ethernet">
+        <Network />
+      </Section>
+      <StorageSection key="storage" showErrors />
+      <SoftwareSection key="software" showErrors />
+      <Users key="users" showErrors={showErrors} />
     </>
   );
 }

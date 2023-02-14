@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "dinstaller/luks_activation_question"
-require "dinstaller/can_ask_question"
 require "y2storage/disk_size"
 
 module DInstaller
@@ -28,14 +27,12 @@ module DInstaller
     module Callbacks
       # Callbacks for LUKS activation
       class ActivateLuks
-        include CanAskQuestion
-
         # Constructor
         #
-        # @param questions_manager [QuestionsManager]
+        # @param questions_client [DInstaller::DBus::Clients::Questions]
         # @param logger [Logger]
-        def initialize(questions_manager, logger)
-          @questions_manager = questions_manager
+        def initialize(questions_client, logger)
+          @questions_client = questions_client
           @logger = logger
         end
 
@@ -52,11 +49,9 @@ module DInstaller
         def call(info, attempt)
           question = question(info, attempt)
 
-          ask(question) do |q|
-            logger.info("#{q.text} #{q.answer}")
-
-            activate = q.answer == :decrypt
-            password = q.password
+          questions_client.ask(question) do |question_client|
+            activate = question_client.answer == :decrypt
+            password = question_client.password
 
             [activate, password]
           end
@@ -64,8 +59,8 @@ module DInstaller
 
       private
 
-        # @return [QuestionsManager]
-        attr_reader :questions_manager
+        # @return [DInstaller::DBus::Clients::Questions]
+        attr_reader :questions_client
 
         # @return [Logger]
         attr_reader :logger

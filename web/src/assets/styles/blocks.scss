@@ -1,0 +1,96 @@
+// Standard section
+// In the future we might need to use an specific CSS class for it if we start having different
+// section layouts.
+section {
+  display: grid;
+  grid-template-columns: var(--icon-size-m) 1fr;
+  grid-template-areas:
+    "icon title"
+    ".... content";
+  gap: var(--spacer-small);
+}
+
+section > svg {
+  grid-area: icon;
+}
+
+section > h2 {
+  grid-area: title;
+}
+
+section > .content {
+  grid-area: content;
+}
+
+// Custom selection list
+.selection-list > * {
+  border: 1px solid #eee;
+  transition:
+    font-size 0.15s ease-in-out,
+    font-weight 0.25s ease-in-out,
+    margin-block 0.15s ease-in-out,
+    box-shadow 0.35s ease-in-out;
+
+  margin-block-start: -2px;
+}
+
+.selection-list .header {
+  border-block-end: 1px solid #eee;
+  padding: var(--spacer-normal);
+}
+
+.selection-list .content {
+  padding: var(--spacer-normal);
+}
+
+.selection-list [data-state="focused"] {
+  margin-block: 20px;
+  box-shadow: 0 0 6px rgb(0 0 0 / 16%), 0 6px 12px rgb(0 0 0 / 32%);
+}
+
+.selection-list [data-state="unstyled"] {
+  border: 0;
+}
+
+.sidebar {
+  --color-background-primary: var(--color-primary);
+  --wrapper-background: var(--color-gray-light);
+
+  position: absolute;
+  padding: 0;
+  right: 0;
+  z-index: 1;
+  inline-size: 70%;
+  box-shadow: 0 0 20px 10px var(--color-primary-darkest);
+}
+
+.sidebar footer {
+  border-top: 1px solid var(--color-gray);
+}
+
+// Remove not wanted PatternFly padding left on a loading link
+.sidebar button.pf-m-progress {
+  --pf-c-button--m-progress--PaddingLeft: var(--pf-global--spacer--md);
+}
+
+.sidebar button.pf-m-progress + div {
+  padding-inline-start: calc(var(--pf-global--spacer--md));
+}
+
+.sidebar[data-state="hidden"] {
+  transition: all 0.04s ease-in-out;
+  inline-size: 0;
+  box-shadow: none;
+}
+
+.sidebar[data-state="visible"] {
+  transition: all 0.2s ease-in-out;
+}
+
+// raw file content with formatting similar to <pre>
+.filecontent {
+  font-family: var(--ff-code);
+  font-size: 90%;
+  word-break: break-all;
+  white-space: pre-wrap;
+}

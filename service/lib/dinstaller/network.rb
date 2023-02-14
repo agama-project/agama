@@ -21,8 +21,10 @@
 
 require "singleton"
 require "yast"
+require "yast2/systemd/service"
 require "y2network/proposal_settings"
-Yast.import "Lan"
+
+Yast.import "Installation"
 
 module DInstaller
   # Backend class to handle network configuration
@@ -31,24 +33,56 @@ module DInstaller
       @logger = logger
     end
 
-    # Probes the network configuration
-    def probe
-      logger.info "Probing network"
-      Yast::Lan.read_config
-      settings = Y2Network::ProposalSettings.instance
-      settings.apply_defaults
-      # force NetworkManager as we are not supporting other backends
-      settings.enable_network_manager!
-    end
-
     # Writes the network configuration to the installed system
+    #
+    # * Copies the connections configuration for NetworkManager, as D-Installer is not
+    #   performing further configuration of the network.
+    # * Enables the NetworkManager service.
     def install
-      Yast::WFM.CallFunction("save_network", [])
+      copy_files
+      enable_service
     end
 
   private
 
     # @return [Logger]
     attr_reader :logger
+
+    ETC_NM_DIR = "/etc/NetworkManager"
+    private_constant :ETC_NM_DIR
+
+    def enable_service
+      service = Yast2::Systemd::Service.find("NetworkManager")
+      if service.nil?
+        logger.error "NetworkManager service was not found"
+        return
+      end
+
+      service.enable
+    end
+
+    # Copies NetworkManager configuration files
+    def copy_files
+      return unless Dir.exist?(ETC_NM_DIR)
+
+      copy_directory(
+        File.join(ETC_NM_DIR, "system-connections"),
+        File.join(Yast::Installation.destdir, ETC_NM_DIR, "system-connections")
+      )
+    end
+
+    # Copies a directory
+    #
+    # This method checks whether the source directory exists. If preserves the target directory if
+    # it exists (otherwise, it creates the directory).
+    #
+    # @param source [String] source directory
+    # @param target [String] target directory
+    def copy_directory(source, target)
+      return unless Dir.exist?(source)
+
+      FileUtils.mkdir_p(target)
+      FileUtils.cp(Dir.glob(File.join(source, "*")), target)
+    end
   end
 end

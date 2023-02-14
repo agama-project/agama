@@ -21,9 +21,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useInstallerClient } from "@context/installer";
-import { useSoftware } from "@context/software";
-import { LoadingEnvironment } from "@components/layout";
+import { useInstallerClient } from "~/context/installer";
+import { useSoftware } from "~/context/software";
 
 import {
   Button,
@@ -34,9 +33,8 @@ import {
   Radio
 } from "@patternfly/react-core";
 
-import { EOS_PRODUCT_SUBSCRIPTIONS as Icon } from "eos-icons-react";
-
-import { Title, PageIcon, MainActions } from "@components/layout/Layout";
+import { Icon, Loading } from "~/components/layout";
+import { Title, PageIcon, MainActions } from "~/components/layout/Layout";
 
 function ProductSelectionPage() {
   const client = useInstallerClient();
@@ -66,7 +64,7 @@ function ProductSelectionPage() {
   };
 
   if (!products) return (
-    <LoadingEnvironment text="Loading available products, please wait..." />
+    <Loading text="Loading available products, please wait..." />
   );
 
   const buildOptions = () => {
@@ -91,7 +89,7 @@ function ProductSelectionPage() {
   return (
     <>
       <Title>Product selection</Title>
-      <PageIcon><Icon /></PageIcon>
+      <PageIcon><Icon name="home_storage" /></PageIcon>
       <MainActions>
         <Button isLarge variant="primary" form="product-selector" type="submit">
           Select

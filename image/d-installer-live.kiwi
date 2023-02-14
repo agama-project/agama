@@ -13,7 +13,7 @@
         <profile name="ALP" description="ALP-only image" />
     </profiles>
     <preferences>
-        <version>0.6</version>
+        <version>0.7</version>
         <packagemanager>zypper</packagemanager>
         <locale>en_US</locale>
         <keytable>us</keytable>
@@ -80,6 +80,7 @@
         <package name="yast2-proxy"/>
         <package name="yast2-storage-ng"/>
         <package name="yast2-users"/>
+        <package name="autoyast2-installation"/>
         <package name="snapper"/>
         <package name="MozillaFirefox"/>
         <package name="MozillaFirefox-branding-openSUSE"/>
@@ -105,8 +106,13 @@
         <package name="joe"/>
         <package name="checkmedia"/>
         <package name="spice-vdagent"/>
+        <package name="fde-tools"/>
+        <package name="libtss2-tcti-device0"/>
         <archive name="root.tar"/>
         <archive name="etc.tar"/>
+    </packages>
+    <packages type="image" profiles="default">
+        <archive name="default.tar.xz"/>
     </packages>
     <packages type="image" profiles="ALP">
         <archive name="alp.tar.xz"/>

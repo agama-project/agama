@@ -22,19 +22,20 @@
 import React from "react";
 
 import { act, screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
-import { createClient } from "@client";
+import { installerRender } from "~/test-utils";
+import { createClient } from "~/client";
 
-import { TargetIpsPopup } from "@components/network";
+import { TargetIpsPopup } from "~/components/network";
 
-jest.mock("@client");
+jest.mock("~/client");
 
 const addresses = [
   { address: "1.2.3.4", prefix: 24 },
   { address: "5.6.7.8", prefix: 16 },
 ];
 const addressFn = jest.fn().mockReturnValue(addresses);
-const hostnameFn = jest.fn().mockReturnValue("example.net");
+const networkSettings = { wifiScanSupported: false, hostname: "example.net" };
+const settingsFn = jest.fn().mockReturnValue(networkSettings);
 
 describe("TargetIpsPopup", () => {
   let callbacks;
@@ -46,7 +47,7 @@ describe("TargetIpsPopup", () => {
         network: {
           onNetworkEvent: onNetworkEventFn,
           addresses: addressFn,
-          hostname: hostnameFn,
+          settings: settingsFn,
           setUp: jest.fn().mockResolvedValue()
         }
       };
@@ -72,12 +73,22 @@ describe("TargetIpsPopup", () => {
     });
   });
 
+  it("triggers onClickCallback function when popup is open", async () => {
+    const onClickCallback = jest.fn();
+
+    const { user } = installerRender(<TargetIpsPopup onClickCallback={onClickCallback} />);
+
+    const button = await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });
+    await user.click(button);
+    expect(onClickCallback).toHaveBeenCalled();
+  });
+
   it("updates address and hostname if they change", async () => {
     installerRender(<TargetIpsPopup />);
     await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });
 
     addressFn.mockReturnValue([{ address: "5.6.7.8", prefix: 24 }]);
-    hostnameFn.mockReturnValue("localhost.localdomain");
+    settingsFn.mockReturnValue({ wifiScanSupported: false, hostname: "localhost.localdomain" });
     act(() => {
       callbacks.forEach(cb => cb());
     });

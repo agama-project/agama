@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,21 +20,18 @@
 # find current contact information at www.suse.com.
 
 require "dinstaller/question"
-require "dinstaller/can_ask_question"
 
 module DInstaller
   module Storage
     module Callbacks
       # Callbacks for multipath activation
       class ActivateMultipath
-        include CanAskQuestion
-
         # Constructor
         #
-        # @param questions_manager [QuestionsManager]
+        # @param questions_client [DInstaller::DBus::Clients::Questions]
         # @param logger [Logger]
-        def initialize(questions_manager, logger)
-          @questions_manager = questions_manager
+        def initialize(questions_client, logger)
+          @questions_client = questions_client
           @logger = logger
         end
 
@@ -47,17 +44,15 @@ module DInstaller
         def call(looks_like_real_multipath)
           return false unless looks_like_real_multipath
 
-          ask(question) do |q|
-            logger.info("#{q.text} #{q.answer}")
-
-            q.answer == :yes
+          questions_client.ask(question) do |question_client|
+            question_client.answer == :yes
           end
         end
 
       private
 
-        # @return [QuestionsManager]
-        attr_reader :questions_manager
+        # @return [DInstaller::DBus::Clients::Questions]
+        attr_reader :questions_client
 
         # @return [Logger]
         attr_reader :logger

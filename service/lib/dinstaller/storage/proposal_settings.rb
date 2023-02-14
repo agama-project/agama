@@ -55,6 +55,13 @@ module DInstaller
         @candidate_devices = []
         @volumes = []
       end
+
+      # Whether the proposal must create encrypted devices
+      #
+      # @return [Boolean]
+      def encrypt?
+        !(encryption_password.nil? || encryption_password.empty?)
+      end
     end
   end
 end

@@ -9,13 +9,19 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
 const CockpitPoPlugin = require("./src/lib/cockpit-po-plugin");
 const CockpitRsyncPlugin = require("./src/lib/cockpit-rsync-plugin");
+const StylelintPlugin = require('stylelint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 /* A standard nodejs and webpack pattern */
 const production = process.env.NODE_ENV === 'production';
+const development = !production;
 
 /* development options for faster iteration */
 const eslint = process.env.ESLINT !== '0';
+
+/* Default to disable csslint for faster production builds */
+const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : development;
 
 // Obtain package name from package.json
 const packageJson = JSON.parse(fs.readFileSync('package.json'));
@@ -23,7 +29,12 @@ const packageJson = JSON.parse(fs.readFileSync('package.json'));
 // Non-JS files which are copied verbatim to dist/
 const copy_files = [
   "./src/index.html",
-  "./src/manifest.json",
+  {
+    from: production ? "./src/manifest.json" : "./src/manifest.dev.json",
+    to: "manifest.json"
+  },
+  // TODO: consider using something more complete like https://github.com/jantimon/favicons-webpack-plugin
+  "./src/assets/favicon.svg",
 ];
 
 const plugins = [
@@ -31,10 +42,17 @@ const plugins = [
   new Extract({ filename: "[name].css" }),
   new CockpitPoPlugin(),
   new CockpitRsyncPlugin({ dest: packageJson.name }),
-];
+  development && new ReactRefreshWebpackPlugin({ overlay: false }),
+].filter(Boolean);
 
 if (eslint) {
   plugins.push(new ESLintPlugin({ extensions: ["js", "jsx"], failOnWarning: true, }));
+}
+
+if (stylelint) {
+  plugins.push(new StylelintPlugin({
+    context: "src/",
+  }));
 }
 
 /* Only minimize when in production mode */
@@ -59,12 +77,25 @@ module.exports = {
     ignored: /node_modules/,
   },
   entry: {
-    index: "./src/index.js",
+    reactRefreshSetup: '@pmmmwh/react-refresh-webpack-plugin/client/ReactRefreshEntry.js',
+    index: ["./src/index.js"],
   },
   // cockpit.js gets included via <script>, everything else should be bundled
   externals: { cockpit: "cockpit" },
+  devServer: {
+    allowedHosts: "all",
+    hot: true,
+    client: {
+      webSocketURL: "ws://localhost:8080/ws"
+    },
+    devMiddleware: {
+      writeToDisk: true,
+    },
+  },
   devtool: "source-map",
   stats: "errors-warnings",
+  // always regenerate dist/, so make rules work
+  output: { clean: true, compareBeforeEmit: false },
 
   optimization: {
     minimize: production,
@@ -85,40 +116,42 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: "babel-loader",
-        test: /\.(js|jsx)$/
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              plugins: [development && require.resolve('react-refresh/babel')].filter(Boolean),
+            },
+          }
+        ]
       },
       {
         test: /\.s?css$/,
-        exclude: [/fonts.scss/],
         use: [
           Extract.loader,
           {
             loader: 'css-loader',
             options: {
               sourceMap: true,
-              url: false
+              url: {
+                // Only follow D-Installer fonts links to be processed by the next rule and place
+                // them in dist/fonts
+                filter: (url) => url.includes("./fonts/")
+              }
             }
           },
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: !production,
+              sourceMap: development,
               sassOptions: {
                 includePaths: ["node_modules"],
                 outputStyle: production ? 'compressed' : undefined,
               },
             },
           },
-        ]
-      },
-      // Load D-Intaller fonts
-      {
-        test: /fonts.scss/,
-        use: [
-          { loader: 'css-loader' },
-          { loader: 'sass-loader' }
         ]
       },
       {
@@ -130,8 +163,15 @@ module.exports = {
       },
       // Load SVG files
       {
-        test: /\.svg/,
-        type: 'asset/inline',
+        test: /\.svg$/i,
+        type: 'asset',
+        resourceQuery: { not: [/component/] } // exclude file import includes ""?component"
+      },
+      {
+        test: /\.svg$/i,
+        issuer: /\.jsx?$/,
+        resourceQuery: /component/, // *.svg?component
+        use: ['@svgr/webpack']
       }
     ]
   },

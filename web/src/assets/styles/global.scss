@@ -1,0 +1,57 @@
+// Global CSS starts
+body {
+  line-height: var(--lh-normal);
+  font-size: var(--fs-base);
+  color: var(--color-text-primary);
+  background: var(--color-gray);
+  text-align: start;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-family: var(--ff-headlines);
+  font-weight: var(--fw-bold);
+}
+
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+
+a {
+  color: currentcolor;
+}
+
+fieldset {
+  padding: var(--fs-base);
+  border: 0;
+  border-top: 1px solid var(--color-gray);
+  border-image: linear-gradient(45deg, var(--color-gray), transparent) 1;
+
+  legend {
+    padding-inline-end: var(--fs-base);
+    margin-inline-start: calc(var(--fs-base) * -1);
+  }
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th {
+  text-align: start;
+}
+
+// Style focus making use of :focus-visible
+*:focus {
+  outline: none;
+}
+
+*:focus:not(:focus-visible) {
+  box-shadow: none;
+}
+
+*:focus-visible {
+  // outline: 1px dotted;
+  // outline-offset: 0.25rem;
+  box-shadow: 0 0 0 1px var(--focus-color);
+}

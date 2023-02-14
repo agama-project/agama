@@ -73,7 +73,7 @@ module DInstaller
       installation_phase.config
 
       storage.probe
-      network.probe
+      software.probe
 
       logger.info("Config phase done")
     rescue StandardError => e
@@ -85,13 +85,9 @@ module DInstaller
     # rubocop:disable Metrics/AbcSize
     def install_phase
       installation_phase.install
+      start_progress(7)
 
-      start_progress(9)
-
-      progress.step("Reading software repositories") do
-        software.probe
-        Yast::Installation.destdir = "/mnt"
-      end
+      Yast::Installation.destdir = "/mnt"
 
       progress.step("Partitioning") do
         storage.install
@@ -107,7 +103,6 @@ module DInstaller
         progress.step("Writing Network Configuration") { network.install }
         progress.step("Saving Language Settings") { language.finish }
         progress.step("Writing repositories information") { software.finish }
-        progress.step("Copying logs") { copy_logs }
         progress.step("Finishing storage configuration") { storage.finish }
       end
 
@@ -182,7 +177,19 @@ module DInstaller
     #
     # @return [Boolean]
     def valid?
-      [storage, users].all?(&:valid?)
+      [storage, users, software].all?(&:valid?)
+    end
+
+    # Collects the logs and stores them into an archive
+    #
+    # @param user [String] local username who will own archive
+    # @return [String] path to created archive
+    def collect_logs(user)
+      output = Yast::Execute.locally!("save_y2logs", stderr: :capture)
+      path = output[/^.* (\/tmp\/y2log-\S*)/, 1]
+      Yast::Execute.locally!("chown", "#{user}:", path)
+
+      path
     end
 
   private
@@ -191,10 +198,5 @@ module DInstaller
 
     # @return [ServiceStatusRecorder]
     attr_reader :service_status_recorder
-
-    # Copy the logs to the target system
-    def copy_logs
-      Yast::WFM.CallFunction("copy_logs_finish", ["Write"])
-    end
   end
 end

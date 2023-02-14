@@ -22,13 +22,13 @@
 import React from "react";
 
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { plainRender } from "~/test-utils";
 
 import About from "./About";
 
 describe("About", () => {
   it("allows user to read 'About D-Installer'", async () => {
-    const { user } = installerRender(<About />);
+    const { user } = plainRender(<About />);
 
     const button = screen.getByRole("button", { name: /About/i });
     await user.click(button);
@@ -43,5 +43,15 @@ describe("About", () => {
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
+  });
+
+  it("triggers given onClickCallback function when opening the dialog", async () => {
+    const onClickCallback = jest.fn();
+
+    const { user } = plainRender(<About onClickCallback={onClickCallback} />);
+    const button = screen.getByRole("button", { name: /About/i });
+
+    await user.click(button);
+    expect(onClickCallback).toHaveBeenCalled();
   });
 });

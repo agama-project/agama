@@ -33,6 +33,7 @@ Dir.chdir(__dir__) do
   require "bundler/setup"
 end
 require "dinstaller/dbus/service_runner"
+require "dinstaller/dbus/server_manager"
 
 # Set up a {Logger} suitable either for terminal (started manually)
 # or syslog (D-Bus activated)
@@ -80,6 +81,8 @@ def start_all_services
   end
 end
 
+dbus_server_manager = DInstaller::DBus::ServerManager.new
+
 if ARGV.empty?
   start_all_services
   Signal.trap("SIGINT") do
@@ -93,6 +96,7 @@ elsif ["-h", "--help"].include?(ARGV[0])
   puts "#{me} -h|--help"
   puts "#{me} -s|--status"
   puts "#{me} -k|--kill"
+  puts "#{me} -d|--daemon"
   puts "#{me} #{ORDERED_SERVICES.sort.join("|")}"
 elsif ["-s", "--status"].include?(ARGV[0])
   # The .[a-z] ensures matching the forked processes
@@ -100,10 +104,17 @@ elsif ["-s", "--status"].include?(ARGV[0])
   system "pgrep -fl bin/d-installer.[a-z]"
   # busctl is prettier but will find nothing until the service files are installed,
   # hence the pgrep above
-  system "busctl | grep -E '^NAME|DInstaller'"
+  system "busctl --address #{dbus_server_manager.address} | grep -E '^NAME|DInstaller'"
 elsif ["-k", "--kill"].include?(ARGV[0])
   system "pkill -f bin/d-installer.[a-z]"
+  # stop the d-bus daemon
+  dbus_server_manager.stop_server
+elsif ["-d", "--daemon"].include?(ARGV[0])
+  # start the D-Bus server
+  pid = dbus_server_manager.find_or_start_server
+  puts pid
 else
+  dbus_server_manager.find_or_start_server
   name = ARGV[0]
   Signal.trap("SIGINT") do
     puts "Stopping #{name} service..."

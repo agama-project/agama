@@ -21,8 +21,8 @@
 
 import React, { useState } from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
-import { DeviceSelector } from "@components/storage";
+import { installerRender } from "~/test-utils";
+import { DeviceSelector } from "~/components/storage";
 
 const availableDevices = [
   { id: "/dev/sda", label: "/dev/sda, 500 GiB" },

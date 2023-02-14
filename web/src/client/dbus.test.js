@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import { DBusClient } from "./dbus";
+import DBusClient from "./dbus";
 import cockpit from "../lib/cockpit";
 
 const proxyObject = {

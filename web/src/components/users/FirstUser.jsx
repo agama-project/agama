@@ -20,9 +20,9 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { useCancellablePromise } from "@/utils";
+import { useCancellablePromise } from "~/utils";
 
-import { useInstallerClient } from "@context/installer";
+import { useInstallerClient } from "~/context/installer";
 import {
   Alert,
   Button,
@@ -34,7 +34,7 @@ import {
   TextInput
 } from "@patternfly/react-core";
 
-import { PasswordAndConfirmationInput, Popup } from '@components/core';
+import { PasswordAndConfirmationInput, Popup } from '~/components/core';
 
 const initialUser = {
   userName: "",

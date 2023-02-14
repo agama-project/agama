@@ -19,3 +19,7 @@ systemctl enable spice-vdagent.service
 
 # default target
 systemctl set-default graphical.target
+
+# adjust owner of extracted files
+chown -R root:root /root
+find /etc -user 1000 | xargs chown root:root

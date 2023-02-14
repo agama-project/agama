@@ -22,21 +22,22 @@
 // @ts-check
 
 import { ManagerClient } from "./manager";
-import { DBusClient } from "./dbus";
+import DBusClient from "./dbus";
 import cockpit from "../lib/cockpit";
 
 jest.mock("../lib/cockpit");
+jest.mock("./dbus");
 
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 const SERVICE_IFACE = "org.opensuse.DInstaller.ServiceStatus1";
 const PROGRESS_IFACE = "org.opensuse.DInstaller.Progress1";
 
-const dbusClient = new DBusClient("");
 const managerProxy = {
   wait: jest.fn(),
   Commit: jest.fn(),
   Probe: jest.fn(),
   CanInstall: jest.fn(),
+  CollectLogs: jest.fn(),
   CurrentInstallationPhase: 0
 };
 
@@ -59,14 +60,15 @@ const proxies = {
 };
 
 beforeEach(() => {
-  dbusClient.proxy = jest.fn().mockImplementation(iface => {
-    return proxies[iface];
+  // @ts-ignore
+  DBusClient.mockImplementation(() => {
+    return { proxy: (iface) => proxies[iface] };
   });
 });
 
 describe("#getStatus", () => {
   it("returns the installer status", async () => {
-    const client = new ManagerClient(dbusClient);
+    const client = new ManagerClient();
     const status = await client.getStatus();
     expect(status).toEqual(0);
   });
@@ -74,7 +76,7 @@ describe("#getStatus", () => {
 
 describe("#getProgress", () => {
   it("returns the manager service progress", async () => {
-    const client = new ManagerClient(dbusClient);
+    const client = new ManagerClient();
     const status = await client.getProgress();
     expect(status).toEqual({
       message: "Installing software",
@@ -87,7 +89,7 @@ describe("#getProgress", () => {
 
 describe("#startProbing", () => {
   it("(re)starts the probing process", async () => {
-    const client = new ManagerClient(dbusClient);
+    const client = new ManagerClient();
     await client.startProbing();
     expect(managerProxy.Probe).toHaveBeenCalledWith();
   });
@@ -95,7 +97,7 @@ describe("#startProbing", () => {
 
 describe("#getPhase", () => {
   it("resolves to the current phase", () => {
-    const client = new ManagerClient(dbusClient);
+    const client = new ManagerClient();
     const phase = client.getPhase();
     expect(phase).resolves.toEqual(0);
   });
@@ -103,7 +105,7 @@ describe("#getPhase", () => {
 
 describe("#startInstallation", () => {
   it("starts the installation", async () => {
-    const client = new ManagerClient(dbusClient);
+    const client = new ManagerClient();
     await client.startInstallation();
     expect(managerProxy.Commit).toHaveBeenCalledWith();
   });
@@ -115,7 +117,7 @@ describe("#rebootSystem", () => {
   });
 
   it("returns whether the system reboot command was called or not", async () => {
-    const client = new ManagerClient(dbusClient);
+    const client = new ManagerClient();
     const reboot = await client.rebootSystem();
     expect(cockpit.spawn).toHaveBeenCalledWith(["/usr/sbin/shutdown", "-r", "now"]);
     expect(reboot).toEqual(true);
@@ -129,7 +131,7 @@ describe("#canInstall", () => {
     });
 
     it("returns true", async () => {
-      const client = new ManagerClient(dbusClient);
+      const client = new ManagerClient();
       const install = await client.canInstall();
       expect(install).toEqual(true);
     });
@@ -141,9 +143,23 @@ describe("#canInstall", () => {
     });
 
     it("returns false", async () => {
-      const client = new ManagerClient(dbusClient);
+      const client = new ManagerClient();
       const install = await client.canInstall();
       expect(install).toEqual(false);
     });
+  });
+});
+
+describe("#fetchLogs", () => {
+  beforeEach(() => {
+    managerProxy.CollectLogs = jest.fn(() => "/tmp/y2log-hWBn95.tar.xz");
+    cockpit.file = jest.fn(() => ({ read: () => "fake-binary-data" }));
+  });
+
+  it("returns the logs file binary content", async () => {
+    const client = new ManagerClient();
+    const logsContent = await client.fetchLogs();
+    expect(logsContent).toEqual("fake-binary-data");
+    expect(cockpit.file).toHaveBeenCalledWith("/tmp/y2log-hWBn95.tar.xz", { binary: true });
   });
 });

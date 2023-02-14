@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,14 +21,14 @@
 
 // @ts-check
 
-import { DBusClient } from "./dbus";
+import DBusClient from "./dbus";
 import { WithStatus, WithValidation } from "./mixins";
 import cockpit from "../lib/cockpit";
 
 const STORAGE_SERVICE = "org.opensuse.DInstaller.Storage";
 const STORAGE_PATH = "/org/opensuse/DInstaller/Storage1";
-const STORAGE_PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage.Proposal1";
-const STORAGE_PROPOSAL_PATH = "/org/opensuse/DInstaller/Storage/Proposal1";
+const PROPOSAL_CALCULATOR_IFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator";
+const PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage1.Proposal";
 
 /**
  * Storage base client
@@ -37,10 +37,10 @@ const STORAGE_PROPOSAL_PATH = "/org/opensuse/DInstaller/Storage/Proposal1";
  */
 class StorageBaseClient {
   /**
-   * @param {DBusClient} [dbusClient] - D-Bus client
+   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
    */
-  constructor(dbusClient) {
-    this.client = dbusClient || new DBusClient(STORAGE_SERVICE);
+  constructor(address = undefined) {
+    this.client = new DBusClient(STORAGE_SERVICE, address);
   }
 
   /**
@@ -49,7 +49,17 @@ class StorageBaseClient {
    * @return {Promise<object>}
    */
   async getProposal() {
-    const proxy = await this.client.proxy(STORAGE_PROPOSAL_IFACE);
+    const storageProxy = await this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_PATH);
+
+    let proposalProxy;
+    try {
+      proposalProxy = await this.client.proxy(PROPOSAL_IFACE);
+    } catch {
+      proposalProxy = {};
+    }
+
+    // Check whether proposal object is already exported
+    if (!proposalProxy?.valid) return {};
 
     const volume = dbusVolume => {
       const valueFrom = dbusValue => dbusValue?.v;
@@ -83,19 +93,17 @@ class StorageBaseClient {
     };
 
     return {
-      availableDevices: proxy.AvailableDevices.map(([id, label]) => ({ id, label })),
-      candidateDevices: proxy.CandidateDevices,
-      lvm: proxy.LVM,
-      encryptionPassword: proxy.EncryptionPassword,
-      volumes: proxy.Volumes.map(volume),
-      actions: proxy.Actions.map(action)
+      availableDevices: storageProxy.AvailableDevices.map(([id, label]) => ({ id, label })),
+      candidateDevices: proposalProxy.CandidateDevices,
+      lvm: proposalProxy.LVM,
+      encryptionPassword: proposalProxy.EncryptionPassword,
+      volumes: proposalProxy.Volumes.map(volume),
+      actions: proposalProxy.Actions.map(action)
     };
   }
 
   /**
    * Calculates a new proposal
-   *
-   * @todo Do not send undefined values
    *
    * @param {object} settings - proposal settings
    * @param {?string[]} [settings.candidateDevices] - Devices to use for the proposal
@@ -105,58 +113,49 @@ class StorageBaseClient {
    * @return {Promise<number>} - 0 success, other for failure
    */
   async calculateProposal({ candidateDevices, encryptionPassword, lvm, volumes }) {
-    const proxy = await this.client.proxy(STORAGE_PROPOSAL_IFACE);
+    const proxy = await this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_PATH);
 
-    const dbusVolume = volume => {
-      return {
-        MountPoint: cockpit.variant("s", volume.mountPoint),
-        Encrypted: cockpit.variant("b", volume.encrypted),
-        FsType: cockpit.variant("s", volume.fsType),
-        MinSize: cockpit.variant("x", volume.minSize),
-        MaxSize: cockpit.variant("x", volume.maxSize),
-        FixedSizeLimits: cockpit.variant("b", volume.fixedSizeLimits),
-        Snapshots: cockpit.variant("b", volume.snapshots)
-      };
+    // Builds a new object without undefined attributes
+    const cleanObject = (object) => {
+      const newObject = { ...object };
+
+      Object.keys(newObject).forEach(key => newObject[key] === undefined && delete newObject[key]);
+      return newObject;
     };
 
-    return proxy.Calculate({
-      CandidateDevices: cockpit.variant("as", candidateDevices),
-      EncryptionPassword: cockpit.variant("s", encryptionPassword),
-      LVM: cockpit.variant("b", lvm),
-      Volumes: cockpit.variant("aa{sv}", volumes.map(dbusVolume))
-    });
-  }
+    // Builds the cockpit object or returns undefined if there is no value
+    const cockpitValue = (type, value) => {
+      if (value === undefined) return undefined;
 
-  /**
-   * Registers a callback to run when properties in the Storage Proposal object change
-   *
-   * @param {function} handler - callback function
-   */
-  onProposalChange(handler) {
-    return this.client.onObjectChanged(STORAGE_PROPOSAL_PATH, STORAGE_PROPOSAL_IFACE, changes => {
-      if (Array.isArray(changes.CandidateDevices.v)) {
-        // FIXME return the proposal object (see getProposal)
-        handler({ candidateDevices: changes.CandidateDevices.v });
-      }
-    });
-  }
+      return cockpit.variant(type, value);
+    };
 
-  /**
-   * Registers a callback to run when properties in the Actions object change
-   *
-   * @param {function} handler - callback function
-   */
-  onActionsChange(handler) {
-    return this.client.onObjectChanged(STORAGE_PROPOSAL_PATH, STORAGE_PROPOSAL_IFACE, changes => {
-      const { Actions: actions } = changes;
-      if (actions !== undefined && Array.isArray(actions.v)) {
-        const newActions = actions.v.map(action => {
-          const { Text: textVar, Subvol: subvolVar, Delete: deleteVar } = action;
-          return { text: textVar.v, subvol: subvolVar.v, delete: deleteVar.v };
-        });
-        handler(newActions);
-      }
+    const dbusVolume = (volume) => {
+      return cleanObject({
+        MountPoint: cockpitValue("s", volume.mountPoint),
+        Encrypted: cockpitValue("b", volume.encrypted),
+        FsType: cockpitValue("s", volume.fsType),
+        MinSize: cockpitValue("x", volume.minSize),
+        MaxSize: cockpitValue("x", volume.maxSize),
+        FixedSizeLimits: cockpitValue("b", volume.fixedSizeLimits),
+        Snapshots: cockpitValue("b", volume.snapshots)
+      });
+    };
+
+    const dbusVolumes = (volumes) => {
+      if (!volumes) return undefined;
+
+      return volumes.map(dbusVolume);
+    };
+
+    const settings = cleanObject({
+      CandidateDevices: cockpitValue("as", candidateDevices),
+      EncryptionPassword: cockpitValue("s", encryptionPassword),
+      LVM: cockpitValue("b", lvm),
+      Volumes: cockpitValue("aa{sv}", dbusVolumes(volumes))
     });
+
+    return proxy.Calculate(settings);
   }
 }
 

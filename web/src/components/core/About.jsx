@@ -20,18 +20,28 @@
  */
 
 import React, { useState } from "react";
+import { noop } from "~/utils";
 import { Button, Text } from "@patternfly/react-core";
-import { Popup } from "@components/core";
+import { Icon } from "~/components/layout";
+import { Popup } from "~/components/core";
 
-export default function About() {
+export default function About({ onClickCallback = noop }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const open = () => setIsOpen(true);
+  const open = () => {
+    setIsOpen(true);
+    onClickCallback();
+  };
+
   const close = () => setIsOpen(false);
 
   return (
     <>
-      <Button variant="link" onClick={open}>
+      <Button
+        variant="link"
+        icon={<Icon name="help" size="24" />}
+        onClick={open}
+      >
         About
       </Button>
 

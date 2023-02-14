@@ -21,8 +21,8 @@
 
 import React, { useState } from "react";
 import { Label, List, ListItem } from '@patternfly/react-core';
-import { Section, Popup } from "@components/core";
-import { ProposalSettingsForm } from "@components/storage";
+import { Section, Popup } from "~/components/core";
+import { ProposalSettingsForm } from "~/components/storage";
 
 export default function ProposalSettingsSection({ proposal, calculateProposal }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -60,7 +60,7 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
     <Section
       title="Settings"
       onActionClick={() => setIsOpen(true)}
-      usingSeparator
+      hasSeparator
     >
       <Popup title="Settings" isOpen={isOpen}>
         <ProposalSettingsForm

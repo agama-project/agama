@@ -21,11 +21,11 @@
 
 // @ts-check
 
-import { DBusClient } from "./dbus";
+import DBusClient from "./dbus";
 import { WithStatus, WithProgress } from "./mixins";
 import cockpit from "../lib/cockpit";
 
-const MANAGER_SERVICE = "org.opensuse.DInstaller.Manager";
+const MANAGER_SERVICE = "org.opensuse.DInstaller";
 const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
 const MANAGER_PATH = "/org/opensuse/DInstaller/Manager1";
 
@@ -36,10 +36,10 @@ const MANAGER_PATH = "/org/opensuse/DInstaller/Manager1";
  */
 class ManagerBaseClient {
   /**
-   * @param {DBusClient} [dbusClient] - D-Bus client
+   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
    */
-  constructor(dbusClient) {
-    this.client = dbusClient || new DBusClient(MANAGER_SERVICE);
+  constructor(address = undefined) {
+    this.client = new DBusClient(MANAGER_SERVICE, address);
   }
 
   /**
@@ -77,6 +77,18 @@ class ManagerBaseClient {
   async canInstall() {
     const proxy = await this.client.proxy(MANAGER_IFACE);
     return proxy.CanInstall();
+  }
+
+  /**
+   * Returns the binary content of the YaST logs file
+   *
+   * @return {Promise<Uint8Array>}
+   */
+  async fetchLogs() {
+    const proxy = await this.client.proxy(MANAGER_IFACE);
+    const path = proxy.CollectLogs("root");
+    const file = cockpit.file(path, { binary: true });
+    return file.read();
   }
 
   /**

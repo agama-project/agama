@@ -21,12 +21,12 @@
 
 // @ts-check
 
-import { DBusClient } from "./dbus";
+import DBusClient from "./dbus";
 import { UsersClient } from "./users";
 
-const USERS_IFACE = "org.opensuse.DInstaller.Users1";
+jest.mock("./dbus");
 
-const dbusClient = new DBusClient("");
+const USERS_IFACE = "org.opensuse.DInstaller.Users1";
 
 let setFirstUserResult = [true, []];
 
@@ -43,14 +43,19 @@ const usersProxy = {
 };
 
 beforeEach(() => {
-  dbusClient.proxy = jest.fn().mockImplementation(iface => {
-    if (iface === USERS_IFACE) return usersProxy;
+  // @ts-ignore
+  DBusClient.mockImplementation(() => {
+    return {
+      proxy: (iface) => {
+        if (iface === USERS_IFACE) return usersProxy;
+      }
+    };
   });
 });
 
 describe("#getUser", () => {
   it("returns the defined first user", async () => {
-    const client = new UsersClient(dbusClient);
+    const client = new UsersClient();
     const user = await client.getUser();
     expect(user).toEqual({ fullName: "Jane Doe", userName: "jane", autologin: false });
   });
@@ -63,7 +68,7 @@ describe("#isRootPasswordSet", () => {
     });
 
     it("returns true", async () => {
-      const client = new UsersClient(dbusClient);
+      const client = new UsersClient();
       const result = await client.isRootPasswordSet();
       expect(result).toEqual(true);
     });
@@ -75,7 +80,7 @@ describe("#isRootPasswordSet", () => {
     });
 
     it("returns false", async () => {
-      const client = new UsersClient(dbusClient);
+      const client = new UsersClient();
       const result = await client.isRootPasswordSet();
       expect(result).toEqual(false);
     });
@@ -84,7 +89,7 @@ describe("#isRootPasswordSet", () => {
 
 describe("#getRootSSHKey", () => {
   it("returns the SSH key for the root user", async () => {
-    const client = new UsersClient(dbusClient);
+    const client = new UsersClient();
     const result = await client.getRootSSHKey();
     expect(result).toEqual("ssh-key");
   });
@@ -92,7 +97,7 @@ describe("#getRootSSHKey", () => {
 
 describe("#setUser", () => {
   it("sets the values of the first user and returns whether succeeded or not an errors found", async () => {
-    const client = new UsersClient(dbusClient);
+    const client = new UsersClient();
     const result = await client.setUser({
       fullName: "Jane Doe",
       userName: "jane",
@@ -111,7 +116,7 @@ describe("#setUser", () => {
     });
 
     it("returns an object with the result as false and the issues found", async () => {
-      const client = new UsersClient(dbusClient);
+      const client = new UsersClient();
       const result = await client.setUser({
         fullName: "Jane Doe",
         userName: "jane",
@@ -126,7 +131,7 @@ describe("#setUser", () => {
 
 describe("#removeUser", () => {
   it("removes the first user and returns true", async () => {
-    const client = new UsersClient(dbusClient);
+    const client = new UsersClient();
     const result = await client.removeUser();
     expect(usersProxy.RemoveFirstUser).toHaveBeenCalled();
     expect(result).toEqual(true);
@@ -136,7 +141,7 @@ describe("#removeUser", () => {
     beforeEach(() => (usersProxy.RemoveFirstUser = jest.fn().mockResolvedValue(1)));
 
     it("returns false", async () => {
-      const client = new UsersClient(dbusClient);
+      const client = new UsersClient();
       const result = await client.removeUser();
       expect(result).toEqual(false);
     });
@@ -145,7 +150,7 @@ describe("#removeUser", () => {
 
 describe("#setRootPassword", () => {
   it("sets the root password and returns true", async () => {
-    const client = new UsersClient(dbusClient);
+    const client = new UsersClient();
     const result = await client.setRootPassword("12345");
     expect(usersProxy.SetRootPassword).toHaveBeenCalledWith("12345", false);
     expect(result).toEqual(true);
@@ -155,7 +160,7 @@ describe("#setRootPassword", () => {
     beforeEach(() => (usersProxy.SetRootPassword = jest.fn().mockResolvedValue(1)));
 
     it("returns false", async () => {
-      const client = new UsersClient(dbusClient);
+      const client = new UsersClient();
       const result = await client.setRootPassword("12345");
       expect(result).toEqual(false);
     });
@@ -164,7 +169,7 @@ describe("#setRootPassword", () => {
 
 describe("#removeRootPassword", () => {
   it("removes the root password", async () => {
-    const client = new UsersClient(dbusClient);
+    const client = new UsersClient();
     const result = await client.removeRootPassword();
     expect(usersProxy.RemoveRootPassword).toHaveBeenCalled();
     expect(result).toEqual(true);
@@ -174,7 +179,7 @@ describe("#removeRootPassword", () => {
     beforeEach(() => (usersProxy.RemoveRootPassword = jest.fn().mockResolvedValue(1)));
 
     it("returns false", async () => {
-      const client = new UsersClient(dbusClient);
+      const client = new UsersClient();
       const result = await client.removeRootPassword();
       expect(result).toEqual(false);
     });
@@ -183,7 +188,7 @@ describe("#removeRootPassword", () => {
 
 describe("#setRootSSHKey", () => {
   it("sets the root password and returns true", async () => {
-    const client = new UsersClient(dbusClient);
+    const client = new UsersClient();
     const result = await client.setRootSSHKey("ssh-key");
     expect(usersProxy.SetRootSSHKey).toHaveBeenCalledWith("ssh-key");
     expect(result).toEqual(true);
@@ -193,7 +198,7 @@ describe("#setRootSSHKey", () => {
     beforeEach(() => (usersProxy.SetRootSSHKey = jest.fn().mockResolvedValue(1)));
 
     it("returns false", async () => {
-      const client = new UsersClient(dbusClient);
+      const client = new UsersClient();
       const result = await client.setRootSSHKey("ssh-key");
       expect(result).toEqual(false);
     });

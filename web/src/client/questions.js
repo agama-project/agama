@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import { DBusClient } from "./dbus";
+import DBusClient from "./dbus";
 
 const QUESTIONS_SERVICE = "org.opensuse.DInstaller.Questions";
 
@@ -112,10 +112,10 @@ function buildQuestion(dbusQuestion) {
  */
 class QuestionsClient {
   /**
-   * @param {DBusClient} [dbusClient] - D-Bus client
+   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
    */
-  constructor(dbusClient) {
-    this.client = dbusClient || new DBusClient(QUESTIONS_SERVICE);
+  constructor(address) {
+    this.client = new DBusClient(QUESTIONS_SERVICE, address);
   }
 
   /**

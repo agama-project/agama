@@ -1,12 +1,11 @@
 [Unit]
 Description=D-Installer Service
-Requires=dbus.socket cockpit.socket
+Requires=cockpit.socket
 After=network-online.target
 
 [Service]
-Type=dbus
-BusName=org.opensuse.DInstaller
-ExecStart=/usr/bin/d-installer manager
+Type=simple
+ExecStart=/usr/bin/d-installer
 User=root
 TimeoutStopSec=5
 

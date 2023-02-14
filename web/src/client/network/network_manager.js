@@ -21,13 +21,14 @@
 
 // @ts-check
 //
-import { DBusClient } from "../dbus";
+import DBusClient from "../dbus";
 import cockpit from "../../lib/cockpit";
 import { intToIPString, stringToIPInt } from "./utils";
 import { NetworkEventTypes } from "./index";
 import { createAccessPoint, createConnection, SecurityProtocols } from "./model";
 
 /**
+ * @typedef {import("./model").NetworkSettings} NetworkSettings
  * @typedef {import("./model").Connection} Connection
  * @typedef {import("./model").ActiveConnection} ActiveConnection
  * @typedef {import("./model").IPAddress} IPAddress
@@ -39,6 +40,8 @@ const SERVICE_NAME = "org.freedesktop.NetworkManager";
 const IFACE = "org.freedesktop.NetworkManager";
 const SETTINGS_IFACE = "org.freedesktop.NetworkManager.Settings";
 const CONNECTION_IFACE = "org.freedesktop.NetworkManager.Settings.Connection";
+const DEVICE_IFACE = "org.freedesktop.NetworkManager.Device";
+const DEVICES_NAMESPACE = "/org/freedesktop/NetworkManager/Devices";
 const ACTIVE_CONNECTION_IFACE = "org.freedesktop.NetworkManager.Connection.Active";
 const ACTIVE_CONNECTION_NAMESPACE = "/org/freedesktop/NetworkManager/ActiveConnection";
 const IP4CONFIG_IFACE = "org.freedesktop.NetworkManager.IP4Config";
@@ -46,6 +49,7 @@ const IP4CONFIG_NAMESPACE = "/org/freedesktop/NetworkManager/IP4Config";
 const ACCESS_POINT_IFACE = "org.freedesktop.NetworkManager.AccessPoint";
 const ACCESS_POINT_NAMESPACE = "/org/freedesktop/NetworkManager/AccessPoint";
 const SETTINGS_NAMESPACE = "/org/freedesktop/NetworkManager/Settings";
+const NM_DEVICE_TYPE_WIFI = 2;
 
 const ApFlags = Object.freeze({
   NONE: 0x00000000,
@@ -166,17 +170,16 @@ const mergeConnectionSettings = (settings, connection) => {
  * D-Bus. Its interface is modeled to serve NetworkClient requirements.
  */
 class NetworkManagerAdapter {
-  /**
-   * @param {DBusClient} [dbusClient] - D-Bus client
-   */
-  constructor(dbusClient) {
-    this.client = dbusClient || new DBusClient(SERVICE_NAME);
+  constructor() {
+    this.client = new DBusClient(SERVICE_NAME);
     /** @type {{[k: string]: string}} */
     this.connectionIds = {};
     this.proxies = {
       accessPoints: {},
       activeConnections: {},
+      devices: {},
       ip4Configs: {},
+      manager: null,
       settings: null,
       connections: {}
     };
@@ -195,7 +198,9 @@ class NetworkManagerAdapter {
       activeConnections: await this.client.proxies(
         ACTIVE_CONNECTION_IFACE, ACTIVE_CONNECTION_NAMESPACE
       ),
+      devices: await this.client.proxies(DEVICE_IFACE, DEVICES_NAMESPACE),
       ip4Configs: await this.client.proxies(IP4CONFIG_IFACE, IP4CONFIG_NAMESPACE),
+      manager: await this.client.proxy(IFACE),
       settings: await this.client.proxy(SETTINGS_IFACE),
       connections: await this.client.proxies(CONNECTION_IFACE, SETTINGS_NAMESPACE)
     };
@@ -372,6 +377,8 @@ class NetworkManagerAdapter {
   async subscribeToEvents() {
     const activeConnectionProxies = this.proxies.activeConnections;
     const connectionProxies = this.proxies.connections;
+    const managerProxy = this.proxies.manager;
+    const settingsProxy = this.proxies.settings;
 
     /** @type {(eventType: string) => NetworkEventFn} */
     const handleWrapperActiveConnection = (eventType) => (_event, proxy) => {
@@ -392,6 +399,10 @@ class NetworkManagerAdapter {
       this.eventsHandler({ type: eventType, payload: connection });
     };
 
+    const handleWrapperSettings = (eventType) => () => {
+      this.eventsHandler({ type: eventType, payload: this.settings() });
+    };
+
     // FIXME: do not build a map (eventTypesMap), just inject the type here
     connectionProxies.addEventListener("added", handleWrapperConnection(NetworkEventTypes.CONNECTION_ADDED));
     connectionProxies.addEventListener("changed", handleWrapperConnection(NetworkEventTypes.CONNECTION_UPDATED));
@@ -401,6 +412,9 @@ class NetworkManagerAdapter {
     activeConnectionProxies.addEventListener("added", handleWrapperActiveConnection(NetworkEventTypes.ACTIVE_CONNECTION_ADDED));
     activeConnectionProxies.addEventListener("changed", handleWrapperActiveConnection(NetworkEventTypes.ACTIVE_CONNECTION_UPDATED));
     activeConnectionProxies.addEventListener("removed", handleWrapperActiveConnection(NetworkEventTypes.ACTIVE_CONNECTION_REMOVED));
+
+    managerProxy.addEventListener("changed", handleWrapperSettings(NetworkEventTypes.SETTINGS_UPDATED));
+    settingsProxy.addEventListener("changed", handleWrapperSettings(NetworkEventTypes.SETTINGS_UPDATED));
   }
 
   /**
@@ -486,17 +500,40 @@ class NetworkManagerAdapter {
     return { address: data.address.v, prefix: parseInt(data.prefix.v) };
   }
 
-  /**
-   * Returns the computer's hostname
-   *
-   * @return {string}
-   *
-   * https://developer-old.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.Settings.html
-   */
-  hostname() {
-    if (!this.proxies.settings) return "";
+  /*
+  * Returns the list of WiFi devices available in the system
+  *
+  * @return {object[]} list of available WiFi devices
+  */
+  availableWifiDevices() {
+    return Object.values(this.proxies.devices).filter(d => d.DeviceType === NM_DEVICE_TYPE_WIFI);
+  }
 
-    return this.proxies.settings.Hostname;
+  /*
+  * Returns whether the system is able to scan wifi networks based on rfkill and the presence of
+  * some wifi device
+  *
+  * @return {boolean}
+  */
+  wifiScanSupported() {
+    const { manager } = this.proxies;
+
+    if (!manager) return false;
+    if (!(manager.WirelessEnabled && manager.WirelessHardwareEnabled)) return false;
+
+    return this.availableWifiDevices().length > 0;
+  }
+
+  /*
+  * Returns NetworkManager general settings
+  *
+  * @return {NetworkSettings}
+  */
+  settings() {
+    return {
+      wifiScanSupported: this.wifiScanSupported(),
+      hostname: this.proxies.settings?.Hostname || ""
+    };
   }
 }
 

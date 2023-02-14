@@ -190,7 +190,9 @@ $(LIB_TEST):
 	    git reset -- ../pkg/lib'
 	mv ../pkg/lib src/ && rmdir ../pkg
 
-$(NODE_MODULES_TEST):
+# run 'npm install' if node_modules is missing
+# or whenever package.json changes afterwards
+$(NODE_MODULES_TEST): package.json
 	# unset NODE_ENV, skips devDependencies otherwise
 	env -u NODE_ENV npm install
 	env -u NODE_ENV npm prune

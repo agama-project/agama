@@ -22,11 +22,11 @@
 import React from "react";
 
 import { act, screen, waitFor, within } from "@testing-library/react";
-import { installerRender, createCallbackMock } from "@/test-utils";
-import { createClient } from "@client";
-import { FirstUser } from "@components/users";
+import { installerRender, createCallbackMock } from "~/test-utils";
+import { createClient } from "~/client";
+import { FirstUser } from "~/components/users";
 
-jest.mock("@client");
+jest.mock("~/client");
 
 let user;
 const emptyUser = {

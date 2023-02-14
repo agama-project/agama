@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,15 +20,15 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/dbus/bus"
 require "dinstaller/dbus/questions"
-require "dinstaller/questions_manager"
 
 module DInstaller
   module DBus
-    # D-Bus service (org.opensuse.DInstaller.Software)
+    # D-Bus service (org.opensuse.DInstaller.Questions)
     #
     # It connects to the system D-Bus and answers requests on objects below
-    # `/org/opensuse/DInstaller/Software`.
+    # `/org/opensuse/DInstaller/Questions1`.
     class QuestionsService
       SERVICE_NAME = "org.opensuse.DInstaller.Questions"
       private_constant :SERVICE_NAME
@@ -38,12 +38,13 @@ module DInstaller
       # @return [::DBus::Connection]
       attr_reader :bus
 
+      # Constructor
+      #
       # @param _config [Config] Configuration object
       # @param logger [Logger]
       def initialize(_config, logger = nil)
         @logger = logger || Logger.new($stdout)
-        @bus = ::DBus::SystemBus.instance
-        @backend ||= DInstaller::QuestionsManager.new(logger)
+        @bus = Bus.current
       end
 
       # Exports the software object through the D-Bus service
@@ -61,7 +62,7 @@ module DInstaller
     private
 
       # @return [Logger]
-      attr_reader :logger, :backend
+      attr_reader :logger
 
       # @return [::DBus::Service]
       def service
@@ -71,7 +72,7 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          DInstaller::DBus::Questions.new(backend, logger)
+          DInstaller::DBus::Questions.new(logger: logger)
         ]
       end
     end

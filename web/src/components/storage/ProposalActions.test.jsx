@@ -21,8 +21,8 @@
 
 import React from "react";
 import { screen, waitFor, within, waitForElementToBeRemoved } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
-import { ProposalActions } from "@components/storage";
+import { installerRender } from "~/test-utils";
+import { ProposalActions } from "~/components/storage";
 
 const actions = [
   { text: 'Create GPT on /dev/vdc', subvol: false, delete: false },
@@ -50,7 +50,7 @@ const destructiveAction = { text: 'Delete ext4 on /dev/vdc', subvol: false, dele
 describe("ProposalActions", () => {
   describe("when there is none action", () => {
     it("renders nothing", async () => {
-      const { container } = installerRender(<ProposalActions actions={[]} />, { usingLayout: false });
+      const { container } = installerRender(<ProposalActions actions={[]} />);
 
       await waitFor(() => expect(container).toBeEmptyDOMElement());
     });

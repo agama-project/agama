@@ -20,8 +20,8 @@
  */
 
 import React from "react";
-import { partition } from "@/utils";
-import { Popup } from "@components/core";
+import { partition } from "~/utils";
+import { Popup } from "~/components/core";
 
 /**
  * Returns given text capitalized

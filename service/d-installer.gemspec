@@ -22,7 +22,7 @@
 
 Gem::Specification.new do |spec|
   spec.name = "d-installer"
-  spec.version = File.read(File.expand_path("VERSION", File.join(__dir__, ".."))).chomp
+  spec.version = File.read("VERSION").chomp
   spec.summary = "D-Installer Service"
   spec.description = "System service for D-Installer, an experimental YaST-based installer."
   spec.author = "YaST Team"
@@ -48,5 +48,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "fast_gettext", "~> 2.2.0"
   spec.add_dependency "nokogiri", "~> 1.13.1"
   spec.add_dependency "rexml", "~> 3.2.5"
-  spec.add_dependency "ruby-dbus", "~> 0.18.1"
+  spec.add_dependency "ruby-dbus", "~> 0.19.0"
 end

@@ -1,14 +1,3 @@
-// Note: for this particular case, we are not using
-// @use "eos-ds/dist/scss/eos-base/variables/typography.scss"
-// because it imports fonts from an external source, which does not fit requirements of the
-// installer (which can be running in a machine without internet access)
-
-$base: Lato, arial, helvetica, sans-serif;
-$headlines: Poppins, san-serif;
-$code: 'Roboto Mono', monospace;
-$size-base: 14px;
-$line-height: 1.5rem;
-
 /**
  * Lato font, a sanserif family designed by Łukasz Dziedzic and others (see
  * http://www.latofonts.com/team) and published under the open-source Open Font License
@@ -20,38 +9,38 @@ $line-height: 1.5rem;
 
 /* LatoLatin-Regular */
 @font-face {
-    font-family: 'Lato';
-    src: url('./fonts/LatoLatin-Regular.woff2') format('woff2');
+    font-family: Lato;
+    src: url("./fonts/LatoLatin-Regular.woff2") format("woff2");
     font-style: normal;
     font-weight: normal;
-    text-rendering: optimizeLegibility;
+    text-rendering: optimizelegibility;
 }
 
 /* LatoLatin-Italic */
 @font-face {
-    font-family: 'Lato';
-    src: url('./fonts/LatoLatin-Italic.woff2') format('woff2');
+    font-family: Lato;
+    src: url("./fonts/LatoLatin-Italic.woff2") format("woff2");
     font-style: italic;
     font-weight: normal;
-    text-rendering: optimizeLegibility;
+    text-rendering: optimizelegibility;
 }
 
 /* LatoLatin-Bold */
 @font-face {
-    font-family: 'Lato';
-    src: url('./fonts/LatoLatin-Bold.woff2') format('woff2');
+    font-family: Lato;
+    src: url("./fonts/LatoLatin-Bold.woff2") format("woff2");
     font-style: normal;
     font-weight: bold;
-    text-rendering: optimizeLegibility;
+    text-rendering: optimizelegibility;
 }
 
 /* LatoLatin-BoldItalic */
 @font-face {
-    font-family: 'Lato';
-    src: url('./fonts/LatoLatin-BoldItalic.woff2') format('woff2');
+    font-family: Lato;
+    src: url("./fonts/LatoLatin-BoldItalic.woff2") format("woff2");
     font-style: italic;
     font-weight: bold;
-    text-rendering: optimizeLegibility;
+    text-rendering: optimizelegibility;
 }
 
 /**
@@ -65,52 +54,52 @@ $line-height: 1.5rem;
 
 /* poppins-300 - latin-ext_latin_devanagari */
 @font-face {
-  font-family: 'Poppins';
+  font-family: Poppins;
   font-style: normal;
   font-weight: 300;
-  src: local(''),
-       url('./fonts/poppins-v19-latin-ext_latin_devanagari-300.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-       url('./fonts/poppins-v19-latin-ext_latin_devanagari-300.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  src: local(""),
+       url("./fonts/poppins-v19-latin-ext_latin_devanagari-300.woff2") format("woff2"), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url("./fonts/poppins-v19-latin-ext_latin_devanagari-300.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
 /* poppins-300italic - latin-ext_latin_devanagari */
 @font-face {
-  font-family: 'Poppins';
+  font-family: Poppins;
   font-style: italic;
   font-weight: 300;
-  src: local(''),
-       url('./fonts/poppins-v19-latin-ext_latin_devanagari-300italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-       url('./fonts/poppins-v19-latin-ext_latin_devanagari-300italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  src: local(""),
+       url("./fonts/poppins-v19-latin-ext_latin_devanagari-300italic.woff2") format("woff2"), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url("./fonts/poppins-v19-latin-ext_latin_devanagari-300italic.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
 /* poppins-regular - latin-ext_latin_devanagari */
 @font-face {
-  font-family: 'Poppins';
+  font-family: Poppins;
   font-style: normal;
   font-weight: 400;
-  src: local(''),
-       url('./fonts/poppins-v19-latin-ext_latin_devanagari-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-       url('./fonts/poppins-v19-latin-ext_latin_devanagari-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  src: local(""),
+       url("./fonts/poppins-v19-latin-ext_latin_devanagari-regular.woff2") format("woff2"), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url("./fonts/poppins-v19-latin-ext_latin_devanagari-regular.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
 /* poppins-500 - latin-ext_latin_devanagari */
 @font-face {
-  font-family: 'Poppins';
+  font-family: Poppins;
   font-style: normal;
   font-weight: 500;
-  src: local(''),
-       url('./fonts/poppins-v19-latin-ext_latin_devanagari-500.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-       url('./fonts/poppins-v19-latin-ext_latin_devanagari-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  src: local(""),
+       url("./fonts/poppins-v19-latin-ext_latin_devanagari-500.woff2") format("woff2"), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url("./fonts/poppins-v19-latin-ext_latin_devanagari-500.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
 /* poppins-500italic - latin-ext_latin_devanagari */
 @font-face {
-  font-family: 'Poppins';
+  font-family: Poppins;
   font-style: italic;
   font-weight: 500;
-  src: local(''),
-       url('./fonts/poppins-v19-latin-ext_latin_devanagari-500italic.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-       url('./fonts/poppins-v19-latin-ext_latin_devanagari-500italic.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  src: local(""),
+       url("./fonts/poppins-v19-latin-ext_latin_devanagari-500italic.woff2") format("woff2"), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url("./fonts/poppins-v19-latin-ext_latin_devanagari-500italic.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
 /**
@@ -122,10 +111,10 @@ $line-height: 1.5rem;
 
 /* roboto-mono-regular - vietnamese_latin-ext_latin_greek_cyrillic-ext_cyrillic */
 @font-face {
-  font-family: 'Roboto Mono';
+  font-family: "Roboto Mono";
   font-style: normal;
   font-weight: 400;
-  src: local(''),
-       url('./fonts/roboto-mono-v13-vietnamese_latin-ext_latin_greek_cyrillic-ext_cyrillic-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
-       url('./fonts/roboto-mono-v13-vietnamese_latin-ext_latin_greek_cyrillic-ext_cyrillic-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  src: local(""),
+       url("./fonts/roboto-mono-v13-vietnamese_latin-ext_latin_greek_cyrillic-ext_cyrillic-regular.woff2") format("woff2"), /* Chrome 26+, Opera 23+, Firefox 39+ */
+       url("./fonts/roboto-mono-v13-vietnamese_latin-ext_latin_greek_cyrillic-ext_cyrillic-regular.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }

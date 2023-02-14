@@ -21,6 +21,7 @@
 
 export * from "./Layout";
 export { default as Layout } from "./Layout";
+export { default as Icon } from "./Icon";
 export { default as Center } from "./Center";
 export { default as DBusError } from "./DBusError";
-export { default as LoadingEnvironment } from "./LoadingEnvironment";
+export { default as Loading } from "./Loading";

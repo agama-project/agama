@@ -21,9 +21,9 @@
 
 import React from "react";
 
-import "./layout.scss";
-import logo from "@assets/suse-horizontal-logo.svg";
+import logoUrl from "~/assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
+import { Sidebar } from "~/components/core";
 
 const PageTitle = createTeleporter();
 const HeaderActions = createTeleporter();
@@ -32,10 +32,20 @@ const FooterActions = createTeleporter();
 const FooterInfoArea = createTeleporter();
 
 /**
- * D-Installer main layout component.
  *
- * It displays the content in a single vertical responsive column with fixed
- * header and footer.
+ * The D-Installer main layout component.
+ *
+ * It displays the content in a single column with a fixed header and footer.
+ *
+ * To achieve a {@link https://gregberge.com/blog/react-scalable-layout scalable layout},
+ * it uses {@link https://reactjs.org/docs/portals.html React Portals} through
+ * {@link https://github.com/gregberge/react-teleporter react-teleporter}. In other words,
+ * it is mounted only once and gets influenced by other components by using the created
+ * slots (Title, PageIcon, MainActions, etc).
+ *
+ * So, please ensure that {@link test-utils!mockLayout } gets updated when adding or deleting
+ * slots here. It's needed in order to allow testing the output of components that interact
+ * with the layout using that mechanism.
  *
  * @example
  *   <Layout>
@@ -57,35 +67,30 @@ const FooterInfoArea = createTeleporter();
  *
  */
 function Layout({ children }) {
-  const responsiveWidthRules = "pf-u-w-66-on-lg pf-u-w-50-on-xl pf-u-w-33-on-2xl";
-  const className = `layout ${responsiveWidthRules}`;
-
   return (
-    <div className={className}>
-      <div className="layout__header">
-        <div className="layout__header-section-title">
-          <h1>
-            <HeaderIcon.Target as="span" className="layout__header-section-title-icon" />
-            <PageTitle.Target as="span" />
-          </h1>
-        </div>
+    <div className="wrapper shadow">
+      <header className="split justify-between bottom-shadow">
+        <h1 className="split">
+          <HeaderIcon.Target as="span" />
+          <PageTitle.Target as="span" />
+        </h1>
 
-        <HeaderActions.Target className="layout__header-section-actions" />
-      </div>
+        <HeaderActions.Target as="span" />
+      </header>
 
-      <main className="layout__content">{children}</main>
+      <Sidebar />
 
-      <div className="layout__footer">
-        <div className="layout__footer-info-area">
-          <img src={logo} alt="Logo of SUSE" className="company-logo" />
-          <FooterInfoArea.Target />
-        </div>
+      <main className="stack">
+        {children}
+      </main>
+
+      <footer className="split justify-between top-shadow" data-state="reversed">
         <FooterActions.Target
-          className="layout__footer-actions-area"
           role="navigation"
           aria-label="Installer Actions"
         />
-      </div>
+        <img src={logoUrl} alt="Logo of SUSE" />
+      </footer>
     </div>
   );
 }

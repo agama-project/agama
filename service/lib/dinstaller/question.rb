@@ -24,8 +24,6 @@ module DInstaller
   #
   # Questions are used when some information needs to be asked. For example, a question could be
   # created for asking whether to continue or not when an error is detected.
-  #
-  # Questions are managed by a questions manager, see {QuestionsManager}.
   class Question
     # Each question is identified by an unique id
     #

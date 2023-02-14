@@ -20,8 +20,8 @@
  */
 
 import React, { useReducer, useEffect } from "react";
-import { useCancellablePromise } from "@/utils";
-import { useInstallerClient } from "@context/installer";
+import { useCancellablePromise } from "~/utils";
+import { useInstallerClient } from "~/context/installer";
 
 import {
   Button,
@@ -31,7 +31,7 @@ import {
   FormSelectOption
 } from "@patternfly/react-core";
 
-import { Popup } from '@components/core';
+import { Popup } from '~/components/core';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -134,7 +134,7 @@ export default function LanguageSelector() {
 
   return (
     <>
-      <Button variant="link" onClick={open}>
+      <Button isInline variant="link" onClick={open}>
         {label()}
       </Button>
 

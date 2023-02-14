@@ -13,8 +13,8 @@ automatically built in the Open Build Service.
 
 In order to release a new version, we need to:
 
-* Update the version number in the `VERSION` file. This file is read by the Ruby-based packages
-  when building the gems.
+* Update the version number in the `VERSION` file in the corresponding subdirectory. These files are
+  read by the Ruby-based packages when building the gems.
 * Tag the repository with the proper number. The process to build `cockpit-d-installer` uses this
   information to infer the version. You can set the tag with something like:
 
@@ -53,9 +53,10 @@ figure out most details by checking the [_service](_./web/package/_service) file
 
 To update the package in the build service, you just need to type:
 
-      osc rebuild YaST:Head:D-Installer cockpit-d-installer
+      osc service manualrun
+      osc commit -m "Update sources"
 
-If you want to build the pacakge locally, just checkout (or branch) the package and run `osc build`.
+If you want to build the package locally, just checkout (or branch) the package and run `osc build`.
 
 The version number is inferred from the repository tags (see [Releasing a new
 version](#releasing-a-new-version)): it uses the latest tag and the abbreviated hash of the last

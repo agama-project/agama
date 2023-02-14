@@ -1,4 +1,120 @@
 -------------------------------------------------------------------
+Mon Feb 13 14:30:56 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 0.7
+
+-------------------------------------------------------------------
+Thu Feb  9 15:29:58 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Add live reloading feature for easing the front-end development
+  process (gh#yast/d-installer#419).
+
+-------------------------------------------------------------------
+Thu Feb  9 14:16:09 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Fix storage section crashing when proposal is not ready
+  (gh#yast/d-installer#418).
+
+-------------------------------------------------------------------
+Wed Feb  8 18:12:06 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Better handling of software repositories
+  (gh#yast/d-installer#414):
+  * Report issues when reading the software repositories.
+  * Inform the user about the software proposal progress.
+  * Add a button to reload the repositories
+    (gh#yast/d-installer#388).
+
+-------------------------------------------------------------------
+Tue Jan 24 09:32:13 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
+
+- Added a button for displaying the YaST logs
+  (related to gh#yast/d-installer#379)
+
+-------------------------------------------------------------------
+Fri Jan 20 09:03:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI fixes (gh#yast/d-installer#401):
+  * Add a fallback height for the layout
+  * Fix some miss-alignments
+  * Add missing icon
+  * Ensure tooling serving and loading fonts
+
+-------------------------------------------------------------------
+Thu Jan 19 07:58:00 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Update aliases for using "~/" instead of "@"
+  (gh#yast/d-installer#400).
+
+-------------------------------------------------------------------
+Wed Jan 18 08:06:05 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow user downloading logs (gh#yast/d-installer#379)
+
+-------------------------------------------------------------------
+Thu Jan 12 16:23:54 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Implement validation of software proposal to early detect
+  issues in software selection (gh#yast/d-installer#381)
+
+-------------------------------------------------------------------
+Wed Jan 11 20:37:26 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Testing: use a mocking function to make mocked components
+  consistent across the test suite (gh#yast/d-installer#392).
+
+-------------------------------------------------------------------
+Wed Jan 11 11:54:29 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Rework UI internals by using plain CSS as much as possible for
+  building the layout instead of relying on wrapper components
+  (gh#yast/d-installer#391).
+
+-------------------------------------------------------------------
+Tue Jan 10 10:30:05 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Connect to the dedicated D-Bus server (gh#yast/d-installer#384).
+
+-------------------------------------------------------------------
+Mon Jan  2 12:53:50 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Add missing favicon (gh#yast/d-installer#387).
+
+-------------------------------------------------------------------
+Mon Jan  2 11:46:37 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not show the link to configure wifi networks when there are no
+  wifi devices and also inform the user when no network connection
+  was detected (gh#yast/d-installer#323).
+- Version 0.6.3
+
+-------------------------------------------------------------------
+Mon Jan  2 10:03:18 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Ensure custom fonts are including in the build
+  (gh#yast/d-installer#385).
+
+-------------------------------------------------------------------
+Fri Dec 30 11:56:46 UTC 2022 - David Diaz <dgonzalez@suse.com>
+
+- Switch to Material Symbols icon set and refactor how icons
+  are imported (gh#yast/d-installer#383).
+
+-------------------------------------------------------------------
+Thu Dec 15 10:14:22 UTC 2022 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not show the link to configure wifi networks when wireless is
+  not enabled (gh#yast/d-installer#323).
+- Version 0.6.2
+
+-------------------------------------------------------------------
+Thu Dec 15 08:55:02 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Display questions during the software installation (related to
+  gh#yast/d-installer#369).
+- Update to version 0.6.1
+
+-------------------------------------------------------------------
 Mon Dec  5 13:18:37 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.6.0
@@ -10,16 +126,16 @@ Fri Dec  2 15:46:46 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   (related to gh#yast/d-installer#297)
 
 -------------------------------------------------------------------
-Fri Dec 2 10:48:14 UTC 2022 - Josef Reidinger <jreidinger@suse.cz>
-
-- Add support for adapting the configuration depending on the
-  architecture (gh#yast/d-installer#339)
-
--------------------------------------------------------------------
 Fri Dec  2 13:41:41 UTC 2022 - José Iván López González <jlopez@suse.com>
 
 - Add new UI for storage proposal offering LVM and encyption
   options (gh#yast/d-installer#321).
+
+-------------------------------------------------------------------
+Fri Dec 2 10:48:14 UTC 2022 - Josef Reidinger <jreidinger@suse.cz>
+
+- Add support for adapting the configuration depending on the
+  architecture (gh#yast/d-installer#339)
 
 -------------------------------------------------------------------
 Wed Nov 30 08:16:42 UTC 2022 - Knut Alejandro Anderssen González <kanderssen@suse.de>

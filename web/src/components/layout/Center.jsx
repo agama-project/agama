@@ -20,10 +20,36 @@
  */
 
 import React from "react";
-import { Bullseye } from "@patternfly/react-core";
 
+/**
+ * Wrapper component for centering vertically its children
+ *
+ * @note It could be relaced by the 'vertically-centered' CSS utility class once Firefox add support
+ *   by default for the :has selector, which allows having something like
+ *
+ *   .parent:has(.vertically-centered) {
+ *     display: grid;
+ *     place-items: center;
+ *     block-size: 100%;
+ *   }
+ *
+ *   .vertically-centered { inline-size: 100%; }
+ *
+ *   We can use \@support CSS at rule and use a workaround when :has not available, but somehow
+ *   prefer waiting until Firefox gets support.
+ *
+ *   To know more, read
+ *     - https://www.w3.org/TR/selectors-4/#relational
+ *     - https://ishadeed.com/article/css-has-parent-selector/
+ *
+ * @param {React.ReactNode} [props.children]
+ */
 const Center = ({ children }) => (
-  <Bullseye className="layout__content-child--filling-block-size">{children}</Bullseye>
+  <div className="vertically-centered">
+    <div className="full-width stack">
+      {children}
+    </div>
+  </div>
 );
 
 export default Center;

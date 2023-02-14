@@ -33,15 +33,11 @@ import {
   DataListItemRow,
   DataListItemCells,
   DataListCell,
-  DataListAction,
-  Stack,
-  StackItem,
-  Split,
-  SplitItem
+  DataListAction
 } from "@patternfly/react-core";
 
-import { FormLabel } from "@components/core";
-import { IpAddressInput } from "@components/network";
+import { FormLabel } from "~/components/core";
+import { IpAddressInput } from "~/components/network";
 
 let index = 0;
 
@@ -96,24 +92,14 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
   const newDnsButtonText = servers.length ? "Add another DNS" : "Add DNS";
 
   return (
-    <Stack className="data-list-form" hasGutter>
-      <StackItem>
-        <Split hasGutter>
-          <SplitItem isFilled>
-            <FormLabel>DNS</FormLabel>
-          </SplitItem>
-          <SplitItem>
-            <Button isSmall variant="secondary" className="btn-sm" onClick={() => addServer()}>
-              {newDnsButtonText}
-            </Button>
-          </SplitItem>
-        </Split>
-      </StackItem>
-      <StackItem>
-        <DataList isCompact gridBreakpoint="none" title="Addresses data list">
-          {servers.map(server => renderDns(server))}
-        </DataList>
-      </StackItem>
-    </Stack>
+    <>
+      <FormLabel>DNS</FormLabel>
+      <Button isSmall variant="secondary" onClick={addServer}>
+        {newDnsButtonText}
+      </Button>
+      <DataList isCompact gridBreakpoint="none" title="Addresses data list">
+        {servers.map(server => renderDns(server))}
+      </DataList>
+    </>
   );
 }

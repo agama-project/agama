@@ -21,9 +21,9 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
-import { ProductSelectionPage } from "@components/software";
-import { createClient } from "@client";
+import { installerRender, mockLayout } from "~/test-utils";
+import { ProductSelectionPage } from "~/components/software";
+import { createClient } from "~/client";
 
 const products = [
   {
@@ -37,8 +37,7 @@ const products = [
     description: "MicroOS description"
   }
 ];
-jest.mock("@client");
-jest.mock("@components/network/TargetIpsPopup", () => () => "Target IPs Mock");
+jest.mock("~/client");
 
 const mockUseNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -46,8 +45,8 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockUseNavigate
 }));
 
-jest.mock("@context/software", () => ({
-  ...jest.requireActual("@context/software"),
+jest.mock("~/context/software", () => ({
+  ...jest.requireActual("~/context/software"),
   useSoftware: () => {
     return {
       products,
@@ -55,6 +54,8 @@ jest.mock("@context/software", () => ({
     };
   }
 }));
+
+jest.mock("~/components/layout/Layout", () => mockLayout());
 
 const softwareMock = {
   getProducts: () => Promise.resolve(products),

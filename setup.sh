@@ -4,7 +4,7 @@
 # package. This script is supposed to run within a repository clone.
 
 sudo zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel \
-  npm git augeas-devel cockpit jemalloc-devel || exit 1
+  'npm>=18' git augeas-devel cockpit jemalloc-devel || exit 1
 
 sudo systemctl start cockpit
 
@@ -16,11 +16,12 @@ sudosed() {
 
 # set up the d-installer service
 MYDIR=$(realpath $(dirname $0))
-sudo cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf
+sudo cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/d-installer.conf
 (
   # D-Bus service activation
   cd $MYDIR/service/share
-  DBUSDIR=/usr/share/dbus-1/system-services
+  DBUSDIR=/usr/share/dbus-1/d-installer-services
+  mkdir -p $DBUSDIR
   for SVC in org.opensuse.DInstaller*.service; do
     sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/service/bin/@" $SVC $DBUSDIR/$SVC
   done

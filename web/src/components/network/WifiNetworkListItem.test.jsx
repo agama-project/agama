@@ -22,12 +22,12 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
+import { installerRender, mockComponent } from "~/test-utils";
 
-import { WifiNetworkListItem } from "@components/network";
+import { WifiNetworkListItem } from "~/components/network";
 
-jest.mock("@components/network/WifiConnectionForm", () => () => "WifiConnectionForm mock");
-jest.mock("@components/network/WifiNetworkMenu", () => () => "WifiNetworkMenu mock");
+jest.mock("~/components/network/WifiConnectionForm", () => mockComponent("WifiConnectionForm mock"));
+jest.mock("~/components/network/WifiNetworkMenu", () => mockComponent("WifiNetworkMenu mock"));
 
 const onSelectCallback = jest.fn();
 const fakeNetwork = {
@@ -50,11 +50,11 @@ describe("NetworkListItem", () => {
   });
 
   describe("when isSelected prop is true", () => {
-    it("renders network as selected", async () => {
+    it("renders network as focused", async () => {
       installerRender(<WifiNetworkListItem network={fakeNetwork} isSelected />);
 
-      const wrapper = await screen.findByRole("article");
-      expect(wrapper.classList.contains("selection-list-checked-item")).toBe(true);
+      const wrapper = await screen.findByRole("listitem");
+      expect(wrapper).toHaveAttribute("data-state", "focused");
     });
 
     it("renders the input radio as checked", async () => {
@@ -65,13 +65,6 @@ describe("NetworkListItem", () => {
   });
 
   describe("when isActive prop is true", () => {
-    it("renders network as selected", async () => {
-      installerRender(<WifiNetworkListItem network={fakeNetwork} isActive />);
-
-      const wrapper = await screen.findByRole("article");
-      expect(wrapper.classList.contains("selection-list-checked-item")).toBe(true);
-    });
-
     it("renders the input radio as checked", async () => {
       installerRender(<WifiNetworkListItem network={fakeNetwork} isActive />);
 
@@ -110,8 +103,8 @@ describe("NetworkListItem", () => {
       it("renders network as focused", async () => {
         installerRender(<WifiNetworkListItem network={fakeNetwork} isSelected />);
 
-        const wrapper = await screen.findByRole("article");
-        expect(wrapper.classList.contains("selection-list-focused-item")).toBe(true);
+        const wrapper = await screen.findByRole("listitem");
+        expect(wrapper).toHaveAttribute("data-state", "focused");
       });
     });
   });

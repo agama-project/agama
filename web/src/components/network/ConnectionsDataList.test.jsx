@@ -21,12 +21,12 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "@/test-utils";
+import { plainRender } from "~/test-utils";
 
-import { ConnectionTypes } from "@client/network";
-import ConnectionsDataList from "@components/network/ConnectionsDataList";
+import { ConnectionTypes } from "~/client/network";
+import ConnectionsDataList from "~/components/network/ConnectionsDataList";
 
-jest.mock("@client");
+jest.mock("~/client");
 
 const wiredConnection = {
   id: "wired-1",
@@ -46,14 +46,14 @@ const conns = [wiredConnection, wiFiConnection];
 describe("ConnectionsDataList", () => {
   describe("when no connections are given", () => {
     it("renders nothing", () => {
-      const { container } = plainRender(<ConnectionsDataList conns={[]} />, { usingLayout: false });
+      const { container } = plainRender(<ConnectionsDataList conns={[]} />);
       expect(container).toBeEmptyDOMElement();
     });
   });
 
   describe("when a list of connections are given", () => {
     it("renders a list with the name and the IPv4 addresses of each connection", () => {
-      plainRender(<ConnectionsDataList conns={conns} />, { usingLayout: false });
+      plainRender(<ConnectionsDataList conns={conns} />);
 
       screen.getByText("Wired 1");
       screen.getByText("WiFi 1");
@@ -65,7 +65,7 @@ describe("ConnectionsDataList", () => {
   describe("when the user clicks on a connection", () => {
     it("calls the onSelect function", async () => {
       const onSelect = jest.fn();
-      const { user } = plainRender(<ConnectionsDataList conns={conns} onSelect={onSelect} />, { usingLayout: false });
+      const { user } = plainRender(<ConnectionsDataList conns={conns} onSelect={onSelect} />);
       const connection = screen.getByRole("button", { name: "WiFi 1" });
       await user.click(connection);
       expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ id: "wifi-1" }));

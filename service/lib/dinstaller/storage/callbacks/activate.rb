@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -33,12 +33,12 @@ module DInstaller
 
         # Constructor
         #
-        # @param questions_manager [QuestionsManager]
+        # @param questions_client [DInstaller::DBus::Clients::Questions]
         # @param logger [Logger]
-        def initialize(questions_manager, logger)
+        def initialize(questions_client, logger)
           super()
 
-          @questions_manager = questions_manager
+          @questions_client = questions_client
           @logger = logger
           @issues = Y2Issues::List.new
         end
@@ -56,7 +56,7 @@ module DInstaller
         #   device.
         # @return [Boolean]
         def multipath(looks_like_real_multipath)
-          callback = ActivateMultipath.new(questions_manager, logger)
+          callback = ActivateMultipath.new(questions_client, logger)
 
           callback.call(looks_like_real_multipath)
         end
@@ -70,7 +70,7 @@ module DInstaller
         #
         # @return [Storage::PairBoolString] Whether to activate the device and the password
         def luks(info, attempt)
-          callback = ActivateLuks.new(questions_manager, logger)
+          callback = ActivateLuks.new(questions_client, logger)
 
           activate, password = callback.call(info, attempt)
 
@@ -79,8 +79,8 @@ module DInstaller
 
       private
 
-        # @return [QuestionsManager]
-        attr_reader :questions_manager
+        # @return [DInstaller::DBus::Clients::Questions]
+        attr_reader :questions_client
 
         # @return [Logger]
         attr_reader :logger

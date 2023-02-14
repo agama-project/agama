@@ -21,8 +21,8 @@
 
 // @ts-check
 
-import { DBusClient } from "./dbus";
-import { WithStatus, WithProgress } from "./mixins";
+import DBusClient from "./dbus";
+import { WithStatus, WithProgress, WithValidation } from "./mixins";
 
 const SOFTWARE_SERVICE = "org.opensuse.DInstaller.Software";
 const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
@@ -42,10 +42,20 @@ const SOFTWARE_PATH = "/org/opensuse/DInstaller/Software1";
  */
 class SoftwareBaseClient {
   /**
-   * @param {DBusClient} [dbusClient] - D-Bus client
+   * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
    */
-  constructor(dbusClient) {
-    this.client = dbusClient || new DBusClient(SOFTWARE_SERVICE);
+  constructor(address = undefined) {
+    this.client = new DBusClient(SOFTWARE_SERVICE, address);
+  }
+
+  /**
+   * Asks the service to reload the repositories metadata
+   *
+   * @return {Promise<void>}
+   */
+  async probe() {
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    return proxy.Probe();
   }
 
   /**
@@ -59,6 +69,16 @@ class SoftwareBaseClient {
       const [id, name, meta] = product;
       return { id, name, description: meta.description?.v };
     });
+  }
+
+  /**
+   * Returns how much space installation takes on disk
+   *
+   * @return {Promise<Array<Product>>}
+   */
+  async getUsedSpace() {
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    return proxy.UsedDiskSpace();
   }
 
   /**
@@ -103,6 +123,10 @@ class SoftwareBaseClient {
 /**
  * Allows getting the list the available products and selecting one for installation.
  */
-class SoftwareClient extends WithProgress(WithStatus(SoftwareBaseClient, SOFTWARE_PATH), SOFTWARE_PATH) {}
+class SoftwareClient extends WithValidation(
+  WithProgress(
+    WithStatus(SoftwareBaseClient, SOFTWARE_PATH), SOFTWARE_PATH
+  ), SOFTWARE_PATH
+) {}
 
 export { SoftwareClient };

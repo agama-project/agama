@@ -30,10 +30,10 @@ import {
   Popover
 } from "@patternfly/react-core";
 
-import ExclamationTriangleIcon from '@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon';
+import { Icon } from '~/components/layout';
 
 /**
- * @param {import("@client/mixins").ValidationError[]} errors - Validation errors
+ * @param {import("~/client/mixins").ValidationError[]} errors - Validation errors
  * @return React.JSX
  */
 const popoverContent = (errors) => {
@@ -56,24 +56,24 @@ const popoverContent = (errors) => {
  *
  * @param {object} props
  * @param {string} props.title - A title for the Popover
- * @param {import("@client/mixins").ValidationError[]} props.errors - Validation errors
+ * @param {import("~/client/mixins").ValidationError[]} props.errors - Validation errors
  */
 const ValidationErrors = ({ title = "Errors", errors }) => {
   const [popoverVisible, setPopoverVisible] = useState(false);
 
   if (!errors || errors.length === 0) return null;
 
+  const warningIcon = <Icon name="warning" size="16" />;
+
   if (errors.length === 1) {
     return (
-      <>
-        <div className="warning-text"><ExclamationTriangleIcon /> {errors[0].message}</div>
-      </>
+      <div className="color-warn">{warningIcon} {errors[0].message}</div>
     );
   } else {
     return (
       <>
-        <div className="warning-text">
-          <ExclamationTriangleIcon />
+        <div className="color-warn">
+          { warningIcon }
           <a href="#" onClick={() => setPopoverVisible(true)}>{`${errors.length} errors found`}</a>
           <Popover
             isVisible={popoverVisible}

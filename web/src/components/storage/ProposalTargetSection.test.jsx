@@ -21,8 +21,8 @@
 
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "@/test-utils";
-import { ProposalTargetSection } from "@components/storage";
+import { installerRender, mockComponent } from "~/test-utils";
+import { ProposalTargetSection } from "~/components/storage";
 
 const FakeProposalTargetForm = ({ id, onSubmit }) => {
   const accept = (e) => {
@@ -31,10 +31,10 @@ const FakeProposalTargetForm = ({ id, onSubmit }) => {
   };
 
   return <form id={id} onSubmit={accept} aria-label="Target form" />;
-}
+};
 
-jest.mock("@components/storage/ProposalSummary", () => () => "Proposal summary");
-jest.mock("@components/storage/ProposalTargetForm", () => FakeProposalTargetForm);
+jest.mock("~/components/storage/ProposalSummary", () => mockComponent("Proposal summary"));
+jest.mock("~/components/storage/ProposalTargetForm", () => FakeProposalTargetForm);
 
 const proposal = {
   availableDevices: [{ id: "/dev/sda", label: "/dev/sda, 500 GiB" }],
@@ -51,7 +51,7 @@ it("renders the proposal summary", () => {
 it("renders an icon for configuring the candidate devices", () => {
   installerRender(<ProposalTargetSection proposal={proposal} />);
 
-  screen.getByRole("button", { name: "Device section action icon" });
+  screen.getByRole("button", { name: "Section settings" });
 });
 
 it("does not show the popup by default", async () => {
@@ -65,7 +65,7 @@ it("does not show the popup by default", async () => {
 it("shows the popup with the form when the icon is clicked", async () => {
   const { user } = installerRender(<ProposalTargetSection proposal={proposal} />);
 
-  const button = screen.getByRole("button", { name: "Device section action icon" });
+  const button = screen.getByRole("button", { name: "Section settings" });
   await user.click(button);
 
   await screen.findByRole("dialog");
@@ -77,7 +77,7 @@ it("closes the popup without submitting the form when cancel is clicked", async 
 
   const { user } = installerRender(<ProposalTargetSection proposal={proposal} calculateProposal={calculateFn} />);
 
-  const button = screen.getByRole("button", { name: "Device section action icon" });
+  const button = screen.getByRole("button", { name: "Section settings" });
   await user.click(button);
 
   const popup = await screen.findByRole("dialog");
@@ -93,7 +93,7 @@ it("closes the popup and submits the form when accept is clicked", async () => {
 
   const { user } = installerRender(<ProposalTargetSection proposal={proposal} calculateProposal={calculateFn} />);
 
-  const button = screen.getByRole("button", { name: "Device section action icon" });
+  const button = screen.getByRole("button", { name: "Section settings" });
   await user.click(button);
 
   const popup = await screen.findByRole("dialog");

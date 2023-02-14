@@ -10,10 +10,10 @@ jobs:
   #     run:
   #       working-directory: ./web
 
-  #   strategy:
-  #     matrix:
-  #       node-version: [16.x]
-  #       # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    strategy:
+      matrix:
+        node-version: ["18.x"]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
   #   steps:
   #   - uses: actions/checkout@v2
@@ -34,8 +34,14 @@ jobs:
   #   - name: Check types
   #     run: npm run check-types
 
-  #   - name: Run the tests and generate coverage report
-  #     run: npm test -- --coverage
+    - name: Run ESLint
+      run: npm run eslint
+
+    - name: Run Stylelint
+      run: npm run stylelint
+
+    - name: Run the tests and generate coverage report
+      run: npm test -- --coverage
 
   #   - name: Coveralls GitHub Action
   #     uses: coverallsapp/github-action@1.1.3

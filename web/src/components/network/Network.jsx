@@ -20,21 +20,22 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Button, Stack, StackItem } from "@patternfly/react-core";
+import { Button } from "@patternfly/react-core";
 
-import { useInstallerClient } from "@context/installer";
-import { ConnectionTypes, NetworkEventTypes } from "@client/network";
-import { NetworkWifiStatus, NetworkWiredStatus, WifiSelector } from "@components/network";
+import { useInstallerClient } from "~/context/installer";
+import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
+import { NetworkWifiStatus, NetworkWiredStatus, WifiSelector } from "~/components/network";
 
 export default function Network() {
   const client = useInstallerClient();
   const [initialized, setInitialized] = useState(false);
   const [connections, setConnections] = useState([]);
-  const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
+  const [wifiScanSupported, setWifiScanSupported] = useState(false);
 
   useEffect(() => {
     if (!initialized) return;
 
+    setWifiScanSupported(client.network.settings().wifiScanSupported);
     setConnections(client.network.activeConnections());
   }, [client.network, initialized]);
 
@@ -59,6 +60,11 @@ export default function Network() {
 
         case NetworkEventTypes.ACTIVE_CONNECTION_REMOVED: {
           setConnections(conns => conns.filter(c => c.id !== payload.id));
+          break;
+        }
+
+        case NetworkEventTypes.SETTINGS_UPDATED: {
+          setWifiScanSupported(payload.wifiScanSupported);
         }
       }
     });
@@ -72,19 +78,36 @@ export default function Network() {
 
   const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
   const activeWifiConnections = connections.filter(c => c.type === ConnectionTypes.WIFI);
+  const showNetwork = (activeWiredConnections.length > 0 || activeWifiConnections.length > 0);
 
-  return (
-    <Stack className="overview-network">
-      <StackItem>
+  const Content = () => {
+    if (!showNetwork) {
+      return "No network connection was detected";
+    }
+
+    return (
+      <>
         <NetworkWiredStatus connections={activeWiredConnections} />
-      </StackItem>
-      <StackItem>
         <NetworkWifiStatus connections={activeWifiConnections} />
-      </StackItem>
-      <StackItem>
+      </>
+    );
+  };
+
+  const WifiOptions = () => {
+    const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
+
+    return (
+      <>
         <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a Wi-Fi network</Button>
         <WifiSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
-      </StackItem>
-    </Stack>
+      </>
+    );
+  };
+
+  return (
+    <>
+      <Content />
+      { wifiScanSupported && <WifiOptions /> }
+    </>
   );
 }

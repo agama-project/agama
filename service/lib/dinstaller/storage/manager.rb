@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,8 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "yast2/execute"
+require "yast2/systemd/service"
 require "bootloader/proposal_client"
 require "bootloader/finish_client"
 require "y2storage/storage_manager"
@@ -27,9 +29,8 @@ require "dinstaller/storage/proposal"
 require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/callbacks"
 require "dinstaller/with_progress"
-require "dinstaller/can_ask_question"
 require "dinstaller/security"
-require "dinstaller/dbus/clients/questions_manager"
+require "dinstaller/dbus/clients/questions"
 require "dinstaller/dbus/clients/software"
 require "dinstaller/helpers"
 
@@ -40,7 +41,6 @@ module DInstaller
     # Manager to handle storage configuration
     class Manager
       include WithProgress
-      include CanAskQuestion
       include Helpers
 
       def initialize(config, logger)
@@ -79,16 +79,24 @@ module DInstaller
 
       # Unmounts the target file system
       def finish
-        start_progress(4)
+        steps = tpm_key? ? 6 : 5
+        start_progress(steps)
 
         on_target do
           progress.step("Writing Linux Security Modules configuration") { security.write }
           progress.step("Installing bootloader") do
-            hack_olaf_password
             ::Bootloader::FinishClient.new.write
+          end
+          if tpm_key?
+            progress.step("Preparing the system to unlock the encryption using the TPM") do
+              prepare_tpm_key
+            end
           end
           progress.step("Configuring file systems snapshots") do
             Yast::WFM.CallFunction("snapshots_finish", ["Write"])
+          end
+          progress.step("Copying logs") do
+            Yast::WFM.CallFunction("copy_logs_finish", ["Write"])
           end
           progress.step("Unmounting storage devices") do
             Yast::WFM.CallFunction("umount_finish", ["Write"])
@@ -123,7 +131,7 @@ module DInstaller
 
       # Activates the devices, calling activation callbacks if needed
       def activate_devices
-        callbacks = Callbacks::Activate.new(questions_manager, logger)
+        callbacks = Callbacks::Activate.new(questions_client, logger)
 
         Y2Storage::StorageManager.instance.activate(callbacks)
       end
@@ -163,9 +171,9 @@ module DInstaller
 
       # Returns the client to ask questions
       #
-      # @return [DInstaller::DBus::Clients::QuestionsManager]
-      def questions_manager
-        @questions_manager ||= DInstaller::DBus::Clients::QuestionsManager.new
+      # @return [DInstaller::DBus::Clients::Questions]
+      def questions_client
+        @questions_client ||= DInstaller::DBus::Clients::Questions.new(logger: logger)
       end
 
       # Returns the client to ask the software service
@@ -175,38 +183,60 @@ module DInstaller
         @software ||= DBus::Clients::Software.new
       end
 
-      # Temporary method for testing FDE during early development
-      def hack_olaf_password
-        password = config.data.fetch("security", {})["olaf_luks2_password"]
-        return if password.nil? || password.empty?
-
-        grub_path = File.join(Yast::Installation.destdir, "etc", "default", "grub")
-        File.open(grub_path, "a") do |file|
-          file.puts "GRUB_CRYPTODISK_PASSWORD=\"#{password}\""
-        end
-
-        hack_jeos_firstboot
+      def tpm_key?
+        tpm_product? && tpm_proposal? && tpm_system?
       end
 
-      # @see #hack_olaf_password
-      #
-      # This assumes the package jeos-firstboot has been installed
-      def hack_jeos_firstboot
-        require "yast2/systemd/service"
-        require "fileutils"
-        destdir = Yast::Installation.destdir
+      def tpm_proposal?
+        settings = proposal.calculated_settings
+        settings.encrypt? && !settings.lvm
+      end
 
-        service = Yast2::Systemd::Service.find("jeos-firstboot")
+      def tpm_system?
+        Y2Storage::Arch.new.efiboot? && tpm_present?
+      end
+
+      def tpm_present?
+        return @tpm_present unless @tpm_present.nil?
+
+        @tpm_present =
+          begin
+            execute_fdectl("tpm-present")
+            logger.info "FDE: TPMv2 detected"
+            true
+          rescue Cheetah::ExecutionFailed
+            logger.info "FDE: TPMv2 not detected"
+            false
+          end
+      end
+
+      def tpm_product?
+        config.data.fetch("security", {}).fetch("tpm_luks_open", false)
+      end
+
+      def prepare_tpm_key
+        keyfile_path = File.join(Yast::Installation.destdir, "root", ".root.keyfile")
+        execute_fdectl(
+          "add-secondary-key", "--keyfile", keyfile_path,
+          stdin:    "#{proposal.calculated_settings.encryption_password}\n",
+          recorder: Yast::ReducedRecorder.new(skip: :stdin)
+        )
+
+        service = Yast2::Systemd::Service.find("fde-tpm-enroll.service")
+        logger.info "FDE: TPM enroll service: #{service}"
         service&.enable
+      rescue Cheetah::ExecutionFailed
+        false
+      end
 
-        reconfig_path = File.join(destdir, "var", "lib", "YaST2")
-        FileUtils.mkdir_p(reconfig_path)
-        FileUtils.touch(File.join(reconfig_path, "reconfig_system"))
+      def execute_fdectl(*args)
+        # Some subcommands like "tpm-present" should not require a --device argument, but they
+        # currently do. Let's always us until the problem at fdectl is fully fixed.
+        Yast::Execute.locally!("fdectl", "--device", fdectl_device, *args)
+      end
 
-        jeos_path = File.join(destdir, "etc", "jeos-firstboot.conf")
-        File.open(jeos_path, "a") do |file|
-          file.puts "JEOS_PASSWORD_ALREADY_SET='yes'"
-        end
+      def fdectl_device
+        Yast::Installation.destdir
       end
     end
   end

@@ -60,6 +60,7 @@ module DInstaller
         dbus_method(:Probe, "") { config_phase }
         dbus_method(:Commit, "") { install_phase }
         dbus_method(:CanInstall, "out result:b") { can_install? }
+        dbus_method(:CollectLogs, "out tarball_filesystem_path:s, in user:s") { |u| collect_logs(u) }
         dbus_reader :installation_phases, "aa{sv}"
         dbus_reader :current_installation_phase, "u"
         dbus_reader :busy_services, "as"
@@ -86,6 +87,11 @@ module DInstaller
       # @return [Boolean]
       def can_install?
         backend.valid?
+      end
+
+      # Collects the YaST logs
+      def collect_logs(user)
+        backend.collect_logs(user)
       end
 
       # Description of all possible installation phase values

@@ -21,7 +21,7 @@
 
 import React from "react";
 import { Button, Modal } from "@patternfly/react-core";
-import { partition } from "@/utils";
+import { partition } from "~/utils";
 
 /**
  * Wrapper component for holding Popup actions

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,8 +21,8 @@
 
 require_relative "../../test_helper"
 require "dinstaller/storage/manager"
-require "dinstaller/questions_manager"
 require "dinstaller/config"
+require "dinstaller/dbus/clients/questions"
 
 describe DInstaller::Storage::Manager do
   subject(:storage) { described_class.new(config, logger) }
@@ -35,8 +35,7 @@ describe DInstaller::Storage::Manager do
 
   before do
     allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
-    allow(DInstaller::DBus::Clients::QuestionsManager).to receive(:new)
-      .and_return(questions_manager)
+    allow(DInstaller::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(DInstaller::DBus::Clients::Software).to receive(:new)
       .and_return(software)
     allow(Bootloader::FinishClient).to receive(:new)
@@ -45,7 +44,7 @@ describe DInstaller::Storage::Manager do
   end
 
   let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
-  let(:questions_manager) { instance_double(DInstaller::DBus::Clients::QuestionsManager) }
+  let(:questions_client) { instance_double(DInstaller::DBus::Clients::Questions) }
   let(:software) do
     instance_double(DInstaller::DBus::Clients::Software, selected_product: "ALP")
   end
@@ -119,10 +118,11 @@ describe DInstaller::Storage::Manager do
   end
 
   describe "#finish" do
-    it "installs the bootloader, sets up the snapshots and umounts the file systems" do
+    it "installs the bootloader, sets up the snapshots, copy logs, and umounts the file systems" do
       expect(security).to receive(:write)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("snapshots_finish", ["Write"])
+      expect(Yast::WFM).to receive(:CallFunction).with("copy_logs_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
       storage.finish
     end

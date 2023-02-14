@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "dinstaller/dbus/bus"
 require "dinstaller/dbus/storage"
 require "dinstaller/storage"
 
@@ -42,7 +43,7 @@ module DInstaller
       # @param logger [Logger]
       def initialize(config, logger = nil)
         @logger = logger || Logger.new($stdout)
-        @bus = ::DBus::SystemBus.instance
+        @bus = Bus.current
         @backend = DInstaller::Storage::Manager.new(config, logger)
         @backend.on_progress_change { dispatch }
       end
@@ -72,8 +73,7 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          DInstaller::DBus::Storage::Manager.new(@backend, logger),
-          DInstaller::DBus::Storage::Proposal.new(@backend.proposal, logger)
+          DInstaller::DBus::Storage::Manager.new(@backend, logger)
         ]
       end
     end

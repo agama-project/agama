@@ -21,8 +21,6 @@
 
 import React, { useState } from "react";
 import {
-  Stack,
-  StackItem,
   List,
   ListItem,
   ExpandableSection,
@@ -61,26 +59,22 @@ export default function ProposalActions ({ actions = [] }) {
   const toggleText = `${userAction} ${subvolActions.length} subvolumes actions`;
 
   return (
-    <Stack hasGutter>
-      <StackItem>
-        <Text>
-          Actions to perform for creating the file systems and for ensuring the system boots.
-        </Text>
-      </StackItem>
-      <StackItem>
-        {renderActionsList(generalActions)}
-        {subvolActions.length > 0 && (
-          <ExpandableSection
-            isIndented
-            isExpanded={isExpanded}
-            onToggle={() => setIsExpanded(!isExpanded)}
-            toggleText={toggleText}
-            className="expandable-actions"
-          >
-            {renderActionsList(subvolActions)}
-          </ExpandableSection>
-        )}
-      </StackItem>
-    </Stack>
+    <>
+      <Text>
+        Actions to perform for creating the file systems and for ensuring the system boots.
+      </Text>
+      {renderActionsList(generalActions)}
+      {subvolActions.length > 0 && (
+        <ExpandableSection
+          isIndented
+          isExpanded={isExpanded}
+          onToggle={() => setIsExpanded(!isExpanded)}
+          toggleText={toggleText}
+          className="expandable-actions"
+        >
+          {renderActionsList(subvolActions)}
+        </ExpandableSection>
+      )}
+    </>
   );
 }

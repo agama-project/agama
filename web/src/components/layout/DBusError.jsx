@@ -24,15 +24,11 @@ import { Button, Title, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patt
 
 import {
   Center,
+  Icon,
   MainActions,
   PageIcon,
   Title as PageTitle,
-} from "@components/layout";
-
-import {
-  EOS_ANNOUNCEMENT as Icon,
-  EOS_ENDPOINTS_DISCONNECTED as DisconnectionIcon
-} from "eos-icons-react";
+} from "~/components/layout";
 
 // TODO: an example
 const ReloadAction = () => (
@@ -43,23 +39,21 @@ const ReloadAction = () => (
 
 function DBusError() {
   return (
-    <>
+    <Center>
       <PageTitle>D-Bus Error</PageTitle>
-      <PageIcon><Icon /></PageIcon>
+      <PageIcon><Icon name="problem" /></PageIcon>
       <MainActions><ReloadAction /></MainActions>
 
-      <Center>
-        <EmptyState>
-          <EmptyStateIcon icon={DisconnectionIcon} />
-          <Title headingLevel="h4" size="lg">
-            Cannot connect to D-Bus
-          </Title>
-          <EmptyStateBody>
-            Could not connect to the D-Bus service. Please, check whether it is running.
-          </EmptyStateBody>
-        </EmptyState>
-      </Center>
-    </>
+      <EmptyState>
+        <EmptyStateIcon icon={({ ...props }) => <Icon name="error" { ...props } />} />
+        <Title headingLevel="h2" size="4xl">
+          Cannot connect to D-Bus
+        </Title>
+        <EmptyStateBody>
+          Could not connect to the D-Bus service. Please, check whether it is running.
+        </EmptyStateBody>
+      </EmptyState>
+    </Center>
   );
 }
 

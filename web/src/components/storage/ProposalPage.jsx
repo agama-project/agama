@@ -25,23 +25,17 @@ import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Button,
-  Flex,
-  FlexItem,
 } from "@patternfly/react-core";
 
-import { InfoCircleIcon } from '@patternfly/react-icons';
-
-import { EOS_VOLUME as Icon } from "eos-icons-react";
-
-import { useInstallerClient } from "@context/installer";
-import { useCancellablePromise } from "@/utils";
-import { Title, PageIcon, MainActions } from "@components/layout";
-import { InstallerSkeleton } from "@components/core";
+import { useInstallerClient } from "~/context/installer";
+import { useCancellablePromise } from "~/utils";
+import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
+import { InstallerSkeleton } from "~/components/core";
 import {
   ProposalTargetSection,
   ProposalSettingsSection,
   ProposalActionsSection
-} from "@components/storage";
+} from "~/components/storage";
 
 const initialState = {
   busy: false,
@@ -102,40 +96,32 @@ export default function ProposalPage() {
     if (state.busy || !state.proposal) return <InstallerSkeleton lines={3} />;
 
     return (
-      <Flex direction={{ default: "column" }}>
-        <FlexItem>
-          <Alert
-            isInline
-            customIcon={<InfoCircleIcon />}
-            title="Devices will not be modified until installation starts."
-          />
-        </FlexItem>
-        <FlexItem key="target" className="installation-overview-section">
-          <ProposalTargetSection
-            proposal={state.proposal}
-            calculateProposal={calculateProposal}
-          />
-        </FlexItem>
-        <FlexItem key="settings" className="installation-overview-section">
-          <ProposalSettingsSection
-            proposal={state.proposal}
-            calculateProposal={calculateProposal}
-          />
-        </FlexItem>
-        <FlexItem key="actions" className="installation-overview-section">
-          <ProposalActionsSection
-            proposal={state.proposal}
-            errors={state.errors}
-          />
-        </FlexItem>
-      </Flex>
+      <>
+        <Alert
+          isInline
+          customIcon={<Icon name="info" size="16" />}
+          title="Devices will not be modified until installation starts."
+        />
+        <ProposalTargetSection
+          proposal={state.proposal}
+          calculateProposal={calculateProposal}
+        />
+        <ProposalSettingsSection
+          proposal={state.proposal}
+          calculateProposal={calculateProposal}
+        />
+        <ProposalActionsSection
+          proposal={state.proposal}
+          errors={state.errors}
+        />
+      </>
     );
   };
 
   return (
     <>
       <Title>Storage</Title>
-      <PageIcon><Icon /></PageIcon>
+      <PageIcon><Icon name="hard_drive" /></PageIcon>
       <MainActions>
         <Button isLarge variant="primary" form="storage-config" onClick={() => navigate("/")}>
           Accept

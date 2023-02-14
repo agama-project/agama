@@ -25,7 +25,7 @@ require "dbus"
 
 describe DInstaller::DBus::Clients::Language do
   before do
-    allow(::DBus::SystemBus).to receive(:instance).and_return(bus)
+    allow(DInstaller::DBus::Bus).to receive(:current).and_return(bus)
     allow(bus).to receive(:service).with("org.opensuse.DInstaller.Language").and_return(service)
     allow(service).to receive(:object).with("/org/opensuse/DInstaller/Language1")
       .and_return(dbus_object)
@@ -34,7 +34,7 @@ describe DInstaller::DBus::Clients::Language do
       .and_return(lang_iface)
   end
 
-  let(:bus) { instance_double(::DBus::SystemBus) }
+  let(:bus) { instance_double(DInstaller::DBus::Bus) }
   let(:service) { instance_double(::DBus::Service) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:lang_iface) { instance_double(::DBus::ProxyObjectInterface) }

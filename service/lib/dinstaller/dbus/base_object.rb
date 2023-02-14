@@ -34,21 +34,6 @@ module DInstaller
         super(path)
       end
 
-      # Generates information about interfaces and properties of the object
-      #
-      # Returns a hash containing interfaces names as keys. Each value is the same hash that would
-      # be returned by the org.freedesktop.DBus.Properties.GetAll() method for that combination of
-      # object path and interface. If an interface has no properties, the empty hash is returned.
-      #
-      # @return [Hash]
-      def interfaces_and_properties
-        get_all_method = self.class.make_method_name("org.freedesktop.DBus.Properties", :GetAll)
-
-        intfs.keys.each_with_object({}) do |interface, hash|
-          hash[interface] = public_send(get_all_method, interface).first
-        end
-      end
-
     private
 
       # @return [Logger]

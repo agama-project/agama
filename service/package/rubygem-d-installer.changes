@@ -1,4 +1,85 @@
 -------------------------------------------------------------------
+Mon Feb 13 13:58:52 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 0.7
+
+-------------------------------------------------------------------
+Wed Feb  8 18:09:01 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Better handling of software repositories
+  (gh#yast/d-installer#414):
+  * Report issues when reading the software repositories.
+  * Inform the user about the software proposal progress.
+  * Do not try to calculate a proposal if there are no
+    repositories.
+
+-------------------------------------------------------------------
+Fri Jan 20 12:25:56 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Use the upstream version of D-Bus ObjectManager
+  (gh#yast/d-installer#245)
+
+-------------------------------------------------------------------
+Wed Jan 18 08:03:40 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Save logs and provide the path to the file
+  (gh#yast/d-installer#379)
+
+-------------------------------------------------------------------
+Tue Jan 17 10:06:23 UT0 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Implement validation of software proposal
+  (gh#yast/d-installer#381)
+
+-------------------------------------------------------------------
+Mon Jan 16 17:02:21 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Check for installed packages in the target system, instead of the
+  installation medium (gh#yast/d-installer#393).
+
+-------------------------------------------------------------------
+Mon Jan 16 14:57:59 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Simplify the network configuration to just copying the
+  NetworkManager connections and enabling the service
+  (gh#yast/d-installer#397).
+
+-------------------------------------------------------------------
+Tue Jan 10 10:29:00 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a dedicated D-Bus server (gh#yast/d-installer#384).
+
+-------------------------------------------------------------------
+Thu Dec 15 13:15:10 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement the ImportGpgKey libzypp callback
+  (gh#yast/d-installer#371)
+- Version 0.6.2
+
+-------------------------------------------------------------------
+Wed Dec 14 22:38:24 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement AcceptUnsignedFile and MediaChange libzypp callbacks
+  (gh#yast/d-installer#369).
+
+-------------------------------------------------------------------
+Wed Dec 14 15:29:12 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Switch the SELinux policy for ALP to "enforcing"
+  (gh#yast/d-installer#360).
+- Fix generic questions handling (gh#yast/d-installer#362)
+- Version 0.6.1
+
+-------------------------------------------------------------------
+Wed Dec 14 13:25:22 UTC 2022 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Removed previous temporary setting "olaf_luks2_password" and all
+  the code supporting it.
+- Added new temporary setting "tpm_luks_open" to try to configure
+  TPM-based unlocking of the LUKS devices during the first system
+  boot (gh#yast/d-installer#363).
+
+-------------------------------------------------------------------
 Mon Dec  5 13:17:56 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Write snapshots configuration (gh#yast/d-installer#350).

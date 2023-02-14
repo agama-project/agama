@@ -1,0 +1,56 @@
+.wrapper {
+  position: relative;
+  display: grid;
+  grid-template-rows: var(--header-block-size) 1fr var(--footer-block-size);
+  grid-template-areas:
+    "header"
+    "content"
+    "footer";
+  overflow: hidden;
+  /** block-size fallbacks **/
+  height: 100vh;
+  height: 100dvb;
+  block-size: 100vh;
+  /** END of block-size fallbacks **/
+  block-size: 100dvb;
+  max-inline-size: 1024px;
+  margin-inline: auto;
+  background: var(--wrapper-background);
+
+  svg {
+    fill: currentcolor;
+    vertical-align: middle;
+  }
+}
+
+.wrapper > * {
+  padding: var(--wrapper-padding);
+}
+
+.wrapper > header {
+  --color-button-plain-link: white;
+  --color-button-plain-link-hover: #fcfcfc;
+
+  grid-area: header;
+  background: var(--color-background-primary);
+  color: var(--color-text-secondary);
+}
+
+.wrapper > main {
+  grid-area: content;
+  overflow-y: auto; // Sadly, only Firefox supports oerflow-block at this moment (Jan 2023)
+  overflow-block: auto;
+  padding: var(--spacer-medium);
+}
+
+.wrapper > footer {
+  grid-area: footer;
+}
+
+.wrapper > footer > img {
+  max-inline-size: 150px;
+}
+
+[data-variant="flip-X"] {
+  transform: scaleX(-1);
+}

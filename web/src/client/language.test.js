@@ -21,12 +21,11 @@
 
 // @ts-check
 
+import DBusClient from "./dbus";
 import { LanguageClient } from "./language";
-import { DBusClient } from "./dbus";
 
-const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
+jest.mock("./dbus");
 
-const dbusClient = new DBusClient("");
 const langProxy = {
   wait: jest.fn(),
   AvailableLanguages: [
@@ -34,15 +33,18 @@ const langProxy = {
   ]
 };
 
+jest.mock("./dbus");
+
 beforeEach(() => {
-  dbusClient.proxy = jest.fn().mockImplementation(iface => {
-    if (iface === LANGUAGE_IFACE) return langProxy;
+  // @ts-ignore
+  DBusClient.mockImplementation(() => {
+    return { proxy: () => langProxy };
   });
 });
 
 describe("#getLanguages", () => {
   it("returns the list of available languages", async () => {
-    const client = new LanguageClient(dbusClient);
+    const client = new LanguageClient();
     const availableLanguages = await client.getLanguages();
     expect(availableLanguages).toEqual([{ id: "cs_CZ", name: "Cestina" }]);
   });
