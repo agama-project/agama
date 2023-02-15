@@ -19,29 +19,50 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+Yast.import "IscsiClientLib"
+
 module DInstaller
   module Storage
-    module Iscsi
-      # The Open-iscsi initiator
+    module ISCSI
+      # Class representing an open-iscsi initiator
+      #
+      # This class is a wrapper for YaST code dealing with the iSCSI initiator. Note that the YaST
+      # code uses a singleton module, so different instances of this class always represent the very
+      # same iSCSI initiator configured by YaST.
       class Initiator
+        # Initiator name
+        #
+        # @return [String]
         def name
           Yast::IscsiClientLib.initiatorname
         end
 
-        def name=(new_name)
-          return if Yast::IscsiClientLib.initiatorname == new_name
+        # Sets the inititator name
+        #
+        # @param value [String]
+        def name=(value)
+          return if Yast::IscsiClientLib.initiatorname == value
 
-          Yast::IscsiClientLib.writeInitiatorName(new_name)
+          Yast::IscsiClientLib.writeInitiatorName(value)
         end
 
+        # Configured iSCSI offload card
+        #
+        # @return [String]
         def offload_card
           Yast::IscsiClientLib.GetOffloadCard()
         end
 
-        def offload_card=(card)
-          Yast::IscsiClientLib.SetOffloadCard(card)
+        # Sets the iSCSI offload card
+        #
+        # @param value [String]
+        def offload_card=(value)
+          Yast::IscsiClientLib.SetOffloadCard(value)
         end
 
+        # Whether the initiator name was set via iBFT
+        #
+        # @return [Boolean]
         def ibft_name?
           !Yast::IscsiClientLib.getiBFT.fetch("iSCSI_INITIATOR_NAME", "").empty?
         end
