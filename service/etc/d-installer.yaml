@@ -323,10 +323,8 @@ Leap Micro:
         archs: aarch64
     mandatory_patterns:
       - microos-base
+      - microos-container_runtime
       - microos-hardware
-      - microos-bootloader
-      - microos-defaults
-      - microos-basesystem
     optional_patterns: null # no optional pattern shared
     mandatory_packages: null
     optional_packages: null
