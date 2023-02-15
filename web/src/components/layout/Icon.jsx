@@ -54,6 +54,7 @@ import Apps from "@icons/apps.svg?component";
 import Loading from "./three-dots-loader-icon.svg?component";
 import Description from "@icons/description.svg?component";
 import Refresh from "@icons/refresh.svg?component";
+import Terminal from "@icons/terminal.svg?component";
 
 const icons = {
   apps: Apps,
@@ -83,6 +84,7 @@ const icons = {
   settings_ethernet: SettingsEthernet,
   signal_cellular_alt: SignalCellularAlt,
   task_alt: TaskAlt,
+  terminal: Terminal,
   translate: Translate,
   warning: Warning,
   wifi: Wifi,

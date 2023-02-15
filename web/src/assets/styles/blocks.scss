@@ -94,3 +94,8 @@ section > .content {
   word-break: break-all;
   white-space: pre-wrap;
 }
+
+iframe.terminal {
+  height: 100%;
+  width: 100%;
+}
