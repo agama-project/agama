@@ -155,8 +155,16 @@ const WithValidation = (superclass, object_path) => class extends superclass {
    * @return {Promise<ValidationError[]>}
    */
   async getValidationErrors() {
-    const proxy = await this.client.proxy(VALIDATION_IFACE, object_path);
-    return proxy.Errors.map(createError);
+    let errors;
+
+    try {
+      const result = await this.client.call(object_path, "org.freedesktop.DBus.Properties", "Get", [VALIDATION_IFACE, "Errors"]);
+      errors = result[0];
+    } catch (error) {
+      console.error(`Could not get the errors for ${object_path}`, error);
+    }
+
+    return errors.v.map(createError);
   }
 
   /**
