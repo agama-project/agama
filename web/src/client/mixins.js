@@ -158,13 +158,12 @@ const WithValidation = (superclass, object_path) => class extends superclass {
     let errors;
 
     try {
-      const result = await this.client.call(object_path, "org.freedesktop.DBus.Properties", "Get", [VALIDATION_IFACE, "Errors"]);
-      errors = result[0];
+      errors = await this.client.getProperty(object_path, VALIDATION_IFACE, "Errors");
     } catch (error) {
-      console.error(`Could not get the errors for ${object_path}`, error);
+      console.error(`Could not get validation errors for ${object_path}`, error);
     }
 
-    return errors.v.map(createError);
+    return errors.map(createError);
   }
 
   /**
