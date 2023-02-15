@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb 15 16:09:16 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add D-Bus API for iSCSI.
+
+-------------------------------------------------------------------
 Wed Feb 15 15:18:43 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.7
