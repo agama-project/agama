@@ -31,7 +31,8 @@ describe DInstaller::DBus::ServerManager do
   let(:tmpdir) { Dir.mktmpdir }
 
   before do
-    allow(Cheetah).to receive(:run).and_return("9999")
+    allow(Process).to receive(:spawn).and_return(9999)
+    allow(Process).to receive(:detach)
   end
 
   after do
@@ -63,9 +64,10 @@ describe DInstaller::DBus::ServerManager do
 
   describe "#start_server" do
     it "starts the dbus-daemon and returns the PID" do
-      expect(Cheetah).to receive(:run)
+      expect(Process).to receive(:spawn)
         .with(/dbus-daemon/, "--config-file", /dbus.conf/, any_args)
-        .and_return("1000")
+        .and_return(1000)
+      expect(Process).to receive(:detach).with(1000)
       expect(subject.start_server).to eq(1000)
     end
 

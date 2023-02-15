@@ -130,6 +130,29 @@ class DBusClient {
   }
 
   /**
+   * Gets a property for a given path and interface
+   *
+   * @param {string} path - D-Bus object path
+   * @param {string} iface - D-Bus interface name
+   * @param {string} name - D-Bus property name
+   * @return {Promise<any>}
+   */
+  async getProperty(path, iface, name) {
+    let property;
+
+    try {
+      const result = await this.client.call(
+        path, "org.freedesktop.DBus.Properties", "Get", [iface, "Errors"]
+      );
+      property = result[0];
+    } catch (error) {
+      console.warn(`Could not get the ${name} property in ${iface}`, error);
+    }
+
+    return (property === undefined) ? null : property.v;
+  }
+
+  /**
    * Register a callback to run when properties change for given D-Bus path
    *
    * @param {string} path - D-Bus path

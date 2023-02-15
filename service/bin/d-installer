@@ -57,7 +57,7 @@ end
 def start_service(name)
   general_y2dir = File.expand_path("../lib/dinstaller/dbus/y2dir", __dir__)
   module_y2dir = File.expand_path("../lib/dinstaller/dbus/y2dir/#{name}", __dir__)
-  ENV["Y2DIR"] = [ENV["Y2DIR"], module_y2dir, general_y2dir].compact.join(":")
+  ENV["Y2DIR"] = [ENV.fetch("Y2DIR", nil), module_y2dir, general_y2dir].compact.join(":")
 
   service_runner = DInstaller::DBus::ServiceRunner.new(name, logger: logger_for(name))
   service_runner.run
@@ -111,8 +111,7 @@ elsif ["-k", "--kill"].include?(ARGV[0])
   dbus_server_manager.stop_server
 elsif ["-d", "--daemon"].include?(ARGV[0])
   # start the D-Bus server
-  pid = dbus_server_manager.find_or_start_server
-  puts pid
+  dbus_server_manager.find_or_start_server
 else
   dbus_server_manager.find_or_start_server
   name = ARGV[0]

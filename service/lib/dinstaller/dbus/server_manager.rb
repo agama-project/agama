@@ -19,7 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "cheetah"
 require "fileutils"
 
 module DInstaller
@@ -55,20 +54,20 @@ module DInstaller
       def start_server
         FileUtils.mkdir_p(run_directory)
 
-        output = Cheetah.run(
+        cmd = [
           "/usr/bin/dbus-daemon",
           "--config-file", config_file,
           "--address", address,
-          "--fork", "--systemd-activation",
-          "--print-pid",
-          stdout: :capture
-        )
+          "--systemd-activation",
+          "--print-pid"
+        ]
+        pid = Process.spawn(*cmd)
+        Process.detach(pid)
         File.write(address_file, address)
-        pid = output.strip
         File.write(pid_file, pid)
-        pid.to_i
-      rescue Cheetah::ExecutionFailed => e
-        puts "Could not start the DBus daemon: #{e.message}"
+        pid
+      rescue SystemCallError => e
+        warn "Could not start the DBus daemon: #{e.message}"
         nil
       end
 
