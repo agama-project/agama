@@ -105,3 +105,9 @@
   /** END block-size fallbacks **/
   block-size: 95dvh;
 }
+
+// fill all available space
+.fill {
+  block-size: 100%;
+  inline-size: 100%;
+}

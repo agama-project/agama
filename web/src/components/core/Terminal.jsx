@@ -31,14 +31,18 @@ export default function Terminal({ onCloseCallback }) {
     if (onCloseCallback) onCloseCallback();
   };
 
+  // embed the cockpit terminal into an iframe, see
+  // https://cockpit-project.org/guide/latest/embedding.html#embedding-components
+  // https://cockpit-project.org/guide/latest/api-terminal-html.html
   return (
     <Popup
       isOpen={isOpen}
       variant="large"
       className="tallest"
+      aria-label="terminal popup"
     >
 
-      <iframe className="terminal" src="/cockpit+app/@localhost/system/terminal.html" />
+      <iframe data-testid="iframe-terminal" className="fill" src="/cockpit/@localhost/system/terminal.html" />
 
       <Popup.Actions>
         <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
