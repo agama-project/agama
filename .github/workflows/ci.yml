@@ -273,6 +273,9 @@ jobs:
     - name: Show the D-Bus services log
       run:  cat service/service.log
 
+    - name: Show the journal
+      run:  journalctl -b
+
     - name: Install the frontend
       run:  ln -snfv `pwd`/web/dist /usr/share/cockpit/d-installer
 
