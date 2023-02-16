@@ -242,7 +242,7 @@ jobs:
     - name: Install packages
       # TODO: check which fonts are really needed
       run:  zypper --non-interactive install --no-recommends gcc gcc-c++ make openssl-devel ruby-devel
-            npm augeas-devel cockpit dbus-1 xorg-x11-server libgtk-3-0
+            npm augeas-devel cockpit dbus-1 xorg-x11-server libgtk-3-0 NetworkManager
             adobe-sourcesans3-fonts gnu-unifont-bitmap-fonts google-opensans-fonts
 
     - name: Install Ruby gems
