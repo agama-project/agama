@@ -22,14 +22,10 @@
 import React from "react";
 // import React, { useEffect, useState } from "react";
 // import { useInstallerClient } from "~/context/installer";
-import { Button } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
-import { Section } from "~/components/core";
+import { Page, Section } from "~/components/core";
 import { FirstUser, RootPassword, RootSSHKey } from "~/components/users";
-import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
 
 export default function UsersPage() {
-  const navigate = useNavigate();
   // const [errors, setErrors] = useState([]);
   // const { users: usersClient } = useInstallerClient();
   //
@@ -39,15 +35,7 @@ export default function UsersPage() {
   // }, [usersClient]);
 
   return (
-    <>
-      <Title>Users settings</Title>
-      <PageIcon><Icon name="manage_accounts" /></PageIcon>
-      <MainActions>
-        <Button isLarge variant="primary" onClick={() => navigate("/")}>
-          Accept
-        </Button>
-      </MainActions>
-
+    <Page title="User Settings" icon="manage_accounts">
       <Section key="first-user" title="User" iconName="person">
         <FirstUser />
       </Section>
@@ -55,6 +43,6 @@ export default function UsersPage() {
         <RootPassword />
         <RootSSHKey />
       </Section>
-    </>
+    </Page>
   );
 }

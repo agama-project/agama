@@ -20,19 +20,16 @@
  */
 
 import React, { useReducer, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 
 import {
-  Button,
   Form,
   FormSelect,
   FormSelectOption
 } from "@patternfly/react-core";
 
-import { Section } from "~/components/core";
-import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
+import { Page, Section } from "~/components/core";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -74,7 +71,6 @@ const initialState = {
 
 export default function LanguageSelector() {
   const client = useInstallerClient();
-  const navigate = useNavigate();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { languages } = state;
@@ -126,20 +122,12 @@ export default function LanguageSelector() {
   };
 
   return (
-    <>
-      <Title>Language settings</Title>
-      <PageIcon><Icon name="translate" /></PageIcon>
-      <MainActions>
-        <Button isLarge variant="primary" onClick={() => navigate("/")}>
-          Accept
-        </Button>
-      </MainActions>
-
+    <Page title="Language settings" icon="translate">
       <Section key="language-selector" title="Language">
         <Form id="language-selector" onSubmit={accept}>
           {buildSelector(state.formCurrent)}
         </Form>
       </Section>
-    </>
+    </Page>
   );
 }
