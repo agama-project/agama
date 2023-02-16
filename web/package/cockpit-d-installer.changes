@@ -4,9 +4,11 @@ Thu Feb 16 12:56:24 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
 - Integrate cockpit terminal application
 
 -------------------------------------------------------------------
-Mon Feb 13 14:30:56 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Wed Feb 15 16:35:54 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.7
+- Do not use a proxy to get the errors lists
+  (gh#yast/d-installer#424).
 
 -------------------------------------------------------------------
 Thu Feb  9 15:29:58 UTC 2023 - David Diaz <dgonzalez@suse.com>

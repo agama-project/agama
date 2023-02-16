@@ -155,8 +155,15 @@ const WithValidation = (superclass, object_path) => class extends superclass {
    * @return {Promise<ValidationError[]>}
    */
   async getValidationErrors() {
-    const proxy = await this.client.proxy(VALIDATION_IFACE, object_path);
-    return proxy.Errors.map(createError);
+    let errors;
+
+    try {
+      errors = await this.client.getProperty(object_path, VALIDATION_IFACE, "Errors");
+    } catch (error) {
+      console.error(`Could not get validation errors for ${object_path}`, error);
+    }
+
+    return errors.map(createError);
   }
 
   /**
