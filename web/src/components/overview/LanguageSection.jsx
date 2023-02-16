@@ -98,6 +98,7 @@ export default function LanguageSection({ showErrors }) {
       key="language-section"
       title="Language"
       iconName={ state.busy ? "loading" : "translate" }
+      path="/language"
       errors={errors}
     >
       <SectionContent />

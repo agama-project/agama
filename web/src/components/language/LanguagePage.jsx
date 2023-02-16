@@ -20,18 +20,19 @@
  */
 
 import React, { useReducer, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 
 import {
   Button,
   Form,
-  FormGroup,
   FormSelect,
   FormSelectOption
 } from "@patternfly/react-core";
 
-import { Popup } from '~/components/core';
+import { Section } from "~/components/core";
+import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -73,9 +74,10 @@ const initialState = {
 
 export default function LanguageSelector() {
   const client = useInstallerClient();
+  const navigate = useNavigate();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { current: language, languages, isFormOpen } = state;
+  const { languages } = state;
 
   useEffect(() => {
     const loadLanguages = async () => {
@@ -99,20 +101,11 @@ export default function LanguageSelector() {
     });
   }, [client.language]);
 
-  const open = () => dispatch({ type: "OPEN" });
-
-  const cancel = () => dispatch({ type: "CANCEL" });
-
   const accept = async (e) => {
     e.preventDefault();
     // TODO: handle errors
     await client.language.setLanguages([state.formCurrent]);
     dispatch({ type: "ACCEPT" });
-  };
-
-  const label = () => {
-    const selectedLanguage = languages.find(lang => lang.id === language);
-    return selectedLanguage ? selectedLanguage.name : "Select language";
   };
 
   const buildSelector = formCurrent => {
@@ -134,24 +127,19 @@ export default function LanguageSelector() {
 
   return (
     <>
-      <Button isInline variant="link" onClick={open}>
-        {label()}
-      </Button>
+      <Title>Language settings</Title>
+      <PageIcon><Icon name="translate" /></PageIcon>
+      <MainActions>
+        <Button isLarge variant="primary" onClick={() => navigate("/")}>
+          Accept
+        </Button>
+      </MainActions>
 
-      <Popup
-        isOpen={isFormOpen}
-        aria-label="Language Selector"
-      >
+      <Section key="language-selector" title="Language">
         <Form id="language-selector" onSubmit={accept}>
-          <FormGroup fieldId="language" label="Language">
-            {buildSelector(state.formCurrent)}
-          </FormGroup>
+          {buildSelector(state.formCurrent)}
         </Form>
-        <Popup.Actions>
-          <Popup.Confirm form="language-selector" type="submit" />
-          <Popup.Cancel onClick={cancel} />
-        </Popup.Actions>
-      </Popup>
+      </Section>
     </>
   );
 }

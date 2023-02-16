@@ -38,6 +38,7 @@ import { Overview } from "~/components/overview";
 import { ProductSelectionPage } from "~/components/software";
 import { ProposalPage as StoragePage } from "~/components/storage";
 import { UsersPage } from "~/components/users";
+import { LanguagePage } from "~/components/language";
 
 ReactDOM.render(
   <StrictMode>
@@ -49,6 +50,7 @@ ReactDOM.render(
               <Route path="/" element={<Main />}>
                 <Route index element={<Overview />} />
                 <Route path="/overview" element={<Overview />} />
+                <Route path="/language" element={<LanguagePage />} />
                 <Route path="/storage" element={<StoragePage />} />
                 <Route path="/users" element={<UsersPage />} />
               </Route>
