@@ -273,8 +273,8 @@ jobs:
     - name: Show the D-Bus services log
       run:  cat service/service.log
 
-    - name: Show the journal
-      run:  journalctl -b
+    - name: test network manager status
+      run:  nmcli general status
 
     - name: Install the frontend
       run:  ln -snfv `pwd`/web/dist /usr/share/cockpit/d-installer
