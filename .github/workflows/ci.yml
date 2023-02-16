@@ -301,6 +301,7 @@ jobs:
         retention-days: 30
         path: |
           playwright/test-results/**/*
+          /var/log/YaST2/y2log
 
 
   finish:
