@@ -21,7 +21,7 @@
 
 import React, { useState } from "react";
 import { Icon, PageActions } from "~/components/layout";
-import { About, ChangeProductButton, LogsButton, ShowLogButton } from "~/components/core";
+import { About, ChangeProductButton, LogsButton, ShowLogButton, ShowTerminalButton } from "~/components/core";
 import { TargetIpsPopup } from "~/components/network";
 
 /**
@@ -65,6 +65,7 @@ export default function Sidebar() {
           <TargetIpsPopup onClickCallback={close} />
           <LogsButton />
           <ShowLogButton onClickCallback={close} />
+          <ShowTerminalButton onClickCallback={close} />
         </div>
 
         <footer className="split" data-state="reversed">
