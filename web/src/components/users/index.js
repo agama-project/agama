@@ -22,4 +22,4 @@
 export { default as FirstUser } from "./FirstUser";
 export { default as RootPassword } from "./RootPassword";
 export { default as RootSSHKey } from "./RootSSHKey";
-export { default as Users } from "./Users";
+export { default as UsersPage } from "./UsersPage";

@@ -24,6 +24,7 @@ import React from 'react';
 // NOTE: "@icons" is an alias to use a shorter path to real icons location.
 //       Check the tsconfig.json file to see its value.
 import Apps from "@icons/apps.svg?component";
+import Badge from "@icons/badge.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import Delete from "@icons/delete.svg?component";
 import Description from "@icons/description.svg?component";
@@ -43,6 +44,7 @@ import ManageAccounts from "@icons/manage_accounts.svg?component";
 import Menu from "@icons/menu.svg?component";
 import MenuOpen from "@icons/menu_open.svg?component";
 import MoreVert from "@icons/more_vert.svg?component";
+import Person from "@icons/person.svg?component";
 import Problem from "@icons/problem.svg?component";
 import Refresh from "@icons/refresh.svg?component";
 import SettingsApplications from "@icons/settings_applications.svg?component";
@@ -59,6 +61,7 @@ import Loading from "./three-dots-loader-icon.svg?component";
 
 const icons = {
   apps: Apps,
+  badge: Badge,
   check_circle: CheckCircle,
   delete: Delete,
   description: Description,
@@ -79,6 +82,7 @@ const icons = {
   menu: Menu,
   menu_open: MenuOpen,
   more_vert: MoreVert,
+  person: Person,
   problem: Problem,
   refresh: Refresh,
   settings: SettingsFill,

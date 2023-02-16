@@ -106,6 +106,7 @@ export default function UsersSection({ showErrors }) {
       title="Users"
       iconName={ state.busy ? "loading" : "manage_accounts" }
       errors={errors}
+      path="/users"
     >
       <SectionContent />
     </Section>
