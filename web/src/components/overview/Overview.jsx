@@ -26,8 +26,7 @@ import { Navigate } from "react-router-dom";
 import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
 import { Section, InstallButton } from "~/components/core";
 import { LanguageSelector } from "~/components/language";
-import { SoftwareSection, StorageSection } from "~/components/overview";
-import { Users } from "~/components/users";
+import { SoftwareSection, StorageSection, UsersSection } from "~/components/overview";
 import { Network } from "~/components/network";
 
 function Overview() {
@@ -53,7 +52,7 @@ function Overview() {
       </Section>
       <StorageSection key="storage" showErrors />
       <SoftwareSection key="software" showErrors />
-      <Users key="users" showErrors={showErrors} />
+      <UsersSection key="users" showErrors={showErrors} />
     </>
   );
 }
