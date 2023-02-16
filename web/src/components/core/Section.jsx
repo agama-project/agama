@@ -22,6 +22,7 @@
 // @ts-check
 
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   Button,
   Text,
@@ -85,6 +86,7 @@ const renderIcon = (name, size = 32) => {
  *
  * @param {object} props
  * @param {string} props.title - The title for the section
+ * @param {string} props.path - The path where the section link to
  * @param {string} [props.description] - A tiny description for the section
  * @param {boolean} [props.hasSeparator] - whether or not a thin border should be shown between title and content
  * @param {string} [props.iconName] - the name of the icon section, if any
@@ -96,6 +98,7 @@ const renderIcon = (name, size = 32) => {
  */
 export default function Section({
   title,
+  path,
   description,
   hasSeparator,
   iconName,
@@ -129,6 +132,12 @@ export default function Section({
     );
   };
 
+  const renderTitle = () => {
+    if (!path || path === "") return title;
+
+    return <Link to={path}>{title}</Link>;
+  };
+
   let headerClassNames = "split";
   if (hasSeparator) headerClassNames += " gradient-border-bottom";
 
@@ -137,7 +146,7 @@ export default function Section({
       {renderIcon(iconName, 32)}
 
       <Text component={TextVariants.h2} className={headerClassNames}>
-        {title}
+        {renderTitle()}
         {renderAction()}
       </Text>
 

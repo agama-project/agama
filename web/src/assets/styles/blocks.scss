@@ -16,6 +16,17 @@ section > svg {
 
 section > h2 {
   grid-area: title;
+
+  a {
+    text-decoration: underline;
+    text-decoration-thickness: 0.1em;
+    text-underline-offset: 0.2em;
+    transition: all 0.15s ease-in-out;
+
+    &:hover {
+      color: var(--color-primary);
+    }
+  }
 }
 
 section > .content {
