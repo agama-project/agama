@@ -28,7 +28,8 @@ import { Terminal } from "~/components/core";
 describe("Terminal", () => {
   it("displays the cockpit terminal in an iframe", async () => {
     plainRender(<Terminal />);
-    const iframe = screen.getByTestId("iframe-terminal");
+    const dialog = await screen.findByRole("dialog");
+    const iframe = dialog.querySelector("iframe");
     expect(iframe.src).toMatch(/cockpit\/@localhost\/system\/terminal.html/);
   });
 

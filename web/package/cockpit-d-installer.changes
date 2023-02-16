@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Feb 16 12:56:24 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
+
+- Integrate cockpit terminal application
+
+-------------------------------------------------------------------
 Mon Feb 13 14:30:56 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.7

@@ -20,9 +20,10 @@
  */
 
 import React, { useState } from "react";
+import { Button } from "@patternfly/react-core";
+
 import { Terminal } from "~/components/core";
 import { Icon } from "~/components/layout";
-import { Button } from "@patternfly/react-core";
 
 /**
  * Button for displaying the terminal application

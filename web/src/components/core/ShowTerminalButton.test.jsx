@@ -27,18 +27,15 @@ import { ShowTerminalButton } from "~/components/core";
 jest.mock("~/components/core/Terminal", () => mockComponent("Terminal Mock"));
 
 describe("ShowTerminalButton", () => {
-  it("renders a button for displaying logs", () => {
-    plainRender(<ShowTerminalButton />);
+  it("renders a button that displays <Terminal> after clicking", async () => {
+    const { user } = plainRender(<ShowTerminalButton />);
     const button = screen.getByRole("button", "Terminal");
-    expect(button).not.toHaveAttribute("disabled");
-  });
 
-  describe("when user clicks on it", () => {
-    it("displays the Terminal component", async () => {
-      const { user } = plainRender(<ShowTerminalButton />);
-      const button = screen.getByRole("button", "Terminal");
-      await user.click(button);
-      screen.getByText(/Terminal Mock/);
-    });
+    // no terminal displayed just after the render
+    expect(screen.queryByText(/Terminal Mock/)).not.toBeInTheDocument();
+
+    await user.click(button);
+    // it is displayed after clicking the button
+    screen.getByText(/Terminal Mock/);
   });
 });

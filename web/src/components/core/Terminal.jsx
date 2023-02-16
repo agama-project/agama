@@ -42,7 +42,7 @@ export default function Terminal({ onCloseCallback }) {
       aria-label="terminal popup"
     >
 
-      <iframe data-testid="iframe-terminal" className="fill" src="/cockpit/@localhost/system/terminal.html" />
+      <iframe className="vertically-centered" src="/cockpit/@localhost/system/terminal.html" />
 
       <Popup.Actions>
         <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
