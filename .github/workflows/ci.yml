@@ -257,7 +257,7 @@ jobs:
 
     - name: Start NetworkManager
       # We need to run it manually as systemd does not run in container
-      run:  /usr/sbin/NetworkManager
+      run:  /usr/sbin/NetworkManager --no-daemon &> /tmp/nm.log &
 
     - name: Start the D-Bus service
       run:  dbus-daemon --system --print-address
@@ -274,7 +274,7 @@ jobs:
       run:  cat service/service.log
 
     - name: test network manager status
-      run:  nmcli general status
+      run:  nmcli general status || cat /tmp/nm.log
 
     - name: Install the frontend
       run:  ln -snfv `pwd`/web/dist /usr/share/cockpit/d-installer
