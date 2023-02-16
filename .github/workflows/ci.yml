@@ -255,6 +255,10 @@ jobs:
       # copy a simplified ALP config file, it skips the product selection at the beginning
       run:  cp playwright/fixtures/d-installer.yaml service/etc/d-installer.yaml
 
+    - name: Start NetworkManager
+      # We need to run it manually as systemd does not run in container
+      run:  /usr/sbin/NetworkManager
+
     - name: Start the D-Bus service
       run:  dbus-daemon --system --print-address
 
