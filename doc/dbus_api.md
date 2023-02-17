@@ -376,7 +376,7 @@ Deletes a discovered iSCSI node. The iSCSI node object is unexported. Note that 
 Arguments:
 
 * `in o iscsi_node_path`: Path of the iSCSI node to delete.
-* `out u result`: `0` on success and `1` on failure.
+* `out u result`: `0` on success and `1` on failure if the given node is not exported, `2` on failure because any other reason.
 
 #### `org.opensuse.DInstaller.Storage1.ISCSI.Node` Interface
 
@@ -419,7 +419,7 @@ Arguments:
   * `ReverseUsername s`: Username for authentication by initiator.
   * `ReversePassword s`: Password for authentication by initiator.
   * `Startup s`: startup mode (`manual`, `onboot`, `automatic`).
-* `out u result`: `0` on success and `1` on failure.
+* `out u result`: `0` on success, `1` on failure if the given startup value is not valid, and `2` on failure because any other reason.
 
 ###### `Logout` Method
 

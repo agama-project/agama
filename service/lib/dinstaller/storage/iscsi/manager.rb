@@ -30,6 +30,8 @@ module DInstaller
     module ISCSI
       # Manager for iSCSI
       class Manager
+        STARTUP_OPTIONS = ["onboot", "manual", "automatic"].freeze
+
         # iSCSI initiator
         #
         # @return [Initiator]
@@ -116,7 +118,7 @@ module DInstaller
         def login(node, authentication, startup: nil)
           startup ||= Yast::IscsiClientLib.default_startup_status
 
-          if !["onboot", "manual", "automatic"].include?(startup)
+          if !STARTUP_OPTIONS.include?(startup)
             logger.info(
               "Cannot create iSCSI session because startup status is not valid: #{startup}"
             )

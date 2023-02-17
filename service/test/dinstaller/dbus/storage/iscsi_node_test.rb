@@ -115,13 +115,21 @@ describe DInstaller::DBus::Storage::ISCSINode do
       end
     end
 
+    context "when the given startup value is not valid" do
+      let(:startup) { "invalid" }
+
+      it "returns 1" do
+        expect(subject.login({ "Startup" => startup })).to eq(1)
+      end
+    end
+
     context "when the action fails" do
       before do
         allow(iscsi_manager).to receive(:login).and_return(false)
       end
 
-      it "returns 1" do
-        expect(subject.login).to eq(1)
+      it "returns 2" do
+        expect(subject.login).to eq(2)
       end
     end
   end

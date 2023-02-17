@@ -172,15 +172,20 @@ module DInstaller
         # Deletes an iSCSI node from the database
         #
         # @param path [::DBus::ObjectPath]
-        # @return [Integer] 0 on success, 1 on failure
+        # @return [Integer] 0 on success, 1 on failure if the given node is not exported, 2 on
+        #   failure because any other reason.
         def iscsi_delete(path)
           dbus_node = iscsi_nodes_tree.find(path)
-          logger.info("iSCSI node #{path} is not exported")
-          return 1 unless dbus_node
+          if !dbus_node
+            logger.info("iSCSI delete error: iSCSI node #{path} is not exported")
+            return 1
+          end
 
           success = backend.iscsi.delete(dbus_node.iscsi_node)
-          logger.info("Fail to delete iSCSI node #{path}")
-          success ? 0 : 1
+          return 0 if success
+
+          logger.info("iSCSI delete error: fail to delete iSCSI node #{path}")
+          2 # Error code
         end
 
         dbus_interface ISCSI_INITIATOR_INTERFACE do

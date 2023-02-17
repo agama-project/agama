@@ -413,10 +413,10 @@ describe DInstaller::DBus::Storage::Manager do
           allow(iscsi).to receive(:delete).with(node).and_return(false)
         end
 
-        it "returns 1" do
+        it "returns 2" do
           result = subject.iscsi_delete(path)
 
-          expect(result).to eq(1)
+          expect(result).to eq(2)
         end
       end
     end

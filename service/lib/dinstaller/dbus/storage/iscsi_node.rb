@@ -123,16 +123,25 @@ module DInstaller
         #   @option Username [String] Username for authentication by target
         #   @option Password [String] Password for authentication by target
         #   @option ReverseUsername [String] Username for authentication by initiator
-        #   @option ReversePassword [String] Username for authentication by inititator
+        #   @option ReversePassword [String] Password for authentication by inititator
         #   @option Startup [String] Valid values are "onboot", "manual", "automatic"
         #
-        # @return [Integer] 0 on success, 1 on failure
+        # @return [Integer] 0 on success, 1 on failure if the given startup value is not valid, and
+        #   2 on failure because any other reason.
         def login(options = {})
           auth = iscsi_auth(options)
           startup = options["Startup"]
 
+          if startup && !DInstaller::Storage::ISCSI::Manager::STARTUP_OPTIONS.include?(startup)
+            logger.info("iSCSI login error: startup value #{startup} is not valid")
+            return 1
+          end
+
           success = iscsi_manager.login(iscsi_node, auth, startup: startup)
-          success ? 0 : 1
+          return 0 if success
+
+          logger.info("iSCSI login error: fail to login iSCSI node #{path}")
+          2 # Error code
         end
 
         # Logouts the iSCSI session
