@@ -28,7 +28,7 @@ import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
 import { Icon } from "~/components/layout";
-import { InstallerSkeleton, Section } from "~/components/core";
+import { SectionSkeleton, Section } from "~/components/core";
 import { ProposalSummary } from "~/components/storage";
 
 const initialState = {
@@ -87,7 +87,7 @@ export default function StorageSection ({ showErrors }) {
   const errors = showErrors ? state.errors : [];
 
   const SectionContent = () => {
-    if (state.busy || !state.proposal) return <InstallerSkeleton lines={1} />;
+    if (state.busy || !state.proposal) return <SectionSkeleton lines={1} />;
 
     return (
       <>

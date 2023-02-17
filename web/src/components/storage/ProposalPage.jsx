@@ -25,7 +25,7 @@ import { Alert } from "@patternfly/react-core";
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
 import { Icon } from "~/components/layout";
-import { Page, InstallerSkeleton } from "~/components/core";
+import { Page, SectionSkeleton } from "~/components/core";
 import {
   ProposalTargetSection,
   ProposalSettingsSection,
@@ -87,7 +87,7 @@ export default function ProposalPage() {
   };
 
   const PageContent = () => {
-    if (state.busy || !state.proposal) return <InstallerSkeleton lines={3} />;
+    if (state.busy || !state.proposal) return <SectionSkeleton lines={3} />;
 
     return (
       <>

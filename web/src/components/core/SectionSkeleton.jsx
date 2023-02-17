@@ -22,22 +22,19 @@
 import React from "react";
 import { Skeleton } from "@patternfly/react-core";
 
-const MAX = 100;
-
-const InstallerSkeleton = ({ lines = 2, ...props }) => (
-  [...Array(lines)].map((_, i) => {
-    const width = Math.floor(Math.random() * MAX);
-    return (
-      <Skeleton
-        className="installer-skeleton"
-        screenreaderText="Waiting..."
-        fontSize="sm"
-        {...props}
-        key={i}
-        width={`${width}%`}
-      />
-    );
-  })
+const SectionSkeleton = () => (
+  <>
+    <Skeleton
+      screenreaderText="Waiting..."
+      fontSize="sm"
+      width="50%"
+    />
+    <Skeleton
+      screenreaderText="Waiting..."
+      fontSize="sm"
+      width="25%"
+    />
+  </>
 );
 
-export default InstallerSkeleton;
+export default SectionSkeleton;

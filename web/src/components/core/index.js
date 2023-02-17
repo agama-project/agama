@@ -28,7 +28,7 @@ export { default as Installation } from "./Installation";
 export { default as InstallationFinished } from "./InstallationFinished";
 export { default as InstallationProgress } from "./InstallationProgress";
 export { default as InstallButton } from "./InstallButton";
-export { default as InstallerSkeleton } from "./InstallerSkeleton";
+export { default as SectionSkeleton } from "./SectionSkeleton";
 export { default as LoadingEnvironment } from "./LoadingEnvironment";
 export { default as KebabMenu } from "./KebabMenu";
 export { default as LogsButton } from "./LogsButton";
