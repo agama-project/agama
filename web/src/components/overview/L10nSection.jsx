@@ -32,7 +32,7 @@ const initialState = {
   errors: []
 };
 
-export default function LanguageSection({ showErrors }) {
+export default function L10nSection({ showErrors }) {
   const [state, setState] = useState(initialState);
   const { language: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
@@ -64,7 +64,7 @@ export default function LanguageSection({ showErrors }) {
     if (busy) return <SectionSkeleton />;
 
     const selected = languages.find(lang => lang.id === language);
-    console.log("selected", selected);
+
     return (
       <Text>
         The system will use <Label isCompact>{`${selected.name} (${selected.id})`}</Label> as its default language.

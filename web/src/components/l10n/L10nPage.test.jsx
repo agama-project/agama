@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,108 +20,62 @@
  */
 
 import React from "react";
-import { act, screen } from "@testing-library/react";
-import { installerRender, createCallbackMock } from "~/test-utils";
-import { LanguageSelector } from "~/components/language";
+import { screen } from "@testing-library/react";
+import { installerRender, mockLayout } from "~/test-utils";
+import { L10nPage } from "~/components/l10n";
 import { createClient } from "~/client";
 
+const mockNavigateFn = jest.fn();
+
 jest.mock("~/client");
+jest.mock('react-router-dom', () => ({
+  useNavigate: () => mockNavigateFn,
+}));
+jest.mock("~/components/layout/Layout", () => mockLayout());
 
 const languages = [
   { id: "en_US", name: "English" },
   { id: "de_DE", name: "German" }
 ];
 
-const setLanguagesFn = jest.fn().mockResolvedValue();
-let onLanguageChangeFn = jest.fn();
-
-const languageMock = {
-  getLanguages: () => Promise.resolve(languages),
-  getSelectedLanguages: () => Promise.resolve(["en_US"]),
-  setLanguages: setLanguagesFn,
-};
+const setLanguagesFn = jest.fn();
 
 beforeEach(() => {
   // if defined outside, the mock is cleared automatically
   createClient.mockImplementation(() => {
     return {
       language: {
-        ...languageMock,
-        onLanguageChange: onLanguageChangeFn
+        getLanguages: () => Promise.resolve(languages),
+        getSelectedLanguages: () => Promise.resolve(["en_US"]),
+        setLanguages: setLanguagesFn,
       }
     };
   });
 });
 
-it("displays the proposal", async () => {
-  installerRender(<LanguageSelector />);
-  await screen.findByText("English");
+it("displays the language selector", async () => {
+  installerRender(<L10nPage />);
+
+  await screen.findByLabelText("Language");
 });
 
-describe("when the user changes the language", () => {
+describe("when the user accept changes", () => {
   it("changes the selected language", async () => {
-    const { user } = installerRender(<LanguageSelector />);
-    const button = await screen.findByRole("button", { name: "English" });
-    await user.click(button);
+    const { user } = installerRender(<L10nPage />);
+    const germanOption = await screen.findByRole("option", { name: "German" });
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
 
-    const languageSelector = await screen.findByLabelText("Language");
-    await user.selectOptions(languageSelector, ["German"]);
-    await user.click(screen.getByRole("button", { name: "Confirm" }));
+    await user.selectOptions(screen.getByLabelText("Language"), germanOption);
+    await user.click(acceptButton);
 
-    await screen.findByRole("button", { name: "German" });
     expect(setLanguagesFn).toHaveBeenCalledWith(["de_DE"]);
   });
-});
 
-describe("when the user changes the language but cancels", () => {
-  it("does not change the selected language", async () => {
-    const { user } = installerRender(<LanguageSelector />);
-    const button = await screen.findByRole("button", { name: "English" });
-    await user.click(button);
+  it("navigates to the root path", async () => {
+    const { user } = installerRender(<L10nPage />);
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+    await user.click(acceptButton);
 
-    const languageSelector = await screen.findByLabelText("Language");
-    await user.selectOptions(languageSelector, ["German"]);
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
-
-    await screen.findByRole("button", { name: "English" });
-    expect(setLanguagesFn).not.toHaveBeenCalled();
-  });
-});
-
-describe("when the user changes the language AND THEN cancels", () => {
-  it("reverts to the selected language, not English", async () => {
-    const { user } = installerRender(<LanguageSelector />);
-    const button = await screen.findByRole("button", { name: "English" });
-    await user.click(button);
-
-    const languageSelector = await screen.findByLabelText("Language");
-    await user.selectOptions(languageSelector, ["German"]);
-    await user.click(screen.getByRole("button", { name: "Confirm" }));
-
-    const button2 = await screen.findByRole("button", { name: "German" });
-    await user.click(button2);
-
-    await screen.findByLabelText("Language");
-    await user.click(screen.getByRole("button", { name: "Cancel" }));
-
-    await screen.findByRole("button", { name: "German" });
-    expect(setLanguagesFn).toHaveBeenCalledTimes(1);
-    expect(setLanguagesFn).toHaveBeenCalledWith(["de_DE"]);
-  });
-});
-
-describe("when the Language Selection changes", () => {
-  it("updates the proposal", async () => {
-    const [mockFunction, callbacks] = createCallbackMock();
-    onLanguageChangeFn = mockFunction;
-
-    installerRender(<LanguageSelector />);
-    await screen.findByRole("button", { name: "English" });
-
-    const [cb] = callbacks;
-    act(() => {
-      cb("de_DE");
-    });
-    await screen.findByRole("button", { name: "German" });
+    expect(mockNavigateFn).toHaveBeenCalledWith("/");
   });
 });

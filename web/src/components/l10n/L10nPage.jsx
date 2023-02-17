@@ -34,7 +34,7 @@ import { Page } from "~/components/core";
 
 const initialState = {
   languages: [],
-  language: null
+  language: ""
 };
 
 export default function LanguageSelector() {
@@ -65,7 +65,7 @@ export default function LanguageSelector() {
     ));
 
     return (
-      <FormGroup fieldId="language-language" label="Language">
+      <FormGroup fieldId="language" label="Language">
         <FormSelect
           id="language"
           aria-label="language"
