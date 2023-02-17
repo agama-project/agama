@@ -19,4 +19,4 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as LanguagePage } from "./LanguagePage";
+export { default as L10nPage } from "./L10nPage";

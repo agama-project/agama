@@ -74,11 +74,11 @@ export default function LanguageSection({ showErrors }) {
 
   return (
     <Section
-      key="language-section"
-      title="Language"
+      key="l10n-section"
+      title="Localization"
       loading={state.busy}
       icon="translate"
-      path="/language"
+      path="/l10n"
       errors={errors}
     >
       <SectionContent />
