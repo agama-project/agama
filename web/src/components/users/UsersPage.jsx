@@ -36,10 +36,10 @@ export default function UsersPage() {
 
   return (
     <Page title="User Settings" icon="manage_accounts">
-      <Section key="first-user" title="User" iconName="person">
+      <Section key="first-user" title="User" icon="person">
         <FirstUser />
       </Section>
-      <Section key="root-settings" title="Root settings" iconName="badge">
+      <Section key="root-settings" title="Root settings" icon="badge">
         <RootPassword />
         <RootSSHKey />
       </Section>

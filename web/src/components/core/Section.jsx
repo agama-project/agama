@@ -89,7 +89,8 @@ const renderIcon = (name, size = 32) => {
  * @param {string} props.path - The path where the section link to
  * @param {string} [props.description] - A tiny description for the section
  * @param {boolean} [props.hasSeparator] - whether or not a thin border should be shown between title and content
- * @param {string} [props.iconName] - the name of the icon section, if any
+ * @param {boolean} [props.loading] - whether the section is loading the content
+ * @param {string} [props.icon] - the name of the icon section, if any
  * @param {string} [props.actionIconName="settings"] - name for the icon for linking to section settings, when needed
  * @param {React.ReactNode} [props.actionTooltip] - text to be shown as a tooltip when user hovers action icon, if present
  * @param {React.MouseEventHandler} [props.onActionClick] - callback to be triggered when user clicks on action icon, if present
@@ -101,7 +102,8 @@ export default function Section({
   path,
   description,
   hasSeparator,
-  iconName,
+  icon,
+  loading,
   actionIconName = "settings",
   actionTooltip,
   onActionClick,
@@ -141,6 +143,8 @@ export default function Section({
   let headerClassNames = "split";
   if (hasSeparator) headerClassNames += " gradient-border-bottom";
 
+  const iconName = loading ? "loading" : icon;
+
   return (
     <section>
       {renderIcon(iconName, 32)}
@@ -151,14 +155,14 @@ export default function Section({
       </Text>
 
       <div className="stack content">
-        { description && description !== "" &&
+        {description && description !== "" &&
           <TextContent>
             <Text component={TextVariants.small}>
               {description}
             </Text>
-          </TextContent> }
-        { errors?.length > 0 &&
-          <ValidationErrors errors={errors} title={`${title} errors`} /> }
+          </TextContent>}
+        {errors?.length > 0 &&
+          <ValidationErrors errors={errors} title={`${title} errors`} />}
         {children}
       </div>
     </section>

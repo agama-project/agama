@@ -109,7 +109,7 @@ export default function StorageSection ({ showErrors }) {
       key="storage-section"
       title="Storage"
       path="/storage"
-      iconName="hard_drive"
+      icon="hard_drive"
       errors={errors}
     >
       <SectionContent />

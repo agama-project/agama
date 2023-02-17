@@ -19,12 +19,12 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
-import { Section } from "~/components/core";
-import { Text } from "@patternfly/react-core";
+import { Section, SectionSkeleton } from "~/components/core";
+import { Text, Label } from "@patternfly/react-core";
 
 const initialState = {
   busy: true,
@@ -97,7 +97,8 @@ export default function LanguageSection({ showErrors }) {
     <Section
       key="language-section"
       title="Language"
-      iconName={ state.busy ? "loading" : "translate" }
+      loading={state.busy}
+      icon="translate"
       path="/language"
       errors={errors}
     >

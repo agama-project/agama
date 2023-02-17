@@ -150,7 +150,8 @@ export default function SoftwareSection({ showErrors }) {
     <Section
       key="software-section"
       title="Software"
-      iconName="apps"
+      icon="apps"
+      loading={state.busy}
       errors={errors}
     >
       <SectionContent />
