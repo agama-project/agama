@@ -20,26 +20,16 @@
  */
 
 import React from "react";
-// import React, { useEffect, useState } from "react";
-// import { useInstallerClient } from "~/context/installer";
 import { Page, Section } from "~/components/core";
 import { FirstUser, RootPassword, RootSSHKey } from "~/components/users";
 
 export default function UsersPage() {
-  // const [errors, setErrors] = useState([]);
-  // const { users: usersClient } = useInstallerClient();
-  //
-  // useEffect(() => {
-  //   usersClient.getValidationErrors().then(setErrors);
-  //   return usersClient.onValidationChange(setErrors);
-  // }, [usersClient]);
-
   return (
-    <Page title="User Settings" icon="manage_accounts">
-      <Section key="first-user" title="User" icon="person">
+    <Page title="User Settings" icon="manage_accounts" actionLabel="Back">
+      <Section title="User" icon="person">
         <FirstUser />
       </Section>
-      <Section key="root-settings" title="Root settings" icon="badge">
+      <Section title="Root authentication" icon="badge">
         <RootPassword />
         <RootSSHKey />
       </Section>

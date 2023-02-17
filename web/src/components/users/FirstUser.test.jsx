@@ -57,8 +57,8 @@ beforeEach(() => {
 
 it("allows defining a new user", async () => {
   const { user } = installerRender(<FirstUser />);
-  const firstUser = await screen.findByText(/A user/);
-  const button = within(firstUser).getByRole("button", { name: "is not defined" });
+  await screen.findByText("No user defined yet");
+  const button = await screen.findByRole("button", { name: "Define a user now" });
   await user.click(button);
 
   const dialog = await screen.findByRole("dialog");
@@ -93,8 +93,7 @@ it("allows defining a new user", async () => {
 
 it("doest not allow to confirm the settings if the user name and the password are not provided", async () => {
   const { user } = installerRender(<FirstUser />);
-  const firstUser = await screen.findByText(/A user/);
-  const button = within(firstUser).getByRole("button", { name: "is not defined" });
+  const button = await screen.findByRole("button", { name: "Define a user now" });
   await user.click(button);
 
   const dialog = await screen.findByRole("dialog");
@@ -107,8 +106,7 @@ it("doest not allow to confirm the settings if the user name and the password ar
 
 it("does not change anything if the user cancels", async () => {
   const { user } = installerRender(<FirstUser />);
-  const firstUser = await screen.findByText(/A user/);
-  const button = within(firstUser).getByRole("button", { name: "is not defined" });
+  const button = await screen.findByRole("button", { name: "Define a user now" });
   await user.click(button);
 
   const dialog = await screen.findByRole("dialog");
@@ -130,8 +128,7 @@ describe("when there is some issue with the user config provided", () => {
 
   it("shows the issues found", async () => {
     const { user } = installerRender(<FirstUser />);
-    const firstUser = await screen.findByText(/A user/);
-    const button = within(firstUser).getByRole("button", { name: "is not defined" });
+    const button = await screen.findByRole("button", { name: "Define a user now" });
     await user.click(button);
 
     const dialog = await screen.findByRole("dialog");
@@ -159,7 +156,7 @@ describe("when there is some issue with the user config provided", () => {
     await waitFor(() => {
       expect(screen.queryByText(/Something went wrong/i)).toBeInTheDocument();
       expect(screen.queryByText(/There is an error/i)).toBeInTheDocument();
-      expect(screen.queryByText(/is not defined/i)).toBeInTheDocument();
+      expect(screen.queryByText(/No user defined yet/i)).toBeInTheDocument();
     });
   });
 });
@@ -167,48 +164,46 @@ describe("when there is some issue with the user config provided", () => {
 describe("when the first user is already defined", () => {
   beforeEach(() => {
     user = {
-      fullName: "John",
+      fullName: "John Doe",
       userName: "jdoe",
       autologin: false
     };
   });
 
+  it("renders the name and username", async () => {
+    installerRender(<FirstUser />);
+    await screen.findByText("John Doe");
+    await screen.findByText("jdoe");
+  });
+
   it("allows removing the user", async () => {
     const { user } = installerRender(<FirstUser />);
-    const button = await screen.findByRole("button", { name: "jdoe" });
-    await user.click(button);
-
-    const dialog = await screen.findByRole("dialog");
-
-    const removeButton = within(dialog).getByRole("button", { name: "Do not create a user" });
-    await user.click(removeButton);
-
+    const table = await screen.findByRole("grid");
+    const row = within(table).getByText("John Doe")
+      .closest("tr");
+    const actionsToggler = within(row).getByRole("button", { name: "Actions" });
+    await user.click(actionsToggler);
+    const discardAction = screen.getByRole("menuitem", { name: "Discard" });
+    await user.click(discardAction);
     expect(removeUserFn).toHaveBeenCalled();
-    await waitFor(() => {
-      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    });
   });
 });
 
-describe("when the Users change", () => {
-  describe("and the FirstUser has been modified", () => {
-    it("updates the proposal first User description", async () => {
-      const [mockFunction, callbacks] = createCallbackMock();
-      onUsersChangeFn = mockFunction;
+describe("when the user has been modified", () => {
+  it("updates the UI for rendering its main info", async () => {
+    const [mockFunction, callbacks] = createCallbackMock();
+    onUsersChangeFn = mockFunction;
+    installerRender(<FirstUser />);
+    await screen.findByText("No user defined yet");
 
-      installerRender(<FirstUser />);
-
-      let firstUser = await screen.findByText(/A user/i);
-      within(firstUser).getByRole("button", { name: "is not defined" });
-
-      const [cb] = callbacks;
-      act(() => {
-        cb({ firstUser: { userName: "yast", fullName: "YaST", autologin: false } });
-      });
-
-      firstUser = await screen.findByText(/User/i);
-      within(firstUser).getByRole("button", { name: "yast" });
-      within(firstUser).findByText("is defined");
+    const [cb] = callbacks;
+    act(() => {
+      cb({ firstUser: { userName: "ytm", fullName: "YaST Team Member", autologin: false } });
     });
+
+    const noUserInfo = await screen.queryByText("No user defined yet");
+    expect(noUserInfo).toBeNull();
+    screen.getByText("YaST Team Member");
+    screen.getByText("ytm");
   });
 });

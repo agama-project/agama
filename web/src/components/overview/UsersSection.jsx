@@ -23,8 +23,26 @@ import React, { useReducer, useEffect } from "react";
 
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
-import { Section } from "~/components/core";
-import { Text } from "@patternfly/react-core";
+import { Section, SectionSkeleton } from "~/components/core";
+import { Label } from "@patternfly/react-core";
+
+/**
+ * Internal component for simplifying conditional rendering.
+ * @component
+ *
+ * Borrowed from the old  Michael J. Ryan’s comment at https://github.com/facebook/jsx/issues/65#issuecomment-255484351
+ * See more options at https://blog.logrocket.com/react-conditional-rendering-9-methods/
+ *
+ * TODO: evaluate if it should be a core component or even if worth it using an specialized library
+ *
+ * @param {object} props
+ * @param {boolean} props.condition
+ * @param {JSX.Element} [props.then=null] - the content to be rendered when the condition is true
+ * @param {JSX.Element} [props.else=null] - the content to be rendered when the condition is false
+ */
+const If = ({ condition, then: positive = null, else: negative = null }) => {
+  return condition ? positive : negative;
+};
 
 const initialState = {
   busy: true,
@@ -49,9 +67,10 @@ const reducer = (state, action) => {
 };
 
 export default function UsersSection({ showErrors }) {
-  const { users: usersClient } = useInstallerClient();
+  const { users: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { user, rootPasswordSet, rootSSHKey } = state;
 
   const updateStatus = ({ ...payload }) => {
     dispatch({ type: "UPDATE_STATUS", payload });
@@ -59,46 +78,57 @@ export default function UsersSection({ showErrors }) {
 
   useEffect(() => {
     const loadData = async () => {
-      const user = await cancellablePromise(usersClient.getUser());
-      const rootPasswordSet = await cancellablePromise(usersClient.isRootPasswordSet());
-      const rootSSHKey = await cancellablePromise(usersClient.getRootSSHKey());
-      const errors = await cancellablePromise(usersClient.getValidationErrors());
+      const user = await cancellablePromise(client.getUser());
+      const rootPasswordSet = await cancellablePromise(client.isRootPasswordSet());
+      const rootSSHKey = await cancellablePromise(client.getRootSSHKey());
+      const errors = await cancellablePromise(client.getValidationErrors());
 
       updateStatus({ user, rootPasswordSet, rootSSHKey, errors, busy: false });
     };
 
     loadData();
 
-    return usersClient.onValidationChange(
+    return client.onValidationChange(
       (errors) => updateStatus({ errors })
     );
-  }, [usersClient, cancellablePromise]);
+  }, [client, cancellablePromise]);
 
   const errors = showErrors ? state.errors : [];
 
-  const SectionContent = () => {
-    if (state.busy) {
-      return "Retrieving users summary...";
-    }
-
-    const userIsDefined = state.user?.userName !== "";
-
-    const summary = [];
-
-    if (userIsDefined) {
-      summary.push(`User \`${state.user.userName}\` will be created`);
-    } else {
-      summary.push("No user defined yet");
-    }
-
-    if (state.rootPasswordSet) {
-      summary.push("Root password is set");
-    } else {
-      summary.push("Root password is not set");
-    }
-
-    return summary.map((sentence, idx) => <Text key={idx}>{sentence}</Text>);
+  const UserSummary = () => {
+    return (
+      <div>
+        <If
+          condition={user?.userName !== ""}
+          then={<>User <Label isCompact>{state.user.userName}</Label> will be created</>}
+          else={<>No user defined yet</>}
+        />
+      </div>
+    );
   };
+
+  const RootAuthSummary = () => {
+    const both = rootPasswordSet && rootSSHKey !== "";
+    const none = !rootPasswordSet && rootSSHKey === "";
+    const onlyPassword = rootPasswordSet && rootSSHKey === "";
+    const onlySSHKey = !rootPasswordSet && rootSSHKey !== "";
+
+    return (
+      <div>
+        <If condition={both} then={<>Root authentication set for using both, password and public SSH Key</>} />
+        <If condition={none} then={<>None authentication method defined for root user</>} />
+        <If condition={onlyPassword} then={<>Root authentication set for using password</>} />
+        <If condition={onlySSHKey} then={<>Root authentication set for using public SSH Key</>} />
+      </div>
+    );
+  };
+
+  const Summary = () => (
+    <>
+      <UserSummary />
+      <RootAuthSummary />
+    </>
+  );
 
   return (
     <Section
@@ -109,7 +139,7 @@ export default function UsersSection({ showErrors }) {
       errors={errors}
       path="/users"
     >
-      <SectionContent />
+      { state.busy ? <SectionSkeleton /> : <Summary /> }
     </Section>
   );
 }

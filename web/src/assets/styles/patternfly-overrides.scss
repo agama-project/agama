@@ -69,6 +69,12 @@
   block-size: 10rem;
 }
 
+// Do not add block padding to empty state inside a table/column
+table td > .pf-c-empty-state {
+  --pf-c-empty-state--PaddingTop: 0;
+  --pf-c-empty-state--PaddingBottom: 0;
+}
+
 // Fix single-line subprogress missaligment
 .pf-c-progress.pf-m-singleline .pf-c-progress__bar {
   grid-row: 1/3;
