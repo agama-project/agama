@@ -20,14 +20,9 @@
  */
 
 import React, { useReducer, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-
-import { Button } from '@patternfly/react-core';
-
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
-import { Icon } from "~/components/layout";
 import { SectionSkeleton, Section } from "~/components/core";
 import { ProposalSummary } from "~/components/storage";
 
@@ -39,7 +34,7 @@ const initialState = {
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "UPDATE_STATUS" : {
+    case "UPDATE_STATUS": {
       return { ...initialState, busy: action.payload.status === BUSY };
     }
 
@@ -57,10 +52,9 @@ const reducer = (state, action) => {
   }
 };
 
-export default function StorageSection ({ showErrors }) {
+export default function StorageSection({ showErrors }) {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -90,17 +84,7 @@ export default function StorageSection ({ showErrors }) {
     if (state.busy || !state.proposal) return <SectionSkeleton lines={1} />;
 
     return (
-      <>
-        <ProposalSummary proposal={state.proposal} />
-        <Button
-          isInline
-          variant="link"
-          icon={<Icon name="edit" size="16" />}
-          onClick={() => navigate("/storage")}
-        >
-          Edit storage settings
-        </Button>
-      </>
+      <ProposalSummary proposal={state.proposal} />
     );
   };
 
