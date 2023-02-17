@@ -149,9 +149,9 @@ Tumbleweed:
 ALP:
   software:
     installation_repositories:
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/ToTest/images/repo/ALP-0.1-x86_64-Media1/
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP/standard/
         archs: x86_64
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/ToTest/images/repo/ALP-0.1-aarch64-Media1/
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP/standard/
         archs: aarch64
     mandatory_patterns:
       - alp_base

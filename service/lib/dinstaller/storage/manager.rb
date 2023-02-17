@@ -188,8 +188,7 @@ module DInstaller
       end
 
       def tpm_proposal?
-        settings = proposal.calculated_settings
-        settings.encrypt? && !settings.lvm
+        proposal.calculated_settings.encrypt?
       end
 
       def tpm_system?
@@ -201,7 +200,7 @@ module DInstaller
 
         @tpm_present =
           begin
-            execute_fdectl("tpm-present")
+            Yast::Execute.on_target!("fdectl", "tpm-present")
             logger.info "FDE: TPMv2 detected"
             true
           rescue Cheetah::ExecutionFailed
@@ -215,9 +214,9 @@ module DInstaller
       end
 
       def prepare_tpm_key
-        keyfile_path = File.join(Yast::Installation.destdir, "root", ".root.keyfile")
-        execute_fdectl(
-          "add-secondary-key", "--keyfile", keyfile_path,
+        keyfile_path = File.join("root", ".root.keyfile")
+        Yast::Execute.on_target!(
+          "fdectl", "add-secondary-key", "--keyfile", keyfile_path,
           stdin:    "#{proposal.calculated_settings.encryption_password}\n",
           recorder: Yast::ReducedRecorder.new(skip: :stdin)
         )
@@ -227,16 +226,6 @@ module DInstaller
         service&.enable
       rescue Cheetah::ExecutionFailed
         false
-      end
-
-      def execute_fdectl(*args)
-        # Some subcommands like "tpm-present" should not require a --device argument, but they
-        # currently do. Let's always us until the problem at fdectl is fully fixed.
-        Yast::Execute.locally!("fdectl", "--device", fdectl_device, *args)
-      end
-
-      def fdectl_device
-        Yast::Installation.destdir
       end
     end
   end
