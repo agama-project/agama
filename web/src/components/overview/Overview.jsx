@@ -25,7 +25,7 @@ import { Navigate } from "react-router-dom";
 
 import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
 import { Section, InstallButton } from "~/components/core";
-import { LanguageSection, SoftwareSection, StorageSection, UsersSection } from "~/components/overview";
+import { L10nSection, SoftwareSection, StorageSection, UsersSection } from "~/components/overview";
 import { Network } from "~/components/network";
 
 function Overview() {
@@ -43,7 +43,7 @@ function Overview() {
       <MainActions>
         <InstallButton onClick={() => setShowErrors(true)} />
       </MainActions>
-      <LanguageSection />
+      <L10nSection />
       <Section key="network" title="Network" iconName="settings_ethernet">
         <Network />
       </Section>
