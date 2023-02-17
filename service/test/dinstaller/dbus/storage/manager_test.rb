@@ -26,6 +26,7 @@ require "dinstaller/storage/manager"
 require "dinstaller/storage/proposal"
 require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/volume"
+require "dinstaller/storage/iscsi/manager"
 require "y2storage"
 require "dbus"
 
@@ -37,6 +38,7 @@ describe DInstaller::DBus::Storage::Manager do
   let(:backend) do
     instance_double(DInstaller::Storage::Manager,
       proposal:           proposal,
+      iscsi:              iscsi,
       on_progress_change: nil,
       on_progress_finish: nil)
   end
@@ -46,6 +48,8 @@ describe DInstaller::DBus::Storage::Manager do
   end
 
   let(:settings) { nil }
+
+  let(:iscsi) { instance_double(DInstaller::Storage::ISCSI::Manager, on_probe: nil) }
 
   describe "#available_devices" do
     before do
@@ -273,6 +277,146 @@ describe DInstaller::DBus::Storage::Manager do
           end
 
           subject.calculate_proposal(dbus_settings)
+        end
+      end
+    end
+  end
+
+  describe "#iscsi_discover" do
+    it "performs an iSCSI discovery" do
+      expect(iscsi).to receive(:discover_send_targets) do |address, port, auth|
+        expect(address).to eq("192.168.100.90")
+        expect(port).to eq(3260)
+        expect(auth).to be_a(Y2IscsiClient::Authentication)
+      end
+
+      subject.iscsi_discover("192.168.100.90", 3260, {})
+    end
+
+    context "when no authentication options are given" do
+      let(:auth_options) { {} }
+
+      it "uses an empty authentication" do
+        expect(iscsi).to receive(:discover_send_targets) do |_, _, auth|
+          expect(auth.by_target?).to eq(false)
+          expect(auth.by_initiator?).to eq(false)
+        end
+
+        subject.iscsi_discover("192.168.100.90", 3260, auth_options)
+      end
+    end
+
+    context "when authentication options are given" do
+      let(:auth_options) do
+        {
+          "Username"        => "testi",
+          "Password"        => "testi",
+          "ReverseUsername" => "testt",
+          "ReversePassword" => "testt"
+        }
+      end
+
+      it "uses the expected authentication" do
+        expect(iscsi).to receive(:discover_send_targets) do |_, _, auth|
+          expect(auth.username).to eq("testi")
+          expect(auth.password).to eq("testi")
+          expect(auth.username_in).to eq("testt")
+          expect(auth.password_in).to eq("testt")
+        end
+
+        subject.iscsi_discover("192.168.100.90", 3260, auth_options)
+      end
+    end
+
+    context "when the action successes" do
+      before do
+        allow(iscsi).to receive(:discover_send_targets).and_return(true)
+      end
+
+      it "returns 0" do
+        result = subject.iscsi_discover("192.168.100.90", 3260, {})
+
+        expect(result).to eq(0)
+      end
+    end
+
+    context "when the action fails" do
+      before do
+        allow(iscsi).to receive(:discover_send_targets).and_return(false)
+      end
+
+      it "returns 1" do
+        result = subject.iscsi_discover("192.168.100.90", 3260, {})
+
+        expect(result).to eq(1)
+      end
+    end
+  end
+
+  describe "#iscsi_delete" do
+    before do
+      allow(DInstaller::DBus::Storage::ISCSINodesTree)
+        .to receive(:new).and_return(iscsi_nodes_tree)
+    end
+
+    let(:iscsi_nodes_tree) { instance_double(DInstaller::DBus::Storage::ISCSINodesTree) }
+
+    let(:path) { "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1" }
+
+    context "when the requested path for deleting is not exported yet" do
+      before do
+        allow(iscsi_nodes_tree).to receive(:find).with(path).and_return(nil)
+      end
+
+      it "does not delete the iSCSI node" do
+        expect(iscsi).to_not receive(:delete)
+
+        subject.iscsi_delete(path)
+      end
+
+      it "returns 1" do
+        result = subject.iscsi_delete(path)
+
+        expect(result).to eq(1)
+      end
+    end
+
+    context "when the requested path for deleting is exported" do
+      before do
+        allow(iscsi_nodes_tree).to receive(:find).with(path).and_return(dbus_node)
+      end
+
+      let(:dbus_node) { DInstaller::DBus::Storage::ISCSINode.new(iscsi, node, path) }
+
+      let(:node) { DInstaller::Storage::ISCSI::Node.new }
+
+      it "deletes the iSCSI node" do
+        expect(iscsi).to receive(:delete).with(node)
+
+        subject.iscsi_delete(path)
+      end
+
+      context "and the action successes" do
+        before do
+          allow(iscsi).to receive(:delete).with(node).and_return(true)
+        end
+
+        it "returns 0" do
+          result = subject.iscsi_delete(path)
+
+          expect(result).to eq(0)
+        end
+      end
+
+      context "and the action fails" do
+        before do
+          allow(iscsi).to receive(:delete).with(node).and_return(false)
+        end
+
+        it "returns 2" do
+          result = subject.iscsi_delete(path)
+
+          expect(result).to eq(2)
         end
       end
     end

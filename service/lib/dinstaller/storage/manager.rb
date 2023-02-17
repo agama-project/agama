@@ -28,6 +28,7 @@ require "y2storage/storage_manager"
 require "dinstaller/storage/proposal"
 require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/callbacks"
+require "dinstaller/storage/iscsi/manager"
 require "dinstaller/with_progress"
 require "dinstaller/security"
 require "dinstaller/dbus/clients/questions"
@@ -111,6 +112,13 @@ module DInstaller
         @proposal ||= Proposal.new(logger, config)
       end
 
+      # iSCSI manager
+      #
+      # @return [Storage::ISCSI::Manager]
+      def iscsi
+        @iscsi ||= ISCSI::Manager.new(logger: logger)
+      end
+
       # Validates the storage configuration
       #
       # @return [Array<ValidationError>] List of validation errors
@@ -133,12 +141,14 @@ module DInstaller
       def activate_devices
         callbacks = Callbacks::Activate.new(questions_client, logger)
 
+        iscsi.activate
         Y2Storage::StorageManager.instance.activate(callbacks)
       end
 
       # Probes the devices
       def probe_devices
         # TODO: probe callbacks
+        iscsi.probe
         Y2Storage::StorageManager.instance.probe
       end
 

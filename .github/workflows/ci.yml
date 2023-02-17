@@ -85,6 +85,9 @@ jobs:
     - name: Install Ruby development files
       run: zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel npm augeas-devel
 
+    - name: Install required packages
+      run: zypper --non-interactive install yast2-iscsi-client
+
     - name: Install RubyGems dependencies
       run: bundle config set --local with 'development' && bundle install
 

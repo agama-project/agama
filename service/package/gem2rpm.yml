@@ -11,6 +11,7 @@
   Requires:       yast2-network
   Requires:       yast2-proxy
   Requires:       yast2-storage-ng
+  Requires:       yast2-iscsi-client >= 4.5.7
   Requires:       yast2-users
   # yast2 with ArchFilter
   Requires:       yast2 >= 4.5.20

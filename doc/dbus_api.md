@@ -1,4 +1,4 @@
-# D-Bus API Document
+# D-Bus API Reference
 
 ## General Principles
 
@@ -111,66 +111,327 @@ Iface: o.o.YaST.Installer1.Software
 -  PropertiesChanged ( only standard one from org.freedesktop.DBus.Properties interface )
 
 
-## Storage
+## `org.opensuse.DInstaller.Storage` Service
 
-### org.opensuse.DInstaller.Storage1
+Service for managing storage devices.
 
-#### Methods
+### Overview
 
-- Probe -> void
+~~~
+/DInstaller/Storage1
+  .ObjectManager
+  .DInstaller.ServiceStatus1
+  .DInstaller.Progress1
+  .DInstaller.Validation1
+  .DInstaller.Storage1
+  .DInstaller.Storage1.Proposal.Calculator
+  .DInstaller.Storage1.ISCSI.Initiator
+/DInstaller/Storage1/Proposal
+  .DInstaller.Storage1.Proposal
+/DInstaller/Storage1/iscsi_nodes/[0-9]+
+  .DInstaller.Storage1.ISCSI.Node
+~~~
 
-- Install -> void
+### D-Bus Objects
 
-- Finish -> void
+#### `/org/opensuse/DInstaller/Storage1` Object
 
-### org.opensuse.DInstaller.Proposal1
+~~~
+/DInstaller/Storage1
+  .ObjectManager
+  .DInstaller.ServiceStatus1
+  .DInstaller.Progress1
+  .DInstaller.Validation1
+  .DInstaller.Storage1
+  .DInstaller.Storage1.Proposal.Calculator
+  .DInstaller.Storage1.ISCSI.Initiator
+~~~
 
-** Making space is not covered yet**
+Main object exported by the service `org.opensuse.DInstaller.Service`. This object implements the `org.freedesktop.DBus.ObjectManager` interface and should be used by clients to discover other objects.
 
-#### Properties
+This object also implements generic interfaces to manage the service status, progress and validation.
 
-- AvailableDevices -> a(ssa{sv}) (r)
-  e.g., ["/dev/sda", "/dev/sda, 8.00 GiB, USB", {}]
+Moreover, it implements interfaces to manipulate the global state (perform installation, create proposals, login sessions for iSCSI nodes, etc).
 
-- CandidateDevices -> as (r)
+#### `/org/opensuse/DInstaller/Storage1/Proposal` Object
 
-- LVM -> b (r)
+~~~
+/DInstaller/Storage1/Proposal
+  .DInstaller.Storage1.Proposal
+~~~
 
-- EncryptionPassword -> s (r)
+This object is exported only if a proposal was already calculated (successful or not). It can be used to inspect the result of the calculated proposal.
 
-- VolumeTemplates -> aa{sv} (r)
-  Struct keys and values: see Volumes
+#### `/org/opensuse/DInstaller/Storage1/iscsi_nodes/[0-9]+` Objects
 
-- Volumes -> aa{sv} (r)
-  Struct keys and values:
-  - DeviceType -> s
-  e.g., "partition", "lvm_lv"
-  - Optional -> b
-  - Encrypted -> b
-  - MountPoint -> s
-  - FixedSizeLimits -> b
-  - AdaptativeSizes -> b
-  - MinSize -> s
-  - MaxSize -> s
-  - FsTypes -> as
-    e.g., ["Btrfs", "XFS"]
-  - FsType -> s
-  - Snapshots -> b
-  - SnapshotsConfigurable -> b
-  - SnapshotsAffectSizes -> b
-  - VolumesWithFallbackSizes -> as
-    e.g., ["/home", "/var"]
+~~~
+/DInstaller/Storage1/iscsi_nodes/[0-9]+
+  .DInstaller.Storage1.ISCSI.Node
+~~~
 
-- Actions -> aa{sv} (r)
-  Struct keys and values:
-  - Text -> s (r)
-  - Subvol -> b (r)
-  - Delete -> b (r)
+Objects representing iSCSI nodes are dynamically exported when a successful iSCSI discovery is performed, see `.org.opensuse.DInstaller.Storage1.ISCSI.Initiator` interface.
 
-#### Methods
+### D-Bus Interfaces
 
-- Calculate(aa{sv}) -> u (0 success, 1 fail)
-  Calculates a new proposal with the given properties (see proposal properties).
+#### `org.opensuse.DInstaller.Storage1` Interface
+
+Offers methods for performing general installation actions.
+
+##### Methods
+
+~~~
+Probe()
+Install()
+Finish()
+~~~
+
+#### `org.opensuse.DInstaller.Storage1.Proposal.Calculator` Interface
+
+Allows creating a storage proposal.
+
+##### Methods
+
+~~~
+Calculate(in  a{sv} settings,
+          out u     result)
+~~~
+
+##### Properties
+
+~~~
+AvailableDevices  readable  a(ssa{sv})
+VolumeTemplates   readable  aa{sv}
+Result            readable  o
+~~~
+
+##### Details
+
+###### `Calculate` method
+
+~~~
+Calculate(in  a{sv} settings,
+          out u     result)
+~~~
+
+Calculates a new proposal with the given settings. A proposal object is exported when the proposal is calculated.
+
+Arguments:
+
+* `in a{sv} settings`: Allowed settings correspond to the properties defined by `org.opensuse.DInstaller.Storage1.Proposal` interface.
+* `out u result`: `0` on success and `1` on failure.
+
+###### `AvailableDevices` Property
+
+~~~
+AvailableDevices  readable a(ssa{sv})
+~~~
+
+Array in which each element has a device name, description, and extra data.
+
+Example: `1 "/dev/sda" "/dev/sda, 8.00 GiB, USB" 0`
+
+Extra data is not used yet.
+
+###### `VolumeTemplates` Property
+
+~~~
+VolumeTemplates   readable aa{sv}
+~~~
+
+Templates that can be used as starting point for the volumes of a new proposal. See `Volumes` property from `org.opensuse.DInstaller.Storage1.Proposal` interface.
+
+###### `Result` Property
+
+~~~
+Result            readable  o
+~~~
+
+Path of the object with the proposal result, typically `/org/opensuse/DInstaller/Storage1/Proposal`. If there is no proposal exported yet, then the path points to root `/`.
+
+#### `org.opensuse.DInstaller.Storage1.Proposal` Interface
+
+Information about the calculated storage proposal.
+
+##### Properties
+
+~~~
+CandidateDevices    readable as
+LVM                 readable b
+EncryptionPassword  readable s
+Volumes             readable aa{sv}
+Actions             readable aa{sv}
+~~~
+
+##### Details
+
+###### `Volumes` Property
+
+~~~
+Volumes             readable aa{sv}
+~~~
+
+List of volumes used for calculating the proposal.
+
+Each volume is defined by the following properties:
+
+~~~
+DeviceType                s
+Optional                  b
+Encrypted                 b
+MountPoint                s
+FixedSizeLimits           b
+AdaptativeSizes           b
+MinSize                   x
+MaxSize                   x
+FsTypes                   as
+FsType                    s
+Snapshots                 b
+SnapshotsConfigurable     b
+SnapshotsAffectSizes      b
+VolumesWithFallbackSizes  as
+~~~
+
+Example:
+
+~~~
+1 14 DeviceType s "partition" Optional b false Encrypted b false MountPoint s / FixedSizeLimit b false AdaptiveSizes b false MinSize x 1024 MaxSize x 2048 FsTypes as 3 Btrfs XFS EXT4 FsType Btrfs Snapshots b true SnapshotsConfigurable b true SnapshotsAffectSizes b false VolumeWithFallbackSizes as 1 /home
+~~~
+
+###### `Actions` Property
+
+~~~
+Actions             readable aa{sv}
+~~~
+
+Actions to perform in the system to create the proposal. If the proposal failed, then the list of actions is empty.
+
+Each action is defined by the following properties:
+
+~~~
+Text    readable s
+Subvol  readable b
+Delete  readable b
+~~~
+
+Example:
+
+~~~
+2 3 Text s "Create partition /dev/vdb1" Subvol b false Delete b false 3 Text s "Delete Btrfs subvolume @/var" Subvol b true Delete b true
+~~~
+
+#### `org.opensuse.DInstaller.Storage1.ISCSI.Initiator` Interface
+
+Provides methods for configuring iSCSI initiator and for discovering nodes.
+
+##### Methods
+
+~~~
+Discover(in  s       address,
+         in  u       port,
+         in  a{sv}   options,
+         out u       result)
+Delete(in o  iscsi_node_path,
+       out u result)
+~~~
+
+##### Properties
+
+~~~
+IniciatorName readable,writable   s
+~~~
+
+##### Details
+
+###### `Discover` Method
+
+~~~
+Discover(in  s       address,
+         in  u       port,
+         in  a{sv}   options,
+         out u       result)
+~~~
+
+Performs nodes discovery. Discovered nodes are exported with the path `/org/opensuse/DInstaller/iscsi/node[0-9]+`.
+
+Arguments:
+
+* `in s address`: IP address of the iSCSI server.
+* `in u port`: Port of the iSCSI server.
+* `in a{sv} options`:
+  * `Username s`: Username for authentication by target.
+  * `Password s`: Password for authentication by target.
+  * `ReverseUsername s`: Username for authentication by initiator.
+  * `ReversePassword s`: Password for authentication by initiator.
+* `out u result`: `0` on success and `1` on failure.
+
+##### `Delete` Method
+
+~~~
+Delete(in o  iscsi_node_path,
+       out u result)
+~~~
+
+Deletes a discovered iSCSI node. The iSCSI node object is unexported. Note that connected nodes cannot be deleted.
+
+Arguments:
+
+* `in o iscsi_node_path`: Path of the iSCSI node to delete.
+* `out u result`: `0` on success and `1` on failure if the given node is not exported, `2` on failure because any other reason.
+
+#### `org.opensuse.DInstaller.Storage1.ISCSI.Node` Interface
+
+This interface is implemented by objects exported at `/org/opensuse/DInstaller/Storage1/iscsi_nodes/[0-9]+` path. It provides information about an iSCSI node and allows to perform login and logout.
+
+##### Methods
+
+~~~
+Login(in  a{sv}   options,
+      out u       result)
+Logout(out u result)
+~~~
+
+##### Properties
+
+~~~
+Target    readable s
+Address   readable s
+Port      readable u
+Interface readable s
+Startup   readable s
+~~~
+
+##### Details
+
+###### `Login` Method
+
+~~~
+Login(in  a{sv}   options,
+      out u       result)
+~~~
+
+Creates an iSCSI session. If the session is created, then a new iSCSI session object is exported with the path `/org/opensuse/DInstaller/Storage1/iscsi/session[0-9]+`.
+
+Arguments:
+
+* `in a{sv} options`:
+  * `Username s`: Username for authentication by target.
+  * `Password s`: Password for authentication by target.
+  * `ReverseUsername s`: Username for authentication by initiator.
+  * `ReversePassword s`: Password for authentication by initiator.
+  * `Startup s`: startup mode (`manual`, `onboot`, `automatic`).
+* `out u result`: `0` on success, `1` on failure if the given startup value is not valid, and `2` on failure because any other reason.
+
+###### `Logout` Method
+
+~~~
+Logout(out u result)
+~~~
+
+Closes an iSCSI session.
+
+Arguments:
+
+* `out u result`: `0` on success and `1` on failure.
 
 
 ## Users
