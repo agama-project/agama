@@ -54,9 +54,9 @@ module DInstaller
 
         # Performs actions for activating iSCSI
         def activate
-          return if @activated
-
           logger.info "Activating iSCSI"
+
+          @activated = true
 
           # Why we need to sleep every now and then? This was copied from yast2-iscsi-client.
           sl = 0.5
@@ -72,8 +72,6 @@ module DInstaller
           Yast::IscsiClientLib.getConfig
           Yast::IscsiClientLib.autoLogOn
           sleep(sl)
-
-          @activated = true
         end
 
         # Probes iSCSI
@@ -101,6 +99,8 @@ module DInstaller
         #
         # @return [Boolean] Whether the action successes
         def discover_send_targets(host, port, authentication)
+          ensure_activated
+
           probe_after do
             Yast::IscsiClientLib.discover(host, port, authentication, silent: true)
           end
@@ -125,6 +125,8 @@ module DInstaller
             return false
           end
 
+          ensure_activated
+
           probe_after do
             Yast::IscsiClientLib.currentRecord = record_from(node)
             Yast::IscsiClientLib.login_into_current(authentication, silent: true) &&
@@ -139,6 +141,8 @@ module DInstaller
         # @param node [Node]
         # @return [Boolean] Whether the action successes
         def logout(node)
+          ensure_activated
+
           probe_after do
             Yast::IscsiClientLib.currentRecord = record_from(node)
             # Yes, this is the correct method name for logging out
@@ -170,6 +174,18 @@ module DInstaller
 
         # @return [Logger]
         attr_reader :logger
+
+        # Calls activation if needed
+        def ensure_activated
+          activate unless activated?
+        end
+
+        # Whether activation has been already performed
+        #
+        # @return [Boolean]
+        def activated?
+          !!@activated
+        end
 
         # Creates a node from the record provided by YaST
         #

@@ -29,6 +29,10 @@ describe DInstaller::Storage::ISCSI::Manager do
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   before do
+    allow(Yast::IscsiClientLib).to receive(:getiBFT)
+    allow(Yast::IscsiClientLib).to receive(:checkInitiatorName)
+    allow(Yast::IscsiClientLib).to receive(:getConfig)
+    allow(Yast::IscsiClientLib).to receive(:autoLogOn)
     allow(Yast::IscsiClientLib).to receive(:readSessions)
     allow(Yast::IscsiClientLib).to receive(:getDiscovered).and_return(yast_nodes)
     allow(Yast::IscsiClientLib).to receive(:currentRecord=)
@@ -36,6 +40,7 @@ describe DInstaller::Storage::ISCSI::Manager do
     allow(Yast::IscsiClientLib).to receive(:iBFT?)
     allow(Yast::IscsiClientLib).to receive(:find_session)
     allow(Yast::IscsiClientLib).to receive(:getStartupStatus)
+    allow(subject).to receive(:sleep)
   end
 
   let(:yast_nodes) { [] }
@@ -80,6 +85,46 @@ describe DInstaller::Storage::ISCSI::Manager do
     end
   end
 
+  describe "#discover_send_targets" do
+    before do
+      allow(Yast::IscsiClientLib).to receive(:discover)
+    end
+
+    let(:auth) { Y2IscsiClient::Authentication.new }
+
+    it "performs iSCSI discovery" do
+      expect(Yast::IscsiClientLib).to receive(:discover)
+
+      subject.discover_send_targets("192.168.100.101", 3264, auth)
+    end
+
+    it "probes iSCSI" do
+      expect(subject).to receive(:probe)
+
+      subject.discover_send_targets("192.168.100.101", 3264, auth)
+    end
+
+    context "if iSCSI activation is not performed yet" do
+      it "activates iSCSI" do
+        expect(subject).to receive(:activate)
+
+        subject.discover_send_targets("192.168.100.101", 3264, auth)
+      end
+    end
+
+    context "if iSCSI activation was already performed" do
+      before do
+        subject.activate
+      end
+
+      it "does not activate iSCSI again" do
+        expect(subject).to_not receive(:activate)
+
+        subject.discover_send_targets("192.168.100.101", 3264, auth)
+      end
+    end
+  end
+
   describe "#login" do
     let(:node) { DInstaller::Storage::ISCSI::Node.new }
 
@@ -96,6 +141,12 @@ describe DInstaller::Storage::ISCSI::Manager do
 
       it "does not try to login" do
         expect(Yast::IscsiClientLib).to_not receive(:login_into_current)
+
+        subject.login(node, auth, startup: startup)
+      end
+
+      it "does not activate iSCSI" do
+        expect(subject).to_not receive(:activate)
 
         subject.login(node, auth, startup: startup)
       end
@@ -129,6 +180,26 @@ describe DInstaller::Storage::ISCSI::Manager do
         expect(Yast::IscsiClientLib).to receive(:login_into_current)
 
         subject.login(node, auth, startup: startup)
+      end
+
+      context "if iSCSI activation is not performed yet" do
+        it "activates iSCSI" do
+          expect(subject).to receive(:activate)
+
+          subject.login(node, auth, startup: startup)
+        end
+      end
+
+      context "if iSCSI activation was already performed" do
+        before do
+          subject.activate
+        end
+
+        it "does not activate iSCSI again" do
+          expect(subject).to_not receive(:activate)
+
+          subject.login(node, auth, startup: startup)
+        end
       end
 
       context "and the session is created" do
@@ -166,6 +237,66 @@ describe DInstaller::Storage::ISCSI::Manager do
           end
         end
       end
+    end
+  end
+
+  describe "#logout" do
+    before do
+      allow(Yast::IscsiClientLib).to receive(:deleteRecord)
+    end
+
+    let(:node) { DInstaller::Storage::ISCSI::Node.new }
+
+    it "closes the iSCSI session" do
+      expect(Yast::IscsiClientLib).to receive(:deleteRecord)
+
+      subject.logout(node)
+    end
+
+    it "probes iSCSI" do
+      expect(subject).to receive(:probe)
+
+      subject.logout(node)
+    end
+
+    context "if iSCSI activation is not performed yet" do
+      it "activates iSCSI" do
+        expect(subject).to receive(:activate)
+
+        subject.logout(node)
+      end
+    end
+
+    context "if iSCSI activation was already performed" do
+      before do
+        subject.activate
+      end
+
+      it "does not activate iSCSI again" do
+        expect(subject).to_not receive(:activate)
+
+        subject.logout(node)
+      end
+    end
+  end
+
+  describe "#delete" do
+    before do
+      allow(Yast::IscsiClientLib).to receive(:removeRecord)
+    end
+
+    let(:node) { DInstaller::Storage::ISCSI::Node.new }
+
+    it "deletes the iSCSI node" do
+      expect(Yast::IscsiClientLib).to receive(:removeRecord)
+
+      subject.delete(node)
+    end
+
+    it "probes iSCSI" do
+      expect(subject).to receive(:probe)
+
+      subject.delete(node)
     end
   end
 end
