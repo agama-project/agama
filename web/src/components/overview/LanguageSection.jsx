@@ -32,65 +32,44 @@ const initialState = {
   errors: []
 };
 
-const reducer = (state, action) => {
-  const { type: actionType, payload } = action;
-
-  switch (actionType) {
-    case "UPDATE_STATUS": {
-      return { ...initialState, ...payload };
-    }
-
-    default: {
-      return state;
-    }
-  }
-};
-
 export default function LanguageSection({ showErrors }) {
-  const { language: languageClient } = useInstallerClient();
+  const [state, setState] = useState(initialState);
+  const { language: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const updateStatus = ({ ...payload }) => {
-    dispatch({ type: "UPDATE_STATUS", payload });
+  const updateState = ({ ...payload }) => {
+    setState(previousState => ({ ...previousState, ...payload }));
   };
 
   useEffect(() => {
     const loadLanguages = async () => {
-      const languages = await cancellablePromise(languageClient.getLanguages());
-      const [current] = await cancellablePromise(languageClient.getSelectedLanguages());
-      updateStatus({ languages, language: current, busy: false });
+      const languages = await cancellablePromise(client.getLanguages());
+      const [language] = await cancellablePromise(client.getSelectedLanguages());
+      updateState({ languages, language, busy: false });
     };
 
     // TODO: use these errors?
     loadLanguages().catch(console.error);
 
-    return languageClient.onLanguageChange(language => {
-      updateStatus({ language });
+    return client.onLanguageChange(language => {
+      updateState({ language });
     });
-  }, [languageClient, cancellablePromise]);
+  }, [client, cancellablePromise]);
 
   const errors = showErrors ? state.errors : [];
 
   const SectionContent = () => {
-    if (state.busy) {
-      // TODO: use skeletons instead?
-      return "Retrieving language information...";
-    }
+    const { busy, languages, language } = state;
 
-    // FIXME: call it `current` instead of `language`?
-    const { languages, language } = state;
+    if (busy) return <SectionSkeleton />;
 
-    const summary = [];
-
-    if (language) {
-      const selectedLanguage = languages.find(lang => lang.id === language);
-      summary.push(`${selectedLanguage.name} will be used as system language`);
-    } else {
-      summary.push("No language selected yet.");
-    }
-
-    return summary.map((sentence, idx) => <Text key={idx}>{sentence}</Text>);
+    const selected = languages.find(lang => lang.id === language);
+    console.log("selected", selected);
+    return (
+      <Text>
+        The system will use <Label isCompact>{`${selected.name} (${selected.id})`}</Label> as its default language.
+      </Text>
+    );
   };
 
   return (

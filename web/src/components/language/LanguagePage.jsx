@@ -16,118 +16,73 @@
  * with this program; if not, contact SUSE LLC.
  *
  * To contact SUSE LLC about this file by physical or electronic mail, you may
- * find current contact information at www.suse.com.
+ * find language contact information at www.suse.com.
  */
 
-import React, { useReducer, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 
 import {
   Form,
+  FormGroup,
   FormSelect,
   FormSelectOption
 } from "@patternfly/react-core";
 
-import { Page, Section } from "~/components/core";
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "LOAD": {
-      return { ...state, ...action.payload };
-    }
-    case "ACCEPT": {
-      return { ...state, isFormOpen: false, current: state.formCurrent };
-    }
-
-    case "CANCEL": {
-      return { ...state, isFormOpen: false };
-    }
-
-    case "CHANGE": {
-      return { ...state, formCurrent: action.payload };
-    }
-
-    case "MODIFIED": {
-      return { ...state, current: action.payload };
-    }
-
-    case "OPEN": {
-      return { ...state, isFormOpen: true, formCurrent: state.current };
-    }
-
-    default: {
-      return state;
-    }
-  }
-};
+import { Page } from "~/components/core";
 
 const initialState = {
   languages: [],
-  current: null,
-  formCurrent: null,
-  isFormOpen: false
+  language: null
 };
 
 export default function LanguageSelector() {
-  const client = useInstallerClient();
+  const { language: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { languages } = state;
+  const [state, setState] = useState(initialState);
+  const { languages, language } = state;
+
+  const updateState = ({ ...payload }) => {
+    setState(previousState => ({ ...previousState, ...payload }));
+  };
 
   useEffect(() => {
     const loadLanguages = async () => {
-      const languages = await cancellablePromise(client.language.getLanguages());
-      const [current] = await cancellablePromise(client.language.getSelectedLanguages());
-      dispatch({
-        type: "LOAD",
-        payload: { languages, current }
-      });
+      const languages = await cancellablePromise(client.getLanguages());
+      const [language] = await cancellablePromise(client.getSelectedLanguages());
+      updateState({ languages, language });
     };
 
     loadLanguages().catch(console.error);
-  }, [client.language, cancellablePromise]);
+  }, [client, cancellablePromise]);
 
-  useEffect(() => {
-    return client.language.onLanguageChange(language => {
-      dispatch({
-        type: "MODIFIED",
-        payload: language
-      });
-    });
-  }, [client.language]);
+  const accept = () => client.setLanguages([language]);
 
-  const accept = async (e) => {
-    e.preventDefault();
-    // TODO: handle errors
-    await client.language.setLanguages([state.formCurrent]);
-    dispatch({ type: "ACCEPT" });
-  };
-
-  const buildSelector = formCurrent => {
+  const LanguageField = ({ selected }) => {
     const selectorOptions = languages.map(lang => (
       <FormSelectOption key={lang.id} value={lang.id} label={lang.name} />
     ));
 
     return (
-      <FormSelect
-        id="language"
-        aria-label="language"
-        value={formCurrent}
-        onChange={v => dispatch({ type: "CHANGE", payload: v })}
-      >
-        {selectorOptions}
-      </FormSelect>
+      <FormGroup fieldId="language-language" label="Language">
+        <FormSelect
+          id="language"
+          aria-label="language"
+          value={selected}
+          onChange={v => updateState({ language: v })}
+        >
+          {selectorOptions}
+        </FormSelect>
+      </FormGroup>
     );
   };
 
   return (
-    <Page title="Language settings" icon="translate">
-      <Section key="language-selector" title="Language">
-        <Form id="language-selector" onSubmit={accept}>
-          {buildSelector(state.formCurrent)}
-        </Form>
-      </Section>
+    <Page title="Language settings" icon="translate" actionCallback={accept}>
+      <Form id="language-selector">
+        <LanguageField selected={language} />
+      </Form>
     </Page>
   );
 }
