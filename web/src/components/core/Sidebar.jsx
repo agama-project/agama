@@ -39,6 +39,8 @@ export default function Sidebar() {
         <button
           onClick={open}
           aria-label="Open D-Installer options"
+          aria-controls="navigation-and-options"
+          aria-expanded={isOpen}
         >
           <Icon name="menu" onClick={open} />
         </button>
@@ -47,6 +49,7 @@ export default function Sidebar() {
       <nav
         aria-label="D-Installer options"
         data-state={isOpen ? "visible" : "hidden"}
+        id="navigation-and-options"
         className="wrapper sidebar"
       >
         <header className="split justify-between">
