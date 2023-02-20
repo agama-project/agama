@@ -30,20 +30,18 @@ import { TargetIpsPopup } from "~/components/network";
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const open = (e) => {
-    // Avoid the link navigating to the initial route
-    e.preventDefault();
-
-    setIsOpen(true);
-  };
+  const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
 
   return (
     <>
       <PageActions>
-        <a href="#" onClick={open} aria-label="Open D-Installer options">
+        <button
+          onClick={open}
+          aria-label="Open D-Installer options"
+        >
           <Icon name="menu" onClick={open} />
-        </a>
+        </button>
       </PageActions>
 
       <nav
@@ -54,9 +52,12 @@ export default function Sidebar() {
         <header className="split justify-between">
           <h1>Options</h1>
 
-          <a href="#" onClick={close} aria-label="Close D-Installer options">
+          <button
+            onClick={close}
+            aria-label="Close D-Installer options"
+          >
             <Icon name="menu_open" data-variant="flip-X" onClick={close} />
-          </a>
+          </button>
         </header>
 
         <div className="flex-stack">
