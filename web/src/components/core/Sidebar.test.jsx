@@ -39,7 +39,7 @@ it("renders the sidebar initially hidden", async () => {
 it("renders a link for displaying the sidebar", async () => {
   const { user } = plainRender(<Sidebar />);
 
-  const link = await screen.findByLabelText(/Open/i);
+  const link = await screen.findByLabelText(/Show/i);
   const nav = await screen.findByRole("navigation", { name: /options/i });
 
   expect(nav).toHaveAttribute("data-state", "hidden");
@@ -50,8 +50,8 @@ it("renders a link for displaying the sidebar", async () => {
 it("renders a link for hidding the sidebar", async () => {
   const { user } = plainRender(<Sidebar />);
 
-  const openLink = await screen.findByLabelText(/Open/i);
-  const closeLink = await screen.findByLabelText(/Close/i);
+  const openLink = await screen.findByLabelText(/Show/i);
+  const closeLink = await screen.findByLabelText(/Hide/i);
 
   const nav = await screen.findByRole("navigation", { name: /options/i });
 

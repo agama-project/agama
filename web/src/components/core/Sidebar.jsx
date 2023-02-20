@@ -44,7 +44,7 @@ export default function Sidebar() {
         <button
           onClick={open}
           className="plain-control"
-          aria-label="Open D-Installer options"
+          aria-label="Show navigation and other options"
           aria-controls="navigation-and-options"
           aria-expanded={isOpen}
         >
@@ -53,10 +53,10 @@ export default function Sidebar() {
       </PageActions>
 
       <nav
-        aria-label="D-Installer options"
-        data-state={isOpen ? "visible" : "hidden"}
         id="navigation-and-options"
         className="wrapper sidebar"
+        aria-label="Navigation and other options"
+        data-state={isOpen ? "visible" : "hidden"}
       >
         <header className="split justify-between">
           <h1>Options</h1>
@@ -65,7 +65,7 @@ export default function Sidebar() {
             onClick={close}
             ref={closeButtonRef}
             className="plain-control"
-            aria-label="Close D-Installer options"
+            aria-label="Hide navigation and other options"
           >
             <Icon name="menu_open" data-variant="flip-X" onClick={close} />
           </button>
