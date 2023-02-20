@@ -61,6 +61,17 @@ it("renders a link for hidding the sidebar", async () => {
   expect(nav).toHaveAttribute("data-state", "hidden");
 });
 
+it("moves the focus to the close action after opening it", async () => {
+  const { user } = plainRender(<Sidebar />);
+
+  const openLink = await screen.findByLabelText(/Show/i);
+  const closeLink = await screen.findByLabelText(/Hide/i);
+
+  expect(closeLink).not.toHaveFocus();
+  await user.click(openLink);
+  expect(closeLink).toHaveFocus();
+});
+
 describe("Sidebar content", () => {
   it("contains the component for changing the selected product", async () => {
     plainRender(<Sidebar />);

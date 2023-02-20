@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Icon, PageActions } from "~/components/layout";
 import { About, ChangeProductButton, LogsButton, ShowLogButton, ShowTerminalButton } from "~/components/core";
 import { TargetIpsPopup } from "~/components/network";
@@ -29,9 +29,14 @@ import { TargetIpsPopup } from "~/components/network";
  */
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const closeButtonRef = useRef(null);
 
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
+
+  useEffect(() => {
+    if (isOpen) closeButtonRef.current.focus();
+  }, [isOpen]);
 
   return (
     <>
@@ -57,6 +62,7 @@ export default function Sidebar() {
 
           <button
             onClick={close}
+            ref={closeButtonRef}
             aria-label="Close D-Installer options"
           >
             <Icon name="menu_open" data-variant="flip-X" onClick={close} />
