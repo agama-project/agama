@@ -43,6 +43,7 @@ export default function Sidebar() {
       <PageActions>
         <button
           onClick={open}
+          className="plain-control"
           aria-label="Open D-Installer options"
           aria-controls="navigation-and-options"
           aria-expanded={isOpen}
@@ -63,6 +64,7 @@ export default function Sidebar() {
           <button
             onClick={close}
             ref={closeButtonRef}
+            className="plain-control"
             aria-label="Close D-Installer options"
           >
             <Icon name="menu_open" data-variant="flip-X" onClick={close} />
