@@ -280,7 +280,7 @@ Optional                  b
 Encrypted                 b
 MountPoint                s
 FixedSizeLimits           b
-AdaptativeSizes           b
+AdaptiveSizes             b
 MinSize                   x
 MaxSize                   x
 FsTypes                   as
@@ -288,7 +288,7 @@ FsType                    s
 Snapshots                 b
 SnapshotsConfigurable     b
 SnapshotsAffectSizes      b
-VolumesWithFallbackSizes  as
+SizeRelevantVolumes       as
 ~~~
 
 Example:
@@ -393,11 +393,13 @@ Logout(out u result)
 ##### Properties
 
 ~~~
-Target    readable s
-Address   readable s
-Port      readable u
-Interface readable s
-Startup   readable s
+Target    readable          s
+Address   readable          s
+Port      readable          u
+Interface readable          s
+IBFT      readable          b
+Connected readable          b
+Startup   readable,writable s
 ~~~
 
 ##### Details

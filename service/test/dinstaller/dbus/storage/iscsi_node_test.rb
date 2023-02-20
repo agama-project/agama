@@ -39,6 +39,28 @@ describe DInstaller::DBus::Storage::ISCSINode do
     allow(subject).to receive(:dbus_properties_changed)
   end
 
+  describe "#startup=" do
+    context "when the given startup status is not valid" do
+      let(:startup) { "invalid" }
+
+      it "raises a D-Bus error" do
+        expect(iscsi_manager).to_not receive(:update)
+
+        expect { subject.startup = startup }.to raise_error(::DBus::Error, /Invalid startup/)
+      end
+    end
+
+    context "when the given startup status is valid" do
+      let(:startup) { "automatic" }
+
+      it "updates the iSCSI node" do
+        expect(iscsi_manager).to receive(:update).with(iscsi_node, startup: startup)
+
+        subject.startup = startup
+      end
+    end
+  end
+
   describe "#iscsi_node=" do
     it "sets the iSCSI node value" do
       node = DInstaller::Storage::ISCSI::Node.new

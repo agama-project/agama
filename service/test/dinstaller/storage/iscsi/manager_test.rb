@@ -136,105 +136,75 @@ describe DInstaller::Storage::ISCSI::Manager do
       allow(Yast::IscsiClientLib).to receive(:setStartupStatus)
     end
 
-    context "if the given startup status is not valid" do
-      let(:startup) { "invalid" }
+    let(:startup) { "automatic" }
 
-      it "does not try to login" do
-        expect(Yast::IscsiClientLib).to_not receive(:login_into_current)
+    before do
+      allow(Yast::IscsiClientLib).to receive(:login_into_current).and_return(login_success)
+      allow(Yast::IscsiClientLib).to receive(:setStartupStatus).and_return(startup_success)
+    end
+
+    let(:login_success) { nil }
+
+    let(:startup_success) { nil }
+
+    it "tries to login" do
+      expect(Yast::IscsiClientLib).to receive(:login_into_current)
+
+      subject.login(node, auth, startup: startup)
+    end
+
+    context "if iSCSI activation is not performed yet" do
+      it "activates iSCSI" do
+        expect(subject).to receive(:activate)
 
         subject.login(node, auth, startup: startup)
       end
+    end
 
-      it "does not activate iSCSI" do
+    context "if iSCSI activation was already performed" do
+      before do
+        subject.activate
+      end
+
+      it "does not activate iSCSI again" do
         expect(subject).to_not receive(:activate)
 
         subject.login(node, auth, startup: startup)
       end
-
-      it "does not probe iSCSI" do
-        expect(subject).to_not receive(:probe)
-
-        subject.login(node, auth, startup: startup)
-      end
-
-      it "returns false" do
-        result = subject.login(node, auth, startup: startup)
-
-        expect(result).to eq(false)
-      end
     end
 
-    context "if the given startup status is valid" do
-      let(:startup) { "automatic" }
+    context "and the session is created" do
+      let(:login_success) { true }
 
-      before do
-        allow(Yast::IscsiClientLib).to receive(:login_into_current).and_return(login_success)
-        allow(Yast::IscsiClientLib).to receive(:setStartupStatus).and_return(startup_success)
-      end
+      context "and the startup status is correctly set" do
+        let(:startup_success) { true }
 
-      let(:login_success) { nil }
-
-      let(:startup_success) { nil }
-
-      it "tries to login" do
-        expect(Yast::IscsiClientLib).to receive(:login_into_current)
-
-        subject.login(node, auth, startup: startup)
-      end
-
-      context "if iSCSI activation is not performed yet" do
-        it "activates iSCSI" do
-          expect(subject).to receive(:activate)
+        it "probes iSCSI" do
+          expect(subject).to receive(:probe)
 
           subject.login(node, auth, startup: startup)
         end
+
+        it "returns true" do
+          result = subject.login(node, auth, startup: startup)
+
+          expect(result).to eq(true)
+        end
       end
 
-      context "if iSCSI activation was already performed" do
-        before do
-          subject.activate
-        end
+      context "and the startup status cannot be set" do
+        let(:startup_success) { false }
 
-        it "does not activate iSCSI again" do
-          expect(subject).to_not receive(:activate)
+        it "probes iSCSI" do
+          expect(subject).to receive(:probe)
 
           subject.login(node, auth, startup: startup)
         end
-      end
 
-      context "and the session is created" do
-        let(:login_success) { true }
+        it "returns false" do
+          result = subject.login(node, auth, startup: startup)
 
-        context "and the startup status is correctly set" do
-          let(:startup_success) { true }
-
-          it "probes iSCSI" do
-            expect(subject).to receive(:probe)
-
-            subject.login(node, auth, startup: startup)
-          end
-
-          it "returns true" do
-            result = subject.login(node, auth, startup: startup)
-
-            expect(result).to eq(true)
-          end
-        end
-
-        context "and the startup status cannot be set" do
-          let(:startup_success) { false }
-
-          it "probes iSCSI" do
-            expect(subject).to receive(:probe)
-
-            subject.login(node, auth, startup: startup)
-          end
-
-          it "returns false" do
-            result = subject.login(node, auth, startup: startup)
-
-            expect(result).to eq(false)
-          end
+          expect(result).to eq(false)
         end
       end
     end
@@ -297,6 +267,26 @@ describe DInstaller::Storage::ISCSI::Manager do
       expect(subject).to receive(:probe)
 
       subject.delete(node)
+    end
+  end
+
+  describe "#update" do
+    before do
+      allow(Yast::IscsiClientLib).to receive(:setStartupStatus)
+    end
+
+    let(:node) { DInstaller::Storage::ISCSI::Node.new }
+
+    it "updates the iSCSI node" do
+      expect(Yast::IscsiClientLib).to receive(:setStartupStatus).with("manual")
+
+      subject.update(node, startup: "manual")
+    end
+
+    it "probes iSCSI" do
+      expect(subject).to receive(:probe)
+
+      subject.update(node, startup: "manual")
     end
   end
 end

@@ -49,20 +49,6 @@ module DInstaller
           @iscsi_node = iscsi_node
         end
 
-        ISCSI_NODE_INTERFACE = "org.opensuse.DInstaller.Storage1.ISCSI.Node"
-        private_constant :ISCSI_NODE_INTERFACE
-
-        dbus_interface ISCSI_NODE_INTERFACE do
-          dbus_reader(:target, "s")
-          dbus_reader(:address, "s")
-          dbus_reader(:port, "u")
-          dbus_reader(:interface, "s")
-          dbus_reader(:connected, "b")
-          dbus_reader(:startup, "s")
-          dbus_method(:Login, "in options:a{sv}, out result:u") { |o| login(o) }
-          dbus_method(:Logout, "out result:u") { logout }
-        end
-
         # Name of the iSCSI target
         #
         # @return [String]
@@ -91,6 +77,13 @@ module DInstaller
           iscsi_node.interface || ""
         end
 
+        # Whether the iSCSI node was initiated by iBTF
+        #
+        # @return [Boolean]
+        def ibft
+          iscsi_node.ibft?
+        end
+
         # Whether the node is connected
         #
         # @return [Boolean]
@@ -103,6 +96,17 @@ module DInstaller
         # @return [String] Empty if the node is not connected
         def startup
           iscsi_node.startup || ""
+        end
+
+        # Sets a new value for the startup status
+        #
+        # @raise [::DBus::Error] If the given value is not valid.
+        #
+        # @param value [String]
+        def startup=(value)
+          raise ::DBus::Error, "Invalid startup value: #{value}" unless valid_startup?(value)
+
+          iscsi_manager.update(iscsi_node, startup: value)
         end
 
         # Sets the associated iSCSI node
@@ -132,7 +136,7 @@ module DInstaller
           auth = iscsi_auth(options)
           startup = options["Startup"]
 
-          if startup && !DInstaller::Storage::ISCSI::Manager::STARTUP_OPTIONS.include?(startup)
+          if startup && !valid_startup?(startup)
             logger.info("iSCSI login error: startup value #{startup} is not valid")
             return 1
           end
@@ -150,6 +154,31 @@ module DInstaller
         def logout
           success = iscsi_manager.logout(iscsi_node)
           success ? 0 : 1
+        end
+
+        ISCSI_NODE_INTERFACE = "org.opensuse.DInstaller.Storage1.ISCSI.Node"
+        private_constant :ISCSI_NODE_INTERFACE
+
+        dbus_interface ISCSI_NODE_INTERFACE do
+          dbus_reader(:target, "s")
+          dbus_reader(:address, "s")
+          dbus_reader(:port, "u")
+          dbus_reader(:interface, "s")
+          dbus_reader(:ibft, "b", dbus_name: "IBFT")
+          dbus_reader(:connected, "b")
+          dbus_accessor(:startup, "s")
+          dbus_method(:Login, "in options:a{sv}, out result:u") { |o| login(o) }
+          dbus_method(:Logout, "out result:u") { logout }
+        end
+
+      private
+
+        # Whether the given value is a valid startup status
+        #
+        # @param value [String]
+        # @return [Boolean]
+        def valid_startup?(value)
+          DInstaller::Storage::ISCSI::Manager::STARTUP_OPTIONS.include?(value)
         end
       end
     end
