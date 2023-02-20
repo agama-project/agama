@@ -227,7 +227,7 @@ jobs:
         distro: [ "tumbleweed" ]
 
     container:
-      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+      image: registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/dinstaller-testing:latest
       # this option should avoid crashing the Chromium browser...
       options: --ipc=host
 
