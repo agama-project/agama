@@ -1,6 +1,7 @@
 ---
 :sourceurl: "%{mod_full_name}.gem"
 :preamble: |-
+  %global rb_build_versions %{rb_default_ruby}
   BuildRequires:  dbus-1-common
   Requires:       dbus-1-common
   Requires:       snapper
