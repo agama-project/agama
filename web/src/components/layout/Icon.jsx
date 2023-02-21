@@ -116,6 +116,6 @@ export default function Icon({ name, size = 32, ...otherProps }) {
   const IconComponent = icons[name];
 
   return (IconComponent)
-    ? <IconComponent className={`icon-size-${size}`} {...otherProps} />
-    : <em>`icon ${name} not found!`</em>;
+    ? <IconComponent className={`icon-size-${size}`} aria-hidden="true" {...otherProps} />
+    : <em>icon {name} not found!</em>;
 }
