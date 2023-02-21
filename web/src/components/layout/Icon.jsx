@@ -108,14 +108,16 @@ const icons = {
  *
  * @param {object} props - component props
  * @param {string} props.name - desired icon
+ * @param {string} [props.className=""] - CSS classes
  * @param {string|number} [props.size=32] - the icon width and height
  * @param {object} [props.otherProps] other props sent to SVG icon
  *
  */
-export default function Icon({ name, size = 32, ...otherProps }) {
+export default function Icon({ name, className = "", size = 32, ...otherProps }) {
   const IconComponent = icons[name];
+  const cssClassName = `${className} icon-size-${size}`.trim();
 
   return (IconComponent)
-    ? <IconComponent className={`icon-size-${size}`} aria-hidden="true" {...otherProps} />
+    ? <IconComponent className={cssClassName} aria-hidden="true" {...otherProps} />
     : <em>icon {name} not found!</em>;
 }
