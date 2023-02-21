@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Feb 21 00:50:48 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Set icons as aria-hidden (gh#yast/d-installer#437).
+
+-------------------------------------------------------------------
 Mon Feb 20 22:52:48 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Sidebar improvements (gh#yast/d-installer#436)
