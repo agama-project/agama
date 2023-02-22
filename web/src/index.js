@@ -39,6 +39,7 @@ import { ProductSelectionPage } from "~/components/software";
 import { ProposalPage as StoragePage } from "~/components/storage";
 import { UsersPage } from "~/components/users";
 import { L10nPage } from "~/components/l10n";
+import { NetworkPage } from "~/components/network";
 
 ReactDOM.render(
   <StrictMode>
@@ -52,6 +53,7 @@ ReactDOM.render(
                 <Route path="/overview" element={<Overview />} />
                 <Route path="/l10n" element={<L10nPage />} />
                 <Route path="/storage" element={<StoragePage />} />
+                <Route path="/network" element={<NetworkPage />} />
                 <Route path="/users" element={<UsersPage />} />
               </Route>
               <Route path="products" element={<ProductSelectionPage />} />

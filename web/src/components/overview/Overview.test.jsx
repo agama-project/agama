@@ -52,7 +52,7 @@ jest.mock('react-router-dom', () => ({
 jest.mock("~/components/layout/Layout", () => mockLayout());
 jest.mock("~/components/overview/L10nSection", () => mockComponent("Localization Section"));
 jest.mock("~/components/overview/StorageSection", () => mockComponent("Storage Section"));
-jest.mock("~/components/network/Network", () => mockComponent("Network Configuration"));
+jest.mock("~/components/overview/NetworkSection", () => mockComponent("Network Section"));
 jest.mock("~/components/overview/UsersSection", () => mockComponent("Users Section"));
 jest.mock("~/components/overview/SoftwareSection", () => mockComponent("Software Section"));
 jest.mock("~/components/core/InstallButton", () => mockComponent("Install Button"));
@@ -63,7 +63,7 @@ it("renders the Overview and the Install button", async () => {
   expect(title).toBeInTheDocument();
 
   await screen.findByText("Localization Section");
-  await screen.findByText("Network Configuration");
+  await screen.findByText("Network Section");
   await screen.findByText("Storage Section");
   await screen.findByText("Users Section");
   await screen.findByText("Software Section");

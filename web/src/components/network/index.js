@@ -20,8 +20,10 @@
  */
 
 export { default as Network } from "./Network";
+export { default as NetworkPage } from "./NetworkPage";
 export { default as AddressesDataList } from "./AddressesDataList";
 export { default as ConnectionsDataList } from "./ConnectionsDataList";
+export { default as ConnectionsTable } from "./ConnectionsTable";
 export { default as DnsDataList } from "./DnsDataList";
 export { default as IpAddressInput } from "./IpAddressInput";
 export { default as IpPrefixInput } from "./IpPrefixInput";

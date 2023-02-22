@@ -24,9 +24,14 @@ import { useSoftware } from "~/context/software";
 import { Navigate } from "react-router-dom";
 
 import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
-import { Section, InstallButton } from "~/components/core";
-import { L10nSection, SoftwareSection, StorageSection, UsersSection } from "~/components/overview";
-import { Network } from "~/components/network";
+import { InstallButton } from "~/components/core";
+import {
+  L10nSection,
+  NetworkSection,
+  SoftwareSection,
+  StorageSection,
+  UsersSection
+} from "~/components/overview";
 
 function Overview() {
   const { selectedProduct } = useSoftware();
@@ -44,9 +49,7 @@ function Overview() {
         <InstallButton onClick={() => setShowErrors(true)} />
       </MainActions>
       <L10nSection />
-      <Section key="network" title="Network" iconName="settings_ethernet">
-        <Network />
-      </Section>
+      <NetworkSection key="network" />
       <StorageSection key="storage" showErrors />
       <SoftwareSection key="software" showErrors />
       <UsersSection key="users" showErrors={showErrors} />
