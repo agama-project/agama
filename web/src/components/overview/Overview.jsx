@@ -23,8 +23,7 @@ import React, { useState } from "react";
 import { useSoftware } from "~/context/software";
 import { Navigate } from "react-router-dom";
 
-import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
-import { InstallButton } from "~/components/core";
+import { Page, InstallButton } from "~/components/core";
 import {
   L10nSection,
   NetworkSection,
@@ -42,18 +41,17 @@ function Overview() {
   }
 
   return (
-    <>
-      <Title>{selectedProduct && selectedProduct.name}</Title>
-      <PageIcon><Icon name="inventory_2" /></PageIcon>
-      <MainActions>
-        <InstallButton onClick={() => setShowErrors(true)} />
-      </MainActions>
+    <Page
+      title={selectedProduct?.name}
+      icon="inventory_2"
+      action={<InstallButton onClick={() => setShowErrors(true)} />}
+    >
       <L10nSection />
       <NetworkSection key="network" />
       <StorageSection key="storage" showErrors />
       <SoftwareSection key="software" showErrors />
       <UsersSection key="users" showErrors={showErrors} />
-    </>
+    </Page>
   );
 }
 

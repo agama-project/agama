@@ -38,10 +38,30 @@ import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
  *     <UserSectionContent />
  *   </Page>
  *
+ * @example <caption>Using custom action label and callback</caption>
+ *   <Page
+ *     title="Users settings"
+ *     icon="manage_accounts"
+ *     actionLabel="Do it!"
+ *     actionCallback={() => console.log("Doing it...")}
+ *   >
+ *     <UserSectionContent />
+ *   </Page>
+ *
+ * @example <caption>Using a component for the primary action</caption>
+ *   <Page
+ *     title="Users settings"
+ *     icon="manage_accounts"
+ *     action={<Button onClick={() => console.log("Doing it...")}>Do it!</Button>}
+ *   >
+ *     <UserSectionContent />
+ *   </Page>
+*
  * @param {object} props
  * @param {string} props.icon - The icon for the page
  * @param {string} props.title - The title for the page
  * @param {string} [props.navigateTo="/"] - The path where the page will go after when user clicks on accept
+ * @param {JSX.Element} [props.action] - an element used as primary action. If present, actionLabel and actionCallback does not make effect
  * @param {string} [props.actionLabel="Accept"] - The label for the primary page action
  * @param {function} [props.actionCallback=noop] - A callback to be execute when triggering the primary action
  * @param {JSX.Element} [props.children] - the section content
@@ -50,6 +70,7 @@ export default function Page({
   icon,
   title,
   navigateTo = "/",
+  action,
   actionLabel = "Accept",
   actionCallback = noop,
   children
@@ -61,16 +82,23 @@ export default function Page({
     navigate(navigateTo);
   };
 
+  const Action = () => {
+    if (action) return action;
+
+    return (
+      <Button isLarge variant="primary" onClick={pageAction}>
+        {actionLabel}
+      </Button>
+    );
+  };
+
   return (
     <>
       <Title>{title}</Title>
       <PageIcon><Icon name={icon} /></PageIcon>
       <MainActions>
-        <Button isLarge variant="primary" onClick={pageAction}>
-          {actionLabel}
-        </Button>
+        <Action />
       </MainActions>
-
       {children}
     </>
   );
