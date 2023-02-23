@@ -226,11 +226,6 @@ jobs:
         # TW is needed because of the Cockpit packages
         distro: [ "tumbleweed" ]
 
-    container:
-      image: registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/dinstaller-testing:latest
-      # this option should avoid crashing the Chromium browser...
-      options: --ipc=host
-
     steps:
 
     # TODO: Reuse/share building the frontend and backend with the other steps
@@ -239,14 +234,17 @@ jobs:
     - name: Git Checkout
       uses: actions/checkout@v3
 
+    - name: start container
+      run:: podman run --detach --name dinstaller --ipc=host -v .:/checkout registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/dinstaller-testing:latest
+
     - name: Install packages
       # TODO: check which fonts are really needed
-      run:  zypper --gpg-auto-import-keys --non-interactive install --no-recommends gcc gcc-c++ make openssl-devel ruby-devel
+      run:  podman exec dinstaller zypper --gpg-auto-import-keys --non-interactive install --no-recommends gcc gcc-c++ make openssl-devel ruby-devel
             npm augeas-devel cockpit dbus-1 xorg-x11-server libgtk-3-0 NetworkManager git patch
             adobe-sourcesans3-fonts gnu-unifont-bitmap-fonts google-opensans-fonts
 
     - name: Install Ruby gems
-      run:  cd service && bundle config set --local path 'vendor/bundle' && bundle install && cd -
+      run:  podman exec dinstaller bash "cd /checkout/service && bundle config set --local path 'vendor/bundle' && bundle install && cd -""
 
     - name: Install the D-Installer D-Bus configuration
       run:  cp service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf
