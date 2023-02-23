@@ -244,7 +244,7 @@ jobs:
             adobe-sourcesans3-fonts gnu-unifont-bitmap-fonts google-opensans-fonts
 
     - name: Install Ruby gems
-      run:  podman exec dinstaller bash "cd /checkout/service && bundle config set --local path 'vendor/bundle' && bundle install && cd -""
+      run:  podman exec dinstaller bash "cd /checkout/service && bundle config set --local path 'vendor/bundle' && bundle install && cd -"
 
     - name: Install the D-Installer D-Bus configuration
       run:  cp service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf
