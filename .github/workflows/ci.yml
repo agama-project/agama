@@ -244,55 +244,58 @@ jobs:
             adobe-sourcesans3-fonts gnu-unifont-bitmap-fonts google-opensans-fonts
 
     - name: Install Ruby gems
-      run:  podman exec dinstaller bash -c "cd /checkout/service && bundle config set --local path 'vendor/bundle' && bundle install && cd -"
+      run:  podman exec dinstaller bash -c "cd /checkout/service && bundle config set --local path 'vendor/bundle' && bundle install"
 
     - name: Install the D-Installer D-Bus configuration
-      run:  cp service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf
+      run:  podman exec dinstaller bash -c "cp /checkout/service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf"
 
     - name: Set a testing D-Installer configuration
       # copy a simplified ALP config file, it skips the product selection at the beginning
-      run:  cp playwright/fixtures/d-installer.yaml service/etc/d-installer.yaml
+      run:  podman exec dinstaller bash -c "cp /checkout/playwright/fixtures/d-installer.yaml /checkout/service/etc/d-installer.yaml"
 
     - name: Start NetworkManager
       # We need to run it manually as systemd does not run in container
-      run:  /usr/sbin/NetworkManager --no-daemon &> /tmp/nm.log &
+      run:  podman exec dinstaller /usr/sbin/NetworkManager
 
     - name: Start the D-Bus service
-      run:  dbus-daemon --system --print-address
+      run:  podman exec dinstaller dbus-daemon --system --print-address
 
     - name: Start the D-Installer D-Bus services
       # TODO: here is a potential race condition, but as building the frontend
       # and installing Playwright takes quite long time it should never happen™
-      run:  cd service && (bundle exec bin/d-installer > service.log 2>&1 &) && cd -
+      run:  podman exec dinstaller bash -c "cd /checkout/service && (bundle exec bin/d-installer > service.log 2>&1 &)"
 
     - name: Build the frontend
-      run:  cd web && npm install && make && cd -
+      run:  podman exec dinstaller bash -c "cd /checkout/web && npm install && make"
 
     - name: Show the D-Bus services log
-      run:  cat service/service.log
+      run:  podman exec dinstaller cat /checkout/service/service.log
+
+    - name: show journal
+      run:  podman exec dinstaller journalctl -b
 
     - name: test network manager status
-      run:  nmcli general status || cat /tmp/nm.log
+      run:  podman exec dinstaller nmcli general status
 
     - name: Install the frontend
-      run:  ln -snfv `pwd`/web/dist /usr/share/cockpit/d-installer
+      run:  podman exec dinstaller bash -c "ln -snfv /checkout/web/dist /usr/share/cockpit/d-installer"
 
     - name: Start Cockpit service
-      run:  /usr/libexec/cockpit-ws --local-session=/usr/bin/cockpit-bridge &
+      run:  podman exec --detach dinstaller /usr/libexec/cockpit-ws --local-session=/usr/bin/cockpit-bridge
 
     - name: Install Playwright
-      run:  cd playwright && npm install && npx playwright --version && cd -
+      run:  podman exec dinstaller bash -c "cd /checkout/playwright && npm install && npx playwright --version"
 
     - name: Install Playwright browsers
       # TODO: it downloads Chromium, Firefox and Webkit from a special repository
       # it would be nice to use the system browsers
-      run:  cd playwright && npx playwright install && cd -
+      run:  podman exec dinstaller bash -c "cd /checkout/playwright && npx playwright install"
 
     - name: Run the D-Installer smoke test
-      run:  curl http://localhost:9090/cockpit/@localhost/d-installer/index.html
+      run:  podman exec dinstaller curl http://localhost:9090/cockpit/@localhost/d-installer/index.html
 
     - name: Run the Playwright tests
-      run:  cd playwright && npx playwright test --trace on && cd -
+      run:  podman exec dinstaller bash -c "cd /checkout/playwright && npx playwright test --trace on"
       env:
         # user authentication is not required when cockpit runs a local session
         SKIP_LOGIN: true
