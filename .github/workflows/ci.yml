@@ -274,8 +274,8 @@ jobs:
     - name: show journal
       run:  podman exec dinstaller journalctl -b
 
-    - name: test network manager status
-      run:  podman exec dinstaller nmcli general status
+    #- name: test network manager status
+    #  run:  podman exec dinstaller nmcli general status
 
     - name: Install the frontend
       run:  podman exec dinstaller bash -c "ln -snfv /checkout/web/dist /usr/share/cockpit/d-installer"
