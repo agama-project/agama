@@ -235,7 +235,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: start container
-      run:: podman run --detach --name dinstaller --ipc=host -v .:/checkout registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/dinstaller-testing:latest
+      run: podman run --detach --name dinstaller --ipc=host -v .:/checkout registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/dinstaller-testing:latest
 
     - name: Install packages
       # TODO: check which fonts are really needed
