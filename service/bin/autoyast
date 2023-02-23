@@ -1,0 +1,99 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Copyright (c) [2023] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
+require "yast"
+require "dinstaller/dbus/clients/software"
+require "dinstaller/dbus/clients/storage"
+require "dinstaller/cmdline_args"
+
+module DInstaller
+  # Sets up the AutoYaST
+  class AutoyastImporter
+    def initialize(profile_url)
+      @profile_url = profile_url
+    end
+
+    def import
+      import_yast
+      profile = find_profile
+      puts "Importing profile #{profile.inspect}"
+      import_profile(profile)
+    end
+
+  private
+
+    attr_reader :profile_url
+
+    def find_profile
+      Yast::AutoinstConfig.ParseCmdLine(profile_url)
+      Yast::ProfileLocation.Process
+      Yast::Profile.ReadXML(Yast::AutoinstConfig.xml_tmpfile)
+      Yast::Profile.current
+    end
+
+    # @param profile [ProfileHash]
+    def import_profile(profile)
+      import_software(profile["software"] || {})
+      import_partitioning(profile["partitioning"] || [])
+    end
+
+    # @param drives [Array<Hash>] Array of drives in the AutoYaST partitioning section
+    def import_partitioning(drives)
+      devices = drives.each_with_object([]) do |d, all|
+        next unless d["device"]
+
+        all << d["device"]
+      end
+
+      storage_client.calculate(devices)
+    end
+
+    # @param profile [Hash] Software section from the AutoYaST profile
+    def import_software(profile)
+      product = profile.fetch("products", []).first
+      return unless product
+
+      software_client.select_product(product)
+    end
+
+    def import_yast
+      Yast.import "AutoinstConfig"
+      Yast.import "ProfileLocation"
+      Yast.import "Profile"
+    end
+
+    # @return [DInstaller::DBus::Clients::Storage]
+    def storage_client
+      @storage_client ||= DBus::Clients::Storage.new
+    end
+
+    # @return [DInstaller::DBus::Clients::Software]
+    def software_client
+      @software_client ||= DBus::Clients::Software.new
+    end
+  end
+end
+
+url = ARGV[0]
+url ||= "file:/autoinst.xml"
+importer = DInstaller::AutoyastImporter.new(url)
+importer.import
