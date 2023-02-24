@@ -27,15 +27,9 @@ const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : deve
 // Cockpit target managed by the development server,
 // by default connect to a locally running Cockpit
 let cockpitTarget = process.env.COCKPIT_TARGET || "localhost";
-
-if (cockpitTarget) {
-  // add the default port if not specified
-  if (cockpitTarget.indexOf(":") === -1) {
-    cockpitTarget += ":9090";
-  }
-
-  cockpitTarget = "https://" + cockpitTarget;
-}
+// add the default port if not specified
+if (cockpitTarget.indexOf(":") === -1) cockpitTarget += ":9090";
+cockpitTarget = "https://" + cockpitTarget;
 
 // Obtain package name from package.json
 const packageJson = JSON.parse(fs.readFileSync('package.json'));
