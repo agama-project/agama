@@ -97,8 +97,6 @@ module.exports = {
   externals: { cockpit: "cockpit" },
   devServer: {
     hot: true,
-    // loopback only, disable external connections
-    host: "localhost",
     // forward all cockpit connections to a real Cockpit instance
     proxy: {
       "/cockpit": {
