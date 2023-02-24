@@ -12,6 +12,7 @@ const CockpitRsyncPlugin = require("./src/lib/cockpit-rsync-plugin");
 const StylelintPlugin = require('stylelint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const webpack = require('webpack');
 
 /* A standard nodejs and webpack pattern */
 const production = process.env.NODE_ENV === 'production';
@@ -23,8 +24,9 @@ const eslint = process.env.ESLINT !== '0';
 /* Default to disable csslint for faster production builds */
 const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : development;
 
-// Cockpit target managed by the development server
-let cockpitTarget = process.env.COCKPIT_TARGET;
+// Cockpit target managed by the development server,
+// by default connect to a locally running Cockpit
+let cockpitTarget = process.env.COCKPIT_TARGET || "localhost";
 
 if (cockpitTarget) {
   // add the default port if not specified
@@ -33,10 +35,6 @@ if (cockpitTarget) {
   }
 
   cockpitTarget = "https://" + cockpitTarget;
-}
-else {
-  // by default connect to a locally running Cockpit
-  cockpitTarget = "https://localhost:9090";
 }
 
 // Obtain package name from package.json
@@ -56,6 +54,11 @@ const plugins = [
   new CockpitPoPlugin(),
   new CockpitRsyncPlugin({ dest: packageJson.name }),
   development && new ReactRefreshWebpackPlugin({ overlay: false }),
+  // replace the "process.env.WEBPACK_SERVE" text in the source code by
+  // the current value of the environment variable, that variable is set to
+  // "true" when running the development server ("npm run server")
+  // https://webpack.js.org/plugins/environment-plugin/
+  new webpack.EnvironmentPlugin({ WEBPACK_SERVE: null }),
 ].filter(Boolean);
 
 if (eslint) {

@@ -34,28 +34,37 @@ import "~/assets/styles/index.scss";
 
 import App from "~/App";
 import Main from "~/Main";
+import DevServerWrapper from "~/DevServerWrapper";
 import { Overview } from "~/components/overview";
 import { ProductSelectionPage } from "~/components/software";
 import { ProposalPage as StoragePage } from "~/components/storage";
 
+// When running in the development server add a special login wrapper which
+// checks whether the user is authenticated. When building the code outside
+// the development server an empty fragment (<></>) is used which is no-op.
+// In the production builds the DevServerWrapper code is completely omitted.
+const LoginWrapper = (process.env.WEBPACK_SERVE) ? DevServerWrapper : React.Fragment;
+
 ReactDOM.render(
   <StrictMode>
-    <InstallerClientProvider client={createClient}>
-      <SoftwareProvider>
-        <HashRouter>
-          <Routes>
-            <Route path="/" element={<App />}>
-              <Route path="/" element={<Main />}>
-                <Route index element={<Overview />} />
-                <Route path="/overview" element={<Overview />} />
-                <Route path="/storage" element={<StoragePage />} />
+    <LoginWrapper>
+      <InstallerClientProvider client={createClient}>
+        <SoftwareProvider>
+          <HashRouter>
+            <Routes>
+              <Route path="/" element={<App />}>
+                <Route path="/" element={<Main />}>
+                  <Route index element={<Overview />} />
+                  <Route path="/overview" element={<Overview />} />
+                  <Route path="/storage" element={<StoragePage />} />
+                </Route>
+                <Route path="products" element={<ProductSelectionPage />} />
               </Route>
-              <Route path="products" element={<ProductSelectionPage />} />
-            </Route>
-          </Routes>
-        </HashRouter>
-      </SoftwareProvider>
-    </InstallerClientProvider>
+            </Routes>
+          </HashRouter>
+        </SoftwareProvider>
+      </InstallerClientProvider>
+    </LoginWrapper>
   </StrictMode>,
   document.getElementById("root")
 );
