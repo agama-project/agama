@@ -158,6 +158,7 @@ ALP:
       - alp_base_zypper
       - alp_cockpit
       - alp-container_runtime
+      - alt_defaults
     optional_patterns: null # no optional pattern shared
     mandatory_packages:
       - device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
