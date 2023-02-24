@@ -21,22 +21,20 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "dinstaller/dbus/clients/software"
-require "dinstaller/dbus/clients/storage"
-require "dinstaller/cmdline_args"
+require "json"
 
 module DInstaller
-  # Sets up the AutoYaST
+  # Converts an AutoYaST profile to D-Installer
   class AutoyastImporter
     def initialize(profile_url)
       @profile_url = profile_url
     end
 
-    def import
+    # @return [Hash] D-Installer profile
+    def export
       import_yast
       profile = find_profile
-      puts "Importing profile #{profile.inspect}"
-      import_profile(profile)
+      export_profile(profile)
     end
 
   private
@@ -51,28 +49,32 @@ module DInstaller
     end
 
     # @param profile [ProfileHash]
-    def import_profile(profile)
-      import_software(profile["software"] || {})
-      import_partitioning(profile["partitioning"] || [])
+    # @return [Hash] D-Installer profile
+    def export_profile(profile)
+      {
+        "software" => export_software(profile["software"] || {}),
+        "storage"  => export_storage(profile["partitioning"] || [])
+      }
     end
 
     # @param drives [Array<Hash>] Array of drives in the AutoYaST partitioning section
-    def import_partitioning(drives)
+    def export_storage(drives)
       devices = drives.each_with_object([]) do |d, all|
         next unless d["device"]
 
         all << d["device"]
       end
+      return {} if devices.empty?
 
-      storage_client.calculate(devices)
+      { "devices" => devices }
     end
 
     # @param profile [Hash] Software section from the AutoYaST profile
-    def import_software(profile)
+    def export_software(profile)
       product = profile.fetch("products", []).first
-      return unless product
+      return {} unless product
 
-      software_client.select_product(product)
+      { "product" => product }
     end
 
     def import_yast
@@ -80,20 +82,17 @@ module DInstaller
       Yast.import "ProfileLocation"
       Yast.import "Profile"
     end
-
-    # @return [DInstaller::DBus::Clients::Storage]
-    def storage_client
-      @storage_client ||= DBus::Clients::Storage.new
-    end
-
-    # @return [DInstaller::DBus::Clients::Software]
-    def software_client
-      @software_client ||= DBus::Clients::Software.new
-    end
   end
 end
 
 url = ARGV[0]
 url ||= "file:/autoinst.xml"
-importer = DInstaller::AutoyastImporter.new(url)
-importer.import
+begin
+  importer = DInstaller::AutoyastImporter.new(url)
+  profile = importer.export.to_json
+  puts profile
+rescue RuntimeError => e
+  warn "Could not load a profile from #{url}"
+  warn "Error: #{e}"
+  exit 1
+end
