@@ -25,7 +25,6 @@ const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : deve
 
 // Cockpit target managed by the development server
 let cockpitTarget = process.env.COCKPIT_TARGET;
-let server, webSocketServer;
 
 if (cockpitTarget) {
   // add the default port if not specified
@@ -34,17 +33,10 @@ if (cockpitTarget) {
   }
 
   cockpitTarget = "https://" + cockpitTarget;
-  // use https so Cockpit uses wss:// when connecting to the backend
-  server = "https";
-  // hot replacement does not support wss:// transport when running over https://,
-  // as a workaround use sockjs (which uses standard https:// protocol)
-  webSocketServer = "sockjs";
 }
 else {
   // by default connect to a locally running Cockpit
-  cockpitTarget = "http://localhost:9090";
-  server = "http";
-  webSocketServer = "ws";
+  cockpitTarget = "https://localhost:9090";
 }
 
 // Obtain package name from package.json
@@ -117,8 +109,11 @@ module.exports = {
         secure: false,
       },
     },
-    server,
-    webSocketServer,
+    // use https so Cockpit uses wss:// when connecting to the backend
+    server: "https",
+    // hot replacement does not support wss:// transport when running over https://,
+    // as a workaround use sockjs (which uses standard https:// protocol)
+    webSocketServer: "sockjs",
   },
   devtool: "source-map",
   stats: "errors-warnings",
