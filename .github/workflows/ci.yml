@@ -272,6 +272,9 @@ jobs:
     - name: Show the D-Bus services log
       run:  podman exec dinstaller cat /checkout/service/service.log
 
+    - name: Check DBus socket
+      run:  podman exec dinstaller ls -l /var/run/dbus/system_bus_socket
+
     - name: show journal
       run:  podman exec dinstaller journalctl -b
 
