@@ -258,8 +258,8 @@ jobs:
       # We need to run it manually as systemd does not run in container
       run:  podman exec dinstaller /usr/sbin/NetworkManager
 
-    - name: Start the D-Bus service
-      run:  podman exec dinstaller dbus-daemon --system --print-address
+    - name: Reload the D-Bus service
+      run:  podman exec dinstaller systemctl reload dbus
 
     - name: Start the D-Installer D-Bus services
       # TODO: here is a potential race condition, but as building the frontend
