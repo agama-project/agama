@@ -234,8 +234,11 @@ jobs:
     - name: Git Checkout
       uses: actions/checkout@v3
 
+    - name: Created shared yast log distro
+      run: mkdir -p /var/log/YaST2
+
     - name: start container
-      run: podman run --privileged --detach --name dinstaller --ipc=host -v .:/checkout -v /var/log:/var/log registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/dinstaller-testing:latest
+      run: podman run --privileged --detach --name dinstaller --ipc=host -v .:/checkout -v /var/log/YaST2:/var/log/YaST2 registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/dinstaller-testing:latest
 
     - name: Install packages
       # TODO: check which fonts are really needed
