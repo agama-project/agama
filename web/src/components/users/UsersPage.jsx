@@ -25,7 +25,7 @@ import { FirstUser, RootPassword, RootSSHKey } from "~/components/users";
 
 export default function UsersPage() {
   return (
-    <Page title="User Settings" icon="manage_accounts" actionLabel="Back">
+    <Page title="User Settings" icon="manage_accounts" actionLabel="Back" actionVariant="secondary">
       <Section title="User" icon="person">
         <FirstUser />
       </Section>
