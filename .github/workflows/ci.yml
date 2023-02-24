@@ -240,9 +240,10 @@ jobs:
     - name: Install packages
       # TODO: check which fonts are really needed
       # libasound needed for browsers
+      # yast2-iscsi-client is just temporary workaround
       run:  podman exec dinstaller zypper --gpg-auto-import-keys --non-interactive install --no-recommends gcc gcc-c++ make openssl-devel ruby-devel
             npm augeas-devel cockpit dbus-1 xorg-x11-server libgtk-3-0 NetworkManager git patch
-            adobe-sourcesans3-fonts gnu-unifont-bitmap-fonts google-opensans-fonts libasound2
+            adobe-sourcesans3-fonts gnu-unifont-bitmap-fonts google-opensans-fonts libasound2 yast2-iscsi-client
 
     - name: Install Ruby gems
       run:  podman exec dinstaller bash -c "cd /checkout/service && bundle config set --local path 'vendor/bundle' && bundle install"
