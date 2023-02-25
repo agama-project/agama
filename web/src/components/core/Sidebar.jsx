@@ -45,7 +45,7 @@ export default function Sidebar() {
     const targetUrl = (process.env.COCKPIT_TARGET_URL.includes("localhost") && window.location.hostname !== "localhost")
       ? process.env.COCKPIT_TARGET_URL
       : (
-        <Button isInline variant="link" component="a" href={ process.env.COCKPIT_TARGET_URL }>
+        <Button isInline variant="link" component="a" href={ process.env.COCKPIT_TARGET_URL } target="_blank">
           { process.env.COCKPIT_TARGET_URL }
         </Button>
       );
