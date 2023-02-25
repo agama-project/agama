@@ -20,6 +20,7 @@
  */
 
 import React, { useState } from "react";
+import { Button, Text } from "@patternfly/react-core";
 import { Icon, PageActions } from "~/components/layout";
 import { About, ChangeProductButton, LogsButton, ShowLogButton, ShowTerminalButton } from "~/components/core";
 import { TargetIpsPopup } from "~/components/network";
@@ -37,6 +38,17 @@ export default function Sidebar() {
     setIsOpen(true);
   };
   const close = () => setIsOpen(false);
+
+  const targetInfo = (process.env.WEBPACK_SERVE)
+    ? (
+      <Text>
+        Target server: { " " }
+        <Button isInline variant="link" component="a" href={ process.env.COCKPIT_TARGET_URL }>
+          { process.env.COCKPIT_TARGET_URL }
+        </Button>
+      </Text>
+    )
+    : null;
 
   return (
     <>
@@ -68,10 +80,11 @@ export default function Sidebar() {
           <ShowTerminalButton onClickCallback={close} />
         </div>
 
-        <footer className="split" data-state="reversed">
+        <footer className="split justify-between" data-state="reversed">
           <a onClick={close}>
             Close <Icon size="16" name="menu_open" data-variant="flip-X" />
           </a>
+          { targetInfo }
         </footer>
       </nav>
     </>
