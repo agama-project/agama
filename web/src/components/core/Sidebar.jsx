@@ -39,16 +39,23 @@ export default function Sidebar() {
   };
   const close = () => setIsOpen(false);
 
-  const targetInfo = (process.env.WEBPACK_SERVE)
-    ? (
-      <Text>
-        Target server: { " " }
+  let targetInfo = null;
+  if (process.env.WEBPACK_SERVE) {
+    // do not link to localhost when connected externally, it would point to a different host
+    const targetUrl = (process.env.COCKPIT_TARGET_URL.includes("localhost") && window.location.hostname !== "localhost")
+      ? process.env.COCKPIT_TARGET_URL
+      : (
         <Button isInline variant="link" component="a" href={ process.env.COCKPIT_TARGET_URL }>
           { process.env.COCKPIT_TARGET_URL }
         </Button>
+      );
+
+    targetInfo = (
+      <Text>
+        Target server: { " " } { targetUrl }
       </Text>
-    )
-    : null;
+    );
+  }
 
   return (
     <>
