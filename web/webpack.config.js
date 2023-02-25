@@ -30,6 +30,7 @@ let cockpitTarget = process.env.COCKPIT_TARGET || "localhost";
 // add the default port if not specified
 if (cockpitTarget.indexOf(":") === -1) cockpitTarget += ":9090";
 cockpitTarget = "https://" + cockpitTarget;
+process.env.COCKPIT_TARGET_URL = cockpitTarget;
 
 // Obtain package name from package.json
 const packageJson = JSON.parse(fs.readFileSync('package.json'));
@@ -52,7 +53,7 @@ const plugins = [
   // the current value of the environment variable, that variable is set to
   // "true" when running the development server ("npm run server")
   // https://webpack.js.org/plugins/environment-plugin/
-  new webpack.EnvironmentPlugin({ WEBPACK_SERVE: null }),
+  new webpack.EnvironmentPlugin({ WEBPACK_SERVE: null, COCKPIT_TARGET_URL: null }),
 ].filter(Boolean);
 
 if (eslint) {
