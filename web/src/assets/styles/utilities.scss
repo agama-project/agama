@@ -99,6 +99,11 @@
   box-shadow: 0 -3px 10px 0 var(--color-gray-darker);
 }
 
+.plain-control {
+  background: none;
+  border: none;
+}
+
 .tallest {
   /** block-size fallbacks **/
   height: 95dvh;

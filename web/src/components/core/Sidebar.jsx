@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Icon, PageActions } from "~/components/layout";
 import { About, ChangeProductButton, LogsButton, ShowLogButton, ShowTerminalButton } from "~/components/core";
 import { TargetIpsPopup } from "~/components/network";
@@ -29,34 +29,46 @@ import { TargetIpsPopup } from "~/components/network";
  */
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const closeButtonRef = useRef(null);
 
-  const open = (e) => {
-    // Avoid the link navigating to the initial route
-    e.preventDefault();
-
-    setIsOpen(true);
-  };
+  const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
+
+  useEffect(() => {
+    if (isOpen) closeButtonRef.current.focus();
+  }, [isOpen]);
 
   return (
     <>
       <PageActions>
-        <a href="#" onClick={open} aria-label="Open D-Installer options">
+        <button
+          onClick={open}
+          className="plain-control"
+          aria-label="Show navigation and other options"
+          aria-controls="navigation-and-options"
+          aria-expanded={isOpen}
+        >
           <Icon name="menu" onClick={open} />
-        </a>
+        </button>
       </PageActions>
 
       <nav
-        aria-label="D-Installer options"
-        data-state={isOpen ? "visible" : "hidden"}
+        id="navigation-and-options"
         className="wrapper sidebar"
+        aria-label="Navigation and other options"
+        data-state={isOpen ? "visible" : "hidden"}
       >
         <header className="split justify-between">
           <h1>Options</h1>
 
-          <a href="#" onClick={close} aria-label="Close D-Installer options">
+          <button
+            onClick={close}
+            ref={closeButtonRef}
+            className="plain-control"
+            aria-label="Hide navigation and other options"
+          >
             <Icon name="menu_open" data-variant="flip-X" onClick={close} />
-          </a>
+          </button>
         </header>
 
         <div className="flex-stack">

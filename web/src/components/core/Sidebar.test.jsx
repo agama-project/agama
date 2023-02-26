@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen, within, createEvent, fireEvent } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { plainRender, mockComponent, mockLayout } from "~/test-utils";
 import { Sidebar } from "~/components/core";
 
@@ -39,7 +39,7 @@ it("renders the sidebar initially hidden", async () => {
 it("renders a link for displaying the sidebar", async () => {
   const { user } = plainRender(<Sidebar />);
 
-  const link = await screen.findByLabelText(/Open/i);
+  const link = await screen.findByLabelText(/Show/i);
   const nav = await screen.findByRole("navigation", { name: /options/i });
 
   expect(nav).toHaveAttribute("data-state", "hidden");
@@ -47,23 +47,11 @@ it("renders a link for displaying the sidebar", async () => {
   expect(nav).toHaveAttribute("data-state", "visible");
 });
 
-// Test that opening the sidebar does not navigate to the initial route
-// This is achive by preventing the default link click behavior
-// Read https://testing-library.com/docs/dom-testing-library/api-events#fireevent and
-// https://developer.mozilla.org/en-US/docs/Web/API/Event/defaultPrevented
-it("prevents the default event when the user click on the open link", async () => {
-  plainRender(<Sidebar />);
-  const link = await screen.findByLabelText(/Open/i);
-  const clickEvent = createEvent.click(link);
-  fireEvent(link, clickEvent);
-  expect(clickEvent.defaultPrevented).toBe(true);
-});
-
 it("renders a link for hidding the sidebar", async () => {
   const { user } = plainRender(<Sidebar />);
 
-  const openLink = await screen.findByLabelText(/Open/i);
-  const closeLink = await screen.findByLabelText(/Close/i);
+  const openLink = await screen.findByLabelText(/Show/i);
+  const closeLink = await screen.findByLabelText(/Hide/i);
 
   const nav = await screen.findByRole("navigation", { name: /options/i });
 
@@ -71,6 +59,17 @@ it("renders a link for hidding the sidebar", async () => {
   expect(nav).toHaveAttribute("data-state", "visible");
   await user.click(closeLink);
   expect(nav).toHaveAttribute("data-state", "hidden");
+});
+
+it("moves the focus to the close action after opening it", async () => {
+  const { user } = plainRender(<Sidebar />);
+
+  const openLink = await screen.findByLabelText(/Show/i);
+  const closeLink = await screen.findByLabelText(/Hide/i);
+
+  expect(closeLink).not.toHaveFocus();
+  await user.click(openLink);
+  expect(closeLink).toHaveFocus();
 });
 
 describe("Sidebar content", () => {

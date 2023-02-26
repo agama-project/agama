@@ -28,12 +28,13 @@
 }
 
 .wrapper > header {
-  --color-button-plain-link: white;
-  --color-button-plain-link-hover: #fcfcfc;
-
   grid-area: header;
   background: var(--color-background-primary);
   color: var(--color-text-secondary);
+
+  svg {
+    color: white;
+  }
 }
 
 .wrapper > main {
