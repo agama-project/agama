@@ -41,11 +41,11 @@ export default function Sidebar() {
 
   let targetInfo = null;
   if (process.env.WEBPACK_SERVE) {
-    let targetUrl = process.env.COCKPIT_TARGET_URL;
+    let targetUrl = COCKPIT_TARGET_URL;
 
     // change the localhost URL when connected remotely as it means another machine
-    if (process.env.COCKPIT_TARGET_URL.includes("localhost") && window.location.hostname !== "localhost") {
-      const urlTarget = new URL(process.env.COCKPIT_TARGET_URL);
+    if (COCKPIT_TARGET_URL.includes("localhost") && window.location.hostname !== "localhost") {
+      const urlTarget = new URL(COCKPIT_TARGET_URL);
       const url = new URL(window.location);
       url.port = urlTarget.port;
       url.pathname = "/";
