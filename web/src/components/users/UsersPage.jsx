@@ -21,7 +21,7 @@
 
 import React from "react";
 import { Page, Section } from "~/components/core";
-import { FirstUser, RootPassword, RootSSHKey } from "~/components/users";
+import { FirstUser, RootAuthMethods } from "~/components/users";
 
 export default function UsersPage() {
   return (
@@ -30,8 +30,7 @@ export default function UsersPage() {
         <FirstUser />
       </Section>
       <Section title="Root authentication" icon="badge">
-        <RootPassword />
-        <RootSSHKey />
+        <RootAuthMethods />
       </Section>
     </Page>
   );
