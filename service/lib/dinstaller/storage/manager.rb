@@ -138,8 +138,8 @@ module DInstaller
 
       # Probes the devices
       def probe_devices
-        # TODO: probe callbacks
-        Y2Storage::StorageManager.instance.probe
+        # TODO: better probe callbacks that can report issue to user
+        Y2Storage::StorageManager.instance.probe(Y2Storage::Callbacks::UserProbe.new)
       end
 
       # Calculates the default proposal
