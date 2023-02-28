@@ -51,8 +51,12 @@ use this command:
 ```
 
 The extra `--open` option automatically opens the server page in your default
-web browser. In this case the server will use the plain HTTP protocol and expects
-a running Cockpit instance at `http://localhost:9090`.
+web browser. In this case the server will use the `https://localhost:8080` URL
+and expects a running Cockpit instance at `https://localhost:9090`.
+
+At the first start the development server generates a self-signed SSL
+certificate, you have to accept it in the browser. The certificate is saved to
+disk and is used in the next runs so you do not have to accept it again.
 
 This can work also remotely, with a D-Installer instance running in a different
 machine (a virtual machine as well). In that case run
@@ -62,22 +66,8 @@ machine (a virtual machine as well). In that case run
 ```
 
 Where  `COCKPIT_TARGET` is the IP address or hostname of the running D-Installer
-instance. In this case the server will use the HTTPS protocol to be compatible
-with the remote server. At the first start it generates a self-signed SSL
-certificate which you have to accept in browser. The certificate is saved to disk
-and used in the next runs so you do not have to accept it again.
-
-#### Logging In
-
-At the start you will very likely see some error in the D-Installer page. The
-reason is that Cockpit serves the plugin files (including the D-Installer),
-but if you are not authenticated it returns the login page.
-
-This is not supported by the development server (yet). The workaround is to
-manually change the URL path to `/cockpit/@localhost/d-installer/index.html`
-which is forwarded to the running Cockpit.
-
-Log into the Cockpit and then go back in the history or change the URL path to `/`.
+instance. This is especially useful if you use the Live ISO which does not contain
+any development tools, you can develop the web frontend easily from your workstation.
 
 ## JSDoc Documentation
 

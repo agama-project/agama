@@ -99,6 +99,7 @@ export default function DevServerWrapper({ children }) {
     // just display the wrapped content
     return children;
   } else {
+    // handle updating the iframe with login form
     const onFrameLoad = () => {
       const passwordInput = iframeRef.current.contentWindow.document.getElementById(loginId);
       // if there is no password field displayed then the user has authenticated successfully
