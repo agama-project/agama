@@ -44,6 +44,8 @@ export default function DevServerWrapper({ children }) {
   const iframeRef = useRef(null);
 
   useEffect(() => {
+    if (!isLoading) return;
+
     // get the current login state by querying the "/cockpit/login" path
     const xhr = new XMLHttpRequest();
     xhr.ontimeout = () => {
@@ -80,8 +82,8 @@ export default function DevServerWrapper({ children }) {
           <EmptyStateBody>
             <Text>
               The server at { " " }
-              <Button isInline variant="link" component="a" href={ process.env.COCKPIT_TARGET_URL }>
-                { process.env.COCKPIT_TARGET_URL }
+              <Button isInline variant="link" component="a" href={ COCKPIT_TARGET_URL } target="_blank">
+                { COCKPIT_TARGET_URL }
               </Button>
               { " " } is not reachable.
             </Text>
