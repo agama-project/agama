@@ -20,9 +20,8 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import { Loading } from "./components/layout";
 import { Button, Title, Text, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
-import { Center, Icon } from "~/components/layout";
+import { Center, Icon, Loading } from "~/components/layout";
 
 // path to any internal Cockpit component to force displaying the login dialog
 const loginPath = "/cockpit/@localhost/system/terminal.html";
@@ -75,7 +74,7 @@ export default function DevServerWrapper({ children }) {
     return (
       <Center>
         <EmptyState>
-          <EmptyStateIcon icon={({ ...props }) => <Icon name="error" { ...props } />} />
+          <EmptyStateIcon icon={ ({ ...props }) => <Icon name="error" { ...props } /> } />
           <Title headingLevel="h2" size="4xl">
             Cannot connect to the Cockpit server
           </Title>
@@ -101,7 +100,7 @@ export default function DevServerWrapper({ children }) {
     // just display the wrapped content
     return children;
   } else {
-    // handle updating the iframe with login form
+    // handle updating the iframe with the login form
     const onFrameLoad = () => {
       const passwordInput = iframeRef.current.contentWindow.document.getElementById(loginId);
       // if there is no password field displayed then the user has authenticated successfully
