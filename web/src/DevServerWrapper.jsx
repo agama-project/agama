@@ -64,9 +64,9 @@ export default function DevServerWrapper({ children }) {
 
       setIsLoading(false);
     };
+    xhr.timeout = 5000;
     xhr.open("GET", "/cockpit/login");
     xhr.send();
-    xhr.timeout = 5000;
   }, [isLoading]);
 
   if (isLoading) return <Loading />;
