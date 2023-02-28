@@ -80,13 +80,7 @@ export default function StorageSection({ showErrors }) {
 
   const errors = showErrors ? state.errors : [];
 
-  const SectionContent = () => {
-    if (state.busy || !state.proposal) return <SectionSkeleton lines={1} />;
-
-    return (
-      <ProposalSummary proposal={state.proposal} />
-    );
-  };
+  const busy = state.busy || !state.proposal;
 
   return (
     <Section
@@ -94,9 +88,10 @@ export default function StorageSection({ showErrors }) {
       title="Storage"
       path="/storage"
       icon="hard_drive"
+      loading={busy}
       errors={errors}
     >
-      <SectionContent />
+      { busy ? <SectionSkeleton /> : <ProposalSummary proposal={state.proposal} /> }
     </Section>
   );
 }
