@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,24 +19,22 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React from "react";
-import { Text } from "@patternfly/react-core";
-import { Em } from "~/components/core";
+import { Label } from "@patternfly/react-core";
 
-export default function ProposalSummary({ proposal }) {
-  const DeviceLabel = ({ device }) => {
-    return (
-      <Em>{device.label}</Em>
-    );
-  };
-
-  const device = proposal.availableDevices.find(d => d.id === proposal.candidateDevices[0]);
-
-  if (!device) return <Text>Device not selected yet</Text>;
-
+/**
+ * Helper component for emphasize wrapped children
+ * @component
+ *
+ * @param {object} props
+ * @param {React.ReactNode} [props.children] elements to be emphasized
+ */
+export default function Em({ children }) {
   return (
-    <Text>
-      Install using device <DeviceLabel device={device} /> and deleting all its content
-    </Text>
+    <Label isCompact>
+      {children}
+    </Label>
   );
 }

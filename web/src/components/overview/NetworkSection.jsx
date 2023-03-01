@@ -20,8 +20,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Label } from "@patternfly/react-core";
-import { Section, SectionSkeleton } from "~/components/core";
+import { Em, Section, SectionSkeleton } from "~/components/core";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { useInstallerClient } from "~/context/installer";
 import { formatIp } from "~/client/network/utils";
@@ -76,7 +75,7 @@ export default function NetworkSection() {
     if (activeConnections.length === 0) return "No network connections detected";
 
     const summary = activeConnections.map(connection => (
-      <Label key={connection.id} isCompact>{connection.name} - {connection.addresses.map(formatIp)}</Label>
+      <Em key={connection.id}>{connection.name} - {connection.addresses.map(formatIp)}</Em>
     ));
 
     return (

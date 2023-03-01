@@ -20,11 +20,9 @@
  */
 
 import React, { useReducer, useEffect } from "react";
-
+import { Em, Section, SectionSkeleton } from "~/components/core";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
-import { Section, SectionSkeleton } from "~/components/core";
-import { Label } from "@patternfly/react-core";
 
 /**
  * Internal component for simplifying conditional rendering.
@@ -100,7 +98,7 @@ export default function UsersSection({ showErrors }) {
       <div>
         <If
           condition={user?.userName !== ""}
-          then={<>User <Label isCompact>{state.user.userName}</Label> will be created</>}
+          then={<>User <Em>{state.user.userName}</Em> will be created</>}
           else={<>No user defined yet</>}
         />
       </div>

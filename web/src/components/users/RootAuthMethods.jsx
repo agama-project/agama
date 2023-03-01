@@ -20,8 +20,9 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { DropdownToggle, Label, Skeleton, Truncate } from "@patternfly/react-core";
+import { DropdownToggle, Skeleton, Truncate } from "@patternfly/react-core";
 import { TableComposable, Thead, Tr, Th, Tbody, Td, ActionsColumn } from '@patternfly/react-table';
+import { Em } from '~/components/core';
 import { Icon } from '~/components/layout';
 import { RootPasswordPopup, RootSSHKeyPopup } from '~/components/users';
 
@@ -137,9 +138,9 @@ export default function RootAuthMethods() {
     const trailingChars = Math.min(sshKey.length - sshKey.lastIndexOf(" "), 30);
 
     return (
-      <Label isCompact>
+      <Em>
         <Truncate content={sshKey} trailingNumChars={trailingChars} position="middle" />
-      </Label>
+      </Em>
     );
   };
 

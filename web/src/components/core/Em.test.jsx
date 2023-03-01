@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,23 +20,15 @@
  */
 
 import React from "react";
-import { Text } from "@patternfly/react-core";
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
 import { Em } from "~/components/core";
 
-export default function ProposalSummary({ proposal }) {
-  const DeviceLabel = ({ device }) => {
-    return (
-      <Em>{device.label}</Em>
-    );
-  };
-
-  const device = proposal.availableDevices.find(d => d.id === proposal.candidateDevices[0]);
-
-  if (!device) return <Text>Device not selected yet</Text>;
-
-  return (
-    <Text>
-      Install using device <DeviceLabel device={device} /> and deleting all its content
-    </Text>
-  );
-}
+describe("Em", () => {
+  it("wraps given children inside a compact PF4/Label", () => {
+    plainRender(<Em>Whatever</Em>);
+    const children = screen.getByText("Whatever");
+    const parent = children.closest("span.pf-c-label");
+    expect(parent.classList.contains("pf-m-compact")).toBe(true);
+  });
+});

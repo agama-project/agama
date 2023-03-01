@@ -20,11 +20,10 @@
  */
 
 import React, { useEffect, useState } from "react";
-
+import { Text } from "@patternfly/react-core";
+import { Em, Section, SectionSkeleton } from "~/components/core";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
-import { Section, SectionSkeleton } from "~/components/core";
-import { Text, Label } from "@patternfly/react-core";
 
 const initialState = {
   busy: true,
@@ -67,7 +66,7 @@ export default function L10nSection({ showErrors }) {
 
     return (
       <Text>
-        The system will use <Label isCompact>{`${selected.name} (${selected.id})`}</Label> as its default language.
+        The system will use <Em>{`${selected.name} (${selected.id})`}</Em> as its default language.
       </Text>
     );
   };

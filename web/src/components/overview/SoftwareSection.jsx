@@ -20,13 +20,12 @@
  */
 
 import React, { useReducer, useEffect } from "react";
-
+import { Button } from "@patternfly/react-core";
+import { Em, ProgressText, Section } from "~/components/core";
+import { Icon } from "~/components/layout";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
-import { ProgressText, Section } from "~/components/core";
-import { Icon } from "~/components/layout";
-import { Button, Label } from "@patternfly/react-core";
 
 const initialState = {
   busy: true,
@@ -116,7 +115,7 @@ export default function SoftwareSection({ showErrors }) {
     if (state.size === "" || state.size === "0 B") return null;
 
     return (
-      <>Installation will take <Label isCompact>{state.size}</Label></>
+      <>Installation will take <Em>{state.size}</Em></>
     );
   };
 
