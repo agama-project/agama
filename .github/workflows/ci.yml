@@ -253,6 +253,10 @@ jobs:
       # copy a simplified ALP config file, it skips the product selection at the beginning
       run:  podman exec dinstaller bash -c "cp /checkout/playwright/config/d-installer.yaml /checkout/service/etc/d-installer.yaml"
 
+    - name: Start NetworkManager
+      # We need to run it manually as systemd dbus activation looks like failing
+      run:  podman exec dinstaller /usr/sbin/NetworkManager
+
     - name: Reload the D-Bus service
       run:  podman exec dinstaller systemctl reload dbus
 
