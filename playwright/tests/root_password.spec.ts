@@ -8,7 +8,7 @@ test.describe('The user section', () => {
   test('can set the root password', async ({ page }) => {
     // See https://playwright.dev/docs/selectors#text-selector
     // click the button
-    await page.locator('.overview-users p').locator('text=Root password is').locator('button').click();
+    await page.locator('text=Root password is not set').locator('button').click();
 
     // fill a new password
     await page.locator('#password').fill('d-installer');
