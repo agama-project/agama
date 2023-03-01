@@ -19,6 +19,6 @@ test.describe('The user section', () => {
     await expect(page.locator('[role="dialog"]')).toHaveCount(0);
 
     // check the summary text
-    await expect(page.locator('.overview-users p').locator('text=Root password is set')).toHaveCount(1);
+    await expect(page.locator('text=Root password is set')).toHaveCount(1);
   });
 })
