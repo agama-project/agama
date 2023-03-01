@@ -243,14 +243,6 @@ jobs:
     - name: start container
       run: podman run --privileged --detach --name dinstaller --ipc=host -v .:/checkout -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/dinstaller-testing:latest
 
-    - name: Install packages
-      # TODO: check which fonts are really needed
-      # libasound needed for browsers
-      # yast2-iscsi-client is just temporary workaround
-      run:  podman exec dinstaller zypper --gpg-auto-import-keys --non-interactive install --no-recommends gcc gcc-c++ make openssl-devel ruby-devel
-            npm augeas-devel cockpit dbus-1 xorg-x11-server libgtk-3-0 NetworkManager git patch
-            adobe-sourcesans3-fonts gnu-unifont-bitmap-fonts google-opensans-fonts libasound2 yast2-iscsi-client
-
     - name: Install Ruby gems
       run:  podman exec dinstaller bash -c "cd /checkout/service && bundle config set --local path 'vendor/bundle' && bundle install"
 
@@ -259,11 +251,7 @@ jobs:
 
     - name: Set a testing D-Installer configuration
       # copy a simplified ALP config file, it skips the product selection at the beginning
-      run:  podman exec dinstaller bash -c "cp /checkout/playwright/fixtures/d-installer.yaml /checkout/service/etc/d-installer.yaml"
-
-    - name: Start NetworkManager
-      # We need to run it manually as systemd does not run in container
-      run:  podman exec dinstaller /usr/sbin/NetworkManager
+      run:  podman exec dinstaller bash -c "cp /checkout/playwright/config/d-installer.yaml /checkout/service/etc/d-installer.yaml"
 
     - name: Reload the D-Bus service
       run:  podman exec dinstaller systemctl reload dbus
@@ -284,9 +272,6 @@ jobs:
 
     - name: show journal
       run:  podman exec dinstaller journalctl -b
-
-    #- name: test network manager status
-    #  run:  podman exec dinstaller nmcli general status
 
     - name: Install the frontend
       run:  podman exec dinstaller bash -c "ln -snfv /checkout/web/dist /usr/share/cockpit/d-installer"
