@@ -303,11 +303,9 @@ jobs:
       run:  podman exec dinstaller curl http://localhost:9090/cockpit/@localhost/d-installer/index.html
 
     - name: Run the Playwright tests
-      run:  podman exec dinstaller bash -c "cd /checkout/playwright && npx playwright test --trace on"
-      env:
-        # user authentication is not required when cockpit runs a local session
-        SKIP_LOGIN: true
-
+      # user authentication is not required when cockpit runs a local session
+      run:  podman exec dinstaller bash -c "cd /checkout/playwright && SKIP_LOGIN=true npx playwright test --trace on"
+      
     - name: Upload the test results
       uses: actions/upload-artifact@v3
       # run even when the previous step fails
