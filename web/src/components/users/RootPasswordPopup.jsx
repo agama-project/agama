@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
 import React, { useState } from "react";
 import { Form } from "@patternfly/react-core";
 import { PasswordAndConfirmationInput, Popup } from '~/components/core';
