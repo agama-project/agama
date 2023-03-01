@@ -51,7 +51,7 @@ describe("DevServerWrapper", () => {
       ...xhrMock
     };
 
-    beforeEach(()=>{
+    beforeEach(() => {
       jest.spyOn(window, 'XMLHttpRequest').mockImplementation(() => xhrMockNotAuth);
     });
 
@@ -73,7 +73,7 @@ describe("DevServerWrapper", () => {
       ...xhrMock
     };
 
-    beforeEach(()=>{
+    beforeEach(() => {
       jest.spyOn(window, 'XMLHttpRequest').mockImplementation(() => xhrMockAuth);
     });
 
@@ -93,12 +93,12 @@ describe("DevServerWrapper", () => {
       ...xhrMock
     };
 
-    beforeEach(()=>{
+    beforeEach(() => {
       jest.spyOn(window, 'XMLHttpRequest').mockImplementation(() => xhrMockError);
     });
 
     it("displays an error message", async () => {
-      render(<DevServerWrapper/>);
+      render(<DevServerWrapper />);
       // wait until the XHR finish handler is set up
       await waitFor(() => expect(xhrMockError.onloadend).toBeDefined());
       act(() => xhrMockError.onloadend());
@@ -107,12 +107,12 @@ describe("DevServerWrapper", () => {
   });
 
   describe("when authentication status request times out", () => {
-    beforeEach(()=>{
+    beforeEach(() => {
       jest.spyOn(window, 'XMLHttpRequest').mockImplementation(() => xhrMock);
     });
 
     it("displays an error message", async () => {
-      render(<DevServerWrapper/>);
+      render(<DevServerWrapper />);
       // wait until the XHR finish handler is set up
       await waitFor(() => expect(xhrMock.ontimeout).toBeDefined());
       act(() => xhrMock.ontimeout());
