@@ -47,8 +47,8 @@ const popoverContent = (errors) => {
  * Displays a list of validation errors
  *
  * When there is only one error, it displays its message. Otherwise, it displays a generic message
- * and the details in an Popover compononent.
-*
+ * and the details in an Popover component.
+ *
  * @component
  *
  * @todo This component might be more generic.

@@ -50,7 +50,7 @@ const FooterInfoArea = createTeleporter();
  * @example
  *   <Layout>
  *     <PageIcon><DashboardIcon /></PageIcon>
- *     <PageActions><DahboardActions /></PageActions>
+ *     <PageActions><DashboardActions /></PageActions>
  *     <MainActions><Install /></MainActions>
  *     <Title>Dashboard</Title>
  *

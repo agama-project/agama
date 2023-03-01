@@ -115,7 +115,7 @@ const SecurityProtocols = Object.freeze({
 /**
  * Returns an IPv4 configuration object
  *
- * Defaults values can be overriden
+ * Defaults values can be overridden
  *
  * @private
  * @param {object} props
@@ -137,7 +137,7 @@ const createIPv4 = ({ method, addresses, nameServers, gateway }) => {
 /**
  * Returns a connection object
  *
- * Defaults values can be overriden
+ * Defaults values can be overridden
  *
  * @param {object} options
  * @param {string} [options.id] - Connection ID

@@ -53,7 +53,7 @@ const isStateChanging = (network) => {
 };
 
 /**
- * Component for displaying a Wi-Fi network within a NetowrkList
+ * Component for displaying a Wi-Fi network within a NetworkList
  *
  * @param {object} props - component props
  * @param {object} props.networks - the ap/configured network to be displayed
@@ -64,7 +64,7 @@ const isStateChanging = (network) => {
  */
 function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCancel }) {
   // Do not wait until receive the next D-Bus network event to have the connection object available
-  // and display the spinner as soon as possible. I.e., renders it inmmediately when the user clicks
+  // and display the spinner as soon as possible. I.e., renders it immediately when the user clicks
   // on an already configured network.
   const showSpinner = (isSelected && network.settings && !network.connection) || isStateChanging(network);
 

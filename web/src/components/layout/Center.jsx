@@ -24,7 +24,7 @@ import React from "react";
 /**
  * Wrapper component for centering vertically its children
  *
- * @note It could be relaced by the 'vertically-centered' CSS utility class once Firefox add support
+ * @note It could be replaced by the 'vertically-centered' CSS utility class once Firefox add support
  *   by default for the :has selector, which allows having something like
  *
  *   .parent:has(.vertically-centered) {

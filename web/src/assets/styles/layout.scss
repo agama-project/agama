@@ -39,7 +39,7 @@
 
 .wrapper > main {
   grid-area: content;
-  overflow-y: auto; // Sadly, only Firefox supports oerflow-block at this moment (Jan 2023)
+  overflow-y: auto; // Sadly, only Firefox supports overflow-block at this moment (Jan 2023)
   overflow-block: auto;
   padding: var(--spacer-medium);
 }

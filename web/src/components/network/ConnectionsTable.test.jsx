@@ -67,7 +67,7 @@ describe("ConnectionsTable", () => {
     });
 
     describe("and the user clicks on the actions toggler", () => {
-      it("renders a list of availalbe actions is shown", async () => {
+      it("renders a list of available actions is shown", async () => {
         const { user } = plainRender(<ConnectionsTable connections={conns} />);
         const connectionActions = screen.getByRole("button", { name: "Actions for connection WiFi 1" });
         await user.click(connectionActions);

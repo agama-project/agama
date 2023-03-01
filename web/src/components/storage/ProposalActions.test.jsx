@@ -76,7 +76,7 @@ describe("ProposalActions", () => {
     });
 
     describe("when there is a destructive action", () => {
-      it("emphatizes it", () => {
+      it("emphasizes it", () => {
         installerRender(
           <ProposalActions actions={[destructiveAction, ...actions]} />
         );
