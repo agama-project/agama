@@ -27,7 +27,7 @@ jobs:
 
     - name: Install dependencies
       run: npm install
-
+ 
     - name: Build the application
       run: make
 
@@ -58,7 +58,6 @@ jobs:
     - name: Publish JSDoc Documentation
       if: ${{ github.ref == 'refs/heads/master' }}
       run: npx surge jsdoc.out/ ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
-
 
   backend_tests:
     runs-on: ubuntu-latest
@@ -220,6 +219,97 @@ jobs:
     - name: Rubocop
       run: /usr/bin/rubocop.*-1.24.1
 
+  integration-tests:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # TW is needed because of the Cockpit packages
+        distro: [ "tumbleweed" ]
+
+    steps:
+
+    # TODO: Reuse/share building the frontend and backend with the other steps
+    # TODO: Cache the Ruby gems and node packages
+
+    - name: Git Checkout
+      uses: actions/checkout@v3
+
+    - name: Created shared yast log distro
+      run: mkdir -p /tmp/log/YaST2
+
+    - name: start container
+      run: podman run --privileged --detach --name dinstaller --ipc=host -v .:/checkout -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/dinstaller-testing:latest
+
+    - name: Install Ruby gems
+      run:  podman exec dinstaller bash -c "cd /checkout/service && bundle config set --local path 'vendor/bundle' && bundle install"
+
+    - name: Install the D-Installer D-Bus configuration
+      run:  podman exec dinstaller bash -c "cp /checkout/service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.DInstaller.conf"
+
+    - name: Set a testing D-Installer configuration
+      # copy a simplified ALP config file, it skips the product selection at the beginning
+      run:  podman exec dinstaller bash -c "cp /checkout/playwright/config/d-installer.yaml /checkout/service/etc/d-installer.yaml"
+
+    - name: Start NetworkManager
+      # We need to run it manually as systemd dbus activation looks like failing
+      run:  podman exec dinstaller /usr/sbin/NetworkManager
+
+    - name: Reload the D-Bus service
+      run:  podman exec dinstaller systemctl reload dbus
+
+    - name: Start the D-Installer D-Bus services
+      # TODO: here is a potential race condition, but as building the frontend
+      # and installing Playwright takes quite long time it should never happen™
+      run:  podman exec dinstaller bash -c "cd /checkout/service && (bundle exec bin/d-installer > service.log 2>&1 &)"
+
+    - name: Build the frontend
+      run:  podman exec dinstaller bash -c "cd /checkout/web && npm install && make"
+
+    - name: Show the D-Bus services log
+      run:  podman exec dinstaller cat /checkout/service/service.log
+
+    - name: Check DBus socket
+      run:  podman exec dinstaller ls -l /var/run/dbus/system_bus_socket
+
+    - name: show journal
+      run:  podman exec dinstaller journalctl -b
+
+    - name: Install the frontend
+      run:  podman exec dinstaller bash -c "ln -snfv /checkout/web/dist /usr/share/cockpit/d-installer"
+
+    - name: Start Cockpit service
+      run:  podman exec --detach dinstaller /usr/libexec/cockpit-ws --local-session=/usr/bin/cockpit-bridge
+
+    - name: Install Playwright
+      run:  podman exec dinstaller bash -c "cd /checkout/playwright && npm install && npx playwright --version"
+
+    - name: Install Playwright browsers
+      # TODO: it downloads Chromium, Firefox and Webkit from a special repository
+      # it would be nice to use the system browsers
+      run:  podman exec dinstaller bash -c "cd /checkout/playwright && npx playwright install"
+
+    - name: Run the D-Installer smoke test
+      run:  podman exec dinstaller curl http://localhost:9090/cockpit/@localhost/d-installer/index.html
+
+    - name: Run the Playwright tests
+      # user authentication is not required when cockpit runs a local session
+      run:  podman exec dinstaller bash -c "cd /checkout/playwright && SKIP_LOGIN=true npx playwright test --trace on"
+      
+    - name: Upload the test results
+      uses: actions/upload-artifact@v3
+      # run even when the previous step fails
+      if: always()
+      with:
+        name: test-results
+        retention-days: 30
+        path: |
+          playwright/test-results/**/*
+          /tmp/log/YaST2/y2log
+
+
   finish:
     runs-on: ubuntu-latest
 
@@ -232,4 +322,3 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         parallel-finished: true
-
