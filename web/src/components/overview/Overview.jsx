@@ -47,10 +47,10 @@ function Overview() {
       action={<InstallButton onClick={() => setShowErrors(true)} />}
     >
       <L10nSection />
-      <NetworkSection key="network" />
-      <StorageSection key="storage" showErrors />
-      <SoftwareSection key="software" showErrors />
-      <UsersSection key="users" showErrors={showErrors} />
+      <NetworkSection />
+      <StorageSection showErrors />
+      <SoftwareSection showErrors />
+      <UsersSection showErrors={showErrors} />
     </Page>
   );
 }
