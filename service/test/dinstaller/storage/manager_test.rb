@@ -21,6 +21,7 @@
 
 require_relative "../../test_helper"
 require "dinstaller/storage/manager"
+require "dinstaller/storage/iscsi/manager"
 require "dinstaller/config"
 require "dinstaller/dbus/clients/questions"
 
@@ -54,6 +55,7 @@ describe DInstaller::Storage::Manager do
   describe "#probe" do
     before do
       allow(DInstaller::Storage::Proposal).to receive(:new).and_return(proposal)
+      allow(DInstaller::Storage::ISCSI::Manager).to receive(:new).and_return(iscsi)
     end
 
     let(:proposal) do
@@ -65,11 +67,15 @@ describe DInstaller::Storage::Manager do
     let(:disk1) { instance_double(Y2Storage::Disk, name: "/dev/vda") }
     let(:disk2) { instance_double(Y2Storage::Disk, name: "/dev/vdb") }
 
+    let(:iscsi) { DInstaller::Storage::ISCSI::Manager.new }
+
     it "probes the storage devices and calculates a proposal" do
       expect(config).to receive(:pick_product).with("ALP")
+      expect(iscsi).to receive(:activate)
       expect(y2storage_manager).to receive(:activate) do |callbacks|
         expect(callbacks).to be_a(DInstaller::Storage::Callbacks::Activate)
       end
+      expect(iscsi).to receive(:probe)
       expect(y2storage_manager).to receive(:probe)
       expect(proposal).to receive(:calculate)
       storage.probe

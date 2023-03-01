@@ -32,7 +32,7 @@ import { InstallerSkeleton, Section } from "~/components/core";
 import { ProposalSummary } from "~/components/storage";
 
 const initialState = {
-  busy: false,
+  busy: true,
   proposal: undefined,
   errors: []
 };

@@ -1,7 +1,27 @@
 -------------------------------------------------------------------
-Mon Feb 13 14:30:56 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Tue Feb 21 00:50:48 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Set icons as aria-hidden (gh#yast/d-installer#437).
+
+-------------------------------------------------------------------
+Mon Feb 20 22:52:48 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Sidebar improvements (gh#yast/d-installer#436)
+  * Use proper control for open and close actions
+  * Improve styling and labels
+  * Add missing aria attributes
+
+-------------------------------------------------------------------
+Thu Feb 16 12:56:24 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
+
+- Integrate cockpit terminal application (gh#yast/d-installer#426)
+
+-------------------------------------------------------------------
+Wed Feb 15 16:35:54 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.7
+- Do not use a proxy to get the errors lists
+  (gh#yast/d-installer#424).
 
 -------------------------------------------------------------------
 Thu Feb  9 15:29:58 UTC 2023 - David Diaz <dgonzalez@suse.com>

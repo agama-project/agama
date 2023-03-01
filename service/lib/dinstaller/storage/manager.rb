@@ -28,6 +28,7 @@ require "y2storage/storage_manager"
 require "dinstaller/storage/proposal"
 require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/callbacks"
+require "dinstaller/storage/iscsi/manager"
 require "dinstaller/with_progress"
 require "dinstaller/security"
 require "dinstaller/dbus/clients/questions"
@@ -111,6 +112,13 @@ module DInstaller
         @proposal ||= Proposal.new(logger, config)
       end
 
+      # iSCSI manager
+      #
+      # @return [Storage::ISCSI::Manager]
+      def iscsi
+        @iscsi ||= ISCSI::Manager.new(logger: logger)
+      end
+
       # Validates the storage configuration
       #
       # @return [Array<ValidationError>] List of validation errors
@@ -133,11 +141,13 @@ module DInstaller
       def activate_devices
         callbacks = Callbacks::Activate.new(questions_client, logger)
 
+        iscsi.activate
         Y2Storage::StorageManager.instance.activate(callbacks)
       end
 
       # Probes the devices
       def probe_devices
+        iscsi.probe
         # TODO: better probe callbacks that can report issue to user
         Y2Storage::StorageManager.instance.probe(Y2Storage::Callbacks::UserProbe.new)
       end
@@ -188,8 +198,7 @@ module DInstaller
       end
 
       def tpm_proposal?
-        settings = proposal.calculated_settings
-        settings.encrypt? && !settings.lvm
+        proposal.calculated_settings.encrypt?
       end
 
       def tpm_system?
@@ -201,7 +210,7 @@ module DInstaller
 
         @tpm_present =
           begin
-            execute_fdectl("tpm-present")
+            Yast::Execute.on_target!("fdectl", "tpm-present")
             logger.info "FDE: TPMv2 detected"
             true
           rescue Cheetah::ExecutionFailed
@@ -215,9 +224,9 @@ module DInstaller
       end
 
       def prepare_tpm_key
-        keyfile_path = File.join(Yast::Installation.destdir, "root", ".root.keyfile")
-        execute_fdectl(
-          "add-secondary-key", "--keyfile", keyfile_path,
+        keyfile_path = File.join("root", ".root.keyfile")
+        Yast::Execute.on_target!(
+          "fdectl", "add-secondary-key", "--keyfile", keyfile_path,
           stdin:    "#{proposal.calculated_settings.encryption_password}\n",
           recorder: Yast::ReducedRecorder.new(skip: :stdin)
         )
@@ -227,16 +236,6 @@ module DInstaller
         service&.enable
       rescue Cheetah::ExecutionFailed
         false
-      end
-
-      def execute_fdectl(*args)
-        # Some subcommands like "tpm-present" should not require a --device argument, but they
-        # currently do. Let's always us until the problem at fdectl is fully fixed.
-        Yast::Execute.locally!("fdectl", "--device", fdectl_device, *args)
-      end
-
-      def fdectl_device
-        Yast::Installation.destdir
       end
     end
   end

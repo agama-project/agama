@@ -17,14 +17,22 @@ link your build folder (`dist`) or just rely on the `devel-install` task:
 Bear in mind that if something goes wrong while building the application (e.g., the linter fails),
 the link will not be created.
 
-While working on the code, you might want to run the [webpack-dev-server](https://github.com/webpack/webpack-dev-server) to get the [Hot Module Replacement](https://webpack.js.org/concepts/hot-module-replacement/) enabled.
+While working on the code, you might want to run the [webpack-dev-server](https://github.com/webpack/webpack-dev-server)
+to get the [Hot Module Replacement](https://webpack.js.org/concepts/hot-module-replacement/) enabled.
 
 ```
     npm run server
 ```
 
-Or simply run the Webpack watcher for refreshing the build every time you save a change **BUT** reloading
-the code in your browser by yourself.
+Unfortunately, it does not work remotely yet because it needs to connect to
+'localhost'. You might workaround it by just using the browser from the VM
+through SSH (e.g., "ssh -X yourmachine firefox" -or chromium-).
+
+Thus, if live reloading does not work for you, using the Webpack watcher for
+refreshing the build every time a file is changed still being an option through
+the command below. But please, do not forget that you have to reload the code
+in your browser manually.
+
 
 ```
     npm run watch

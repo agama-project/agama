@@ -119,7 +119,7 @@ initrd following these steps:
 
 3. Rebuild the image:
 
-       dracut --verbose --force --no-hostonly --no-hostonly-cmdline --no-hostonly-default-device --no-hostonly-i18n --reproducible iguana-initrd
+       dracut --verbose --force --no-hostonly --no-hostonly-cmdline --no-hostonly-default-device --no-hostonly-i18n --reproducible --add iguana iguana-initrd
 
 4. Copy the system's kernel (`/boot/vmlinuz-VERSION`) and the generated initrd to your TFTP tree.
 

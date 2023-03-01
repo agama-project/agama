@@ -1,7 +1,14 @@
 -------------------------------------------------------------------
-Mon Feb 13 13:58:52 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Wed Feb 15 16:09:16 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add D-Bus API for iSCSI.
+
+-------------------------------------------------------------------
+Wed Feb 15 15:18:43 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.7
+- Update the list of patterns to install for Leap Micro 5.3
+  (gh#yast/d-installer#427).
 
 -------------------------------------------------------------------
 Wed Feb  8 18:09:01 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
