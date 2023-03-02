@@ -23,6 +23,7 @@ import React from "react";
 
 import { act, screen, within } from "@testing-library/react";
 import { installerRender, createCallbackMock, mockComponent } from "~/test-utils";
+import { noop } from "~/utils";
 import { createClient } from "~/client";
 
 import { RootAuthMethods } from "~/components/users";
@@ -37,7 +38,7 @@ jest.mock("@patternfly/react-core", () => {
   };
 });
 
-let onUsersChangeFn = jest.fn();
+let onUsersChangeFn = noop;
 const isRootPasswordSetFn = jest.fn();
 const getRootSSHKeyFn = jest.fn();
 const setRootSSHKeyFn = jest.fn();
@@ -47,7 +48,6 @@ const testKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example";
 beforeEach(() => {
   isRootPasswordSetFn.mockResolvedValue(false);
   getRootSSHKeyFn.mockResolvedValue("");
-  onUsersChangeFn.mockResolvedValue({});
 
   createClient.mockImplementation(() => {
     return {

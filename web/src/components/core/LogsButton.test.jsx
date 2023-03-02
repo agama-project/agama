@@ -30,11 +30,13 @@ jest.mock("~/client");
 const originalCreateElement = document.createElement;
 
 const executor = jest.fn();
-const fetchLogsFn = jest.fn().mockImplementation(() => new Promise(executor));
+const fetchLogsFn = jest.fn();
 
 beforeEach(() => {
   window.URL.createObjectURL = jest.fn(() => "fake-blob-url");
   window.URL.revokeObjectURL = jest.fn();
+
+  fetchLogsFn.mockImplementation(() => new Promise(executor));
 
   createClient.mockImplementation(() => {
     return {
