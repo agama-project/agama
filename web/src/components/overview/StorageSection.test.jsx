@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -41,8 +41,10 @@ let proposal = {
     { id: "/dev/sda", label: "/dev/sda, 500 GiB" },
     { id: "/dev/sdb", label: "/dev/sdb, 650 GiB" }
   ],
-  candidateDevices: ["/dev/sda"],
-  lvm: false
+  result: {
+    candidateDevices: ["/dev/sda"],
+    lvm: false
+  }
 };
 let errors = [];
 let onStatusChangeFn = jest.fn();
@@ -51,7 +53,7 @@ beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       storage: {
-        getProposal: jest.fn().mockResolvedValue(proposal),
+        proposal: { getData: jest.fn().mockResolvedValue(proposal) },
         getStatus: jest.fn().mockResolvedValue(status),
         getValidationErrors: jest.fn().mockResolvedValue(errors),
         onStatusChange: onStatusChangeFn
@@ -111,7 +113,7 @@ describe("when there is a proposal", () => {
 
 describe("when there is no proposal yet", () => {
   beforeEach(() => {
-    proposal = undefined;
+    proposal = { result: undefined };
     errors = [{ message: "Fake error" }];
   });
 

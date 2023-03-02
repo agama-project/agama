@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,8 +26,10 @@ import { installerRender } from "~/test-utils";
 import { ProposalSettingsForm } from "~/components/storage";
 
 const proposal = {
-  lvm: false,
-  encryptionPassword: ""
+  result: {
+    lvm: false,
+    encryptionPassword: ""
+  }
 };
 const onSubmitFn = jest.fn();
 const onValidateFn = jest.fn();
@@ -61,7 +63,7 @@ describe("ProposalSettingsForm", () => {
   describe("Input for setting LVM", () => {
     it("gets its initial value from given proposal", () => {
       installerRender(
-        <ProposalSettingsForm proposal={{ lvm: true }} />
+        <ProposalSettingsForm proposal={ { result: { lvm: true } }} />
       );
 
       const lvmCheckbox = screen.getByRole("checkbox", { name: "Use LVM" });
@@ -93,7 +95,7 @@ describe("ProposalSettingsForm", () => {
 
     it("gets rendered as checked when given proposal contains a password", () => {
       installerRender(
-        <ProposalSettingsForm proposal={{ encryptionPassword: "s3cr3t" }} />
+        <ProposalSettingsForm proposal={{ result: { encryptionPassword: "s3cr3t" } }} />
       );
 
       const encryptionOptionsCheckbox = screen.getByRole("checkbox", { name: "Encrypt devices" });
@@ -120,7 +122,7 @@ describe("ProposalSettingsForm", () => {
     it("changes its state when user types on it", async () => {
       const { user } = installerRender(
         <ProposalSettingsForm
-          proposal={{ encryptionPassword: "s3cr3t" }}
+          proposal={{ result: { encryptionPassword: "s3cr3t" } }}
           onValidate={onValidateFn}
         />
       );

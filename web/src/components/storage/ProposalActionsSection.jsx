@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,7 +31,7 @@ export default function ProposalActionsSection({ proposal, errors }) {
       hasSeparator
       errors={errors}
     >
-      <ProposalActions actions={proposal.actions} />
+      <ProposalActions actions={proposal.result.actions} />
     </Section>
   );
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import {
 import { DeviceSelector } from "~/components/storage";
 
 export default function ProposalTargetForm({ id, proposal, onSubmit }) {
-  const [candidateDevices, setCandidateDevices] = useState(proposal.candidateDevices);
+  const [candidateDevices, setCandidateDevices] = useState(proposal.result.candidateDevices);
 
   const accept = (e) => {
     e.preventDefault();
