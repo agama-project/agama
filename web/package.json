@@ -12,6 +12,7 @@
     "server": "webpack server",
     "watch": "webpack --watch --progress",
     "build": "webpack",
+    "cspell": "cspell --no-progress --show-suggestions src",
     "eslint": "eslint --ext .js --ext .jsx src/",
     "eslint:fix": "eslint --fix --ext .js --ext .jsx src/",
     "stylelint": "stylelint 'src/**/*.{css,scss}'",
