@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar  2 08:48:36 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Write /iguana/mountlist if running on Iguana.
+
+-------------------------------------------------------------------
 Wed Feb 15 16:09:16 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Add D-Bus API for iSCSI.

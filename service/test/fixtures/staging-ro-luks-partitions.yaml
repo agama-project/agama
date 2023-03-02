@@ -1,0 +1,48 @@
+---
+- disk:
+    name: /dev/vda
+    size: 20 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 0.5 GiB
+        name: /dev/vda1
+        id: esp
+        file_system: vfat
+        mount_point: /boot/efi
+        fstab_options:
+        - utf8
+    - partition:
+        name: /dev/vda2
+        id: linux
+        file_system: btrfs
+        mount_point: "/"
+        fstab_options:
+        - ro
+        btrfs:
+          default_subvolume: "@"
+          subvolumes:
+          - subvolume:
+              path: "@"
+          - subvolume:
+              path: "@/boot/grub2/i386-pc"
+          - subvolume:
+              path: "@/boot/grub2/x86_64-efi"
+          - subvolume:
+              path: "@/boot/writable"
+          - subvolume:
+              path: "@/home"
+          - subvolume:
+              path: "@/opt"
+          - subvolume:
+              path: "@/root"
+          - subvolume:
+              path: "@/srv"
+          - subvolume:
+              path: "@/usr/local"
+          - subvolume:
+              path: "@/var"
+              nocow: true
+        encryption:
+          type: luks
+          name: /dev/mapper/cr_root

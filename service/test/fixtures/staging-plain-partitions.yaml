@@ -1,0 +1,65 @@
+---
+- disk:
+    name: "/dev/sda"
+    size: 50 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 2 MiB
+        name: "/dev/sda1"
+        id: bios_boot
+    - partition:
+        size: 40 GiB
+        name: "/dev/sda2"
+        id: linux
+        file_system: btrfs
+        mount_point: "/"
+        btrfs:
+          subvolumes:
+          - subvolume:
+              path: boot/grub2/i386-pc
+          - subvolume:
+              path: boot/grub2/x86_64-efi
+          - subvolume:
+              path: home
+          - subvolume:
+              path: opt
+          - subvolume:
+              path: tmp
+          - subvolume:
+              path: usr/local
+          - subvolume:
+              path: var/cache
+          - subvolume:
+              path: var/crash
+          - subvolume:
+              path: var/lib/libvirt/images
+              nocow: true
+          - subvolume:
+              path: var/lib/machines
+          - subvolume:
+              path: var/lib/mailman
+          - subvolume:
+              path: var/lib/mariadb
+              nocow: true
+          - subvolume:
+              path: var/lib/mysql
+              nocow: true
+          - subvolume:
+              path: var/lib/named
+          - subvolume:
+              path: var/lib/pgsql
+              nocow: true
+          - subvolume:
+              path: var/log
+          - subvolume:
+              path: var/opt
+          - subvolume:
+              path: var/spool
+          - subvolume:
+              path: var/tmp
+    - partition:
+        name: "/dev/sda3"
+        id: linux
+        file_system: xfs
+        mount_point: "/srv"
