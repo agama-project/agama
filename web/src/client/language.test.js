@@ -20,6 +20,7 @@
  */
 
 // @ts-check
+// cspell:ignore Cestina
 
 import DBusClient from "./dbus";
 import { LanguageClient } from "./language";
