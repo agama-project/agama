@@ -102,7 +102,7 @@ describe("ProgressReport", () => {
 
         await screen.findByText(/Waiting/i);
 
-        // NOTE: there can be more than one susbcriptions to the
+        // NOTE: there can be more than one subscriptions to the
         // manager#onChange. We're interested in the latest one here.
         const cb0 = callbacks.manager[callbacks.manager.length - 1];
         act(() => {

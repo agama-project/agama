@@ -118,7 +118,7 @@ describe("LuksActivationQuestion", () => {
       });
     });
 
-    describe("submiting the form by pressing 'enter'", () => {
+    describe("submitting the form by pressing 'enter'", () => {
       it("calls the callback after setting both, answer and password", async() => {
         const { user } = renderQuestion();
 
