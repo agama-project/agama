@@ -17,7 +17,7 @@
     "stylelint": "stylelint 'src/**/*.{css,scss}'",
     "stylelint:fix": "stylelint --fix 'src/**/*.{css,scss}'",
     "check-types": "tsc --skipLibCheck",
-    "jsdoc": "npx typedoc src src/client && echo Tip: && echo xdg-open jsdoc.out/index.html",
+    "jsdoc": "npx typedoc --skipErrorChecking src src/client && echo Tip: && echo xdg-open jsdoc.out/index.html",
     "test": "jest"
   },
   "engines": {
