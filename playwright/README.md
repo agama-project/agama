@@ -5,7 +5,7 @@
 There are stored artifacts in the GitHub CI. Go to the failed job and there is
 a link "Summary". At the bottom of the page there is "Artifacts" section which
 contains the `y2log` and also `trace.zip` file. The trace can be browsed using
-the playwright too locally or at page https://trace.playwright.dev/ to get
+the playwright tool locally or at page https://trace.playwright.dev/ to get
 details of the failure.
 
 ### Stuck at DBus Loading
