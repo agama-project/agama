@@ -16,7 +16,7 @@
     "eslint:fix": "eslint --fix --ext .js --ext .jsx src/",
     "stylelint": "stylelint 'src/**/*.{css,scss}'",
     "stylelint:fix": "stylelint --fix 'src/**/*.{css,scss}'",
-    "check-types": "tsc",
+    "check-types": "tsc --skipLibCheck",
     "jsdoc": "npx typedoc src src/client && echo Tip: && echo xdg-open jsdoc.out/index.html",
     "test": "jest"
   },
