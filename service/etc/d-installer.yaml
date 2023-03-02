@@ -63,7 +63,8 @@ Tumbleweed:
     mandatory_patterns:
       - enhanced_base # only pattern that is shared among all roles on TW
     optional_patterns: null # no optional pattern shared
-    mandatory_packages: null
+    mandatory_packages:
+      - NetworkManager
     optional_packages: null
     base_product: openSUSE
 
@@ -305,7 +306,8 @@ Leap:
     mandatory_patterns:
       - enhanced_base # For now lets pick some minimal one
     optional_patterns: null # no optional pattern shared
-    mandatory_packages: null
+    mandatory_packages:
+      - NetworkManager
     optional_packages: null
     base_product: Leap
 
