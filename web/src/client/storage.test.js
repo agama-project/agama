@@ -26,83 +26,48 @@ import { StorageClient } from "./storage";
 
 jest.mock("./dbus");
 
-const dbusProxy = {};
-const mockDBusProxy = (iface, path) => {
-  switch (iface) {
-    case "org.opensuse.DInstaller.Storage1.Proposal.Calculator": return dbusProxy.proposalCalculator;
-    case "org.opensuse.DInstaller.Storage1.ISCSI.Initiator": return dbusProxy.iscsiInitiator;
-    case "org.opensuse.DInstaller.Storage1.ISCSI.Node":
-      return dbusProxy.iscsiNode[path];
-  }
-};
+const cockpitProxies = {};
 
-let dbusData;
-const mockDBusCall = (path, iface, method) => dbusData[path][iface][method];
-
-const dbusContext = {
+const contexts = {
   withoutProposal: () => {
-    dbusData = {
-      "/org/opensuse/DInstaller/Storage1": {
-        "org.freedesktop.DBus.ObjectManager": {
-          GetManagedObjects: [{}]
-        }
-      }
-    };
+    cockpitProxies.proposal = null;
   },
   withProposal: () => {
-    const proposalResult = {
-      CandidateDevices: { t: "as", v: ["/dev/sda"] },
-      LVM: { t: "b", v: true },
-      Volumes: {
-        t: "aa{sv}",
-        v: [
-          {
-            MountPoint: { t: "s", v: "/test1" },
-            Optional: { t: "b", v: true },
-            DeviceType: { t: "s", v: "partition" },
-            Encrypted: { t: "b", v: false },
-            FsTypes: { t: "as", v: [{ t: "s", v: "Btrfs" }, { t: "s", v: "Ext3" }] },
-            FsType: { t: "s", v: "Btrfs" },
-            MinSize: { t: "x", v: 1024 },
-            MaxSize: { t: "x", v: 2048 },
-            FixedSizeLimits: { t: "b", v: false },
-            AdaptiveSizes: { t: "b", v: false },
-            Snapshots: { t: "b", v: true },
-            SnapshotsConfigurable: { t: "b", v: true },
-            SnapshotsAffectSizes: { t: "b", v: false },
-            SizeRelevantVolumes: { t: "as", v: [] }
-          },
-          {
-            MountPoint: { t: "s", v: "/test2" }
-          }
-        ]
-      },
-      Actions: {
-        t: "aa{sv}",
-        v: [
-          {
-            Text: { t: "s", v: "Mount /dev/sdb1 as root" },
-            Subvol: { t: "b", v: false },
-            Delete: { t: "b", v: false }
-          }
-        ]
-      }
-    };
-
-    dbusData = {
-      "/org/opensuse/DInstaller/Storage1": {
-        "org.freedesktop.DBus.ObjectManager": {
-          GetManagedObjects: [{
-            "/org/opensuse/DInstaller/Storage1/Proposal": {
-              "org.opensuse.DInstaller.Storage1.Proposal": proposalResult
-            }
-          }]
+    cockpitProxies.proposal = {
+      CandidateDevices:["/dev/sda"],
+      LVM: true,
+      Volumes: [
+        {
+          MountPoint: { t: "s", v: "/test1" },
+          Optional: { t: "b", v: true },
+          DeviceType: { t: "s", v: "partition" },
+          Encrypted: { t: "b", v: false },
+          FsTypes: { t: "as", v: [{ t: "s", v: "Btrfs" }, { t: "s", v: "Ext3" }] },
+          FsType: { t: "s", v: "Btrfs" },
+          MinSize: { t: "x", v: 1024 },
+          MaxSize: { t: "x", v: 2048 },
+          FixedSizeLimits: { t: "b", v: false },
+          AdaptiveSizes: { t: "b", v: false },
+          Snapshots: { t: "b", v: true },
+          SnapshotsConfigurable: { t: "b", v: true },
+          SnapshotsAffectSizes: { t: "b", v: false },
+          SizeRelevantVolumes: { t: "as", v: [] }
+        },
+        {
+          MountPoint: { t: "s", v: "/test2" }
         }
-      }
+      ],
+      Actions: [
+        {
+          Text: { t: "s", v: "Mount /dev/sdb1 as root" },
+          Subvol: { t: "b", v: false },
+          Delete: { t: "b", v: false }
+        }
+      ]
     };
   },
   withAvailableDevices: () => {
-    dbusProxy.proposalCalculator = {
+    cockpitProxies.proposalCalculator = {
       AvailableDevices: [
         ["/dev/sda", "/dev/sda, 950 GiB, Windows"],
         ["/dev/sdb", "/dev/sdb, 500 GiB"]
@@ -110,49 +75,46 @@ const dbusContext = {
     };
   },
   withoutISCSINodes: () => {
-    dbusData = {
-      "/org/opensuse/DInstaller/Storage1": {
-        "org.freedesktop.DBus.ObjectManager": {
-          GetManagedObjects: [{}]
-        }
-      }
-    };
+    cockpitProxies.iscsiNodes = {};
   },
   withISCSINodes: () => {
-    const node1 = {
-      Target: { t: "s", v: "iqn.2023-01.com.example:37dac" },
-      Address: { t: "s", v: "192.168.100.101" },
-      Port: { t: "u", v: 3260 },
-      Interface: { t: "s", v: "default" },
-      IBFT: { t: "b", v: false },
-      Connected: { t: "b", v: false },
-      Startup: { t: "s", v: "" }
-    };
-
-    const node2 = {
-      Target: { t: "s", v: "iqn.2023-01.com.example:74afb" },
-      Address: { t: "s", v: "192.168.100.102" },
-      Port: { t: "u", v: 3260 },
-      Interface: { t: "s", v: "default" },
-      IBFT: { t: "b", v: true },
-      Connected: { t: "b", v: true },
-      Startup: { t: "s", v: "onboot" }
-    };
-
-    dbusData = {
-      "/org/opensuse/DInstaller/Storage1": {
-        "org.freedesktop.DBus.ObjectManager": {
-          GetManagedObjects: [{
-            "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1": {
-              "org.opensuse.DInstaller.Storage1.ISCSI.Node": node1
-            },
-            "/org/opensuse/DInstaller/Storage1/iscsi_nodes/2": {
-              "org.opensuse.DInstaller.Storage1.ISCSI.Node": node2
-            }
-          }]
-        }
+    cockpitProxies.iscsiNodes = {
+      "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1": {
+        path: "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1",
+        Target: "iqn.2023-01.com.example:37dac",
+        Address: "192.168.100.101",
+        Port: 3260,
+        Interface: "default",
+        IBFT: false,
+        Connected: false,
+        Startup: ""
+      },
+      "/org/opensuse/DInstaller/Storage1/iscsi_nodes/2": {
+        path: "/org/opensuse/DInstaller/Storage1/iscsi_nodes/2",
+        Target: "iqn.2023-01.com.example:74afb",
+        Address: "192.168.100.102",
+        Port: 3260,
+        Interface: "default",
+        IBFT: true,
+        Connected: true,
+        Startup: "onboot"
       }
     };
+  }
+};
+
+const mockProxy = (iface, path) => {
+  switch (iface) {
+    case "org.opensuse.DInstaller.Storage1.Proposal": return cockpitProxies.proposal;
+    case "org.opensuse.DInstaller.Storage1.Proposal.Calculator": return cockpitProxies.proposalCalculator;
+    case "org.opensuse.DInstaller.Storage1.ISCSI.Initiator": return cockpitProxies.iscsiInitiator;
+    case "org.opensuse.DInstaller.Storage1.ISCSI.Node": return cockpitProxies.iscsiNode[path];
+  }
+};
+
+const mockProxies = (iface) => {
+  switch (iface) {
+    case "org.opensuse.DInstaller.Storage1.ISCSI.Node": return cockpitProxies.iscsiNodes;
   }
 };
 
@@ -162,8 +124,8 @@ beforeEach(() => {
   // @ts-ignore
   DBusClient.mockImplementation(() => {
     return {
-      proxy: mockDBusProxy,
-      call: mockDBusCall
+      proxy: mockProxy,
+      proxies: mockProxies
     };
   });
 
@@ -206,8 +168,8 @@ describe("#proposal", () => {
 
   describe("#getData", () => {
     beforeEach(() => {
-      dbusContext.withAvailableDevices();
-      dbusContext.withProposal();
+      contexts.withAvailableDevices();
+      contexts.withProposal();
     });
 
     it("returns the available devices and the proposal result", async () => {
@@ -219,7 +181,7 @@ describe("#proposal", () => {
 
   describe("#getAvailableDevices", () => {
     beforeEach(() => {
-      dbusContext.withAvailableDevices();
+      contexts.withAvailableDevices();
     });
 
     it("returns the list of available devices", async () => {
@@ -231,7 +193,7 @@ describe("#proposal", () => {
   describe("#getResult", () => {
     describe("if there is no proposal yet", () => {
       beforeEach(() => {
-        dbusContext.withoutProposal();
+        contexts.withoutProposal();
       });
 
       it("returns undefined", async () => {
@@ -242,7 +204,7 @@ describe("#proposal", () => {
 
     describe("if there is a proposal", () => {
       beforeEach(() => {
-        dbusContext.withProposal();
+        contexts.withProposal();
       });
 
       it("returns the proposal settings and actions", async () => {
@@ -254,14 +216,14 @@ describe("#proposal", () => {
 
   describe("#calculate", () => {
     beforeEach(() => {
-      dbusProxy.proposalCalculator = {
+      cockpitProxies.proposalCalculator = {
         Calculate: jest.fn()
       };
     });
 
     it("calculates a default proposal when no settings are given", async () => {
       await client.proposal.calculate({});
-      expect(dbusProxy.proposalCalculator.Calculate).toHaveBeenCalledWith({});
+      expect(cockpitProxies.proposalCalculator.Calculate).toHaveBeenCalledWith({});
     });
 
     it("calculates a proposal with the given settings", async () => {
@@ -286,7 +248,7 @@ describe("#proposal", () => {
         ]
       });
 
-      expect(dbusProxy.proposalCalculator.Calculate).toHaveBeenCalledWith({
+      expect(cockpitProxies.proposalCalculator.Calculate).toHaveBeenCalledWith({
         CandidateDevices: { t: "as", v: ["/dev/vda"] },
         EncryptionPassword: { t: "s", v: "12345" },
         LVM: { t: "b", v: true },
@@ -316,7 +278,7 @@ describe("#proposal", () => {
 describe("#iscsi", () => {
   describe("#getInitiatorName", () => {
     beforeEach(() => {
-      dbusProxy.iscsiInitiator = {
+      cockpitProxies.iscsiInitiator = {
         InitiatorName: "iqn.1996-04.com.suse:01:351e6d6249"
       };
     });
@@ -329,7 +291,7 @@ describe("#iscsi", () => {
 
   describe("#setInitiatorName", () => {
     beforeEach(() => {
-      dbusProxy.iscsiInitiator = {
+      cockpitProxies.iscsiInitiator = {
         InitiatorName: "iqn.1996-04.com.suse:01:351e6d6249"
       };
     });
@@ -344,7 +306,7 @@ describe("#iscsi", () => {
   describe("#getNodes", () => {
     describe("if there is no exported iSCSI nodes yet", () => {
       beforeEach(() => {
-        dbusContext.withoutISCSINodes();
+        contexts.withoutISCSINodes();
       });
 
       it("returns an empty list", async () => {
@@ -355,7 +317,7 @@ describe("#iscsi", () => {
 
     describe("if there are exported iSCSI nodes", () => {
       beforeEach(() => {
-        dbusContext.withISCSINodes();
+        contexts.withISCSINodes();
       });
 
       it("returns a list with the exported iSCSI nodes", async () => {
@@ -387,7 +349,7 @@ describe("#iscsi", () => {
 
   describe("#discover", () => {
     beforeEach(() => {
-      dbusProxy.iscsiInitiator = {
+      cockpitProxies.iscsiInitiator = {
         Discover: jest.fn()
       };
     });
@@ -400,7 +362,7 @@ describe("#iscsi", () => {
         reversePassword: "notsecret"
       });
 
-      expect(dbusProxy.iscsiInitiator.Discover).toHaveBeenCalledWith("192.168.100.101", 3260, {
+      expect(cockpitProxies.iscsiInitiator.Discover).toHaveBeenCalledWith("192.168.100.101", 3260, {
         Username: { t: "s", v: "test" },
         Password: { t: "s", v: "12345" },
         ReverseUsername: { t: "s", v: "target" },
@@ -411,14 +373,14 @@ describe("#iscsi", () => {
 
   describe("#Delete", () => {
     beforeEach(() => {
-      dbusProxy.iscsiInitiator = {
+      cockpitProxies.iscsiInitiator = {
         Delete: jest.fn()
       };
     });
 
     it("deletes the given iSCSI node", async () => {
       await client.iscsi.delete({ id: "1" });
-      expect(dbusProxy.iscsiInitiator.Delete).toHaveBeenCalledWith(
+      expect(cockpitProxies.iscsiInitiator.Delete).toHaveBeenCalledWith(
         "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1"
       );
     });
@@ -430,7 +392,7 @@ describe("#iscsi", () => {
     };
 
     beforeEach(() => {
-      dbusProxy.iscsiNode = {
+      cockpitProxies.iscsiNode = {
         "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1": nodeProxy
       };
     });
@@ -460,7 +422,7 @@ describe("#iscsi", () => {
     };
 
     beforeEach(() => {
-      dbusProxy.iscsiNode = {
+      cockpitProxies.iscsiNode = {
         "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1": nodeProxy
       };
     });
