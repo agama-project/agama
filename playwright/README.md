@@ -8,9 +8,9 @@ contains the `y2log` and also `trace.zip` file. The trace can be browsed using
 the playwright tool locally or at page https://trace.playwright.dev/ to get
 details of the failure.
 
-### Stuck at DBus Loading
+### Stuck at D-Bus Loading
 
-It usually indicates an issue with the DInstaller DBus services. There is a step
+It usually indicates an issue with the D-Installer D-Bus services. There is a step
 called "Show D-Bus Services Logs" which should give a hint what is going wrong.
 Additional help can be the `y2log` file in the artifacts (see above).
 
