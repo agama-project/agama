@@ -27,7 +27,7 @@ products:
       and sysadmins the best stable Linux experience available.'
   Leap16:
     name: openSUSE Leap 16.0
-    description: 'openSUSE Leap 16 is built on top of the next generation Adaptable Linux Platform (ALP) from SUSE.'
+    description: '[Experimental project] openSUSE Leap 16 is built on top of the next generation Adaptable Linux Platform (ALP) from SUSE.'
 
 web:
   ssl: null
