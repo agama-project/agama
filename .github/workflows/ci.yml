@@ -278,7 +278,7 @@ jobs:
       run:  podman exec dinstaller ls -l /var/run/dbus/system_bus_socket
 
     - name: show journal
-      run:  podman exec dinstaller journalctl -b
+      run:  podman exec dinstaller journalctl -b || echo "journal failed with $?"
 
     - name: Install the frontend
       run:  podman exec dinstaller bash -c "ln -snfv /checkout/web/dist /usr/share/cockpit/d-installer"
@@ -300,7 +300,7 @@ jobs:
     - name: Run the Playwright tests
       # user authentication is not required when cockpit runs a local session
       run:  podman exec dinstaller bash -c "cd /checkout/playwright && SKIP_LOGIN=true npx playwright test --trace on"
-      
+
     - name: Upload the test results
       uses: actions/upload-artifact@v3
       # run even when the previous step fails
@@ -321,6 +321,6 @@ jobs:
     steps:
 
     - name: Coveralls Finished
-      uses: coverallsapp/github-action@1.2.4
+      uses: coverallsapp/github-action@v1
       with:
         parallel-finished: true
