@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Mar  2 23:16:09 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Dependencies update (gh#yast/d-installer#449).
+  * Go up to React 18.
+  * Bring node packages up to date.
+
+-------------------------------------------------------------------
 Wed Mar  1 23:22:37 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Create a dedicated page per section

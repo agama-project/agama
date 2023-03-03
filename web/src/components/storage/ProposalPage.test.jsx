@@ -94,7 +94,14 @@ describe("when there is a proposal", () => {
       user.click(link);
 
       await screen.findByText("Loading proposal");
-      await waitForElementToBeRemoved(() => screen.queryByText("Loading proposal"));
+    });
+
+    it("renders the sections after calculating the proposal", async () => {
+      const { user } = installerRender(<ProposalPage />);
+
+      const link = await screen.findByRole("link", { name: "Calculate" });
+      user.click(link);
+
       screen.getByText("Target section");
       screen.getByText("Settings section");
       screen.getByText("Actions section");

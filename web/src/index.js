@@ -20,7 +20,7 @@
  */
 
 import React, { StrictMode } from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
@@ -41,7 +41,10 @@ import { UsersPage } from "~/components/users";
 import { L10nPage } from "~/components/l10n";
 import { NetworkPage } from "~/components/network";
 
-ReactDOM.render(
+const container = document.getElementById("root");
+const root = createRoot(container);
+
+root.render(
   <StrictMode>
     <InstallerClientProvider client={createClient}>
       <SoftwareProvider>
@@ -62,6 +65,5 @@ ReactDOM.render(
         </HashRouter>
       </SoftwareProvider>
     </InstallerClientProvider>
-  </StrictMode>,
-  document.getElementById("root")
+  </StrictMode>
 );
