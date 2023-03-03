@@ -46,14 +46,8 @@ const STORAGE_OBJECT = "/org/opensuse/DInstaller/Storage1";
  * @returns {object}
  */
 const removeUndefinedCockpitProperties = (cockpitObject) => {
-  const result = {};
-
-  Object.keys(cockpitObject).forEach(key => {
-    if (cockpitObject[key].v !== undefined)
-      result[key] = cockpitObject[key];
-  });
-
-  return result;
+  const filtered = Object.entries(cockpitObject).filter(([, { v }]) => v !== undefined);
+  return Object.fromEntries(filtered);
 };
 
 /**
