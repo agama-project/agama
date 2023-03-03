@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -45,9 +45,9 @@ module DInstaller
 
         # Configuration of the first user to create during the installation
         #
-        # @return [Array<String, String, Boolean>] full name, name and autologin
+        # @return [Array<String, String, Boolean>] full name, name, password and autologin
         def first_user
-          dbus_object["org.opensuse.DInstaller.Users1"]["FirstUser"][0..2]
+          dbus_object["org.opensuse.DInstaller.Users1"]["FirstUser"][0..3]
         end
 
         # Configures the first user to create during the installation

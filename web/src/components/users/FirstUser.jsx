@@ -114,7 +114,7 @@ export default function FirstUser() {
   const [isEditing, setIsEditing] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isValidPassword, setIsValidPassword] = useState(true);
-  const [showPasswordField, setShowPasswordField] = useState(false);
+  const [isSettingPassword, setIsSettingPassword] = useState(false);
 
   useEffect(() => {
     cancellablePromise(client.users.getUser()).then(userValues => {
@@ -134,7 +134,10 @@ export default function FirstUser() {
 
   const openForm = (e, mode = CREATE_MODE) => {
     setIsEditing(mode === EDIT_MODE);
-    setShowPasswordField(mode === CREATE_MODE);
+    // Password will be always set when creating the user. In the edit mode it
+    // depends on the user choice
+    setIsSettingPassword(mode === CREATE_MODE);
+    // To avoid confusion, do not expose the current password
     setFormValues({ ...initialUser, ...user, password: "" });
     setIsFormOpen(true);
   };
@@ -149,11 +152,17 @@ export default function FirstUser() {
     e.preventDefault();
     setErrors([]);
     setIsLoading(true);
-    const { result, issues = [] } = await client.users.setUser(formValues);
+
+    // Preserve current password value if the user was not editing it.
+    const newUser = { ...formValues };
+    if (!isSettingPassword) newUser.password = user.password;
+
+    const { result, issues = [] } = await client.users.setUser(newUser);
     setErrors(issues);
     setIsLoading(false);
     if (result) {
-      setUser(formValues);
+      setUser(newUser);
+
       closeForm();
     }
   };
@@ -190,9 +199,9 @@ export default function FirstUser() {
     }
   ];
 
-  const toggleShowPasswordField = () => setShowPasswordField(!showPasswordField);
+  const toggleShowPasswordField = () => setIsSettingPassword(!isSettingPassword);
   const usingValidPassword = formValues.password && formValues.password !== "" && isValidPassword;
-  const submitDisable = formValues.userName === "" || (showPasswordField && !usingValidPassword);
+  const submitDisable = formValues.userName === "" || (isSettingPassword && !usingValidPassword);
 
   if (isLoading) return <Skeleton />;
 
@@ -237,11 +246,11 @@ export default function FirstUser() {
                 id="edit-password"
                 name="edit-password"
                 label="Edit password too"
-                isChecked={showPasswordField}
+                isChecked={isSettingPassword}
                 onChange={toggleShowPasswordField}
               /> }
 
-            { showPasswordField &&
+            { isSettingPassword &&
               <PasswordAndConfirmationInput
                 value={formValues.password}
                 onChange={(value, event) => {

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar  3 15:00:05 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Enhance the user edit form (gh#yast/d-installer#451).
+
+-------------------------------------------------------------------
 Thu Mar  2 23:16:09 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Dependencies update (gh#yast/d-installer#449).

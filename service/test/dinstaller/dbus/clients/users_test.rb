@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -61,12 +61,12 @@ describe DInstaller::DBus::Clients::Users do
   describe "#first_user" do
     before do
       allow(users_iface).to receive(:[]).with("FirstUser").and_return(
-        ["Test user", "user", true, {}]
+        ["Test user", "user", "12345", true, {}]
       )
     end
 
     it "returns the configuration of the first user" do
-      expect(subject.first_user).to contain_exactly("Test user", "user", true)
+      expect(subject.first_user).to contain_exactly("Test user", "user", "12345", true)
     end
   end
 

@@ -41,7 +41,7 @@ module DInstallerCli
 
       desc "show", "Show the user configuration"
       def show
-        full_name, name, autologin = client.first_user
+        full_name, name, _, autologin = client.first_user
 
         return if name.empty?
 
