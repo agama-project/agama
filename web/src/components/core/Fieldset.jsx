@@ -36,7 +36,7 @@ import React from "react";
  *   </Fieldset>
  *
  * @param {object} props
- * @param {React.ReactNode} props.legend - The lengend
+ * @param {React.ReactNode} props.legend - The legend
  * @param {string} [props.className] - additionally CSS class names
  * @param {JSX.Element} [props.children] - the section content
  * @param {object} [props.otherProps] fieldset element attributes, see {@link https://html.spec.whatwg.org/#the-fieldset-element}

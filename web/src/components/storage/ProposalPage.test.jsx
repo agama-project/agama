@@ -40,7 +40,7 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => jest.fn()
 }));
 
-jest.mock("~/components/core/InstallerSkeleton", () => mockComponent("Loading proposal"));
+jest.mock("~/components/core/SectionSkeleton", () => mockComponent("Loading proposal"));
 jest.mock("~/components/storage/ProposalTargetSection", () => FakeProposalTargetSection);
 
 jest.mock("~/components/storage/ProposalSettingsSection", () => mockComponent("Settings section"));

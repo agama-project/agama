@@ -370,7 +370,7 @@ class NetworkManagerAdapter {
    * Subscribes to network events
    *
    * Registers a handler for changes in /org/freedesktop/NetworkManager/ActiveConnection/*.
-   * The handler recevies a NetworkEvent object.
+   * The handler receives a NetworkEvent object.
    *
    * @private
    */

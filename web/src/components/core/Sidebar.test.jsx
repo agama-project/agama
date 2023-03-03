@@ -47,7 +47,7 @@ it("renders a link for displaying the sidebar", async () => {
   expect(nav).toHaveAttribute("data-state", "visible");
 });
 
-it("renders a link for hidding the sidebar", async () => {
+it("renders a link for hiding the sidebar", async () => {
   const { user } = plainRender(<Sidebar />);
 
   const openLink = await screen.findByLabelText(/Show/i);

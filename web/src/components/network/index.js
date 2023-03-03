@@ -19,15 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as Network } from "./Network";
+export { default as NetworkPage } from "./NetworkPage";
 export { default as AddressesDataList } from "./AddressesDataList";
-export { default as ConnectionsDataList } from "./ConnectionsDataList";
+export { default as ConnectionsTable } from "./ConnectionsTable";
 export { default as DnsDataList } from "./DnsDataList";
 export { default as IpAddressInput } from "./IpAddressInput";
 export { default as IpPrefixInput } from "./IpPrefixInput";
 export { default as IpSettingsForm } from "./IpSettingsForm";
-export { default as NetworkWifiStatus } from "./NetworkWifiStatus";
-export { default as NetworkWiredStatus } from "./NetworkWiredStatus";
 export { default as TargetIpsPopup } from "./TargetIpsPopup";
 export { default as WifiConnectionForm } from "./WifiConnectionForm";
 export { default as WifiHiddenNetworkForm } from "./WifiHiddenNetworkForm";

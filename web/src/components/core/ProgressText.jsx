@@ -23,7 +23,6 @@
 
 import React from "react";
 import { Text } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
 
 /**
  * Progress description
@@ -39,7 +38,6 @@ export default function ProgressText({ message, current, total }) {
   const text = (current === 0) ? message : `${message} (${current}/${total})`;
   return (
     <div className="split">
-      <Icon name="loading" size="24" />
       <Text>
         {text}
       </Text>

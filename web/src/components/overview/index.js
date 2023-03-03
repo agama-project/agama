@@ -20,5 +20,8 @@
  */
 
 export { default as Overview } from "./Overview";
+export { default as L10nSection } from "./L10nSection";
+export { default as NetworkSection } from "./NetworkSection";
 export { default as SoftwareSection } from "./SoftwareSection";
 export { default as StorageSection } from "./StorageSection";
+export { default as UsersSection } from "./UsersSection";

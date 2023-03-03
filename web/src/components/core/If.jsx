@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,25 +19,22 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Skeleton } from "@patternfly/react-core";
-
-const MAX = 100;
-
-const InstallerSkeleton = ({ lines = 2, ...props }) => (
-  [...Array(lines)].map((_, i) => {
-    const width = Math.floor(Math.random() * MAX);
-    return (
-      <Skeleton
-        className="installer-skeleton"
-        screenreaderText="Waiting..."
-        fontSize="sm"
-        {...props}
-        key={i}
-        width={`${width}%`}
-      />
-    );
-  })
-);
-
-export default InstallerSkeleton;
+/**
+ * Simple component for simplifying conditional rendering.
+ * @component
+ *
+ * Borrowed from the old  Michael J. Ryan’s comment at https://github.com/facebook/jsx/issues/65#issuecomment-255484351
+ * See more options at https://blog.logrocket.com/react-conditional-rendering-9-methods/
+ *
+ * @param {object} props
+ * @param {boolean} props.condition
+ * @param {JSX.Element} [props.then=null] - the content to be rendered when the condition is true
+ * @param {JSX.Element} [props.else=null] - the content to be rendered when the condition is false
+ */
+export default function If ({
+  condition,
+  then: positive = null,
+  else: negative = null
+}) {
+  return condition ? positive : negative;
+}

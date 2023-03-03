@@ -20,8 +20,8 @@
  */
 
 import React, { useState } from "react";
-import { Label, List, ListItem } from '@patternfly/react-core';
-import { Section, Popup } from "~/components/core";
+import { List, ListItem } from '@patternfly/react-core';
+import { Em, Section, Popup } from "~/components/core";
 import { ProposalSettingsForm } from "~/components/storage";
 
 export default function ProposalSettingsSection({ proposal, calculateProposal }) {
@@ -47,9 +47,7 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
         <ListItem>{settingsText(proposal)}</ListItem>
         <ListItem className="volumes-list">
           Create the following file systems: {proposal.volumes.map(v => (
-            <Label key={v.mountPoint} isCompact>
-              {v.mountPoint}
-            </Label>
+            <Em key={v.mountPoint}>{v.mountPoint}</Em>
           ))}
         </ListItem>
       </List>

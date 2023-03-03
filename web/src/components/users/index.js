@@ -20,6 +20,7 @@
  */
 
 export { default as FirstUser } from "./FirstUser";
-export { default as RootPassword } from "./RootPassword";
-export { default as RootSSHKey } from "./RootSSHKey";
-export { default as Users } from "./Users";
+export { default as RootAuthMethods } from "./RootAuthMethods";
+export { default as RootPasswordPopup } from "./RootPasswordPopup";
+export { default as RootSSHKeyPopup } from "./RootSSHKeyPopup";
+export { default as UsersPage } from "./UsersPage";

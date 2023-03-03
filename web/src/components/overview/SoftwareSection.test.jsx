@@ -54,7 +54,8 @@ describe("when there proposal is calculated", () => {
 
   it("renders the required space", async () => {
     installerRender(<SoftwareSection showErrors />);
-    await screen.findByText("Installation will take 500 MB.");
+    await screen.findByText("Installation will take");
+    await screen.findByText("500 MB");
   });
 
   describe("and there are errors", () => {

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar  1 23:22:37 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Create a dedicated page per section
+  (gh#yast/d-installer#443).
+
+-------------------------------------------------------------------
 Tue Feb 21 00:50:48 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Set icons as aria-hidden (gh#yast/d-installer#437).

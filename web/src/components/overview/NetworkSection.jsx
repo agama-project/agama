@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,27 +20,28 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Button } from "@patternfly/react-core";
-
-import { useInstallerClient } from "~/context/installer";
+import { Em, Section, SectionSkeleton } from "~/components/core";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
-import { NetworkWifiStatus, NetworkWiredStatus, WifiSelector } from "~/components/network";
+import { useInstallerClient } from "~/context/installer";
+import { formatIp } from "~/client/network/utils";
 
-export default function Network() {
-  const client = useInstallerClient();
+export default function NetworkSection() {
+  const { network: client } = useInstallerClient();
   const [initialized, setInitialized] = useState(false);
   const [connections, setConnections] = useState([]);
-  const [wifiScanSupported, setWifiScanSupported] = useState(false);
 
   useEffect(() => {
-    if (!initialized) return;
-
-    setWifiScanSupported(client.network.settings().wifiScanSupported);
-    setConnections(client.network.activeConnections());
-  }, [client.network, initialized]);
+    client.setUp().then(() => setInitialized(true));
+  }, [client]);
 
   useEffect(() => {
-    return client.network.onNetworkEvent(({ type, payload }) => {
+    if (initialized) {
+      setConnections(client.activeConnections());
+    }
+  }, [client, initialized]);
+
+  useEffect(() => {
+    return client.onNetworkEvent(({ type, payload }) => {
       switch (type) {
         case NetworkEventTypes.ACTIVE_CONNECTION_ADDED: {
           setConnections(conns => {
@@ -62,52 +63,37 @@ export default function Network() {
           setConnections(conns => conns.filter(c => c.id !== payload.id));
           break;
         }
-
-        case NetworkEventTypes.SETTINGS_UPDATED: {
-          setWifiScanSupported(payload.wifiScanSupported);
-        }
       }
     });
   });
 
-  useEffect(() => {
-    client.network.setUp().then(() => setInitialized(true));
-  }, [client.network]);
-
-  if (!initialized) return null;
-
-  const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
-  const activeWifiConnections = connections.filter(c => c.type === ConnectionTypes.WIFI);
-  const showNetwork = (activeWiredConnections.length > 0 || activeWifiConnections.length > 0);
-
   const Content = () => {
-    if (!showNetwork) {
-      return "No network connection was detected";
-    }
+    if (!initialized) return <SectionSkeleton />;
+
+    const activeConnections = connections.filter(c => [ConnectionTypes.WIFI, ConnectionTypes.ETHERNET].includes(c.type));
+
+    if (activeConnections.length === 0) return "No network connections detected";
+
+    const summary = activeConnections.map(connection => (
+      <Em key={connection.id}>{connection.name} - {connection.addresses.map(formatIp)}</Em>
+    ));
 
     return (
       <>
-        <NetworkWiredStatus connections={activeWiredConnections} />
-        <NetworkWifiStatus connections={activeWifiConnections} />
-      </>
-    );
-  };
-
-  const WifiOptions = () => {
-    const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
-
-    return (
-      <>
-        <Button variant="link" onClick={() => setWifiSelectorOpen(true)}>Connect to a Wi-Fi network</Button>
-        <WifiSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
+        <div>{activeConnections.length} connection(s) set:</div>
+        <div className="split wrapped">{summary}</div>
       </>
     );
   };
 
   return (
-    <>
+    <Section
+      title="Network"
+      icon="settings_ethernet"
+      loading={!initialized}
+      path="/network"
+    >
       <Content />
-      { wifiScanSupported && <WifiOptions /> }
-    </>
+    </Section>
   );
 }

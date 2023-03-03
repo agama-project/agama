@@ -33,7 +33,7 @@ const onSelectCallback = jest.fn();
 const fakeNetwork = {
   ssid: "Fake Wi-Fi AP",
   security: ["WPA2"],
-  strenght: 86
+  strength: 86
 };
 
 const fakeSettings = {

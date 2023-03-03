@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,4 +19,16 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as LanguageSelector } from "./LanguageSelector";
+import React from "react";
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
+import { Em } from "~/components/core";
+
+describe("Em", () => {
+  it("wraps given children inside a compact PF4/Label", () => {
+    plainRender(<Em>Whatever</Em>);
+    const children = screen.getByText("Whatever");
+    const parent = children.closest("span.pf-c-label");
+    expect(parent.classList.contains("pf-m-compact")).toBe(true);
+  });
+});

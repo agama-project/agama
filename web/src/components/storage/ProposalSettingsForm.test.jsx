@@ -172,7 +172,7 @@ describe("ProposalSettingsForm", () => {
     });
 
     describe("when user enters the encryption password but disables the option before sending the form", () => {
-      it("executes onSubmit function with an emtpy password", async () => {
+      it("executes onSubmit function with an empty password", async () => {
         const FormWrapper = () => {
           return (
             <>

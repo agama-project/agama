@@ -16,6 +16,10 @@
   gap: var(--split-gutter);
 }
 
+.wrapped {
+  flex-wrap: wrap;
+}
+
 [data-state="reversed"] {
   flex-direction: row-reverse;
 }

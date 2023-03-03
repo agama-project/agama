@@ -20,18 +20,13 @@
  */
 
 import React from "react";
-
-import {
-  Label,
-  Text
-} from "@patternfly/react-core";
+import { Text } from "@patternfly/react-core";
+import { Em } from "~/components/core";
 
 export default function ProposalSummary({ proposal }) {
   const DeviceLabel = ({ device }) => {
     return (
-      <Label isCompact>
-        {device.label}
-      </Label>
+      <Em>{device.label}</Em>
     );
   };
 

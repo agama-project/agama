@@ -118,7 +118,7 @@ const SecondaryAction = ({ children, ...props }) => (
  *   <Cancel onClick={cancel} />
  *
  * @example <caption>Using it with a custom text</caption>
- *   <Cancel onClick={dissmiss}>Dismiss</Confirm>
+ *   <Cancel onClick={dismiss}>Dismiss</Confirm>
  *
  * @param {React.ReactNode} [props.children="Cancel"] - content of the action
  * @param {object} [props] - {@link Action} props
@@ -138,7 +138,7 @@ const Cancel = ({ children = "Cancel", ...props }) => (
  *
  * @example <caption>Advanced usage</caption>
  *   <AncillaryAction onClick={turnUserSettingsOff}>
- *     <Removeicon />
+ *     <RemoveIcon />
  *     <Text>Do not set</Text>
  *   </AncillaryAction>
  *

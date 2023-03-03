@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,33 +19,19 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Page, Section } from "~/components/core";
+import { FirstUser, RootAuthMethods } from "~/components/users";
 
-import { useInstallerClient } from "~/context/installer";
-import { Section } from "~/components/core";
-import { FirstUser, RootPassword, RootSSHKey } from "~/components/users";
-
-export default function Users({ showErrors }) {
-  const [errors, setErrors] = useState([]);
-  const { users: usersClient } = useInstallerClient();
-
-  useEffect(() => {
-    usersClient.getValidationErrors().then(setErrors);
-    return usersClient.onValidationChange(setErrors);
-  }, [usersClient]);
-
+export default function UsersPage() {
   return (
-    <>
-      <Section
-        key="users"
-        title="Users"
-        iconName="manage_accounts"
-        errors={showErrors ? errors : []}
-      >
-        <RootPassword />
-        <RootSSHKey />
+    <Page title="User Settings" icon="manage_accounts" actionLabel="Back" actionVariant="secondary">
+      <Section title="User" icon="person">
         <FirstUser />
       </Section>
-    </>
+      <Section title="Root authentication" icon="badge">
+        <RootAuthMethods />
+      </Section>
+    </Page>
   );
 }
