@@ -38,7 +38,7 @@ const myNetwork = {
 const otherNetwork = {
   ssid: "My Neighbor Network",
   security: ["WPA2"],
-  strengh: 35
+  strength: 35
 };
 
 const networksMock = [myNetwork, otherNetwork];

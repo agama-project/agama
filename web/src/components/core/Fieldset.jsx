@@ -25,7 +25,7 @@ import React from "react";
 
 /**
  * Convenient component for grouping form fields in "sections"
- * by using the native formfield element
+ * by using the native fieldset element
  *
  * @component
  *

@@ -144,7 +144,7 @@ const MainActions = FooterActions.Source;
  * Component for setting the additional content shown at the footer
  *
  * @example
- *   import { AdditionaInfo } from "dinstaller-layout";
+ *   import { AdditionalInfo } from "dinstaller-layout";
  *   import { About, HostIp } from "somewhere";
  *
  *   ...

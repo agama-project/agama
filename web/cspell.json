@@ -1,0 +1,31 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "allowCompoundWords": true,
+  "ignorePaths": [
+    "src/lib/cockpit.js",
+    "src/lib/cockpit-po-plugin.js"
+  ],
+  "ignoreWords": [
+    "addrs",
+    "apsens",
+    "btrfs",
+    "ccmp",
+    "dbus",
+    "dinstaller",
+    "ifaces",
+    "ipaddr",
+    "jdoe",
+    "lldp",
+    "luks",
+    "mgmt",
+    "partitioner",
+    "patternfly",
+    "rfkill",
+    "ssid",
+    "ssids",
+    "subvol",
+    "teleporter",
+    "tkip"
+  ]
+}
