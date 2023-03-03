@@ -47,8 +47,8 @@ beforeEach(() => {
     return {
       users: {
         setUser: setUserFn,
-        removeUser: removeUserFn,
         getUser: jest.fn().mockResolvedValue(user),
+        removeUser: removeUserFn,
         onUsersChange: onUsersChangeFn
       }
     };
@@ -161,11 +161,12 @@ describe("when there is some issue with the user config provided", () => {
   });
 });
 
-describe("when the first user is already defined", () => {
+describe("when the user is already defined", () => {
   beforeEach(() => {
     user = {
       fullName: "John Doe",
       userName: "jdoe",
+      password: "sup3rSecret",
       autologin: false
     };
   });
@@ -174,6 +175,74 @@ describe("when the first user is already defined", () => {
     installerRender(<FirstUser />);
     await screen.findByText("John Doe");
     await screen.findByText("jdoe");
+  });
+
+  it("allows editing the user without changing the password", async () => {
+    const { user } = installerRender(<FirstUser />);
+
+    await screen.findByText("John Doe");
+
+    const userActionsToggler = screen.getByRole("button", { name: "Actions" });
+    await user.click(userActionsToggler);
+    const editAction = screen.getByRole("menuitem", { name: "Edit" });
+    await user.click(editAction);
+    const dialog = await screen.findByRole("dialog");
+
+    const fullNameInput = within(dialog).getByLabelText("Full name");
+    await user.clear(fullNameInput);
+    await user.type(fullNameInput, "Jane");
+
+    const usernameInput = within(dialog).getByLabelText(/Username/);
+    await user.clear(usernameInput);
+    await user.type(usernameInput, "jane");
+
+    const autologinCheckbox = within(dialog).getByLabelText(/Auto-login/);
+    await user.click(autologinCheckbox);
+
+    const confirmButton = screen.getByRole("button", { name: /Confirm/i });
+    expect(confirmButton).toBeEnabled();
+    await user.click(confirmButton);
+
+    expect(setUserFn).toHaveBeenCalledWith({
+      fullName: "Jane",
+      userName: "jane",
+      password: "sup3rSecret",
+      autologin: true
+    });
+  });
+
+  it("allows changing the password", async () => {
+    const { user } = installerRender(<FirstUser />);
+
+    await screen.findByText("John Doe");
+
+    const userActionsToggler = screen.getByRole("button", { name: "Actions" });
+    await user.click(userActionsToggler);
+    const editAction = screen.getByRole("menuitem", { name: "Edit" });
+    await user.click(editAction);
+    const dialog = await screen.findByRole("dialog");
+
+    const confirmButton = screen.getByRole("button", { name: /Confirm/i });
+    const changePasswordCheckbox = within(dialog).getByLabelText("Edit password too");
+    await user.click(changePasswordCheckbox);
+
+    expect(confirmButton).toBeDisabled();
+
+    const passwordInput = within(dialog).getByLabelText("Password");
+    await user.type(passwordInput, "n0tSecret");
+    const passwordConfirmationInput = within(dialog).getByLabelText("Password confirmation");
+    await user.type(passwordConfirmationInput, "n0tSecret");
+
+    expect(confirmButton).toBeEnabled();
+
+    await user.click(confirmButton);
+
+    expect(setUserFn).toHaveBeenCalledWith({
+      fullName: "John Doe",
+      userName: "jdoe",
+      password: "n0tSecret",
+      autologin: false
+    });
   });
 
   it("allows removing the user", async () => {
