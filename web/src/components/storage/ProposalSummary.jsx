@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -30,9 +30,9 @@ export default function ProposalSummary({ proposal }) {
     );
   };
 
-  const device = proposal.availableDevices.find(d => d.id === proposal.candidateDevices[0]);
+  if (proposal.result === undefined) return <Text>Device not selected yet</Text>;
 
-  if (!device) return <Text>Device not selected yet</Text>;
+  const device = proposal.availableDevices.find(d => d.id === proposal.result.candidateDevices[0]);
 
   return (
     <Text>

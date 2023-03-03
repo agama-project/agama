@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -36,8 +36,8 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
   const ProposalDescription = () => {
     const settingsText = (proposal) => {
       let text = "Create file systems over";
-      if (proposal.encryptionPassword.length > 0) text += " encrypted";
-      text += proposal.lvm ? " LVM volumes" : " partitions";
+      if (proposal.result.encryptionPassword.length > 0) text += " encrypted";
+      text += proposal.result.lvm ? " LVM volumes" : " partitions";
 
       return text;
     };
@@ -46,7 +46,7 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
       <List>
         <ListItem>{settingsText(proposal)}</ListItem>
         <ListItem className="volumes-list">
-          Create the following file systems: {proposal.volumes.map(v => (
+          Create the following file systems: {proposal.result.volumes.map(v => (
             <Em key={v.mountPoint}>{v.mountPoint}</Em>
           ))}
         </ListItem>

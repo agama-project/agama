@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -50,9 +50,9 @@ const reducer = (state, action) => {
 
 export default function ProposalSettingsForm({ id, proposal, onSubmit, onValidate }) {
   const [state, dispatch] = useReducer(reducer, {
-    lvm: proposal.lvm,
-    encryption: proposal.encryptionPassword?.length !== 0,
-    encryptionPassword: proposal.encryptionPassword
+    lvm: proposal.result.lvm,
+    encryption: proposal.result.encryptionPassword?.length !== 0,
+    encryptionPassword: proposal.result.encryptionPassword
   });
 
   const onLvmChange = (value) => {

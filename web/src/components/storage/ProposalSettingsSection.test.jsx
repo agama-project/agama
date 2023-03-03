@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -36,10 +36,12 @@ const FakeProposalSettingsForm = ({ id, onSubmit }) => {
 jest.mock("~/components/storage/ProposalSettingsForm", () => FakeProposalSettingsForm);
 
 const proposal = {
-  candidateDevices: ["/dev/sda"],
-  encryptionPassword: "",
-  lvm: false,
-  volumes: [{ mountPoint: "/test1" }, { mountPoint: "/test2" }]
+  result: {
+    candidateDevices: ["/dev/sda"],
+    encryptionPassword: "",
+    lvm: false,
+    volumes: [{ mountPoint: "/test1" }, { mountPoint: "/test2" }]
+  }
 };
 
 it("renders the list of the volumes to create", () => {
@@ -108,8 +110,8 @@ it("closes the popup and submits the form when accept is clicked", async () => {
 
 describe("when neither lvm nor encryption are selected", () => {
   beforeEach(() => {
-    proposal.lvm = false;
-    proposal.encryptionPassword = "";
+    proposal.result.lvm = false;
+    proposal.result.encryptionPassword = "";
   });
 
   it("renders the proper description for the current settings", () => {
@@ -121,8 +123,8 @@ describe("when neither lvm nor encryption are selected", () => {
 
 describe("when lvm is selected", () => {
   beforeEach(() => {
-    proposal.lvm = true;
-    proposal.encryptionPassword = "";
+    proposal.result.lvm = true;
+    proposal.result.encryptionPassword = "";
   });
 
   it("renders the proper description for the current settings", () => {
@@ -134,8 +136,8 @@ describe("when lvm is selected", () => {
 
 describe("when encryption is selected", () => {
   beforeEach(() => {
-    proposal.lvm = false;
-    proposal.encryptionPassword = "12345";
+    proposal.result.lvm = false;
+    proposal.result.encryptionPassword = "12345";
   });
 
   it("renders the proper description for the current settings", () => {
@@ -147,8 +149,8 @@ describe("when encryption is selected", () => {
 
 describe("when LVM and encryption are selected", () => {
   beforeEach(() => {
-    proposal.lvm = true;
-    proposal.encryptionPassword = "12345";
+    proposal.result.lvm = true;
+    proposal.result.encryptionPassword = "12345";
   });
 
   it("renders the proper description for the current settings", () => {

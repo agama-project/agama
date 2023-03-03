@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -68,7 +68,7 @@ export default function ProposalPage() {
     const loadProposal = async () => {
       dispatch({ type: "SET_BUSY" });
 
-      const proposal = await cancellablePromise(client.storage.getProposal());
+      const proposal = await cancellablePromise(client.storage.proposal.getData());
       const errors = await cancellablePromise(client.storage.getValidationErrors());
 
       dispatch({
@@ -82,12 +82,12 @@ export default function ProposalPage() {
 
   const calculateProposal = async (settings) => {
     dispatch({ type: "SET_BUSY" });
-    await client.storage.calculateProposal({ ...state.proposal, ...settings });
+    await client.storage.proposal.calculate({ ...state.proposal.result, ...settings });
     dispatch({ type: "CALCULATE" });
   };
 
   const PageContent = () => {
-    if (state.busy || !state.proposal) return <SectionSkeleton lines={3} />;
+    if (state.busy || state.proposal?.result === undefined) return <SectionSkeleton lines={3} />;
 
     return (
       <>

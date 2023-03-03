@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -52,9 +52,11 @@ beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       storage: {
-        getProposal: jest.fn().mockResolvedValue(proposal),
-        getValidationErrors: jest.fn().mockResolvedValue([]),
-        calculateProposal: jest.fn().mockResolvedValue(0)
+        proposal: {
+          getData: jest.fn().mockResolvedValue(proposal),
+          calculate: jest.fn().mockResolvedValue(0)
+        },
+        getValidationErrors: jest.fn().mockResolvedValue([])
       }
     };
   });
@@ -62,7 +64,7 @@ beforeEach(() => {
 
 describe("when there is no proposal yet", () => {
   beforeEach(() => {
-    proposal = undefined;
+    proposal = { result: undefined };
   });
 
   it("renders the skeleton", async () => {
@@ -74,7 +76,7 @@ describe("when there is no proposal yet", () => {
 
 describe("when there is a proposal", () => {
   beforeEach(() => {
-    proposal = {};
+    proposal = { result: {} };
   });
 
   it("renders the sections", async () => {

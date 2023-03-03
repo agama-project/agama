@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -69,7 +69,7 @@ export default function StorageSection({ showErrors }) {
 
   useEffect(() => {
     const updateProposal = async () => {
-      const proposal = await cancellablePromise(client.storage.getProposal());
+      const proposal = await cancellablePromise(client.storage.proposal.getData());
       const errors = await cancellablePromise(client.storage.getValidationErrors());
 
       dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
