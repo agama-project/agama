@@ -69,7 +69,7 @@ describe DInstallerCli::Commands::User do
     end
 
     context "when a user is configured" do
-      let(:config) { ["Test user", "test", true] }
+      let(:config) { ["Test user", "test", "12345", true] }
 
       it "shows the first user config" do
         expect(subject).to receive(:say).once

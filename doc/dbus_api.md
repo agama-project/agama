@@ -471,7 +471,7 @@ Arguments:
   root public ssh key that can be used to login to machine
   Can be empty which means not set
 
-- FirstUser -> struct( string FullName, string UserName, boolean AutoLogin, map AdditionalData)
+- FirstUser -> struct( string FullName, string UserName, string Password, boolean AutoLogin, map AdditionalData)
   info about first user to set. if Username is empty, it means not set and other values can be ignored
 
 

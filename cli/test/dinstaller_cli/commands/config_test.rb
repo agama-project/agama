@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -198,7 +198,7 @@ describe DInstallerCli::Commands::Config do
       allow(software_client).to receive(:selected_product).and_return("Tumbleweed")
       allow(language_client).to receive(:selected_languages).and_return(["es_ES"])
       allow(storage_client).to receive(:candidate_devices).and_return(["/dev/vda"])
-      allow(users_client).to receive(:first_user).and_return(["Test User", "user", true])
+      allow(users_client).to receive(:first_user).and_return(["Test User", "user", "12345", true])
       allow(users_client).to receive(:root_ssh_key).and_return("1234abcd")
     end
 

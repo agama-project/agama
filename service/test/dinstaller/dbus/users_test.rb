@@ -53,4 +53,35 @@ describe DInstaller::DBus::Users do
       subject
     end
   end
+
+  describe "first_user" do
+    before do
+      allow(backend).to receive(:first_user).and_return(user)
+    end
+
+    context "if there is no user yet" do
+      let(:user) { nil }
+
+      it "returns default data" do
+        expect(subject.first_user).to eq(["", "", "", false, {}])
+      end
+    end
+
+    context "if there is an user" do
+      let(:user) do
+        instance_double(Y2Users::User,
+          full_name:        "Test user",
+          name:             "test",
+          password_content: "12345")
+      end
+
+      before do
+        allow(backend).to receive(:autologin?).with(user).and_return(true)
+      end
+
+      it "returns the first user data" do
+        expect(subject.first_user).to eq(["Test user", "test", "12345", true, {}])
+      end
+    end
+  end
 end
