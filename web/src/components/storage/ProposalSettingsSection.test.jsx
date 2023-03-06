@@ -92,7 +92,6 @@ it("allows aborting the settings edition when cancel is clicked", async () => {
   expect(calculateFn).not.toHaveBeenCalled();
 });
 
-
 describe("when neither lvm nor encryption are selected", () => {
   beforeEach(() => {
     proposal.result.lvm = false;

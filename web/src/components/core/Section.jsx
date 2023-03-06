@@ -34,7 +34,7 @@ import { ValidationErrors } from "~/components/core";
  * @param {string} [props.name] - the name of the icon
  * @param {number} [props.size=32] - the icon size
  *
- * @return {React.ReactNode}
+ * @return {React.ReactElement}
  */
 const SectionIcon = ({ name, size = 32 }) => {
   if (!name) return null;
@@ -53,12 +53,12 @@ const SectionIcon = ({ name, size = 32 }) => {
  * @param {object} props
  * @param {string} props.text - the title for the section
  * @param {string} props.path - the path where the section links to. If present, props.openDialog is ignored
- * @param {function} [props.openDialog] - callback to be triggered when user clicks on the title, used for opening a dialog.
+ * @param {React.MouseEventHandler|undefined} [props.openDialog] - callback to be triggered when user clicks on the title, used for opening a dialog.
  *
- * @return {React.ReactNode}
+ * @return {JSX.Element}
  */
 const SectionTitle = ({ text, path, openDialog }) => {
-  let title = text;
+  let title = <>{text}</>;
 
   if (path && path !== "") {
     title = <Link to={path}>{text}</Link>;
@@ -77,8 +77,9 @@ const SectionTitle = ({ text, path, openDialog }) => {
 /**
  * Internal component for wrapping and rendering the section content
  *
- * @param {JSX.Element} [props.children] - the content to be wrapped
- * @return {React.ReactNode}
+ * @param {object} props
+ * @param {React.ReactElement|React.ReactElement[]} props.children - the content to be wrapped
+ * @return {JSX.Element}
  */
 const SectionContent = ({ children }) => {
   return (
@@ -122,10 +123,11 @@ const SectionContent = ({ children }) => {
  * @param {string} [props.icon] - the name of the icon section, if any
  * @param {string} props.title - The title for the section
  * @param {string} props.path - The path where the section links to. If present, props.openDialog is ignored
- * @param {function} [props.openDialog] - callback to be triggered when user clicks on the title, used for opening a dialog.
+ * @param {React.MouseEventHandler|undefined} [props.openDialog] - callback to be triggered
+ *  when user clicks on the title, used for opening a dialog.
  * @param {boolean} [props.loading] - whether the section is busy loading its content or not
  * @param {import("~/client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title
- * @param {JSX.Element} [props.children] - the section content
+ * @param {React.ReactElement} props.children - the section content
  */
 export default function Section({
   icon,

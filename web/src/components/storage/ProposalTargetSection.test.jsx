@@ -94,7 +94,6 @@ describe("when there are candidate devices available", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(calculateFn).not.toHaveBeenCalled();
   });
-
 });
 
 describe("when there are no candidate devices available", () => {

@@ -90,7 +90,7 @@ describe("Section", () => {
           <Section title="Settings" openDialog={openDialog} />
         );
         const button = screen.getByRole("button", { name: "Settings" });
-        await user.click(button)
+        await user.click(button);
         expect(openDialog).toHaveBeenCalled();
       });
     });
@@ -108,7 +108,7 @@ describe("Section", () => {
           <Section path="/settings" title="Settings" openDialog={openDialog} />
         );
         const link = screen.getByRole("link", { name: "Settings" });
-        await user.click(link)
+        await user.click(link);
         expect(openDialog).not.toHaveBeenCalled();
       });
     });
