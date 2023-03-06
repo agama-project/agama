@@ -30,9 +30,16 @@ export default function ProposalSummary({ proposal }) {
     );
   };
 
-  if (proposal.result === undefined) return <Text>Device not selected yet</Text>;
+  const { availableDevices = [], result } = proposal;
 
-  const device = proposal.availableDevices.find(d => d.id === proposal.result.candidateDevices[0]);
+  // When there are no availableDevices the proposal does not make sense.
+  // Returning nothing because a parent component should be displaying the proper error message to the user.
+  if (availableDevices.length === 0) return null;
+
+  if (result === undefined) return <Text>Device not selected yet</Text>;
+
+  const [candidateDevice] = result.candidateDevices;
+  const device = proposal.availableDevices.find(d => d.id === candidateDevice);
 
   return (
     <Text>
