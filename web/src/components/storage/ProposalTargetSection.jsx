@@ -32,7 +32,7 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
     calculateProposal({ candidateDevices });
   };
 
-  const onActionClick = () => setIsOpen(true);
+  const openDeviceSelector = () => setIsOpen(true);
 
   const { availableDevices = [] } = proposal;
 
@@ -52,7 +52,7 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
   );
 
   return (
-    <Section title="Device" onActionClick={renderSelector ? onActionClick : null} hasSeparator>
+    <Section title="Device" openDialog={renderSelector ? openDeviceSelector : null}>
       <If condition={renderSelector} then={<Content />} else="No available devices" />
     </Section>
   );
