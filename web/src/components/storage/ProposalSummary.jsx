@@ -24,19 +24,20 @@ import { Text } from "@patternfly/react-core";
 import { Em } from "~/components/core";
 
 export default function ProposalSummary({ proposal }) {
-  const DeviceLabel = ({ device }) => {
-    return (
-      <Em>{device.label}</Em>
-    );
-  };
+  const { availableDevices = [], result } = proposal;
 
-  if (proposal.result === undefined) return <Text>Device not selected yet</Text>;
+  // When there are no availableDevices the proposal does not make sense.
+  // Returning nothing because a parent component should be displaying the proper error message to the user.
+  if (availableDevices.length === 0) return null;
 
-  const device = proposal.availableDevices.find(d => d.id === proposal.result.candidateDevices[0]);
+  if (result === undefined) return <Text>Device not selected yet</Text>;
+
+  const [candidateDevice] = result.candidateDevices;
+  const device = proposal.availableDevices.find(d => d.id === candidateDevice);
 
   return (
     <Text>
-      Install using device <DeviceLabel device={device} /> and deleting all its content
+      Install using device <Em>{device.label}</Em> and deleting all its content
     </Text>
   );
 }
