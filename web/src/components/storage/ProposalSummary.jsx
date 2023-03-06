@@ -24,12 +24,6 @@ import { Text } from "@patternfly/react-core";
 import { Em } from "~/components/core";
 
 export default function ProposalSummary({ proposal }) {
-  const DeviceLabel = ({ device }) => {
-    return (
-      <Em>{device.label}</Em>
-    );
-  };
-
   const { availableDevices = [], result } = proposal;
 
   // When there are no availableDevices the proposal does not make sense.
@@ -43,7 +37,7 @@ export default function ProposalSummary({ proposal }) {
 
   return (
     <Text>
-      Install using device <DeviceLabel device={device} /> and deleting all its content
+      Install using device <Em>{device.label}</Em> and deleting all its content
     </Text>
   );
 }
