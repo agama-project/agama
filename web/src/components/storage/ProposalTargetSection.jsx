@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,29 +19,22 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-
-import { Section, Popup } from "~/components/core";
-import { ProposalTargetForm, ProposalSummary } from "~/components/storage";
+import React from "react";
+import { If, Section } from "~/components/core";
+import { ProposalTargetForm } from "~/components/storage";
 
 export default function ProposalTargetSection({ proposal, calculateProposal }) {
-  const [isOpen, setIsOpen] = useState(false);
-
   const onTargetChange = ({ candidateDevices }) => {
-    setIsOpen(false);
     calculateProposal({ candidateDevices });
   };
 
   return (
-    <Section title="Device" onActionClick={() => setIsOpen(true)} hasSeparator>
-      <ProposalSummary proposal={proposal} />
-      <Popup aria-label="Device selection" isOpen={isOpen}>
-        <ProposalTargetForm id="target-form" proposal={proposal} onSubmit={onTargetChange} />
-        <Popup.Actions>
-          <Popup.Confirm form="target-form" type="submit">Accept</Popup.Confirm>
-          <Popup.Cancel onClick={() => setIsOpen(false)} autoFocus />
-        </Popup.Actions>
-      </Popup>
+    <Section title="Device" hasSeparator>
+      <If
+        condition={proposal.availableDevices?.length > 0}
+        then={<ProposalTargetForm id="target-form" proposal={proposal} onChangeCallback={onTargetChange} />}
+        else="No available devices"
+      />
     </Section>
   );
 }

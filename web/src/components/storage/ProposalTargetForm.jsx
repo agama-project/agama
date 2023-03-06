@@ -20,28 +20,25 @@
  */
 
 import React, { useState } from "react";
-
-import {
-  Form,
-} from "@patternfly/react-core";
-
+import { Form } from "@patternfly/react-core";
 import { DeviceSelector } from "~/components/storage";
+import { noop } from "~/utils";
 
-export default function ProposalTargetForm({ id, proposal, onSubmit }) {
+export default function ProposalTargetForm({ id, proposal, onChangeCallback = noop }) {
   const [candidateDevices, setCandidateDevices] = useState(proposal.result.candidateDevices);
 
-  const accept = (e) => {
-    e.preventDefault();
-    onSubmit({ candidateDevices });
+  const onChange = (value) => {
+    setCandidateDevices([value]);
+    onChangeCallback({ candidateDevices: [value] });
   };
 
   return (
-    <Form id={id} onSubmit={accept}>
+    <Form id={id}>
       <DeviceSelector
         key={candidateDevices[0]}
         value={candidateDevices[0]}
         options={proposal.availableDevices}
-        onChange={(value) => setCandidateDevices([value])}
+        onChange={onChange}
       />
     </Form>
   );

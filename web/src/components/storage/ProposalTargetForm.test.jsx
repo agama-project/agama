@@ -34,7 +34,7 @@ const proposal = {
     candidateDevices: ["/dev/sda"]
   }
 };
-const onSubmitFn = jest.fn();
+const onCallbackFn = jest.fn();
 
 describe("ProposalTargetForm", () => {
   it("renders a selector for choosing candidate devices among available devices in given proposal", () => {
@@ -73,31 +73,17 @@ describe("ProposalTargetForm", () => {
     });
   });
 
-  describe("#onSubmit", () => {
-    it("executes given onSubmit function with selected candidate devices", async () => {
-      // FIXME: our forms do not have submit forms because they are submitted
-      // from outside (usually from the popup buttons). That's why we have the id prop.
-      // Ideally, we should add a prop for choosing when a child submit button
-      // should be rendered and when not.
-      const FormWrapper = () => {
-        return (
-          <>
-            <ProposalTargetForm id="the-form" proposal={proposal} onSubmit={onSubmitFn} />
-            <button type="submit" form="the-form">Submit the form</button>
-          </>
-        );
-      };
-
-      const { user } = installerRender(<FormWrapper />);
+  describe("#onChange", () => {
+    it("executes given onChangeCallback function with selected candidate devices", async () => {
+      const { user } = installerRender(
+        <ProposalTargetForm id="the-form" proposal={proposal} onChangeCallback={onCallbackFn} />
+      );
 
       const deviceSelector = screen.getByRole("combobox");
       const sdbOption = within(deviceSelector).getByRole("option", { name: "/dev/sdb, 650 GiB" });
-      const submitButton = screen.getByRole("button", { name: "Submit the form" });
-
       await user.selectOptions(deviceSelector, sdbOption);
-      await user.click(submitButton);
 
-      expect(onSubmitFn).toHaveBeenCalledWith({ candidateDevices: ["/dev/sdb"] });
+      expect(onCallbackFn).toHaveBeenCalledWith({ candidateDevices: ["/dev/sdb"] });
     });
   });
 });
