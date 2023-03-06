@@ -99,7 +99,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
-    "react-teleporter": "^3.0.2",
+    "react-teleporter": "github:yast/react-teleporter#support-function-as-source",
     "regenerator-runtime": "^0.13.9"
   }
 }
