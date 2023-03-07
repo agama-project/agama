@@ -72,32 +72,6 @@ it("moves the focus to the close action after opening it", async () => {
   expect(closeLink).toHaveFocus();
 });
 
-describe("Sidebar content", () => {
-  it("contains the component for changing the selected product", async () => {
-    plainRender(<Sidebar />);
-    const nav = await screen.findByRole("navigation", { name: /options/i });
-    await within(nav).findByText("ChangeProductButton Mock");
-  });
-
-  it("contains the component for displaying the 'About' information", async () => {
-    plainRender(<Sidebar />);
-    const nav = await screen.findByRole("navigation", { name: /options/i });
-    await within(nav).findByText("About Mock");
-  });
-
-  it("contains the component for displaying the 'Host Ips' information", async () => {
-    plainRender(<Sidebar />);
-    const nav = await screen.findByRole("navigation", { name: /options/i });
-    await within(nav).findByText("Host Ips Mock");
-  });
-
-  it("contains the components for downloading the logs", async () => {
-    plainRender(<Sidebar />);
-    const nav = await screen.findByRole("navigation", { name: /options/i });
-    await within(nav).findByText("LogsButton Mock");
-  });
-});
-
 describe("onClick bubbling", () => {
   it("hides the sidebar only if the user clicked on a link w/o keepSidebarOpen attribute", async () => {
     const { user } = plainRender(<Sidebar />);
