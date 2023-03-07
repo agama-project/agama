@@ -26,11 +26,7 @@ import { ProposalActions } from "~/components/storage";
 
 export default function ProposalActionsSection({ proposal, errors }) {
   return (
-    <Section
-      title="Result"
-      hasSeparator
-      errors={errors}
-    >
+    <Section title="Result" errors={errors}>
       <ProposalActions actions={proposal.result.actions} />
     </Section>
   );

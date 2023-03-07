@@ -17,7 +17,15 @@ section > svg {
 section > h2 {
   grid-area: title;
 
-  a {
+  button {
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    padding: 0;
+  }
+
+  a, button {
     text-decoration: underline;
     text-decoration-thickness: 0.1em;
     text-underline-offset: 0.2em;

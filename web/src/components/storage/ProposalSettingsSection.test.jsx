@@ -52,13 +52,7 @@ it("renders the list of the volumes to create", () => {
   screen.getByText("/test2");
 });
 
-it("renders an icon for configuring the settings", () => {
-  installerRender(<ProposalSettingsSection proposal={proposal} />);
-
-  screen.getByRole("button", { name: "Section settings" });
-});
-
-it("does not show the popup by default", async () => {
+it("does not show the settings dialog by default", async () => {
   installerRender(<ProposalSettingsSection proposal={proposal} />);
 
   await waitFor(() => {
@@ -66,39 +60,13 @@ it("does not show the popup by default", async () => {
   });
 });
 
-it("shows the popup with the form when the icon is clicked", async () => {
-  const { user } = installerRender(<ProposalSettingsSection proposal={proposal} />);
-
-  const button = screen.getByRole("button", { name: "Section settings" });
-  await user.click(button);
-
-  await screen.findByRole("dialog");
-  screen.getByRole("form", { name: "Settings form" });
-});
-
-it("closes the popup without submitting the form when cancel is clicked", async () => {
+it("allows editing the settings when the user clicks on the section title", async () => {
   const calculateFn = jest.fn();
 
   const { user } = installerRender(<ProposalSettingsSection proposal={proposal} calculateProposal={calculateFn} />);
 
-  const button = screen.getByRole("button", { name: "Section settings" });
-  await user.click(button);
-
-  const popup = await screen.findByRole("dialog");
-  const cancel = within(popup).getByRole("button", { name: "Cancel" });
-  await user.click(cancel);
-
-  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  expect(calculateFn).not.toHaveBeenCalled();
-});
-
-it("closes the popup and submits the form when accept is clicked", async () => {
-  const calculateFn = jest.fn();
-
-  const { user } = installerRender(<ProposalSettingsSection proposal={proposal} calculateProposal={calculateFn} />);
-
-  const button = screen.getByRole("button", { name: "Section settings" });
-  await user.click(button);
+  const action = screen.getByRole("button", { name: "Settings" });
+  await user.click(action);
 
   const popup = await screen.findByRole("dialog");
   const accept = within(popup).getByRole("button", { name: "Accept" });
@@ -106,6 +74,22 @@ it("closes the popup and submits the form when accept is clicked", async () => {
 
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   expect(calculateFn).toHaveBeenCalled();
+});
+
+it("allows aborting the settings edition when cancel is clicked", async () => {
+  const calculateFn = jest.fn();
+
+  const { user } = installerRender(<ProposalSettingsSection proposal={proposal} calculateProposal={calculateFn} />);
+
+  const action = screen.getByRole("button", { name: "Settings" });
+  await user.click(action);
+
+  const popup = await screen.findByRole("dialog");
+  const cancel = within(popup).getByRole("button", { name: "Cancel" });
+  await user.click(cancel);
+
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(calculateFn).not.toHaveBeenCalled();
 });
 
 describe("when neither lvm nor encryption are selected", () => {
