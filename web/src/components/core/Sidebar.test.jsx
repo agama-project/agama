@@ -25,9 +25,9 @@ import { plainRender, mockComponent, mockLayout } from "~/test-utils";
 import { Sidebar } from "~/components/core";
 
 jest.mock("~/components/layout/Layout", () => mockLayout());
-jest.mock("~/components/core/About", () => mockComponent("About Mock"));
+jest.mock("~/components/core/About", () => mockComponent(<a href="#">About link mock</a>));
+jest.mock("~/components/core/LogsButton", () => mockComponent(<a href="#" data-keep-sidebar-open="true">Download logs mock</a>));
 jest.mock("~/components/core/ChangeProductButton", () => mockComponent("ChangeProductButton Mock"));
-jest.mock("~/components/core/LogsButton", () => mockComponent("LogsButton Mock"));
 jest.mock("~/components/network/TargetIpsPopup", () => mockComponent("Host Ips Mock"));
 
 it("renders the sidebar initially hidden", async () => {
@@ -95,5 +95,29 @@ describe("Sidebar content", () => {
     plainRender(<Sidebar />);
     const nav = await screen.findByRole("navigation", { name: /options/i });
     await within(nav).findByText("LogsButton Mock");
+  });
+});
+
+describe("onClick bubbling", () => {
+  it("hides the sidebar only if the user clicked on a link w/o keepSidebarOpen attribute", async () => {
+    const { user } = plainRender(<Sidebar />);
+    const openLink = screen.getByLabelText(/Show/i);
+    await user.click(openLink);
+    const nav = screen.getByRole("navigation", { name: /options/i });
+    expect(nav).toHaveAttribute("data-state", "visible");
+
+    // user clicks in the sidebar body
+    await user.click(nav);
+    expect(nav).toHaveAttribute("data-state", "visible");
+
+    // user clicks on a link set for keeping the sidebar open
+    const downloadLink = within(nav).getByRole("link", { name: "Download logs mock" });
+    await user.click(downloadLink);
+    expect(nav).toHaveAttribute("data-state", "visible");
+
+    // user clicks a link NOT set for keeping the sidebar open
+    const aboutLink = within(nav).getByRole("link", { name: "About link mock" });
+    await user.click(aboutLink);
+    expect(nav).toHaveAttribute("data-state", "hidden");
   });
 });

@@ -38,6 +38,18 @@ export default function Sidebar() {
     if (isOpen) closeButtonRef.current.focus();
   }, [isOpen]);
 
+  /**
+   * Handler for automatically closing the sidebar when a click bubbles from a
+   * children of its content.
+   *
+   * @param {MouseEvent} event - the event triggered by a click
+   */
+  const onClick = (event) => {
+    const { target, currentTarget } = event;
+    if (target === currentTarget) return;
+    if (!target.dataset.keepSidebarOpen) close();
+  };
+
   return (
     <>
       <PageActions>
@@ -71,7 +83,7 @@ export default function Sidebar() {
           </button>
         </header>
 
-        <div className="flex-stack">
+        <div className="flex-stack" onClick={onClick}>
           <ChangeProductButton onClickCallback={close} />
           <About onClickCallback={close} />
           <TargetIpsPopup onClickCallback={close} />
