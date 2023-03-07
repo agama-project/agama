@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -43,15 +43,5 @@ describe("About", () => {
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
-  });
-
-  it("triggers given onClickCallback function when opening the dialog", async () => {
-    const onClickCallback = jest.fn();
-
-    const { user } = plainRender(<About onClickCallback={onClickCallback} />);
-    const button = screen.getByRole("button", { name: /About/i });
-
-    await user.click(button);
-    expect(onClickCallback).toHaveBeenCalled();
   });
 });

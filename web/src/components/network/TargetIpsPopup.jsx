@@ -22,14 +22,14 @@
 import React, { useEffect, useState } from "react";
 import { Button, List, ListItem, Text } from "@patternfly/react-core";
 
-import { noop, useCancellablePromise } from "~/utils";
+import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { formatIp } from "~/client/network/utils";
 
 import { Icon } from "~/components/layout";
 import { Popup } from "~/components/core";
 
-export default function TargetIpsPopup({ onClickCallback = noop }) {
+export default function TargetIpsPopup() {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [addresses, setAddresses] = useState([]);
@@ -58,11 +58,7 @@ export default function TargetIpsPopup({ onClickCallback = noop }) {
   if (addresses.length === 0) return null;
   const [firstIp] = addresses;
 
-  const open = () => {
-    setIsOpen(true);
-    onClickCallback();
-  };
-
+  const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
 
   return (

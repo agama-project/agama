@@ -73,16 +73,6 @@ describe("TargetIpsPopup", () => {
     });
   });
 
-  it("triggers onClickCallback function when popup is open", async () => {
-    const onClickCallback = jest.fn();
-
-    const { user } = installerRender(<TargetIpsPopup onClickCallback={onClickCallback} />);
-
-    const button = await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });
-    await user.click(button);
-    expect(onClickCallback).toHaveBeenCalled();
-  });
-
   it("updates address and hostname if they change", async () => {
     installerRender(<TargetIpsPopup />);
     await screen.findByRole("button", { name: /1.2.3.4\/24 \(example.net\)/i });

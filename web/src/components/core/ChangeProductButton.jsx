@@ -24,9 +24,8 @@ import { Button } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 import { useSoftware } from "~/context/software";
 import { Icon } from "~/components/layout";
-import { noop } from "~/utils";
 
-export default function ChangeProductButton({ onClickCallback = noop }) {
+export default function ChangeProductButton() {
   const { products } = useSoftware();
   const navigate = useNavigate();
 
@@ -38,10 +37,7 @@ export default function ChangeProductButton({ onClickCallback = noop }) {
     <Button
       variant="link"
       icon={<Icon name="edit_square" size="24" />}
-      onClick={() => {
-        navigate("/products");
-        onClickCallback();
-      }}
+      onClick={() => navigate("/products")}
     >
       Change selected product
     </Button>

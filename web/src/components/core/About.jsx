@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,19 +20,14 @@
  */
 
 import React, { useState } from "react";
-import { noop } from "~/utils";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { Popup } from "~/components/core";
 
-export default function About({ onClickCallback = noop }) {
+export default function About() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const open = () => {
-    setIsOpen(true);
-    onClickCallback();
-  };
-
+  const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
 
   return (

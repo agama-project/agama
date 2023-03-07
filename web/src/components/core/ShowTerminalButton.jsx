@@ -27,22 +27,13 @@ import { Icon } from "~/components/layout";
 
 /**
  * Button for displaying the terminal application
- *
  * @component
- *
- * @param {function} onClickCallback callback triggered after clicking the button
  */
-const ShowTerminalButton = ({ onClickCallback }) => {
+const ShowTerminalButton = () => {
   const [isTermDisplayed, setIsTermDisplayed] = useState(false);
 
-  const onClick = () => {
-    if (onClickCallback) onClickCallback();
-    setIsTermDisplayed(true);
-  };
-
-  const onClose = () => {
-    setIsTermDisplayed(false);
-  };
+  const onClick = () => setIsTermDisplayed(true);
+  const onClose = () => setIsTermDisplayed(false);
 
   return (
     <>

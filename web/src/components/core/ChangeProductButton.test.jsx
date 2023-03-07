@@ -86,15 +86,5 @@ describe("ChangeProductButton", () => {
       await user.click(changeProductButton);
       expect(mockNavigateFn).toHaveBeenCalledWith("/products");
     });
-
-    it("triggers given callback when user clicks on rendered button", async () => {
-      const onClickCallback = jest.fn();
-
-      const { user } = plainRender(<ChangeProductButton onClickCallback={onClickCallback} />);
-      const changeProductButton = await screen.findByRole("button", { name: "Change selected product" });
-
-      await user.click(changeProductButton);
-      expect(onClickCallback).toHaveBeenCalled();
-    });
   });
 });
