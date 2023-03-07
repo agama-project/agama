@@ -45,11 +45,6 @@ const SectionIcon = ({ name, size = 32 }) => {
 /**
  * Internal component for rendering the section title
  *
- *  NOTE: a section can do either, navigate to a page following given path or
- *  open a dialog triggering the openDialog callback but not both. Thus, if path
- *  is given onDialogCallback will be completely ignored. page or open a dialog,
- *  but not both.
- *
  * @param {object} props
  * @param {string} props.text - the title for the section
  * @param {string} props.path - the path where the section links to. If present, props.openDialog is ignored
@@ -94,10 +89,9 @@ const SectionContent = ({ children }) => {
  * Displays an installation section
  * @component
  *
- *  NOTE: a section can do either, navigate to a page following given path or
- *  open a dialog triggering the openDialog callback but not both. Thus, if path
- *  is given onDialogCallback will be completely ignored. page or open a dialog,
- *  but not both.
+ *  NOTE: a section can do either, navigate to the given path or open a dialog
+ *  triggering the openDialog callback but not both. Thus, if path is given
+ *  openDialog callback will be completely ignored.
  *
  * @example <caption>Simple usage</caption>
  *   <Section title="Users" icon="manage_accounts">
