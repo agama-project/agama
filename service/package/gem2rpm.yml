@@ -1,31 +1,29 @@
 ---
 :sourceurl: "%{mod_full_name}.gem"
-:preamble: |-
-  # Override build.rpm, see also https://github.com/openSUSE/obs-build/blob/master/configs/
-  %global rb_build_versions %{rb_default_ruby}
-  BuildRequires:  dbus-1-common
-  Requires:       dbus-1-common
-  Requires:       snapper
-  Requires:       yast2-bootloader
-  Requires:       yast2-country
-  Requires:       yast2-hardware-detection
-  Requires:       yast2-installation
-  Requires:       yast2-network
-  Requires:       yast2-proxy
-  Requires:       yast2-storage-ng
-  Requires:       yast2-iscsi-client >= 4.5.7
-  Requires:       yast2-users
-  # yast2 with ArchFilter
-  Requires:       yast2 >= 4.5.20
-# ## used by gem2rpm
 :post_install: |-
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/dbus.conf %{buildroot}%{_datadir}/dbus-1/d-installer.conf
   install --directory %{buildroot}%{_datadir}/dbus-1/d-installer-services
   install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/d-installer-services %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/org.opensuse.DInstaller*.service
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/systemd.service %{buildroot}%{_unitdir}/d-installer.service
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/etc/d-installer.yaml %{buildroot}%{_sysconfdir}/d-installer.yaml
-# ## used by gem_packages
 :main:
+  :preamble: |-
+    # Override build.rpm, see also https://github.com/openSUSE/obs-build/blob/master/configs/
+    %global rb_build_versions %{rb_default_ruby}
+    BuildRequires:  dbus-1-common
+    Requires:       dbus-1-common
+    Requires:       snapper
+    Requires:       yast2-bootloader
+    Requires:       yast2-country
+    Requires:       yast2-hardware-detection
+    Requires:       yast2-installation
+    Requires:       yast2-network
+    Requires:       yast2-proxy
+    Requires:       yast2-storage-ng
+    Requires:       yast2-iscsi-client >= 4.5.7
+    Requires:       yast2-users
+    # yast2 with ArchFilter
+    Requires:       yast2 >= 4.5.20
   :filelist: "%{_datadir}/dbus-1/d-installer.conf\n
     %dir %{_datadir}/dbus-1/d-installer-services\n
     %{_datadir}/dbus-1/d-installer-services/org.opensuse.DInstaller*.service\n
