@@ -85,11 +85,11 @@ export default function Sidebar() {
 
         <div className="flex-stack" onClick={onClick}>
           <ChangeProductButton />
-          <About />
-          <TargetIpsPopup />
-          <LogsButton data-keep-sidebar-open="true" />
           <ShowLogButton />
+          <LogsButton data-keep-sidebar-open="true" />
           <ShowTerminalButton />
+          <TargetIpsPopup />
+          <About />
         </div>
 
         <footer className="split" data-state="reversed">
