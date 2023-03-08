@@ -25,6 +25,43 @@ import { About, ChangeProductButton, LogsButton, ShowLogButton, ShowTerminalButt
 import { TargetIpsPopup } from "~/components/network";
 
 /**
+ * Internal and memoized component for rendering links only once
+ *
+ * The reason of this is to avoid re-rendering those links each time
+ * the sidebar visibility is changed. It does not make sense to re-trigger
+ * their logic (which might be complicated or not) just because the
+ * "expanded"/"visible" state of the Sidebar has changed.
+ *
+ * The issue can be fixed in other ways, but there is a reason for discarded
+ * them at this moment. Namely,
+ *
+ *   - Use a stateless Sidebar, handling the visibility with pure CSS
+ *
+ *     That would be great, but it's (almost?) not possible to make it
+ *     completely accessible using just CSS.
+ *
+ *   - Move these children outside, placing them in the same location the
+ *     <Sidebar /> is used.
+ *
+ *     It will not work when using the function as child component pattern,
+ *     which is the case of the PageOptions content, which we will use for
+ *     teleporting a Page options to the Sidebar by now.
+ *
+ * To know more about how children and parent re-renders behavior, have a look to
+ * https://www.developerway.com/posts/react-elements-children-parents
+ */
+const FixedLinks = React.memo(() => (
+  <>
+    <ChangeProductButton />
+    <ShowLogButton />
+    <LogsButton data-keep-sidebar-open="true" />
+    <ShowTerminalButton />
+    <TargetIpsPopup />
+    <About />
+  </>
+), () => true);
+
+/**
  * D-Installer sidebar navigation
  */
 export default function Sidebar() {
@@ -84,12 +121,7 @@ export default function Sidebar() {
         </header>
 
         <div className="flex-stack" onClick={onClick}>
-          <ChangeProductButton />
-          <ShowLogButton />
-          <LogsButton data-keep-sidebar-open="true" />
-          <ShowTerminalButton />
-          <TargetIpsPopup />
-          <About />
+          <FixedLinks />
         </div>
 
         <footer className="split" data-state="reversed">
