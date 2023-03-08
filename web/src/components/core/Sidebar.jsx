@@ -60,7 +60,7 @@ export default function Sidebar() {
           aria-controls="navigation-and-options"
           aria-expanded={isOpen}
         >
-          <Icon name="menu" onClick={open} />
+          <Icon name="menu" />
         </button>
       </PageActions>
 
