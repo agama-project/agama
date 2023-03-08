@@ -28,4 +28,4 @@
     %dir %{_datadir}/dbus-1/d-installer-services\n
     %{_datadir}/dbus-1/d-installer-services/org.opensuse.DInstaller*.service\n
     %{_unitdir}/d-installer.service\n
-    %{_sysconfdir}/d-installer.yaml\n"
+    %config %{_sysconfdir}/d-installer.yaml\n"
