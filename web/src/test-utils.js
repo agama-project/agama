@@ -34,6 +34,11 @@ import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 
 /**
+ * Internal mock for manipulating routes, using ["/"] by default
+ */
+const initialRoutes = jest.fn().mockReturnValue(["/"]);
+
+/**
  * Allows checking when react-router-dom navigate function  was
  * called with certain path
  *
@@ -41,6 +46,18 @@ import { InstallerClientProvider } from "~/context/installer";
  *   expect(mockNavigateFn).toHaveBeenCalledWith("/")
  */
 const mockNavigateFn = jest.fn();
+
+/**
+ * Allows manipulating MemoryRouter routes for testing purpose
+ *
+ * NOTE: on purpose, it will take effect only once.
+ *
+ * @example
+ *   mockRoutes("/products", "/storage");
+ *
+ * @param {...string} routes
+ */
+const mockRoutes = (...routes) => initialRoutes.mockReturnValueOnce(routes);
 
 // Centralize the react-router-dom mock here
 jest.mock('react-router-dom', () => ({
@@ -55,7 +72,7 @@ const Providers = ({ children }) => {
 
   return (
     <InstallerClientProvider client={client}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={initialRoutes()}>
         {children}
       </MemoryRouter>
     </InstallerClientProvider>
@@ -138,5 +155,6 @@ export {
   createCallbackMock,
   mockComponent,
   mockLayout,
-  mockNavigateFn
+  mockNavigateFn,
+  mockRoutes,
 };

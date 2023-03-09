@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { plainRender, installerRender } from "~/test-utils";
+import { installerRender, mockRoutes } from "~/test-utils";
 import { createClient } from "~/client";
 import { ChangeProductButton } from "~/components/core";
 
@@ -48,6 +48,21 @@ beforeEach(() => {
 });
 
 describe("ChangeProductButton", () => {
+  describe("when it's already in the product selection path", () => {
+    beforeEach(() => {
+      mockRoutes("/products");
+      mockProducts = [
+        { id: "openSUSE", name: "openSUSE Tumbleweed" },
+        { id: "Leap Micro", name: "openSUSE Micro" }
+      ];
+    });
+
+    it("renders nothing", async () => {
+      const { container } = installerRender(<ChangeProductButton />);
+      await waitFor(() => expect(container).toBeEmptyDOMElement());
+    });
+  });
+
   describe("when there is only a single product", () => {
     beforeEach(() => {
       mockProducts = [
@@ -56,7 +71,7 @@ describe("ChangeProductButton", () => {
     });
 
     it("renders nothing", async () => {
-      const { container } = plainRender(<ChangeProductButton />);
+      const { container } = installerRender(<ChangeProductButton />);
       await waitFor(() => expect(container).toBeEmptyDOMElement());
     });
   });
