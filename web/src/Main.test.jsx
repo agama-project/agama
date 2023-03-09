@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,18 +21,16 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "~/test-utils";
+import { plainRender, mockComponent } from "~/test-utils";
 
 import Main from "~/Main";
 
 jest.mock("~/components/questions/Questions", () => mockComponent("Questions Mock"));
-jest.mock('react-router-dom', () => ({
-  Outlet: mockComponent("Content"),
-}));
 
 it("renders the Questions component and the content", async () => {
-  installerRender(<Main />);
+  plainRender(<Main />);
 
   await screen.findByText("Questions Mock");
-  await screen.findByText("Content");
+  // react-router-dom Outlet is mocked. See test-utils for more details
+  await screen.findByText("Outlet Content");
 });

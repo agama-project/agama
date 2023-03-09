@@ -21,12 +21,8 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { plainRender, installerRender } from "~/test-utils";
 import { Section } from "~/components/core";
-
-jest.mock('react-router-dom', () => ({
-  Link: ({ to, children }) => <a href={to}>{children}</a>
-}));
 
 describe("Section", () => {
   it("renders given title", () => {
@@ -74,10 +70,9 @@ describe("Section", () => {
 
   describe("when path is given", () => {
     it("renders a link for navigating to it", async () => {
-      plainRender(<Section title="Settings" path="/settings" />);
+      installerRender(<Section title="Settings" path="/settings" />);
       const heading = screen.getByRole("heading", { name: "Settings" });
       const link = within(heading).getByRole("link", { name: "Settings" });
-      // NOTE: ReactRouter#Link is mocked at the top of file.
       expect(link).toHaveAttribute("href", "/settings");
     });
   });
@@ -86,7 +81,7 @@ describe("Section", () => {
     describe("and path is not present", () => {
       it("triggers it when the user click on the section title", async () => {
         const openDialog = jest.fn();
-        const { user } = plainRender(
+        const { user } = installerRender(
           <Section title="Settings" openDialog={openDialog} />
         );
         const button = screen.getByRole("button", { name: "Settings" });
@@ -96,15 +91,9 @@ describe("Section", () => {
     });
 
     describe("but path is present too", () => {
-      // Silence "Error: Not Implemented: navigation..." from jsdom when clicking a link
-      // https://github.com/jsdom/jsdom/issues/2112
-      const eventListener = (e) => e.preventDefault();
-      beforeEach(() => window.addEventListener("click", eventListener));
-      afterEach(() => window.removeEventListener("click", eventListener, true));
-
       it("does not triggers it when the user click on the section title", async () => {
         const openDialog = jest.fn();
-        const { user } = plainRender(
+        const { user } = installerRender(
           <Section path="/settings" title="Settings" openDialog={openDialog} />
         );
         const link = screen.getByRole("link", { name: "Settings" });

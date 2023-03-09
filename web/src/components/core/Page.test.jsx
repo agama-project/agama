@@ -24,11 +24,6 @@ import { screen } from "@testing-library/react";
 import { installerRender, mockLayout } from "~/test-utils";
 import { Page } from "~/components/core";
 
-const mockNavigateFn = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigateFn,
-}));
 jest.mock("~/components/layout/Layout", () => mockLayout());
 
 describe("Page", () => {

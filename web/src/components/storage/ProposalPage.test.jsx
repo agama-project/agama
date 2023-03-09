@@ -35,14 +35,8 @@ const FakeProposalTargetSection = ({ calculateProposal }) => {
 };
 
 jest.mock("~/client");
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => jest.fn()
-}));
-
 jest.mock("~/components/core/SectionSkeleton", () => mockComponent("Loading proposal"));
 jest.mock("~/components/storage/ProposalTargetSection", () => FakeProposalTargetSection);
-
 jest.mock("~/components/storage/ProposalSettingsSection", () => mockComponent("Settings section"));
 jest.mock("~/components/storage/ProposalActionsSection", () => mockComponent("Actions section"));
 

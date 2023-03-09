@@ -44,11 +44,6 @@ jest.mock("~/context/software", () => ({
   }
 }));
 
-jest.mock('react-router-dom', () => ({
-  Navigate: mockComponent("Navigate"),
-  useNavigate: () => jest.fn()
-}));
-
 jest.mock("~/components/layout/Layout", () => mockLayout());
 jest.mock("~/components/overview/L10nSection", () => mockComponent("Localization Section"));
 jest.mock("~/components/overview/StorageSection", () => mockComponent("Storage Section"));
@@ -92,7 +87,8 @@ describe("when no product is selected", () => {
   it("redirects to the product selection page", async () => {
     installerRender(<Overview />);
 
-    await screen.findByText("Navigate");
+    // react-router-dom Navigate is mocked. See test-utils for more details.
+    await screen.findByText("Navigating to /products");
   });
 });
 

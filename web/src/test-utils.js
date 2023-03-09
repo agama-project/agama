@@ -26,17 +26,38 @@
  */
 
 import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
 
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 
-const InstallerProvider = ({ children }) => {
+/**
+ * Allows checking when react-router-dom navigate function  was
+ * called with certain path
+ *
+ * @example
+ *   expect(mockNavigateFn).toHaveBeenCalledWith("/")
+ */
+const mockNavigateFn = jest.fn();
+
+// Centralize the react-router-dom mock here
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigateFn,
+  Navigate: ({ to: route }) => <>Navigating to {route}</>,
+  Outlet: () => <>Outlet Content</>
+}));
+
+const Providers = ({ children }) => {
   const client = createClient();
+
   return (
     <InstallerClientProvider client={client}>
-      {children}
+      <MemoryRouter>
+        {children}
+      </MemoryRouter>
     </InstallerClientProvider>
   );
 };
@@ -45,7 +66,7 @@ const installerRender = (ui, options = {}) => {
   return (
     {
       user: userEvent.setup(),
-      ...render(ui, { wrapper: InstallerProvider, ...options })
+      ...render(ui, { wrapper: Providers, ...options })
     }
   );
 };
@@ -111,4 +132,11 @@ const mockLayout = () => ({
   AdditionalInfo: ({ children }) => children,
 });
 
-export { installerRender, plainRender, createCallbackMock, mockComponent, mockLayout };
+export {
+  plainRender,
+  installerRender,
+  createCallbackMock,
+  mockComponent,
+  mockLayout,
+  mockNavigateFn
+};

@@ -26,11 +26,6 @@ import NetworkPage from "~/components/network/NetworkPage";
 import { ConnectionTypes } from "~/client/network";
 import { createClient } from "~/client";
 
-const mockNavigateFn = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigateFn,
-}));
 jest.mock("~/client");
 
 const wiredConnection = {

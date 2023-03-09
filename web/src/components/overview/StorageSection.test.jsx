@@ -26,14 +26,8 @@ import { createClient } from "~/client";
 import { BUSY, IDLE } from "~/client/status";
 import { StorageSection } from "~/components/overview";
 
-const mockUseNavigate = jest.fn();
 jest.mock("~/client");
 jest.mock("~/components/core/SectionSkeleton", () => mockComponent("Loading storage"));
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockUseNavigate,
-  Link: mockComponent("Link")
-}));
 
 let status = IDLE;
 let proposal = {

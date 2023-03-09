@@ -21,17 +21,11 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { UsersSection } from "~/components/overview";
 import { createClient } from "~/client";
 
-const mockNavigateFn = jest.fn();
-
 jest.mock("~/client");
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigateFn,
-  Link: mockComponent("Link")
-}));
 
 const user = {
   fullName: "Jane Doe",
