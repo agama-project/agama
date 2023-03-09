@@ -21,7 +21,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Icon, PageActions } from "~/components/layout";
-import { About, ChangeProductButton, LogsButton, ShowLogButton, ShowTerminalButton } from "~/components/core";
+import { About, LogsButton, ShowLogButton, ShowTerminalButton } from "~/components/core";
+import { ChangeProductLink } from "~/components/software";
 import { TargetIpsPopup } from "~/components/network";
 
 /**
@@ -52,7 +53,7 @@ import { TargetIpsPopup } from "~/components/network";
  */
 const FixedLinks = React.memo(() => (
   <>
-    <ChangeProductButton />
+    <ChangeProductLink />
     <ShowLogButton />
     <LogsButton data-keep-sidebar-open="true" />
     <ShowTerminalButton />

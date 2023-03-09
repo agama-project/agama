@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,7 +23,7 @@ import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { createClient } from "~/client";
-import { ChangeProductButton } from "~/components/core";
+import { ChangeProductLink } from "~/components/software";
 
 let mockProducts;
 
@@ -47,7 +47,7 @@ beforeEach(() => {
   });
 });
 
-describe("ChangeProductButton", () => {
+describe("ChangeProductLink", () => {
   describe("when it's already in the product selection path", () => {
     beforeEach(() => {
       mockRoutes("/products");
@@ -58,7 +58,7 @@ describe("ChangeProductButton", () => {
     });
 
     it("renders nothing", async () => {
-      const { container } = installerRender(<ChangeProductButton />);
+      const { container } = installerRender(<ChangeProductLink />);
       await waitFor(() => expect(container).toBeEmptyDOMElement());
     });
   });
@@ -71,7 +71,7 @@ describe("ChangeProductButton", () => {
     });
 
     it("renders nothing", async () => {
-      const { container } = installerRender(<ChangeProductButton />);
+      const { container } = installerRender(<ChangeProductLink />);
       await waitFor(() => expect(container).toBeEmptyDOMElement());
     });
   });
@@ -85,7 +85,7 @@ describe("ChangeProductButton", () => {
     });
 
     it("renders a link for navigating to the selection product page", async () => {
-      installerRender(<ChangeProductButton />, { usingProvider: true });
+      installerRender(<ChangeProductLink />, { usingProvider: true });
       const link = await screen.findByRole("link", { name: "Change selected product" });
 
       expect(link).toHaveAttribute("href", "/products");

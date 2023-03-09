@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -24,7 +24,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useSoftware } from "~/context/software";
 import { Icon } from "~/components/layout";
 
-export default function ChangeProductButton() {
+export default function ChangeProductLink() {
   const { products } = useSoftware();
   const { pathname } = useLocation();
   const multiProduct = products?.length > 1;

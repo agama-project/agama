@@ -41,7 +41,6 @@ export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmati
 export { default as Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";
 export { default as ProgressText } from "./ProgressText";
-export { default as ChangeProductButton } from "./ChangeProductButton";
 export { default as ValidationErrors } from "./ValidationErrors";
 export { default as Terminal } from "./Terminal";
 export { default as ShowTerminalButton } from "./ShowTerminalButton";

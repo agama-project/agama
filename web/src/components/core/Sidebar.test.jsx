@@ -27,7 +27,7 @@ import { Sidebar } from "~/components/core";
 jest.mock("~/components/layout/Layout", () => mockLayout());
 jest.mock("~/components/core/About", () => mockComponent(<a href="#">About link mock</a>));
 jest.mock("~/components/core/LogsButton", () => mockComponent(<a href="#" data-keep-sidebar-open="true">Download logs mock</a>));
-jest.mock("~/components/core/ChangeProductButton", () => mockComponent("ChangeProductButton Mock"));
+jest.mock("~/components/software/ChangeProductLink", () => mockComponent("ChangeProductLink Mock"));
 jest.mock("~/components/network/TargetIpsPopup", () => mockComponent("Host Ips Mock"));
 
 it("renders the sidebar initially hidden", async () => {
