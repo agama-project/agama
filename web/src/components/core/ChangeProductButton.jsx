@@ -20,26 +20,22 @@
  */
 
 import React from "react";
-import { Button } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSoftware } from "~/context/software";
 import { Icon } from "~/components/layout";
 
 export default function ChangeProductButton() {
   const { products } = useSoftware();
-  const navigate = useNavigate();
+  const multiProduct = products?.length > 1;
 
-  if (products === undefined || products.length === 1) {
+  if (!multiProduct) {
     return null;
   }
 
   return (
-    <Button
-      variant="link"
-      icon={<Icon name="edit_square" size="24" />}
-      onClick={() => navigate("/products")}
-    >
+    <Link to="/products">
+      <Icon name="edit_square" size="24" />
       Change selected product
-    </Button>
+    </Link>
   );
 }

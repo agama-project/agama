@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { plainRender, mockNavigateFn } from "~/test-utils";
+import { plainRender, installerRender } from "~/test-utils";
 import { createClient } from "~/client";
 import { ChangeProductButton } from "~/components/core";
 
@@ -69,18 +69,11 @@ describe("ChangeProductButton", () => {
       ];
     });
 
-    it("renders a button for changing the selected product", async () => {
-      plainRender(<ChangeProductButton />);
+    it("renders a link for navigating to the selection product page", async () => {
+      installerRender(<ChangeProductButton />, { usingProvider: true });
+      const link = await screen.findByRole("link", { name: "Change selected product" });
 
-      await screen.findByRole("button", { name: "Change selected product" });
-    });
-
-    it("navigates to products route when users clicks on rendered button", async () => {
-      const { user } = plainRender(<ChangeProductButton />);
-      const changeProductButton = await screen.findByRole("button", { name: "Change selected product" });
-
-      await user.click(changeProductButton);
-      expect(mockNavigateFn).toHaveBeenCalledWith("/products");
+      expect(link).toHaveAttribute("href", "/products");
     });
   });
 });
