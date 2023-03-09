@@ -72,8 +72,9 @@ module DInstaller
     def config_phase
       installation_phase.config
 
-      storage.probe
-      software.probe
+      start_progress(2)
+      progress.step("Probing Storage") { storage.probe }
+      progress.step("Probing Software") { software.probe }
 
       logger.info("Config phase done")
     rescue StandardError => e
