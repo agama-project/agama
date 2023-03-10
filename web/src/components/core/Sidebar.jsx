@@ -52,7 +52,8 @@ import { TargetIpsPopup } from "~/components/network";
  * https://www.developerway.com/posts/react-elements-children-parents
  */
 const FixedLinks = React.memo(() => (
-  <>
+  <div className="flex-stack">
+    <h3>Other options</h3>
     <ChangeProductLink />
     <Disclosure label="Diagnosis tools" data-keep-sidebar-open>
       <ShowLogButton />
@@ -61,7 +62,7 @@ const FixedLinks = React.memo(() => (
     </Disclosure>
     <TargetIpsPopup />
     <About />
-  </>
+  </div>
 ), () => true);
 
 /**
@@ -115,7 +116,7 @@ export default function Sidebar() {
         data-state={isOpen ? "visible" : "hidden"}
       >
         <header className="split justify-between">
-          <h1>Options</h1>
+          <h2>Options</h2>
 
           <button
             onClick={close}
