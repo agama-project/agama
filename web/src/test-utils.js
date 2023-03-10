@@ -147,6 +147,8 @@ const mockLayout = () => ({
   PageActions: ({ children }) => children,
   MainActions: ({ children }) => children,
   AdditionalInfo: ({ children }) => children,
+  PageOptionsSlot: ({ children }) => children,
+  PageOptionsContent: ({ children }) => children,
 });
 
 export {

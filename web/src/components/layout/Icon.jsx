@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import React from 'react';
 import Apps from "@icons/apps.svg?component";
 import Badge from "@icons/badge.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
+import ChevronRight from "@icons/chevron_right.svg?component";
 import Delete from "@icons/delete.svg?component";
 import Description from "@icons/description.svg?component";
 import Download from "@icons/download.svg?component";
@@ -63,6 +64,7 @@ const icons = {
   apps: Apps,
   badge: Badge,
   check_circle: CheckCircle,
+  chevron_right: ChevronRight,
   delete: Delete,
   description: Description,
   download: Download,

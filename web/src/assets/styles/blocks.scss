@@ -96,6 +96,7 @@ section > .content {
   font-weight: var(--fw-bold);
   text-decoration: underline;
   text-underline-offset: 2px;
+  padding-block: 0;
 
   &:hover {
     color: var(--color-link-hover);
@@ -140,6 +141,37 @@ section > .content {
 
 .sidebar[data-state="visible"] {
   transition: all 0.2s ease-in-out;
+}
+
+.disclosure > button {
+  margin-inline-start: var(--pf-global--spacer--md);
+  display: inline-flex;
+  align-items: center;
+  // Keep links and buttons labels aligned by adding the same margin than
+  // .pf-c-button__icon.pf-m-start
+  svg {
+    margin-inline-end: var(--pf-global--spacer--xs);
+    transition: transform 0.2s ease-in-out;
+  }
+
+  &[aria-expanded="true"] {
+    svg {
+      transform: rotate(90deg);
+    }
+  }
+
+  &[aria-expanded="false"] + div {
+    display: none;
+    visibility: hidden;
+  }
+}
+
+.disclosure > div {
+  margin-inline-start: calc(
+    var(--pf-global--spacer--md) + 12px // half of the icon size;
+  );
+  border-inline-start: 1px solid var(--color-primary-lighter);
+  padding-block: var(--spacer-small);
 }
 
 // raw file content with formatting similar to <pre>
