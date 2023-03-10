@@ -20,7 +20,7 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import { Icon, PageActions } from "~/components/layout";
+import { Icon, PageActions, PageOptionsSlot } from "~/components/layout";
 import { About, Disclosure, LogsButton, ShowLogButton, ShowTerminalButton } from "~/components/core";
 import { ChangeProductLink } from "~/components/software";
 import { TargetIpsPopup } from "~/components/network";
@@ -124,6 +124,7 @@ export default function Sidebar() {
         </header>
 
         <div className="flex-stack" onClick={onClick}>
+          <PageOptionsSlot />
           <FixedLinks />
         </div>
 

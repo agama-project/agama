@@ -38,6 +38,7 @@ export { default as LogsButton } from "./LogsButton";
 export { default as FileViewer } from "./FileViewer";
 export { default as ShowLogButton } from "./ShowLogButton";
 export { default as Page } from "./Page";
+export { default as PageOptions } from "./PageOptions";
 export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmationInput";
 export { default as Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";
