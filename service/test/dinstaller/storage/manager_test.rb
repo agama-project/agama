@@ -131,13 +131,18 @@ describe DInstaller::Storage::Manager do
     before do
       mock_storage(devicegraph: devicegraph)
       allow(File).to receive(:directory?).with("/iguana").and_return iguana
+      allow(copy_files_class).to receive(:new).and_return(copy_files)
     end
+    let(:copy_files_class) { DInstaller::Storage::Finisher::CopyFilesStep }
+    let(:copy_files) { instance_double(copy_files_class, run?: true, run: true, label: "Copy") }
 
     let(:iguana) { false }
     let(:devicegraph) { "staging-plain-partitions.yaml" }
 
-    it "installs the bootloader, sets up the snapshots, copy logs, and umounts the file systems" do
+    it "copy needed files, installs the bootloader, sets up the snapshots, " \
+       "copy logs, and umounts the file systems" do
       expect(security).to receive(:write)
+      expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("snapshots_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("copy_logs_finish", ["Write"])

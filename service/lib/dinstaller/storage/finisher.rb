@@ -28,6 +28,8 @@ require "dinstaller/with_progress"
 require "dinstaller/helpers"
 require "abstract_method"
 
+Yast.import "Arch"
+
 module DInstaller
   module Storage
     # Auxiliary class to handle the last storage-related steps of the installation
@@ -36,6 +38,9 @@ module DInstaller
       include Helpers
 
       # Constructor
+      # @param logger [Logger]
+      # @param config [Config]
+      # @param security [Security]
       def initialize(logger, config, security)
         @logger = logger
         @config = config
@@ -69,6 +74,7 @@ module DInstaller
       def possible_steps
         [
           SecurityStep.new(logger, security),
+          CopyFilesStep.new(logger),
           BootloaderStep.new(logger),
           TpmStep.new(logger, config),
           IguanaStep.new(logger),
@@ -121,6 +127,41 @@ module DInstaller
         end
       end
 
+      # Step to copy files from the inst-sys to the target system
+      class CopyFilesStep < Step
+        UDEV_RULES_DIR = "/etc/udev/rules.d"
+        ROOT_PATH = "/"
+        FILES = [
+          { dir: "/etc/udev/rules.d", file: "40-*" },
+          { dir: "/etc/udev/rules.d", file: "41-*" },
+          { dir: "/etc/udev/rules.d", file: "70-persistent-net.rules" }
+        ].freeze
+
+        def label
+          "Copying important installation files to the target system"
+        end
+
+        def run?
+          glob_files.any?
+        end
+
+        def run
+          target = File.join(Yast::Installation.destdir, UDEV_RULES_DIR)
+          FileUtils.mkdir_p(target)
+          FileUtils.cp(glob_files, target)
+        end
+
+      private
+
+        def root_dir
+          ROOT_PATH
+        end
+
+        def glob_files
+          Dir.glob(FILES.map { |f| File.join(root_dir, f[:dir], f[:file]) })
+        end
+      end
+
       # Step to write the security settings
       class SecurityStep < Step
         # Constructor
@@ -145,7 +186,13 @@ module DInstaller
         end
 
         def run
+          cio_ignore_finish if Yast::Arch.s390
           ::Bootloader::FinishClient.new.write
+        end
+
+        def cio_ignore_finish
+          require "installation/cio_ignore"
+          wfm_write("cio_ignore_finish")
         end
       end
 
