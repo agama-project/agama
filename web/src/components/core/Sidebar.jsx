@@ -74,21 +74,25 @@ export default function Sidebar() {
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
 
-  useEffect(() => {
-    if (isOpen) closeButtonRef.current.focus();
-  }, [isOpen]);
-
   /**
    * Handler for automatically closing the sidebar when a click bubbles from a
    * children of its content.
    *
-   * @param {MouseEvent} event - the event triggered by a click
+   * @param {MouseEvent} event
    */
   const onClick = (event) => {
-    const { target, currentTarget } = event;
-    if (target === currentTarget) return;
-    if (!target.dataset.keepSidebarOpen) close();
+    const target = event.detail?.originalTarget || event.target;
+    const isLinkOrButton = target instanceof HTMLAnchorElement || target instanceof HTMLButtonElement;
+    const keepOpen = target.dataset.keepSidebarOpen;
+
+    if (!isLinkOrButton || keepOpen) return;
+
+    close();
   };
+
+  useEffect(() => {
+    if (isOpen) closeButtonRef.current.focus();
+  }, [isOpen]);
 
   return (
     <>

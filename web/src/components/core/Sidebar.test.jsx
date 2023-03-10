@@ -25,9 +25,9 @@ import { plainRender, mockComponent, mockLayout } from "~/test-utils";
 import { Sidebar } from "~/components/core";
 
 jest.mock("~/components/layout/Layout", () => mockLayout());
-jest.mock("~/components/core/About", () => mockComponent(<a href="#">About link mock</a>));
+jest.mock("~/components/core/About", () => mockComponent(<button>About button mock</button>));
 jest.mock("~/components/core/LogsButton", () => mockComponent(<a href="#" data-keep-sidebar-open="true">Download logs mock</a>));
-jest.mock("~/components/software/ChangeProductLink", () => mockComponent("ChangeProductLink Mock"));
+jest.mock("~/components/software/ChangeProductLink", () => mockComponent(<a href="#">Change product mock</a>));
 jest.mock("~/components/network/TargetIpsPopup", () => mockComponent("Host Ips Mock"));
 
 it("renders the sidebar initially hidden", async () => {
@@ -73,7 +73,7 @@ it("moves the focus to the close action after opening it", async () => {
 });
 
 describe("onClick bubbling", () => {
-  it("hides the sidebar only if the user clicked on a link w/o keepSidebarOpen attribute", async () => {
+  it("hides the sidebar only if the user clicked on a link or button w/o keepSidebarOpen attribute", async () => {
     const { user } = plainRender(<Sidebar />);
     const openLink = screen.getByLabelText(/Show/i);
     await user.click(openLink);
@@ -90,8 +90,17 @@ describe("onClick bubbling", () => {
     expect(nav).toHaveAttribute("data-state", "visible");
 
     // user clicks a link NOT set for keeping the sidebar open
-    const aboutLink = within(nav).getByRole("link", { name: "About link mock" });
-    await user.click(aboutLink);
+    const changeProductLink = within(nav).getByRole("link", { name: "Change product mock" });
+    await user.click(changeProductLink);
+    expect(nav).toHaveAttribute("data-state", "hidden");
+
+    // open it again
+    await user.click(openLink);
+    expect(nav).toHaveAttribute("data-state", "visible");
+
+    // user clicks on a button
+    const aboutButton = within(nav).getByRole("button", { name: "About button mock" });
+    await user.click(aboutButton);
     expect(nav).toHaveAttribute("data-state", "hidden");
   });
 });
