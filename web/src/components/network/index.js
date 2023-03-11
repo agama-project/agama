@@ -26,7 +26,6 @@ export { default as DnsDataList } from "./DnsDataList";
 export { default as IpAddressInput } from "./IpAddressInput";
 export { default as IpPrefixInput } from "./IpPrefixInput";
 export { default as IpSettingsForm } from "./IpSettingsForm";
-export { default as TargetIpsPopup } from "./TargetIpsPopup";
 export { default as WifiConnectionForm } from "./WifiConnectionForm";
 export { default as WifiHiddenNetworkForm } from "./WifiHiddenNetworkForm";
 export { default as WifiNetworkListItem } from "./WifiNetworkListItem";

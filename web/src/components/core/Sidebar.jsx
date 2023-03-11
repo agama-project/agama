@@ -22,7 +22,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Icon, PageActions, PageOptionsSlot } from "~/components/layout";
 import { About, Disclosure, LogsButton, ShowLogButton, ShowTerminalButton } from "~/components/core";
-import { TargetIpsPopup } from "~/components/network";
 
 /**
  * Internal and memoized component for rendering links only once
@@ -58,7 +57,6 @@ const FixedLinks = React.memo(() => (
       <LogsButton data-keep-sidebar-open="true" />
       <ShowTerminalButton />
     </Disclosure>
-    <TargetIpsPopup />
     <About />
   </div>
 ), () => true);

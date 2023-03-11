@@ -28,7 +28,6 @@ jest.mock("~/components/layout/Layout", () => mockLayout());
 jest.mock("~/components/core/About", () => mockComponent(<a href="#">About link mock</a>));
 jest.mock("~/components/core/LogsButton", () => mockComponent(<button data-keep-sidebar-open="true">Download logs mock</button>));
 jest.mock("~/components/core/ShowLogButton", () => mockComponent(<button href="#">Show logs mock</button>));
-jest.mock("~/components/network/TargetIpsPopup", () => mockComponent("Host Ips Mock"));
 
 it("renders the sidebar initially hidden", async () => {
   plainRender(<Sidebar />);
