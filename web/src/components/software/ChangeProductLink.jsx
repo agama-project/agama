@@ -20,18 +20,14 @@
  */
 
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSoftware } from "~/context/software";
 import { Icon } from "~/components/layout";
 
 export default function ChangeProductLink() {
   const { products } = useSoftware();
-  const { pathname } = useLocation();
-  const multiProduct = products?.length > 1;
 
-  if (!multiProduct || pathname === "/products") {
-    return null;
-  }
+  if (products?.length === 1) return null;
 
   return (
     <Link to="/products">

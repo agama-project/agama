@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { installerRender, mockRoutes } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { createClient } from "~/client";
 import { ChangeProductLink } from "~/components/software";
 
@@ -48,21 +48,6 @@ beforeEach(() => {
 });
 
 describe("ChangeProductLink", () => {
-  describe("when it's already in the product selection path", () => {
-    beforeEach(() => {
-      mockRoutes("/products");
-      mockProducts = [
-        { id: "openSUSE", name: "openSUSE Tumbleweed" },
-        { id: "Leap Micro", name: "openSUSE Micro" }
-      ];
-    });
-
-    it("renders nothing", async () => {
-      const { container } = installerRender(<ChangeProductLink />);
-      await waitFor(() => expect(container).toBeEmptyDOMElement());
-    });
-  });
-
   describe("when there is only a single product", () => {
     beforeEach(() => {
       mockProducts = [
