@@ -22,7 +22,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Icon, PageActions, PageOptionsSlot } from "~/components/layout";
 import { About, Disclosure, LogsButton, ShowLogButton, ShowTerminalButton } from "~/components/core";
-import { ChangeProductLink } from "~/components/software";
 import { TargetIpsPopup } from "~/components/network";
 
 /**
@@ -54,7 +53,6 @@ import { TargetIpsPopup } from "~/components/network";
 const FixedLinks = React.memo(() => (
   <div className="flex-stack">
     <h3>Other options</h3>
-    <ChangeProductLink />
     <Disclosure label="Diagnosis tools" data-keep-sidebar-open>
       <ShowLogButton />
       <LogsButton data-keep-sidebar-open="true" />

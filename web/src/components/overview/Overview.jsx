@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,7 +23,8 @@ import React, { useState } from "react";
 import { useSoftware } from "~/context/software";
 import { Navigate } from "react-router-dom";
 
-import { Page, InstallButton } from "~/components/core";
+import { Page, PageOptions, InstallButton } from "~/components/core";
+import { ChangeProductLink } from "~/components/software";
 import {
   L10nSection,
   NetworkSection,
@@ -46,6 +47,10 @@ function Overview() {
       icon="inventory_2"
       action={<InstallButton onClick={() => setShowErrors(true)} />}
     >
+      <PageOptions>
+        <ChangeProductLink />
+      </PageOptions>
+
       <L10nSection />
       <NetworkSection />
       <StorageSection showErrors />
