@@ -43,7 +43,7 @@ const ShowTerminalButton = () => {
         isDisabled={isTermDisplayed}
         icon={<Icon name="terminal" size="24" />}
       >
-        Terminal
+        Open Terminal
       </Button>
 
       { isTermDisplayed &&
