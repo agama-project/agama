@@ -52,7 +52,7 @@ import { About, Disclosure, LogsButton, ShowLogButton, ShowTerminalButton } from
 const FixedLinks = React.memo(() => (
   <div className="flex-stack">
     <h3>Other options</h3>
-    <Disclosure label="Diagnosis tools" data-keep-sidebar-open>
+    <Disclosure label="Diagnostic tools" data-keep-sidebar-open>
       <ShowLogButton />
       <LogsButton data-keep-sidebar-open="true" />
       <ShowTerminalButton />
