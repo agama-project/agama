@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,7 +23,7 @@ import React from "react";
 
 import logoUrl from "~/assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
-import { Sidebar } from "~/components/core";
+import { About, Disclosure, LogsButton, Sidebar, ShowLogButton, ShowTerminalButton } from "~/components/core";
 
 const PageTitle = createTeleporter();
 const PageOptions = createTeleporter();
@@ -79,7 +79,19 @@ function Layout({ children }) {
         <HeaderActions.Target as="span" />
       </header>
 
-      <Sidebar />
+      <Sidebar>
+        <>
+          <PageOptions.Target />
+
+          <h3>Other options</h3>
+          <Disclosure label="Diagnostic tools" data-keep-sidebar-open>
+            <ShowLogButton />
+            <LogsButton data-keep-sidebar-open="true" />
+            <ShowTerminalButton />
+          </Disclosure>
+          <About />
+        </>
+      </Sidebar>
 
       <main className="stack">
         {children}

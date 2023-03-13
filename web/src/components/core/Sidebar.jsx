@@ -20,51 +20,12 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import { Icon, PageActions, PageOptionsSlot } from "~/components/layout";
-import { About, Disclosure, LogsButton, ShowLogButton, ShowTerminalButton } from "~/components/core";
-
-/**
- * Internal and memoized component for rendering links only once
- *
- * The reason of this is to avoid re-rendering those links each time
- * the sidebar visibility is changed. It does not make sense to re-trigger
- * their logic (which might be complicated or not) just because the
- * "expanded"/"visible" state of the Sidebar has changed.
- *
- * The issue can be fixed in other ways, but there is a reason for discarded
- * them at this moment. Namely,
- *
- *   - Use a stateless Sidebar, handling the visibility with pure CSS
- *
- *     That would be great, but it's (almost?) not possible to make it
- *     completely accessible using just CSS.
- *
- *   - Move these children outside, placing them in the same location the
- *     <Sidebar /> is used.
- *
- *     It will not work when using the function as child component pattern,
- *     which is the case of the PageOptions content, which we will use for
- *     teleporting a Page options to the Sidebar by now.
- *
- * To know more about how children and parent re-renders behavior, have a look to
- * https://www.developerway.com/posts/react-elements-children-parents
- */
-const FixedLinks = React.memo(() => (
-  <div className="flex-stack">
-    <h3>Other options</h3>
-    <Disclosure label="Diagnostic tools" data-keep-sidebar-open>
-      <ShowLogButton />
-      <LogsButton data-keep-sidebar-open="true" />
-      <ShowTerminalButton />
-    </Disclosure>
-    <About />
-  </div>
-), () => true);
+import { Icon, PageActions } from "~/components/layout";
 
 /**
  * D-Installer sidebar navigation
  */
-export default function Sidebar() {
+export default function Sidebar({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const closeButtonRef = useRef(null);
 
@@ -125,8 +86,7 @@ export default function Sidebar() {
         </header>
 
         <div className="flex-stack" onClick={onClick}>
-          <PageOptionsSlot />
-          <FixedLinks />
+          { children }
         </div>
 
         <footer className="split" data-state="reversed">

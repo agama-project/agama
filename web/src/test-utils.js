@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -147,7 +147,6 @@ const mockLayout = () => ({
   PageActions: ({ children }) => children,
   MainActions: ({ children }) => children,
   AdditionalInfo: ({ children }) => children,
-  PageOptionsSlot: ({ children }) => children,
   PageOptionsContent: ({ children }) => children,
 });
 
