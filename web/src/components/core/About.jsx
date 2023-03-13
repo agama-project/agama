@@ -37,7 +37,7 @@ export default function About() {
         icon={<Icon name="help" size="24" />}
         onClick={open}
       >
-        About
+        About D-Installer
       </Button>
 
       <Popup
