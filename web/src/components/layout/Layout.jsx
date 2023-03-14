@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,9 +23,10 @@ import React from "react";
 
 import logoUrl from "~/assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
-import { Sidebar } from "~/components/core";
+import { About, Disclosure, LogsButton, Sidebar, ShowLogButton, ShowTerminalButton } from "~/components/core";
 
 const PageTitle = createTeleporter();
+const PageOptions = createTeleporter();
 const HeaderActions = createTeleporter();
 const HeaderIcon = createTeleporter();
 const FooterActions = createTeleporter();
@@ -78,7 +79,19 @@ function Layout({ children }) {
         <HeaderActions.Target as="span" />
       </header>
 
-      <Sidebar />
+      <Sidebar>
+        <>
+          <PageOptions.Target />
+
+          <h3>Other options</h3>
+          <Disclosure label="Diagnostic tools" data-keep-sidebar-open>
+            <ShowLogButton />
+            <LogsButton data-keep-sidebar-open="true" />
+            <ShowTerminalButton />
+          </Disclosure>
+          <About />
+        </>
+      </Sidebar>
 
       <main className="stack">
         {children}
@@ -156,11 +169,23 @@ const MainActions = FooterActions.Source;
  */
 const AdditionalInfo = FooterInfoArea.Source;
 
+/**
+ * Component for setting the slot to place related options, usually in the Sidebar
+ */
+const PageOptionsSlot = PageOptions.Target;
+
+/**
+ * Component for teleporting page related options to the PageOptions slot
+ */
+const PageOptionsContent = PageOptions.Source;
+
 export {
   Layout as default,
   Title,
   PageIcon,
   PageActions,
   MainActions,
-  AdditionalInfo
+  AdditionalInfo,
+  PageOptionsSlot,
+  PageOptionsContent,
 };

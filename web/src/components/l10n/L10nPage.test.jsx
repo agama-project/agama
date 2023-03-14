@@ -21,24 +21,18 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockLayout } from "~/test-utils";
+import { installerRender, mockLayout, mockNavigateFn } from "~/test-utils";
 import { L10nPage } from "~/components/l10n";
 import { createClient } from "~/client";
 
-const mockNavigateFn = jest.fn();
-
-jest.mock("~/client");
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigateFn,
-}));
-jest.mock("~/components/layout/Layout", () => mockLayout());
-
+const setLanguagesFn = jest.fn();
 const languages = [
   { id: "en_US", name: "English" },
   { id: "de_DE", name: "German" }
 ];
 
-const setLanguagesFn = jest.fn();
+jest.mock("~/client");
+jest.mock("~/components/layout/Layout", () => mockLayout());
 
 beforeEach(() => {
   // if defined outside, the mock is cleared automatically

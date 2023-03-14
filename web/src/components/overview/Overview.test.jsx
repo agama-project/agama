@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,7 +26,7 @@ import Overview from "./Overview";
 import { createClient } from "~/client";
 
 let mockProduct;
-let mockProducts = [
+const mockProducts = [
   { id: "openSUSE", name: "openSUSE Tumbleweed" },
   { id: "Leap Micro", name: "openSUSE Micro" }
 ];
@@ -44,31 +44,14 @@ jest.mock("~/context/software", () => ({
   }
 }));
 
-jest.mock('react-router-dom', () => ({
-  Navigate: mockComponent("Navigate"),
-  useNavigate: () => jest.fn()
-}));
-
 jest.mock("~/components/layout/Layout", () => mockLayout());
 jest.mock("~/components/overview/L10nSection", () => mockComponent("Localization Section"));
 jest.mock("~/components/overview/StorageSection", () => mockComponent("Storage Section"));
 jest.mock("~/components/overview/NetworkSection", () => mockComponent("Network Section"));
 jest.mock("~/components/overview/UsersSection", () => mockComponent("Users Section"));
 jest.mock("~/components/overview/SoftwareSection", () => mockComponent("Software Section"));
+jest.mock("~/components/core/PageOptions", () => mockComponent("PageOptions"));
 jest.mock("~/components/core/InstallButton", () => mockComponent("Install Button"));
-
-it("renders the Overview and the Install button", async () => {
-  installerRender(<Overview />);
-  const title = screen.getByText(/openSUSE Tumbleweed/i);
-  expect(title).toBeInTheDocument();
-
-  await screen.findByText("Localization Section");
-  await screen.findByText("Network Section");
-  await screen.findByText("Storage Section");
-  await screen.findByText("Users Section");
-  await screen.findByText("Software Section");
-  await screen.findByText("Install Button");
-});
 
 beforeEach(() => {
   mockProduct = { id: "openSUSE", name: "openSUSE Tumbleweed" };
@@ -84,6 +67,21 @@ beforeEach(() => {
   });
 });
 
+describe("when product is selected", () => {
+  it("renders the Overview and the Install button", async () => {
+    installerRender(<Overview />);
+    const title = screen.getByText(/openSUSE Tumbleweed/i);
+    expect(title).toBeInTheDocument();
+
+    await screen.findByText("Localization Section");
+    await screen.findByText("Network Section");
+    await screen.findByText("Storage Section");
+    await screen.findByText("Users Section");
+    await screen.findByText("Software Section");
+    await screen.findByText("Install Button");
+  });
+});
+
 describe("when no product is selected", () => {
   beforeEach(() => {
     mockProduct = null;
@@ -92,19 +90,7 @@ describe("when no product is selected", () => {
   it("redirects to the product selection page", async () => {
     installerRender(<Overview />);
 
-    await screen.findByText("Navigate");
-  });
-});
-
-describe("if there is only one product", () => {
-  beforeEach(() => {
-    mockProducts = [mockProduct];
-  });
-
-  it("does not show the action for changing the selected product", async () => {
-    installerRender(<Overview />);
-
-    await screen.findByText("openSUSE Tumbleweed");
-    expect(screen.queryByLabelText("Change selected product")).not.toBeInTheDocument();
+    // react-router-dom Navigate is mocked. See test-utils for more details.
+    await screen.findByText("Navigating to /products");
   });
 });

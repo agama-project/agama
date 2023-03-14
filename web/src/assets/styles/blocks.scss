@@ -32,7 +32,7 @@ section > h2 {
     transition: all 0.15s ease-in-out;
 
     &:hover {
-      color: var(--color-primary);
+      color: var(--color-link-hover);
     }
   }
 }
@@ -72,7 +72,7 @@ section > .content {
 }
 
 .sidebar {
-  --color-background-primary: var(--color-primary);
+  --color-background-primary: var(--color-primary-lighter);
   --wrapper-background: var(--color-gray-light);
 
   position: absolute;
@@ -80,7 +80,7 @@ section > .content {
   right: 0;
   z-index: 1;
   inline-size: 70%;
-  box-shadow: 0 0 20px 10px var(--color-primary-darkest);
+  box-shadow: 0 0 20px 10px var(--color-primary);
 }
 
 .sidebar header {
@@ -89,6 +89,43 @@ section > .content {
 
 .sidebar footer {
   border-top: 1px solid var(--color-gray);
+}
+
+.sidebar > div {
+  margin-inline-start: var(--pf-global--spacer--md);
+}
+
+.sidebar a, .sidebar button {
+  font-size: 16px;
+  font-weight: var(--fw-bold);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding-block: 0;
+
+  &:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+
+    svg {
+      color: var(--color-link);
+    }
+  }
+
+  svg {
+    color: var(--color-link);
+    vertical-align: text-bottom;
+    margin-block-end: -2px;
+  }
+}
+
+.sidebar a {
+  margin-inline-start: var(--pf-global--spacer--md);
+
+  // Keep links and buttons labels aligned by adding the same margin than
+  // .pf-c-button__icon.pf-m-start
+  svg {
+    margin-inline-end: var(--pf-global--spacer--xs);
+  }
 }
 
 // Remove not wanted PatternFly padding left on a loading link
@@ -108,6 +145,37 @@ section > .content {
 
 .sidebar[data-state="visible"] {
   transition: all 0.2s ease-in-out;
+}
+
+.disclosure > button {
+  margin-inline-start: var(--pf-global--spacer--md);
+  display: inline-flex;
+  align-items: center;
+  // Keep links and buttons labels aligned by adding the same margin than
+  // .pf-c-button__icon.pf-m-start
+  svg {
+    margin-inline-end: var(--pf-global--spacer--xs);
+    transition: transform 0.2s ease-in-out;
+  }
+
+  &[aria-expanded="true"] {
+    svg {
+      transform: rotate(90deg);
+    }
+  }
+
+  &[aria-expanded="false"] + div {
+    display: none;
+    visibility: hidden;
+  }
+}
+
+.disclosure > div {
+  margin-inline-start: calc(
+    var(--pf-global--spacer--md) + 12px // half of the icon size;
+  );
+  border-inline-start: 1px solid var(--color-primary-lighter);
+  padding-block: var(--spacer-small);
 }
 
 // raw file content with formatting similar to <pre>

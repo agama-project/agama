@@ -21,17 +21,11 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender, createCallbackMock, mockComponent } from "~/test-utils";
+import { installerRender, createCallbackMock } from "~/test-utils";
 import { L10nSection } from "~/components/overview";
 import { createClient } from "~/client";
 
-const mockNavigateFn = jest.fn();
-
 jest.mock("~/client");
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigateFn,
-  Link: mockComponent("Link")
-}));
 
 const languages = [
   { id: "en_US", name: "English" },

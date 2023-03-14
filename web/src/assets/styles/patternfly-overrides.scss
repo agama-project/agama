@@ -56,11 +56,9 @@
   --pf-c-button--m-plain--hover--Color: var(--color-button-plain-link-hover);
 }
 
-// Adds a tiny "padding" when focusing a primary or secondary action to avoid
-// https://github.com/yast/d-installer/issues/115#issuecomment-1087375598
-.pf-c-button.pf-m-primary:focus-visible,
-.pf-c-button.pf-m-secondary:focus-visible {
-  box-shadow: 0 0 0 1px white, 0 0 0 2px var(--focus-color);
+.pf-c-button.pf-m-secondary {
+  --pf-c-button--m-secondary--hover--after--BorderColor: var(--color-link-hover);
+  --pf-c-button--m-secondary--hover--Color: var(--color-link-hover);
 }
 
 // SVG icons does not obey font-size

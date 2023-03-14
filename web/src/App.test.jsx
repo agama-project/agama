@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,11 +28,6 @@ import { STARTUP, CONFIG, INSTALL } from "~/client/phase";
 import { IDLE, BUSY } from "~/client/status";
 
 jest.mock("~/client");
-
-jest.mock('react-router-dom', () => ({
-  Outlet: mockComponent("Content"),
-}));
-
 jest.mock("~/components/layout/Layout", () => mockLayout());
 
 // Mock some components,
@@ -147,7 +142,7 @@ describe("App", () => {
 
     it("renders the application content", async () => {
       installerRender(<App />);
-      await screen.findByText("Content");
+      await screen.findByText(/Outlet Content/);
     });
   });
 
@@ -169,7 +164,7 @@ describe("App", () => {
 
     it("renders the Installation component on the INSTALL phase", async () => {
       installerRender(<App />);
-      await screen.findByText("Content");
+      await screen.findByText(/Outlet Content/);
       changePhaseTo(INSTALL);
       await screen.findByText("Installation Mock");
     });
@@ -183,7 +178,7 @@ describe("App", () => {
 
     it("renders the application's content", async () => {
       installerRender(<App />);
-      await screen.findByText("Content");
+      await screen.findByText(/Outlet Content/);
     });
   });
 });

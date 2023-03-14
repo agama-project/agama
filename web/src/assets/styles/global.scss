@@ -21,6 +21,21 @@ a {
   color: currentcolor;
 }
 
+a,
+// TODO: make it better, using PatternFly custom properties for overriding it
+button.pf-m-plain,
+button.pf-m-link {
+  text-decoration: underline;
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.2em;
+  transition: all 0.15s ease-in-out;
+
+  &:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+  }
+}
+
 fieldset {
   padding: var(--fs-base);
   border: 0;

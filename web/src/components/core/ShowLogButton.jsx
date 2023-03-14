@@ -26,22 +26,13 @@ import { Button } from "@patternfly/react-core";
 
 /**
  * Button for displaying the YaST logs
- *
  * @component
- *
- * @param {function} onClickCallback callback triggered after clicking the button
  */
-const ShowLogButton = ({ onClickCallback }) => {
+const ShowLogButton = () => {
   const [isLogDisplayed, setIsLogDisplayed] = useState(false);
 
-  const onClick = () => {
-    if (onClickCallback) onClickCallback();
-    setIsLogDisplayed(true);
-  };
-
-  const onClose = () => {
-    setIsLogDisplayed(false);
-  };
+  const onClick = () => setIsLogDisplayed(true);
+  const onClose = () => setIsLogDisplayed(false);
 
   return (
     <>

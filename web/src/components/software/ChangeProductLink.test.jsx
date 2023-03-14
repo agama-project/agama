@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,12 +21,11 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { createClient } from "~/client";
-import { ChangeProductButton } from "~/components/core";
+import { ChangeProductLink } from "~/components/software";
 
 let mockProducts;
-const mockNavigateFn = jest.fn();
 
 jest.mock("~/client");
 jest.mock("~/context/software", () => ({
@@ -36,9 +35,6 @@ jest.mock("~/context/software", () => ({
       products: mockProducts,
     };
   }
-}));
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigateFn,
 }));
 
 beforeEach(() => {
@@ -51,7 +47,7 @@ beforeEach(() => {
   });
 });
 
-describe("ChangeProductButton", () => {
+describe("ChangeProductLink", () => {
   describe("when there is only a single product", () => {
     beforeEach(() => {
       mockProducts = [
@@ -60,7 +56,7 @@ describe("ChangeProductButton", () => {
     });
 
     it("renders nothing", async () => {
-      const { container } = plainRender(<ChangeProductButton />);
+      const { container } = installerRender(<ChangeProductLink />);
       await waitFor(() => expect(container).toBeEmptyDOMElement());
     });
   });
@@ -73,28 +69,11 @@ describe("ChangeProductButton", () => {
       ];
     });
 
-    it("renders a button for changing the selected product", async () => {
-      plainRender(<ChangeProductButton />);
+    it("renders a link for navigating to the selection product page", async () => {
+      installerRender(<ChangeProductLink />, { usingProvider: true });
+      const link = await screen.findByRole("link", { name: "Change product" });
 
-      await screen.findByRole("button", { name: "Change selected product" });
-    });
-
-    it("navigates to products route when users clicks on rendered button", async () => {
-      const { user } = plainRender(<ChangeProductButton />);
-      const changeProductButton = await screen.findByRole("button", { name: "Change selected product" });
-
-      await user.click(changeProductButton);
-      expect(mockNavigateFn).toHaveBeenCalledWith("/products");
-    });
-
-    it("triggers given callback when user clicks on rendered button", async () => {
-      const onClickCallback = jest.fn();
-
-      const { user } = plainRender(<ChangeProductButton onClickCallback={onClickCallback} />);
-      const changeProductButton = await screen.findByRole("button", { name: "Change selected product" });
-
-      await user.click(changeProductButton);
-      expect(onClickCallback).toHaveBeenCalled();
+      expect(link).toHaveAttribute("href", "/products");
     });
   });
 });

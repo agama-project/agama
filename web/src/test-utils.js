@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,17 +26,55 @@
  */
 
 import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { render } from "@testing-library/react";
 
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 
-const InstallerProvider = ({ children }) => {
+/**
+ * Internal mock for manipulating routes, using ["/"] by default
+ */
+const initialRoutes = jest.fn().mockReturnValue(["/"]);
+
+/**
+ * Allows checking when react-router-dom navigate function  was
+ * called with certain path
+ *
+ * @example
+ *   expect(mockNavigateFn).toHaveBeenCalledWith("/")
+ */
+const mockNavigateFn = jest.fn();
+
+/**
+ * Allows manipulating MemoryRouter routes for testing purpose
+ *
+ * NOTE: on purpose, it will take effect only once.
+ *
+ * @example
+ *   mockRoutes("/products", "/storage");
+ *
+ * @param {...string} routes
+ */
+const mockRoutes = (...routes) => initialRoutes.mockReturnValueOnce(routes);
+
+// Centralize the react-router-dom mock here
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigateFn,
+  Navigate: ({ to: route }) => <>Navigating to {route}</>,
+  Outlet: () => <>Outlet Content</>
+}));
+
+const Providers = ({ children }) => {
   const client = createClient();
+
   return (
     <InstallerClientProvider client={client}>
-      {children}
+      <MemoryRouter initialEntries={initialRoutes()}>
+        {children}
+      </MemoryRouter>
     </InstallerClientProvider>
   );
 };
@@ -45,7 +83,7 @@ const installerRender = (ui, options = {}) => {
   return (
     {
       user: userEvent.setup(),
-      ...render(ui, { wrapper: InstallerProvider, ...options })
+      ...render(ui, { wrapper: Providers, ...options })
     }
   );
 };
@@ -109,6 +147,15 @@ const mockLayout = () => ({
   PageActions: ({ children }) => children,
   MainActions: ({ children }) => children,
   AdditionalInfo: ({ children }) => children,
+  PageOptionsContent: ({ children }) => children,
 });
 
-export { installerRender, plainRender, createCallbackMock, mockComponent, mockLayout };
+export {
+  plainRender,
+  installerRender,
+  createCallbackMock,
+  mockComponent,
+  mockLayout,
+  mockNavigateFn,
+  mockRoutes,
+};

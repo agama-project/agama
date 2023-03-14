@@ -108,6 +108,14 @@
   border: none;
 }
 
+.plain-button {
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+}
+
 .tallest {
   /** block-size fallbacks **/
   height: 95dvh;

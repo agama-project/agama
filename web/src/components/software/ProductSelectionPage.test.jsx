@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockLayout } from "~/test-utils";
+import { installerRender, mockLayout, mockNavigateFn } from "~/test-utils";
 import { ProductSelectionPage } from "~/components/software";
 import { createClient } from "~/client";
 
@@ -38,12 +38,6 @@ const products = [
   }
 ];
 jest.mock("~/client");
-
-const mockUseNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockUseNavigate
-}));
 
 jest.mock("~/context/software", () => ({
   ...jest.requireActual("~/context/software"),
@@ -78,7 +72,7 @@ describe("when the user chooses a product", () => {
     const button = await screen.findByRole("button", { name: "Select" });
     await user.click(button);
     expect(softwareMock.selectProduct).toHaveBeenCalledWith("MicroOS");
-    expect(mockUseNavigate).toHaveBeenCalledWith("/");
+    expect(mockNavigateFn).toHaveBeenCalledWith("/");
   });
 });
 
@@ -89,6 +83,6 @@ describe("when the user chooses does not change the product", () => {
     const button = await screen.findByRole("button", { name: "Select" });
     await user.click(button);
     expect(softwareMock.selectProduct).not.toHaveBeenCalled();
-    expect(mockUseNavigate).toHaveBeenCalledWith("/");
+    expect(mockNavigateFn).toHaveBeenCalledWith("/");
   });
 });

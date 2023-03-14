@@ -21,18 +21,32 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Icon, PageActions } from "~/components/layout";
-import { About, ChangeProductButton, LogsButton, ShowLogButton, ShowTerminalButton } from "~/components/core";
-import { TargetIpsPopup } from "~/components/network";
 
 /**
  * D-Installer sidebar navigation
  */
-export default function Sidebar() {
+export default function Sidebar({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const closeButtonRef = useRef(null);
 
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
+
+  /**
+   * Handler for automatically closing the sidebar when a click bubbles from a
+   * children of its content.
+   *
+   * @param {MouseEvent} event
+   */
+  const onClick = (event) => {
+    const target = event.detail?.originalTarget || event.target;
+    const isLinkOrButton = target instanceof HTMLAnchorElement || target instanceof HTMLButtonElement;
+    const keepOpen = target.dataset.keepSidebarOpen;
+
+    if (!isLinkOrButton || keepOpen) return;
+
+    close();
+  };
 
   useEffect(() => {
     if (isOpen) closeButtonRef.current.focus();
@@ -48,7 +62,7 @@ export default function Sidebar() {
           aria-controls="navigation-and-options"
           aria-expanded={isOpen}
         >
-          <Icon name="menu" onClick={open} />
+          <Icon name="menu" />
         </button>
       </PageActions>
 
@@ -59,7 +73,7 @@ export default function Sidebar() {
         data-state={isOpen ? "visible" : "hidden"}
       >
         <header className="split justify-between">
-          <h1>Options</h1>
+          <h2>Options</h2>
 
           <button
             onClick={close}
@@ -71,13 +85,8 @@ export default function Sidebar() {
           </button>
         </header>
 
-        <div className="flex-stack">
-          <ChangeProductButton onClickCallback={close} />
-          <About onClickCallback={close} />
-          <TargetIpsPopup onClickCallback={close} />
-          <LogsButton />
-          <ShowLogButton onClickCallback={close} />
-          <ShowTerminalButton onClickCallback={close} />
+        <div className="flex-stack" onClick={onClick}>
+          { children }
         </div>
 
         <footer className="split" data-state="reversed">

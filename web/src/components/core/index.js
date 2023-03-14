@@ -20,6 +20,7 @@
  */
 
 export { default as About } from "./About";
+export { default as Disclosure } from "./Disclosure";
 export { default as Sidebar } from "./Sidebar";
 export { default as Section } from "./Section";
 export { default as FormLabel } from "./FormLabel";
@@ -37,11 +38,11 @@ export { default as LogsButton } from "./LogsButton";
 export { default as FileViewer } from "./FileViewer";
 export { default as ShowLogButton } from "./ShowLogButton";
 export { default as Page } from "./Page";
+export { default as PageOptions } from "./PageOptions";
 export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmationInput";
 export { default as Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";
 export { default as ProgressText } from "./ProgressText";
-export { default as ChangeProductButton } from "./ChangeProductButton";
 export { default as ValidationErrors } from "./ValidationErrors";
 export { default as Terminal } from "./Terminal";
 export { default as ShowTerminalButton } from "./ShowTerminalButton";

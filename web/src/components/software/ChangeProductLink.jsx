@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,30 +20,19 @@
  */
 
 import React from "react";
-import { Button } from "@patternfly/react-core";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSoftware } from "~/context/software";
 import { Icon } from "~/components/layout";
-import { noop } from "~/utils";
 
-export default function ChangeProductButton({ onClickCallback = noop }) {
+export default function ChangeProductLink() {
   const { products } = useSoftware();
-  const navigate = useNavigate();
 
-  if (products === undefined || products.length === 1) {
-    return null;
-  }
+  if (products?.length === 1) return null;
 
   return (
-    <Button
-      variant="link"
-      icon={<Icon name="edit_square" size="24" />}
-      onClick={() => {
-        navigate("/products");
-        onClickCallback();
-      }}
-    >
-      Change selected product
-    </Button>
+    <Link to="/products">
+      <Icon name="edit_square" size="24" />
+      Change product
+    </Link>
   );
 }

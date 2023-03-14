@@ -26,13 +26,7 @@ import { NetworkSection } from "~/components/overview";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { createClient } from "~/client";
 
-const mockNavigateFn = jest.fn();
-
 jest.mock("~/client");
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigateFn,
-  Link: mockComponent("Link")
-}));
 
 jest.mock('~/components/core/SectionSkeleton', () => mockComponent("Section Skeleton"));
 
