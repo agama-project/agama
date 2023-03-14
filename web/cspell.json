@@ -1,7 +1,7 @@
 {
   "version": "0.2",
   "language": "en",
-  "allowCompoundWords": true,
+  "allowCompoundWords": false,
   "ignorePaths": [
     "src/lib/cockpit.js",
     "src/lib/cockpit-po-plugin.js"
