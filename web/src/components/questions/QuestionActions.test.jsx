@@ -24,12 +24,12 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { QuestionActions } from "~/components/questions";
 
-let defaultOption = "handsdown";
+let defaultOption = "sure";
 
 let question = {
   id: 1,
   text: "Should we use a component for rendering actions?",
-  options: ["no", "maybe", "handsdown"],
+  options: ["no", "maybe", "sure"],
   defaultOption
 };
 
@@ -51,7 +51,7 @@ describe("QuestionActions", () => {
     it("renders the default option as primary action", async () => {
       renderQuestionActions();
 
-      const button = await screen.findByRole("button", { name: "Handsdown" });
+      const button = await screen.findByRole("button", { name: "Sure" });
       expect(button.classList.contains("pf-m-primary")).toBe(true);
     });
 
@@ -86,7 +86,7 @@ describe("QuestionActions", () => {
       let button = await screen.findByRole("button", { name: "Maybe" });
       expect(button.classList.contains("pf-m-secondary")).toBe(true);
 
-      button = await screen.findByRole("button", { name: "Handsdown" });
+      button = await screen.findByRole("button", { name: "Sure" });
       expect(button.classList.contains("pf-m-secondary")).toBe(true);
     });
   });
@@ -104,7 +104,7 @@ describe("QuestionActions", () => {
   it("calls the actionCallback when user clicks on action", async () => {
     const { user } = renderQuestionActions();
 
-    const button = await screen.findByRole("button", { name: "Handsdown" });
+    const button = await screen.findByRole("button", { name: "Sure" });
     await user.click(button);
 
     expect(actionCallback).toHaveBeenCalled();
