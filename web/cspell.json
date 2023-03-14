@@ -6,6 +6,18 @@
     "src/lib/cockpit.js",
     "src/lib/cockpit-po-plugin.js"
   ],
+  "import": [
+    "@cspell/dict-css/cspell-ext.json",
+    "@cspell/dict-en-common-misspellings/cspell-ext.json",
+    "@cspell/dict-fullstack/cspell-ext.json",
+    "@cspell/dict-html/cspell-ext.json"
+  ],
+  "dictionaries": [
+    "css",
+    "en-common-misspelling",
+    "fullstack",
+    "html"
+  ],
   "ignoreWords": [
     "addrs",
     "apsens",
