@@ -71,7 +71,7 @@ describe("ChangeProductLink", () => {
 
     it("renders a link for navigating to the selection product page", async () => {
       installerRender(<ChangeProductLink />, { usingProvider: true });
-      const link = await screen.findByRole("link", { name: "Change selected product" });
+      const link = await screen.findByRole("link", { name: "Change product" });
 
       expect(link).toHaveAttribute("href", "/products");
     });

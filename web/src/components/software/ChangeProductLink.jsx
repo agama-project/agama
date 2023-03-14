@@ -32,7 +32,7 @@ export default function ChangeProductLink() {
   return (
     <Link to="/products">
       <Icon name="edit_square" size="24" />
-      Change selected product
+      Change product
     </Link>
   );
 }

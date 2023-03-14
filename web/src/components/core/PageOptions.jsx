@@ -40,7 +40,7 @@ import { PageOptionsContent } from '~/components/layout';
  *       onClick={showStorageHwInfo}
  *       data-keep-sidebar-open
  *     >
- *       Show Storage Hardaware info
+ *       Show Storage Hardware info
  *     </Button>
  *   </PageOptions>
  *
