@@ -260,6 +260,11 @@ class ISCSIManager {
     this.proxies = {};
   }
 
+  async getInitiatorIbft() {
+    const proxy = await this.iscsiInitiatorProxy();
+    return proxy.IBFT;
+  }
+
   /**
    * Gets the iSCSI initiator name
    *
@@ -296,23 +301,8 @@ class ISCSIManager {
    * @property {string} startup
    */
   async getNodes() {
-    const buildNode = (iscsiProxy) => {
-      const id = path => path.split("/").slice(-1)[0];
-
-      return {
-        id: id(iscsiProxy.path),
-        target: iscsiProxy.Target,
-        address: iscsiProxy.Address,
-        port: iscsiProxy.Port,
-        interface: iscsiProxy.Interface,
-        ibft: iscsiProxy.IBFT,
-        connected: iscsiProxy.Connected,
-        startup: iscsiProxy.Startup
-      };
-    };
-
     const proxy = await this.iscsiNodesProxy();
-    return Object.values(proxy).map(p => buildNode(p));
+    return Object.values(proxy).map(this.buildNode);
   }
 
   /**
@@ -340,6 +330,19 @@ class ISCSIManager {
 
     const proxy = await this.iscsiInitiatorProxy();
     return proxy.Discover(address, port, auth);
+  }
+
+  /**
+   * Sets the statup status of the connection
+   *
+   * @param {ISCSINode} node
+   * @param {String} startup
+   */
+  async setStartup(node, startup) {
+    const path = this.nodePath(node);
+
+    const proxy = await this.client.proxy(ISCSI_NODE_IFACE, path);
+    proxy.Startup = startup;
   }
 
   /**
@@ -399,6 +402,48 @@ class ISCSIManager {
     // return await iscsiNode.iface.logout();
     const proxy = await this.client.proxy(ISCSI_NODE_IFACE, path);
     return proxy.Logout();
+  }
+
+  onInitiatorChanged(handler) {
+    return this.client.onObjectChanged(STORAGE_OBJECT, ISCSI_INITIATOR_IFACE, (changes) => {
+      const data = {
+        name: changes.InitiatorName?.v,
+        ibft: changes.IBFT?.v
+      };
+
+      const filtered = Object.entries(data).filter(([, v]) => v !== undefined);
+      return handler(Object.fromEntries(filtered));
+    });
+  }
+
+  async onNodeAdded(handler) {
+    const proxy = await this.iscsiNodesProxy();
+    proxy.addEventListener("added", (_, proxy) => handler(this.buildNode(proxy)));
+  }
+
+  async onNodeChanged(handler) {
+    const proxy = await this.iscsiNodesProxy();
+    proxy.addEventListener("changed", (_, proxy) => handler(this.buildNode(proxy)));
+  }
+
+  async onNodeRemoved(handler) {
+    const proxy = await this.iscsiNodesProxy();
+    proxy.addEventListener("removed", (_, proxy) => handler(this.buildNode(proxy)));
+  }
+
+  buildNode(proxy) {
+    const id = path => path.split("/").slice(-1)[0];
+
+    return {
+      id: id(proxy.path),
+      target: proxy.Target,
+      address: proxy.Address,
+      port: proxy.Port,
+      interface: proxy.Interface,
+      ibft: proxy.IBFT,
+      connected: proxy.Connected,
+      startup: proxy.Startup
+    };
   }
 
   /**
