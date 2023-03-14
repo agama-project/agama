@@ -175,7 +175,7 @@ const AdditionalInfo = FooterInfoArea.Source;
 const PageOptionsSlot = PageOptions.Target;
 
 /**
- * Component for teleporting page related options to the PageOptions slot
+ * Component for teleport page related options to the PageOptions slot
  */
 const PageOptionsContent = PageOptions.Source;
 

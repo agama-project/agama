@@ -360,14 +360,14 @@ describe("#iscsi", () => {
         username: "test",
         password: "12345",
         reverseUsername: "target",
-        reversePassword: "notsecret"
+        reversePassword: "nonsecret"
       });
 
       expect(cockpitProxies.iscsiInitiator.Discover).toHaveBeenCalledWith("192.168.100.101", 3260, {
         Username: { t: "s", v: "test" },
         Password: { t: "s", v: "12345" },
         ReverseUsername: { t: "s", v: "target" },
-        ReversePassword: { t: "s", v: "notsecret" }
+        ReversePassword: { t: "s", v: "nonsecret" }
       });
     });
   });
@@ -403,7 +403,7 @@ describe("#iscsi", () => {
         username: "test",
         password: "12345",
         reverseUsername: "target",
-        reversePassword: "notsecret",
+        reversePassword: "nonsecret",
         startup: "automatic"
       });
 
@@ -411,7 +411,7 @@ describe("#iscsi", () => {
         Username: { t: "s", v: "test" },
         Password: { t: "s", v: "12345" },
         ReverseUsername: { t: "s", v: "target" },
-        ReversePassword: { t: "s", v: "notsecret" },
+        ReversePassword: { t: "s", v: "nonsecret" },
         Startup: { t: "s", v: "automatic" }
       });
     });
