@@ -10,6 +10,10 @@ section {
   gap: var(--spacer-small);
 }
 
+section:not(:last-child) {
+  margin-block-end: var(--spacer-large);
+}
+
 section > svg {
   grid-area: icon;
 }

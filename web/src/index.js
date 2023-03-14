@@ -36,7 +36,7 @@ import App from "~/App";
 import Main from "~/Main";
 import { Overview } from "~/components/overview";
 import { ProductSelectionPage } from "~/components/software";
-import { ProposalPage as StoragePage } from "~/components/storage";
+import { ProposalPage as StoragePage, ISCSIPage } from "~/components/storage";
 import { UsersPage } from "~/components/users";
 import { L10nPage } from "~/components/l10n";
 import { NetworkPage } from "~/components/network";
@@ -58,6 +58,7 @@ root.render(
                 <Route path="/storage" element={<StoragePage />} />
                 <Route path="/network" element={<NetworkPage />} />
                 <Route path="/users" element={<UsersPage />} />
+                <Route path="/storage/iscsi" element={<ISCSIPage />} />
               </Route>
               <Route path="products" element={<ProductSelectionPage />} />
             </Route>
