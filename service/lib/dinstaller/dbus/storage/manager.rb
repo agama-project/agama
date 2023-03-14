@@ -161,6 +161,13 @@ module DInstaller
           backend.iscsi.initiator.name = value
         end
 
+        # Whether the initiator name was set via iBFT
+        #
+        # @return [Boolean]
+        def ibft
+          backend.iscsi.initiator.ibft_name?
+        end
+
         # Performs an iSCSI discovery
         #
         # @param address [String] IP address of the iSCSI server
@@ -198,6 +205,8 @@ module DInstaller
 
         dbus_interface ISCSI_INITIATOR_INTERFACE do
           dbus_accessor :initiator_name, "s"
+
+          dbus_reader :ibft, "b", dbus_name: "IBFT"
 
           dbus_method :Discover,
             "in address:s, in port:u, in options:a{sv}, out result:u" do |address, port, options|
