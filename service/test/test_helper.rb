@@ -33,7 +33,7 @@ ENV["LC_ALL"] = "en_US.UTF-8"
 # Hack to avoid requiring some files
 # Initially introduced because yast2-s390 is only available for s390x systems
 # (but we want to run the DASD-related unit tests in all architectures).
-LIBS_TO_SKIP = ["y2s390"].freeze
+LIBS_TO_SKIP = ["y2s390", "y2s390/format_process"].freeze
 module Kernel
   alias_method :old_require, :require
 
