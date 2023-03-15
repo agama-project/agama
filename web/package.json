@@ -103,7 +103,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
-    "react-teleporter": "github:yast/react-teleporter#support-function-as-source",
+    "react-teleporter": "^3.1.0",
     "regenerator-runtime": "^0.13.9"
   }
 }
