@@ -127,6 +127,9 @@ $ make devel-install
 $ cd -
 ~~~
 
+Alternatively you can run a development server which works as a proxy for
+the cockpit server. See more details [in the documentation](web/README.md).
+
 * Start the services:
     * beware that D-Installer must run as root (like YaST does) to do
       hardware probing, partition the disks, install the software and so on.
