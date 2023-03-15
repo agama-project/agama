@@ -20,8 +20,6 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
-require "dinstaller/storage/dasd/manager"
-require "dinstaller/dbus/storage/dasds_tree"
 
 module DInstaller
   module DBus
