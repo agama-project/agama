@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon, PageActions } from "~/components/layout";
 
