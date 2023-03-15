@@ -47,7 +47,7 @@
     "chrome-remote-interface": "^0.32.1",
     "compression-webpack-plugin": "^10.0.0",
     "copy-webpack-plugin": "^11.0.0",
-    "cspell-cli": "github:streetsidesoftware/cspell-cli",
+    "cspell": "^6.29.3",
     "css-loader": "^6.5.0",
     "css-minimizer-webpack-plugin": "^4.2.2",
     "eslint": "^8.28.0",
