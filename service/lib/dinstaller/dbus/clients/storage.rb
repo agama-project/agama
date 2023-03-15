@@ -33,7 +33,7 @@ module DInstaller
         include WithProgress
         include WithValidation
 
-        STORAGE_IFACE = "org.opensuse.DInstaller.Storage1.Proposal"
+        STORAGE_IFACE = "org.opensuse.DInstaller.Storage1"
         private_constant :STORAGE_IFACE
 
         PROPOSAL_CALCULATOR_IFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator"
@@ -53,7 +53,7 @@ module DInstaller
         #
         # @param done [Proc] Block to execute once the probing is done
         def probe(&done)
-          dbus_object.Probe(&done)
+          dbus_object[STORAGE_IFACE].Probe(&done)
         end
 
         # Performs the packages installation

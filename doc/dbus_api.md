@@ -126,10 +126,13 @@ Service for managing storage devices.
   .DInstaller.Storage1
   .DInstaller.Storage1.Proposal.Calculator
   .DInstaller.Storage1.ISCSI.Initiator
+  .DInstaller.Storage1.DASD.Manager (Only available on s390 systems)
 /DInstaller/Storage1/Proposal
   .DInstaller.Storage1.Proposal
 /DInstaller/Storage1/iscsi_nodes/[0-9]+
   .DInstaller.Storage1.ISCSI.Node
+/DInstaller/Storage1/dasds/[0-9]+ (Only available on s390 systems)
+  .DInstaller.Storage1.DASD.device
 ~~~
 
 ### D-Bus Objects
@@ -145,6 +148,7 @@ Service for managing storage devices.
   .DInstaller.Storage1
   .DInstaller.Storage1.Proposal.Calculator
   .DInstaller.Storage1.ISCSI.Initiator
+  .DInstaller.Storage1.DASD.manager
 ~~~
 
 Main object exported by the service `org.opensuse.DInstaller.Service`. This object implements the `org.freedesktop.DBus.ObjectManager` interface and should be used by clients to discover other objects.
@@ -170,6 +174,15 @@ This object is exported only if a proposal was already calculated (successful or
 ~~~
 
 Objects representing iSCSI nodes are dynamically exported when a successful iSCSI discovery is performed, see `.org.opensuse.DInstaller.Storage1.ISCSI.Initiator` interface.
+
+#### `/org/opensuse/DInstaller/Storage1/dasds/[0-9]+` Objects
+
+~~~
+/DInstaller/Storage1/dasds/[0-9]+
+  .DInstaller.Storage1.DASD.Device
+~~~
+
+Objects representing DASDs are dynamically exported when a successful probing is performed by the `DASD.manager` interface of the main storage object, see `.org.opensuse.DInstaller.Storage1.DASD.manager`.
 
 ### D-Bus Interfaces
 
@@ -337,7 +350,7 @@ Delete(in o  iscsi_node_path,
 ##### Properties
 
 ~~~
-IniciatorName readable,writable   s
+InitiatorName readable,writable   s
 ~~~
 
 ##### Details
@@ -351,7 +364,7 @@ Discover(in  s       address,
          out u       result)
 ~~~
 
-Performs nodes discovery. Discovered nodes are exported with the path `/org/opensuse/DInstaller/iscsi/node[0-9]+`.
+Performs nodes discovery. Discovered nodes are exported with the path `/org/opensuse/DInstaller/iscsi_nodes/[0-9]+`.
 
 Arguments:
 
@@ -411,7 +424,8 @@ Login(in  a{sv}   options,
       out u       result)
 ~~~
 
-Creates an iSCSI session. If the session is created, then a new iSCSI session object is exported with the path `/org/opensuse/DInstaller/Storage1/iscsi/session[0-9]+`.
+Creates an iSCSI session. If the session is created, the corresponding object at the path
+`/org/opensuse/DInstaller/Storage1/iscsi_nodes/[0-9]+` is updated.
 
 Arguments:
 
@@ -435,6 +449,132 @@ Arguments:
 
 * `out u result`: `0` on success and `1` on failure.
 
+#### `org.opensuse.DInstaller.Storage1.DASD.Manager` Interface
+
+Provides methods for configuring DASDs. It's only available if the D-Bus service is running on a
+s390x system.
+
+##### A Note About DIAG and YaST
+
+The `use_diag` flag of a given DASD controls whether it should use the DIAG access method.
+Traditionally YaST has managed that flag in a way that may be confusing to newcomers. Nevertheless,
+for the sake of consistency and easy transition (and also to reuse some YaST components without
+modifications) D-Installer observes that YaST approach. In a nutshell:
+
+- When the list of DASDs is read from the system (see method `Probe()`), the value of the `use_diag`
+  flag for enabled devices is checked from the system and exported with the proper value in the D-Bus
+  representation of the DASD. But for disabled DASDs, the value of the flag is always assumed to be
+  false.
+- When the value of the `use_diag` flag is changed for an enabled device using the D-Bus interface
+  (see method `SetDiag()`), the change is applied immediately to the system, disabling the device
+  and enabling it again with the new access method.
+- When the value of the flag is changed for a disabled device, the flag is updated in the D-Bus
+  representation of the DASD but not written to the system configuration. The change will only
+  have effect in the system if the device is enabled afterwards using the `Enable()` method. The
+  change is lost if `Probe()` is called again without having enabled the device.
+
+##### Methods
+
+~~~
+Probe()
+Enable(in  ao devices,
+       out u  result)
+Disable(in  ao devices,
+        out u  result)
+SetDiag(in  ao devices,
+        in  b  diag,
+        out u  result)
+~~~
+
+In addition, a `Format()` method is provided, but it's not documented here because it's going to
+change heavily in the short term.
+
+##### Details
+
+###### `Probe` Method
+
+Finds DASDs in the system. Found DASDs are exported with the path
+`/org/opensuse/DInstaller/Storage1/dasds/[0-9]+`.
+
+###### `Enable` Method
+
+~~~
+Enable(in  ao devices,
+       out u  result)
+~~~
+
+Enables the given list of DASDs. See documentation above to understand how the `use_diag` flag of
+the DASDs is affected by this method.
+
+Arguments:
+
+* `in ao devices`: paths of the D-Bus objects representing the DASDs to enable.
+* `out u result`: `0` if all DASDs are successfully enabled. `1` if any of the given paths is invalid (ie. it does not correspond to a known DASD), `2` in case of any other error.
+
+
+###### `Disable` Method
+
+~~~
+Disable(in  ao devices,
+        out u  result)
+~~~
+
+Disables the given list of DASDs.
+
+Arguments:
+
+* `in ao devices`: paths of the D-Bus objects representing the DASDs to disable.
+* `out u result`: `0` if all DASDs are successfully disabled. `1` if any of the given paths is invalid (ie. it does not correspond to a known DASD), `2` in case of any other error.
+
+###### `SetDiag` Method
+
+~~~
+SetDiag(in  ao devices,
+        in  b  diag,
+        out u  result)
+~~~
+
+Sets the `use_diag` attribute for the given DASDs to the given value. See documentation above to
+understand what setting the flag really means (since this follows the same convention than YaST).
+
+Arguments:
+
+* `in ao devices`: paths of the D-Bus objects representing the DASDs to configure.
+* `in b diag`: new value for the flag.
+* `out u result`: `0` if `use_diag` is correctly set for all the requested DASDs. `1` if any of the given paths is invalid (ie. it does not correspond to a known DASD), `2` in case of any other error.
+
+#### `org.opensuse.DInstaller.Storage1.DASD.Device` Interface
+
+This interface is implemented by objects exported at the `/org/opensuse/DInstaller/Storage1/dasds/[0-9]+`
+paths. It provides information about a DASD in the system.
+
+##### Properties
+
+~~~
+Id            readable s
+Enabled       readable b
+DeviceName    readable s
+Formatted     readable b
+Diag          readable b
+Type          readable s
+AccessType    readable s
+PartitionInfo readable s
+~~~
+
+Bear in mind these properties are a quite direct translation of the attributes read and exposed by
+YaST. Some changes may be introduced in the future to make them easier to consume (eg. the current
+string `AccessType` could be replaced by a boolean `ReadOnly`).
+
+* `Id`: The device channel id (eg. "0.0.0150")
+* `Enabled`: Whether the device is enabled.
+* `DeviceName`: Device name of the DASD in the linux system (eg. "/dev/dasda"). Empty string if the
+  device is not enabled.
+* `Formatted`: whether the device is formatted.
+* `Diag`: Whether the DIAG access method is used (or will be used when the device is enabled).
+* `Type`: The DASD type (eg. EKCD or FBA).
+* `AccessType`: Empty string if unknown. Either "rw" or "ro" otherwise.
+* `PartitionInfo`: Partition names (and sometimes their type) separated by commas.
+  Eg. "_/dev/dasda1 (Linux native), /dev/dasda2 (Linux native)_". Empty if the information is unknown.
 
 ## Users
 

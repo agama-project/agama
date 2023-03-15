@@ -20,16 +20,20 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "yast"
 require "dinstaller/dbus/base_object"
 require "dinstaller/dbus/with_service_status"
 require "dinstaller/dbus/interfaces/progress"
 require "dinstaller/dbus/interfaces/service_status"
 require "dinstaller/dbus/interfaces/validation"
+require "dinstaller/dbus/interfaces/dasd"
 require "dinstaller/dbus/storage/proposal"
 require "dinstaller/dbus/storage/proposal_settings_converter"
 require "dinstaller/dbus/storage/volume_converter"
 require "dinstaller/dbus/storage/with_iscsi_auth"
 require "dinstaller/dbus/storage/iscsi_nodes_tree"
+
+Yast.import "Arch"
 
 module DInstaller
   module DBus
@@ -57,6 +61,10 @@ module DInstaller
           register_progress_callbacks
           register_service_status_callbacks
           register_iscsi_callbacks
+          return unless Yast::Arch.s390
+
+          singleton_class.include DBus::Interfaces::Dasd
+          register_dasd_callbacks
         end
 
         STORAGE_INTERFACE = "org.opensuse.DInstaller.Storage1"
