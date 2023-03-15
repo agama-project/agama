@@ -141,7 +141,8 @@ module DInstaller
         def dasds_dbus_method(paths)
           dbus_dasds = dasds_tree.find_paths(paths)
           if dbus_dasds.size != paths.size
-            logger.error "Unknown path(s) at #{paths}"
+            missing = paths - dbus_dasds.map(&:path)
+            logger.error "Unknown path(s) #{missing} at requested list #{paths}"
             return 1
           end
 

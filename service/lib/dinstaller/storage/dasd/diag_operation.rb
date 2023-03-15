@@ -39,7 +39,7 @@ module DInstaller
 
       private
 
-        # @return [Boolean] new wanted value for the use_diag flag
+        # @return [Boolean] newly wanted value for the use_diag flag
         attr_reader :value
 
         def process_dasd(dasd)

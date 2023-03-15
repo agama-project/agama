@@ -451,7 +451,7 @@ Arguments:
 
 #### `org.opensuse.DInstaller.Storage1.DASD.Manager` Interface
 
-Provides methods for configuring DASDs. It's only available if the D-Bus service is running on an
+Provides methods for configuring DASDs. It's only available if the D-Bus service is running on a
 s390x system.
 
 ##### A Note About DIAG and YaST
@@ -561,6 +561,10 @@ AccessType    readable s
 PartitionInfo readable s
 ~~~
 
+Bear in mind these properties are a quite direct translation of the attributes read and exposed by
+YaST. Some changes may be introduced in the future to make them easier to consume (eg. the current
+string `AccessType` could be replaced by a boolean `ReadOnly`).
+
 * `Id`: The device channel id (eg. "0.0.0150")
 * `Enabled`: Whether the device is enabled.
 * `DeviceName`: Device name of the DASD in the linux system (eg. "/dev/dasda"). Empty string if the
@@ -569,7 +573,8 @@ PartitionInfo readable s
 * `Diag`: Whether the DIAG access method is used (or will be used when the device is enabled).
 * `Type`: The DASD type (eg. EKCD or FBA).
 * `AccessType`: Empty string if unknown. Either "rw" or "ro" otherwise.
-* `PartitionInfo`: Description of the partitions. Empty if the information is unknown.
+* `PartitionInfo`: Partition names (and sometimes their type) separated by commas.
+  Eg. "_/dev/dasda1 (Linux native), /dev/dasda2 (Linux native)_". Empty if the information is unknown.
 
 ## Users
 
