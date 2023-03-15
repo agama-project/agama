@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,13 +26,8 @@ import { createClient } from "~/client";
 import { BUSY, IDLE } from "~/client/status";
 import { StorageSection } from "~/components/overview";
 
-const mockUseNavigate = jest.fn();
 jest.mock("~/client");
-jest.mock("~/components/core/InstallerSkeleton", () => mockComponent("Loading storage"));
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockUseNavigate
-}));
+jest.mock("~/components/core/SectionSkeleton", () => mockComponent("Loading storage"));
 
 let status = IDLE;
 let proposal = {
@@ -40,8 +35,10 @@ let proposal = {
     { id: "/dev/sda", label: "/dev/sda, 500 GiB" },
     { id: "/dev/sdb", label: "/dev/sdb, 650 GiB" }
   ],
-  candidateDevices: ["/dev/sda"],
-  lvm: false
+  result: {
+    candidateDevices: ["/dev/sda"],
+    lvm: false
+  }
 };
 let errors = [];
 let onStatusChangeFn = jest.fn();
@@ -50,7 +47,7 @@ beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       storage: {
-        getProposal: jest.fn().mockResolvedValue(proposal),
+        proposal: { getData: jest.fn().mockResolvedValue(proposal) },
         getStatus: jest.fn().mockResolvedValue(status),
         getValidationErrors: jest.fn().mockResolvedValue(errors),
         onStatusChange: onStatusChangeFn
@@ -66,12 +63,6 @@ describe("when there is a proposal", () => {
     await screen.findByText(/Install using device/);
     await screen.findByText(/\/dev\/sda, 500 GiB/);
     await screen.findByText(/and deleting all its content/);
-  });
-
-  it("renders a link a for editing storage settings", async () => {
-    installerRender(<StorageSection />);
-
-    await screen.findByRole("button", { name: "Edit storage settings" });
   });
 
   describe("with errors", () => {
@@ -102,27 +93,21 @@ describe("when there is a proposal", () => {
       onStatusChangeFn = mockFunction;
 
       installerRender(<StorageSection showErrors />);
+
       await screen.findByText(/Install using device/);
-      await screen.findByRole("button", { name: "Edit storage settings" });
 
       const [onStatusChangeCb] = callbacks;
+      act(() => onStatusChangeCb(BUSY));
 
-      act(() => {
-        onStatusChangeCb(BUSY);
-      });
-
+      // FIXME: check that it was not there before
       await screen.findByText("Loading storage");
-      await waitFor(() => {
-        expect(screen.queryByText(/Install using device/)).not.toBeInTheDocument();
-        expect(screen.queryByRole("button", { name: "Edit storage settings" })).not.toBeInTheDocument();
-      });
     });
   });
 });
 
 describe("when there is no proposal yet", () => {
   beforeEach(() => {
-    proposal = undefined;
+    proposal = { result: undefined };
     errors = [{ message: "Fake error" }];
   });
 
@@ -130,14 +115,6 @@ describe("when there is no proposal yet", () => {
     installerRender(<StorageSection />);
 
     await screen.findByText("Loading storage");
-  });
-
-  it("does not render a link a for editing storage settings", async () => {
-    installerRender(<StorageSection />);
-
-    await waitFor(() => {
-      expect(screen.queryByRole("button", { name: "Edit storage settings" })).not.toBeInTheDocument();
-    });
   });
 
   it("does not render errors", async () => {
@@ -157,14 +134,6 @@ describe("but storage service is busy", () => {
     installerRender(<StorageSection />);
 
     await screen.findByText("Loading storage");
-  });
-
-  it("does not render a link a for editing storage settings", async () => {
-    installerRender(<StorageSection />);
-
-    await waitFor(() => {
-      expect(screen.queryByRole("button", { name: "Edit storage settings" })).not.toBeInTheDocument();
-    });
   });
 
   it("does not render errors", async () => {

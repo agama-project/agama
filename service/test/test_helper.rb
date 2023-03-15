@@ -30,6 +30,18 @@ $LOAD_PATH.unshift(SRC_PATH)
 # (some tests check the output which is marked for translation)
 ENV["LC_ALL"] = "en_US.UTF-8"
 
+# Hack to avoid requiring some files
+# Initially introduced because yast2-s390 is only available for s390x systems
+# (but we want to run the DASD-related unit tests in all architectures).
+LIBS_TO_SKIP = ["y2s390", "y2s390/format_process"].freeze
+module Kernel
+  alias_method :old_require, :require
+
+  def require(path)
+    old_require(path) unless LIBS_TO_SKIP.include?(path)
+  end
+end
+
 if ENV["COVERAGE"]
   require "simplecov"
   SimpleCov.start do

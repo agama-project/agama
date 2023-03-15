@@ -108,7 +108,7 @@ module DInstaller
 
         # Creates a new iSCSI session
         #
-        # @note iSCSI nodes are probed again if needed, see {#probe_after}.
+        # @note iSCSI nodes are probed again, see {#probe_after}.
         #
         # @param node [Node]
         # @param authentication [Y2IscsiClient::Authentication]
@@ -117,13 +117,6 @@ module DInstaller
         # @return [Boolean] Whether the action successes
         def login(node, authentication, startup: nil)
           startup ||= Yast::IscsiClientLib.default_startup_status
-
-          if !STARTUP_OPTIONS.include?(startup)
-            logger.info(
-              "Cannot create iSCSI session because startup status is not valid: #{startup}"
-            )
-            return false
-          end
 
           ensure_activated
 
@@ -160,6 +153,21 @@ module DInstaller
           probe_after do
             Yast::IscsiClientLib.currentRecord = record_from(node)
             Yast::IscsiClientLib.removeRecord
+          end
+        end
+
+        # Updates an iSCSI node
+        #
+        # @note iSCSI nodes are probed again, see {#probe_after}.
+        #
+        # @param node [Node]
+        # @param startup [String] New startup mode value
+        #
+        # @return [Boolean] Whether the action successes
+        def update(node, startup:)
+          probe_after do
+            Yast::IscsiClientLib.currentRecord = record_from(node)
+            Yast::IscsiClientLib.setStartupStatus(startup)
           end
         end
 

@@ -61,10 +61,10 @@ describe DInstaller::DBus::Clients::Storage do
   subject { described_class.new }
 
   describe "#probe" do
-    let(:dbus_object) { double(::DBus::ProxyObject, Probe: nil) }
+    let(:storage_iface) { double(::DBus::ProxyObjectInterface, Probe: nil) }
 
     it "calls the D-Bus Probe method" do
-      expect(dbus_object).to receive(:Probe)
+      expect(storage_iface).to receive(:Probe)
 
       subject.probe
     end
@@ -72,7 +72,7 @@ describe DInstaller::DBus::Clients::Storage do
     context "when a block is given" do
       it "passes the block to the Probe method (async)" do
         callback = proc {}
-        expect(dbus_object).to receive(:Probe) do |&block|
+        expect(storage_iface).to receive(:Probe) do |&block|
           expect(block).to be(callback)
         end
 

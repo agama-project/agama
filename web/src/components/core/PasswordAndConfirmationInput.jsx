@@ -25,7 +25,7 @@ import {
   TextInput
 } from "@patternfly/react-core";
 
-const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisabled }) => {
+const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisabled, split = false }) => {
   const [confirmation, setConfirmation] = useState(value || "");
   const [error, setError] = useState("");
 
@@ -53,7 +53,7 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
   };
 
   return (
-    <>
+    <div className={split ? "split" : "stack"}>
       <FormGroup fieldId="password" label="Password">
         <TextInput
           id="password"
@@ -84,7 +84,7 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
           validated={error === "" ? "default" : "error"}
         />
       </FormGroup>
-    </>
+    </div>
   );
 };
 

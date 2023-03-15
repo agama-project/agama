@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -30,8 +30,7 @@ const FILENAME = "y2logs.tar.xz";
 const FILETYPE = "application/x-xz";
 
 /**
- * Button for collecting and donwloading YaST logs
- *
+ * Button for collecting and downloading YaST logs
  * @component
  *
  * @param {object} props

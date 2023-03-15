@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,8 +21,8 @@
 
 import React, { useState } from "react";
 
-import { Section, Popup } from "~/components/core";
-import { ProposalTargetForm, ProposalSummary } from "~/components/storage";
+import { If, Popup, Section } from "~/components/core";
+import { ProposalSummary, ProposalTargetForm } from "~/components/storage";
 
 export default function ProposalTargetSection({ proposal, calculateProposal }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,8 +32,14 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
     calculateProposal({ candidateDevices });
   };
 
-  return (
-    <Section title="Device" onActionClick={() => setIsOpen(true)} hasSeparator>
+  const openDeviceSelector = () => setIsOpen(true);
+
+  const { availableDevices = [] } = proposal;
+
+  const renderSelector = availableDevices.length > 0;
+
+  const Content = () => (
+    <>
       <ProposalSummary proposal={proposal} />
       <Popup aria-label="Device selection" isOpen={isOpen}>
         <ProposalTargetForm id="target-form" proposal={proposal} onSubmit={onTargetChange} />
@@ -42,6 +48,12 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
           <Popup.Cancel onClick={() => setIsOpen(false)} autoFocus />
         </Popup.Actions>
       </Popup>
+    </>
+  );
+
+  return (
+    <Section title="Device" openDialog={renderSelector ? openDeviceSelector : null}>
+      <If condition={renderSelector} then={<Content />} else="No available devices" />
     </Section>
   );
 }

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -64,13 +64,19 @@ module DInstaller
       root_user.password = value.empty? ? nil : pwd
     end
 
+    # Whether the given user is configured for autologin
+    #
+    # @param [Y2Users::User] user
+    # @return [Boolean]
+    def autologin?(user)
+      config.login.autologin_user == user
+    end
+
+    # First created user
+    #
+    # @return [Y2Users::User, nil]
     def first_user
-      user = config.users.reject(&:root?).first
-
-      return ["", "", false, {}] unless user
-
-      # TODO: not sure if backend should return structure of dbus?
-      [user.full_name, user.name, config.login.autologin_user == user, {}]
+      config.users.reject(&:root?).first
     end
 
     # Clears the root password

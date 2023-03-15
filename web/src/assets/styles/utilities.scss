@@ -25,6 +25,10 @@
   text-align: center;
 }
 
+.bold {
+  font-weight: bold;
+}
+
 .icon-size-10 {
   width: 10px;
   height: 10px;
@@ -102,6 +106,19 @@
 
 .bottom-shadow {
   box-shadow: 0 -3px 10px 0 var(--color-gray-darker);
+}
+
+.plain-control {
+  background: none;
+  border: none;
+}
+
+.plain-button {
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  padding: 0;
 }
 
 .tallest {

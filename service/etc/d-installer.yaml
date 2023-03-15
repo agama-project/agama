@@ -25,6 +25,9 @@ products:
       gives Leap a level of stability unmatched by other Linux distributions,
       and combines that with community developments to give users, developers
       and sysadmins the best stable Linux experience available.'
+  Leap16:
+    name: openSUSE Leap 16.0
+    description: '[Experimental project] openSUSE Leap 16 is built on top of the next generation Adaptable Linux Platform (ALP) from SUSE.'
 
 web:
   ssl: null
@@ -60,7 +63,8 @@ Tumbleweed:
     mandatory_patterns:
       - enhanced_base # only pattern that is shared among all roles on TW
     optional_patterns: null # no optional pattern shared
-    mandatory_packages: null
+    mandatory_packages:
+      - NetworkManager
     optional_packages: null
     base_product: openSUSE
 
@@ -158,6 +162,7 @@ ALP:
       - alp_base_zypper
       - alp_cockpit
       - alp-container_runtime
+      - alp_defaults
     optional_patterns: null # no optional pattern shared
     mandatory_packages:
       - device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
@@ -165,6 +170,77 @@ ALP:
       - libtss2-tcti-device0 # Same than fde-tools
     optional_packages: null
     base_product: ALP
+
+  security:
+    tpm_luks_open: true
+    lsm: selinux
+    available_lsms:
+      # apparmor:
+      #   patterns:
+      #     - apparmor
+      selinux:
+        patterns:
+          - alp_selinux
+        policy: enforcing
+      none:
+        patterns: null
+
+  storage:
+    encryption:
+      method: luks2
+      pbkdf: pbkdf2
+    volumes:
+      - mount_point: "/"
+        fs_type: btrfs
+        desired_size: 20 GiB
+        min_size: 5 GiB
+        fs_types:
+          - btrfs
+        weight: 20
+        snapshots: true
+        snapshots_configurable: false
+        proposed_configurable: false
+        btrfs_default_subvolume: "@"
+        btrfs_read_only: true
+        subvolumes:
+        - path: root
+        - path: home
+        - path: opt
+        - path: srv
+        - path: boot/writable
+        - path: usr/local
+        - path: boot/grub2/arm64-efi
+          archs: aarch64
+        - path: boot/grub2/i386-pc
+          archs: x86_64
+        - path: boot/grub2/powerpc-ieee1275
+          archs: ppc,!board_powernv
+        - path: boot/grub2/s390x-emu
+          archs: s390
+        - path: boot/grub2/x86_64-efi
+          archs: x86_64
+        - path: var
+          copy_on_write: false
+Leap16:
+  software:
+    installation_repositories:
+      - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/standard/
+        archs: x86_64
+      - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/standard/
+        archs: aarch64
+    mandatory_patterns:
+      - alp_base
+      - alp_base_zypper
+      - alp_cockpit
+      - alp-container_runtime
+      - alt_defaults
+    optional_patterns: null # no optional pattern shared
+    mandatory_packages:
+      - device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
+      - fde-tools # Needed for FDE with TPM, hardcoded here temporarily
+      - libtss2-tcti-device0 # Same than fde-tools
+    optional_packages: null
+    base_product: Leap16
 
   security:
     tpm_luks_open: true
@@ -230,7 +306,8 @@ Leap:
     mandatory_patterns:
       - enhanced_base # For now lets pick some minimal one
     optional_patterns: null # no optional pattern shared
-    mandatory_packages: null
+    mandatory_packages:
+      - NetworkManager
     optional_packages: null
     base_product: Leap
 

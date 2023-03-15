@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Wed Mar  8 07:46:54 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix gem2rpm configuration to include YaST2 dependencies
+  (gh#yast/d-installer#459).
+
+-------------------------------------------------------------------
+Thu Mar  2 08:48:36 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Write /iguana/mountlist if running on Iguana.
+
+-------------------------------------------------------------------
 Wed Feb 15 16:09:16 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Add D-Bus API for iSCSI.

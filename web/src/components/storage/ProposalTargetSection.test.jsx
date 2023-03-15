@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -36,70 +36,86 @@ const FakeProposalTargetForm = ({ id, onSubmit }) => {
 jest.mock("~/components/storage/ProposalSummary", () => mockComponent("Proposal summary"));
 jest.mock("~/components/storage/ProposalTargetForm", () => FakeProposalTargetForm);
 
-const proposal = {
-  availableDevices: [{ id: "/dev/sda", label: "/dev/sda, 500 GiB" }],
-  candidateDevices: ["/dev/sda"],
-  lvm: false
-};
+let proposal;
 
-it("renders the proposal summary", () => {
-  installerRender(<ProposalTargetSection proposal={proposal} />);
+describe("when there are candidate devices available", () => {
+  beforeEach(() => {
+    proposal = {
+      availableDevices: [{ id: "/dev/sda", label: "/dev/sda, 500 GiB" }],
+      result : {
+        candidateDevices: ["/dev/sda"],
+        lvm: false
+      }
+    };
+  });
 
-  screen.getByText("Proposal summary");
-});
+  it("renders the proposal summary", () => {
+    installerRender(<ProposalTargetSection proposal={proposal} />);
 
-it("renders an icon for configuring the candidate devices", () => {
-  installerRender(<ProposalTargetSection proposal={proposal} />);
+    screen.getByText("Proposal summary");
+  });
 
-  screen.getByRole("button", { name: "Section settings" });
-});
+  it("does not show the device selector by default", async () => {
+    installerRender(<ProposalTargetSection proposal={proposal} />);
 
-it("does not show the popup by default", async () => {
-  installerRender(<ProposalTargetSection proposal={proposal} />);
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+  });
 
-  await waitFor(() => {
+  it("allows changing the device selection", async () => {
+    const calculateFn = jest.fn();
+
+    const { user } = installerRender(<ProposalTargetSection proposal={proposal} calculateProposal={calculateFn} />);
+
+    const button = screen.getByRole("button", { name: "Device" });
+    await user.click(button);
+
+    const popup = await screen.findByRole("dialog");
+    const accept = within(popup).getByRole("button", { name: "Accept" });
+    await user.click(accept);
+
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(calculateFn).toHaveBeenCalled();
+  });
+
+  it("allows aborting the candidate selection", async () => {
+    const calculateFn = jest.fn();
+
+    const { user } = installerRender(<ProposalTargetSection proposal={proposal} calculateProposal={calculateFn} />);
+
+    const button = screen.getByRole("button", { name: "Device" });
+    await user.click(button);
+
+    const popup = await screen.findByRole("dialog");
+    const cancel = within(popup).getByRole("button", { name: "Cancel" });
+    await user.click(cancel);
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(calculateFn).not.toHaveBeenCalled();
   });
 });
 
-it("shows the popup with the form when the icon is clicked", async () => {
-  const { user } = installerRender(<ProposalTargetSection proposal={proposal} />);
+describe("when there are no candidate devices available", () => {
+  beforeEach(() => {
+    proposal = {
+      result: {
+        candidateDevices: []
+      },
+      availableDevices: []
+    };
+  });
 
-  const button = screen.getByRole("button", { name: "Section settings" });
-  await user.click(button);
+  it("renders an informative message", () => {
+    installerRender(<ProposalTargetSection proposal={proposal} />);
 
-  await screen.findByRole("dialog");
-  screen.getByRole("form", { name: "Target form" });
-});
+    screen.getByText("No available devices");
+  });
 
-it("closes the popup without submitting the form when cancel is clicked", async () => {
-  const calculateFn = jest.fn();
+  it("does not allow configuring the candidate devices", () => {
+    installerRender(<ProposalTargetSection proposal={proposal} />);
 
-  const { user } = installerRender(<ProposalTargetSection proposal={proposal} calculateProposal={calculateFn} />);
-
-  const button = screen.getByRole("button", { name: "Section settings" });
-  await user.click(button);
-
-  const popup = await screen.findByRole("dialog");
-  const cancel = within(popup).getByRole("button", { name: "Cancel" });
-  await user.click(cancel);
-
-  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  expect(calculateFn).not.toHaveBeenCalled();
-});
-
-it("closes the popup and submits the form when accept is clicked", async () => {
-  const calculateFn = jest.fn();
-
-  const { user } = installerRender(<ProposalTargetSection proposal={proposal} calculateProposal={calculateFn} />);
-
-  const button = screen.getByRole("button", { name: "Section settings" });
-  await user.click(button);
-
-  const popup = await screen.findByRole("dialog");
-  const accept = within(popup).getByRole("button", { name: "Accept" });
-  await user.click(accept);
-
-  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  expect(calculateFn).toHaveBeenCalled();
+    const actionButton = screen.queryByRole("button", { name: "Device" });
+    expect(actionButton).toBeNull();
+  });
 });

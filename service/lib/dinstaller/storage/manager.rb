@@ -20,20 +20,17 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "yast2/execute"
-require "yast2/systemd/service"
 require "bootloader/proposal_client"
-require "bootloader/finish_client"
 require "y2storage/storage_manager"
 require "dinstaller/storage/proposal"
 require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/callbacks"
 require "dinstaller/storage/iscsi/manager"
+require "dinstaller/storage/finisher"
 require "dinstaller/with_progress"
 require "dinstaller/security"
 require "dinstaller/dbus/clients/questions"
 require "dinstaller/dbus/clients/software"
-require "dinstaller/helpers"
 
 Yast.import "PackagesProposal"
 
@@ -42,7 +39,6 @@ module DInstaller
     # Manager to handle storage configuration
     class Manager
       include WithProgress
-      include Helpers
 
       def initialize(config, logger)
         @config = config
@@ -78,31 +74,9 @@ module DInstaller
         end
       end
 
-      # Unmounts the target file system
+      # Performs the final steps on the target file system(s)
       def finish
-        steps = tpm_key? ? 6 : 5
-        start_progress(steps)
-
-        on_target do
-          progress.step("Writing Linux Security Modules configuration") { security.write }
-          progress.step("Installing bootloader") do
-            ::Bootloader::FinishClient.new.write
-          end
-          if tpm_key?
-            progress.step("Preparing the system to unlock the encryption using the TPM") do
-              prepare_tpm_key
-            end
-          end
-          progress.step("Configuring file systems snapshots") do
-            Yast::WFM.CallFunction("snapshots_finish", ["Write"])
-          end
-          progress.step("Copying logs") do
-            Yast::WFM.CallFunction("copy_logs_finish", ["Write"])
-          end
-          progress.step("Unmounting storage devices") do
-            Yast::WFM.CallFunction("umount_finish", ["Write"])
-          end
-        end
+        Finisher.new(logger, config, security).run
       end
 
       # Storage proposal manager
@@ -147,9 +121,9 @@ module DInstaller
 
       # Probes the devices
       def probe_devices
-        # TODO: probe callbacks
         iscsi.probe
-        Y2Storage::StorageManager.instance.probe
+        # TODO: better probe callbacks that can report issue to user
+        Y2Storage::StorageManager.instance.probe(Y2Storage::Callbacks::UserProbe.new)
       end
 
       # Calculates the default proposal
@@ -191,51 +165,6 @@ module DInstaller
       # @return [DInstaller::DBus::Clients::Software]
       def software
         @software ||= DBus::Clients::Software.new
-      end
-
-      def tpm_key?
-        tpm_product? && tpm_proposal? && tpm_system?
-      end
-
-      def tpm_proposal?
-        proposal.calculated_settings.encrypt?
-      end
-
-      def tpm_system?
-        Y2Storage::Arch.new.efiboot? && tpm_present?
-      end
-
-      def tpm_present?
-        return @tpm_present unless @tpm_present.nil?
-
-        @tpm_present =
-          begin
-            Yast::Execute.on_target!("fdectl", "tpm-present")
-            logger.info "FDE: TPMv2 detected"
-            true
-          rescue Cheetah::ExecutionFailed
-            logger.info "FDE: TPMv2 not detected"
-            false
-          end
-      end
-
-      def tpm_product?
-        config.data.fetch("security", {}).fetch("tpm_luks_open", false)
-      end
-
-      def prepare_tpm_key
-        keyfile_path = File.join("root", ".root.keyfile")
-        Yast::Execute.on_target!(
-          "fdectl", "add-secondary-key", "--keyfile", keyfile_path,
-          stdin:    "#{proposal.calculated_settings.encryption_password}\n",
-          recorder: Yast::ReducedRecorder.new(skip: :stdin)
-        )
-
-        service = Yast2::Systemd::Service.find("fde-tpm-enroll.service")
-        logger.info "FDE: TPM enroll service: #{service}"
-        service&.enable
-      rescue Cheetah::ExecutionFailed
-        false
       end
     end
   end

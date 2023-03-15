@@ -73,7 +73,7 @@ describe("ProgressReport", () => {
       await screen.findByText(/Waiting/i);
       await screen.findByText(/Reading/i);
 
-      // NOTE: there can be more than one susbcriptions to the
+      // NOTE: there can be more than one subscriptions to the
       // manager#onProgressChange. We're interested in the latest one here.
       const cb = callbacks.manager[callbacks.manager.length - 1];
       act(() => {
@@ -102,8 +102,8 @@ describe("ProgressReport", () => {
 
         await screen.findByText(/Waiting/i);
 
-        // NOTE: there can be more than one susbcriptions to the
-        // manager#onChange. We're insterested in the latest one here.
+        // NOTE: there can be more than one subscriptions to the
+        // manager#onChange. We're interested in the latest one here.
         const cb0 = callbacks.manager[callbacks.manager.length - 1];
         act(() => {
           cb0({ message: "Installing software", current: 4, total: 10 });

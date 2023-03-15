@@ -7,7 +7,7 @@
   }
 }
 
-// Make proposal actiosn compact
+// Make proposal actions compact
 .proposal-actions li + li {
   margin-block-start: 0;
 }
@@ -54,10 +54,6 @@
   .pf-c-radio__description {
     color: var(--color-primary-darkest);
   }
-}
-
-.installer-skeleton {
-  margin-block-start: 1em;
 }
 
 .collapsed {
@@ -140,6 +136,8 @@ button.hidden-popover-button {
 }
 
 .danger-action {
+  --pf-c-dropdown__menu-item--Color: var(--pf-global--danger-color--200);
+
   color: var(--pf-global--danger-color--200);
 
   svg {

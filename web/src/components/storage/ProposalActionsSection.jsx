@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,12 +26,8 @@ import { ProposalActions } from "~/components/storage";
 
 export default function ProposalActionsSection({ proposal, errors }) {
   return (
-    <Section
-      title="Result"
-      hasSeparator
-      errors={errors}
-    >
-      <ProposalActions actions={proposal.actions} />
+    <Section title="Result" errors={errors}>
+      <ProposalActions actions={proposal.result.actions} />
     </Section>
   );
 }

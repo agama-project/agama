@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -32,7 +32,7 @@ let setFirstUserResult = [true, []];
 
 const usersProxy = {
   wait: jest.fn(),
-  FirstUser: ["Jane Doe", "jane", false, {}],
+  FirstUser: ["Jane Doe", "jane", "12345", false, {}],
   SetFirstUser: jest.fn().mockResolvedValue(setFirstUserResult),
   RemoveFirstUser: jest.fn().mockResolvedValue(0),
   SetRootPassword: jest.fn().mockResolvedValue(0),
@@ -57,7 +57,12 @@ describe("#getUser", () => {
   it("returns the defined first user", async () => {
     const client = new UsersClient();
     const user = await client.getUser();
-    expect(user).toEqual({ fullName: "Jane Doe", userName: "jane", autologin: false });
+    expect(user).toEqual({
+      fullName: "Jane Doe",
+      userName: "jane",
+      password: "12345",
+      autologin: false
+    });
   });
 });
 

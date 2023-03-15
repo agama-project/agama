@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -35,14 +35,8 @@ const FakeProposalTargetSection = ({ calculateProposal }) => {
 };
 
 jest.mock("~/client");
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => jest.fn()
-}));
-
-jest.mock("~/components/core/InstallerSkeleton", () => mockComponent("Loading proposal"));
+jest.mock("~/components/core/SectionSkeleton", () => mockComponent("Loading proposal"));
 jest.mock("~/components/storage/ProposalTargetSection", () => FakeProposalTargetSection);
-
 jest.mock("~/components/storage/ProposalSettingsSection", () => mockComponent("Settings section"));
 jest.mock("~/components/storage/ProposalActionsSection", () => mockComponent("Actions section"));
 
@@ -52,9 +46,11 @@ beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       storage: {
-        getProposal: jest.fn().mockResolvedValue(proposal),
-        getValidationErrors: jest.fn().mockResolvedValue([]),
-        calculateProposal: jest.fn().mockResolvedValue(0)
+        proposal: {
+          getData: jest.fn().mockResolvedValue(proposal),
+          calculate: jest.fn().mockResolvedValue(0)
+        },
+        getValidationErrors: jest.fn().mockResolvedValue([])
       }
     };
   });
@@ -62,7 +58,7 @@ beforeEach(() => {
 
 describe("when there is no proposal yet", () => {
   beforeEach(() => {
-    proposal = undefined;
+    proposal = { result: undefined };
   });
 
   it("renders the skeleton", async () => {
@@ -74,7 +70,7 @@ describe("when there is no proposal yet", () => {
 
 describe("when there is a proposal", () => {
   beforeEach(() => {
-    proposal = {};
+    proposal = { result: {} };
   });
 
   it("renders the sections", async () => {
@@ -94,7 +90,14 @@ describe("when there is a proposal", () => {
       user.click(link);
 
       await screen.findByText("Loading proposal");
-      await waitForElementToBeRemoved(() => screen.queryByText("Loading proposal"));
+    });
+
+    it("renders the sections after calculating the proposal", async () => {
+      const { user } = installerRender(<ProposalPage />);
+
+      const link = await screen.findByRole("link", { name: "Calculate" });
+      user.click(link);
+
       screen.getByText("Target section");
       screen.getByText("Settings section");
       screen.getByText("Actions section");

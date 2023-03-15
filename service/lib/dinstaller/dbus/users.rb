@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -58,7 +58,7 @@ module DInstaller
 
         dbus_reader :root_ssh_key, "s", dbus_name: "RootSSHKey"
 
-        dbus_reader :first_user, "(ssba{sv})"
+        dbus_reader :first_user, "(sssba{sv})"
 
         dbus_method :SetRootPassword,
           "in Value:s, in Encrypted:b, out result:u" do |value, encrypted|
@@ -128,7 +128,17 @@ module DInstaller
       end
 
       def first_user
-        backend.first_user
+        user = backend.first_user
+
+        return ["", "", "", false, {}] unless user
+
+        [
+          user.full_name,
+          user.name,
+          user.password_content || "",
+          backend.autologin?(user),
+          {}
+        ]
       end
 
       def root_password_set

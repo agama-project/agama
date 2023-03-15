@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,28 +20,24 @@
  */
 
 import React from "react";
-
-import {
-  Label,
-  Text
-} from "@patternfly/react-core";
+import { Text } from "@patternfly/react-core";
+import { Em } from "~/components/core";
 
 export default function ProposalSummary({ proposal }) {
-  const DeviceLabel = ({ device }) => {
-    return (
-      <Label isCompact>
-        {device.label}
-      </Label>
-    );
-  };
+  const { availableDevices = [], result } = proposal;
 
-  const device = proposal.availableDevices.find(d => d.id === proposal.candidateDevices[0]);
+  // When there are no availableDevices the proposal does not make sense.
+  // Returning nothing because a parent component should be displaying the proper error message to the user.
+  if (availableDevices.length === 0) return null;
 
-  if (!device) return <Text>Device not selected yet</Text>;
+  if (result === undefined) return <Text>Device not selected yet</Text>;
+
+  const [candidateDevice] = result.candidateDevices;
+  const device = proposal.availableDevices.find(d => d.id === candidateDevice);
 
   return (
     <Text>
-      Install using device <DeviceLabel device={device} /> and deleting all its content
+      Install using device <Em>{device.label}</Em> and deleting all its content
     </Text>
   );
 }

@@ -19,26 +19,41 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon, PageActions } from "~/components/layout";
-import { About, ChangeProductButton, LogsButton, ShowLogButton, ShowTerminalButton } from "~/components/core";
-import { TargetIpsPopup } from "~/components/network";
 
 /**
  * D-Installer sidebar navigation
  */
-export default function Sidebar() {
+export default function Sidebar({ children }) {
   const [isOpen, setIsOpen] = useState(false);
+  const closeButtonRef = useRef(null);
 
-  const open = (e) => {
-    // Avoid the link navigating to the initial route
-    e.preventDefault();
-
-    setIsOpen(true);
-  };
+  const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
 
+  /**
+   * Handler for automatically closing the sidebar when a click bubbles from a
+   * children of its content.
+   *
+   * @param {MouseEvent} event
+   */
+  const onClick = (event) => {
+    const target = event.detail?.originalTarget || event.target;
+    const isLinkOrButton = target instanceof HTMLAnchorElement || target instanceof HTMLButtonElement;
+    const keepOpen = target.dataset.keepSidebarOpen;
+
+    if (!isLinkOrButton || keepOpen) return;
+
+    close();
+  };
+
+  useEffect(() => {
+    if (isOpen) closeButtonRef.current.focus();
+  }, [isOpen]);
+
+  // display additional info when running in a development server
   let targetInfo = null;
   if (process.env.WEBPACK_SERVE) {
     let targetUrl = COCKPIT_TARGET_URL;
@@ -67,31 +82,38 @@ export default function Sidebar() {
   return (
     <>
       <PageActions>
-        <a href="#" onClick={open} aria-label="Open D-Installer options">
-          <Icon name="menu" onClick={open} />
-        </a>
+        <button
+          onClick={open}
+          className="plain-control"
+          aria-label="Show navigation and other options"
+          aria-controls="navigation-and-options"
+          aria-expanded={isOpen}
+        >
+          <Icon name="menu" />
+        </button>
       </PageActions>
 
       <nav
-        aria-label="D-Installer options"
-        data-state={isOpen ? "visible" : "hidden"}
+        id="navigation-and-options"
         className="wrapper sidebar"
+        aria-label="Navigation and other options"
+        data-state={isOpen ? "visible" : "hidden"}
       >
         <header className="split justify-between">
-          <h1>Options</h1>
+          <h2>Options</h2>
 
-          <a href="#" onClick={close} aria-label="Close D-Installer options">
+          <button
+            onClick={close}
+            ref={closeButtonRef}
+            className="plain-control"
+            aria-label="Hide navigation and other options"
+          >
             <Icon name="menu_open" data-variant="flip-X" onClick={close} />
-          </a>
+          </button>
         </header>
 
-        <div className="flex-stack">
-          <ChangeProductButton onClickCallback={close} />
-          <About onClickCallback={close} />
-          <TargetIpsPopup onClickCallback={close} />
-          <LogsButton />
-          <ShowLogButton onClickCallback={close} />
-          <ShowTerminalButton onClickCallback={close} />
+        <div className="flex-stack" onClick={onClick}>
+          { children }
         </div>
 
         <footer className="split justify-between" data-state="reversed">

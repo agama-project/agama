@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,68 +19,87 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import React from "react";
+import { screen, within } from "@testing-library/react";
+import { plainRender, installerRender } from "~/test-utils";
 import { Section } from "~/components/core";
 
 describe("Section", () => {
   it("renders given title", () => {
-    installerRender(<Section title="Awesome settings" />);
+    plainRender(<Section title="settings" />);
 
-    screen.getByRole("heading", { name: "Awesome settings" });
-  });
-
-  it("renders given description", () => {
-    installerRender(
-      <Section title="Awesome settings" description="Intended to perform awesome tweaks" />
-    );
-
-    screen.getByText("Intended to perform awesome tweaks");
+    screen.getByRole("heading", { name: "settings" });
   });
 
   it("renders given errors", () => {
-    installerRender(
+    plainRender(
       <Section title="Awesome settings" errors={[{ message: "Something went wrong" }]} />
     );
 
     screen.getByText("Something went wrong");
   });
 
-  describe("when onActionClick callback is given", () => {
-    it("renders a link for section settings", () => {
-      installerRender(
-        <Section title="Awesome settings" onActionClick={() => null} />
-      );
+  it("renders given content", () => {
+    plainRender(
+      <Section title="Settings">
+        A settings summary
+      </Section>
+    );
 
-      screen.getByLabelText("Section settings");
+    screen.getByText("A settings summary");
+  });
+
+  it("renders an icon when set as loading", () => {
+    // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
+    const { container } = plainRender(<Section title="Settings" loading />);
+    container.querySelector("svg");
+  });
+
+  it("renders an icon when a valid icon name is given", () => {
+    // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
+    const { container } = plainRender(<Section title="Settings" icon="settings" />);
+    container.querySelector("svg");
+  });
+
+  it("does not render an icon when either, not loading or not icon name was given", () => {
+    // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
+    const { container } = plainRender(<Section title="Settings" />);
+    const icon = container.querySelector("svg");
+    expect(icon).toBeNull();
+  });
+
+  describe("when path is given", () => {
+    it("renders a link for navigating to it", async () => {
+      installerRender(<Section title="Settings" path="/settings" />);
+      const heading = screen.getByRole("heading", { name: "Settings" });
+      const link = within(heading).getByRole("link", { name: "Settings" });
+      expect(link).toHaveAttribute("href", "/settings");
+    });
+  });
+
+  describe("when openDialog callback is given", () => {
+    describe("and path is not present", () => {
+      it("triggers it when the user click on the section title", async () => {
+        const openDialog = jest.fn();
+        const { user } = installerRender(
+          <Section title="Settings" openDialog={openDialog} />
+        );
+        const button = screen.getByRole("button", { name: "Settings" });
+        await user.click(button);
+        expect(openDialog).toHaveBeenCalled();
+      });
     });
 
-    it("triggers the action when user clicks on it", async () => {
-      const AwesomeSection = () => {
-        const [showInput, setShowInput] = useState(false);
-        return (
-          <Section title="Awesome settings" onActionClick={() => setShowInput(true)}>
-            { showInput &&
-              <>
-                <label htmlFor="awesome-input">Awesome input</label>
-                <input id="awesome-input" type="text" />
-              </> }
-          </Section>
+    describe("but path is present too", () => {
+      it("does not triggers it when the user click on the section title", async () => {
+        const openDialog = jest.fn();
+        const { user } = installerRender(
+          <Section path="/settings" title="Settings" openDialog={openDialog} />
         );
-      };
-
-      const { user } = installerRender(<AwesomeSection />);
-
-      let inputText = screen.queryByRole("textbox", { name: "Awesome input" });
-      expect(inputText).not.toBeInTheDocument();
-
-      const actionLink = screen.getByLabelText("Section settings");
-
-      await user.click(actionLink);
-
-      inputText = screen.queryByRole("textbox", { name: "Awesome input" });
-      expect(inputText).toBeInTheDocument();
+        const link = screen.getByRole("link", { name: "Settings" });
+        await user.click(link);
+        expect(openDialog).not.toHaveBeenCalled();
+      });
     });
   });
 });

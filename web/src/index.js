@@ -20,7 +20,7 @@
  */
 
 import React, { StrictMode } from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
@@ -38,6 +38,9 @@ import DevServerWrapper from "~/DevServerWrapper";
 import { Overview } from "~/components/overview";
 import { ProductSelectionPage } from "~/components/software";
 import { ProposalPage as StoragePage } from "~/components/storage";
+import { UsersPage } from "~/components/users";
+import { L10nPage } from "~/components/l10n";
+import { NetworkPage } from "~/components/network";
 
 // When running in the development server add a special login wrapper which
 // checks whether the user is authenticated. When building the code outside
@@ -45,7 +48,10 @@ import { ProposalPage as StoragePage } from "~/components/storage";
 // In the production builds the DevServerWrapper code is completely omitted.
 const LoginWrapper = (process.env.WEBPACK_SERVE) ? DevServerWrapper : React.Fragment;
 
-ReactDOM.render(
+const container = document.getElementById("root");
+const root = createRoot(container);
+
+root.render(
   <StrictMode>
     <LoginWrapper>
       <InstallerClientProvider client={createClient}>
@@ -56,7 +62,10 @@ ReactDOM.render(
                 <Route path="/" element={<Main />}>
                   <Route index element={<Overview />} />
                   <Route path="/overview" element={<Overview />} />
+                  <Route path="/l10n" element={<L10nPage />} />
                   <Route path="/storage" element={<StoragePage />} />
+                  <Route path="/network" element={<NetworkPage />} />
+                  <Route path="/users" element={<UsersPage />} />
                 </Route>
                 <Route path="products" element={<ProductSelectionPage />} />
               </Route>
@@ -65,6 +74,5 @@ ReactDOM.render(
         </SoftwareProvider>
       </InstallerClientProvider>
     </LoginWrapper>
-  </StrictMode>,
-  document.getElementById("root")
+  </StrictMode>
 );

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,42 +23,48 @@ import React from 'react';
 
 // NOTE: "@icons" is an alias to use a shorter path to real icons location.
 //       Check the tsconfig.json file to see its value.
-import Inventory from "@icons/inventory_2.svg?component";
-import Translate from "@icons/translate.svg?component";
-import SettingsEthernet from "@icons/settings_ethernet.svg?component";
-import EditSquare from "@icons/edit_square.svg?component";
-import Edit from "@icons/edit.svg?component";
+import Apps from "@icons/apps.svg?component";
+import Badge from "@icons/badge.svg?component";
+import CheckCircle from "@icons/check_circle.svg?component";
+import ChevronRight from "@icons/chevron_right.svg?component";
+import Delete from "@icons/delete.svg?component";
+import Description from "@icons/description.svg?component";
 import Download from "@icons/download.svg?component";
+import Downloading from "@icons/downloading.svg?component";
+import Edit from "@icons/edit.svg?component";
+import EditSquare from "@icons/edit_square.svg?component";
+import Error from "@icons/error.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Help from "@icons/help.svg?component";
+import HomeStorage from "@icons/home_storage.svg?component";
+import Info from "@icons/info.svg?component";
+import Inventory from "@icons/inventory_2.svg?component";
+import Lan from "@icons/lan.svg?component";
+import Lock from "@icons/lock.svg?component";
 import ManageAccounts from "@icons/manage_accounts.svg?component";
 import Menu from "@icons/menu.svg?component";
 import MenuOpen from "@icons/menu_open.svg?component";
-import HomeStorage from "@icons/home_storage.svg?component";
-import Problem from "@icons/problem.svg?component";
-import Error from "@icons/error.svg?component";
-import CheckCircle from "@icons/check_circle.svg?component";
-import TaskAlt from "@icons/task_alt.svg?component";
-import Downloading from "@icons/downloading.svg?component";
 import MoreVert from "@icons/more_vert.svg?component";
-import Wifi from "@icons/wifi.svg?component";
-import Lan from "@icons/lan.svg?component";
-import Lock from "@icons/lock.svg?component";
-import SignalCellularAlt from "@icons/signal_cellular_alt.svg?component";
-import SettingsFill from "@icons/settings-fill.svg?component";
-import SettingsApplications from "@icons/settings_applications.svg?component";
-import Info from "@icons/info.svg?component";
-import Delete from "@icons/delete.svg?component";
-import Warning from "@icons/warning.svg?component";
-import Apps from "@icons/apps.svg?component";
-import Loading from "./three-dots-loader-icon.svg?component";
-import Description from "@icons/description.svg?component";
+import Person from "@icons/person.svg?component";
+import Problem from "@icons/problem.svg?component";
 import Refresh from "@icons/refresh.svg?component";
+import SettingsApplications from "@icons/settings_applications.svg?component";
+import SettingsEthernet from "@icons/settings_ethernet.svg?component";
+import SettingsFill from "@icons/settings-fill.svg?component";
+import SignalCellularAlt from "@icons/signal_cellular_alt.svg?component";
+import TaskAlt from "@icons/task_alt.svg?component";
 import Terminal from "@icons/terminal.svg?component";
+import Translate from "@icons/translate.svg?component";
+import Warning from "@icons/warning.svg?component";
+import Wifi from "@icons/wifi.svg?component";
+
+import Loading from "./three-dots-loader-icon.svg?component";
 
 const icons = {
   apps: Apps,
+  badge: Badge,
   check_circle: CheckCircle,
+  chevron_right: ChevronRight,
   delete: Delete,
   description: Description,
   download: Download,
@@ -78,7 +84,9 @@ const icons = {
   menu: Menu,
   menu_open: MenuOpen,
   more_vert: MoreVert,
+  person: Person,
   problem: Problem,
+  refresh: Refresh,
   settings: SettingsFill,
   settings_applications: SettingsApplications,
   settings_ethernet: SettingsEthernet,
@@ -87,8 +95,7 @@ const icons = {
   terminal: Terminal,
   translate: Translate,
   warning: Warning,
-  wifi: Wifi,
-  refresh: Refresh
+  wifi: Wifi
 };
 
 /**
@@ -107,14 +114,16 @@ const icons = {
  *
  * @param {object} props - component props
  * @param {string} props.name - desired icon
+ * @param {string} [props.className=""] - CSS classes
  * @param {string|number} [props.size=32] - the icon width and height
  * @param {object} [props.otherProps] other props sent to SVG icon
  *
  */
-export default function Icon({ name, size = 32, ...otherProps }) {
+export default function Icon({ name, className = "", size = 32, ...otherProps }) {
   const IconComponent = icons[name];
+  const cssClassName = `${className} icon-size-${size}`.trim();
 
   return (IconComponent)
-    ? <IconComponent className={`icon-size-${size}`} {...otherProps} />
-    : <em>`icon ${name} not found!`</em>;
+    ? <IconComponent className={cssClassName} aria-hidden="true" {...otherProps} />
+    : <em>icon {name} not found!</em>;
 }

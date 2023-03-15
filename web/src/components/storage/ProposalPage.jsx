@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,17 +20,12 @@
  */
 
 import React, { useReducer, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-
-import {
-  Alert,
-  Button,
-} from "@patternfly/react-core";
+import { Alert } from "@patternfly/react-core";
 
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
-import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
-import { InstallerSkeleton } from "~/components/core";
+import { Icon } from "~/components/layout";
+import { Page, SectionSkeleton } from "~/components/core";
 import {
   ProposalTargetSection,
   ProposalSettingsSection,
@@ -66,7 +61,6 @@ const reducer = (state, action) => {
 
 export default function ProposalPage() {
   const client = useInstallerClient();
-  const navigate = useNavigate();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -74,7 +68,7 @@ export default function ProposalPage() {
     const loadProposal = async () => {
       dispatch({ type: "SET_BUSY" });
 
-      const proposal = await cancellablePromise(client.storage.getProposal());
+      const proposal = await cancellablePromise(client.storage.proposal.getData());
       const errors = await cancellablePromise(client.storage.getValidationErrors());
 
       dispatch({
@@ -88,12 +82,12 @@ export default function ProposalPage() {
 
   const calculateProposal = async (settings) => {
     dispatch({ type: "SET_BUSY" });
-    await client.storage.calculateProposal({ ...state.proposal, ...settings });
+    await client.storage.proposal.calculate({ ...state.proposal.result, ...settings });
     dispatch({ type: "CALCULATE" });
   };
 
   const PageContent = () => {
-    if (state.busy || !state.proposal) return <InstallerSkeleton lines={3} />;
+    if (state.busy || state.proposal?.result === undefined) return <SectionSkeleton lines={3} />;
 
     return (
       <>
@@ -119,15 +113,8 @@ export default function ProposalPage() {
   };
 
   return (
-    <>
-      <Title>Storage</Title>
-      <PageIcon><Icon name="hard_drive" /></PageIcon>
-      <MainActions>
-        <Button isLarge variant="primary" form="storage-config" onClick={() => navigate("/")}>
-          Accept
-        </Button>
-      </MainActions>
+    <Page title="Storage settings" icon="hard_drive">
       <PageContent />
-    </>
+    </Page>
   );
 }

@@ -23,12 +23,423 @@
 
 import DBusClient from "./dbus";
 import { WithStatus, WithValidation } from "./mixins";
-import cockpit from "../lib/cockpit";
 
-const STORAGE_SERVICE = "org.opensuse.DInstaller.Storage";
-const STORAGE_PATH = "/org/opensuse/DInstaller/Storage1";
 const PROPOSAL_CALCULATOR_IFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator";
+const ISCSI_NODE_IFACE = "org.opensuse.DInstaller.Storage1.ISCSI.Node";
+const ISCSI_NODES_NAMESPACE = "/org/opensuse/DInstaller/Storage1/iscsi_nodes";
+const ISCSI_INITIATOR_IFACE = "org.opensuse.DInstaller.Storage1.ISCSI.Initiator";
 const PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage1.Proposal";
+const STORAGE_OBJECT = "/org/opensuse/DInstaller/Storage1";
+
+/**
+ * Removes properties with undefined value
+ *
+ * @example
+ * removeUndefinedCockpitProperties({
+ *  property1: { t: "s", v: "foo" },
+ *  property2: { t: b, v: false },
+ *  property3: { t: "s", v: undefined }
+ * });
+ * //returns { property1: { t: "s", v: "foo" }, property2: { t: "b", v: false } }
+ *
+ * @param {object} cockpitObject
+ * @returns {object}
+ */
+const removeUndefinedCockpitProperties = (cockpitObject) => {
+  const filtered = Object.entries(cockpitObject).filter(([, { v }]) => v !== undefined);
+  return Object.fromEntries(filtered);
+};
+
+/**
+ * Class providing an API for managing the storage proposal through D-Bus
+ */
+class ProposalManager {
+  /**
+   * @param {DBusClient} client
+   */
+  constructor(client) {
+    this.client = client;
+    this.proxies = {};
+  }
+
+  /**
+   * Gets data associated to the proposal
+   *
+   * @returns {Promise<ProposalData>}
+   *
+   * @typedef {object} ProposalData
+   * @property {AvailableDevice[]} availableDevices
+   * @property {Result} result
+   */
+  async getData() {
+    const availableDevices = await this.getAvailableDevices();
+    const result = await this.getResult();
+
+    return { availableDevices, result };
+  }
+
+  /**
+   * Gets the list of available devices
+   *
+   * @returns {Promise<AvailableDevice[]>}
+   *
+   * @typedef {object} AvailableDevice
+   * @property {string} id - Device kernel name
+   * @property {string} label - Device description
+   */
+  async getAvailableDevices() {
+    const buildDevice = dbusDevice => {
+      return {
+        id: dbusDevice[0],
+        label: dbusDevice[1]
+      };
+    };
+
+    const proxy = await this.proposalCalculatorProxy();
+    return proxy.AvailableDevices.map(buildDevice);
+  }
+
+  /**
+   * Gets the values of the current proposal
+   *
+   * @return {Promise<Result>}
+   *
+   * @typedef {object} Result
+   * @property {string[]} candidateDevices
+   * @property {boolean} lvm
+   * @property {string} encryptionPassword
+   * @property {Volume[]} volumes
+   * @property {Action[]} actions
+   *
+   * @typedef {object} Volume
+   * @property {string} [deviceType]
+   * @property {boolean} [optional]
+   * @property {string} [mountPoint]
+   * @property {boolean} [fixedSizeLimits]
+   * @property {number} [minSize]
+   * @property {number} [maxSize]
+   * @property {string[]} [fsTypes]
+   * @property {string} [fsType]
+   * @property {boolean} [snapshots]
+   * @property {boolean} [snapshotsConfigurable]
+   * @property {boolean} [snapshotsAffectSizes]
+   * @property {string[]} [sizeRelevantVolumes]
+   *
+   * @typedef {object} Action
+   * @property {string} text
+   * @property {boolean} subvol
+   * @property {boolean} delete
+  */
+  async getResult() {
+    const proxy = await this.proposalProxy();
+
+    if (!proxy) return undefined;
+
+    const buildResult = (proxy) => {
+      const buildVolume = dbusVolume => {
+        const buildList = (value) => {
+          if (value === undefined) return [];
+
+          return value.map(val => val.v);
+        };
+
+        return {
+          deviceType: dbusVolume.DeviceType?.v,
+          optional: dbusVolume.Optional?.v,
+          encrypted: dbusVolume.Encrypted?.v,
+          mountPoint: dbusVolume.MountPoint?.v,
+          fixedSizeLimits: dbusVolume.FixedSizeLimits?.v,
+          adaptiveSizes: dbusVolume.AdaptiveSizes?.v,
+          minSize: dbusVolume.MinSize?.v,
+          maxSize: dbusVolume.MaxSize?.v,
+          fsTypes: buildList(dbusVolume.FsTypes?.v),
+          fsType: dbusVolume.FsType?.v,
+          snapshots: dbusVolume.Snapshots?.v,
+          snapshotsConfigurable: dbusVolume.SnapshotsConfigurable?.v,
+          snapshotsAffectSizes: dbusVolume.SnapshotsAffectSizes?.v,
+          sizeRelevantVolumes: buildList(dbusVolume.SizeRelevantVolumes?.v)
+        };
+      };
+
+      const buildAction = dbusAction => {
+        return {
+          text: dbusAction.Text.v,
+          subvol: dbusAction.Subvol.v,
+          delete: dbusAction.Delete.v
+        };
+      };
+
+      return {
+        candidateDevices: proxy.CandidateDevices,
+        lvm: proxy.LVM,
+        encryptionPassword: proxy.EncryptionPassword,
+        volumes: proxy.Volumes.map(buildVolume),
+        actions: proxy.Actions.map(buildAction)
+      };
+    };
+
+    return buildResult(proxy);
+  }
+
+  /**
+   * Calculates a new proposal
+   *
+   * @param {Settings} settings
+   *
+   * @typedef {object} Settings
+   * @property {string[]} [candidateDevices] - Devices to use for the proposal
+   * @property {string} [encryptionPassword] - Password for encrypting devices
+   * @property {boolean} [lvm] - Whether to calculate the proposal with LVM volumes
+   * @property {Volume[]} [volumes] - Volumes to create
+   *
+   * @returns {Promise<number>} 0 on success, 1 on failure
+   */
+  async calculate({ candidateDevices, encryptionPassword, lvm, volumes }) {
+    const dbusVolume = (volume) => {
+      return removeUndefinedCockpitProperties({
+        MountPoint: { t: "s", v: volume.mountPoint },
+        Encrypted: { t: "b", v: volume.encrypted },
+        FsType: { t: "s", v: volume.fsType },
+        MinSize: { t: "x", v: volume.minSize },
+        MaxSize: { t: "x", v: volume.maxSize },
+        FixedSizeLimits: { t: "b", v: volume.fixedSizeLimits },
+        Snapshots: { t: "b", v: volume.snapshots }
+      });
+    };
+
+    const settings = removeUndefinedCockpitProperties({
+      CandidateDevices: { t: "as", v: candidateDevices },
+      EncryptionPassword: { t: "s", v: encryptionPassword },
+      LVM: { t: "b", v: lvm },
+      Volumes: { t: "aa{sv}", v: volumes?.map(dbusVolume) }
+    });
+
+    const proxy = await this.proposalCalculatorProxy();
+    return proxy.Calculate(settings);
+  }
+
+  /**
+   * @private
+   * Proxy for org.opensuse.DInstaller.Storage1.Proposal.Calculator iface
+   *
+   * @returns {Promise<object>}
+   */
+  async proposalCalculatorProxy() {
+    if (!this.proxies.proposalCalculator)
+      this.proxies.proposalCalculator = await this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_OBJECT);
+
+    return this.proxies.proposalCalculator;
+  }
+
+  /**
+   * @private
+   * Proxy for org.opensuse.DInstaller.Storage1.Proposal iface
+   *
+   * @note The proposal object implementing this iface is dynamically exported.
+   *
+   * @returns {Promise<object|null>} null if the proposal object is not exported yet
+   */
+  async proposalProxy() {
+    try {
+      return await this.client.proxy(PROPOSAL_IFACE);
+    } catch {
+      return null;
+    }
+  }
+}
+
+/**
+ * Class providing an API for managing iSCSI through D-Bus
+ */
+class ISCSIManager {
+  /**
+   * @param {DBusClient} client
+   */
+  constructor(client) {
+    this.client = client;
+    this.proxies = {};
+  }
+
+  /**
+   * Gets the iSCSI initiator name
+   *
+   * @returns {Promise<string>}
+   */
+  async getInitiatorName() {
+    const proxy = await this.iscsiInitiatorProxy();
+    return proxy.InitiatorName;
+  }
+
+  /**
+   * Sets the iSCSI initiator name
+   *
+   * @param {string} value
+   */
+  async setInitiatorName(value) {
+    const proxy = await this.iscsiInitiatorProxy();
+    proxy.InitiatorName = value;
+  }
+
+  /**
+   * Gets the list of exported iSCSI nodes
+   *
+   * @returns {Promise<ISCSINode[]>}
+   *
+   * @typedef {object} ISCSINode
+   * @property {string} id
+   * @property {string} target
+   * @property {string} address
+   * @property {number} port
+   * @property {string} interface
+   * @property {boolean} ibft
+   * @property {boolean} connected
+   * @property {string} startup
+   */
+  async getNodes() {
+    const buildNode = (iscsiProxy) => {
+      const id = path => path.split("/").slice(-1)[0];
+
+      return {
+        id: id(iscsiProxy.path),
+        target: iscsiProxy.Target,
+        address: iscsiProxy.Address,
+        port: iscsiProxy.Port,
+        interface: iscsiProxy.Interface,
+        ibft: iscsiProxy.IBFT,
+        connected: iscsiProxy.Connected,
+        startup: iscsiProxy.Startup
+      };
+    };
+
+    const proxy = await this.iscsiNodesProxy();
+    return Object.values(proxy).map(p => buildNode(p));
+  }
+
+  /**
+   * Performs an iSCSI discovery
+   *
+   * @param {string} address - IP address of the iSCSI server
+   * @param {number} port - Port of the iSCSI server
+   * @param {DiscoverOptions} [options]
+   *
+   * @typedef {object} DiscoverOptions
+   * @property {string} [username] - Username for authentication by target
+   * @property {string} [password] - Password for authentication by target
+   * @property {string} [reverseUsername] - Username for authentication by initiator
+   * @property {string} [reversePassword] - Password for authentication by initiator
+   *
+   * @returns {Promise<number>} 0 on success, 1 on failure
+   */
+  async discover(address, port, options = {}) {
+    const auth = removeUndefinedCockpitProperties({
+      Username: { t: "s", v: options.username },
+      Password: { t: "s", v: options.password },
+      ReverseUsername: { t: "s", v: options.reverseUsername },
+      ReversePassword: { t: "s", v: options.reversePassword }
+    });
+
+    const proxy = await this.iscsiInitiatorProxy();
+    return proxy.Discover(address, port, auth);
+  }
+
+  /**
+   * Deletes the given iSCSI node
+   *
+   * @param {ISCSINode} node
+   * @returns {Promise<number>} 0 on success, 1 on failure if the given path is not exported, 2 on
+   *  failure because any other reason.
+   */
+  async delete(node) {
+    const path = this.nodePath(node);
+
+    const proxy = await this.iscsiInitiatorProxy();
+    return proxy.Delete(path);
+  }
+
+  /**
+   * Creates an iSCSI session
+   *
+   * @param {ISCSINode} node
+   * @param {LoginOptions} options
+   *
+   * @typedef {object} LoginOptions
+   * @property {string} [username] - Username for authentication by target
+   * @property {string} [password] - Password for authentication by target
+   * @property {string} [reverseUsername] - Username for authentication by initiator
+   * @property {string} [reversePassword] - Password for authentication by initiator
+   * @property {string} [startup] - Startup status for the session
+   *
+   * @returns {Promise<number>} 0 on success, 1 on failure if the given startup value is not
+   *  valid, and 2 on failure because any other reason
+   */
+  async login(node, options = {}) {
+    const path = this.nodePath(node);
+
+    const dbusOptions = removeUndefinedCockpitProperties({
+      Username: { t: "s", v: options.username },
+      Password: { t: "s", v: options.password },
+      ReverseUsername: { t: "s", v: options.reverseUsername },
+      ReversePassword: { t: "s", v: options.reversePassword },
+      Startup: { t: "s", v: options.startup }
+    });
+
+    const proxy = await this.client.proxy(ISCSI_NODE_IFACE, path);
+    return proxy.Login(dbusOptions);
+  }
+
+  /**
+   * Closes an iSCSI session
+   *
+   * @param {ISCSINode} node
+   * @returns {Promise<number>} 0 on success, 1 on failure
+   */
+  async logout(node) {
+    const path = this.nodePath(node);
+    // const iscsiNode = new ISCSINodeObject(this.client, path);
+    // return await iscsiNode.iface.logout();
+    const proxy = await this.client.proxy(ISCSI_NODE_IFACE, path);
+    return proxy.Logout();
+  }
+
+  /**
+   * @private
+   * Proxy for org.opensuse.DInstaller.Storage1.ISCSI.Initiator iface
+   *
+   * @returns {Promise<object>}
+   */
+  async iscsiInitiatorProxy() {
+    if (!this.proxies.iscsiInitiator)
+      this.proxies.iscsiInitiator = await this.client.proxy(ISCSI_INITIATOR_IFACE, STORAGE_OBJECT);
+
+    return this.proxies.iscsiInitiator;
+  }
+
+  /**
+   * @private
+   * Proxy for objects implementing org.opensuse.DInstaller.Storage1.ISCSI.Node iface
+   *
+   * @note The ISCSI nodes are dynamically exported.
+   *
+   * @returns {Promise<object>}
+   */
+  async iscsiNodesProxy() {
+    if (!this.proxies.iscsiNodes)
+      this.proxies.iscsiNodes = await this.client.proxies(ISCSI_NODE_IFACE, ISCSI_NODES_NAMESPACE);
+
+    return this.proxies.iscsiNodes;
+  }
+
+  /**
+   * @private
+   * Builds the D-Bus path for the given iSCSI node
+   *
+   * @param {ISCSINode} node
+   * @returns {string}
+   */
+  nodePath(node) {
+    return ISCSI_NODES_NAMESPACE + "/" + node.id;
+  }
+}
 
 /**
  * Storage base client
@@ -36,126 +447,15 @@ const PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage1.Proposal";
  * @ignore
  */
 class StorageBaseClient {
+  static SERVICE = "org.opensuse.DInstaller.Storage";
+
   /**
    * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
    */
   constructor(address = undefined) {
-    this.client = new DBusClient(STORAGE_SERVICE, address);
-  }
-
-  /**
-   * Returns storage proposal values
-   *
-   * @return {Promise<object>}
-   */
-  async getProposal() {
-    const storageProxy = await this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_PATH);
-
-    let proposalProxy;
-    try {
-      proposalProxy = await this.client.proxy(PROPOSAL_IFACE);
-    } catch {
-      proposalProxy = {};
-    }
-
-    // Check whether proposal object is already exported
-    if (!proposalProxy?.valid) return {};
-
-    const volume = dbusVolume => {
-      const valueFrom = dbusValue => dbusValue?.v;
-
-      const valuesFrom = (dbusValues) => {
-        if (dbusValues === undefined) return [];
-        return dbusValues.v.map(valueFrom);
-      };
-
-      return {
-        mountPoint: valueFrom(dbusVolume.MountPoint),
-        optional: valueFrom(dbusVolume.Optional),
-        deviceType: valueFrom(dbusVolume.DeviceType),
-        encrypted: valueFrom(dbusVolume.Encrypted),
-        fsTypes: valuesFrom(dbusVolume.FsTypes),
-        fsType: valueFrom(dbusVolume.FsType),
-        minSize: valueFrom(dbusVolume.MinSize),
-        maxSize: valueFrom(dbusVolume.MaxSize),
-        fixedSizeLimits: valueFrom(dbusVolume.FixedSizeLimits),
-        adaptiveSizes: valueFrom(dbusVolume.AdaptiveSizes),
-        snapshots: valueFrom(dbusVolume.Snapshots),
-        snapshotsConfigurable: valueFrom(dbusVolume.SnapshotsConfigurable),
-        snapshotsAffectSizes: valueFrom(dbusVolume.SnapshotsAffectSizes),
-        sizeRelevantVolumes: valueFrom(dbusVolume.SizeRelevantVolumes)
-      };
-    };
-
-    const action = dbusAction => {
-      const { Text: { v: textVar }, Subvol: { v: subvolVar }, Delete: { v: deleteVar } } = dbusAction;
-      return { text: textVar, subvol: subvolVar, delete: deleteVar };
-    };
-
-    return {
-      availableDevices: storageProxy.AvailableDevices.map(([id, label]) => ({ id, label })),
-      candidateDevices: proposalProxy.CandidateDevices,
-      lvm: proposalProxy.LVM,
-      encryptionPassword: proposalProxy.EncryptionPassword,
-      volumes: proposalProxy.Volumes.map(volume),
-      actions: proposalProxy.Actions.map(action)
-    };
-  }
-
-  /**
-   * Calculates a new proposal
-   *
-   * @param {object} settings - proposal settings
-   * @param {?string[]} [settings.candidateDevices] - Devices to use for the proposal
-   * @param {?string} [settings.encryptionPassword] - Password for encrypting devices
-   * @param {?boolean} [settings.lvm] - Whether to calculate the proposal with LVM volumes
-   * @param {?object[]} [settings.volumes] - Volumes to create
-   * @return {Promise<number>} - 0 success, other for failure
-   */
-  async calculateProposal({ candidateDevices, encryptionPassword, lvm, volumes }) {
-    const proxy = await this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_PATH);
-
-    // Builds a new object without undefined attributes
-    const cleanObject = (object) => {
-      const newObject = { ...object };
-
-      Object.keys(newObject).forEach(key => newObject[key] === undefined && delete newObject[key]);
-      return newObject;
-    };
-
-    // Builds the cockpit object or returns undefined if there is no value
-    const cockpitValue = (type, value) => {
-      if (value === undefined) return undefined;
-
-      return cockpit.variant(type, value);
-    };
-
-    const dbusVolume = (volume) => {
-      return cleanObject({
-        MountPoint: cockpitValue("s", volume.mountPoint),
-        Encrypted: cockpitValue("b", volume.encrypted),
-        FsType: cockpitValue("s", volume.fsType),
-        MinSize: cockpitValue("x", volume.minSize),
-        MaxSize: cockpitValue("x", volume.maxSize),
-        FixedSizeLimits: cockpitValue("b", volume.fixedSizeLimits),
-        Snapshots: cockpitValue("b", volume.snapshots)
-      });
-    };
-
-    const dbusVolumes = (volumes) => {
-      if (!volumes) return undefined;
-
-      return volumes.map(dbusVolume);
-    };
-
-    const settings = cleanObject({
-      CandidateDevices: cockpitValue("as", candidateDevices),
-      EncryptionPassword: cockpitValue("s", encryptionPassword),
-      LVM: cockpitValue("b", lvm),
-      Volumes: cockpitValue("aa{sv}", dbusVolumes(volumes))
-    });
-
-    return proxy.Calculate(settings);
+    this.client = new DBusClient(StorageBaseClient.SERVICE, address);
+    this.proposal = new ProposalManager(this.client);
+    this.iscsi = new ISCSIManager(this.client);
   }
 }
 
@@ -163,7 +463,7 @@ class StorageBaseClient {
  * Allows interacting with the storage settings
  */
 class StorageClient extends WithValidation(
-  WithStatus(StorageBaseClient, STORAGE_PATH), STORAGE_PATH
+  WithStatus(StorageBaseClient, STORAGE_OBJECT), STORAGE_OBJECT
 ) {}
 
 export { StorageClient };

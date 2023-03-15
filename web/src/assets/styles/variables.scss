@@ -5,8 +5,8 @@
 
   --fw-light: 300;
   --fw-normal: 400;
-  --fw-medium: 400;
-  --fw-bold: 500;
+  --fw-medium: 500;
+  --fw-bold: 700;
 
   --fs-base: 14px;
   --fs-h1: 1.5rem;
@@ -27,26 +27,26 @@
   --wrapper-padding: var(--spacer-normal);
   --wrapper-background: white;
 
-  --color-primary: #30ba78;
-  --color-primary-darkest: #0c322c;
+  --color-primary: #0c322c;
+  --color-primary-lighter: #30ba78;
   --color-gray-light: #fcfcfc;
   --color-gray: #f2f2f2;
   --color-gray-dark: #efefef; // Fog
   --color-gray-darker: #999;
 
-  --color-link: #30ba78;
-  --color-link-hover: #0c322c;
+  --color-link: #0c322c;
+  --color-link-hover: #30ba78;
 
-  --color-button-primary: #30ba78;
-  --color-button-primary-hover: #0c322c;
+  --color-button-primary: var(--color-link);
+  --color-button-primary-hover: var(--color-link-hover);
 
-  --color-button-plain-link: #30ba78;
-  --color-button-plain-link-hover: #0c322c;
+  --color-button-plain-link: var(--color-link);
+  --color-button-plain-link-hover: var(--color-link-hover);
 
-  --color-background-primary: var(--color-primary-darkest);
+  --color-background-primary: var(--color-primary);
   --color-background-secondary: var(--color-gray-dark);
 
-  --color-text-primary: var(--color-primary-darkest);
+  --color-text-primary: var(--color-primary);
   --color-text-secondary: var(--color-gray-dark);
 
   --color-success: #30ba78;

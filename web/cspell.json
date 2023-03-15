@@ -1,0 +1,65 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "allowCompoundWords": false,
+  "ignorePaths": [
+    "src/lib/cockpit.js",
+    "src/lib/cockpit-po-plugin.js"
+  ],
+  "import": [
+    "@cspell/dict-css/cspell-ext.json",
+    "@cspell/dict-en-common-misspellings/cspell-ext.json",
+    "@cspell/dict-fullstack/cspell-ext.json",
+    "@cspell/dict-html/cspell-ext.json"
+  ],
+  "dictionaryDefinitions": [
+    {
+      "name": "custom",
+      "words": [
+        "addrs",
+        "apsens",
+        "autologin",
+        "autoconnect",
+        "btrfs",
+        "ccmp",
+        "dbus",
+        "dinstaller",
+        "filecontent",
+        "filename",
+        "fullname",
+        "freedesktop",
+        "ibft",
+        "ifaces",
+        "ipaddr",
+        "iscsi",
+        "jdoe",
+        "lldp",
+        "localdomain",
+        "luks",
+        "mgmt",
+        "partitioner",
+        "patternfly",
+        "rfkill",
+        "screenreader",
+        "ssid",
+        "ssids",
+        "subprogress",
+        "subvol",
+        "subvolume",
+        "subvolumes",
+        "teleporter",
+        "testfile",
+        "testsuite",
+        "textinput",
+        "tkip"
+      ]
+    }
+  ],
+  "dictionaries": [
+    "custom",
+    "css",
+    "en-common-misspelling",
+    "fullstack",
+    "html"
+  ]
+}

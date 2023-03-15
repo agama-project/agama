@@ -20,12 +20,15 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
+require_relative "storage_helpers"
 require "dinstaller/storage/manager"
 require "dinstaller/storage/iscsi/manager"
 require "dinstaller/config"
 require "dinstaller/dbus/clients/questions"
 
 describe DInstaller::Storage::Manager do
+  include DInstaller::RSpec::StorageHelpers
+
   subject(:storage) { described_class.new(config, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
@@ -35,7 +38,6 @@ describe DInstaller::Storage::Manager do
   let(:config) { DInstaller::Config.from_file(config_path) }
 
   before do
-    allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
     allow(DInstaller::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(DInstaller::DBus::Clients::Software).to receive(:new)
       .and_return(software)
@@ -54,6 +56,7 @@ describe DInstaller::Storage::Manager do
 
   describe "#probe" do
     before do
+      allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
       allow(DInstaller::Storage::Proposal).to receive(:new).and_return(proposal)
       allow(DInstaller::Storage::ISCSI::Manager).to receive(:new).and_return(iscsi)
     end
@@ -84,6 +87,7 @@ describe DInstaller::Storage::Manager do
 
   describe "#install" do
     before do
+      allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
       allow(y2storage_manager).to receive(:staging).and_return(proposed_devicegraph)
 
       allow(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
@@ -124,13 +128,60 @@ describe DInstaller::Storage::Manager do
   end
 
   describe "#finish" do
-    it "installs the bootloader, sets up the snapshots, copy logs, and umounts the file systems" do
+    before do
+      mock_storage(devicegraph: devicegraph)
+      allow(File).to receive(:directory?).with("/iguana").and_return iguana
+      allow(copy_files_class).to receive(:new).and_return(copy_files)
+    end
+    let(:copy_files_class) { DInstaller::Storage::Finisher::CopyFilesStep }
+    let(:copy_files) { instance_double(copy_files_class, run?: true, run: true, label: "Copy") }
+
+    let(:iguana) { false }
+    let(:devicegraph) { "staging-plain-partitions.yaml" }
+
+    it "copy needed files, installs the bootloader, sets up the snapshots, " \
+       "copy logs, and umounts the file systems" do
       expect(security).to receive(:write)
+      expect(copy_files).to receive(:run)
       expect(bootloader_finish).to receive(:write)
       expect(Yast::WFM).to receive(:CallFunction).with("snapshots_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("copy_logs_finish", ["Write"])
       expect(Yast::WFM).to receive(:CallFunction).with("umount_finish", ["Write"])
       storage.finish
+    end
+
+    context "when executed on top of iguana" do
+      let(:iguana) { true }
+
+      before do
+        allow(security).to receive(:write)
+        allow(bootloader_finish).to receive(:write)
+        allow(Yast::WFM).to receive(:CallFunction)
+      end
+
+      context "on a traditional installation over plain partitions" do
+        let(:devicegraph) { "staging-plain-partitions.yaml" }
+
+        it "writes the /iguana/mountlist file with the expected content" do
+          file = instance_double(File)
+          expect(File).to receive(:open).with("/iguana/mountlist", "w").and_yield file
+          expect(file).to receive(:puts).with "/dev/sda2 /sysroot defaults"
+
+          storage.finish
+        end
+      end
+
+      context "on a transactional system with encrypted partitions" do
+        let(:devicegraph) { "staging-ro-luks-partitions.yaml" }
+
+        it "writes the /iguana/mountlist file with the expected content" do
+          file = instance_double(File)
+          expect(File).to receive(:open).with("/iguana/mountlist", "w").and_yield file
+          expect(file).to receive(:puts).with "/dev/mapper/cr_root /sysroot ro"
+
+          storage.finish
+        end
+      end
     end
   end
 

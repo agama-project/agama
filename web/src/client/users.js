@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -69,8 +69,8 @@ class UsersBaseClient {
    */
   async getUser() {
     const proxy = await this.client.proxy(USERS_IFACE);
-    const [fullName, userName, autologin] = proxy.FirstUser;
-    return { fullName, userName, autologin };
+    const [fullName, userName, password, autologin] = proxy.FirstUser;
+    return { fullName, userName, password, autologin };
   }
 
   /**
@@ -173,8 +173,8 @@ class UsersBaseClient {
         return handler({ rootSSHKey: changes.RootSSHKey.v.toString() });
       } else if (changes.FirstUser) {
         // @ts-ignore
-        const [fullName, userName, autologin] = changes.FirstUser.v;
-        return handler({ firstUser: { fullName, userName, autologin } });
+        const [fullName, userName, password, autologin] = changes.FirstUser.v;
+        return handler({ firstUser: { fullName, userName, password, autologin } });
       }
     });
   }

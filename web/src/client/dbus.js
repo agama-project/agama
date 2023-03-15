@@ -158,7 +158,7 @@ class DBusClient {
    * @param {string} path - D-Bus path
    * @param {string} iface - D-Bus interface name
    * @param {ChangesHandler} handler - callback function
-   * @return {RemoveFn} function to desubscribe from the changes
+   * @return {RemoveFn} function to unsubscribe from the changes
    */
   onObjectChanged(path, iface, handler) {
     const { remove } = this.client.subscribe(

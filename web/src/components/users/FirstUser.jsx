@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,34 +27,100 @@ import {
   Alert,
   Button,
   Checkbox,
+  DropdownToggle,
   Form,
   FormGroup,
+  TextInput,
   Skeleton,
-  Text,
-  TextInput
 } from "@patternfly/react-core";
 
+import { TableComposable, Thead, Tr, Th, Tbody, Td, ActionsColumn } from '@patternfly/react-table';
+
+import { Icon } from '~/components/layout';
 import { PasswordAndConfirmationInput, Popup } from '~/components/core';
+
+const RowActions = ({ actions, id, ...props }) => {
+  const actionsToggle = (props) => (
+    <DropdownToggle
+      id={id}
+      aria-label="Actions"
+      toggleIndicator={null}
+      isDisabled={props.isDisabled}
+      onToggle={props.onToggle}
+    >
+      <Icon name="more_vert" size="24" />
+    </DropdownToggle>
+  );
+
+  return (
+    <ActionsColumn
+      items={actions}
+      actionsToggle={actionsToggle}
+      {...props}
+    />
+  );
+};
+
+const UserNotDefined = ({ actionCb }) => {
+  return (
+    <div className="stack">
+      <div className="bold">No user defined yet</div>
+      <div>Please, be aware that a user must be defined before installing the system to be able to log into it.</div>
+      <Button variant="primary" onClick={actionCb}>Define a user now</Button>
+    </div>
+  );
+};
+
+const UserData = ({ user, actions }) => {
+  return (
+    <TableComposable gridBreakPoint="grid-sm" variant="compact" className="users">
+      <Thead>
+        <Tr>
+          <Th width={25}>Fullname</Th>
+          <Th>Username</Th>
+          <Th />
+        </Tr>
+      </Thead>
+      <Tbody>
+        <Tr>
+          <Td>{user.fullName}</Td>
+          <Td>{user.userName}</Td>
+          <Td isActionCell>
+            <RowActions actions={actions} id={`actions-for-${user.userName}`} />
+          </Td>
+        </Tr>
+      </Tbody>
+    </TableComposable>
+  );
+};
+
+const CREATE_MODE = 'create';
+const EDIT_MODE = 'edit';
 
 const initialUser = {
   userName: "",
   fullName: "",
   autologin: false,
-  password: ""
+  password: "",
 };
+
 export default function FirstUser() {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const [user, setUser] = useState(null);
-  const [formValues, setFormValues] = useState(initialUser);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [user, setUser] = useState({});
   const [errors, setErrors] = useState([]);
-  const [validPassword, setValidPassword] = useState(true);
+  const [formValues, setFormValues] = useState(initialUser);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isValidPassword, setIsValidPassword] = useState(true);
+  const [isSettingPassword, setIsSettingPassword] = useState(false);
 
   useEffect(() => {
     cancellablePromise(client.users.getUser()).then(userValues => {
       setUser(userValues);
       setFormValues({ ...initialUser, ...userValues });
+      setIsLoading(false);
     });
   }, [client.users, cancellablePromise]);
 
@@ -66,37 +132,51 @@ export default function FirstUser() {
     });
   }, [client.users]);
 
-  if (user === null) return <Skeleton width="50%" fontSize="sm" />;
-
-  const open = () => {
+  const openForm = (e, mode = CREATE_MODE) => {
+    setIsEditing(mode === EDIT_MODE);
+    // Password will be always set when creating the user. In the edit mode it
+    // depends on the user choice
+    setIsSettingPassword(mode === CREATE_MODE);
+    // To avoid confusion, do not expose the current password
     setFormValues({ ...initialUser, ...user, password: "" });
     setIsFormOpen(true);
   };
 
-  const cancel = () => {
+  const closeForm = () => {
     setErrors([]);
+    setIsEditing(false);
     setIsFormOpen(false);
   };
 
-  const accept = async (e) => {
+  const accept = async (formName, e) => {
     e.preventDefault();
     setErrors([]);
-    const { result, issues = [] } = await client.users.setUser(formValues);
+    setIsLoading(true);
+
+    // Preserve current password value if the user was not editing it.
+    const newUser = { ...formValues };
+    if (!isSettingPassword) newUser.password = user.password;
+
+    const { result, issues = [] } = await client.users.setUser(newUser);
     setErrors(issues);
+    setIsLoading(false);
     if (result) {
-      setUser(formValues);
-      setIsFormOpen(false);
+      setUser(newUser);
+
+      closeForm();
     }
   };
 
   const remove = async () => {
+    setIsLoading(true);
+
     const result = await client.users.removeUser();
 
     if (result) {
       setUser(initialUser);
       setFormValues(initialUser);
+      setIsLoading(false);
     }
-    setIsFormOpen(false);
   };
 
   const handleInputChange = (value, { target }) => {
@@ -104,85 +184,100 @@ export default function FirstUser() {
     setFormValues({ ...formValues, [name]: value });
   };
 
-  const userIsDefined = user?.userName !== "";
-
-  const link = content => (
-    <Button variant="link" isInline onClick={open}>
-      {content}
-    </Button>
-  );
-
-  const renderLink = () => {
-    if (userIsDefined) {
-      return <Text>User {link(user.userName)} is defined</Text>;
-    } else {
-      return <Text>A user {link("is not defined")}</Text>;
-    }
-  };
-
+  const isUserDefined = user?.userName && user?.userName !== "";
   const showErrors = () => ((errors || []).length > 0);
-  const buttonDisabled = formValues.userName === "" || formValues.password === "" || !validPassword;
+
+  const actions = [
+    {
+      title: "Edit",
+      onClick: (e) => openForm(e, EDIT_MODE)
+    },
+    {
+      title: "Discard",
+      onClick: remove,
+      className: "danger-action"
+    }
+  ];
+
+  const toggleShowPasswordField = () => setIsSettingPassword(!isSettingPassword);
+  const usingValidPassword = formValues.password && formValues.password !== "" && isValidPassword;
+  const submitDisable = formValues.userName === "" || (isSettingPassword && !usingValidPassword);
+
+  if (isLoading) return <Skeleton />;
+
   return (
     <>
-      {renderLink()}
+      { isUserDefined ? <UserData user={user} actions={actions} /> : <UserNotDefined actionCb={openForm} /> }
+      { /* TODO: Extract this form to a component, if possible */ }
+      { isFormOpen &&
+        <Popup isOpen height="medium" title={isEditing ? "Edit user account" : "Create user account"}>
+          <Form id="createUser" onSubmit={(e) => accept("createUser", e)}>
+            { showErrors() &&
+              <Alert variant="warning" isInline title="Something went wrong">
+                { errors.map((e, i) => <p key={`error_${i}`}>{e}</p>) }
+              </Alert> }
 
-      <Popup isOpen={isFormOpen} title="User account">
-        <Form id="first-user" onSubmit={accept}>
-          { showErrors() &&
-            <Alert variant="warning" isInline title="Something went wrong">
-              { errors.map((e, i) => <p key={`error_${i}`}>{e}</p>) }
-            </Alert> }
+            <FormGroup fieldId="userFullName" label="Full name">
+              <TextInput
+                id="userFullName"
+                name="fullName"
+                aria-label="User fullname"
+                value={formValues.fullName}
+                label="User full name"
+                onChange={handleInputChange}
+              />
+            </FormGroup>
 
-          <FormGroup fieldId="userFullName" label="Full name">
-            <TextInput
-              id="userFullName"
-              name="fullName"
-              aria-label="User fullname"
-              value={formValues.fullName}
-              label="User full name"
+            <FormGroup fieldId="userName" label="Username" isRequired>
+              <TextInput
+                id="userName"
+                name="userName"
+                aria-label="Username"
+                value={formValues.userName}
+                label="Username"
+                isRequired
+                onChange={handleInputChange}
+              />
+            </FormGroup>
+
+            { isEditing &&
+              <Checkbox
+                aria-label="Edit password too"
+                id="edit-password"
+                name="edit-password"
+                label="Edit password too"
+                isChecked={isSettingPassword}
+                onChange={toggleShowPasswordField}
+              /> }
+
+            { isSettingPassword &&
+              <PasswordAndConfirmationInput
+                value={formValues.password}
+                onChange={(value, event) => {
+                  handleInputChange(value, event);
+                }}
+                onValidation={isValid => setIsValidPassword(isValid)}
+              /> }
+
+            <Checkbox
+              aria-label="user autologin"
+              id="autologin"
+              name="autologin"
+              label="Auto-login"
+              isChecked={formValues.autologin}
               onChange={handleInputChange}
             />
-          </FormGroup>
+          </Form>
 
-          <FormGroup fieldId="userName" label="Username" isRequired>
-            <TextInput
-              id="userName"
-              name="userName"
-              aria-label="Username"
-              value={formValues.userName}
-              label="Username"
-              isRequired
-              onChange={handleInputChange}
+          <Popup.Actions>
+            <Popup.Confirm
+              form="createUser"
+              type="submit"
+              isDisabled={submitDisable}
             />
-          </FormGroup>
-
-          <PasswordAndConfirmationInput
-            value={formValues.password}
-            onChange={(value, event) => {
-              if (value === "") setValidPassword(true);
-              handleInputChange(value, event);
-            }}
-            onValidation={isValid => setValidPassword(isValid)}
-          />
-
-          <Checkbox
-            aria-label="user autologin"
-            id="autologin"
-            name="autologin"
-            label="Auto-login"
-            isChecked={formValues.autologin}
-            onChange={handleInputChange}
-          />
-        </Form>
-
-        <Popup.Actions>
-          <Popup.Confirm form="first-user" type="submit" isDisabled={buttonDisabled} />
-          <Popup.Cancel onClick={cancel} />
-          <Popup.AncillaryAction onClick={remove} isDisabled={!userIsDefined} key="unset">
-            Do not create a user
-          </Popup.AncillaryAction>
-        </Popup.Actions>
-      </Popup>
+            <Popup.Cancel onClick={closeForm} />
+          </Popup.Actions>
+        </Popup> }
     </>
   );
 }

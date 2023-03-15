@@ -108,7 +108,7 @@ module DInstallerCli
       #
       # @return [InstallConfig::User]
       def current_user_config
-        fullname, name, autologin = users_client.first_user
+        fullname, name, _, autologin = users_client.first_user
 
         InstallConfig::User.new.tap do |user|
           user.name = name unless name.empty?

@@ -22,6 +22,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import { noop } from "~/utils";
 import { createClient } from "~/client";
 import { BUSY, IDLE } from "~/client/status";
 import { SoftwareSection } from "~/components/overview";
@@ -39,8 +40,8 @@ beforeEach(() => {
         getStatus: getStatusFn,
         getProgress: getProgressFn,
         getValidationErrors: getValidationErrorsFn,
-        onStatusChange: jest.fn().mockResolvedValue(),
-        onProgressChange: jest.fn(),
+        onStatusChange: noop,
+        onProgressChange: noop,
         getUsedSpace: jest.fn().mockResolvedValue("500 MB")
       },
     };
@@ -54,7 +55,8 @@ describe("when there proposal is calculated", () => {
 
   it("renders the required space", async () => {
     installerRender(<SoftwareSection showErrors />);
-    await screen.findByText("Installation will take 500 MB.");
+    await screen.findByText("Installation will take");
+    await screen.findByText("500 MB");
   });
 
   describe("and there are errors", () => {

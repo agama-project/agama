@@ -20,13 +20,12 @@
  */
 
 import React, { useReducer, useEffect } from "react";
-
+import { Button } from "@patternfly/react-core";
+import { Em, ProgressText, Section } from "~/components/core";
+import { Icon } from "~/components/layout";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
-import { ProgressText, Section } from "~/components/core";
-import { Icon } from "~/components/layout";
-import { Button, Text } from "@patternfly/react-core";
 
 const initialState = {
   busy: true,
@@ -61,7 +60,7 @@ const reducer = (state, action) => {
 };
 
 export default function SoftwareSection({ showErrors }) {
-  const client = useInstallerClient();
+  const { software: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -69,46 +68,46 @@ export default function SoftwareSection({ showErrors }) {
     dispatch({ type: "UPDATE_STATUS", payload: { status } });
   };
 
-  const probe = () => client.software.probe();
+  const probe = () => client.probe();
 
   useEffect(() => {
-    cancellablePromise(client.software.getStatus()).then(updateStatus);
+    cancellablePromise(client.getStatus()).then(updateStatus);
 
-    return client.software.onStatusChange(updateStatus);
-  }, [client.software, cancellablePromise]);
+    return client.onStatusChange(updateStatus);
+  }, [client, cancellablePromise]);
 
   useEffect(() => {
-    cancellablePromise(client.software.getStatus()).then(updateStatus);
-  }, [client.software, cancellablePromise]);
+    cancellablePromise(client.getStatus()).then(updateStatus);
+  }, [client, cancellablePromise]);
 
   useEffect(() => {
     const updateProposal = async () => {
-      const errors = await cancellablePromise(client.software.getValidationErrors());
-      const size = await cancellablePromise(client.software.getUsedSpace());
+      const errors = await cancellablePromise(client.getValidationErrors());
+      const size = await cancellablePromise(client.getUsedSpace());
 
       dispatch({ type: "UPDATE_PROPOSAL", payload: { errors, size } });
     };
 
     updateProposal();
-  }, [client.software, cancellablePromise, state.busy]);
+  }, [client, cancellablePromise, state.busy]);
 
   useEffect(() => {
-    cancellablePromise(client.software.getProgress()).then(({ message, current, total, finished }) => {
+    cancellablePromise(client.getProgress()).then(({ message, current, total, finished }) => {
       dispatch({
         type: "UPDATE_PROGRESS",
         payload: { message, current, total, finished }
       });
     });
-  }, [client.software, cancellablePromise]);
+  }, [client, cancellablePromise]);
 
   useEffect(() => {
-    return client.software.onProgressChange(({ message, current, total, finished }) => {
+    return client.onProgressChange(({ message, current, total, finished }) => {
       dispatch({
         type: "UPDATE_PROGRESS",
         payload: { message, current, total, finished }
       });
     });
-  }, [client.software, cancellablePromise]);
+  }, [client, cancellablePromise]);
 
   const errors = showErrors ? state.errors : [];
 
@@ -116,9 +115,7 @@ export default function SoftwareSection({ showErrors }) {
     if (state.size === "" || state.size === "0 B") return null;
 
     return (
-      <Text>
-        Installation will take {state.size}.
-      </Text>
+      <>Installation will take <Em>{state.size}</Em></>
     );
   };
 
@@ -150,7 +147,8 @@ export default function SoftwareSection({ showErrors }) {
     <Section
       key="software-section"
       title="Software"
-      iconName="apps"
+      icon="apps"
+      loading={state.busy}
       errors={errors}
     >
       <SectionContent />

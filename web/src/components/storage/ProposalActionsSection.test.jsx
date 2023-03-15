@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,7 +26,7 @@ import { ProposalActionsSection } from "~/components/storage";
 
 jest.mock("~/components/storage/ProposalActions", () => mockComponent("ProposalActions content"));
 
-const proposal = {};
+const proposal = { result: {} };
 
 describe("ProposalActionsSection", () => {
   it("renders the proposal actions", async () => {

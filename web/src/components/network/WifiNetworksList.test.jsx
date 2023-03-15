@@ -31,14 +31,14 @@ const onSelectionCallback = jest.fn();
 const myNetwork = {
   ssid: "My Wi-Fi Network",
   security: ["WPA2"],
-  strengh: 85,
+  strength: 85,
   settings: { wireless: { hidden: false } }
 };
 
 const otherNetwork = {
-  ssid: "My Neighbour Network",
+  ssid: "My Neighbor Network",
   security: ["WPA2"],
-  strengh: 35
+  strength: 35
 };
 
 const networksMock = [myNetwork, otherNetwork];
@@ -53,7 +53,7 @@ describe("WifiNetworksList", () => {
     installerRender(<WifiNetworksList networks={networksMock} />);
 
     expect(screen.getByText("My Wi-Fi Network")).toBeInTheDocument();
-    expect(screen.getByText("My Neighbour Network")).toBeInTheDocument();
+    expect(screen.getByText("My Neighbor Network")).toBeInTheDocument();
   });
 
   describe("when the user clicks on a not selected network", () => {
