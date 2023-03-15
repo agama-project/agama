@@ -238,4 +238,63 @@ describe DInstaller::Storage::DASD::Manager do
       end
     end
   end
+
+  describe "#set_diag" do
+    let(:callback) { proc {} }
+
+    let(:dasd1) do
+      double("Y2S390::Dasd", id: "0.0.001", offline?: false, use_diag: true, diag_wanted: wanted)
+    end
+    let(:dasd2) do
+      double("Y2S390::Dasd", id: "0.0.002", offline?: false, use_diag: false, diag_wanted: wanted)
+    end
+    let(:dasd3) do
+      double("Y2S390::Dasd", id: "0.0.003", offline?: true, use_diag: false, diag_wanted: wanted)
+    end
+
+    let(:wanted) { true }
+
+    before do
+      allow(reader).to receive(:update_info)
+      allow(dasd1).to receive(:diag_wanted=)
+      allow(dasd2).to receive(:diag_wanted=)
+      allow(dasd3).to receive(:diag_wanted=)
+      allow(Yast::Execute).to receive(:locally!).with(array_including(dasd2.id), any_args)
+    end
+
+    context "for DASDs that are initially enabled" do
+      it "disables the devices and enables it again if the value of use_diag has changed" do
+        expect(Yast::Execute).to receive(:locally!)
+          .with(["dasd_configure", dasd2.id, "0"], any_args).ordered
+        expect(Yast::Execute).to receive(:locally!)
+          .with(["dasd_configure", dasd2.id, "1", "1"], any_args).ordered
+
+        subject.set_diag(dasds, wanted)
+      end
+
+      it "does nothing if the value of use_diag is the same than the current one" do
+        expect(Yast::Execute).to_not receive(:locally!).with(array_including(dasd1.id), any_args)
+        subject.set_diag(dasds, wanted)
+      end
+    end
+
+    context "for DASDs that are initially disabled" do
+      it "does not enable the device" do
+        expect(Yast::Execute).to_not receive(:locally!).with(array_including(dasd3.id), any_args)
+        subject.set_diag(dasds, wanted)
+      end
+    end
+
+    it "updates the information of the DASDs and runs the refresh callbacks" do
+      allow(Yast::Execute).to receive(:locally!)
+      subject.on_refresh(&callback)
+
+      expect(reader).to receive(:update_info).with(dasd1, extended: true)
+      expect(reader).to receive(:update_info).with(dasd2, extended: true)
+      expect(reader).to receive(:update_info).with(dasd3, extended: true)
+      expect(callback).to receive(:call).with(dasds)
+
+      subject.set_diag(dasds, wanted)
+    end
+  end
 end

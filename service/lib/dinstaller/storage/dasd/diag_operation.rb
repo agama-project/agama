@@ -45,17 +45,12 @@ module DInstaller
         def process_dasd(dasd)
           dasd.diag_wanted = value
           return true if dasd.offline?
+          return true if dasd.diag_wanted == dasd.use_diag
 
+          dasd_configure = DasdConfigureCmd.new(dasd)
           dasd_configure.disable && dasd_configure.enable
         rescue Cheetah::ExecutionFailed
           false
-        end
-
-        # Utility object used to re-enable de device after the flag change
-        #
-        # @return [DasdConfigureCmd]
-        def dasd_configure
-          @dasd_configure ||= DasdConfigureCmd.new(dasd)
         end
       end
     end
