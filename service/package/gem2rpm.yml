@@ -1,5 +1,9 @@
 ---
 :sourceurl: "%{mod_full_name}.gem"
+:preamble: |-
+  %global rb_build_versions %{rb_default_ruby}
+  BuildRequires:  dbus-1-common
+  Requires:       dbus-1-common
 :post_install: |-
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/dbus.conf %{buildroot}%{_datadir}/dbus-1/d-installer.conf
   install --directory %{buildroot}%{_datadir}/dbus-1/d-installer-services
