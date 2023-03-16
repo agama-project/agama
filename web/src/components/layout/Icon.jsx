@@ -23,7 +23,6 @@ import React from 'react';
 
 // NOTE: "@icons" is an alias to use a shorter path to real icons location.
 //       Check the tsconfig.json file to see its value.
-import Add from "@icons/add.svg?component";
 import Apps from "@icons/apps.svg?component";
 import Badge from "@icons/badge.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
