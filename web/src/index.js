@@ -56,9 +56,9 @@ root.render(
                 <Route path="/overview" element={<Overview />} />
                 <Route path="/l10n" element={<L10nPage />} />
                 <Route path="/storage" element={<StoragePage />} />
+                <Route path="/storage/iscsi" element={<ISCSIPage />} />
                 <Route path="/network" element={<NetworkPage />} />
                 <Route path="/users" element={<UsersPage />} />
-                <Route path="/storage/iscsi" element={<ISCSIPage />} />
               </Route>
               <Route path="products" element={<ProductSelectionPage />} />
             </Route>
