@@ -115,13 +115,22 @@ $ sudo bundle exec bin/d-installer
 [busctl](https://www.freedesktop.org/wiki/Software/dbus/) or
 [D-Feet](https://wiki.gnome.org/Apps/DFeet) if you prefer a graphical one:
 
-~~~
-$ busctl call org.opensuse.DInstaller.Language /org/opensuse/DInstaller/Language1 \
-    org.opensuse.DInstaller.Language1 AvailableLanguages
 
-$ busctl call org.opensuse.DInstaller.Language /org/opensuse/DInstaller/Language1 \
-    org.freedesktop.DBus.Properties GetAll s org.opensuse.DInstaller.Language1
-~~~
+```console
+$ busctl --address=unix:path=/run/d-installer/bus \
+    call \
+    org.opensuse.DInstaller \
+   /org/opensuse/DInstaller/Manager1 \
+    org.opensuse.DInstaller.Manager1 \
+    CanInstall
+
+$ busctl --address=unix:path=/run/d-installer/bus \
+    call \
+    org.opensuse.DInstaller.Language \
+   /org/opensuse/DInstaller/Language1 \
+    org.freedesktop.DBus.Properties \
+    GetAll s org.opensuse.DInstaller.Language1
+```
 
 ## How to Contribute
 
