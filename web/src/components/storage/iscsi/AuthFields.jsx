@@ -56,25 +56,18 @@ export default function AuthFields({ data, onChange, onValidate }) {
     );
   });
 
-  const ByInitiatorAuthLegend = () => {
-    const Info = () => {
-      return (
-        <p>
-          <Icon
-            name="info"
-            size="16"
-            style={{ verticalAlign: "text-bottom", marginRight: "0.3em" }}
-          />
-          Only available if authentication by target is provided
-        </p>
-      );
-    };
+  const ByInitiatorAuthTip = () => {
+    if (isValidAuth()) return null;
 
     return (
-      <>
-        Authentication by initiator
-        { !isValidAuth() && <Info /> }
-      </>
+      <p>
+        <Icon
+          name="info"
+          size="16"
+          style={{ verticalAlign: "text-bottom", marginRight: "0.3em" }}
+        />
+        Only available if authentication by target is provided
+      </p>
     );
   };
 
@@ -115,7 +108,8 @@ export default function AuthFields({ data, onChange, onValidate }) {
           />
         </FormGroup>
       </Fieldset>
-      <Fieldset legend={ByInitiatorAuthLegend()}>
+      <Fieldset legend="Authentication by initiator">
+        <ByInitiatorAuthTip />
         <FormGroup
           fieldId="reverseUsername"
           label="Username"
