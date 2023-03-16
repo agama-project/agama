@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 16 13:45:21 UTC 2023 - Knut Alejandro Anderssen González <kanderssen@suse.com>
+
+- Fix gem2rpm configuration requiring the dbus-1-common package
+  (gh#yast/d-installer#459).
+
+-------------------------------------------------------------------
 Wed Mar  8 07:46:54 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix gem2rpm configuration to include YaST2 dependencies
