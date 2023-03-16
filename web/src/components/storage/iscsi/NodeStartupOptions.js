@@ -19,13 +19,12 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as InitiatorSection } from "./InitiatorSection";
-export { default as InitiatorPresenter } from "./InitiatorPresenter";
-export { default as InitiatorForm } from "./InitiatorForm";
-export { default as TargetsSection } from "./TargetsSection";
-export { default as NodesPresenter } from "./NodesPresenter";
-export { default as DiscoverForm } from "./DiscoverForm";
-export { default as EditNodeForm } from "./EditNodeForm";
-export { default as LoginForm } from "./LoginForm";
-export { default as AuthFields } from "./AuthFields";
-export { default as NodeStartupOptions } from "./NodeStartupOptions";
+// cspell:ignore onboot
+
+const NodeStartupOptions = Object.freeze({
+  MANUAL: { label: "Manual", value: "manual" },
+  ONBOOT: { label: "On boot", value: "onboot" },
+  AUTOMATIC: { label: "Automatic", value: "automatic" }
+});
+
+export default NodeStartupOptions;
