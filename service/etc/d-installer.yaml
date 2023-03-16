@@ -1,7 +1,6 @@
 products:
   ALP:
     name: SUSE ALP ContainerHost OS
-    archs: x86_64,aarch64
     description: 'The Adaptable Linux Platform (ALP), the next generation of Linux,
       allow users to focus on their workloads while abstracting from the hardware
       and the application layer. The preview of ContainerHost OS is one of the
@@ -27,6 +26,7 @@ products:
       and sysadmins the best stable Linux experience available.'
   Leap16:
     name: openSUSE Leap 16.0
+    archs: x86_64,aarch64
     description: '[Experimental project] openSUSE Leap 16 is built on top of the next generation Adaptable Linux Platform (ALP) from SUSE.'
 
 web:
@@ -157,6 +157,11 @@ ALP:
         archs: x86_64
       - url: https://download.opensuse.org/repositories/SUSE:/ALP/standard/
         archs: aarch64
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP/standard/
+        archs: s390
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/zSystems/standard/
+        archs: s390
+
     mandatory_patterns:
       - alp_base
       - alp_base_zypper
@@ -166,7 +171,7 @@ ALP:
     optional_patterns: null # no optional pattern shared
     mandatory_packages:
       - device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
-      - fde-tools # Needed for FDE with TPM, hardcoded here temporarily
+      - fde-tools # Needed for FDE with TPM, hardcoded here temporarily (aarch64, x86_64 specific)
       - libtss2-tcti-device0 # Same than fde-tools
     optional_packages: null
     base_product: ALP
