@@ -23,10 +23,9 @@ import React, { useEffect, useReducer, useState } from "react";
 import {
   Button,
   Toolbar, ToolbarItem, ToolbarContent,
-  Skeleton
 } from "@patternfly/react-core";
 
-import { Section } from "~/components/core";
+import { Section, SectionSkeleton } from "~/components/core";
 import { NodesPresenter, DiscoverForm } from "~/components/storage/iscsi";
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
@@ -140,7 +139,7 @@ export default function TargetsSection() {
   };
 
   const SectionContent = () => {
-    if (state.isLoading) return <Skeleton />;
+    if (state.isLoading) return <SectionSkeleton />;
 
     if (state.nodes.length === 0) {
       return (
