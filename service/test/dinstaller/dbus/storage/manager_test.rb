@@ -50,7 +50,9 @@ describe DInstaller::DBus::Storage::Manager do
 
   let(:settings) { nil }
 
-  let(:iscsi) { instance_double(DInstaller::Storage::ISCSI::Manager, on_probe: nil) }
+  let(:iscsi) do
+    instance_double(DInstaller::Storage::ISCSI::Manager, on_activate: nil, on_probe: nil)
+  end
 
   before do
     allow(Yast::Arch).to receive(:s390).and_return false

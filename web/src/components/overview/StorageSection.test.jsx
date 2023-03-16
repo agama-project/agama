@@ -50,7 +50,8 @@ beforeEach(() => {
         proposal: { getData: jest.fn().mockResolvedValue(proposal) },
         getStatus: jest.fn().mockResolvedValue(status),
         getValidationErrors: jest.fn().mockResolvedValue(errors),
-        onStatusChange: onStatusChangeFn
+        onStatusChange: onStatusChangeFn,
+        setUp: jest.fn().mockResolvedValue(null)
       },
     };
   });

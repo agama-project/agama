@@ -49,6 +49,7 @@ module DInstaller
           @logger = logger || ::Logger.new($stdout)
           @initiator = ISCSI::Initiator.new
 
+          @on_activate_callbacks = []
           @on_probe_callbacks = []
         end
 
@@ -71,7 +72,8 @@ module DInstaller
 
           Yast::IscsiClientLib.getConfig
           Yast::IscsiClientLib.autoLogOn
-          sleep(sl)
+
+          @on_activate_callbacks.each(&:call)
         end
 
         # Probes iSCSI
@@ -169,6 +171,13 @@ module DInstaller
             Yast::IscsiClientLib.currentRecord = record_from(node)
             Yast::IscsiClientLib.setStartupStatus(startup)
           end
+        end
+
+        # Registers a callback to be called after performing iSCSI activation
+        #
+        # @param block [Proc]
+        def on_activate(&block)
+          @on_activate_callbacks << block
         end
 
         # Registers a callback to be called when the nodes are probed

@@ -161,6 +161,13 @@ module DInstaller
           backend.iscsi.initiator.name = value
         end
 
+        # Whether the initiator name was set via iBFT
+        #
+        # @return [Boolean]
+        def ibft
+          backend.iscsi.initiator.ibft_name?
+        end
+
         # Performs an iSCSI discovery
         #
         # @param address [String] IP address of the iSCSI server
@@ -199,6 +206,8 @@ module DInstaller
         dbus_interface ISCSI_INITIATOR_INTERFACE do
           dbus_accessor :initiator_name, "s"
 
+          dbus_reader :ibft, "b", dbus_name: "IBFT"
+
           dbus_method :Discover,
             "in address:s, in port:u, in options:a{sv}, out result:u" do |address, port, options|
             busy_while { iscsi_discover(address, port, options) }
@@ -223,18 +232,23 @@ module DInstaller
         def register_proposal_callbacks
           proposal.on_calculate do
             export_proposal
-            properties_changed
+            proposal_properties_changed
             update_validation
           end
         end
 
         def register_iscsi_callbacks
+          backend.iscsi.on_activate do
+            properties = interfaces_and_properties[ISCSI_INITIATOR_INTERFACE]
+            dbus_properties_changed(ISCSI_INITIATOR_INTERFACE, properties, [])
+          end
+
           backend.iscsi.on_probe do
             refresh_iscsi_nodes
           end
         end
 
-        def properties_changed
+        def proposal_properties_changed
           properties = interfaces_and_properties[PROPOSAL_CALCULATOR_INTERFACE]
           dbus_properties_changed(PROPOSAL_CALCULATOR_INTERFACE, properties, [])
         end

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,13 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ProposalPage } from "./ProposalPage";
-export { default as ProposalTargetSection } from "./ProposalTargetSection";
-export { default as ProposalSettingsSection } from "./ProposalSettingsSection";
-export { default as ProposalActionsSection } from "./ProposalActionsSection";
-export { default as ProposalTargetForm } from "./ProposalTargetForm";
-export { default as ProposalSettingsForm } from "./ProposalSettingsForm";
-export { default as DeviceSelector } from "./DeviceSelector";
-export { default as ProposalActions } from "./ProposalActions";
-export { default as ProposalSummary } from "./ProposalSummary";
-export { default as ISCSIPage } from "./ISCSIPage";
+export { default as InitiatorSection } from "./InitiatorSection";
+export { default as InitiatorPresenter } from "./InitiatorPresenter";
+export { default as InitiatorForm } from "./InitiatorForm";
+export { default as TargetsSection } from "./TargetsSection";
+export { default as NodesPresenter } from "./NodesPresenter";
+export { default as DiscoverForm } from "./DiscoverForm";
+export { default as EditNodeForm } from "./EditNodeForm";
+export { default as LoginForm } from "./LoginForm";
+export { default as AuthFields } from "./AuthFields";
+export { default as NodeStartupOptions } from "./NodeStartupOptions";

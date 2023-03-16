@@ -24,12 +24,13 @@
 import DBusClient from "./dbus";
 import { WithStatus, WithValidation } from "./mixins";
 
-const PROPOSAL_CALCULATOR_IFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator";
-const ISCSI_NODE_IFACE = "org.opensuse.DInstaller.Storage1.ISCSI.Node";
+const SERVICE = "org.opensuse.DInstaller.Storage";
+const STORAGE_OBJECT = "/org/opensuse/DInstaller/Storage1";
 const ISCSI_NODES_NAMESPACE = "/org/opensuse/DInstaller/Storage1/iscsi_nodes";
+const PROPOSAL_CALCULATOR_IFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator";
 const ISCSI_INITIATOR_IFACE = "org.opensuse.DInstaller.Storage1.ISCSI.Initiator";
 const PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage1.Proposal";
-const STORAGE_OBJECT = "/org/opensuse/DInstaller/Storage1";
+const ISCSI_NODE_IFACE = "org.opensuse.DInstaller.Storage1.ISCSI.Node";
 
 /**
  * Removes properties with undefined value
@@ -60,6 +61,12 @@ class ProposalManager {
   constructor(client) {
     this.client = client;
     this.proxies = {};
+  }
+
+  async setUp() {
+    const proposalCalculator = await this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_OBJECT);
+
+    this.proxies = { proposalCalculator };
   }
 
   /**
@@ -95,8 +102,7 @@ class ProposalManager {
       };
     };
 
-    const proxy = await this.proposalCalculatorProxy();
-    return proxy.AvailableDevices.map(buildDevice);
+    return this.proxies.proposalCalculator.AvailableDevices.map(buildDevice);
   }
 
   /**
@@ -214,21 +220,7 @@ class ProposalManager {
       Volumes: { t: "aa{sv}", v: volumes?.map(dbusVolume) }
     });
 
-    const proxy = await this.proposalCalculatorProxy();
-    return proxy.Calculate(settings);
-  }
-
-  /**
-   * @private
-   * Proxy for org.opensuse.DInstaller.Storage1.Proposal.Calculator iface
-   *
-   * @returns {Promise<object>}
-   */
-  async proposalCalculatorProxy() {
-    if (!this.proxies.proposalCalculator)
-      this.proxies.proposalCalculator = await this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_OBJECT);
-
-    return this.proxies.proposalCalculator;
+    return this.proxies.proposalCalculator.Calculate(settings);
   }
 
   /**
@@ -260,14 +252,24 @@ class ISCSIManager {
     this.proxies = {};
   }
 
+  async setUp() {
+    const initiator = await this.client.proxy(ISCSI_INITIATOR_IFACE, STORAGE_OBJECT);
+    const nodes = await this.client.proxies(ISCSI_NODE_IFACE, ISCSI_NODES_NAMESPACE);
+
+    this.proxies = { initiator, nodes };
+  }
+
+  async getInitiatorIbft() {
+    return this.proxies.initiator.IBFT;
+  }
+
   /**
    * Gets the iSCSI initiator name
    *
    * @returns {Promise<string>}
    */
   async getInitiatorName() {
-    const proxy = await this.iscsiInitiatorProxy();
-    return proxy.InitiatorName;
+    return this.proxies.initiator.InitiatorName;
   }
 
   /**
@@ -276,8 +278,7 @@ class ISCSIManager {
    * @param {string} value
    */
   async setInitiatorName(value) {
-    const proxy = await this.iscsiInitiatorProxy();
-    proxy.InitiatorName = value;
+    this.proxies.initiator.InitiatorName = value;
   }
 
   /**
@@ -296,23 +297,7 @@ class ISCSIManager {
    * @property {string} startup
    */
   async getNodes() {
-    const buildNode = (iscsiProxy) => {
-      const id = path => path.split("/").slice(-1)[0];
-
-      return {
-        id: id(iscsiProxy.path),
-        target: iscsiProxy.Target,
-        address: iscsiProxy.Address,
-        port: iscsiProxy.Port,
-        interface: iscsiProxy.Interface,
-        ibft: iscsiProxy.IBFT,
-        connected: iscsiProxy.Connected,
-        startup: iscsiProxy.Startup
-      };
-    };
-
-    const proxy = await this.iscsiNodesProxy();
-    return Object.values(proxy).map(p => buildNode(p));
+    return Object.values(this.proxies.nodes).map(this.buildNode);
   }
 
   /**
@@ -338,8 +323,20 @@ class ISCSIManager {
       ReversePassword: { t: "s", v: options.reversePassword }
     });
 
-    const proxy = await this.iscsiInitiatorProxy();
-    return proxy.Discover(address, port, auth);
+    return this.proxies.initiator.Discover(address, port, auth);
+  }
+
+  /**
+   * Sets the startup status of the connection
+   *
+   * @param {ISCSINode} node
+   * @param {String} startup
+   */
+  async setStartup(node, startup) {
+    const path = this.nodePath(node);
+
+    const proxy = await this.client.proxy(ISCSI_NODE_IFACE, path);
+    proxy.Startup = startup;
   }
 
   /**
@@ -352,8 +349,7 @@ class ISCSIManager {
   async delete(node) {
     const path = this.nodePath(node);
 
-    const proxy = await this.iscsiInitiatorProxy();
-    return proxy.Delete(path);
+    return this.proxies.initiator.Delete(path);
   }
 
   /**
@@ -401,32 +397,43 @@ class ISCSIManager {
     return proxy.Logout();
   }
 
-  /**
-   * @private
-   * Proxy for org.opensuse.DInstaller.Storage1.ISCSI.Initiator iface
-   *
-   * @returns {Promise<object>}
-   */
-  async iscsiInitiatorProxy() {
-    if (!this.proxies.iscsiInitiator)
-      this.proxies.iscsiInitiator = await this.client.proxy(ISCSI_INITIATOR_IFACE, STORAGE_OBJECT);
+  onInitiatorChanged(handler) {
+    return this.client.onObjectChanged(STORAGE_OBJECT, ISCSI_INITIATOR_IFACE, (changes) => {
+      const data = {
+        name: changes.InitiatorName?.v,
+        ibft: changes.IBFT?.v
+      };
 
-    return this.proxies.iscsiInitiator;
+      const filtered = Object.entries(data).filter(([, v]) => v !== undefined);
+      return handler(Object.fromEntries(filtered));
+    });
   }
 
-  /**
-   * @private
-   * Proxy for objects implementing org.opensuse.DInstaller.Storage1.ISCSI.Node iface
-   *
-   * @note The ISCSI nodes are dynamically exported.
-   *
-   * @returns {Promise<object>}
-   */
-  async iscsiNodesProxy() {
-    if (!this.proxies.iscsiNodes)
-      this.proxies.iscsiNodes = await this.client.proxies(ISCSI_NODE_IFACE, ISCSI_NODES_NAMESPACE);
+  async onNodeAdded(handler) {
+    this.proxies.nodes.addEventListener("added", (_, proxy) => handler(this.buildNode(proxy)));
+  }
 
-    return this.proxies.iscsiNodes;
+  async onNodeChanged(handler) {
+    this.proxies.nodes.addEventListener("changed", (_, proxy) => handler(this.buildNode(proxy)));
+  }
+
+  async onNodeRemoved(handler) {
+    this.proxies.nodes.addEventListener("removed", (_, proxy) => handler(this.buildNode(proxy)));
+  }
+
+  buildNode(proxy) {
+    const id = path => path.split("/").slice(-1)[0];
+
+    return {
+      id: id(proxy.path),
+      target: proxy.Target,
+      address: proxy.Address,
+      port: proxy.Port,
+      interface: proxy.Interface,
+      ibft: proxy.IBFT,
+      connected: proxy.Connected,
+      startup: proxy.Startup
+    };
   }
 
   /**
@@ -447,15 +454,21 @@ class ISCSIManager {
  * @ignore
  */
 class StorageBaseClient {
-  static SERVICE = "org.opensuse.DInstaller.Storage";
-
   /**
    * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.
    */
   constructor(address = undefined) {
-    this.client = new DBusClient(StorageBaseClient.SERVICE, address);
+    this.client = new DBusClient(SERVICE, address);
     this.proposal = new ProposalManager(this.client);
     this.iscsi = new ISCSIManager(this.client);
+  }
+
+  /**
+   * Initializes the proxies
+   */
+  async setUp() {
+    await this.proposal.setUp();
+    await this.iscsi.setUp();
   }
 }
 
