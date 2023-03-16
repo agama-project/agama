@@ -40,7 +40,7 @@ const defaultData = {
   reversePassword: ""
 };
 
-export default function DiscoverForm({ client, onSuccess, onCancel }) {
+export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
   const [savedData, setSavedData] = useLocalStorage("dinstaller-iscsi-discovery", {});
   const [data, setData] = useState(defaultData);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,18 +61,12 @@ export default function DiscoverForm({ client, onSuccess, onCancel }) {
     setIsLoading(true);
     setSavedData(data);
 
-    const { username, password, reverseUsername, reversePassword } = data;
-    const result = await client.iscsi.discover(data.address, parseInt(data.port), {
-      username, password, reverseUsername, reversePassword
-    });
+    const result = await onSubmitProp(data);
 
-    if (result === 0) {
-      onSuccess();
-      return;
+    if (result !== 0) {
+      setIsFailed(true);
+      setIsLoading(false);
     }
-
-    setIsFailed(true);
-    setIsLoading(false);
   };
 
   const isValidAddress = () => isValidIp(data.address);

@@ -27,15 +27,14 @@ import {
 import { Popup } from "~/components/core";
 import { NodeStartupOptions } from "~/components/storage/iscsi";
 
-export default function EditNodeForm({ node, client, onSuccess, onCancel }) {
+export default function EditNodeForm({ node, onSubmit: onSubmitProp, onCancel }) {
   const [data, setData] = useState({ startup: node.startup });
 
   const onStartupChange = v => setData({ ...data, startup: v });
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    await client.iscsi.setStartup(node, data.startup);
-    onSuccess();
+    await onSubmitProp(data);
   };
 
   const startupFormOptions = Object.values(NodeStartupOptions).map((option, i) => (

@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// cspell:ignore onboot
+
 import React, { useState } from "react";
 import {
   Alert,
@@ -28,7 +30,7 @@ import {
 import { Popup } from "~/components/core";
 import { AuthFields, NodeStartupOptions } from "~/components/storage/iscsi";
 
-export default function LoginForm({ node, client, onSuccess, onCancel }) {
+export default function LoginForm({ node, onSubmit: onSubmitProp, onCancel }) {
   const [data, setData] = useState({
     username: "",
     password: "",
@@ -47,15 +49,12 @@ export default function LoginForm({ node, client, onSuccess, onCancel }) {
     setIsLoading(true);
     event.preventDefault();
 
-    const result = await client.iscsi.login(node, data);
+    const result = await onSubmitProp(data);
 
-    if (result === 0) {
-      onSuccess();
-      return;
+    if (result !== 0) {
+      setIsFailed(true);
+      setIsLoading(false);
     }
-
-    setIsFailed(true);
-    setIsLoading(false);
   };
 
   const startupFormOptions = Object.values(NodeStartupOptions).map((option, i) => (

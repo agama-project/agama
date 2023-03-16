@@ -24,15 +24,14 @@ import { Form, FormGroup, TextInput } from "@patternfly/react-core";
 
 import { Popup } from "~/components/core";
 
-export default function InitiatorForm({ initiator, client, onSuccess, onCancel }) {
+export default function InitiatorForm({ initiator, onSubmit: onSubmitProp, onCancel }) {
   const [data, setData] = useState({ ...initiator });
 
   const onNameChange = name => setData({ ...data, name });
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    await client.iscsi.setInitiatorName(data.name);
-    onSuccess();
+    onSubmitProp(data);
   };
 
   const id = "editIscsiInitiator";

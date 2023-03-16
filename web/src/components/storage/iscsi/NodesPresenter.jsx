@@ -60,12 +60,24 @@ export default function NodesPresenter ({ nodes, client }) {
 
   const closeLoginForm = () => setIsLoginFormOpen(false);
 
+  const submitLoginForm = async (options) => {
+    const result = await client.iscsi.login(currentNode, options);
+    if (result === 0) closeLoginForm();
+
+    return result;
+  };
+
   const openEditForm = (node) => {
     setCurrentNode(node);
     setIsEditFormOpen(true);
   };
 
   const closeEditForm = () => setIsEditFormOpen(false);
+
+  const submitEditForm = async (data) => {
+    await client.iscsi.setStartup(currentNode, data.startup);
+    closeEditForm();
+  };
 
   const nodeStatus = (node) => {
     if (!node.connected) return "Disconnected";
@@ -140,15 +152,13 @@ export default function NodesPresenter ({ nodes, client }) {
       { isLoginFormOpen &&
         <LoginForm
           node={currentNode}
-          client={client}
-          onSuccess={closeLoginForm}
+          onSubmit={submitLoginForm}
           onCancel={closeLoginForm}
         /> }
       { isEditFormOpen &&
         <EditNodeForm
           node={currentNode}
-          client={client}
-          onSuccess={closeEditForm}
+          onSubmit={submitEditForm}
           onCancel={closeEditForm}
         /> }
     </>

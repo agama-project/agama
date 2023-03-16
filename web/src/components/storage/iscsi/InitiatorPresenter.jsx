@@ -49,18 +49,19 @@ const RowActions = ({ actions, id, ...props }) => {
 };
 
 export default function InitiatorPresenter({ initiator, client }) {
-  const [data, setData] = useState();
+  const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
-    if (initiator !== undefined) setData({ ...initiator });
-  }, [setData, initiator]);
+    setIsLoading(initiator === undefined);
+  }, [initiator]);
 
   const openForm = () => setIsFormOpen(true);
   const closeForm = () => setIsFormOpen(false);
+  const submitForm = async (data) => {
+    await client.iscsi.setInitiatorName(data.name);
 
-  const onSuccess = () => {
-    setData(undefined);
+    setIsLoading(true);
     closeForm();
   };
 
@@ -73,7 +74,7 @@ export default function InitiatorPresenter({ initiator, client }) {
   };
 
   const Content = () => {
-    if (data === undefined) {
+    if (isLoading) {
       return (
         <Tr>
           <Td colSpan={4}>
@@ -85,9 +86,9 @@ export default function InitiatorPresenter({ initiator, client }) {
 
     return (
       <Tr>
-        <Td>{data.name}</Td>
-        <Td>{data.ibft ? "Yes" : "No"}</Td>
-        <Td>{data.offloadCard || "None"}</Td>
+        <Td>{initiator.name}</Td>
+        <Td>{initiator.ibft ? "Yes" : "No"}</Td>
+        <Td>{initiator.offloadCard || "None"}</Td>
         <Td isActionCell>
           <RowActions actions={initiatorActions()} id="actions-for-initiator" />
         </Td>
@@ -113,8 +114,7 @@ export default function InitiatorPresenter({ initiator, client }) {
       { isFormOpen &&
         <InitiatorForm
           initiator={initiator}
-          client={client}
-          onSuccess={onSuccess}
+          onSubmit={submitForm}
           onCancel={closeForm}
         /> }
     </>
