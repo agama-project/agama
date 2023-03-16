@@ -1,6 +1,6 @@
 <services>
   <service name="obs_scm" mode="manual">
-    <param name="versionformat">@PARENT_TAG@.%h</param>
+    <param name="versionformat">@PARENT_TAG@~@TAG_OFFSET@</param>
     <param name="url">http://github.com/yast/d-installer.git</param>
     <param name="scm">git</param>
     <param name="revision">master</param>
