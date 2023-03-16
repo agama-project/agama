@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 16 15:56:00 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add callbacks to be called on iSCSI activation
+  (gh#yast/d-installer#435).
+
+-------------------------------------------------------------------
 Thu Mar 16 14:54:44 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Adapted the service configuration for the s390x architecture
