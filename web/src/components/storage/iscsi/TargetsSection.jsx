@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import {
   Button,
   Toolbar, ToolbarItem, ToolbarContent,
@@ -91,8 +91,15 @@ export default function TargetsSection() {
   const { storage: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
+    client.setUp().then(() => setInitialized(true));
+  }, [client]);
+
+  useEffect(() => {
+    if (!initialized) return;
+
     const loadNodes = async () => {
       dispatch({ type: "START_LOADING" });
       const nodes = await cancellablePromise(client.iscsi.getNodes());
@@ -101,15 +108,17 @@ export default function TargetsSection() {
     };
 
     loadNodes().catch(console.error);
-  }, [cancellablePromise, client.iscsi]);
+  }, [cancellablePromise, client.iscsi, initialized]);
 
   useEffect(() => {
+    if (!initialized) return;
+
     const action = (type, node) => dispatch({ type, payload: { node } });
 
     client.iscsi.onNodeAdded(n => action("ADD_NODE", n));
     client.iscsi.onNodeChanged(n => action("UPDATE_NODE", n));
     client.iscsi.onNodeRemoved(n => action("REMOVE_NODE", n));
-  }, [client.iscsi]);
+  }, [client.iscsi, initialized]);
 
   const openDiscoverForm = () => {
     dispatch({ type: "OPEN_DISCOVER_FORM" });
