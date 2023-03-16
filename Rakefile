@@ -75,6 +75,8 @@ Rake::Task["package"].clear
 desc "Prepare sources for rpm build"
 task package: [] do
   Dir.chdir(Rake.original_dir) do |dir|
+    old_gems = Dir.glob(File.join(package_dir, "*.gem"))
+    FileUtils.rm(old_gems) unless old_gems.empty?
     name = gem_name_from(dir)
     sh "gem build #{name}.gemspec"
     gem = find_gem(dir).first
