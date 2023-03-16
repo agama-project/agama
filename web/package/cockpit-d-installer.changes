@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar 16 15:53:34 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add UI for configuring iSCSI (gh#yast/d-installer#435).
+
+-------------------------------------------------------------------
 Mon Mar 13 15:51:08 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Sidebar improvements (gh#yast/d-installer#462)
