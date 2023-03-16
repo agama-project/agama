@@ -41,7 +41,7 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/d-installer.conf
 (
   cd $MYDIR/service/share
   DBUSDIR=/usr/share/dbus-1/d-installer-services
-  mkdir -p $DBUSDIR
+  $SUDO mkdir -p $DBUSDIR
   for SVC in org.opensuse.DInstaller*.service; do
     sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/service/bin/@" $SVC $DBUSDIR/$SVC
   done
