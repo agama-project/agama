@@ -26,15 +26,13 @@ In order to release a new version, we need to:
 After updating the releasing information and commiting those changes to the repository, it is time
 to update the packages in the build service.
 
-### Service and CLI
+### Service
 
-You can check the current packages in
-[YaST:Head:D-Installer/rubygem-d-installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/rubygem-d-installer)
-and
-[YaST:Head:D-Installer/rubygem-d-installer-cli](https://build.opensuse.org/package/show/YaST:Head:D-Installer/rubygem-d-installer-cli).
+You can check the current package in
+[YaST:Head:D-Installer/rubygem-d-installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/rubygem-d-installer).
 
-Given that you are in the `service` or the `cli` directory, just type the following command to
-update the packages in the build service:
+Given that you are in the `service` directory, just type the following command to update the
+package in the build service:
 
       rake osc:commit
 
@@ -59,23 +57,32 @@ To update the package in the build service, you just need to type:
 If you want to build the package locally, just checkout (or branch) the package and run `osc build`.
 
 The version number is inferred from the repository tags (see [Releasing a new
-version](#releasing-a-new-version)): it uses the latest tag and the abbreviated hash of the last
-commit (e.g., `0.5.49e6a2a`).
+version](#releasing-a-new-version)): it uses the latest tag and the offset of the latest commit
+respect such a tag. (e.g., `0.1~2`).
 
 You can read more about the overall approach of this package in the following article: [Git work
 flows in the upcoming 2.7 release](https://openbuildservice.org/2016/04/08/new_git_in_27/).
 
+### Command-line interface
+
+The current package is
+[YaST:Head:D-Installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/d-installer-cli).
+Bear in mind that the sources are in a [different
+repository](https://github.com/yast/d-installer-cli). To update the package in the build service,
+run the following commands:
+
+      osc service runall
+      osc addremove *
+      osc commit -m "Update sources"
+
+If you want to build the package locally, just checkout (or branch) the package and run `osc build`.
+
+The version number is inferred from the repository tags (see [Releasing a new
+version](#releasing-a-new-version)): it uses the latest tag and the offset of the latest commit
+respect such a tag. (e.g., `0.1~2`).
+
 ### The Live ISO
 
-The ISO is built in
+The ISO is built and developed in
 [YaST:Head:D-Installer/d-installer-live](https://build.opensuse.org/package/show/YaST:Head:D-Installer/d-installer-live).
-Once a package is rebuilt, the ISO image gets refreshed too. If you want to release
-a new version, follow these steps:
-
-1. Bump the version in the `preferences` section of the [kiwi](./image/d-installer-live.kiwi) file
-   through a pull request.
-2. Once the pull request is merged, checkout (or branch) the OBS package.
-3. Run `osc service manualrun` in your checkout to update the sources.
-4. Commit the changes.
-
-See [image/README.md](./image/README.md) for more details about how the Live ISO is built.
+See [IMAGE.md](./IMAGE.md) for more details.
