@@ -48,7 +48,12 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/d-installer.conf
   sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/service/bin/@" \
           systemd.service /usr/lib/systemd/system/d-installer.service
   $SUDO systemctl daemon-reload
+  # Start the separate dbus-daemon for D-Installer
+  $SUDO systemctl start d-installer.service
 )
+
+# - Make sure NetworkManager is running
+$SUDO systemctl start NetworkManager
 
 # - Install the service dependencies
 (
