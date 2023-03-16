@@ -328,7 +328,7 @@ class ISCSIManager {
   }
 
   /**
-   * Sets the statup status of the connection
+   * Sets the startup status of the connection
    *
    * @param {ISCSINode} node
    * @param {String} startup

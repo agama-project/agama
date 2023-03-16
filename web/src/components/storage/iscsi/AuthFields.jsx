@@ -72,7 +72,7 @@ export default function AuthFields({ data, onChange, onValidate }) {
 
     return (
       <>
-        Authentication by inititator
+        Authentication by initiator
         { !isValidAuth() && <Info /> }
       </>
     );
