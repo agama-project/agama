@@ -20,7 +20,6 @@
  */
 
 // @ts-check
-// cspell:ignore onboot
 
 import DBusClient from "./dbus";
 import { StorageClient } from "./storage";

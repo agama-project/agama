@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// cspell:ignore onboot
-
 import React, { useState } from "react";
 import {
   Alert,

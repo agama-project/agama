@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// cspell:ignore onboot
-
 const NodeStartupOptions = Object.freeze({
   MANUAL: { label: "Manual", value: "manual" },
   ONBOOT: { label: "On boot", value: "onboot" },

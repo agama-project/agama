@@ -20,7 +20,6 @@
  */
 
 // @ts-check
-// cspell:ignore startup
 
 import DBusClient from "./dbus";
 import { WithStatus, WithValidation } from "./mixins";
