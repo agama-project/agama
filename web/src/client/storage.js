@@ -253,14 +253,14 @@ class ISCSIManager {
   }
 
   async setUp() {
-    const iscsiInitiator = await this.client.proxy(ISCSI_INITIATOR_IFACE, STORAGE_OBJECT);
-    const iscsiNodes = await this.client.proxies(ISCSI_NODE_IFACE, ISCSI_NODES_NAMESPACE);
+    const initiator = await this.client.proxy(ISCSI_INITIATOR_IFACE, STORAGE_OBJECT);
+    const nodes = await this.client.proxies(ISCSI_NODE_IFACE, ISCSI_NODES_NAMESPACE);
 
-    this.proxies = { iscsiInitiator, iscsiNodes };
+    this.proxies = { initiator, nodes };
   }
 
   async getInitiatorIbft() {
-    return this.proxies.iscsiInitiator.IBFT;
+    return this.proxies.initiator.IBFT;
   }
 
   /**
@@ -269,7 +269,7 @@ class ISCSIManager {
    * @returns {Promise<string>}
    */
   async getInitiatorName() {
-    return this.proxies.iscsiInitiator.InitiatorName;
+    return this.proxies.initiator.InitiatorName;
   }
 
   /**
@@ -278,7 +278,7 @@ class ISCSIManager {
    * @param {string} value
    */
   async setInitiatorName(value) {
-    this.proxies.iscsiInitiator.InitiatorName = value;
+    this.proxies.initiator.InitiatorName = value;
   }
 
   /**
@@ -297,7 +297,7 @@ class ISCSIManager {
    * @property {string} startup
    */
   async getNodes() {
-    return Object.values(this.proxies.iscsiNodes).map(this.buildNode);
+    return Object.values(this.proxies.nodes).map(this.buildNode);
   }
 
   /**
@@ -323,7 +323,7 @@ class ISCSIManager {
       ReversePassword: { t: "s", v: options.reversePassword }
     });
 
-    return this.proxies.iscsiInitiator.Discover(address, port, auth);
+    return this.proxies.initiator.Discover(address, port, auth);
   }
 
   /**
@@ -349,7 +349,7 @@ class ISCSIManager {
   async delete(node) {
     const path = this.nodePath(node);
 
-    return this.proxies.iscsiInitiator.Delete(path);
+    return this.proxies.initiator.Delete(path);
   }
 
   /**
@@ -410,15 +410,15 @@ class ISCSIManager {
   }
 
   async onNodeAdded(handler) {
-    this.proxies.iscsiNodes.addEventListener("added", (_, proxy) => handler(this.buildNode(proxy)));
+    this.proxies.nodes.addEventListener("added", (_, proxy) => handler(this.buildNode(proxy)));
   }
 
   async onNodeChanged(handler) {
-    this.proxies.iscsiNodes.addEventListener("changed", (_, proxy) => handler(this.buildNode(proxy)));
+    this.proxies.nodes.addEventListener("changed", (_, proxy) => handler(this.buildNode(proxy)));
   }
 
   async onNodeRemoved(handler) {
-    this.proxies.iscsiNodes.addEventListener("removed", (_, proxy) => handler(this.buildNode(proxy)));
+    this.proxies.nodes.addEventListener("removed", (_, proxy) => handler(this.buildNode(proxy)));
   }
 
   buildNode(proxy) {
