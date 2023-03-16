@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,13 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ProposalPage } from "./ProposalPage";
-export { default as ProposalTargetSection } from "./ProposalTargetSection";
-export { default as ProposalSettingsSection } from "./ProposalSettingsSection";
-export { default as ProposalActionsSection } from "./ProposalActionsSection";
-export { default as ProposalTargetForm } from "./ProposalTargetForm";
-export { default as ProposalSettingsForm } from "./ProposalSettingsForm";
-export { default as DeviceSelector } from "./DeviceSelector";
-export { default as ProposalActions } from "./ProposalActions";
-export { default as ProposalSummary } from "./ProposalSummary";
-export { default as ISCSIPage } from "./ISCSIPage";
+const NodeStartupOptions = Object.freeze({
+  MANUAL: { label: "Manual", value: "manual" },
+  ONBOOT: { label: "On boot", value: "onboot" },
+  AUTOMATIC: { label: "Automatic", value: "automatic" }
+});
+
+export default NodeStartupOptions;

@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Thu Mar 16 14:54:44 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Adapted the service configuration for the s390x architecture
+  (gh#yast/d-installer#469).
+
+-------------------------------------------------------------------
+Thu Mar 16 13:45:21 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix gem2rpm configuration requiring the dbus-1-common package
+  (gh#yast/d-installer#470).
+
+-------------------------------------------------------------------
 Wed Mar  8 07:46:54 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix gem2rpm configuration to include YaST2 dependencies

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,13 +19,27 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ProposalPage } from "./ProposalPage";
-export { default as ProposalTargetSection } from "./ProposalTargetSection";
-export { default as ProposalSettingsSection } from "./ProposalSettingsSection";
-export { default as ProposalActionsSection } from "./ProposalActionsSection";
-export { default as ProposalTargetForm } from "./ProposalTargetForm";
-export { default as ProposalSettingsForm } from "./ProposalSettingsForm";
-export { default as DeviceSelector } from "./DeviceSelector";
-export { default as ProposalActions } from "./ProposalActions";
-export { default as ProposalSummary } from "./ProposalSummary";
-export { default as ISCSIPage } from "./ISCSIPage";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@patternfly/react-core";
+
+import { Title as PageTitle, MainActions } from "~/components/layout";
+import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
+
+export default function ISCSIPage() {
+  const navigate = useNavigate();
+
+  return (
+    <>
+      <PageTitle>Storage iSCSI</PageTitle>
+      <MainActions>
+        <Button isLarge variant="secondary" form="storage-config" onClick={() => navigate("/storage")}>
+          Back
+        </Button>
+      </MainActions>
+
+      <InitiatorSection />
+      <TargetsSection />
+    </>
+  );
+}

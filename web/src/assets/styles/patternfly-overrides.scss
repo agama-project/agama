@@ -110,3 +110,14 @@ table td > .pf-c-empty-state {
 .pf-c-data-list {
   --pf-c-data-list--BorderTopWidth: 2px;
 }
+
+// Toolbar content aligned to the right (alignment prop seems to be ignored)
+.pf-c-toolbar__content-section {
+  justify-content: flex-end;
+}
+
+section .pf-c-toolbar {
+  --stack-gutter: 0;
+  --pf-c-toolbar--PaddingBottom: 0;
+  --pf-c-toolbar--PaddingTop: 0;
+}

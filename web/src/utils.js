@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 
 /**
  * Returns an empty function useful to be used as a default callback.
@@ -143,9 +143,29 @@ function useCancellablePromise() {
   return { cancellablePromise };
 }
 
+/** Hook for using local storage
+ *
+ * @see {@link https://www.robinwieruch.de/react-uselocalstorage-hook/}
+ *
+ * @param {String} storageKey
+ * @param {*} fallbackState
+ */
+const useLocalStorage = (storageKey, fallbackState) => {
+  const [value, setValue] = useState(
+    JSON.parse(localStorage.getItem(storageKey)) ?? fallbackState
+  );
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(value));
+  }, [value, storageKey]);
+
+  return [value, setValue];
+};
+
 export {
   noop,
   partition,
   classNames,
   useCancellablePromise,
+  useLocalStorage
 };

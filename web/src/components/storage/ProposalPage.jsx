@@ -21,11 +21,12 @@
 
 import React, { useReducer, useEffect } from "react";
 import { Alert } from "@patternfly/react-core";
+import { Link } from "react-router-dom";
 
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
 import { Icon } from "~/components/layout";
-import { Page, SectionSkeleton } from "~/components/core";
+import { Page, PageOptions, SectionSkeleton } from "~/components/core";
 import {
   ProposalTargetSection,
   ProposalSettingsSection,
@@ -113,8 +114,14 @@ export default function ProposalPage() {
   };
 
   return (
-    <Page title="Storage settings" icon="hard_drive">
+    <Page title="Storage Settings" icon="hard_drive" actionLabel="Back" actionVariant="secondary">
       <PageContent />
+      <PageOptions title="Storage">
+        <Link to="/storage/iscsi">
+          <Icon name="settings" size="24" />
+          Configure iSCSI
+        </Link>
+      </PageOptions>
     </Page>
   );
 }
