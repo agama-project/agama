@@ -173,7 +173,7 @@ module DInstaller
           end
         end
 
-        # Registers a callback to be called after performing iSCSI actvation
+        # Registers a callback to be called after performing iSCSI activation
         #
         # @param block [Proc]
         def on_activate(&block)
