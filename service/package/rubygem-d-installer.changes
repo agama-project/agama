@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar 16 16:13:21 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 0.8
+
+-------------------------------------------------------------------
 Thu Mar 16 15:56:00 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Add callbacks to be called on iSCSI activation
@@ -25,12 +30,13 @@ Wed Mar  8 07:46:54 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Thu Mar  2 08:48:36 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
 
-- Write /iguana/mountlist if running on Iguana.
+- Write /iguana/mountlist if running on Iguana
+  (gh#yast/d-installer#445).
 
 -------------------------------------------------------------------
 Wed Feb 15 16:09:16 UTC 2023 - José Iván López González <jlopez@suse.com>
 
-- Add D-Bus API for iSCSI.
+- Add D-Bus API for iSCSI (gh#yast/d-installer#402).
 
 -------------------------------------------------------------------
 Wed Feb 15 15:18:43 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

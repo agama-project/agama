@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar 16 16:13:39 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 0.8
+
+-------------------------------------------------------------------
 Thu Mar 16 15:53:34 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Add UI for configuring iSCSI (gh#yast/d-installer#435).
