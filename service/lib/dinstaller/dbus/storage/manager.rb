@@ -232,18 +232,23 @@ module DInstaller
         def register_proposal_callbacks
           proposal.on_calculate do
             export_proposal
-            properties_changed
+            proposal_properties_changed
             update_validation
           end
         end
 
         def register_iscsi_callbacks
+          backend.iscsi.on_activate do
+            properties = interfaces_and_properties[ISCSI_INITIATOR_INTERFACE]
+            dbus_properties_changed(ISCSI_INITIATOR_INTERFACE, properties, [])
+          end
+
           backend.iscsi.on_probe do
             refresh_iscsi_nodes
           end
         end
 
-        def properties_changed
+        def proposal_properties_changed
           properties = interfaces_and_properties[PROPOSAL_CALCULATOR_INTERFACE]
           dbus_properties_changed(PROPOSAL_CALCULATOR_INTERFACE, properties, [])
         end
