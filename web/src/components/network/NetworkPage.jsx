@@ -21,10 +21,9 @@
 
 import React, { useEffect, useState } from "react";
 import { Button, Skeleton } from "@patternfly/react-core";
-
 import { useInstallerClient } from "~/context/installer";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
-import { Page, Section } from "~/components/core";
+import { Page, PageOptions, Section } from "~/components/core";
 import { ConnectionsTable, IpSettingsForm, WifiSelector } from "~/components/network";
 
 /**
@@ -76,7 +75,7 @@ const NoWifiConnections = ({ wifiScanSupported }) => {
     <div className="stack">
       <div className="bold">No WiFi connections found</div>
       <div>{message}</div>
-      <WifiScan supported={wifiScanSupported} buttonVariant="primary" />
+      <WifiScan supported={wifiScanSupported} actionVariant="primary" />
     </div>
   );
 };
@@ -151,9 +150,6 @@ export default function NetworkPage() {
     return (
       <>
         <ConnectionsTable connections={activeWifiConnections} onEdit={selectConnection} />
-        <div className="horizontally-centered">
-          <WifiScan supported={wifiScanSupported} />
-        </div>
       </>
     );
   };
@@ -176,6 +172,9 @@ export default function NetworkPage() {
 
       { /* TODO: improve the connections edition */ }
       { selectedConnection && <IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} /> }
+      <PageOptions title="Network">
+        <WifiScan supported={wifiScanSupported} />
+      </PageOptions>
     </Page>
   );
 }
