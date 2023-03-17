@@ -12,6 +12,7 @@ const CockpitRsyncPlugin = require("./src/lib/cockpit-rsync-plugin");
 const StylelintPlugin = require('stylelint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const webpack = require('webpack');
 
 /* A standard nodejs and webpack pattern */
 const production = process.env.NODE_ENV === 'production';
@@ -23,16 +24,20 @@ const eslint = process.env.ESLINT !== '0';
 /* Default to disable csslint for faster production builds */
 const stylelint = process.env.STYLELINT ? (process.env.STYLELINT !== '0') : development;
 
+// Cockpit target managed by the development server,
+// by default connect to a locally running Cockpit
+let cockpitTarget = process.env.COCKPIT_TARGET || "localhost";
+// add the default port if not specified
+if (cockpitTarget.indexOf(":") === -1) cockpitTarget += ":9090";
+cockpitTarget = "https://" + cockpitTarget;
+
 // Obtain package name from package.json
 const packageJson = JSON.parse(fs.readFileSync('package.json'));
 
 // Non-JS files which are copied verbatim to dist/
 const copy_files = [
   "./src/index.html",
-  {
-    from: production ? "./src/manifest.json" : "./src/manifest.dev.json",
-    to: "manifest.json"
-  },
+  "./src/manifest.json",
   // TODO: consider using something more complete like https://github.com/jantimon/favicons-webpack-plugin
   "./src/assets/favicon.svg",
 ];
@@ -43,6 +48,16 @@ const plugins = [
   new CockpitPoPlugin(),
   new CockpitRsyncPlugin({ dest: packageJson.name }),
   development && new ReactRefreshWebpackPlugin({ overlay: false }),
+  // replace the "process.env.WEBPACK_SERVE" text in the source code by
+  // the current value of the environment variable, that variable is set to
+  // "true" when running the development server ("npm run server")
+  // https://webpack.js.org/plugins/environment-plugin/
+  new webpack.EnvironmentPlugin({ WEBPACK_SERVE: null }),
+  // similarly for a non-environment value
+  // https://webpack.js.org/plugins/define-plugin/
+  // but because ESlint runs *before* the DefinePlugin we need to
+  // add it as a global variable in .eslintrc.json config file
+  new webpack.DefinePlugin({ COCKPIT_TARGET_URL: JSON.stringify(cockpitTarget) }),
 ].filter(Boolean);
 
 if (eslint) {
@@ -83,14 +98,22 @@ module.exports = {
   // cockpit.js gets included via <script>, everything else should be bundled
   externals: { cockpit: "cockpit" },
   devServer: {
-    allowedHosts: "all",
     hot: true,
-    client: {
-      webSocketURL: "ws://localhost:8080/ws"
+    // forward all cockpit connections to a real Cockpit instance
+    proxy: {
+      "/cockpit": {
+        target: cockpitTarget,
+        // redirect also the websocket connections
+        ws: true,
+        // ignore SSL problems (self-signed certificate)
+        secure: false,
+      },
     },
-    devMiddleware: {
-      writeToDisk: true,
-    },
+    // use https so Cockpit uses wss:// when connecting to the backend
+    server: "https",
+    // hot replacement does not support wss:// transport when running over https://,
+    // as a workaround use sockjs (which uses standard https:// protocol)
+    webSocketServer: "sockjs",
   },
   devtool: "source-map",
   stats: "errors-warnings",

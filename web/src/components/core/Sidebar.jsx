@@ -20,6 +20,7 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
+import { Button, Text } from "@patternfly/react-core";
 import { Icon, PageActions } from "~/components/layout";
 
 /**
@@ -51,6 +52,32 @@ export default function Sidebar({ children }) {
   useEffect(() => {
     if (isOpen) closeButtonRef.current.focus();
   }, [isOpen]);
+
+  // display additional info when running in a development server
+  let targetInfo = null;
+  if (process.env.WEBPACK_SERVE) {
+    let targetUrl = COCKPIT_TARGET_URL;
+
+    // change the localhost URL when connected remotely as it means another machine
+    if (COCKPIT_TARGET_URL.includes("localhost") && window.location.hostname !== "localhost") {
+      const urlTarget = new URL(COCKPIT_TARGET_URL);
+      const url = new URL(window.location);
+      url.port = urlTarget.port;
+      url.pathname = "/";
+      url.search = "";
+      url.hash = "";
+      targetUrl = url.toString();
+    }
+
+    targetInfo = (
+      <Text>
+        Target server: { " " }
+        <Button isInline variant="link" component="a" href={ targetUrl } target="_blank">
+          { targetUrl }
+        </Button>
+      </Text>
+    );
+  }
 
   return (
     <>
@@ -89,10 +116,11 @@ export default function Sidebar({ children }) {
           { children }
         </div>
 
-        <footer className="split" data-state="reversed">
+        <footer className="split justify-between" data-state="reversed">
           <a onClick={close}>
             Close <Icon size="16" name="menu_open" data-variant="flip-X" />
           </a>
+          { targetInfo }
         </footer>
       </nav>
     </>

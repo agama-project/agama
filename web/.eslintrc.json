@@ -7,7 +7,7 @@
     },
     "extends": [
       "eslint:recommended",
-      "standard", 
+      "standard",
       "standard-jsx",
       "standard-react",
       "plugin:@typescript-eslint/recommended"
@@ -59,6 +59,7 @@
     },
     "globals": {
         "require": false,
-        "module": false
+        "module": false,
+        "COCKPIT_TARGET_URL": "readonly"
     }
 }
