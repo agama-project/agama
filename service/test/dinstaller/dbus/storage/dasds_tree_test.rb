@@ -80,6 +80,26 @@ describe DInstaller::DBus::Storage::DasdsTree do
     end
   end
 
+  describe "#find" do
+    let(:dbus_nodes) { [dbus_dasd1, dbus_dasd2, dbus_dasd3] }
+
+    let(:dbus_dasd1) do
+      instance_double(DInstaller::DBus::Storage::Dasd, id: "0.0.001", formatted: false)
+    end
+
+    let(:dbus_dasd2) do
+      instance_double(DInstaller::DBus::Storage::Dasd, id: "0.0.002", formatted: true)
+    end
+
+    let(:dbus_dasd3) do
+      instance_double(DInstaller::DBus::Storage::Dasd, id: "0.0.003", formatted: true)
+    end
+
+    it "returns the first DASD that matches the criteria" do
+      expect(subject.find(&:formatted)).to eq dbus_dasd2
+    end
+  end
+
   describe "#populate" do
     let(:dbus_nodes) { [dbus_dasd1, dbus_dasd2] }
 

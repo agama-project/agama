@@ -54,7 +54,7 @@ describe DInstaller::Storage::DASD::Manager do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:reader) { double(Y2S390::DasdsReader) }
-  before { expect(Y2S390::DasdsReader).to receive(:new).and_return(reader) }
+  before { allow(Y2S390::DasdsReader).to receive(:new).and_return(reader) }
 
   let(:dasds) { Y2S390::DasdsCollection.new([dasd1, dasd2, dasd3]) }
   let(:dasd1) { double("Y2S390::Dasd", id: "0.0.001", use_diag: true, diag_wanted: true) }
@@ -181,18 +181,64 @@ describe DInstaller::Storage::DASD::Manager do
   end
 
   describe "#format" do
-    let(:callback) { proc {} }
+    # Mocks cannot traverse threads, so we need some real classes here to somehow emulate the
+    # behavior of Y2S30
+    module Y2S390
+      # See above
+      class FormatStatus
+        attr_accessor :progress, :cylinders, :dasd
 
-    let(:fmt_status) { 0 }
-    let(:fmt_process) do
-      double("FmtProcess", start: true, status: fmt_status,
-              initialize_summary: true, update_summary: true)
+        def initialize(dasd, cylinders)
+          @dasd = dasd
+          @cylinders = cylinders
+          @progress = 0
+        end
+
+        def done?
+          @progress >= @cylinders
+        end
+      end
+
+      # See above
+      class FormatProcess
+        attr_reader :summary, :status
+        alias_method :updated, :summary
+
+        def initialize(dasds, max: 3, status: 0)
+          @dasds = dasds
+          @summary = {}
+          @counter = 0
+          @max = max
+          @status = status
+        end
+
+        def running?
+          @counter < @max
+        end
+
+        def initialize_summary
+          @dasds.each_with_index { |d, i| @summary[i] = FormatStatus.new(d, @max) }
+        end
+
+        def update_summary
+          @counter += 1
+          @dasds.each.with_index do |_d, index|
+            @summary[index].progress = @counter
+          end
+        end
+      end
     end
+
+    let(:fmt_process) { Y2S390::FormatProcess.new(dasds, max: steps - 1, status: exit_code) }
+    let(:progress_callback) { proc {} }
+    let(:finish_callback) { proc {} }
+    let(:steps) { 3 }
+    let(:exit_code) { 5 }
 
     before do
       allow(reader).to receive(:update_info)
       allow(Y2S390::FormatProcess).to receive(:new).and_return fmt_process
-      allow(fmt_process).to receive(:running?).and_return(true, true, true, false)
+      allow(fmt_process).to receive(:start)
     end
 
     it "starts a FormatProcess with the given dasds" do
@@ -201,40 +247,40 @@ describe DInstaller::Storage::DASD::Manager do
       subject.format(dasds)
     end
 
-    it "updates the information of the DASDs and runs the refresh callbacks" do
-      subject.on_refresh(&callback)
+    it "returns the initial status of the process as an array of FormatStatus objects" do
+      result = subject.format(dasds)
+      expect(result).to all(be_a(Y2S390::FormatStatus))
+      expect(result.map(&:dasd)).to contain_exactly(*dasds.all)
+      expect(result.map(&:progress)).to eq [0, 0, 0]
+    end
 
+    it "executes the progress and finish callbacks" do
+      expect(progress_callback).to receive(:call).exactly(steps).times
+      expect(finish_callback).to receive(:call).once.with(exit_code)
+      subject.format(dasds, on_progress: progress_callback, on_finish: finish_callback)
+      sleep(2) # give background threads a chance to run
+    end
+
+    it "updates the information of the DASDs when formatting finishes" do
       expect(reader).to receive(:update_info).with(dasd1, extended: true)
       expect(reader).to receive(:update_info).with(dasd2, extended: true)
       expect(reader).to receive(:update_info).with(dasd3, extended: true)
-      expect(callback).to receive(:call).with(dasds)
-
       subject.format(dasds)
+      sleep(2) # give background threads a chance to run
     end
 
-    context "when the process is not running after 0.2 seconds of waiting" do
-      before do
-        allow(fmt_process).to receive(:running?).and_return(false)
+    context "when the process returns false to the first call to #running?" do
+      let(:steps) { 0 }
+
+      it "returns nil" do
+        expect(subject.format(dasds)).to be_nil
       end
 
-      it "returns false" do
-        expect(subject.format(dasds)).to eq false
-      end
-    end
-
-    context "if the process finishes with a status of 0" do
-      let(:fmt_status) { 0 }
-
-      it "returns true" do
-        expect(subject.format(dasds)).to eq true
-      end
-    end
-
-    context "if the process finishes with a non-zero status" do
-      let(:fmt_status) { 1 }
-
-      it "returns false" do
-        expect(subject.format(dasds)).to eq false
+      it "does not execute any of the callbacks" do
+        expect(progress_callback).to_not receive(:call)
+        expect(finish_callback).to_not receive(:call)
+        subject.format(dasds, on_progress: progress_callback, on_finish: finish_callback)
+        sleep(2) # give background threads a chance to run
       end
     end
   end

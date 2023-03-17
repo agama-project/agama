@@ -38,6 +38,7 @@ module DInstaller
         def self.included(base)
           # Require the optional dependencies only if the module is included
           require "dinstaller/dbus/storage/dasds_tree"
+          require "dinstaller/dbus/storage/jobs_tree"
           require "dinstaller/storage/dasd/manager"
 
           base.class_eval do
@@ -66,10 +67,8 @@ module DInstaller
                 busy_while { dasd_set_diag(devs, diag) }
               end
 
-              # Formats the DASDs in the given list
-              # TODO: we plan to change this so it returns the path of a new Process object. See
-              # https://gist.github.com/ancorgs/390b064373995595a1b1dfb08d00507a#gistcomment-4502266
-              dbus_method(:Format, "in devices:ao, out result:u") do |devs|
+              # Creates a format job for the DASDs in the given list
+              dbus_method(:Format, "in devices:ao, out result:u, out job:o") do |devs|
                 busy_while { dasd_format(devs) }
               end
             end
@@ -124,7 +123,17 @@ module DInstaller
         # @param paths [Array<String>]
         # @return [Integer]
         def dasd_format(paths)
-          dasds_dbus_method(paths) { |dasds| dasd_backend.format(dasds) }
+          dasds = find_dasds(paths)
+          return [1, ""] if dasds.nil?
+
+          job = nil
+          progress = proc { |statuses| job.update_format(statuses) }
+          finish = proc { |result| job.finish_format(result) }
+          initial_statuses = dasd_backend.format(dasds, on_progress: progress, on_finish: finish)
+          return [2, ""] unless initial_statuses
+
+          job = jobs_tree.add_dasds_format(initial_statuses, dasds_tree)
+          [0, job.path]
         end
 
         # Finds the DASDs matching the given D-Bus paths and calls the given block on them
@@ -137,16 +146,28 @@ module DInstaller
         #
         # @return [Integer]
         def dasds_dbus_method(paths)
+          dasds = find_dasds(paths)
+          return 1 if dasds.nil?
+
+          return 0 if yield(dasds)
+
+          2
+        end
+
+        # Finds the DASDs matching the given D-Bus paths
+        #
+        # Returns nil (and logs an error) unless all the paths are known.
+        #
+        # @return [Array<Y2S390::Dasd>, nil]
+        def find_dasds(paths)
           dbus_dasds = dasds_tree.find_paths(paths)
           if dbus_dasds.size != paths.size
             missing = paths - dbus_dasds.map(&:path)
             logger.error "Unknown path(s) #{missing} at requested list #{paths}"
-            return 1
+            return nil
           end
 
-          return 0 if yield(dbus_dasds.map(&:dasd))
-
-          2
+          dbus_dasds.map(&:dasd)
         end
 
         # Registers the callbacks necessary to ensure accuracy of the tree of DASD objects
@@ -163,6 +184,11 @@ module DInstaller
         # Tree with the devices representing the DASDs in the system
         def dasds_tree
           @dasds_tree ||= Storage::DasdsTree.new(@service, logger: logger)
+        end
+
+        # Tree with the storage jobs
+        def jobs_tree
+          @jobs_tree ||= Storage::JobsTree.new(@service, logger: logger)
         end
 
         # DASD manager

@@ -44,7 +44,7 @@ module DInstaller
 
         # Fills the D-Bus tree with the given DASDs
         #
-        # Any previous DASD if unexported and the new ones are exported
+        # Any previous DASD is unexported and the new ones are exported
         #
         # @param dasds [Array<DBus::Storage::Dasd>]
         def populate(dasds)
@@ -67,6 +67,11 @@ module DInstaller
         # @return [Array<DBus::Storage::Dasd>]
         def find_paths(paths)
           dbus_dasds.find_all { |d| paths.include?(d.path) }
+        end
+
+        # @return [Array<DBus::Storage::Dasd>]
+        def find(*args, &block)
+          dbus_dasds.find(*args, &block)
         end
 
       private
@@ -102,7 +107,7 @@ module DInstaller
 
         # Exports or updates the information of a given DASD object
         #
-        # @return [DBus::Storage::Dasd>]
+        # @return [DBus::Storage::Dasd]
         def publish(dasd)
           dbus_dasd = dbus_dasds.find { |d| d.id == dasd.id }
 
