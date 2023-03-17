@@ -253,11 +253,25 @@ class ProposalManager {
  */
 class ISCSIManager {
   /**
-   * @param {DBusClient} client
+   * @param {string} service - D-Bus service name
+   * @param {string} address - D-Bus address
    */
-  constructor(client) {
-    this.client = client;
+  constructor(service, address) {
+    this.service = service;
+    this.address = address;
     this.proxies = {};
+  }
+
+  /**
+   * @return {DBusClient} client
+   */
+  client() {
+    // return this.assigned_client;
+    if (!this._client) {
+      this._client = new DBusClient(this.service, this.address);
+    }
+
+    return this._client;
   }
 
   async getInitiatorIbft() {
@@ -341,7 +355,7 @@ class ISCSIManager {
   async setStartup(node, startup) {
     const path = this.nodePath(node);
 
-    const proxy = await this.client.proxy(ISCSI_NODE_IFACE, path);
+    const proxy = await this.client().proxy(ISCSI_NODE_IFACE, path);
     proxy.Startup = startup;
   }
 
@@ -386,7 +400,7 @@ class ISCSIManager {
       Startup: { t: "s", v: options.startup }
     });
 
-    const proxy = await this.client.proxy(ISCSI_NODE_IFACE, path);
+    const proxy = await this.client().proxy(ISCSI_NODE_IFACE, path);
     return proxy.Login(dbusOptions);
   }
 
@@ -400,12 +414,12 @@ class ISCSIManager {
     const path = this.nodePath(node);
     // const iscsiNode = new ISCSINodeObject(this.client, path);
     // return await iscsiNode.iface.logout();
-    const proxy = await this.client.proxy(ISCSI_NODE_IFACE, path);
+    const proxy = await this.client().proxy(ISCSI_NODE_IFACE, path);
     return proxy.Logout();
   }
 
   onInitiatorChanged(handler) {
-    return this.client.onObjectChanged(STORAGE_OBJECT, ISCSI_INITIATOR_IFACE, (changes) => {
+    return this.client().onObjectChanged(STORAGE_OBJECT, ISCSI_INITIATOR_IFACE, (changes) => {
       const data = {
         name: changes.InitiatorName?.v,
         ibft: changes.IBFT?.v
@@ -453,8 +467,9 @@ class ISCSIManager {
    * @returns {Promise<object>}
    */
   async iscsiInitiatorProxy() {
-    if (!this.proxies.iscsiInitiator)
-      this.proxies.iscsiInitiator = await this.client.proxy(ISCSI_INITIATOR_IFACE, STORAGE_OBJECT);
+    if (!this.proxies.iscsiInitiator) {
+      this.proxies.iscsiInitiator = await this.client().proxy(ISCSI_INITIATOR_IFACE, STORAGE_OBJECT);
+    }
 
     return this.proxies.iscsiInitiator;
   }
@@ -469,7 +484,7 @@ class ISCSIManager {
    */
   async iscsiNodesProxy() {
     if (!this.proxies.iscsiNodes)
-      this.proxies.iscsiNodes = await this.client.proxies(ISCSI_NODE_IFACE, ISCSI_NODES_NAMESPACE);
+      this.proxies.iscsiNodes = await this.client().proxies(ISCSI_NODE_IFACE, ISCSI_NODES_NAMESPACE);
 
     return this.proxies.iscsiNodes;
   }
@@ -500,7 +515,7 @@ class StorageBaseClient {
   constructor(address = undefined) {
     this.client = new DBusClient(StorageBaseClient.SERVICE, address);
     this.proposal = new ProposalManager(this.client);
-    this.iscsi = new ISCSIManager(this.client);
+    this.iscsi = new ISCSIManager(StorageBaseClient.SERVICE, address);
   }
 }
 
