@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer, useState, useEffect } from "react";
+import React, { useReducer, useEffect } from "react";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
@@ -56,15 +56,8 @@ export default function StorageSection({ showErrors }) {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    client.storage.setUp().then(() => setInitialized(true));
-  }, [client.storage]);
-
-  useEffect(() => {
-    if (!initialized) return;
-
     const updateStatus = (status) => {
       dispatch({ type: "UPDATE_STATUS", payload: { status } });
     };
@@ -72,11 +65,9 @@ export default function StorageSection({ showErrors }) {
     cancellablePromise(client.storage.getStatus()).then(updateStatus);
 
     return client.storage.onStatusChange(updateStatus);
-  }, [client.storage, cancellablePromise, initialized]);
+  }, [client.storage, cancellablePromise]);
 
   useEffect(() => {
-    if (!initialized) return;
-
     const updateProposal = async () => {
       const proposal = await cancellablePromise(client.storage.proposal.getData());
       const errors = await cancellablePromise(client.storage.getValidationErrors());
@@ -85,7 +76,7 @@ export default function StorageSection({ showErrors }) {
     };
 
     updateProposal();
-  }, [client.storage, cancellablePromise, state.busy, initialized]);
+  }, [client.storage, cancellablePromise, state.busy]);
 
   const errors = showErrors ? state.errors : [];
 

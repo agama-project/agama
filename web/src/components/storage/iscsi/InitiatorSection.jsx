@@ -30,15 +30,8 @@ export default function InitiatorSection() {
   const { storage: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [initiator, setInitiator] = useState();
-  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    client.setUp().then(() => setInitialized(true));
-  }, [client]);
-
-  useEffect(() => {
-    if (!initialized) return;
-
     const loadInitiator = async () => {
       setInitiator(undefined);
       const name = await cancellablePromise(client.iscsi.getInitiatorName());
@@ -49,7 +42,7 @@ export default function InitiatorSection() {
     loadInitiator().catch(console.error);
 
     return client.iscsi.onInitiatorChanged(loadInitiator);
-  }, [cancellablePromise, client, initialized]);
+  }, [cancellablePromise, client.iscsi]);
 
   return (
     <Section title="Initiator" iconName="settings">
