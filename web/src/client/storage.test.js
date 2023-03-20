@@ -167,10 +167,9 @@ describe("#proposal", () => {
   };
 
   describe("#getData", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       contexts.withAvailableDevices();
       contexts.withProposal();
-      await client.setUp();
     });
 
     it("returns the available devices and the proposal result", async () => {
@@ -181,9 +180,8 @@ describe("#proposal", () => {
   });
 
   describe("#getAvailableDevices", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       contexts.withAvailableDevices();
-      await client.setUp();
     });
 
     it("returns the list of available devices", async () => {
@@ -194,9 +192,8 @@ describe("#proposal", () => {
 
   describe("#getResult", () => {
     describe("if there is no proposal yet", () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         contexts.withoutProposal();
-        await client.setUp();
       });
 
       it("returns undefined", async () => {
@@ -206,9 +203,8 @@ describe("#proposal", () => {
     });
 
     describe("if there is a proposal", () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         contexts.withProposal();
-        await client.setUp();
       });
 
       it("returns the proposal settings and actions", async () => {
@@ -219,11 +215,10 @@ describe("#proposal", () => {
   });
 
   describe("#calculate", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       cockpitProxies.proposalCalculator = {
         Calculate: jest.fn()
       };
-      await client.setUp();
     });
 
     it("calculates a default proposal when no settings are given", async () => {
@@ -282,11 +277,10 @@ describe("#proposal", () => {
 
 describe("#iscsi", () => {
   describe("#getInitiatorName", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       cockpitProxies.iscsiInitiator = {
         InitiatorName: "iqn.1996-04.com.suse:01:351e6d6249"
       };
-      await client.setUp();
     });
 
     it("returns the current initiator name", async () => {
@@ -296,11 +290,10 @@ describe("#iscsi", () => {
   });
 
   describe("#setInitiatorName", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       cockpitProxies.iscsiInitiator = {
         InitiatorName: "iqn.1996-04.com.suse:01:351e6d6249"
       };
-      await client.setUp();
     });
 
     it("sets the given initiator name", async () => {
@@ -312,9 +305,8 @@ describe("#iscsi", () => {
 
   describe("#getNodes", () => {
     describe("if there is no exported iSCSI nodes yet", () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         contexts.withoutISCSINodes();
-        await client.setUp();
       });
 
       it("returns an empty list", async () => {
@@ -324,9 +316,8 @@ describe("#iscsi", () => {
     });
 
     describe("if there are exported iSCSI nodes", () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         contexts.withISCSINodes();
-        await client.setUp();
       });
 
       it("returns a list with the exported iSCSI nodes", async () => {
@@ -357,11 +348,10 @@ describe("#iscsi", () => {
   });
 
   describe("#discover", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       cockpitProxies.iscsiInitiator = {
         Discover: jest.fn()
       };
-      await client.setUp();
     });
 
     it("performs an iSCSI discovery with the given options", async () => {
@@ -382,11 +372,10 @@ describe("#iscsi", () => {
   });
 
   describe("#Delete", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       cockpitProxies.iscsiInitiator = {
         Delete: jest.fn()
       };
-      await client.setUp();
     });
 
     it("deletes the given iSCSI node", async () => {

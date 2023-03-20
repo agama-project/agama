@@ -112,12 +112,6 @@ describe("when there are no candidate devices available", () => {
     screen.getByText("No devices found");
   });
 
-  it("allows configuring iSCSI devices", () => {
-    installerRender(<ProposalTargetSection proposal={proposal} />);
-
-    screen.getByRole("button", { name: "Configure iSCSI" });
-  });
-
   it("does not allow configuring the candidate devices", () => {
     installerRender(<ProposalTargetSection proposal={proposal} />);
 

@@ -91,11 +91,18 @@ class DBusClient {
    *
    * @param {string} iface - D-Bus iface
    * @param {string} [path] - D-Bus object path
-   * @return {Promise<object>} a cockpit DBusProxy
+   * @return {Promise<object,undefined>} a cockpit DBusProxy or undefined if it
+   *   was not possible to create the proxy
    */
   async proxy(iface, path) {
     const proxy = this.client.proxy(iface, path, { watch: true });
-    await proxy.wait();
+
+    try {
+      await proxy.wait();
+    } catch (error) {
+      console.error("Could not create a proxy for", iface, path, "error=", error);
+      return;
+    }
 
     return proxy;
   }
