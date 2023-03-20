@@ -157,7 +157,7 @@ const AncillaryAction = ({ children, ...props }) => (
  *
  * @example <caption>Usage example</caption>
  *   <Popup
- *     title="User Settings"
+ *     title="Users"
  *     isOpen={showUserSettings}
  *   >
  *     <UserSettingsForm />
@@ -172,7 +172,7 @@ const AncillaryAction = ({ children, ...props }) => (
  *
  * @example <caption>Usage example using shortcuts actions</caption>
  *   <Popup
- *     title="User Settings"
+ *     title="Users"
  *     isOpen={showUserSettings}
  *   >
  *     <UserSettingsForm />

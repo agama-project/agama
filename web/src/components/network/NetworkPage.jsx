@@ -165,7 +165,7 @@ export default function NetworkPage() {
   };
 
   return (
-    <Page title="Network Settings" icon="settings_ethernet" actionLabel="Back" actionVariant="secondary">
+    <Page title="Network" icon="settings_ethernet" actionLabel="Back" actionVariant="secondary">
       <Section title="Wired networks" icon="lan">
         { ready ? <WiredConnections /> : <Skeleton /> }
       </Section>

@@ -25,7 +25,7 @@ import { FirstUser, RootAuthMethods } from "~/components/users";
 
 export default function UsersPage() {
   return (
-    <Page title="User Settings" icon="manage_accounts" actionLabel="Back" actionVariant="secondary">
+    <Page title="Users" icon="manage_accounts" actionLabel="Back" actionVariant="secondary">
       <Section title="User" icon="person">
         <FirstUser />
       </Section>
