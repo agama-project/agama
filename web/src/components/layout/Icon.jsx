@@ -57,6 +57,7 @@ import Terminal from "@icons/terminal.svg?component";
 import Translate from "@icons/translate.svg?component";
 import Warning from "@icons/warning.svg?component";
 import Wifi from "@icons/wifi.svg?component";
+import WifiFind from "@icons/wifi_find.svg?component";
 
 import Loading from "./three-dots-loader-icon.svg?component";
 
@@ -95,7 +96,8 @@ const icons = {
   terminal: Terminal,
   translate: Translate,
   warning: Warning,
-  wifi: Wifi
+  wifi: Wifi,
+  wifi_find: WifiFind
 };
 
 /**

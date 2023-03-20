@@ -60,10 +60,12 @@ const RowActions = ({ actions, connection, ...props }) => {
  * @param {object} props
  * @param {Connection[]} props.connections - Connections to be shown
  * @param {function} props.onEdit - function to be called for editing a connection
+ * @param {function} props.onForget - function to be called for forgetting a connection
  */
 export default function ConnectionsTable ({
   connections,
-  onEdit
+  onEdit,
+  onForget
 }) {
   if (connections.length === 0) return null;
 
@@ -83,8 +85,15 @@ export default function ConnectionsTable ({
               title: "Edit",
               "aria-label": `Edit connection ${connection.name}`,
               onClick: () => onEdit(connection)
-            }
-          ];
+            },
+            typeof onForget === 'function' && {
+              title: "Forget",
+              "aria-label": `Forget connection ${connection.name}`,
+              className: "danger-action",
+              icon: <Icon name="delete" size="24" />,
+              onClick: () => onForget(connection)
+            },
+          ].filter(Boolean);
 
           return (
             <Tr key={connection.id}>

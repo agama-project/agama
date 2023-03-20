@@ -21,6 +21,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Button, Skeleton } from "@patternfly/react-core";
+import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { Page, PageOptions, Section } from "~/components/core";
@@ -41,7 +42,13 @@ const WifiScan = ({ supported, actionVariant = "link" }) => {
 
   return (
     <>
-      <Button variant={actionVariant} onClick={() => setWifiSelectorOpen(true)}>Connect to a Wi-Fi network</Button>
+      <Button
+        variant={actionVariant}
+        onClick={() => setWifiSelectorOpen(true)}
+        icon={<Icon name="wifi_find" size="24" />}
+      >
+        Connect to a Wi-Fi network
+      </Button>
       <WifiSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
     </>
   );
@@ -139,6 +146,11 @@ export default function NetworkPage() {
     client.getConnection(id).then(setSelectedConnection);
   };
 
+  const forgetConnection = async ({ id }) => {
+    const connection = await client.getConnection(id);
+    client.deleteConnection(connection);
+  };
+
   const activeWiredConnections = connections.filter(c => c.type === ConnectionTypes.ETHERNET);
   const activeWifiConnections = connections.filter(c => c.type === ConnectionTypes.WIFI);
 
@@ -149,7 +161,7 @@ export default function NetworkPage() {
 
     return (
       <>
-        <ConnectionsTable connections={activeWifiConnections} onEdit={selectConnection} />
+        <ConnectionsTable connections={activeWifiConnections} onEdit={selectConnection} onForget={forgetConnection} />
       </>
     );
   };
@@ -172,9 +184,10 @@ export default function NetworkPage() {
 
       { /* TODO: improve the connections edition */ }
       { selectedConnection && <IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} /> }
-      <PageOptions title="Network">
-        <WifiScan supported={wifiScanSupported} />
-      </PageOptions>
+      { wifiScanSupported &&
+        <PageOptions title="Network">
+          <WifiScan supported={wifiScanSupported} />
+        </PageOptions> }
     </Page>
   );
 }
