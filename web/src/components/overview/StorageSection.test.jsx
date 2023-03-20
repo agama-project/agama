@@ -22,6 +22,7 @@
 import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
 import { installerRender, createCallbackMock, mockComponent } from "~/test-utils";
+import { noop } from "~/utils";
 import { createClient } from "~/client";
 import { BUSY, IDLE } from "~/client/status";
 import { StorageSection } from "~/components/overview";
@@ -49,9 +50,12 @@ beforeEach(() => {
       storage: {
         proposal: { getData: jest.fn().mockResolvedValue(proposal) },
         getStatus: jest.fn().mockResolvedValue(status),
+        getProgress: jest.fn().mockResolvedValue({
+          message: "Activating storage devices", current: 1, total: 4
+        }),
+        onProgressChange: noop,
         getValidationErrors: jest.fn().mockResolvedValue(errors),
-        onStatusChange: onStatusChangeFn,
-        setUp: jest.fn().mockResolvedValue(null)
+        onStatusChange: onStatusChangeFn
       },
     };
   });
@@ -89,7 +93,7 @@ describe("when there is a proposal", () => {
   });
 
   describe("but service status changes to busy", () => {
-    it("renders the skeleton", async () => {
+    it("renders the progress", async () => {
       const [mockFunction, callbacks] = createCallbackMock();
       onStatusChangeFn = mockFunction;
 
@@ -101,7 +105,7 @@ describe("when there is a proposal", () => {
       act(() => onStatusChangeCb(BUSY));
 
       // FIXME: check that it was not there before
-      await screen.findByText("Loading storage");
+      await screen.findByText("Probing storage devices");
     });
   });
 });
@@ -112,10 +116,10 @@ describe("when there is no proposal yet", () => {
     errors = [{ message: "Fake error" }];
   });
 
-  it("renders the skeleton", async () => {
+  it("renders the progress", async () => {
     installerRender(<StorageSection />);
 
-    await screen.findByText("Loading storage");
+    await screen.findByText("Probing storage devices");
   });
 
   it("does not render errors", async () => {
@@ -131,10 +135,10 @@ describe("but storage service is busy", () => {
     errors = [{ message: "Fake error" }];
   });
 
-  it("renders the skeleton", async () => {
+  it("renders the progress", async () => {
     installerRender(<StorageSection />);
 
-    await screen.findByText("Loading storage");
+    await screen.findByText("Activating storage devices (1/4)");
   });
 
   it("does not render errors", async () => {
