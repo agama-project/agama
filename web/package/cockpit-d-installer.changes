@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Mon Mar 20 11:51:56 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the initialization of the D-Bus iSCSI proxies
+  (gh#yast/d-installer#478).
+
+-------------------------------------------------------------------
+Mon Mar 20 11:50:37 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Fix the iSCSI discover form when no information is found in the
+  browser's local storage (gh#yast/d-installer#475).
+
+-------------------------------------------------------------------
 Thu Mar 16 16:13:39 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.8
