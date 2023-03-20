@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 20 15:13:28 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Upgrade Webpack to version 5.76.2 (CVE-2023-28154, bsc#1209494).
+- Version 0.8.1
+
+-------------------------------------------------------------------
 Mon Mar 20 13:40:08 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Remove the redundant "Settings" suffix (gh#yast/d-installer#481).
