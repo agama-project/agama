@@ -133,6 +133,9 @@ Service for managing storage devices.
   .DInstaller.Storage1.ISCSI.Node
 /DInstaller/Storage1/dasds/[0-9]+ (Only available on s390 systems)
   .DInstaller.Storage1.DASD.device
+/DInstaller/Storage1/jobs/[0-9]+
+  .DInstaller.Storage1.Job
+  .DInstaller.Storage1.DASD.Format
 ~~~
 
 ### D-Bus Objects
@@ -183,6 +186,16 @@ Objects representing iSCSI nodes are dynamically exported when a successful iSCS
 ~~~
 
 Objects representing DASDs are dynamically exported when a successful probing is performed by the `DASD.manager` interface of the main storage object, see `.org.opensuse.DInstaller.Storage1.DASD.manager`.
+
+#### `/org/opensuse/DInstaller/Storage1/jobs/[0-9]+` Objects
+
+~~~
+/DInstaller/Storage1/jobs/[0-9]+
+  .DInstaller.Storage1.Job
+  .DInstaller.Storage1.DASD.Format
+~~~
+
+Objects representing long-running processes, like formatting of DASDs.
 
 ### D-Bus Interfaces
 
@@ -484,10 +497,10 @@ Disable(in  ao devices,
 SetDiag(in  ao devices,
         in  b  diag,
         out u  result)
+Format(in  ao devices,
+       out u  result,
+       out o  job)
 ~~~
-
-In addition, a `Format()` method is provided, but it's not documented here because it's going to
-change heavily in the short term.
 
 ##### Details
 
@@ -543,6 +556,23 @@ Arguments:
 * `in b diag`: new value for the flag.
 * `out u result`: `0` if `use_diag` is correctly set for all the requested DASDs. `1` if any of the given paths is invalid (ie. it does not correspond to a known DASD), `2` in case of any other error.
 
+###### `Format` Method
+
+~~~
+Format(in  ao devices,
+       out u  result,
+       out o  job)
+~~~
+
+Starts a format process for the DASDs in the given list. It creates a job to represent such a
+process.
+
+Arguments:
+
+* `in ao devices`: paths of the D-Bus objects representing the DASDs to format.
+* `out u result`: `0` if the format operation starts correctly and the job to track it is created. `1` if any of the given paths is invalid (ie. it does not correspond to a known DASD), `2` in case of any other error.
+* `out o job`: if the result is 0, path of the new job that can be used to track the formatting. Empty string in any other case.
+
 #### `org.opensuse.DInstaller.Storage1.DASD.Device` Interface
 
 This interface is implemented by objects exported at the `/org/opensuse/DInstaller/Storage1/dasds/[0-9]+`
@@ -575,6 +605,43 @@ string `AccessType` could be replaced by a boolean `ReadOnly`).
 * `AccessType`: Empty string if unknown. Either "rw" or "ro" otherwise.
 * `PartitionInfo`: Partition names (and sometimes their type) separated by commas.
   Eg. "_/dev/dasda1 (Linux native), /dev/dasda2 (Linux native)_". Empty if the information is unknown.
+
+#### `org.opensuse.DInstaller.Storage1.Job` Interface
+
+This interface is implemented by objects exported at the `/org/opensuse/DInstaller/Storage1/jobs/[0-9]+`
+paths. It provides information about a long-running process.
+
+##### Properties
+
+~~~
+Running  readable b
+ExitCode readable u
+~~~
+
+* `Running`: Whether the Job is still being executed or it has already finished.
+* `ExitCode`: Final result. Zero for running processes.
+
+##### Signals
+
+* `Finished(u exit_code)`: the Job is not longer running and the exit code has been set to its final value.
+
+#### `org.opensuse.DInstaller.Storage1.DASD.Format` Interface
+
+This interface is implemented by those Job objects used to represent the formatting of a set of DASDs.
+
+##### Properties
+
+~~~
+Summary readable a{s(uub)}
+~~~
+
+* `Summary`: A hash where each key is the path of one of the DASDs being formatted and the value is
+  the status represented by a triplet of total cylinders, cylinders already processed and a boolean
+  indicating whether the process for that particular disk is completed.
+
+##### Signals
+
+* `SummaryUpdated(a{s(uub)} progress)`: the summary has been updated with new progress information for some of the DASDs.
 
 ## Users
 
