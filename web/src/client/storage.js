@@ -22,7 +22,7 @@
 // @ts-check
 
 import DBusClient from "./dbus";
-import { WithStatus, WithValidation } from "./mixins";
+import { WithStatus, WithProgress, WithValidation } from "./mixins";
 
 const PROPOSAL_CALCULATOR_IFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator";
 const ISCSI_NODE_IFACE = "org.opensuse.DInstaller.Storage1.ISCSI.Node";
@@ -523,7 +523,9 @@ class StorageBaseClient {
  * Allows interacting with the storage settings
  */
 class StorageClient extends WithValidation(
-  WithStatus(StorageBaseClient, STORAGE_OBJECT), STORAGE_OBJECT
-) {}
+  WithProgress(
+    WithStatus(StorageBaseClient, STORAGE_OBJECT), STORAGE_OBJECT
+  ), STORAGE_OBJECT
+) { }
 
 export { StorageClient };

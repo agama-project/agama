@@ -32,7 +32,7 @@ const initialState = {
   errors: [],
   errorsRead: false,
   size: "",
-  progress: { message: "Reading software repositories", current: 0, total: 0, finished: 0 }
+  progress: { message: "Reading software repositories", current: 0, total: 0, finished: false }
 };
 
 const reducer = (state, action) => {
