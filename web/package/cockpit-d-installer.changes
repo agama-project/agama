@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 20 13:40:08 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Remove the redundant "Settings" suffix (gh#yast/d-installer#481).
+
+-------------------------------------------------------------------
 Mon Mar 20 11:51:56 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the initialization of the D-Bus iSCSI proxies
