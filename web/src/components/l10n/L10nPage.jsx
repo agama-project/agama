@@ -79,7 +79,7 @@ export default function LanguageSelector() {
   };
 
   return (
-    <Page title="Localization settings" icon="translate" actionCallback={accept}>
+    <Page title="Localization" icon="translate" actionCallback={accept}>
       <Form id="language-selector">
         <LanguageField selected={language} />
       </Form>

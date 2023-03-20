@@ -114,7 +114,7 @@ export default function ProposalPage() {
   };
 
   return (
-    <Page title="Storage Settings" icon="hard_drive" actionLabel="Back" actionVariant="secondary">
+    <Page title="Storage" icon="hard_drive" actionLabel="Back" actionVariant="secondary">
       <PageContent />
       <PageOptions title="Storage">
         <Link to="/storage/iscsi">
