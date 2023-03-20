@@ -1,10 +1,15 @@
 products:
-  ALP:
-    name: SUSE ALP ContainerHost OS
-    description: 'The Adaptable Linux Platform (ALP), the next generation of Linux,
-      allow users to focus on their workloads while abstracting from the hardware
-      and the application layer. The preview of ContainerHost OS is one of the
-      first prototypes based on that platform.'
+  ALP-Bedrock:
+    name: SUSE ALP Bedrock
+    description: 'SUSE ALP Bedrock is a flexible, secure, customizable and
+      modular Server allowing an enterprise to run a variety of services,
+      workloads and application in a compartmentalized form. Based on an
+      immutable root filesystem, Security has been built into it from the ground.'
+  ALP-Micro:
+    name: SUSE ALP Micro
+    description: 'SUSE ALP Micro is a minimum immutable OS core, focused on
+      security to provide the bare minimum to run workloads and services as
+      containers or virtual machines.'
   Tumbleweed:
     name: openSUSE Tumbleweed
     description: 'The Tumbleweed distribution is a pure rolling release version
@@ -137,31 +142,24 @@ Tumbleweed:
       proposed_configurable: true
       disable_order: 2
 
-ALP:
+ALP-Bedrock:
   software:
     installation_repositories:
       - url: https://download.opensuse.org/repositories/SUSE:/ALP/standard/
-        archs: x86_64
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP/standard/
-        archs: aarch64
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP/standard/
-        archs: s390
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/zSystems/standard/
-        archs: s390
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/standard/
 
     mandatory_patterns:
-      - alp_base
-      - alp_base_zypper
-      - alp_cockpit
-      - alp-container_runtime
-      - alp_defaults
+      - alp-bedrock-base
+      - alp-bedrock-cockpit
+      - alp-bedrock-hardware
+      - alp-bedrock-container_runtime
     optional_patterns: null # no optional pattern shared
     mandatory_packages:
       - device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
       - fde-tools # Needed for FDE with TPM, hardcoded here temporarily (aarch64, x86_64 specific)
       - libtss2-tcti-device0 # Same than fde-tools
     optional_packages: null
-    base_product: ALP
+    base_product: ALP-Bedrock
 
   security:
     tpm_luks_open: true
@@ -172,7 +170,7 @@ ALP:
       #     - apparmor
       selinux:
         patterns:
-          - alp_selinux
+          - alp-bedrock-selinux
         policy: enforcing
       none:
         patterns: null
@@ -213,6 +211,77 @@ ALP:
           archs: x86_64
         - path: var
           copy_on_write: false
+
+ALP-Micro:
+  software:
+    installation_repositories:
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP/standard/
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/standard/
+
+    mandatory_patterns:
+      - alp-micro-base
+      - alp-micro-cockpit
+      - alp-micro-container_runtime
+      - alp-micro-hardware
+    optional_patterns: null # no optional pattern shared
+    mandatory_packages:
+      - device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
+      - fde-tools # Needed for FDE with TPM, hardcoded here temporarily (aarch64, x86_64 specific)
+      - libtss2-tcti-device0 # Same than fde-tools
+    optional_packages: null
+    base_product: ALP-Micro
+
+  security:
+    tpm_luks_open: true
+    lsm: selinux
+    available_lsms:
+      # apparmor:
+      #   patterns:
+      #     - apparmor
+      selinux:
+        patterns:
+          - alp-micro-selinux
+        policy: enforcing
+      none:
+        patterns: null
+
+  storage:
+    encryption:
+      method: luks2
+      pbkdf: pbkdf2
+    volumes:
+      - mount_point: "/"
+        fs_type: btrfs
+        desired_size: 20 GiB
+        min_size: 5 GiB
+        fs_types:
+          - btrfs
+        weight: 20
+        snapshots: true
+        snapshots_configurable: false
+        proposed_configurable: false
+        btrfs_default_subvolume: "@"
+        btrfs_read_only: true
+        subvolumes:
+        - path: root
+        - path: home
+        - path: opt
+        - path: srv
+        - path: boot/writable
+        - path: usr/local
+        - path: boot/grub2/arm64-efi
+          archs: aarch64
+        - path: boot/grub2/i386-pc
+          archs: x86_64
+        - path: boot/grub2/powerpc-ieee1275
+          archs: ppc,!board_powernv
+        - path: boot/grub2/s390x-emu
+          archs: s390
+        - path: boot/grub2/x86_64-efi
+          archs: x86_64
+        - path: var
+          copy_on_write: false
+
 Leap16:
   software:
     installation_repositories:
