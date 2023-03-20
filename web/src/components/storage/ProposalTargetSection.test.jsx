@@ -109,7 +109,7 @@ describe("when there are no candidate devices available", () => {
   it("renders an informative message", () => {
     installerRender(<ProposalTargetSection proposal={proposal} />);
 
-    screen.getByText("No available devices");
+    screen.getByText("No devices found");
   });
 
   it("does not allow configuring the candidate devices", () => {
