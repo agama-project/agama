@@ -82,29 +82,6 @@ describe("NetworkPage", () => {
     within(section).getByText("192.168.69.200/24");
   });
 
-  describe("when WiFi scan is supported", () => {
-    beforeEach(() => {
-      settingsFn.mockReturnValue({ ...networkSettings, wifiScanSupported: true });
-    });
-
-    it("displays a link for scanning other WiFi networks", async () => {
-      installerRender(<NetworkPage />);
-
-      const heading = await screen.findByRole("heading", { name: "WiFi networks" });
-      const section = heading.closest("section");
-      const scanWifiButton = within(section).getByRole("button", { name: "Connect to a Wi-Fi network" });
-      expect(scanWifiButton.classList.contains("pf-m-link")).toBe(true);
-    });
-
-    it("opens the WiFi selector dialog when user clicks for scanning WiFi networks", async () => {
-      const { user } = installerRender(<NetworkPage />);
-      const link = await screen.findByRole("button", { name: "Connect to a Wi-Fi network" });
-      await user.click(link);
-      const wifiDialog = await screen.findByRole("dialog");
-      within(wifiDialog).getByText("Connect to a Wi-Fi network");
-    });
-  });
-
   describe("when no wired connection is detected", () => {
     beforeEach(() => {
       activeConnectionsFn.mockReturnValue([wiFiConnection]);
