@@ -145,7 +145,6 @@ Tumbleweed:
 ALP-Bedrock:
   software:
     installation_repositories:
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP/standard/
       - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/standard/
 
     mandatory_patterns:
@@ -215,7 +214,6 @@ ALP-Bedrock:
 ALP-Micro:
   software:
     installation_repositories:
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP/standard/
       - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/standard/
 
     mandatory_patterns:
