@@ -89,7 +89,6 @@ module DInstaller
 
         dbus_interface DASD_FORMAT_INTERFACE do
           dbus_reader(:summary, "a{s(uub)}")
-          dbus_signal(:SummaryUpdated, "progress:a{s(uub)}")
         end
 
         # @return [Boolean]
@@ -142,7 +141,10 @@ module DInstaller
         #
         # @param statuses [Array<Y2S390::FormatStatus] latest status update from the format process
         def update_format(statuses)
-          SummaryUpdated(update_info(statuses))
+          return if statuses.empty?
+
+          update_info(statuses)
+          dbus_properties_changed(DASD_FORMAT_INTERFACE, { "Summary" => summary }, [])
         end
 
       private
@@ -151,15 +153,11 @@ module DInstaller
         attr_reader :dasds_tree
 
         # @param statuses [Array<Y2S390::FormatStatus] latest status update from the format process
-        # @return [{String => DasdFormatInfo}] status info of the DASDs, indexed by D-Bus path
         def update_info(statuses)
-          result = {}
           statuses.each do |status|
             info = DasdFormatInfo.new(status, dasds_tree)
             @infos[info.id] = info
-            result[info.path] = info.to_dbus if info.path
           end
-          result
         end
       end
     end

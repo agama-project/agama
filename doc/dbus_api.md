@@ -645,7 +645,7 @@ Summary readable a{s(uub)}
 
 ##### Signals
 
-* `SummaryUpdated(a{s(uub)} progress)`: the summary has been updated with new progress information for some of the DASDs.
+* `PropertiesChanged`, as standard from `org.freedesktop.DBus.Properties`.
 
 ## Users
 
