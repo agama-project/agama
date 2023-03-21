@@ -28,6 +28,7 @@ require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/volume"
 require "dinstaller/storage/iscsi/manager"
 require "dinstaller/storage/dasd/manager"
+require "dinstaller/dbus/storage/dasds_tree"
 require "y2storage"
 require "dbus"
 
@@ -504,6 +505,80 @@ describe DInstaller::DBus::Storage::Manager do
         end
       end
     end
+
+    describe "#dasd_format" do
+      before do
+        allow(DInstaller::DBus::Storage::DasdsTree).to receive(:new).and_return(dasds_tree)
+        allow(dasds_tree).to receive(:find_paths).and_return [dbus_dasd1, dbus_dasd2]
+      end
+
+      let(:dasds_tree) { instance_double(DInstaller::DBus::Storage::DasdsTree) }
+
+      let(:dasd1) { instance_double("Y2S390::Dasd") }
+      let(:path1) { "/org/opensuse/DInstaller/Storage1/dasds/1" }
+      let(:dbus_dasd1) { DInstaller::DBus::Storage::Dasd.new(dasd1, path1) }
+
+      let(:dasd2) { instance_double("Y2S390::Dasd") }
+      let(:path2) { "/org/opensuse/DInstaller/Storage1/dasds/2" }
+      let(:dbus_dasd2) { DInstaller::DBus::Storage::Dasd.new(dasd2, path2) }
+
+      let(:path3) { "/org/opensuse/DInstaller/Storage1/dasds/3" }
+
+      context "when some of the paths do not correspond to an exported DASD" do
+        let(:paths) { [path1, path2, path3] }
+
+        it "does not try to format" do
+          expect(dasd_backend).to_not receive(:format)
+          subject.dasd_format(paths)
+        end
+
+        it "returns 1 as code and '/' as path" do
+          result = subject.dasd_format(paths)
+          expect(result).to eq [1, "/"]
+        end
+      end
+
+      context "when all the paths correspond to exported DASDs" do
+        let(:paths) { [path1, path2] }
+
+        it "tries to format all the DASDs" do
+          expect(dasd_backend).to receive(:format).with([dasd1, dasd2], any_args)
+          subject.dasd_format(paths)
+        end
+
+        context "and the action successes" do
+          before do
+            allow(dasd_backend).to receive(:format).and_return initial_status
+
+            allow(DInstaller::DBus::Storage::JobsTree).to receive(:new).and_return(jobs_tree)
+            allow(jobs_tree).to receive(:add_dasds_format).and_return format_job
+          end
+
+          let(:initial_status) { [double("FormatStatus"), double("FormatStatus")] }
+          let(:jobs_tree) { instance_double(DInstaller::DBus::Storage::JobsTree) }
+          let(:format_job) do
+            instance_double(DInstaller::DBus::Storage::DasdsFormatJob, path: job_path)
+          end
+          let(:job_path) { "/some/path" }
+
+          it "returns 0 and the path to the new Job object" do
+            result = subject.dasd_format(paths)
+            expect(result).to eq [0, job_path]
+          end
+        end
+
+        context "and the action fails" do
+          before do
+            allow(dasd_backend).to receive(:format).and_return nil
+          end
+
+          it "returns 2 as code and '/' as path" do
+            result = subject.dasd_format(paths)
+            expect(result).to eq [2, "/"]
+          end
+        end
+      end
+    end
   end
 
   context "in a system that is not s390" do
@@ -513,6 +588,10 @@ describe DInstaller::DBus::Storage::Manager do
 
     it "does not respond to #dasd_enable" do
       expect { subject.dasd_enable }.to raise_error NoMethodError
+    end
+
+    it "does not respond to #dasd_format" do
+      expect { subject.dasd_format }.to raise_error NoMethodError
     end
   end
 end

@@ -125,16 +125,14 @@ module DInstaller
 
         # Formats the given list of DASDs
         #
-        # Refresh callbacks are called at the end, see {#on_refresh}.
-        #
-        # TODO: we plan to change the approach to DASD formatting. See discussion at
-        # https://gist.github.com/ancorgs/390b064373995595a1b1dfb08d00507a
-        # So this method is subject to change in the short term.
-        #
         # @param devices [Array<Y2S390::Dasd>]
         # @return [Boolean] true if all the given devices were successfully formatted
-        def format(devices)
-          refresh_after(devices) { FormatOperation.new(devices).run }
+        def format(devices, on_progress: nil, on_finish: nil)
+          progress = []
+          finish = [proc { |_status| refresh(devices) }]
+          progress << on_progress if on_progress
+          finish << on_finish if on_finish
+          FormatOperation.new(devices, progress, finish).run
         end
 
       private

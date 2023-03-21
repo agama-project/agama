@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 21 16:28:26 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Added D-Bus API for management of DASDs (gh#yast/d-installer#464,
+  gh#yast/d-installer#476)
+
+-------------------------------------------------------------------
 Tue Mar 21 11:42:51 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update the products definitions (gh#yast/d-installer#485):
