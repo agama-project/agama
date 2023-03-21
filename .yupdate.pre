@@ -17,6 +17,10 @@
 #   run the yupdate script several times
 #
 
+if [ "$YUPDATE_SKIP_FRONTEND" == "1" ]; then
+  exit 0
+fi
+
 # the needed packages for compiling the d-installer cockpit module
 PACKAGES=(appstream-glib-devel make npm)
 
