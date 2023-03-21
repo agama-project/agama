@@ -63,7 +63,9 @@ module DInstaller
         # @return [Y2S390::FormatProcess]
         attr_reader :process
 
-        WAIT_TIME = 0.3
+        # Seconds between queries (including the first one) to the dasdformat command... and thus,
+        # between subsequent progress updates.
+        WAIT_TIME = 1
         private_constant :WAIT_TIME
 
         def wait

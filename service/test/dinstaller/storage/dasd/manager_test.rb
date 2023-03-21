@@ -258,7 +258,7 @@ describe DInstaller::Storage::DASD::Manager do
       expect(progress_callback).to receive(:call).exactly(steps).times
       expect(finish_callback).to receive(:call).once.with(exit_code)
       subject.format(dasds, on_progress: progress_callback, on_finish: finish_callback)
-      sleep(2) # give background threads a chance to run
+      sleep(5) # give background threads a chance to run
     end
 
     it "updates the information of the DASDs when formatting finishes" do
@@ -266,7 +266,7 @@ describe DInstaller::Storage::DASD::Manager do
       expect(reader).to receive(:update_info).with(dasd2, extended: true)
       expect(reader).to receive(:update_info).with(dasd3, extended: true)
       subject.format(dasds)
-      sleep(2) # give background threads a chance to run
+      sleep(5) # give background threads a chance to run
     end
 
     context "when the process returns false to the first call to #running?" do
@@ -280,7 +280,7 @@ describe DInstaller::Storage::DASD::Manager do
         expect(progress_callback).to_not receive(:call)
         expect(finish_callback).to_not receive(:call)
         subject.format(dasds, on_progress: progress_callback, on_finish: finish_callback)
-        sleep(2) # give background threads a chance to run
+        sleep(5) # give background threads a chance to run
       end
     end
   end
