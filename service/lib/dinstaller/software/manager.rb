@@ -232,7 +232,7 @@ module DInstaller
       end
 
       def add_base_repos
-        arch_collection_for("installation_repositories", "repo").map { |url| repositories.add(url) }
+        arch_collection_for("installation_repositories", "url").map { |url| repositories.add(url) }
       end
 
       REPOS_BACKUP = "/etc/zypp/repos.d.dinstaller.backup"
