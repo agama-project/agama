@@ -532,9 +532,9 @@ describe DInstaller::DBus::Storage::Manager do
           subject.dasd_format(paths)
         end
 
-        it "returns 1 as code and empty string as path" do
+        it "returns 1 as code and '/' as path" do
           result = subject.dasd_format(paths)
-          expect(result).to eq [1, ""]
+          expect(result).to eq [1, "/"]
         end
       end
 
@@ -572,9 +572,9 @@ describe DInstaller::DBus::Storage::Manager do
             allow(dasd_backend).to receive(:format).and_return nil
           end
 
-          it "returns 2 as code an empty string as path" do
+          it "returns 2 as code and '/' as path" do
             result = subject.dasd_format(paths)
-            expect(result).to eq [2, ""]
+            expect(result).to eq [2, "/"]
           end
         end
       end

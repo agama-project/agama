@@ -124,13 +124,13 @@ module DInstaller
         # @return [Integer]
         def dasd_format(paths)
           dasds = find_dasds(paths)
-          return [1, ""] if dasds.nil?
+          return [1, "/"] if dasds.nil?
 
           job = nil
           progress = proc { |statuses| job.update_format(statuses) }
           finish = proc { |result| job.finish_format(result) }
           initial_statuses = dasd_backend.format(dasds, on_progress: progress, on_finish: finish)
-          return [2, ""] unless initial_statuses
+          return [2, "/"] unless initial_statuses
 
           job = jobs_tree.add_dasds_format(initial_statuses, dasds_tree)
           [0, job.path]

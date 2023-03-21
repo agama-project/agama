@@ -571,7 +571,7 @@ Arguments:
 
 * `in ao devices`: paths of the D-Bus objects representing the DASDs to format.
 * `out u result`: `0` if the format operation starts correctly and the job to track it is created. `1` if any of the given paths is invalid (ie. it does not correspond to a known DASD), `2` in case of any other error.
-* `out o job`: if the result is 0, path of the new job that can be used to track the formatting. Empty string in any other case.
+* `out o job`: if the result is 0, path of the new job that can be used to track the formatting. Contains the string `/` (no job) if the result is not zero.
 
 #### `org.opensuse.DInstaller.Storage1.DASD.Device` Interface
 
