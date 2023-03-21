@@ -35,7 +35,9 @@ Tumbleweed:
     optional_patterns:
       - optional_base
     mandatory_packages:
-      - mandatory_pkg
+      - package: mandatory_pkg
+      - package: mandatory_pkg_s390
+        archs: s390
     optional_packages:
       - optional_pkg
     base_product: openSUSE

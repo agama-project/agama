@@ -212,25 +212,27 @@ module DInstaller
         end
       end
 
-      def installation_repositories
-        @config.data["software"]["installation_repositories"]
+      def arch_select(section)
+        collection = @config.data["software"][section] || []
+        collection.select { |c| !c.is_a?(Hash) || arch_match?(c["archs"]) }
+      end
+
+      def arch_collection_for(section, key)
+        arch_select(section).map { |r| r.is_a?(Hash) ? r[key] : r }
       end
 
       def selected_base_product
         @config.data["software"]["base_product"]
       end
 
+      def arch_match?(archs)
+        return true if archs.nil?
+
+        Yast2::ArchFilter.from_string(archs).match?
+      end
+
       def add_base_repos
-        installation_repositories.each do |repo|
-          if repo.is_a?(Hash)
-            url = repo["url"]
-            # skip if repo is not for current arch
-            next if repo["archs"] && !Yast2::ArchFilter.from_string(repo["archs"]).match?
-          else
-            url = repo
-          end
-          repositories.add(url)
-        end
+        arch_collection_for("installation_repositories", "repo").map { |url| repositories.add(url) }
       end
 
       REPOS_BACKUP = "/etc/zypp/repos.d.dinstaller.backup"
@@ -260,17 +262,17 @@ module DInstaller
 
       # adds resolvables from yaml config for given product
       def select_resolvables
-        mandatory_patterns = @config.data["software"]["mandatory_patterns"] || []
+        mandatory_patterns = arch_collection_for("mandatory_patterns", "pattern")
         proposal.set_resolvables("d-installer", :pattern, mandatory_patterns)
 
-        optional_patterns = @config.data["software"]["optional_patterns"] || []
+        optional_patterns = arch_collection_for("optional_patterns", "pattern")
         proposal.set_resolvables("d-installer", :pattern, optional_patterns,
           optional: true)
 
-        mandatory_packages = @config.data["software"]["mandatory_packages"] || []
+        mandatory_packages = arch_collection_for("mandatory_packages", "package")
         proposal.set_resolvables("d-installer", :package, mandatory_packages)
 
-        optional_packages = @config.data["software"]["optional_packages"] || []
+        optional_packages = arch_collection_for("optional_packages", "package")
         proposal.set_resolvables("d-installer", :package, optional_packages,
           optional: true)
       end

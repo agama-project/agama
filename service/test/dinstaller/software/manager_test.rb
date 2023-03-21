@@ -137,6 +137,7 @@ describe DInstaller::Software::Manager do
   describe "#propose" do
     before do
       subject.select_product("Tumbleweed")
+      allow(Yast::Arch).to receive(:s390).and_return(false)
     end
 
     it "creates a new proposal for the selected product" do
@@ -146,7 +147,7 @@ describe DInstaller::Software::Manager do
       subject.propose
     end
 
-    it "adds the patterns and packages to install" do
+    it "adds the patterns and packages to install depending on the system architecture" do
       expect(proposal).to receive(:set_resolvables)
         .with("d-installer", :pattern, ["enhanced_base"])
       expect(proposal).to receive(:set_resolvables)
@@ -155,6 +156,11 @@ describe DInstaller::Software::Manager do
         .with("d-installer", :package, ["mandatory_pkg"])
       expect(proposal).to receive(:set_resolvables)
         .with("d-installer", :package, ["optional_pkg"], optional: true)
+      subject.propose
+
+      expect(Yast::Arch).to receive(:s390).and_return(true)
+      expect(proposal).to receive(:set_resolvables)
+        .with("d-installer", :package, ["mandatory_pkg", "mandatory_pkg_s390"])
       subject.propose
     end
   end

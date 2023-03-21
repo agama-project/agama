@@ -157,9 +157,10 @@ ALP-Bedrock:
       - alp-bedrock-container_runtime
     optional_patterns: null # no optional pattern shared
     mandatory_packages:
-      - device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
-      - fde-tools # Needed for FDE with TPM, hardcoded here temporarily (aarch64, x86_64 specific)
-      - libtss2-tcti-device0 # Same than fde-tools
+      - package: device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
+      - package: fde-tools # Needed for FDE with TPM, hardcoded here temporarily (aarch64, x86_64 specific)
+        archs: aarch64, x86_64
+      - package: libtss2-tcti-device0 # Same than fde-tools
     optional_packages: null
     base_product: ALP-Bedrock
 
@@ -301,9 +302,10 @@ Leap16:
       - alp_defaults
     optional_patterns: null # no optional pattern shared
     mandatory_packages:
-      - device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
-      - fde-tools # Needed for FDE with TPM, hardcoded here temporarily
-      - libtss2-tcti-device0 # Same than fde-tools
+      - package: device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
+      - package: fde-tools # Needed for FDE with TPM, hardcoded here temporarily (aarch64, x86_64 specific)
+        archs: aarch64, x86_64
+      - package: libtss2-tcti-device0 # Same than fde-tools
     optional_packages: null
     base_product: Leap16
 
