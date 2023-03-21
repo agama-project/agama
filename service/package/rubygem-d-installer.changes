@@ -5,6 +5,21 @@ Tue Mar 21 16:44:27 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
   "idle" state when finishing a block (related to bsc#1209523)
 
 -------------------------------------------------------------------
+Tue Mar 21 16:28:26 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Added D-Bus API for management of DASDs (gh#yast/d-installer#464,
+  gh#yast/d-installer#476)
+
+-------------------------------------------------------------------
+Tue Mar 21 11:42:51 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update the products definitions (gh#yast/d-installer#485):
+  * Replace "ALP" with "ALP Bedrock" and "ALP Micro".
+  * Drop Leap 15.4 and Leap Micro 5.3.
+- Add a script to auto-generate the configuration file when
+  building the ISO.
+
+-------------------------------------------------------------------
 Thu Mar 16 16:13:21 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.8

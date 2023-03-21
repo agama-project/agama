@@ -27,37 +27,38 @@ module DInstaller
   module Storage
     module DASD
       # Operation to format the given set of DASDs
-      #
-      # TODO: we plan to change the approach to DASD formatting, so this class will change
-      # very soon.
       class FormatOperation
         # Constructor
         #
         # @param dasds [Array<Y2S390:Dasd>] devices to format
-        def initialize(dasds)
+        # @param on_progress [Array<Proc>] callbacks to be called when the status of the operation
+        #   is refreshed
+        # @param on_finish [Array<Proc>] callbacks to be called when the operation ends
+        def initialize(dasds, on_progress = [], on_finish = [])
           @process = Y2S390::FormatProcess.new(dasds)
+          @on_progress = on_progress
+          @on_finish = on_finish
         end
 
-        # Formats all the given DASDs
+        # Starts a format process on the given DASDs
         #
-        # NOTE: this algorithm is pretty much copied from Y2S390::Dialogs::FormatDialog
+        # NOTE: Does a device need to be reactivated after formating it? The code at
+        # DasdActions::Activate seems to imply that, but the code at DasdActions::Format contains a
+        # comment stating otherwise. Let's do nothing for the time being.
         #
-        # @return [Boolean] true if the operation succeeds for all the DASDs
+        # @return [Array<Y2S390::FormatStatus>, nil] Initial status for all DASDs, nil if the format
+        #   process couldn't be started.
         def run
-          # NOTE: Does a device need to be reactivated after formating it?
-          #       The code at DasdActions::Activate seems to imply that
-          #       But the code at DasdActions::Format contains a comment stating otherwise
-          return false unless start?
+          return nil unless start?
 
           process.initialize_summary
-          while process.running?
-            process.update_summary
-            # TODO: trigger a callback to notify the process status information
-            sleep(0.2)
+          Thread.new do
+            # Just to be absolutely sure, sleep to ensure the #run method returns and its result is
+            # processed by the caller before we start calling callbacks
+            wait
+            monitor_process
           end
-          # TODO: maybe trigger a callback to notify the final status?
-
-          process.status.to_i.zero?
+          process.summary.values
         end
 
       private
@@ -67,13 +68,36 @@ module DInstaller
         # @return [Y2S390::FormatProcess]
         attr_reader :process
 
+        # Seconds between queries (including the first one) to the dasdformat command... and thus,
+        # between subsequent progress updates.
+        WAIT_TIME = 1
+        private_constant :WAIT_TIME
+
+        def wait
+          sleep(WAIT_TIME)
+        end
+
         # Starts the formatting process
         #
         # @return [Boolean] true if the process was succesfully started
         def start?
           process.start
-          sleep(0.2)
+          wait
           process.running?
+        end
+
+        def monitor_process
+          while process.running?
+            update_status
+            wait
+          end
+          update_status
+          @on_finish.each { |p| p.call(process.status) }
+        end
+
+        def update_status
+          process.update_summary
+          @on_progress.each { |p| p.call(process.updated.values) }
         end
       end
     end
