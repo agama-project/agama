@@ -145,7 +145,10 @@ Tumbleweed:
 ALP-Bedrock:
   software:
     installation_repositories:
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/standard/
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/images/repo/ALP-Bedrock-0.1-x86_64-Media1/
+        archs: x86_64
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/images/repo/ALP-Bedrock-0.1-aarch64-Media1/
+        archs: aarch64
 
     mandatory_patterns:
       - alp-bedrock-base
@@ -214,7 +217,10 @@ ALP-Bedrock:
 ALP-Micro:
   software:
     installation_repositories:
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/standard/
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/images/repo/ALP-Micro-0.1-x86_64-Media1/
+        archs: x86_64
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/images/repo/ALP-Micro-0.1-aarch64-Media1/
+        archs: aarch64
 
     mandatory_patterns:
       - alp-micro-base
