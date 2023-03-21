@@ -47,6 +47,7 @@ module DInstaller
         # @param initial [Array<Y2S390::FormatStatus] initial status information for all the
         #   involved DASDs
         # @param dasds_tree [DasdsTree] up-to-date representations of the DASDs in the D-Bus tree
+        # @return [DasdsFormatJob]
         def add_dasds_format(initial, dasds_tree)
           job = DBus::Storage::DasdsFormatJob.new(
             initial, dasds_tree, next_path, logger: logger

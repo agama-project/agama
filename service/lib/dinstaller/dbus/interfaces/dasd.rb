@@ -121,7 +121,7 @@ module DInstaller
         # Succeeds (returns 0) if all the devices where successfully formatted.
         #
         # @param paths [Array<String>]
-        # @return [Integer]
+        # @return [Array(Integer,::DBus::ObjectPath)]
         def dasd_format(paths)
           dasds = find_dasds(paths)
           return [1, "/"] if dasds.nil?
