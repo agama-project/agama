@@ -4,7 +4,7 @@ products:
     description: 'SUSE ALP Bedrock is a flexible, secure, customizable and
       modular Server allowing an enterprise to run a variety of services,
       workloads and application in a compartmentalized form. Based on an
-      immutable root filesystem, Security has been built into it from the ground.'
+      immutable root filesystem, security has been built into it from the ground.'
   ALP-Micro:
     name: SUSE ALP Micro
     description: 'SUSE ALP Micro is a minimum immutable OS core, focused on
