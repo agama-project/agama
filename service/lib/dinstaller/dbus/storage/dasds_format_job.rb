@@ -126,13 +126,14 @@ module DInstaller
 
         # Marks the job as finished
         #
-        # @note A Finished signal is always emitted.
+        # @note A Finished and a PropertiesChanged signals are always emitted.
         #
         # @param exit_code [Integer]
         def finish_format(exit_code)
           @running = false
           @exit_code = exit_code
           Finished(exit_code)
+          dbus_properties_changed(JOB_INTERFACE, interfaces_and_properties.slice(JOB_INTERFACE), [])
         end
 
         # Updates the internal status information

@@ -623,7 +623,11 @@ ExitCode readable u
 
 ##### Signals
 
-* `Finished(u exit_code)`: the Job is not longer running and the exit code has been set to its final value.
+* `Finished(u exit_code)`: the Job is not longer running and the exit code has been set to its final
+  value.
+* `PropertiesChanged()`: in parallel to the mentioned `Finished` signal, the standard
+  `PropertiesChanged` signal from `org.freedesktop.DBus.Properties` is also triggered at the end of
+  the job execution to reflect the corresponding changes in the properties.
 
 #### `org.opensuse.DInstaller.Storage1.DASD.Format` Interface
 
