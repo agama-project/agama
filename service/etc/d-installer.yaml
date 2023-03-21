@@ -1,29 +1,21 @@
 products:
-  ALP:
-    name: SUSE ALP ContainerHost OS
-    description: 'The Adaptable Linux Platform (ALP), the next generation of Linux,
-      allow users to focus on their workloads while abstracting from the hardware
-      and the application layer. The preview of ContainerHost OS is one of the
-      first prototypes based on that platform.'
+  ALP-Bedrock:
+    name: SUSE ALP Bedrock
+    description: 'SUSE ALP Bedrock is a flexible, secure, customizable and
+      modular Server allowing an enterprise to run a variety of services,
+      workloads and application in a compartmentalized form. Based on an
+      immutable root filesystem, security has been built into it from the ground.'
+  ALP-Micro:
+    name: SUSE ALP Micro
+    description: 'SUSE ALP Micro is a minimum immutable OS core, focused on
+      security to provide the bare minimum to run workloads and services as
+      containers or virtual machines.'
   Tumbleweed:
     name: openSUSE Tumbleweed
     description: 'The Tumbleweed distribution is a pure rolling release version
       of openSUSE containing the latest "stable" versions of all software
       instead of relying on rigid periodic release cycles. The project does
       this for users that want the newest stable software.'
-  Leap Micro:
-    name: openSUSE Leap Micro 5.3
-    archs: x86_64,aarch64
-    description: 'Leap Micro is an ultra-reliable, lightweight operating system
-      built for containerized and virtualized workloads. This community version
-      is based on SUSE Linux Enterprise Micro, which leverages the enterprise
-      hardened security and compliance components of SUSE Linux Enterprise.'
-  Leap:
-    name: openSUSE Leap 15.4
-    description: 'Leap uses source from SUSE Linux Enterprise (SLE), which
-      gives Leap a level of stability unmatched by other Linux distributions,
-      and combines that with community developments to give users, developers
-      and sysadmins the best stable Linux experience available.'
   Leap16:
     name: openSUSE Leap 16.0
     archs: x86_64,aarch64
@@ -150,31 +142,26 @@ Tumbleweed:
       proposed_configurable: true
       disable_order: 2
 
-ALP:
+ALP-Bedrock:
   software:
     installation_repositories:
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP/standard/
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/images/repo/ALP-Bedrock-0.1-x86_64-Media1/
         archs: x86_64
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP/standard/
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/images/repo/ALP-Bedrock-0.1-aarch64-Media1/
         archs: aarch64
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP/standard/
-        archs: s390
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/zSystems/standard/
-        archs: s390
 
     mandatory_patterns:
-      - alp_base
-      - alp_base_zypper
-      - alp_cockpit
-      - alp-container_runtime
-      - alp_defaults
+      - alp-bedrock-base
+      - alp-bedrock-cockpit
+      - alp-bedrock-hardware
+      - alp-bedrock-container_runtime
     optional_patterns: null # no optional pattern shared
     mandatory_packages:
       - device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
       - fde-tools # Needed for FDE with TPM, hardcoded here temporarily (aarch64, x86_64 specific)
       - libtss2-tcti-device0 # Same than fde-tools
     optional_packages: null
-    base_product: ALP
+    base_product: ALP-Bedrock
 
   security:
     tpm_luks_open: true
@@ -185,7 +172,7 @@ ALP:
       #     - apparmor
       selinux:
         patterns:
-          - alp_selinux
+          - alp-bedrock-selinux
         policy: enforcing
       none:
         patterns: null
@@ -226,6 +213,79 @@ ALP:
           archs: x86_64
         - path: var
           copy_on_write: false
+
+ALP-Micro:
+  software:
+    installation_repositories:
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/images/repo/ALP-Micro-0.1-x86_64-Media1/
+        archs: x86_64
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/images/repo/ALP-Micro-0.1-aarch64-Media1/
+        archs: aarch64
+
+    mandatory_patterns:
+      - alp-micro-base
+      - alp-micro-cockpit
+      - alp-micro-container_runtime
+      - alp-micro-hardware
+    optional_patterns: null # no optional pattern shared
+    mandatory_packages:
+      - device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
+      - fde-tools # Needed for FDE with TPM, hardcoded here temporarily (aarch64, x86_64 specific)
+      - libtss2-tcti-device0 # Same than fde-tools
+    optional_packages: null
+    base_product: ALP-Micro
+
+  security:
+    tpm_luks_open: true
+    lsm: selinux
+    available_lsms:
+      # apparmor:
+      #   patterns:
+      #     - apparmor
+      selinux:
+        patterns:
+          - alp-micro-selinux
+        policy: enforcing
+      none:
+        patterns: null
+
+  storage:
+    encryption:
+      method: luks2
+      pbkdf: pbkdf2
+    volumes:
+      - mount_point: "/"
+        fs_type: btrfs
+        desired_size: 20 GiB
+        min_size: 5 GiB
+        fs_types:
+          - btrfs
+        weight: 20
+        snapshots: true
+        snapshots_configurable: false
+        proposed_configurable: false
+        btrfs_default_subvolume: "@"
+        btrfs_read_only: true
+        subvolumes:
+        - path: root
+        - path: home
+        - path: opt
+        - path: srv
+        - path: boot/writable
+        - path: usr/local
+        - path: boot/grub2/arm64-efi
+          archs: aarch64
+        - path: boot/grub2/i386-pc
+          archs: x86_64
+        - path: boot/grub2/powerpc-ieee1275
+          archs: ppc,!board_powernv
+        - path: boot/grub2/s390x-emu
+          archs: s390
+        - path: boot/grub2/x86_64-efi
+          archs: x86_64
+        - path: var
+          copy_on_write: false
+
 Leap16:
   software:
     installation_repositories:
@@ -297,175 +357,3 @@ Leap16:
           archs: x86_64
         - path: var
           copy_on_write: false
-
-Leap:
-  software:
-    installation_repositories:
-      # TODO: support somehow $releasever in URL
-      - https://download.opensuse.org/distribution/leap/15.4/repo/oss/
-      - https://download.opensuse.org/distribution/leap/15.4/repo/non-oss/
-      - https://download.opensuse.org/update/leap/15.4/oss/
-      - https://download.opensuse.org/update/leap/15.4/non-oss/
-      - https://download.opensuse.org/update/leap/15.4/sle/
-      - https://download.opensuse.org/update/leap/15.4/backports/
-    mandatory_patterns:
-      - enhanced_base # For now lets pick some minimal one
-    optional_patterns: null # no optional pattern shared
-    mandatory_packages:
-      - NetworkManager
-    optional_packages: null
-    base_product: Leap
-
-  security:
-    # TODO: check if skelcd for Leap 15.4 is correct as code is using lsm in globals, but skelcd contain selinux only
-    lsm: apparmor
-    available_lsms:
-      apparmor:
-        patterns:
-          - apparmor
-      selinux:
-        patterns:
-          - selinux
-        policy: disabled
-      none:
-        patterns: null
-
-  storage:
-    volumes:
-    - mount_point: "/"
-      fs_type: btrfs
-      desired_size: 10 GiB
-      min_size: 5 GiB
-      max_size: unlimited
-      weight: 30
-
-      # There must always be a root
-      proposed_configurable: false
-
-      snapshots: true
-      snapshots_percentage: 250
-      snapshots_configurable: true
-      # Disable snapshots if there is not enough room
-      disable_order: 3
-
-      btrfs_default_subvolume: "@"
-      subvolumes:
-      - path: home
-      - path: opt
-      - path: root
-      - path: srv
-      - path: usr/local
-      # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
-      - path: var
-        copy_on_write: false
-
-      # Architecture specific subvolumes
-      - path: boot/grub2/arm64-efi
-        archs: aarch64
-      - path: boot/grub2/i386-pc
-        archs: x86_64
-      - path: boot/grub2/powerpc-ieee1275
-        archs: ppc,!board_powernv
-      - path: boot/grub2/s390x-emu
-        archs: s390
-      - path: boot/grub2/x86_64-efi
-        archs: x86_64
-
-    - mount_point: "/home"
-      fs_type: xfs
-      desired_size: 40 GiB
-      min_size: 10 GiB
-      max_size: unlimited
-      weight: 60
-
-      proposed: false
-      proposed_configurable: true
-      disable_order: 1
-
-    - mount_point: "swap"
-      fs_type: swap
-      desired_size: 2 GiB
-      min_size: 1 GiB
-      max_size: 2 GiB
-      weight: 10
-
-      adjust_by_ram: false
-      adjust_by_ram_configurable: true
-
-      proposed_configurable: true
-      disable_order: 2
-
-
-Leap Micro:
-  software:
-    installation_repositories:
-      - url: https://download.opensuse.org/distribution/leap-micro/5.3/product/repo/Leap-Micro-5.3-x86_64-Media/
-        archs: x86_64
-      - url: https://download.opensuse.org/distribution/leap-micro/5.3/product/repo/Leap-Micro-5.3-aarch64-Media/
-        archs: aarch64
-    mandatory_patterns:
-      - microos-base
-      - microos-container_runtime
-      - microos-hardware
-    optional_patterns: null # no optional pattern shared
-    mandatory_packages: null
-    optional_packages: null
-    base_product: Leap-Micro
-
-  security:
-    lsm: selinux
-    available_lsms:
-      selinux:
-        patterns:
-          - microos-selinux
-        policy: enforcing
-      none:
-        patterns: null
-
-  storage:
-    volumes:
-      - mount_point: "/"
-        fs_type: btrfs
-        desired_size: 20 GiB
-        min_size: 5 GiB
-        max_size: 20 GiB
-        fs_types:
-          - btrfs
-        weight: 20
-        snapshots: true
-        snapshots_configurable: false
-        proposed_configurable: false
-        btrfs_default_subvolume: "@"
-        btrfs_read_only: true
-        subvolumes:
-        - path: root
-        - path: home
-        - path: opt
-        - path: srv
-        - path: root
-        - path: boot/writable
-        - path: usr/local
-        - path: boot/grub2/arm64-efi
-          archs: aarch64
-        - path: boot/grub2/i386-pc
-          archs: x86_64
-        - path: boot/grub2/powerpc-ieee1275
-          archs: ppc,!board_powernv
-        - path: boot/grub2/s390x-emu
-          archs: s390
-        - path: boot/grub2/x86_64-efi
-          archs: x86_64
-      - mount_point: "/var"
-        fs_type: btrfs
-        fs_types:
-          - btrfs
-        desired_size: 19 GiB
-        min_size: 5 GiB
-        max_size: unlimited
-        weight: 40
-        snapshots: false
-        snapshots_configurable: false
-        disable_order: 1
-        fallback_for_desired_size: "/"
-        fallback_for_max_size: "/"
-        fallback_for_weight: "/"
