@@ -31,6 +31,9 @@ module DInstaller
         # Constructor
         #
         # @param dasds [Array<Y2S390:Dasd>] devices to format
+        # @param on_progress [Array<Proc>] callbacks to be called when the status of the operation
+        #   is refreshed
+        # @param on_finish [Array<Proc>] callbacks to be called when the operation ends
         def initialize(dasds, on_progress = [], on_finish = [])
           @process = Y2S390::FormatProcess.new(dasds)
           @on_progress = on_progress
@@ -50,7 +53,9 @@ module DInstaller
 
           process.initialize_summary
           Thread.new do
-            wait # Ensure we finish first
+            # Just to be absolutely sure, sleep to ensure the #run method returns and its result is
+            # processed by the caller before we start calling callbacks
+            wait
             monitor_process
           end
           process.summary.values

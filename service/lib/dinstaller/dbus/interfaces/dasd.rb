@@ -126,6 +126,16 @@ module DInstaller
           dasds = find_dasds(paths)
           return [1, "/"] if dasds.nil?
 
+          # Theoreticaly, there is room for a race condition here if the callbacks 'progress' or
+          # 'finish' are called before the job is created below. But in practice it will not happen
+          # because dasd_backend#format sleeps before calling any of the callbacks and, of course,
+          # it only calls them if the formatting process effectively started.
+          #
+          # We can change the approach in the future and always create the job beforehand if we feel
+          # the risk is not acceptable. That would make the Format operation a bit less consistent
+          # with other methods in this interface. If the format process cannot be started it would
+          # still return 0 as result and would create a job in the tree with kind of meaningless
+          # progress information representing the failed execution.
           job = nil
           progress = proc { |statuses| job.update_format(statuses) }
           finish = proc { |result| job.finish_format(result) }
