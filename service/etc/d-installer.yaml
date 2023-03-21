@@ -229,16 +229,16 @@ ALP:
 Leap16:
   software:
     installation_repositories:
-      - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/standard/
+      - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/images/repo/Leap-16.0-x86_64-Media1/
         archs: x86_64
-      - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/standard/
+      - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/images/repo/Leap-16.0-aarch64-Media1/
         archs: aarch64
     mandatory_patterns:
       - alp_base
       - alp_base_zypper
       - alp_cockpit
       - alp-container_runtime
-      - alt_defaults
+      - alp_defaults
     optional_patterns: null # no optional pattern shared
     mandatory_packages:
       - device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
