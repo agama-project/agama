@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 21 21:51:48 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to define architecture specific patterns and packages
+  (gh#yast/d-installer#86).
+
+-------------------------------------------------------------------
 Tue Mar 21 16:28:26 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Added D-Bus API for management of DASDs (gh#yast/d-installer#464,
