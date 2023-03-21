@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Mar 21 11:42:51 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update the products definitions (gh#yast/d-installer#485):
+  * Replace "ALP" with "ALP Bedrock" and "ALP Micro".
+  * Drop Leap 15.4 and Leap Micro 5.3.
+- Add a script to auto-generate the configuration file when
+  building the ISO.
+
+-------------------------------------------------------------------
 Thu Mar 16 16:13:21 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.8
