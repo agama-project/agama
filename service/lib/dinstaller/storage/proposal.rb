@@ -109,7 +109,7 @@ module DInstaller
       def calculated_settings
         return nil unless proposal
 
-        to_dinstaller_settings(proposal.settings, devices: proposal.planned_devices)
+        to_dinstaller_settings(proposal.settings, devices: proposal.planned_devices || [])
       end
 
       # Calculates a new proposal
