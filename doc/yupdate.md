@@ -48,6 +48,12 @@ You can modify the update process with these environment variables:
   mode. The files will not be minimized and additional `*.map` files will be
   generated. This helps with debugging in the browser, you can get the locations
   in the original source files.
+- `YUPDATE_SKIP_FRONTEND=1` - Skip updating the web frontend. Use this option
+  when you use the webpack development server for running the web frontend.
+  In that case updating the web frontend does not make sense because it is
+  running in a different server. This saves some time and disk/RAM space.
+- `YUPDATE_SKIP_BACKEND=1` - Skip updating the DBus service backend. This is the
+  opposite case for the previous option.
 
 ## Notes
 
