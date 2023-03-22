@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 22 15:20:45 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adjustments to prevent iSCSI-related delays during storage
+  probing (gh#yast/d-installer#493).
+
+-------------------------------------------------------------------
 Wed Mar 22 15:12:46 UTC 2023 - Martin Vidner <mvidner@suse.com>
 
 - Fix service startup (gh#yast/d-installer#491):
