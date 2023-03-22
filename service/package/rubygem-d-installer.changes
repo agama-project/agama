@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar 22 11:11:52 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 0.8.1
+
+-------------------------------------------------------------------
 Tue Mar 21 16:44:27 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed exception handling so service always goes back to the
