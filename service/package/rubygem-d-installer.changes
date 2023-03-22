@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar 22 15:12:46 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Fix service startup (gh#yast/d-installer#491):
+  * Fix race at systemd startup time.
+  * Install the dependencies before starting it up.
+
+-------------------------------------------------------------------
 Wed Mar 22 11:11:52 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.8.1
