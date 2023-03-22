@@ -52,7 +52,7 @@ You can modify the update process with these environment variables:
   when you use the webpack development server for running the web frontend.
   In that case updating the web frontend does not make sense because it is
   running in a different server. This saves some time and disk/RAM space.
-- `YUPDATE_SKIP_BACKEND=1` - Skip updating the DBus service backend. This is the
+- `YUPDATE_SKIP_BACKEND=1` - Skip updating the D-Bus service backend. This is the
   opposite case for the previous option.
 
 ## Notes
