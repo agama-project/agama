@@ -56,20 +56,14 @@ module DInstaller
         # Performs actions for activating iSCSI
         def activate
           logger.info "Activating iSCSI"
-
           @activated = true
 
-          # Why we need to sleep every now and then? This was copied from yast2-iscsi-client.
-          sl = 0.5
-
           Yast::IscsiClientLib.getiBFT
-          sleep(sl)
-
           # Check initiator name, creating one if missing
           return false unless Yast::IscsiClientLib.checkInitiatorName(silent: true)
 
-          sleep(sl)
-
+          # Why we need to sleep here? This was copied from yast2-iscsi-client.
+          sleep(0.5)
           Yast::IscsiClientLib.getConfig
           Yast::IscsiClientLib.autoLogOn
 
