@@ -93,41 +93,45 @@ SERVICES_DIR = "/usr/share/dbus-1/d-installer-services"
 if File.exist?("/.packages.initrd") || `mount`.match?(/^[\w]+ on \/ type overlay/)
   Rake::Task["install"].clear
   task :install do
-    destdir = ENV["DESTDIR"] || "/"
+    if ENV["YUPDATE_SKIP_BACKEND"] != "1"
+      destdir = ENV["DESTDIR"] || "/"
 
-    puts "Installing the DBus service..."
-    Dir.chdir("service") do
-      sh "gem build d-installer.gemspec"
-      sh "gem install --local --force --no-format-exec --no-doc --build-root #{destdir.shellescape} d-installer-*.gem"
+      puts "Installing the DBus service..."
+      Dir.chdir("service") do
+        sh "gem build d-installer.gemspec"
+        sh "gem install --local --force --no-format-exec --no-doc --build-root #{destdir.shellescape} d-installer-*.gem"
 
-      # update the DBus configuration files
-      FileUtils.mkdir_p(SERVICES_DIR)
-      sh "cp share/org.opensuse.DInstaller*.service #{SERVICES_DIR}"
-      sh "cp share/dbus.conf /usr/share/dbus-1/d-installer.conf"
+        # update the DBus configuration files
+        FileUtils.mkdir_p(SERVICES_DIR)
+        sh "cp share/org.opensuse.DInstaller*.service #{SERVICES_DIR}"
+        sh "cp share/dbus.conf /usr/share/dbus-1/d-installer.conf"
 
-      # update the systemd service file
-      source_file = "share/systemd.service"
-      target_file = "/usr/lib/systemd/system/d-installer.service"
+        # update the systemd service file
+        source_file = "share/systemd.service"
+        target_file = "/usr/lib/systemd/system/d-installer.service"
 
-      unless FileUtils.identical?(source_file, target_file)
-        FileUtils.cp(source_file, target_file)
-        sh "systemctl daemon-reload"
+        unless FileUtils.identical?(source_file, target_file)
+          FileUtils.cp(source_file, target_file)
+          sh "systemctl daemon-reload"
+        end
       end
     end
 
-    puts "Installing the Web frontend..."
-    Dir.chdir("web") do
-      node_env = ENV["NODE_ENV"] || "production"
-      sh "NODE_ENV=#{node_env.shellescape} make install"
+    if ENV["YUPDATE_SKIP_FRONTEND"] != "1"
+      puts "Installing the Web frontend..."
+      Dir.chdir("web") do
+        node_env = ENV["NODE_ENV"] || "production"
+        sh "NODE_ENV=#{node_env.shellescape} make install"
 
-      # clean up the extra files when switching the development/production mode
-      if node_env == "production"
-        # remove the uncompressed and development files
-        FileUtils.rm_f(Dir.glob("/usr/share/cockpit/d-installer/index.{css,html,js}"))
-        FileUtils.rm_f(Dir.glob("/usr/share/cockpit/d-installer/*.map"))
-      else
-        # remove the compressed files
-        FileUtils.rm_f(Dir.glob("/usr/share/cockpit/d-installer/*.gz"))
+        # clean up the extra files when switching the development/production mode
+        if node_env == "production"
+          # remove the uncompressed and development files
+          FileUtils.rm_f(Dir.glob("/usr/share/cockpit/d-installer/index.{css,html,js}"))
+          FileUtils.rm_f(Dir.glob("/usr/share/cockpit/d-installer/*.map"))
+        else
+          # remove the compressed files
+          FileUtils.rm_f(Dir.glob("/usr/share/cockpit/d-installer/*.gz"))
+        end
       end
     end
   end

@@ -48,5 +48,17 @@ describe WithServiceStatusTest do
       result = subject.busy_while { "test" }
       expect(result).to eq("test")
     end
+
+    context "the passed block raises an exception" do
+      it "sets the idle status and passes the exception up" do
+        expect(subject.service_status).to receive(:busy)
+        expect(subject.service_status).to receive(:idle)
+
+        class TestException < RuntimeError; end
+
+        expect { subject.busy_while { raise TestException } }.to raise_error(TestException)
+      end
+    end
+
   end
 end
