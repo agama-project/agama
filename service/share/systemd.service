@@ -4,7 +4,7 @@ Requires=cockpit.socket
 After=network-online.target
 
 [Service]
-Type=simple
+Type=forking
 ExecStart=/usr/bin/d-installer --daemon
 PIDFile=/run/d-installer/bus.pid
 User=root
