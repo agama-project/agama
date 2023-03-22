@@ -32,6 +32,13 @@ sudosed() {
   sed -e "$1" "$2" | $SUDO tee "$3" > /dev/null
 }
 
+# - Install the service dependencies
+(
+  cd $MYDIR/service
+  bundle config set --local path 'vendor/bundle'
+  bundle install
+)
+
 # - D-Bus configuration
 $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/d-installer.conf
 
@@ -54,11 +61,3 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/d-installer.conf
 
 # - Make sure NetworkManager is running
 $SUDO systemctl start NetworkManager
-
-# - Install the service dependencies
-(
-  cd $MYDIR/service
-  bundle config set --local path 'vendor/bundle'
-  bundle install
-)
-
