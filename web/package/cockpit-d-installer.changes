@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 21 16:41:06 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not crash when setting an invalid target device using the
+  command line interface (bsc#1209523)
+
+-------------------------------------------------------------------
 Mon Mar 20 15:13:28 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Upgrade Webpack to version 5.76.2 (CVE-2023-28154, bsc#1209494).

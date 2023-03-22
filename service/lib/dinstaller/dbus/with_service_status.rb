@@ -38,10 +38,9 @@ module DInstaller
       # @return [Object] the result of the given block
       def busy_while(&block)
         service_status.busy
-        result = block.call
+        block.call
+      ensure
         service_status.idle
-
-        result
       end
     end
   end
