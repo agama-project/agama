@@ -7,7 +7,7 @@ Wed Mar 22 11:11:52 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 Tue Mar 21 21:51:48 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow to define architecture specific patterns and packages
-  (gh#yast/d-installer#86).
+  (gh#yast/d-installer#486).
   
 -------------------------------------------------------------------
 Tue Mar 21 16:44:27 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
