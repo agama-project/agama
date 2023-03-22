@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 22 16:05:14 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Added a fallback in order to prevent a proposal error when no
+  planned devices are available (gh#yast/d-installer#494).
+
+-------------------------------------------------------------------
 Wed Mar 22 15:20:45 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Adjustments to prevent iSCSI-related delays during storage
