@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 23 17:07:29 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Reprobe storage if the system becomes deprecated
+  (gh#yast/d-installer#484).
+
+-------------------------------------------------------------------
 Tue Mar 21 16:41:06 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
 
 - Do not crash when setting an invalid target device using the
