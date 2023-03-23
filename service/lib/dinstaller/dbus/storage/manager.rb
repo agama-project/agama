@@ -61,6 +61,7 @@ module DInstaller
           register_progress_callbacks
           register_service_status_callbacks
           register_iscsi_callbacks
+          register_software_callbacks
           return unless Yast::Arch.s390
 
           singleton_class.include DBus::Interfaces::Dasd
@@ -71,7 +72,10 @@ module DInstaller
         private_constant :STORAGE_INTERFACE
 
         def probe
-          busy_while { backend.probe }
+          busy_while do
+            backend.probe
+            storage_properties_changed
+          end
         end
 
         def install
@@ -82,10 +86,18 @@ module DInstaller
           busy_while { backend.finish }
         end
 
+        # Whether the system is in a deprecated status
+        #
+        # @return [Boolean]
+        def deprecated_system
+          backend.deprecated_system
+        end
+
         dbus_interface STORAGE_INTERFACE do
           dbus_method(:Probe) { probe }
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
+          dbus_reader(:deprecated_system, "b")
         end
 
         PROPOSAL_CALCULATOR_INTERFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator"
@@ -246,6 +258,27 @@ module DInstaller
           backend.iscsi.on_probe do
             refresh_iscsi_nodes
           end
+
+          backend.iscsi.on_sessions_change do
+            deprecate_system
+          end
+        end
+
+        def register_software_callbacks
+          backend.software.on_product_selected do |_product|
+            backend.proposal.reset
+          end
+        end
+
+        def deprecate_system
+          backend.deprecated_system = true
+          storage_properties_changed
+          update_validation
+        end
+
+        def storage_properties_changed
+          properties = interfaces_and_properties[STORAGE_INTERFACE]
+          dbus_properties_changed(STORAGE_INTERFACE, properties, [])
         end
 
         def proposal_properties_changed

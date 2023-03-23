@@ -51,6 +51,7 @@ module DInstaller
 
           @on_activate_callbacks = []
           @on_probe_callbacks = []
+          @on_sessions_change_callbacks = []
         end
 
         # Performs actions for activating iSCSI
@@ -116,11 +117,14 @@ module DInstaller
 
           ensure_activated
 
-          probe_after do
+          result = probe_after do
             Yast::IscsiClientLib.currentRecord = record_from(node)
             Yast::IscsiClientLib.login_into_current(authentication, silent: true) &&
               Yast::IscsiClientLib.setStartupStatus(startup)
           end
+
+          run_on_sessions_change_callbacks
+          result
         end
 
         # Closes an iSCSI session
@@ -132,11 +136,14 @@ module DInstaller
         def logout(node)
           ensure_activated
 
-          probe_after do
+          result = probe_after do
             Yast::IscsiClientLib.currentRecord = record_from(node)
             # Yes, this is the correct method name for logging out
             Yast::IscsiClientLib.deleteRecord
           end
+
+          run_on_sessions_change_callbacks
+          result
         end
 
         # Deletes an iSCSI node from the database
@@ -179,6 +186,13 @@ module DInstaller
         # @param block [Proc]
         def on_probe(&block)
           @on_probe_callbacks << block
+        end
+
+        # Registers a callback to be called when a session changes
+        #
+        # @param block [Proc]
+        def on_sessions_change(&block)
+          @on_sessions_change_callbacks << block
         end
 
       private
@@ -247,6 +261,11 @@ module DInstaller
         # @param block [Proc]
         def probe_after(&block)
           block.call.tap { probe }
+        end
+
+        # Runs callbacks when a session changes
+        def run_on_sessions_change_callbacks
+          @on_sessions_change_callbacks.each(&:call)
         end
       end
     end

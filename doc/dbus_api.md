@@ -211,6 +211,12 @@ Install()
 Finish()
 ~~~
 
+##### Properties
+
+~~~
+DeprecatedSystem  readable  b
+~~~
+
 #### `org.opensuse.DInstaller.Storage1.Proposal.Calculator` Interface
 
 Allows creating a storage proposal.

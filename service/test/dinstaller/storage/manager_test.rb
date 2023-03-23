@@ -22,6 +22,7 @@
 require_relative "../../test_helper"
 require_relative "storage_helpers"
 require "dinstaller/storage/manager"
+require "dinstaller/storage/proposal_settings"
 require "dinstaller/storage/iscsi/manager"
 require "dinstaller/config"
 require "dinstaller/dbus/clients/questions"
@@ -62,15 +63,27 @@ describe DInstaller::Storage::Manager do
     end
 
     let(:proposal) do
-      instance_double(DInstaller::Storage::Proposal, calculate: nil, available_devices: devices)
+      instance_double(DInstaller::Storage::Proposal,
+        settings:          settings,
+        calculate:         nil,
+        available_devices: devices)
     end
 
     let(:devices) { [disk1, disk2] }
+    let(:settings) { nil }
 
     let(:disk1) { instance_double(Y2Storage::Disk, name: "/dev/vda") }
     let(:disk2) { instance_double(Y2Storage::Disk, name: "/dev/vdb") }
 
     let(:iscsi) { DInstaller::Storage::ISCSI::Manager.new }
+
+    before do
+      allow(config).to receive(:pick_product)
+      allow(iscsi).to receive(:activate)
+      allow(y2storage_manager).to receive(:activate)
+      allow(iscsi).to receive(:probe)
+      allow(y2storage_manager).to receive(:probe)
+    end
 
     it "probes the storage devices and calculates a proposal" do
       expect(config).to receive(:pick_product).with("ALP")
@@ -82,6 +95,37 @@ describe DInstaller::Storage::Manager do
       expect(y2storage_manager).to receive(:probe)
       expect(proposal).to receive(:calculate)
       storage.probe
+    end
+
+    it "sets the system as non deprecated" do
+      storage.deprecated_system = true
+      storage.probe
+
+      expect(storage.deprecated_system).to eq(false)
+    end
+
+    context "when there are settings from a previous proposal" do
+      let(:settings) { DInstaller::Storage::ProposalSettings.new }
+
+      it "calculates a proposal using the previous settings" do
+        expect(proposal).to receive(:calculate).with(settings)
+        storage.probe
+      end
+    end
+
+    context "when there are no settings from a previous proposal" do
+      let(:settings) { nil }
+
+      let(:new_settings) { DInstaller::Storage::ProposalSettings.new }
+
+      before do
+        allow(DInstaller::Storage::ProposalSettings).to receive(:new).and_return(new_settings)
+      end
+
+      it "calculates a proposal using new settings" do
+        expect(proposal).to receive(:calculate).with(new_settings)
+        storage.probe
+      end
     end
   end
 
@@ -197,6 +241,18 @@ describe DInstaller::Storage::Manager do
 
     it "returns the proposal errors" do
       expect(storage.validate).to eq(errors)
+    end
+
+    context "if the system is deprecated" do
+      before do
+        storage.deprecated_system = true
+      end
+
+      it "includes an error" do
+        error = storage.validate.find { |e| e.message.match?(/devices have changed/) }
+
+        expect(error).to_not be_nil
+      end
     end
   end
 end

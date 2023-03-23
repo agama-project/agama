@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require_relative "../../test_helper"
 require_relative "storage_helpers"
 require "dinstaller/storage/proposal"
+require "dinstaller/storage/proposal_settings"
 require "dinstaller/config"
 
 describe DInstaller::Storage::Proposal do
@@ -111,6 +112,15 @@ describe DInstaller::Storage::Proposal do
       proposal.calculate
       expect(var1).to eq 6
       expect(var2).to eq 10
+    end
+
+    it "stores the given settings" do
+      expect(proposal.settings).to be_nil
+
+      settings = DInstaller::Storage::ProposalSettings.new
+      proposal.calculate(settings)
+
+      expect(proposal.settings).to eq(settings)
     end
 
     context "with undefined settings and no storage section in the config" do
@@ -339,7 +349,7 @@ describe DInstaller::Storage::Proposal do
   end
 
   describe "#validate" do
-    let(:sda) { instance_double(Y2Storage::Device, display_name: "/dev/sda") }
+    let(:sda) { instance_double(Y2Storage::Disk, name: "/dev/sda") }
     let(:available_devices) { [sda] }
     let(:candidate_devices) { ["/dev/sda"] }
 
@@ -361,37 +371,43 @@ describe DInstaller::Storage::Proposal do
       let(:y2storage_proposal) { nil }
 
       it "returns an empty list" do
-        expect(subject.validate).to be_empty
+        expect(subject.validate).to eq([])
       end
     end
 
     context "when there are not available storage devices" do
       let(:available_devices) { [] }
 
-      it "returns an error" do
-        errors = subject.validate
-        expect(errors.size).to eq(1)
-        expect(errors.first.message).to include("There is no suitable device")
-      end
-    end
-
-    context "when the proposal failed" do
-      let(:failed) { true }
-
-      it "returns an error" do
-        errors = subject.validate
-        expect(errors.size).to eq(1)
-        expect(errors.first.message).to include("Cannot accommodate")
+      it "returns a list of errors including the expected error" do
+        error = subject.validate.find { |e| e.message.match?(/no suitable device/) }
+        expect(error).to_not be_nil
       end
     end
 
     context "when no candidate devices are selected" do
       let(:candidate_devices) { [] }
 
-      it "returns an error" do
-        errors = subject.validate
-        expect(errors.size).to eq(1)
-        expect(errors.first.message).to include("No devices are selected for installation")
+      it "returns a list of errors including the expected error" do
+        error = subject.validate.find { |e| e.message.match?(/No devices are selected/) }
+        expect(error).to_not be_nil
+      end
+    end
+
+    context "when any candidate device is missing" do
+      let(:candidate_devices) { ["/dev/vda"] }
+
+      it "returns a list of errors including the expected error" do
+        error = subject.validate.find { |e| e.message.match?(/not found in the system/) }
+        expect(error).to_not be_nil
+      end
+    end
+
+    context "when the proposal failed" do
+      let(:failed) { true }
+
+      it "returns a list of errors including the expected error" do
+        error = subject.validate.find { |e| e.message.match?(/Cannot accommodate/) }
+        expect(error).to_not be_nil
       end
     end
   end
