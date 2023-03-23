@@ -83,6 +83,10 @@ jobs:
     - name: Git Checkout
       uses: actions/checkout@v3
 
+    - name: Configure and refresh repositories
+      # disable unused repositories to have faster refresh
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
+
     - name: Install Ruby development files
       run: zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel npm augeas-devel
 
@@ -147,6 +151,10 @@ jobs:
 
     - name: Git Checkout
       uses: actions/checkout@v3
+
+    - name: Configure and refresh repositories
+      # disable unused repositories to have faster refresh
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
 
     - name: Install Ruby development files
       run: zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel npm augeas-devel
