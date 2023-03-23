@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { StrictMode } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
@@ -52,28 +52,26 @@ const container = document.getElementById("root");
 const root = createRoot(container);
 
 root.render(
-  <StrictMode>
-    <LoginWrapper>
-      <InstallerClientProvider client={createClient}>
-        <SoftwareProvider>
-          <HashRouter>
-            <Routes>
-              <Route path="/" element={<App />}>
-                <Route path="/" element={<Main />}>
-                  <Route index element={<Overview />} />
-                  <Route path="/overview" element={<Overview />} />
-                  <Route path="/l10n" element={<L10nPage />} />
-                  <Route path="/storage" element={<StoragePage />} />
-                  <Route path="/storage/iscsi" element={<ISCSIPage />} />
-                  <Route path="/network" element={<NetworkPage />} />
-                  <Route path="/users" element={<UsersPage />} />
-                </Route>
-                <Route path="products" element={<ProductSelectionPage />} />
+  <LoginWrapper>
+    <InstallerClientProvider client={createClient}>
+      <SoftwareProvider>
+        <HashRouter>
+          <Routes>
+            <Route path="/" element={<App />}>
+              <Route path="/" element={<Main />}>
+                <Route index element={<Overview />} />
+                <Route path="/overview" element={<Overview />} />
+                <Route path="/l10n" element={<L10nPage />} />
+                <Route path="/storage" element={<StoragePage />} />
+                <Route path="/storage/iscsi" element={<ISCSIPage />} />
+                <Route path="/network" element={<NetworkPage />} />
+                <Route path="/users" element={<UsersPage />} />
               </Route>
-            </Routes>
-          </HashRouter>
-        </SoftwareProvider>
-      </InstallerClientProvider>
-    </LoginWrapper>
-  </StrictMode>
+              <Route path="products" element={<ProductSelectionPage />} />
+            </Route>
+          </Routes>
+        </HashRouter>
+      </SoftwareProvider>
+    </InstallerClientProvider>
+  </LoginWrapper>
 );
