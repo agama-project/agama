@@ -33,7 +33,7 @@ case "$url" in
     /usr/bin/dinstaller install;;
 *.sh )
     /usr/bin/dinstaller profile download "$url" > "${tmpdir}/profile.sh"
-    exec $SHELL -c "/${tmpdir}/profile.sh";;
+    exec $SHELL "/${tmpdir}/profile.sh";;
 *)
     echo "Unrecognized suffix ${url}"
     exit 1
