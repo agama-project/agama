@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Mar 23 17:04:54 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Set system as deprecated after changing iSCSI sessions.
+- Reuse settings from previous proposal.
+- gh#yast/d-installer#484
+
+-------------------------------------------------------------------
 Wed Mar 22 16:05:14 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Added a fallback in order to prevent a proposal error when no
