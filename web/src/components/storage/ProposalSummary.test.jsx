@@ -47,22 +47,40 @@ describe("ProposalSummary", () => {
   });
 
   describe("when the proposal is calculated", () => {
-    it("renders the candidate device label", () => {
-      const proposal = {
+    let proposal;
+
+    beforeEach(() => {
+      proposal = {
         result: {
           candidateDevices: ["sdb"]
         },
         availableDevices: [
-          { id: "sda", label: "/dev/sda" },
-          { id: "sdb", label: "/dev/sdb" },
+          { id: "sda", label: "/dev/sda 300 MiB" },
+          { id: "sdb", label: "/dev/sdb 5 GiB" },
         ]
       };
+    });
 
+    it("renders the candidate device label", () => {
       installerRender(
         <ProposalSummary proposal={proposal} />
       );
 
-      screen.getByText("/dev/sdb");
+      screen.getByText("/dev/sdb 5 GiB");
+    });
+
+    describe("and the candidate device is missing", () => {
+      beforeEach(() => {
+        proposal.result.candidateDevices = ["sdc"];
+      });
+
+      it("renders the candidate device name", () => {
+        installerRender(
+          <ProposalSummary proposal={proposal} />
+        );
+
+        screen.getByText("sdc");
+      });
     });
   });
 });

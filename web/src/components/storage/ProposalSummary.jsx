@@ -35,17 +35,11 @@ export default function ProposalSummary({ proposal }) {
   const [candidateDevice] = result.candidateDevices;
   const device = proposal.availableDevices.find(d => d.id === candidateDevice);
 
-  if (device === undefined) {
-    return (
-      <Text>
-        Required device <Em>{candidateDevice}</Em> not found
-      </Text>
-    );
-  }
+  const deviceLabel = device?.label || candidateDevice;
 
   return (
     <Text>
-      Install using device <Em>{device.label}</Em> and deleting all its content
+      Install using device <Em>{deviceLabel}</Em> and deleting all its content
     </Text>
   );
 }
