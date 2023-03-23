@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { mainPagePath } from "../lib/installer";
 
 test.describe('The main page', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/cockpit/@localhost/d-installer/index.html');
+    await page.goto(mainPagePath());
   });
 
   test('has the "D-Installer" title', async ({ page }) => {
