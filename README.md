@@ -1,3 +1,4 @@
+[![CI Status](https://github.com/yast/d-installer/actions/workflows/ci.yml/badge.svg)](https://github.com/yast/d-installer/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/yast/d-installer/badge.svg?branch=master)](https://coveralls.io/github/yast/d-installer?branch=master)
 
 # D-Installer: A Service-based Linux Installer
