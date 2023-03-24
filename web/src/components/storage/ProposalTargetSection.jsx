@@ -40,7 +40,7 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
   // Temporary mini-component with temporary text for March prototype
   const SideBarTip = () => {
     return (
-      <div>If needed, use the <Sidebar.OpenButton>advanced options menu</Sidebar.OpenButton> to configure access to more disks using technologies like iSCSI or DASD (when available).</div>
+      <div>If needed, use the <Sidebar.OpenButton>advanced options menu</Sidebar.OpenButton> to configure access to more disks.</div>
     );
   };
 
