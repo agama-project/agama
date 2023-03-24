@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Mar 24 14:53:14 UTC 2023 - Knut Alejandro Anderssen González <kanderssen@suse.com>
+
+- Adjustments to allow obtaining the DASD format progress and set
+  the system as deprecated after making DASD changes.
+- gh#d-installer#501.
+
+-------------------------------------------------------------------
 Fri Mar 24 10:39:18 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.8.2
