@@ -82,11 +82,39 @@ module DInstaller
           dasd.diag_wanted
         end
 
-        # The DASD type (EKCD, FBA)
+        # The DASD device type concatenating the cutype and devtype (i.e. 3990/E9 3390/0A)
+        #
+        # @return [String] empty if unknown
+        def device_type
+          dasd.device_type || ""
+        end
+
+        ECKD = "ECKD"
+        FBA = "FBA"
+
+        # Return the type from the device type
+        #
+        # @see https://github.com/SUSE/s390-tools/blob/master/dasd_configure#L162
+        #
+        # @return [String]
+        def type_from(device_type)
+          cu_type, dev_type = device_type.split
+          return ECKD if cu_type.to_s.start_with?("3990", "2105", "2107", "1750", "9343")
+          return FBA if cu_type.to_s.start_with?("6310")
+
+          if cu_type.start_with?("3880")
+            return ECKD if dev_type.start_with?("3390")
+            return FBA if dev_type.start_with?("3370")
+          end
+
+          device_type
+        end
+
+        # The DASD type (ECKD, FBA)
         #
         # @return [String] empty if unknown
         def type
-          dasd.type || ""
+          dasd.type || type_from(device_type)
         end
 
         # Access type ('rw', 'ro')
@@ -94,6 +122,13 @@ module DInstaller
         # @return [String] empty if unknown
         def access_type
           dasd.access_type || ""
+        end
+
+        # Device status if known or 'unknown' if not
+        #
+        # @return [String] 'active', 'read_only', 'offline', 'no_format', or 'unknown'
+        def status
+          dasd.status.to_s
         end
 
         # Description of the partitions
@@ -125,7 +160,9 @@ module DInstaller
           dbus_reader(:device_name, "s")
           dbus_reader(:formatted, "b")
           dbus_reader(:diag, "b")
+          dbus_reader(:status, "s")
           dbus_reader(:type, "s")
+          dbus_reader(:device_type, "s")
           dbus_reader(:access_type, "s")
           dbus_reader(:partition_info, "s")
         end
