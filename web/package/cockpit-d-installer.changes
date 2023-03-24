@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 24 14:51:55 UTC 2023 - Knut Alejandro Anderssen González <kanderssen@suse.com>
+
+- Add UI for configuring DASD (gh#yast/d-installer#501).
+
+-------------------------------------------------------------------
 Fri Mar 24 12:50:06 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Added a tip about iSCSI and DASD configuration to the storage
