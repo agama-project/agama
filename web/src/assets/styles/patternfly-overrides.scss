@@ -121,3 +121,12 @@ section .pf-c-toolbar {
   --pf-c-toolbar--PaddingBottom: 0;
   --pf-c-toolbar--PaddingTop: 0;
 }
+
+// FIXME: these main.stack PF4/toolbar overrides are just for testing.
+.pf-c-toolbar {
+  border-block-end: 1px solid var(--color-gray-light);
+}
+
+.pf-c-text-input-group__utilities .pf-c-button {
+  padding: 0;
+}

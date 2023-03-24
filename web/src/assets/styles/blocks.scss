@@ -189,3 +189,10 @@ section > .content {
   word-break: break-all;
   white-space: pre-wrap;
 }
+
+// Make progress more compact
+.dasd-format-progress {
+  .pf-c-progress {
+    --pf-c-progress--GridGap: var(--spacer-small);
+  }
+}

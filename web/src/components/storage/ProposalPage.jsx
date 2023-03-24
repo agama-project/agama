@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useReducer, useEffect } from "react";
+import React, { useCallback, useReducer, useEffect, useState } from "react";
 import { Alert } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 
@@ -122,10 +122,28 @@ export default function ProposalPage() {
     );
   };
 
+  const DASDLink = () => {
+    const [show, setShow] = useState(false);
+
+    useEffect(() => {
+      client.dasd.isSupported().then(setShow);
+    }, []);
+
+    if (!show) return null;
+
+    return (
+      <Link to="/storage/dasd">
+        <Icon name="settings" size="24" />
+        Configure DASD
+      </Link>
+    );
+  };
+
   return (
     <Page title="Storage" icon="hard_drive" actionLabel="Back" actionVariant="secondary">
       <PageContent />
       <PageOptions title="Storage">
+        <DASDLink />
         <Link to="/storage/iscsi">
           <Icon name="settings" size="24" />
           Configure iSCSI
