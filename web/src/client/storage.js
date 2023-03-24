@@ -271,6 +271,8 @@ class DASDManager {
     return this._client;
   }
 
+  // FIXME: use info from ObjectManager instead.
+  //   https://github.com/yast/d-installer/pull/501#discussion_r1147707515
   async isSupported() {
     const proxy = await this.managerProxy();
 
