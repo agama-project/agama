@@ -23,11 +23,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon, PageActions } from "~/components/layout";
 
+// FIXME: look for a better way to allow opening the Sidebar from outside
+let openButtonRef = {};
+
 /**
  * D-Installer sidebar navigation
  */
-export default function Sidebar({ children }) {
+const Sidebar = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
+  openButtonRef = useRef(null);
   const closeButtonRef = useRef(null);
 
   const open = () => setIsOpen(true);
@@ -83,6 +87,7 @@ export default function Sidebar({ children }) {
     <>
       <PageActions>
         <button
+          ref={openButtonRef}
           onClick={open}
           className="plain-control"
           aria-label="Show navigation and other options"
@@ -125,4 +130,10 @@ export default function Sidebar({ children }) {
       </nav>
     </>
   );
-}
+};
+
+Sidebar.OpenButton = ({ children }) => (
+  <Button variant="link" isInline onClick={() => openButtonRef.current.click()}>{children}</Button>
+);
+
+export default Sidebar;

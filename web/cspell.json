@@ -22,6 +22,7 @@
         "autoconnect",
         "btrfs",
         "ccmp",
+        "dasd",
         "dbus",
         "dinstaller",
         "filecontent",

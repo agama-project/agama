@@ -20,15 +20,12 @@
  */
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@patternfly/react-core";
 
-import { If, Popup, Section } from "~/components/core";
+import { If, Popup, Section, Sidebar } from "~/components/core";
 import { ProposalSummary, ProposalTargetForm } from "~/components/storage";
 
 export default function ProposalTargetSection({ proposal, calculateProposal }) {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
 
   const onTargetChange = ({ candidateDevices }) => {
     setIsOpen(false);
@@ -36,10 +33,16 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
   };
 
   const openDeviceSelector = () => setIsOpen(true);
-  const navigateToISCSIPage = () => navigate("/storage/iscsi");
 
   const { availableDevices = [] } = proposal;
   const renderSelector = availableDevices.length > 0;
+
+  // Temporary mini-component with temporary text for March prototype
+  const SideBarTip = () => {
+    return (
+      <div>If needed, use the <Sidebar.OpenButton>advanced options menu</Sidebar.OpenButton> to configure access to more disks.</div>
+    );
+  };
 
   const Content = () => {
     return (
@@ -52,6 +55,7 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
             <Popup.Cancel onClick={() => setIsOpen(false)} autoFocus />
           </Popup.Actions>
         </Popup>
+        <SideBarTip />
       </>
     );
   };
@@ -60,8 +64,7 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
     return (
       <div className="stack">
         <div className="bold">No devices found</div>
-        <div>Please, configure iSCSI targets in order to find available devices for installation.</div>
-        <Button variant="primary" onClick={navigateToISCSIPage}>Configure iSCSI</Button>
+        <SideBarTip />
       </div>
     );
   };

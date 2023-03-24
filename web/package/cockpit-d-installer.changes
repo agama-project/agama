@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 24 12:50:06 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Added a tip about iSCSI and DASD configuration to the storage
+  page (gh#yast/d-installer#500).
+
+-------------------------------------------------------------------
 Fri Mar 24 10:39:45 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.8.2
