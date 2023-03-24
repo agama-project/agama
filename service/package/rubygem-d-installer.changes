@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 24 10:39:18 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 0.8.2
+
+-------------------------------------------------------------------
 Thu Mar 23 17:04:54 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Set system as deprecated after changing iSCSI sessions.

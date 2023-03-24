@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 24 10:39:45 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 0.8.2
+
+-------------------------------------------------------------------
 Thu Mar 23 17:07:29 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Reprobe storage if the system becomes deprecated
