@@ -22,6 +22,7 @@
 import React from "react";
 import { screen, waitForElementToBeRemoved } from "@testing-library/react";
 import { installerRender, mockComponent } from "~/test-utils";
+import { noop } from "~/utils";
 import { createClient } from "~/client";
 import { ProposalPage } from "~/components/storage";
 
@@ -50,7 +51,9 @@ beforeEach(() => {
           getData: jest.fn().mockResolvedValue(proposal),
           calculate: jest.fn().mockResolvedValue(0)
         },
-        getValidationErrors: jest.fn().mockResolvedValue([])
+        getValidationErrors: jest.fn().mockResolvedValue([]),
+        isDeprecated: jest.fn().mockResolvedValue(false),
+        onDeprecate: noop
       }
     };
   });

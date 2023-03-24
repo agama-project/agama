@@ -22,7 +22,7 @@
 import React from "react";
 
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import { ProposalTargetForm } from "~/components/storage";
 
 const proposal = {
@@ -38,7 +38,7 @@ const onSubmitFn = jest.fn();
 
 describe("ProposalTargetForm", () => {
   it("renders a selector for choosing candidate devices among available devices in given proposal", () => {
-    installerRender(
+    plainRender(
       <ProposalTargetForm proposal={proposal} />
     );
 
@@ -49,7 +49,7 @@ describe("ProposalTargetForm", () => {
 
   describe("Selector for choosing candidate devices", () => {
     it("gets its initial value from given proposal", () => {
-      installerRender(
+      plainRender(
         <ProposalTargetForm proposal={proposal} />
       );
 
@@ -58,7 +58,7 @@ describe("ProposalTargetForm", () => {
     });
 
     it("changes its value when user changes the selection", async () => {
-      const { user } = installerRender(
+      const { user } = plainRender(
         <ProposalTargetForm proposal={proposal} />
       );
 
@@ -88,7 +88,7 @@ describe("ProposalTargetForm", () => {
         );
       };
 
-      const { user } = installerRender(<FormWrapper />);
+      const { user } = plainRender(<FormWrapper />);
 
       const deviceSelector = screen.getByRole("combobox");
       const sdbOption = within(deviceSelector).getByRole("option", { name: "/dev/sdb, 650 GiB" });

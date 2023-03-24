@@ -41,6 +41,11 @@ module DInstaller
     #   proposal.calculate(settings)  #=> true
     #   proposal.calculated_volumes   #=> [Volume, Volume]
     class Proposal
+      # Settings used for calculating the proposal
+      #
+      # @return [ProposalSettings, nil]
+      attr_reader :settings
+
       # Constructor
       #
       # @param logger [Logger]
@@ -49,6 +54,10 @@ module DInstaller
         @logger = logger
         @config = config
         @on_calculate_callbacks = []
+      end
+
+      def reset
+        @settings = nil
       end
 
       # Stores callbacks to be call after calculating a proposal
@@ -114,14 +123,14 @@ module DInstaller
 
       # Calculates a new proposal
       #
-      # @param settings [ProposalSettings] settings to calculate the proposal
+      # @param settings [ProposalSettings, nil] settings to calculate the proposal
       # @return [Boolean] whether the proposal was correctly calculated
       def calculate(settings = nil)
-        settings ||= ProposalSettings.new
-        settings.freeze
-        proposal_settings = to_y2storage_settings(settings)
+        @settings = settings || ProposalSettings.new
+        @settings.freeze
+        y2storage_settings = to_y2storage_settings(@settings)
 
-        @proposal = new_proposal(proposal_settings)
+        @proposal = new_proposal(y2storage_settings)
         storage_manager.proposal = proposal
 
         @on_calculate_callbacks.each(&:call)
@@ -145,9 +154,10 @@ module DInstaller
         return [] if proposal.nil?
 
         [
-          validate_proposal,
-          validate_available_devices,
-          validate_candidate_devices
+          empty_available_devices_error,
+          empty_candidate_devices_error,
+          missing_candidate_devices_error,
+          proposal_error
         ].compact
       end
 
@@ -248,22 +258,30 @@ module DInstaller
         Y2Storage::StorageManager.instance
       end
 
-      def validate_proposal
-        return if candidate_devices.empty? || !proposal.failed?
-
-        ValidationError.new("Cannot accommodate the required file systems for installation")
-      end
-
-      def validate_available_devices
+      def empty_available_devices_error
         return if available_devices.any?
 
         ValidationError.new("There is no suitable device for installation")
       end
 
-      def validate_candidate_devices
-        return if available_devices.empty? || candidate_devices.any?
+      def empty_candidate_devices_error
+        return if candidate_devices.any?
 
         ValidationError.new("No devices are selected for installation")
+      end
+
+      def missing_candidate_devices_error
+        available_names = available_devices.map(&:name)
+        missing = candidate_devices - available_names
+        return if missing.none?
+
+        ValidationError.new("Some selected devices are not found in the system")
+      end
+
+      def proposal_error
+        return unless proposal.failed?
+
+        ValidationError.new("Cannot accommodate the required file systems for installation")
       end
 
       # Adjusts the encryption-related settings of the given Y2Storage::ProposalSettings object

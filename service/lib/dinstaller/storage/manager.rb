@@ -29,6 +29,7 @@ require "dinstaller/storage/iscsi/manager"
 require "dinstaller/storage/finisher"
 require "dinstaller/with_progress"
 require "dinstaller/security"
+require "dinstaller/validation_error"
 require "dinstaller/dbus/clients/questions"
 require "dinstaller/dbus/clients/software"
 
@@ -40,13 +41,23 @@ module DInstaller
     class Manager
       include WithProgress
 
+      # Whether the system is in a deprecated status
+      #
+      # The system is usually set as deprecated as effect of managing some kind of devices, for
+      # example, when iSCSI sessions are created.
+      #
+      # A deprecated system means that the probed system could not match with the current system.
+      attr_accessor :deprecated_system
+
       def initialize(config, logger)
         @config = config
         @logger = logger
+        @deprecated_system = false
       end
 
       # Probes storage devices and performs an initial proposal
       def probe
+        @deprecated_system = false
         start_progress(4)
         config.pick_product(software.selected_product)
         progress.step("Activating storage devices") { activate_devices }
@@ -97,7 +108,15 @@ module DInstaller
       #
       # @return [Array<ValidationError>] List of validation errors
       def validate
-        proposal.validate
+        errors = [deprecated_system_error] + proposal.validate
+        errors.compact
+      end
+
+      # Returns the client to ask the software service
+      #
+      # @return [DInstaller::DBus::Clients::Software]
+      def software
+        @software ||= DBus::Clients::Software.new
       end
 
     private
@@ -126,12 +145,18 @@ module DInstaller
         Y2Storage::StorageManager.instance.probe(Y2Storage::Callbacks::UserProbe.new)
       end
 
-      # Calculates the default proposal
+      # Calculates the proposal
+      #
+      # It reuses the settings from the previous proposal, if any.
       def calculate_proposal
-        settings = ProposalSettings.new
-        # FIXME: by now, the UI only allows to select one disk
-        device = proposal.available_devices.first&.name
-        settings.candidate_devices << device if device
+        settings = proposal.settings
+
+        if !settings
+          settings = ProposalSettings.new
+          # FIXME: by now, the UI only allows to select one disk
+          device = proposal.available_devices.first&.name
+          settings.candidate_devices << device if device
+        end
 
         proposal.calculate(settings)
       end
@@ -146,6 +171,15 @@ module DInstaller
         Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, packages)
       end
 
+      # Returns an error if the system is deprecated
+      #
+      # @return [ValidationError, nil]
+      def deprecated_system_error
+        return unless deprecated_system
+
+        ValidationError.new("The system devices have changed")
+      end
+
       # Security manager
       #
       # @return [Security]
@@ -158,13 +192,6 @@ module DInstaller
       # @return [DInstaller::DBus::Clients::Questions]
       def questions_client
         @questions_client ||= DInstaller::DBus::Clients::Questions.new(logger: logger)
-      end
-
-      # Returns the client to ask the software service
-      #
-      # @return [DInstaller::DBus::Clients::Software]
-      def software
-        @software ||= DBus::Clients::Software.new
       end
     end
   end

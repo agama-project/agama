@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -43,7 +43,7 @@ describe("when there are multiple errors", () => {
     ];
 
     const { user } = plainRender(<ValidationErrors title="Errors" errors={errors} />);
-    const button = await screen.findByRole("link", { name: "2 errors found" });
+    const button = await screen.findByRole("button", { name: "2 errors found" });
     await user.click(button);
 
     await waitFor(() => {

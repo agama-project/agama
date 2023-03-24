@@ -55,7 +55,9 @@ beforeEach(() => {
         }),
         onProgressChange: noop,
         getValidationErrors: jest.fn().mockResolvedValue(errors),
-        onStatusChange: onStatusChangeFn
+        onStatusChange: onStatusChangeFn,
+        isDeprecated: jest.fn().mockResolvedValue(false),
+        onDeprecate: noop
       },
     };
   });

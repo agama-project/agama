@@ -28,6 +28,8 @@ jest.mock("./dbus");
 
 const cockpitProxies = {};
 
+const cockpitCallbacks = {};
+
 const contexts = {
   withoutProposal: () => {
     cockpitProxies.proposal = null;
@@ -105,6 +107,7 @@ const contexts = {
 
 const mockProxy = (iface, path) => {
   switch (iface) {
+    case "org.opensuse.DInstaller.Storage1": return cockpitProxies.storage;
     case "org.opensuse.DInstaller.Storage1.Proposal": return cockpitProxies.proposal;
     case "org.opensuse.DInstaller.Storage1.Proposal.Calculator": return cockpitProxies.proposalCalculator;
     case "org.opensuse.DInstaller.Storage1.ISCSI.Initiator": return cockpitProxies.iscsiInitiator;
@@ -118,18 +121,98 @@ const mockProxies = (iface) => {
   }
 };
 
-let client;
+const mockOnObjectChanged = (path, iface, handler) => {
+  if (!cockpitCallbacks[path]) cockpitCallbacks[path] = {};
+  cockpitCallbacks[path][iface] = handler;
+};
+
+const emitSignal = (path, iface, data) => {
+  if (!cockpitCallbacks[path]) return;
+
+  const handler = cockpitCallbacks[path][iface];
+  if (!handler) return;
+
+  return handler(data);
+};
 
 beforeEach(() => {
   // @ts-ignore
   DBusClient.mockImplementation(() => {
     return {
       proxy: mockProxy,
-      proxies: mockProxies
+      proxies: mockProxies,
+      onObjectChanged: mockOnObjectChanged
     };
   });
+});
 
-  client = new StorageClient();
+let client;
+
+describe("#probe", () => {
+  beforeEach(() => {
+    cockpitProxies.storage = {
+      Probe: jest.fn()
+    };
+
+    client = new StorageClient();
+  });
+
+  it("probes the system", async () => {
+    await client.probe();
+    expect(cockpitProxies.storage.Probe).toHaveBeenCalled();
+  });
+});
+
+describe("#isDeprecated", () => {
+  describe("if the system is not deprecated", () => {
+    beforeEach(() => {
+      cockpitProxies.storage = {
+        DeprecatedSystem: false
+      };
+
+      client = new StorageClient();
+    });
+
+    it("returns false", async () => {
+      const result = await client.isDeprecated();
+      expect(result).toEqual(false);
+    });
+  });
+});
+
+describe("#onDeprecate", () => {
+  const handler = jest.fn();
+
+  beforeEach(() => {
+    client = new StorageClient();
+    client.onDeprecate(handler);
+  });
+
+  describe("if the system was not deprecated", () => {
+    beforeEach(() => {
+      emitSignal(
+        "/org/opensuse/DInstaller/Storage1",
+        "org.opensuse.DInstaller.Storage1",
+        {});
+    });
+
+    it("does not run the handler", async () => {
+      expect(handler).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("if the system was deprecated", () => {
+    beforeEach(() => {
+      emitSignal(
+        "/org/opensuse/DInstaller/Storage1",
+        "org.opensuse.DInstaller.Storage1",
+        { DeprecatedSystem: true });
+    });
+
+    it("runs the handler", async () => {
+      expect(handler).not.toHaveBeenCalled();
+    });
+  });
 });
 
 describe("#proposal", () => {
@@ -170,6 +253,7 @@ describe("#proposal", () => {
     beforeEach(() => {
       contexts.withAvailableDevices();
       contexts.withProposal();
+      client = new StorageClient();
     });
 
     it("returns the available devices and the proposal result", async () => {
@@ -182,6 +266,7 @@ describe("#proposal", () => {
   describe("#getAvailableDevices", () => {
     beforeEach(() => {
       contexts.withAvailableDevices();
+      client = new StorageClient();
     });
 
     it("returns the list of available devices", async () => {
@@ -194,6 +279,7 @@ describe("#proposal", () => {
     describe("if there is no proposal yet", () => {
       beforeEach(() => {
         contexts.withoutProposal();
+        client = new StorageClient();
       });
 
       it("returns undefined", async () => {
@@ -205,6 +291,7 @@ describe("#proposal", () => {
     describe("if there is a proposal", () => {
       beforeEach(() => {
         contexts.withProposal();
+        client = new StorageClient();
       });
 
       it("returns the proposal settings and actions", async () => {
@@ -219,6 +306,8 @@ describe("#proposal", () => {
       cockpitProxies.proposalCalculator = {
         Calculate: jest.fn()
       };
+
+      client = new StorageClient();
     });
 
     it("calculates a default proposal when no settings are given", async () => {
@@ -276,6 +365,10 @@ describe("#proposal", () => {
 });
 
 describe("#iscsi", () => {
+  beforeEach(() => {
+    client = new StorageClient();
+  });
+
   describe("#getInitiatorName", () => {
     beforeEach(() => {
       cockpitProxies.iscsiInitiator = {

@@ -29,6 +29,7 @@ require "dinstaller/storage/volume"
 require "dinstaller/storage/iscsi/manager"
 require "dinstaller/storage/dasd/manager"
 require "dinstaller/dbus/storage/dasds_tree"
+require "dinstaller/dbus/clients/software"
 require "y2storage"
 require "dbus"
 
@@ -41,6 +42,7 @@ describe DInstaller::DBus::Storage::Manager do
     instance_double(DInstaller::Storage::Manager,
       proposal:           proposal,
       iscsi:              iscsi,
+      software:           software,
       on_progress_change: nil,
       on_progress_finish: nil)
   end
@@ -52,11 +54,38 @@ describe DInstaller::DBus::Storage::Manager do
   let(:settings) { nil }
 
   let(:iscsi) do
-    instance_double(DInstaller::Storage::ISCSI::Manager, on_activate: nil, on_probe: nil)
+    instance_double(DInstaller::Storage::ISCSI::Manager,
+      on_activate:        nil,
+      on_probe:           nil,
+      on_sessions_change: nil)
   end
+
+  let(:software) { instance_double(DInstaller::DBus::Clients::Software, on_product_selected: nil) }
 
   before do
     allow(Yast::Arch).to receive(:s390).and_return false
+  end
+
+  describe "#deprecated_system" do
+    before do
+      allow(backend).to receive(:deprecated_system).and_return(deprecated)
+    end
+
+    context "if the system is set as deprecated" do
+      let(:deprecated) { true }
+
+      it "returns true" do
+        expect(subject.deprecated_system).to eq(true)
+      end
+    end
+
+    context "if the system is not set as deprecated" do
+      let(:deprecated) { false }
+
+      it "returns false" do
+        expect(subject.deprecated_system).to eq(false)
+      end
+    end
   end
 
   describe "#available_devices" do

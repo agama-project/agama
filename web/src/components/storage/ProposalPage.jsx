@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useReducer, useEffect } from "react";
+import React, { useCallback, useReducer, useEffect } from "react";
 import { Alert } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 
@@ -34,24 +34,21 @@ import {
 } from "~/components/storage";
 
 const initialState = {
-  busy: false,
+  loading: false,
   proposal: undefined,
   errors: []
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "SET_BUSY" : {
-      return { ...state, busy: true };
+    case "UPDATE_LOADING" : {
+      const { loading } = action.payload;
+      return { ...state, loading };
     }
 
-    case "LOAD": {
+    case "UPDATE_PROPOSAL": {
       const { proposal, errors } = action.payload;
-      return { ...state, proposal, errors, busy: false };
-    }
-
-    case "CALCULATE": {
-      return initialState;
+      return { ...state, proposal, errors };
     }
 
     default: {
@@ -61,34 +58,46 @@ const reducer = (state, action) => {
 };
 
 export default function ProposalPage() {
-  const client = useInstallerClient();
+  const { storage: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const loadProposal = useCallback(async (hooks = {}) => {
+    dispatch({ type: "UPDATE_LOADING", payload: { loading: true } });
+
+    if (hooks.before !== undefined) await cancellablePromise(hooks.before());
+    const proposal = await cancellablePromise(client.proposal.getData());
+    const errors = await cancellablePromise(client.getValidationErrors());
+
+    dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
+    dispatch({ type: "UPDATE_LOADING", payload: { loading: false } });
+  }, [client, cancellablePromise]);
+
   useEffect(() => {
-    const loadProposal = async () => {
-      dispatch({ type: "SET_BUSY" });
-
-      const proposal = await cancellablePromise(client.storage.proposal.getData());
-      const errors = await cancellablePromise(client.storage.getValidationErrors());
-
-      dispatch({
-        type: "LOAD",
-        payload: { proposal, errors }
-      });
+    const probeAndLoad = async () => {
+      await loadProposal({ before: () => client.probe() });
     };
 
-    if (!state.proposal) loadProposal().catch(console.error);
-  }, [client.storage, cancellablePromise, state.proposal]);
+    const load = async () => {
+      const isDeprecated = await cancellablePromise(client.isDeprecated());
+      isDeprecated ? probeAndLoad() : loadProposal();
+    };
+
+    load().catch(console.error);
+
+    return client.onDeprecate(() => probeAndLoad());
+  }, [client, cancellablePromise, loadProposal]);
 
   const calculateProposal = async (settings) => {
-    dispatch({ type: "SET_BUSY" });
-    await client.storage.proposal.calculate({ ...state.proposal.result, ...settings });
-    dispatch({ type: "CALCULATE" });
+    const calculate = async () => {
+      await client.proposal.calculate({ ...state.proposal.result, ...settings });
+    };
+
+    loadProposal({ before: calculate }).catch(console.error);
   };
 
   const PageContent = () => {
-    if (state.busy || state.proposal?.result === undefined) return <SectionSkeleton lines={3} />;
+    if (state.loading || state.proposal?.result === undefined) return <SectionSkeleton lines={3} />;
 
     return (
       <>

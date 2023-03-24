@@ -75,13 +75,16 @@ export default function StorageSection({ showErrors }) {
 
   useEffect(() => {
     const updateProposal = async () => {
+      const isDeprecated = await cancellablePromise(client.isDeprecated());
+      if (isDeprecated) await cancellablePromise(client.probe());
+
       const proposal = await cancellablePromise(client.proposal.getData());
       const errors = await cancellablePromise(client.getValidationErrors());
 
       dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
     };
 
-    updateProposal();
+    if (!state.busy) updateProposal();
   }, [client, cancellablePromise, state.busy]);
 
   useEffect(() => {
@@ -101,6 +104,10 @@ export default function StorageSection({ showErrors }) {
       });
     });
   }, [client, cancellablePromise]);
+
+  useEffect(() => {
+    return client.onDeprecate(() => client.probe());
+  }, [client]);
 
   const errors = showErrors ? state.errors : [];
 

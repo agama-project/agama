@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Form,
@@ -29,6 +29,17 @@ import { DeviceSelector } from "~/components/storage";
 
 export default function ProposalTargetForm({ id, proposal, onSubmit }) {
   const [candidateDevices, setCandidateDevices] = useState(proposal.result.candidateDevices);
+
+  useEffect(() => {
+    const existCandidates = () => {
+      const devices = proposal.result.candidateDevices;
+      const device = proposal.availableDevices.find(d => d.id === devices[0]);
+      return device !== undefined;
+    };
+
+    if (!existCandidates())
+      setCandidateDevices([proposal.availableDevices[0].id]);
+  }, [proposal]);
 
   const accept = (e) => {
     e.preventDefault();

@@ -24,6 +24,7 @@
 import DBusClient from "./dbus";
 import { WithStatus, WithProgress, WithValidation } from "./mixins";
 
+const STORAGE_IFACE = "org.opensuse.DInstaller.Storage1";
 const PROPOSAL_CALCULATOR_IFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator";
 const ISCSI_NODE_IFACE = "org.opensuse.DInstaller.Storage1.ISCSI.Node";
 const ISCSI_NODES_NAMESPACE = "/org/opensuse/DInstaller/Storage1/iscsi_nodes";
@@ -59,7 +60,9 @@ class ProposalManager {
    */
   constructor(client) {
     this.client = client;
-    this.proxies = {};
+    this.proxies = {
+      proposalCalculator: this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_OBJECT)
+    };
   }
 
   /**
@@ -95,7 +98,7 @@ class ProposalManager {
       };
     };
 
-    const proxy = await this.proposalCalculatorProxy();
+    const proxy = await this.proxies.proposalCalculator;
     return proxy.AvailableDevices.map(buildDevice);
   }
 
@@ -214,21 +217,8 @@ class ProposalManager {
       Volumes: { t: "aa{sv}", v: volumes?.map(dbusVolume) }
     });
 
-    const proxy = await this.proposalCalculatorProxy();
+    const proxy = await this.proxies.proposalCalculator;
     return proxy.Calculate(settings);
-  }
-
-  /**
-   * @private
-   * Proxy for org.opensuse.DInstaller.Storage1.Proposal.Calculator iface
-   *
-   * @returns {Promise<object>}
-   */
-  async proposalCalculatorProxy() {
-    if (!this.proxies.proposalCalculator)
-      this.proxies.proposalCalculator = await this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_OBJECT);
-
-    return this.proxies.proposalCalculator;
   }
 
   /**
@@ -516,6 +506,40 @@ class StorageBaseClient {
     this.client = new DBusClient(StorageBaseClient.SERVICE, address);
     this.proposal = new ProposalManager(this.client);
     this.iscsi = new ISCSIManager(StorageBaseClient.SERVICE, address);
+    this.proxies = {
+      storage: this.client.proxy(STORAGE_IFACE)
+    };
+  }
+
+  /**
+   * Probes the system
+   */
+  async probe() {
+    const proxy = await this.proxies.storage;
+    return proxy.Probe();
+  }
+
+  /**
+   * Whether the system is in a deprecated status
+   *
+   * @returns {Promise<boolean>}
+   */
+  async isDeprecated() {
+    const proxy = await this.proxies.storage;
+    return proxy.DeprecatedSystem;
+  }
+
+  /**
+   * Runs a handler function when the system becomes deprecated
+   *
+   * @callback handlerFn
+   *
+   * @param {handlerFn} handler
+   */
+  onDeprecate(handler) {
+    return this.client.onObjectChanged(STORAGE_OBJECT, STORAGE_IFACE, (changes) => {
+      if (changes.DeprecatedSystem?.v) return handler();
+    });
   }
 }
 

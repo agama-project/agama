@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -73,8 +73,13 @@ const ValidationErrors = ({ title = "Errors", errors }) => {
     return (
       <>
         <div className="color-warn">
-          { warningIcon }
-          <a href="#" onClick={() => setPopoverVisible(true)}>{`${errors.length} errors found`}</a>
+          <button
+            style={{ padding: "0", borderBottom: "1px solid" }}
+            className="plain-control color-warn"
+            onClick={() => setPopoverVisible(true)}
+          >
+            { warningIcon } {`${errors.length} errors found`}
+          </button>
           <Popover
             isVisible={popoverVisible}
             position="right"
