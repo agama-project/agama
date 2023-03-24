@@ -132,7 +132,7 @@ module DInstaller
           @running = false
           @exit_code = exit_code
           Finished(exit_code)
-          dbus_properties_changed(JOB_INTERFACE, interfaces_and_properties.slice(JOB_INTERFACE), [])
+          dbus_properties_changed(JOB_INTERFACE, interfaces_and_properties[JOB_INTERFACE], [])
         end
 
         # Updates the internal status information
