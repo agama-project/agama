@@ -162,10 +162,16 @@ const useLocalStorage = (storageKey, fallbackState) => {
   return [value, setValue];
 };
 
+const hex = (value) => {
+  const sanitizedValue = value.replaceAll(".", "");
+  return parseInt(sanitizedValue, 16);
+};
+
 export {
   noop,
   partition,
   classNames,
   useCancellablePromise,
-  useLocalStorage
+  useLocalStorage,
+  hex
 };

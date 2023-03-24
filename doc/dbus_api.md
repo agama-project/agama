@@ -593,6 +593,7 @@ DeviceName    readable s
 Formatted     readable b
 Diag          readable b
 Type          readable s
+Status        readable s
 AccessType    readable s
 PartitionInfo readable s
 ~~~
@@ -608,6 +609,7 @@ string `AccessType` could be replaced by a boolean `ReadOnly`).
 * `Formatted`: whether the device is formatted.
 * `Diag`: Whether the DIAG access method is used (or will be used when the device is enabled).
 * `Type`: The DASD type (eg. EKCD or FBA).
+* `Status`: Device status according to lsdasd (eg. "offline", "active", "active(ro)")
 * `AccessType`: Empty string if unknown. Either "rw" or "ro" otherwise.
 * `PartitionInfo`: Partition names (and sometimes their type) separated by commas.
   Eg. "_/dev/dasda1 (Linux native), /dev/dasda2 (Linux native)_". Empty if the information is unknown.

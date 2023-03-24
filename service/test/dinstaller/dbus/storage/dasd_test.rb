@@ -29,7 +29,8 @@ describe DInstaller::DBus::Storage::Dasd do
   let(:y2s390_dasd2) do
     instance_double(
       "Y2S390::Dasd", id: "0.0.002", offline?: true, device_name: nil, formatted?: false,
-      diag_wanted: false, type: nil, access_type: nil, partition_info: ""
+      diag_wanted: false, type: nil, access_type: nil, partition_info: "", status: :unknown,
+      device_type: ""
     )
   end
   let(:path) { "/org/opensuse/DInstaller/Storage1/dasds/1" }

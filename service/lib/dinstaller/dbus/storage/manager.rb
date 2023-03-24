@@ -65,7 +65,7 @@ module DInstaller
           return unless Yast::Arch.s390
 
           singleton_class.include DBus::Interfaces::Dasd
-          register_dasd_callbacks
+          register_and_extend_dasd_callbacks
         end
 
         STORAGE_INTERFACE = "org.opensuse.DInstaller.Storage1"
@@ -267,6 +267,14 @@ module DInstaller
         def register_software_callbacks
           backend.software.on_product_selected do |_product|
             backend.proposal.reset
+          end
+        end
+
+        def register_and_extend_dasd_callbacks
+          register_dasd_callbacks
+
+          dasd_backend.on_refresh do |_|
+            deprecate_system
           end
         end
 

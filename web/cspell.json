@@ -23,6 +23,7 @@
         "btrfs",
         "ccmp",
         "dasd",
+        "dasds",
         "dbus",
         "dinstaller",
         "filecontent",
