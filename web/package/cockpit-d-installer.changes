@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 24 15:30:48 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 0.8.3
+
+-------------------------------------------------------------------
 Fri Mar 24 14:51:55 UTC 2023 - Knut Alejandro Anderssen González <kanderssen@suse.com>
 
 - Add UI for configuring DASD (gh#yast/d-installer#501).
