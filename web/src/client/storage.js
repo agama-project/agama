@@ -464,7 +464,6 @@ class DASDManager {
    * @property {string} partitionInfo
    * @property {string} status
    * @property {string} type
-   * @property {string} device_type
    */
   buildDevice(device) {
     const id = device.path.split("/").slice(-1)[0];
@@ -481,8 +480,7 @@ class DASDManager {
       name: device.DeviceName,
       partitionInfo: enabled ? device.PartitionInfo : "",
       status: device.Status,
-      type: device.Type,
-      device_type: device.DeviceType
+      type: device.Type
     };
   }
 

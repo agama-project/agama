@@ -162,7 +162,6 @@ module DInstaller
           dbus_reader(:diag, "b")
           dbus_reader(:status, "s")
           dbus_reader(:type, "s")
-          dbus_reader(:device_type, "s")
           dbus_reader(:access_type, "s")
           dbus_reader(:partition_info, "s")
         end
