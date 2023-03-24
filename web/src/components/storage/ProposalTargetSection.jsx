@@ -37,6 +37,13 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
   const { availableDevices = [] } = proposal;
   const renderSelector = availableDevices.length > 0;
 
+  // Temporary mini-component with temporary text for March prototype
+  const SideBarTip = () => {
+    return (
+      <div>If needed, use the <Sidebar.OpenButton>advanced options menu</Sidebar.OpenButton> to configure access to more disks using technologies like iSCSI or DASD (when available).</div>
+    );
+  };
+
   const Content = () => {
     return (
       <>
@@ -48,6 +55,7 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
             <Popup.Cancel onClick={() => setIsOpen(false)} autoFocus />
           </Popup.Actions>
         </Popup>
+        <SideBarTip />
       </>
     );
   };
@@ -56,7 +64,7 @@ export default function ProposalTargetSection({ proposal, calculateProposal }) {
     return (
       <div className="stack">
         <div className="bold">No devices found</div>
-        <div>Please, <Sidebar.OpenButton>configure</Sidebar.OpenButton> storage devices in order to make them available for installation.</div>
+        <SideBarTip />
       </div>
     );
   };
