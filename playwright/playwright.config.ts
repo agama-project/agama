@@ -27,15 +27,17 @@ const config: PlaywrightTestConfig = {
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Because of test dependencies or race conditions run all tests in sequence, */
+  /* later we could use a serial-parallel approach using the test lists, */
+  /* see https://playwright.dev/docs/test-parallel#use-a-test-list-file */
+  workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: process.env.GITHUB_ACTIONS ? 'github' : 'list',
   globalSetup: require.resolve('./global-setup'),
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
-    actionTimeout: 0,
+    actionTimeout: 30000,
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.BASE_URL || 'http://localhost:9090',
 

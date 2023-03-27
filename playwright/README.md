@@ -39,6 +39,22 @@ To run just a specific test:
 npx playwright test tests/root_password.spec.ts
 ```
 
+## Updating the Screenshots
+
+There is one test specially designed for refreshing the screenshots displayed
+in the main `README.md` file.
+
+To fully run the installation run this:
+
+```
+RUN_INSTALLATION=1 BASE_URL=https://<host>:9090 npx playwright test --headed take_screenshots
+```
+
+The `--headed` option shows the browser window so you can see the progress.
+You can use the `--debug` option to run the test step-by-step.
+
+The screenshots are saved to the `screenshots/` subdirectory.
+
 ## Target Server
 
 By default the tests use the installer instance running locally at
