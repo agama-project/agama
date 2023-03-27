@@ -23,6 +23,9 @@ D-Installer is a new Linux installer born in the core of the YaST team. It is de
 |-|-|
 | ![Installing](./doc/images/screenshots/installing.png) | ![Installation finished](./doc/images/screenshots/finished.png) |
 
+*Note for developers: For updating the screenshots see the
+[integration test documentation](playwright/README.md#updating-the-screenshots).*
+
 </details>
 
 ## Table of Content
