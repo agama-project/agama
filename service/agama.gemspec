@@ -21,16 +21,16 @@
 # find current contact information at www.suse.com.
 
 Gem::Specification.new do |spec|
-  spec.name = "d-installer"
+  spec.name = "agama"
   spec.version = File.read("VERSION").chomp
-  spec.summary = "D-Installer Service"
-  spec.description = "System service for D-Installer, an experimental YaST-based installer."
+  spec.summary = "Agama Installer Service"
+  spec.description = "System service for Agama, an experimental YaST-based installer."
   spec.author = "YaST Team"
   spec.email = "yast-devel@opensuse.org"
-  spec.homepage = "https://github.com/yast/d-installer"
+  spec.homepage = "https://github.com/yast/agama"
   spec.license = "GPL-2.0-only"
   spec.files = Dir["lib/**/*.rb", "bin/*", "share/*", "etc/*"]
-  spec.executables = ["d-installer"]
+  spec.executables = ["agamad"]
   spec.metadata = { "rubygems_mfa_required" => "true" }
 
   spec.required_ruby_version = ">= 2.5.0"
