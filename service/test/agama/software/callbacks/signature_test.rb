@@ -94,7 +94,7 @@ describe Agama::Software::Callbacks::Signature do
       {
         "id"          => "0123456789ABCDEF",
         "fingerprint" => "2E2EA448C9DDD7A91BC28441AEE969E90F05DB9D",
-        "name"        => "YaST:Head:D-Installer"
+        "name"        => "YaST:Head:Agama"
       }
     end
 

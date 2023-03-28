@@ -4,12 +4,12 @@
 
 sudo rpm --import https://build.opensuse.org/projects/YaST/public_key
 sudo zypper ar -f \
-  https://download.opensuse.org/repositories/YaST:/Head:/D-Installer/openSUSE_Tumbleweed/YaST:Head:D-Installer.repo
-RUBY_VERSION=ruby:`rpm --eval '%{rb_ver}'`
+	https://download.opensuse.org/repositories/YaST:/Head:/D-Installer/openSUSE_Tumbleweed/YaST:Head:Agama.repo
+RUBY_VERSION=ruby:$(rpm --eval '%{rb_ver}')
 sudo zypper --non-interactive in --no-recommends \
-  "rubygem($RUBY_VERSION:d-installer)" \
-  cockpit-d-installer \
-  cockpit
+	"rubygem($RUBY_VERSION:d-installer)" \
+	cockpit-d-installer \
+	cockpit
 
 sudo systemctl start cockpit
 sudo systemctl start d-installer
