@@ -127,7 +127,7 @@ $ sudo bundle exec bin/agama
 ```console
 $ busctl --address=unix:path=/run/agama/bus \
     call \
-    org.opensuse.Agama \
+    org.opensuse.Agama1 \
    /org/opensuse/Agama1/Manager \
     org.opensuse.Agama1.Manager \
     CanInstall

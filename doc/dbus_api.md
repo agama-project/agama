@@ -111,95 +111,95 @@ Iface: o.o.Agama.Software1
 -  PropertiesChanged ( only standard one from org.freedesktop.DBus.Properties interface )
 
 
-## `org.opensuse.DInstaller.Storage1` Service
+## `org.opensuse.Agama.Storage1` Service
 
 Service for managing storage devices.
 
 ### Overview
 
 ~~~
-/DInstaller/Storage1
+/Agama/Storage1
   .ObjectManager
-  .DInstaller.ServiceStatus1
-  .DInstaller.Progress1
-  .DInstaller.Validation1
-  .DInstaller.Storage1
-  .DInstaller.Storage1.Proposal.Calculator
-  .DInstaller.Storage1.ISCSI.Initiator
-  .DInstaller.Storage1.DASD.Manager (Only available on s390 systems)
-/DInstaller/Storage1/Proposal
-  .DInstaller.Storage1.Proposal
-/DInstaller/Storage1/iscsi_nodes/[0-9]+
-  .DInstaller.Storage1.ISCSI.Node
-/DInstaller/Storage1/dasds/[0-9]+ (Only available on s390 systems)
-  .DInstaller.Storage1.DASD.device
-/DInstaller/Storage1/jobs/[0-9]+
-  .DInstaller.Storage1.Job
-  .DInstaller.Storage1.DASD.Format
+  .Agama1.ServiceStatus
+  .Agama1.Progress
+  .Agama1.Validation
+  .Agama.Storage1
+  .Agama.Storage1.Proposal.Calculator
+  .Agama.Storage1.ISCSI.Initiator
+  .Agama.Storage1.DASD.Manager (Only available on s390 systems)
+/Agama/Storage1/Proposal
+  .Agama.Storage1.Proposal
+/Agama/Storage1/iscsi_nodes/[0-9]+
+  .Agama.Storage1.ISCSI.Node
+/Agama/Storage1/dasds/[0-9]+ (Only available on s390 systems)
+  .Agama.Storage1.DASD.device
+/Agama/Storage1/jobs/[0-9]+
+  .Agama.Storage1.Job
+  .Agama.Storage1.DASD.Format
 ~~~
 
 ### D-Bus Objects
 
-#### `/org/opensuse/DInstaller/Storage1` Object
+#### `/org/opensuse/Agama/Storage1` Object
 
 ~~~
-/DInstaller/Storage1
+/Agama/Storage1
   .ObjectManager
-  .DInstaller.ServiceStatus1
-  .DInstaller.Progress1
-  .DInstaller.Validation1
-  .DInstaller.Storage1
-  .DInstaller.Storage1.Proposal.Calculator
-  .DInstaller.Storage1.ISCSI.Initiator
-  .DInstaller.Storage1.DASD.manager
+  .Agama1.ServiceStatus
+  .Agama1.Progress
+  .Agama1.Validation
+  .Agama.Storage1
+  .Agama.Storage1.Proposal.Calculator
+  .Agama.Storage1.ISCSI.Initiator
+  .Agama.Storage1.DASD.manager
 ~~~
 
-Main object exported by the service `org.opensuse.DInstaller.Service`. This object implements the `org.freedesktop.DBus.ObjectManager` interface and should be used by clients to discover other objects.
+Main object exported by the service `org.opensuse.Agama.Service`. This object implements the `org.freedesktop.DBus.ObjectManager` interface and should be used by clients to discover other objects.
 
 This object also implements generic interfaces to manage the service status, progress and validation.
 
 Moreover, it implements interfaces to manipulate the global state (perform installation, create proposals, login sessions for iSCSI nodes, etc).
 
-#### `/org/opensuse/DInstaller/Storage1/Proposal` Object
+#### `/org/opensuse/Agama/Storage1/Proposal` Object
 
 ~~~
-/DInstaller/Storage1/Proposal
-  .DInstaller.Storage1.Proposal
+/Agama/Storage1/Proposal
+  .Agama.Storage1.Proposal
 ~~~
 
 This object is exported only if a proposal was already calculated (successful or not). It can be used to inspect the result of the calculated proposal.
 
-#### `/org/opensuse/DInstaller/Storage1/iscsi_nodes/[0-9]+` Objects
+#### `/org/opensuse/Agama/Storage1/iscsi_nodes/[0-9]+` Objects
 
 ~~~
-/DInstaller/Storage1/iscsi_nodes/[0-9]+
-  .DInstaller.Storage1.ISCSI.Node
+/Agama/Storage1/iscsi_nodes/[0-9]+
+  .Agama.Storage1.ISCSI.Node
 ~~~
 
-Objects representing iSCSI nodes are dynamically exported when a successful iSCSI discovery is performed, see `.org.opensuse.DInstaller.Storage1.ISCSI.Initiator` interface.
+Objects representing iSCSI nodes are dynamically exported when a successful iSCSI discovery is performed, see `.org.opensuse.Agama.Storage1.ISCSI.Initiator` interface.
 
-#### `/org/opensuse/DInstaller/Storage1/dasds/[0-9]+` Objects
-
-~~~
-/DInstaller/Storage1/dasds/[0-9]+
-  .DInstaller.Storage1.DASD.Device
-~~~
-
-Objects representing DASDs are dynamically exported when a successful probing is performed by the `DASD.manager` interface of the main storage object, see `.org.opensuse.DInstaller.Storage1.DASD.manager`.
-
-#### `/org/opensuse/DInstaller/Storage1/jobs/[0-9]+` Objects
+#### `/org/opensuse/Agama/Storage1/dasds/[0-9]+` Objects
 
 ~~~
-/DInstaller/Storage1/jobs/[0-9]+
-  .DInstaller.Storage1.Job
-  .DInstaller.Storage1.DASD.Format
+/Agama/Storage1/dasds/[0-9]+
+  .Agama.Storage1.DASD.Device
+~~~
+
+Objects representing DASDs are dynamically exported when a successful probing is performed by the `DASD.manager` interface of the main storage object, see `.org.opensuse.Agama.Storage1.DASD.manager`.
+
+#### `/org/opensuse/Agama/Storage1/jobs/[0-9]+` Objects
+
+~~~
+/Agama/Storage1/jobs/[0-9]+
+  .Agama.Storage1.Job
+  .Agama.Storage1.DASD.Format
 ~~~
 
 Objects representing long-running processes, like formatting of DASDs.
 
 ### D-Bus Interfaces
 
-#### `org.opensuse.DInstaller.Storage1` Interface
+#### `org.opensuse.Agama.Storage1` Interface
 
 Offers methods for performing general installation actions.
 
@@ -217,7 +217,7 @@ Finish()
 DeprecatedSystem  readable  b
 ~~~
 
-#### `org.opensuse.DInstaller.Storage1.Proposal.Calculator` Interface
+#### `org.opensuse.Agama.Storage1.Proposal.Calculator` Interface
 
 Allows creating a storage proposal.
 
@@ -249,7 +249,7 @@ Calculates a new proposal with the given settings. A proposal object is exported
 
 Arguments:
 
-* `in a{sv} settings`: Allowed settings correspond to the properties defined by `org.opensuse.DInstaller.Storage1.Proposal` interface.
+* `in a{sv} settings`: Allowed settings correspond to the properties defined by `org.opensuse.Agama.Storage1.Proposal` interface.
 * `out u result`: `0` on success and `1` on failure.
 
 ###### `AvailableDevices` Property
@@ -270,7 +270,7 @@ Extra data is not used yet.
 VolumeTemplates   readable aa{sv}
 ~~~
 
-Templates that can be used as starting point for the volumes of a new proposal. See `Volumes` property from `org.opensuse.DInstaller.Storage1.Proposal` interface.
+Templates that can be used as starting point for the volumes of a new proposal. See `Volumes` property from `org.opensuse.Agama.Storage1.Proposal` interface.
 
 ###### `Result` Property
 
@@ -278,9 +278,9 @@ Templates that can be used as starting point for the volumes of a new proposal. 
 Result            readable  o
 ~~~
 
-Path of the object with the proposal result, typically `/org/opensuse/DInstaller/Storage1/Proposal`. If there is no proposal exported yet, then the path points to root `/`.
+Path of the object with the proposal result, typically `/org/opensuse/Agama/Storage1/Proposal`. If there is no proposal exported yet, then the path points to root `/`.
 
-#### `org.opensuse.DInstaller.Storage1.Proposal` Interface
+#### `org.opensuse.Agama.Storage1.Proposal` Interface
 
 Information about the calculated storage proposal.
 
@@ -351,7 +351,7 @@ Example:
 2 3 Text s "Create partition /dev/vdb1" Subvol b false Delete b false 3 Text s "Delete Btrfs subvolume @/var" Subvol b true Delete b true
 ~~~
 
-#### `org.opensuse.DInstaller.Storage1.ISCSI.Initiator` Interface
+#### `org.opensuse.Agama.Storage1.ISCSI.Initiator` Interface
 
 Provides methods for configuring iSCSI initiator and for discovering nodes.
 
@@ -383,7 +383,7 @@ Discover(in  s       address,
          out u       result)
 ~~~
 
-Performs nodes discovery. Discovered nodes are exported with the path `/org/opensuse/DInstaller/iscsi_nodes/[0-9]+`.
+Performs nodes discovery. Discovered nodes are exported with the path `/org/opensuse/Agama/iscsi_nodes/[0-9]+`.
 
 Arguments:
 
@@ -410,9 +410,9 @@ Arguments:
 * `in o iscsi_node_path`: Path of the iSCSI node to delete.
 * `out u result`: `0` on success and `1` on failure if the given node is not exported, `2` on failure because any other reason.
 
-#### `org.opensuse.DInstaller.Storage1.ISCSI.Node` Interface
+#### `org.opensuse.Agama.Storage1.ISCSI.Node` Interface
 
-This interface is implemented by objects exported at `/org/opensuse/DInstaller/Storage1/iscsi_nodes/[0-9]+` path. It provides information about an iSCSI node and allows to perform login and logout.
+This interface is implemented by objects exported at `/org/opensuse/Agama/Storage1/iscsi_nodes/[0-9]+` path. It provides information about an iSCSI node and allows to perform login and logout.
 
 ##### Methods
 
@@ -444,7 +444,7 @@ Login(in  a{sv}   options,
 ~~~
 
 Creates an iSCSI session. If the session is created, the corresponding object at the path
-`/org/opensuse/DInstaller/Storage1/iscsi_nodes/[0-9]+` is updated.
+`/org/opensuse/Agama/Storage1/iscsi_nodes/[0-9]+` is updated.
 
 Arguments:
 
@@ -468,7 +468,7 @@ Arguments:
 
 * `out u result`: `0` on success and `1` on failure.
 
-#### `org.opensuse.DInstaller.Storage1.DASD.Manager` Interface
+#### `org.opensuse.Agama.Storage1.DASD.Manager` Interface
 
 Provides methods for configuring DASDs. It's only available if the D-Bus service is running on a
 s390x system.
@@ -513,7 +513,7 @@ Format(in  ao devices,
 ###### `Probe` Method
 
 Finds DASDs in the system. Found DASDs are exported with the path
-`/org/opensuse/DInstaller/Storage1/dasds/[0-9]+`.
+`/org/opensuse/Agama/Storage1/dasds/[0-9]+`.
 
 ###### `Enable` Method
 
@@ -579,9 +579,9 @@ Arguments:
 * `out u result`: `0` if the format operation starts correctly and the job to track it is created. `1` if any of the given paths is invalid (ie. it does not correspond to a known DASD), `2` in case of any other error.
 * `out o job`: if the result is 0, path of the new job that can be used to track the formatting. Contains the string `/` (no job) if the result is not zero.
 
-#### `org.opensuse.DInstaller.Storage1.DASD.Device` Interface
+#### `org.opensuse.Agama.Storage1.DASD.Device` Interface
 
-This interface is implemented by objects exported at the `/org/opensuse/DInstaller/Storage1/dasds/[0-9]+`
+This interface is implemented by objects exported at the `/org/opensuse/Agama/Storage1/dasds/[0-9]+`
 paths. It provides information about a DASD in the system.
 
 ##### Properties
@@ -614,9 +614,9 @@ string `AccessType` could be replaced by a boolean `ReadOnly`).
 * `PartitionInfo`: Partition names (and sometimes their type) separated by commas.
   Eg. "_/dev/dasda1 (Linux native), /dev/dasda2 (Linux native)_". Empty if the information is unknown.
 
-#### `org.opensuse.DInstaller.Storage1.Job` Interface
+#### `org.opensuse.Agama.Storage1.Job` Interface
 
-This interface is implemented by objects exported at the `/org/opensuse/DInstaller/Storage1/jobs/[0-9]+`
+This interface is implemented by objects exported at the `/org/opensuse/Agama/Storage1/jobs/[0-9]+`
 paths. It provides information about a long-running process.
 
 ##### Properties
@@ -637,7 +637,7 @@ ExitCode readable u
   `PropertiesChanged` signal from `org.freedesktop.DBus.Properties` is also triggered at the end of
   the job execution to reflect the corresponding changes in the properties.
 
-#### `org.opensuse.DInstaller.Storage1.DASD.Format` Interface
+#### `org.opensuse.Agama.Storage1.DASD.Format` Interface
 
 This interface is implemented by those Job objects used to represent the formatting of a set of DASDs.
 
@@ -698,22 +698,22 @@ Summary readable a{s(uub)}
 
 Agamas offers a mechanism to communicate with clients. The D-Bus service exports a *Questions*
 object that implements the *org.freedesktop.DBus.ObjectManager* interface. Individual questions are
-dynamically exported in a tree under the */org/opensuse/DInstaller/Questions1* path, for example:
+dynamically exported in a tree under the */org/opensuse/Agama/Questions1* path, for example:
 
 ~~~
-/org/opensuse/DInstaller/Questions1
-  /org/opensuse/DInstaller/Questions1/1
-  /org/opensuse/DInstaller/Questions1/2
-  /org/opensuse/DInstaller/Questions1/4
+/org/opensuse/Agama/Questions1
+  /org/opensuse/Agama/Questions1/1
+  /org/opensuse/Agama/Questions1/2
+  /org/opensuse/Agama/Questions1/4
 ~~~
 
 Each D-Bus question implements its own set of interfaces, depending on the type of question. For
-example, a generic question implements *org.opensuse.DInstaller.Question1*. And a question asking
-for the activation of a LUKS device also implements *org.opensuse.DInstaller.Question.LuksActivation1*.
+example, a generic question implements *org.opensuse.Agama.Question1*. And a question asking
+for the activation of a LUKS device also implements *org.opensuse.Agama.Questions1.LuksActivation*.
 Questions can be "unexported" from the ObjectManager tree. The service typically unexports a question
 when the question is answered.
 
-### org.opensuse.DInstaller.Question1
+### org.opensuse.Agama.Questions1
 
 #### Properties
 
@@ -733,7 +733,7 @@ when the question is answered.
 - Answer -> string (rw)
   Answer for the question. Clients set an option as answer.
 
-### org.opensuse.DInstaller.Question.LuksActivation1
+### org.opensuse.Agama.Questions1.LuksActivation
 
 #### Properties
 
@@ -753,7 +753,7 @@ task is done.
 
 The main object of a service implements the following interface:
 
-### org.opensuse.DInstaller.ServiceStatus1
+### org.opensuse.Agama1.ServiceStatus
 
 #### Properties
 
@@ -776,7 +776,7 @@ The main object of a service implements the following interface:
 
 The main object of a service implements the following interface:
 
-### org.opensuse.DInstaller.Progress1
+### org.opensuse.Agama1.Progress
 
 - TotalSteps: unsigned 32-bit integer (r)
   Number of steps.
@@ -792,7 +792,7 @@ The main object of a service implements the following interface:
 The main object of a service may implement the validation interface. It reports
 any issue that might block the installation.
 
-### org.opensuse.DInstaller.Validation1
+### org.opensuse.Agama1.Validation
 
 - Errors: array of strings (as)
   List of validation errors.
@@ -805,7 +805,7 @@ any issue that might block the installation.
 
 ### Installation Phases
 
-The installation process follows a set of phases. Only the main service (`DInstaller::Manager`)
+The installation process follows a set of phases. Only the main service (`Agama::Manager`)
 knows the information about the current installation phase. The rest of services will act as utility
 services without any knowledge about the whole installation process.
 
@@ -840,7 +840,7 @@ Note that the services are blocked meanwhile they are performing a long task. Fo
 reason, the *manager* service will store the status of each service and the clients will ask to
 *manager* to know that status.
 
-### org.opensuse.DInstaller.Manager1
+### org.opensuse.Agama1.Manager
 
 #### Properties
 

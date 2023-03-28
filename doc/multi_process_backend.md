@@ -45,7 +45,7 @@ We reached these agreements:
 - This PoC uses a special directory (`service/lib/agama/dbus/y2dir`)
   which contains a modified version of the dependencies. This directory is
   added to `Y2DIR`, so these modules are used instead of the original ones.
-- Having `DInstaller::DBus::Clients` for D-Bus clients that are needed to
+- Having `Agama::DBus::Clients` for D-Bus clients that are needed to
   communicate between different processes.
 
 ## Future steps
