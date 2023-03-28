@@ -23,14 +23,14 @@ require "fileutils"
 
 module Agama
   module DBus
-    # This class takes care of setting up the D-Installer D-Bus server
+    # This class takes care of setting up the Agama Installer D-Bus server
     #
     # @example Find the current server or start a new if it is not running
     #   manager = DBusManager.new
     #   manager.find_or_start_server
     class ServerManager
       # @return [String] Default run directory path
-      DEFAULT_RUN_DIRECTORY = "/run/d-installer"
+      DEFAULT_RUN_DIRECTORY = "/run/agama"
       private_constant :DEFAULT_RUN_DIRECTORY
 
       attr_reader :run_directory
@@ -113,7 +113,7 @@ module Agama
         file = File.join(Dir.pwd, "share", "dbus.conf")
         return file if File.exist?(file)
 
-        "/usr/share/dbus-1/d-installer.conf"
+        "/usr/share/dbus-1/agama.conf"
       end
 
       # Returns the path to the file containing the PID
