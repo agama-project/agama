@@ -13,7 +13,7 @@ Basically, we have identified these approaches:
 
 ## Activation
 
-Auto-installation is activated by using `dinst.auto=<url>` on kernel command line. It can handle
+Auto-installation is activated by using `agama.auto=<url>` on kernel command line. It can handle
 three different file formats: JSON, Jsonnet and a plain shell script. So let's describe how they are
 handled.
 
@@ -26,7 +26,7 @@ specify the configuration. You can find some [examples in the CLI
 repository](https://github.com/yast/d-installer-cli/tree/main/dinstaller-lib/share/examples). The
 JSON representation can be easily obtained by running: `dinstaller config show`.
 
-When this kind of files are provided through the `dinst.auto` parameter, D-Installer fetches,
+When this kind of files are provided through the `agama.auto` parameter, D-Installer fetches,
 validates and processes the file.
 
 ### Shell Script
@@ -44,5 +44,5 @@ set -ex
 /usr/bin/dinstaller install
 ```
 
-When a shell script is provided through the `dinst.auto` parameter, D-Installer fetches and runs the
+When a shell script is provided through the `agama.auto` parameter, D-Installer fetches and runs the
 script.

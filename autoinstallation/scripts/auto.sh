@@ -3,7 +3,7 @@ set -ex
 
 if [ -z "$1" ]
 then
-  url=$(awk -F 'dinst.auto=' '{sub(/ .*$/, "", $2); print $2}' < /proc/cmdline)
+  url=$(awk -F 'agama.auto=' '{sub(/ .*$/, "", $2); print $2}' < /proc/cmdline)
 else
   url="$1"
 fi
