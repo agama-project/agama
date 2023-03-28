@@ -114,22 +114,22 @@ module Agama
 
     # Copy the SSL certificate to Cockpit's certificates directory
     #
-    # The certificate is renamed as `0-d-installer.cert`.
+    # The certificate is renamed as `0-agama.cert`.
     #
     # @param location [String] Certificate location
     def copy_ssl_cert(location)
       logger.info "Retrieving SSL certificate from #{location}"
-      copy_file(location, File.join(prefix, WS_CERTS_DIR, "0-d-installer.cert"))
+      copy_file(location, File.join(prefix, WS_CERTS_DIR, "0-agama.cert"))
     end
 
     # Copy the SSL certificate key to Cockpit's certificates directory
     #
-    # The certificate is renamed as `0-d-installer.key`.
+    # The certificate is renamed as `0-agama.key`.
     #
     # @param location [String] Certificate key location
     def copy_ssl_key(location)
       logger.info "Retrieving SSL key from #{location}"
-      copy_file(location, File.join(prefix, WS_CERTS_DIR, "0-d-installer.key"))
+      copy_file(location, File.join(prefix, WS_CERTS_DIR, "0-agama.key"))
     end
 
     # Remove Cockpit's self signed certificates if they exist

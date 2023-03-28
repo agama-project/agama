@@ -105,14 +105,14 @@ describe Agama::CockpitManager do
 
     context "when a TLS/SSL certificate and key URLs are given" do
       let(:options) do
-        { "ssl_cert" => "file://" + File.join(FIXTURES_PATH, "d-installer.cert"),
-          "ssl_key"  => "file://" + File.join(FIXTURES_PATH, "d-installer.key") }
+        { "ssl_cert" => "file://" + File.join(FIXTURES_PATH, "agama.cert"),
+          "ssl_key"  => "file://" + File.join(FIXTURES_PATH, "agama.key") }
       end
 
       it "downloads the certificate to Cockpit's certificates directory" do
         subject.setup(options)
-        expect(File).to exist(File.join(cockpit_certs, "0-d-installer.cert"))
-        expect(File).to exist(File.join(cockpit_certs, "0-d-installer.key"))
+        expect(File).to exist(File.join(cockpit_certs, "0-agama.cert"))
+        expect(File).to exist(File.join(cockpit_certs, "0-agama.key"))
       end
 
       it "restarts cockpit" do
