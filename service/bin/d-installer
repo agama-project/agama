@@ -32,8 +32,8 @@ require "rubygems"
 Dir.chdir(__dir__) do
   require "bundler/setup"
 end
-require "dinstaller/dbus/service_runner"
-require "dinstaller/dbus/server_manager"
+require "agama/dbus/service_runner"
+require "agama/dbus/server_manager"
 
 # Set up a {Logger} suitable either for terminal (started manually)
 # or syslog (D-Bus activated)
@@ -55,8 +55,8 @@ end
 # @param name [Symbol] Service name
 # @see ORDERED_SERVICES
 def start_service(name)
-  general_y2dir = File.expand_path("../lib/dinstaller/dbus/y2dir", __dir__)
-  module_y2dir = File.expand_path("../lib/dinstaller/dbus/y2dir/#{name}", __dir__)
+  general_y2dir = File.expand_path("../lib/agama/dbus/y2dir", __dir__)
+  module_y2dir = File.expand_path("../lib/agama/dbus/y2dir/#{name}", __dir__)
   ENV["Y2DIR"] = [ENV.fetch("Y2DIR", nil), module_y2dir, general_y2dir].compact.join(":")
 
   service_runner = DInstaller::DBus::ServiceRunner.new(name, logger: logger_for(name))

@@ -1,0 +1,185 @@
+# frozen_string_literal: true
+
+# Copyright (c) [2022] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
+require_relative "../../../test_helper"
+require_relative "with_service_status_examples"
+require_relative "with_progress_examples"
+require "agama/dbus/clients/software"
+require "agama/dbus/service_status"
+require "agama/dbus/interfaces/service_status"
+require "dbus"
+
+describe DInstaller::DBus::Clients::Software do
+  before do
+    allow(DInstaller::DBus::Bus).to receive(:current).and_return(bus)
+    allow(bus).to receive(:service).with("org.opensuse.DInstaller.Software").and_return(service)
+    allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Software1")
+      .and_return(dbus_object)
+    allow(dbus_object).to receive(:introspect)
+    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Software1")
+      .and_return(software_iface)
+    allow(dbus_object).to receive(:[]).with("org.freedesktop.DBus.Properties")
+      .and_return(properties_iface)
+    allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Software/Proposal1")
+      .and_return(dbus_proposal)
+  end
+
+  let(:bus) { instance_double(DInstaller::DBus::Bus) }
+  let(:service) { instance_double(::DBus::Service) }
+  let(:dbus_object) { instance_double(::DBus::ProxyObject) }
+  let(:dbus_proposal) { instance_double(::DBus::ProxyObject, introspect: nil) }
+  let(:software_iface) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:properties_iface) { instance_double(::DBus::ProxyObjectInterface) }
+
+  subject { described_class.new }
+
+  describe "#available_products" do
+    before do
+      allow(software_iface).to receive(:[]).with("AvailableBaseProducts").and_return(
+        [
+          ["Tumbleweed", "openSUSE Tumbleweed", {}],
+          ["Leap15.3", "openSUSE Leap 15.3", {}]
+        ]
+      )
+    end
+
+    it "returns the name and display name for all available products" do
+      expect(subject.available_products).to contain_exactly(
+        ["Tumbleweed", "openSUSE Tumbleweed"],
+        ["Leap15.3", "openSUSE Leap 15.3"]
+      )
+    end
+  end
+
+  describe "#selected_product" do
+    before do
+      allow(software_iface).to receive(:[]).with("SelectedBaseProduct").and_return(product)
+    end
+
+    context "when there is no selected product" do
+      let(:product) { "" }
+
+      it "returns nil" do
+        expect(subject.selected_product).to be_nil
+      end
+    end
+
+    context "when there is a selected product" do
+      let(:product) { "Tumbleweed" }
+
+      it "returns the name of the selected product" do
+        expect(subject.selected_product).to eq("Tumbleweed")
+      end
+    end
+  end
+
+  describe "#select_product" do
+    # Using partial double because methods are dynamically added to the proxy object
+    let(:dbus_object) { double(::DBus::ProxyObject) }
+
+    it "selects the given product" do
+      expect(dbus_object).to receive(:SelectProduct).with("Tumbleweed")
+
+      subject.select_product("Tumbleweed")
+    end
+  end
+
+  describe "#probe" do
+    let(:dbus_object) { double(::DBus::ProxyObject, Probe: nil) }
+
+    it "calls the D-Bus Probe method" do
+      expect(dbus_object).to receive(:Probe)
+
+      subject.probe
+    end
+
+    context "when a block is given" do
+      it "passes the block to the Probe method (async)" do
+        callback = proc {}
+        expect(dbus_object).to receive(:Probe) do |&block|
+          expect(block).to be(callback)
+        end
+
+        subject.probe(&callback)
+      end
+    end
+  end
+
+  describe "#provisions_selected" do
+    let(:dbus_object) { double(::DBus::ProxyObject) }
+
+    it "returns true/false for every tag given" do
+      expect(dbus_object).to receive(:ProvisionsSelected)
+        .with(["sddm", "gdm"]).and_return([true, false])
+      expect(subject.provisions_selected?(["sddm", "gdm"]))
+        .to eq([true, false])
+    end
+  end
+
+  describe "#package_installed?" do
+    let(:dbus_object) { double(::DBus::ProxyObject, IsPackageInstalled: installed?) }
+    let(:package) { "NetworkManager" }
+
+    context "when the package is installed" do
+      let(:installed?) { true }
+
+      it "returns true" do
+        expect(subject.package_installed?(package)).to eq(true)
+      end
+    end
+
+    context "when the package is installed" do
+      let(:installed?) { false }
+
+      it "returns false" do
+        expect(subject.package_installed?(package)).to eq(false)
+      end
+    end
+  end
+
+  describe "#on_product_selected" do
+    before do
+      allow(dbus_object).to receive(:path).and_return("/org/opensuse/DInstaller/Test")
+      allow(properties_iface).to receive(:on_signal)
+    end
+
+    context "if there are no callbacks for changes in properties" do
+      it "subscribes to properties change signal" do
+        expect(properties_iface).to receive(:on_signal)
+        subject.on_product_selected { "test" }
+      end
+    end
+
+    context "if there already are callbacks for changes in properties" do
+      before do
+        subject.on_product_selected { "test" }
+      end
+
+      it "does not subscribe to properties change signal again" do
+        expect(properties_iface).to_not receive(:on_signal)
+        subject.on_product_selected { "test" }
+      end
+    end
+  end
+
+  include_examples "service status"
+  include_examples "progress"
+end

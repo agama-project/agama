@@ -25,7 +25,7 @@
 #   filter-config.rb /etc/d-installer.yaml ALP-Bedrock ALP-Micro
 
 require "yast"
-require "dinstaller/config"
+require "agama/config"
 require "yaml"
 
 if ARGV.size < 2
