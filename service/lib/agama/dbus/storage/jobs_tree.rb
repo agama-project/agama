@@ -30,7 +30,7 @@ module Agama
       class JobsTree
         include WithPathGenerator
 
-        ROOT_PATH = "/org/opensuse/DInstaller/Storage1/jobs"
+        ROOT_PATH = "/org/opensuse/Agama/Storage1/jobs"
         path_generator ROOT_PATH
 
         # Constructor

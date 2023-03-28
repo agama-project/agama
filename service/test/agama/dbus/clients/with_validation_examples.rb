@@ -23,8 +23,8 @@ require_relative "../../../test_helper"
 
 shared_examples "validation" do
   before do
-    allow(dbus_object).to receive(:path).and_return("/org/opensuse/DInstaller/Test")
-    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Validation1")
+    allow(dbus_object).to receive(:path).and_return("/org/opensuse/Agama/Test")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama1.Validation")
       .and_return(validation_properties)
   end
 

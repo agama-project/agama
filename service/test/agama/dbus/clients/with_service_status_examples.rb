@@ -26,7 +26,7 @@ require "agama/dbus/interfaces/service_status"
 
 shared_examples "service status" do
   before do
-    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.ServiceStatus1")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama1.ServiceStatus")
       .and_return(service_status_iface)
   end
 
@@ -45,7 +45,7 @@ shared_examples "service status" do
 
   describe "#on_service_status_change" do
     before do
-      allow(dbus_object).to receive(:path).and_return("/org/opensuse/DInstaller/Test")
+      allow(dbus_object).to receive(:path).and_return("/org/opensuse/Agama/Test")
       allow(dbus_object).to receive(:[]).with("org.freedesktop.DBus.Properties")
         .and_return(properties_iface)
       allow(properties_iface).to receive(:on_signal)

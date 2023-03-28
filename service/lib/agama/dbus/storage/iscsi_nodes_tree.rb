@@ -29,7 +29,7 @@ module Agama
       class ISCSINodesTree
         include WithPathGenerator
 
-        ROOT_PATH = "/org/opensuse/DInstaller/Storage1/iscsi_nodes"
+        ROOT_PATH = "/org/opensuse/Agama/Storage1/iscsi_nodes"
         path_generator ROOT_PATH
 
         # Constructor

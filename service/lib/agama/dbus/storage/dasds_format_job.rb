@@ -75,7 +75,7 @@ module Agama
           end
         end
 
-        JOB_INTERFACE = "org.opensuse.DInstaller.Storage1.Job"
+        JOB_INTERFACE = "org.opensuse.Agama.Storage1.Job"
         private_constant :JOB_INTERFACE
 
         dbus_interface JOB_INTERFACE do
@@ -84,7 +84,7 @@ module Agama
           dbus_signal(:Finished, "exit_code:u")
         end
 
-        DASD_FORMAT_INTERFACE = "org.opensuse.DInstaller.Storage1.DASD.Format"
+        DASD_FORMAT_INTERFACE = "org.opensuse.Agama.Storage1.DASD.Format"
         private_constant :DASD_FORMAT_INTERFACE
 
         dbus_interface DASD_FORMAT_INTERFACE do

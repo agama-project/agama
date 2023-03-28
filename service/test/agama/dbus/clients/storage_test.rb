@@ -27,20 +27,20 @@ require "dbus"
 describe Agama::DBus::Clients::Storage do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.DInstaller.Storage").and_return(service)
+    allow(bus).to receive(:service).with("org.opensuse.Agama.Storage1").and_return(service)
 
-    allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Storage1")
+    allow(service).to receive(:[]).with("/org/opensuse/Agama/Storage1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Storage1")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Storage1")
       .and_return(storage_iface)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Storage1.Proposal.Calculator")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Storage1.Proposal.Calculator")
       .and_return(proposal_calculator_iface)
 
-    allow(service).to receive(:object).with("/org/opensuse/DInstaller/Storage1/Proposal")
+    allow(service).to receive(:object).with("/org/opensuse/Agama/Storage1/Proposal")
       .and_return(dbus_proposal)
     allow(dbus_proposal).to receive(:introspect)
-    allow(dbus_proposal).to receive(:[]).with("org.opensuse.DInstaller.Storage1.Proposal")
+    allow(dbus_proposal).to receive(:[]).with("org.opensuse.Agama.Storage1.Proposal")
       .and_return(proposal_iface)
 
     allow(proposal_calculator_iface).to receive(:[]).with("Result").and_return(proposal_path)
@@ -126,7 +126,7 @@ describe Agama::DBus::Clients::Storage do
     end
 
     context "if a proposal object is already exported" do
-      let(:proposal_path) { "/org/opensuse/DInstaller/Storage1/Proposal" }
+      let(:proposal_path) { "/org/opensuse/Agama/Storage1/Proposal" }
 
       before do
         allow(proposal_iface).to receive(:[]).with("CandidateDevices").and_return(["/dev/sda"])
@@ -160,7 +160,7 @@ describe Agama::DBus::Clients::Storage do
     end
 
     context "if a proposal object is already exported" do
-      let(:proposal_path) { "/org/opensuse/DInstaller/Storage1/Proposal" }
+      let(:proposal_path) { "/org/opensuse/Agama/Storage1/Proposal" }
 
       before do
         allow(proposal_iface).to receive(:[]).with("Actions").and_return(

@@ -29,7 +29,7 @@ class DBusObjectWithProgressInterface < Agama::DBus::BaseObject
   include Agama::DBus::Interfaces::Progress
 
   def initialize
-    super("org.opensuse.DInstaller.UnitTests")
+    super("org.opensuse.Agama.UnitTests")
   end
 
   def backend

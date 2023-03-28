@@ -30,7 +30,7 @@ module Agama
         include WithPathGenerator
 
         # Root of the tree
-        ROOT_PATH = "/org/opensuse/DInstaller/Storage1/dasds"
+        ROOT_PATH = "/org/opensuse/Agama/Storage1/dasds"
         path_generator ROOT_PATH
 
         # Constructor

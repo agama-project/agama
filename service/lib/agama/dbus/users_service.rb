@@ -26,15 +26,15 @@ require "agama/users"
 
 module Agama
   module DBus
-    # D-Bus service (org.opensuse.DInstaller.Users)
+    # D-Bus service (org.opensuse.Agama.Users1)
     #
     # It connects to the system D-Bus and answers requests on objects below
-    # `/org/opensuse/DInstaller/Users1`.
+    # `/org/opensuse/Agama/Users1`.
     class UsersService
       # Service name
       #
       # @return [String]
-      SERVICE_NAME = "org.opensuse.DInstaller.Users"
+      SERVICE_NAME = "org.opensuse.Agama.Users1"
       private_constant :SERVICE_NAME
 
       # System D-Bus

@@ -39,7 +39,7 @@ describe Agama::DBus::Questions do
   let(:system_bus) { instance_double(DBus::SystemBus) }
 
   describe "Questions interface" do
-    let(:interface) { "org.opensuse.DInstaller.Questions1" }
+    let(:interface) { "org.opensuse.Agama.Questions1" }
     let(:full_method_name) { described_class.make_method_name(interface, method_name) }
 
     describe "#New" do
@@ -54,7 +54,7 @@ describe Agama::DBus::Questions do
 
         result = subject.public_send(full_method_name, "How you doin?", ["fine", "great"], [])
 
-        expect(result).to start_with("/org/opensuse/DInstaller/Questions1/")
+        expect(result).to start_with("/org/opensuse/Agama/Questions1/")
       end
     end
 
@@ -69,7 +69,7 @@ describe Agama::DBus::Questions do
 
         result = subject.public_send(full_method_name, "/dev/tape1", "New games", "90 minutes", 1)
 
-        expect(result).to start_with("/org/opensuse/DInstaller/Questions1/")
+        expect(result).to start_with("/org/opensuse/Agama/Questions1/")
       end
     end
 
@@ -81,7 +81,7 @@ describe Agama::DBus::Questions do
       end
 
       context "when the given object path does not exist" do
-        let(:path) { "/org/opensuse/DInstaller/Questions1/666" }
+        let(:path) { "/org/opensuse/Agama/Questions1/666" }
         let(:node) { nil }
 
         it "raises an error" do
@@ -90,7 +90,7 @@ describe Agama::DBus::Questions do
       end
 
       context "when the given object path is not a question" do
-        let(:path) { "/org/opensuse/DInstaller/Foo/1" }
+        let(:path) { "/org/opensuse/Agama/Foo/1" }
         let(:node) { instance_double(DBus::Node, object: dbus_object) }
         let(:dbus_object) { "test" }
 
@@ -100,7 +100,7 @@ describe Agama::DBus::Questions do
       end
 
       context "when the given object path is a question" do
-        let(:path) { "/org/opensuse/DInstaller/Questions1/1" }
+        let(:path) { "/org/opensuse/Agama/Questions1/1" }
         let(:node) { instance_double(DBus::Node, object: dbus_object) }
         let(:dbus_object) { Agama::DBus::Question.new(path, question, logger) }
         let(:question) { Agama::Question.new("Do you want to test?", options: [:yes, :no]) }

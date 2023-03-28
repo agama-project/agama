@@ -26,11 +26,11 @@ require "dbus"
 describe Agama::DBus::Clients::Language do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.DInstaller.Language").and_return(service)
-    allow(service).to receive(:object).with("/org/opensuse/DInstaller/Language1")
+    allow(bus).to receive(:service).with("org.opensuse.Agama.Language1").and_return(service)
+    allow(service).to receive(:object).with("/org/opensuse/Agama/Language1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Language1")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Language1")
       .and_return(lang_iface)
   end
 

@@ -28,13 +28,13 @@ require "agama/dbus/interfaces/validation"
 
 module Agama
   module DBus
-    # YaST D-Bus object (/org/opensuse/DInstaller/Users1)
+    # YaST D-Bus object (/org/opensuse/Agama/Users1)
     class Users < BaseObject
       include WithServiceStatus
       include Interfaces::ServiceStatus
       include Interfaces::Validation
 
-      PATH = "/org/opensuse/DInstaller/Users1"
+      PATH = "/org/opensuse/Agama/Users1"
       private_constant :PATH
 
       # Constructor
@@ -47,7 +47,7 @@ module Agama
         register_service_status_callbacks
       end
 
-      USERS_INTERFACE = "org.opensuse.DInstaller.Users1"
+      USERS_INTERFACE = "org.opensuse.Agama.Users1"
       private_constant :USERS_INTERFACE
 
       FUSER_SIG = "in FullName:s, in UserName:s, in Password:s, in AutoLogin:b, in data:a{sv}"

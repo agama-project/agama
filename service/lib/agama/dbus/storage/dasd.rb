@@ -151,7 +151,7 @@ module Agama
         end
 
         # Interface name representing a DASD object
-        DASD_DEVICE_INTERFACE = "org.opensuse.DInstaller.Storage1.DASD.Device"
+        DASD_DEVICE_INTERFACE = "org.opensuse.Agama.Storage1.DASD.Device"
         private_constant :DASD_DEVICE_INTERFACE
 
         dbus_interface DASD_DEVICE_INTERFACE do

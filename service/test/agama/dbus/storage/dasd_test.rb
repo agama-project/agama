@@ -33,7 +33,7 @@ describe Agama::DBus::Storage::Dasd do
       device_type: ""
     )
   end
-  let(:path) { "/org/opensuse/DInstaller/Storage1/dasds/1" }
+  let(:path) { "/org/opensuse/Agama/Storage1/dasds/1" }
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   before do

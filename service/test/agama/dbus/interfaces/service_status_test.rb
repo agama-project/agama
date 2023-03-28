@@ -29,7 +29,7 @@ class DBusObjectWithServiceStatusInterface < ::DBus::Object
   include Agama::DBus::Interfaces::ServiceStatus
 
   def initialize
-    super("org.opensuse.DInstaller.UnitTests")
+    super("org.opensuse.Agama.UnitTests")
   end
 end
 

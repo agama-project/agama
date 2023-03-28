@@ -32,7 +32,7 @@ module Agama
       # @note This mixin is expected to be included only if the namespace Y2S390 (which
       # traditionally lives in the yast2-s390 package) is available.
       module Dasd
-        DASD_MANAGER_INTERFACE = "org.opensuse.DInstaller.Storage1.DASD.Manager"
+        DASD_MANAGER_INTERFACE = "org.opensuse.Agama.Storage1.DASD.Manager"
         private_constant :DASD_MANAGER_INTERFACE
 
         def self.included(base)

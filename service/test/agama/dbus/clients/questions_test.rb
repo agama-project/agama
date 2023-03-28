@@ -27,8 +27,8 @@ require "dbus"
 describe Agama::DBus::Clients::Questions do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.DInstaller.Questions").and_return(service)
-    allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Questions1")
+    allow(bus).to receive(:service).with("org.opensuse.Agama.Questions1").and_return(service)
+    allow(service).to receive(:[]).with("/org/opensuse/Agama/Questions1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:default_iface=)
   end
@@ -47,7 +47,7 @@ describe Agama::DBus::Clients::Questions do
     Agama::Question.new("When?", options: [:now, :later], default_option: :now)
   end
   let(:question1_proxy) do
-    instance_double(::DBus::ProxyObject, path: "/org/opensuse/DInstaller/Questions1/33")
+    instance_double(::DBus::ProxyObject, path: "/org/opensuse/Agama/Questions1/33")
   end
   let(:question1_stub) do
     instance_double(Agama::DBus::Clients::Question, dbus_object: question1_proxy)

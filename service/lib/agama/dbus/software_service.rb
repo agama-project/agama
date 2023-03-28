@@ -26,12 +26,12 @@ require "agama/software"
 
 module Agama
   module DBus
-    # D-Bus service (org.opensuse.DInstaller.Software)
+    # D-Bus service (org.opensuse.Agama.Software1)
     #
     # It connects to the system D-Bus and answers requests on objects below
-    # `/org/opensuse/DInstaller/Software`.
+    # `/org/opensuse/Agama/Software1`.
     class SoftwareService
-      SERVICE_NAME = "org.opensuse.DInstaller.Software"
+      SERVICE_NAME = "org.opensuse.Agama.Software1"
       private_constant :SERVICE_NAME
 
       # D-Bus connection

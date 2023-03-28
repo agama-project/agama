@@ -36,7 +36,7 @@ module Agama
       #   class Demo < Agama::DBus::BaseObject
       #     include Agama::DBus::Interfaces::Validation
       #
-      #     dbus_interface "org.opensuse.DInstaller.Demo1" do
+      #     dbus_interface "org.opensuse.Agama.Demo1" do
       #       dbus_reader :errors, "as", dbus_name: "Errors"
       #       dbus_method :Foo, "out result:u" do
       #         # do some stuff
@@ -49,7 +49,7 @@ module Agama
       # @note This mixin is expected to be included in a class that inherits from {DBus::BaseObject}
       # and it requires a #backend method that returns an object that implements a #validate method.
       module Validation
-        VALIDATION_INTERFACE = "org.opensuse.DInstaller.Validation1"
+        VALIDATION_INTERFACE = "org.opensuse.Agama1.Validation"
 
         # D-Bus properties of the Validation1 interface
         #

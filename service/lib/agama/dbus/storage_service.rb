@@ -26,12 +26,12 @@ require "agama/storage"
 
 module Agama
   module DBus
-    # D-Bus service (org.opensuse.DInstaller.Storage)
+    # D-Bus service (org.opensuse.Agama.Storage1)
     #
     # It connects to the system D-Bus and answers requests on objects below
-    # `/org/opensuse/DInstaller/Storage`.
+    # `/org/opensuse/Agama/Storage1`.
     class StorageService
-      SERVICE_NAME = "org.opensuse.DInstaller.Storage"
+      SERVICE_NAME = "org.opensuse.Agama.Storage1"
       private_constant :SERVICE_NAME
 
       # D-Bus connection

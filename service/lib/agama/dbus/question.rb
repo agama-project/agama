@@ -39,7 +39,7 @@ module Agama
       module Interfaces
         # Generic interface for a question
         module Question
-          QUESTION_INTERFACE = "org.opensuse.DInstaller.Question1"
+          QUESTION_INTERFACE = "org.opensuse.Agama.Questions1"
           private_constant :QUESTION_INTERFACE
 
           # @!method backend
@@ -105,7 +105,7 @@ module Agama
 
         # Interface to provide information when activating a LUKS device
         module LuksActivation
-          LUKS_ACTIVATION_INTERFACE = "org.opensuse.DInstaller.Question.LuksActivation1"
+          LUKS_ACTIVATION_INTERFACE = "org.opensuse.Agama.Questions1.LuksActivation"
           private_constant :LUKS_ACTIVATION_INTERFACE
 
           # @!method backend

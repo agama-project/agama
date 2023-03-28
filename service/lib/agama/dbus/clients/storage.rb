@@ -33,17 +33,17 @@ module Agama
         include WithProgress
         include WithValidation
 
-        STORAGE_IFACE = "org.opensuse.DInstaller.Storage1"
+        STORAGE_IFACE = "org.opensuse.Agama.Storage1"
         private_constant :STORAGE_IFACE
 
-        PROPOSAL_CALCULATOR_IFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator"
+        PROPOSAL_CALCULATOR_IFACE = "org.opensuse.Agama.Storage1.Proposal.Calculator"
         private_constant :PROPOSAL_CALCULATOR_IFACE
 
-        PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage1.Proposal"
+        PROPOSAL_IFACE = "org.opensuse.Agama.Storage1.Proposal"
         private_constant :PROPOSAL_IFACE
 
         def service_name
-          @service_name ||= "org.opensuse.DInstaller.Storage"
+          @service_name ||= "org.opensuse.Agama.Storage1"
         end
 
         # Starts the probing process
@@ -106,12 +106,12 @@ module Agama
 
         # @return [::DBus::Object]
         def dbus_object
-          @dbus_object ||= service["/org/opensuse/DInstaller/Storage1"].tap(&:introspect)
+          @dbus_object ||= service["/org/opensuse/Agama/Storage1"].tap(&:introspect)
         end
 
         # @return [::DBus::Object, nil]
         def dbus_proposal
-          path = dbus_object["org.opensuse.DInstaller.Storage1.Proposal.Calculator"]["Result"]
+          path = dbus_object["org.opensuse.Agama.Storage1.Proposal.Calculator"]["Result"]
           return nil if path == "/"
 
           service.object(path).tap(&:introspect)

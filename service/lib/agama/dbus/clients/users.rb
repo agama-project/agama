@@ -34,20 +34,20 @@ module Agama
         def initialize
           super
 
-          @dbus_object = service["/org/opensuse/DInstaller/Users1"]
+          @dbus_object = service["/org/opensuse/Agama/Users1"]
           @dbus_object.introspect
         end
 
         # @return [String]
         def service_name
-          @service_name ||= "org.opensuse.DInstaller.Users"
+          @service_name ||= "org.opensuse.Agama.Users1"
         end
 
         # Configuration of the first user to create during the installation
         #
         # @return [Array<String, String, Boolean>] full name, name, password and autologin
         def first_user
-          dbus_object["org.opensuse.DInstaller.Users1"]["FirstUser"][0..3]
+          dbus_object["org.opensuse.Agama.Users1"]["FirstUser"][0..3]
         end
 
         # Configures the first user to create during the installation
@@ -70,7 +70,7 @@ module Agama
         #
         # @return [String] empty if no SSH key set
         def root_ssh_key
-          dbus_object["org.opensuse.DInstaller.Users1"]["RootSSHKey"]
+          dbus_object["org.opensuse.Agama.Users1"]["RootSSHKey"]
         end
 
         # Sets the SSH key for root
@@ -84,7 +84,7 @@ module Agama
         #
         # @return [Boolean]
         def root_password?
-          dbus_object["org.opensuse.DInstaller.Users1"]["RootPasswordSet"]
+          dbus_object["org.opensuse.Agama.Users1"]["RootPasswordSet"]
         end
 
         # Sets the root password

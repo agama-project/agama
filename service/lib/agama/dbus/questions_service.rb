@@ -25,12 +25,12 @@ require "agama/dbus/questions"
 
 module Agama
   module DBus
-    # D-Bus service (org.opensuse.DInstaller.Questions)
+    # D-Bus service (org.opensuse.Agama.Questions1)
     #
     # It connects to the system D-Bus and answers requests on objects below
-    # `/org/opensuse/DInstaller/Questions1`.
+    # `/org/opensuse/Agama/Questions1`.
     class QuestionsService
-      SERVICE_NAME = "org.opensuse.DInstaller.Questions"
+      SERVICE_NAME = "org.opensuse.Agama.Questions1"
       private_constant :SERVICE_NAME
 
       # D-Bus connection

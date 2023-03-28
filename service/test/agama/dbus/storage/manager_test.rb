@@ -398,7 +398,7 @@ describe Agama::DBus::Storage::Manager do
 
     let(:iscsi_nodes_tree) { instance_double(Agama::DBus::Storage::ISCSINodesTree) }
 
-    let(:path) { "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1" }
+    let(:path) { "/org/opensuse/Agama/Storage1/iscsi_nodes/1" }
 
     context "when the requested path for deleting is not exported yet" do
       before do
@@ -480,14 +480,14 @@ describe Agama::DBus::Storage::Manager do
       let(:dasds_tree) { instance_double(Agama::DBus::Storage::DasdsTree) }
 
       let(:dasd1) { instance_double("Y2S390::Dasd") }
-      let(:path1) { "/org/opensuse/DInstaller/Storage1/dasds/1" }
+      let(:path1) { "/org/opensuse/Agama/Storage1/dasds/1" }
       let(:dbus_dasd1) { Agama::DBus::Storage::Dasd.new(dasd1, path1) }
 
       let(:dasd2) { instance_double("Y2S390::Dasd") }
-      let(:path2) { "/org/opensuse/DInstaller/Storage1/dasds/2" }
+      let(:path2) { "/org/opensuse/Agama/Storage1/dasds/2" }
       let(:dbus_dasd2) { Agama::DBus::Storage::Dasd.new(dasd2, path2) }
 
-      let(:path3) { "/org/opensuse/DInstaller/Storage1/dasds/3" }
+      let(:path3) { "/org/opensuse/Agama/Storage1/dasds/3" }
 
       context "when some of the paths do not correspond to an exported DASD" do
         let(:paths) { [path1, path2, path3] }
@@ -544,14 +544,14 @@ describe Agama::DBus::Storage::Manager do
       let(:dasds_tree) { instance_double(Agama::DBus::Storage::DasdsTree) }
 
       let(:dasd1) { instance_double("Y2S390::Dasd") }
-      let(:path1) { "/org/opensuse/DInstaller/Storage1/dasds/1" }
+      let(:path1) { "/org/opensuse/Agama/Storage1/dasds/1" }
       let(:dbus_dasd1) { Agama::DBus::Storage::Dasd.new(dasd1, path1) }
 
       let(:dasd2) { instance_double("Y2S390::Dasd") }
-      let(:path2) { "/org/opensuse/DInstaller/Storage1/dasds/2" }
+      let(:path2) { "/org/opensuse/Agama/Storage1/dasds/2" }
       let(:dbus_dasd2) { Agama::DBus::Storage::Dasd.new(dasd2, path2) }
 
-      let(:path3) { "/org/opensuse/DInstaller/Storage1/dasds/3" }
+      let(:path3) { "/org/opensuse/Agama/Storage1/dasds/3" }
 
       context "when some of the paths do not correspond to an exported DASD" do
         let(:paths) { [path1, path2, path3] }

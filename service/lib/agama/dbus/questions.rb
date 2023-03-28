@@ -31,10 +31,10 @@ module Agama
     class Questions < ::DBus::Object
       include ::DBus::ObjectManager
 
-      PATH = "/org/opensuse/DInstaller/Questions1"
+      PATH = "/org/opensuse/Agama/Questions1"
       private_constant :PATH
 
-      QUESTIONS_INTERFACE = "org.opensuse.DInstaller.Questions1"
+      QUESTIONS_INTERFACE = "org.opensuse.Agama.Questions1"
       private_constant :QUESTIONS_INTERFACE
 
       # Constructor
@@ -99,7 +99,7 @@ module Agama
         dbus_question.path
       end
 
-      # Builds the question path (e.g., /org/opensuse/DInstaller/Questions1/1)
+      # Builds the question path (e.g., /org/opensuse/Agama/Questions1/1)
       #
       # @param question [Agama::Question]
       # @return [::DBus::ObjectPath]

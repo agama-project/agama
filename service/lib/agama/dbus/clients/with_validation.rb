@@ -25,7 +25,7 @@ module Agama
   module DBus
     # Mixin to include in the clients of services that implement the Validation1 interface
     module WithValidation
-      VALIDATION_IFACE = "org.opensuse.DInstaller.Validation1"
+      VALIDATION_IFACE = "org.opensuse.Agama1.Validation"
       private_constant :VALIDATION_IFACE
 
       # Returns the validation errors

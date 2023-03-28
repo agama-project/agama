@@ -43,7 +43,7 @@ module Agama
       #       @service_status ||= Agama::DBus::ServiceStatus.new
       #   end
       module ServiceStatus
-        SERVICE_STATUS_INTERFACE = "org.opensuse.DInstaller.ServiceStatus1"
+        SERVICE_STATUS_INTERFACE = "org.opensuse.Agama1.ServiceStatus"
 
         SERVICE_STATUS_IDLE = 0
         SERVICE_STATUS_BUSY = 1

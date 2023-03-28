@@ -25,14 +25,14 @@ require "agama/errors"
 
 module Agama
   module DBus
-    # YaST D-Bus object (/org/opensuse/DInstaller/Language1)
+    # YaST D-Bus object (/org/opensuse/Agama/Language1)
     #
     # @see https://rubygems.org/gems/ruby-dbus
     class Language < ::DBus::Object
-      PATH = "/org/opensuse/DInstaller/Language1"
+      PATH = "/org/opensuse/Agama/Language1"
       private_constant :PATH
 
-      LANGUAGE_INTERFACE = "org.opensuse.DInstaller.Language1"
+      LANGUAGE_INTERFACE = "org.opensuse.Agama.Language1"
       private_constant :LANGUAGE_INTERFACE
 
       # @param backend [Agama::Language]

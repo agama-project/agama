@@ -29,13 +29,13 @@ require "dbus"
 describe Agama::DBus::Clients::Users do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.DInstaller.Users").and_return(service)
-    allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Users1")
+    allow(bus).to receive(:service).with("org.opensuse.Agama.Users1").and_return(service)
+    allow(service).to receive(:[]).with("/org/opensuse/Agama/Users1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Users1")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Users1")
       .and_return(users_iface)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.ServiceStatus1")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama1.ServiceStatus")
       .and_return(service_status_iface)
   end
 

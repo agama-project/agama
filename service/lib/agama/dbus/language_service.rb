@@ -26,15 +26,15 @@ require "agama/language"
 
 module Agama
   module DBus
-    # D-Bus service (org.opensuse.DInstaller.Language)
+    # D-Bus service (org.opensuse.Agama.Language1)
     #
     # It connects to the system D-Bus and answers requests on objects below
-    # `/org/opensuse/DInstaller/Language1`.
+    # `/org/opensuse/Agama/Language1`.
     class LanguageService
       # Service name
       #
       # @return [String]
-      SERVICE_NAME = "org.opensuse.DInstaller.Language"
+      SERVICE_NAME = "org.opensuse.Agama.Language1"
       private_constant :SERVICE_NAME
 
       # System D-Bus

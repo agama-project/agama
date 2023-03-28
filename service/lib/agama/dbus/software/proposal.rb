@@ -32,10 +32,10 @@ module Agama
       #
       # @see Yast::PackagesProposal
       class Proposal < ::DBus::Object
-        PATH = "/org/opensuse/DInstaller/Software/Proposal1"
+        PATH = "/org/opensuse/Agama/Software1/Proposal"
         private_constant :PATH
 
-        INTERFACE = "org.opensuse.DInstaller.Software.Proposal1"
+        INTERFACE = "org.opensuse.Agama.Software1.Proposal"
         private_constant :INTERFACE
 
         TYPES = [:package, :pattern].freeze

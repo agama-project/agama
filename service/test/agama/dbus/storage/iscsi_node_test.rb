@@ -31,7 +31,7 @@ describe Agama::DBus::Storage::ISCSINode do
 
   let(:iscsi_node) { Agama::Storage::ISCSI::Node.new }
 
-  let(:path) { "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1" }
+  let(:path) { "/org/opensuse/Agama/Storage1/iscsi_nodes/1" }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 

@@ -26,14 +26,14 @@ require "dbus"
 describe Agama::DBus::Clients::Question do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.DInstaller.Questions").and_return(service)
-    allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Questions1/23")
+    allow(bus).to receive(:service).with("org.opensuse.Agama.Questions1").and_return(service)
+    allow(service).to receive(:[]).with("/org/opensuse/Agama/Questions1/23")
       .and_return(dbus_object)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Question1")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Questions1")
       .and_return(question_iface)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Question.LuksActivation1")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Questions1.LuksActivation")
       .and_return(luks_iface)
-    allow(dbus_object).to receive(:has_iface?).with(/LuksActivation1/).and_return(luks_iface?)
+    allow(dbus_object).to receive(:has_iface?).with(/LuksActivation/).and_return(luks_iface?)
   end
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
@@ -43,7 +43,7 @@ describe Agama::DBus::Clients::Question do
   let(:luks_iface) { instance_double(::DBus::ProxyObjectInterface) }
   let(:luks_iface?) { true }
 
-  subject { described_class.new("/org/opensuse/DInstaller/Questions1/23") }
+  subject { described_class.new("/org/opensuse/Agama/Questions1/23") }
 
   describe "#answered?" do
     it "returns false if there is no answer" do

@@ -28,15 +28,15 @@ require "agama/dbus/storage/proposal"
 
 module Agama
   module DBus
-    # D-Bus service (org.opensuse.DInstaller)
+    # D-Bus service (org.opensuse.Agama1)
     #
     # It connects to the system D-Bus and answers requests on objects below
-    # `/org/opensuse/DInstaller`.
+    # `/org/opensuse/Agama1`.
     class ManagerService
       # Service name
       #
       # @return [String]
-      SERVICE_NAME = "org.opensuse.DInstaller"
+      SERVICE_NAME = "org.opensuse.Agama1"
       private_constant :SERVICE_NAME
 
       # System D-Bus

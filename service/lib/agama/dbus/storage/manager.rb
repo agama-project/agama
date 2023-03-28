@@ -47,7 +47,7 @@ module Agama
         include DBus::Interfaces::ServiceStatus
         include DBus::Interfaces::Validation
 
-        PATH = "/org/opensuse/DInstaller/Storage1"
+        PATH = "/org/opensuse/Agama/Storage1"
         private_constant :PATH
 
         # Constructor
@@ -68,7 +68,7 @@ module Agama
           register_and_extend_dasd_callbacks
         end
 
-        STORAGE_INTERFACE = "org.opensuse.DInstaller.Storage1"
+        STORAGE_INTERFACE = "org.opensuse.Agama.Storage1"
         private_constant :STORAGE_INTERFACE
 
         def probe
@@ -100,7 +100,7 @@ module Agama
           dbus_reader(:deprecated_system, "b")
         end
 
-        PROPOSAL_CALCULATOR_INTERFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator"
+        PROPOSAL_CALCULATOR_INTERFACE = "org.opensuse.Agama.Storage1.Proposal.Calculator"
         private_constant :PROPOSAL_CALCULATOR_INTERFACE
 
         # List of disks available for installation
@@ -156,7 +156,7 @@ module Agama
           end
         end
 
-        ISCSI_INITIATOR_INTERFACE = "org.opensuse.DInstaller.Storage1.ISCSI.Initiator"
+        ISCSI_INITIATOR_INTERFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator"
         private_constant :ISCSI_INITIATOR_INTERFACE
 
         # Gets the iSCSI initiator name

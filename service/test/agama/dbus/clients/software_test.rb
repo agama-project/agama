@@ -30,15 +30,15 @@ require "dbus"
 describe Agama::DBus::Clients::Software do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.DInstaller.Software").and_return(service)
-    allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Software1")
+    allow(bus).to receive(:service).with("org.opensuse.Agama.Software1").and_return(service)
+    allow(service).to receive(:[]).with("/org/opensuse/Agama/Software1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Software1")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Software1")
       .and_return(software_iface)
     allow(dbus_object).to receive(:[]).with("org.freedesktop.DBus.Properties")
       .and_return(properties_iface)
-    allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Software/Proposal1")
+    allow(service).to receive(:[]).with("/org/opensuse/Agama/Software1/Proposal")
       .and_return(dbus_proposal)
   end
 
@@ -157,7 +157,7 @@ describe Agama::DBus::Clients::Software do
 
   describe "#on_product_selected" do
     before do
-      allow(dbus_object).to receive(:path).and_return("/org/opensuse/DInstaller/Test")
+      allow(dbus_object).to receive(:path).and_return("/org/opensuse/Agama/Test")
       allow(properties_iface).to receive(:on_signal)
     end
 

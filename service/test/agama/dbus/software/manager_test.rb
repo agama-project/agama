@@ -135,7 +135,7 @@ describe Agama::DBus::Software::Manager do
     it "returns whether the package is installed or not" do
       expect(backend).to receive(:package_installed?).with("NetworkManager").and_return(true)
       installed = subject.public_send(
-        "org.opensuse.DInstaller.Software1%%IsPackageInstalled", "NetworkManager"
+        "org.opensuse.Agama.Software1%%IsPackageInstalled", "NetworkManager"
       )
       expect(installed).to eq(true)
     end

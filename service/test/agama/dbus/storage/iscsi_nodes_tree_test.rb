@@ -50,15 +50,15 @@ describe Agama::DBus::Storage::ISCSINodesTree do
     let(:dbus_nodes) { [dbus_node1, dbus_node2] }
 
     let(:dbus_node1) do
-      instance_double(::DBus::Object, path: "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1")
+      instance_double(::DBus::Object, path: "/org/opensuse/Agama/Storage1/iscsi_nodes/1")
     end
 
     let(:dbus_node2) do
-      instance_double(::DBus::Object, path: "/org/opensuse/DInstaller/Storage1/iscsi_nodes/2")
+      instance_double(::DBus::Object, path: "/org/opensuse/Agama/Storage1/iscsi_nodes/2")
     end
 
     context "when the given path is already exported on D-Bus" do
-      let(:path) { "/org/opensuse/DInstaller/Storage1/iscsi_nodes/2" }
+      let(:path) { "/org/opensuse/Agama/Storage1/iscsi_nodes/2" }
 
       it "returns the iSCSI D-Bus node exported with the given path" do
         expect(subject.find(path)).to eq(dbus_node2)
@@ -66,7 +66,7 @@ describe Agama::DBus::Storage::ISCSINodesTree do
     end
 
     context "when the given path is not exported on D-Bus yet" do
-      let(:path) { "/org/opensuse/DInstaller/Storage1/iscsi_nodes/3" }
+      let(:path) { "/org/opensuse/Agama/Storage1/iscsi_nodes/3" }
 
       it "returns nil" do
         expect(subject.find(path)).to be_nil

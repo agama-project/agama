@@ -30,11 +30,11 @@ require "agama/installation_phase"
 describe Agama::DBus::Clients::Manager do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.DInstaller").and_return(service)
-    allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Manager1")
+    allow(bus).to receive(:service).with("org.opensuse.Agama1").and_return(service)
+    allow(service).to receive(:[]).with("/org/opensuse/Agama1/Manager")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.DInstaller.Manager1")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama1.Manager")
       .and_return(manager_iface)
     allow(dbus_object).to receive(:[]).with("org.freedesktop.DBus.Properties")
       .and_return(properties_iface)

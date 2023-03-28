@@ -29,26 +29,26 @@ module Agama
         def initialize
           super
 
-          @dbus_object = service.object("/org/opensuse/DInstaller/Language1")
+          @dbus_object = service.object("/org/opensuse/Agama/Language1")
           @dbus_object.introspect
         end
 
         def service_name
-          @service_name ||= "org.opensuse.DInstaller.Language"
+          @service_name ||= "org.opensuse.Agama.Language1"
         end
 
         # Available languages for the installation
         #
         # @return [Array<Array<String, String>>] id and name of each language
         def available_languages
-          dbus_object["org.opensuse.DInstaller.Language1"]["AvailableLanguages"].map { |l| l[0..1] }
+          dbus_object["org.opensuse.Agama.Language1"]["AvailableLanguages"].map { |l| l[0..1] }
         end
 
         # Languages selected to install
         #
         # @return [Array<String>] ids of the languages
         def selected_languages
-          dbus_object["org.opensuse.DInstaller.Language1"]["MarkedForInstall"]
+          dbus_object["org.opensuse.Agama.Language1"]["MarkedForInstall"]
         end
 
         # Selects the languages to install

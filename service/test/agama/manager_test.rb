@@ -133,17 +133,17 @@ describe Agama::Manager do
     before do
       allow(subject).to receive(:service_status_recorder).and_return(service_status_recorder)
 
-      service_status_recorder.save("org.opensuse.DInstaller.Test1", busy)
-      service_status_recorder.save("org.opensuse.DInstaller.Test2", idle)
-      service_status_recorder.save("org.opensuse.DInstaller.Test3", busy)
+      service_status_recorder.save("org.opensuse.Agama.Test1", busy)
+      service_status_recorder.save("org.opensuse.Agama.Test2", idle)
+      service_status_recorder.save("org.opensuse.Agama.Test3", busy)
     end
 
     let(:service_status_recorder) { Agama::ServiceStatusRecorder.new }
 
     it "returns the name of the busy services" do
       expect(subject.busy_services).to contain_exactly(
-        "org.opensuse.DInstaller.Test1",
-        "org.opensuse.DInstaller.Test3"
+        "org.opensuse.Agama.Test1",
+        "org.opensuse.Agama.Test3"
       )
     end
   end
@@ -159,7 +159,7 @@ describe Agama::Manager do
       subject.on_services_status_change { logger.info("change status") }
 
       expect(logger).to receive(:info).with(/change status/)
-      service_status_recorder.save("org.opensuse.DInstaller.Test", busy)
+      service_status_recorder.save("org.opensuse.Agama.Test", busy)
     end
   end
 

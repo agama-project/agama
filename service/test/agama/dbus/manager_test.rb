@@ -67,7 +67,7 @@ describe Agama::DBus::Manager do
   describe ".new" do
     it "configures callbacks for changes in the installation phase" do
       expect(subject).to receive(:dbus_properties_changed) do |iface, properties, _|
-        expect(iface).to match(/DInstaller\.Manager1/)
+        expect(iface).to match(/Agama1\.Manager/)
         expect(properties["CurrentInstallationPhase"]).to eq(0)
       end
 
@@ -213,11 +213,11 @@ describe Agama::DBus::Manager do
 
   describe "#busy_services" do
     before do
-      allow(backend).to receive(:busy_services).and_return(["org.opensuse.DInstaller.Users"])
+      allow(backend).to receive(:busy_services).and_return(["org.opensuse.Agama.Users1"])
     end
 
     it "returns the names of the busy services" do
-      expect(subject.busy_services).to contain_exactly("org.opensuse.DInstaller.Users")
+      expect(subject.busy_services).to contain_exactly("org.opensuse.Agama.Users1")
     end
   end
 

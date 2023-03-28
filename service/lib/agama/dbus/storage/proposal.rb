@@ -28,7 +28,7 @@ module Agama
     module Storage
       # D-Bus object to manage the storage proposal
       class Proposal < BaseObject
-        PATH = "/org/opensuse/DInstaller/Storage1/Proposal"
+        PATH = "/org/opensuse/Agama/Storage1/Proposal"
         private_constant :PATH
 
         # Constructor
@@ -40,7 +40,7 @@ module Agama
           @backend = backend
         end
 
-        STORAGE_PROPOSAL_INTERFACE = "org.opensuse.DInstaller.Storage1.Proposal"
+        STORAGE_PROPOSAL_INTERFACE = "org.opensuse.Agama.Storage1.Proposal"
         private_constant :STORAGE_PROPOSAL_INTERFACE
 
         dbus_interface STORAGE_PROPOSAL_INTERFACE do

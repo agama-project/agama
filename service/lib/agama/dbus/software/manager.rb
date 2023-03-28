@@ -38,7 +38,7 @@ module Agama
         include Interfaces::ServiceStatus
         include Interfaces::Validation
 
-        PATH = "/org/opensuse/DInstaller/Software1"
+        PATH = "/org/opensuse/Agama/Software1"
         private_constant :PATH
 
         # Constructor
@@ -53,7 +53,7 @@ module Agama
           register_service_status_callbacks
         end
 
-        SOFTWARE_INTERFACE = "org.opensuse.DInstaller.Software1"
+        SOFTWARE_INTERFACE = "org.opensuse.Agama.Software1"
         private_constant :SOFTWARE_INTERFACE
 
         dbus_interface SOFTWARE_INTERFACE do

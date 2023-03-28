@@ -42,16 +42,16 @@ describe Agama::DBus::Storage::DasdsTree do
     let(:dbus_nodes) { [dbus_dasd1, dbus_dasd2] }
 
     let(:dbus_dasd1) do
-      instance_double(::DBus::Object, path: "/org/opensuse/DInstaller/Storage1/dasds/1")
+      instance_double(::DBus::Object, path: "/org/opensuse/Agama/Storage1/dasds/1")
     end
 
     let(:dbus_dasd2) do
-      instance_double(::DBus::Object, path: "/org/opensuse/DInstaller/Storage1/dasds/2")
+      instance_double(::DBus::Object, path: "/org/opensuse/Agama/Storage1/dasds/2")
     end
 
     context "when all the given paths are already exported on D-Bus" do
       let(:paths) do
-        ["/org/opensuse/DInstaller/Storage1/dasds/1"]
+        ["/org/opensuse/Agama/Storage1/dasds/1"]
       end
 
       it "returns the corresponding D-BUS DASDs" do
@@ -61,7 +61,7 @@ describe Agama::DBus::Storage::DasdsTree do
 
     context "when some of the given paths are already exported on D-Bus" do
       let(:paths) do
-        ["/org/opensuse/DInstaller/Storage1/dasds/1", "/org/opensuse/DInstaller/Storage1/dasds/3"]
+        ["/org/opensuse/Agama/Storage1/dasds/1", "/org/opensuse/Agama/Storage1/dasds/3"]
       end
 
       it "returns the subset of D-BUS DASDs that are exported" do
@@ -71,7 +71,7 @@ describe Agama::DBus::Storage::DasdsTree do
 
     context "when none of the given paths are already exported on D-Bus" do
       let(:paths) do
-        ["/org/opensuse/DInstaller/Storage1/dasds/3"]
+        ["/org/opensuse/Agama/Storage1/dasds/3"]
       end
 
       it "returns an empty array" do

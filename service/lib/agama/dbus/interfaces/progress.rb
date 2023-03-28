@@ -48,7 +48,7 @@ module Agama
       #     end
       #   end
       module Progress
-        PROGRESS_INTERFACE = "org.opensuse.DInstaller.Progress1"
+        PROGRESS_INTERFACE = "org.opensuse.Agama1.Progress"
 
         # Total number of steps of the progress
         #

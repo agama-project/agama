@@ -25,7 +25,7 @@ require "dbus"
 shared_examples "progress" do
   describe "#on_progress_change" do
     before do
-      allow(dbus_object).to receive(:path).and_return("/org/opensuse/DInstaller/Test")
+      allow(dbus_object).to receive(:path).and_return("/org/opensuse/Agama/Test")
       allow(dbus_object).to receive(:[]).with("org.freedesktop.DBus.Properties")
         .and_return(properties_iface)
       allow(properties_iface).to receive(:on_signal)

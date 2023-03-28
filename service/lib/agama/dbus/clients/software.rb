@@ -39,23 +39,23 @@ module Agama
         def initialize
           super
 
-          @dbus_object = service["/org/opensuse/DInstaller/Software1"]
+          @dbus_object = service["/org/opensuse/Agama/Software1"]
           @dbus_object.introspect
 
-          @dbus_proposal = service["/org/opensuse/DInstaller/Software/Proposal1"]
+          @dbus_proposal = service["/org/opensuse/Agama/Software1/Proposal"]
           @dbus_proposal.introspect
         end
 
         # @return [String]
         def service_name
-          @service_name ||= "org.opensuse.DInstaller.Software"
+          @service_name ||= "org.opensuse.Agama.Software1"
         end
 
         # Available products for the installation
         #
         # @return [Array<Array<String, String>>] name and display name of each product
         def available_products
-          dbus_object["org.opensuse.DInstaller.Software1"]["AvailableBaseProducts"].map do |l|
+          dbus_object["org.opensuse.Agama.Software1"]["AvailableBaseProducts"].map do |l|
             l[0..1]
           end
         end
@@ -64,7 +64,7 @@ module Agama
         #
         # @return [String, nil] name of the product
         def selected_product
-          product = dbus_object["org.opensuse.DInstaller.Software1"]["SelectedBaseProduct"]
+          product = dbus_object["org.opensuse.Agama.Software1"]["SelectedBaseProduct"]
           return nil if product.empty?
 
           product

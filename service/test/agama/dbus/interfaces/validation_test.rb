@@ -30,7 +30,7 @@ class DBusObjectWithValidationInterface < Agama::DBus::BaseObject
   attr_reader :backend
 
   def initialize(backend)
-    super("org.opensuse.DInstaller.UnitTests")
+    super("org.opensuse.Agama.UnitTests")
     @backend = backend
   end
 end
@@ -87,7 +87,7 @@ describe Agama::DBus::Interfaces::Validation do
 
     it "updates the validation" do
       expect(subject).to receive(:dbus_properties_changed)
-        .once.with("org.opensuse.DInstaller.Validation1", Hash, [])
+        .once.with("org.opensuse.Agama1.Validation", Hash, [])
       expect { subject.update_validation }
         .to change { subject.errors.size }
         .from(1).to(2)

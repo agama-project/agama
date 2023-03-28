@@ -35,49 +35,49 @@ describe Agama::ServiceStatusRecorder do
 
   describe "#save" do
     it "stores the status of a service" do
-      subject.save("org.opensuse.DInstaller.Test", busy)
-      expect(subject.busy_services).to include("org.opensuse.DInstaller.Test")
+      subject.save("org.opensuse.Agama.Test", busy)
+      expect(subject.busy_services).to include("org.opensuse.Agama.Test")
     end
 
     context "when the given service status is different to the stored one" do
       before do
-        subject.save("org.opensuse.DInstaller.Test", busy)
+        subject.save("org.opensuse.Agama.Test", busy)
       end
 
       it "stores the new status" do
-        subject.save("org.opensuse.DInstaller.Test", idle)
-        expect(subject.busy_services).to_not include("org.opensuse.DInstaller.Test")
+        subject.save("org.opensuse.Agama.Test", idle)
+        expect(subject.busy_services).to_not include("org.opensuse.Agama.Test")
       end
 
       it "runs the callbacks" do
         expect(logger).to receive(:info).with(/change status/)
-        subject.save("org.opensuse.DInstaller.Test", idle)
+        subject.save("org.opensuse.Agama.Test", idle)
       end
     end
 
     context "when the given service status is the same as the stored one" do
       before do
-        subject.save("org.opensuse.DInstaller.Test", busy)
+        subject.save("org.opensuse.Agama.Test", busy)
       end
 
       it "does not run the callbacks" do
         expect(logger).to_not receive(:info).with(/change status/)
-        subject.save("org.opensuse.DInstaller.Test", busy)
+        subject.save("org.opensuse.Agama.Test", busy)
       end
     end
   end
 
   describe "#busy_services" do
     before do
-      subject.save("org.opensuse.DInstaller.Test1", busy)
-      subject.save("org.opensuse.DInstaller.Test2", idle)
-      subject.save("org.opensuse.DInstaller.Test3", busy)
+      subject.save("org.opensuse.Agama.Test1", busy)
+      subject.save("org.opensuse.Agama.Test2", idle)
+      subject.save("org.opensuse.Agama.Test3", busy)
     end
 
     it "returns the name of the busy services" do
       expect(subject.busy_services).to contain_exactly(
-        "org.opensuse.DInstaller.Test1",
-        "org.opensuse.DInstaller.Test3"
+        "org.opensuse.Agama.Test1",
+        "org.opensuse.Agama.Test3"
       )
     end
   end

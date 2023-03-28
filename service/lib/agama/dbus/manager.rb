@@ -34,7 +34,7 @@ module Agama
       include Interfaces::Progress
       include Interfaces::ServiceStatus
 
-      PATH = "/org/opensuse/DInstaller/Manager1"
+      PATH = "/org/opensuse/Agama1/Manager"
       private_constant :PATH
 
       # Constructor
@@ -49,7 +49,7 @@ module Agama
         register_service_status_callbacks
       end
 
-      MANAGER_INTERFACE = "org.opensuse.DInstaller.Manager1"
+      MANAGER_INTERFACE = "org.opensuse.Agama1.Manager"
       private_constant :MANAGER_INTERFACE
 
       STARTUP_PHASE = 0
@@ -138,7 +138,7 @@ module Agama
       end
 
       def busy_error
-        ::DBus.error("org.opensuse.DInstaller.Error.Busy")
+        ::DBus.error("org.opensuse.Agama1.Error.Busy")
       end
 
       # Registers callback to be called

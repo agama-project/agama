@@ -26,7 +26,7 @@ module Agama
     module Clients
       # D-Bus client for asking a question.
       class Question < Base
-        LUKS_ACTIVATION_IFACE = "org.opensuse.DInstaller.Question.LuksActivation1"
+        LUKS_ACTIVATION_IFACE = "org.opensuse.Agama.Questions1.LuksActivation"
         private_constant :LUKS_ACTIVATION_IFACE
 
         # @return [::DBus::ProxyObject]
@@ -37,7 +37,7 @@ module Agama
           super()
 
           @dbus_object = service[object_path]
-          @dbus_iface = @dbus_object["org.opensuse.DInstaller.Question1"]
+          @dbus_iface = @dbus_object["org.opensuse.Agama.Questions1"]
           # one D-Bus client for all kinds of questions
           return unless @dbus_object.has_iface?(LUKS_ACTIVATION_IFACE)
 
@@ -46,7 +46,7 @@ module Agama
 
         # @return [String]
         def service_name
-          @service_name ||= "org.opensuse.DInstaller.Questions"
+          @service_name ||= "org.opensuse.Agama.Questions1"
         end
 
         # @return [String] Question text

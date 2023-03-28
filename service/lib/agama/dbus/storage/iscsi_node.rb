@@ -156,7 +156,7 @@ module Agama
           success ? 0 : 1
         end
 
-        ISCSI_NODE_INTERFACE = "org.opensuse.DInstaller.Storage1.ISCSI.Node"
+        ISCSI_NODE_INTERFACE = "org.opensuse.Agama.Storage1.ISCSI.Node"
         private_constant :ISCSI_NODE_INTERFACE
 
         dbus_interface ISCSI_NODE_INTERFACE do
