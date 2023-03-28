@@ -25,26 +25,39 @@ test.describe("The Installer", () => {
     // set screenshot size to 768x1024
     page.setViewportSize({ width: 768, height: 1024 });
 
+    // optional actions done on the page
+    const actions = Object.freeze({
+      setProduct: Symbol("product"),
+      setPassword: Symbol("password"),
+      done: Symbol("done")
+    });
+
+    // check for multiple texts in parallel, avoid waiting for timeouts
+    let action = await Promise.any([
+      page.getByText("Product selection").waitFor().then(() => actions.setProduct),
+      page.getByText("None authentication method").waitFor().then(() => actions.setPassword),
+      page.getByText("Root authentication set").waitFor().then(() => actions.done),
+    ]);
+
     // optional product selection
-    await test.step("Select the product", async () => {
-      // optional product selection
-      try {
-        await page.getByText("Product selection").waitFor({ timeout: 5000 });
+    if (action === actions.setProduct) {
+      await test.step("Select the product", async () => {
         // select openSUSE Tumbleweed
         await page.getByText("openSUSE Tumbleweed").click();
         await page.screenshot({ path: "screenshots/product-selection.png" });
         await page.getByRole("button", { name: "Select" }).click();
-      }
-      catch (error) {
-        // do not ignore other errors
-        if (error.constructor.name !== "TimeoutError") throw(error);
-      }
-    });
+      });
 
-    // the the root password must be set
-    await test.step("Set the root password", async () => {
-      try {
-        await page.getByText("None authentication method").waitFor({ timeout: 10000 });
+      // update the action for the next step
+      action = await Promise.any([
+        page.getByText("None authentication method").waitFor().then(() => actions.setPassword),
+        page.getByText("Root authentication set").waitFor().then(() => actions.done),
+      ]);
+    }
+
+    if (action === actions.setPassword) {
+      // the the root password must be set
+      await test.step("Set the root password", async () => {
         await page.locator("a[href='#/users']").click();
         await page.locator("#actions-for-root-password").click();
         await page.getByRole("menuitem", { name: "Set" }).click();
@@ -52,12 +65,8 @@ test.describe("The Installer", () => {
         await page.locator("#passwordConfirmation").fill("linux");
         await page.locator('button[type="submit"]').click();
         await page.getByText("Back").click();
-        }
-      catch (error) {
-        // do not ignore other errors
-        if (error.constructor.name !== "TimeoutError") throw(error);
-      }
-    });
+      });
+    }
 
     // ensure the software proposal is ready, use longer timeout,
     // refreshing the repositories takes some time
