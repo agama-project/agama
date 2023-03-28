@@ -25,15 +25,22 @@ test.describe("The Installer", () => {
     // set screenshot size to 768x1024
     page.setViewportSize({ width: 768, height: 1024 });
 
+    // optional actions done on the page
+    const actions = Object.freeze({
+      setProduct: Symbol("product"),
+      setPassword: Symbol("password"),
+      done: Symbol("done")
+    });
+
     // check for multiple texts in parallel, avoid waiting for timeouts
     let action = await Promise.any([
-      page.getByText("Product selection").waitFor().then(() => "set_product"),
-      page.getByText("None authentication method").waitFor().then(() => "set_password"),
-      page.getByText("Root authentication set").waitFor().then(() => "done"),
+      page.getByText("Product selection").waitFor().then(() => actions.setProduct),
+      page.getByText("None authentication method").waitFor().then(() => actions.setPassword),
+      page.getByText("Root authentication set").waitFor().then(() => actions.done),
     ]);
 
     // optional product selection
-    if (action === "set_product") {
+    if (action === actions.setProduct) {
       await test.step("Select the product", async () => {
         // select openSUSE Tumbleweed
         await page.getByText("openSUSE Tumbleweed").click();
@@ -43,12 +50,12 @@ test.describe("The Installer", () => {
 
       // update the action for the next step
       action = await Promise.any([
-        page.getByText("None authentication method").waitFor().then(() => "set_password"),
-        page.getByText("Root authentication set").waitFor().then(() => "done"),
+        page.getByText("None authentication method").waitFor().then(() => actions.setPassword),
+        page.getByText("Root authentication set").waitFor().then(() => actions.done),
       ]);
     }
 
-    if (action === "set_password") {
+    if (action === actions.setPassword) {
       // the the root password must be set
       await test.step("Set the root password", async () => {
         await page.locator("a[href='#/users']").click();
