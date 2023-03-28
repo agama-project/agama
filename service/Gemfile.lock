@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    d-installer (0.8.3)
+    agama (0.8.3)
       cfa (~> 1.0.2)
       cfa_grub2 (~> 2.0.0)
       cheetah (~> 1.0.0)
@@ -67,8 +67,8 @@ PLATFORMS
   x86_64-linux-gnu
 
 DEPENDENCIES
+  agama!
   byebug
-  d-installer!
   packaging_rake_tasks (~> 1.5.1)
   rake (~> 13.0.6)
   rspec (~> 3.11.0)
