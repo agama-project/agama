@@ -21,7 +21,7 @@
 
 require "dbus"
 
-module DInstaller
+module Agama
   module DBus
     # Base class for DBus objects
     class BaseObject < ::DBus::Object

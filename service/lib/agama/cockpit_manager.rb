@@ -27,7 +27,7 @@ require "fileutils"
 
 Yast.import "URL"
 
-module DInstaller
+module Agama
   # Cockpit configuration file representation
   #
   # @example Set the AllowUnencrypted option

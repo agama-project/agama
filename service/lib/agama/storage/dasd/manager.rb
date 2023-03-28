@@ -26,7 +26,7 @@ require "agama/storage/dasd/disable_operation"
 require "agama/storage/dasd/diag_operation"
 require "agama/storage/dasd/format_operation"
 
-module DInstaller
+module Agama
   module Storage
     module DASD
       # Manager for configuring DASDs (Direct-Access Storage Devices)

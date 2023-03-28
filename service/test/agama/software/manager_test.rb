@@ -27,7 +27,7 @@ require "agama/config"
 require "agama/software/manager"
 require "agama/dbus/clients/questions"
 
-describe DInstaller::Software::Manager do
+describe Agama::Software::Manager do
   subject { described_class.new(config, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
@@ -36,7 +36,7 @@ describe DInstaller::Software::Manager do
   let(:gpg_keys) { [] }
   let(:repositories) do
     instance_double(
-      DInstaller::Software::RepositoriesManager,
+      Agama::Software::RepositoriesManager,
       add:        nil,
       load:       nil,
       delete_all: nil,
@@ -45,7 +45,7 @@ describe DInstaller::Software::Manager do
   end
   let(:proposal) do
     instance_double(
-      DInstaller::Software::Proposal,
+      Agama::Software::Proposal,
       :base_product= => nil,
       calculate:        nil,
       :languages= =>    nil,
@@ -59,11 +59,11 @@ describe DInstaller::Software::Manager do
   end
 
   let(:config) do
-    DInstaller::Config.new(YAML.safe_load(File.read(config_path)))
+    Agama::Config.new(YAML.safe_load(File.read(config_path)))
   end
 
   let(:questions_client) do
-    instance_double(DInstaller::DBus::Clients::Questions)
+    instance_double(Agama::DBus::Clients::Questions)
   end
 
   before do
@@ -75,9 +75,9 @@ describe DInstaller::Software::Manager do
       .and_return(base_url)
     allow(Yast::Pkg).to receive(:SourceCreate)
     allow(Yast::Installation).to receive(:destdir).and_return(destdir)
-    allow(DInstaller::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
-    allow(DInstaller::Software::RepositoriesManager).to receive(:new).and_return(repositories)
-    allow(DInstaller::Software::Proposal).to receive(:new).and_return(proposal)
+    allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
+    allow(Agama::Software::RepositoriesManager).to receive(:new).and_return(repositories)
+    allow(Agama::Software::Proposal).to receive(:new).and_return(proposal)
   end
 
   describe "#probe" do
@@ -86,8 +86,8 @@ describe DInstaller::Software::Manager do
     let(:backup_repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d.backup") }
 
     before do
-      stub_const("DInstaller::Software::Manager::REPOS_DIR", repos_dir)
-      stub_const("DInstaller::Software::Manager::REPOS_BACKUP", backup_repos_dir)
+      stub_const("Agama::Software::Manager::REPOS_DIR", repos_dir)
+      stub_const("Agama::Software::Manager::REPOS_BACKUP", backup_repos_dir)
       FileUtils.mkdir_p(repos_dir)
     end
 
@@ -179,7 +179,7 @@ describe DInstaller::Software::Manager do
     end
 
     it "sets up the package callbacks" do
-      expect(DInstaller::Software::Callbacks::Progress).to receive(:setup)
+      expect(Agama::Software::Callbacks::Progress).to receive(:setup)
       subject.install
     end
 
@@ -201,7 +201,7 @@ describe DInstaller::Software::Manager do
 
     let(:enabled_repos) { [] }
     let(:disabled_repos) { [] }
-    let(:proposal_error) { DInstaller::ValidationError.new("proposal error") }
+    let(:proposal_error) { Agama::ValidationError.new("proposal error") }
 
     context "when there are not enabled repositories" do
       it "does not return the proposal errors" do
@@ -211,7 +211,7 @@ describe DInstaller::Software::Manager do
 
     context "when there are disabled repositories" do
       let(:disabled_repos) do
-        [instance_double(DInstaller::Software::Repository, name: "Repo #1")]
+        [instance_double(Agama::Software::Repository, name: "Repo #1")]
       end
 
       it "returns an error for each disabled repository" do
@@ -222,7 +222,7 @@ describe DInstaller::Software::Manager do
     end
 
     context "when there are enabled repositories" do
-      let(:enabled_repos) { [instance_double(DInstaller::Software::Repository)] }
+      let(:enabled_repos) { [instance_double(Agama::Software::Repository)] }
       it "returns the proposal errors" do
         expect(subject.validate).to include(proposal_error)
       end
@@ -235,8 +235,8 @@ describe DInstaller::Software::Manager do
     let(:backup_repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d.backup") }
 
     before do
-      stub_const("DInstaller::Software::Manager::REPOS_DIR", repos_dir)
-      stub_const("DInstaller::Software::Manager::REPOS_BACKUP", backup_repos_dir)
+      stub_const("Agama::Software::Manager::REPOS_DIR", repos_dir)
+      stub_const("Agama::Software::Manager::REPOS_BACKUP", backup_repos_dir)
       FileUtils.mkdir_p(repos_dir)
       FileUtils.mkdir_p(backup_repos_dir)
       FileUtils.touch(File.join(backup_repos_dir, "example.repo"))

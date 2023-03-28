@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module DInstaller
+module Agama
   # Represents the installation phase of the manager service and allows to configure callbacks to be
   # called when the installation phase value changes
   class InstallationPhase

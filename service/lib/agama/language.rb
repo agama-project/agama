@@ -24,7 +24,7 @@ require "agama/errors"
 
 Yast.import "Language"
 
-module DInstaller
+module Agama
   # Backend for handling language settings
   class Language
     # @return [Hash<Array<String,Array<String>>>] Known languages, where the key

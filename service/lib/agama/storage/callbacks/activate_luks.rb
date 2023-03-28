@@ -22,14 +22,14 @@
 require "agama/luks_activation_question"
 require "y2storage/disk_size"
 
-module DInstaller
+module Agama
   module Storage
     module Callbacks
       # Callbacks for LUKS activation
       class ActivateLuks
         # Constructor
         #
-        # @param questions_client [DInstaller::DBus::Clients::Questions]
+        # @param questions_client [Agama::DBus::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
           @questions_client = questions_client
@@ -59,7 +59,7 @@ module DInstaller
 
       private
 
-        # @return [DInstaller::DBus::Clients::Questions]
+        # @return [Agama::DBus::Clients::Questions]
         attr_reader :questions_client
 
         # @return [Logger]

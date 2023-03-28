@@ -23,7 +23,7 @@ require "dbus"
 require "agama/dbus/bus"
 require "abstract_method"
 
-module DInstaller
+module Agama
   module DBus
     module Clients
       # Base class for D-Bus clients

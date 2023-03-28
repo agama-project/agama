@@ -22,7 +22,7 @@
 require_relative "../test_helper"
 require "agama/security"
 
-describe DInstaller::Security do
+describe Agama::Security do
   subject(:security) { described_class.new(logger, config) }
 
   let(:logger) { Logger.new($stdout) }
@@ -32,7 +32,7 @@ describe DInstaller::Security do
   end
 
   let(:config) do
-    DInstaller::Config.new(YAML.safe_load(File.read(config_path)))
+    Agama::Config.new(YAML.safe_load(File.read(config_path)))
   end
 
   let(:lsm_config) do

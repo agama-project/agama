@@ -24,15 +24,15 @@ require "agama/software/callbacks/signature"
 require "agama/dbus/clients/questions"
 require "agama/dbus/clients/question"
 
-describe DInstaller::Software::Callbacks::Signature do
+describe Agama::Software::Callbacks::Signature do
   before do
     allow(questions_client).to receive(:ask).and_yield(question_client)
     allow(question_client).to receive(:answer).and_return(answer)
   end
 
-  let(:questions_client) { instance_double(DInstaller::DBus::Clients::Questions) }
+  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
 
-  let(:question_client) { instance_double(DInstaller::DBus::Clients::Question) }
+  let(:question_client) { instance_double(Agama::DBus::Clients::Question) }
 
   let(:answer) { nil }
 

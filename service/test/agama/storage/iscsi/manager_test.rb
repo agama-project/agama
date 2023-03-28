@@ -23,7 +23,7 @@ require_relative "../../../test_helper"
 require "agama/storage/iscsi/manager"
 require "agama/storage/iscsi/node"
 
-describe DInstaller::Storage::ISCSI::Manager do
+describe Agama::Storage::ISCSI::Manager do
   subject { described_class.new(logger: logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
@@ -57,7 +57,7 @@ describe DInstaller::Storage::ISCSI::Manager do
       subject.probe
 
       nodes = subject.nodes
-      expect(nodes).to all(be_a(DInstaller::Storage::ISCSI::Node))
+      expect(nodes).to all(be_a(Agama::Storage::ISCSI::Node))
 
       expect(nodes).to include(an_object_having_attributes(
         address:   "192.168.100.101",
@@ -126,7 +126,7 @@ describe DInstaller::Storage::ISCSI::Manager do
   end
 
   describe "#login" do
-    let(:node) { DInstaller::Storage::ISCSI::Node.new }
+    let(:node) { Agama::Storage::ISCSI::Node.new }
 
     let(:auth) { Y2IscsiClient::Authentication.new }
 
@@ -215,7 +215,7 @@ describe DInstaller::Storage::ISCSI::Manager do
       allow(Yast::IscsiClientLib).to receive(:deleteRecord)
     end
 
-    let(:node) { DInstaller::Storage::ISCSI::Node.new }
+    let(:node) { Agama::Storage::ISCSI::Node.new }
 
     it "closes the iSCSI session" do
       expect(Yast::IscsiClientLib).to receive(:deleteRecord)
@@ -255,7 +255,7 @@ describe DInstaller::Storage::ISCSI::Manager do
       allow(Yast::IscsiClientLib).to receive(:removeRecord)
     end
 
-    let(:node) { DInstaller::Storage::ISCSI::Node.new }
+    let(:node) { Agama::Storage::ISCSI::Node.new }
 
     it "deletes the iSCSI node" do
       expect(Yast::IscsiClientLib).to receive(:removeRecord)
@@ -275,7 +275,7 @@ describe DInstaller::Storage::ISCSI::Manager do
       allow(Yast::IscsiClientLib).to receive(:setStartupStatus)
     end
 
-    let(:node) { DInstaller::Storage::ISCSI::Node.new }
+    let(:node) { Agama::Storage::ISCSI::Node.new }
 
     it "updates the iSCSI node" do
       expect(Yast::IscsiClientLib).to receive(:setStartupStatus).with("manual")

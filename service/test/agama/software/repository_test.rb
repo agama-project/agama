@@ -22,7 +22,7 @@
 require_relative "../../test_helper"
 require "agama/software/repository"
 
-describe DInstaller::Software::Repository do
+describe Agama::Software::Repository do
   subject do
     described_class.new(
       repo_id: 1, repo_alias: "tumbleweed", name: "openSUSE Tumbleweed",

@@ -29,7 +29,7 @@ require "transfer/file_from_url"
 Yast.import "URL"
 Yast.import "Directory"
 
-module DInstaller
+module Agama
   # This class is responsible for reading DInstaller configuration from different locations
   # including kernel cmdline options
   class ConfigReader

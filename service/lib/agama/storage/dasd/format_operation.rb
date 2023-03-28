@@ -23,7 +23,7 @@ require "yast"
 require "y2s390"
 require "y2s390/format_process"
 
-module DInstaller
+module Agama
   module Storage
     module DASD
       # Operation to format the given set of DASDs

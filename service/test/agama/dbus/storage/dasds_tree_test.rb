@@ -24,7 +24,7 @@ require "agama/dbus/storage/dasds_tree"
 require "agama/dbus/storage/dasd"
 require "dbus"
 
-describe DInstaller::DBus::Storage::DasdsTree do
+describe Agama::DBus::Storage::DasdsTree do
   subject { described_class.new(service, logger: logger) }
 
   let(:service) { instance_double(::DBus::Service) }
@@ -84,15 +84,15 @@ describe DInstaller::DBus::Storage::DasdsTree do
     let(:dbus_nodes) { [dbus_dasd1, dbus_dasd2, dbus_dasd3] }
 
     let(:dbus_dasd1) do
-      instance_double(DInstaller::DBus::Storage::Dasd, id: "0.0.001", formatted: false)
+      instance_double(Agama::DBus::Storage::Dasd, id: "0.0.001", formatted: false)
     end
 
     let(:dbus_dasd2) do
-      instance_double(DInstaller::DBus::Storage::Dasd, id: "0.0.002", formatted: true)
+      instance_double(Agama::DBus::Storage::Dasd, id: "0.0.002", formatted: true)
     end
 
     let(:dbus_dasd3) do
-      instance_double(DInstaller::DBus::Storage::Dasd, id: "0.0.003", formatted: true)
+      instance_double(Agama::DBus::Storage::Dasd, id: "0.0.003", formatted: true)
     end
 
     it "returns the first DASD that matches the criteria" do
@@ -104,11 +104,11 @@ describe DInstaller::DBus::Storage::DasdsTree do
     let(:dbus_nodes) { [dbus_dasd1, dbus_dasd2] }
 
     let(:dbus_dasd1) do
-      instance_double(DInstaller::DBus::Storage::Dasd, dasd: dasd1, id: dasd1.id)
+      instance_double(Agama::DBus::Storage::Dasd, dasd: dasd1, id: dasd1.id)
     end
 
     let(:dbus_dasd2) do
-      instance_double(DInstaller::DBus::Storage::Dasd, dasd: dasd2, id: dasd2.id)
+      instance_double(Agama::DBus::Storage::Dasd, dasd: dasd2, id: dasd2.id)
     end
 
     let(:dasd1) do
@@ -187,11 +187,11 @@ describe DInstaller::DBus::Storage::DasdsTree do
     let(:dbus_nodes) { [dbus_dasd1, dbus_dasd2] }
 
     let(:dbus_dasd1) do
-      instance_double(DInstaller::DBus::Storage::Dasd, dasd: dasd1, id: dasd1.id)
+      instance_double(Agama::DBus::Storage::Dasd, dasd: dasd1, id: dasd1.id)
     end
 
     let(:dbus_dasd2) do
-      instance_double(DInstaller::DBus::Storage::Dasd, dasd: dasd2, id: dasd2.id)
+      instance_double(Agama::DBus::Storage::Dasd, dasd: dasd2, id: dasd2.id)
     end
 
     let(:dasd1) do

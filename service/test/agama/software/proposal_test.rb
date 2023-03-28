@@ -23,7 +23,7 @@ require_relative "../../test_helper"
 require "agama/software/proposal"
 require "agama/config"
 
-describe DInstaller::Software::Proposal do
+describe Agama::Software::Proposal do
   subject(:proposal) { described_class.new(logger: logger) }
 
   let(:logger) { Logger.new($stdout) }
@@ -91,7 +91,7 @@ describe DInstaller::Software::Proposal do
       it "registers the corresponding validation error" do
         subject.calculate
         expect(subject.errors).to eq(
-          [DInstaller::ValidationError.new("Could not install...")]
+          [Agama::ValidationError.new("Could not install...")]
         )
       end
     end
@@ -104,8 +104,8 @@ describe DInstaller::Software::Proposal do
         subject.calculate
         expect(subject.errors).to eq(
           [
-            DInstaller::ValidationError.new("Solving errors..."),
-            DInstaller::ValidationError.new("Found 5 dependency issues.")
+            Agama::ValidationError.new("Solving errors..."),
+            Agama::ValidationError.new("Found 5 dependency issues.")
           ]
         )
       end

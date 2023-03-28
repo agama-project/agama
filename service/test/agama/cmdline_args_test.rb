@@ -22,7 +22,7 @@
 require_relative "../test_helper"
 require "agama/cmdline_args"
 
-describe DInstaller::CmdlineArgs do
+describe Agama::CmdlineArgs do
   let(:workdir) { File.join(FIXTURES_PATH, "root_dir") }
   subject { described_class.new(workdir: workdir) }
 

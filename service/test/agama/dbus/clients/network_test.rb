@@ -22,7 +22,7 @@
 require_relative "../../../test_helper"
 require "agama/dbus/clients/network"
 
-describe DInstaller::DBus::Clients::Network do
+describe Agama::DBus::Clients::Network do
   before do
     allow(DBus::SystemBus).to receive(:instance).and_return(bus)
     allow(bus).to receive(:service).with("org.freedesktop.NetworkManager").and_return(service)

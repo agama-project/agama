@@ -26,10 +26,10 @@ require "agama/dbus/clients/questions"
 require "agama/dbus/clients/question"
 require "storage"
 
-describe DInstaller::Storage::Callbacks::ActivateLuks do
+describe Agama::Storage::Callbacks::ActivateLuks do
   subject { described_class.new(questions_client, logger) }
 
-  let(:questions_client) { instance_double(DInstaller::DBus::Clients::Questions) }
+  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
@@ -38,7 +38,7 @@ describe DInstaller::Storage::Callbacks::ActivateLuks do
       allow(questions_client).to receive(:ask).and_yield(question_client)
     end
 
-    let(:question_client) { instance_double(DInstaller::DBus::Clients::Question) }
+    let(:question_client) { instance_double(Agama::DBus::Clients::Question) }
 
     let(:luks_info) do
       instance_double(Storage::LuksInfo,
@@ -51,7 +51,7 @@ describe DInstaller::Storage::Callbacks::ActivateLuks do
 
     it "asks a question to activate a LUKS device" do
       expect(questions_client).to receive(:ask) do |question|
-        expect(question).to be_a(DInstaller::LuksActivationQuestion)
+        expect(question).to be_a(Agama::LuksActivationQuestion)
       end
 
       subject.call(luks_info, attempt)

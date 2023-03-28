@@ -23,10 +23,10 @@ require "y2storage"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume_converter"
 
-module DInstaller
+module Agama
   module Storage
     # Utility class offering methods to convert between Y2Storage::ProposalSettings objects and
-    # DInstaller::ProposalSettings ones
+    # Agama::ProposalSettings ones
     class ProposalSettingsConverter
       # Constructor
       #
@@ -37,7 +37,7 @@ module DInstaller
       end
 
       # Returns the Y2Storage::VolumeSpecification object that is equivalent to the given
-      # DInstaller::Volume one
+      # Agama::Volume one
       #
       # @param settings [ProposalSettings]
       # @return [Y2Storage::ProposalSettings]

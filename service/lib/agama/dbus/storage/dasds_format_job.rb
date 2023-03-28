@@ -22,7 +22,7 @@
 require "dbus"
 require "agama/dbus/base_object"
 
-module DInstaller
+module Agama
   module DBus
     module Storage
       # Class representing the process of formatting a set of DASDs

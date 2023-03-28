@@ -41,7 +41,7 @@ unless File.exist?(path)
   exit(2)
 end
 
-config = DInstaller::Config.from_file(path)
+config = Agama::Config.from_file(path)
 
 unknown_products = product_ids - config.products.keys
 unless unknown_products.empty?

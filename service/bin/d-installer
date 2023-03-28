@@ -59,7 +59,7 @@ def start_service(name)
   module_y2dir = File.expand_path("../lib/agama/dbus/y2dir/#{name}", __dir__)
   ENV["Y2DIR"] = [ENV.fetch("Y2DIR", nil), module_y2dir, general_y2dir].compact.join(":")
 
-  service_runner = DInstaller::DBus::ServiceRunner.new(name, logger: logger_for(name))
+  service_runner = Agama::DBus::ServiceRunner.new(name, logger: logger_for(name))
   service_runner.run
 end
 
@@ -81,7 +81,7 @@ def start_all_services
   end
 end
 
-dbus_server_manager = DInstaller::DBus::ServerManager.new
+dbus_server_manager = Agama::DBus::ServerManager.new
 
 if ARGV.empty?
   start_all_services

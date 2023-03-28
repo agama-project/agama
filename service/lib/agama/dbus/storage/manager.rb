@@ -35,7 +35,7 @@ require "agama/dbus/storage/iscsi_nodes_tree"
 
 Yast.import "Arch"
 
-module DInstaller
+module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
@@ -52,7 +52,7 @@ module DInstaller
 
         # Constructor
         #
-        # @param backend [DInstaller::Storage::Manager]
+        # @param backend [Agama::Storage::Manager]
         # @param logger [Logger]
         def initialize(backend, logger)
           super(PATH, logger: logger)
@@ -230,13 +230,13 @@ module DInstaller
 
       private
 
-        # @return [DInstaller::Storage::Manager]
+        # @return [Agama::Storage::Manager]
         attr_reader :backend
 
         # @return [DBus::Storage::Proposal, nil]
         attr_reader :dbus_proposal
 
-        # @return [DInstaller::Storage::Proposal]
+        # @return [Agama::Storage::Proposal]
         def proposal
           backend.proposal
         end

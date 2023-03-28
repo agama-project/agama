@@ -21,7 +21,7 @@
 
 require "y2storage/secret_attributes"
 
-module DInstaller
+module Agama
   module Storage
     # Settings used to calculate a D-Installer proposal
     class ProposalSettings

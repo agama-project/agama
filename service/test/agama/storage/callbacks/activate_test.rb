@@ -23,20 +23,20 @@ require_relative "../../../test_helper"
 require "agama/storage/callbacks/activate"
 require "agama/dbus/clients/questions"
 
-describe DInstaller::Storage::Callbacks::Activate do
+describe Agama::Storage::Callbacks::Activate do
   subject { described_class.new(questions_client, logger) }
 
-  let(:questions_client) { instance_double(DInstaller::DBus::Clients::Questions) }
+  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#multipath" do
     before do
-      allow(DInstaller::Storage::Callbacks::ActivateMultipath)
+      allow(Agama::Storage::Callbacks::ActivateMultipath)
         .to receive(:new).and_return(activate_callbacks)
     end
 
-    let(:activate_callbacks) { instance_double(DInstaller::Storage::Callbacks::ActivateMultipath) }
+    let(:activate_callbacks) { instance_double(Agama::Storage::Callbacks::ActivateMultipath) }
 
     it "calls callbacks for multipath activation" do
       expect(activate_callbacks).to receive(:call)
@@ -67,12 +67,12 @@ describe DInstaller::Storage::Callbacks::Activate do
 
   describe "#luks" do
     before do
-      allow(DInstaller::Storage::Callbacks::ActivateLuks)
+      allow(Agama::Storage::Callbacks::ActivateLuks)
         .to receive(:new).and_return(activate_callbacks)
       allow(activate_callbacks).to receive(:call).and_return([true, "notsecret"])
     end
 
-    let(:activate_callbacks) { instance_double(DInstaller::Storage::Callbacks::ActivateLuks) }
+    let(:activate_callbacks) { instance_double(Agama::Storage::Callbacks::ActivateLuks) }
 
     let(:info) { instance_double(Storage::LuksInfo) }
 

@@ -25,7 +25,7 @@ require "agama/question"
 require "agama/luks_activation_question"
 require "agama/dbus/question"
 
-module DInstaller
+module Agama
   module DBus
     # This class represents a D-Bus object implementing ObjectManager interface for questions
     class Questions < ::DBus::Object
@@ -51,7 +51,7 @@ module DInstaller
         dbus_method :New, "in text:s, in options:as, in default_option:as, out q:o" do
           |text, options, default_option|
 
-          question = DInstaller::Question.new(
+          question = Agama::Question.new(
             text,
             options:        options.map(&:to_sym),
             default_option: default_option.map(&:to_sym).first
@@ -63,7 +63,7 @@ module DInstaller
         dbus_method :NewLuksActivation, "in device:s, in label:s, in size:s, in attempt:y, out q:o" do
           |device, label, size, attempt|
 
-          question = DInstaller::LuksActivationQuestion.new(
+          question = Agama::LuksActivationQuestion.new(
             device, label: label, size: size, attempt: attempt
           )
 
@@ -75,7 +75,7 @@ module DInstaller
 
           raise ArgumentError, "Object path #{question_path} not found" unless dbus_question
 
-          if !dbus_question.is_a?(DInstaller::DBus::Question)
+          if !dbus_question.is_a?(Agama::DBus::Question)
             raise ArgumentError, "Object #{question_path} is not a Question"
           end
 
@@ -90,7 +90,7 @@ module DInstaller
 
       # Exports a new question object
       #
-      # @param question [DInstaller::Question]
+      # @param question [Agama::Question]
       # @return [::DBus::ObjectPath]
       def export(question)
         dbus_question = DBus::Question.new(path_for(question), question, logger)
@@ -101,7 +101,7 @@ module DInstaller
 
       # Builds the question path (e.g., /org/opensuse/DInstaller/Questions1/1)
       #
-      # @param question [DInstaller::Question]
+      # @param question [Agama::Question]
       # @return [::DBus::ObjectPath]
       def path_for(question)
         path = Pathname.new(PATH).join(question.id.to_s)

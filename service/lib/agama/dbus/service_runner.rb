@@ -23,7 +23,7 @@ require "eventmachine"
 require "logger"
 require "dbus"
 
-module DInstaller
+module Agama
   module DBus
     # Set up and run a given D-Bus service
     #
@@ -78,7 +78,7 @@ module DInstaller
       # @return [#export,#dispatch] Class that implements #export and #dispatch methods.
       def build_service(name, logger)
         require "agama/dbus/#{name}_service"
-        klass = DInstaller::DBus.const_get("#{name.capitalize}Service")
+        klass = Agama::DBus.const_get("#{name.capitalize}Service")
         klass.new(config, logger)
       rescue LoadError, NameError
         raise "Service '#{name}' not found"

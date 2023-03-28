@@ -26,12 +26,12 @@ require "agama/storage/iscsi/manager"
 require "agama/storage/iscsi/node"
 require "dbus"
 
-describe DInstaller::DBus::Storage::ISCSINodesTree do
+describe Agama::DBus::Storage::ISCSINodesTree do
   subject { described_class.new(service, iscsi_manager, logger: logger) }
 
   let(:service) { instance_double(::DBus::Service) }
 
-  let(:iscsi_manager) { DInstaller::Storage::ISCSI::Manager.new }
+  let(:iscsi_manager) { Agama::Storage::ISCSI::Manager.new }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
@@ -42,7 +42,7 @@ describe DInstaller::DBus::Storage::ISCSINodesTree do
     allow(root_node).to receive(:descendant_objects).and_return(dbus_nodes)
   end
 
-  let(:root_node) { DInstaller::Storage::ISCSI::Node.new }
+  let(:root_node) { Agama::Storage::ISCSI::Node.new }
 
   let(:dbus_nodes) { [] }
 
@@ -78,15 +78,15 @@ describe DInstaller::DBus::Storage::ISCSINodesTree do
     let(:dbus_nodes) { [dbus_node1, dbus_node2] }
 
     let(:dbus_node1) do
-      instance_double(DInstaller::DBus::Storage::ISCSINode, iscsi_node: node1)
+      instance_double(Agama::DBus::Storage::ISCSINode, iscsi_node: node1)
     end
 
     let(:dbus_node2) do
-      instance_double(DInstaller::DBus::Storage::ISCSINode, iscsi_node: node2)
+      instance_double(Agama::DBus::Storage::ISCSINode, iscsi_node: node2)
     end
 
     let(:node1) do
-      DInstaller::Storage::ISCSI::Node.new.tap do |node|
+      Agama::Storage::ISCSI::Node.new.tap do |node|
         node.address = "192.168.100.101"
         node.port = 3260
         node.target = "iqn.2023-01.com.example:12ac588"
@@ -95,7 +95,7 @@ describe DInstaller::DBus::Storage::ISCSINodesTree do
     end
 
     let(:node2) do
-      DInstaller::Storage::ISCSI::Node.new.tap do |node|
+      Agama::Storage::ISCSI::Node.new.tap do |node|
         node.address = "192.168.100.102"
         node.port = 3260
         node.target = "iqn.2023-01.com.example:12ac588"
@@ -112,7 +112,7 @@ describe DInstaller::DBus::Storage::ISCSINodesTree do
       let(:nodes) { [node3] }
 
       let(:node3) do
-        DInstaller::Storage::ISCSI::Node.new.tap do |node|
+        Agama::Storage::ISCSI::Node.new.tap do |node|
           node.address = "192.168.100.103"
           node.port = 3260
           node.target = "iqn.2023-01.com.example:12ac588"
@@ -134,7 +134,7 @@ describe DInstaller::DBus::Storage::ISCSINodesTree do
       let(:nodes) { [node3] }
 
       let(:node3) do
-        DInstaller::Storage::ISCSI::Node.new.tap do |node|
+        Agama::Storage::ISCSI::Node.new.tap do |node|
           node.address = "192.168.100.102"
           node.port = 3260
           node.target = "iqn.2023-01.com.example:12ac588"

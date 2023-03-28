@@ -24,8 +24,8 @@ require_relative "storage_helpers"
 require "agama/storage/proposal"
 require "agama/config"
 
-describe DInstaller::Storage::Proposal do
-  include DInstaller::RSpec::StorageHelpers
+describe Agama::Storage::Proposal do
+  include Agama::RSpec::StorageHelpers
   before do
     mock_storage
     allow(Y2Storage::StorageManager.instance).to receive(:proposal=)
@@ -34,13 +34,13 @@ describe DInstaller::Storage::Proposal do
   subject(:proposal) { described_class.new(logger, config) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
-  let(:config) { DInstaller::Config.new(config_data) }
+  let(:config) { Agama::Config.new(config_data) }
 
   let(:config_data) do
     { "storage" => { "volumes" => config_volumes } }
   end
   let(:settings) do
-    settings = DInstaller::Storage::ProposalSettings.new
+    settings = Agama::Storage::ProposalSettings.new
     settings.volumes = volumes
     settings
   end
@@ -66,9 +66,9 @@ describe DInstaller::Storage::Proposal do
   # Constructs a DInstaller volume with the given set of attributes
   #
   # @param attrs [Hash] set of attributes and their values (sizes can be provided as strings)
-  # @return [DInstaller::Storage::Volume]
+  # @return [Agama::Storage::Volume]
   def test_vol(attrs = {})
-    vol = DInstaller::Storage::Volume.new
+    vol = Agama::Storage::Volume.new
     attrs.each do |attr, value|
       if [:min_size, :max_size].include?(attr.to_sym)
         # DiskSize.new can take a DiskSize, a string or a number

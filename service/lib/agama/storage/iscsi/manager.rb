@@ -25,7 +25,7 @@ require "agama/storage/iscsi/initiator"
 
 Yast.import "IscsiClientLib"
 
-module DInstaller
+module Agama
   module Storage
     module ISCSI
       # Manager for iSCSI

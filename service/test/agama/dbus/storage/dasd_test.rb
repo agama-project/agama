@@ -22,7 +22,7 @@
 require_relative "../../../test_helper"
 require "agama/dbus/storage/dasd"
 
-describe DInstaller::DBus::Storage::Dasd do
+describe Agama::DBus::Storage::Dasd do
   subject { described_class.new(y2s390_dasd1, path, logger: logger) }
 
   let(:y2s390_dasd1) { instance_double("Y2S390::Dasd") }

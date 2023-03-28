@@ -23,7 +23,7 @@ require "agama/storage/volume"
 require "y2storage/disk_size"
 require "y2storage/filesystems/type"
 
-module DInstaller
+module Agama
   module DBus
     module Storage
       # Utility class offering methods to convert volumes between D-Installer and D-Bus formats
@@ -31,7 +31,7 @@ module DInstaller
       # @note In the future this class might be not needed if proposal volumes and templates are
       #   exported as objects in D-Bus.
       class VolumeConverter
-        # Converts the given D-Bus volume to its equivalent DInstaller::Volume object
+        # Converts the given D-Bus volume to its equivalent Agama::Volume object
         #
         # @param dbus_volume [Hash]
         # @return [Storage::Volume]
@@ -58,7 +58,7 @@ module DInstaller
 
           # @return [Storage::Volume]
           def convert
-            DInstaller::Storage::Volume.new.tap do |volume|
+            Agama::Storage::Volume.new.tap do |volume|
               dbus_volume.each do |dbus_property, dbus_value|
                 setter, value_converter = VOLUME_CONVERSIONS[dbus_property]
                 volume.public_send(setter, value_converter.call(dbus_value, self))

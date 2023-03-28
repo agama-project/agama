@@ -21,7 +21,7 @@
 
 require "agama/progress"
 
-module DInstaller
+module Agama
   # Mixin that allows to start a progress and configure callbacks
   module WithProgress
     # There is an unfinished progress

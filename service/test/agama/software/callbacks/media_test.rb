@@ -24,10 +24,10 @@ require "agama/software/callbacks/media"
 require "agama/dbus/clients/questions"
 require "agama/dbus/clients/question"
 
-describe DInstaller::Software::Callbacks::Media do
+describe Agama::Software::Callbacks::Media do
   subject { described_class.new(questions_client, logger) }
 
-  let(:questions_client) { instance_double(DInstaller::DBus::Clients::Questions) }
+  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
@@ -37,7 +37,7 @@ describe DInstaller::Software::Callbacks::Media do
       allow(question_client).to receive(:answer).and_return(answer)
     end
 
-    let(:question_client) { instance_double(DInstaller::DBus::Clients::Question) }
+    let(:question_client) { instance_double(Agama::DBus::Clients::Question) }
 
     context "when the user answers :Retry" do
       let(:answer) { :Retry }

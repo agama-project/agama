@@ -25,7 +25,7 @@ require "fileutils"
 require "agama/cockpit_manager"
 Yast.import "Installation"
 
-describe DInstaller::CockpitManager do
+describe Agama::CockpitManager do
   subject(:cockpit) { described_class.new(logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }

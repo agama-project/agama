@@ -25,14 +25,14 @@ require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/config"
 
-describe DInstaller::Storage::Proposal do
-  include DInstaller::RSpec::StorageHelpers
+describe Agama::Storage::Proposal do
+  include Agama::RSpec::StorageHelpers
   before { mock_storage }
 
   subject(:proposal) { described_class.new(logger, config) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
-  let(:config) { DInstaller::Config.new(config_data) }
+  let(:config) { Agama::Config.new(config_data) }
   let(:config_data) do
     { "storage" => { "volumes" => config_volumes } }
   end
@@ -117,7 +117,7 @@ describe DInstaller::Storage::Proposal do
     it "stores the given settings" do
       expect(proposal.settings).to be_nil
 
-      settings = DInstaller::Storage::ProposalSettings.new
+      settings = Agama::Storage::ProposalSettings.new
       proposal.calculate(settings)
 
       expect(proposal.settings).to eq(settings)
@@ -149,7 +149,7 @@ describe DInstaller::Storage::Proposal do
     end
 
     context "with the default settings" do
-      let(:settings) { DInstaller::Storage::ProposalSettings.new }
+      let(:settings) { Agama::Storage::ProposalSettings.new }
 
       include_examples "y2storage proposal from config"
       include_examples "y2storage proposal with clean-up settings"
@@ -157,7 +157,7 @@ describe DInstaller::Storage::Proposal do
 
     context "with settings defining a list of candidate devices" do
       let(:settings) do
-        settings = DInstaller::Storage::ProposalSettings.new
+        settings = Agama::Storage::ProposalSettings.new
         settings.candidate_devices = devices
         settings
       end
@@ -287,7 +287,7 @@ describe DInstaller::Storage::Proposal do
   describe "#volume_templates" do
     it "returns a list with the default volumes from the configuration" do
       templates = proposal.volume_templates
-      expect(templates).to all be_a(DInstaller::Storage::Volume)
+      expect(templates).to all be_a(Agama::Storage::Volume)
       expect(templates.map(&:mount_point)).to contain_exactly("/", "/two")
     end
 
@@ -297,7 +297,7 @@ describe DInstaller::Storage::Proposal do
       it "returns settings with a fallback list of volumes" do
         templates = proposal.volume_templates
         expect(templates).to_not be_empty
-        expect(templates).to all be_a(DInstaller::Storage::Volume)
+        expect(templates).to all be_a(Agama::Storage::Volume)
       end
     end
 

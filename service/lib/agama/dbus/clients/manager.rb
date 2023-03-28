@@ -25,7 +25,7 @@ require "agama/dbus/clients/with_progress"
 require "agama/dbus/manager"
 require "agama/installation_phase"
 
-module DInstaller
+module Agama
   module DBus
     module Clients
       # D-Bus client for manager service

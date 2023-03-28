@@ -24,7 +24,7 @@ require "agama/dbus/bus"
 require "agama/dbus/storage"
 require "agama/storage"
 
-module DInstaller
+module Agama
   module DBus
     # D-Bus service (org.opensuse.DInstaller.Storage)
     #
@@ -44,7 +44,7 @@ module DInstaller
       def initialize(config, logger = nil)
         @logger = logger || Logger.new($stdout)
         @bus = Bus.current
-        @backend = DInstaller::Storage::Manager.new(config, logger)
+        @backend = Agama::Storage::Manager.new(config, logger)
         @backend.on_progress_change { dispatch }
       end
 
@@ -73,7 +73,7 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          DInstaller::DBus::Storage::Manager.new(@backend, logger)
+          Agama::DBus::Storage::Manager.new(@backend, logger)
         ]
       end
     end

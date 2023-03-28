@@ -26,7 +26,7 @@ require "agama/dbus/with_service_status"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
 
-module DInstaller
+module Agama
   module DBus
     # D-Bus object to manage the installation process
     class Manager < BaseObject
@@ -39,7 +39,7 @@ module DInstaller
 
       # Constructor
       #
-      # @param backend [DInstaller::Manager]
+      # @param backend [Agama::Manager]
       # @param logger [Logger]
       def initialize(backend, logger)
         super(PATH, logger: logger)
@@ -123,7 +123,7 @@ module DInstaller
 
     private
 
-      # @return [DInstaller::Manager]
+      # @return [Agama::Manager]
       attr_reader :backend
 
       # Executes the given block only if the service is idle

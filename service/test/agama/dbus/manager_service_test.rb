@@ -23,26 +23,26 @@ require_relative "../../test_helper"
 require "agama/dbus/manager_service"
 require "agama/config"
 
-describe DInstaller::DBus::ManagerService do
+describe Agama::DBus::ManagerService do
   subject(:service) { described_class.new(config, logger) }
 
-  let(:config) { DInstaller::Config.new }
+  let(:config) { Agama::Config.new }
   let(:logger) { Logger.new($stdout, level: :warn) }
-  let(:manager) { DInstaller::Manager.new(config, logger) }
-  let(:bus) { instance_double(DInstaller::DBus::Bus) }
+  let(:manager) { Agama::Manager.new(config, logger) }
+  let(:bus) { instance_double(Agama::DBus::Bus) }
   let(:bus_service) do
     instance_double(::DBus::Service, export: nil)
   end
-  let(:cockpit) { instance_double(DInstaller::CockpitManager, setup: nil) }
+  let(:cockpit) { instance_double(Agama::CockpitManager, setup: nil) }
   let(:software_client) do
-    instance_double(DInstaller::DBus::Clients::Software, on_product_selected: nil)
+    instance_double(Agama::DBus::Clients::Software, on_product_selected: nil)
   end
 
   before do
-    allow(DInstaller::DBus::Bus).to receive(:current).and_return(bus)
+    allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
     allow(bus).to receive(:request_service).and_return(bus_service)
-    allow(DInstaller::Manager).to receive(:new).with(config, logger).and_return(manager)
-    allow(DInstaller::CockpitManager).to receive(:new).and_return(cockpit)
+    allow(Agama::Manager).to receive(:new).with(config, logger).and_return(manager)
+    allow(Agama::CockpitManager).to receive(:new).and_return(cockpit)
     allow(manager).to receive(:software).and_return(software_client)
   end
 
@@ -55,8 +55,8 @@ describe DInstaller::DBus::ManagerService do
 
   describe "#export" do
     it "exports the manager object" do
-      manager_obj = instance_double(DInstaller::DBus::Manager, path: nil)
-      allow(DInstaller::DBus::Manager).to receive(:new)
+      manager_obj = instance_double(Agama::DBus::Manager, path: nil)
+      allow(Agama::DBus::Manager).to receive(:new)
         .with(manager, logger).and_return(manager_obj)
 
       expect(bus_service).to receive(:export).with(manager_obj)

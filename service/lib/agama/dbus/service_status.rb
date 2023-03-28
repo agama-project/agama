@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module DInstaller
+module Agama
   module DBus
     # Represents the status of a D-Installer service and allows to configure callbacks to be called
     # when the status value changes

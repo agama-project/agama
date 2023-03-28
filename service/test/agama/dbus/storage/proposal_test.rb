@@ -26,13 +26,13 @@ require "agama/storage/proposal_settings"
 require "agama/storage/volume"
 require "y2storage"
 
-describe DInstaller::DBus::Storage::Proposal do
+describe Agama::DBus::Storage::Proposal do
   subject { described_class.new(backend, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:backend) do
-    instance_double(DInstaller::Storage::Proposal, calculated_settings: settings)
+    instance_double(Agama::Storage::Proposal, calculated_settings: settings)
   end
 
   let(:settings) { nil }
@@ -48,7 +48,7 @@ describe DInstaller::DBus::Storage::Proposal do
 
     context "if a proposal has been calculated" do
       let(:settings) do
-        instance_double(DInstaller::Storage::ProposalSettings,
+        instance_double(Agama::Storage::ProposalSettings,
           candidate_devices: ["/dev/vda", "/dev/vdb"])
       end
 
@@ -69,7 +69,7 @@ describe DInstaller::DBus::Storage::Proposal do
 
     context "if a proposal has been calculated" do
       let(:settings) do
-        instance_double(DInstaller::Storage::ProposalSettings, lvm: true)
+        instance_double(Agama::Storage::ProposalSettings, lvm: true)
       end
 
       it "return whether LVM was used" do
@@ -89,7 +89,7 @@ describe DInstaller::DBus::Storage::Proposal do
 
     context "if a proposal has been calculated" do
       let(:settings) do
-        instance_double(DInstaller::Storage::ProposalSettings, encryption_password: "n0ts3cr3t")
+        instance_double(Agama::Storage::ProposalSettings, encryption_password: "n0ts3cr3t")
       end
 
       it "return the encryption password used by the proposal" do
@@ -100,7 +100,7 @@ describe DInstaller::DBus::Storage::Proposal do
 
   describe "#volumes" do
     let(:settings) do
-      DInstaller::Storage::ProposalSettings.new.tap { |s| s.volumes = calculated_volumes }
+      Agama::Storage::ProposalSettings.new.tap { |s| s.volumes = calculated_volumes }
     end
 
     context "if the calculated settings has no volumes" do
@@ -115,13 +115,13 @@ describe DInstaller::DBus::Storage::Proposal do
       let(:calculated_volumes) { [calculated_volume1, calculated_volume2] }
 
       let(:calculated_volume1) do
-        DInstaller::Storage::Volume.new.tap do |volume|
+        Agama::Storage::Volume.new.tap do |volume|
           volume.mount_point = "/test1"
         end
       end
 
       let(:calculated_volume2) do
-        DInstaller::Storage::Volume.new.tap do |volume|
+        Agama::Storage::Volume.new.tap do |volume|
           volume.mount_point = "/test2"
         end
       end

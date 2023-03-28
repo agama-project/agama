@@ -22,7 +22,7 @@
 require "agama/dbus/with_path_generator"
 require "agama/dbus/storage/dasd"
 
-module DInstaller
+module Agama
   module DBus
     module Storage
       # Class representing the tree of DASDs exported on D-Bus

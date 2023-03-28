@@ -22,11 +22,11 @@
 require_relative "../test_helper"
 require "agama/config"
 
-describe DInstaller::Config do
+describe Agama::Config do
   let(:config) { described_class.new("web" => { "ssl" => "SOMETHING" }) }
 
   before do
-    allow_any_instance_of(DInstaller::ConfigReader).to receive(:config).and_return(config)
+    allow_any_instance_of(Agama::ConfigReader).to receive(:config).and_return(config)
   end
 
   describe ".load" do
@@ -35,12 +35,12 @@ describe DInstaller::Config do
     end
 
     it "reads the configuration from different locations" do
-      expect_any_instance_of(DInstaller::ConfigReader).to receive(:config)
+      expect_any_instance_of(Agama::ConfigReader).to receive(:config)
       described_class.load
     end
 
     it "stores the read configuration and set it as the current one" do
-      allow_any_instance_of(DInstaller::ConfigReader).to receive(:config).and_return(config)
+      allow_any_instance_of(Agama::ConfigReader).to receive(:config).and_return(config)
       expect { described_class.load }.to change { described_class.base }.from(nil).to(config)
       expect(described_class.base).to_not eql(described_class.current)
       expect(described_class.base.data).to eql(described_class.current.data)

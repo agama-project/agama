@@ -22,7 +22,7 @@
 require "dbus"
 require "agama/dbus/base_object"
 
-module DInstaller
+module Agama
   module DBus
     module Storage
       # Class representing a DASD in the D-Bus tree
@@ -73,7 +73,7 @@ module DInstaller
         # Whether the DIAG access method is enabled
         #
         # YaST traditionally displays #use_diag, which is always false for disabled devices (see
-        # more info about the YaST behavior regarding DIAG at DInstaller::Storage::DASD::Manager).
+        # more info about the YaST behavior regarding DIAG at Agama::Storage::DASD::Manager).
         # But displaying #diag_wanted is surely more useful. For enabled DASDs both values match
         # and for disabled DASDs #diag_wanted is more informative.
         #

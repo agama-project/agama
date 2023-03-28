@@ -21,18 +21,18 @@
 
 require "dbus"
 
-module DInstaller
+module Agama
   module DBus
     module Interfaces
       # Mixin to define the ServiceStatus D-Bus interface
       #
       # @note This mixin is expected to be included in a class inherited from {::DBus::Object} and
-      #   it requires a #service_status method that returns a {DInstaller::DBus::ServiceStatus}
+      #   it requires a #service_status method that returns a {Agama::DBus::ServiceStatus}
       #   object.
       #
       # @example
       #   class Demo < ::DBus::Object
-      #     include DInstaller::DBus::Interfaces::ServiceStatus
+      #     include Agama::DBus::Interfaces::ServiceStatus
       #
       #     def initialize
       #       super("org.test.Demo")
@@ -40,7 +40,7 @@ module DInstaller
       #     end
       #
       #     def service_status
-      #       @service_status ||= DInstaller::DBus::ServiceStatus.new
+      #       @service_status ||= Agama::DBus::ServiceStatus.new
       #   end
       module ServiceStatus
         SERVICE_STATUS_INTERFACE = "org.opensuse.DInstaller.ServiceStatus1"

@@ -23,7 +23,7 @@ require_relative "../test_helper"
 require "agama/with_progress"
 
 class WithProgressTest
-  include DInstaller::WithProgress
+  include Agama::WithProgress
 end
 
 describe WithProgressTest do
@@ -42,7 +42,7 @@ describe WithProgressTest do
       end
 
       it "returns the progress object" do
-        expect(subject.progress).to be_a(DInstaller::Progress)
+        expect(subject.progress).to be_a(Agama::Progress)
       end
     end
   end
@@ -55,7 +55,7 @@ describe WithProgressTest do
 
       it "raises an error" do
         expect { subject.start_progress(1) }
-          .to raise_error(DInstaller::WithProgress::NotFinishedProgress)
+          .to raise_error(Agama::WithProgress::NotFinishedProgress)
       end
     end
 

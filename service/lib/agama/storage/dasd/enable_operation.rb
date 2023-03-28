@@ -22,7 +22,7 @@
 require "agama/storage/dasd/sequential_operation"
 require "agama/storage/dasd/dasd_configure_cmd"
 
-module DInstaller
+module Agama
   module Storage
     module DASD
       # Operation to enable a set of DASDs

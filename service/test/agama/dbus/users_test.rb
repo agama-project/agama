@@ -24,12 +24,12 @@ require "agama/dbus/interfaces/service_status"
 require "agama/dbus/users"
 require "agama/users"
 
-describe DInstaller::DBus::Users do
+describe Agama::DBus::Users do
   subject { described_class.new(backend, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:backend) { instance_double(DInstaller::Users) }
+  let(:backend) { instance_double(Agama::Users) }
 
   before do
     allow_any_instance_of(described_class).to receive(:register_service_status_callbacks)
@@ -37,13 +37,13 @@ describe DInstaller::DBus::Users do
 
   it "defines ServiceStatus D-Bus interface" do
     expect(subject.intfs.keys).to include(
-      DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
+      Agama::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
     )
   end
 
   it "defines Validation D-Bus interface" do
     expect(subject.intfs.keys).to include(
-      DInstaller::DBus::Interfaces::Validation::VALIDATION_INTERFACE
+      Agama::DBus::Interfaces::Validation::VALIDATION_INTERFACE
     )
   end
 

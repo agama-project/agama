@@ -24,7 +24,7 @@ require "agama/dbus/bus"
 require "agama/dbus/users"
 require "agama/users"
 
-module DInstaller
+module Agama
   module DBus
     # D-Bus service (org.opensuse.DInstaller.Users)
     #
@@ -79,14 +79,14 @@ module DInstaller
         ]
       end
 
-      # @return [DInstaller::DBus::Users]
+      # @return [Agama::DBus::Users]
       def users_dbus
-        @users_dbus ||= DInstaller::DBus::Users.new(users_backend(logger), logger)
+        @users_dbus ||= Agama::DBus::Users.new(users_backend(logger), logger)
       end
 
-      # @return [DInstaller::Users]
+      # @return [Agama::Users]
       def users_backend(logger)
-        @users_backend ||= DInstaller::Users.new(logger)
+        @users_backend ||= Agama::Users.new(logger)
       end
     end
   end

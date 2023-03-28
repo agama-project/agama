@@ -24,7 +24,7 @@ require "tmpdir"
 require "agama/network"
 require "agama/progress"
 
-describe DInstaller::Network do
+describe Agama::Network do
   subject(:network) { described_class.new(logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
@@ -40,7 +40,7 @@ describe DInstaller::Network do
     before do
       allow(Yast::Installation).to receive(:destdir).and_return(targetdir)
       allow(Yast2::Systemd::Service).to receive(:find).with("NetworkManager").and_return(service)
-      stub_const("DInstaller::Network::ETC_NM_DIR", etcdir)
+      stub_const("Agama::Network::ETC_NM_DIR", etcdir)
     end
 
     after do

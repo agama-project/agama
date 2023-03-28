@@ -23,7 +23,7 @@ require "yast"
 
 Yast.import "Pkg"
 
-module DInstaller
+module Agama
   module Software
     module Callbacks
       # This class represents the installer status
@@ -48,7 +48,7 @@ module DInstaller
 
       private
 
-        # @return [DInstaller::Progress]
+        # @return [Agama::Progress]
         attr_reader :progress
 
         def fun_ref(method, signature)

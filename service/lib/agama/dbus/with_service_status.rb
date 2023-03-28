@@ -21,7 +21,7 @@
 
 require "agama/dbus/service_status"
 
-module DInstaller
+module Agama
   module DBus
     # Mixin to be included by D-Bus objects that needs to register a service status
     module WithServiceStatus

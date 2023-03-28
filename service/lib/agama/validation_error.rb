@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module DInstaller
+module Agama
   # Represents a validation error
   #
   # These are errors related to the logic of the backends. For instance,

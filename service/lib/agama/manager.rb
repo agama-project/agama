@@ -33,12 +33,12 @@ require "agama/helpers"
 
 Yast.import "Stage"
 
-module DInstaller
+module Agama
   # This class represents the top level installer manager.
   #
   # It is responsible for orchestrating the installation process. For module
   # specific stuff it delegates it to the corresponding module class (e.g.,
-  # {DInstaller::Network}, {DInstaller::Storage::Proposal}, etc.) or asks
+  # {Agama::Network}, {Agama::Storage::Proposal}, etc.) or asks
   # other services via D-Bus (e.g., `org.opensuse.DInstaller.Software`).
   class Manager
     include WithProgress

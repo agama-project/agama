@@ -22,7 +22,7 @@
 require_relative "../../test_helper"
 require "agama/dbus/service_status"
 
-describe DInstaller::DBus::ServiceStatus do
+describe Agama::DBus::ServiceStatus do
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   describe "#new" do

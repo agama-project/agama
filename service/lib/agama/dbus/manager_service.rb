@@ -26,7 +26,7 @@ require "agama/dbus/bus"
 require "agama/dbus/manager"
 require "agama/dbus/storage/proposal"
 
-module DInstaller
+module Agama
   module DBus
     # D-Bus service (org.opensuse.DInstaller)
     #
@@ -46,14 +46,14 @@ module DInstaller
 
       # Installation manager
       #
-      # @return [DInstaller::Manager]
+      # @return [Agama::Manager]
       attr_reader :manager
 
       # @param config [Config] Configuration
       # @param logger [Logger]
       def initialize(config, logger = nil)
         @config = config
-        @manager = DInstaller::Manager.new(config, logger)
+        @manager = Agama::Manager.new(config, logger)
         @logger = logger || Logger.new($stdout)
         @bus = Bus.current
       end
@@ -107,7 +107,7 @@ module DInstaller
       end
 
       def manager_dbus
-        @manager_dbus ||= DInstaller::DBus::Manager.new(manager, logger)
+        @manager_dbus ||= Agama::DBus::Manager.new(manager, logger)
       end
     end
   end

@@ -21,7 +21,7 @@
 
 require "agama/dbus/clients/base"
 
-module DInstaller
+module Agama
   module DBus
     module Clients
       # D-Bus client for asking a question.

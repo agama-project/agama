@@ -35,7 +35,7 @@ require "agama/dbus/clients/software"
 
 Yast.import "PackagesProposal"
 
-module DInstaller
+module Agama
   module Storage
     # Manager to handle storage configuration
     class Manager
@@ -114,7 +114,7 @@ module DInstaller
 
       # Returns the client to ask the software service
       #
-      # @return [DInstaller::DBus::Clients::Software]
+      # @return [Agama::DBus::Clients::Software]
       def software
         @software ||= DBus::Clients::Software.new
       end
@@ -189,9 +189,9 @@ module DInstaller
 
       # Returns the client to ask questions
       #
-      # @return [DInstaller::DBus::Clients::Questions]
+      # @return [Agama::DBus::Clients::Questions]
       def questions_client
-        @questions_client ||= DInstaller::DBus::Clients::Questions.new(logger: logger)
+        @questions_client ||= Agama::DBus::Clients::Questions.new(logger: logger)
       end
     end
   end

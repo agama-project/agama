@@ -21,7 +21,7 @@
 
 require "agama/validation_error"
 
-module DInstaller
+module Agama
   module DBus
     # Mixin to include in the clients of services that implement the Validation1 interface
     module WithValidation
@@ -33,7 +33,7 @@ module DInstaller
       # @return [Array<ValidationError>] Validation errors
       def errors
         dbus_object[VALIDATION_IFACE]["Errors"].map do |message|
-          DInstaller::ValidationError.new(message)
+          Agama::ValidationError.new(message)
         end
       end
 

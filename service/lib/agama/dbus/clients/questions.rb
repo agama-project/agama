@@ -23,7 +23,7 @@ require "agama/dbus/clients/base"
 require "agama/dbus/clients/question"
 require "agama/luks_activation_question"
 
-module DInstaller
+module Agama
   module DBus
     module Clients
       # D-Bus client for asking a question.
@@ -45,7 +45,7 @@ module DInstaller
 
         # Adds a question
         #
-        # @param question [DInstaller::Question]
+        # @param question [Agama::Question]
         # @return [DBus::Clients::Question]
         def add(question)
           dbus_path = add_question(question)
@@ -89,8 +89,8 @@ module DInstaller
         #   ask(question1)                           #=> Symbol
         #   ask(question2) { |q| q.answer == :yes }  #=> Boolean
         #
-        # @param question [DInstaller::Question]
-        # @yield [DInstaller::DBus::Clients::Question] Gives the answered question to the block.
+        # @param question [Agama::Question]
+        # @yield [Agama::DBus::Clients::Question] Gives the answered question to the block.
         # @return [Symbol, Object] The question answer, or the result of the block in case a block
         #   is given.
         def ask(question)
@@ -113,10 +113,10 @@ module DInstaller
 
         # Adds a question using the proper D-Bus method according to the question type
         #
-        # @param question [DInstaller::Question]
+        # @param question [Agama::Question]
         # @return [::DBus::ObjectPath]
         def add_question(question)
-          if question.is_a?(DInstaller::LuksActivationQuestion)
+          if question.is_a?(Agama::LuksActivationQuestion)
             add_luks_activation_question(question)
           else
             add_generic_question(question)
@@ -125,7 +125,7 @@ module DInstaller
 
         # Adds a generic question
         #
-        # @param question [DInstaller::Question]
+        # @param question [Agama::Question]
         # @return [::DBus::ObjectPath]
         def add_generic_question(question)
           @dbus_object.New(
@@ -137,7 +137,7 @@ module DInstaller
 
         # Adds a question for activating LUKS
         #
-        # @param question [DInstaller::LuksActivationQuestion]
+        # @param question [Agama::LuksActivationQuestion]
         # @return [::DBus::ObjectPath]
         def add_luks_activation_question(question)
           @dbus_object.NewLuksActivation(

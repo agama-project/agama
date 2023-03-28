@@ -21,7 +21,7 @@
 
 require "y2iscsi_client/authentication"
 
-module DInstaller
+module Agama
   module DBus
     module Storage
       # Mixin for creating an iSCSI authentication object from D-Bus options

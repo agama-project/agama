@@ -28,7 +28,7 @@ require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
 require "agama/dbus/interfaces/validation"
 
-module DInstaller
+module Agama
   module DBus
     module Software
       # D-Bus object to manage software installation
@@ -43,7 +43,7 @@ module DInstaller
 
         # Constructor
         #
-        # @param backend [DInstaller::Software]
+        # @param backend [Agama::Software]
         # @param logger [Logger]
         def initialize(backend, logger)
           super(PATH, logger: logger)
@@ -130,17 +130,17 @@ module DInstaller
 
       private
 
-        # @return [DInstaller::Software]
+        # @return [Agama::Software]
         attr_reader :backend
 
         # Registers callback to be called
         def register_callbacks
-          lang_client = DInstaller::DBus::Clients::Language.new
+          lang_client = Agama::DBus::Clients::Language.new
           lang_client.on_language_selected do |language_ids|
             backend.languages = language_ids
           end
 
-          nm_client = DInstaller::DBus::Clients::Network.new
+          nm_client = Agama::DBus::Clients::Network.new
           nm_client.on_connection_changed do |connected|
             probe if connected
           end

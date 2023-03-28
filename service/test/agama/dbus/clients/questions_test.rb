@@ -24,9 +24,9 @@ require "agama/dbus/clients/questions"
 require "agama/question"
 require "dbus"
 
-describe DInstaller::DBus::Clients::Questions do
+describe Agama::DBus::Clients::Questions do
   before do
-    allow(DInstaller::DBus::Bus).to receive(:current).and_return(bus)
+    allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
     allow(bus).to receive(:service).with("org.opensuse.DInstaller.Questions").and_return(service)
     allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Questions1")
       .and_return(dbus_object)
@@ -37,20 +37,20 @@ describe DInstaller::DBus::Clients::Questions do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:bus) { instance_double(DInstaller::DBus::Bus) }
+  let(:bus) { instance_double(Agama::DBus::Bus) }
   let(:service) { instance_double(::DBus::Service) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:properties_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
-  let(:question1) { DInstaller::Question.new("What?", options: [:this, :that]) }
+  let(:question1) { Agama::Question.new("What?", options: [:this, :that]) }
   let(:question2) do
-    DInstaller::Question.new("When?", options: [:now, :later], default_option: :now)
+    Agama::Question.new("When?", options: [:now, :later], default_option: :now)
   end
   let(:question1_proxy) do
     instance_double(::DBus::ProxyObject, path: "/org/opensuse/DInstaller/Questions1/33")
   end
   let(:question1_stub) do
-    instance_double(DInstaller::DBus::Clients::Question, dbus_object: question1_proxy)
+    instance_double(Agama::DBus::Clients::Question, dbus_object: question1_proxy)
   end
 
   describe "#add" do
@@ -59,7 +59,7 @@ describe DInstaller::DBus::Clients::Questions do
 
     it "asks the service to add a question and returns a stub object for it" do
       expect(dbus_object).to receive(:New).with("What?", ["this", "that"], [])
-      expect(DInstaller::DBus::Clients::Question).to receive(:new).and_return(question1_stub)
+      expect(Agama::DBus::Clients::Question).to receive(:new).and_return(question1_stub)
       expect(subject.add(question1)).to eq question1_stub
     end
   end

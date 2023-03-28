@@ -21,7 +21,7 @@
 
 require "fileutils"
 
-module DInstaller
+module Agama
   module DBus
     # This class takes care of setting up the D-Installer D-Bus server
     #

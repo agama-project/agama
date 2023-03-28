@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module DInstaller
+module Agama
   module DBus
     # Namespace for Clients for DBus API.
     # It provides API to be called from other services.

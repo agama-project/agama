@@ -24,7 +24,7 @@ require "agama/question"
 require "agama/luks_activation_question"
 require "agama/dbus/base_object"
 
-module DInstaller
+module Agama
   module DBus
     # Class to represent a question on D-Bus
     #
@@ -44,7 +44,7 @@ module DInstaller
 
           # @!method backend
           #   @note Classes including this mixin must define a #backend method
-          #   @return [DInstaller::Question]
+          #   @return [Agama::Question]
 
           # Unique id of the question
           #
@@ -110,7 +110,7 @@ module DInstaller
 
           # @!method backend
           #   @note Classes including this mixin must define a #backend method
-          #   @return [DInstaller::Question]
+          #   @return [Agama::Question]
 
           # Given password
           #
@@ -146,15 +146,15 @@ module DInstaller
 
       # Defines the interfaces to implement according to the backend type
       INTERFACES_TO_INCLUDE = {
-        DInstaller::Question               => [Interfaces::Question],
-        DInstaller::LuksActivationQuestion => [Interfaces::Question, Interfaces::LuksActivation]
+        Agama::Question               => [Interfaces::Question],
+        Agama::LuksActivationQuestion => [Interfaces::Question, Interfaces::LuksActivation]
       }.freeze
       private_constant :INTERFACES_TO_INCLUDE
 
       # Constructor
       #
       # @param path [::DBus::ObjectPath]
-      # @param backend [DInstaller::Question]
+      # @param backend [Agama::Question]
       # @param logger [Logger]
       def initialize(path, backend, logger)
         super(path, logger: logger)
@@ -162,7 +162,7 @@ module DInstaller
         add_interfaces
       end
 
-      # @return [DInstaller::Question]
+      # @return [Agama::Question]
       attr_reader :backend
 
     private

@@ -21,7 +21,7 @@
 
 require "yast"
 
-module DInstaller
+module Agama
   # This module contains some reusable utility methods
   #
   # We might consider turning some of them into proper classes if needed.

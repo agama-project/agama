@@ -34,7 +34,7 @@ shared_examples "validation" do
 
   describe "#validation_errors" do
     it "returns the validation errors" do
-      expect(subject.errors).to eq([DInstaller::ValidationError.new("An error")])
+      expect(subject.errors).to eq([Agama::ValidationError.new("An error")])
     end
   end
 

@@ -21,13 +21,13 @@
 
 require "dbus"
 
-module DInstaller
+module Agama
   module DBus
     module Interfaces
       # Mixin to define the D-Bus interface to manage DASD devices
       #
       # @note This mixin is expected to be included in a class inherited from
-      # {DInstaller::DBus::BaseObject}
+      # {Agama::DBus::BaseObject}
       #
       # @note This mixin is expected to be included only if the namespace Y2S390 (which
       # traditionally lives in the yast2-s390 package) is available.
@@ -49,7 +49,7 @@ module DInstaller
               end
 
               # Enables the given list of DASDs.
-              # See documentation at DInstaller::Storage::DASD::Manager to understand how the
+              # See documentation at Agama::Storage::DASD::Manager to understand how the
               # use_diag flag is affected by this operation.
               dbus_method(:Enable, "in devices:ao, out result:u") do |devs|
                 busy_while { dasd_enable(devs) }
@@ -61,7 +61,7 @@ module DInstaller
               end
 
               # Sets the use_diag attribute for the given DASDs to the given value.
-              # See documentation at DInstaller::Storage::DASD::Manager to understand what that
+              # See documentation at Agama::Storage::DASD::Manager to understand what that
               # really means (since this follows the same strange convention than YaST).
               dbus_method(:SetDiag, "in devices:ao, in diag:b, out result:u") do |devs, diag|
                 busy_while { dasd_set_diag(devs, diag) }
@@ -205,7 +205,7 @@ module DInstaller
         #
         # @return [Storage::DASD::Manager]
         def dasd_backend
-          @dasd_backend ||= DInstaller::Storage::DASD::Manager.new(logger: logger)
+          @dasd_backend ||= Agama::Storage::DASD::Manager.new(logger: logger)
         end
       end
     end

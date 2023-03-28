@@ -22,7 +22,7 @@
 require "yast"
 require "y2packager/repository"
 
-module DInstaller
+module Agama
   module Software
     # This class represents a software repository
     #

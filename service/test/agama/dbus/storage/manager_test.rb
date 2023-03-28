@@ -33,13 +33,13 @@ require "agama/dbus/clients/software"
 require "y2storage"
 require "dbus"
 
-describe DInstaller::DBus::Storage::Manager do
+describe Agama::DBus::Storage::Manager do
   subject { described_class.new(backend, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:backend) do
-    instance_double(DInstaller::Storage::Manager,
+    instance_double(Agama::Storage::Manager,
       proposal:           proposal,
       iscsi:              iscsi,
       software:           software,
@@ -48,19 +48,19 @@ describe DInstaller::DBus::Storage::Manager do
   end
 
   let(:proposal) do
-    instance_double(DInstaller::Storage::Proposal, on_calculate: nil, calculated_settings: settings)
+    instance_double(Agama::Storage::Proposal, on_calculate: nil, calculated_settings: settings)
   end
 
   let(:settings) { nil }
 
   let(:iscsi) do
-    instance_double(DInstaller::Storage::ISCSI::Manager,
+    instance_double(Agama::Storage::ISCSI::Manager,
       on_activate:        nil,
       on_probe:           nil,
       on_sessions_change: nil)
   end
 
-  let(:software) { instance_double(DInstaller::DBus::Clients::Software, on_product_selected: nil) }
+  let(:software) { instance_double(Agama::DBus::Clients::Software, on_product_selected: nil) }
 
   before do
     allow(Yast::Arch).to receive(:s390).and_return false
@@ -140,7 +140,7 @@ describe DInstaller::DBus::Storage::Manager do
       let(:templates) { [volume1_template, volume2_template] }
 
       let(:volume1_template) do
-        DInstaller::Storage::Volume.new(Y2Storage::VolumeSpecification.new({})).tap do |volume|
+        Agama::Storage::Volume.new(Y2Storage::VolumeSpecification.new({})).tap do |volume|
           volume.mount_point = "/test"
           volume.device_type = :partition
           volume.encrypted = true
@@ -152,7 +152,7 @@ describe DInstaller::DBus::Storage::Manager do
         end
       end
 
-      let(:volume2_template) { DInstaller::Storage::Volume.new }
+      let(:volume2_template) { Agama::Storage::Volume.new }
 
       before do
         allow(volume1_template).to receive(:size_relevant_volumes).and_return(["/home"])
@@ -208,7 +208,7 @@ describe DInstaller::DBus::Storage::Manager do
 
     context "when there is an exported proposal object" do
       let(:dbus_proposal) do
-        instance_double(DInstaller::DBus::Storage::Proposal, path: ::DBus::ObjectPath.new("/test"))
+        instance_double(Agama::DBus::Storage::Proposal, path: ::DBus::ObjectPath.new("/test"))
       end
 
       it "returns the proposal object path" do
@@ -236,7 +236,7 @@ describe DInstaller::DBus::Storage::Manager do
 
     it "calculates a proposal with settings having values from D-Bus" do
       expect(proposal).to receive(:calculate) do |settings|
-        expect(settings).to be_a(DInstaller::Storage::ProposalSettings)
+        expect(settings).to be_a(Agama::Storage::ProposalSettings)
         expect(settings.candidate_devices).to contain_exactly("/dev/vda")
         expect(settings.lvm).to eq(true)
         expect(settings.encryption_password).to eq("n0ts3cr3t")
@@ -254,7 +254,7 @@ describe DInstaller::DBus::Storage::Manager do
 
       it "calculates a proposal with settings having default values for the missing settings" do
         expect(proposal).to receive(:calculate) do |settings|
-          expect(settings).to be_a(DInstaller::Storage::ProposalSettings)
+          expect(settings).to be_a(Agama::Storage::ProposalSettings)
           expect(settings.candidate_devices).to eq([])
           expect(settings.lvm).to be_nil
           expect(settings.encryption_password).to be_nil
@@ -392,11 +392,11 @@ describe DInstaller::DBus::Storage::Manager do
 
   describe "#iscsi_delete" do
     before do
-      allow(DInstaller::DBus::Storage::ISCSINodesTree)
+      allow(Agama::DBus::Storage::ISCSINodesTree)
         .to receive(:new).and_return(iscsi_nodes_tree)
     end
 
-    let(:iscsi_nodes_tree) { instance_double(DInstaller::DBus::Storage::ISCSINodesTree) }
+    let(:iscsi_nodes_tree) { instance_double(Agama::DBus::Storage::ISCSINodesTree) }
 
     let(:path) { "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1" }
 
@@ -423,9 +423,9 @@ describe DInstaller::DBus::Storage::Manager do
         allow(iscsi_nodes_tree).to receive(:find).with(path).and_return(dbus_node)
       end
 
-      let(:dbus_node) { DInstaller::DBus::Storage::ISCSINode.new(iscsi, node, path) }
+      let(:dbus_node) { Agama::DBus::Storage::ISCSINode.new(iscsi, node, path) }
 
-      let(:node) { DInstaller::Storage::ISCSI::Node.new }
+      let(:node) { Agama::Storage::ISCSI::Node.new }
 
       it "deletes the iSCSI node" do
         expect(iscsi).to receive(:delete).with(node)
@@ -462,30 +462,30 @@ describe DInstaller::DBus::Storage::Manager do
   context "in an s390 system" do
     before do
       allow(Yast::Arch).to receive(:s390).and_return true
-      allow(DInstaller::Storage::DASD::Manager).to receive(:new).and_return(dasd_backend)
+      allow(Agama::Storage::DASD::Manager).to receive(:new).and_return(dasd_backend)
     end
 
     let(:dasd_backend) do
-      instance_double(DInstaller::Storage::DASD::Manager,
+      instance_double(Agama::Storage::DASD::Manager,
         on_probe:   nil,
         on_refresh: nil)
     end
 
     describe "#dasd_enable" do
       before do
-        allow(DInstaller::DBus::Storage::DasdsTree).to receive(:new).and_return(dasds_tree)
+        allow(Agama::DBus::Storage::DasdsTree).to receive(:new).and_return(dasds_tree)
         allow(dasds_tree).to receive(:find_paths).and_return [dbus_dasd1, dbus_dasd2]
       end
 
-      let(:dasds_tree) { instance_double(DInstaller::DBus::Storage::DasdsTree) }
+      let(:dasds_tree) { instance_double(Agama::DBus::Storage::DasdsTree) }
 
       let(:dasd1) { instance_double("Y2S390::Dasd") }
       let(:path1) { "/org/opensuse/DInstaller/Storage1/dasds/1" }
-      let(:dbus_dasd1) { DInstaller::DBus::Storage::Dasd.new(dasd1, path1) }
+      let(:dbus_dasd1) { Agama::DBus::Storage::Dasd.new(dasd1, path1) }
 
       let(:dasd2) { instance_double("Y2S390::Dasd") }
       let(:path2) { "/org/opensuse/DInstaller/Storage1/dasds/2" }
-      let(:dbus_dasd2) { DInstaller::DBus::Storage::Dasd.new(dasd2, path2) }
+      let(:dbus_dasd2) { Agama::DBus::Storage::Dasd.new(dasd2, path2) }
 
       let(:path3) { "/org/opensuse/DInstaller/Storage1/dasds/3" }
 
@@ -537,19 +537,19 @@ describe DInstaller::DBus::Storage::Manager do
 
     describe "#dasd_format" do
       before do
-        allow(DInstaller::DBus::Storage::DasdsTree).to receive(:new).and_return(dasds_tree)
+        allow(Agama::DBus::Storage::DasdsTree).to receive(:new).and_return(dasds_tree)
         allow(dasds_tree).to receive(:find_paths).and_return [dbus_dasd1, dbus_dasd2]
       end
 
-      let(:dasds_tree) { instance_double(DInstaller::DBus::Storage::DasdsTree) }
+      let(:dasds_tree) { instance_double(Agama::DBus::Storage::DasdsTree) }
 
       let(:dasd1) { instance_double("Y2S390::Dasd") }
       let(:path1) { "/org/opensuse/DInstaller/Storage1/dasds/1" }
-      let(:dbus_dasd1) { DInstaller::DBus::Storage::Dasd.new(dasd1, path1) }
+      let(:dbus_dasd1) { Agama::DBus::Storage::Dasd.new(dasd1, path1) }
 
       let(:dasd2) { instance_double("Y2S390::Dasd") }
       let(:path2) { "/org/opensuse/DInstaller/Storage1/dasds/2" }
-      let(:dbus_dasd2) { DInstaller::DBus::Storage::Dasd.new(dasd2, path2) }
+      let(:dbus_dasd2) { Agama::DBus::Storage::Dasd.new(dasd2, path2) }
 
       let(:path3) { "/org/opensuse/DInstaller/Storage1/dasds/3" }
 
@@ -579,14 +579,14 @@ describe DInstaller::DBus::Storage::Manager do
           before do
             allow(dasd_backend).to receive(:format).and_return initial_status
 
-            allow(DInstaller::DBus::Storage::JobsTree).to receive(:new).and_return(jobs_tree)
+            allow(Agama::DBus::Storage::JobsTree).to receive(:new).and_return(jobs_tree)
             allow(jobs_tree).to receive(:add_dasds_format).and_return format_job
           end
 
           let(:initial_status) { [double("FormatStatus"), double("FormatStatus")] }
-          let(:jobs_tree) { instance_double(DInstaller::DBus::Storage::JobsTree) }
+          let(:jobs_tree) { instance_double(Agama::DBus::Storage::JobsTree) }
           let(:format_job) do
-            instance_double(DInstaller::DBus::Storage::DasdsFormatJob, path: job_path)
+            instance_double(Agama::DBus::Storage::DasdsFormatJob, path: job_path)
           end
           let(:job_path) { "/some/path" }
 

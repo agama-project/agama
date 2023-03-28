@@ -25,19 +25,19 @@ require "agama/dbus/service_runner"
 require "agama/dbus/manager_service"
 require "agama/manager"
 
-describe DInstaller::DBus::ServiceRunner do
+describe Agama::DBus::ServiceRunner do
   describe "#run" do
-    subject(:runner) { DInstaller::DBus::ServiceRunner.new(:manager) }
+    subject(:runner) { Agama::DBus::ServiceRunner.new(:manager) }
 
-    let(:config) { DInstaller::Config.new }
+    let(:config) { Agama::Config.new }
     let(:logger) { Logger.new($stdout) }
-    let(:manager) { DInstaller::Manager.new(config, logger) }
-    let(:service) { instance_double(DInstaller::DBus::ManagerService) }
+    let(:manager) { Agama::Manager.new(config, logger) }
+    let(:service) { instance_double(Agama::DBus::ManagerService) }
 
     before do
-      allow(DInstaller::Config).to receive(:current).and_return(config)
-      allow(DInstaller::Manager).to receive(:new).with(config).and_return(manager)
-      allow(DInstaller::DBus::ManagerService).to receive(:new).with(config, Logger)
+      allow(Agama::Config).to receive(:current).and_return(config)
+      allow(Agama::Manager).to receive(:new).with(config).and_return(manager)
+      allow(Agama::DBus::ManagerService).to receive(:new).with(config, Logger)
         .and_return(service)
     end
 

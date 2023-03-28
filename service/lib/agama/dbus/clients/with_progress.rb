@@ -21,7 +21,7 @@
 
 require "agama/dbus/interfaces/progress"
 
-module DInstaller
+module Agama
   module DBus
     module Clients
       # Mixin for clients of services that define the Progress D-Bus interface

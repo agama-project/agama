@@ -25,8 +25,8 @@ require "agama/dbus/interfaces/progress"
 require "agama/with_progress"
 require "agama/progress"
 
-class DBusObjectWithProgressInterface < DInstaller::DBus::BaseObject
-  include DInstaller::DBus::Interfaces::Progress
+class DBusObjectWithProgressInterface < Agama::DBus::BaseObject
+  include Agama::DBus::Interfaces::Progress
 
   def initialize
     super("org.opensuse.DInstaller.UnitTests")
@@ -37,14 +37,14 @@ class DBusObjectWithProgressInterface < DInstaller::DBus::BaseObject
   end
 
   class Backend
-    include DInstaller::WithProgress
+    include Agama::WithProgress
   end
 end
 
 describe DBusObjectWithProgressInterface do
   let(:progress) { subject.backend.progress }
 
-  let(:progress_interface) { DInstaller::DBus::Interfaces::Progress::PROGRESS_INTERFACE }
+  let(:progress_interface) { Agama::DBus::Interfaces::Progress::PROGRESS_INTERFACE }
 
   it "defines Progress D-Bus interface" do
     expect(subject.intfs.keys).to include(progress_interface)

@@ -27,7 +27,7 @@ require "agama/storage/proposal_settings"
 require "agama/storage/proposal_settings_converter"
 require "agama/storage/volume_converter"
 
-module DInstaller
+module Agama
   module Storage
     # Backend class to calculate a storage proposal
     #
@@ -210,7 +210,7 @@ module DInstaller
         config_volumes.map { |v| Y2Storage::VolumeSpecification.new(v) }
       end
 
-      # Converts a DInstaller::Storage::ProposalSettings object to its equivalent
+      # Converts a Agama::Storage::ProposalSettings object to its equivalent
       # Y2Storage::ProposalSettings one
       #
       # @param settings [ProposalSettings]
@@ -224,7 +224,7 @@ module DInstaller
       end
 
       # Converts a Y2Storage::ProposalSettings object to its equivalent
-      # DInstaller::Storage::ProposalSettings one
+      # Agama::Storage::ProposalSettings one
       #
       # @param settings [Y2Storage::ProposalSettings]
       # @param devices [Array<Y2Storage::Planned::Device>]

@@ -25,11 +25,11 @@ require "agama/errors"
 require "agama/language"
 require "agama/progress"
 
-describe DInstaller::DBus::Language do
+describe Agama::DBus::Language do
   subject { described_class.new(backend, logger) }
 
   let(:backend) do
-    instance_double(DInstaller::Language, languages: languages, language: "de_DE")
+    instance_double(Agama::Language, languages: languages, language: "de_DE")
   end
 
   let(:logger) { Logger.new($stdout) }
@@ -71,7 +71,7 @@ describe DInstaller::DBus::Language do
 
     context "when the language does not exists" do
       before do
-        allow(backend).to receive(:language=).and_raise(DInstaller::Errors::InvalidValue)
+        allow(backend).to receive(:language=).and_raise(Agama::Errors::InvalidValue)
       end
 
       it "returns false" do

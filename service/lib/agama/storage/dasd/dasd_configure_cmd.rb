@@ -21,7 +21,7 @@
 
 require "yast2/execute"
 
-module DInstaller
+module Agama
   module Storage
     module DASD
       # Class used to invoke the dasd_configure command traditionally used during (open)SUSE

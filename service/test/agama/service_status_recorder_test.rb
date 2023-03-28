@@ -23,11 +23,11 @@ require_relative "../test_helper"
 require "agama/service_status_recorder"
 require "agama/dbus/service_status"
 
-describe DInstaller::ServiceStatusRecorder do
+describe Agama::ServiceStatusRecorder do
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:idle) { DInstaller::DBus::ServiceStatus::IDLE }
-  let(:busy) { DInstaller::DBus::ServiceStatus::BUSY }
+  let(:idle) { Agama::DBus::ServiceStatus::IDLE }
+  let(:busy) { Agama::DBus::ServiceStatus::BUSY }
 
   before do
     subject.on_service_status_change { logger.info("change status") }

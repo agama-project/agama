@@ -21,7 +21,7 @@
 
 require "agama/question"
 
-module DInstaller
+module Agama
   # This class represent a question to ask whether to activate a LUKS device
   #
   # Clients have to answer one of these options:

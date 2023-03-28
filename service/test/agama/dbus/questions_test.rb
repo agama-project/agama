@@ -25,7 +25,7 @@ require "agama/question"
 require "agama/luks_activation_question"
 require "dbus"
 
-describe DInstaller::DBus::Questions do
+describe Agama::DBus::Questions do
   before do
     subject.instance_variable_set(:@service, service)
   end
@@ -47,8 +47,8 @@ describe DInstaller::DBus::Questions do
 
       it "exports a question and returns its path" do
         expect(service).to receive(:export) do |question|
-          expect(question).is_a?(DInstaller::DBus::Question)
-          expect(question.backend).is_a?(DInstaller::Question)
+          expect(question).is_a?(Agama::DBus::Question)
+          expect(question.backend).is_a?(Agama::Question)
           expect(question.text).to match(/How you doin/)
         end
 
@@ -63,8 +63,8 @@ describe DInstaller::DBus::Questions do
 
       it "exports a question and returns its path" do
         expect(service).to receive(:export) do |question|
-          expect(question).is_a?(DInstaller::DBus::Question)
-          expect(question).is_a?(DInstaller::LuksActivationQuestion)
+          expect(question).is_a?(Agama::DBus::Question)
+          expect(question).is_a?(Agama::LuksActivationQuestion)
         end
 
         result = subject.public_send(full_method_name, "/dev/tape1", "New games", "90 minutes", 1)
@@ -102,8 +102,8 @@ describe DInstaller::DBus::Questions do
       context "when the given object path is a question" do
         let(:path) { "/org/opensuse/DInstaller/Questions1/1" }
         let(:node) { instance_double(DBus::Node, object: dbus_object) }
-        let(:dbus_object) { DInstaller::DBus::Question.new(path, question, logger) }
-        let(:question) { DInstaller::Question.new("Do you want to test?", options: [:yes, :no]) }
+        let(:dbus_object) { Agama::DBus::Question.new(path, question, logger) }
+        let(:question) { Agama::Question.new("Do you want to test?", options: [:yes, :no]) }
 
         it "unexports the question" do
           expect(service).to receive(:unexport).with(dbus_object)

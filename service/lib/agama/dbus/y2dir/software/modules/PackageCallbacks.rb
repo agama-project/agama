@@ -34,20 +34,20 @@ module Yast
     def InitPackageCallbacks(logger = nil)
       @logger = logger || ::Logger.new($stdout)
 
-      DInstaller::Software::Callbacks::Signature.new(
+      Agama::Software::Callbacks::Signature.new(
         questions_client, logger
       ).setup
 
-      DInstaller::Software::Callbacks::Media.new(
+      Agama::Software::Callbacks::Media.new(
         questions_client, logger
       ).setup
     end
 
     # Returns the client to ask questions
     #
-    # @return [DInstaller::DBus::Clients::Questions]
+    # @return [Agama::DBus::Clients::Questions]
     def questions_client
-      @questions_client ||= DInstaller::DBus::Clients::Questions.new(logger: logger)
+      @questions_client ||= Agama::DBus::Clients::Questions.new(logger: logger)
     end
 
   private

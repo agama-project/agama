@@ -8,7 +8,7 @@ require "dinstaller/dbus/clients/dinstaller"
 
 PACKAGES = ["autologin-support", "kdm", "gdm", "sddm", "lightdm"].freeze
 
-CLIENT = DInstaller::DBus::Clients::DInstaller
+CLIENT = Agama::DBus::Clients::Agama
 # warm up call
 CLIENT.provisions_selected?(PACKAGES)
 

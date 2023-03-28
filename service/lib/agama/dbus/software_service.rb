@@ -24,7 +24,7 @@ require "agama/dbus/bus"
 require "agama/dbus/software"
 require "agama/software"
 
-module DInstaller
+module Agama
   module DBus
     # D-Bus service (org.opensuse.DInstaller.Software)
     #
@@ -44,7 +44,7 @@ module DInstaller
       def initialize(config, logger = nil)
         @logger = logger || Logger.new($stdout)
         @bus = Bus.current
-        @backend = DInstaller::Software::Manager.new(config, logger)
+        @backend = Agama::Software::Manager.new(config, logger)
         @backend.on_progress_change { dispatch }
       end
 
@@ -74,15 +74,15 @@ module DInstaller
       def dbus_objects
         @dbus_objects ||= [
           dbus_software_manager,
-          DInstaller::DBus::Software::Proposal.new(logger).tap do |proposal|
+          Agama::DBus::Software::Proposal.new(logger).tap do |proposal|
             proposal.on_change { dbus_software_manager.update_validation }
           end
         ]
       end
 
-      # @return [DInstaller::DBus::Software::Manager]
+      # @return [Agama::DBus::Software::Manager]
       def dbus_software_manager
-        @dbus_software_manager ||= DInstaller::DBus::Software::Manager.new(@backend, logger)
+        @dbus_software_manager ||= Agama::DBus::Software::Manager.new(@backend, logger)
       end
     end
   end

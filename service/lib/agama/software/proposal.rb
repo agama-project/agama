@@ -28,7 +28,7 @@ Yast.import "Pkg"
 Yast.import "PackagesProposal"
 Yast.import "Packages"
 
-module DInstaller
+module Agama
   module Software
     # Backend class to calculate the software proposal
     #

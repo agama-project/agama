@@ -21,7 +21,7 @@
 
 require "abstract_method"
 
-module DInstaller
+module Agama
   module Storage
     module DASD
       # Base class for operations that are performed one by one over a set of DASDs

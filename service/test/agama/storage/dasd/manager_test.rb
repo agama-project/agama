@@ -49,7 +49,7 @@ module Y2S390
   end
 end
 
-describe DInstaller::Storage::DASD::Manager do
+describe Agama::Storage::DASD::Manager do
   subject { described_class.new(logger: logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }

@@ -21,7 +21,7 @@
 
 require "dbus"
 
-module DInstaller
+module Agama
   module DBus
     module Interfaces
       # Mixin to define the Validation D-Bus interface
@@ -33,8 +33,8 @@ module DInstaller
       #     end
       #   end
       #
-      #   class Demo < DInstaller::DBus::BaseObject
-      #     include DInstaller::DBus::Interfaces::Validation
+      #   class Demo < Agama::DBus::BaseObject
+      #     include Agama::DBus::Interfaces::Validation
       #
       #     dbus_interface "org.opensuse.DInstaller.Demo1" do
       #       dbus_reader :errors, "as", dbus_name: "Errors"

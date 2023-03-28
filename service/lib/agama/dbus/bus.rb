@@ -22,7 +22,7 @@
 require "dbus"
 require "agama/dbus/server_manager"
 
-module DInstaller
+module Agama
   module DBus
     # Represents the D-Installer bus, a distinct one from the system and session buses.
     class Bus < ::DBus::Connection

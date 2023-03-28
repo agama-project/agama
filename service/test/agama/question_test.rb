@@ -22,7 +22,7 @@
 require_relative "../test_helper"
 require "agama/question"
 
-describe DInstaller::Question do
+describe Agama::Question do
   describe ".new" do
     it "creates a question with unique id" do
       question1 = described_class.new("test1")

@@ -22,7 +22,7 @@
 require_relative "../test_helper"
 require "agama/users"
 
-describe DInstaller::Users do
+describe Agama::Users do
   subject(:storage) { described_class.new(logger) }
 
   let(:logger) { Logger.new($stdout) }

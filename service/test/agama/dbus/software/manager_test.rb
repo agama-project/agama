@@ -26,20 +26,20 @@ require "agama/dbus/interfaces/service_status"
 require "agama/dbus/interfaces/validation"
 require "agama/software"
 
-describe DInstaller::DBus::Software::Manager do
+describe Agama::DBus::Software::Manager do
   subject { described_class.new(backend, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:backend) { instance_double(DInstaller::Software::Manager) }
+  let(:backend) { instance_double(Agama::Software::Manager) }
 
-  let(:progress_interface) { DInstaller::DBus::Interfaces::Progress::PROGRESS_INTERFACE }
+  let(:progress_interface) { Agama::DBus::Interfaces::Progress::PROGRESS_INTERFACE }
 
   let(:service_status_interface) do
-    DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
+    Agama::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
   end
 
-  let(:validation_interface) { DInstaller::DBus::Interfaces::Validation::VALIDATION_INTERFACE }
+  let(:validation_interface) { Agama::DBus::Interfaces::Validation::VALIDATION_INTERFACE }
 
   before do
     allow_any_instance_of(described_class).to receive(:register_callbacks)

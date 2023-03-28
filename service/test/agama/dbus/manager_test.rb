@@ -25,30 +25,30 @@ require "agama/dbus/service_status"
 require "agama/installation_phase"
 require "agama/service_status_recorder"
 
-describe DInstaller::DBus::Manager do
+describe Agama::DBus::Manager do
   subject { described_class.new(backend, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:backend) do
-    instance_double(DInstaller::Manager,
+    instance_double(Agama::Manager,
       installation_phase:        installation_phase,
       software:                  software_client,
       on_services_status_change: nil,
       valid?:                    true)
   end
 
-  let(:installation_phase) { DInstaller::InstallationPhase.new }
+  let(:installation_phase) { Agama::InstallationPhase.new }
   let(:software_client) do
-    instance_double(DInstaller::DBus::Clients::Software, on_product_selected: nil)
+    instance_double(Agama::DBus::Clients::Software, on_product_selected: nil)
   end
-  let(:service_status_recorder) { DInstaller::ServiceStatusRecorder.new }
+  let(:service_status_recorder) { Agama::ServiceStatusRecorder.new }
 
-  let(:idle) { DInstaller::DBus::ServiceStatus::IDLE }
-  let(:busy) { DInstaller::DBus::ServiceStatus::BUSY }
-  let(:progress_interface) { DInstaller::DBus::Interfaces::Progress::PROGRESS_INTERFACE }
+  let(:idle) { Agama::DBus::ServiceStatus::IDLE }
+  let(:busy) { Agama::DBus::ServiceStatus::BUSY }
+  let(:progress_interface) { Agama::DBus::Interfaces::Progress::PROGRESS_INTERFACE }
   let(:service_status_interface) do
-    DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
+    Agama::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
   end
 
   before do

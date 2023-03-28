@@ -27,9 +27,9 @@ require "agama/dbus/clients/manager"
 require "agama/dbus/manager"
 require "agama/installation_phase"
 
-describe DInstaller::DBus::Clients::Manager do
+describe Agama::DBus::Clients::Manager do
   before do
-    allow(DInstaller::DBus::Bus).to receive(:current).and_return(bus)
+    allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
     allow(bus).to receive(:service).with("org.opensuse.DInstaller").and_return(service)
     allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Manager1")
       .and_return(dbus_object)
@@ -40,7 +40,7 @@ describe DInstaller::DBus::Clients::Manager do
       .and_return(properties_iface)
   end
 
-  let(:bus) { instance_double(DInstaller::DBus::Bus) }
+  let(:bus) { instance_double(Agama::DBus::Bus) }
   let(:service) { instance_double(::DBus::Service) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:manager_iface) { instance_double(::DBus::ProxyObjectInterface) }
@@ -77,26 +77,26 @@ describe DInstaller::DBus::Clients::Manager do
     end
 
     context "when the current phase is startup" do
-      let(:current_phase) { DInstaller::DBus::Manager::STARTUP_PHASE }
+      let(:current_phase) { Agama::DBus::Manager::STARTUP_PHASE }
 
       it "returns the startup phase value" do
-        expect(subject.current_installation_phase).to eq(DInstaller::InstallationPhase::STARTUP)
+        expect(subject.current_installation_phase).to eq(Agama::InstallationPhase::STARTUP)
       end
     end
 
     context "when the current phase is config" do
-      let(:current_phase) { DInstaller::DBus::Manager::CONFIG_PHASE }
+      let(:current_phase) { Agama::DBus::Manager::CONFIG_PHASE }
 
       it "returns the config phase value" do
-        expect(subject.current_installation_phase).to eq(DInstaller::InstallationPhase::CONFIG)
+        expect(subject.current_installation_phase).to eq(Agama::InstallationPhase::CONFIG)
       end
     end
 
     context "when the current phase is install" do
-      let(:current_phase) { DInstaller::DBus::Manager::INSTALL_PHASE }
+      let(:current_phase) { Agama::DBus::Manager::INSTALL_PHASE }
 
       it "returns the install phase value" do
-        expect(subject.current_installation_phase).to eq(DInstaller::InstallationPhase::INSTALL)
+        expect(subject.current_installation_phase).to eq(Agama::InstallationPhase::INSTALL)
       end
     end
   end

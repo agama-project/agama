@@ -22,7 +22,7 @@
 require "agama/dbus/with_path_generator"
 require "agama/dbus/storage/dasds_format_job"
 
-module DInstaller
+module Agama
   module DBus
     module Storage
       # Class representing the storage jobs (D-Bus objects representing long-running processes)

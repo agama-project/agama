@@ -24,7 +24,7 @@ require "agama/dbus/bus"
 require "agama/dbus/language"
 require "agama/language"
 
-module DInstaller
+module Agama
   module DBus
     # D-Bus service (org.opensuse.DInstaller.Language)
     #
@@ -79,14 +79,14 @@ module DInstaller
         ]
       end
 
-      # @return [DInstaller::DBus::Language]
+      # @return [Agama::DBus::Language]
       def language_dbus
-        @language_dbus ||= DInstaller::DBus::Language.new(language_backend(logger), logger)
+        @language_dbus ||= Agama::DBus::Language.new(language_backend(logger), logger)
       end
 
-      # @return [DInstaller::Language]
+      # @return [Agama::Language]
       def language_backend(logger)
-        @language_backend ||= DInstaller::Language.new(logger).tap(&:probe)
+        @language_backend ||= Agama::Language.new(logger).tap(&:probe)
       end
     end
   end

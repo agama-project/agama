@@ -23,7 +23,7 @@ require "yast"
 require "dbus"
 Yast.import "PackagesProposal"
 
-module DInstaller
+module Agama
   module DBus
     module Software
       # Software proposal D-Bus representation

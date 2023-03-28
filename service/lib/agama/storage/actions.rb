@@ -21,7 +21,7 @@
 
 require "y2storage/storage_manager"
 
-module DInstaller
+module Agama
   module Storage
     # Backend class to get the list of actions over the storage devices
     class Actions

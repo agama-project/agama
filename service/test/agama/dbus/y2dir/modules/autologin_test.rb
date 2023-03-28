@@ -29,11 +29,11 @@ describe Yast::Autologin do
 
   before do
     subject.main
-    allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(client)
+    allow(Agama::DBus::Clients::Software).to receive(:new).and_return(client)
   end
 
   let(:client) do
-    instance_double(DInstaller::DBus::Clients::Software)
+    instance_double(Agama::DBus::Clients::Software)
   end
 
   describe "#supported?" do

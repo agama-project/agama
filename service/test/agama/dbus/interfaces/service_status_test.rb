@@ -25,8 +25,8 @@ require "agama/dbus/interfaces/service_status"
 require "agama/dbus/with_service_status"
 
 class DBusObjectWithServiceStatusInterface < ::DBus::Object
-  include DInstaller::DBus::WithServiceStatus
-  include DInstaller::DBus::Interfaces::ServiceStatus
+  include Agama::DBus::WithServiceStatus
+  include Agama::DBus::Interfaces::ServiceStatus
 
   def initialize
     super("org.opensuse.DInstaller.UnitTests")
@@ -35,7 +35,7 @@ end
 
 describe DBusObjectWithServiceStatusInterface do
   let(:service_status_interface) do
-    DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
+    Agama::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
   end
 
   it "defines ServiceStatus D-Bus interface" do

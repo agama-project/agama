@@ -35,11 +35,11 @@ shared_examples "service status" do
   describe "#service_status" do
     before do
       allow(service_status_iface).to receive(:[]).with("Current")
-        .and_return(DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_BUSY)
+        .and_return(Agama::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_BUSY)
     end
 
     it "returns the value of the service status" do
-      expect(subject.service_status).to eq(DInstaller::DBus::ServiceStatus::BUSY)
+      expect(subject.service_status).to eq(Agama::DBus::ServiceStatus::BUSY)
     end
   end
 

@@ -24,12 +24,12 @@ require "agama/dbus/storage/iscsi_node"
 require "agama/storage/iscsi/manager"
 require "agama/storage/iscsi/node"
 
-describe DInstaller::DBus::Storage::ISCSINode do
+describe Agama::DBus::Storage::ISCSINode do
   subject { described_class.new(iscsi_manager, iscsi_node, path, logger: logger) }
 
-  let(:iscsi_manager) { DInstaller::Storage::ISCSI::Manager.new }
+  let(:iscsi_manager) { Agama::Storage::ISCSI::Manager.new }
 
-  let(:iscsi_node) { DInstaller::Storage::ISCSI::Node.new }
+  let(:iscsi_node) { Agama::Storage::ISCSI::Node.new }
 
   let(:path) { "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1" }
 
@@ -63,7 +63,7 @@ describe DInstaller::DBus::Storage::ISCSINode do
 
   describe "#iscsi_node=" do
     it "sets the iSCSI node value" do
-      node = DInstaller::Storage::ISCSI::Node.new
+      node = Agama::Storage::ISCSI::Node.new
       expect(subject.iscsi_node).to_not eq(node)
 
       subject.iscsi_node = node
@@ -73,7 +73,7 @@ describe DInstaller::DBus::Storage::ISCSINode do
     it "emits properties changed signal" do
       expect(subject).to receive(:dbus_properties_changed)
 
-      subject.iscsi_node = DInstaller::Storage::ISCSI::Node.new
+      subject.iscsi_node = Agama::Storage::ISCSI::Node.new
     end
   end
 

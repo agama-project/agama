@@ -25,33 +25,33 @@ require "agama/config"
 require "agama/question"
 require "agama/dbus/service_status"
 
-describe DInstaller::Manager do
+describe Agama::Manager do
   subject { described_class.new(config, logger) }
 
   let(:config_path) do
     File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
   end
-  let(:config) { DInstaller::Config.from_file(config_path) }
+  let(:config) { Agama::Config.from_file(config_path) }
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:software) do
     instance_double(
-      DInstaller::DBus::Clients::Software,
+      Agama::DBus::Clients::Software,
       probe: nil, install: nil, propose: nil, finish: nil, on_product_selected: nil,
       on_service_status_change: nil, selected_product: product, valid?: true
     )
   end
   let(:users) do
     instance_double(
-      DInstaller::DBus::Clients::Users,
+      Agama::DBus::Clients::Users,
       write: nil, on_service_status_change: nil, valid?: true
     )
   end
-  let(:language) { instance_double(DInstaller::DBus::Clients::Language, finish: nil) }
-  let(:network) { instance_double(DInstaller::Network, install: nil) }
+  let(:language) { instance_double(Agama::DBus::Clients::Language, finish: nil) }
+  let(:network) { instance_double(Agama::Network, install: nil) }
   let(:storage) do
     instance_double(
-      DInstaller::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
+      Agama::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
       on_service_status_change: nil, valid?: true
     )
   end
@@ -59,11 +59,11 @@ describe DInstaller::Manager do
   let(:product) { nil }
 
   before do
-    allow(DInstaller::Network).to receive(:new).and_return(network)
-    allow(DInstaller::DBus::Clients::Language).to receive(:new).and_return(language)
-    allow(DInstaller::DBus::Clients::Software).to receive(:new).and_return(software)
-    allow(DInstaller::DBus::Clients::Storage).to receive(:new).and_return(storage)
-    allow(DInstaller::DBus::Clients::Users).to receive(:new).and_return(users)
+    allow(Agama::Network).to receive(:new).and_return(network)
+    allow(Agama::DBus::Clients::Language).to receive(:new).and_return(language)
+    allow(Agama::DBus::Clients::Software).to receive(:new).and_return(software)
+    allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
+    allow(Agama::DBus::Clients::Users).to receive(:new).and_return(users)
   end
 
   describe "#startup_phase" do
@@ -126,8 +126,8 @@ describe DInstaller::Manager do
     end
   end
 
-  let(:idle) { DInstaller::DBus::ServiceStatus::IDLE }
-  let(:busy) { DInstaller::DBus::ServiceStatus::BUSY }
+  let(:idle) { Agama::DBus::ServiceStatus::IDLE }
+  let(:busy) { Agama::DBus::ServiceStatus::BUSY }
 
   describe "#busy_services" do
     before do
@@ -138,7 +138,7 @@ describe DInstaller::Manager do
       service_status_recorder.save("org.opensuse.DInstaller.Test3", busy)
     end
 
-    let(:service_status_recorder) { DInstaller::ServiceStatusRecorder.new }
+    let(:service_status_recorder) { Agama::ServiceStatusRecorder.new }
 
     it "returns the name of the busy services" do
       expect(subject.busy_services).to contain_exactly(
@@ -153,7 +153,7 @@ describe DInstaller::Manager do
       allow(subject).to receive(:service_status_recorder).and_return(service_status_recorder)
     end
 
-    let(:service_status_recorder) { DInstaller::ServiceStatusRecorder.new }
+    let(:service_status_recorder) { Agama::ServiceStatusRecorder.new }
 
     it "add a callback to be run when the status of a service changes" do
       subject.on_services_status_change { logger.info("change status") }

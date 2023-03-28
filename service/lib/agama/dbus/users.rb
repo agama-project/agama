@@ -26,7 +26,7 @@ require "agama/dbus/with_service_status"
 require "agama/dbus/interfaces/service_status"
 require "agama/dbus/interfaces/validation"
 
-module DInstaller
+module Agama
   module DBus
     # YaST D-Bus object (/org/opensuse/DInstaller/Users1)
     class Users < BaseObject
@@ -39,7 +39,7 @@ module DInstaller
 
       # Constructor
       #
-      # @param backend [DInstaller::Users]
+      # @param backend [Agama::Users]
       # @param logger [Logger]
       def initialize(backend, logger)
         super(PATH, logger: logger)
@@ -147,7 +147,7 @@ module DInstaller
 
     private
 
-      # @return [DInstaller::Users]
+      # @return [Agama::Users]
       attr_reader :backend
     end
   end

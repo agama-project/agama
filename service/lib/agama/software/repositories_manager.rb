@@ -21,7 +21,7 @@
 
 require "agama/software/repository"
 
-module DInstaller
+module Agama
   module Software
     # Class to manage repositories
     #

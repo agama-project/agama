@@ -22,7 +22,7 @@
 require_relative "../test_helper"
 require "agama/luks_activation_question"
 
-describe DInstaller::LuksActivationQuestion do
+describe Agama::LuksActivationQuestion do
   describe ".new" do
     it "creates a question with the text to ask for a LUKS activation" do
       question = described_class.new("/dev/sda1")

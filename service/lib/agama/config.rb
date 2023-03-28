@@ -23,7 +23,7 @@ require "yaml"
 require "yast2/arch_filter"
 require "agama/config_reader"
 
-module DInstaller
+module Agama
   # Class responsible for getting current configuration.
   # It is smarter then just plain yaml reader as it also evaluates
   # conditions in it, so it is result of all conditions in file.

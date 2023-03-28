@@ -23,7 +23,7 @@ require_relative "../../test_helper"
 require "agama/dbus/with_service_status"
 
 class WithServiceStatusTest
-  include DInstaller::DBus::WithServiceStatus
+  include Agama::DBus::WithServiceStatus
 end
 
 describe WithServiceStatusTest do
@@ -31,7 +31,7 @@ describe WithServiceStatusTest do
 
   describe "#service_status" do
     it "returns a service status" do
-      expect(subject.service_status).to be_a(DInstaller::DBus::ServiceStatus)
+      expect(subject.service_status).to be_a(Agama::DBus::ServiceStatus)
     end
   end
 

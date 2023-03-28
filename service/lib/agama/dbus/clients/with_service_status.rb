@@ -23,7 +23,7 @@ require "dbus"
 require "agama/dbus/service_status"
 require "agama/dbus/interfaces/service_status"
 
-module DInstaller
+module Agama
   module DBus
     module Clients
       # Mixin for clients of services that define the ServiceStatus D-Bus interface

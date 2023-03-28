@@ -22,7 +22,7 @@
 require "dbus/object_path"
 require "pathname"
 
-module DInstaller
+module Agama
   module DBus
     # Mixin for creating D-Bus path of dynamically exported objects
     #

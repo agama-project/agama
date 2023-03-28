@@ -21,7 +21,7 @@
 
 Yast.import "IscsiClientLib"
 
-module DInstaller
+module Agama
   module Storage
     module ISCSI
       # Class representing an open-iscsi initiator

@@ -23,23 +23,23 @@ require "dbus"
 require "agama/dbus/base_object"
 require "agama/dbus/storage/with_iscsi_auth"
 
-module DInstaller
+module Agama
   module DBus
     module Storage
       # Class representing an iSCSI node
       class ISCSINode < BaseObject
         include WithISCSIAuth
 
-        # @return [DInstaller::Storage::ISCSI::Manager]
+        # @return [Agama::Storage::ISCSI::Manager]
         attr_reader :iscsi_manager
 
-        # @return [DInstaller::Storage::ISCSI::Node]
+        # @return [Agama::Storage::ISCSI::Node]
         attr_reader :iscsi_node
 
         # Constructor
         #
-        # @param iscsi_manager [DInstaller::Storage::Iscsi::Manager]
-        # @param iscsi_node [DInstaller::Storage::Iscsi::Node]
+        # @param iscsi_manager [Agama::Storage::Iscsi::Manager]
+        # @param iscsi_node [Agama::Storage::Iscsi::Node]
         # @param path [DBus::ObjectPath] Path in which the object is exported
         # @param logger [Logger, nil]
         def initialize(iscsi_manager, iscsi_node, path, logger: nil)
@@ -113,7 +113,7 @@ module DInstaller
         #
         # @note A properties changed signal is always emitted.
         #
-        # @param value [DInstaller::Storage::ISCSI::Node]
+        # @param value [Agama::Storage::ISCSI::Node]
         def iscsi_node=(value)
           @iscsi_node = value
 
@@ -178,7 +178,7 @@ module DInstaller
         # @param value [String]
         # @return [Boolean]
         def valid_startup?(value)
-          DInstaller::Storage::ISCSI::Manager::STARTUP_OPTIONS.include?(value)
+          Agama::Storage::ISCSI::Manager::STARTUP_OPTIONS.include?(value)
         end
       end
     end

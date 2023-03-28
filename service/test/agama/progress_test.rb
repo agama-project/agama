@@ -22,7 +22,7 @@
 require_relative "../test_helper"
 require "agama/progress"
 
-describe DInstaller::Progress do
+describe Agama::Progress do
   subject { described_class.new(steps) }
 
   describe "#current_step" do
@@ -43,7 +43,7 @@ describe DInstaller::Progress do
       it "returns an step with the id and description of the current step" do
         step = subject.current_step
 
-        expect(step).to be_a(DInstaller::Progress::Step)
+        expect(step).to be_a(Agama::Progress::Step)
         expect(step.id).to eq(2)
         expect(step.description).to match(/step 2/)
       end

@@ -22,10 +22,10 @@
 require "y2storage"
 require "agama/storage/volume"
 
-module DInstaller
+module Agama
   module Storage
     # Utility class offering methods to convert between Y2Storage::VolumeSpecification objects and
-    # DInstaller::Volume ones
+    # Agama::Volume ones
     class VolumeConverter
       # Constructor
       #
@@ -36,7 +36,7 @@ module DInstaller
       end
 
       # Returns the Y2Storage::VolumeSpecification object that is equivalent to the given
-      # DInstaller::Volume one
+      # Agama::Volume one
       #
       # @param volume [Volume]
       # @return [Y2Storage::VolumeSpecification]
@@ -44,7 +44,7 @@ module DInstaller
         ToY2Storage.new(volume, default_specs).convert
       end
 
-      # Returns the DInstaller::Volume object that is equivalent to the given
+      # Returns the Agama::Volume object that is equivalent to the given
       # Y2Storage::VolumeSpecification one
       #
       # @param spec [Y2Storage::VolumeSpecification]

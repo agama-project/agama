@@ -25,8 +25,8 @@ require "agama/dbus/interfaces/validation"
 require "agama/dbus/base_object"
 require "agama/validation_error"
 
-class DBusObjectWithValidationInterface < DInstaller::DBus::BaseObject
-  include DInstaller::DBus::Interfaces::Validation
+class DBusObjectWithValidationInterface < Agama::DBus::BaseObject
+  include Agama::DBus::Interfaces::Validation
   attr_reader :backend
 
   def initialize(backend)
@@ -35,12 +35,12 @@ class DBusObjectWithValidationInterface < DInstaller::DBus::BaseObject
   end
 end
 
-describe DInstaller::DBus::Interfaces::Validation do
+describe Agama::DBus::Interfaces::Validation do
   subject { DBusObjectWithValidationInterface.new(backend) }
 
   let(:backend) { double("Backend", validate: errors) }
   let(:errors) { [] }
-  let(:error1) { DInstaller::ValidationError.new("Some error") }
+  let(:error1) { Agama::ValidationError.new("Some error") }
 
   describe "#errors" do
     context "when there are not validation errors" do
@@ -79,7 +79,7 @@ describe DInstaller::DBus::Interfaces::Validation do
   end
 
   describe "#update_validation" do
-    let(:error2) { DInstaller::ValidationError.new("Another error") }
+    let(:error2) { Agama::ValidationError.new("Another error") }
 
     before do
       allow(backend).to receive(:validate).and_return([error1], [error1, error2])

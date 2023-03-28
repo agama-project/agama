@@ -22,7 +22,7 @@
 require "rspec"
 require "y2storage"
 
-module DInstaller
+module Agama
   module RSpec
     # RSpec extension to add Y2Storage specific helpers
     module StorageHelpers

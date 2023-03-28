@@ -24,14 +24,14 @@ require "agama/question"
 
 Yast.import "Pkg"
 
-module DInstaller
+module Agama
   module Software
     module Callbacks
       # Callbacks related to media handling
       class Media
         # Constructor
         #
-        # @param questions_client [DInstaller::DBus::Clients::Questions]
+        # @param questions_client [Agama::DBus::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
           @questions_client = questions_client
@@ -56,7 +56,7 @@ module DInstaller
         # rubocop:disable Metrics/ParameterLists
         def media_change(_error_code, error, _url, _product, _current, _current_label, _wanted,
           _wanted_label, _double_sided, _devices, _current_device)
-          question = DInstaller::Question.new(
+          question = Agama::Question.new(
             error, options: [:Retry, :Skip], default_option: :Retry
           )
           questions_client.ask(question) do |question_client|
@@ -67,7 +67,7 @@ module DInstaller
 
       private
 
-        # @return [DInstaller::DBus::Clients::Questions]
+        # @return [Agama::DBus::Clients::Questions]
         attr_reader :questions_client
 
         # @return [Logger]

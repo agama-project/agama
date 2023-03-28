@@ -24,14 +24,14 @@ require "agama/question"
 
 Yast.import "Pkg"
 
-module DInstaller
+module Agama
   module Software
     module Callbacks
       # Callbacks related to signatures handling
       class Signature
         # Constructor
         #
-        # @param questions_client [DInstaller::DBus::Clients::Questions]
+        # @param questions_client [Agama::DBus::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
           @questions_client = questions_client
@@ -68,7 +68,7 @@ module DInstaller
             "verified. Use it anyway?", source: source
           )
 
-          question = DInstaller::Question.new(
+          question = Agama::Question.new(
             message, options: [:Yes, :No], default_option: :No
           )
           questions_client.ask(question) do |question_client|
@@ -88,7 +88,7 @@ module DInstaller
             id: key["id"], name: key["name"], fingerprint: fingerprint
           )
 
-          question = DInstaller::Question.new(
+          question = Agama::Question.new(
             message, options: [:Trust, :Skip], default_option: :Skip
           )
 
@@ -99,7 +99,7 @@ module DInstaller
 
       private
 
-        # @return [DInstaller::DBus::Clients::Questions]
+        # @return [Agama::DBus::Clients::Questions]
         attr_reader :questions_client
 
         # @return [Logger]

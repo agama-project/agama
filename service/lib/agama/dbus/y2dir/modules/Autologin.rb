@@ -203,9 +203,9 @@ module Yast
 
     # Software service client
     #
-    # @return [DInstaller::DBus::Clients::Software] Software service client
+    # @return [Agama::DBus::Clients::Software] Software service client
     def dbus_client
-      @dbus_client ||= DInstaller::DBus::Clients::Software.new
+      @dbus_client ||= Agama::DBus::Clients::Software.new
     end
   end
 

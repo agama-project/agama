@@ -22,7 +22,7 @@
 require "agama/storage/proposal_settings"
 require "agama/dbus/storage/volume_converter"
 
-module DInstaller
+module Agama
   module DBus
     module Storage
       # Utility class offering methods to convert volumes between D-Installer and D-Bus formats
@@ -33,7 +33,7 @@ module DInstaller
         # Converts the given D-Bus settings to its equivalent D-Installer proposal settings
         #
         # @param dbus_settings [Hash]
-        # @return [DInstaller::Storage::ProposalSettings]
+        # @return [Agama::Storage::ProposalSettings]
         def to_dinstaller(dbus_settings)
           ToDInstaller.new(dbus_settings).convert
         end
@@ -49,9 +49,9 @@ module DInstaller
 
           # Converts settings from D-Bus to D-Installer format
           #
-          # @return [DInstaller::Storage::ProposalSettings]
+          # @return [Agama::Storage::ProposalSettings]
           def convert
-            DInstaller::Storage::ProposalSettings.new.tap do |proposal_settings|
+            Agama::Storage::ProposalSettings.new.tap do |proposal_settings|
               dbus_settings.each do |dbus_property, dbus_value|
                 setter, value_converter = SETTINGS_CONVERSIONS[dbus_property]
                 proposal_settings.public_send(setter, value_converter.call(dbus_value, self))
@@ -79,7 +79,7 @@ module DInstaller
           # Converts volumes from D-Bus to the D-Installer format
           #
           # @param dbus_volumes [Array<Hash>]
-          # @return [Array<DInstaller::Storage::Volume>]
+          # @return [Array<Agama::Storage::Volume>]
           def to_dinstaller_volumes(dbus_volumes)
             converter = VolumeConverter.new
             dbus_volumes.map { |v| converter.to_dinstaller(v) }

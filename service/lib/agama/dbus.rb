@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DInstaller
+module Agama
   # Namespace for DBus API
   module DBus
   end

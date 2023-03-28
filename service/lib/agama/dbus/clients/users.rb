@@ -23,7 +23,7 @@ require "agama/dbus/clients/base"
 require "agama/dbus/clients/with_service_status"
 require "agama/dbus/clients/with_validation"
 
-module DInstaller
+module Agama
   module DBus
     module Clients
       # D-Bus client for users configuration

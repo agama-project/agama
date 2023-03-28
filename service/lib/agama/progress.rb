@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module DInstaller
+module Agama
   # Class to manage progress
   #
   # It allows to configure callbacks to be called on each step and also when the progress finishes.

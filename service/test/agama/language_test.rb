@@ -24,7 +24,7 @@ require "agama/language"
 
 Yast.import "Language"
 
-describe DInstaller::Language do
+describe Agama::Language do
   subject { described_class.new(logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
@@ -67,7 +67,7 @@ describe DInstaller::Language do
 
     context "if the language is unknown" do
       it "raise an InvalidValue exception" do
-        expect { subject.language = "unknown" }.to raise_error(DInstaller::Errors::InvalidValue)
+        expect { subject.language = "unknown" }.to raise_error(Agama::Errors::InvalidValue)
       end
     end
   end

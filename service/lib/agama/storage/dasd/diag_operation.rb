@@ -23,13 +23,13 @@ require "yast2/execute"
 require "agama/storage/dasd/sequential_operation"
 require "agama/storage/dasd/dasd_configure_cmd"
 
-module DInstaller
+module Agama
   module Storage
     module DASD
       # Operation to set the use_diag flag for a group of DASDs
       #
       # Management of that flag in YaST is a bit weird, but we decided to emulate it to a big extent
-      # to keep the known behavior. Check DInstaller::Storage::DASD::Manager for more information.
+      # to keep the known behavior. Check Agama::Storage::DASD::Manager for more information.
       class DiagOperation < SequentialOperation
         # Constructor
         def initialize(dasds, logger, value)

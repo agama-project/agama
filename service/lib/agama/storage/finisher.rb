@@ -30,7 +30,7 @@ require "abstract_method"
 
 Yast.import "Arch"
 
-module DInstaller
+module Agama
   module Storage
     # Auxiliary class to handle the last storage-related steps of the installation
     class Finisher

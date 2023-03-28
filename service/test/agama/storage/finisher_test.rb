@@ -26,8 +26,8 @@ require "agama/config"
 require "agama/security"
 require "agama/storage/finisher"
 
-describe DInstaller::Storage::Finisher do
-  include DInstaller::RSpec::StorageHelpers
+describe Agama::Storage::Finisher do
+  include Agama::RSpec::StorageHelpers
 
   subject(:storage) { described_class.new(logger, config, security) }
 
@@ -37,10 +37,10 @@ describe DInstaller::Storage::Finisher do
   end
 
   let(:destdir) { File.join(FIXTURES_PATH, "target_dir") }
-  let(:config) { DInstaller::Config.from_file(config_path) }
-  let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
-  let(:copy_files) { DInstaller::Storage::Finisher::CopyFilesStep.new(logger) }
-  let(:progress) { instance_double(DInstaller::Progress, step: nil) }
+  let(:config) { Agama::Config.from_file(config_path) }
+  let(:security) { instance_double(Agama::Security, probe: nil, write: nil) }
+  let(:copy_files) { Agama::Storage::Finisher::CopyFilesStep.new(logger) }
+  let(:progress) { instance_double(Agama::Progress, step: nil) }
 
   describe "#run" do
     before do

@@ -27,8 +27,8 @@ require "agama/storage/iscsi/manager"
 require "agama/config"
 require "agama/dbus/clients/questions"
 
-describe DInstaller::Storage::Manager do
-  include DInstaller::RSpec::StorageHelpers
+describe Agama::Storage::Manager do
+  include Agama::RSpec::StorageHelpers
 
   subject(:storage) { described_class.new(config, logger) }
 
@@ -36,34 +36,34 @@ describe DInstaller::Storage::Manager do
   let(:config_path) do
     File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
   end
-  let(:config) { DInstaller::Config.from_file(config_path) }
+  let(:config) { Agama::Config.from_file(config_path) }
 
   before do
-    allow(DInstaller::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
-    allow(DInstaller::DBus::Clients::Software).to receive(:new)
+    allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
+    allow(Agama::DBus::Clients::Software).to receive(:new)
       .and_return(software)
     allow(Bootloader::FinishClient).to receive(:new)
       .and_return(bootloader_finish)
-    allow(DInstaller::Security).to receive(:new).and_return(security)
+    allow(Agama::Security).to receive(:new).and_return(security)
   end
 
   let(:y2storage_manager) { instance_double(Y2Storage::StorageManager, probe: nil) }
-  let(:questions_client) { instance_double(DInstaller::DBus::Clients::Questions) }
+  let(:questions_client) { instance_double(Agama::DBus::Clients::Questions) }
   let(:software) do
-    instance_double(DInstaller::DBus::Clients::Software, selected_product: "ALP")
+    instance_double(Agama::DBus::Clients::Software, selected_product: "ALP")
   end
   let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
-  let(:security) { instance_double(DInstaller::Security, probe: nil, write: nil) }
+  let(:security) { instance_double(Agama::Security, probe: nil, write: nil) }
 
   describe "#probe" do
     before do
       allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
-      allow(DInstaller::Storage::Proposal).to receive(:new).and_return(proposal)
-      allow(DInstaller::Storage::ISCSI::Manager).to receive(:new).and_return(iscsi)
+      allow(Agama::Storage::Proposal).to receive(:new).and_return(proposal)
+      allow(Agama::Storage::ISCSI::Manager).to receive(:new).and_return(iscsi)
     end
 
     let(:proposal) do
-      instance_double(DInstaller::Storage::Proposal,
+      instance_double(Agama::Storage::Proposal,
         settings:          settings,
         calculate:         nil,
         available_devices: devices)
@@ -75,7 +75,7 @@ describe DInstaller::Storage::Manager do
     let(:disk1) { instance_double(Y2Storage::Disk, name: "/dev/vda") }
     let(:disk2) { instance_double(Y2Storage::Disk, name: "/dev/vdb") }
 
-    let(:iscsi) { DInstaller::Storage::ISCSI::Manager.new }
+    let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
 
     before do
       allow(config).to receive(:pick_product)
@@ -89,7 +89,7 @@ describe DInstaller::Storage::Manager do
       expect(config).to receive(:pick_product).with("ALP")
       expect(iscsi).to receive(:activate)
       expect(y2storage_manager).to receive(:activate) do |callbacks|
-        expect(callbacks).to be_a(DInstaller::Storage::Callbacks::Activate)
+        expect(callbacks).to be_a(Agama::Storage::Callbacks::Activate)
       end
       expect(iscsi).to receive(:probe)
       expect(y2storage_manager).to receive(:probe)
@@ -105,7 +105,7 @@ describe DInstaller::Storage::Manager do
     end
 
     context "when there are settings from a previous proposal" do
-      let(:settings) { DInstaller::Storage::ProposalSettings.new }
+      let(:settings) { Agama::Storage::ProposalSettings.new }
 
       it "calculates a proposal using the previous settings" do
         expect(proposal).to receive(:calculate).with(settings)
@@ -116,10 +116,10 @@ describe DInstaller::Storage::Manager do
     context "when there are no settings from a previous proposal" do
       let(:settings) { nil }
 
-      let(:new_settings) { DInstaller::Storage::ProposalSettings.new }
+      let(:new_settings) { Agama::Storage::ProposalSettings.new }
 
       before do
-        allow(DInstaller::Storage::ProposalSettings).to receive(:new).and_return(new_settings)
+        allow(Agama::Storage::ProposalSettings).to receive(:new).and_return(new_settings)
       end
 
       it "calculates a proposal using new settings" do
@@ -167,7 +167,7 @@ describe DInstaller::Storage::Manager do
 
   describe "#proposal" do
     it "returns an instance of the Storage::Proposal class" do
-      expect(storage.proposal).to be_a(DInstaller::Storage::Proposal)
+      expect(storage.proposal).to be_a(Agama::Storage::Proposal)
     end
   end
 
@@ -177,7 +177,7 @@ describe DInstaller::Storage::Manager do
       allow(File).to receive(:directory?).with("/iguana").and_return iguana
       allow(copy_files_class).to receive(:new).and_return(copy_files)
     end
-    let(:copy_files_class) { DInstaller::Storage::Finisher::CopyFilesStep }
+    let(:copy_files_class) { Agama::Storage::Finisher::CopyFilesStep }
     let(:copy_files) { instance_double(copy_files_class, run?: true, run: true, label: "Copy") }
 
     let(:iguana) { false }
@@ -232,11 +232,11 @@ describe DInstaller::Storage::Manager do
   describe "#validate" do
     let(:errors) { [double("error 1")] }
     let(:proposal) do
-      instance_double(DInstaller::Storage::Proposal, validate: errors)
+      instance_double(Agama::Storage::Proposal, validate: errors)
     end
 
     before do
-      allow(DInstaller::Storage::Proposal).to receive(:new).and_return(proposal)
+      allow(Agama::Storage::Proposal).to receive(:new).and_return(proposal)
     end
 
     it "returns the proposal errors" do

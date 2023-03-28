@@ -26,11 +26,11 @@ require "yast2/execute"
 require "agama/helpers"
 require "agama/validation_error"
 
-module DInstaller
+module Agama
   # Backend class using YaST code.
   #
-  # {DInstaller::DBus::Users} wraps it with a D-Bus interface and
-  # {DInstaller::DBus::Clients::Users} is a D-Bus client for that.
+  # {Agama::DBus::Users} wraps it with a D-Bus interface and
+  # {Agama::DBus::Clients::Users} is a D-Bus client for that.
   class Users
     include Helpers
 

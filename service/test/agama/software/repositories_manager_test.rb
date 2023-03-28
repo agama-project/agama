@@ -22,21 +22,21 @@
 require_relative "../../test_helper"
 require "agama/software/repositories_manager"
 
-describe DInstaller::Software::RepositoriesManager do
+describe Agama::Software::RepositoriesManager do
   let(:repo) do
     instance_double(
-      DInstaller::Software::Repository, enable!: nil, probe: true, enabled?: true
+      Agama::Software::Repository, enable!: nil, probe: true, enabled?: true
     )
   end
 
   let(:disabled_repo) do
-    instance_double(DInstaller::Software::Repository, enable!: nil, enabled?: false)
+    instance_double(Agama::Software::Repository, enable!: nil, enabled?: false)
   end
 
   describe "#add" do
     it "registers the repository in the packaging system" do
       url = "https://example.net"
-      expect(DInstaller::Software::Repository).to receive(:create)
+      expect(Agama::Software::Repository).to receive(:create)
         .with(name: url, url: url)
         .and_return(repo)
       subject.add(url)
@@ -47,7 +47,7 @@ describe DInstaller::Software::RepositoriesManager do
   describe "#load" do
     let(:repo1) do
       instance_double(
-        DInstaller::Software::Repository, disable!: nil, probe: false
+        Agama::Software::Repository, disable!: nil, probe: false
       )
     end
 

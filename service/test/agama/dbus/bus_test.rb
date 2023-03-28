@@ -22,19 +22,19 @@
 require_relative "../../test_helper"
 require "agama/dbus/bus"
 
-describe DInstaller::DBus::Bus do
+describe Agama::DBus::Bus do
   describe ".current" do
     let(:server_manager) do
-      DInstaller::DBus::ServerManager.new(run_directory: "/tmp")
+      Agama::DBus::ServerManager.new(run_directory: "/tmp")
     end
 
     before do
-      allow(DInstaller::DBus::ServerManager).to receive(:new).and_return(server_manager)
+      allow(Agama::DBus::ServerManager).to receive(:new).and_return(server_manager)
       allow(server_manager).to receive(:find_or_start_server)
     end
 
     it "returns a connection to the current server" do
-      bus = instance_double(DInstaller::DBus::Bus)
+      bus = instance_double(Agama::DBus::Bus)
       expect(described_class).to receive(:new).with(server_manager.address)
         .and_return(bus)
       expect(described_class.current).to eq(bus)

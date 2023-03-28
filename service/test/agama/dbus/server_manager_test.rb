@@ -23,7 +23,7 @@ require_relative "../../test_helper"
 require "tmpdir"
 require "agama/dbus/server_manager"
 
-describe DInstaller::DBus::ServerManager do
+describe Agama::DBus::ServerManager do
   subject do
     described_class.new(run_directory: tmpdir)
   end

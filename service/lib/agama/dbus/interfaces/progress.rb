@@ -21,22 +21,22 @@
 
 require "dbus"
 
-module DInstaller
+module Agama
   module DBus
     module Interfaces
       # Mixin to define the Progress D-Bus interface
       #
       # @note This mixin is expected to be included in a class inherited from {DBus::BaseObject}
       #   class and it requires a #backend method that returns an instance of a class including the
-      #   {DInstaller::WithProgress} mixin.
+      #   {Agama::WithProgress} mixin.
       #
       # @example
       #   class Backend
-      #     include DInstaller::WithProgress
+      #     include Agama::WithProgress
       #   end
       #
-      #   class Demo < DInstaller::DBus::BaseObject
-      #     include DInstaller::DBus::Interfaces::Progress
+      #   class Demo < Agama::DBus::BaseObject
+      #     include Agama::DBus::Interfaces::Progress
       #
       #     def initialize
       #       super("org.test.Demo")

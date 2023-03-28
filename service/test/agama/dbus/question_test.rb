@@ -25,7 +25,7 @@ require "agama/question"
 require "agama/luks_activation_question"
 require "dbus"
 
-describe DInstaller::DBus::Question do
+describe Agama::DBus::Question do
   subject { described_class.new(path, backend, logger) }
 
   before do
@@ -131,11 +131,11 @@ describe DInstaller::DBus::Question do
       end
     end
 
-    let(:backend) { DInstaller::Question.new("test") }
+    let(:backend) { Agama::Question.new("test") }
 
     context "for a generic question" do
       let(:backend) do
-        DInstaller::Question.new("test", options: options, default_option: default_option)
+        Agama::Question.new("test", options: options, default_option: default_option)
       end
 
       let(:options) { [:yes, :no] }
@@ -170,7 +170,7 @@ describe DInstaller::DBus::Question do
     end
 
     context "for a question to activate a LUKS device" do
-      let(:backend) { DInstaller::LuksActivationQuestion.new("/dev/sda1") }
+      let(:backend) { Agama::LuksActivationQuestion.new("/dev/sda1") }
 
       include_examples "Question interface"
       include_examples "LuksActivation interface"

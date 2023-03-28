@@ -24,7 +24,7 @@ require "agama/dbus/storage/jobs_tree"
 require "agama/dbus/storage/dasds_tree"
 require "dbus"
 
-describe DInstaller::DBus::Storage::JobsTree do
+describe Agama::DBus::Storage::JobsTree do
   subject { described_class.new(service, logger: logger) }
 
   let(:service) { instance_double(::DBus::Service) }
@@ -33,20 +33,20 @@ describe DInstaller::DBus::Storage::JobsTree do
 
   before do
     allow(service).to receive(:get_node)
-      .with(DInstaller::DBus::Storage::DasdsTree::ROOT_PATH, anything).and_return(dasds_root_node)
+      .with(Agama::DBus::Storage::DasdsTree::ROOT_PATH, anything).and_return(dasds_root_node)
 
     allow(dasds_root_node).to receive(:descendant_objects).and_return(dasd_nodes)
   end
 
   describe "#add_dasds_format" do
     let(:dbus_dasd1) do
-      instance_double(DInstaller::DBus::Storage::Dasd, id: "0.0.001", path: "/path/dasd1")
+      instance_double(Agama::DBus::Storage::Dasd, id: "0.0.001", path: "/path/dasd1")
     end
     let(:dbus_dasd2) do
-      instance_double(DInstaller::DBus::Storage::Dasd, id: "0.0.002", path: "/path/dasd2")
+      instance_double(Agama::DBus::Storage::Dasd, id: "0.0.002", path: "/path/dasd2")
     end
     let(:dasd_nodes) { [dbus_dasd1, dbus_dasd2] }
-    let(:dasds_tree) { DInstaller::DBus::Storage::DasdsTree.new(service, logger: logger) }
+    let(:dasds_tree) { Agama::DBus::Storage::DasdsTree.new(service, logger: logger) }
 
     let(:dasd1) { double("Y2S390::Dasd", id: "0.0.001") }
     let(:dasd2) { double("Y2S390::Dasd", id: "0.0.002") }

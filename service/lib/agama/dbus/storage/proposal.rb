@@ -23,7 +23,7 @@ require "dbus"
 require "agama/dbus/base_object"
 require "agama/dbus/storage/volume_converter"
 
-module DInstaller
+module Agama
   module DBus
     module Storage
       # D-Bus object to manage the storage proposal
@@ -33,7 +33,7 @@ module DInstaller
 
         # Constructor
         #
-        # @param backend [DInstaller::Storage::Proposal]
+        # @param backend [Agama::Storage::Proposal]
         # @param logger [Logger]
         def initialize(backend, logger)
           super(PATH, logger: logger)
@@ -101,7 +101,7 @@ module DInstaller
 
       private
 
-        # @return [DInstaller::Storage::Proposal]
+        # @return [Agama::Storage::Proposal]
         attr_reader :backend
 
         # @return [Logger]

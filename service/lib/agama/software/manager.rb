@@ -37,7 +37,7 @@ Yast.import "PackageCallbacks"
 Yast.import "Pkg"
 Yast.import "Stage"
 
-module DInstaller
+module Agama
   module Software
     # This class is responsible for software handling
     class Manager
@@ -151,7 +151,7 @@ module DInstaller
         end
 
         logger.info "Commit result #{commit_result}"
-      rescue DInstaller::WithProgress::NotFinishedProgress => e
+      rescue Agama::WithProgress::NotFinishedProgress => e
         logger.error "There is an unfinished progress: #{e.inspect}"
         finish_progress
       end

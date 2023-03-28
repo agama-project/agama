@@ -35,7 +35,7 @@ module Y2Security
       def product_feature_settings
         return @product_feature_settings unless @product_feature_settings.nil?
 
-        value = ::DInstaller::Config.current.data["security"]["available_lsms"][id.to_s]
+        value = ::Agama::Config.current.data["security"]["available_lsms"][id.to_s]
         res = if value
           {
             selectable:   true,
@@ -57,7 +57,7 @@ module Y2Security
   end
 end
 
-module DInstaller
+module Agama
   # Backend class between dbus service and yast code
   class Security
     # @return [Logger]

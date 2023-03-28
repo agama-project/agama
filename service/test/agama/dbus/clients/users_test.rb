@@ -26,9 +26,9 @@ require "agama/dbus/interfaces/service_status"
 require_relative "with_validation_examples"
 require "dbus"
 
-describe DInstaller::DBus::Clients::Users do
+describe Agama::DBus::Clients::Users do
   before do
-    allow(DInstaller::DBus::Bus).to receive(:current).and_return(bus)
+    allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
     allow(bus).to receive(:service).with("org.opensuse.DInstaller.Users").and_return(service)
     allow(service).to receive(:[]).with("/org/opensuse/DInstaller/Users1")
       .and_return(dbus_object)
@@ -39,7 +39,7 @@ describe DInstaller::DBus::Clients::Users do
       .and_return(service_status_iface)
   end
 
-  let(:bus) { instance_double(DInstaller::DBus::Bus) }
+  let(:bus) { instance_double(Agama::DBus::Bus) }
   let(:service) { instance_double(::DBus::Service) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:users_iface) { instance_double(::DBus::ProxyObjectInterface) }
@@ -50,11 +50,11 @@ describe DInstaller::DBus::Clients::Users do
   describe "#service_status" do
     before do
       allow(service_status_iface).to receive(:[]).with("Current")
-        .and_return(DInstaller::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_BUSY)
+        .and_return(Agama::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_BUSY)
     end
 
     it "returns the value of the service status" do
-      expect(subject.service_status).to eq(DInstaller::DBus::ServiceStatus::BUSY)
+      expect(subject.service_status).to eq(Agama::DBus::ServiceStatus::BUSY)
     end
   end
 

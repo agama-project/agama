@@ -22,7 +22,7 @@
 require_relative "../test_helper"
 require "agama/installation_phase"
 
-describe DInstaller::InstallationPhase do
+describe Agama::InstallationPhase do
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   before do

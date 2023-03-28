@@ -24,7 +24,7 @@ require "y2storage/callbacks/issues_callback"
 require "agama/storage/callbacks/activate_multipath"
 require "agama/storage/callbacks/activate_luks"
 
-module DInstaller
+module Agama
   module Storage
     module Callbacks
       # Callbacks to manage devices activation
@@ -33,7 +33,7 @@ module DInstaller
 
         # Constructor
         #
-        # @param questions_client [DInstaller::DBus::Clients::Questions]
+        # @param questions_client [Agama::DBus::Clients::Questions]
         # @param logger [Logger]
         def initialize(questions_client, logger)
           super()
@@ -79,7 +79,7 @@ module DInstaller
 
       private
 
-        # @return [DInstaller::DBus::Clients::Questions]
+        # @return [Agama::DBus::Clients::Questions]
         attr_reader :questions_client
 
         # @return [Logger]

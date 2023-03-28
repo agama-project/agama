@@ -26,7 +26,7 @@ require "y2network/proposal_settings"
 
 Yast.import "Installation"
 
-module DInstaller
+module Agama
   # Backend class to handle network configuration
   class Network
     def initialize(logger)

@@ -21,7 +21,7 @@
 
 require "agama/dbus/service_status"
 
-module DInstaller
+module Agama
   # Allows to record the status of services and to register callbacks to be called when a service
   # status changes its value
   class ServiceStatusRecorder

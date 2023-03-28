@@ -22,7 +22,7 @@
 require_relative "../test_helper"
 require "agama/config_reader"
 
-describe DInstaller::ConfigReader do
+describe Agama::ConfigReader do
   let(:workdir) { File.join(FIXTURES_PATH, "root_dir") }
   let(:logger) { Logger.new($stdout, level: :warn) }
   subject { described_class.new(logger: logger, workdir: workdir) }
@@ -34,7 +34,7 @@ describe DInstaller::ConfigReader do
   describe "#config_from_file" do
     it "returns a Config object with the configuration read from the given file" do
       config = subject.config_from_file(File.join(workdir, "etc", "d-installer.yaml"))
-      expect(config).to be_a(DInstaller::Config)
+      expect(config).to be_a(Agama::Config)
       expect(config.data["products"].keys).to include("Tumbleweed")
     end
   end

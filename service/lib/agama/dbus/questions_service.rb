@@ -23,7 +23,7 @@ require "dbus"
 require "agama/dbus/bus"
 require "agama/dbus/questions"
 
-module DInstaller
+module Agama
   module DBus
     # D-Bus service (org.opensuse.DInstaller.Questions)
     #
@@ -72,7 +72,7 @@ module DInstaller
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          DInstaller::DBus::Questions.new(logger: logger)
+          Agama::DBus::Questions.new(logger: logger)
         ]
       end
     end

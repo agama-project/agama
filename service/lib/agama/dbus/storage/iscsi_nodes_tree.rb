@@ -22,7 +22,7 @@
 require "agama/dbus/with_path_generator"
 require "agama/dbus/storage/iscsi_node"
 
-module DInstaller
+module Agama
   module DBus
     module Storage
       # Class representing the iSCSI nodes tree exported on D-Bus
@@ -35,7 +35,7 @@ module DInstaller
         # Constructor
         #
         # @param service [::DBus::Service]
-        # @param iscsi_manager DInstaller::Storage::ISCSI::Manager]
+        # @param iscsi_manager Agama::Storage::ISCSI::Manager]
         # @param logger [Logger, nil]
         def initialize(service, iscsi_manager, logger: nil)
           @service = service
@@ -54,7 +54,7 @@ module DInstaller
         #
         # New nodes are exported, existing nodes are updated and missing nodes are unexported.
         #
-        # @param iscsi_nodes [Array<DInstaller::Storage::ISCSI::Node>]
+        # @param iscsi_nodes [Array<Agama::Storage::ISCSI::Node>]
         def update(iscsi_nodes)
           add_new_nodes(iscsi_nodes)
           update_existing_nodes(iscsi_nodes)
@@ -66,7 +66,7 @@ module DInstaller
         # @return [::DBus::Service]
         attr_reader :service
 
-        # @return [DInstaller::Storage::ISCSI::Manager]
+        # @return [Agama::Storage::ISCSI::Manager]
         attr_reader :iscsi_manager
 
         # @return [Logger]
@@ -74,7 +74,7 @@ module DInstaller
 
         # Exports a new iSCSI D-Bus node for the given iSCSI nodes which do not have a D-Bus object
         #
-        # @param iscsi_nodes [Array<DInstaller::Storage::ISCSI::Node>]
+        # @param iscsi_nodes [Array<Agama::Storage::ISCSI::Node>]
         def add_new_nodes(iscsi_nodes)
           new_iscsi_nodes = iscsi_nodes.select { |n| find_node(n).nil? }
           new_iscsi_nodes.each { |n| add_node(n) }
@@ -82,7 +82,7 @@ module DInstaller
 
         # Updates the D-Bus iSCSI node for the given iSCSI nodes that already have a D-Bus object
         #
-        # @param iscsi_nodes [Array<DInstaller::Storage::ISCSI::Node>]
+        # @param iscsi_nodes [Array<Agama::Storage::ISCSI::Node>]
         def update_existing_nodes(iscsi_nodes)
           existing_iscsi_nodes = iscsi_nodes.reject { |n| find_node(n).nil? }
           existing_iscsi_nodes.each { |n| update_node(n) }
@@ -90,7 +90,7 @@ module DInstaller
 
         # Unexports the D-Bus iSCSI nodes that do not represent any of the given iSCSI nodes
         #
-        # @param iscsi_nodes [Array<DInstaller::Storage::ISCSI::Node>]
+        # @param iscsi_nodes [Array<Agama::Storage::ISCSI::Node>]
         def delete_old_nodes(iscsi_nodes)
           current_iscsi_nodes = dbus_nodes.map(&:iscsi_node)
           deleted_iscsi_nodes = current_iscsi_nodes.select do |current_node|
@@ -102,7 +102,7 @@ module DInstaller
 
         # Exports a D-Bus node for the given iSCSI node
         #
-        # @param iscsi_node [DInstaller::Storage::ISCSI::Node]
+        # @param iscsi_node [Agama::Storage::ISCSI::Node]
         def add_node(iscsi_node)
           dbus_node = DBus::Storage::ISCSINode.new(
             iscsi_manager, iscsi_node, next_path, logger: logger
@@ -113,7 +113,7 @@ module DInstaller
 
         # Updates the D-Bus node associated to the given iSCSI node
         #
-        # @param iscsi_node [DInstaller::Storage::ISCSI::Node]
+        # @param iscsi_node [Agama::Storage::ISCSI::Node]
         def update_node(iscsi_node)
           dbus_node = find_node(iscsi_node)
           dbus_node.iscsi_node = iscsi_node
@@ -121,7 +121,7 @@ module DInstaller
 
         # Unexports the D-Bus node associated to the given iSCSI node
         #
-        # @param iscsi_node [DInstaller::Storage::ISCSI::Node]
+        # @param iscsi_node [Agama::Storage::ISCSI::Node]
         def delete_node(iscsi_node)
           dbus_node = find_node(iscsi_node)
           service.unexport(dbus_node)
@@ -129,15 +129,15 @@ module DInstaller
 
         # Returns the D-Bus node associated to the given iSCSI node
         #
-        # @param iscsi_node [DInstaller::Storage::ISCSI::Node]
-        # @return [DInstaller::DBus::Storage::ISCSINode]
+        # @param iscsi_node [Agama::Storage::ISCSI::Node]
+        # @return [Agama::DBus::Storage::ISCSINode]
         def find_node(iscsi_node)
           dbus_nodes.find { |n| same_iscsi_node?(n.iscsi_node, iscsi_node) }
         end
 
         # All exported iSCSI D-Bus nodes
         #
-        # @return [Array<DInstaller::DBus::Storage::ISCSINode>]
+        # @return [Array<Agama::DBus::Storage::ISCSINode>]
         def dbus_nodes
           root = service.get_node(ROOT_PATH, create: false)
           return [] unless root
@@ -147,8 +147,8 @@ module DInstaller
 
         # Whether the given iSCSI nodes can be considered the same iSCSI node
         #
-        # @param iscsi_node1 [DInstaller::Storage::ISCSI::Node]
-        # @param iscsi_node2 [DInstaller::Storage::ISCSI::Node]
+        # @param iscsi_node1 [Agama::Storage::ISCSI::Node]
+        # @param iscsi_node2 [Agama::Storage::ISCSI::Node]
         #
         # @return [Boolean]
         def same_iscsi_node?(iscsi_node1, iscsi_node2)
