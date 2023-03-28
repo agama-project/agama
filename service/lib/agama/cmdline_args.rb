@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 module Agama
-  # This class is responsible for reading DInstaller kernel cmdline options
+  # This class is responsible for reading Agama kernel cmdline options
   class CmdlineArgs
     CMDLINE_PATH = "/proc/cmdline"
     CMDLINE_PREFIX = "agama."

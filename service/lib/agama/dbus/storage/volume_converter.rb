@@ -47,7 +47,7 @@ module Agama
           ToDBus.new(volume).convert
         end
 
-        # Internal class to generate a DInstaller volume
+        # Internal class to generate a Agama volume
         class ToAgama
           # Constructor
           #

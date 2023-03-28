@@ -63,7 +63,7 @@ describe Agama::Storage::Proposal do
     instance_double(Y2Storage::MinGuidedProposal, propose: true, failed?: false)
   end
 
-  # Constructs a DInstaller volume with the given set of attributes
+  # Constructs a Agama volume with the given set of attributes
   #
   # @param attrs [Hash] set of attributes and their values (sizes can be provided as strings)
   # @return [Agama::Storage::Volume]

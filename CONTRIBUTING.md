@@ -56,15 +56,15 @@ infrastructure for some operations (code at the `web` directory).
 ### Service Structure
 
 The service part written in Ruby is separated into two layers, a backend (in the
-Ruby namespace `DInstaller`) and the D-Bus interface on top (namespace
-`DInstaller::DBus`). 
+Ruby namespace `Agama`) and the D-Bus interface on top (namespace
+`Agama::DBus`).
 
 Although there can be only one installation in progress, the service is
 structured to avoid the abuse of the Singleton programming pattern as mechanism
 to share the state information. The classes containing the business logic (eg.
-`DInstaller::Manager`, `DInstaller::Software`) are completely independent and
+`Agama::Manager`, `Agama::Software`) are completely independent and
 decoupled from the ones providing the D-Bus layer. When an object of the
-`DInstaller::DBus` namespace is initialized, it receives the corresponding
+`Agama::DBus` namespace is initialized, it receives the corresponding
 business logic object as argument. That's more robust than making those business
 logic objects singleton and allowing the D-Bus related ones to simply access
 those singletons.

@@ -30,13 +30,13 @@ Yast.import "URL"
 Yast.import "Directory"
 
 module Agama
-  # This class is responsible for reading DInstaller configuration from different locations
+  # This class is responsible for reading Agama configuration from different locations
   # including kernel cmdline options
   class ConfigReader
     include Yast::Transfer::FileFromUrl
     include Yast::I18n
 
-    # Default DInstaller configuration which should define all the possible values
+    # Default Agama configuration which should define all the possible values
     SYSTEM_PATH = "/etc/agama.yaml"
     GIT_PATH = File.expand_path("#{__dir__}/../../etc/agama.yaml")
     GIT_DIR = File.expand_path("#{__dir__}/../../../.git")

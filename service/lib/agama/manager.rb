@@ -39,7 +39,7 @@ module Agama
   # It is responsible for orchestrating the installation process. For module
   # specific stuff it delegates it to the corresponding module class (e.g.,
   # {Agama::Network}, {Agama::Storage::Proposal}, etc.) or asks
-  # other services via D-Bus (e.g., `org.opensuse.DInstaller.Software`).
+  # other services via D-Bus (e.g., `org.opensuse.Agama.Software1`).
   class Manager
     include WithProgress
     include Helpers

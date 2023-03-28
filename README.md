@@ -127,17 +127,17 @@ $ sudo bundle exec bin/agama
 ```console
 $ busctl --address=unix:path=/run/agama/bus \
     call \
-    org.opensuse.DInstaller \
-   /org/opensuse/DInstaller/Manager1 \
-    org.opensuse.DInstaller.Manager1 \
+    org.opensuse.Agama \
+   /org/opensuse/Agama1/Manager \
+    org.opensuse.Agama1.Manager \
     CanInstall
 
 $ busctl --address=unix:path=/run/agama/bus \
     call \
-    org.opensuse.DInstaller.Language \
-   /org/opensuse/DInstaller/Language1 \
+    org.opensuse.Agama.Language1 \
+   /org/opensuse/Agama/Language1 \
     org.freedesktop.DBus.Properties \
-    GetAll s org.opensuse.DInstaller.Language1
+    GetAll s org.opensuse.Agama.Language1
 ```
 
 ## How to Contribute
