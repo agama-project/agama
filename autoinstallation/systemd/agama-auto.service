@@ -1,12 +1,12 @@
 [Unit]
-Description=DInstaller automatic profile runner
-# it needs to dbus, so it has access to dinstaller dbus interface
+Description=Agama automatic profile runner
+# it needs to D-Bus, so it has access to Agama D-Bus interface
 After=dbus.socket
 # it needs to NetworkManager, so it has access to it
 After=NetworkManager.service
 # it needs dinstaller, of course
-After=d-installer.service
-Requires=d-installer.service
+After=agama.service
+Requires=agama.service
 
 [Service]
 ExecStart=/usr/bin/auto.sh
