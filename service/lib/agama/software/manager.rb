@@ -235,7 +235,7 @@ module Agama
         arch_collection_for("installation_repositories", "url").map { |url| repositories.add(url) }
       end
 
-      REPOS_BACKUP = "/etc/zypp/repos.d.dinstaller.backup"
+      REPOS_BACKUP = "/etc/zypp/repos.d.agama.backup"
       private_constant :REPOS_BACKUP
 
       REPOS_DIR = "/etc/zypp/repos.d"
