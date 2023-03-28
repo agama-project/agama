@@ -1,4 +1,4 @@
 [D-BUS Service]
-Name=org.opensuse.DInstaller.Users
-Exec=/usr/bin/d-installer users
+Name=org.opensuse.Agama.Users1
+Exec=/usr/bin/agamad users
 User=root

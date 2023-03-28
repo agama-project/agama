@@ -1,4 +1,4 @@
 [D-BUS Service]
-Name=org.opensuse.DInstaller.Software
-Exec=/usr/bin/d-installer software
+Name=org.opensuse.Agama.Software1
+Exec=/usr/bin/agamad software
 User=root

@@ -1,4 +1,4 @@
 [D-BUS Service]
-Name=org.opensuse.DInstaller.Language
-Exec=/usr/bin/d-installer language
+Name=org.opensuse.Agama.Language1
+Exec=/usr/bin/agamad language
 User=root

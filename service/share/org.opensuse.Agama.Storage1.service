@@ -1,4 +1,4 @@
 [D-BUS Service]
-Name=org.opensuse.DInstaller.Storage
-Exec=/usr/bin/d-installer storage
+Name=org.opensuse.Agama.Storage1
+Exec=/usr/bin/agamad storage
 User=root

@@ -1,4 +1,4 @@
 [D-BUS Service]
-Name=org.opensuse.DInstaller.Questions
-Exec=/usr/bin/d-installer questions
+Name=org.opensuse.Agama.Questions1
+Exec=/usr/bin/agamad questions
 User=root
