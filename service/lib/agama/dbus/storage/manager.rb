@@ -138,7 +138,7 @@ module Agama
           logger.info("Calculating storage proposal from D-Bus settings: #{dbus_settings}")
 
           converter = ProposalSettingsConverter.new
-          success = proposal.calculate(converter.to_dinstaller(dbus_settings))
+          success = proposal.calculate(converter.to_agama(dbus_settings))
 
           success ? 0 : 1
         end

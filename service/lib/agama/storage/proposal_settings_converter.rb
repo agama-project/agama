@@ -45,8 +45,8 @@ module Agama
         ToY2Storage.new(settings, default_specs).convert
       end
 
-      def to_dinstaller(settings, devices: [])
-        ToDInstaller.new(settings, default_specs, devices).convert
+      def to_agama(settings, devices: [])
+        ToAgama.new(settings, default_specs, devices).convert
       end
 
     private
@@ -133,7 +133,7 @@ module Agama
       end
 
       # Internal class to generate a ProposalSettings object
-      class ToDInstaller
+      class ToAgama
         # Constructor
         #
         # @param y2storage_settings [Y2Storage::ProposalSettings]
@@ -159,7 +159,7 @@ module Agama
 
       private
 
-        # @see ProposalSettingsConverter#to_dinstaller
+        # @see ProposalSettingsConverter#to_agama
         # @return [Y2Storage::ProposalSettings]
         attr_reader :y2storage_settings
 
@@ -167,7 +167,7 @@ module Agama
         # @return [Array<Y2Storage::VolumeSpecification>]
         attr_reader :default_specs
 
-        # @see ProposalSettingsConverter#to_dinstaller
+        # @see ProposalSettingsConverter#to_agama
         # @return [Array<Y2Storage::Planned::Device>]
         attr_reader :devices
 
@@ -176,7 +176,7 @@ module Agama
         # @param spec [Y2Storage::VolumeSpecification]
         # @return [Volume]
         def to_volume(spec)
-          volume_converter.to_dinstaller(spec, devices: devices).tap do |volume|
+          volume_converter.to_agama(spec, devices: devices).tap do |volume|
             volume.encrypted = y2storage_settings.use_encryption
           end
         end

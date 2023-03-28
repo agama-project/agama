@@ -34,12 +34,12 @@ module Agama
         #
         # @param dbus_settings [Hash]
         # @return [Agama::Storage::ProposalSettings]
-        def to_dinstaller(dbus_settings)
-          ToDInstaller.new(dbus_settings).convert
+        def to_agama(dbus_settings)
+          ToAgama.new(dbus_settings).convert
         end
 
         # Internal class to generate a Agama proposal settings
-        class ToDInstaller
+        class ToAgama
           # Constructor
           #
           # @param dbus_settings [Hash]
@@ -72,7 +72,7 @@ module Agama
             "CandidateDevices"   => ["candidate_devices=", proc { |v| v }],
             "LVM"                => ["lvm=", proc { |v| v }],
             "EncryptionPassword" => ["encryption_password=", proc { |v| v.empty? ? nil : v }],
-            "Volumes"            => ["volumes=", proc { |v, o| o.send(:to_dinstaller_volumes, v) }]
+            "Volumes"            => ["volumes=", proc { |v, o| o.send(:to_agama_volumes, v) }]
           }.freeze
           private_constant :SETTINGS_CONVERSIONS
 
@@ -80,9 +80,9 @@ module Agama
           #
           # @param dbus_volumes [Array<Hash>]
           # @return [Array<Agama::Storage::Volume>]
-          def to_dinstaller_volumes(dbus_volumes)
+          def to_agama_volumes(dbus_volumes)
             converter = VolumeConverter.new
-            dbus_volumes.map { |v| converter.to_dinstaller(v) }
+            dbus_volumes.map { |v| converter.to_agama(v) }
           end
         end
       end

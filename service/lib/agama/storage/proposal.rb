@@ -106,7 +106,7 @@ module Agama
       def volume_templates
         converter = VolumeConverter.new(default_specs: default_specs)
 
-        default_specs.map { |s| converter.to_dinstaller(s) }
+        default_specs.map { |s| converter.to_agama(s) }
       end
 
       # Settings with the data used during the calculation of the storage proposal
@@ -118,7 +118,7 @@ module Agama
       def calculated_settings
         return nil unless proposal
 
-        to_dinstaller_settings(proposal.settings, devices: proposal.planned_devices || [])
+        to_agama_settings(proposal.settings, devices: proposal.planned_devices || [])
       end
 
       # Calculates a new proposal
@@ -230,9 +230,9 @@ module Agama
       # @param devices [Array<Y2Storage::Planned::Device>]
       #
       # @return [ProposalSettings]
-      def to_dinstaller_settings(settings, devices: [])
+      def to_agama_settings(settings, devices: [])
         converter = ProposalSettingsConverter.new(default_specs: default_specs)
-        converter.to_dinstaller(settings, devices: devices)
+        converter.to_agama(settings, devices: devices)
       end
 
       # @return [Y2Storage::DiskAnalyzer]

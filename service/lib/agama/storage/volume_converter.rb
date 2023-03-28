@@ -51,8 +51,8 @@ module Agama
       # @param devices [Array<Y2Storage::Planned::Device] planned devices generated during the
       #   latest proposal attempt
       # @return [Volume]
-      def to_dinstaller(spec, devices: [])
-        ToDInstaller.new(spec, default_specs, devices).convert
+      def to_agama(spec, devices: [])
+        ToAgama.new(spec, default_specs, devices).convert
       end
 
     private
@@ -129,7 +129,7 @@ module Agama
       end
 
       # Internal class to generate a DInstaller volume
-      class ToDInstaller
+      class ToAgama
         # Constructor
         #
         # @param spec see {#spec}

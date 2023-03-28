@@ -35,8 +35,8 @@ module Agama
         #
         # @param dbus_volume [Hash]
         # @return [Storage::Volume]
-        def to_dinstaller(dbus_volume)
-          ToDInstaller.new(dbus_volume).convert
+        def to_agama(dbus_volume)
+          ToAgama.new(dbus_volume).convert
         end
 
         # Converts the given volume to its equivalent D-Bus volume
@@ -48,7 +48,7 @@ module Agama
         end
 
         # Internal class to generate a DInstaller volume
-        class ToDInstaller
+        class ToAgama
           # Constructor
           #
           # @param dbus_volume [Hash]
