@@ -23,7 +23,7 @@ module Agama
   # This class is responsible for reading DInstaller kernel cmdline options
   class CmdlineArgs
     CMDLINE_PATH = "/proc/cmdline"
-    CMDLINE_PREFIX = "dinst."
+    CMDLINE_PREFIX = "agama."
 
     attr_accessor :config_url
     attr_reader :data
