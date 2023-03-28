@@ -23,12 +23,12 @@ require "pathname"
 
 module Agama
   module Storage
-    # A volume is used by the D-Installer proposal to communicate to the D-Bus layer about the
+    # A volume is used by the Agama proposal to communicate to the D-Bus layer about the
     # characteristics of a volume to create in the system. A volume only provides the meaningful
-    # options from D-Bus and D-Installer point of views.
+    # options from D-Bus and Agama point of views.
     #
-    # The D-Installer proposal calculates a storage proposal with volume specifications created from
-    # the volumes.
+    # The Agama proposal calculates a storage proposal with volume specifications created from the
+    # volumes.
     class Volume
       # Mount path
       #

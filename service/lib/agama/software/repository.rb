@@ -27,7 +27,7 @@ module Agama
     # This class represents a software repository
     #
     # It extends the `Y2Packager::Repository` with some methods in the context
-    # of D-Installer.
+    # of Agama.
     #
     # @see RepositoriesManager
     class Repository < Y2Packager::Repository

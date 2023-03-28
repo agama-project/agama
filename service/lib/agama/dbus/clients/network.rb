@@ -27,7 +27,7 @@ module Agama
       # D-Bus client for the network service
       #
       # This client is intended to be used to watch for changes in
-      # NetworkManager because D-Installer does not implement its own network
+      # NetworkManager because Agama does not implement its own network
       # service. The configuration is done directly in the UI or through
       # `nmcli`.
       class Network < Base

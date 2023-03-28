@@ -25,12 +25,12 @@ require "agama/dbus/storage/volume_converter"
 module Agama
   module DBus
     module Storage
-      # Utility class offering methods to convert volumes between D-Installer and D-Bus formats
+      # Utility class offering methods to convert volumes between Agama and D-Bus formats
       #
       # @note In the future this class might be not needed if proposal volumes and templates are
       #   exported as objects in D-Bus.
       class ProposalSettingsConverter
-        # Converts the given D-Bus settings to its equivalent D-Installer proposal settings
+        # Converts the given D-Bus settings to its equivalent Agama proposal settings
         #
         # @param dbus_settings [Hash]
         # @return [Agama::Storage::ProposalSettings]
@@ -38,7 +38,7 @@ module Agama
           ToDInstaller.new(dbus_settings).convert
         end
 
-        # Internal class to generate a D-Installer proposal settings
+        # Internal class to generate a Agama proposal settings
         class ToDInstaller
           # Constructor
           #
@@ -47,7 +47,7 @@ module Agama
             @dbus_settings = dbus_settings
           end
 
-          # Converts settings from D-Bus to D-Installer format
+          # Converts settings from D-Bus to Agama format
           #
           # @return [Agama::Storage::ProposalSettings]
           def convert
@@ -64,7 +64,7 @@ module Agama
           # @return [Hash]
           attr_reader :dbus_settings
 
-          # Relationship between D-Bus settings and D-Installer proposal settings
+          # Relationship between D-Bus settings and Agama proposal settings
           #
           # For each D-Bus setting there is a list with the setter to use and the conversion from a
           # D-Bus value to the value expected by the ProposalSettings setter.
@@ -76,7 +76,7 @@ module Agama
           }.freeze
           private_constant :SETTINGS_CONVERSIONS
 
-          # Converts volumes from D-Bus to the D-Installer format
+          # Converts volumes from D-Bus to the Agama format
           #
           # @param dbus_volumes [Array<Hash>]
           # @return [Array<Agama::Storage::Volume>]

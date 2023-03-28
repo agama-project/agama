@@ -35,7 +35,7 @@ module Agama
 
     # Writes the network configuration to the installed system
     #
-    # * Copies the connections configuration for NetworkManager, as D-Installer is not
+    # * Copies the connections configuration for NetworkManager, as Agama is not
     #   performing further configuration of the network.
     # * Enables the NetworkManager service.
     def install

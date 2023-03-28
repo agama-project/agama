@@ -23,7 +23,7 @@ require "y2storage/secret_attributes"
 
 module Agama
   module Storage
-    # Settings used to calculate a D-Installer proposal
+    # Settings used to calculate a Agama proposal
     class ProposalSettings
       include Y2Storage::SecretAttributes
 

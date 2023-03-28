@@ -21,8 +21,8 @@
 
 module Agama
   module DBus
-    # Represents the status of a D-Installer service and allows to configure callbacks to be called
-    # when the status value changes
+    # Represents the status of a Agama service and allows to configure callbacks to be called when
+    # the status value changes
     class ServiceStatus
       # Possible values of the service status
       IDLE = "idle"

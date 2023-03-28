@@ -26,7 +26,7 @@ require "y2storage/filesystems/type"
 module Agama
   module DBus
     module Storage
-      # Utility class offering methods to convert volumes between D-Installer and D-Bus formats
+      # Utility class offering methods to convert volumes between Agama and D-Bus formats
       #
       # @note In the future this class might be not needed if proposal volumes and templates are
       #   exported as objects in D-Bus.

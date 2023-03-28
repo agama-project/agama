@@ -49,7 +49,7 @@ module Agama
       # Constructor
       #
       # @param logger [Logger]
-      # @param config [Config] D-Installer config
+      # @param config [Config] Agama config
       def initialize(logger, config)
         @logger = logger
         @config = config
@@ -202,7 +202,7 @@ module Agama
         Y2Storage::ProposalSettings.new_for_current_product.volumes
       end
 
-      # Volume specs from the D-Installer config file
+      # Volume specs from the Agama config file
       #
       # @return [Array<Y2Storage::VolumeSpecification>]
       def specs_from_config
