@@ -30,7 +30,7 @@ describe Agama::CmdlineArgs do
     it "reads the kernel command line options and return a CmdlineArgs object" do
       args = described_class.read_from(File.join(workdir, "/proc/cmdline"))
       expect(args.data).to eql("web" => { "ssl" => true })
-      expect(args.config_url).to eql("http://example.org/d-installer.yaml")
+      expect(args.config_url).to eql("http://example.org/agama.yaml")
     end
   end
 end

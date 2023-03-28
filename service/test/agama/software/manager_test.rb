@@ -55,7 +55,7 @@ describe Agama::Software::Manager do
   end
 
   let(:config_path) do
-    File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
+    File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
   end
 
   let(:config) do

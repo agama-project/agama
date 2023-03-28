@@ -34,7 +34,7 @@ describe Agama::Storage::Manager do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:config_path) do
-    File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
+    File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
   end
   let(:config) { Agama::Config.from_file(config_path) }
 

@@ -29,7 +29,7 @@ describe Agama::Manager do
   subject { described_class.new(config, logger) }
 
   let(:config_path) do
-    File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
+    File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
   end
   let(:config) { Agama::Config.from_file(config_path) }
   let(:logger) { Logger.new($stdout, level: :warn) }

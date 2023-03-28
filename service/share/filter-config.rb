@@ -22,7 +22,7 @@
 
 # Helper script to create a configuration file for a selected list of products.
 #
-#   filter-config.rb /etc/d-installer.yaml ALP-Bedrock ALP-Micro
+#   filter-config.rb /etc/agama.yaml ALP-Bedrock ALP-Micro
 
 require "yast"
 require "agama/config"

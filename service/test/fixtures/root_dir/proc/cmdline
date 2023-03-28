@@ -1,1 +1,1 @@
-dinst.config_url=http://example.org/d-installer.yaml dinst.web.ssl=true
+dinst.config_url=http://example.org/agama.yaml dinst.web.ssl=true

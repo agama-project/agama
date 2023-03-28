@@ -37,15 +37,15 @@ module Agama
     include Yast::I18n
 
     # Default DInstaller configuration which should define all the possible values
-    SYSTEM_PATH = "/etc/d-installer.yaml"
-    GIT_PATH = File.expand_path("#{__dir__}/../../etc/d-installer.yaml")
+    SYSTEM_PATH = "/etc/agama.yaml"
+    GIT_PATH = File.expand_path("#{__dir__}/../../etc/agama.yaml")
     GIT_DIR = File.expand_path("#{__dir__}/../../../.git")
-    REMOTE_BOOT_CONFIG = "d-installer_boot.yaml"
+    REMOTE_BOOT_CONFIG = "agama_boot.yaml"
 
     PATHS = [
-      "/usr/lib/d-installer.d",
-      "/etc/d-installer.d",
-      "/run/d-installer.d"
+      "/usr/lib/agama.d",
+      "/etc/agama.d",
+      "/run/agama.d"
     ].freeze
 
     attr_reader :logger

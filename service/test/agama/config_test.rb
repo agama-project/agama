@@ -50,7 +50,7 @@ describe Agama::Config do
   describe ".from_file" do
     it "builds a new instance from a given file" do
       config = described_class.from_file(
-        File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
+        File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
       )
       expect(config).to be_a(described_class)
       expect(config.data["products"].size).to eq(3)
@@ -91,7 +91,7 @@ describe Agama::Config do
 
   describe "#products" do
     it "returns products available for current hardware" do
-      subject = described_class.from_file(File.join(FIXTURES_PATH, "d-installer-archs.yaml"))
+      subject = described_class.from_file(File.join(FIXTURES_PATH, "agama-archs.yaml"))
       expect(subject.products.size).to eq 2
     end
   end
@@ -100,7 +100,7 @@ describe Agama::Config do
     context "when more than one product is defined" do
       subject do
         described_class.from_file(
-          File.join(FIXTURES_PATH, "root_dir", "etc", "d-installer.yaml")
+          File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
         )
       end
 
@@ -111,7 +111,7 @@ describe Agama::Config do
 
     context "when just one product is defined" do
       subject do
-        described_class.from_file(File.join(FIXTURES_PATH, "d-installer-single.yaml"))
+        described_class.from_file(File.join(FIXTURES_PATH, "agama-single.yaml"))
       end
 
       it "returns true" do

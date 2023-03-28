@@ -9,7 +9,7 @@
   install --directory %{buildroot}%{_datadir}/dbus-1/d-installer-services
   install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/d-installer-services %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/org.opensuse.DInstaller*.service
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/systemd.service %{buildroot}%{_unitdir}/d-installer.service
-  install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/etc/d-installer.yaml %{buildroot}%{_sysconfdir}/d-installer.yaml
+  install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/etc/agama.yaml %{buildroot}%{_sysconfdir}/agama.yaml
 :main:
   :preamble: |-
     # Override build.rpm, see also https://github.com/openSUSE/obs-build/blob/master/configs/
@@ -33,4 +33,4 @@
     %dir %{_datadir}/dbus-1/d-installer-services\n
     %{_datadir}/dbus-1/d-installer-services/org.opensuse.DInstaller*.service\n
     %{_unitdir}/d-installer.service\n
-    %config %{_sysconfdir}/d-installer.yaml\n"
+    %config %{_sysconfdir}/agama.yaml\n"
