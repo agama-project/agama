@@ -44,7 +44,7 @@ We use these resources to get more familiar with D-Bus API designing.
 
 ## Language
 
-Iface: o.o.YaST.Installer1.Language
+Iface: o.o.Agama.Language1
 
 #### methods:
 
@@ -80,7 +80,7 @@ identifiers: maybe LanguageTag https://www.rubydoc.info/github/yast/yast-package
 
 ## Base Product
 
-Iface: o.o.YaST.Installer1.Software
+Iface: o.o.Agama.Software1
 
 #### methods:
 
@@ -111,7 +111,7 @@ Iface: o.o.YaST.Installer1.Software
 -  PropertiesChanged ( only standard one from org.freedesktop.DBus.Properties interface )
 
 
-## `org.opensuse.DInstaller.Storage` Service
+## `org.opensuse.DInstaller.Storage1` Service
 
 Service for managing storage devices.
 
@@ -478,7 +478,7 @@ s390x system.
 The `use_diag` flag of a given DASD controls whether it should use the DIAG access method.
 Traditionally YaST has managed that flag in a way that may be confusing to newcomers. Nevertheless,
 for the sake of consistency and easy transition (and also to reuse some YaST components without
-modifications) D-Installer observes that YaST approach. In a nutshell:
+modifications) Agama observes that YaST approach. In a nutshell:
 
 - When the list of DASDs is read from the system (see method `Probe()`), the value of the `use_diag`
   flag for enabled devices is checked from the system and exported with the proper value in the D-Bus
@@ -657,7 +657,7 @@ Summary readable a{s(uub)}
 
 ## Users
 
-### iface o.o.Installer1.Users
+### iface o.o.Agama.Users1
 
 #### methods:
 
@@ -696,7 +696,7 @@ Summary readable a{s(uub)}
 
 ## Questions
 
-D-Installers offers a mechanism to communicate with clients. The D-Bus service exports a *Questions*
+Agamas offers a mechanism to communicate with clients. The D-Bus service exports a *Questions*
 object that implements the *org.freedesktop.DBus.ObjectManager* interface. Individual questions are
 dynamically exported in a tree under the */org/opensuse/DInstaller/Questions1* path, for example:
 

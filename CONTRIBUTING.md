@@ -1,4 +1,4 @@
-# D-Installer Contribution Guidelines
+# Agama Contribution Guidelines
 
 This is an open source project and as such it welcomes all kinds of
 contributions. If you decide to contribute, please follow these guidelines to
@@ -46,7 +46,7 @@ requests.
 ## Code Structure
 
 This section contains a small unsorted list of the principles and guidelines we
-are trying to observe while developing D-Installer.
+are trying to observe while developing Agama.
 
 The project is divided in two big parts that communicate with each other - the
 installer service written in Ruby (code located at the `service` directory) and

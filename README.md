@@ -1,9 +1,9 @@
-[![CI Status](https://github.com/yast/d-installer/actions/workflows/ci.yml/badge.svg)](https://github.com/yast/d-installer/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/yast/d-installer/badge.svg?branch=master)](https://coveralls.io/github/yast/d-installer?branch=master)
+[![CI Status](https://github.com/yast/agama/actions/workflows/ci.yml/badge.svg)](https://github.com/yast/agama/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/yast/agama/badge.svg?branch=master)](https://coveralls.io/github/yast/agama?branch=master)
 
-# D-Installer: A Service-based Linux Installer
+# Agama: A Service-based Linux Installer
 
-D-Installer is a new Linux installer born in the core of the YaST team. It is designed to offer re-usability, integration with third party tools and the possibility of building advanced user interfaces over it.
+Agama is a new Linux installer born in the core of the YaST team. It is designed to offer re-usability, integration with third party tools and the possibility of building advanced user interfaces over it.
 
 |||
 |-|-|
@@ -49,7 +49,7 @@ YaST is a mature installer and control center for SUSE and openSUSE operating sy
 * Sharing logic with other tools like Salt or Ansible is very difficult.
 * Some in-house solutions like libyui makes more difficult to contribute to the project.
 
-SUSE is working on its next generation operating system called ALP (Adaptable Linux Platform). ALP is designed to be a lean core system, moving most of the software and workloads to containers and virtual machines. For some cases, for example cloud and virtual machines, ALP based systems will be deployed with auto-installable images. But still there are quite some situations in which ALP must be installed in a more traditional way. A clear example consists on installing over bare metal where some system analysis is required beforehand. D-Installer is also intended to cover such use cases for ALP, offering a minimal but powerful installer able to support a wide range of scenarios (e.g., RAID, encryption, LVM, network storage, etc).
+SUSE is working on its next generation operating system called ALP (Adaptable Linux Platform). ALP is designed to be a lean core system, moving most of the software and workloads to containers and virtual machines. For some cases, for example cloud and virtual machines, ALP based systems will be deployed with auto-installable images. But still there are quite some situations in which ALP must be installed in a more traditional way. A clear example consists on installing over bare metal where some system analysis is required beforehand. Agama is also intended to cover such use cases for ALP, offering a minimal but powerful installer able to support a wide range of scenarios (e.g., RAID, encryption, LVM, network storage, etc).
 
 ## Architecture
 
@@ -58,48 +58,48 @@ communication.
 
 ![Architecture](./doc/images/architecture.png)
 
-D-Installer consists on a set of D-Bus services and a web client (an experimental CLI is also available). The services use YaST-based libraries under the hood, reusing a lot logic already provided by YaST. Currently D-Installer comes with six separate services, although the list can increase in the future:
+Agama consists on a set of D-Bus services and a web client (an experimental CLI is also available). The services use YaST-based libraries under the hood, reusing a lot logic already provided by YaST. Currently Agama comes with six separate services, although the list can increase in the future:
 
-* D-Installer service: it is the main service which manages and controls the installation process.
+* Agama service: it is the main service which manages and controls the installation process.
 * Software service: configures the product and software to install.
 * Users service: manages first user creation and configuration for root.
 * Language service: allows to configure the language and keyboard settings.
 * Storage service: analyzes and prepares the storage devices in order to perform the installation.
 * Questions service: helper service used for requesting information from clients.
 
-D-Installer offers a web interface and its UI process uses the [Cockpit's infrastructure](https://cockpit-project.org/) to communicate with the D-Bus services.
+Agama offers a web interface and its UI process uses the [Cockpit's infrastructure](https://cockpit-project.org/) to communicate with the D-Bus services.
 
 ## How to run
 
-There are two ways of running this project: a) by using a D-Installer live ISO image or b) by cloning and configuring the project.
+There are two ways of running this project: a) by using a Agama live ISO image or b) by cloning and configuring the project.
 
 ### Live ISO Image
 
-The easiest way to give D-Installer a try is to grab a live ISO image and boot it in a virtual
+The easiest way to give Agama a try is to grab a live ISO image and boot it in a virtual
 machine. This is also the recommended way if you only want to play and see it in action. If you want
 to have a closer look, then clone and configure the project as explained in the next section.
 
-* [multi-product](https://build.opensuse.org/package/binaries/YaST:Head:Agama/d-installer-live:default/images):
+* [multi-product](https://build.opensuse.org/package/binaries/YaST:Head:Agama/agama-live:default/images):
   it can be used to install different products, like *openSUSE Tumbleweed*, *Leap*, *Leap Micro* or
   an experimental version of the *SUSE ALP ContainerHost OS*.
-* [ALP only](https://build.opensuse.org/package/binaries/YaST:Head:Agama/d-installer-live:ALP/images):
+* [ALP only](https://build.opensuse.org/package/binaries/YaST:Head:Agama/agama-live:ALP/images):
   it only contains the definition for the experimental *SUSE ALP ContainerHost OS*, although
   the rest of the content is pretty much the same than the multi-product version.
 
 ### Manual Configuration
 
-You can run D-Installer from its sources by cloning and configuring the project:
+You can run Agama from its sources by cloning and configuring the project:
 
 ```console
-$ git clone https://github.com/yast/d-installer
-$ cd d-installer
+$ git clone https://github.com/yast/agama
+$ cd agama
 $ ./setup.sh
 ```
 
-Then point your browser to http://localhost:9090/cockpit/@localhost/d-installer/index.html and that's all.
+Then point your browser to http://localhost:9090/cockpit/@localhost/agama/index.html and that's all.
 
 The [setup.sh](./setup.sh) script installs the required dependencies
-to build and run the project and it also configures the D-Installer services
+to build and run the project and it also configures the Agama services
 and cockpit. It uses `sudo` to install packages and files to system locations.
 The script is well commented so we refer you to it instead of repeating its
 steps here.
@@ -109,30 +109,30 @@ the cockpit server. See more details [in the documentation](
 web/README.md#using-a-development-server).
 
 * Start the services:
-    * beware that D-Installer must run as root (like YaST does) to do
+    * beware that Agama must run as root (like YaST does) to do
       hardware probing, partition the disks, install the software and so on.
     * Note that `setup.sh` sets up D-Bus activation so starting manually is
       only needed when you prefer to see the log output upfront.
 
 ```console
 $ cd service
-$ sudo bundle exec bin/d-installer
+$ sudo bundle exec bin/agama
 ```
 
-* Check that D-Installer services are working with a tool like
+* Check that Agama services are working with a tool like
 [busctl](https://www.freedesktop.org/wiki/Software/dbus/) or
 [D-Feet](https://wiki.gnome.org/Apps/DFeet) if you prefer a graphical one:
 
 
 ```console
-$ busctl --address=unix:path=/run/d-installer/bus \
+$ busctl --address=unix:path=/run/agama/bus \
     call \
     org.opensuse.DInstaller \
    /org/opensuse/DInstaller/Manager1 \
     org.opensuse.DInstaller.Manager1 \
     CanInstall
 
-$ busctl --address=unix:path=/run/d-installer/bus \
+$ busctl --address=unix:path=/run/agama/bus \
     call \
     org.opensuse.DInstaller.Language \
    /org/opensuse/DInstaller/Language1 \
@@ -142,7 +142,7 @@ $ busctl --address=unix:path=/run/d-installer/bus \
 
 ## How to Contribute
 
-If you want to contribute to D-Installer, then please open a pull request or report an issue. You can also have a look to our [road-map](https://github.com/orgs/yast/projects/1/views/1).
+If you want to contribute to Agama, then please open a pull request or report an issue. You can also have a look to our [road-map](https://github.com/orgs/yast/projects/1/views/1).
 
 ## Development Notes
 

@@ -1,4 +1,4 @@
-# Patching the D-Installer on a Live Medium
+# Patching the Agama on a Live Medium
 
 The D-installer allows patching itself directly from the GitHub sources
 or from your local Git checkout using the [yupdate script](
@@ -22,7 +22,7 @@ You can replace the `master` branch with any branch containing a fix or a new fe
 
 ## Patching from a Local Git Checkout
 
-First you need to run the `rake server` command in your D-Installer Git checkout.
+First you need to run the `rake server` command in your Agama Git checkout.
 
 Then run this command:
 
@@ -91,6 +91,6 @@ The support is implemented in the main [Rakefile](../Rakefile) and in the
 scripts.
 
 - The `.yupdate.pre` script prepares the system for compiling and installing
-  new D-Installer files.
+  new Agama files.
 - The `Rakefile` code builds and installs both backend and frontend parts.
 - The `.yupdate.pre` script activates the changes, it restarts the backend if needed.

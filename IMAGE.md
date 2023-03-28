@@ -6,7 +6,7 @@ This directory contains a set of files that are used to build the Live ISO image
 
 * The `_service` file defines the OBS services to fetch the required files from the Git repository.
 * The `_constraints` file tells OBS to build the image on the hosts with enough resources.
-* `d-installer-live.kiwi` (and `config.sh`) are used by [kiwi](https://github.com/OSInside/kiwi/) to
+* `agama-live.kiwi` (and `config.sh`) are used by [kiwi](https://github.com/OSInside/kiwi/) to
   build the image.
 * The `extrastuff` directory contains a set of configuration files that are placed in the ISO but
   not taken from any RPM package.

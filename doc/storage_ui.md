@@ -25,7 +25,7 @@ the future by a better alternative to show the result.
 
 ### Calculating How to Make Space
 
-Although D-Installer reuses part of the internal logic of YaST, there is no need to reproduce all
+Although Agama reuses part of the internal logic of YaST, there is no need to reproduce all
 YaST behaviors.
 
 YaST's `GuidedProposal` contains a subcomponent called `SpaceMaker` which takes cares of deleting
@@ -33,7 +33,7 @@ and resizing existing partitions to make space for the new system. It decides by
 partitions should be affected following a logic that, even though is configurable in the control
 file and by the UI, is hard to follow for many end users.
 
-The proposal described in this document would not rely on that logic. Instead, D-Installer would
+The proposal described in this document would not rely on that logic. Instead, Agama would
 only propose two ways of making space:
 
 - Completely wipe the content of the selected disk(s) and start from scratch.
@@ -69,7 +69,7 @@ sentence like these next to the result of the current proposal:
 
 ![Guided Setup result at YaST](img/yast_guided_result.png)
 
-As mentioned before, D-Installer doesn't need to replicate all YaST behaviors or to inherit its
+As mentioned before, Agama doesn't need to replicate all YaST behaviors or to inherit its
 requirements and expectations. It's possible to adopt the same approach or to go all the way in the
 other direction and try by default to execute the `GuidedProposal` only once, with:
 
@@ -77,23 +77,23 @@ other direction and try by default to execute the `GuidedProposal` only once, wi
   - Wiping the content of the disk (see previous note about making space)
   - Using the desired sizes of the volumes and their default settings
 
-If that execution of the `GuidedProposal` fails, then D-Installer could simply show a message like:
+If that execution of the `GuidedProposal` fails, then Agama could simply show a message like:
 "it was not possible to calculate an initial storage layout".
 
 The interface proposed in this document will work equally whatever approach is decided for the
-initial storage proposal of D-Installer.
+initial storage proposal of Agama.
 
 ## General Workflow
 
 Having all the previous considerations in mind, let's describe how the general user interaction will
 work.
 
-The summary screen of D-Installer would display the result of the current storage proposal (or a
+The summary screen of Agama would display the result of the current storage proposal (or a
 message about the failed initial calculation) and next to it, a link to modify that layout.
 That link will lead to the following interface. Note the mock-ups do not display an initial
 proposal, but the status after some manual changes done by the user.
 
-![Initial storage screen](img/dinstaller_guided_initial.png)
+![Initial storage screen](img/agama_guided_initial.png)
 
 Every configuration change for any of the aspects displayed in that screen will be performed in a
 pop-up. Accepting the pop-up will result in the re-calculation of the "result" section.
@@ -117,7 +117,7 @@ changes will result in the recalculation of the result.
 The list of volumes is collapsed by default for clarity, but expanding it would reveal the following
 options.
 
-![Expanded storage screen](img/dinstaller_guided_expanded.png)
+![Expanded storage screen](img/agama_guided_expanded.png)
 
 The table allows to customize the list of volumes. The form to add or edit a given volume
 would be displayed as a pop-up and every confirmed change in the list will cause a recalculation of

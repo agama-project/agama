@@ -1,6 +1,6 @@
 # Reading arguments from kernel command line
 
-D-Installer configuration can be altered through the kernel command line. It is possible to load a
+Agama configuration can be altered through the kernel command line. It is possible to load a
 full configuration file or to change some specific values.
 
 ## Loading a new configuration file

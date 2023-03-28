@@ -1,16 +1,16 @@
 # Using PXE and Iguana
 
-This document explains how to run D-Installer on PXE with the help of Iguana. The described setup
+This document explains how to run Agama on PXE with the help of Iguana. The described setup
 uses libvirt, but you can adapt the overall approach to other scenarios (like running your TFTP
 server).
 
-Additionally, it offers some helpful tips for debugging D-Installer problems.
+Additionally, it offers some helpful tips for debugging Agama problems.
 
 ## Set up
 
 The process can be summarized in these steps:
 
-1. Set up the TFTP tree, defining a boot option for D-Installer + Iguana.
+1. Set up the TFTP tree, defining a boot option for Agama + Iguana.
 2. Configure libvirt network to serve the tree.
 3. Prepare the initial ramdisk image (initrd), based on Iguana.
 4. Boot from PXE.
@@ -25,7 +25,7 @@ The TFTP tree should contain the SYSLINUX boot loader. You can copy the required
     cp /usr/share/syslinux/pxelinux.0 /srv/tftpboot
     mkdir /srv/tftpboot/pxelinux.cfg
 
-To define a boot option to run D-Installer, add a `/srv/tftpboot/pxelinux.cfg/default` file with the
+To define a boot option to run Agama, add a `/srv/tftpboot/pxelinux.cfg/default` file with the
 following content:
 
 ```
@@ -80,7 +80,7 @@ package](https://build.opensuse.org/package/show/home:oholecek:iguana/iguana).
 
 Which containers to use and how to set them up is defined in a *workflow definition*. The [Iguana
 repository](https://github.com/openSUSE/iguana) includes a [definition for
-D-Installer](https://github.com/openSUSE/iguana/blob/main/iguana-workflow/examples/d-installer.yaml).
+Agama](https://github.com/openSUSE/iguana/blob/main/iguana-workflow/examples/d-installer.yaml).
 
 After installing the `iguana` package, copy the kernel (`/usr/share/iguana/vmlinuz-VERSION`), the
 initrd (`/usr/share/iguana/iguana-initrd`) and the workflow definition to the TFTP tree[^1]. You must
@@ -95,8 +95,8 @@ link: `rd.iguana.control_url=https://raw.githubusercontent.com/openSUSE/iguana/m
 To boot from PXE, you just need to set the network card as the first booting device. Alternatively,
 you can enable the boot menu so you can decide how to boot your system manually.
 
-Now your virtual machine should be ready to boot from PXE and start Iguana/D-Installer. Once the
-system boots and the services are started, you should be able to access D-Installer with a browser
+Now your virtual machine should be ready to boot from PXE and start Iguana/Agama. Once the
+system boots and the services are started, you should be able to access Agama with a browser
 on port 9090.
 
 :warning: 4GB RAM is the minimum memory for the virtual machine and using less could affect the
