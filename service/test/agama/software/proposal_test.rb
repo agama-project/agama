@@ -115,8 +115,8 @@ describe Agama::Software::Proposal do
   describe "#set_resolvables" do
     it "adds the list of packages/patterns to the proposal" do
       expect(Yast::PackagesProposal).to receive(:SetResolvables)
-        .with("d-installer", :pattern, "alp_base", optional: false)
-      subject.set_resolvables("d-installer", :pattern, "alp_base", optional: false)
+        .with("agama", :pattern, "alp_base", optional: false)
+      subject.set_resolvables("agama", :pattern, "alp_base", optional: false)
     end
   end
 

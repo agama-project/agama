@@ -149,18 +149,18 @@ describe Agama::Software::Manager do
 
     it "adds the patterns and packages to install depending on the system architecture" do
       expect(proposal).to receive(:set_resolvables)
-        .with("d-installer", :pattern, ["enhanced_base"])
+        .with("agama", :pattern, ["enhanced_base"])
       expect(proposal).to receive(:set_resolvables)
-        .with("d-installer", :pattern, ["optional_base"], optional: true)
+        .with("agama", :pattern, ["optional_base"], optional: true)
       expect(proposal).to receive(:set_resolvables)
-        .with("d-installer", :package, ["mandatory_pkg"])
+        .with("agama", :package, ["mandatory_pkg"])
       expect(proposal).to receive(:set_resolvables)
-        .with("d-installer", :package, ["optional_pkg"], optional: true)
+        .with("agama", :package, ["optional_pkg"], optional: true)
       subject.propose
 
       expect(Yast::Arch).to receive(:s390).and_return(true)
       expect(proposal).to receive(:set_resolvables)
-        .with("d-installer", :package, ["mandatory_pkg", "mandatory_pkg_s390"])
+        .with("agama", :package, ["mandatory_pkg", "mandatory_pkg_s390"])
       subject.propose
     end
   end

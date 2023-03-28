@@ -7,7 +7,7 @@ products:
       this for users that want the newest stable software.'
   Leap Micro:
     name: openSUSE Leap Micro 5.2
-    archs: sparc32 # lets hope that noone use sparc32 for building d-installer, so this distro is always excluded
+    archs: sparc32 # lets hope that noone use sparc32 for building agama, so this distro is always excluded
     description: 'Leap Micro is an ultra-reliable, lightweight operating system
       built for containerized and virtualized workloads. This community version
       is based on SUSE Linux Enterprise Micro, which leverages the enterprise

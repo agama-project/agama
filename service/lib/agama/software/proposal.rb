@@ -44,7 +44,7 @@ module Agama
     # @example Calculate a proposal
     #   proposal = Proposal.new
     #   proposal.base_product = "openSUSE"
-    #   proposal.add_resolvables("d-installer", :pattern, ["enhanced_base"])
+    #   proposal.add_resolvables("agama", :pattern, ["enhanced_base"])
     #   proposal.languages = ["en_US", "de_DE"]
     #   proposal.calculate #=> true
     #   proposal.errors #=> []

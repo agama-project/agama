@@ -263,17 +263,17 @@ module Agama
       # adds resolvables from yaml config for given product
       def select_resolvables
         mandatory_patterns = arch_collection_for("mandatory_patterns", "pattern")
-        proposal.set_resolvables("d-installer", :pattern, mandatory_patterns)
+        proposal.set_resolvables("agama", :pattern, mandatory_patterns)
 
         optional_patterns = arch_collection_for("optional_patterns", "pattern")
-        proposal.set_resolvables("d-installer", :pattern, optional_patterns,
+        proposal.set_resolvables("agama", :pattern, optional_patterns,
           optional: true)
 
         mandatory_packages = arch_collection_for("mandatory_packages", "package")
-        proposal.set_resolvables("d-installer", :package, mandatory_packages)
+        proposal.set_resolvables("agama", :package, mandatory_packages)
 
         optional_packages = arch_collection_for("optional_packages", "package")
-        proposal.set_resolvables("d-installer", :package, optional_packages,
+        proposal.set_resolvables("agama", :package, optional_packages,
           optional: true)
       end
     end
