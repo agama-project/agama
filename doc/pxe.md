@@ -34,7 +34,7 @@ default iguana
 label iguana
   ipappend 2
   kernel vmlinuz-iguana
-  append initrd=initrd-iguana rd.iguana.control_url=tftp://192.168.122.1/d-installer.yaml rd.iguana.debug=1
+  append initrd=initrd-iguana rd.iguana.control_url=tftp://192.168.122.1/agama.yaml rd.iguana.debug=1
 
 display		message
 implicit	1
@@ -42,7 +42,7 @@ prompt		1
 timeout		50
 ```
 
-Do not worry about the kernel, the initrd or the `d-installer.yaml` file, we will jump into it
+Do not worry about the kernel, the initrd or the `agama.yaml` file, we will jump into it
 later.
 
 ### Configure libvirt to serve TFTP files
@@ -72,6 +72,38 @@ it accordingly. Here is an example:
 </network>
 ```
 
+### Configure VirtualBox to serve TFTP files
+
+If you want to use VirtualBox together with it's built in TFTP support, you have to accept some limitations.
+
+1. Built in TFTP support is available only for NAT network device.
+   Such device cannot be used for accessing the guest machine from host system later on. If you plan to access
+   the guest over network from host system, you have to use an additional network device - e.g. bridged one.
+
+2. VirtualBox doesn't have particular configuration file / options for setting TFTP. Everything is done via
+   hardcoded setup. VirtualBox's internal TFTP server uses `~/.config/VirtualBox/TFTP` (on Linux) for serving
+   files. Moreover, to tight particular configuration to specific virtual machine (VM), you have to use VM's
+   name in file, subdirectory names, So, if you have VM with name `PXE boot` then PXE kernel is expected to be
+   named `PXE boot.pxe`. Similarly, using same naming for kernel and initrd names as above, initrd-iguana is
+   expected to be named `PXE initrd-iguana` and kernel `PXE vmlinuz-iguana`. Last but not least the configuration
+   directory `pxelinux.0` should be named `PXE pxelinux.0`. To make it clear. Machine name based prefix has to be
+   used only in the file names. In the configuration you refer to those files without the prefix - VirtualBox
+   adds it transparently for you.
+
+3. VirtualBox's TFTP server is quite limited. You cannot use it for serving custom files like `agama.yaml`.
+   You can use another way how to serve d-installer's configuration file. E.g. local http server by changing
+   boot option to `rd.iguana.control_url=http://<http-server-ip>/agama.yaml`
+
+4. With this setup Agama listens on port 9090 (See also bellow in Booting from PXE chapter). To be able
+   to connect to it you need an additional network device as described in (1). You need to modify
+   kernel boot options one more time and add something like `ip=enp0s8:dhcp` where `enp0s8` is second network device.
+
+So, to put everything together. You should have your PXE configuration stored in `~/.config/VirtualBox/TFTP`. You
+can use sources and configuration as presented throughout this document with small modification to boot options in
+the `default` configuration file. It should look e.g. like this (see point (4) above for details):
+
+`append initrd=initrd-iguana rd.iguana.control_url=http://<http-server-ip>/agama.yaml rd.iguana.debug=1 ip=enp0s8:dhcp`
+
 ### initrd preparation
 
 Iguana provides a universal initrd in which actual functionality is implemented in containers. This
@@ -80,7 +112,7 @@ package](https://build.opensuse.org/package/show/home:oholecek:iguana/iguana).
 
 Which containers to use and how to set them up is defined in a *workflow definition*. The [Iguana
 repository](https://github.com/openSUSE/iguana) includes a [definition for
-Agama](https://github.com/openSUSE/iguana/blob/main/iguana-workflow/examples/d-installer.yaml).
+Agama](https://github.com/openSUSE/iguana/blob/main/iguana-workflow/examples/agama.yaml).
 
 After installing the `iguana` package, copy the kernel (`/usr/share/iguana/vmlinuz-VERSION`), the
 initrd (`/usr/share/iguana/iguana-initrd`) and the workflow definition to the TFTP tree[^1]. You must
@@ -88,7 +120,7 @@ use the same paths specified in the `ìguana` boot option (see [Set up the TFTP
 tree](#set-up-the-tftp-tree) section).
 
 [^1]: If you want to point always to the latest workflow definition, you can use a raw GitHub
-link: `rd.iguana.control_url=https://raw.githubusercontent.com/openSUSE/iguana/main/iguana-workflow/examples/d-installer.yaml`
+link: `rd.iguana.control_url=https://raw.githubusercontent.com/openSUSE/iguana/main/iguana-workflow/examples/agama.yaml`
 
 ### Booting from PXE
 
