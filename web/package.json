@@ -1,9 +1,9 @@
 {
-  "name": "d-installer",
+  "name": "agama",
   "description": "A Service-based Linux Installer",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yast/d-installer.git",
+    "url": "https://github.com/opensuse/Agama.git",
     "directory": "web"
   },
   "author": "",
