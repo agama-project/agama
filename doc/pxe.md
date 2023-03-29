@@ -72,6 +72,38 @@ it accordingly. Here is an example:
 </network>
 ```
 
+### Configure VirtualBox to serve TFTP files
+
+If you want to use VirtualBox together with it's built in TFTP support, you have to accept some limitations.
+
+1. Built in TFTP support is available only for NAT network device.
+   Such device cannot be used for accessing the guest machine from host system later on. If you plan to access
+   the guest over network from host system, you have to use an additional network device - e.g. bridged one.
+
+2. VirtualBox doesn't have particular configuration file / options for setting TFTP. Everything is done via
+   hardcoded setup. VirtualBox's internal TFTP server uses `~/.config/VirtualBox/TFTP` (on Linux) for serving
+   files. Moreover, to tight particular configuration to specific virtual machine (VM), you have to use VM's
+   name in file, subdirectory names, So, if you have VM with name `PXE boot` then PXE kernel is expected to be
+   named `PXE boot.pxe`. Similarly, using same naming for kernel and initrd names as above, initrd-iguana is
+   expected to be named `PXE initrd-iguana` and kernel `PXE vmlinuz-iguana`. Last but not least the configuration
+   directory `pxelinux.0` should be named `PXE pxelinux.0`. To make it clear. Machine name based prefix has to be
+   used only in the file names. In the configuration you refer to those files without the prefix - VirtualBox
+   adds it transparently for you.
+
+3. VirtualBox's TFTP server is quite limited. You cannot use it for serving custom files like `d-installer.yaml`.
+   You can use another way how to serve d-installer's configuration file. E.g. local http server by changing
+   boot option to `rd.iguana.control_url=http://<http-server-ip>/d-installer.yaml`
+
+4. With this setup D-Installer listens on port 9090 (See also bellow in Booting from PXE chapter). To be able
+   to connect to it you need an additional network device as described in (1). You need to modify
+   kernel boot options one more time and add something like `ip=enp0s8:dhcp` where `enp0s8` is second network device.
+
+So, to put everything together. You should have your PXE configuration stored in `~/.config/VirtualBox/TFTP`. You
+can use sources and configuration as presented throughout this document with small modification to boot options in
+the `default` configuration file. It should look e.g. like this (see point (4) above for details):
+
+`append initrd=initrd-iguana rd.iguana.control_url=http://<http-server-ip>/d-installer.yaml rd.iguana.debug=1 ip=enp0s8:dhcp`
+
 ### initrd preparation
 
 Iguana provides a universal initrd in which actual functionality is implemented in containers. This
