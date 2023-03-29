@@ -41,12 +41,12 @@ describe("DBusClient", () => {
 
   describe("#proxy", () => {
     it("returns a proxy for the given iface and path", async () => {
-      const client = new DBusClient("org.opensuse.DInstaller");
+      const client = new DBusClient("org.opensuse.Agama1");
       const proxy = await client.proxy(
-        "org.opensuse.DInstaller.Manager", "/org/opensuse/DInstaller/Manager"
+        "org.opensuse.Agama1.Manager", "/org/opensuse/Agama1/Manager"
       );
       expect(cockpitDBusClient.proxy).toHaveBeenCalledWith(
-        "org.opensuse.DInstaller.Manager", "/org/opensuse/DInstaller/Manager",
+        "org.opensuse.Agama1.Manager", "/org/opensuse/Agama1/Manager",
         { watch: true }
       );
       expect(proxy).toBe(proxyObject);
@@ -57,7 +57,7 @@ describe("DBusClient", () => {
     it("returns a DBusProxies for the given iface and namespace", async () => {
       const iface = "org.freedesktop.NetworkManager.Device";
       const path = "/org/freedesktop/NetworkManager/Device";
-      const client = new DBusClient("org.opensuse.DInstaller");
+      const client = new DBusClient("org.opensuse.Agama1");
       const proxies = await client.proxies(iface, path);
       expect(cockpitDBusClient.proxies).toHaveBeenCalledWith(iface, path, { watch: true });
       expect(proxies).toBe(proxyObject);
@@ -66,16 +66,16 @@ describe("DBusClient", () => {
 
   describe("#call", () => {
     it("calls to the given D-Bus method", async () => {
-      const client = new DBusClient("org.opensuse.DInstaller");
+      const client = new DBusClient("org.opensuse.Agama.Software1");
       const result = await client.call(
-        "org.opensuse.DInstaller.Software",
-        "/org/opensuse/DInstaller/Software",
+        "org.opensuse.Agama.Software1",
+        "/org/opensuse/Agama/Software1",
         "SelectProduct",
         ["alp"]
       );
       expect(cockpitDBusClient.call).toHaveBeenCalledWith(
-        "org.opensuse.DInstaller.Software",
-        "/org/opensuse/DInstaller/Software",
+        "org.opensuse.Agama.Software1",
+        "/org/opensuse/Agama/Software1",
         "SelectProduct",
         ["alp"]
       );

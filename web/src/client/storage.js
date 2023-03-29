@@ -25,19 +25,19 @@ import DBusClient from "./dbus";
 import { WithStatus, WithProgress, WithValidation } from "./mixins";
 import { hex } from "~/utils";
 
-const STORAGE_IFACE = "org.opensuse.DInstaller.Storage1";
-const PROPOSAL_CALCULATOR_IFACE = "org.opensuse.DInstaller.Storage1.Proposal.Calculator";
-const ISCSI_NODE_IFACE = "org.opensuse.DInstaller.Storage1.ISCSI.Node";
-const ISCSI_NODES_NAMESPACE = "/org/opensuse/DInstaller/Storage1/iscsi_nodes";
-const ISCSI_INITIATOR_IFACE = "org.opensuse.DInstaller.Storage1.ISCSI.Initiator";
-const DASD_DEVICE_IFACE = "org.opensuse.DInstaller.Storage1.DASD.Device";
-const DASD_DEVICES_NAMESPACE = "/org/opensuse/DInstaller/Storage1/dasds";
-const DASD_MANAGER_IFACE = "org.opensuse.DInstaller.Storage1.DASD.Manager";
-const DASD_STATUS_IFACE = "org.opensuse.DInstaller.Storage1.DASD.Format";
-const PROPOSAL_IFACE = "org.opensuse.DInstaller.Storage1.Proposal";
-const STORAGE_OBJECT = "/org/opensuse/DInstaller/Storage1";
-const STORAGE_JOB_IFACE = "org.opensuse.DInstaller.Storage1.Job";
-const STORAGE_JOBS_NAMESPACE = "/org/opensuse/DInstaller/Storage1/jobs";
+const STORAGE_IFACE = "org.opensuse.Agama.Storage1";
+const PROPOSAL_CALCULATOR_IFACE = "org.opensuse.Agama.Storage1.Proposal.Calculator";
+const ISCSI_NODE_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Node";
+const ISCSI_NODES_NAMESPACE = "/org/opensuse/Agama/Storage1/iscsi_nodes";
+const ISCSI_INITIATOR_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator";
+const DASD_DEVICE_IFACE = "org.opensuse.Agama.Storage1.DASD.Device";
+const DASD_DEVICES_NAMESPACE = "/org/opensuse/Agama/Storage1/dasds";
+const DASD_MANAGER_IFACE = "org.opensuse.Agama.Storage1.DASD.Manager";
+const DASD_STATUS_IFACE = "org.opensuse.Agama.Storage1.DASD.Format";
+const PROPOSAL_IFACE = "org.opensuse.Agama.Storage1.Proposal";
+const STORAGE_OBJECT = "/org/opensuse/Agama/Storage1";
+const STORAGE_JOB_IFACE = "org.opensuse.Agama.Storage1.Job";
+const STORAGE_JOBS_NAMESPACE = "/org/opensuse/Agama/Storage1/jobs";
 
 /**
  * Removes properties with undefined value
@@ -230,7 +230,7 @@ class ProposalManager {
 
   /**
    * @private
-   * Proxy for org.opensuse.DInstaller.Storage1.Proposal iface
+   * Proxy for org.opensuse.Agama.Storage1.Proposal iface
    *
    * @note The proposal object implementing this iface is dynamically exported.
    *
@@ -364,7 +364,7 @@ class DASDManager {
 
   /**
    * @private
-   * Proxy for objects implementing org.opensuse.DInstaller.Storage1.Job iface
+   * Proxy for objects implementing org.opensuse.Agama.Storage1.Job iface
    *
    * @note The jobs are dynamically exported.
    *
@@ -395,7 +395,7 @@ class DASDManager {
 
   /**
    * @private
-   * Proxy for objects implementing org.opensuse.DInstaller.Storage1.Job iface
+   * Proxy for objects implementing org.opensuse.Agama.Storage1.Job iface
    *
    * @note The jobs are dynamically exported.
    *
@@ -415,7 +415,7 @@ class DASDManager {
 
   /**
    * @private
-   * Proxy for objects implementing org.opensuse.DInstaller.Storage1.DASD.Device iface
+   * Proxy for objects implementing org.opensuse.Agama.Storage1.DASD.Device iface
    *
    * @note The DASD devices are dynamically exported.
    *
@@ -430,7 +430,7 @@ class DASDManager {
 
   /**
    * @private
-   * Proxy for org.opensuse.DInstaller.Storage1.DASD.Manager iface
+   * Proxy for org.opensuse.Agama.Storage1.DASD.Manager iface
    *
    * @returns {Promise<object>}
    */
@@ -712,7 +712,7 @@ class ISCSIManager {
 
   /**
    * @private
-   * Proxy for org.opensuse.DInstaller.Storage1.ISCSI.Initiator iface
+   * Proxy for org.opensuse.Agama.Storage1.ISCSI.Initiator iface
    *
    * @returns {Promise<object>}
    */
@@ -726,7 +726,7 @@ class ISCSIManager {
 
   /**
    * @private
-   * Proxy for objects implementing org.opensuse.DInstaller.Storage1.ISCSI.Node iface
+   * Proxy for objects implementing org.opensuse.Agama.Storage1.ISCSI.Node iface
    *
    * @note The ISCSI nodes are dynamically exported.
    *
@@ -757,7 +757,7 @@ class ISCSIManager {
  * @ignore
  */
 class StorageBaseClient {
-  static SERVICE = "org.opensuse.DInstaller.Storage";
+  static SERVICE = "org.opensuse.Agama.Storage1";
 
   /**
    * @param {string|undefined} address - D-Bus address; if it is undefined, it uses the system bus.

@@ -25,8 +25,8 @@ import { QuestionsClient } from "./questions";
 jest.mock("./dbus");
 
 // NOTE: should we export them?
-const QUESTION_IFACE = "org.opensuse.DInstaller.Question1";
-const LUKS_ACTIVATION_IFACE = "org.opensuse.DInstaller.Question.LuksActivation1";
+const QUESTION_IFACE = "org.opensuse.Agama.Questions1";
+const LUKS_ACTIVATION_IFACE = "org.opensuse.Agama.Questions1.LuksActivation";
 
 const questionsProxy = {
   wait: jest.fn(),
@@ -38,10 +38,10 @@ const luksActivationProxy = {
   Password: ""
 };
 
-const questionPath = "/org/opensuse/DInstaller/Questions1/432";
+const questionPath = "/org/opensuse/Agama/Questions1/432";
 const ifacesAndProperties = {
   "org.freedesktop.DBus.Properties": {},
-  "org.opensuse.DInstaller.Question1": {
+  "org.opensuse.Agama.Questions1": {
     Id: {
       t: "u",
       v: 432
@@ -66,7 +66,7 @@ const ifacesAndProperties = {
       v: ""
     }
   },
-  "org.opensuse.DInstaller.Question.LuksActivation1": {
+  "org.opensuse.Agama.Questions1.LuksActivation": {
     Password: {
       t: "s",
       v: ""

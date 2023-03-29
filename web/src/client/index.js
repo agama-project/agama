@@ -31,7 +31,7 @@ import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
 
-const SERVICE_NAME = "org.opensuse.DInstaller";
+const SERVICE_NAME = "org.opensuse.Agama";
 
 /**
  * @typedef {object} InstallerClient
@@ -50,7 +50,7 @@ const SERVICE_NAME = "org.opensuse.DInstaller";
  *
  * @return {InstallerClient}
  */
-const createClient = (address = "unix:path=/run/d-installer/bus") => {
+const createClient = (address = "unix:path=/run/agama/bus") => {
   return {
     language: new LanguageClient(address),
     manager: new ManagerClient(address),

@@ -26,7 +26,7 @@ import { SoftwareClient } from "./software";
 
 jest.mock("./dbus");
 
-const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
+const SOFTWARE_IFACE = "org.opensuse.Agama.Software1";
 
 const softProxy = {
   wait: jest.fn(),

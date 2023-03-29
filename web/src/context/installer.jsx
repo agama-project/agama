@@ -41,13 +41,13 @@ function useInstallerClient() {
   return context;
 }
 
-const BUS_ADDRESS_FILE = "/run/d-installer/bus.address";
+const BUS_ADDRESS_FILE = "/run/agama/bus.address";
 
 /**
   * @param {object} props
   * @param {import("~/client").InstallerClient|undefined} [props.client] client to connect to
   *   D-Installer service; if it is undefined, it instantiates a new one using the address
-  *   registered in /run/d-installer/bus.address.
+  *   registered in /run/agama/bus.address.
   * @param {React.ReactNode} [props.children] - content to display within the provider
   */
 function InstallerClientProvider({ client, children }) {

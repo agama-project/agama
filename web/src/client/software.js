@@ -24,9 +24,9 @@
 import DBusClient from "./dbus";
 import { WithStatus, WithProgress, WithValidation } from "./mixins";
 
-const SOFTWARE_SERVICE = "org.opensuse.DInstaller.Software";
-const SOFTWARE_IFACE = "org.opensuse.DInstaller.Software1";
-const SOFTWARE_PATH = "/org/opensuse/DInstaller/Software1";
+const SOFTWARE_SERVICE = "org.opensuse.Agama.Software1";
+const SOFTWARE_IFACE = "org.opensuse.Agama.Software1";
+const SOFTWARE_PATH = "/org/opensuse/Agama/Software1";
 
 /**
  * @typedef {object} Product
@@ -127,6 +127,6 @@ class SoftwareClient extends WithValidation(
   WithProgress(
     WithStatus(SoftwareBaseClient, SOFTWARE_PATH), SOFTWARE_PATH
   ), SOFTWARE_PATH
-) {}
+) { }
 
 export { SoftwareClient };

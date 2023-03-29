@@ -20,7 +20,7 @@
  */
 
 // @ts-check
-const STATUS_IFACE = "org.opensuse.DInstaller.ServiceStatus1";
+const STATUS_IFACE = "org.opensuse.Agama1.ServiceStatus";
 
 /**
  * @typedef {object} Progress
@@ -84,7 +84,7 @@ const WithStatus = (superclass, object_path) => class extends superclass {
   }
 };
 
-const PROGRESS_IFACE = "org.opensuse.DInstaller.Progress1";
+const PROGRESS_IFACE = "org.opensuse.Agama1.Progress";
 
 /**
  * Extends the given class with methods to get and track the progress over D-Bus
@@ -102,9 +102,9 @@ const WithProgress = (superclass, object_path) => class extends superclass {
   async getProgress() {
     const proxy = await this.client.proxy(PROGRESS_IFACE, object_path);
     return {
-      total:    proxy.TotalSteps,
-      current:  proxy.CurrentStep[0],
-      message:  proxy.CurrentStep[1],
+      total: proxy.TotalSteps,
+      current: proxy.CurrentStep[0],
+      message: proxy.CurrentStep[1],
       finished: proxy.Finished
     };
   }
@@ -140,7 +140,7 @@ const createError = (message) => {
   return { message };
 };
 
-const VALIDATION_IFACE = "org.opensuse.DInstaller.Validation1";
+const VALIDATION_IFACE = "org.opensuse.Agama1.Validation";
 
 /**
  * Extends the given class with methods to get validation errors over D-Bus

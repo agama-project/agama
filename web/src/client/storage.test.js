@@ -82,8 +82,8 @@ const contexts = {
   },
   withISCSINodes: () => {
     cockpitProxies.iscsiNodes = {
-      "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1": {
-        path: "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1",
+      "/org/opensuse/Agama/Storage1/iscsi_nodes/1": {
+        path: "/org/opensuse/Agama/Storage1/iscsi_nodes/1",
         Target: "iqn.2023-01.com.example:37dac",
         Address: "192.168.100.101",
         Port: 3260,
@@ -92,8 +92,8 @@ const contexts = {
         Connected: false,
         Startup: ""
       },
-      "/org/opensuse/DInstaller/Storage1/iscsi_nodes/2": {
-        path: "/org/opensuse/DInstaller/Storage1/iscsi_nodes/2",
+      "/org/opensuse/Agama/Storage1/iscsi_nodes/2": {
+        path: "/org/opensuse/Agama/Storage1/iscsi_nodes/2",
         Target: "iqn.2023-01.com.example:74afb",
         Address: "192.168.100.102",
         Port: 3260,
@@ -109,8 +109,8 @@ const contexts = {
   },
   withDASDDevices: () => {
     cockpitProxies.dasdDevices = {
-      "/org/opensuse/DInstaller/Storage1/dasds/8": {
-        path: "/org/opensuse/DInstaller/Storage1/dasds/8",
+      "/org/opensuse/Agama/Storage1/dasds/8": {
+        path: "/org/opensuse/Agama/Storage1/dasds/8",
         AccessType: "",
         DeviceName: "dasd_sample_8",
         Diag: false,
@@ -120,8 +120,8 @@ const contexts = {
         PartitionInfo: "",
         Type: "ECKD"
       },
-      "/org/opensuse/DInstaller/Storage1/dasds/9": {
-        path: "/org/opensuse/DInstaller/Storage1/dasds/9",
+      "/org/opensuse/Agama/Storage1/dasds/9": {
+        path: "/org/opensuse/Agama/Storage1/dasds/9",
         AccessType: "rw",
         DeviceName: "dasd_sample_9",
         Diag: false,
@@ -137,19 +137,19 @@ const contexts = {
 
 const mockProxy = (iface, path) => {
   switch (iface) {
-    case "org.opensuse.DInstaller.Storage1": return cockpitProxies.storage;
-    case "org.opensuse.DInstaller.Storage1.Proposal": return cockpitProxies.proposal;
-    case "org.opensuse.DInstaller.Storage1.Proposal.Calculator": return cockpitProxies.proposalCalculator;
-    case "org.opensuse.DInstaller.Storage1.ISCSI.Initiator": return cockpitProxies.iscsiInitiator;
-    case "org.opensuse.DInstaller.Storage1.ISCSI.Node": return cockpitProxies.iscsiNode[path];
-    case "org.opensuse.DInstaller.Storage1.DASD.Manager": return cockpitProxies.dasdManager;
+    case "org.opensuse.Agama.Storage1": return cockpitProxies.storage;
+    case "org.opensuse.Agama.Storage1.Proposal": return cockpitProxies.proposal;
+    case "org.opensuse.Agama.Storage1.Proposal.Calculator": return cockpitProxies.proposalCalculator;
+    case "org.opensuse.Agama.Storage1.ISCSI.Initiator": return cockpitProxies.iscsiInitiator;
+    case "org.opensuse.Agama.Storage1.ISCSI.Node": return cockpitProxies.iscsiNode[path];
+    case "org.opensuse.Agama.Storage1.DASD.Manager": return cockpitProxies.dasdManager;
   }
 };
 
 const mockProxies = (iface) => {
   switch (iface) {
-    case "org.opensuse.DInstaller.Storage1.ISCSI.Node": return cockpitProxies.iscsiNodes;
-    case "org.opensuse.DInstaller.Storage1.DASD.Device": return cockpitProxies.dasdDevices;
+    case "org.opensuse.Agama.Storage1.ISCSI.Node": return cockpitProxies.iscsiNodes;
+    case "org.opensuse.Agama.Storage1.DASD.Device": return cockpitProxies.dasdDevices;
   }
 };
 
@@ -223,8 +223,8 @@ describe("#onDeprecate", () => {
   describe("if the system was not deprecated", () => {
     beforeEach(() => {
       emitSignal(
-        "/org/opensuse/DInstaller/Storage1",
-        "org.opensuse.DInstaller.Storage1",
+        "/org/opensuse/Agama/Storage1",
+        "org.opensuse.Agama.Storage1",
         {});
     });
 
@@ -236,8 +236,8 @@ describe("#onDeprecate", () => {
   describe("if the system was deprecated", () => {
     beforeEach(() => {
       emitSignal(
-        "/org/opensuse/DInstaller/Storage1",
-        "org.opensuse.DInstaller.Storage1",
+        "/org/opensuse/Agama/Storage1",
+        "org.opensuse.Agama.Storage1",
         { DeprecatedSystem: true });
     });
 
@@ -479,13 +479,13 @@ describe("#dasd", () => {
     it("requests for setting DIAG for given devices", async () => {
       await client.dasd.setDIAG([sampleDasdDevice], true);
       expect(setDiagFn).toHaveBeenCalledWith(
-        ["/org/opensuse/DInstaller/Storage1/dasds/8"],
+        ["/org/opensuse/Agama/Storage1/dasds/8"],
         true
       );
 
       await client.dasd.setDIAG([sampleDasdDevice], false);
       expect(setDiagFn).toHaveBeenCalledWith(
-        ["/org/opensuse/DInstaller/Storage1/dasds/8"],
+        ["/org/opensuse/Agama/Storage1/dasds/8"],
         false
       );
     });
@@ -494,14 +494,14 @@ describe("#dasd", () => {
   describe("#enableDevices", () => {
     it("requests for enabling given devices", async () => {
       await client.dasd.enableDevices([sampleDasdDevice]);
-      expect(enableFn).toHaveBeenCalledWith(["/org/opensuse/DInstaller/Storage1/dasds/8"]);
+      expect(enableFn).toHaveBeenCalledWith(["/org/opensuse/Agama/Storage1/dasds/8"]);
     });
   });
 
   describe("#disableDevices", () => {
     it("requests for disabling given devices", async () => {
       await client.dasd.disableDevices([sampleDasdDevice]);
-      expect(disableFn).toHaveBeenCalledWith(["/org/opensuse/DInstaller/Storage1/dasds/8"]);
+      expect(disableFn).toHaveBeenCalledWith(["/org/opensuse/Agama/Storage1/dasds/8"]);
     });
   });
 });
@@ -616,7 +616,7 @@ describe("#iscsi", () => {
     it("deletes the given iSCSI node", async () => {
       await client.iscsi.delete({ id: "1" });
       expect(cockpitProxies.iscsiInitiator.Delete).toHaveBeenCalledWith(
-        "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1"
+        "/org/opensuse/Agama/Storage1/iscsi_nodes/1"
       );
     });
   });
@@ -628,7 +628,7 @@ describe("#iscsi", () => {
 
     beforeEach(() => {
       cockpitProxies.iscsiNode = {
-        "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1": nodeProxy
+        "/org/opensuse/Agama/Storage1/iscsi_nodes/1": nodeProxy
       };
     });
 
@@ -658,7 +658,7 @@ describe("#iscsi", () => {
 
     beforeEach(() => {
       cockpitProxies.iscsiNode = {
-        "/org/opensuse/DInstaller/Storage1/iscsi_nodes/1": nodeProxy
+        "/org/opensuse/Agama/Storage1/iscsi_nodes/1": nodeProxy
       };
     });
 

@@ -22,9 +22,9 @@
 // @ts-check
 import DBusClient from "./dbus";
 
-const LANGUAGE_SERVICE = "org.opensuse.DInstaller.Language";
-const LANGUAGE_IFACE = "org.opensuse.DInstaller.Language1";
-const LANGUAGE_PATH = "/org/opensuse/DInstaller/Language1";
+const LANGUAGE_SERVICE = "org.opensuse.Agama.Language1";
+const LANGUAGE_IFACE = "org.opensuse.Agama.Language1";
+const LANGUAGE_PATH = "/org/opensuse/Agama/Language1";
 
 /**
  * @typedef {object} Language
