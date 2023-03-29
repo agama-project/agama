@@ -3,7 +3,7 @@
   "description": "A Service-based Linux Installer",
   "repository": {
     "type": "git",
-    "url": "https://github.com/opensuse/Agama.git",
+    "url": "https://github.com/openSUSE/Agama.git",
     "directory": "web"
   },
   "author": "",
