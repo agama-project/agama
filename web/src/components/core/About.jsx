@@ -50,7 +50,7 @@ export default function About() {
           to give it a try, we recommend to use a virtual machine to prevent any possible data loss.
         </Text>
         <Text>
-          For more information, please visit the project's repository at https://github.com/yast/agama.
+          For more information, please visit the project's repository at https://github.com/opensuse/Agama.
         </Text>
         <Popup.Actions>
           <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
