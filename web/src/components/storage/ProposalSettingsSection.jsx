@@ -22,7 +22,7 @@
 import React, { useState } from "react";
 import { List, ListItem } from '@patternfly/react-core';
 import { Em, Section, Popup } from "~/components/core";
-import { ProposalSettingsForm } from "~/components/storage";
+import { ProposalSettingsForm, ProposalVolumes } from "~/components/storage";
 
 export default function ProposalSettingsSection({ proposal, calculateProposal }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,6 +71,7 @@ export default function ProposalSettingsSection({ proposal, calculateProposal })
         </Popup.Actions>
       </Popup>
       <ProposalDescription />
+      <ProposalVolumes volumes={proposal.result.volumes} />
     </Section>
   );
 }

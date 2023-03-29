@@ -26,6 +26,7 @@ export { default as ProposalActionsSection } from "./ProposalActionsSection";
 export { default as ProposalTargetForm } from "./ProposalTargetForm";
 export { default as ProposalSettingsForm } from "./ProposalSettingsForm";
 export { default as DeviceSelector } from "./DeviceSelector";
+export { default as ProposalVolumes } from "./ProposalVolumes";
 export { default as ProposalActions } from "./ProposalActions";
 export { default as ProposalSummary } from "./ProposalSummary";
 export { default as DASDPage } from "./DASDPage";
