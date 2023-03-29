@@ -208,7 +208,7 @@ jobs:
 
     - name: Start the Agama D-Bus services
       # TODO: here is a potential race condition, but as building the frontend
-      # and installing Playwright takes quite long time it should never happen™
+      # takes quite long time it should never happen™
       run:  podman exec agama bash -c "cd /checkout/service && (bundle exec bin/agamactl > service.log 2>&1 &)"
 
     - name: Build the frontend
@@ -220,7 +220,7 @@ jobs:
     - name: Check DBus socket
       run:  podman exec agama ls -l /var/run/dbus/system_bus_socket
 
-    - name: show journal
+    - name: Show journal
       run:  podman exec agama journalctl -b || echo "journal failed with $?"
 
     - name: Install the frontend
@@ -229,20 +229,16 @@ jobs:
     - name: Start Cockpit service
       run:  podman exec --detach agama /usr/libexec/cockpit-ws --local-session=/usr/bin/cockpit-bridge
 
-    - name: Install Playwright
-      run:  podman exec agama bash -c "cd /checkout/playwright && npm install && npx playwright --version"
-
-    - name: Install Playwright browsers
-      # TODO: it downloads Chromium, Firefox and Webkit from a special repository
-      # it would be nice to use the system browsers
-      run:  podman exec agama bash -c "cd /checkout/playwright && npx playwright install"
-
     - name: Run the Agama smoke test
       run:  podman exec agama curl http://localhost:9090/cockpit/@localhost/agama/index.html
 
+    - name: Check Playwright version
+      run:  podman exec agama playwright --version
+
     - name: Run the Playwright tests
       # user authentication is not required when cockpit runs a local session
-      run:  podman exec agama bash -c "cd /checkout/playwright && SKIP_LOGIN=true npx playwright test --trace on"
+      # run the tests in the Chromium browser
+      run:  podman exec agama bash -c "cd /checkout/playwright && SKIP_LOGIN=true playwright test --trace on --project chromium"
 
     - name: Upload the test results
       uses: actions/upload-artifact@v3
