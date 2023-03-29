@@ -1,4 +1,4 @@
 [D-BUS Service]
 Name=org.opensuse.Agama.Storage1
-Exec=/usr/bin/agamad storage
+Exec=/usr/bin/agamactl storage
 User=root

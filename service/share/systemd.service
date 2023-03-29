@@ -5,7 +5,7 @@ After=network-online.target
 
 [Service]
 Type=forking
-ExecStart=/usr/bin/agamad --daemon
+ExecStart=/usr/bin/agamactl --daemon
 PIDFile=/run/agama/bus.pid
 User=root
 TimeoutStopSec=5

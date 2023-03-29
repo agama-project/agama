@@ -1,4 +1,4 @@
 [D-BUS Service]
 Name=org.opensuse.Agama.Users1
-Exec=/usr/bin/agamad users
+Exec=/usr/bin/agamactl users
 User=root
