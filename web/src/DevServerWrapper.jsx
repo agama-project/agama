@@ -31,7 +31,7 @@ const loginId = "login-password-input";
 /**
  * This is a helper wrapper used in the development server only. It displays
  * the Cockpit login page if the user is not authenticated. After successful
- * authentication the D-Installer page is displayed.
+ * authentication the Agama page is displayed.
  *
  * @param {React.ReactNode} [props.children] - content to display within the wrapper
  *

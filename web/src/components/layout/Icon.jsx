@@ -101,7 +101,7 @@ const icons = {
 };
 
 /**
- * D-Installer Icon component
+ * Agama Icon component
  *
  * If exists, it renders requested icon with given size.
  *

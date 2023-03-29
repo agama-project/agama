@@ -46,7 +46,7 @@ const SERVICE_NAME = "org.opensuse.Agama";
  */
 
 /**
- * Creates a D-Installer client
+ * Creates the Agama client
  *
  * @return {InstallerClient}
  */

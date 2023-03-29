@@ -27,7 +27,7 @@ import { Icon, PageActions } from "~/components/layout";
 let openButtonRef = {};
 
 /**
- * D-Installer sidebar navigation
+ * Agama sidebar navigation
  */
 const Sidebar = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);

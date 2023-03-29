@@ -126,7 +126,7 @@ class ManagerBaseClient {
 }
 
 /**
-  * Client to interact with the D-Installer manager service
+  * Client to interact with the Agama manager service
   */
 class ManagerClient extends WithProgress(WithStatus(ManagerBaseClient, MANAGER_PATH), MANAGER_PATH) { }
 

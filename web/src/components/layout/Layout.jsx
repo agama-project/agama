@@ -34,7 +34,7 @@ const FooterInfoArea = createTeleporter();
 
 /**
  *
- * The D-Installer main layout component.
+ * The Agama main layout component.
  *
  * It displays the content in a single column with a fixed header and footer.
  *
