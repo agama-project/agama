@@ -101,12 +101,12 @@ elsif ["-h", "--help"].include?(ARGV[0])
 elsif ["-s", "--status"].include?(ARGV[0])
   # The .[a-z] ensures matching the forked processes
   # which can be distinguished by having a non-option argument
-  system "pgrep -fl bin/agamad.[a-z]"
+  system "pgrep -fl bin/agamactl.[a-z]"
   # busctl is prettier but will find nothing until the service files are installed,
   # hence the pgrep above
   system "busctl --address #{dbus_server_manager.address} | grep -E '^NAME|Agama'"
 elsif ["-k", "--kill"].include?(ARGV[0])
-  system "pkill -f bin/agamad.[a-z]"
+  system "pkill -f bin/agamactl.[a-z]"
   # stop the d-bus daemon
   dbus_server_manager.stop_server
 elsif ["-d", "--daemon"].include?(ARGV[0])
