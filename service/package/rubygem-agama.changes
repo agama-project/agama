@@ -8,7 +8,7 @@ Fri Mar 24 14:53:14 UTC 2023 - Knut Alejandro Anderssen González <kanderssen@su
 
 - Adjustments to allow obtaining the DASD format progress and set
   the system as deprecated after making DASD changes.
-- gh#yast/agama#501.
+- gh#openSUSE/agama#501.
 
 -------------------------------------------------------------------
 Fri Mar 24 10:39:18 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
@@ -20,24 +20,24 @@ Thu Mar 23 17:04:54 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Set system as deprecated after changing iSCSI sessions.
 - Reuse settings from previous proposal.
-- gh#yast/agama#484
+- gh#openSUSE/agama#484
 
 -------------------------------------------------------------------
 Wed Mar 22 16:05:14 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Added a fallback in order to prevent a proposal error when no
-  planned devices are available (gh#yast/agama#494).
+  planned devices are available (gh#openSUSE/agama#494).
 
 -------------------------------------------------------------------
 Wed Mar 22 15:20:45 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Adjustments to prevent iSCSI-related delays during storage
-  probing (gh#yast/agama#493).
+  probing (gh#openSUSE/agama#493).
 
 -------------------------------------------------------------------
 Wed Mar 22 15:12:46 UTC 2023 - Martin Vidner <mvidner@suse.com>
 
-- Fix service startup (gh#yast/agama#491):
+- Fix service startup (gh#openSUSE/agama#491):
   * Fix race at systemd startup time.
   * Install the dependencies before starting it up.
 
@@ -50,7 +50,7 @@ Wed Mar 22 11:11:52 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 Tue Mar 21 21:51:48 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow to define architecture specific patterns and packages
-  (gh#yast/agama#486).
+  (gh#openSUSE/agama#486).
   
 -------------------------------------------------------------------
 Tue Mar 21 16:44:27 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
@@ -61,13 +61,13 @@ Tue Mar 21 16:44:27 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
 -------------------------------------------------------------------
 Tue Mar 21 16:28:26 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
 
-- Added D-Bus API for management of DASDs (gh#yast/agama#464,
-  gh#yast/agama#476)
+- Added D-Bus API for management of DASDs (gh#openSUSE/agama#464,
+  gh#openSUSE/agama#476)
 
 -------------------------------------------------------------------
 Tue Mar 21 11:42:51 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Update the products definitions (gh#yast/agama#485):
+- Update the products definitions (gh#openSUSE/agama#485):
   * Replace "ALP" with "ALP Bedrock" and "ALP Micro".
   * Drop Leap 15.4 and Leap Micro 5.3.
 - Add a script to auto-generate the configuration file when
@@ -82,49 +82,49 @@ Thu Mar 16 16:13:21 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 Thu Mar 16 15:56:00 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Add callbacks to be called on iSCSI activation
-  (gh#yast/agama#435).
+  (gh#openSUSE/agama#435).
 
 -------------------------------------------------------------------
 Thu Mar 16 14:54:44 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Adapted the service configuration for the s390x architecture
-  (gh#yast/agama#469).
+  (gh#openSUSE/agama#469).
 
 -------------------------------------------------------------------
 Thu Mar 16 13:45:21 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix gem2rpm configuration requiring the dbus-1-common package
-  (gh#yast/agama#470).
+  (gh#openSUSE/agama#470).
 
 -------------------------------------------------------------------
 Wed Mar  8 07:46:54 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix gem2rpm configuration to include YaST2 dependencies
-  (gh#yast/agama#459).
+  (gh#openSUSE/agama#459).
 
 -------------------------------------------------------------------
 Thu Mar  2 08:48:36 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Write /iguana/mountlist if running on Iguana
-  (gh#yast/agama#445).
+  (gh#openSUSE/agama#445).
 
 -------------------------------------------------------------------
 Wed Feb 15 16:09:16 UTC 2023 - José Iván López González <jlopez@suse.com>
 
-- Add D-Bus API for iSCSI (gh#yast/agama#402).
+- Add D-Bus API for iSCSI (gh#openSUSE/agama#402).
 
 -------------------------------------------------------------------
 Wed Feb 15 15:18:43 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.7
 - Update the list of patterns to install for Leap Micro 5.3
-  (gh#yast/agama#427).
+  (gh#openSUSE/agama#427).
 
 -------------------------------------------------------------------
 Wed Feb  8 18:09:01 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Better handling of software repositories
-  (gh#yast/agama#414):
+  (gh#openSUSE/agama#414):
   * Report issues when reading the software repositories.
   * Inform the user about the software proposal progress.
   * Do not try to calculate a proposal if there are no
@@ -134,57 +134,57 @@ Wed Feb  8 18:09:01 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 Fri Jan 20 12:25:56 UTC 2023 - Martin Vidner <mvidner@suse.com>
 
 - Use the upstream version of D-Bus ObjectManager
-  (gh#yast/agama#245)
+  (gh#openSUSE/agama#245)
 
 -------------------------------------------------------------------
 Wed Jan 18 08:03:40 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Save logs and provide the path to the file
-  (gh#yast/agama#379)
+  (gh#openSUSE/agama#379)
 
 -------------------------------------------------------------------
 Tue Jan 17 10:06:23 UT0 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Implement validation of software proposal
-  (gh#yast/agama#381)
+  (gh#openSUSE/agama#381)
 
 -------------------------------------------------------------------
 Mon Jan 16 17:02:21 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Check for installed packages in the target system, instead of the
-  installation medium (gh#yast/agama#393).
+  installation medium (gh#openSUSE/agama#393).
 
 -------------------------------------------------------------------
 Mon Jan 16 14:57:59 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Simplify the network configuration to just copying the
   NetworkManager connections and enabling the service
-  (gh#yast/agama#397).
+  (gh#openSUSE/agama#397).
 
 -------------------------------------------------------------------
 Tue Jan 10 10:29:00 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Use a dedicated D-Bus server (gh#yast/agama#384).
+- Use a dedicated D-Bus server (gh#openSUSE/agama#384).
 
 -------------------------------------------------------------------
 Thu Dec 15 13:15:10 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Implement the ImportGpgKey libzypp callback
-  (gh#yast/agama#371)
+  (gh#openSUSE/agama#371)
 - Version 0.6.2
 
 -------------------------------------------------------------------
 Wed Dec 14 22:38:24 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Implement AcceptUnsignedFile and MediaChange libzypp callbacks
-  (gh#yast/agama#369).
+  (gh#openSUSE/agama#369).
 
 -------------------------------------------------------------------
 Wed Dec 14 15:29:12 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Switch the SELinux policy for ALP to "enforcing"
-  (gh#yast/agama#360).
-- Fix generic questions handling (gh#yast/agama#362)
+  (gh#openSUSE/agama#360).
+- Fix generic questions handling (gh#openSUSE/agama#362)
 - Version 0.6.1
 
 -------------------------------------------------------------------
@@ -194,12 +194,12 @@ Wed Dec 14 13:25:22 UTC 2022 - Ancor Gonzalez Sosa <ancor@suse.com>
   the code supporting it.
 - Added new temporary setting "tpm_luks_open" to try to configure
   TPM-based unlocking of the LUKS devices during the first system
-  boot (gh#yast/agama#363).
+  boot (gh#openSUSE/agama#363).
 
 -------------------------------------------------------------------
 Mon Dec  5 13:17:56 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Write snapshots configuration (gh#yast/agama#350).
+- Write snapshots configuration (gh#openSUSE/agama#350).
 - Update to version 0.6.0
 
 -------------------------------------------------------------------
@@ -207,7 +207,7 @@ Fri Dec  2 14:52:36 UTC 2022 - José Iván López González <jlopez@suse.com>
 
 - Improve messages of storage validation errors.
 - Do not encrypt devices when receiving an empty password from
-  D-Bus (gh#yast/agama#321).
+  D-Bus (gh#openSUSE/agama#321).
 
 -------------------------------------------------------------------
 Thu Dec  1 16:22:58 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
@@ -215,50 +215,50 @@ Thu Dec  1 16:22:58 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
 - Allow to define products architectures and architecture specific
   installation repositories
 - Adapt default d-installer.yml to fix installation on other archs
-  (gh#yast/agama#279)
+  (gh#openSUSE/agama#279)
 
 -------------------------------------------------------------------
 Wed Nov 30 12:42:42 UTC 2022 - Knut Alejandro Anderssen González <kanderssen@suse.de>
 
-- Add validation for the first user creation (gh#yast/agama#337)
+- Add validation for the first user creation (gh#openSUSE/agama#337)
 
 -------------------------------------------------------------------
 Wed Nov 30 12:41:26 UTC 2022 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Encryption method and pbkdf are now configurable per-product, set
-  to LUKS2 and PBKDF2 for ALP (gh#yast/agama#340).
+  to LUKS2 and PBKDF2 for ALP (gh#openSUSE/agama#340).
 - Improved selection of packages for ALP to boot from encrypted
-  devices and LVM (gh#yast/agama#338).
+  devices and LVM (gh#openSUSE/agama#338).
 - Temporarily adjusted storage proposal to delete all existing
-  partitions and to never reuse LVM (gh#yast/agama#340).
+  partitions and to never reuse LVM (gh#openSUSE/agama#340).
 
 -------------------------------------------------------------------
 Fri Nov 18 16:27:43 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.5.0:
   * Use D-Bus activation instead of explicit service starting
-    (gh#yast/agama#287).
+    (gh#openSUSE/agama#287).
   * Load the configuration from /etc/d-installer.yaml
-    (gh#yast/agama#301).
-  * Move D-Bus configuration to /usr/share (gh#yast/agama#254).
+    (gh#openSUSE/agama#301).
+  * Move D-Bus configuration to /usr/share (gh#openSUSE/agama#254).
   * Extract questions and storage handling to separate services
-    (gh#yast/agama#248).
+    (gh#openSUSE/agama#248).
   * Add a mechanism to report problems found in the configuration
-    (gh#yast/agama#299).
+    (gh#openSUSE/agama#299).
   * Extend the D-Bus API for the storage proposal
-    (gh#yast/agama#268).
+    (gh#openSUSE/agama#268).
   * Do not block after software installation if a package cannot
-    be installed (gh#yast/agama#322).
+    be installed (gh#openSUSE/agama#322).
   * Add support to install the Adaptable Linux Platform Host OS
-    (gh#yast/agama#265).
-  * Update Leap Micro to version 5.3 (gh#yast/agama#318).
+    (gh#openSUSE/agama#265).
+  * Update Leap Micro to version 5.3 (gh#openSUSE/agama#318).
 
 -------------------------------------------------------------------
 Thu Jul 28 08:20:21 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.4.2:
   * Prevent the installation from being blocked when the user
-    changes the language (gh#yast/agama#239 and
+    changes the language (gh#openSUSE/agama#239 and
     gh#yast/yast-dinstaller#240).
   * Add a new service org.opensuse.DInstaller.Language to handle
     yast2-country related logic.
@@ -268,7 +268,7 @@ Tue Jul 26 09:56:53 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.4.1:
   * Respond to D-Bus messages during software installation
-    (gh#yast/agama#223).
+    (gh#openSUSE/agama#223).
   * Prevent the redefined PackagesProposal module from sending a
     nil value over D-Bus.
 
@@ -277,15 +277,15 @@ Fri Jul 15 07:24:16 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.4:
   * Add support for installing multiple products
-    (gh#yast/agama#181).
-  * Switch to a multi-process architecture (gh#yast/agama#153):
-    - Users service (gh#yast/agama#164).
-    - Software service (gh#yast/agama#201).
+    (gh#openSUSE/agama#181).
+  * Switch to a multi-process architecture (gh#openSUSE/agama#153):
+    - Users service (gh#openSUSE/agama#164).
+    - Software service (gh#openSUSE/agama#201).
   * Simplify the installation workflow and introduce a new
     status/progress reporting API
-    (gh#yast/agama#209).
+    (gh#openSUSE/agama#209).
   * Install packages that are required to configure the LSM
-    (gh#yast/agama#222).
+    (gh#openSUSE/agama#222).
 - Add dependencies on YaST2 and snapper packages.
 
 -------------------------------------------------------------------
@@ -294,24 +294,24 @@ Mon Jun 13 10:17:32 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 - Update to version 0.3:
   * Extend configuration to support:
     - Selecting patterns for installation
-      (gh#yast/agama#184).
-    - Configuring an LSM (gh#yast/agama#173 and
-      gh#yast/agama#184).
+      (gh#openSUSE/agama#184).
+    - Configuring an LSM (gh#openSUSE/agama#173 and
+      gh#openSUSE/agama#184).
     - Specifying the list of storage volumes
-      (gh#yast/agama#188).
+      (gh#openSUSE/agama#188).
 
 -------------------------------------------------------------------
 Tue May 17 10:58:43 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.2:
   * Introduce a YAML-based configuration system
-    (gh#yast/agama#132 and gh#yast/agama#158).
+    (gh#openSUSE/agama#132 and gh#openSUSE/agama#158).
   * Add a mechanism to allow user interaction from the service
-    (gh#yast/agama#123 and gh#yast/agama#135).
+    (gh#openSUSE/agama#123 and gh#openSUSE/agama#135).
   * Allow setting an SSL certificate for remote installation
-    or disabling SSL completely (gh#yast/agama#145).
+    or disabling SSL completely (gh#openSUSE/agama#145).
   * Define the installation repository through a configuration
-    file (gh#yast/agama#122).
+    file (gh#openSUSE/agama#122).
 
 -------------------------------------------------------------------
 Wed Mar 30 07:06:18 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

@@ -1,5 +1,5 @@
-[![CI Status](https://github.com/yast/agama/actions/workflows/ci.yml/badge.svg)](https://github.com/yast/agama/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/yast/agama/badge.svg?branch=master)](https://coveralls.io/github/yast/agama?branch=master)
+[![CI Status](https://github.com/openSUSE/agama/actions/workflows/ci.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/openSUSE/agama/badge.svg?branch=master)](https://coveralls.io/github/openSUSE/agama?branch=master)
 
 # Agama: A Service-based Linux Installer
 
@@ -91,7 +91,7 @@ to have a closer look, then clone and configure the project as explained in the 
 You can run Agama from its sources by cloning and configuring the project:
 
 ```console
-$ git clone https://github.com/yast/agama
+$ git clone https://github.com/openSUSE/agama
 $ cd agama
 $ ./setup.sh
 ```

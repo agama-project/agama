@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   spec.description = "System service for Agama, an experimental YaST-based installer."
   spec.author = "YaST Team"
   spec.email = "yast-devel@opensuse.org"
-  spec.homepage = "https://github.com/yast/agama"
+  spec.homepage = "https://github.com/openSUSE/agama"
   spec.license = "GPL-2.0-only"
   spec.files = Dir["lib/**/*.rb", "bin/*", "share/*", "etc/*"]
   spec.executables = ["agamad"]
