@@ -34,7 +34,7 @@ default iguana
 label iguana
   ipappend 2
   kernel vmlinuz-iguana
-  append initrd=initrd-iguana rd.iguana.control_url=tftp://192.168.122.1/d-installer.yaml rd.iguana.debug=1
+  append initrd=initrd-iguana rd.iguana.control_url=tftp://192.168.122.1/agama.yaml rd.iguana.debug=1
 
 display		message
 implicit	1
@@ -42,7 +42,7 @@ prompt		1
 timeout		50
 ```
 
-Do not worry about the kernel, the initrd or the `d-installer.yaml` file, we will jump into it
+Do not worry about the kernel, the initrd or the `agama.yaml` file, we will jump into it
 later.
 
 ### Configure libvirt to serve TFTP files
@@ -90,9 +90,9 @@ If you want to use VirtualBox together with it's built in TFTP support, you have
    used only in the file names. In the configuration you refer to those files without the prefix - VirtualBox
    adds it transparently for you.
 
-3. VirtualBox's TFTP server is quite limited. You cannot use it for serving custom files like `d-installer.yaml`.
+3. VirtualBox's TFTP server is quite limited. You cannot use it for serving custom files like `agama.yaml`.
    You can use another way how to serve d-installer's configuration file. E.g. local http server by changing
-   boot option to `rd.iguana.control_url=http://<http-server-ip>/d-installer.yaml`
+   boot option to `rd.iguana.control_url=http://<http-server-ip>/agama.yaml`
 
 4. With this setup D-Installer listens on port 9090 (See also bellow in Booting from PXE chapter). To be able
    to connect to it you need an additional network device as described in (1). You need to modify
@@ -102,7 +102,7 @@ So, to put everything together. You should have your PXE configuration stored in
 can use sources and configuration as presented throughout this document with small modification to boot options in
 the `default` configuration file. It should look e.g. like this (see point (4) above for details):
 
-`append initrd=initrd-iguana rd.iguana.control_url=http://<http-server-ip>/d-installer.yaml rd.iguana.debug=1 ip=enp0s8:dhcp`
+`append initrd=initrd-iguana rd.iguana.control_url=http://<http-server-ip>/agama.yaml rd.iguana.debug=1 ip=enp0s8:dhcp`
 
 ### initrd preparation
 
@@ -112,7 +112,7 @@ package](https://build.opensuse.org/package/show/home:oholecek:iguana/iguana).
 
 Which containers to use and how to set them up is defined in a *workflow definition*. The [Iguana
 repository](https://github.com/openSUSE/iguana) includes a [definition for
-D-Installer](https://github.com/openSUSE/iguana/blob/main/iguana-workflow/examples/d-installer.yaml).
+D-Installer](https://github.com/openSUSE/iguana/blob/main/iguana-workflow/examples/agama.yaml).
 
 After installing the `iguana` package, copy the kernel (`/usr/share/iguana/vmlinuz-VERSION`), the
 initrd (`/usr/share/iguana/iguana-initrd`) and the workflow definition to the TFTP tree[^1]. You must
@@ -120,7 +120,7 @@ use the same paths specified in the `ìguana` boot option (see [Set up the TFTP
 tree](#set-up-the-tftp-tree) section).
 
 [^1]: If you want to point always to the latest workflow definition, you can use a raw GitHub
-link: `rd.iguana.control_url=https://raw.githubusercontent.com/openSUSE/iguana/main/iguana-workflow/examples/d-installer.yaml`
+link: `rd.iguana.control_url=https://raw.githubusercontent.com/openSUSE/iguana/main/iguana-workflow/examples/agama.yaml`
 
 ### Booting from PXE
 
