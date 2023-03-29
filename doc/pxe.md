@@ -91,7 +91,7 @@ If you want to use VirtualBox together with it's built in TFTP support, you have
    adds it transparently for you.
 
 3. VirtualBox's TFTP server is quite limited. You cannot use it for serving custom files like `agama.yaml`.
-   You can use another way how to serve d-installer's configuration file. E.g. local http server by changing
+   You can use another way how to serve Agama's configuration file. E.g. local http server by changing
    boot option to `rd.iguana.control_url=http://<http-server-ip>/agama.yaml`
 
 4. With this setup Agama listens on port 9090 (See also bellow in Booting from PXE chapter). To be able
