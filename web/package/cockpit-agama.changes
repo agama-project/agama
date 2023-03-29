@@ -6,13 +6,13 @@ Fri Mar 24 15:30:48 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Fri Mar 24 14:51:55 UTC 2023 - Knut Alejandro Anderssen González <kanderssen@suse.com>
 
-- Add UI for configuring DASD (gh#yast/d-installer#501).
+- Add UI for configuring DASD (gh#openSUSE/agama#501).
 
 -------------------------------------------------------------------
 Fri Mar 24 12:50:06 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Added a tip about iSCSI and DASD configuration to the storage
-  page (gh#yast/d-installer#500).
+  page (gh#openSUSE/agama#500).
 
 -------------------------------------------------------------------
 Fri Mar 24 10:39:45 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
@@ -23,7 +23,7 @@ Fri Mar 24 10:39:45 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 Thu Mar 23 17:07:29 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Reprobe storage if the system becomes deprecated
-  (gh#yast/d-installer#484).
+  (gh#openSUSE/agama#484).
 
 -------------------------------------------------------------------
 Tue Mar 21 16:41:06 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
@@ -40,19 +40,19 @@ Mon Mar 20 15:13:28 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Mon Mar 20 13:40:08 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Remove the redundant "Settings" suffix (gh#yast/d-installer#481).
+- Remove the redundant "Settings" suffix (gh#openSUSE/agama#481).
 
 -------------------------------------------------------------------
 Mon Mar 20 11:51:56 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the initialization of the D-Bus iSCSI proxies
-  (gh#yast/d-installer#478).
+  (gh#openSUSE/agama#478).
 
 -------------------------------------------------------------------
 Mon Mar 20 11:50:37 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Fix the iSCSI discover form when no information is found in the
-  browser's local storage (gh#yast/d-installer#475).
+  browser's local storage (gh#openSUSE/agama#475).
 
 -------------------------------------------------------------------
 Thu Mar 16 16:13:39 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
@@ -62,12 +62,12 @@ Thu Mar 16 16:13:39 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Thu Mar 16 15:53:34 UTC 2023 - José Iván López González <jlopez@suse.com>
 
-- Add UI for configuring iSCSI (gh#yast/d-installer#435).
+- Add UI for configuring iSCSI (gh#openSUSE/agama#435).
 
 -------------------------------------------------------------------
 Mon Mar 13 15:51:08 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
-- Sidebar improvements (gh#yast/d-installer#462)
+- Sidebar improvements (gh#openSUSE/agama#462)
   * Allow adding actions from a page.
   * Remove network information.
   * Use underlined links and darker green color for improving contrast.
@@ -76,12 +76,12 @@ Mon Mar 13 15:51:08 UTC 2023 - David Diaz <dgonzalez@suse.com>
 -------------------------------------------------------------------
 Fri Mar  3 15:00:05 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
-- Enhance the user edit form (gh#yast/d-installer#451).
+- Enhance the user edit form (gh#openSUSE/agama#451).
 
 -------------------------------------------------------------------
 Thu Mar  2 23:16:09 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
-- Dependencies update (gh#yast/d-installer#449).
+- Dependencies update (gh#openSUSE/agama#449).
   * Go up to React 18.
   * Bring node packages up to date.
 
@@ -89,17 +89,17 @@ Thu Mar  2 23:16:09 UTC 2023 - David Diaz <dgonzalez@suse.com>
 Wed Mar  1 23:22:37 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Create a dedicated page per section
-  (gh#yast/d-installer#443).
+  (gh#openSUSE/agama#443).
 
 -------------------------------------------------------------------
 Tue Feb 21 00:50:48 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
-- Set icons as aria-hidden (gh#yast/d-installer#437).
+- Set icons as aria-hidden (gh#openSUSE/agama#437).
 
 -------------------------------------------------------------------
 Mon Feb 20 22:52:48 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
-- Sidebar improvements (gh#yast/d-installer#436)
+- Sidebar improvements (gh#openSUSE/agama#436)
   * Use proper control for open and close actions
   * Improve styling and labels
   * Add missing aria attributes
@@ -107,47 +107,47 @@ Mon Feb 20 22:52:48 UTC 2023 - David Diaz <dgonzalez@suse.com>
 -------------------------------------------------------------------
 Thu Feb 16 12:56:24 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
 
-- Integrate cockpit terminal application (gh#yast/d-installer#426)
+- Integrate cockpit terminal application (gh#openSUSE/agama#426)
 
 -------------------------------------------------------------------
 Wed Feb 15 16:35:54 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.7
 - Do not use a proxy to get the errors lists
-  (gh#yast/d-installer#424).
+  (gh#openSUSE/agama#424).
 
 -------------------------------------------------------------------
 Thu Feb  9 15:29:58 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Add live reloading feature for easing the front-end development
-  process (gh#yast/d-installer#419).
+  process (gh#openSUSE/agama#419).
 
 -------------------------------------------------------------------
 Thu Feb  9 14:16:09 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Fix storage section crashing when proposal is not ready
-  (gh#yast/d-installer#418).
+  (gh#openSUSE/agama#418).
 
 -------------------------------------------------------------------
 Wed Feb  8 18:12:06 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Better handling of software repositories
-  (gh#yast/d-installer#414):
+  (gh#openSUSE/agama#414):
   * Report issues when reading the software repositories.
   * Inform the user about the software proposal progress.
   * Add a button to reload the repositories
-    (gh#yast/d-installer#388).
+    (gh#openSUSE/agama#388).
 
 -------------------------------------------------------------------
 Tue Jan 24 09:32:13 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
 
 - Added a button for displaying the YaST logs
-  (related to gh#yast/d-installer#379)
+  (related to gh#openSUSE/agama#379)
 
 -------------------------------------------------------------------
 Fri Jan 20 09:03:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
-- UI fixes (gh#yast/d-installer#401):
+- UI fixes (gh#openSUSE/agama#401):
   * Add a fallback height for the layout
   * Fix some miss-alignments
   * Add missing icon
@@ -157,74 +157,74 @@ Fri Jan 20 09:03:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
 Thu Jan 19 07:58:00 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Update aliases for using "~/" instead of "@"
-  (gh#yast/d-installer#400).
+  (gh#openSUSE/agama#400).
 
 -------------------------------------------------------------------
 Wed Jan 18 08:06:05 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
-- Allow user downloading logs (gh#yast/d-installer#379)
+- Allow user downloading logs (gh#openSUSE/agama#379)
 
 -------------------------------------------------------------------
 Thu Jan 12 16:23:54 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Implement validation of software proposal to early detect
-  issues in software selection (gh#yast/d-installer#381)
+  issues in software selection (gh#openSUSE/agama#381)
 
 -------------------------------------------------------------------
 Wed Jan 11 20:37:26 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Testing: use a mocking function to make mocked components
-  consistent across the test suite (gh#yast/d-installer#392).
+  consistent across the test suite (gh#openSUSE/agama#392).
 
 -------------------------------------------------------------------
 Wed Jan 11 11:54:29 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Rework UI internals by using plain CSS as much as possible for
   building the layout instead of relying on wrapper components
-  (gh#yast/d-installer#391).
+  (gh#openSUSE/agama#391).
 
 -------------------------------------------------------------------
 Tue Jan 10 10:30:05 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Connect to the dedicated D-Bus server (gh#yast/d-installer#384).
+- Connect to the dedicated D-Bus server (gh#openSUSE/agama#384).
 
 -------------------------------------------------------------------
 Mon Jan  2 12:53:50 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
-- Add missing favicon (gh#yast/d-installer#387).
+- Add missing favicon (gh#openSUSE/agama#387).
 
 -------------------------------------------------------------------
 Mon Jan  2 11:46:37 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Do not show the link to configure wifi networks when there are no
   wifi devices and also inform the user when no network connection
-  was detected (gh#yast/d-installer#323).
+  was detected (gh#openSUSE/agama#323).
 - Version 0.6.3
 
 -------------------------------------------------------------------
 Mon Jan  2 10:03:18 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Ensure custom fonts are including in the build
-  (gh#yast/d-installer#385).
+  (gh#openSUSE/agama#385).
 
 -------------------------------------------------------------------
 Fri Dec 30 11:56:46 UTC 2022 - David Diaz <dgonzalez@suse.com>
 
 - Switch to Material Symbols icon set and refactor how icons
-  are imported (gh#yast/d-installer#383).
+  are imported (gh#openSUSE/agama#383).
 
 -------------------------------------------------------------------
 Thu Dec 15 10:14:22 UTC 2022 - Knut Anderssen <kanderssen@suse.com>
 
 - Do not show the link to configure wifi networks when wireless is
-  not enabled (gh#yast/d-installer#323).
+  not enabled (gh#openSUSE/agama#323).
 - Version 0.6.2
 
 -------------------------------------------------------------------
 Thu Dec 15 08:55:02 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Display questions during the software installation (related to
-  gh#yast/d-installer#369).
+  gh#openSUSE/agama#369).
 - Update to version 0.6.1
 
 -------------------------------------------------------------------
@@ -236,48 +236,48 @@ Mon Dec  5 13:18:37 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 Fri Dec  2 15:46:46 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for password confirmation
-  (related to gh#yast/d-installer#297)
+  (related to gh#openSUSE/agama#297)
 
 -------------------------------------------------------------------
 Fri Dec  2 13:41:41 UTC 2022 - José Iván López González <jlopez@suse.com>
 
 - Add new UI for storage proposal offering LVM and encyption
-  options (gh#yast/d-installer#321).
+  options (gh#openSUSE/agama#321).
 
 -------------------------------------------------------------------
 Fri Dec 2 10:48:14 UTC 2022 - Josef Reidinger <jreidinger@suse.cz>
 
 - Add support for adapting the configuration depending on the
-  architecture (gh#yast/d-installer#339)
+  architecture (gh#openSUSE/agama#339)
 
 -------------------------------------------------------------------
 Wed Nov 30 08:16:42 UTC 2022 - Knut Alejandro Anderssen González <kanderssen@suse.de>
 
-- Add validation for the first user creation (gh#yast/d-installer#337)
+- Add validation for the first user creation (gh#openSUSE/agama#337)
 
 -------------------------------------------------------------------
 Fri Nov 18 16:27:26 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.5.0:
   * Add support for basic network configuration, based on
-    NetworkManager (gh#yast/d-installer#260, gh#yast/d-installer#292).
+    NetworkManager (gh#openSUSE/agama#260, gh#openSUSE/agama#292).
   * Improve the usability of the LUKS activation dialog
-    (gh#yast/d-installer#253).
+    (gh#openSUSE/agama#253).
   * Prevent starting the installation with incomplete or wrong
-    configuration (gh#yast/d-installer#299).
+    configuration (gh#openSUSE/agama#299).
 
 -------------------------------------------------------------------
 Thu Jul 28 08:17:06 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.4.2:
   * Connect to the org.opensuse.DInstaller.Language service
-    (related to gh#yast/d-installer#240).
+    (related to gh#openSUSE/agama#240).
 
 -------------------------------------------------------------------
 Tue Jul 26 10:04:53 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.4.1:
-  * Fix several user interface-related issues (gh#yast/d-installer#230):
+  * Fix several user interface-related issues (gh#openSUSE/agama#230):
     - Avoid reloading the page when pushing the enter key.
     - Always display the D-Bus error page when the connection gets
       broken. Reload the UI again when the D-Bus connection is
@@ -296,34 +296,34 @@ Fri Jul 15 07:32:48 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.4:
   * Support for installing multiple products
-    (gh#yast/d-installer#211).
+    (gh#openSUSE/agama#211).
   * Adapt to the new status/progress reporting API
-    (gh#yast/d-installer#219).
-  * Add a better layout mechanism (gh#yast/d-installer#216).
+    (gh#openSUSE/agama#219).
+  * Add a better layout mechanism (gh#openSUSE/agama#216).
 
 -------------------------------------------------------------------
 Mon Jun 13 10:10:03 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.3:
   * Refresh the web UI when a selected option changes (e.g., through
-    the CLI) (gh#yast/d-installer#180).
+    the CLI) (gh#openSUSE/agama#180).
   * Remove the "Restart Installation" button
-    (gh#yast/d-installer#167 and gh#yast/d-installer#174).
+    (gh#openSUSE/agama#167 and gh#openSUSE/agama#174).
   * Add a task to generate the JSDoc-based documentation
-    (gh#yast/d-installer#186 and gh#yast/d-installer#191).
+    (gh#openSUSE/agama#186 and gh#openSUSE/agama#191).
 
 -------------------------------------------------------------------
 Tue May 17 10:58:51 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update to version 0.2:
-  * Turn the web UI into a Cockpit module (gh#yast/d-installer#127)
-    and drop the authentication code (gh#yast/d-installer#128).
-  * Add basic storage devices activation (gh#yast/d-installer#150).
+  * Turn the web UI into a Cockpit module (gh#openSUSE/agama#127)
+    and drop the authentication code (gh#openSUSE/agama#128).
+  * Add basic storage devices activation (gh#openSUSE/agama#150).
   * Fix the behavior of the language selector
-    (gh#yast/d-installer#125).
+    (gh#openSUSE/agama#125).
   * Add an installation confirmation dialog
-    (gh#yast/d-installer#118) and a reboot button
-    (gh#yast/d-installer#114).
+    (gh#openSUSE/agama#118) and a reboot button
+    (gh#openSUSE/agama#114).
 
 -------------------------------------------------------------------
 Wed Mar 30 07:06:23 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
