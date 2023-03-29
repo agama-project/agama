@@ -1,5 +1,5 @@
 {
-    "name": "d-installer",
+    "name": "agama",
     "requires": {
         "cockpit": "137"
     },

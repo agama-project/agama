@@ -120,7 +120,7 @@ const Title = PageTitle.Source;
  * Component for setting the icon shown at the header left
  *
  * @example
- *   import { PageIcon } from "dinstaller-layout";
+ *   import { PageIcon } from "agama-layout";
  *   import { FancyIcon } from "icons-package";
  *   ...
  *   <PageIcon><FancyIcon color="white" /></PageIcon>
@@ -131,7 +131,7 @@ const PageIcon = HeaderIcon.Source;
  * Component for setting page actions shown on the header right
  *
  * @example
- *   import { PageActions } from "dinstaller-layout";
+ *   import { PageActions } from "agama-layout";
  *   import { FancyButton } from "somewhere";
  *   ...
  *   <PageActions>
@@ -144,7 +144,7 @@ const PageActions = HeaderActions.Source;
  * Component for setting the main actions shown on the footer right
  *
  * @example
- *   import { MainActions } from "dinstaller-layout";
+ *   import { MainActions } from "agama-layout";
  *   import { FancyButton } from "somewhere";
  *   ...
  *   <MainActions>
@@ -157,7 +157,7 @@ const MainActions = FooterActions.Source;
  * Component for setting the additional content shown at the footer
  *
  * @example
- *   import { AdditionalInfo } from "dinstaller-layout";
+ *   import { AdditionalInfo } from "agama-layout";
  *   import { About, HostIp } from "somewhere";
  *
  *   ...

@@ -272,7 +272,7 @@ class DASDManager {
   }
 
   // FIXME: use info from ObjectManager instead.
-  //   https://github.com/yast/d-installer/pull/501#discussion_r1147707515
+  //   https://github.com/yast/agama/pull/501#discussion_r1147707515
   async isSupported() {
     const proxy = await this.managerProxy();
 

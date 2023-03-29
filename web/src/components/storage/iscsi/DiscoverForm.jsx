@@ -41,7 +41,7 @@ const defaultData = {
 };
 
 export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
-  const [savedData, setSavedData] = useLocalStorage("dinstaller-iscsi-discovery", defaultData);
+  const [savedData, setSavedData] = useLocalStorage("agama-iscsi-discovery", defaultData);
   const [data, setData] = useState(defaultData);
   const [isLoading, setIsLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
