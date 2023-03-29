@@ -22,8 +22,8 @@ test.describe('The user section', () => {
     await page.getByRole("menuitem", { name: "Set" }).click();
 
     // fill a new password
-    await page.locator('#password').fill('d-installer');
-    await page.locator('#passwordConfirmation').fill('d-installer');
+    await page.locator('#password').fill('agama');
+    await page.locator('#passwordConfirmation').fill('agama');
     await page.locator('button[type="submit"]').click();
 
     // wait until the popup is closed
