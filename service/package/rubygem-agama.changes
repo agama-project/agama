@@ -265,7 +265,7 @@ Thu Jul 28 08:20:21 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 - Update to version 0.4.2:
   * Prevent the installation from being blocked when the user
     changes the language (gh#openSUSE/agama#239 and
-    gh#yast/yast-dinstaller#240).
+    gh#openSUSE/agama#240).
   * Add a new service org.opensuse.DInstaller.Language to handle
     yast2-country related logic.
 
