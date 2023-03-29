@@ -1,0 +1,3 @@
+# or maybe commit them. depends on the deployment model
+*.ref.xml
+*.ref.html
