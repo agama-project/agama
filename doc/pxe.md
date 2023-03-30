@@ -74,7 +74,7 @@ it accordingly. Here is an example:
 
 ### Configure VirtualBox to serve TFTP files
 
-If you want to use VirtualBox together with it's built in TFTP support, you have to accept some limitations.
+If you want to use VirtualBox together with it's built-in TFTP support, you have to accept some limitations.
 
 1. Built in TFTP support is available only for NAT network device.
    Such device cannot be used for accessing the guest machine from host system later on. If you plan to access
@@ -83,10 +83,10 @@ If you want to use VirtualBox together with it's built in TFTP support, you have
 2. VirtualBox doesn't have particular configuration file / options for setting TFTP. Everything is done via
    hardcoded setup. VirtualBox's internal TFTP server uses `~/.config/VirtualBox/TFTP` (on Linux) for serving
    files. Moreover, to tight particular configuration to specific virtual machine (VM), you have to use VM's
-   name in file, subdirectory names, So, if you have VM with name `PXE boot` then PXE kernel is expected to be
+   name in file, subdirectory names. So if you have VM with name `PXE boot` then PXE kernel is expected to be
    named `PXE boot.pxe`. Similarly, using same naming for kernel and initrd names as above, initrd-iguana is
    expected to be named `PXE initrd-iguana` and kernel `PXE vmlinuz-iguana`. Last but not least the configuration
-   directory `pxelinux.0` should be named `PXE pxelinux.0`. To make it clear. Machine name based prefix has to be
+   directory `pxelinux.0` should be named `PXE pxelinux.0`. To make it clear, machine name based prefix has to be
    used only in the file names. In the configuration you refer to those files without the prefix - VirtualBox
    adds it transparently for you.
 
@@ -94,7 +94,7 @@ If you want to use VirtualBox together with it's built in TFTP support, you have
    You can use another way how to serve Agama's configuration file. E.g. local http server by changing
    boot option to `rd.iguana.control_url=http://<http-server-ip>/agama.yaml`
 
-4. With this setup Agama listens on port 9090 (See also bellow in Booting from PXE chapter). To be able
+4. With this setup Agama listens on port 9090 (see also bellow in Booting from PXE chapter). To be able
    to connect to it you need an additional network device as described in (1). You need to modify
    kernel boot options one more time and add something like `ip=enp0s8:dhcp` where `enp0s8` is second network device.
 
