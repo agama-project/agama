@@ -8,14 +8,14 @@ https://playwright.dev/) testing framework.
 To install the Playwright tool run this command in the `playwright` subdirectory:
 
 ```shell
-npm install
+npm install --no-save @playwright/test
 ```
 
-This will install the NPM packages into the `node_modules` subdirectory
-and download the browsers into the `~/.cache/ms-playwright` directory.
+This will install the NPM packages into the `node_modules` subdirectory.
 
-*Note: The downloaded browsers need almost 1GB, make sure you have enough
-space in your `$HOME` directory.*
+Alternatively you can install it as an RPM package from the
+[YaST:Head:Agama](https://build.opensuse.org/project/show/YaST:Head:Agama)
+OBS project.
 
 ## Files
 
@@ -26,6 +26,9 @@ space in your `$HOME` directory.*
 - `lib/*` - shared library files
 
 ## Running the Tests
+
+*Note: If you install Playwright from the RPM package then omit the `npx`
+tool from all commands below.*
 
 To run all tests use this command:
 
@@ -39,6 +42,15 @@ To run just a specific test:
 npx playwright test tests/root_password.spec.ts
 ```
 
+By default it runs tests in all configured projects (browsers),
+if you want to use only a specific browser use the `--project` option:
+
+```
+npx playwright test --project chromium -- tests/root_password.spec.ts
+```
+
+See the `playwright.config.ts` file for the list of configured projects.
+
 ## Updating the Screenshots
 
 There is one test specially designed for refreshing the screenshots displayed
@@ -47,7 +59,7 @@ in the main `README.md` file.
 To fully run the installation type this:
 
 ```
-RUN_INSTALLATION=1 BASE_URL=https://<host>:9090 npx playwright test --headed take_screenshots
+RUN_INSTALLATION=1 BASE_URL=https://<host>:9090 npx playwright test --headed --project chromium take_screenshots
 ```
 
 The `--headed` option shows the browser window so you can see the progress.
