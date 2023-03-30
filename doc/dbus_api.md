@@ -154,7 +154,7 @@ Service for managing storage devices.
   .Agama.Storage1.DASD.manager
 ~~~
 
-Main object exported by the service `org.opensuse.Agama.Service`. This object implements the `org.freedesktop.DBus.ObjectManager` interface and should be used by clients to discover other objects.
+Main object exported by the service `org.opensuse.Agama1`. This object implements the `org.freedesktop.DBus.ObjectManager` interface and should be used by clients to discover other objects.
 
 This object also implements generic interfaces to manage the service status, progress and validation.
 

@@ -115,8 +115,8 @@ data by installing the `lshw` package and running the following command: `lshw -
 ### Validating and evaluating a profile
 
 Agama includes a handy command-line interface available in the `agama-cli` package. Among many other
-things, it allows for downloading, validating and evaluating profiles. For instance, we could try
-the check the result of the previous profile by running the following command:
+things, it allows for downloading, validating and evaluating profiles. For instance, we could check
+the result of the previous profile by running the following command:
 
 ```
 $ sudo agama profile evaluate my-profile.jsonnet
@@ -146,7 +146,7 @@ $ sudo agama config show > profile.json
 Instead of a profile, you can provide a shell script, having complete control of the process. In
 this scenario, it is expected to use the CLI to interact with Agama. In addition, you can rely on
 any other tool available in the installation media. What's more, when using the Live ISO, you could
-want to add your own tools.
+install your own tools.
 
 Below there is a minimal working example to install ALP Bedrock:
 
@@ -164,7 +164,7 @@ script comes into action when you provide a profile.
 ## Starting the auto-installation
 
 The auto-installation is started by passing `agama.auto=<url>` on the kernel's command line. If you
-are using the Live media, you need to edit the Grub2 by entry adding that option. Or you can use PXE
+are using the Live media, you need to edit the Grub2 entry to add that option. Or you can use PXE
 if it fits better. For instance, `agama.auto=http://example.net/bedrock.jsonnet`.
 
 Using the correct extension in the file name is important:
