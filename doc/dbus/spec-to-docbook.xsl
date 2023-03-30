@@ -91,12 +91,13 @@
 
 
 <xsl:template name="property-doc">
+  <xsl:apply-templates select="doc:doc/doc:summary"/>
   <xsl:apply-templates select="doc:doc/doc:description"/>
 
   <variablelist role="params">
     <xsl:for-each select="arg">
 <varlistentry><term><parameter><xsl:value-of select="@name"/></parameter>:</term>
-<listitem><simpara><xsl:value-of select="doc:doc/doc:summary"/></simpara></listitem>
+<listitem><simpara><xsl:apply-templates select="doc:doc/doc:summary"/></simpara></listitem>
 </varlistentry>
     </xsl:for-each>
   </variablelist>
@@ -129,12 +130,13 @@
 </xsl:template>
 
 <xsl:template name="signal-doc">
+  <xsl:apply-templates select="doc:doc/doc:summary"/>
   <xsl:apply-templates select="doc:doc/doc:description"/>
 
   <variablelist role="params">
     <xsl:for-each select="arg">
 <varlistentry><term><parameter><xsl:value-of select="@name"/></parameter>:</term>
-<listitem><simpara><xsl:value-of select="doc:doc/doc:summary"/></simpara></listitem>
+<listitem><simpara><xsl:apply-templates select="doc:doc/doc:summary"/></simpara></listitem>
 </varlistentry>
     </xsl:for-each>
   </variablelist>
@@ -171,7 +173,9 @@
 </xsl:template>
 
 <xsl:template match="doc:summary">
-<!-- by default don't display -->
+<para>
+  <xsl:apply-templates />
+</para>
 </xsl:template>
 
 <xsl:template match="doc:example">
@@ -282,12 +286,13 @@ See also:
 </xsl:template>
 
 <xsl:template name="method-doc">
+  <xsl:apply-templates select="doc:doc/doc:summary"/>
   <xsl:apply-templates select="doc:doc/doc:description"/>
 
   <variablelist role="params">
     <xsl:for-each select="arg">
 <varlistentry><term><parameter><xsl:value-of select="@name"/></parameter>:</term>
-<listitem><simpara><xsl:value-of select="doc:doc/doc:summary"/></simpara></listitem>
+<listitem><simpara><xsl:apply-templates select="doc:doc/doc:summary"/></simpara></listitem>
 </varlistentry>
     </xsl:for-each>
   </variablelist>
