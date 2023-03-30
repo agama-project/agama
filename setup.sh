@@ -33,12 +33,12 @@ $SUDO systemctl start cockpit
 
 # set up the web UI
 cd web; make devel-install; cd -
-$SUDO ln -snf `pwd`/web/dist /usr/share/cockpit/d-installer
+$SUDO ln -snf `pwd`/web/dist /usr/share/cockpit/agama
 
 # Start the installer
 echo
 echo "D-Bus will start the services, see journalctl for their logs."
 echo "To start the services manually, logging to the terminal:"
-echo "  cd service; $SUDO bundle exec bin/d-installer"
+echo "  cd service; $SUDO bundle exec bin/agama"
 echo
-echo "Visit http://localhost:9090/cockpit/@localhost/d-installer/index.html"
+echo "Visit http://localhost:9090/cockpit/@localhost/agama/index.html"

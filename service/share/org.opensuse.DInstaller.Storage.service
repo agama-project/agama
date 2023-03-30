@@ -1,4 +1,0 @@
-[D-BUS Service]
-Name=org.opensuse.DInstaller.Storage
-Exec=/usr/bin/d-installer storage
-User=root

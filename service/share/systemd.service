@@ -1,12 +1,12 @@
 [Unit]
-Description=D-Installer Service
+Description=Agama Installer Service
 Requires=cockpit.socket
 After=network-online.target
 
 [Service]
 Type=forking
-ExecStart=/usr/bin/d-installer --daemon
-PIDFile=/run/d-installer/bus.pid
+ExecStart=/usr/bin/agamactl --daemon
+PIDFile=/run/agama/bus.pid
 User=root
 TimeoutStopSec=5
 

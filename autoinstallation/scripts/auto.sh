@@ -3,7 +3,7 @@ set -ex
 
 if [ -z "$1" ]
 then
-  url=$(awk -F 'dinst.auto=' '{sub(/ .*$/, "", $2); print $2}' < /proc/cmdline)
+  url=$(awk -F 'agama.auto=' '{sub(/ .*$/, "", $2); print $2}' < /proc/cmdline)
 else
   url="$1"
 fi
@@ -16,23 +16,23 @@ fi
 
 echo "Using the profile at $url"
 
-tmpdir=$(mktemp --directory --suffix "-dinstaller")
+tmpdir=$(mktemp --directory --suffix "-agama")
 echo "working on $tmpdir"
 
 case "$url" in
 *.jsonnet )
-    /usr/bin/dinstaller profile download "$url" > "${tmpdir}/profile.jsonnet"
-    /usr/bin/dinstaller profile evaluate "${tmpdir}/profile.jsonnet" > "${tmpdir}/profile.json"
-    /usr/bin/dinstaller profile validate "${tmpdir}/profile.json" || echo "Validation failed"
-    /usr/bin/dinstaller config load "${tmpdir}/profile.json"
-    /usr/bin/dinstaller install;;
+    /usr/bin/agama profile download "$url" > "${tmpdir}/profile.jsonnet"
+    /usr/bin/agama profile evaluate "${tmpdir}/profile.jsonnet" > "${tmpdir}/profile.json"
+    /usr/bin/agama profile validate "${tmpdir}/profile.json" || echo "Validation failed"
+    /usr/bin/agama config load "${tmpdir}/profile.json"
+    /usr/bin/agama install;;
 *.json )
-    /usr/bin/dinstaller profile download "$url" > "${tmpdir}/profile.json"
-    /usr/bin/dinstaller profile validate "${tmpdir}/profile.json" || echo "Validation failed"
-    /usr/bin/dinstaller config load "${tmpdir}/profile.json"
-    /usr/bin/dinstaller install;;
+    /usr/bin/agama profile download "$url" > "${tmpdir}/profile.json"
+    /usr/bin/agama profile validate "${tmpdir}/profile.json" || echo "Validation failed"
+    /usr/bin/agama config load "${tmpdir}/profile.json"
+    /usr/bin/agama install;;
 *.sh )
-    /usr/bin/dinstaller profile download "$url" > "${tmpdir}/profile.sh"
+    /usr/bin/agama profile download "$url" > "${tmpdir}/profile.sh"
     exec $SHELL "/${tmpdir}/profile.sh";;
 *)
     echo "Unrecognized suffix ${url}"

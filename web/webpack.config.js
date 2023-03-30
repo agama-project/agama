@@ -159,7 +159,7 @@ module.exports = {
             options: {
               sourceMap: true,
               url: {
-                // Only follow D-Installer fonts links to be processed by the next rule and place
+                // Only follow the Agama fonts links to be processed by the next rule and place
                 // them in dist/fonts
                 filter: (url) => url.includes("./fonts/")
               }

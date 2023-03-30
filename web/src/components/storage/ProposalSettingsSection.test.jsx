@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import { ProposalSettingsSection } from "~/components/storage";
 
 const FakeProposalSettingsForm = ({ id, onSubmit }) => {
@@ -45,7 +45,7 @@ const proposal = {
 };
 
 it("renders the list of the volumes to create", () => {
-  installerRender(<ProposalSettingsSection proposal={proposal} />);
+  plainRender(<ProposalSettingsSection proposal={proposal} />);
 
   screen.getByText(/Create the following file systems/);
   screen.getByText("/test1");
@@ -53,7 +53,7 @@ it("renders the list of the volumes to create", () => {
 });
 
 it("does not show the settings dialog by default", async () => {
-  installerRender(<ProposalSettingsSection proposal={proposal} />);
+  plainRender(<ProposalSettingsSection proposal={proposal} />);
 
   await waitFor(() => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -63,7 +63,7 @@ it("does not show the settings dialog by default", async () => {
 it("allows editing the settings when the user clicks on the section title", async () => {
   const calculateFn = jest.fn();
 
-  const { user } = installerRender(<ProposalSettingsSection proposal={proposal} calculateProposal={calculateFn} />);
+  const { user } = plainRender(<ProposalSettingsSection proposal={proposal} calculateProposal={calculateFn} />);
 
   const action = screen.getByRole("button", { name: "Settings" });
   await user.click(action);
@@ -79,7 +79,7 @@ it("allows editing the settings when the user clicks on the section title", asyn
 it("allows aborting the settings edition when cancel is clicked", async () => {
   const calculateFn = jest.fn();
 
-  const { user } = installerRender(<ProposalSettingsSection proposal={proposal} calculateProposal={calculateFn} />);
+  const { user } = plainRender(<ProposalSettingsSection proposal={proposal} calculateProposal={calculateFn} />);
 
   const action = screen.getByRole("button", { name: "Settings" });
   await user.click(action);
@@ -99,7 +99,7 @@ describe("when neither lvm nor encryption are selected", () => {
   });
 
   it("renders the proper description for the current settings", () => {
-    installerRender(<ProposalSettingsSection proposal={proposal} />);
+    plainRender(<ProposalSettingsSection proposal={proposal} />);
 
     screen.getByText(/Create file systems over partitions/);
   });
@@ -112,7 +112,7 @@ describe("when lvm is selected", () => {
   });
 
   it("renders the proper description for the current settings", () => {
-    installerRender(<ProposalSettingsSection proposal={proposal} />);
+    plainRender(<ProposalSettingsSection proposal={proposal} />);
 
     screen.getByText(/Create file systems over LVM volumes/);
   });
@@ -125,7 +125,7 @@ describe("when encryption is selected", () => {
   });
 
   it("renders the proper description for the current settings", () => {
-    installerRender(<ProposalSettingsSection proposal={proposal} />);
+    plainRender(<ProposalSettingsSection proposal={proposal} />);
 
     screen.getByText(/Create file systems over encrypted partitions/);
   });
@@ -138,7 +138,7 @@ describe("when LVM and encryption are selected", () => {
   });
 
   it("renders the proper description for the current settings", () => {
-    installerRender(<ProposalSettingsSection proposal={proposal} />);
+    plainRender(<ProposalSettingsSection proposal={proposal} />);
 
     screen.getByText(/Create file systems over encrypted LVM volumes/);
   });

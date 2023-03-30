@@ -28,9 +28,9 @@ import cockpit from "../lib/cockpit";
 jest.mock("../lib/cockpit");
 jest.mock("./dbus");
 
-const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
-const SERVICE_IFACE = "org.opensuse.DInstaller.ServiceStatus1";
-const PROGRESS_IFACE = "org.opensuse.DInstaller.Progress1";
+const MANAGER_IFACE = "org.opensuse.Agama1.Manager";
+const SERVICE_IFACE = "org.opensuse.Agama1.ServiceStatus";
+const PROGRESS_IFACE = "org.opensuse.Agama1.Progress";
 
 const managerProxy = {
   wait: jest.fn(),

@@ -25,9 +25,9 @@ import DBusClient from "./dbus";
 import { WithStatus, WithProgress } from "./mixins";
 import cockpit from "../lib/cockpit";
 
-const MANAGER_SERVICE = "org.opensuse.DInstaller";
-const MANAGER_IFACE = "org.opensuse.DInstaller.Manager1";
-const MANAGER_PATH = "/org/opensuse/DInstaller/Manager1";
+const MANAGER_SERVICE = "org.opensuse.Agama1";
+const MANAGER_IFACE = "org.opensuse.Agama1.Manager";
+const MANAGER_PATH = "/org/opensuse/Agama1/Manager";
 
 /**
  * Manager base client
@@ -126,8 +126,8 @@ class ManagerBaseClient {
 }
 
 /**
-  * Client to interact with the D-Installer manager service
+  * Client to interact with the Agama manager service
   */
-class ManagerClient extends WithProgress(WithStatus(ManagerBaseClient, MANAGER_PATH), MANAGER_PATH) {}
+class ManagerClient extends WithProgress(WithStatus(ManagerBaseClient, MANAGER_PATH), MANAGER_PATH) { }
 
 export { ManagerClient };

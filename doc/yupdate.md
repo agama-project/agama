@@ -1,4 +1,4 @@
-# Patching the D-Installer on a Live Medium
+# Patching the Agama on a Live Medium
 
 The D-installer allows patching itself directly from the GitHub sources
 or from your local Git checkout using the [yupdate script](
@@ -15,14 +15,14 @@ end users or testers.
 ## Patching from GitHub
 
 ```
-yupdate patch yast/d-installer master
+yupdate patch yast/agama master
 ```
 
 You can replace the `master` branch with any branch containing a fix or a new feature.
 
 ## Patching from a Local Git Checkout
 
-First you need to run the `rake server` command in your D-Installer Git checkout.
+First you need to run the `rake server` command in your Agama Git checkout.
 
 Then run this command:
 
@@ -42,7 +42,7 @@ You can modify the update process with these environment variables:
   and will be reused in the next run. This can speed up the patching process
   if you need to patch the installer several times. On the other hand this
   increases the amount of needed RAM memory.
-  The cache is stored in `$HOME/.cache/d-installer-devel/` directory,
+  The cache is stored in `$HOME/.cache/agama-devel/` directory,
   if you need to refresh the content of the cache then delete this directory.
 - `NODE_ENV=development` - The web front-end will be built in the development
   mode. The files will not be minimized and additional `*.map` files will be
@@ -91,6 +91,6 @@ The support is implemented in the main [Rakefile](../Rakefile) and in the
 scripts.
 
 - The `.yupdate.pre` script prepares the system for compiling and installing
-  new D-Installer files.
+  new Agama files.
 - The `Rakefile` code builds and installs both backend and frontend parts.
 - The `.yupdate.pre` script activates the changes, it restarts the backend if needed.

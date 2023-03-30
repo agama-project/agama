@@ -7,7 +7,7 @@ function mainPagePath():string {
   // when running at the default cockpit port use the full cockpit path,
   // otherwise expect the webpack development server where the installer
   // is available at the root path
-  return (baseURL.port == "9090") ? "/cockpit/@localhost/d-installer/index.html" : "/";
+  return (baseURL.port == "9090") ? "/cockpit/@localhost/agama/index.html" : "/";
 }
 
 export {

@@ -1,12 +1,12 @@
 {
-    "name": "d-installer",
+    "name": "agama",
     "requires": {
         "cockpit": "137"
     },
 
     "tools": {
         "index": {
-            "label": "D-Installer"
+            "label": "Agama"
         }
     }
 }

@@ -72,7 +72,7 @@ function App() {
 
   return (
     <Layout>
-      <Title>D-Installer</Title>
+      <Title>Agama</Title>
       <Content />
     </Layout>
   );

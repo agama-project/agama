@@ -26,7 +26,7 @@ import { UsersClient } from "./users";
 
 jest.mock("./dbus");
 
-const USERS_IFACE = "org.opensuse.DInstaller.Users1";
+const USERS_IFACE = "org.opensuse.Agama.Users1";
 
 let setFirstUserResult = [true, []];
 

@@ -24,9 +24,9 @@
 import DBusClient from "./dbus";
 import { WithValidation } from "./mixins";
 
-const USERS_SERVICE = "org.opensuse.DInstaller.Users";
-const USERS_IFACE = "org.opensuse.DInstaller.Users1";
-const USERS_PATH = "/org/opensuse/DInstaller/Users1";
+const USERS_SERVICE = "org.opensuse.Agama.Users1";
+const USERS_IFACE = "org.opensuse.Agama.Users1";
+const USERS_PATH = "/org/opensuse/Agama/Users1";
 
 /**
 * @typedef {object} UserResult
@@ -180,6 +180,6 @@ class UsersBaseClient {
   }
 }
 
-class UsersClient extends WithValidation(UsersBaseClient, USERS_PATH) {}
+class UsersClient extends WithValidation(UsersBaseClient, USERS_PATH) { }
 
 export { UsersClient };

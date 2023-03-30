@@ -1,11 +1,11 @@
 # Packaging
 
-D-Installer packages are available in the [YaST:Head:D-Installer project in
-OBS](https://build.opensuse.org/project/show/YaST:Head:D-Installer). This document summarizes the
+Agama packages are available in the [YaST:Head:Agama project in
+OBS](https://build.opensuse.org/project/show/YaST:Head:Agama). This document summarizes the
 process we follow to build those packages.
 
-The process to build the Ruby-based ones (`rubygem-d-installer` and `rubygem-d-installer-cli`) is
-different from the one we use to build the web UI (`cockpit-d-installer`). The former packages are
+The process to build the Ruby-based ones (`rubygem-agama` and `rubygem-agama-cli`) is
+different from the one we use to build the web UI (`cockpit-agama`). The former packages are
 built in the same way that other YaST packages (through Rake tasks), while the latter package is
 automatically built in the Open Build Service.
 
@@ -15,7 +15,7 @@ In order to release a new version, we need to:
 
 * Update the version number in the `VERSION` file in the corresponding subdirectory. These files are
   read by the Ruby-based packages when building the gems.
-* Tag the repository with the proper number. The process to build `cockpit-d-installer` uses this
+* Tag the repository with the proper number. The process to build `cockpit-agama` uses this
   information to infer the version. You can set the tag with something like:
 
       git tag --sign 0.5 --message "Version 0.5"
@@ -29,7 +29,7 @@ to update the packages in the build service.
 ### Service
 
 You can check the current package in
-[YaST:Head:D-Installer/rubygem-d-installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/rubygem-d-installer).
+[YaST:Head:Agama/rubygem-agama](https://build.opensuse.org/package/show/YaST:Head:Agama/rubygem-agama).
 
 Given that you are in the `service` directory, just type the following command to update the
 package in the build service:
@@ -43,7 +43,7 @@ If you just want to build the package locally, run:
 ### The Cockpit module
 
 The current package is
-[YaST:Head:D-Installer/cockpit-d-installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/cockpit-d-installer).
+[YaST:Head:Agama/cockpit-agama](https://build.opensuse.org/package/show/YaST:Head:Agama/cockpit-agama).
 It relies on [OBS Source
 Services](https://openbuildservice.org/help/manuals/obs-user-guide/cha.obs.source_service.html) to
 fetch the sources (including the dependencies), set the version and build the package. You can
@@ -66,9 +66,9 @@ flows in the upcoming 2.7 release](https://openbuildservice.org/2016/04/08/new_g
 ### Command-line interface
 
 The current package is
-[YaST:Head:D-Installer](https://build.opensuse.org/package/show/YaST:Head:D-Installer/d-installer-cli).
+[YaST:Head:Agama](https://build.opensuse.org/package/show/YaST:Head:Agama/agama-cli).
 Bear in mind that the sources are in a [different
-repository](https://github.com/yast/d-installer-cli). To update the package in the build service,
+repository](https://github.com/yast/agama-cli). To update the package in the build service,
 run the following commands:
 
       osc service runall
@@ -84,5 +84,5 @@ respect such a tag. (e.g., `0.1~2`).
 ### The Live ISO
 
 The ISO is built and developed in
-[YaST:Head:D-Installer/d-installer-live](https://build.opensuse.org/package/show/YaST:Head:D-Installer/d-installer-live).
+[YaST:Head:Agama/agama-live](https://build.opensuse.org/package/show/YaST:Head:Agama/agama-live).
 See [IMAGE.md](./IMAGE.md) for more details.

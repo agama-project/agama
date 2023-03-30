@@ -7,8 +7,8 @@ inherit_from:
 AllCops:
   Exclude:
     - vendor/**/*
-    - lib/dinstaller/dbus/y2dir/**/*
-    - d-installer.gemspec
+    - lib/agama/dbus/y2dir/**/*
+    - agama.gemspec
     - package/*.spec
 
 # a D-Bus method definition may take up more line lenght than usual

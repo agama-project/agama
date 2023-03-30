@@ -22,10 +22,10 @@
 
 # Helper script to create a configuration file for a selected list of products.
 #
-#   filter-config.rb /etc/d-installer.yaml ALP-Bedrock ALP-Micro
+#   filter-config.rb /etc/agama.yaml ALP-Bedrock ALP-Micro
 
 require "yast"
-require "dinstaller/config"
+require "agama/config"
 require "yaml"
 
 if ARGV.size < 2
@@ -41,7 +41,7 @@ unless File.exist?(path)
   exit(2)
 end
 
-config = DInstaller::Config.from_file(path)
+config = Agama::Config.from_file(path)
 
 unknown_products = product_ids - config.products.keys
 unless unknown_products.empty?

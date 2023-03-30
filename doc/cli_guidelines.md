@@ -1,6 +1,6 @@
-# D-Installer CLI Guidelines
+# Agama CLI Guidelines
 
-This document defines the syntax for the D-Installer CLI. For more CLI specific aspects like return values, flags, etc, please refer to [clig.dev](https://clig.dev/). Guidelines from clig.dev are agnostic about programming languages and tooling in general, and it can be perfectly used as reference for the D-Installer CLI.
+This document defines the syntax for the Agama CLI. For more CLI specific aspects like return values, flags, etc, please refer to [clig.dev](https://clig.dev/). Guidelines from clig.dev are agnostic about programming languages and tooling in general, and it can be perfectly used as reference for the Agama CLI.
 
 ## CLI Syntax
 
@@ -29,49 +29,49 @@ In the following commands `<key>` represents a YAML key from the config structur
 This is the list of all sub-commands and verbs:
 
 ~~~
-$ dinstaller install
+$ agama install
 Starts the installation.
 
-$ dinstaller abort
+$ agama abort
 Aborts the installation.
 
-$ dinstaller status
+$ agama status
 Prints the current status of the installation process and informs about pending actions (e.g., if there are questions waiting to be answered, if a product is not selected yet, etc).
 
-$ dinstaller watch
+$ agama watch
 Prints messages from the installation process (e.g., progress, questions, etc).
 
-$ dinstaller config load <file>
+$ agama config load <file>
 Loads installation config from a YAML file, keeping the rest of the config as it is.
 
-$ dinstaller config show [<key>]
+$ agama config show [<key>]
 Prints the current installation config in YAML format. If a <key> is given, then it only prints the content for the given key.
 
-$ dinstaller config set <key>=<value> ...
+$ agama config set <key>=<value> ...
 Sets a config value for the given key.
 
-$ dinstaller config unset <key>
+$ agama config unset <key>
 Removes the current value for the given key.
 
-$ dinstaller config reset [<key>]
+$ agama config reset [<key>]
 Sets the default value for the given <key>. If no key is given, then the whole config is reset.
 
-$ dinstaller config add <list-key> [<key>=]<value> ...
+$ agama config add <list-key> [<key>=]<value> ...
 Adds a new entry with all the given key-value pairs to a config list. The `<key>=` part is omitted for a list of scalar values (e.g., languages).
 
-$ dinstaller config delete <list-key> [<key>=]<value> ...
+$ agama config delete <list-key> [<key>=]<value> ...
 Deletes any entry matching all the given key-value pairs from a config list. The `<key>=` part is omitted for a list of scalar values.
 
-$ dinstaller config check
+$ agama config check
 Validates the config and prints errors
 
-$ dinstaller config info <key> [<value>]
+$ agama config info <key> [<value>]
 Prints info about the given key. If no value is given, then it prints what values are admitted by the given key. If a value is given, then it shows extra info about such a value.
 
-$ dinstaller summary [<section>]
+$ agama summary [<section>]
 Prints a summary with the actions to perform in the system. If a section is given (e.g., storage, software, ...), then it only shows the section summary.
 
-$ dinstaller questions
+$ agama questions
 Prints questions and allows to answer them.
 
 ~~~
@@ -117,68 +117,68 @@ Let's see some examples:
 
 ~~~
 # Set a product
-$ dinstaller config set product=Tumbleweed
+$ agama config set product=Tumbleweed
 
 # Set user values
-$ dinstaller config set user.name=linux
-$ dinstaller config set user.fullname=linux
-$ dinstaller config set user.password=linux
-$ dinstaller config set user.name=linux user.fullname=linux user.password=12345
+$ agama config set user.name=linux
+$ agama config set user.fullname=linux
+$ agama config set user.password=linux
+$ agama config set user.name=linux user.fullname=linux user.password=12345
 
 # Unset user
-$ dinstaller config unset user
+$ agama config unset user
 
 # Add and delete languages
-$ dinstaller config add languages en_US
-$ dinstaller config delete languages en_US
+$ agama config add languages en_US
+$ agama config delete languages en_US
 
 # Set storage settings
-$ dinstaller config set storage.lvm=false
-$ dinstaller config set storage.encryption_password=12345
+$ agama config set storage.lvm=false
+$ agama config set storage.encryption_password=12345
 
 # Add and delete candidate devices
-$ dinstaller config add storage.candidate_devices /dev/sda
-$ dinstaller config delete storage.candidate_devices /dev/sdb
+$ agama config add storage.candidate_devices /dev/sda
+$ agama config delete storage.candidate_devices /dev/sdb
 
 # Add and delete storage volumes
-$ dinstaller config add storage.volumes mountpoint=/ minsize=10GiB
-$ dinstaller config delete storage.volumes mountpoint=/home
+$ agama config add storage.volumes mountpoint=/ minsize=10GiB
+$ agama config delete storage.volumes mountpoint=/home
 
 # Reset storage config
-$ dinstaller config reset storage
+$ agama config reset storage
 
 # Show some config values
-$ dinstaller config show storage.candidate_devices
-$ dinstaller config show user
+$ agama config show storage.candidate_devices
+$ agama config show user
 
 # Dump config into a file
-$ dinstaller config show > ~/config.yaml
+$ agama config show > ~/config.yaml
 
 # Show info of a key
-$ dinstaller config info storage.candidate_devices
-$ dinstaller config info languages
+$ agama config info storage.candidate_devices
+$ agama config info languages
 
 # Show info of a specific value
-$ dinstaller config info storage.candidate_devices /dev/sda
+$ agama config info storage.candidate_devices /dev/sda
 
 # Show the storage actions to perform in the system
-$ dinstaller summary storage
+$ agama summary storage
 ~~~
 
 ## Product Selection
 
-D-Installer can automatically infers all the config values, but at least one product must be selected. Selecting a product implies some actions in the D-Bus services (e.g., storage devices are probed). And the D-Bus services might emit some questions if needed (e.g., asking to provide a LUKS password). Because of that, the command for selecting a product could ask questions to the user:
+Agama can automatically infers all the config values, but at least one product must be selected. Selecting a product implies some actions in the D-Bus services (e.g., storage devices are probed). And the D-Bus services might emit some questions if needed (e.g., asking to provide a LUKS password). Because of that, the command for selecting a product could ask questions to the user:
 
 ~~~
-$ dinstaller config set product=ALP
+$ agama config set product=ALP
 > The device /dev/sda is encrypted. Provide an encryption password if you want to open it (enter to skip):
 ~~~
 
 If a product is not selected yet, then many commands cannot work. In that case, commands should inform about it:
 
 ~~~
-$ dinstaller config show
-A product is not selected yet. Please, select a product first: dinstaller config set product=<product>.
+$ agama config show
+A product is not selected yet. Please, select a product first: agama config set product=<product>.
 ~~~
 
 ## D-Bus Questions
@@ -186,8 +186,8 @@ A product is not selected yet. Please, select a product first: dinstaller config
 Sometimes answering pending questions is required before performing the requested command. For example, for single product live images the storage proposal is automatically done (the target product is already known). If some questions were emitted during the process, then they have to be answered before continuing using the CLI. Commands would show a warning to inform about the situation and how to proceed:
 
 ~~~
-$ dinstaller config show
-There are pending questions. Please, answer questions first: dinstaller questions.
+$ agama config show
+There are pending questions. Please, answer questions first: agama questions.
 ~~~
 
 ## Non Interactive Mode

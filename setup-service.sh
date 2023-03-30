@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Using a git checkout in the current directory,
-# set up the service (backend) part of d-installer
+# set up the service (backend) part of agama
 # so that it can be used by
 # - the web frontend (as set up by setup.sh)
 # - the CLI
@@ -40,23 +40,23 @@ sudosed() {
 )
 
 # - D-Bus configuration
-$SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/d-installer.conf
+$SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
 
 # - D-Bus activation configuration
 #   (this could be left out but then we would rely
-#    on the manual startup via bin/d-installer)
+#    on the manual startup via bin/agama)
 (
   cd $MYDIR/service/share
-  DBUSDIR=/usr/share/dbus-1/d-installer-services
+  DBUSDIR=/usr/share/dbus-1/agama-services
   $SUDO mkdir -p $DBUSDIR
-  for SVC in org.opensuse.DInstaller*.service; do
+  for SVC in org.opensuse.Agama*.service; do
     sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/service/bin/@" $SVC $DBUSDIR/$SVC
   done
   sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/service/bin/@" \
-          systemd.service /usr/lib/systemd/system/d-installer.service
+          systemd.service /usr/lib/systemd/system/agama.service
   $SUDO systemctl daemon-reload
-  # Start the separate dbus-daemon for D-Installer
-  $SUDO systemctl start d-installer.service
+  # Start the separate dbus-daemon for Agama
+  $SUDO systemctl start agama.service
 )
 
 # - Make sure NetworkManager is running

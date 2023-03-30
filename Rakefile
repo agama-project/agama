@@ -59,7 +59,7 @@ end
 
 Yast::Tasks.configuration do |conf|
   conf.obs_api = "https://api.opensuse.org"
-  conf.obs_project = "YaST:Head:D-Installer"
+  conf.obs_project = "YaST:Head:Agama"
   conf.package_dir = File.join(Rake.original_dir, "package")
   conf.obs_target = "openSUSE_Tumbleweed"
   package_name = package_name_from(Rake.original_dir)
@@ -86,7 +86,7 @@ task package: [] do
   end
 end
 
-SERVICES_DIR = "/usr/share/dbus-1/d-installer-services"
+SERVICES_DIR = "/usr/share/dbus-1/agama-services"
 
 # support for patching by the yupdate script,
 # only when running in the inst-sys or live medium
@@ -98,17 +98,17 @@ if File.exist?("/.packages.initrd") || `mount`.match?(/^[\w]+ on \/ type overlay
 
       puts "Installing the DBus service..."
       Dir.chdir("service") do
-        sh "gem build d-installer.gemspec"
-        sh "gem install --local --force --no-format-exec --no-doc --build-root #{destdir.shellescape} d-installer-*.gem"
+        sh "gem build agama.gemspec"
+        sh "gem install --local --force --no-format-exec --no-doc --build-root #{destdir.shellescape} agama-*.gem"
 
         # update the DBus configuration files
         FileUtils.mkdir_p(SERVICES_DIR)
-        sh "cp share/org.opensuse.DInstaller*.service #{SERVICES_DIR}"
-        sh "cp share/dbus.conf /usr/share/dbus-1/d-installer.conf"
+        sh "cp share/org.opensuse.Agama*.service #{SERVICES_DIR}"
+        sh "cp share/dbus.conf /usr/share/dbus-1/agama.conf"
 
         # update the systemd service file
         source_file = "share/systemd.service"
-        target_file = "/usr/lib/systemd/system/d-installer.service"
+        target_file = "/usr/lib/systemd/system/agama.service"
 
         unless FileUtils.identical?(source_file, target_file)
           FileUtils.cp(source_file, target_file)
@@ -126,11 +126,11 @@ if File.exist?("/.packages.initrd") || `mount`.match?(/^[\w]+ on \/ type overlay
         # clean up the extra files when switching the development/production mode
         if node_env == "production"
           # remove the uncompressed and development files
-          FileUtils.rm_f(Dir.glob("/usr/share/cockpit/d-installer/index.{css,html,js}"))
-          FileUtils.rm_f(Dir.glob("/usr/share/cockpit/d-installer/*.map"))
+          FileUtils.rm_f(Dir.glob("/usr/share/cockpit/agama/index.{css,html,js}"))
+          FileUtils.rm_f(Dir.glob("/usr/share/cockpit/agama/*.map"))
         else
           # remove the compressed files
-          FileUtils.rm_f(Dir.glob("/usr/share/cockpit/d-installer/*.gz"))
+          FileUtils.rm_f(Dir.glob("/usr/share/cockpit/agama/*.gz"))
         end
       end
     end

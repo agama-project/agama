@@ -1,4 +1,0 @@
-[D-BUS Service]
-Name=org.opensuse.DInstaller
-Exec=/usr/bin/d-installer manager
-User=root

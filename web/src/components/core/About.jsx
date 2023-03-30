@@ -37,20 +37,20 @@ export default function About() {
         icon={<Icon name="help" size="24" />}
         onClick={open}
       >
-        About D-Installer
+        About Agama
       </Button>
 
       <Popup
         isOpen={isOpen}
-        title="About D-Installer"
+        title="About Agama"
       >
         <Text>
-          D-Installer is an <strong>experimental installer</strong> for (open)SUSE systems. It is
+          Agama is an <strong>experimental installer</strong> for (open)SUSE systems. It is
           still under development so, please, do not use it in production environments. If you want
           to give it a try, we recommend to use a virtual machine to prevent any possible data loss.
         </Text>
         <Text>
-          For more information, please visit the project's repository at https://github.com/yast/d-installer.
+          For more information, please visit the project's repository at https://github.com/openSUSE/Agama.
         </Text>
         <Popup.Actions>
           <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>

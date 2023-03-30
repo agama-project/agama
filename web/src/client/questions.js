@@ -23,19 +23,19 @@
 
 import DBusClient from "./dbus";
 
-const QUESTIONS_SERVICE = "org.opensuse.DInstaller.Questions";
+const QUESTIONS_SERVICE = "org.opensuse.Agama.Questions1";
 
 const DBUS_CONFIG = {
   questions: {
-    path: "/org/opensuse/DInstaller/Questions1",
+    path: "/org/opensuse/Agama/Questions1",
     ifaces: {
       objectManager: "org.freedesktop.DBus.ObjectManager"
     }
   },
   question: {
     ifaces: {
-      question: "org.opensuse.DInstaller.Question1",
-      luksActivation: "org.opensuse.DInstaller.Question.LuksActivation1"
+      question: "org.opensuse.Agama.Questions1",
+      luksActivation: "org.opensuse.Agama.Questions1.LuksActivation"
     }
   }
 };

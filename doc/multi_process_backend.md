@@ -24,28 +24,28 @@ bring much benefit, but we thought it was a good starting point because:
 
 1. Users handling was (partially) refactored recently, so it is well covered
    by unit tests.
-2. No other D-Installer component relies on users handling.
+2. No other Agama component relies on users handling.
 
 ### Users
 
 We found these dependencies:
 
-- `MailAliases` (which depends on `MailTable`): no other D-Installer component
+- `MailAliases` (which depends on `MailTable`): no other Agama component
   depends on it.
 - `ShadowConfig` uses CFA to modify the `login.defs` file, which is also used
   by `Security`. However, it looks like `Security` is not used in other parts
   of D-installer.
 - `Autologin`, which uses many modules, including packages, can be tricky. It
   basically checks which supported Display Managers are available.
-- `ProductFeatures`, which should be replaced with D-Installer configuration
+- `ProductFeatures`, which should be replaced with Agama configuration
   mechanism. Ignored by now.
 
 We reached these agreements:
 
-- This PoC uses a special directory (`service/lib/dinstaller/dbus/y2dir`)
+- This PoC uses a special directory (`service/lib/agama/dbus/y2dir`)
   which contains a modified version of the dependencies. This directory is
   added to `Y2DIR`, so these modules are used instead of the original ones.
-- Having `DInstaller::DBus::Clients` for D-Bus clients that are needed to
+- Having `Agama::DBus::Clients` for D-Bus clients that are needed to
   communicate between different processes.
 
 ## Future steps

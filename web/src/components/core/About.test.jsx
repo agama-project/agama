@@ -27,7 +27,7 @@ import { plainRender } from "~/test-utils";
 import About from "./About";
 
 describe("About", () => {
-  it("allows user to read 'About D-Installer'", async () => {
+  it("allows user to read 'About Agama'", async () => {
     const { user } = plainRender(<About />);
 
     const button = screen.getByRole("button", { name: /About/i });
@@ -35,7 +35,7 @@ describe("About", () => {
 
     const dialog = await screen.findByRole("dialog");
 
-    within(dialog).getByText("About D-Installer");
+    within(dialog).getByText("About Agama");
 
     const closeButton = within(dialog).getByRole("button", { name: /Close/i });
     await user.click(closeButton);

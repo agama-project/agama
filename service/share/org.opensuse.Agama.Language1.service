@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.opensuse.Agama.Language1
+Exec=/usr/bin/agamactl language
+User=root

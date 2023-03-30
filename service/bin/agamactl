@@ -1,0 +1,123 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+#
+# Copyright (c) [2022] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
+# TEMPORARY overwrite of Y2DIR to use DBus for communication with dependent yast modules
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
+
+# Set the PATH to a known value
+ENV["PATH"] = "/sbin:/usr/sbin:/usr/bin:/bin"
+
+require "rubygems"
+# find Gemfile when D-Bus activates a git checkout
+Dir.chdir(__dir__) do
+  require "bundler/setup"
+end
+require "agama/dbus/service_runner"
+require "agama/dbus/server_manager"
+
+# Set up a {Logger} suitable either for terminal (started manually)
+# or syslog (D-Bus activated)
+# @return [Logger]
+def logger_for(name)
+  if $stdout.tty?
+    formatter = Logger::Formatter.new # the default
+  else
+    # going via syslog which will provide time and progname already
+    formatter = ->(severity, _time, _progname, msg) { "#{severity}: #{msg}\n" }
+    $stdout.sync = true
+  end
+
+  Logger.new($stdout, progname: name.to_s, formatter: formatter)
+end
+
+# Runs the service with the given name
+#
+# @param name [Symbol] Service name
+# @see ORDERED_SERVICES
+def start_service(name)
+  general_y2dir = File.expand_path("../lib/agama/dbus/y2dir", __dir__)
+  module_y2dir = File.expand_path("../lib/agama/dbus/y2dir/#{name}", __dir__)
+  ENV["Y2DIR"] = [ENV.fetch("Y2DIR", nil), module_y2dir, general_y2dir].compact.join(":")
+
+  service_runner = Agama::DBus::ServiceRunner.new(name, logger: logger_for(name))
+  service_runner.run
+end
+
+ORDERED_SERVICES = [:questions, :language, :software, :storage, :users, :manager].freeze
+
+# Normally the services are started by D-Bus activation.
+# This starts all the services sequentially without relying on that.
+# This is useful during development to have their log output on the terminal,
+# not mixed with other syslog/journal messages.
+# The downside is relying on an arbitrary delay, and a manually maintained ordering.
+#
+# @return [void]
+# @see ORDERED_SERVICES
+def start_all_services
+  ORDERED_SERVICES.map do |name|
+    puts "Starting #{name}:"
+    fork { exec("#{__FILE__} #{name}") }
+    sleep(7)
+  end
+end
+
+dbus_server_manager = Agama::DBus::ServerManager.new
+
+if ARGV.empty?
+  start_all_services
+  Signal.trap("SIGINT") do
+    puts "Stopping all services..."
+    exit
+  end
+  Process.wait
+elsif ["-h", "--help"].include?(ARGV[0])
+  me = $PROGRAM_NAME
+  puts "Usage:"
+  puts "#{me} -h|--help"
+  puts "#{me} -s|--status"
+  puts "#{me} -k|--kill"
+  puts "#{me} -d|--daemon"
+  puts "#{me} #{ORDERED_SERVICES.sort.join("|")}"
+elsif ["-s", "--status"].include?(ARGV[0])
+  # The .[a-z] ensures matching the forked processes
+  # which can be distinguished by having a non-option argument
+  system "pgrep -fl bin/agamactl.[a-z]"
+  # busctl is prettier but will find nothing until the service files are installed,
+  # hence the pgrep above
+  system "busctl --address #{dbus_server_manager.address} | grep -E '^NAME|Agama'"
+elsif ["-k", "--kill"].include?(ARGV[0])
+  system "pkill -f bin/agamactl.[a-z]"
+  # stop the d-bus daemon
+  dbus_server_manager.stop_server
+elsif ["-d", "--daemon"].include?(ARGV[0])
+  # start the D-Bus server
+  dbus_server_manager.find_or_start_server
+else
+  dbus_server_manager.find_or_start_server
+  name = ARGV[0]
+  Signal.trap("SIGINT") do
+    puts "Stopping #{name} service..."
+    exit
+  end
+  start_service(name.to_sym)
+end

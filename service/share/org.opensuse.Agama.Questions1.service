@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.opensuse.Agama.Questions1
+Exec=/usr/bin/agamactl questions
+User=root

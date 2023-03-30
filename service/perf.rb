@@ -4,11 +4,11 @@ require "benchmark"
 
 $LOAD_PATH << File.expand_path("lib", __dir__)
 
-require "dinstaller/dbus/clients/dinstaller"
+require "agama/dbus/clients/software"
 
 PACKAGES = ["autologin-support", "kdm", "gdm", "sddm", "lightdm"].freeze
 
-CLIENT = DInstaller::DBus::Clients::DInstaller
+CLIENT = Agama::DBus::Clients::Software.new
 # warm up call
 CLIENT.provisions_selected?(PACKAGES)
 
