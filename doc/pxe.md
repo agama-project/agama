@@ -132,7 +132,7 @@ system boots and the services are started, you should be able to access Agama wi
 on port 9090.
 
 :warning: 4GB RAM is the minimum memory for the virtual machine and using less could affect the
-boot proccess.
+boot process.
 
 ## Tips
 

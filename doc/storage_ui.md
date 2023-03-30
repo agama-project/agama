@@ -141,7 +141,7 @@ actions allow to:
 - Same action but using the minimum sizes (i.e. min) as lower limit
 
 The proposed workflow and interface should cover most of the basic use-cases, although further
-improvements may be needed to accomodate scenarios like re-installing the system in a similar way to
+improvements may be needed to accommodate scenarios like re-installing the system in a similar way to
 the option "Import Mount Points" from the YaST Partitioner.
 
 ## Automatic Size Limits
@@ -153,7 +153,7 @@ the `GuidedProposal` based on the following aspects:
 - Whether the size of the volume must be influenced by the RAM size (used for suspend in the case
   of swap and for Kdump in the case of the root volume)
 - Whether the given volume is marked as "fallback" for another one (eg. if the separate /home is
-  disabled then the upper limit of the root one dissapears)
+  disabled then the upper limit of the root one disappears)
 
 To make that possible, the size limits of the volumes that are affected by one or several of those
 circumstances will be set as "automatic" by default. If that's the case, a tool-tip will be

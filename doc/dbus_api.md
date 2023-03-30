@@ -403,7 +403,7 @@ Delete(in o  iscsi_node_path,
        out u result)
 ~~~
 
-Deletes a discovered iSCSI node. The iSCSI node object is unexported. Note that connected nodes cannot be deleted.
+Deletes a discovered iSCSI node. The iSCSI node object is not exported. Note that connected nodes cannot be deleted.
 
 Arguments:
 
