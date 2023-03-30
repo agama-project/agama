@@ -1,0 +1,41 @@
+-------------------------------------------------------------------
+Fri Mar 24 14:36:36 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 0.2:
+  * Add validation for software and users settings
+    (gh#yast/agama-cli#48, gh#yast/agama-cli#51).
+  * Better error reporting when the bus is not found
+    (gh#yast/agama-cli#48).
+  * Improve the progress reporting mechanism, although it is still
+    a work in progress (gh#yast/agama-cli#50).
+
+-------------------------------------------------------------------
+Wed Mar 22 09:39:29 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for setting root authentication mechanisms
+  (gh#yast/agama-cli#47).
+
+-------------------------------------------------------------------
+Tue Mar 21 16:06:02 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Do not fall back to the system D-Bus (gh#yast/agama-cli#45).
+
+-------------------------------------------------------------------
+Wed Mar 21 13:28:01 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use JSON as the default format (gh#yast/agama-cli#46).
+
+-------------------------------------------------------------------
+Tue Mar 21 08:55:39 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix the path of the JSON schema (gh#yast/agama-cli#44).
+
+-------------------------------------------------------------------
+Thu Mar 16 11:56:42 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- First version of the package:
+  * Querying and setting simple values.
+  * Adding elements to collections
+  * Handling of auto-installation profiles.
+  * Basic error handling
+- 0.1

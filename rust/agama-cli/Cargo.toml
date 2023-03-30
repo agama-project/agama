@@ -1,0 +1,21 @@
+[package]
+name = "agama-cli"
+version = "1.0.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.1.4", features = ["derive"] }
+agama-lib = { path="../agama-lib" }
+serde = { version = "1.0.152" }
+serde_json = "1.0.91"
+serde_yaml = "0.9.17"
+indicatif= "0.17.3"
+async-std = { version ="1.12.0", features = ["attributes"] }
+thiserror = "1.0.39"
+convert_case = "0.6.0"
+
+[[bin]]
+name = "agama"
+path = "src/main.rs"

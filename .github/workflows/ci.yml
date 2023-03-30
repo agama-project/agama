@@ -255,6 +255,23 @@ jobs:
           playwright/test-results/**/*
           /tmp/log/YaST2/y2log
 
+  cli_build:
+    runs-on: ubuntu-latest
+
+    env:
+      CARGO_TERM_COLOR: always
+
+    defaults:
+      run:
+        working-directory: ./rust
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
+
 
   finish:
     runs-on: ubuntu-latest
