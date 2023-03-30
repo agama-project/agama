@@ -4,14 +4,44 @@
 sudo busctl -\-verbose -\-address unix:path=/run/agama/bus -\-xml-interface introspect org.opensuse.Agama.Language1 /org/opensuse/Agama/Language1
 # but pick only the main interface
 -->
-<node name="/org/opensuse/Agama/Language1">
+<node name="/org/opensuse/Agama/Language1"
+  xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
   <interface name="org.opensuse.Agama.Language1">
     <method name="ToInstall">
-      <arg name="LangIDs" direction="in" type="as"/>
+      <doc:doc>
+        <doc:summary>Set list of languages to install</doc:summary>
+        <doc:description>
+          <doc:example>
+            <doc:code>ToInstall(["cs_CZ", "de_DE"])</doc:code>
+          </doc:example>
+        </doc:description>
+      </doc:doc>
+      <arg name="LangIDs" direction="in" type="as">
+        <doc:doc>
+          <doc:summary>List of language IDs from <doc:ref type="property"
+           to="Language1:AvailableLanguages">AvailableLanguages</doc:ref></doc:summary>
+        </doc:doc>
+      </arg>
     </method>
     <method name="Finish">
     </method>
-    <property type="a(ssa{sv})" name="AvailableLanguages" access="read"/>
-    <property type="as" name="MarkedForInstall" access="read"/>
+    <property type="a(ssa{sv})" name="AvailableLanguages" access="read">
+      <doc:doc>
+        <doc:summary>List of all available languages to install on target system.</doc:summary>
+        <doc:description>
+          <doc:para>Elements are triples:
+             language ID, human readable language name, and
+             a dictionary for future extensions to provide more data</doc:para>
+          <doc:example>
+            <doc:code>AvailableLanguages -&gt; [["cs_CZ", "Czech", {}]]</doc:code>
+          </doc:example>
+        </doc:description>
+      </doc:doc>
+    </property>
+    <property type="as" name="MarkedForInstall" access="read">
+      <doc:doc>
+        <doc:summary>List of languages to install. Same format as ToInstall</doc:summary>
+      </doc:doc>
+    </property>
   </interface>
 </node>
