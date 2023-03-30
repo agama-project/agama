@@ -18,6 +18,9 @@
   </xsl:call-template>
 </xsl:variable>
 
+<xsl:text disable-output-escaping='yes'
+>&lt;!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"&gt;&#10;</xsl:text>
+
 <refentry><xsl:attribute name="id"><xsl:value-of select="$basename"/></xsl:attribute>
   <refmeta>
     <refentrytitle role="top_of_page"><xsl:value-of select="//interface/@name"/></refentrytitle>
