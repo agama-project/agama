@@ -4,7 +4,7 @@ use quote::quote;
 use syn::{parse_macro_input, DeriveInput, Fields, Ident};
 
 /// Derive Settings, typically for a FooSettings struct.
-/// (see dinstaller_lib::settings::Settings but I cannot link to it without a circular dependency)
+/// (see agama_lib::settings::Settings but I cannot link to it without a circular dependency)
 #[proc_macro_derive(Settings, attributes(collection_setting))]
 pub fn agama_attributes_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);

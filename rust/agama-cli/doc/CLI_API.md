@@ -217,7 +217,7 @@ Commands should offer a `--non-interactive` option to make scripting possible. T
 
 ## Current CLI
 
-As reference, this is the current CLI:
+As reference, this was the old CLI:
 
 ~~~
 dinstallerctl install # Perform the installation
