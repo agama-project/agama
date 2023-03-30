@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   # Single deploy job since we're just deploying
-  deploy:
+  pages_deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -31,13 +31,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Install DocBook tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get --assume-yes --no-install-recommends install xmlto docbook-xsl
+
+      - name: Build HTML via DocBook
+        run: cd doc/dbus; make
+
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          # Upload entire repository
-          path: '.'
+          # upload the D-Bus docs... TODO index... what if we want something else too?
+          path: 'doc/dbus'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
