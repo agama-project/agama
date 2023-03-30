@@ -30,7 +30,7 @@ require "agama/config"
 # TODO: add ability to set product features in LSM::Base
 module Y2Security
   module LSM
-    # modified LSM Base class to use dinstaller config
+    # modified LSM Base class to use Agama config
     class Base
       def product_feature_settings
         return @product_feature_settings unless @product_feature_settings.nil?
