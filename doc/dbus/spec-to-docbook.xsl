@@ -175,6 +175,7 @@
 </xsl:template>
 
 <xsl:template match="doc:example">
+  <caption>Example:</caption>
 <informalexample>
 <xsl:apply-templates />
 </informalexample>
