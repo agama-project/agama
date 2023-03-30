@@ -11,7 +11,7 @@ Latest **iso** images can be downloaded from:
 https://download.opensuse.org/repositories/YaST:/Head:/Agama/images/iso/
 
 ```bash
-wget https://download-repositories.opensuse.org/repositories/SUSE:/ALP:/Products:/Installer:/0.8/images/iso/d-installer-live.s390x-ALP.iso
+wget https://download.opensuse.org/repositories/YaST:/Head:/Agama/images/iso/agama-live.s390x-ALP.iso
 ```
 
 ## Prepare the ISO to be served by your FTP server
