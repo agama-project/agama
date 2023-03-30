@@ -49,15 +49,6 @@
     </synopsis>
   </refsect1>
 
-  <refsect1 role="impl_interfaces">
-    <title role="impl_interfaces.title">Implemented Interfaces</title>
-    <para>
-    <xsl:value-of select="$interface"/> implements
-    org.freedesktop.DBus.Introspectable,
-    org.freedesktop.DBus.Properties
-    </para>
-  </refsect1>
-
   <refsect1 role="properties">
     <title role="properties.title">Properties</title>
     <synopsis>
