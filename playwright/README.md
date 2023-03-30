@@ -98,7 +98,7 @@ details of the failure.
 
 ### Stuck at D-Bus Loading
 
-It usually indicates an issue with the D-Installer D-Bus services. There is a step
+It usually indicates an issue with the Agama D-Bus services. There is a step
 called "Show D-Bus Services Logs" which should give a hint what is going wrong.
 Additional help can be the `y2log` file in the artifacts (see above).
 
