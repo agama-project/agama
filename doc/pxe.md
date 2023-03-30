@@ -94,7 +94,7 @@ If you want to use VirtualBox together with it's built-in TFTP support, you have
    You can use another way how to serve Agama's configuration file. E.g. local http server by changing
    boot option to `rd.iguana.control_url=http://<http-server-ip>/agama.yaml`
 
-4. With this setup Agama listens on port 9090 (see also bellow in Booting from PXE chapter). To be able
+4. With this setup Agama listens on port 9090 (see also below in Booting from PXE chapter). To be able
    to connect to it you need an additional network device as described in (1). You need to modify
    kernel boot options one more time and add something like `ip=enp0s8:dhcp` where `enp0s8` is second network device.
 
