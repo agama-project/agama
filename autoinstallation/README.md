@@ -138,7 +138,7 @@ you. You can boot the installation, use the web interface to tweak all the value
 terminal, generate the file by running the following command:
 
 ```
-$ sudo agama config show
+$ sudo agama config show > profile.json
 ```
 
 ## Shell-based installation
@@ -180,4 +180,6 @@ Auto-installation support is far from being complete, so you should have a few t
 * Progress reporting through the command-line interface is limited, so you should watch the web
   interface, especially if the installation gets stuck.
 * If something goes wrong processing the profile, you will not notice because Agama does not report
-  such problems yet. The only consequence is that the installation will not start.
+  such problems yet. The only consequence is that the installation will not start. You can check the
+  output of `journalctl -u agama-auto` for further information.
+* You need to manually reboot the system after installation.
