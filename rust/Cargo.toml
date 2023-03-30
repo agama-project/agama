@@ -1,0 +1,6 @@
+[workspace]
+members = [
+  "agama-lib",
+  "agama-cli",
+  "agama-derive"
+]

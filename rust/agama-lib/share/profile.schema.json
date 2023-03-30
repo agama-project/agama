@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/d-installer/profile.schema.json",
+  "title": "Profile",
+  "description": "Profile definition for automated installation",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "software": {
+      "description": "Software settings (e.g., product to install)",
+      "type": "object",
+      "properties": {
+        "product": {
+          "description": "Product identifier",
+          "type": "string"
+        }
+      }
+    },
+    "user": {
+      "description": "First user settings",
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "description": "Full name (e.g., 'Jane Doe')",
+          "type": "string"
+        },
+        "userName": {
+          "description": "User login name (e.g., 'jane.doe')",
+          "type": "string"
+        },
+        "password": {
+          "description": "User password (e.g., 'nots3cr3t')",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fullName",
+        "userName",
+        "password"
+      ]
+    },
+    "root": {
+      "description": "Root authentication settings",
+      "type": "object",
+      "properties": {
+        "password": {
+          "description": "Root password",
+          "type": "string"
+        },
+        "sshPublicKey": {
+          "description": "SSH public key",
+          "type": "string"
+        }
+      }
+    },
+    "localization": {
+      "description": "Localization settings",
+      "type": "object",
+      "properties": {
+        "language": {
+          "description": "System language ID (e.g., 'en_US')",
+          "type": "string"
+        },
+        "keyboard": {
+          "description": "Keyboard layout ID",
+          "type": "string"
+        }
+      }
+    },
+    "storage": {
+      "description": "Storage settings",
+      "type": "object",
+      "properties": {
+        "devices": {
+          "description": "Storage devices to install the system to",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "description": "Storage device name (e.g., '/dev/sda')",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

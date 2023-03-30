@@ -1,0 +1,25 @@
+{
+  "localization": {
+    "keyboard": "en_US",
+    "language": "en_US"
+  },
+  "software": {
+    "product": "ALP"
+  },
+  "storage": {
+    "devices": [
+      {
+        "name": "/dev/dm-1"
+      }
+    ]
+  },
+  "user": {
+    "fullName": "Jane Doe",
+    "password": "123456",
+    "userName": "jane.doe"
+  },
+  "root": {
+    "password": "nots3cr3t",
+    "sshKey": "..."
+  }
+}
