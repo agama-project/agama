@@ -305,10 +305,32 @@ See also:
     </xsl:call-template>
   </xsl:variable>
   <xsl:for-each select="///method">
+    <xsl:text>&#10;</xsl:text>
     <refsect2>
-    <title><anchor role="function"><xsl:attribute name="id"><xsl:value-of select="$basename"/>.<xsl:value-of select="@name"/></xsl:attribute></anchor><xsl:value-of select="@name"/> ()</title>
-<indexterm><primary><xsl:value-of select="@name"/></primary><secondary><xsl:value-of select="$basename"/></secondary></indexterm>
-<programlisting><xsl:value-of select="@name"/> (<xsl:call-template name="method-args"><xsl:with-param name="indent" select="string-length(@name) + 2"/><xsl:with-param name="prefix" select="."/></xsl:call-template>)</programlisting>
+      <title>
+        <anchor role="function">
+          <xsl:attribute name="id">
+            <xsl:value-of select="$basename"/>.<xsl:value-of select="@name"/>
+          </xsl:attribute>
+        </anchor>
+        <xsl:value-of select="@name"/>
+        <xsl:text> ()</xsl:text>
+      </title>
+      <indexterm>
+        <primary><xsl:value-of select="@name"/></primary>
+        <secondary><xsl:value-of select="$basename"/></secondary>
+      </indexterm>
+      <xsl:text>&#10;</xsl:text>
+      <programlisting>
+        <xsl:value-of select="@name"/>
+        <xsl:text> (</xsl:text>
+        <xsl:call-template name="method-args">
+          <xsl:with-param name="indent" select="string-length(@name) + 2"/>
+          <xsl:with-param name="prefix" select="."/>
+        </xsl:call-template>
+        <xsl:text>)</xsl:text>
+      </programlisting>
+      <xsl:text>&#10;</xsl:text>
     </refsect2>
 
     <xsl:call-template name="method-doc"/>
