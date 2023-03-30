@@ -123,6 +123,25 @@ root=live:http://example.org/d-installer.iso
 
 Below you will find the screenshots of an z/VM installation selecting the ALP Micro product and doing the activation and format of the DASD device with D-Installer:
 
+![x3269 terminal](https://user-images.githubusercontent.com/7056681/228835939-f6f5f9c8-e81c-4fe7-ac3d-2c6f2590e2cd.png)
+![SLES REXX ](https://user-images.githubusercontent.com/7056681/228842954-2ab59682-b82e-4759-9c1e-3e8575947b09.png)
+![Cockpit login](https://user-images.githubusercontent.com/7056681/228842974-8c1f4ea5-8165-4bb9-9e8b-51a39e89f321.png)
+![Product Selection](https://user-images.githubusercontent.com/7056681/228847895-38e900c3-f20d-40ca-9def-90d7ca547947.png)
+![Installation Summary](https://user-images.githubusercontent.com/7056681/228847915-701d5d80-0218-4986-8456-813b1461080a.png)
+![Storage Section](https://user-images.githubusercontent.com/7056681/228847920-306d72ee-6be1-42eb-8a6d-beac593e44ab.png)
+![Configure DASD](https://user-images.githubusercontent.com/7056681/228848927-63ba80d9-b607-4536-bd96-4de2942f2495.png)
+![DASDs list](https://user-images.githubusercontent.com/7056681/228842819-eb8261f1-040e-45d7-b299-80b67cf05615.png)
+![DASD activation](https://user-images.githubusercontent.com/7056681/228842827-5b73a37a-4576-408e-90a4-0250b1ce2fc1.png)
+![DASD list refreshed](https://user-images.githubusercontent.com/7056681/228842840-88104726-f640-40cc-af99-7948bed68f42.png)
+![DASD format](https://user-images.githubusercontent.com/7056681/228846800-6e31ec83-b0d5-4bb2-9fb3-315a1ab12198.png)
+![Format Progress](https://user-images.githubusercontent.com/7056681/228849469-b0a43d9b-62b0-4c77-aa99-a4f8f5b0ca02.png)
+
 ## Example of formatting 3 DASDs in parallel
 
+![Select DASDs](https://user-images.githubusercontent.com/7056681/228841345-d22260f5-f3a9-4a92-a3b5-526880449a34.png)
+![Format progress](https://user-images.githubusercontent.com/7056681/228841358-69ae66f4-f05c-48ba-b047-b24c8aca843a.png)
+
 ## Enable diagnose access example
+
+![Select FBA disk](https://user-images.githubusercontent.com/7056681/228841751-b5b37538-7d51-4a0a-9b97-4f2efdfe9e60.png)
+![Set use diag](https://user-images.githubusercontent.com/7056681/228841761-dec26714-30b2-4c9a-aaed-0e449698c74b.png)
