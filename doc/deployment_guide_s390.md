@@ -12,8 +12,9 @@ https://download.opensuse.org/repositories/YaST:/Head:/Agama/images/iso/
 
 ```bash
 wget https://download-repositories.opensuse.org/repositories/SUSE:/ALP:/Products:/Installer:/0.8/images/iso/d-installer-live.s390x-ALP.iso
-Prepare the ISO to be served by your FTP server
 ```
+
+## Prepare the ISO to be served by your FTP server
 
 Currently there is an already fixed issue in kiwi which makes the initrd root-readable only, therefore for modifying it we will extract the iso content instead of just mounting it.
 
@@ -27,7 +28,7 @@ sudo isoinfo -R -X -i d-installer.iso
 sudo chmod a+u boot s390x/initrd 
 ```
 
-**Note:** Setting up an installation server (NFS or FTP) is out of the scope of this document, refer to preparing for installation documentation for installation details.
+**Note:** Setting up an installation server (NFS or FTP) is out of the scope of this document, for further information, refer to [preparing for installation](https://documentation.suse.com/sles/15-SP4/html/SLES-all/cha-zseries.html#sec-zseries-prep) documentation.
 
 ## Example of z/VM machine installation
 
@@ -85,8 +86,6 @@ Although **cio_ignore** parameter is optional we used it in order to list only t
 
 As we do not have an interactive dialog for enabling and configuring our network device we need to provide the settings through the kernel command line, in this case we will use rd.zdev option for activating our qeth device and the ip option for configuring network settings the enc800 linux network interface.
 
-We even could activate our DASD device with the **rd.zdev=dasd,0.0.0160** option which in that case the **rd.cio_accept=0.0.0160** could be omitted as it is superfluous but for this documentation we will do it later with Agama.
-
 Finally we will boot from a live image retrieved from an url using the **root=live:<url>** parameter.
   
 The content of the sles.exec file is:
@@ -113,7 +112,7 @@ sles
 
 Once the installation system finish the booting process just connect to the machine with the web browser (e.g. https://s390vsl111.suse.de:9090) or by SSH with (root / linux) user.
 
-## Complete installation Z/VM installation workflow screenshots
+## Screenshots of the complete installation Z/VM installation workflow
 
 For taking the screenshots we have omitted the cio_ignore parameter from the parmfile and as dhcp config is supported the config is quite simple as we can see below:
 ```txt
@@ -131,14 +130,3 @@ Below you will find the screenshots of an z/VM installation selecting the ALP Mi
 | ![Configure DASD](./images/screenshots/s390/configure_dasd.png) | ![DASD list](./images/screenshots/s390/dasd_list.png) |
 | ![Activate DASD](./images/screenshots/s390/dasd_activate.png) | ![DASD list refresh](./images/screenshots/s390/dasd_list_refreshed.png) | 
 | ![DASD format](./images/screenshots/s390/dasd_format.png) | ![Format progress](./images/screenshots/s390/format_progress.png) |
-
-## Example of formatting 3 DASDs in parallel
-|||
-|-|-|
-| ![Select DASDs](./images/screenshots/s390/dasd_multiple_select.png) | ![Format progress](./images/screenshots/s390/format_progress_multiple.png) |
-
-## Enable diagnose access example
-
-|||
-|-|-|
-| ![Set use diag](./images/screenshots/s390/dasd_use_diag.png) | ![DASD list diag refreshed](./images/screenshots/s390/dasd_list_diag.png) |
