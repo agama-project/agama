@@ -93,10 +93,12 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
 
   return (
     <>
-      <FormLabel>DNS</FormLabel>
-      <Button isSmall variant="secondary" onClick={addServer}>
-        {newDnsButtonText}
-      </Button>
+      <div className="split justify-between">
+        <FormLabel>DNS</FormLabel>
+        <Button isSmall variant="secondary" onClick={addServer}>
+          {newDnsButtonText}
+        </Button>
+      </div>
       <DataList isCompact gridBreakpoint="none" title="Addresses data list">
         {servers.map(server => renderDns(server))}
       </DataList>
