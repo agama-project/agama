@@ -57,10 +57,12 @@ import { NetworkPage } from "~/components/network";
  */
 import "~/assets/styles/index.scss";
 
-// When running in the development server add a special login wrapper which
-// checks whether the user is authenticated. When building the code outside
-// the development server an empty fragment (<></>) is used which is no-op.
-// In the production builds the DevServerWrapper code is completely omitted.
+/**
+ * When running in the development server add a special login wrapper which
+ * checks whether the user is authenticated. When building the code outside
+ * the development server an empty fragment (<></>) is used which is no-op.
+ * In the production builds the DevServerWrapper code is completely omitted.
+ */
 const LoginWrapper = (process.env.WEBPACK_SERVE) ? DevServerWrapper : React.Fragment;
 
 const container = document.getElementById("root");
