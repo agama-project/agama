@@ -22,8 +22,11 @@ In order to release a new version, we need to:
 
 1. Update the version number in the `service/VERSION` file with the new number. These file is read
   when building the `rubygem-agama` package.
-2. Run `bundle install` from the `service` directory.
+2. `(cd service; bundle install)` # Updates Gemfile.lock which is part of the repository
 3. Add entries in the changes files.
+    `osc vc service/package`
+    `osc vc rust/package`
+    `osc vc web/package`
 4. Open a pull request to get these changes into the repository.
 5. Once the pull request is merged, tag the repository with the proper version number. The processes
    to build `cockpit-agama` and `agama-cli` use this information to infer the version. You can set
