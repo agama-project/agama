@@ -22,8 +22,10 @@ test.describe("The Installer", () => {
     // maximum time for this test to run
     test.setTimeout(60 * minute);
 
-    // set screenshot size to 768x1024
-    page.setViewportSize({ width: 768, height: 1024 });
+    if (process.env.SCREENSHOT_MODE === "1") {
+      // set screenshot size to 768x1024
+      page.setViewportSize({ width: 768, height: 1024 });
+    }
 
     // optional actions done on the page
     const actions = Object.freeze({

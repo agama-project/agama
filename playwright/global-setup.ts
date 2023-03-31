@@ -22,7 +22,7 @@ function findProject(config: FullConfig):FullProject {
   const optionIndex = process.argv.findIndex(a => a === "--project");
   if (optionIndex >= 0) {
     const projectName = process.argv[optionIndex + 1];
-    project = config.projects.find(p => p.name === projectName && fs.existsSync(p.use.launchOptions.executablePath));
+    project = config.projects.find(p => p.name === projectName);
   }
   else {
     project = config.projects.find(p => fs.existsSync(p.use.launchOptions.executablePath));
