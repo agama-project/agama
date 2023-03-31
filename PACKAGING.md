@@ -4,36 +4,48 @@ Agama packages are available in the [YaST:Head:Agama project in
 OBS](https://build.opensuse.org/project/show/YaST:Head:Agama). This document summarizes the
 process we follow to build those packages.
 
-The process to build the Ruby-based ones (`rubygem-agama` and `rubygem-agama-cli`) is
-different from the one we use to build the web UI (`cockpit-agama`). The former packages are
-built in the same way that other YaST packages (through Rake tasks), while the latter package is
-automatically built in the Open Build Service.
+The process to build each package is slightly different depending on the technology we are using.
+While the Ruby-based one (`rubygem-agama`) is built as any other YaST package, the web UI
+(`cockpit-agama`) and the CLI (`agama-cli`) rely on [OBS source
+services](https://openbuildservice.org/help/manuals/obs-user-guide/cha.obs.source_service.html).
 
-## Releasing a new version
+## Versioning policy
+
+We have decided to follow a single number schema: 1, 2, 3, etc. However, if we need to release a
+hot-fix, we might use a dotted version (e.g., 2.1). Moreover, all the components share the same
+version number. Releasing a new version implies that all of them get the new number, no matter if
+they contain changes or not.
+
+## Bumping the version
 
 In order to release a new version, we need to:
 
-* Update the version number in the `VERSION` file in the corresponding subdirectory. These files are
-  read by the Ruby-based packages when building the gems.
-* Tag the repository with the proper number. The process to build `cockpit-agama` uses this
-  information to infer the version. You can set the tag with something like:
+1. Update the version number in the `service/VERSION` file with the new number. These file is read
+  when building the `rubygem-agama` package.
+2. `(cd service; bundle install)` # Updates Gemfile.lock which is part of the repository
+3. Add entries in the changes files.
+    `osc vc service/package`
+    `osc vc rust/package`
+    `osc vc web/package`
+4. Open a pull request to get these changes into the repository.
+5. Once the pull request is merged, tag the repository with the proper version number. The processes
+   to build `cockpit-agama` and `agama-cli` use this information to infer the version. You can set
+   the tag with something like:
 
-      git tag --sign 0.5 --message "Version 0.5"
+      git tag --sign v$(cat service/VERSION) --message "Version $(cat service/VERSION)"
       git push --tags
 
-## Building the packages
 
-After updating the releasing information and commiting those changes to the repository, it is time
-to update the packages in the build service.
+## Building the packages
 
 ### Service
 
 You can check the current package in
 [YaST:Head:Agama/rubygem-agama](https://build.opensuse.org/package/show/YaST:Head:Agama/rubygem-agama).
 
-Given that you are in the `service` directory, just type the following command to update the
-package in the build service:
+Use `rake` to update the package in OBS as you would do with any other YaST package:
 
+      cd service
       rake osc:commit
 
 If you just want to build the package locally, run:
@@ -66,12 +78,10 @@ flows in the upcoming 2.7 release](https://openbuildservice.org/2016/04/08/new_g
 ### Command-line interface
 
 The current package is
-[YaST:Head:Agama](https://build.opensuse.org/package/show/YaST:Head:Agama/agama-cli).
-Bear in mind that the sources are in a [different
-repository](https://github.com/yast/agama-cli). To update the package in the build service,
-run the following commands:
+[YaST:Head:Agama](https://build.opensuse.org/package/show/YaST:Head:Agama/agama-cli). To update the
+package in the build service, run the following commands:
 
-      osc service runall
+      osc service manualrun
       osc addremove *
       osc commit -m "Update sources"
 
