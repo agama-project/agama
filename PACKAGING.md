@@ -32,7 +32,7 @@ In order to release a new version, we need to:
    to build `cockpit-agama` and `agama-cli` use this information to infer the version. You can set
    the tag with something like:
 
-      git tag --sign 1 --message "Version 1"
+      git tag --sign v$(cat service/VERSION) --message "Version $(cat service/VERSION)"
       git push --tags
 
 
