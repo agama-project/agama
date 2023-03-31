@@ -59,7 +59,7 @@ in the main `README.md` file.
 To fully run the installation type this:
 
 ```
-RUN_INSTALLATION=1 BASE_URL=https://<host>:9090 npx playwright test --headed --project chromium take_screenshots
+SCREENSHOT_MODE=1 RUN_INSTALLATION=1 BASE_URL=https://<host>:9090 npx playwright test --headed --project chromium take_screenshots
 ```
 
 The `--headed` option shows the browser window so you can see the progress.
