@@ -63,7 +63,7 @@ figure out most details by checking the [_service](_./web/package/_service) file
 
 To update the package in the build service, you just need to type:
 
-      osc service runall
+      osc service manualrun
       osc commit -m "Update sources"
 
 If you want to build the package locally, just checkout (or branch) the package and run `osc build`.
@@ -81,7 +81,7 @@ The current package is
 [YaST:Head:Agama](https://build.opensuse.org/package/show/YaST:Head:Agama/agama-cli). To update the
 package in the build service, run the following commands:
 
-      osc service runall
+      osc service manualrun
       osc addremove *
       osc commit -m "Update sources"
 
