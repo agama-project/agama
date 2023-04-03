@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Mon Apr  3 08:13:55 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
-- Fix dns handling (gh#openSUSE/agama#518).
+- Fix DNS handling by using ipv4.dns-data instead of ipv4.dns (gh#openSUSE/agama#518).
 
 -------------------------------------------------------------------
 Wed Mar 29 11:32:13 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
