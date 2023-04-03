@@ -206,7 +206,8 @@ const connectionSettingsMock = {
       ),
       method: cockpit.variant("s", "auto"),
       gateway: cockpit.variant("s", "192.168.122.1"),
-      dns: cockpit.variant("au", [67305985, 16843009]),
+      // this field is buggy and superseded by dns-data. test that it is not used.
+      dns: cockpit.variant("au", [67305985]),
       "dns-data": cockpit.variant("as", ["192.168.122.1", "1.1.1.1"]),
       "route-data": []
     }

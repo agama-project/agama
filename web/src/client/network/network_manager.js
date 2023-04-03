@@ -146,7 +146,7 @@ const connectionToCockpit = (connection) => {
  * @return {object} Object to be used with the UpdateConnection D-Bus method
  */
 const mergeConnectionSettings = (settings, connection) => {
-  // We need to delete this keys or otherwise them have precedence over the key-data ones
+  // We need to delete these keys or otherwise they have precedence over the key-data ones
   const { addresses, gateway, dns, ...cleanIPv4 } = settings.ipv4 || {};
   const { connection: conn, ipv4 } = connectionToCockpit(connection);
 
