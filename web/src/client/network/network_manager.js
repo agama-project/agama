@@ -23,7 +23,6 @@
 //
 import DBusClient from "../dbus";
 import cockpit from "../../lib/cockpit";
-import { intToIPString, stringToIPInt } from "./utils";
 import { NetworkEventTypes } from "./index";
 import { createAccessPoint, createConnection, SecurityProtocols } from "./model";
 
@@ -111,7 +110,7 @@ const connectionToCockpit = (connection) => {
           prefix: cockpit.variant("u", parseInt(addr.prefix.toString()))
         }
       ))),
-      dns: cockpit.variant("au", ipv4.nameServers.map(stringToIPInt)),
+      "dns-data": cockpit.variant("as", ipv4.nameServers),
       method: cockpit.variant("s", ipv4.method)
     }
   };
@@ -147,7 +146,8 @@ const connectionToCockpit = (connection) => {
  * @return {object} Object to be used with the UpdateConnection D-Bus method
  */
 const mergeConnectionSettings = (settings, connection) => {
-  const { addresses, gateway, ...cleanIPv4 } = settings.ipv4 || {};
+  // We need to delete these keys or otherwise they have precedence over the key-data ones
+  const { addresses, gateway, dns, ...cleanIPv4 } = settings.ipv4 || {};
   const { connection: conn, ipv4 } = connectionToCockpit(connection);
 
   return {
@@ -269,8 +269,7 @@ class NetworkManagerAdapter {
         addresses: ipv4["address-data"].v.map(({ address, prefix }) => {
           return { address: address.v, prefix: prefix.v };
         }),
-        // FIXME: handle different byte-order (little-endian vs big-endian)
-        nameServers: ipv4.dns?.v.map(intToIPString) || [],
+        nameServers: ipv4["dns-data"]?.v || [],
         method: ipv4.method.v,
       };
       if (ipv4.gateway?.v) conn.ipv4.gateway = ipv4.gateway.v;
