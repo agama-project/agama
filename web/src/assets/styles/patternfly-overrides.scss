@@ -123,3 +123,15 @@ table td > .pf-c-empty-state {
 .pf-c-text-input-group__utilities .pf-c-button {
   padding: 0;
 }
+
+.pf-m-grid-md {
+  &.pf-c-table {
+    tbody:first-of-type {
+      --pf-c-table--tbody--responsive--border-width--base: 4px;
+    }
+
+    tr:not(.pf-c-table__expandable-row) {
+      --pf-c-table-tr--responsive--border-width--base: 4px;
+    }
+  }
+}
