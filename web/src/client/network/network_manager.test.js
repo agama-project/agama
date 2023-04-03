@@ -126,7 +126,8 @@ const connections = {
         addresses: [],
         "address-data": cockpit.variant("aa{sv}", []),
         method: cockpit.variant("s", "auto"),
-        dns: cockpit.variant("au", []),
+        dns: [],
+        "dns-data": cockpit.variant("as", []),
         "route-data": []
       },
       "802-11-wireless": {
@@ -206,6 +207,7 @@ const connectionSettingsMock = {
       method: cockpit.variant("s", "auto"),
       gateway: cockpit.variant("s", "192.168.122.1"),
       dns: cockpit.variant("au", [67305985, 16843009]),
+      "dns-data": cockpit.variant("as", ["192.168.122.1", "1.1.1.1"]),
       "route-data": []
     }
   }),
@@ -321,7 +323,7 @@ describe("NetworkManagerAdapter", () => {
           addresses: [{ address: "192.168.122.200", prefix: 24 }],
           gateway: "192.168.122.1",
           method: "auto",
-          nameServers: ["1.2.3.4", "1.1.1.1"]
+          nameServers: ["192.168.122.1", "1.1.1.1"]
         }
       });
     });
@@ -503,7 +505,7 @@ describe("mergeConnectionSettings", () => {
         address: cockpit.variant("s", "192.168.1.2"),
         prefix: cockpit.variant("u", 24)
       }]),
-      dns: cockpit.variant("au", []),
+      "dns-data": cockpit.variant("as", []),
       method: cockpit.variant("s", "auto"),
       "routes-data": cockpit.variant("aau", [])
     });
