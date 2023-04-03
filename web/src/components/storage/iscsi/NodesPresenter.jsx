@@ -134,7 +134,7 @@ export default function NodesPresenter ({ nodes, client }) {
 
   return (
     <>
-      <TableComposable gridBreakPoint="grid-sm" variant="compact" className="users">
+      <TableComposable gridBreakPoint="grid-sm" variant="compact">
         <Thead>
           <Tr>
             <Th>Name</Th>

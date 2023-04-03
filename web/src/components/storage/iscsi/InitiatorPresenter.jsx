@@ -98,7 +98,7 @@ export default function InitiatorPresenter({ initiator, client }) {
 
   return (
     <>
-      <TableComposable gridBreakPoint="grid-sm" variant="compact" className="users">
+      <TableComposable gridBreakPoint="grid-sm" variant="compact">
         <Thead>
           <Tr>
             <Th width={50}>Name</Th>
