@@ -57,6 +57,12 @@ def find_gem(directory)
   Dir.glob(File.join(directory, "#{name}-*.gem"))
 end
 
+def live_iso?
+  mount_out = `mount`
+  # live medium uses overlay FS or device mapper for the root
+  mount_out.match?(/^\w+ on \/ type overlay/) || mount_out.match?(/^\/dev\/mapper\/live-rw on \/ /)
+end
+
 Yast::Tasks.configuration do |conf|
   conf.obs_api = "https://api.opensuse.org"
   conf.obs_project = "YaST:Head:Agama"
@@ -90,12 +96,12 @@ SERVICES_DIR = "/usr/share/dbus-1/agama-services"
 
 # support for patching by the yupdate script,
 # only when running in the inst-sys or live medium
-if File.exist?("/.packages.initrd") || `mount`.match?(/^[\w]+ on \/ type overlay/)
+if ENV["YUPDATE_FORCE"] == "1" || File.exist?("/.packages.initrd") || live_iso?
   Rake::Task["install"].clear
   task :install do
-    if ENV["YUPDATE_SKIP_BACKEND"] != "1"
-      destdir = ENV["DESTDIR"] || "/"
+    destdir = ENV["DESTDIR"] || "/"
 
+    if ENV["YUPDATE_SKIP_BACKEND"] != "1"
       puts "Installing the DBus service..."
       Dir.chdir("service") do
         sh "gem build agama.gemspec"
@@ -133,6 +139,15 @@ if File.exist?("/.packages.initrd") || `mount`.match?(/^[\w]+ on \/ type overlay
           FileUtils.rm_f(Dir.glob("/usr/share/cockpit/agama/*.gz"))
         end
       end
+    end
+
+    # update also the tests if they are present in the system
+    if ENV["YUPDATE_SKIP_TESTS"] != "1" && File.exist?("/usr/share/agama-playwright")
+      puts "Installing the integration tests..."
+
+      # we are installing into an empty chroot, make sure the target exists
+      FileUtils.mkdir_p(File.join(destdir, "/usr/share"))
+      FileUtils.cp_r("playwright/.", File.join(destdir, "/usr/share/agama-playwright"))
     end
   end
 end
