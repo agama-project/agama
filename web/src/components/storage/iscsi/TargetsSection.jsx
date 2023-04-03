@@ -160,7 +160,7 @@ export default function TargetsSection() {
   };
 
   return (
-    <Section title="Targets" iconName="lan">
+    <Section title="Targets">
       <SectionContent />
       { state.isDiscoverFormOpen &&
         <DiscoverForm
