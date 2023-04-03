@@ -116,12 +116,6 @@ table td > .pf-c-empty-state {
   --pf-c-data-list--BorderTopWidth: 2px;
 }
 
-section .pf-c-toolbar {
-  --stack-gutter: 0;
-  --pf-c-toolbar--PaddingBottom: 0;
-  --pf-c-toolbar--PaddingTop: 0;
-}
-
 .pf-c-toolbar {
   border-block-end: 1px solid var(--color-gray-light);
 }

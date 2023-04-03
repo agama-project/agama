@@ -121,6 +121,10 @@
   padding: 0;
 }
 
+.no-stack-gutter {
+  --stack-gutter: 0;
+}
+
 .tallest {
   /** block-size fallbacks **/
   height: 95dvh;
