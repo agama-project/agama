@@ -146,7 +146,7 @@ export default function TargetsSection() {
       <>
         <Toolbar>
           <ToolbarContent alignment="alignRight">
-            <ToolbarItem>
+            <ToolbarItem alignment={{ default: "alignRight" }}>
               <Button onClick={openDiscoverForm}>Discover</Button>
             </ToolbarItem>
           </ToolbarContent>
