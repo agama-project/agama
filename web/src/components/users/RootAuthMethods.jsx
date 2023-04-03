@@ -146,7 +146,7 @@ export default function RootAuthMethods() {
 
   return (
     <>
-      <TableComposable gridBreakPoint="grid-sm" variant="compact">
+      <TableComposable variant="compact" gridBreakPoint="grid-md">
         <Thead>
           <Tr>
             <Th width={25}>Method</Th>
@@ -156,15 +156,15 @@ export default function RootAuthMethods() {
         </Thead>
         <Tbody>
           <Tr>
-            <Td>Password</Td>
-            <Td><PasswordLabel /></Td>
+            <Td dataLabel="Method">Password</Td>
+            <Td dataLabel="Status"><PasswordLabel /></Td>
             <Td isActionCell>
               <RowActions actions={passwordActions} id="actions-for-root-password" />
             </Td>
           </Tr>
           <Tr>
-            <Td>SSH Key</Td>
-            <Td><SSHKeyLabel /></Td>
+            <Td dataLabel="Method">SSH Key</Td>
+            <Td dataLabel="Status"><SSHKeyLabel /></Td>
             <Td isActionCell>
               <RowActions actions={sshKeyActions} id="actions-for-root-sshKey" />
             </Td>

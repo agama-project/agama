@@ -86,9 +86,9 @@ export default function InitiatorPresenter({ initiator, client }) {
 
     return (
       <Tr>
-        <Td>{initiator.name}</Td>
-        <Td>{initiator.ibft ? "Yes" : "No"}</Td>
-        <Td>{initiator.offloadCard || "None"}</Td>
+        <Td dataLabel="Name">{initiator.name}</Td>
+        <Td dataLabel="iBFT">{initiator.ibft ? "Yes" : "No"}</Td>
+        <Td dataLabel="Offload card">{initiator.offloadCard || "None"}</Td>
         <Td isActionCell>
           <RowActions actions={initiatorActions()} id="actions-for-initiator" />
         </Td>
@@ -98,7 +98,7 @@ export default function InitiatorPresenter({ initiator, client }) {
 
   return (
     <>
-      <TableComposable gridBreakPoint="grid-sm" variant="compact">
+      <TableComposable variant="compact">
         <Thead>
           <Tr>
             <Th width={50}>Name</Th>

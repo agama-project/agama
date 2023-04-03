@@ -116,11 +116,11 @@ export default function NodesPresenter ({ nodes, client }) {
   const NodeRow = ({ node }) => {
     return (
       <Tr>
-        <Td>{node.target}</Td>
-        <Td>{node.address + ":" + node.port}</Td>
-        <Td>{node.interface}</Td>
-        <Td>{node.ibft ? "Yes" : "No"}</Td>
-        <Td>{nodeStatus(node)}</Td>
+        <Td dataLabel="Name">{node.target}</Td>
+        <Td dataLabel="Portal">{node.address + ":" + node.port}</Td>
+        <Td dataLabel="Interface">{node.interface}</Td>
+        <Td dataLabel="iBFT">{node.ibft ? "Yes" : "No"}</Td>
+        <Td dataLabel="Status">{nodeStatus(node)}</Td>
         <Td isActionCell>
           <RowActions actions={nodeActions(node)} id={`actions-for-node${node.id}`} />
         </Td>
@@ -134,7 +134,7 @@ export default function NodesPresenter ({ nodes, client }) {
 
   return (
     <>
-      <TableComposable gridBreakPoint="grid-sm" variant="compact">
+      <TableComposable variant="compact">
         <Thead>
           <Tr>
             <Th>Name</Th>
