@@ -1,10 +1,5 @@
-.loading-screen-icon {
-  text-align: center;
-
-  svg {
-    block-size: 10rem;
-    inline-size: 10rem;
-  }
+#root {
+  height: 100%;
 }
 
 // Make proposal actions compact
@@ -25,10 +20,6 @@
 
 .expandable-actions > div {
   margin-block-start: 0;
-}
-
-.overview-users > div {
-  margin-block-start: 0.5ex;
 }
 
 // Using a "selected-product" CSS class because sadly we cannot use
@@ -53,36 +44,6 @@
 
   .pf-c-radio__description {
     color: var(--color-primary-darkest);
-  }
-}
-
-.collapsed {
-  height: 0;
-  overflow: hidden;
-}
-
-.hidden {
-  visibility: hidden;
-}
-
-.host-ip {
-  vertical-align: middle;
-  color: var(--color-gray);
-}
-
-ul.connections-datalist {
-  border: 0;
-
-  li {
-    border: 0;
-    // TODO: get rid of this nested overrides once the network overview UI is better defined
-    .pf-c-data-list__item-row {
-      padding-inline: 0;
-
-      .pf-c-data-list__item-content {
-        padding-block-end: 0;
-      }
-    }
   }
 }
 
@@ -113,22 +74,6 @@ button.remove-link:hover {
   color: var(--pf-c-button--m-danger--BackgroundColor);
 }
 
-// Custom styles for summary warnings
-.warning-text {
-  color: var(--pf-global--warning-color--200);
-  font-size: calc(var(--fs-base) - 2px);
-
-  a, small {
-    text-decoration: underline;
-    margin-inline: 4px;
-    color: var(--pf-global--warning-color--200);
-    font-size: calc(var(--fs-base) - 2px);
-  }
-
-  svg {
-    fill: var(--pf-global--warning-color--200);
-  }
-}
 
 button.hidden-popover-button {
   visibility: hidden;
@@ -167,8 +112,4 @@ button.hidden-popover-button {
   .pf-c-label {
     margin-inline-end: 5px;
   }
-}
-
-#root {
-  height: 100%;
 }

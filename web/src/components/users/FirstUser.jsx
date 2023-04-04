@@ -73,7 +73,7 @@ const UserNotDefined = ({ actionCb }) => {
 
 const UserData = ({ user, actions }) => {
   return (
-    <TableComposable gridBreakPoint="grid-sm" variant="compact" className="users">
+    <TableComposable variant="compact">
       <Thead>
         <Tr>
           <Th width={25}>Fullname</Th>
@@ -83,8 +83,8 @@ const UserData = ({ user, actions }) => {
       </Thead>
       <Tbody>
         <Tr>
-          <Td>{user.fullName}</Td>
-          <Td>{user.userName}</Td>
+          <Td dataLabel="Fullname">{user.fullName}</Td>
+          <Td dataLabel="Username">{user.userName}</Td>
           <Td isActionCell>
             <RowActions actions={actions} id={`actions-for-${user.userName}`} />
           </Td>

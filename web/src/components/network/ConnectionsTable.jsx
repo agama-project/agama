@@ -70,7 +70,7 @@ export default function ConnectionsTable ({
   if (connections.length === 0) return null;
 
   return (
-    <TableComposable gridBreakPoint="grid-sm" variant="compact">
+    <TableComposable variant="compact">
       <Thead>
         <Tr>
           <Th width={25}>Name</Th>
@@ -97,8 +97,8 @@ export default function ConnectionsTable ({
 
           return (
             <Tr key={connection.id}>
-              <Td>{connection.name}</Td>
-              <Td>{connection.addresses.map(formatIp).join(", ")}</Td>
+              <Td dataLabel="Name">{connection.name}</Td>
+              <Td dataLabel="Ip addresses">{connection.addresses.map(formatIp).join(", ")}</Td>
               <Td isActionCell>
                 <RowActions actions={actions} connection={connection} />
               </Td>

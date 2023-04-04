@@ -144,9 +144,9 @@ export default function TargetsSection() {
 
     return (
       <>
-        <Toolbar>
+        <Toolbar className="no-stack-gutter">
           <ToolbarContent alignment="alignRight">
-            <ToolbarItem>
+            <ToolbarItem alignment={{ default: "alignRight" }}>
               <Button onClick={openDiscoverForm}>Discover</Button>
             </ToolbarItem>
           </ToolbarContent>
@@ -160,7 +160,7 @@ export default function TargetsSection() {
   };
 
   return (
-    <Section title="Targets" iconName="lan">
+    <Section title="Targets">
       <SectionContent />
       { state.isDiscoverFormOpen &&
         <DiscoverForm

@@ -45,7 +45,7 @@ export default function InitiatorSection() {
   }, [cancellablePromise, client.iscsi]);
 
   return (
-    <Section title="Initiator" iconName="settings">
+    <Section title="Initiator">
       <InitiatorPresenter
         initiator={initiator}
         client={client}

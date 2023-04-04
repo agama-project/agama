@@ -179,7 +179,7 @@ export default function DASDTable({ state, dispatch }) {
     <>
       <Toolbar>
         <ToolbarContent>
-          <ToolbarGroup>
+          <ToolbarGroup alignment={{ default: "alignRight" }}>
             <ToolbarItem>
               <TextInputGroup>
                 <TextInputGroupMain
