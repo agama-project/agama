@@ -30,6 +30,10 @@ OBS project.
 *Note: If you install Playwright from the RPM package then omit the `npx`
 tool from all commands below.*
 
+By default the tests are used against the local running server, if you
+want to test a remote server see the [Target Server](#target-server)
+section below.
+
 To run all tests use this command:
 
 ```
@@ -50,6 +54,33 @@ npx playwright test --project chromium -- tests/root_password.spec.ts
 ```
 
 See the `playwright.config.ts` file for the list of configured projects.
+
+### Running Tests Directly from the Live ISO
+
+You can download the `default-Playwright` image type from the [YaST:Head:Agama](
+https://download.opensuse.org/repositories/YaST:/Head:/Agama/images/iso/) repository.
+
+This ISO additionally includes the Playwright tool, Chromium browser and the
+Agama integration tests.
+
+To start a test in a console or in a SSH session use this command:
+
+```
+playwright test --project chromium --config /usr/share/agama-playwright <test>
+```
+
+*Note the missing `npx` tool in the command, in this case Playwright is
+installed into the system directories.*
+
+You can also start the tests in headed mode (with `--headed` option) either
+via `ssh -X` or using a local X terminal session:
+
+```shell
+# from a Linux console
+DISPLAY=:0 xterm &
+# then switch to console 7 using the Alt+F7 keyboard shortcut
+# and run Playwright from the xterm
+```
 
 ## Updating the Screenshots
 
