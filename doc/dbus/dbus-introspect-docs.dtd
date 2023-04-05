@@ -15,7 +15,7 @@
 
 <!ELEMENT error (#PCDATA|para)*>
 <!ATTLIST error name CDATA #REQUIRED>
-<!ELEMENT para (#PCDATA|example|code|list|ref)*>
+<!ELEMENT para (#PCDATA|example|code|list|ref|ulink)*>
 <!ELEMENT example (#PCDATA|para|code|ref)*>
 <!ATTLIST language (c|glib|python|shell) #REQUIRED>
 <!ATTLIST title CDATA #IMPLIED>
@@ -30,3 +30,6 @@
 <!ELEMENT ref CDATA>
 <!ATTLIST ref type (parameter|arg|signal|method|interface) #REQUIRED>
 <!ATTLIST ref to CDATA #REQUIRED>
+
+<!ELEMENT ulink (#PCDATA)>
+<!ATTLIST ulink url CDATA #REQUIRED>

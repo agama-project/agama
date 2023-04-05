@@ -285,6 +285,13 @@ See also:
   </xsl:call-template>
 </xsl:template>
 
+<xsl:template match="doc:ulink">
+  <ulink>
+    <xsl:attribute name="url"><xsl:value-of select="@url"/></xsl:attribute>
+    <xsl:apply-templates/>
+  </ulink>
+</xsl:template>
+
 <xsl:template name="method-doc">
   <xsl:apply-templates select="doc:doc/doc:summary"/>
   <xsl:apply-templates select="doc:doc/doc:description"/>
