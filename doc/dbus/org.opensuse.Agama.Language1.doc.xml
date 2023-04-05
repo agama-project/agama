@@ -7,6 +7,19 @@ sudo busctl -\-verbose -\-address unix:path=/run/agama/bus -\-xml-interface intr
 <node name="/org/opensuse/Agama/Language1"
   xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
   <interface name="org.opensuse.Agama.Language1">
+    <doc:doc>
+      <doc:description>
+        <doc:para>
+          Implementation note about language identifiers:
+        </doc:para>
+
+        <doc:para>
+          Maybe use <doc:ulink url="https://www.rubydoc.info/github/yast/yast-packager/master/LanguageTag">yast2-packager/LanguageTag</doc:ulink>.
+          See <doc:ulink url="https://lists.opensuse.org/archives/list/yast-devel@lists.opensuse.org/message/D52PSZ7TRID2RVM6CE6K2C2RUNNGOS6Z/">its announcement on yast-devel</doc:ulink>.
+          See also <doc:ulink url="https://tools.ietf.org/html/rfc4647">RFC 4647 Matching of Language Tags</doc:ulink>.
+        </doc:para>
+      </doc:description>
+    </doc:doc>
     <method name="ToInstall">
       <doc:doc>
         <doc:summary>Set list of languages to install</doc:summary>

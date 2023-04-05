@@ -46,37 +46,12 @@ We use these resources to get more familiar with D-Bus API designing.
 
 Iface: o.o.Agama.Language1
 
-#### methods:
+See the new-style [reference][lang-ref] ([source][lang-src]).
 
--  ToInstall(array(string LangId)) -> void
-    Set list of languages to install
-    Example:
-
-      ToInstall(["cs_CZ", "de_DE"]) -> () # only lang codes from AvailableLanguages is supported
-
-#### Properties (all read only):
-
--  AvailableLanguages -> array(struct(string LangId, string LangLabel, dict(string, variant) details))
-    List of all available languages to install on target system.
-    Example:
-
-      AvailableLanguages -> [["cs_CZ", "Czech", {}]] # it is lang code, human readable lang name and dict for future extensions to provide more data
-
--  MarkedForInstall -> array(string LangId)
-    List of languages to install. Same format as ToInstall
-
-#### Signals:
-
--  PropertiesChanged ( only standard one from org.freedesktop.DBus.Properties interface )
-
-
-notes:
-
-identifiers: maybe LanguageTag https://www.rubydoc.info/github/yast/yast-packager/master/LanguageTag
-- move it to yast-yast2
-- link to the standard from yard
-- see https://tools.ietf.org/html/rfc4647 Matching of Language Tags
-- see https://lists.opensuse.org/archives/list/yast-devel@lists.opensuse.org/message/D52PSZ7TRID2RVM6CE6K2C2RUNNGOS6Z/
+<!-- FIXME: use opensuse.github.io/agama -->
+<!-- FIXME: don't monopolize the GH Pages, use /agama/dbus/ -->
+[lang-ref]: https://mvidner.github.io/agama/org.opensuse.Agama.Language1.ref.html
+[lang-src]: dbus/org.opensuse.Agama.Language1.doc.xml
 
 ## Base Product
 
@@ -803,62 +778,9 @@ any issue that might block the installation.
 
 ## Manager
 
-### Installation Phases
+See the new-style [reference][mgr-ref] ([source][mgr-src]).
 
-The installation process follows a set of phases. Only the main service (`Agama::Manager`)
-knows the information about the current installation phase. The rest of services will act as utility
-services without any knowledge about the whole installation process.
-
-A client (e.g., a web UI) will ask to the main service for the current phase of the installation.
-
-In principle, the installation will follow 3 possible phases: *Startup*, *Config* and *Install*.
-
-* *Startup* Phase
-
-This is the initial phase. The manager service will start in this phase and it will not change to
-another phase until the client asks for performing the next phase.
-
-* *Config* Phase
-
-The installation is configured during this phase. Configuring the installation means that everything
-needed from the system is read and the required default proposal are calculated. In YaST terms, the
-*config* phase implies to probe some modules like storage, language, etc, and to perform their
-proposals. Note that not all modules have to be probed/proposed. Probing some modules could be
-delayed to the next *install* phase.
-
-* *Install* Phase
-
-This phase implies to perform everything to install the system according to the selected options and
-proposals. Note that this phase is not only a typical YaST commit. For example, some proposals
-(software?) could be done during this phase. In short, at the beginning of this phase we have all
-the required information to perform the installation, and at the end of the phase the system is
-installed.
-
-### Status of the Services
-
-Note that the services are blocked meanwhile they are performing a long task. For this
-reason, the *manager* service will store the status of each service and the clients will ask to
-*manager* to know that status.
-
-### org.opensuse.Agama1.Manager
-
-#### Properties
-
-- InstallationPhases -> array(array(dict(string, variant))) (r)
-
-  All possible phases:
-~~~
-  [
-    {"id" => 0, "label" => "startup"},
-    {"id" => 1, "label" => "config"},
-    {"id" => 2, "label" => "install"}
-  ]
-~~~
-
-- CurrentInstallationPhase -> unsigned 32-bit integer (r)
-
-  Id of the current phase.
-
-- BusyServices -> a(s) (r)
-
-  List of names of the currently busy services.
+<!-- FIXME: use opensuse.github.io/agama -->
+<!-- FIXME: don't monopolize the GH Pages, use /agama/dbus/ -->
+[mgr-ref]: https://mvidner.github.io/agama/org.opensuse.Agama1.Manager.ref.html
+[mgr-src]: dbus/org.opensuse.Agama1.Manager.doc.xml
