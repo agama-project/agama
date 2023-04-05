@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -41,7 +41,7 @@ describe Agama::DBus::Question do
   let(:system_bus) { instance_double(DBus::SystemBus, emit: nil) }
 
   describe ".new" do
-    shared_examples "Question interface" do
+    shared_examples "Generic interface" do
       it "defines #id, #text, #options, #default_option, #answer" do
         expect(subject).to respond_to(:id, :text, :options, :default_option, :answer)
       end
@@ -142,7 +142,7 @@ describe Agama::DBus::Question do
 
       let(:default_option) { nil }
 
-      include_examples "Question interface"
+      include_examples "Generic interface"
 
       describe "#options" do
         it "returns the question options as strings" do
@@ -172,7 +172,7 @@ describe Agama::DBus::Question do
     context "for a question to activate a LUKS device" do
       let(:backend) { Agama::LuksActivationQuestion.new("/dev/sda1") }
 
-      include_examples "Question interface"
+      include_examples "Generic interface"
       include_examples "LuksActivation interface"
 
       describe "#options" do

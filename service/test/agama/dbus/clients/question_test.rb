@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -29,8 +29,8 @@ describe Agama::DBus::Clients::Question do
     allow(bus).to receive(:service).with("org.opensuse.Agama.Questions1").and_return(service)
     allow(service).to receive(:[]).with("/org/opensuse/Agama/Questions1/23")
       .and_return(dbus_object)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Questions1")
-      .and_return(question_iface)
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Questions1.Generic")
+      .and_return(generic_iface)
     allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Questions1.LuksActivation")
       .and_return(luks_iface)
     allow(dbus_object).to receive(:has_iface?).with(/LuksActivation/).and_return(luks_iface?)
@@ -39,7 +39,7 @@ describe Agama::DBus::Clients::Question do
   let(:bus) { instance_double(Agama::DBus::Bus) }
   let(:service) { instance_double(::DBus::Service) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
-  let(:question_iface) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:generic_iface) { instance_double(::DBus::ProxyObjectInterface) }
   let(:luks_iface) { instance_double(::DBus::ProxyObjectInterface) }
   let(:luks_iface?) { true }
 
@@ -47,14 +47,14 @@ describe Agama::DBus::Clients::Question do
 
   describe "#answered?" do
     it "returns false if there is no answer" do
-      expect(question_iface).to receive(:[]).with("Answer").and_return("")
+      expect(generic_iface).to receive(:[]).with("Answer").and_return("")
       expect(subject.answered?).to eq false
     end
   end
 
   describe "#text" do
     it "returns the appropriate property" do
-      expect(question_iface).to receive(:[]).with("Text").and_return("the text")
+      expect(generic_iface).to receive(:[]).with("Text").and_return("the text")
       expect(subject.text).to eq "the text"
     end
   end
