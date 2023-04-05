@@ -195,7 +195,7 @@ class QuestionsClient {
   onQuestionRemoved(handler) {
     return this.onObjectsChanged("InterfacesRemoved", path => {
       const id = path.split("/").at(-1);
-      handler(id);
+      handler(Number(id));
     });
   }
 }
