@@ -144,6 +144,9 @@ $ busctl --address=unix:path=/run/agama/bus \
 
 If you want to contribute to Agama, then please open a pull request or report an issue. You can also have a look to our [road-map](https://github.com/orgs/yast/projects/1/views/1).
 
+For more details, please read the [contributing](CONTRIBUTING.md) guidelines.
+
 ## Development Notes
 
-* [Working with the web UI](./web/README.md).
+* [Packaging](PACKAGING.md)
+* [Working with the web UI](./web/README.md)

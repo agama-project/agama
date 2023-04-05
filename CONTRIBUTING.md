@@ -15,6 +15,9 @@ best way to reach us is at the [#yast](https://web.libera.chat/#yast) IRC
 channel on libera.chat or using the [YaST development mailing
 list](http://lists.opensuse.org/yast-devel/).
 
+For reporting security issues read the [Security](SECURITY.md)
+documentation. The security related bugs need a special handling.
+
 ## Code Changes
 
 We welcome all kinds of code contributions. However, before making any
