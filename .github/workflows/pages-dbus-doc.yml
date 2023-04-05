@@ -38,15 +38,15 @@ jobs:
           sudo apt-get --assume-yes --no-install-recommends install xmlto docbook-xsl
 
       - name: Build HTML via DocBook
-        run: cd doc/dbus; make
+        run: cd doc; make
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          # upload the D-Bus docs... TODO index... what if we want something else too?
-          path: 'doc/dbus'
+          # upload the built docs
+          path: 'doc/dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2

@@ -1,3 +1,2 @@
-# or maybe commit them. depends on the deployment model
-*.ref.xml
-*.ref.html
+tmp/*.ref.xml
+tmp/*.iface.xml
