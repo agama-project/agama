@@ -1,8 +1,5 @@
 # A Proposal for the Storage User Interface
 
-The main idea is to reuse the `GuidedProposal` mechanism implemented by YaST but following an
-slightly different approach regarding the logic to delete and resize partitions (see below).
-
 ## Previous Considerations
 
 ### Don't Take Mock-ups Too Seriously
@@ -18,10 +15,34 @@ being represented as separate buttons, etc.
 Another important point to consider is that currently the list of (libstorage-ng) actions is the
 only way we have to represent the result of a given proposal. That representation is far from ideal.
 It doesn't offer a convenient high-level view of the final layout or of the really significant
-actions (it includes too many intermediate steps by default). But designing a more convenient
-representation of the result is out of the scope of this proposal. Wherever the list of actions is
-presented in a workflow step or a screenshot, it's assumed that such a list will be substituted in
-the future by a better alternative to show the result.
+actions (it includes too many intermediate steps by default).
+
+A complete design for a more convenient representation of the result is out of the scope of this
+proposal. Nevertheless, small changes (like grouping the actions based on the operating system
+they affect) are somehow suggested in some of the upcoming sections and mock-ups.
+
+In the long term, we may need to come with a better alternative to show the result.
+
+### Volumes in the YaST Proposal: Lessons Learned
+
+The YaST proposal heavily relies in the concept of the so-called volumes. Those volumes, that are
+different for every product or system role, describe the partitions or LVM logical volumes to be
+created during the process.
+
+In YaST, every volume specifies two different kinds of lower size limits. The so-called "desired
+size" that is the smallest size that is recommeded for a normal usage of that volume and the "min
+size" that is the lower threshold for the volume to be minimally useful. On top of that, every
+volume has a "weight", used adjust how the available space is distributed among the volumes.
+
+On the other hand, the maximum size for a given volume can be configured with the optional "max
+size". But that value can be overriden if LVM is used by the also optional "max size LVM".
+
+Experience has shown that people in charge of defining the volumes for each product struggle to
+grasp the concepts of desired size, min size and weight. The flexibility and level of customization
+they provide doesn't seem to pay off for the confusion they introduce.
+
+Volumes at Agama will only have a minimum size and (optionally) a maximum one. No "desired size",
+"weight" or "max size LVM".
 
 ### Calculating How to Make Space
 
@@ -33,22 +54,20 @@ and resizing existing partitions to make space for the new system. It decides by
 partitions should be affected following a logic that, even though is configurable in the control
 file and by the UI, is hard to follow for many end users.
 
-The proposal described in this document would not rely on that logic. Instead, Agama would
-only propose two ways of making space:
+### Reusing LVM Setups
 
-- Completely wipe the content of the selected disk(s) and start from scratch.
-- Manually select which partitions to keep / delete / resize.
+For historical reasons, YaST tries to reuse existing LVM volume groups when making a proposal. That
+behavior can be very confusing in many situations. To avoid the associated problems, the Agama
+storage proposal will not automatically reuse existing LVM structures.
 
 ### About the Initial Proposal
 
 Currently YaST tries really hard to present an initial proposal to the user, even if that implies
 several subsequent executions of the `GuidedProposal`, each of them with a less ambitious
-configuration. For that it relies on two features of the so-called volumes (i.e. the specification
-of the partitions or LVM logical volumes to be created during the process).
+configuration. For that it relies on two features of the so-called volumes (volumes are already
+described in a previous section).
 
-- First of all, every volume specifies two different kinds of lower size limits in the control file.
-  The so-called "desired size" that is the smallest size that is recommeded for a normal usage of
-  that volume and the "min size" that is the lower threshold for the volume to be minimally useful.
+- First of all, every volume specify both a "min size" and a "desired size" (as already explained).
 - On the other hand, some features of a volume are marked as optional in the control file. That
   includes the usage of snapshots, the ability to expand based on the RAM size or even the existence
   of the volume at all.
@@ -67,15 +86,15 @@ sentence like these next to the result of the current proposal:
 - "_Initial layout proposed with the default Guided Setup settings_"
 - "_Initial layout proposed after adjusting the Guided Setup settings_" (see screenshot).
 
-![Guided Setup result at YaST](img/yast_guided_result.png)
+![Guided Setup result at YaST](images/storage_ui/yast_guided_result.png)
 
 As mentioned before, Agama doesn't need to replicate all YaST behaviors or to inherit its
 requirements and expectations. It's possible to adopt the same approach or to go all the way in the
-other direction and try by default to execute the `GuidedProposal` only once, with:
+other direction and try by default to execute a variant of the `GuidedProposal` only once, with:
 
   - A single disk as target (chosen by any criteria)
-  - Wiping the content of the disk (see previous note about making space)
-  - Using the desired sizes of the volumes and their default settings
+  - A simple strategy for making space (eg. wiping the content of the disk)
+  - Using the default settings for all volumes
 
 If that execution of the `GuidedProposal` fails, then Agama could simply show a message like:
 "it was not possible to calculate an initial storage layout".
@@ -89,62 +108,66 @@ Having all the previous considerations in mind, let's describe how the general u
 work.
 
 The summary screen of Agama would display the result of the current storage proposal (or a
-message about the failed initial calculation) and next to it, a link to modify that layout.
-That link will lead to the following interface. Note the mock-ups do not display an initial
-proposal, but the status after some manual changes done by the user.
+message about the failed initial calculation) and a link to modify that layout. That link will lead
+to the page that allows to (re)configure and (re)calculate the storage proposal and that is
+described at *The Proposal Page*.
 
-![Initial storage screen](img/agama_guided_initial.png)
+The Agama storage proposal will be the only mechanism to define the file systems of the new operating
+system (including their mount points, subvolumes and options for formatting or mounting). This
+proposal is similar to the `GuidedProposal` implemented by YaST. As such, the resulting file systems
+will actually be defined as a set of so-called volumes very similar to the YaST ones (although we
+may need to find a better name).
 
-Every configuration change for any of the aspects displayed in that screen will be performed in a
-pop-up. Accepting the pop-up will result in the re-calculation of the "result" section.
+Sometimes a previous setup may be needed in order to prepare the devices used by that proposal
+mechanism. That includes actions like connecting to some iSCSI disks, activating and formating
+DASDs, creating a software-defined RAID or setting an advanced LVM layout potentially including
+several volume groups or thin-provisioned volumes. Those actions will in general modify the system
+right away, instead of just planning actions to be performed during installation. Access to those
+preliminary actions will be available from the Agama advanced menu in the side bar and their general
+functionality is briefly described at *Advanced Preparations*.
 
-The first option would be to change the target device(s) of the proposal. That pop-up is not fully
-defined but will allow two things:
+## The Proposal Screen
 
-- Select in which disk(s) to install the system. It should also allow to specify which disk is
-  used as boot device.
-- Specify what to do with the current content of the selected disk(s). The default option would be
-  to simply wipe the full content but there should be an alternative to select explicitly which
-  concrete partitions must be deleted or resized and to what extend.
+### General Description of the Proposal
 
-Then the "settings" section will allow to configure two things: the general proposal configuration
-and the list of volumes to use as a base to create partitions and logical volumes.
+The following interface will allow to configure the Agama storage setup for installation. Note the
+mock-ups do not display an initial proposal, but the status after some manual changes done by the
+user.
 
-The general configuration includes the usage of LVM and encryption and any aspect related to those,
-like the encryption passphrase. As always, that will be displayed in a pop-up and accepting the
-changes will result in the recalculation of the result.
+![Initial storage screen](images/storage_ui/agama_guided.png)
 
-The list of volumes is collapsed by default for clarity, but expanding it would reveal the following
-options.
+The table with the file systems actually represents the volumes used as input for the Agama variant
+of the `GuidedProposal`. Compared to YaST, Agama turns the volumes into a much more visible concept.
+The users will be able to see and adjust most of their attributes. Users could even define new
+volumes that are not initially part of the configuration of the selected product.
 
-![Expanded storage screen](img/agama_guided_expanded.png)
+Every change to any of the aspects in the "settings" section will result in an immediate
+re-calculation of the "result" section. Changes in the configuration of LVM and encryption can also
+imply refreshing the description of the volumes.
 
-The table allows to customize the list of volumes. The form to add or edit a given volume
-would be displayed as a pop-up and every confirmed change in the list will cause a recalculation of
-the result at the bottom.
+Pop-ups will be used to modify the advanced LVM settings (if any), the encryption configuration and
+to add or edit a given volume.
 
 The size of each volume is specified as a couple of lower and upper limits (the upper one is
 optional in all cases). With the current approach of the YaST `GuidedProposal` there are some
 volumes that may need to recalculate those limits based on its configuration or its relationship
-with others volumes. Their limits will be set as "automatic" by default. For more details,
+with others volumes. Their limits will be set as "auto-calculated" by default. For more details,
 see the corresponding section below.
 
-Apart from the size limits, the add/edit form for a given volume would allow to configure other
-aspects like the file-system type or the usage of snapshots and subvolumes.
+By default, all volumes will be created in the boot disk (for partitions) or in the default LVM
+volume group (for logical volumes). But the user will be able to manually overwrite that for a
+particular volume. In the screenshot above that has been done for the volume at `/home`.
 
-Last but not least, the table header includes a small description about the origin of the current
-list of volumes. Maybe some additional details can be displayed with a tool-tip or maybe that small
-description can be displayed by any other mechanism. Next to the description a set of two grouped
-actions allow to:
+Similarly, it will be possible to specify that a given volume will re-use an existing partition or
+logical volume, either re-formatting it in the process or not. In any case, size limits cannot be
+adjusted for re-used devices. The size of the re-used device will be displayed.
 
-- Reset the list to the default volumes using their recommended sizes (i.e. desired) as lower limit
-- Same action but using the minimum sizes (i.e. min) as lower limit
+Defining the settings and the list of volumes also defines, as a direct consequence, the disks
+affected by the installation process. It may be needed to make some space in those disks. Clicking
+on the current "policy to make space" will open a pop-up to define how to do it, described in the
+corresponding section below.
 
-The proposed workflow and interface should cover most of the basic use-cases, although further
-improvements may be needed to accommodate scenarios like re-installing the system in a similar way to
-the option "Import Mount Points" from the YaST Partitioner.
-
-## Automatic Size Limits
+### Automatic Size Limits
 
 Currently there are cases in which the lower and upper limits of a given volume are adjusted for
 the `GuidedProposal` based on the following aspects:
@@ -156,7 +179,7 @@ the `GuidedProposal` based on the following aspects:
   disabled then the upper limit of the root one disappears)
 
 To make that possible, the size limits of the volumes that are affected by one or several of those
-circumstances will be set as "automatic" by default. If that's the case, a tool-tip will be
+circumstances will be set as "auto-calculated" by default. If that's the case, a tool-tip will be
 available next to each set of limits to explain the rationale of the current values.
 
 Let's consider the following example in which some volumes are configured like this in the control
@@ -187,9 +210,9 @@ file of the product/role being installed:
 
 The list could start with something like this.
 
-![Automatic Sizes Example Step 1](img/automatic_size_example1.png)
+![Automatic Sizes Example Step 1](images/storage_ui/automatic_size_example1.png)
 
-The reason for the "automatic" value would be explained to the user via a tool-tip (or similar
+The reason for the "auto-calculated" value would be explained to the user via a tool-tip (or similar
 mechanism) with a text similar to this (very crude wording, to be refined):
 
 ```
@@ -201,12 +224,71 @@ These limits are affected by::
 As a consequence of all that, if the user deletes the /home volume then the new list would be (note
 the change in the automatic size limits of the root volume).
 
-![Automatic Sizes Example Step 2](img/automatic_size_example2.png)
+![Automatic Sizes Example Step 2](images/storage_ui/automatic_size_example2.png)
 
 If, on top of that, the user also disables snapshots the new resulting list would be.
 
-![Automatic Sizes Example Step 3](img/automatic_size_example3.png)
+![Automatic Sizes Example Step 3](images/storage_ui/automatic_size_example3.png)
 
-Of course, at any point in time the user could modify the root volume and switch to fixed limits. In
-that case, the entered values would be observed and would not be automatically recalculated anymore,
-despite any configuration in the control file.
+Of course, at any point in time the user could modify the root volume and switch to fixed (ie. not
+auto-calculated) limits. In that case, the entered values would be observed and would not be
+automatically recalculated anymore, despite any configuration in the control file.
+
+### Making Space for the Volumes
+
+Similar to YaST, Agama will offer by default the option to automatically make space for the new
+operating system reusing the internal mechanisms of the previously mentioned `SpaceMaker`, but the
+exact algorithm will be different and way less configurable (to reduce confusion).
+
+As an alternative, the Agama proposal will offer a manual mode in which the user will explicitly
+select which partitions to keep, delete or resize.
+
+That will result in up to four possibilities presented in the corresponding pop-up dialog (it's
+still undecided what will be the exact wording used to describe them in the user interface):
+
+- Delete everything in the disk(s). Obviously, all previous data is removed.
+- Resize existing partition(s). The information is kept, but partitions are resized as needed to make
+  enough space.
+- Do not modify existing partition(s). The installation will only succeed if the disk(s) already
+  contains suitable free spaces.
+- Custom. A user interface will allow the user to specify what to do with every individual partition
+  in the affected disks: resize it, delete it or keep it as it is.
+
+In general, the interface of this pop-up should put the focus in the operating systems found in the
+affected disks. Even if the custom mode allows to indicate individual actions per partition, the
+relationship between every one of those partitions and the installed operating system they belong to
+should be as visible as possible.
+
+## Advanced Preparations
+
+As mentioned above, in addition to the page for defining the proposal, Agama will offer interfaces to
+perform some preparatory actions like managing DASDs or setting up complex RAID or LVM layouts.
+Those interfaces will never replace the storage proposal as the only way to define the file systems of
+the installed system. Instead, they will operate right away in the system to configure the devices
+to be used by the proposal.
+
+Some of those interfaces already exist, like the one that allows to connect and disconnect to iSCSI
+targets or the one to manage DASDs. Currently they can be reached through the advanced options menu
+at Agama's side bar.
+
+There will also be interfaces to:
+
+- Manage software-defined RAIDs
+- Manage Bcache devices
+- Define custom LVM setups
+- Manipulate partitions in the disks or in any of the RAID and bcache devices
+
+Since all those actions are interrelated (eg. the user often creates partitions that are combined
+into a RAID that is then used as an LVM physical volume), the final user interface will likely
+resemble the traditional YaST Expert Partitioner. But, since the scope of such a tool will be
+limited to preparing the disk for the proposal, it will not allow to format devices or to define
+mount points for the target system. After defining all the actions to be performed, the changes will
+be committed to the system before returning to the proposal page.
+
+## Other Use-Cases
+
+The proposed workflow and interfaces should cover most of the known installation use-cases.
+Nevertheless further improvements may be needed to accommodate scenarios like re-installing the
+system in a similar way to the option "Import Mount Points" from the YaST Partitioner, which can
+effectively be done by tweaking the proposal options to reuse the appropriate devices.
+
