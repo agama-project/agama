@@ -129,6 +129,88 @@ also allows to easily get the object selectors using the `Explore` button.
 - https://playwright.dev/docs/test-assertions - Test assetions (`expect`)
 - https://playwright.dev/docs/api/class-locator - Finding the elements on the page
 
+## Tips for Writing Tests
+
+The installer runs in another process in a browser, it does not run
+synchronously with the test. Additionally the installer uses the React
+framework, that means the initial web page is empty and the content is added
+asynchronously by Javascript code.
+
+These features have some consequences for writing the tests.
+
+### Timeouts
+
+As mentioned above, the page content is updated asynchronously so if something
+is missing on the page it does not mean the test fails immediately.
+The tested object might appear on the page after a small delay,
+Playwright uses timeouts for most of the checks. If something is missing
+then it tries the search again until the timeout is reached.
+
+The default timeout is set in the `playwright.config.ts` configuration file.
+That should be enough for most operations even on a slow machine.
+However, for some long running operations like refreshing repositories or
+installing packages you might need to use a longer timeout.
+
+Playwright allows setting explicit timeout for each test or action:
+
+```js
+// refreshing the repositories and evaluating the package dependencies might take long time
+await expect(page.getByText("Installation will take")).toBeVisible({timeout: 2 * minute});
+```
+
+or you can set how long the whole test should run:
+
+```js
+test.setTimeout(60 * minute);
+```
+
+## Testing Not Displayed Elements
+
+This is also related to the asynchronous work. You should never test that something
+is NOT displayed on the page because it is not guaranteed that it will not
+be displayed one millisecond after you check for it.
+
+The only exception is that you first check that an element is displayed, do some
+action and then check that the element is not displayed anymore.
+
+```js
+// clicking a 'Details' button
+await page.getByText('Details').click();
+// opens a modal dialog (popup)
+await expect(page.locator('[role="dialog"]')).toBeVisible();
+
+// after clicking the 'Close' button
+await page.getByText('Close').click();
+// the popup disappears
+await expect(page.locator('[role="dialog"]')).not.toBeVisible();
+```
+
+The last check actually waits until the popup disappears. It is OK if it takes
+some short time to close the popup.
+
+## Locators
+
+By default the text locators search for a *substring*! If there are similar
+labels present you might get errors for multiple elements found.
+
+For example when there are "Password" and "Password Confirmation" fields
+displayed on the page then simple
+
+```js
+await page.getByLabel('Password').click()
+```
+
+would actually match *both* elements and Playwright would not know which one you
+wanted to click. In that case the test would fail with an error.
+
+The solution is to use the exact matching:
+
+```js
+await page.getByLabel('Password', { exact: true }).click()
+```
+
+This will match only one field without any conflict.
+
 ## Troubleshooting Failed Integration Tests in CI
 
 ### Single Test Failure
