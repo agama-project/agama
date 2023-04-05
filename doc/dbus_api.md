@@ -48,9 +48,7 @@ Iface: o.o.Agama.Language1
 
 See the new-style [reference][lang-ref] ([source][lang-src]).
 
-<!-- FIXME: use opensuse.github.io/agama -->
-<!-- FIXME: don't monopolize the GH Pages, use /agama/dbus/ -->
-[lang-ref]: https://mvidner.github.io/agama/org.opensuse.Agama.Language1.ref.html
+[lang-ref]: https://opensuse.github.io/agama/dbus/org.opensuse.Agama.Language1.ref.html
 [lang-src]: dbus/org.opensuse.Agama.Language1.doc.xml
 
 ## Base Product
@@ -780,7 +778,5 @@ any issue that might block the installation.
 
 See the new-style [reference][mgr-ref] ([source][mgr-src]).
 
-<!-- FIXME: use opensuse.github.io/agama -->
-<!-- FIXME: don't monopolize the GH Pages, use /agama/dbus/ -->
-[mgr-ref]: https://mvidner.github.io/agama/org.opensuse.Agama1.Manager.ref.html
+[mgr-ref]: https://opensuse.github.io/agama/dbus/org.opensuse.Agama1.Manager.ref.html
 [mgr-src]: dbus/org.opensuse.Agama1.Manager.doc.xml

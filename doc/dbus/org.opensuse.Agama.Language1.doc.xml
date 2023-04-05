@@ -1,9 +1,5 @@
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
-<!--
-sudo busctl -\-verbose -\-address unix:path=/run/agama/bus -\-xml-interface introspect org.opensuse.Agama.Language1 /org/opensuse/Agama/Language1
-# but pick only the main interface
--->
 <node name="/org/opensuse/Agama/Language1"
   xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
   <interface name="org.opensuse.Agama.Language1">
