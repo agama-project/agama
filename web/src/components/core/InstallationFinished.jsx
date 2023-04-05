@@ -34,14 +34,14 @@ import { useInstallerClient } from "~/context/installer";
 
 function InstallationFinished() {
   const client = useInstallerClient();
-  const onRebootAction = () => client.manager.rebootSystem();
+  const closingAction = () => client.manager.rebootSystem();
 
   return (
     <Center>
       <SectionTitle>Installation Finished</SectionTitle>
       <PageIcon><Icon name="task_alt" /></PageIcon>
       <MainActions>
-        <Button isLarge variant="primary" onClick={onRebootAction}>
+        <Button isLarge variant="primary" onClick={closingAction}>
           Reboot
         </Button>
       </MainActions>
