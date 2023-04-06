@@ -164,7 +164,7 @@ or you can set how long the whole test should run:
 test.setTimeout(60 * minute);
 ```
 
-## Testing Not Displayed Elements
+### Testing Not Displayed Elements
 
 This is also related to the asynchronous work. You should never test that something
 is NOT displayed on the page because it is not guaranteed that it will not
@@ -188,7 +188,7 @@ await expect(page.locator('[role="dialog"]')).not.toBeVisible();
 The last check actually waits until the popup disappears. It is OK if it takes
 some short time to close the popup.
 
-## Locators
+### Locators
 
 By default the text locators search for a *substring*! If there are similar
 labels present you might get errors for multiple elements found.
