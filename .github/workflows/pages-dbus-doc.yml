@@ -35,7 +35,10 @@ jobs:
       - name: Install DocBook tooling
         run: |
           sudo apt-get update
-          sudo apt-get --assume-yes --no-install-recommends install xmlto docbook-xsl
+          sudo apt-get --assume-yes --no-install-recommends install xmlto docbook-xsl xmlstarlet
+
+      - name: Check that introspected API and its docs have not diverged
+        run: cd doc/dbus; make diff
 
       - name: Build HTML via DocBook
         run: cd doc; make
