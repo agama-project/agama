@@ -8,7 +8,7 @@ Mon Apr 10 10:14:39 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 Wed Apr  5 14:12:51 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Rename D-Bus interface for generic questions
-  (gh@openSUSE/agama#524).
+  (gh#openSUSE/agama#524).
 
 -------------------------------------------------------------------
 Wed Mar 29 11:31:12 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
