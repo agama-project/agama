@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -37,7 +37,7 @@ module Agama
           super()
 
           @dbus_object = service[object_path]
-          @dbus_iface = @dbus_object["org.opensuse.Agama.Questions1"]
+          @dbus_iface = @dbus_object["org.opensuse.Agama.Questions1.Generic"]
           # one D-Bus client for all kinds of questions
           return unless @dbus_object.has_iface?(LUKS_ACTIVATION_IFACE)
 

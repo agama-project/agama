@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -38,9 +38,9 @@ module Agama
       # D-Bus question.
       module Interfaces
         # Generic interface for a question
-        module Question
-          QUESTION_INTERFACE = "org.opensuse.Agama.Questions1"
-          private_constant :QUESTION_INTERFACE
+        module Generic
+          GENERIC_INTERFACE = "org.opensuse.Agama.Questions1.Generic"
+          private_constant :GENERIC_INTERFACE
 
           # @!method backend
           #   @note Classes including this mixin must define a #backend method
@@ -92,7 +92,7 @@ module Agama
 
           def self.included(base)
             base.class_eval do
-              dbus_interface QUESTION_INTERFACE do
+              dbus_interface GENERIC_INTERFACE do
                 dbus_reader :id, "u"
                 dbus_reader :text, "s"
                 dbus_reader :options, "as"
@@ -146,8 +146,8 @@ module Agama
 
       # Defines the interfaces to implement according to the backend type
       INTERFACES_TO_INCLUDE = {
-        Agama::Question               => [Interfaces::Question],
-        Agama::LuksActivationQuestion => [Interfaces::Question, Interfaces::LuksActivation]
+        Agama::Question               => [Interfaces::Generic],
+        Agama::LuksActivationQuestion => [Interfaces::Generic, Interfaces::LuksActivation]
       }.freeze
       private_constant :INTERFACES_TO_INCLUDE
 

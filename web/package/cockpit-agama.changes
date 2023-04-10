@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Apr  5 14:14:32 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Fix issues with questions client (gh#openSUSE/agama#524).
+
+-------------------------------------------------------------------
 Mon Apr  3 08:13:55 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix DNS handling by using ipv4.dns-data instead of ipv4.dns (gh#openSUSE/agama#518).

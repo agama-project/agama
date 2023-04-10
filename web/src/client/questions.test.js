@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,10 +25,10 @@ import { QuestionsClient } from "./questions";
 jest.mock("./dbus");
 
 // NOTE: should we export them?
-const QUESTION_IFACE = "org.opensuse.Agama.Questions1";
+const GENERIC_IFACE = "org.opensuse.Agama.Questions1.Generic";
 const LUKS_ACTIVATION_IFACE = "org.opensuse.Agama.Questions1.LuksActivation";
 
-const questionsProxy = {
+const questionProxy = {
   wait: jest.fn(),
   Answer: ""
 };
@@ -41,7 +41,7 @@ const luksActivationProxy = {
 const questionPath = "/org/opensuse/Agama/Questions1/432";
 const ifacesAndProperties = {
   "org.freedesktop.DBus.Properties": {},
-  "org.opensuse.Agama.Questions1": {
+  "org.opensuse.Agama.Questions1.Generic": {
     Id: {
       t: "u",
       v: 432
@@ -96,7 +96,7 @@ const expectedQuestions = [
 ];
 
 const proxies = {
-  [QUESTION_IFACE]: questionsProxy,
+  [GENERIC_IFACE]: questionProxy,
   [LUKS_ACTIVATION_IFACE]: luksActivationProxy
 };
 
@@ -128,7 +128,7 @@ describe("#answer", () => {
     const client = new QuestionsClient();
     await client.answer(question);
 
-    expect(questionsProxy).toMatchObject({ Answer: 'the-answer' });
+    expect(questionProxy).toMatchObject({ Answer: 'the-answer' });
   });
 
   describe("when answering a question implementing the LUKS activation interface", () => {

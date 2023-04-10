@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -34,7 +34,7 @@ const DBUS_CONFIG = {
   },
   question: {
     ifaces: {
-      question: "org.opensuse.Agama.Questions1",
+      generic: "org.opensuse.Agama.Questions1.Generic",
       luksActivation: "org.opensuse.Agama.Questions1.LuksActivation"
     }
   }
@@ -85,8 +85,8 @@ function buildQuestion(dbusQuestion) {
   const ifaces = getIfaces(dbusQuestion);
   const ifacesAndProperties = getIfacesAndProperties(dbusQuestion);
 
-  if (ifaces.includes(DBUS_CONFIG.question.ifaces.question)) {
-    const dbusProperties = ifacesAndProperties[DBUS_CONFIG.question.ifaces.question];
+  if (ifaces.includes(DBUS_CONFIG.question.ifaces.generic)) {
+    const dbusProperties = ifacesAndProperties[DBUS_CONFIG.question.ifaces.generic];
 
     question.type = QUESTION_TYPES.generic;
     question.id = fetchValue(dbusProperties, "Id");
@@ -148,7 +148,7 @@ class QuestionsClient {
       proxy.Password = question.password;
     }
 
-    const proxy = await this.client.proxy(DBUS_CONFIG.question.ifaces.question, path);
+    const proxy = await this.client.proxy(DBUS_CONFIG.question.ifaces.generic, path);
     proxy.Answer = question.answer;
   }
 
@@ -195,7 +195,7 @@ class QuestionsClient {
   onQuestionRemoved(handler) {
     return this.onObjectsChanged("InterfacesRemoved", path => {
       const id = path.split("/").at(-1);
-      handler(id);
+      handler(Number(id));
     });
   }
 }
