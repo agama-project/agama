@@ -182,30 +182,23 @@ To make that possible, the size limits of the volumes that are affected by one o
 circumstances will be set as "auto-calculated" by default. If that's the case, a tool-tip will be
 available next to each set of limits to explain the rationale of the current values.
 
-Let's consider the following example in which some volumes are configured like this in the control
-file of the product/role being installed:
+Let's consider the following example in which some volumes are configured like this for the product
+being installed:
 
-```xml
-<volumes>
-  <volume>
-    <mount_point>/</mount_point>
-    <desired_size>5 GiB</desired_size>
-    <max_size>10 GiB</max_size>
-    <!-- Sizes are multiplied by 4 if snapshots are configured -->
-    <snapshots_percentage>300</snapshots_percentage>
-    ...
-  </volume>
-  <volume>
-    <mount_point>/home</mount_point>
-    <desired_size>10 GiB</desired_size>
-    <max_size>unlimited</max_size>
-    <!-- if this volume is disabled we want "/" to increase -->
-    <fallback_for_desired_size>/</fallback_for_desired_size>
-    <fallback_for_max_size>/</fallback_for_max_size>
-    ...
-  </volume>
+```yaml
+volumes:
+- mount_point: "/"
+  min_size: 5 GiB
+  max_size: 20 GiB
+  # Sizes are multiplied by 3 if snapshots are configured
+  snapshots_percentage: 200
   ...
-</volumes>
+- mount_point: "/home"
+  min_size: 10 GiB
+  max_size: unlimited
+  # If this volume is disabled we want "/" to increase
+  fallback_for_max_size: "/"
+  ...
 ```
 
 The list could start with something like this.
@@ -232,7 +225,7 @@ If, on top of that, the user also disables snapshots the new resulting list woul
 
 Of course, at any point in time the user could modify the root volume and switch to fixed (ie. not
 auto-calculated) limits. In that case, the entered values would be observed and would not be
-automatically recalculated anymore, despite any configuration in the control file.
+automatically recalculated anymore, despite any configuration for the default volumes.
 
 ### Making Space for the Volumes
 
