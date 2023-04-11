@@ -1,13 +1,13 @@
-# How to set up a backend for testing this CLI frontend
+# How to set up a backend for testing the CLI frontend
 
-I needed a testing instance of the D-Installer backend so that this
-command-line frontend has something to talk to.
+I needed a testing instance of the Agama backend so that the
+Rust command-line frontend has something to talk to.
 
 ## Summary
 
 1. Take the container used for continuous integration (CI) testing of the
    backend
-2. Give it a git checkout of the backend
+2. Give it a git checkout of this repo
 3. Install the backend within the container
 4. Copy the frontend binary into the container
 
@@ -15,7 +15,7 @@ command-line frontend has something to talk to.
 
 My first plan had a different finale, 4. Make the D-Bus service visible
 ouside the container, but I hit an issue with D-Bus authentication, hopefully
-solvable.
+solvable. (Update: `xdg-dbus-proxy` seems to work, ask mvidner about it)
 
 Josef wanted to test against a different container ([d-installer-backend][]) but that one was a
 bit old and the D-Bus API was mismatched between frontend and backend.
@@ -24,22 +24,16 @@ bit old and the D-Bus API was mismatched between frontend and backend.
 
 ## Details
 
-- Frontend: [d-installer-cli][], this repo
-- Backend:  [d-installer][]
-
-[d-installer-cli]: https://github.com/yast/d-installer-cli
-[d-installer]: https://github.com/yast/d-installer
-
 The container used is built in
-[OBS YaST:Head:Containers/d-installer-testing](d-installer-testing) and
+[OBS YaST:Head:Containers/agama-testing](agama-testing) and
 downloaded from registry.o.o specified below.
 
-[d-installer-testing]: https://build.opensuse.org/package/show/YaST:Head:Containers/d-installer-testing
+[agama-testing]: https://build.opensuse.org/package/show/YaST:Head:Containers/agama-testing
 
 I basically picked the useful bits from the `integration-tests` part
-of [d-installer/.../ci.yml][ci.yml].
+of [.github/workflows/ci.yml][ci.yml].
 
-[ci.yml]: https://github.com/yast/d-installer/blob/25462f57ab695d6910beb59ff0b21a7afaeda47e/.github/workflows/ci.yml
+[ci.yml]: https://github.com/openSUSE/agama/blob/25462f57ab695d6910beb59ff0b21a7afaeda47e/.github/workflows/ci.yml
 
 
 ```sh
