@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import { isValidIp, isValidIpPrefix, intToIPString, stringToIPInt, formatIp } from "./utils";
+import { isValidIp, isValidIpPrefix, intToIPString, stringToIPInt, formatIp, ipPrefixFor } from "./utils";
 
 describe("#isValidIp", () => {
   it("returns true when the IP is valid", () => {
@@ -46,6 +46,13 @@ describe("#isValidIpPrefix", () => {
   it("returns false when it is not neither a valid netmask nor a network prefix", () => {
     expect(isValidIpPrefix("88")).toEqual(false);
     expect(isValidIpPrefix("not-an-netmask")).toEqual(false);
+  });
+});
+
+describe("#ipPrefixFor", () => {
+  it("returns the prefix as an integer for the given netmask or prefix", () => {
+    expect(ipPrefixFor("255.255.0.0")).toEqual(16);
+    expect(ipPrefixFor("24")).toEqual(24);
   });
 });
 

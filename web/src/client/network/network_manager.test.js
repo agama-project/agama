@@ -349,7 +349,7 @@ describe("NetworkManagerAdapter", () => {
       const connection = await client.getConnection("uuid-wifi-1");
       connection.ipv4 = {
         ...connection.ipv4,
-        addresses: [{ address: "192.168.1.2", prefix: 24 }],
+        addresses: [{ address: "192.168.1.2", prefix: "255.255.255.0" }],
         gateway: "192.168.1.1",
         nameServers: ["1.2.3.4"]
       };
