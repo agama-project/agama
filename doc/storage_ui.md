@@ -23,7 +23,7 @@ they affect) are somehow suggested in some of the upcoming sections and mock-ups
 
 In the long term, we may need to come with a better alternative to show the result.
 
-### Volumes in the YaST Proposal: Lessons Learned
+### Volumes in the YaST Proposal
 
 The YaST proposal heavily relies in the concept of the so-called volumes. Those volumes, that are
 different for every product or system role, describe the partitions or LVM logical volumes to be
@@ -32,10 +32,10 @@ created during the process.
 In YaST, every volume specifies two different kinds of lower size limits. The so-called "desired
 size" that is the smallest size that is recommeded for a normal usage of that volume and the "min
 size" that is the lower threshold for the volume to be minimally useful. On top of that, every
-volume has a "weight", used adjust how the available space is distributed among the volumes.
+volume has a "weight", used to adjust how the available space is distributed among the volumes.
 
 On the other hand, the maximum size for a given volume can be configured with the optional "max
-size". But that value can be overriden if LVM is used by the also optional "max size LVM".
+size". But that value can be overridden if LVM is used by the also optional "max size LVM".
 
 Experience has shown that people in charge of defining the volumes for each product struggle to
 grasp the concepts of desired size, min size and weight. The flexibility and level of customization
@@ -65,9 +65,9 @@ storage proposal will not automatically reuse existing LVM structures.
 Currently YaST tries really hard to present an initial proposal to the user, even if that implies
 several subsequent executions of the `GuidedProposal`, each of them with a less ambitious
 configuration. For that it relies on two features of the so-called volumes (volumes are already
-described in a previous section).
+described at *Volumes in the YaST Proposal*):
 
-- First of all, every volume specify both a "min size" and a "desired size" (as already explained).
+- First of all, every volume specifies both a "min size" and a "desired size".
 - On the other hand, some features of a volume are marked as optional in the control file. That
   includes the usage of snapshots, the ability to expand based on the RAM size or even the existence
   of the volume at all.
@@ -107,7 +107,7 @@ initial storage proposal of Agama.
 Having all the previous considerations in mind, let's describe how the general user interaction will
 work.
 
-The summary screen of Agama would display the result of the current storage proposal (or a
+The summary page of Agama would display the result of the current storage proposal (or a
 message about the failed initial calculation) and a link to modify that layout. That link will lead
 to the page that allows to (re)configure and (re)calculate the storage proposal and that is
 described at *The Proposal Page*.
@@ -126,7 +126,7 @@ right away, instead of just planning actions to be performed during installation
 preliminary actions will be available from the Agama advanced menu in the side bar and their general
 functionality is briefly described at *Advanced Preparations*.
 
-## The Proposal Screen
+## The Proposal Page
 
 ### General Description of the Proposal
 
