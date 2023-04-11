@@ -38,13 +38,11 @@ org.freedesktop.locale1 interface -     -
 .X11Variant             property  s     "qwerty,basic"
 ```
 
-#### Design
-
-Elementary Layer (lower)
+#### Design of Elementary Layer (lower)
 
 - Just use the systemd API, don't add any API of our own
 
-Proposal Layer (uppper)
+#### Design of Proposal Layer (uppper)
 
 - when setting the locale, adjust the proposed package selection and keyboard
   accordingly. And timezone.
@@ -85,11 +83,15 @@ org.freedesktop.timedate1 interface -    -                -
 "LocalRTC" means "is the local time zone used for the real time clock",
 so it's !hwclock_in_UTC
 
-#### Design
+#### Design of Elementary Layer (lower)
 
-we will use
-.ListTimezones
-.SetLocalRTC
-.SetTimezone
-.LocalRTC
-.Timezone
+Just use the systemd API, don't add any API of our own. We will use
+- .ListTimezones
+- .SetLocalRTC
+- .SetTimezone
+- .LocalRTC
+- .Timezone
+
+#### Design of Proposal Layer (uppper)
+
+None needed?
