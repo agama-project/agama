@@ -3,16 +3,28 @@ use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput, Fields};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 enum SettingKind {
     Scalar,
     Collection,
 }
 
+/// Represents a setting and its configuration
 #[derive(Debug, Clone)]
 struct SettingField {
-    ident: syn::Ident,
-    kind: SettingKind,
+    /// Setting ident
+    pub ident: syn::Ident,
+    /// Setting kind (scalar, collection, struct).
+    pub kind: SettingKind,
+}
+
+/// List of setting fields
+struct SettingFieldsList(Vec<SettingField>);
+
+impl SettingFieldsList {
+    pub fn by_type(&self, kind: SettingKind) -> Vec<&SettingField> {
+        self.0.iter().filter(|f| f.kind == kind).collect()
+    }
 }
 
 /// Derive Settings, typically for a FooSettings struct.
@@ -31,20 +43,11 @@ pub fn agama_attributes_derive(input: TokenStream) -> TokenStream {
     let fields: Vec<&syn::Field> = fields.iter().collect();
     let settings = parse_setting_fields(fields);
 
-    let scalar_fields: Vec<SettingField> = settings
-        .clone()
-        .into_iter()
-        .filter(|s| matches!(s.kind, SettingKind::Scalar))
-        .collect();
-
+    let scalar_fields = settings.by_type(SettingKind::Scalar);
     let set_fn = expand_set_fn(&scalar_fields);
     let merge_fn = expand_merge_fn(&scalar_fields);
 
-    let collection_fields: Vec<SettingField> = settings
-        .clone()
-        .into_iter()
-        .filter(|s| matches!(s.kind, SettingKind::Collection))
-        .collect();
+    let collection_fields = settings.by_type(SettingKind::Collection);
     let add_fn = expand_add_fn(&collection_fields);
 
     let name = input.ident;
@@ -59,7 +62,7 @@ pub fn agama_attributes_derive(input: TokenStream) -> TokenStream {
     expanded.into()
 }
 
-fn expand_set_fn(settings: &Vec<SettingField>) -> TokenStream2 {
+fn expand_set_fn(settings: &Vec<&SettingField>) -> TokenStream2 {
     if settings.is_empty() {
         return quote! {};
     }
@@ -76,7 +79,7 @@ fn expand_set_fn(settings: &Vec<SettingField>) -> TokenStream2 {
     }
 }
 
-fn expand_merge_fn(settings: &Vec<SettingField>) -> TokenStream2 {
+fn expand_merge_fn(settings: &Vec<&SettingField>) -> TokenStream2 {
     if settings.is_empty() {
         return quote! {};
     }
@@ -94,7 +97,7 @@ fn expand_merge_fn(settings: &Vec<SettingField>) -> TokenStream2 {
     }
 }
 
-fn expand_add_fn(settings: &Vec<SettingField>) -> TokenStream2 {
+fn expand_add_fn(settings: &Vec<&SettingField>) -> TokenStream2 {
     if settings.is_empty() {
         return quote! {};
     }
@@ -112,11 +115,11 @@ fn expand_add_fn(settings: &Vec<SettingField>) -> TokenStream2 {
 }
 
 // Extracts information about the settings fields
-fn parse_setting_fields(fields: Vec<&syn::Field>) -> Vec<SettingField> {
+fn parse_setting_fields(fields: Vec<&syn::Field>) -> SettingFieldsList {
     let mut settings = vec![];
     for field in fields {
         let mut setting = SettingField {
-            ident: field.ident.clone().expect("could not find an ident"),
+            ident: field.ident.clone().expect("to find a field ident"),
             kind: SettingKind::Scalar,
         };
 
@@ -131,9 +134,9 @@ fn parse_setting_fields(fields: Vec<&syn::Field>) -> Vec<SettingField> {
 
                 Ok(())
             })
-            .expect("wrong arguments to the settings attribute");
+            .expect("settings arguments do not follow the expected structure");
         }
         settings.push(setting);
     }
-    settings
+    SettingFieldsList(settings)
 }
