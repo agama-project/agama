@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Title,
@@ -33,12 +33,21 @@ import { Center, Icon, Title as SectionTitle, PageIcon, MainActions } from "~/co
 import { useInstallerClient } from "~/context/installer";
 
 function InstallationFinished() {
-  const iguana = false;
   const client = useInstallerClient();
+  const [iguana, setIguana] = useState(false);
   const closingAction = iguana
     ? () => client.manager.finishCockpit()
     : () => client.manager.rebootSystem();
   const buttonCaption = iguana ? "Finish" : "Reboot";
+
+  useEffect(() => {
+    async function getIguana() {
+      const ret = await client.manager.useIguana();
+      setIguana(ret === "iguana");
+    }
+
+    getIguana();
+  });
 
   return (
     <Center>

@@ -130,6 +130,13 @@ class ManagerBaseClient {
   finishCockpit() {
     return cockpit.spawn(["systemctl", "stop", "cockpit.service"]);
   }
+
+  /**
+   * Returns whether Iguana is used on the system
+   */
+  useIguana() {
+    return cockpit.script("[ -d /iguana ] && echo -n iguana");
+  }
 }
 
 /**
