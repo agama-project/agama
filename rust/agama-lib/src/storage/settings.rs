@@ -13,7 +13,7 @@ pub struct StorageSettings {
     /// Encryption password for the storage devices (in clear text)
     pub encryption_password: Option<String>,
     /// Devices to use in the installation
-    #[collection_setting]
+    #[settings(collection)]
     pub devices: Vec<Device>,
 }
 
