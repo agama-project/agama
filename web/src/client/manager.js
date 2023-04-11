@@ -123,6 +123,13 @@ class ManagerBaseClient {
   rebootSystem() {
     return cockpit.spawn(["/usr/sbin/shutdown", "-r", "now"]);
   }
+
+  /**
+   * Returns whether finishing cockpit succeeded
+   */
+  finishCockpit() {
+    return cockpit.spawn(["systemctl", "stop", "cockpit.service"]);
+  }
 }
 
 /**

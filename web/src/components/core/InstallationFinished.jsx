@@ -33,8 +33,12 @@ import { Center, Icon, Title as SectionTitle, PageIcon, MainActions } from "~/co
 import { useInstallerClient } from "~/context/installer";
 
 function InstallationFinished() {
+  const iguana = false;
   const client = useInstallerClient();
-  const closingAction = () => client.manager.rebootSystem();
+  const closingAction = iguana
+    ? () => client.manager.finishCockpit()
+    : () => client.manager.rebootSystem();
+  const buttonCaption = iguana ? "Finish" : "Reboot";
 
   return (
     <Center>
@@ -42,7 +46,7 @@ function InstallationFinished() {
       <PageIcon><Icon name="task_alt" /></PageIcon>
       <MainActions>
         <Button isLarge variant="primary" onClick={closingAction}>
-          Reboot
+          {buttonCaption}
         </Button>
       </MainActions>
 
@@ -55,7 +59,7 @@ function InstallationFinished() {
           <div>
             <Text>The installation on your machine is complete.</Text>
             <Text>
-              At this point you can 'Reboot' the machine to log in to the new system.
+              At this point you can {buttonCaption} the machine to log in to the new system.
             </Text>
             <Text>Have a lot of fun! Your openSUSE Development Team.</Text>
           </div>
