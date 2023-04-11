@@ -23,85 +23,6 @@ they affect) are somehow suggested in some of the upcoming sections and mock-ups
 
 In the long term, we may need to come with a better alternative to show the result.
 
-### Volumes in the YaST Proposal
-
-The YaST proposal heavily relies in the concept of the so-called volumes. Those volumes, that are
-different for every product or system role, describe the partitions or LVM logical volumes to be
-created during the process.
-
-In YaST, every volume specifies two different kinds of lower size limits. The so-called "desired
-size" that is the smallest size that is recommeded for a normal usage of that volume and the "min
-size" that is the lower threshold for the volume to be minimally useful. On top of that, every
-volume has a "weight", used to adjust how the available space is distributed among the volumes.
-
-On the other hand, the maximum size for a given volume can be configured with the optional "max
-size". But that value can be overridden if LVM is used by the also optional "max size LVM".
-
-Experience has shown that people in charge of defining the volumes for each product struggle to
-grasp the concepts of desired size, min size and weight. The flexibility and level of customization
-they provide doesn't seem to pay off for the confusion they introduce.
-
-Volumes at Agama will only have a minimum size and (optionally) a maximum one. No "desired size",
-"weight" or "max size LVM".
-
-### Calculating How to Make Space
-
-Although Agama reuses part of the internal logic of YaST, there is no need to reproduce all
-YaST behaviors.
-
-YaST's `GuidedProposal` contains a subcomponent called `SpaceMaker` which takes cares of deleting
-and resizing existing partitions to make space for the new system. It decides by itself which
-partitions should be affected following a logic that, even though is configurable in the control
-file and by the UI, is hard to follow for many end users.
-
-### Reusing LVM Setups
-
-For historical reasons, YaST tries to reuse existing LVM volume groups when making a proposal. That
-behavior can be very confusing in many situations. To avoid the associated problems, the Agama
-storage proposal will not automatically reuse existing LVM structures.
-
-### About the Initial Proposal
-
-Currently YaST tries really hard to present an initial proposal to the user, even if that implies
-several subsequent executions of the `GuidedProposal`, each of them with a less ambitious
-configuration. For that it relies on two features of the so-called volumes (volumes are already
-described at *Volumes in the YaST Proposal*):
-
-- First of all, every volume specifies both a "min size" and a "desired size".
-- On the other hand, some features of a volume are marked as optional in the control file. That
-  includes the usage of snapshots, the ability to expand based on the RAM size or even the existence
-  of the volume at all.
-
-YaST performs an initial execution of the `GuidedProposal` using the desired sizes as starting point
-and with all the optional features set at their recommended values. If that fails, it runs
-subsequent attempts until a proposal is possible. For that it fallbacks to the min sizes and
-disables volumes (or volume features) in the order specified in the control file. It also explores
-the possibility of using the different disks found on the system.
-
-That behavior almost guarantees that YaST can make a storage proposal so it's possible to install
-with an empty AutoYaST profile or by simply clicking "next, next, next" in the interactive
-installer. But it is not very self-explanatory. To somehow explain what happened, YaST shows a
-sentence like these next to the result of the current proposal:
-
-- "_Initial layout proposed with the default Guided Setup settings_"
-- "_Initial layout proposed after adjusting the Guided Setup settings_" (see screenshot).
-
-![Guided Setup result at YaST](images/storage_ui/yast_guided_result.png)
-
-As mentioned before, Agama doesn't need to replicate all YaST behaviors or to inherit its
-requirements and expectations. It's possible to adopt the same approach or to go all the way in the
-other direction and try by default to execute a variant of the `GuidedProposal` only once, with:
-
-  - A single disk as target (chosen by any criteria)
-  - A simple strategy for making space (eg. wiping the content of the disk)
-  - Using the default settings for all volumes
-
-If that execution of the `GuidedProposal` fails, then Agama could simply show a message like:
-"it was not possible to calculate an initial storage layout".
-
-The interface proposed in this document will work equally whatever approach is decided for the
-initial storage proposal of Agama.
-
 ## General Workflow
 
 Having all the previous considerations in mind, let's describe how the general user interaction will
@@ -114,9 +35,9 @@ described at *The Proposal Page*.
 
 The Agama storage proposal will be the only mechanism to define the file systems of the new operating
 system (including their mount points, subvolumes and options for formatting or mounting). This
-proposal is similar to the `GuidedProposal` implemented by YaST. As such, the resulting file systems
+proposal is similar to the `GuidedProposal` implemented by YaST. As such, the wanted file systems
 will actually be defined as a set of so-called volumes very similar to the YaST ones (although we
-may need to find a better name).
+may need to find a better name). See *Volumes in the YaST Proposal* for more information.
 
 Sometimes a previous setup may be needed in order to prepare the devices used by that proposal
 mechanism. That includes actions like connecting to some iSCSI disks, activating and formating
@@ -230,8 +151,7 @@ automatically recalculated anymore, despite any configuration for the default vo
 ### Making Space for the Volumes
 
 Similar to YaST, Agama will offer by default the option to automatically make space for the new
-operating system reusing the internal mechanisms of the previously mentioned `SpaceMaker`, but the
-exact algorithm will be different and way less configurable (to reduce confusion).
+operating system. But the algorithm will be different and less configurable.
 
 As an alternative, the Agama proposal will offer a manual mode in which the user will explicitly
 select which partitions to keep, delete or resize.
@@ -284,4 +204,75 @@ The proposed workflow and interfaces should cover most of the known installation
 Nevertheless further improvements may be needed to accommodate scenarios like re-installing the
 system in a similar way to the option "Import Mount Points" from the YaST Partitioner, which can
 effectively be done by tweaking the proposal options to reuse the appropriate devices.
+
+## Comparison with the YaST Proposal
+
+### Volumes in the YaST Proposal
+
+The YaST proposal heavily relies in the concept of the so-called volumes. Those volumes, that are
+different for every product or system role, describe the partitions or LVM logical volumes to be
+created during the process.
+
+In YaST, every volume specifies two different kinds of lower size limits. The so-called "desired
+size" that is the smallest size that is recommeded for a normal usage of that volume and the "min
+size" that is the lower threshold for the volume to be minimally useful. On top of that, every
+volume has a "weight", used to adjust how the available space is distributed among the volumes.
+
+On the other hand, the maximum size for a given volume can be configured with the optional "max
+size". But that value can be overridden if LVM is used by the also optional "max size LVM".
+
+Experience has shown that people in charge of defining the volumes for each product struggle to
+grasp the concepts of desired size, min size and weight. The flexibility and level of customization
+they provide doesn't seem to pay off for the confusion they introduce.
+
+Volumes at Agama will only have a minimum size and (optionally) a maximum one. No "desired size",
+"weight" or "max size LVM".
+
+### Reusing LVM Setups
+
+For historical reasons, YaST tries to reuse existing LVM volume groups when making a proposal. That
+behavior can be very confusing in many situations. To avoid the associated problems, the Agama
+storage proposal will not automatically reuse existing LVM structures.
+
+### About the Initial Proposal
+
+Currently YaST tries really hard to present an initial proposal to the user, even if that implies
+several subsequent executions of the `GuidedProposal`, each of them with a less ambitious
+configuration. For that it relies on two features of the so-called volumes (volumes are already
+described at *Volumes in the YaST Proposal*):
+
+- First of all, every volume specifies both a "min size" and a "desired size".
+- On the other hand, some features of a volume are marked as optional in the control file. That
+  includes the usage of snapshots, the ability to expand based on the RAM size or even the existence
+  of the volume at all.
+
+YaST performs an initial execution of the `GuidedProposal` using the desired sizes as starting point
+and with all the optional features set at their recommended values. If that fails, it runs
+subsequent attempts until a proposal is possible. For that it fallbacks to the min sizes and
+disables volumes (or volume features) in the order specified in the control file. It also explores
+the possibility of using the different disks found on the system.
+
+That behavior almost guarantees that YaST can make a storage proposal so it's possible to install
+with an empty AutoYaST profile or by simply clicking "next, next, next" in the interactive
+installer. But it is not very self-explanatory. To somehow explain what happened, YaST shows a
+sentence like these next to the result of the current proposal:
+
+- "_Initial layout proposed with the default Guided Setup settings_"
+- "_Initial layout proposed after adjusting the Guided Setup settings_" (see screenshot).
+
+![Guided Setup result at YaST](images/storage_ui/yast_guided_result.png)
+
+As mentioned before, Agama doesn't need to replicate all YaST behaviors or to inherit its
+requirements and expectations. It's possible to adopt the same approach or to go all the way in the
+other direction and try by default to execute a variant of the `GuidedProposal` only once, with:
+
+  - A single disk as target (chosen by any criteria)
+  - A simple strategy for making space (eg. wiping the content of the disk)
+  - Using the default settings for all volumes
+
+If that execution of the `GuidedProposal` fails, then Agama could simply show a message like:
+"it was not possible to calculate an initial storage layout".
+
+The interface proposed in this document will work equally whatever approach is decided for the
+initial storage proposal of Agama.
 
