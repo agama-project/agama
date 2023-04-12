@@ -44,7 +44,7 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
 
 # - D-Bus activation configuration
 #   (this could be left out but then we would rely
-#    on the manual startup via bin/agama)
+#    on the manual startup via bin/agamactl)
 (
   cd $MYDIR/service/share
   DBUSDIR=/usr/share/dbus-1/agama-services

@@ -39,6 +39,6 @@ $SUDO ln -snf `pwd`/web/dist /usr/share/cockpit/agama
 echo
 echo "D-Bus will start the services, see journalctl for their logs."
 echo "To start the services manually, logging to the terminal:"
-echo "  cd service; $SUDO bundle exec bin/agama"
+echo "  cd service; $SUDO bundle exec bin/agamactl"
 echo
 echo "Visit http://localhost:9090/cockpit/@localhost/agama/index.html"
