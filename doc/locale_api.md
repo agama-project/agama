@@ -85,7 +85,7 @@ node ...Agama/Locale1 {
       # we have a list of LANG settings, 1st gets passed to systemd,
       # others affect package selection
       readwrite as   Locale = ['cs_CZ.UTF-8', 'de_DE.UTF-8'];
-      readonly  (ss) X11Keyboard = ('cz','qwerty);
+      readwrite (ss) X11Keyboard = ('cz','qwerty);
   };
 };
 ```
@@ -147,7 +147,7 @@ node ...Agama/Locale1 {
   interface ...Agama.Locale1 {
     properties:
       readwrite (yas)   Locale = (23, ['cs_CZ.UTF-8', 'de_DE.UTF-8']);
-      readonly  (y(ss)) X11Keyboard = (42, ('cz','qwerty));
+      readwrite (y(ss)) X11Keyboard = (42, ('cz','qwerty));
   };
 };
 ```
