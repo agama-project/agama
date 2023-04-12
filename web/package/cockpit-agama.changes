@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Apr 11 14:02:31 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix netmask handling (bsc#1210104).
+
+-------------------------------------------------------------------
 Wed Apr  5 14:14:32 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Fix issues with questions client (gh#openSUSE/agama#524).

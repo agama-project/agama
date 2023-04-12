@@ -25,6 +25,7 @@ import DBusClient from "../dbus";
 import cockpit from "../../lib/cockpit";
 import { NetworkEventTypes } from "./index";
 import { createAccessPoint, createConnection, SecurityProtocols } from "./model";
+import { ipPrefixFor } from "./utils";
 
 /**
  * @typedef {import("./model").NetworkSettings} NetworkSettings
@@ -107,7 +108,7 @@ const connectionToCockpit = (connection) => {
       "address-data": cockpit.variant("aa{sv}", ipv4.addresses.map(addr => (
         {
           address: cockpit.variant("s", addr.address),
-          prefix: cockpit.variant("u", parseInt(addr.prefix.toString()))
+          prefix: cockpit.variant("u", ipPrefixFor(addr.prefix.toString()))
         }
       ))),
       "dns-data": cockpit.variant("as", ipv4.nameServers),

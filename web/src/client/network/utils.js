@@ -54,6 +54,22 @@ const isValidIpPrefix = (value) => {
 };
 
 /**
+ * Prefix for the given prefix or netmask
+ *
+ * By now, only IPv4 is supported.
+ *
+ * @param {string} value - An netmask or a network prefix
+ * @return {number} prefix for the given netmask or prefix
+ */
+const ipPrefixFor = (value) => {
+  if (value.match(/^\d+$/)) {
+    return parseInt(value);
+  } else {
+    return ipaddr.IPv4.parse(value).prefixLengthFromSubnetMask();
+  }
+};
+
+/**
  *  Converts an IP given in decimal format to text format
  *
  * FIXME: IPv6 is not supported yet.
@@ -104,5 +120,6 @@ export {
   isValidIpPrefix,
   intToIPString,
   stringToIPInt,
-  formatIp
+  formatIp,
+  ipPrefixFor
 };
