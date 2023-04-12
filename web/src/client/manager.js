@@ -128,7 +128,7 @@ class ManagerBaseClient {
    * Returns whether finishing cockpit succeeded
    */
   finishCockpit() {
-    return cockpit.spawn(["systemctl", "stop", "cockpit.service"]);
+    return cockpit.spawn(["systemctl", "stop", "cockpit-wsinstance-http.service"]);
   }
 
   /**
