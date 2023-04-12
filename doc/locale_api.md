@@ -42,19 +42,122 @@ org.freedesktop.locale1 interface -     -
 
 - Just use the systemd API, don't add any API of our own
 
-#### Design of Proposal Layer (uppper)
+#### Design of Proposal Layer (upper)
 
 - when setting the locale, adjust the proposed package selection and keyboard
   accordingly. And timezone.
 
-Agama.locale1 interface (on Agama/Language1?)
-- is a copy of freedesktop.locale1,
-  forwarding to the elementary layer,
-  and SetLocale does the additional work
+
+
+The general design of the proposal layer is
+
+- declarative, using read-write properties
+- setting some properties will make changes in the proposal layer of other
+  properties of other objects
+
+So here, setting `Locale` below will set also `X11Keyboard` here and
   - Agama...Software...todo(...)
-  - Agama.locale1.SetVConsoleKeyboard(...)
-  - Agama.locale1.SetX11Keyboard(...)
   - Agama...Timezone...todo(...)
+
+For the first version of the API, let's keep things simple:
+
+**LocaleType** is just one string, the value for the `LANG` variable, like
+`"cs_CZ.UTF-8"`.
+
+**X11KeyboardType** is a pair of strings, the Layout and Variant, for example
+`("cz", "qwerty")` or `("us", "basic")`.
+
+We don't expose the console keyboard, instead letting systemd do it via the
+_convert_ parameter.
+
+(The other systemd keyboard settings are X11Model and X11Options, we don't
+have UI or data for that)
+
+```
+# this is gdbus syntax BTW
+node ...Agama/Locale1 {
+  interface ...Agama.Locale1 {
+    methods:
+      # FIXME: the method part is unclear to me. anyone better at proposals?
+      Commit();
+    properties:
+      # NOTE: "as" has different meaning to systemd,
+      # we have a list of LANG settings, 1st gets passed to systemd,
+      # others affect package selection
+      readwrite as   Locale = ['cs_CZ.UTF-8', 'de_DE.UTF-8'];
+      readonly  (ss) X11Keyboard = ('cz','qwerty);
+  };
+};
+```
+
+##### Overriding the User's Choice?
+
+<details>
+<summary>
+If setting the Locale proposes the Language, what do we do if the user first
+changes the language and _then_ the locale?
+</summary>
+
+When Agama UI first shows up, it may show default choices like:
+
+>  Locale: English (US), Keyboard: US
+
+Then we change the locale to Czech, and the keyboard is adjusted automatically:
+
+>  Locale: Czech, Keyboard: Czech
+
+We tune the keyboard:
+
+>  Locale: Czech, Keyboard: Czech (qwerty)
+
+When we then change the locale, the keyboard could stay the same, as we have
+already touched it:
+
+>  Locale: German, Keyboard: Czech (qwerty)
+</details>
+
+##### Simple Design: Always Repropose
+
+We can easily afford throwing away the user's choice of keyboard layout and
+simply set what we consider a good default for a newly set locale, because:
+
+1. it is just one setting (as opposed to whole partitioning layout)
+2. the change will be visible in the UI, I assume
+
+##### Detailed Design: Prioritize
+
+But other cases may not be as simple, so here's a generic design:
+
+All settings are wrapped in a `Priority<T>` generic type (an Enum in Rust),
+meaning, what is the source and importance of the setting:
+- `Machine(data)` means the system has proposed it
+- `Human(data)` means the user has made the choice
+
+In D-Bus, it is represented by wrapping the data in a struct, with a leading
+byte* tagging the priority. For ease of recognition when watching bus traffic,
+special numbers are used:
+- `23` means Human, for the number of chromosome pairs
+- `42` means Machine, as the famous Answer was given by Deep Thought, a machine
+
+In the following dump, we see that the locale was set by the user and the
+system has adjusted the keyboard.
+
+```
+node ...Agama/Locale1 {
+  interface ...Agama.Locale1 {
+    properties:
+      readwrite (yas)   Locale = (23, ['cs_CZ.UTF-8', 'de_DE.UTF-8']);
+      readonly  (y(ss)) X11Keyboard = (42, ('cz','qwerty));
+  };
+};
+```
+
+You may know a [similar settings in libzypp][resstatus] where it has 4 levels.
+
+*: maybe this is a crazy optimization? I am not too opposed to use strings for
+this on the bus.
+
+[resstatus]: https://github.com/openSUSE/libzypp/blob/d441746c59f063b5d54833bfdebc48829b07feb5/zypp/ResStatus.h#L106
 
 ### Timezone
 
@@ -92,6 +195,6 @@ Just use the systemd API, don't add any API of our own. We will use
 - .LocalRTC
 - .Timezone
 
-#### Design of Proposal Layer (uppper)
+#### Design of Proposal Layer (upper)
 
 None needed?
