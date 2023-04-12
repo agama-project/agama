@@ -25,7 +25,7 @@ bit old and the D-Bus API was mismatched between frontend and backend.
 ## Details
 
 The container used is built in
-[OBS YaST:Head:Containers/agama-testing](agama-testing) and
+[OBS YaST:Head:Containers/agama-testing][agama-testing] and
 downloaded from registry.o.o specified below.
 
 [agama-testing]: https://build.opensuse.org/package/show/YaST:Head:Containers/agama-testing
