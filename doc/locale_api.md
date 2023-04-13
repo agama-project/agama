@@ -163,16 +163,28 @@ this on the bus.
 
 #### Systemd
 
+(I find `gdbus` verbose output better for methods and `busctl` terse output
+better for properties)
+
 ```
+$ gdbus introspect -y -d org.freedesktop.timedate1 -o /org/freedesktop/timedate1                        
+node /org/freedesktop/timedate1 { …
+  interface org.freedesktop.timedate1 { …
+    methods:
+      SetTime(in  x usec_utc,
+              in  b relative,
+              in  b interactive);
+      SetTimezone(in  s timezone,
+                  in  b interactive);
+      SetLocalRTC(in  b local_rtc,
+                  in  b fix_system,
+                  in  b interactive);
+      SetNTP(in  b use_ntp,
+             in  b interactive);
+      ListTimezones(out as timezones);
+…
 $ busctl --system introspect org.freedesktop.timedate1 /org/freedesktop/timedate1
 NAME                      TYPE      SIG  RESULT/VALUE     FLAGS
-...
-org.freedesktop.timedate1 interface -    -                -
-.ListTimezones            method    -    as               -
-.SetLocalRTC              method    bbb  -                -
-.SetNTP                   method    bb   -                -
-.SetTime                  method    xbb  -                -
-.SetTimezone              method    sb   -                -
 (properties are read only)
 .CanNTP                   property  b    true             -
 .LocalRTC                 property  b    false            emits-change
@@ -197,4 +209,16 @@ Just use the systemd API, don't add any API of our own. We will use
 
 #### Design of Proposal Layer (upper)
 
-None needed?
+(Using the `Priority<T>` design from above)
+
+```
+node ...Agama/TimeDate1 {
+  interface ...Agama.TimeDate1 {
+    methods:
+      # FIXME: add relevant methods common to all proposals
+    properties:
+      readwrite (ys) Timezone = (42, 'Europe/Prague');
+      readwrite (yb) LocalRTC = (42, false);
+  };
+};
+```
