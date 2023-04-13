@@ -1,6 +1,6 @@
 <!-- DTD for D-Bus Introspection Documentation -->
 
-<!ELEMENT doc (summary?,description?,errors?,permission?,since?,deprecated,seealso?)>
+<!ELEMENT doc (summary?,description?,errors?,permission?,since?,deprecated?,seealso?)>
 
 <!ELEMENT summary (#PCDATA|ref)*>
 <!ELEMENT description (#PCDATA|para|example)*>
