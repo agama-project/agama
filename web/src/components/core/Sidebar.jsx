@@ -132,8 +132,13 @@ const Sidebar = ({ children }) => {
   );
 };
 
-Sidebar.OpenButton = ({ children }) => (
-  <Button variant="link" isInline onClick={() => openButtonRef.current.click()}>{children}</Button>
-);
+Sidebar.OpenButton = ({ onClick: onClickProp, children }) => {
+  const onClick = () => {
+    if (onClickProp !== undefined) onClickProp();
+    openButtonRef.current.click();
+  };
+
+  return <Button variant="link" isInline onClick={onClick}>{children}</Button>;
+};
 
 export default Sidebar;
