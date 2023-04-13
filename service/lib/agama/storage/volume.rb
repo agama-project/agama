@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -179,7 +179,7 @@ module Agama
         @mount_point = spec.mount_point
         @optional = spec.proposed_configurable?
         @min_size = spec.min_size
-        @max_size = spec.min_size
+        @max_size = spec.max_size
         @fs_types = spec.fs_types
         @fs_type = spec.fs_type
         @snapshots = spec.snapshots?
