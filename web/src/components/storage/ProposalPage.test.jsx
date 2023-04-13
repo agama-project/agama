@@ -20,90 +20,119 @@
  */
 
 import React from "react";
-import { screen, waitForElementToBeRemoved } from "@testing-library/react";
-import { installerRender, mockComponent } from "~/test-utils";
-import { noop } from "~/utils";
+import { act, screen, waitFor } from "@testing-library/react";
+import { createCallbackMock, installerRender, mockComponent } from "~/test-utils";
 import { createClient } from "~/client";
 import { ProposalPage } from "~/components/storage";
 
-const FakeProposalTargetSection = ({ calculateProposal }) => {
-  return (
-    <div>
-      Target section
-      <a href="#" onClick={calculateProposal}>Calculate</a>
-    </div>
-  );
+jest.mock("~/client");
+
+jest.mock("@patternfly/react-core", () => {
+  const original = jest.requireActual("@patternfly/react-core");
+
+  return {
+    ...original,
+    Skeleton: mockComponent("PFSkeleton")
+  };
+});
+
+const defaultProposalData = {
+  availableDevices: [],
+  volumeTemplates: [],
+  result: {
+    candidateDevices: ["/dev/vda"],
+    lvm: false,
+    encryptionPassword: "",
+    volumes: []
+  }
 };
 
-jest.mock("~/client");
-jest.mock("~/components/core/SectionSkeleton", () => mockComponent("Loading proposal"));
-jest.mock("~/components/storage/ProposalTargetSection", () => FakeProposalTargetSection);
-jest.mock("~/components/storage/ProposalSettingsSection", () => mockComponent("Settings section"));
-jest.mock("~/components/storage/ProposalActionsSection", () => mockComponent("Actions section"));
+let proposalData;
 
-let proposal;
+const probeFn = jest.fn().mockResolvedValue(0);
+
+const isDeprecatedFn = jest.fn();
+
+let onDeprecateFn = jest.fn();
 
 beforeEach(() => {
+  isDeprecatedFn.mockResolvedValue(false);
+
+  proposalData = defaultProposalData;
+
   createClient.mockImplementation(() => {
     return {
       storage: {
+        probe: probeFn,
         proposal: {
-          getData: jest.fn().mockResolvedValue(proposal),
+          getData: jest.fn().mockResolvedValue(proposalData),
           calculate: jest.fn().mockResolvedValue(0)
         },
         getValidationErrors: jest.fn().mockResolvedValue([]),
-        isDeprecated: jest.fn().mockResolvedValue(false),
-        onDeprecate: noop
+        isDeprecated: isDeprecatedFn,
+        onDeprecate: onDeprecateFn
       }
     };
   });
 });
 
-describe("when there is no proposal yet", () => {
-  beforeEach(() => {
-    proposal = { result: undefined };
-  });
-
-  it("renders the skeleton", async () => {
-    installerRender(<ProposalPage />);
-
-    await screen.findByText("Loading proposal");
-  });
+it("probes the system if the system is deprecated", async () => {
+  isDeprecatedFn.mockResolvedValue(true);
+  installerRender(<ProposalPage />);
+  await waitFor(() => expect(probeFn).toHaveBeenCalled());
 });
 
-describe("when there is a proposal", () => {
-  beforeEach(() => {
-    proposal = { result: {} };
-  });
+it("does not probe the system if the system is not deprecated", async () => {
+  installerRender(<ProposalPage />);
+  await waitFor(() => expect(probeFn).not.toHaveBeenCalled());
+});
 
-  it("renders the sections", async () => {
+it("loads the proposal data", async () => {
+  installerRender(<ProposalPage />);
+
+  screen.getAllByText(/PFSkeleton/);
+  expect(screen.queryByText(/Installation device/)).toBeNull();
+  await screen.findByText(/Installation device/);
+  screen.getByText("/dev/vda");
+});
+
+it("renders a warning about modified devices", async () => {
+  installerRender(<ProposalPage />);
+
+  await screen.findByText(/Devices will not be modified/);
+});
+
+it("renders the settings and actions sections", async () => {
+  installerRender(<ProposalPage />);
+
+  await screen.findByText(/Settings/);
+  await screen.findByText(/Planned Actions/);
+});
+
+describe("when the system becomes deprecated", () => {
+  it("probes the system", async () => {
+    const [mockFunction, callbacks] = createCallbackMock();
+    onDeprecateFn = mockFunction;
     installerRender(<ProposalPage />);
 
-    await waitForElementToBeRemoved(() => screen.queryByText("Loading proposal"));
-    screen.getByText("Target section");
-    screen.getByText("Settings section");
-    screen.getByText("Actions section");
+    const [onDeprecateCb] = callbacks;
+    await act(() => onDeprecateCb());
+
+    await waitFor(() => expect(probeFn).toHaveBeenCalled());
   });
 
-  describe("and the the proposal needs to be recalculated", () => {
-    it("renders the skeleton while calculating proposal", async () => {
-      const { user } = installerRender(<ProposalPage />);
+  it("loads the proposal data", async () => {
+    const [mockFunction, callbacks] = createCallbackMock();
+    onDeprecateFn = mockFunction;
+    installerRender(<ProposalPage />);
 
-      const link = await screen.findByRole("link", { name: "Calculate" });
-      user.click(link);
+    await screen.findByText("/dev/vda");
 
-      await screen.findByText("Loading proposal");
-    });
+    proposalData.result.candidateDevices = ["/dev/vdb"];
 
-    it("renders the sections after calculating the proposal", async () => {
-      const { user } = installerRender(<ProposalPage />);
+    const [onDeprecateCb] = callbacks;
+    await act(() => onDeprecateCb());
 
-      const link = await screen.findByRole("link", { name: "Calculate" });
-      user.click(link);
-
-      screen.getByText("Target section");
-      screen.getByText("Settings section");
-      screen.getByText("Actions section");
-    });
+    await screen.findByText("/dev/vdb");
   });
 });

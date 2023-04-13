@@ -56,7 +56,7 @@ import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
  *   >
  *     <UserSectionContent />
  *   </Page>
-*
+ *
  * @param {object} props
  * @param {string} props.icon - The icon for the page
  * @param {string} props.title - The title for the page

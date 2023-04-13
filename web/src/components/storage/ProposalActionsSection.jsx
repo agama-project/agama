@@ -19,15 +19,93 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
+import {
+  List,
+  ListItem,
+  ExpandableSection,
+  Skeleton,
+  Text
+} from "@patternfly/react-core";
 
-import { Section } from "~/components/core";
-import { ProposalActions } from "~/components/storage";
+import { If, Section } from "~/components/core";
 
-export default function ProposalActionsSection({ proposal, errors }) {
+const ProposalActions = ({ actions = [] }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // TODO: would be nice adding an aria-description to these lists, but aria-description still in
+  // draft yet and aria-describedby should be used... which id not ideal right now
+  // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-description
+  const ActionsList = ({ actions }) => {
+    // Some actions (e.g., deleting a LV) are reported as several actions joined by a line break
+    const actionItems = (action, id) => {
+      return action.text.split("\n").map((text, index) => {
+        return (
+          <ListItem key={`${id}-${index}`} className={action.delete ? "proposal-action--delete" : null}>
+            {text}
+          </ListItem>
+        );
+      });
+    };
+
+    const items = actions.map(actionItems).flat();
+
+    return <List className="proposal-actions">{items}</List>;
+  };
+
+  if (actions.length === 0) return null;
+
+  const generalActions = actions.filter(a => !a.subvol);
+  const subvolActions = actions.filter(a => a.subvol);
+  const userAction = isExpanded ? "Hide" : "Show";
+  const toggleText = `${userAction} ${subvolActions.length} subvolumes actions`;
+
   return (
-    <Section title="Result" errors={errors}>
-      <ProposalActions actions={proposal.result.actions} />
+    <>
+      <Text>
+        Actions to perform for creating the file systems and for ensuring the system boots.
+      </Text>
+      <ActionsList actions={generalActions} />
+      {subvolActions.length > 0 && (
+        <ExpandableSection
+          isIndented
+          isExpanded={isExpanded}
+          onToggle={() => setIsExpanded(!isExpanded)}
+          toggleText={toggleText}
+          className="expandable-actions"
+        >
+          <ActionsList actions={subvolActions} />
+        </ExpandableSection>
+      )}
+    </>
+  );
+};
+
+/**
+ * @todo Create a component for rendering a customized skeleton
+ */
+const ActionsSkeleton = () => {
+  return (
+    <>
+      <Skeleton width="80%" />
+      <Skeleton width="65%" />
+      <Skeleton width="70%" />
+      <Skeleton width="65%" />
+      <Skeleton width="40%" />
+    </>
+  );
+};
+
+export default function ProposalActionsSection({ actions = [], errors = [], isLoading = false }) {
+  if (isLoading) errors = [];
+
+  return (
+    <Section title="Planned Actions" errors={errors}>
+      <If
+        condition={isLoading}
+        then={<ActionsSkeleton />}
+        else={<ProposalActions actions={actions} />}
+      />
     </Section>
   );
 }

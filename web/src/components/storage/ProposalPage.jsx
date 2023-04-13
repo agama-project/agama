@@ -20,35 +20,52 @@
  */
 
 import React, { useCallback, useReducer, useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { Alert } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
 import { Icon } from "~/components/layout";
-import { Page, PageOptions, SectionSkeleton } from "~/components/core";
-import {
-  ProposalTargetSection,
-  ProposalSettingsSection,
-  ProposalActionsSection
-} from "~/components/storage";
+import { Page, PageOptions } from "~/components/core";
+import { ProposalActionsSection, ProposalSettingsSection } from "~/components/storage";
 
 const initialState = {
-  loading: false,
-  proposal: undefined,
+  loading: true,
+  availableDevices: [],
+  volumeTemplates: [],
+  settings: {},
+  actions: [],
   errors: []
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case "UPDATE_LOADING" : {
-      const { loading } = action.payload;
-      return { ...state, loading };
+    case "START_LOADING" : {
+      return { ...state, loading: true };
+    }
+
+    case "STOP_LOADING" : {
+      return { ...state, loading: false };
     }
 
     case "UPDATE_PROPOSAL": {
       const { proposal, errors } = action.payload;
-      return { ...state, proposal, errors };
+      const { availableDevices, volumeTemplates, result } = proposal;
+      const { candidateDevices, lvm, encryptionPassword, volumes, actions } = result;
+      return {
+        ...state,
+        availableDevices,
+        volumeTemplates,
+        settings: { candidateDevices, lvm, encryptionPassword, volumes },
+        actions,
+        errors
+      };
+    }
+
+    case "UPDATE_SETTINGS": {
+      const { settings } = action.payload;
+      return { ...state, settings };
     }
 
     default: {
@@ -63,14 +80,14 @@ export default function ProposalPage() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const loadProposal = useCallback(async (hooks = {}) => {
-    dispatch({ type: "UPDATE_LOADING", payload: { loading: true } });
+    flushSync(() => dispatch({ type: "START_LOADING" }));
 
     if (hooks.before !== undefined) await cancellablePromise(hooks.before());
     const proposal = await cancellablePromise(client.proposal.getData());
     const errors = await cancellablePromise(client.getValidationErrors());
 
     dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
-    dispatch({ type: "UPDATE_LOADING", payload: { loading: false } });
+    dispatch({ type: "STOP_LOADING" });
   }, [client, cancellablePromise]);
 
   useEffect(() => {
@@ -88,16 +105,24 @@ export default function ProposalPage() {
     return client.onDeprecate(() => probeAndLoad());
   }, [client, cancellablePromise, loadProposal]);
 
-  const calculateProposal = async (settings) => {
-    const calculate = async () => {
-      await client.proposal.calculate({ ...state.proposal.result, ...settings });
+  const changeSettings = async (settings) => {
+    const calculateProposal = async (settings) => {
+      await client.proposal.calculate(settings);
     };
 
-    loadProposal({ before: calculate }).catch(console.error);
+    const newSettings = { ...state.settings, ...settings };
+
+    dispatch({ type: "UPDATE_SETTINGS", payload: { settings: newSettings } });
+
+    loadProposal({ before: () => calculateProposal(newSettings) }).catch(console.error);
   };
 
   const PageContent = () => {
-    if (state.loading || state.proposal?.result === undefined) return <SectionSkeleton lines={3} />;
+    const validVolumeTemplates = () => {
+      const volumes = state.settings.volumes || [];
+      const mountPoints = volumes.map(v => v.mountPoint);
+      return state.volumeTemplates.filter(t => !mountPoints.includes(t.mountPoint));
+    };
 
     return (
       <>
@@ -106,17 +131,17 @@ export default function ProposalPage() {
           customIcon={<Icon name="info" size="16" />}
           title="Devices will not be modified until installation starts."
         />
-        <ProposalTargetSection
-          proposal={state.proposal}
-          calculateProposal={calculateProposal}
-        />
         <ProposalSettingsSection
-          proposal={state.proposal}
-          calculateProposal={calculateProposal}
+          availableDevices={state.availableDevices}
+          volumeTemplates={validVolumeTemplates()}
+          settings={state.settings}
+          onChange={changeSettings}
+          isLoading={state.loading}
         />
         <ProposalActionsSection
-          proposal={state.proposal}
+          actions={state.actions}
           errors={state.errors}
+          isLoading={state.loading}
         />
       </>
     );
