@@ -20,33 +20,10 @@
  */
 
 import React, { useState } from "react";
-import { DropdownToggle } from "@patternfly/react-core";
-import { TableComposable, Thead, Tr, Th, Tbody, Td, ActionsColumn } from '@patternfly/react-table';
+import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
-import { Icon } from '~/components/layout';
+import { RowActions } from '~/components/core';
 import { EditNodeForm, LoginForm, NodeStartupOptions } from "~/components/storage/iscsi";
-
-const RowActions = ({ actions, id, ...props }) => {
-  const actionsToggle = (props) => (
-    <DropdownToggle
-      id={id}
-      aria-label="Actions"
-      toggleIndicator={null}
-      isDisabled={props.isDisabled}
-      onToggle={props.onToggle}
-    >
-      <Icon name="more_vert" size="24" />
-    </DropdownToggle>
-  );
-
-  return (
-    <ActionsColumn
-      items={actions}
-      actionsToggle={actionsToggle}
-      {...props}
-    />
-  );
-};
 
 export default function NodesPresenter ({ nodes, client }) {
   const [currentNode, setCurrentNode] = useState();
