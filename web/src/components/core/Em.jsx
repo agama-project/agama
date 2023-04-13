@@ -30,10 +30,11 @@ import { Label } from "@patternfly/react-core";
  *
  * @param {object} props
  * @param {React.ReactNode} [props.children] elements to be emphasized
+ * @param {object} [props.rest] rest of props for a label
  */
-export default function Em({ children }) {
+export default function Em({ children, ...rest }) {
   return (
-    <Label isCompact>
+    <Label isCompact {...rest}>
       {children}
     </Label>
   );
