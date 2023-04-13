@@ -31,6 +31,28 @@ const cockpitProxies = {};
 
 const cockpitCallbacks = {};
 
+const volumes = [
+  {
+    MountPoint: { t: "s", v: "/test1" },
+    DeviceType: { t: "s", v: "partition" },
+    Optional: { t: "b", v: true },
+    Encrypted: { t: "b", v: false },
+    FixedSizeLimits: { t: "b", v: false },
+    AdaptiveSizes: { t: "b", v: false },
+    MinSize: { t: "x", v: 1024 },
+    MaxSize: { t: "x", v: 2048 },
+    FsTypes: { t: "as", v: [{ t: "s", v: "Btrfs" }, { t: "s", v: "Ext3" }] },
+    FsType: { t: "s", v: "Btrfs" },
+    Snapshots: { t: "b", v: true },
+    SnapshotsConfigurable: { t: "b", v: true },
+    SnapshotsAffectSizes: { t: "b", v: false },
+    SizeRelevantVolumes: { t: "as", v: [] }
+  },
+  {
+    MountPoint: { t: "s", v: "/test2" }
+  }
+];
+
 const contexts = {
   withoutProposal: () => {
     cockpitProxies.proposal = null;
@@ -39,27 +61,7 @@ const contexts = {
     cockpitProxies.proposal = {
       CandidateDevices:["/dev/sda"],
       LVM: true,
-      Volumes: [
-        {
-          MountPoint: { t: "s", v: "/test1" },
-          Optional: { t: "b", v: true },
-          DeviceType: { t: "s", v: "partition" },
-          Encrypted: { t: "b", v: false },
-          FsTypes: { t: "as", v: [{ t: "s", v: "Btrfs" }, { t: "s", v: "Ext3" }] },
-          FsType: { t: "s", v: "Btrfs" },
-          MinSize: { t: "x", v: 1024 },
-          MaxSize: { t: "x", v: 2048 },
-          FixedSizeLimits: { t: "b", v: false },
-          AdaptiveSizes: { t: "b", v: false },
-          Snapshots: { t: "b", v: true },
-          SnapshotsConfigurable: { t: "b", v: true },
-          SnapshotsAffectSizes: { t: "b", v: false },
-          SizeRelevantVolumes: { t: "as", v: [] }
-        },
-        {
-          MountPoint: { t: "s", v: "/test2" }
-        }
-      ],
+      Volumes: volumes,
       Actions: [
         {
           Text: { t: "s", v: "Mount /dev/sdb1 as root" },
@@ -70,12 +72,13 @@ const contexts = {
     };
   },
   withAvailableDevices: () => {
-    cockpitProxies.proposalCalculator = {
-      AvailableDevices: [
-        ["/dev/sda", "/dev/sda, 950 GiB, Windows"],
-        ["/dev/sdb", "/dev/sdb, 500 GiB"]
-      ]
-    };
+    cockpitProxies.proposalCalculator.AvailableDevices = [
+      ["/dev/sda", "/dev/sda, 950 GiB, Windows"],
+      ["/dev/sdb", "/dev/sdb, 500 GiB"]
+    ];
+  },
+  withVolumeTemplates: () => {
+    cockpitProxies.proposalCalculator.VolumeTemplates = volumes;
   },
   withoutISCSINodes: () => {
     cockpitProxies.iscsiNodes = {};
@@ -167,7 +170,20 @@ const emitSignal = (path, iface, data) => {
   return handler(data);
 };
 
+const reset = () => {
+  cockpitProxies.storage = {};
+  cockpitProxies.proposalCalculator = {};
+  cockpitProxies.proposal = null;
+  cockpitProxies.iscsiInitiator = {};
+  cockpitProxies.iscsiNodes = {};
+  cockpitProxies.iscsiNode = {};
+  cockpitProxies.dasdManager = {};
+  cockpitProxies.dasdDevices = {};
+};
+
 beforeEach(() => {
+  reset();
+
   // @ts-ignore
   DBusClient.mockImplementation(() => {
     return {
@@ -255,42 +271,48 @@ describe("#proposal", () => {
     ]);
   };
 
+  const checkVolumes = (volumes) => {
+    expect(volumes.length).toEqual(2);
+    expect(volumes[0]).toEqual({
+      mountPoint: "/test1",
+      deviceType: "partition",
+      optional: true,
+      encrypted: false,
+      fixedSizeLimits: false,
+      adaptiveSizes: false,
+      minSize: 1024,
+      maxSize:2048,
+      fsTypes: ["Btrfs", "Ext3"],
+      fsType: "Btrfs",
+      snapshots: true,
+      snapshotsConfigurable: true,
+      snapshotsAffectSizes: false,
+      sizeRelevantVolumes: []
+    });
+    expect(volumes[1].mountPoint).toEqual("/test2");
+  };
+
   const checkProposalResult = (result) => {
     expect(result.candidateDevices).toEqual(["/dev/sda"]);
     expect(result.lvm).toBeTruthy();
     expect(result.actions).toEqual([
       { text: "Mount /dev/sdb1 as root", subvol: false, delete: false }
     ]);
-
-    expect(result.volumes[0]).toEqual({
-      mountPoint: "/test1",
-      optional: true,
-      deviceType: "partition",
-      encrypted: false,
-      fsTypes: ["Btrfs", "Ext3"],
-      fsType: "Btrfs",
-      minSize: 1024,
-      maxSize:2048,
-      fixedSizeLimits: false,
-      adaptiveSizes: false,
-      snapshots: true,
-      snapshotsConfigurable: true,
-      snapshotsAffectSizes: false,
-      sizeRelevantVolumes: []
-    });
-    expect(result.volumes[1].mountPoint).toEqual("/test2");
+    checkVolumes(result.volumes);
   };
 
   describe("#getData", () => {
     beforeEach(() => {
       contexts.withAvailableDevices();
+      contexts.withVolumeTemplates();
       contexts.withProposal();
       client = new StorageClient();
     });
 
-    it("returns the available devices and the proposal result", async () => {
-      const { availableDevices, result } = await client.proposal.getData();
+    it("returns the available devices, templates and the proposal result", async () => {
+      const { availableDevices, volumeTemplates, result } = await client.proposal.getData();
       checkAvailableDevices(availableDevices);
+      checkVolumes(volumeTemplates);
       checkProposalResult(result);
     });
   });
@@ -304,6 +326,18 @@ describe("#proposal", () => {
     it("returns the list of available devices", async () => {
       const availableDevices = await client.proposal.getAvailableDevices();
       checkAvailableDevices(availableDevices);
+    });
+  });
+
+  describe("#getVolumeTemplates", () => {
+    beforeEach(() => {
+      contexts.withVolumeTemplates();
+      client = new StorageClient();
+    });
+
+    it("returns the list of available volume templates", async () => {
+      const volumeTemplates = await client.proposal.getVolumeTemplates();
+      checkVolumes(volumeTemplates);
     });
   });
 
