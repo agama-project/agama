@@ -47,6 +47,9 @@ dependencies = [
 [[package]]
 name = "agama-locale-data"
 version = "0.1.0"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "ahash"
