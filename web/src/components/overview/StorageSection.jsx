@@ -20,11 +20,33 @@
  */
 
 import React, { useReducer, useEffect } from "react";
+import { Text } from "@patternfly/react-core";
+
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
-import { ProgressText, Section } from "~/components/core";
-import { ProposalSummary } from "~/components/storage";
+import { Em, ProgressText, Section } from "~/components/core";
+
+const ProposalSummary = ({ proposal }) => {
+  const { availableDevices = [], result } = proposal;
+
+  // When there are no availableDevices the proposal does not make sense.
+  // Returning nothing because a parent component should be displaying the proper error message to the user.
+  if (availableDevices.length === 0) return null;
+
+  if (result === undefined) return <Text>Device not selected yet</Text>;
+
+  const [candidateDevice] = result.candidateDevices;
+  const device = proposal.availableDevices.find(d => d.id === candidateDevice);
+
+  const deviceLabel = device?.label || candidateDevice;
+
+  return (
+    <Text>
+      Install using device <Em>{deviceLabel}</Em> and deleting all its content
+    </Text>
+  );
+};
 
 const initialState = {
   busy: true,
