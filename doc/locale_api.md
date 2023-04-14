@@ -18,16 +18,26 @@ Plan:
 #### Systemd
 
 The systemd API for Locale(Language) and Keyboard is this:
-(where the last boolean means Interactive, and the other boolean means Convert)
 
 ```
-org.freedesktop.locale1 service
-/org/freedesktop/locale1 object
-NAME                    TYPE      SIG   RESULT/VALUE
-org.freedesktop.locale1 interface -     -
-.SetLocale              method    asb   -
-.SetVConsoleKeyboard    method    ssbb  -
-.SetX11Keyboard         method    ssssbb-
+$ gdbus introspect -y -d org.freedesktop.locale1 -o /org/freedesktop/locale1
+node /org/freedesktop/locale1 {
+  interface org.freedesktop.locale1 {
+    methods:
+      SetLocale(in  as locale,
+                in  b interactive);
+      SetVConsoleKeyboard(in  s keymap,
+                          in  s keymap_toggle,
+                          in  b convert,
+                          in  b interactive);
+      SetX11Keyboard(in  s layout,
+                     in  s model,
+                     in  s variant,
+                     in  s options,
+                     in  b convert,
+                     in  b interactive);
+…
+$ busctl --system introspect org.freedesktop.locale1 /org/freedesktop/locale1
 (all properties are read-only and emit PropertiesChanged)
 .Locale                 property  as    1 "LANG=en_US.UTF-8"
 .VConsoleKeymap         property  s     "cz-lat2-us"
@@ -40,14 +50,22 @@ org.freedesktop.locale1 interface -     -
 
 #### Design of Elementary Layer (lower)
 
-- Just use the systemd API, don't add any API of our own
+The plan was:
+
+> Just use the systemd API, don't add any API of our own
+
+But the problem with that is the installer runs in one system (inst-sys, `/`)
+and operates on another (target, `/mnt`) and we cannot use the full systemd
+API. Instead we rely on `systemd-firstboot`.
+
+`systemd-firstboot` only has an option for the console keymap, but we have a
+way to propagate it to X11, see [bsc#1046436](https://bugzilla.suse.com/show_bug.cgi?id=1046436)
+
 
 #### Design of Proposal Layer (upper)
 
 - when setting the locale, adjust the proposed package selection and keyboard
   accordingly. And timezone.
-
-
 
 The general design of the proposal layer is
 
@@ -55,7 +73,7 @@ The general design of the proposal layer is
 - setting some properties will make changes in the proposal layer of other
   properties of other objects
 
-So here, setting `Locale` below will set also `X11Keyboard` here and
+So here, setting `Locale` below will set also `VConsoleKeyboard` here and
   - Agama...Software...todo(...)
   - Agama...Timezone...todo(...)
 
@@ -64,10 +82,10 @@ For the first version of the API, let's keep things simple:
 **LocaleType** is just one string, the value for the `LANG` variable, like
 `"cs_CZ.UTF-8"`.
 
-**X11KeyboardType** is a pair of strings, the Layout and Variant, for example
-`("cz", "qwerty")` or `("us", "basic")`.
+**VConsoleKeyboardType** is a string, for example
+`"cz-qwerty"` or `"us"`.
 
-We don't expose the console keyboard, instead letting systemd do it via the
+We don't expose the X11 keyboard, instead letting systemd do it via the
 _convert_ parameter.
 
 (The other systemd keyboard settings are X11Model and X11Options, we don't
@@ -85,7 +103,7 @@ node ...Agama/Locale1 {
       # we have a list of LANG settings, 1st gets passed to systemd,
       # others affect package selection
       readwrite as   Locale = ['cs_CZ.UTF-8', 'de_DE.UTF-8'];
-      readwrite (ss) X11Keyboard = ('cz','qwerty);
+      readwrite s    VConsoleKeyboard = 'cz-qwerty';
   };
 };
 ```
@@ -94,8 +112,8 @@ node ...Agama/Locale1 {
 
 <details>
 <summary>
-If setting the Locale proposes the Language, what do we do if the user first
-changes the language and _then_ the locale?
+If setting the locale proposes the keyboard, what do we do if the user first
+changes the keyboard and _then_ the locale?
 </summary>
 
 When Agama UI first shows up, it may show default choices like:
