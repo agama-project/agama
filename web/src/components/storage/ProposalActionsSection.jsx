@@ -29,6 +29,7 @@ import {
 } from "@patternfly/react-core";
 
 import { If, Section } from "~/components/core";
+import { partition } from "~/utils";
 
 // TODO: would be nice adding an aria-description to these lists, but aria-description still in
 // draft yet and aria-describedby should be used... which id not ideal right now
@@ -62,8 +63,7 @@ const ProposalActions = ({ actions = [] }) => {
 
   if (actions.length === 0) return null;
 
-  const generalActions = actions.filter(a => !a.subvol);
-  const subvolActions = actions.filter(a => a.subvol);
+  const [generalActions, subvolActions] = partition(actions, a => !a.subvol);
   const userAction = isExpanded ? "Hide" : "Show";
   const toggleText = `${userAction} ${subvolActions.length} subvolumes actions`;
 
