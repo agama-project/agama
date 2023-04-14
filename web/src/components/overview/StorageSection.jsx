@@ -28,11 +28,7 @@ import { BUSY } from "~/client/status";
 import { Em, ProgressText, Section } from "~/components/core";
 
 const ProposalSummary = ({ proposal }) => {
-  const { availableDevices = [], result } = proposal;
-
-  // When there are no availableDevices the proposal does not make sense.
-  // Returning nothing because a parent component should be displaying the proper error message to the user.
-  if (availableDevices.length === 0) return null;
+  const { result } = proposal;
 
   if (result === undefined) return <Text>Device not selected yet</Text>;
 
