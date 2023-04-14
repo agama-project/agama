@@ -63,7 +63,7 @@ const sizeText = (size) => {
  * @param {object} props
  * @param {string} props.id - Form ID
  * @param {object[]} props.templates - Volume templates
- * @param {onSubmitFn} props.onSubmit - Funtion to use for submitting a new volume
+ * @param {onSubmitFn} props.onSubmit - Function to use for submitting a new volume
  *
  * @callback onSubmitFn
  * @param {object} volume
@@ -147,8 +147,8 @@ const VolumeForm = ({ id, templates, onSubmit }) => {
  *
  * @param {object} props
  * @param {object[]} props.templates - Volume templates
- * @param {onAddFn} props.onAdd - Funtion to use for adding a new volume
- * @param {onResetFn} props.onReset - Funtion to use for resetting to the default subvolumes
+ * @param {onAddFn} props.onAdd - Function to use for adding a new volume
+ * @param {onResetFn} props.onReset - Function to use for resetting to the default subvolumes
  *
  * @callback onAddFn
  * @param {object} volume
@@ -227,7 +227,7 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
  * @param {object[]} props.columns - Column specs
  * @param {object} props.volume - Volume to show
  * @param {boolean} props.isLoading - Whether to show the row as loading
- * @param {onDeleteFn} props.onDelete - Funtion to use for deleting the volume
+ * @param {onDeleteFn} props.onDelete - Function to use for deleting the volume
  *
  * @callback onDeleteFn
  * @param {object} volume
@@ -318,7 +318,7 @@ const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
  * @param {object} props
  * @param {object[]} props.volumes - Volumes to show
  * @param {boolean} props.isLoading - Whether to show the table as loading
- * @param {onVolumesChangeFn} props.onVolumesChange - Funtion to submit changes in volumes
+ * @param {onVolumesChangeFn} props.onVolumesChange - Function to submit changes in volumes
  *
  * @callback onVolumesChangeFn
  * @param {object[]} volumes
@@ -383,7 +383,7 @@ const VolumesTable = ({ volumes, isLoading, onVolumesChange }) => {
  * @param {object[]} [props.volumes=[]] - Volumes to show
  * @param {object[]} [props.templates=[]] - Templates to use for new volumes
  * @param {boolean} [props.isLoading=false] - Whether to show the content as loading
- * @param {onChangeFn} [props.onChange=noop] - Funtion to use for changing the volumes
+ * @param {onChangeFn} [props.onChange=noop] - Function to use for changing the volumes
  *
  * @callback onChangeFn
  * @param {object[]} volumes

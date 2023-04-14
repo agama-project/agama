@@ -119,7 +119,7 @@ export default function ProposalPage() {
   };
 
   const PageContent = () => {
-    // Templates for already existings mount points are filtered out
+    // Templates for already existing mount points are filtered out
     const usefulTemplates = () => {
       const volumes = state.settings.volumes || [];
       const mountPoints = volumes.map(v => v.mountPoint);

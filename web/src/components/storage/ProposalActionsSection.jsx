@@ -110,7 +110,7 @@ const ActionsSkeleton = () => {
  * @param {object} props
  * @param {object[]} [props.actions=[]]
  * @param {string[]} [props.errors=[]]
- * @param {boolean} [props.isLoading=false] - Whehter the section content should be rendered as loading
+ * @param {boolean} [props.isLoading=false] - Whether the section content should be rendered as loading
  */
 export default function ProposalActionsSection({ actions = [], errors = [], isLoading = false }) {
   if (isLoading) errors = [];
