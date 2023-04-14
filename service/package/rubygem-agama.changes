@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr 14 13:13:56 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Modify default storage settings.
+- Fix issue with volume templates.
+- gh#openSUSE/agama/521
+
+-------------------------------------------------------------------
 Mon Apr 10 10:14:39 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update ruby-dbus dependency to version 0.21.0
