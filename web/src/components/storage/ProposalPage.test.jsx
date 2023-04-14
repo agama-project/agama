@@ -76,13 +76,13 @@ beforeEach(() => {
   });
 });
 
-it("probes the system if the system is deprecated", async () => {
+it("probes storage if the storage devices are deprecated", async () => {
   isDeprecatedFn.mockResolvedValue(true);
   installerRender(<ProposalPage />);
   await waitFor(() => expect(probeFn).toHaveBeenCalled());
 });
 
-it("does not probe the system if the system is not deprecated", async () => {
+it("does not probe storage if the storage devices are not deprecated", async () => {
   installerRender(<ProposalPage />);
   await waitFor(() => expect(probeFn).not.toHaveBeenCalled());
 });
@@ -109,12 +109,13 @@ it("renders the settings and actions sections", async () => {
   await screen.findByText(/Planned Actions/);
 });
 
-describe("when the system becomes deprecated", () => {
-  it("probes the system", async () => {
+describe("when the storage devices become deprecated", () => {
+  it("probes storage", async () => {
     const [mockFunction, callbacks] = createCallbackMock();
     onDeprecateFn = mockFunction;
     installerRender(<ProposalPage />);
 
+    isDeprecatedFn.mockResolvedValue(true);
     const [onDeprecateCb] = callbacks;
     await act(() => onDeprecateCb());
 

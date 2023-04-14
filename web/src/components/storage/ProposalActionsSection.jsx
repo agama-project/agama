@@ -70,7 +70,7 @@ const ProposalActions = ({ actions = [] }) => {
   return (
     <>
       <Text>
-        Actions to perform for creating the file systems and for ensuring the system boots.
+        Actions to create the file systems and to ensure the system boots.
       </Text>
       <ActionsList actions={generalActions} />
       {subvolActions.length > 0 && (
