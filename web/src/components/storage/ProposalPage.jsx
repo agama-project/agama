@@ -20,7 +20,6 @@
  */
 
 import React, { useCallback, useReducer, useEffect, useState } from "react";
-import { flushSync } from "react-dom";
 import { Alert } from "@patternfly/react-core";
 import { Link } from "react-router-dom";
 
@@ -79,46 +78,49 @@ export default function ProposalPage() {
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const loadProposal = useCallback(async (hooks = {}) => {
-    flushSync(() => dispatch({ type: "START_LOADING" }));
-
-    if (hooks.before !== undefined) await cancellablePromise(hooks.before());
+  const loadProposal = useCallback(async () => {
     const proposal = await cancellablePromise(client.proposal.getData());
     const errors = await cancellablePromise(client.getValidationErrors());
-
-    dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
-    dispatch({ type: "STOP_LOADING" });
+    return { proposal, errors };
   }, [client, cancellablePromise]);
 
+  const load = useCallback(async () => {
+    dispatch({ type: "START_LOADING" });
+
+    const isDeprecated = await cancellablePromise(client.isDeprecated());
+    if (isDeprecated) await client.probe();
+
+    const { proposal, errors } = await loadProposal();
+    dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
+    dispatch({ type: "STOP_LOADING" });
+  }, [cancellablePromise, client, loadProposal]);
+
+  const calculate = useCallback(async (settings) => {
+    dispatch({ type: "START_LOADING" });
+
+    await cancellablePromise(client.proposal.calculate(settings));
+
+    const { proposal, errors } = await loadProposal();
+    dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
+    dispatch({ type: "STOP_LOADING" });
+  }, [cancellablePromise, client, loadProposal]);
+
   useEffect(() => {
-    const probeAndLoad = async () => {
-      await loadProposal({ before: () => client.probe() });
-    };
-
-    const load = async () => {
-      const isDeprecated = await cancellablePromise(client.isDeprecated());
-      isDeprecated ? probeAndLoad() : loadProposal();
-    };
-
     load().catch(console.error);
 
-    return client.onDeprecate(() => probeAndLoad());
-  }, [client, cancellablePromise, loadProposal]);
+    return client.onDeprecate(() => load());
+  }, [client, load]);
 
   const changeSettings = async (settings) => {
-    const calculateProposal = async (settings) => {
-      await client.proposal.calculate(settings);
-    };
-
     const newSettings = { ...state.settings, ...settings };
 
     dispatch({ type: "UPDATE_SETTINGS", payload: { settings: newSettings } });
-
-    loadProposal({ before: () => calculateProposal(newSettings) }).catch(console.error);
+    calculate(newSettings).catch(console.error);
   };
 
   const PageContent = () => {
-    const validVolumeTemplates = () => {
+    // Templates for already existings mount points are filtered out
+    const usefulTemplates = () => {
       const volumes = state.settings.volumes || [];
       const mountPoints = volumes.map(v => v.mountPoint);
       return state.volumeTemplates.filter(t => !mountPoints.includes(t.mountPoint));
@@ -133,7 +135,7 @@ export default function ProposalPage() {
         />
         <ProposalSettingsSection
           availableDevices={state.availableDevices}
-          volumeTemplates={validVolumeTemplates()}
+          volumeTemplates={usefulTemplates()}
           settings={state.settings}
           onChange={changeSettings}
           isLoading={state.loading}
