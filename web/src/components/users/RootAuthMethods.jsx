@@ -20,36 +20,13 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { DropdownToggle, Skeleton, Truncate } from "@patternfly/react-core";
-import { TableComposable, Thead, Tr, Th, Tbody, Td, ActionsColumn } from '@patternfly/react-table';
-import { Em } from '~/components/core';
-import { Icon } from '~/components/layout';
+import { Skeleton, Truncate } from "@patternfly/react-core";
+import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Em, RowActions } from '~/components/core';
 import { RootPasswordPopup, RootSSHKeyPopup } from '~/components/users';
 
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
-
-const RowActions = ({ actions, id, ...props }) => {
-  const actionsToggle = (props) => (
-    <DropdownToggle
-      id={id}
-      aria-label="Actions"
-      toggleIndicator={null}
-      isDisabled={props.isDisabled}
-      onToggle={props.onToggle}
-    >
-      <Icon name="more_vert" size="24" />
-    </DropdownToggle>
-  );
-
-  return (
-    <ActionsColumn
-      items={actions}
-      actionsToggle={actionsToggle}
-      {...props}
-    />
-  );
-};
 
 export default function RootAuthMethods() {
   const { users: client } = useInstallerClient();

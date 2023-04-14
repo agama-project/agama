@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -36,6 +36,7 @@ export { default as LoadingEnvironment } from "./LoadingEnvironment";
 export { default as KebabMenu } from "./KebabMenu";
 export { default as LogsButton } from "./LogsButton";
 export { default as FileViewer } from "./FileViewer";
+export { default as RowActions } from "./RowActions";
 export { default as ShowLogButton } from "./ShowLogButton";
 export { default as Page } from "./Page";
 export { default as PageOptions } from "./PageOptions";

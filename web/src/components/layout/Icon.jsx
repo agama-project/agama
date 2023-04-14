@@ -23,6 +23,8 @@ import React from 'react';
 
 // NOTE: "@icons" is an alias to use a shorter path to real icons location.
 //       Check the tsconfig.json file to see its value.
+import AddAPhoto from "@icons/add_a_photo.svg?component";
+import AutoMode from "@icons/auto_mode.svg?component";
 import Apps from "@icons/apps.svg?component";
 import Badge from "@icons/badge.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
@@ -55,6 +57,7 @@ import SignalCellularAlt from "@icons/signal_cellular_alt.svg?component";
 import TaskAlt from "@icons/task_alt.svg?component";
 import Terminal from "@icons/terminal.svg?component";
 import Translate from "@icons/translate.svg?component";
+import Tune from "@icons/tune.svg?component";
 import Warning from "@icons/warning.svg?component";
 import Wifi from "@icons/wifi.svg?component";
 import WifiFind from "@icons/wifi_find.svg?component";
@@ -62,6 +65,8 @@ import WifiFind from "@icons/wifi_find.svg?component";
 import Loading from "./three-dots-loader-icon.svg?component";
 
 const icons = {
+  add_a_photo: AddAPhoto,
+  auto_mode: AutoMode,
   apps: Apps,
   badge: Badge,
   check_circle: CheckCircle,
@@ -95,6 +100,7 @@ const icons = {
   task_alt: TaskAlt,
   terminal: Terminal,
   translate: Translate,
+  tune: Tune,
   warning: Warning,
   wifi: Wifi,
   wifi_find: WifiFind

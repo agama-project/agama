@@ -100,6 +100,7 @@
     "@patternfly/react-table": "^4.111.33",
     "core-js": "^3.21.1",
     "fast-sort": "^3.2.1",
+    "filesize": "^10.0.5",
     "ipaddr.js": "^2.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

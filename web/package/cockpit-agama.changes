@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Apr 14 13:08:05 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- First steps for redesigning storage proposal UI:
+  * Place settings directly on the proposal page.
+  * Show list of file systems, allowing to add and remove.
+- gh#openSUSE/agama#521
+
+-------------------------------------------------------------------
 Tue Apr 11 14:02:31 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix netmask handling (bsc#1210104).

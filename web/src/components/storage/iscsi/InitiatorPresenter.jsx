@@ -20,33 +20,11 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { DropdownToggle, Skeleton } from "@patternfly/react-core";
-import { TableComposable, Thead, Tr, Th, Tbody, Td, ActionsColumn } from '@patternfly/react-table';
+import { Skeleton } from "@patternfly/react-core";
+import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
-import { Icon } from '~/components/layout';
+import { RowActions } from '~/components/core';
 import { InitiatorForm } from "~/components/storage/iscsi";
-
-const RowActions = ({ actions, id, ...props }) => {
-  const actionsToggle = (props) => (
-    <DropdownToggle
-      id={id}
-      aria-label="Actions"
-      toggleIndicator={null}
-      isDisabled={props.isDisabled}
-      onToggle={props.onToggle}
-    >
-      <Icon name="more_vert" size="24" />
-    </DropdownToggle>
-  );
-
-  return (
-    <ActionsColumn
-      items={actions}
-      actionsToggle={actionsToggle}
-      {...props}
-    />
-  );
-};
 
 export default function InitiatorPresenter({ initiator, client }) {
   const [isLoading, setIsLoading] = useState(true);

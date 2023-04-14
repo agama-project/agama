@@ -140,13 +140,16 @@ describe Agama::DBus::Storage::Manager do
       let(:templates) { [volume1_template, volume2_template] }
 
       let(:volume1_template) do
-        Agama::Storage::Volume.new(Y2Storage::VolumeSpecification.new({})).tap do |volume|
+        spec = Y2Storage::VolumeSpecification.new({
+          "min_size" => "5 GiB",
+          "max_size" => "10 GiB"
+        })
+
+        Agama::Storage::Volume.new(spec).tap do |volume|
           volume.mount_point = "/test"
           volume.device_type = :partition
           volume.encrypted = true
           volume.fs_type = Y2Storage::Filesystems::Type::EXT3
-          volume.min_size = Y2Storage::DiskSize.new(1024)
-          volume.max_size = Y2Storage::DiskSize.new(2048)
           volume.fixed_size_limits = true
           volume.snapshots = true
         end
@@ -173,8 +176,8 @@ describe Agama::DBus::Storage::Manager do
           "Encrypted"             => true,
           "FsTypes"               => ["Ext3"],
           "FsType"                => "Ext3",
-          "MinSize"               => 1024,
-          "MaxSize"               => 2048,
+          "MinSize"               => Y2Storage::DiskSize.GiB(5).to_i,
+          "MaxSize"               => Y2Storage::DiskSize.GiB(10).to_i,
           "FixedSizeLimits"       => true,
           "AdaptiveSizes"         => true,
           "Snapshots"             => true,
