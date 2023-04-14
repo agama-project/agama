@@ -54,11 +54,11 @@ import { Icon } from '~/components/layout';
  *
  * @return {React.ActionsColumn}
  */
-export default function RowActions({ id, actions, ...rest }) {
+export default function RowActions({ id, actions, "aria-label": toggleAriaLabel, ...rest }) {
   const actionsToggle = (props) => (
     <DropdownToggle
       id={id}
-      aria-label={rest["aria-label"] || "Actions"}
+      aria-label={toggleAriaLabel || "Actions"}
       toggleIndicator={null}
       isDisabled={props.isDisabled}
       onToggle={props.onToggle}
