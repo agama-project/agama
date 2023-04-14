@@ -36,12 +36,39 @@ import { Em, If, Popup, RowActions } from '~/components/core';
 import { Icon } from '~/components/layout';
 import { noop } from "~/utils";
 
+/**
+ * Generates a disk size representation
+ * @function
+ *
+ * @example
+ * sizeText(1024)
+ * // returns "1 kiB"
+ *
+ * sizeText(-1)
+ * // returns "Unlimited"
+ *
+ * @param {number} size - Number of bytes. The value -1 represents an unlimited size.
+ * @returns {string}
+ */
 const sizeText = (size) => {
   if (size === -1) return "Unlimited";
 
   return filesize(size, { base: 2 });
 };
 
+/**
+ * Form used for adding a new file system from a list of templates
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.id - Form ID
+ * @param {object[]} props.templates - Volume templates
+ * @param {onSubmitFn} props.onSubmit - Funtion to use for submitting a new volume
+ *
+ * @callback onSubmitFn
+ * @param {object} volume
+ * @return {void}
+ */
 const VolumeForm = ({ id, templates, onSubmit }) => {
   const [volume, setVolume] = useState(templates[0]);
 
@@ -114,7 +141,23 @@ const VolumeForm = ({ id, templates, onSubmit }) => {
   );
 };
 
-const GeneralActions = ({ volumes, templates, onVolumesChange }) => {
+/**
+ * Button with general actions for the file systems
+ * @component
+ *
+ * @param {object} props
+ * @param {object[]} props.templates - Volume templates
+ * @param {onAddFn} props.onAdd - Funtion to use for adding a new volume
+ * @param {onResetFn} props.onReset - Funtion to use for resetting to the default subvolumes
+ *
+ * @callback onAddFn
+ * @param {object} volume
+ * @return {void}
+ *
+ * @callback onResetFn
+ * @return {void}
+ */
+const GeneralActions = ({ templates, onAdd, onReset }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
@@ -124,12 +167,8 @@ const GeneralActions = ({ volumes, templates, onVolumesChange }) => {
 
   const acceptForm = (volume) => {
     closeForm();
-
-    const newVolumes = [...volumes, volume];
-    onVolumesChange(newVolumes);
+    onAdd(volume);
   };
-
-  const reset = () => onVolumesChange([]);
 
   const toggleActions = (status) => setIsOpen(status);
 
@@ -147,7 +186,7 @@ const GeneralActions = ({ volumes, templates, onVolumesChange }) => {
         dropdownItems={[
           <Action
             key="reset"
-            onClick={reset}
+            onClick={onReset}
           >
             Reset to defaults
           </Action>,
@@ -180,7 +219,112 @@ const GeneralActions = ({ volumes, templates, onVolumesChange }) => {
   );
 };
 
-const VolumesTable = ({ volumes, onVolumesChange, isLoading }) => {
+/**
+ * Renders a table row with the information and actions for a volume
+ * @component
+ *
+ * @param {object} props
+ * @param {object[]} props.columns - Column specs
+ * @param {object} props.volume - Volume to show
+ * @param {boolean} props.isLoading - Whether to show the row as loading
+ * @param {onDeleteFn} props.onDelete - Funtion to use for deleting the volume
+ *
+ * @callback onDeleteFn
+ * @param {object} volume
+ * @return {void}
+ */
+const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
+  const SizeLimits = ({ volume }) => {
+    const limits = `${sizeText(volume.minSize)} - ${sizeText(volume.maxSize)}`;
+    const isAuto = volume.adaptiveSizes && !volume.fixedSizeLimits;
+
+    const autoModeIcon = <Icon name="auto_mode" size={12} />;
+
+    return (
+      <div className="split">
+        <span>{limits}</span>
+        <If condition={isAuto} then={<Em icon={autoModeIcon}>auto-calculated</Em>} />
+      </div>
+    );
+  };
+
+  const Details = ({ volume }) => {
+    const isLv = volume.deviceType === "lvm_lv";
+    const hasSnapshots = volume.fsType === "Btrfs" && volume.snapshots;
+
+    const text = `${volume.fsType} ${isLv ? "logical volume" : "partition"}`;
+    const lockIcon = <Icon name="lock" size={12} />;
+    const snapshotsIcon = <Icon name="add_a_photo" size={12} />;
+
+    return (
+      <div className="split">
+        <span>{text}</span>
+        <If condition={volume.encrypted} then={<Em icon={lockIcon}>encrypted</Em>} />
+        <If condition={hasSnapshots} then={<Em icon={snapshotsIcon}>with snapshots</Em>} />
+      </div>
+    );
+  };
+
+  const VolumeActions = ({ volume, onDelete }) => {
+    const actions = () => {
+      const actions = {
+        delete: {
+          title: "Delete",
+          onClick: () => onDelete(volume),
+          className: "danger-action"
+        }
+      };
+
+      if (volume.optional)
+        return [actions.delete];
+      else
+        return [];
+    };
+
+    const currentActions = actions();
+
+    if (currentActions.length === 0) return null;
+
+    return <RowActions actions={currentActions} />;
+  };
+
+  if (isLoading) {
+    return (
+      <Tr>
+        <Td colSpan={4}><Skeleton /></Td>
+      </Tr>
+    );
+  }
+
+  return (
+    <Tr>
+      <Td dataLabel={columns.mountPoint}>{volume.mountPoint}</Td>
+      <Td dataLabel={columns.details}><Details volume={volume} /></Td>
+      <Td dataLabel={columns.size}><SizeLimits volume={volume} /></Td>
+      <Td isActionCell>
+        <VolumeActions
+          volume={volume}
+          onDelete={onDelete}
+        />
+      </Td>
+    </Tr>
+  );
+};
+
+/**
+ * Renders a table with the information and actions of the volumes
+ * @component
+ *
+ * @param {object} props
+ * @param {object[]} props.volumes - Volumes to show
+ * @param {boolean} props.isLoading - Whether to show the table as loading
+ * @param {onVolumesChangeFn} props.onVolumesChange - Funtion to submit changes in volumes
+ *
+ * @callback onVolumesChangeFn
+ * @param {object[]} volumes
+ * @return {void}
+ */
+const VolumesTable = ({ volumes, isLoading, onVolumesChange }) => {
   const columns = {
     mountPoint: "At",
     details: "Details",
@@ -188,87 +332,12 @@ const VolumesTable = ({ volumes, onVolumesChange, isLoading }) => {
     actions: "Actions"
   };
 
-  const VolumeRow = ({ id, volume, isLoading }) => {
-    const SizeLimits = ({ volume }) => {
-      const limits = `${sizeText(volume.minSize)} - ${sizeText(volume.maxSize)}`;
-      const isAuto = volume.adaptiveSizes && !volume.fixedSizeLimits;
-
-      const autoModeIcon = <Icon name="auto_mode" size={12} />;
-
-      return (
-        <div className="split">
-          <span>{limits}</span>
-          <If condition={isAuto} then={<Em icon={autoModeIcon}>auto-calculated</Em>} />
-        </div>
-      );
+  const VolumesContent = ({ volumes, isLoading, onVolumesChange }) => {
+    const deleteVolume = (volume) => {
+      const newVolumes = volumes.filter(v => v.mountPoint !== volume.mountPoint);
+      onVolumesChange(newVolumes);
     };
 
-    const Details = ({ volume }) => {
-      const isLv = volume.deviceType === "lvm_lv";
-      const hasSnapshots = volume.fsType === "Btrfs" && volume.snapshots;
-
-      const text = `${volume.fsType} ${isLv ? "logical volume" : "partition"}`;
-      const lockIcon = <Icon name="lock" size={12} />;
-      const snapshotsIcon = <Icon name="add_a_photo" size={12} />;
-
-      return (
-        <div className="split">
-          <span>{text}</span>
-          <If condition={volume.encrypted} then={<Em icon={lockIcon}>encrypted</Em>} />
-          <If condition={hasSnapshots} then={<Em icon={snapshotsIcon}>with snapshots</Em>} />
-        </div>
-      );
-    };
-
-    const VolumeActions = ({ id, volume }) => {
-      const removeVolume = (volume) => {
-        const newVolumes = volumes.filter(v => v.mountPoint !== volume.mountPoint);
-        onVolumesChange(newVolumes);
-      };
-
-      const actions = () => {
-        const actions = {
-          delete: {
-            title: "Delete",
-            onClick: () => removeVolume(volume),
-            className: "danger-action"
-          }
-        };
-
-        if (volume.optional)
-          return [actions.delete];
-        else
-          return [];
-      };
-
-      const currentActions = actions();
-
-      if (currentActions.length === 0) return null;
-
-      return <RowActions actions={currentActions} id={id} />;
-    };
-
-    if (isLoading) {
-      return (
-        <Tr>
-          <Td colSpan={4}><Skeleton /></Td>
-        </Tr>
-      );
-    }
-
-    return (
-      <Tr>
-        <Td dataLabel={columns.mountPoint}>{volume.mountPoint}</Td>
-        <Td dataLabel={columns.details}><Details volume={volume} /></Td>
-        <Td dataLabel={columns.size}><SizeLimits volume={volume} /></Td>
-        <Td isActionCell>
-          <VolumeActions volume={volume} id={`actions-for-volume${id}`} />
-        </Td>
-      </Tr>
-    );
-  };
-
-  const VolumesContent = ({ volumes, isLoading }) => {
     if (volumes.length === 0 && isLoading) return <VolumeRow isLoading />;
 
     return volumes.map((volume, index) => {
@@ -276,8 +345,10 @@ const VolumesTable = ({ volumes, onVolumesChange, isLoading }) => {
         <VolumeRow
           key={`volume${index}`}
           id={index}
+          columns={columns}
           volume={volume}
           isLoading={isLoading}
+          onDelete={deleteVolume}
         />
       );
     });
@@ -294,18 +365,47 @@ const VolumesTable = ({ volumes, onVolumesChange, isLoading }) => {
         </Tr>
       </Thead>
       <Tbody>
-        <VolumesContent volumes={volumes} isLoading={isLoading} />
+        <VolumesContent
+          volumes={volumes}
+          isLoading={isLoading}
+          onVolumesChange={onVolumesChange}
+        />
       </Tbody>
     </TableComposable>
   );
 };
 
+/**
+ * Renders information of the volumes and actions to modify them
+ * @component
+ *
+ * @param {object} props
+ * @param {object[]} [props.volumes=[]] - Volumes to show
+ * @param {object[]} [props.templates=[]] - Templates to use for new volumes
+ * @param {boolean} [props.isLoading=false] - Whether to show the content as loading
+ * @param {onChangeFn} [props.onChange=noop] - Funtion to use for changing the volumes
+ *
+ * @callback onChangeFn
+ * @param {object[]} volumes
+ * @return {void}
+ */
 export default function ProposalVolumes({
   volumes = [],
   templates = [],
-  onChange = noop,
-  isLoading = false
+  isLoading = false,
+  onChange = noop
 }) {
+  const addVolume = (volume) => {
+    if (onChange === noop) return;
+    const newVolumes = [...volumes, volume];
+    onChange(newVolumes);
+  };
+
+  const resetVolumes = () => {
+    if (onChange === noop) return;
+    onChange([]);
+  };
+
   return (
     <>
       <Toolbar>
@@ -315,9 +415,9 @@ export default function ProposalVolumes({
           </ToolbarItem>
           <ToolbarItem alignment={{ default: "alignRight" }}>
             <GeneralActions
-              volumes={volumes}
               templates={templates}
-              onVolumesChange={onChange}
+              onAdd={addVolume}
+              onReset={resetVolumes}
             />
           </ToolbarItem>
         </ToolbarContent>

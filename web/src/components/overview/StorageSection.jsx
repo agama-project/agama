@@ -76,7 +76,14 @@ const reducer = (state, action) => {
   }
 };
 
-export default function StorageSection({ showErrors }) {
+/**
+ * Section for storage config
+ * @component
+ *
+ * @param {object} props
+ * @param {boolean} [props.showErrors=false]
+ */
+export default function StorageSection({ showErrors = false }) {
   const { storage: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);

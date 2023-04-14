@@ -30,28 +30,35 @@ import {
 
 import { If, Section } from "~/components/core";
 
+// TODO: would be nice adding an aria-description to these lists, but aria-description still in
+// draft yet and aria-describedby should be used... which id not ideal right now
+// https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-description
+const ActionsList = ({ actions }) => {
+  // Some actions (e.g., deleting a LV) are reported as several actions joined by a line break
+  const actionItems = (action, id) => {
+    return action.text.split("\n").map((text, index) => {
+      return (
+        <ListItem key={`${id}-${index}`} className={action.delete ? "proposal-action--delete" : null}>
+          {text}
+        </ListItem>
+      );
+    });
+  };
+
+  const items = actions.map(actionItems).flat();
+
+  return <List className="proposal-actions">{items}</List>;
+};
+
+/**
+ * Renders the list of actions to perform in the system
+ * @component
+ *
+ * @param {object} props
+ * @param {object[]} [props.actions=[]]
+ */
 const ProposalActions = ({ actions = [] }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-
-  // TODO: would be nice adding an aria-description to these lists, but aria-description still in
-  // draft yet and aria-describedby should be used... which id not ideal right now
-  // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-description
-  const ActionsList = ({ actions }) => {
-    // Some actions (e.g., deleting a LV) are reported as several actions joined by a line break
-    const actionItems = (action, id) => {
-      return action.text.split("\n").map((text, index) => {
-        return (
-          <ListItem key={`${id}-${index}`} className={action.delete ? "proposal-action--delete" : null}>
-            {text}
-          </ListItem>
-        );
-      });
-    };
-
-    const items = actions.map(actionItems).flat();
-
-    return <List className="proposal-actions">{items}</List>;
-  };
 
   if (actions.length === 0) return null;
 
@@ -96,6 +103,15 @@ const ActionsSkeleton = () => {
   );
 };
 
+/**
+ * Section with the actions to perform in the system
+ * @component
+ *
+ * @param {object} props
+ * @param {object[]} [props.actions=[]]
+ * @param {string[]} [props.errors=[]]
+ * @param {boolean} [props.isLoading=false] - Whehter the section content should be rendered as loading
+ */
 export default function ProposalActionsSection({ actions = [], errors = [], isLoading = false }) {
   if (isLoading) errors = [];
 
