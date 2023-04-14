@@ -1,104 +1,99 @@
-# Network planning
+# Network Support Planning
 
-## Different upstream alternatives
+This document summarizes the plan to add proper networking support to Agama. It is still under
+discussion, so expect some things to change.
+
+## What scenarios/features do we want to support?
+
+In general, we are focused on scenarios that are important for the installation process. Defining
+a set up to be used *after the installation* is out of scope.
+
+Here is a preliminary list of the scenarios/features we would like to support. In general, we should
+focus on scenarios that are important for the installation.
+
+* Specify a static configuration, useful where no DHCP is available or the configuration needs some
+  extra change:
+  - IPv4 / IPv6 (optionally in addition to the DHCP settings)
+  - DNS configuration (needed to reach the repositories)
+  - Routing configuration (needed to work on some specific networks)
+* Use the DHCP provided configuration, allowing the user to adapt it if needed.
+* Connect to a wireless network, adding support for the most common authentication mechanisms.
+* Define a proxy to access the network.
+* High availability scenarios. This features are critical when working with remote storage, network
+  redundancy and so on. NTP configuration very important here. We should support:
+  - Bonding
+  - Bridge
+  - VLAN
+* s390 deployment: devices activation (port number and layer 2/3 configuration).
+* VPN (?). If needed, which one?
+
+Other interesting use cases:
+
+* Provide multiple WiFi networks (in the unattended installation) and select one available during
+  installation. You could reuse the same profile and deploy on different places.
+
+## Current situation
+
+Networking support in Agama is far from being finished. At this point, only the web UI allows
+setting up simple scenarios:
+
+* DHCP and static configuration of Ethernet devices.
+* Connection to wireless devices with limited authentication settings.
+
+Moreover, it connects directly to the NetworkManager D-Bus interface, so the Agama service is not
+really involved. So if you want to set up the network using the CLI, you need to use `nmcli` and
+rely on Agama to copy the configuration files at the end of the installation.
+
+## Considered options
+
+Based on the situation described above, we considered these approaches:
+
+1. Implement support to set up the network through Agama D-Bus service.
+2. Keep the status quo, extend the web UI and rely on `nmcli` for the CLI-based installation. For
+   automation, we could rely on third-party tool.
+
+Although it might be harder, option 1 looks more consistent: you just need Agama D-Bus interface to
+perform an installation.
+
+## Adding our own D-Bus interface
+
+Adding a D-Bus interface does not mean that we need to implement a full solution to set up the
+network. Actually, we can leverage some third-party tool to do the hard work. The idea is to build a
+good enough interface to support our use cases.
+
+### Why not YaST2?
+
+You might be wondering, why not use YaST2 itself? Let's see some reasons:
+
+* It does not implement support for reading the NetworkManager configuration.
+* It is not able to talk to NetworkManager D-Bus interface. It configures NetworkManager by writing
+  the connection files.
+* It is Ruby-based, so we might consider a Rust-based solution.
+
+### The proposal
+
+Our proposal is to build a D-Bus service that wraps around a third-party tool that takes care of the
+hard part. We considered [Netplan](https://netplan.io/) and [nmstate](https://nmstate.io/), although
+we decided to use the latter (see [Third-party tools](#third-party-tools)).
+
+Unfortunately, those tools are missing support for some cases (e.g., wireless configuration or udev
+handling), but we can such a support in our wrapper.
+
+## Third-party tools
+
+Both [Netplan](https://netplan.io/) and [nmstate](https://nmstate.io/) are tools that allow 
+
+### nmstate
+
+- Based on devices/interfaces (the concept of connection does not exist).
+- Designed to support multiple network providers, but at this point only NetworkManager is
+  supported.
+- Offered as a Rust library.
+- Bindings for several languages and a CLI.
+- Support for WiFi and VPNs is missing.
 
 ### Netplan
 
-- renderer
-- python only
-- support networkd and NetworkManager (backend agnostic)
-- DBUS Api for reading and applying configs
-
-### NMState
-
-- declarative
-- based on devices / interfaces no connections
-- could support multiple network providers but currently only NM is supported
-- rust
-- many bindings and a cli
-- does not have WiFi Support
-- does not have VPN support
-
-
-## Design / Support use cases
-
-- Installation using different WiFi networks (via the interface or autoinstallation profile)
-  - as a user I could provide multiple network and the client will choose the one accesible or with
-    strongest signal.
-
-- A DHCP server provides the configuration
-  - be able to modiy it
-
-- A DHCP server is not available
-  - IPv4 / IPv6 configuration (static)
-  - DNS configuration (need to solve repositories)
-  - Routes configuration (need to reach some specific network)
-
-- Install through a proxy
-
-- HA configuration
-  - Bonding / Bridge / VLAN should be supported
-  - NTP configuration is very important in this scenarios
-  - very important in HA scenarios (with storage and network redundancy..)
-
-- s390 deployment
-  - devices activation (port no and layer 2/3 configuration)
-
-- VPN connection is required
-  - support for openVPN / Wireguard / ipSEC ?
-
-
-NetworkManager supports all the scenarios through the DBUS API.
-NMState does not have support for multiple networks / WiFI / VPNS.
-Netplan supports rendering and applying the configuration to all the use cases through a YAML
-definition.
-
-### Model 
-
-- interfaces:
-  - virtual
-  - physical -> params
-- connection/configuration (settings in NM)
-- routing
-- dns
-- proxy
-- wireless networks and/or access points
-
-## Approaches
-
-1. Build a D-Bus interface as part of Agama. Use that interface from the web UI and the CLI. Use
-   NMstate to write the changes.
-   - Good: consistency (same code path)
-   - Bad: complexity and maintenance
-   - Idea: minimal D-Bus interface on top of nmstate (basically a translation) extended with
-     wireless and udev handling
-2. Support nmstate as part of the profile.json. Keep using the NetworkManager from the web UI.
-   - Good: we can easily embed the parsing/writing of the nmstate section (it is a just library
-     after all)
-   - Bad: different code paths for each client
-   - Meh: what to do with nmstate unsupported cases? They are supported by NM though.
-   - Meh: what to do with udev rules?
-
-## D-Bus API proposal
-
-* `org.opensuse.Agama.Network1`
-  * `/org/opensuse/Agama/Network1/Manager`
-    - it features methods to add elements
-  * `/org/opensuse.Agama/Network1/Interfaces/1`
-    - `org.opensuse.Agama.Network1.Interface`
-    - `org.opensuse.Agama.Network1.Ethernet`
-    - `org.opensuse.Agama.Network1.IPv4`
-  * `/org/opensuse.Agama/Network1/Interfaces/2`
-    - `org.opensuse.Agama.Network1.Interface`
-    - `org.opensuse.Agama.Network1.Wireless`
-    - `org.opensuse.Agama.Network1.IPv4`
-  * /org/opensuse/Agama/Network1/Interfaces/3
-    - `org.opensuse.Agama.Network1.Interface`
-
-
-## Problems/Questions
-
-* Device names (persistent, etc.). What if I want to reuse the same profile for multiple
-  machines with different device names?
-* Should we split interaces/connections.
-* What about network signals? nispor?
+- Written in Python.
+- Designed to support multiple network providers, nowadays it supports NetworkManager and networkd.
+- It offers a rather limited D-Bus API.
