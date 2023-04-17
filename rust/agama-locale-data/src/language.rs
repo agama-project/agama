@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::keyboard::RankedTerritories;
+use crate::ranked::RankedTerritories;
 
 #[derive(Debug, Deserialize)]
 pub struct Language {
