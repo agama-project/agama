@@ -77,7 +77,7 @@ hard part. We considered [Netplan](https://netplan.io/) and [nmstate](https://nm
 we decided to use the latter (see [Third-party tools](#third-party-tools)).
 
 Unfortunately, those tools are missing support for some cases (e.g., wireless configuration or udev
-handling), but we can such a support in our wrapper.
+handling), but we can add such a support in our wrapper.
 
 ## Third-party tools
 
