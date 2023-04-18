@@ -42,6 +42,10 @@ pub fn get_timezone_parts() -> timezone_part::TimezoneIdParts {
     timezone_part::TimezoneIdParts::deserialize(&mut deserializer).expect("Failed to deserialize timezone part entry")
 }
 
+pub fn get_timezones() -> Vec<String> {
+    chrono_tz::TZ_VARIANTS.iter().map(|e| e.name().to_string()).collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -76,5 +80,14 @@ mod tests {
         assert_eq!(result.timezone_part.len(), 441);
         let first = result.timezone_part.first().expect("no keyboards");
         assert_eq!(first.id, "Abidjan")
+    }
+
+
+    #[test]
+    fn test_get_timezones() {
+        let result = get_timezones();
+        assert_eq!(result.len(), 596);
+        let first = result.first().expect("no keyboards");
+        assert_eq!(first, "Africa/Abidjan")
     }
 }
