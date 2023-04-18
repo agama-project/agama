@@ -49,7 +49,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "cspell": "^6.29.3",
     "css-loader": "^6.5.0",
-    "css-minimizer-webpack-plugin": "^4.2.2",
+    "css-minimizer-webpack-plugin": "^5.0.0",
     "eslint": "^8.28.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-config-standard-jsx": "^11.0.0",
