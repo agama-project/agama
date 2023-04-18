@@ -20,11 +20,11 @@ Currently there is an already fixed issue in kiwi which makes the initrd root-re
 
 ```bash
 # once the issue mentioned above is fixed mounting the iso should be enough
-# sudo mount -t iso9660 -o loop d-installer-live.s390x-ALP.iso /srv/ftp
+# sudo mount -t iso9660 -o loop agama-live.s390x-ALP.iso /srv/ftp
 
-sudo mv d-installer-live.s390x-ALP.iso /srv/ftp/d-installer.iso
+sudo mv agama-live.s390x-ALP.iso /srv/ftp/agama.iso
 sudo cd /srv/ftp/
-sudo isoinfo -R -X -i d-installer.iso
+sudo isoinfo -R -X -i agama.iso
 sudo chmod a+u boot s390x/initrd 
 ```
 
@@ -79,7 +79,7 @@ rd.cio_accept=0.0.0160
 rd.zdev=qeth,0.0.0800:0.0.0801:0.0.0802,layer2=1,portno=0
 ip=192.168.0.111::192.168.0.1:24:zvmtest.example.org:enc800:none
 nameserver=192.168.0.1
-root=live:http://example.org/d-installer.iso
+root=live:http://example.org/agama.iso
 ```
 
 Although **cio_ignore** parameter is optional we used it in order to list only the relevant installation devices accepting the ones which we will use for the installation. 
@@ -117,7 +117,7 @@ Once the installation system finish the booting process just connect to the mach
 For taking the screenshots we have omitted the cio_ignore parameter from the parmfile and as dhcp config is supported the config is quite simple as we can see below:
 ```txt
 rd.zdev=qeth,0.0.0800:0.0.0801:0.0.0802,layer2=1,portno=0
-root=live:http://example.org/d-installer.iso
+root=live:http://example.org/agama.iso
 ```
 
 Below you will find the screenshots of an z/VM installation selecting the ALP Micro product and doing the activation and format of the DASD device with Agama:

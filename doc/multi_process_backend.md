@@ -34,7 +34,7 @@ We found these dependencies:
   depends on it.
 - `ShadowConfig` uses CFA to modify the `login.defs` file, which is also used
   by `Security`. However, it looks like `Security` is not used in other parts
-  of D-installer.
+  of the installer.
 - `Autologin`, which uses many modules, including packages, can be tricky. It
   basically checks which supported Display Managers are available.
 - `ProductFeatures`, which should be replaced with Agama configuration
