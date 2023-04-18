@@ -5,27 +5,27 @@
 # after running "rake install" command.
 #
 # The script does several tasks:
-# - it restarts the DBus service when any file in the d-installer ruby gem
-#   was updated
+# - it restarts the DBus service when any file in the ruby gem was updated
 # - saves the installed NPM packages to a cache so they can be reused in the
 #   next yupdate run
 #
 
-# restart the D-Installer service if needed
+SERVICE_NAME="agama"
+
+# restart the installer service if needed
 function restart_service() {
   # get the service start time
-  SERVICE_START=$(systemctl show d-installer | grep "^ExecMainStartTimestamp=" | sed -e "s/^ExecMainStartTimestamp=\(.*\)\$/\\1/")
+  SERVICE_START=$(systemctl show "$SERVICE_NAME" | grep "^ExecMainStartTimestamp=" | sed -e "s/^ExecMainStartTimestamp=\(.*\)\$/\\1/")
 
   if [ -n "$SERVICE_START" ]; then
     SERVICE_START_UNIX_TIME=$(date -d "$SERVICE_START" +"%s")
-    # find the date of the latest file in the d-installer gem
-    # the regexp is used to ignore the d-installer-cli files
-    NEWEST_FILE_TIME=$(find /usr/lib*/ruby/gems/*/gems -type f -regex '\(.*/\)?d-installer-[0-9].*\(/.*\)?' -exec stat --format '%Y' "{}" \; | sort -nr | head -n 1)
+    # find the date of the latest file in the gem
+    NEWEST_FILE_TIME=$(find /usr/lib*/ruby/gems/*/gems/$SERVICE_NAME-* -exec stat --format %Y "{}" \; | sort -nr | head -n 1)
 
     # when a file is newer than the start time then restart the service
     if [ -n "$NEWEST_FILE_TIME" ] && [ "$SERVICE_START_UNIX_TIME" -lt "$NEWEST_FILE_TIME" ]; then
-      echo "Restarting D-Installer service..."
-      systemctl restart d-installer
+      echo "Restarting $SERVICE_NAME service..."
+      systemctl restart "$SERVICE_NAME"
     fi
   fi
 }
@@ -33,7 +33,7 @@ function restart_service() {
 # copy installed NPM packages to cache
 function save_npm_cache() {
   echo "Saving NPM cache..."
-  CACHEDIR="$HOME/.cache/d-installer-devel/"
+  CACHEDIR="$HOME/.cache/$SERVICE_NAME-devel/"
   mkdir -p "$CACHEDIR"
 
   MYDIR=$(realpath "$(dirname "$0")")
