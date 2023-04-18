@@ -68,7 +68,8 @@ You might be wondering, why not use YaST2 itself? Let's see some reasons:
 * It does not implement support for reading the NetworkManager configuration.
 * It is not able to talk to NetworkManager D-Bus interface. It configures NetworkManager by writing
   the connection files.
-* It is Ruby-based, so we might consider a Rust-based solution.
+* It is Ruby-based, so we might consider a Rust-based solution. It is not a language problem, but we
+  would like to reduce the memory consumption.
 
 ### The proposal
 
@@ -81,7 +82,9 @@ handling), but we can add such a support in our wrapper.
 
 ## Third-party tools
 
-Both [Netplan](https://netplan.io/) and [nmstate](https://nmstate.io/) are tools that allow 
+Both [Netplan](https://netplan.io/) and [nmstate](https://nmstate.io/) are tools that are able to
+set up NetworkManager to meet a given configuration. Although we decided on `nmstate`, let's
+have a look to some of their characteristics:
 
 ### nmstate
 
@@ -94,6 +97,6 @@ Both [Netplan](https://netplan.io/) and [nmstate](https://nmstate.io/) are tools
 
 ### Netplan
 
-- Written in Python.
+- Written in Python. That's the main reason to discard this option.
 - Designed to support multiple network providers, nowadays it supports NetworkManager and networkd.
 - It offers a rather limited D-Bus API.
