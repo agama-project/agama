@@ -3,5 +3,6 @@ members = [
   "agama-lib",
   "agama-cli",
   "agama-derive",
-  "agama-locale-data"
+  "agama-locale-data",
+  "agama-dbus-server"
 ]
