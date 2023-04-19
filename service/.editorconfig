@@ -4,6 +4,6 @@
 root = true
 
 # 2 space indentation
-[{*.rb,bin/d-installer}]
+[{*.rb,bin/agamactl}]
 indent_style = space
 indent_size = 2
