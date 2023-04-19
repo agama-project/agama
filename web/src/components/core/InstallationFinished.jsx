@@ -43,7 +43,7 @@ function InstallationFinished() {
   useEffect(() => {
     async function getIguana() {
       const ret = await client.manager.useIguana();
-      setIguana(ret === "iguana");
+      setIguana(ret);
     }
 
     getIguana();

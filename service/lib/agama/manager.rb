@@ -193,6 +193,13 @@ module Agama
       path
     end
 
+    # Says whether running on iguana or not
+    #
+    # @return [Boolean] true when running on iguana
+    def iguana?
+      return true
+    end
+
   private
 
     attr_reader :config

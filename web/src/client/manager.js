@@ -134,8 +134,9 @@ class ManagerBaseClient {
   /**
    * Returns whether Iguana is used on the system
    */
-  useIguana() {
-    return cockpit.script("[ -d /iguana ] && echo -n iguana");
+  async useIguana() {
+    const proxy = await this.client.proxy(MANAGER_IFACE);
+    return proxy.IguanaBackend;
   }
 }
 

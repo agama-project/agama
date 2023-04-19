@@ -56,6 +56,9 @@ module Agama
       CONFIG_PHASE = 1
       INSTALL_PHASE = 2
 
+      IGUANA_NOT_USED = 0
+      IGUANA_USED = 1
+
       dbus_interface MANAGER_INTERFACE do
         dbus_method(:Probe, "") { config_phase }
         dbus_method(:Commit, "") { install_phase }
@@ -63,6 +66,7 @@ module Agama
         dbus_method(:CollectLogs, "out tarball_filesystem_path:s, in user:s") { |u| collect_logs(u) }
         dbus_reader :installation_phases, "aa{sv}"
         dbus_reader :current_installation_phase, "u"
+        dbus_reader :iguana_backend, "b"
         dbus_reader :busy_services, "as"
       end
 
@@ -112,6 +116,11 @@ module Agama
         return STARTUP_PHASE if backend.installation_phase.startup?
         return CONFIG_PHASE if backend.installation_phase.config?
         return INSTALL_PHASE if backend.installation_phase.install?
+      end
+
+      # States whether installation runs on iguana
+      def iguana_backend
+        return backend.iguana? ? IGUANA_USED : IGUANA_NOT_USED
       end
 
       # Name of the services that are currently busy
