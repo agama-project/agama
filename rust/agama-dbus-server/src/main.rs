@@ -29,6 +29,12 @@ impl Locale {
         self.keyboard_id = keyboard.to_string();
     }
 
+    fn list_timezones(&self, locale: &str) -> Vec<(String, String)> {
+        let timezones = agama_locale_data::get_timezones();
+        let localized = agama_locale_data::get_timezone_parts().localize_timezones(locale, &timezones);
+        timezones.into_iter().zip(localized.into_iter()).collect()
+    }
+
     fn set_timezone(&mut self, timezone: &str) {
         self.timezone_id = timezone.to_string();
     }
