@@ -57,19 +57,27 @@ const sizeText = (size) => {
   return filesize(size, { base: 2 });
 };
 
-const calculatedTooltip = (volume) => {
-  // no tooltip, the size is not affected by snapshots or other volumes
-  if (!volume.snapshotsAffectSizes && volume.sizeRelevantVolumes.length === 0) return null;
+const AutoCalculatedTooltip = ({ volume, children }) => {
+  // the size is not affected by snapshots or other volumes
+  if (!volume.snapshotsAffectSizes && volume.sizeRelevantVolumes.length === 0) {
+    const content = <Text>These limits are not affected by any other settings</Text>;
+    return <Tooltip content={content}>{children}</Tooltip>;
+  }
 
-  return (
+  const content = (
     <>
       <Text>These limits are affected by:</Text><br />
       <List>
-        {volume.snapshotsAffectSizes && <ListItem>The configuration of snapshots</ListItem>}
-        {volume.sizeRelevantVolumes.length > 0 && <ListItem>By presence of other volumes ({volume.sizeRelevantVolumes.join(", ")})</ListItem>}
+        {volume.snapshotsAffectSizes &&
+          <ListItem>The configuration of snapshots</ListItem>}
+        {volume.sizeRelevantVolumes.length > 0 &&
+          <ListItem>By presence of other volumes ({volume.sizeRelevantVolumes.join(", ")})</ListItem>}
       </List>
     </>
   );
+
+  // align the content to the left so the list looks better
+  return <Tooltip isContentLeftAligned content={content}>{children}</Tooltip>;
 };
 
 /**
@@ -257,19 +265,10 @@ const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
 
     const autoModeIcon = <Icon name="auto_mode" size={12} />;
 
-    const OptionalTooltip = ({ volume, children }) => {
-      const tooltipContent = calculatedTooltip(volume);
-
-      // tooltip content is empty, do not wrap in <Tooltip>
-      if (!tooltipContent) return children;
-
-      return <Tooltip isContentLeftAligned content={tooltipContent}>{children}</Tooltip>;
-    };
-
     return (
       <div className="split">
         <span>{limits}</span>
-        <If condition={isAuto} then={<OptionalTooltip volume={volume}><Em icon={autoModeIcon}>auto-calculated</Em></OptionalTooltip>} />
+        <If condition={isAuto} then={<AutoCalculatedTooltip volume={volume}><Em icon={autoModeIcon}>auto-calculated</Em></AutoCalculatedTooltip>} />
       </div>
     );
   };
