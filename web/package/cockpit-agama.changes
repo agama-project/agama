@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 20 12:44:44 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Make styles consistent when the user is hovering a button,
+  no matter if it is a focus state or not (gh#openSUSE/agama#544).
+
+-------------------------------------------------------------------
 Fri Apr 14 13:08:05 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - First steps for redesigning storage proposal UI:
