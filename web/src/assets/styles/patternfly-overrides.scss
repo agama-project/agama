@@ -44,6 +44,11 @@
   --pf-c-button--m-primary--hover--BackgroundColor: var(--color-button-primary-hover);
 }
 
+// Make :hover style visible when the button is in a :focus state too
+.pf-c-button.pf-m-primary:focus:hover {
+  --pf-c-button--m-primary--BackgroundColor: var(--color-button-primary-hover);
+}
+
 .pf-c-button.pf-m-link {
   // Colors for buttons modifiers
   --pf-c-button--m-link--Color: var(--color-link);
@@ -59,6 +64,12 @@
 .pf-c-button.pf-m-secondary {
   --pf-c-button--m-secondary--hover--after--BorderColor: var(--color-link-hover);
   --pf-c-button--m-secondary--hover--Color: var(--color-link-hover);
+}
+
+// Make :hover style visible when the button is in a :focus state too
+.pf-c-button.pf-m-secondary:focus:hover {
+  --pf-c-button--after--BorderColor: var(--color-link-hover);
+  --pf-c-button--m-secondary--Color: var(--color-link-hover);
 }
 
 // SVG icons does not obey font-size
