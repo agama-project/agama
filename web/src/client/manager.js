@@ -116,19 +116,11 @@ class ManagerBaseClient {
   }
 
   /**
-   * Returns whether calling the system reboot succeeded or not.
-   *
-   * @return {Promise<boolean>}
+   * Runs cleanup when installation is done
    */
-  rebootSystem() {
-    return cockpit.spawn(["/usr/sbin/shutdown", "-r", "now"]);
-  }
-
-  /**
-   * Returns whether finishing cockpit succeeded
-   */
-  finishCockpit() {
-    return cockpit.spawn(["systemctl", "stop", "cockpit-wsinstance-http.service"]);
+  async finishInstallation() {
+    const proxy = await this.client.proxy(MANAGER_IFACE);
+    return proxy.Finish;
   }
 
   /**

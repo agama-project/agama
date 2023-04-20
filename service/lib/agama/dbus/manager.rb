@@ -56,14 +56,15 @@ module Agama
       CONFIG_PHASE = 1
       INSTALL_PHASE = 2
 
-      IGUANA_NOT_USED = 0
-      IGUANA_USED = 1
+      IGUANA_NOT_USED = false
+      IGUANA_USED = true
 
       dbus_interface MANAGER_INTERFACE do
         dbus_method(:Probe, "") { config_phase }
         dbus_method(:Commit, "") { install_phase }
         dbus_method(:CanInstall, "out result:b") { can_install? }
         dbus_method(:CollectLogs, "out tarball_filesystem_path:s, in user:s") { |u| collect_logs(u) }
+        dbus_method(:Finish, "") { finish_phase }
         dbus_reader :installation_phases, "aa{sv}"
         dbus_reader :current_installation_phase, "u"
         dbus_reader :iguana_backend, "b"
@@ -96,6 +97,11 @@ module Agama
       # Collects the YaST logs
       def collect_logs(user)
         backend.collect_logs(user)
+      end
+
+      # Last action for the installer
+      def finish_phase
+        backend.finish_installation
       end
 
       # Description of all possible installation phase values

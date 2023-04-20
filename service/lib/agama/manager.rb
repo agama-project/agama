@@ -193,11 +193,22 @@ module Agama
       path
     end
 
+    # Whatever has to be done at the end of installation
+    def finish_installation
+      cmd = if iguana?
+        "systemctl stop cockpit-wsinstance-http.service"
+      else
+        "/usr/sbin/shutdown -r now"
+      end
+
+      return system(cmd)
+    end
+
     # Says whether running on iguana or not
     #
     # @return [Boolean] true when running on iguana
     def iguana?
-      return true
+      return false
     end
 
   private
