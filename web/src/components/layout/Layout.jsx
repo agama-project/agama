@@ -27,7 +27,6 @@ import { ChangeProductLink } from "~/components/software";
 import { About, Disclosure, LogsButton, Sidebar, ShowLogButton, ShowTerminalButton } from "~/components/core";
 
 const PageTitle = createTeleporter();
-const PageOptions = createTeleporter();
 const PageActions = createTeleporter();
 const HeaderActions = createTeleporter();
 const HeaderIcon = createTeleporter();
@@ -86,8 +85,6 @@ function Layout({ children }) {
 
       <Sidebar>
         <>
-          <PageOptions.Target />
-
           <ChangeProductLink />
           <Disclosure label="Diagnostic tools" data-keep-sidebar-open>
             <ShowLogButton />
@@ -187,16 +184,6 @@ const MainActions = FooterActions.Source;
  */
 const AdditionalInfo = FooterInfoArea.Source;
 
-/**
- * Component for setting the slot to place related options, usually in the Sidebar
- */
-const PageOptionsSlot = PageOptions.Target;
-
-/**
- * Component for teleport page related options to the PageOptions slot
- */
-const PageOptionsContent = PageOptions.Source;
-
 export {
   Layout as default,
   Title,
@@ -205,6 +192,4 @@ export {
   ContextualActions,
   MainActions,
   AdditionalInfo,
-  PageOptionsSlot,
-  PageOptionsContent,
 };

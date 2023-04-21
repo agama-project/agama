@@ -22,17 +22,9 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender, mockComponent, mockLayout } from "~/test-utils";
-import { PageOptions, Sidebar } from "~/components/core";
+import { Sidebar } from "~/components/core";
 
 jest.mock("~/components/layout/Layout", () => mockLayout());
-jest.mock("~/components/core/PageOptions", () => mockComponent(
-  <>
-    <a href="#">Goes somewhere</a>
-    <a href="#" data-keep-sidebar-open="true">Keep it open!</a>
-    <button>Do something</button>
-    <button data-keep-sidebar-open="true">Keep it open!</button>
-  </>
-));
 
 it("renders the sidebar initially hidden", async () => {
   plainRender(<Sidebar />);
@@ -41,7 +33,7 @@ it("renders the sidebar initially hidden", async () => {
 });
 
 it("renders a link for displaying the sidebar", async () => {
-  const { user } = plainRender(<Sidebar><PageOptions /></Sidebar>);
+  const { user } = plainRender(<Sidebar />);
 
   const link = await screen.findByLabelText(/Show/i);
   const nav = await screen.findByRole("navigation", { name: /options/i });
@@ -52,7 +44,7 @@ it("renders a link for displaying the sidebar", async () => {
 });
 
 it("renders a link for hiding the sidebar", async () => {
-  const { user } = plainRender(<Sidebar><PageOptions /></Sidebar>);
+  const { user } = plainRender(<Sidebar />);
 
   const openLink = await screen.findByLabelText(/Show/i);
   const closeLink = await screen.findByLabelText(/Hide/i);
@@ -66,7 +58,7 @@ it("renders a link for hiding the sidebar", async () => {
 });
 
 it("moves the focus to the close action after opening it", async () => {
-  const { user } = plainRender(<Sidebar><PageOptions /></Sidebar>);
+  const { user } = plainRender(<Sidebar />);
 
   const openLink = await screen.findByLabelText(/Show/i);
   const closeLink = await screen.findByLabelText(/Hide/i);
@@ -78,7 +70,15 @@ it("moves the focus to the close action after opening it", async () => {
 
 describe("onClick bubbling", () => {
   it("hides the sidebar only if the user clicked on a link or button w/o keepSidebarOpen attribute", async () => {
-    const { user } = plainRender(<Sidebar><PageOptions /></Sidebar>);
+    const { user } = plainRender(
+      <Sidebar>
+        <a href="#">Goes somewhere</a>
+        <a href="#" data-keep-sidebar-open="true">Keep it open!</a>
+        <button>Do something</button>
+        <button data-keep-sidebar-open="true">Keep it open!</button>
+      </Sidebar>
+    );
+
     const openLink = screen.getByLabelText(/Show/i);
     await user.click(openLink);
     const nav = screen.getByRole("navigation", { name: /options/i });
