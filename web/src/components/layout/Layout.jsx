@@ -27,6 +27,7 @@ import { About, Disclosure, LogsButton, Sidebar, ShowLogButton, ShowTerminalButt
 
 const PageTitle = createTeleporter();
 const PageOptions = createTeleporter();
+const PageActions = createTeleporter();
 const HeaderActions = createTeleporter();
 const HeaderIcon = createTeleporter();
 const FooterActions = createTeleporter();
@@ -76,7 +77,10 @@ function Layout({ children }) {
           <PageTitle.Target as="span" />
         </h1>
 
-        <HeaderActions.Target as="span" />
+        <div className="split">
+          <PageActions.Target as="span" />
+          <HeaderActions.Target as="span" />
+        </div>
       </header>
 
       <Sidebar>
@@ -151,7 +155,7 @@ const AppActions = HeaderActions.Source;
  *     <FancyButton onClick={() => console.log("do something")} />
  *   </PageActions>
  */
-const PageActions = HeaderActions.Source;
+const ContextualActions = PageActions.Source;
 
 /**
  * Component for setting the main actions shown on the footer right
@@ -197,6 +201,7 @@ export {
   Title,
   PageIcon,
   AppActions,
+  ContextualActions,
   MainActions,
   AdditionalInfo,
   PageOptionsSlot,
