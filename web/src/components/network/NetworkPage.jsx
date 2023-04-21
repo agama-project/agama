@@ -24,8 +24,8 @@ import { Button, Skeleton } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
-import { Page, PageOptions, Section } from "~/components/core";
-import { ConnectionsTable, IpSettingsForm, WifiSelector } from "~/components/network";
+import { If, Page, Section } from "~/components/core";
+import { ConnectionsTable, IpSettingsForm, NetworkPageOptions, WifiSelector } from "~/components/network";
 
 /**
  * Internal component for displaying the WifiSelector when applicable
@@ -98,6 +98,10 @@ export default function NetworkPage() {
   const [connections, setConnections] = useState([]);
   const [selectedConnection, setSelectedConnection] = useState(null);
   const [wifiScanSupported, setWifiScanSupported] = useState(false);
+  const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
+
+  const openWifiSelector = () => setWifiSelectorOpen(true);
+  const closeWifiSelector = () => setWifiSelectorOpen(false);
 
   useEffect(() => {
     client.setUp().then(() => setInitialized(true));
@@ -182,12 +186,21 @@ export default function NetworkPage() {
         { ready ? <WifiConnections /> : <Skeleton /> }
       </Section>
 
+      <NetworkPageOptions
+        wifiScanSupported={wifiScanSupported}
+        openWifiSelectorCallback={openWifiSelector}
+      />
+
+      <If
+        condition={wifiScanSupported}
+        then={<WifiSelector isOpen={wifiSelectorOpen} onClose={closeWifiSelector} />}
+      />
+
       { /* TODO: improve the connections edition */ }
-      { selectedConnection && <IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} /> }
-      { wifiScanSupported &&
-        <PageOptions title="Network">
-          <WifiScan supported={wifiScanSupported} />
-        </PageOptions> }
+      <If
+        condition={selectedConnection}
+        then=<IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} />
+      />
     </Page>
   );
 }
