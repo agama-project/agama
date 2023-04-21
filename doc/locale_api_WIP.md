@@ -7,8 +7,7 @@ let's use such different API.
 
 ```
 ListLocales(
-  in  s     display_locale # "en_US.UTF-8"
-  out a(ss) id_label_pairs
+  out a(sss) id_english_native
 )
 
 SetLocale(in s locale_id)
@@ -18,8 +17,7 @@ SetLocale(in s locale_id)
 
 ```
 ListX11Keyboards(
-  in  s     display_locale # "en_US.UTF-8"
-  out a(ss) id_label_pairs  # id like "layout(variant)"
+  out as    ids  # id like "layout(variant)"
 )
 
 SetX11Keyboard(in s kb_id)
