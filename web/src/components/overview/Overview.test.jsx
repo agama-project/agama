@@ -50,7 +50,6 @@ jest.mock("~/components/overview/StorageSection", () => mockComponent("Storage S
 jest.mock("~/components/overview/NetworkSection", () => mockComponent("Network Section"));
 jest.mock("~/components/overview/UsersSection", () => mockComponent("Users Section"));
 jest.mock("~/components/overview/SoftwareSection", () => mockComponent("Software Section"));
-jest.mock("~/components/core/PageOptions", () => mockComponent("PageOptions"));
 jest.mock("~/components/core/InstallButton", () => mockComponent("Install Button"));
 
 beforeEach(() => {
