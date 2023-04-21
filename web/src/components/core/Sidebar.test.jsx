@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender, mockComponent, mockLayout } from "~/test-utils";
+import { plainRender, mockLayout } from "~/test-utils";
 import { Sidebar } from "~/components/core";
 
 jest.mock("~/components/layout/Layout", () => mockLayout());
