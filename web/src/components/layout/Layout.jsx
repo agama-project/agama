@@ -51,7 +51,7 @@ const FooterInfoArea = createTeleporter();
  * @example
  *   <Layout>
  *     <PageIcon><DashboardIcon /></PageIcon>
- *     <PageActions><DashboardActions /></PageActions>
+ *     <AppActions><DashboardActions /></AppActions>
  *     <MainActions><Install /></MainActions>
  *     <Title>Dashboard</Title>
  *
@@ -128,6 +128,19 @@ const Title = PageTitle.Source;
 const PageIcon = HeaderIcon.Source;
 
 /**
+ * Component for setting global actions shown on the header right
+ *
+ * @example
+ *   import { AppActions } from "agama-layout";
+ *   import { FancyButton } from "somewhere";
+ *   ...
+ *   <AppActions>
+ *     <FancyButton onClick={() => console.log("do something")} />
+ *   </AppActions>
+ */
+const AppActions = HeaderActions.Source;
+
+/**
  * Component for setting page actions shown on the header right
  *
  * @example
@@ -183,7 +196,7 @@ export {
   Layout as default,
   Title,
   PageIcon,
-  PageActions,
+  AppActions,
   MainActions,
   AdditionalInfo,
   PageOptionsSlot,

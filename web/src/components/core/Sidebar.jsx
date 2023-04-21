@@ -21,7 +21,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
-import { Icon, PageActions } from "~/components/layout";
+import { Icon, AppActions } from "~/components/layout";
 
 // FIXME: look for a better way to allow opening the Sidebar from outside
 let openButtonRef = {};
@@ -89,7 +89,7 @@ const Sidebar = ({ children }) => {
 
   return (
     <>
-      <PageActions>
+      <AppActions>
         <button
           ref={openButtonRef}
           onClick={open}
@@ -100,7 +100,7 @@ const Sidebar = ({ children }) => {
         >
           <Icon name="menu" />
         </button>
-      </PageActions>
+      </AppActions>
 
       <nav
         id="navigation-and-options"

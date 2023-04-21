@@ -144,6 +144,7 @@ const mockLayout = () => ({
   default: ({ children }) => children,
   Title: ({ children }) => children,
   PageIcon: ({ children }) => children,
+  AppActions: ({ children }) => children,
   PageActions: ({ children }) => children,
   MainActions: ({ children }) => children,
   AdditionalInfo: ({ children }) => children,
