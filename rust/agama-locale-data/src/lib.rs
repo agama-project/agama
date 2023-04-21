@@ -10,6 +10,7 @@ pub mod localization;
 pub mod territory;
 pub mod timezone_part;
 pub mod ranked;
+pub mod deprecated_timezones;
 
 pub fn get_keyboards() -> keyboard::Keyboards {
     const FILE_PATH: &str = "/usr/share/langtable/data/keyboards.xml.gz";
@@ -43,73 +44,9 @@ pub fn get_timezone_parts() -> timezone_part::TimezoneIdParts {
     timezone_part::TimezoneIdParts::deserialize(&mut deserializer).expect("Failed to deserialize timezone part entry")
 }
 
-/// List of timezones which are deprecated and langtables missing translations for it
-const DEPRECATED_TIMEZONES : &[&str]= &[
-    "Africa/Asmera", // replaced by Africa/Asmara
-    "Africa/Timbuktu", // replaced by Africa/Bamako
-    "America/Argentina/ComodRivadavia", // replaced by America/Argentina/Catamarca
-    "America/Atka", // replaced by America/Adak
-    "America/Ciudad_Juarez", // failed to find replacement
-    "America/Coral_Harbour", // replaced by America/Atikokan
-    "America/Ensenada", // replaced by America/Tijuana
-    "America/Fort_Nelson",
-    "America/Fort_Wayne", // replaced by America/Indiana/Indianapolis
-    "America/Knox_IN", // replaced by America/Indiana/Knox
-    "America/Nuuk",
-    "America/Porto_Acre", // replaced by America/Rio_Branco
-    "America/Punta_Arenas",
-    "America/Rosario",
-    "America/Virgin",
-    "Antarctica/Troll",
-    "Asia/Ashkhabad", // looks like typo/wrong transcript, it should be Asia/Ashgabat
-    "Asia/Atyrau",
-    "Asia/Barnaul",
-    "Asia/Calcutta", // renamed to Asia/Kolkata
-    "Asia/Chita",
-    "Asia/Chungking",
-    "Asia/Dacca",
-    "Asia/Famagusta",
-    "Asia/Katmandu",
-    "Asia/Macao",
-    "Asia/Qostanay",
-    "Asia/Saigon",
-    "Asia/Srednekolymsk",
-    "Asia/Tel_Aviv",
-    "Asia/Thimbu",
-    "Asia/Tomsk",
-    "Asia/Ujung_Pandang",
-    "Asia/Ulan_Bator",
-    "Asia/Yangon",
-    "Atlantic/Faeroe",
-    "Atlantic/Jan_Mayen",
-    "Australia/ACT",
-    "Australia/Canberra",
-    "Australia/LHI",
-    "Australia/NSW",
-    "Australia/North",
-    "Australia/Queensland",
-    "Australia/South",
-    "Australia/Tasmania",
-    "Australia/Victoria",
-    "Australia/West",
-    "Australia/Yancowinna",
-    "Brazil/Acre",
-    "Brazil/DeNoronha",
-    "Brazil/East",
-    "Brazil/West",
-    "CET",
-    "CST6CDT",
-    "Canada/Atlantic",
-    "Canada/Central",
-    "Canada/Eastern",
-    "Canada/Mountain",
-    "Canada/Newfoundland",
-    "Canada/Pacific",
-];
-
 pub fn get_timezones() -> Vec<String> {
     chrono_tz::TZ_VARIANTS.iter()
-    .filter(|&tz| !DEPRECATED_TIMEZONES.contains(&tz.name())) // Filter out deprecated asmera
+    .filter(|&tz| !crate::deprecated_timezones::DEPRECATED_TIMEZONES.contains(&tz.name())) // Filter out deprecated asmera
     .map(|e| e.name().to_string())
     .collect()
 }
@@ -162,6 +99,7 @@ mod tests {
         let asmara = result.iter().find(|&t| *t == "Africa/Asmara".to_string());
         assert_eq!(asmara, Some(&"Africa/Asmara".to_string()));
         // here test that timezones from timezones matches ones in langtable ( as timezones can contain deprecated ones)
+        // so this test catch if there is new zone that is not translated or if a zone is become deprecated
         let timezones = get_timezones();
         let localized = get_timezone_parts().localize_timezones("de", &timezones);
         let _res : Vec<(String, String)> = timezones.into_iter().zip(localized.into_iter()).collect();

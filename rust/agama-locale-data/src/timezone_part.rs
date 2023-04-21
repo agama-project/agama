@@ -44,7 +44,6 @@ impl TimezoneIdParts {
     }
 
     fn translate_timezone(&self, mapping: &HashMap<String, String>, timezone: &str) -> String {
-        eprintln!("{timezone}");
         timezone.split("/")
         .map(|tzp| mapping.get(&tzp.to_string()).expect(format!("Unknown timezone part {tzp}").as_str()).to_owned())
         .collect::<Vec<String>>().join("/")
