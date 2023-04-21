@@ -90,7 +90,7 @@ mod tests {
     #[test]
     fn test_get_timezones() {
         let result = get_timezones();
-        //assert_eq!(result.len(), 574);
+        assert_eq!(result.len(), 430);
         let first = result.first().expect("no keyboards");
         assert_eq!(first, "Africa/Abidjan");
         // test that we filter out deprecates Asmera ( there is already recent Asmara)
