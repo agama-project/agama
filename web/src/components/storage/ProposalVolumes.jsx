@@ -63,7 +63,7 @@ const AutoCalculatedInfo = ({ volume }) => {
   // the size is not affected by snapshots or other volumes
   if (!volume.snapshotsAffectSizes && volume.sizeRelevantVolumes.length === 0) {
     const content = <Text>These limits are not affected by any other settings</Text>;
-    return <Popover bodyContent={content}>{info}</Popover>;
+    return <Popover showClose={false} bodyContent={content}>{info}</Popover>;
   }
 
   const content = (
@@ -78,7 +78,7 @@ const AutoCalculatedInfo = ({ volume }) => {
     </>
   );
 
-  return <Popover bodyContent={content}>{info}</Popover>;
+  return <Popover showClose={false} bodyContent={content}>{info}</Popover>;
 };
 
 /**
