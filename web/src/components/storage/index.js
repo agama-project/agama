@@ -20,6 +20,7 @@
  */
 
 export { default as ProposalPage } from "./ProposalPage";
+export { default as ProposalPageOptions } from "./ProposalPageOptions";
 export { default as ProposalSettingsSection } from "./ProposalSettingsSection";
 export { default as ProposalActionsSection } from "./ProposalActionsSection";
 export { default as ProposalVolumes } from "./ProposalVolumes";

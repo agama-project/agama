@@ -19,15 +19,14 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useReducer, useEffect, useState } from "react";
+import React, { useCallback, useReducer, useEffect } from "react";
 import { Alert } from "@patternfly/react-core";
-import { useHref } from "react-router-dom";
 
 import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
 import { Icon } from "~/components/layout";
-import { Page, ContextualActions } from "~/components/core";
-import { ProposalActionsSection, ProposalSettingsSection } from "~/components/storage";
+import { Page } from "~/components/core";
+import { ProposalActionsSection, ProposalPageOptions, ProposalSettingsSection } from "~/components/storage";
 
 const initialState = {
   loading: true,
@@ -149,53 +148,10 @@ export default function ProposalPage() {
     );
   };
 
-  const DASDLink = () => {
-    const [show, setShow] = useState(false);
-    const href = useHref("/storage/dasd");
-
-    useEffect(() => {
-      client.dasd.isSupported().then(setShow);
-    }, []);
-
-    if (!show) return null;
-
-    return (
-      <ContextualActions.Item
-        key="dasd-link"
-        href={href}
-        description="Manage and format"
-      >
-        DASD
-      </ContextualActions.Item>
-    );
-  };
-
-  const ISCSILink = () => {
-    const href = useHref("/storage/iscsi");
-
-    return (
-      <ContextualActions.Item
-        key="iscsi-link"
-        href={href}
-        description="Connect to iSCSI targets"
-      >
-        iSCSI
-      </ContextualActions.Item>
-    );
-  };
-
   return (
     <Page title="Storage" icon="hard_drive" actionLabel="Back" actionVariant="secondary">
       <PageContent />
-      <ContextualActions>
-        <ContextualActions.Group
-          label="Configure"
-          key="devices-options"
-        >
-          <DASDLink />
-          <ISCSILink />
-        </ContextualActions.Group>
-      </ContextualActions>
+      <ProposalPageOptions />
     </Page>
   );
 }

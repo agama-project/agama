@@ -26,6 +26,7 @@ import { createClient } from "~/client";
 import { ProposalPage } from "~/components/storage";
 
 jest.mock("~/client");
+jest.mock("~/components/storage/ProposalPageOptions", mockComponent("ProposalPage Options"));
 
 jest.mock("@patternfly/react-core", () => {
   const original = jest.requireActual("@patternfly/react-core");
