@@ -87,7 +87,6 @@ function Layout({ children }) {
         <>
           <PageOptions.Target />
 
-          <h3>Other options</h3>
           <Disclosure label="Diagnostic tools" data-keep-sidebar-open>
             <ShowLogButton />
             <LogsButton data-keep-sidebar-open="true" />
