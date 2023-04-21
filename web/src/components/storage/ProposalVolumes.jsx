@@ -73,7 +73,7 @@ const AutoCalculatedInfo = ({ volume }) => {
         {volume.snapshotsAffectSizes &&
           <ListItem>The configuration of snapshots</ListItem>}
         {volume.sizeRelevantVolumes.length > 0 &&
-          <ListItem>By presence of other volumes ({volume.sizeRelevantVolumes.join(", ")})</ListItem>}
+          <ListItem>Presence of other volumes ({volume.sizeRelevantVolumes.join(", ")})</ListItem>}
       </List>
     </>
   );
@@ -270,7 +270,7 @@ const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
     return (
       <div className="split">
         <span>{limits}</span>
-        <If condition={isAuto} then={<><Em icon={autoModeIcon}>auto</Em><AutoCalculatedInfo volume={volume} /></> } />
+        <If condition={isAuto} then={<><AutoCalculatedInfo volume={volume} /><Em icon={autoModeIcon}>auto</Em></> } />
       </div>
     );
   };
