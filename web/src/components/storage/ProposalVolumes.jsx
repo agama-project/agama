@@ -57,16 +57,18 @@ const sizeText = (size) => {
   return filesize(size, { base: 2 });
 };
 
-const AutoCalculatedTooltip = ({ volume, children }) => {
+const AutoCalculatedInfo = ({ volume }) => {
+  const info = <Icon name="info" size="16" />;
+
   // the size is not affected by snapshots or other volumes
   if (!volume.snapshotsAffectSizes && volume.sizeRelevantVolumes.length === 0) {
     const content = <Text>These limits are not affected by any other settings</Text>;
-    return <Tooltip content={content}>{children}</Tooltip>;
+    return <Tooltip content={content}>{info}</Tooltip>;
   }
 
   const content = (
     <>
-      <Text>These limits are affected by:</Text><br />
+      <Text>These limits are affected by:</Text>
       <List>
         {volume.snapshotsAffectSizes &&
           <ListItem>The configuration of snapshots</ListItem>}
@@ -77,7 +79,7 @@ const AutoCalculatedTooltip = ({ volume, children }) => {
   );
 
   // align the content to the left so the list looks better
-  return <Tooltip isContentLeftAligned content={content}>{children}</Tooltip>;
+  return <Tooltip isContentLeftAligned content={content}>{info}</Tooltip>;
 };
 
 /**
@@ -268,7 +270,7 @@ const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
     return (
       <div className="split">
         <span>{limits}</span>
-        <If condition={isAuto} then={<AutoCalculatedTooltip volume={volume}><Em icon={autoModeIcon}>auto-calculated</Em></AutoCalculatedTooltip>} />
+        <If condition={isAuto} then={<><Em icon={autoModeIcon}>auto</Em><AutoCalculatedInfo volume={volume} /></> } />
       </div>
     );
   };
