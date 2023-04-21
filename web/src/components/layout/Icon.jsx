@@ -36,6 +36,7 @@ import Downloading from "@icons/downloading.svg?component";
 import Edit from "@icons/edit.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Error from "@icons/error.svg?component";
+import ExpandMore from "@icons/expand_more.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Help from "@icons/help.svg?component";
 import HomeStorage from "@icons/home_storage.svg?component";
@@ -78,6 +79,7 @@ const icons = {
   edit: Edit,
   edit_square: EditSquare,
   error: Error,
+  expand_more: ExpandMore,
   hard_drive: HardDrive,
   help: Help,
   home_storage: HomeStorage,

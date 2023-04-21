@@ -20,6 +20,7 @@
  */
 
 export { default as About } from "./About";
+export { default as ContextualActions } from "./ContextualActions";
 export { default as Disclosure } from "./Disclosure";
 export { default as Sidebar } from "./Sidebar";
 export { default as Section } from "./Section";
