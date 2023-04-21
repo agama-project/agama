@@ -2,12 +2,15 @@
 
 ## File Names
 
-**`*.doc.xml`**: documentation authored by humans in the `<doc:*>` tags
+**`*.doc.xml`**: documentation authored by humans in XML comments,
+as specified in [`gdbus-codegen`][gd-cg].
 
-`tmp/`**`*.ref.xml`**: intermediate, produced from `*.doc.xml`, contains DocBook
+[gd-cg]: https://developer-old.gnome.org/gio/stable/gdbus-codegen.html#id-1.4.25.7.9
+
+`tmp/`**`ref-*.xml`**: intermediate, produced from `*.doc.xml`, contains DocBook
 "**ref**entry"
 
-`../dist/dbus/`**`*.ref.html`**: rendered for publishing on GitHub Pages
+`../dist/dbus/`**`ref-*.html`**: rendered for publishing on GitHub Pages
 
 `bus/`**`*.bus.xml`**: output of D-Bus introspection
 

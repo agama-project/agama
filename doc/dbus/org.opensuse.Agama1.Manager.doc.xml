@@ -1,7 +1,6 @@
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
-<node name="/org/opensuse/Agama1/Manager"
-      xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
+<node name="/org/opensuse/Agama1/Manager">
   <interface name="org.opensuse.Agama1.Manager">
     <method name="Probe">
     </method>
@@ -15,72 +14,60 @@
       <arg name="tarball_filesystem_path" direction="out" type="s"/>
     </method>
 
-    <property type="aa{sv}" name="InstallationPhases" access="read">
-      <doc:doc>
-        <doc:description>
-          <doc:para>
+    <!--
+        InstallationPhases:
+
   All possible phases:
-            <doc:code>[
+<programlisting>
+[
     {"id" => 0, "label" => "startup"},
     {"id" => 1, "label" => "config"},
     {"id" => 2, "label" => "install"}
-]</doc:code>
-          </doc:para>
-          <doc:para>
+]
+</programlisting>
+
 The installation process follows a set of phases. Only the main service (`Agama::Manager`)
 knows the information about the current installation phase. The rest of services will act as utility
 services without any knowledge about the whole installation process.
-          </doc:para>
-          <doc:para>
+
 A client (e.g., a web UI) will ask to the main service for the current phase of the installation.
-          </doc:para>
-          <doc:para>
+
 In principle, the installation will follow 3 possible phases: *Startup*, *Config* and *Install*.
-          </doc:para>
-          <doc:para>
+
 * *Startup* Phase:
 This is the initial phase. The manager service will start in this phase and it will not change to
 another phase until the client asks for performing the next phase.
-          </doc:para>
-          <doc:para>
+
 * *Config* Phase:
 The installation is configured during this phase. Configuring the installation means that everything
 needed from the system is read and the required default proposal are calculated. In YaST terms, the
 *config* phase implies to probe some modules like storage, language, etc, and to perform their
 proposals. Note that not all modules have to be probed/proposed. Probing some modules could be
 delayed to the next *install* phase.
-          </doc:para>
-          <doc:para>
+
 * *Install* Phase:
 This phase implies to perform everything to install the system according to the selected options and
 proposals. Note that this phase is not only a typical YaST commit. For example, some proposals
 (software?) could be done during this phase. In short, at the beginning of this phase we have all
 the required information to perform the installation, and at the end of the phase the system is
 installed.
-          </doc:para>
-        </doc:description>
-      </doc:doc>
-    </property>
+    -->
+    <property type="aa{sv}" name="InstallationPhases" access="read"/>
 
-    <property type="u" name="CurrentInstallationPhase" access="read">
-      <doc:doc>
-        <doc:summary>
-            Id of the current phase.
-        </doc:summary>
-      </doc:doc>
-    </property>
+    <!--
+        CurrentInstallationPhase:
+        @short_description: Id of the current phase.
+    -->
+    <property type="u" name="CurrentInstallationPhase" access="read"/>
 
-    <property type="as" name="BusyServices" access="read">
-      <doc:doc>
-        <doc:summary>
-            List of names of the currently busy services.
-        </doc:summary>
-        <doc:description>
-Note that the services are blocked meanwhile they are performing a long task. For this
-reason, the *manager* service will store the status of each service and the clients will ask to
-*manager* to know that status.
-        </doc:description>
-      </doc:doc>
-    </property>
+    <!--
+        CurrentInstallationPhase:
+        @short_description: List of names of the currently busy services.
+
+        Note that the services are blocked meanwhile they are performing a long task. For this
+        reason, the *manager* service will store the status of each service and the clients will ask to
+        *manager* to know that status.
+    -->
+    <property type="as" name="BusyServices" access="read"/>
   </interface>
 </node>
