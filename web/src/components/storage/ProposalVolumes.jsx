@@ -26,9 +26,9 @@ import {
   Dropdown, DropdownToggle, DropdownItem,
   Form, FormGroup, FormSelect, FormSelectOption,
   List, ListItem,
-  Skeleton,
+  Popover, Skeleton,
   Text, TextInput,
-  Toolbar, ToolbarContent, ToolbarItem, Tooltip
+  Toolbar, ToolbarContent, ToolbarItem
 } from "@patternfly/react-core";
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { filesize } from "filesize";
@@ -63,7 +63,7 @@ const AutoCalculatedInfo = ({ volume }) => {
   // the size is not affected by snapshots or other volumes
   if (!volume.snapshotsAffectSizes && volume.sizeRelevantVolumes.length === 0) {
     const content = <Text>These limits are not affected by any other settings</Text>;
-    return <Tooltip content={content}>{info}</Tooltip>;
+    return <Popover bodyContent={content}>{info}</Popover>;
   }
 
   const content = (
@@ -78,8 +78,7 @@ const AutoCalculatedInfo = ({ volume }) => {
     </>
   );
 
-  // align the content to the left so the list looks better
-  return <Tooltip isContentLeftAligned content={content}>{info}</Tooltip>;
+  return <Popover bodyContent={content}>{info}</Popover>;
 };
 
 /**
