@@ -28,8 +28,10 @@ name = "agama-dbus-server"
 version = "0.1.0"
 dependencies = [
  "agama-locale-data",
+ "anyhow",
  "async-std",
  "zbus",
+ "zbus_macros",
 ]
 
 [[package]]
@@ -63,6 +65,7 @@ dependencies = [
 name = "agama-locale-data"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "chrono-tz",
  "flate2",
  "quick-xml",

@@ -1,4 +1,6 @@
-use std::{error::Error, future::pending};
+pub mod error;
+use crate::error::Error;
+use std::future::pending;
 use zbus::{ConnectionBuilder, dbus_interface};
 
 struct Locale {
@@ -10,10 +12,14 @@ struct Locale {
 #[dbus_interface(name = "org.opensuse.Agama.Locale1")]
 impl Locale {
     // Can be `async` as well.
-    fn list_locales(&self, locale: &str) -> Vec<(String, String)> {
+    fn list_locales(&self, locale: &str) -> Result<Vec<(String, String)>, Error> {
         let locales = agama_locale_data::get_languages();
         // TODO: localization param
-        return locales.language.iter().map(|l| (l.id.clone(), locale.to_string())).collect()
+        let ret = locales?
+            .language.iter()
+            .map(|l| (l.id.clone(), locale.to_string()))
+            .collect();
+        Ok(ret)
     }
 
     fn set_locale(&mut self, locale: &str) {
@@ -42,7 +48,7 @@ impl Locale {
 
 // Although we use `async-std` here, you can use any async runtime of choice.
 #[async_std::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let locale = Locale { locale_id: "en".to_string(), keyboard_id: "us".to_string(), timezone_id: "Europe/Prague".to_string() };
     let _conn = ConnectionBuilder::session()? //TODO: use agama bus instead of session one
         .name("org.opensuse.Agama.Locale1")?

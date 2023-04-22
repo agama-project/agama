@@ -1,3 +1,4 @@
+use anyhow::Context;
 use serde::Deserialize;
 use std::fs::File;
 use std::io::BufReader;
@@ -20,12 +21,15 @@ pub fn get_keyboards() -> keyboard::Keyboards {
     keyboard::Keyboards::deserialize(&mut deserializer).expect("Failed to deserialize keyboard entry")
 }
 
-pub fn get_languages() -> language::Languages {
+pub fn get_languages() -> anyhow::Result<language::Languages> {
     const FILE_PATH: &str = "/usr/share/langtable/data/languages.xml.gz";
-    let file = File::open(FILE_PATH).expect("Failed to read langtable-data.");
+    let file = File::open(FILE_PATH)
+        .context("Failed to read langtable-data")?;
     let reader = BufReader::new(GzDecoder::new(BufReader::new(&file)));
     let mut deserializer = Deserializer::from_reader(reader);
-    language::Languages::deserialize(&mut deserializer).expect("Failed to deserialize language entry")
+    let ret = language::Languages::deserialize(&mut deserializer)
+        .context("Failed to deserialize language entry")?;
+    Ok(ret)
 }
 
 pub fn get_territories() -> territory::Territories {
