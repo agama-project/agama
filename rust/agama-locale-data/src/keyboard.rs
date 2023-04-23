@@ -5,7 +5,9 @@ use crate::ranked::{RankedTerritories, RankedLanguages};
 #[derive(Debug, Deserialize)]
 pub struct Keyboard {
     #[serde(rename(deserialize = "keyboardId"))]
+    /// like "layout(variant)", for example "us" or "ua(phonetic)"
     pub id: String,
+    ///  like "Ukrainian (phonetic)"
     pub description: String,
     pub ascii: bool,
     pub comment: Option<String>,

@@ -1,5 +1,6 @@
 pub mod error;
 use crate::error::Error;
+
 use std::future::pending;
 use zbus::{ConnectionBuilder, dbus_interface};
 
@@ -26,19 +27,25 @@ impl Locale {
         self.locale_id = locale.to_string();
     }
 
-    fn list_x11_keyboards(&self) -> Vec<(String, String)> {
-        let keyboards = agama_locale_data::get_keyboards();
-        return keyboards.keyboard.iter().map(|k| (k.id.clone(), k.description.clone())).collect()
+    fn list_x11_keyboards(&self) -> Result<Vec<(String, String)>, Error> {
+        let keyboards = agama_locale_data::get_keyboards()?;
+        let ret = keyboards
+            .keyboard.iter()
+            .map(|k| (k.id.clone(), k.description.clone()))
+            .collect();
+        Ok(ret)
     }
 
     fn set_x11_keyboard(&mut self, keyboard: &str) {
         self.keyboard_id = keyboard.to_string();
     }
 
-    fn list_timezones(&self, locale: &str) -> Vec<(String, String)> {
+    fn list_timezones(&self, locale: &str) -> Result<Vec<(String, String)>, Error> {
         let timezones = agama_locale_data::get_timezones();
-        let localized = agama_locale_data::get_timezone_parts().localize_timezones(locale, &timezones);
-        timezones.into_iter().zip(localized.into_iter()).collect()
+        let localized = agama_locale_data::get_timezone_parts()?
+            .localize_timezones(locale, &timezones);
+        let ret = timezones.into_iter().zip(localized.into_iter()).collect();
+        Ok(ret)
     }
 
     fn set_timezone(&mut self, timezone: &str) {

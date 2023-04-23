@@ -5,7 +5,9 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize)]
 pub struct TimezoneIdPart {
     #[serde(rename(deserialize = "timezoneIdPartId"))]
+    /// "Prague"
     pub id: String,
+    /// [{language: "cs", value: "Praha"}, {"language": "de", value: "Prag"} ...]
     pub names: crate::localization::Localization
 }
 
