@@ -26,7 +26,7 @@ import {
   Tooltip
 } from "@patternfly/react-core";
 
-import { If, PasswordAndConfirmationInput, Section, Sidebar, Popup } from "~/components/core";
+import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { ProposalVolumes } from "~/components/storage";
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
@@ -130,14 +130,6 @@ const InstallationDeviceField = ({ current, devices, isLoading, onChange }) => {
     return <Button variant="link" isInline onClick={openForm}>{text}</Button>;
   };
 
-  const SidebarLink = ({ label }) => {
-    return (
-      <Sidebar.OpenButton onClick={closeForm}>
-        {label}
-      </Sidebar.OpenButton>
-    );
-  };
-
   if (isLoading) {
     return <Skeleton width="25%" />;
   }
@@ -153,23 +145,18 @@ const InstallationDeviceField = ({ current, devices, isLoading, onChange }) => {
         title="Installation device"
         isOpen={isFormOpen}
       >
-        <div className="flex-stack">
-          <If
-            condition={devices.length === 0}
-            then={<div className="bold">No devices found</div>}
-            else={
-              <InstallationDeviceForm
-                id="bootDeviceForm"
-                current={device}
-                devices={devices}
-                onSubmit={acceptForm}
-              />
-            }
-          />
-          <p>
-            Use the <SidebarLink label="advanced options menu" /> to configure access to more disks.
-          </p>
-        </div>
+        <If
+          condition={devices.length === 0}
+          then={<div className="bold">No devices found</div>}
+          else={
+            <InstallationDeviceForm
+              id="bootDeviceForm"
+              current={device}
+              devices={devices}
+              onSubmit={acceptForm}
+            />
+          }
+        />
         <Popup.Actions>
           <Popup.Confirm
             form="bootDeviceForm"
