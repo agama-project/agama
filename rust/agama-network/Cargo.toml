@@ -6,3 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+agama-lib = { path="../agama-lib" }
+async-std = { version = "1.12.0", features = ["attributes"] }
+nmstate = { version = "2.2.8", default-features = false, features = ["nispor", "query_apply", "zbus"] }
+thiserror = "1.0.40"
+zbus = "3.12.0"
