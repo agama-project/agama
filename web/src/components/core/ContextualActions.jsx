@@ -23,6 +23,13 @@ import React, { useState } from 'react';
 import { Button, Dropdown, DropdownItem, DropdownGroup } from '@patternfly/react-core';
 import { Icon, ContextualActions as ContextualActionsSlot } from "~/components/layout";
 
+/**
+ * Internal component to build the {ContextualActions} toggler
+ * @component
+ *
+ * @param {object} props
+ * @param {function} props.onClick
+ */
 const Toggler = ({ onClick }) => {
   return (
     <Button onClick={onClick} variant="plain">
@@ -31,6 +38,16 @@ const Toggler = ({ onClick }) => {
   );
 };
 
+/**
+ * A group of actions belonging to a {ContextualActions} component
+ * @component
+ *
+ * Built on top of {@link https://www.patternfly.org/v4/components/dropdown/#dropdowngroup PF DropdownGroup}
+ *
+ * @see {ContextualActions } examples.
+ *
+ * @param {object} props - PF DropdownItem props, See {@link https://www.patternfly.org/v4/components/dropdowngroup}
+ */
 const Group = ({ children, ...props }) => {
   return (
     <DropdownGroup {...props}>
@@ -39,6 +56,16 @@ const Group = ({ children, ...props }) => {
   );
 };
 
+/**
+ * An action belonging to a {ContextualActions} component
+ * @component
+ *
+ * Built on top of {@link https://www.patternfly.org/v4/components/dropdown/#dropdownitem PF DropdownItem}
+ *
+ * @see {ContextualActions } examples.
+ *
+ * @param {object} props - PF DropdownItem props, See {@link https://www.patternfly.org/v4/components/dropdownitem}
+ */
 const Item = ({ children, ...props }) => {
   return (
     <DropdownItem {...props}>
@@ -47,6 +74,44 @@ const Item = ({ children, ...props }) => {
   );
 };
 
+/**
+ * Component for rendering actions related to the current page
+ * @component
+ *
+ * It consist in a {@link https://www.patternfly.org/v4/components/dropdown
+ * PatternFly Dropdown} "teleported" to the header, close to the
+ * action for opening the Sidebar
+ *
+ * @example <caption>Usage example</caption>
+ *   <ContextualActions>
+ *     <ContextualActions.Item
+ *       key="reprobe-link"
+ *       description="Run a storage device detection"
+ *     >
+ *
+ *       Reprobe
+ *     </ContextualActions.Item>
+ *     <ContextualActions.Group key="configuration-links" label="Configure">
+ *       <ContextualActions.Item
+ *         key="dasd-link"
+ *         href={href}
+ *         description="Manage and format"
+ *       >
+ *         DASD
+ *       </ContextualActions.Item>
+ *       <ContextualActions.Item
+ *         key="iscsi-link"
+ *         href={href}
+ *         description="Connect to iSCSI targets"
+ *        >
+ *         iSCSI
+ *       </ContextualActions.Item>
+ *     </ContextualActions.Group>
+ *   </ContextualActions>
+ *
+ * @param {object} props
+ * @param {Group|Item|Array<Group|Item>} props.children
+ */
 const ContextualActions = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const onToggle = () => setIsOpen(!isOpen);
