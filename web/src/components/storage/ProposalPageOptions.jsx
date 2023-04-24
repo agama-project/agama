@@ -24,6 +24,10 @@ import { useHref } from "react-router-dom";
 import { useInstallerClient } from "~/context/installer";
 import { If, PageOptions } from "~/components/core";
 
+/**
+ * Internal component for build the link to Storage/DASD page
+ * @component
+ */
 const DASDLink = () => {
   const href = useHref("/storage/dasd");
 
@@ -38,6 +42,10 @@ const DASDLink = () => {
   );
 };
 
+/**
+ * Internal component for build the link to Storage/iSCSI page
+ * @component
+ */
 const ISCSILink = () => {
   const href = useHref("/storage/iscsi");
 
@@ -52,6 +60,10 @@ const ISCSILink = () => {
   );
 };
 
+/**
+ * Component for rendering the options available from Storage/ProposalPage
+ * @component
+ */
 export default function ProposalPageOptions () {
   const [showDasdLink, setShowDasdLink] = useState(false);
   const { storage: client } = useInstallerClient();

@@ -22,6 +22,14 @@
 import React from "react";
 import { PageOptions } from "~/components/core";
 
+/**
+ * Component for rendering the options available from Network page
+ * @component
+ *
+ * @param {object} props
+ * @param {boolean} [props.wifiScanSupported=false] - wether the scan of WiFi networks is supported
+ * @param {function} props.openWifiSelector - the function for opening the WiFi network selector
+ */
 export default function NetworkPageOptions ({
   wifiScanSupported = false,
   openWifiSelector,
