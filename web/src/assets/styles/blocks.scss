@@ -197,6 +197,10 @@ section > .content {
   }
 }
 
+.contextual-actions > button {
+  --pf-c-button--PaddingRight: 0
+}
+
 .contextual-actions a {
   font-size: 16px;
   font-weight: var(--fw-bold);
