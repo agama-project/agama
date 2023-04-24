@@ -201,3 +201,12 @@ section > .content {
 [role="tooltip"] li + li {
   margin: 0;
 }
+
+// extra margin for "i" icons in labels
+.pf-c-label__content > svg {
+  margin-left: 4px;
+}
+
+.has_help {
+  cursor: pointer;
+}

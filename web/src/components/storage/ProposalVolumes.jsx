@@ -57,13 +57,17 @@ const sizeText = (size) => {
   return filesize(size, { base: 2 });
 };
 
-const AutoCalculatedInfo = ({ volume }) => {
-  const info = <Icon name="info" size="16" />;
-
+/**
+ * Generates an icon with help describing what affects the volume limits.
+ * If the limits are nor affected then returns `null`.
+ * @component
+ *
+ * @param {object} volume - storage volume object
+ */
+const AutoCalculatedInfo = ({ volume, children }) => {
   // the size is not affected by snapshots or other volumes
   if (!volume.snapshotsAffectSizes && volume.sizeRelevantVolumes.length === 0) {
-    const content = <Text>These limits are not affected by any other settings</Text>;
-    return <Popover showClose={false} bodyContent={content}>{info}</Popover>;
+    return <>{children}</>;
   }
 
   const content = (
@@ -78,7 +82,7 @@ const AutoCalculatedInfo = ({ volume }) => {
     </>
   );
 
-  return <Popover showClose={false} bodyContent={content}>{info}</Popover>;
+  return <Popover showClose={false} bodyContent={content}><div className="has_help">{children}</div></Popover>;
 };
 
 /**
@@ -264,12 +268,10 @@ const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
     const limits = `${sizeText(volume.minSize)} - ${sizeText(volume.maxSize)}`;
     const isAuto = volume.adaptiveSizes && !volume.fixedSizeLimits;
 
-    const autoModeIcon = <Icon name="auto_mode" size={12} />;
-
     return (
       <div className="split">
         <span>{limits}</span>
-        <If condition={isAuto} then={<><AutoCalculatedInfo volume={volume} /><Em icon={autoModeIcon}>auto</Em></> } />
+        <If condition={isAuto} then={<AutoCalculatedInfo volume={volume}><Em>auto <Icon name="info" size="16" /></Em></AutoCalculatedInfo>} />
       </div>
     );
   };
