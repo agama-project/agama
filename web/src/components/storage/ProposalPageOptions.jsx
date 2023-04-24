@@ -22,19 +22,19 @@
 import React, { useEffect, useState } from "react";
 import { useHref } from "react-router-dom";
 import { useInstallerClient } from "~/context/installer";
-import { If, ContextualActions } from "~/components/core";
+import { If, PageOptions } from "~/components/core";
 
 const DASDLink = () => {
   const href = useHref("/storage/dasd");
 
   return (
-    <ContextualActions.Item
+    <PageOptions.Item
       key="dasd-link"
       href={href}
       description="Manage and format"
     >
       DASD
-    </ContextualActions.Item>
+    </PageOptions.Item>
   );
 };
 
@@ -42,13 +42,13 @@ const ISCSILink = () => {
   const href = useHref("/storage/iscsi");
 
   return (
-    <ContextualActions.Item
+    <PageOptions.Item
       key="iscsi-link"
       href={href}
       description="Connect to iSCSI targets"
     >
       iSCSI
-    </ContextualActions.Item>
+    </PageOptions.Item>
   );
 };
 
@@ -61,14 +61,14 @@ export default function ProposalPageOptions () {
   }, [client.dasd]);
 
   return (
-    <ContextualActions>
-      <ContextualActions.Group
+    <PageOptions>
+      <PageOptions.Group
         label="Configure"
         key="devices-options"
       >
         <If condition={showDasdLink} then={<DASDLink />} />
         <ISCSILink />
-      </ContextualActions.Group>
-    </ContextualActions>
+      </PageOptions.Group>
+    </PageOptions>
   );
 }

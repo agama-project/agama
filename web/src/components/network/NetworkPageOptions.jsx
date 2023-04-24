@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { ContextualActions } from "~/components/core";
+import { PageOptions } from "~/components/core";
 
 export default function NetworkPageOptions ({
   wifiScanSupported = false,
@@ -31,10 +31,10 @@ export default function NetworkPageOptions ({
   if (!wifiScanSupported) return null;
 
   return (
-    <ContextualActions>
-      <ContextualActions.Item key="open-wifi-selector" onClick={openWifiSelector}>
+    <PageOptions>
+      <PageOptions.Item key="open-wifi-selector" onClick={openWifiSelector}>
         <>Connect to a Wi-Fi network</>
-      </ContextualActions.Item>
-    </ContextualActions>
+      </PageOptions.Item>
+    </PageOptions>
   );
 }

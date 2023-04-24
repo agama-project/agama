@@ -130,6 +130,19 @@ const Title = PageTitle.Source;
 const PageIcon = HeaderIcon.Source;
 
 /**
+ * Component for setting page actions shown on the header right
+ *
+ * @example
+ *   import { PageActions } from "agama-layout";
+ *   import { FancyButton } from "somewhere";
+ *   ...
+ *   <PageActions>
+ *     <FancyButton onClick={() => console.log("do something")} />
+ *   </PageActions>
+ */
+const PageOptions = PageActions.Source;
+
+/**
  * Component for setting global actions shown on the header right
  *
  * @example
@@ -141,19 +154,6 @@ const PageIcon = HeaderIcon.Source;
  *   </AppActions>
  */
 const AppActions = HeaderActions.Source;
-
-/**
- * Component for setting page actions shown on the header right
- *
- * @example
- *   import { PageActions } from "agama-layout";
- *   import { FancyButton } from "somewhere";
- *   ...
- *   <PageActions>
- *     <FancyButton onClick={() => console.log("do something")} />
- *   </PageActions>
- */
-const ContextualActions = PageActions.Source;
 
 /**
  * Component for setting the main actions shown on the footer right
@@ -189,7 +189,7 @@ export {
   Title,
   PageIcon,
   AppActions,
-  ContextualActions,
+  PageOptions,
   MainActions,
   AdditionalInfo,
 };

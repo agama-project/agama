@@ -21,10 +21,10 @@
 
 import React, { useState } from 'react';
 import { Button, Dropdown, DropdownItem, DropdownGroup } from '@patternfly/react-core';
-import { Icon, ContextualActions as ContextualActionsSlot } from "~/components/layout";
+import { Icon, PageOptions as PageOptionsSlot } from "~/components/layout";
 
 /**
- * Internal component to build the {ContextualActions} toggler
+ * Internal component to build the {PageOptions} toggler
  * @component
  *
  * @param {object} props
@@ -39,12 +39,12 @@ const Toggler = ({ onClick }) => {
 };
 
 /**
- * A group of actions belonging to a {ContextualActions} component
+ * A group of actions belonging to a {PageOptions} component
  * @component
  *
  * Built on top of {@link https://www.patternfly.org/v4/components/dropdown/#dropdowngroup PF DropdownGroup}
  *
- * @see {ContextualActions } examples.
+ * @see {PageOptions } examples.
  *
  * @param {object} props - PF DropdownItem props, See {@link https://www.patternfly.org/v4/components/dropdowngroup}
  */
@@ -57,12 +57,12 @@ const Group = ({ children, ...props }) => {
 };
 
 /**
- * An action belonging to a {ContextualActions} component
+ * An action belonging to a {PageOptions} component
  * @component
  *
  * Built on top of {@link https://www.patternfly.org/v4/components/dropdown/#dropdownitem PF DropdownItem}
  *
- * @see {ContextualActions } examples.
+ * @see {PageOptions } examples.
  *
  * @param {object} props - PF DropdownItem props, See {@link https://www.patternfly.org/v4/components/dropdownitem}
  */
@@ -83,56 +83,56 @@ const Item = ({ children, ...props }) => {
  * action for opening the Sidebar
  *
  * @example <caption>Usage example</caption>
- *   <ContextualActions>
- *     <ContextualActions.Item
+ *   <PageOptions>
+ *     <PageOptions.Item
  *       key="reprobe-link"
  *       description="Run a storage device detection"
  *     >
  *
  *       Reprobe
- *     </ContextualActions.Item>
- *     <ContextualActions.Group key="configuration-links" label="Configure">
- *       <ContextualActions.Item
+ *     </PageOptions.Item>
+ *     <PageOptions.Group key="configuration-links" label="Configure">
+ *       <PageOptions.Item
  *         key="dasd-link"
  *         href={href}
  *         description="Manage and format"
  *       >
  *         DASD
- *       </ContextualActions.Item>
- *       <ContextualActions.Item
+ *       </PageOptions.Item>
+ *       <PageOptions.Item
  *         key="iscsi-link"
  *         href={href}
  *         description="Connect to iSCSI targets"
  *        >
  *         iSCSI
- *       </ContextualActions.Item>
- *     </ContextualActions.Group>
- *   </ContextualActions>
+ *       </PageOptions.Item>
+ *     </PageOptions.Group>
+ *   </PageOptions>
  *
  * @param {object} props
  * @param {Group|Item|Array<Group|Item>} props.children
  */
-const ContextualActions = ({ children }) => {
+const PageOptions = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const onToggle = () => setIsOpen(!isOpen);
   const onSelect = () => setIsOpen(false);
 
   return (
-    <ContextualActionsSlot>
+    <PageOptionsSlot>
       <Dropdown
         isOpen={isOpen}
         toggle={<Toggler onClick={onToggle} />}
         onSelect={onSelect}
         dropdownItems={Array(children)}
         position="right"
-        className="contextual-actions"
+        className="page-options"
         isGrouped
       />
-    </ContextualActionsSlot>
+    </PageOptionsSlot>
   );
 };
 
-ContextualActions.Group = Group;
-ContextualActions.Item = Item;
+PageOptions.Group = Group;
+PageOptions.Item = Item;
 
-export default ContextualActions;
+export default PageOptions;

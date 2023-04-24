@@ -22,15 +22,15 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender, mockLayout } from "~/test-utils";
-import { ContextualActions } from "~/components/core";
+import { PageOptions } from "~/components/core";
 
 jest.mock("~/components/layout/Layout", () => mockLayout());
 
 it("renders the component initially closed", async () => {
   const { user } = plainRender(
-    <ContextualActions>
-      <ContextualActions.Item>A dummy action</ContextualActions.Item>
-    </ContextualActions>
+    <PageOptions>
+      <PageOptions.Item>A dummy action</PageOptions.Item>
+    </PageOptions>
   );
 
   expect(screen.queryByRole("menuitem", { name: "A dummy action" })).toBeNull();
@@ -38,9 +38,9 @@ it("renders the component initially closed", async () => {
 
 it("show and hide the component content on user request", async () => {
   const { user } = plainRender(
-    <ContextualActions>
-      <ContextualActions.Item><>A dummy action</></ContextualActions.Item>
-    </ContextualActions>
+    <PageOptions>
+      <PageOptions.Item><>A dummy action</></PageOptions.Item>
+    </PageOptions>
   );
 
   const toggler = screen.getByRole("button");
@@ -58,13 +58,13 @@ it("show and hide the component content on user request", async () => {
 
 it("hide the component content when the user clicks on one of its actions", async () => {
   const { user } = plainRender(
-    <ContextualActions>
-      <ContextualActions.Group label="Refresh">
-        <ContextualActions.Item><>Section</></ContextualActions.Item>
-        <ContextualActions.Item><>Page</></ContextualActions.Item>
-      </ContextualActions.Group>
-      <ContextualActions.Item><>Exit</></ContextualActions.Item>
-    </ContextualActions>
+    <PageOptions>
+      <PageOptions.Group label="Refresh">
+        <PageOptions.Item><>Section</></PageOptions.Item>
+        <PageOptions.Item><>Page</></PageOptions.Item>
+      </PageOptions.Group>
+      <PageOptions.Item><>Exit</></PageOptions.Item>
+    </PageOptions>
   );
 
   const toggler = screen.getByRole("button");
