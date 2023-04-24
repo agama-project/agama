@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr 24 15:53:35 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Extract page options from the Sidebar to make them
+  more discoverable (gh#openSUSE/agama#545)
+
+-------------------------------------------------------------------
 Fri Apr 14 13:08:05 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - First steps for redesigning storage proposal UI:
