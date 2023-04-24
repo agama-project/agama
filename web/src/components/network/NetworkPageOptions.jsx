@@ -22,26 +22,17 @@
 import React from "react";
 import { ContextualActions } from "~/components/core";
 
-const WifiScanNotSupported = () => {
-  return (
-    <>
-      The system does not support scanning WiFi networks
-    </>
-  );
-};
-
 export default function NetworkPageOptions ({
   wifiScanSupported = false,
-  openWifiSelectorCallback
+  openWifiSelector,
 }) {
+  // Since there are not more options yet, do not show the menu if WiFi scan is
+  // not supported.
+  if (!wifiScanSupported) return null;
+
   return (
     <ContextualActions>
-      <ContextualActions.Item
-        key="open-wifi-selector"
-        onClick={openWifiSelectorCallback}
-        isDisabled={!wifiScanSupported}
-        description={!wifiScanSupported ? <WifiScanNotSupported /> : null}
-      >
+      <ContextualActions.Item key="open-wifi-selector" onClick={openWifiSelector}>
         <>Connect to a Wi-Fi network</>
       </ContextualActions.Item>
     </ContextualActions>

@@ -173,10 +173,7 @@ export default function NetworkPage() {
         { ready ? <WifiConnections /> : <Skeleton /> }
       </Section>
 
-      <NetworkPageOptions
-        wifiScanSupported={wifiScanSupported}
-        openWifiSelectorCallback={openWifiSelector}
-      />
+      <NetworkPageOptions wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
 
       <If
         condition={wifiScanSupported}
