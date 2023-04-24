@@ -23,7 +23,7 @@ impl Device {
 
     pub fn with_device<T, F>(&self, f: F) -> Result<T, NetworkStateError>
     where
-        F: Fn(&nmstate::Interface) -> T,
+        F: FnOnce(&nmstate::Interface) -> T,
     {
         let state = self.network.lock().unwrap();
         let device =
@@ -89,7 +89,7 @@ impl Ipv4 {
 
     pub fn update_ipv4<F>(&self, set: F) -> Result<(), NetworkStateError>
     where
-        F: Fn(&mut nmstate::InterfaceIpv4),
+        F: FnOnce(&mut nmstate::InterfaceIpv4),
     {
         let mut state = self.network.lock().unwrap();
         let device =
