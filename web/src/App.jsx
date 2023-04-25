@@ -27,7 +27,7 @@ import { STARTUP, INSTALL } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
 import { Layout, Title, DBusError } from "~/components/layout";
-import { Installation, LoadingEnvironment } from "~/components/core";
+import { Installation, LoadingEnvironment, Sidebar } from "~/components/core";
 
 function App() {
   const client = useInstallerClient();
@@ -71,10 +71,13 @@ function App() {
   };
 
   return (
-    <Layout>
-      <Title>Agama</Title>
-      <Content />
-    </Layout>
+    <>
+      <Sidebar />
+      <Layout>
+        <Title>Agama</Title>
+        <Content />
+      </Layout>
+    </>
   );
 }
 

@@ -23,7 +23,6 @@ import React from "react";
 
 import logoUrl from "~/assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
-import { Sidebar } from "~/components/core";
 
 const PageTitle = createTeleporter();
 const PageActions = createTeleporter();
@@ -82,8 +81,6 @@ function Layout({ children }) {
         </div>
 
       </header>
-
-      <Sidebar />
 
       <main className="stack">
         {children}
