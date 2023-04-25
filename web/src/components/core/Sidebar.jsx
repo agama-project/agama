@@ -21,10 +21,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
-import { Icon, PageActions } from "~/components/layout";
-
-// FIXME: look for a better way to allow opening the Sidebar from outside
-let openButtonRef = {};
+import { Icon, AppActions } from "~/components/layout";
 
 /**
  * Agama sidebar navigation
@@ -33,9 +30,8 @@ let openButtonRef = {};
  * @param {object} props
  * @param {React.ReactElement} props.children
  */
-const Sidebar = ({ children }) => {
+export default function Sidebar ({ children }) {
   const [isOpen, setIsOpen] = useState(false);
-  openButtonRef = useRef(null);
   const closeButtonRef = useRef(null);
 
   const open = () => setIsOpen(true);
@@ -89,9 +85,8 @@ const Sidebar = ({ children }) => {
 
   return (
     <>
-      <PageActions>
+      <AppActions>
         <button
-          ref={openButtonRef}
           onClick={open}
           className="plain-control"
           aria-label="Show navigation and other options"
@@ -100,7 +95,7 @@ const Sidebar = ({ children }) => {
         >
           <Icon name="menu" />
         </button>
-      </PageActions>
+      </AppActions>
 
       <nav
         id="navigation-and-options"
@@ -134,23 +129,4 @@ const Sidebar = ({ children }) => {
       </nav>
     </>
   );
-};
-
-/**
- * Button for opening the sidebar
- * @component
- *
- * @param {object} props
- * @param {onClickFn} [props.onClick] - On click callback
- * @param {React.ReactElement} props.children
- */
-Sidebar.OpenButton = ({ onClick: onClickProp, children }) => {
-  const onClick = () => {
-    if (onClickProp !== undefined) onClickProp();
-    openButtonRef.current.click();
-  };
-
-  return <Button variant="link" isInline onClick={onClick}>{children}</Button>;
-};
-
-export default Sidebar;
+}

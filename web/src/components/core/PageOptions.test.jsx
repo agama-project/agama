@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,51 +21,56 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
-import { PageOptionsSlot } from "~/components/layout";
+import { plainRender, mockLayout } from "~/test-utils";
 import { PageOptions } from "~/components/core";
 
-describe("PageOptions", () => {
-  it("renders given title", () => {
-    plainRender(
-      <>
-        <PageOptionsSlot />
-        <PageOptions title="Awesome options">
-          The page options content
-        </PageOptions>
-      </>
-    );
+jest.mock("~/components/layout/Layout", () => mockLayout());
 
-    screen.getByText("Awesome options");
-  });
+it("renders the component initially closed", async () => {
+  plainRender(
+    <PageOptions>
+      <PageOptions.Item>A dummy action</PageOptions.Item>
+    </PageOptions>
+  );
 
-  it("renders given children", () => {
-    plainRender(
-      <>
-        <PageOptionsSlot />
-        <PageOptions title="Awesome options">
-          The page options content
-        </PageOptions>
-      </>
-    );
+  expect(screen.queryByRole("menuitem", { name: "A dummy action" })).toBeNull();
+});
 
-    screen.getByText("The page options content");
-  });
+it("show and hide the component content on user request", async () => {
+  const { user } = plainRender(
+    <PageOptions>
+      <PageOptions.Item><>A dummy action</></PageOptions.Item>
+    </PageOptions>
+  );
 
-  it("dispatches onClick events to the target", async () => {
-    const onClickHandler = jest.fn();
-    const { user } = plainRender(
-      <>
-        <PageOptionsSlot onClick={onClickHandler} />
-        <PageOptions title="Awesome options">
-          <button>Click tester</button>
-        </PageOptions>
-      </>
-    );
+  const toggler = screen.getByRole("button");
 
-    const button = screen.getByRole("button", { name: "Click tester" });
-    await user.click(button);
+  expect(screen.queryByRole("menuitem", { name: "A dummy action" })).toBeNull();
 
-    expect(onClickHandler).toHaveBeenCalled();
-  });
+  await user.click(toggler);
+
+  screen.getByRole("menuitem", { name: "A dummy action" });
+
+  await user.click(toggler);
+
+  expect(screen.queryByRole("menuitem", { name: "A dummy action" })).toBeNull();
+});
+
+it("hide the component content when the user clicks on one of its actions", async () => {
+  const { user } = plainRender(
+    <PageOptions>
+      <PageOptions.Group label="Refresh">
+        <PageOptions.Item><>Section</></PageOptions.Item>
+        <PageOptions.Item><>Page</></PageOptions.Item>
+      </PageOptions.Group>
+      <PageOptions.Item><>Exit</></PageOptions.Item>
+    </PageOptions>
+  );
+
+  const toggler = screen.getByRole("button");
+  await user.click(toggler);
+  const action = screen.getByRole("menuitem", { name: "Section" });
+  await user.click(action);
+
+  expect(screen.queryByRole("menuitem", { name: "A dummy action" })).toBeNull();
 });

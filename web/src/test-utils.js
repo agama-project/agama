@@ -144,10 +144,10 @@ const mockLayout = () => ({
   default: ({ children }) => children,
   Title: ({ children }) => children,
   PageIcon: ({ children }) => children,
-  PageActions: ({ children }) => children,
+  AppActions: ({ children }) => children,
+  PageOptions: ({ children }) => children,
   MainActions: ({ children }) => children,
   AdditionalInfo: ({ children }) => children,
-  PageOptionsContent: ({ children }) => children,
 });
 
 export {

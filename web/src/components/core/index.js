@@ -20,6 +20,7 @@
  */
 
 export { default as About } from "./About";
+export { default as PageOptions } from "./PageOptions";
 export { default as Disclosure } from "./Disclosure";
 export { default as Sidebar } from "./Sidebar";
 export { default as Section } from "./Section";
@@ -39,7 +40,6 @@ export { default as FileViewer } from "./FileViewer";
 export { default as RowActions } from "./RowActions";
 export { default as ShowLogButton } from "./ShowLogButton";
 export { default as Page } from "./Page";
-export { default as PageOptions } from "./PageOptions";
 export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmationInput";
 export { default as Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";

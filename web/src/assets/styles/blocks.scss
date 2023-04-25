@@ -1,7 +1,7 @@
 // Standard section
 // In the future we might need to use an specific CSS class for it if we start having different
 // section layouts.
-section {
+section:not([class^="pf-c"]) {
   display: grid;
   grid-template-columns: var(--icon-size-m) 1fr;
   grid-template-areas:
@@ -10,7 +10,7 @@ section {
   gap: var(--spacer-small);
 }
 
-section:not(:last-child) {
+section:not(:last-child, [class^="pf-c"]) {
   margin-block-end: var(--spacer-large);
 }
 
@@ -194,5 +194,27 @@ section > .content {
 .dasd-format-progress {
   .pf-c-progress {
     --pf-c-progress--GridGap: var(--spacer-small);
+  }
+}
+
+.page-options > button {
+  --pf-c-button--PaddingRight: 0
+}
+
+.page-options a {
+  font-size: 16px;
+  font-weight: var(--fw-bold);
+  text-decoration: none;
+
+  svg {
+    color: inherit;
+  }
+
+  &:hover {
+    color: var(--color-link-hover);
+
+    svg {
+      color: var(--color-link);
+    }
   }
 }
