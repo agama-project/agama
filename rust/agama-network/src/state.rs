@@ -8,6 +8,8 @@ pub enum NetworkStateError {
     UnknownInterface(String),
     #[error("Missing IPv4 data")]
     MissingIpv4Settings,
+    #[error("Invalid IP address {0}")]
+    InvalidIpAddr(String),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {
