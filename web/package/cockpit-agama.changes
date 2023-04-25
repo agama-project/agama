@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 25 13:42:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: Fix dropdown content alignment at storage proposal page
+  (gh#openSUSE/agama#547).
+
+-------------------------------------------------------------------
 Tue Apr 25 12:23:27 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Do not indent sections whitout icons (gh#openSUSE/agama#549).
