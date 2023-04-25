@@ -41,7 +41,7 @@ jobs:
         run: cd doc/dbus; make diff
 
       - name: Build HTML via DocBook
-        run: cd doc; make
+        run: make -C doc
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
