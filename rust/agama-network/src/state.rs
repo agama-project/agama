@@ -29,7 +29,6 @@ impl NetworkState {
     /// Retrieves the network state from the underlying system
     pub fn from_system() -> Result<Self, Box<dyn Error>> {
         let mut net_state = nmstate::NetworkState::new();
-        net_state.set_kernel_only(true);
         net_state.retrieve()?;
         Ok(Self(net_state))
     }
@@ -37,6 +36,16 @@ impl NetworkState {
     /// Returns a vector containing the interfaces
     pub fn interfaces(&self) -> Vec<&nmstate::Interface> {
         self.0.interfaces.to_vec()
+    }
+
+    /// Returns the DnsState
+    pub fn dns(&self) -> &nmstate::DnsState {
+        &self.0.dns
+    }
+
+    /// Returns the DnsState
+    pub fn dns_mut(&mut self) -> &mut nmstate::DnsState {
+        &mut self.0.dns
     }
 
     /// Update an interface

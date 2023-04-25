@@ -1,3 +1,4 @@
+use crate::dbus::dns;
 use crate::dbus::interface;
 use crate::state::NetworkState;
 use agama_lib::error::ServiceError;
@@ -27,6 +28,13 @@ impl NetworkService {
 
     pub async fn listen(&self) -> Result<(), Box<dyn Error>> {
         self.publish_devices().await?;
+        self.connection
+            .object_server()
+            .at(
+                "/org/opensuse/Agama/Network1/Dns",
+                dns::Dns::new(Arc::clone(&self.state)),
+            )
+            .await?;
         self.connection
             .request_name("org.opensuse.Agama.Network1")
             .await?;
