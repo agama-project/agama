@@ -63,3 +63,27 @@ impl NetworkState {
             .get_iface(&name, nmstate::InterfaceType::Unknown)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_interfaces() {
+        let inner_state: nmstate::NetworkState = serde_json::from_str(
+            r#"{
+              "interfaces": [
+                { "name": "eth0", "type": "ethernet" }
+              ]
+            }"#,
+        )
+        .unwrap();
+        let state = super::NetworkState(inner_state);
+        let interfaces = state.interfaces().to_vec();
+        assert_eq!(interfaces.len(), 1);
+        let eth0 = interfaces.get(0).unwrap();
+        assert_eq!(eth0.base_iface().name, "eth0");
+        assert_eq!(
+            eth0.base_iface().iface_type,
+            nmstate::InterfaceType::Ethernet
+        );
+    }
+}

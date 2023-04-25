@@ -51,6 +51,7 @@ dependencies = [
  "agama-lib",
  "async-std",
  "nmstate",
+ "serde_json",
  "thiserror",
  "zbus 3.12.0",
 ]
