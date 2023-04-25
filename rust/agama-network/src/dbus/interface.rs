@@ -1,6 +1,7 @@
 //! D-Bus interfaces to expose networking settings
 use crate::state::{NetworkState, NetworkStateError};
 use nmstate;
+use std::net::{IpAddr, Ipv4Addr};
 use std::sync::{Arc, Mutex};
 use zbus::dbus_interface;
 
@@ -108,6 +109,8 @@ impl Ipv4 {
     }
 }
 
+type DBusIpv4Addr = (u8, u8, u8, u8, u8);
+
 #[dbus_interface(name = "org.opensuse.Agama.Network1.IPv4")]
 impl Ipv4 {
     #[dbus_interface(property)]
@@ -116,17 +119,69 @@ impl Ipv4 {
     }
 
     #[dbus_interface(property)]
-    pub async fn auto_dns(&self) -> zbus::fdo::Result<bool> {
-        Ok(self.with_ipv4(|i| i.auto_dns.unwrap_or(false))?)
-    }
-
-    #[dbus_interface(property)]
     pub async fn set_dhcp(&mut self, value: bool) -> zbus::fdo::Result<()> {
         Ok(self.update_ipv4(|i| i.dhcp = Some(value))?)
     }
 
     #[dbus_interface(property)]
+    pub async fn auto_dns(&self) -> zbus::fdo::Result<bool> {
+        Ok(self.with_ipv4(|i| i.auto_dns.unwrap_or(false))?)
+    }
+
+    #[dbus_interface(property)]
     pub async fn set_auto_dns(&mut self, value: bool) -> zbus::fdo::Result<()> {
         Ok(self.update_ipv4(|i| i.auto_dns = Some(value))?)
+    }
+
+    #[dbus_interface(property)]
+    pub async fn addresses(&self) -> zbus::fdo::Result<Vec<(u8, u8, u8, u8, u8)>> {
+        let result = self.with_ipv4(|i| match &i.addresses {
+            Some(addresses) => addresses
+                .iter()
+                .filter_map(|a| match a.ip {
+                    IpAddr::V4(addr) => {
+                        let octets = addr.octets();
+                        Some((octets[0], octets[1], octets[2], octets[3], a.prefix_length))
+                    }
+                    _ => None,
+                })
+                .collect(),
+            None => vec![],
+        })?;
+        Ok(result)
+    }
+
+    pub async fn add_address(&mut self, addr: DBusIpv4Addr) -> zbus::fdo::Result<()> {
+        let mut new_address = nmstate::InterfaceIpAddr::default();
+        new_address.ip = IpAddr::V4(Ipv4Addr::from([addr.0, addr.1, addr.2, addr.3]));
+        new_address.prefix_length = addr.4;
+        self.update_ipv4(|i| {
+            let addresses = i.addresses.get_or_insert(vec![]);
+            addresses.push(new_address);
+        })?;
+        Ok(())
+    }
+
+    pub async fn remove_address(&mut self, index: u32) -> zbus::fdo::Result<()> {
+        Ok(self.update_ipv4(|i| {
+            if let Some(addresses) = i.addresses.as_mut() {
+                addresses.remove(index as usize);
+            }
+        })?)
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_addresses(&mut self, addrs: Vec<DBusIpv4Addr>) -> zbus::fdo::Result<()> {
+        let new_addresses: Vec<nmstate::InterfaceIpAddr> = addrs
+            .iter()
+            .map(|a| {
+                let mut new_address = nmstate::InterfaceIpAddr::default();
+                new_address.ip = IpAddr::V4(Ipv4Addr::from([a.0, a.1, a.2, a.3]));
+                new_address.prefix_length = a.4;
+                new_address
+            })
+            .collect();
+        self.update_ipv4(|i| i.addresses = Some(new_addresses))?;
+        Ok(())
     }
 }
