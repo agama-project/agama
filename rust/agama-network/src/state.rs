@@ -34,8 +34,8 @@ impl NetworkState {
     }
 
     /// Returns a vector containing the interfaces
-    pub fn interfaces(&self) -> Vec<&nmstate::Interface> {
-        self.0.interfaces.to_vec()
+    pub fn interfaces(&self) -> &nmstate::Interfaces {
+        &self.0.interfaces
     }
 
     /// Returns the DnsState

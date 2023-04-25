@@ -45,7 +45,7 @@ impl NetworkService {
     async fn publish_devices(&self) -> Result<(), Box<dyn Error>> {
         let state = self.state.lock().unwrap();
 
-        for device in state.interfaces() {
+        for device in state.interfaces().iter() {
             let path = format!("/org/opensuse/Agama/Network1/Device/{}", device.name());
             let name = &device.name();
             match device {
