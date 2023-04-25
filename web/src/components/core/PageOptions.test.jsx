@@ -20,14 +20,14 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { plainRender, mockLayout } from "~/test-utils";
 import { PageOptions } from "~/components/core";
 
 jest.mock("~/components/layout/Layout", () => mockLayout());
 
 it("renders the component initially closed", async () => {
-  const { user } = plainRender(
+  plainRender(
     <PageOptions>
       <PageOptions.Item>A dummy action</PageOptions.Item>
     </PageOptions>
