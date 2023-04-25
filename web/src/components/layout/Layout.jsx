@@ -23,16 +23,7 @@ import React from "react";
 
 import logoUrl from "~/assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
-import { ChangeProductLink } from "~/components/software";
-import {
-  About,
-  Disclosure,
-  IssuesLink,
-  LogsButton,
-  Sidebar,
-  ShowLogButton,
-  ShowTerminalButton
-} from "~/components/core";
+import { Sidebar } from "~/components/core";
 
 const PageTitle = createTeleporter();
 const PageActions = createTeleporter();
@@ -89,20 +80,10 @@ function Layout({ children }) {
           <PageActions.Target as="span" />
           <HeaderActions.Target as="span" />
         </div>
+
       </header>
 
-      <Sidebar>
-        <>
-          <ChangeProductLink />
-          <IssuesLink />
-          <Disclosure label="Diagnostic tools" data-keep-sidebar-open>
-            <ShowLogButton />
-            <LogsButton data-keep-sidebar-open="true" />
-            <ShowTerminalButton />
-          </Disclosure>
-          <About />
-        </>
-      </Sidebar>
+      <Sidebar />
 
       <main className="stack">
         {children}
