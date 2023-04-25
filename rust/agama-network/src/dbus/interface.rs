@@ -49,8 +49,14 @@ impl Device {
         Ok(self.with_device(|dev| dev.is_virtual())?)
     }
 
+    #[dbus_interface(property)]
     pub fn is_up(&self) -> zbus::fdo::Result<bool> {
         Ok(self.with_device(|dev| dev.is_up())?)
+    }
+
+    #[dbus_interface(property)]
+    pub fn device_type(&self) -> zbus::fdo::Result<String> {
+        Ok(self.with_device(|dev| dev.iface_type().to_string())?)
     }
 }
 
@@ -113,6 +119,16 @@ type DBusIpv4Addr = (u8, u8, u8, u8, u8);
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.IPv4")]
 impl Ipv4 {
+    #[dbus_interface(property)]
+    pub async fn enabled(&self) -> zbus::fdo::Result<bool> {
+        Ok(self.with_ipv4(|i| i.enabled)?)
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_enabled(&mut self, value: bool) -> zbus::fdo::Result<()> {
+        Ok(self.update_ipv4(|i| i.enabled = value)?)
+    }
+
     #[dbus_interface(property)]
     pub async fn dhcp(&self) -> zbus::fdo::Result<bool> {
         Ok(self.with_ipv4(|i| i.dhcp.unwrap_or(false))?)
