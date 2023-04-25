@@ -22,12 +22,12 @@ pub struct TimezoneIdParts {
 impl TimezoneIdParts {
     /// Localized given list of timezones to given language
     /// # Examples
-    /// 
+    ///
     /// ```
-    /// let parts = agama_locale_data::get_timezone_parts();
+    /// let parts = agama_locale_data::get_timezone_parts().expect("missing timezone parts");
     /// let timezones = vec!["Europe/Prague".to_string(), "Europe/Berlin".to_string()];
     /// let result = vec!["Evropa/Praha".to_string(), "Evropa/Berlín".to_string()];
-    /// assert_eq!(parts.localize_timezones("cs", timezones), result);
+    /// assert_eq!(parts.localize_timezones("cs", &timezones), result);
     /// ```
     pub fn localize_timezones(&self, language: &str, timezones: &Vec<String>) -> Vec<String> {
         let mapping = self.construct_mapping(language);
@@ -39,7 +39,10 @@ impl TimezoneIdParts {
         self.timezone_part.iter()
           .map(|part| (part.id.clone(), part.names.name_for(language)))
           .for_each(|tuple| -> () {
-            res.insert(tuple.0, tuple.1);
+            // skip missing translations
+            if let Some(trans) = tuple.1 {
+                res.insert(tuple.0, trans);
+            }
           }
         );
         return res

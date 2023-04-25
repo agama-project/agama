@@ -13,13 +13,16 @@ struct Locale {
 #[dbus_interface(name = "org.opensuse.Agama.Locale1")]
 impl Locale {
     // Can be `async` as well.
-    fn list_locales(&self, locale: &str) -> Result<Vec<(String, String)>, Error> {
+    fn list_locales(&self) -> Result<Vec<(String, String,String,Vec<String>)>, Error> {
         let locales = agama_locale_data::get_languages();
-        // TODO: localization param
-        let ret = locales?
-            .language.iter()
-            .map(|l| (l.id.clone(), locale.to_string()))
-            .collect();
+        let res = locales?.language.iter()
+            .map(|l| (l.id.clone(), l.names.name_for("en").unwrap_or_default(),
+                l.names.name_for(l.id.as_str()).unwrap_or_default(),
+                l.locales.locale.iter().map(|l| l.id.to_owned()).collect()))
+             // filter out missing translations as language that does not translate itself is very minor
+            .filter(|r| r.1 != "" && r.2 != "")
+            .collect()
+
         Ok(ret)
     }
 

@@ -1,12 +1,14 @@
 use serde::Deserialize;
 
-use crate::ranked::RankedTerritories;
+use crate::ranked::{RankedTerritories, RankedLocales};
 
 #[derive(Debug, Deserialize)]
 pub struct Language {
     #[serde(rename(deserialize = "languageId"))]
     pub id: String,
-    pub territories: RankedTerritories
+    pub territories: RankedTerritories,
+    pub locales: RankedLocales,
+    pub names: crate::localization::Localization
 }
 
 #[derive(Debug, Deserialize)]

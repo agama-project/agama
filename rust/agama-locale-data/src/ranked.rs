@@ -1,5 +1,4 @@
 //! Bigger rank means it is more important
-
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -12,7 +11,8 @@ pub struct RankedLanguage {
 
 #[derive(Debug, Deserialize)]
 pub struct RankedLanguages {
-    pub language: Option<Vec<RankedLanguage>>
+    #[serde(default)]
+    pub language: Vec<RankedLanguage>
 }
 
 #[derive(Debug, Deserialize)]
@@ -25,5 +25,19 @@ pub struct RankedTerritory {
 
 #[derive(Debug, Deserialize)]
 pub struct RankedTerritories {
-    pub territory: Option<Vec<RankedTerritory>>
+    #[serde(default)]
+    pub territory: Vec<RankedTerritory>
+}
+
+#[derive(Debug, Deserialize)]
+pub struct RankedLocale {
+    #[serde(rename(deserialize = "localeId"))]
+    pub id: String,
+    pub rank: u16
+}
+
+#[derive(Debug, Deserialize)]
+pub struct RankedLocales {
+    #[serde(default)]
+    pub locale: Vec<RankedLocale>
 }
