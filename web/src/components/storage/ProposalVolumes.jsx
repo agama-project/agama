@@ -181,6 +181,7 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
   return (
     <>
       <Dropdown
+        position="right"
         isOpen={isOpen}
         onSelect={closeActions}
         dropdownItems={[
