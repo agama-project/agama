@@ -218,3 +218,16 @@ section > .content {
     }
   }
 }
+
+span.notification-mark {
+  --border-width: 2px;
+  --size: calc(var(--fs-base) + var(--border-width));
+
+  position: absolute;
+  right: 0;
+  background: var(--color-primary-lighter);
+  border: var(--border-width) solid var(--color-primary);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 999px;
+}

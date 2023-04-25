@@ -22,6 +22,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon, AppActions } from "~/components/layout";
+import { NotificationMark } from "~/components/core";
 
 /**
  * Agama sidebar navigation
@@ -93,6 +94,7 @@ export default function Sidebar ({ children }) {
           aria-controls="navigation-and-options"
           aria-expanded={isOpen}
         >
+          <NotificationMark />
           <Icon name="menu" />
         </button>
       </AppActions>

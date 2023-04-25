@@ -47,3 +47,4 @@ export { default as ProgressText } from "./ProgressText";
 export { default as ValidationErrors } from "./ValidationErrors";
 export { default as Terminal } from "./Terminal";
 export { default as ShowTerminalButton } from "./ShowTerminalButton";
+export { default as NotificationMark } from "./NotificationMark";
