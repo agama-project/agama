@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Apr 25 12:23:27 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: Do not indent sections whitout icons (gh#openSUSE/agama#549).
+
+-------------------------------------------------------------------
 Thu Apr 20 12:44:44 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Make styles consistent when the user is hovering a button,
