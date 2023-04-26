@@ -208,7 +208,7 @@ module Agama
     #
     # @return [Boolean] true when running on iguana
     def iguana?
-      return false
+      return Dir.exist?("/iguana")
     end
 
   private
