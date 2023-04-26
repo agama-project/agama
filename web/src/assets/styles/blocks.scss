@@ -197,8 +197,8 @@ section > .content {
   }
 }
 
-// compact lists in tooltips
-[role="tooltip"] li + li {
+// compact lists in popover
+.pf-c-popover li + li {
   margin: 0;
 }
 
@@ -207,6 +207,6 @@ section > .content {
   margin-left: 4px;
 }
 
-.has_help {
+.with_description {
   cursor: pointer;
 }

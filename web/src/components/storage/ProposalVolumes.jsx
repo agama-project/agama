@@ -26,14 +26,14 @@ import {
   Dropdown, DropdownToggle, DropdownItem,
   Form, FormGroup, FormSelect, FormSelectOption,
   List, ListItem,
-  Popover, Skeleton,
-  Text, TextInput,
+  Skeleton,
+  TextInput,
   Toolbar, ToolbarContent, ToolbarItem
 } from "@patternfly/react-core";
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { filesize } from "filesize";
 
-import { Em, If, Popup, RowActions } from '~/components/core';
+import { Attribute, Em, If, Popup, RowActions } from '~/components/core';
 import { Icon } from '~/components/layout';
 import { noop } from "~/utils";
 
@@ -58,21 +58,21 @@ const sizeText = (size) => {
 };
 
 /**
- * Generates an icon with help describing what affects the volume limits.
- * If the limits are nor affected then returns `null`.
- * @component
+ * Generates an hint describing which attributes affect the auto-calculated limits.
+ * If the limits are not affected then it returns `null`.
+ * @function
  *
  * @param {object} volume - storage volume object
  */
-const AutoCalculatedInfo = ({ volume, children }) => {
-  // the size is not affected by snapshots or other volumes
+const AutoCalculatedHint = (volume) => {
+  // no hint, the size is not affected by snapshots or other volumes
   if (!volume.snapshotsAffectSizes && volume.sizeRelevantVolumes.length === 0) {
-    return <>{children}</>;
+    return null;
   }
 
-  const content = (
+  return (
     <>
-      <Text>These limits are affected by:</Text>
+      These limits are affected by:
       <List>
         {volume.snapshotsAffectSizes &&
           <ListItem>The configuration of snapshots</ListItem>}
@@ -81,8 +81,6 @@ const AutoCalculatedInfo = ({ volume, children }) => {
       </List>
     </>
   );
-
-  return <Popover showClose={false} bodyContent={content}><div className="has_help">{children}</div></Popover>;
 };
 
 /**
@@ -271,7 +269,7 @@ const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
     return (
       <div className="split">
         <span>{limits}</span>
-        <If condition={isAuto} then={<AutoCalculatedInfo volume={volume}><Em>auto <Icon name="info" size="16" /></Em></AutoCalculatedInfo>} />
+        <If condition={isAuto} then={<Attribute hint={AutoCalculatedHint(volume)}>auto</Attribute>} />
       </div>
     );
   };

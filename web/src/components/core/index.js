@@ -20,6 +20,8 @@
  */
 
 export { default as About } from "./About";
+export { default as Attribute } from "./Attribute";
+export { default as Description } from "./Description";
 export { default as Disclosure } from "./Disclosure";
 export { default as Sidebar } from "./Sidebar";
 export { default as Section } from "./Section";
