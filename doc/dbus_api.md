@@ -637,25 +637,12 @@ See the new-style [reference][usr-ref] ([source][usr-src]).
 
 ## Questions
 
-Agamas offers a mechanism to communicate with clients. The D-Bus service exports a *Questions*
-object that implements the *org.freedesktop.DBus.ObjectManager* interface. Individual questions are
-dynamically exported in a tree under the */org/opensuse/Agama/Questions1* path, for example:
-
-~~~
-/org/opensuse/Agama/Questions1
-  /org/opensuse/Agama/Questions1/1
-  /org/opensuse/Agama/Questions1/2
-  /org/opensuse/Agama/Questions1/4
-~~~
-
-Each D-Bus question implements its own set of interfaces, depending on the type of question. For
-example, a generic question implements *org.opensuse.Agama.Question1*. And a question asking
-for the activation of a LUKS device also implements *org.opensuse.Agama.Questions1.LuksActivation*.
-Questions can be "unexported" from the ObjectManager tree. The service typically unexports a question
-when the question is answered.
 
 ### org.opensuse.Agama.Questions1
 
+<!--
+TODO: seed a question object and a luks question object
+-->
 #### Properties
 
 - Id -> unsigned 32-bit integer (r)
