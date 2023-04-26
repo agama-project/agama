@@ -69,6 +69,7 @@ dependencies = [
  "chrono-tz",
  "flate2",
  "quick-xml",
+ "regex",
  "serde",
 ]
 

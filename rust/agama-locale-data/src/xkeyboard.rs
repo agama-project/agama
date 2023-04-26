@@ -3,7 +3,7 @@ use serde::Deserialize;
 use crate::ranked::{RankedTerritories, RankedLanguages};
 
 #[derive(Debug, Deserialize)]
-pub struct Keyboard {
+pub struct XKeyboard {
     #[serde(rename(deserialize = "keyboardId"))]
     /// like "layout(variant)", for example "us" or "ua(phonetic)"
     pub id: String,
@@ -16,6 +16,6 @@ pub struct Keyboard {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Keyboards {
-    pub keyboard: Vec<Keyboard>
+pub struct XKeyboards {
+    pub keyboard: Vec<XKeyboard>
 }

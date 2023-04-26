@@ -4,7 +4,8 @@ use serde::Deserialize;
 pub struct Territory {
     #[serde(rename(deserialize = "territoryId"))]
     pub id: String,
-    pub languages: crate::ranked::RankedLanguages
+    pub languages: crate::ranked::RankedLanguages,
+    pub names: crate::localization::Localization
 }
 
 #[derive(Debug, Deserialize)]

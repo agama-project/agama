@@ -3,10 +3,12 @@ use serde::Deserialize;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
+use std::process::Command;
 use quick_xml::de::Deserializer;
 use flate2::bufread::GzDecoder;
+use regex::Regex;
 
-pub mod keyboard;
+pub mod xkeyboard;
 pub mod language;
 pub mod localization;
 pub mod territory;
@@ -21,13 +23,46 @@ fn file_reader(file_path: &str) -> anyhow::Result<impl BufRead> {
     Ok(reader)
 }
 
-pub fn get_keyboards() -> anyhow::Result<keyboard::Keyboards> {
+pub fn get_xkeyboards() -> anyhow::Result<xkeyboard::XKeyboards> {
     const FILE_PATH: &str = "/usr/share/langtable/data/keyboards.xml.gz";
     let reader = file_reader(FILE_PATH)?;
     let mut deserializer = Deserializer::from_reader(reader);
-    let ret = keyboard::Keyboards::deserialize(&mut deserializer)
+    let ret = xkeyboard::XKeyboards::deserialize(&mut deserializer)
         .context("Failed to deserialize keyboard entry")?;
     Ok(ret)
+}
+
+/// Gets list of available keymaps
+/// 
+/// ## Examples
+/// 
+/// ```
+/// let key_maps = agama_locale_data::get_key_maps().unwrap();
+/// assert!(key_maps.contains(&"us".to_string()))
+/// ```
+pub fn get_key_maps() -> anyhow::Result<Vec<String>> {
+    const BINARY: &str = "/usr/bin/localectl";
+    let output = Command::new(BINARY).arg("list-keymaps")
+        .output().context("failed to execute localectl list-maps")?.stdout;
+    let output = String::from_utf8(output).context("Strange localectl output formatting")?;
+    let ret = output.split('\n').map(|l| l.trim().to_string()).collect();
+    
+    Ok(ret)
+}
+
+/// Parses given locale to language and territory part
+/// 
+/// /// ## Examples
+/// 
+/// ```
+/// let result = agama_locale_data::parse_locale("en_US.UTF-8").unwrap();
+/// assert_eq!(result.0, "en");
+/// assert_eq!(result.1, "US")
+/// ```
+pub fn parse_locale(locale: &str) -> anyhow::Result<(&str, &str)> {
+    let locale_regexp : Regex = Regex::new(r"^([[:alpha:]]+)_([[:alpha:]]+)").unwrap();
+    let captures = locale_regexp.captures(locale).context("Failed to parse locale")?;
+    Ok((captures.get(1).unwrap().as_str(), captures.get(2).unwrap().as_str()))
 }
 
 pub fn get_languages() -> anyhow::Result<language::Languages> {
@@ -70,7 +105,7 @@ mod tests {
 
     #[test]
     fn test_get_keyboards() {
-        let result = get_keyboards().unwrap();
+        let result = get_xkeyboards().unwrap();
         assert_eq!(result.keyboard.len(), 247);
         let first = result.keyboard.first().expect("no keyboards");
         assert_eq!(first.id, "ad")
