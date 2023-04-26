@@ -20,12 +20,16 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
+require_relative "../with_progress_examples"
+require_relative "../with_issues_examples"
 require_relative "storage_helpers"
 require "agama/storage/manager"
 require "agama/storage/proposal_settings"
 require "agama/storage/iscsi/manager"
 require "agama/config"
+require "agama/issue"
 require "agama/dbus/clients/questions"
+require "y2storage/issue"
 
 describe Agama::Storage::Manager do
   include Agama::RSpec::StorageHelpers
@@ -55,19 +59,113 @@ describe Agama::Storage::Manager do
   let(:bootloader_finish) { instance_double(Bootloader::FinishClient, write: nil) }
   let(:security) { instance_double(Agama::Security, probe: nil, write: nil) }
 
+  describe "#deprecated_system=" do
+    before do
+      allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
+      allow(Agama::Storage::Proposal).to receive(:new).and_return(proposal)
+
+      allow(y2storage_manager).to receive(:raw_probed).and_return(raw_devicegraph)
+
+      allow(proposal).to receive(:issues).and_return([])
+      allow(proposal).to receive(:available_devices).and_return([])
+    end
+
+    let(:raw_devicegraph) { instance_double(Y2Storage::Devicegraph, probing_issues: []) }
+
+    let(:proposal) { Agama::Storage::Proposal.new(logger, config) }
+
+    let(:callback) { proc {} }
+
+    context "if the current value is changed" do
+      before do
+        storage.deprecated_system = true
+      end
+
+      it "executes the on_deprecated_system_change callbacks" do
+        storage.on_deprecated_system_change(&callback)
+
+        expect(callback).to receive(:call)
+
+        storage.deprecated_system = false
+      end
+    end
+
+    context "if the current value is not changed" do
+      before do
+        storage.deprecated_system = true
+      end
+
+      it "does not execute the on_deprecated_system_change callbacks" do
+        storage.on_deprecated_system_change(&callback)
+
+        expect(callback).to_not receive(:call)
+
+        storage.deprecated_system = true
+      end
+    end
+
+    context "when the system is set as deprecated" do
+      it "marks the system as deprecated" do
+        storage.deprecated_system = true
+
+        expect(storage.deprecated_system?).to eq(true)
+      end
+
+      it "adds a deprecated system issue" do
+        expect(storage.issues).to be_empty
+
+        storage.deprecated_system = true
+
+        expect(storage.issues).to include(
+          an_object_having_attributes(description: /system devices have changed/)
+        )
+      end
+    end
+
+    context "when the system is set as not deprecated" do
+      it "marks the system as not deprecated" do
+        storage.deprecated_system = false
+
+        expect(storage.deprecated_system?).to eq(false)
+      end
+
+      it "does not add a deprecated system issue" do
+        storage.deprecated_system = false
+
+        expect(storage.issues).to_not include(
+          an_object_having_attributes(description: /system devices have changed/)
+        )
+      end
+    end
+  end
+
   describe "#probe" do
     before do
       allow(Y2Storage::StorageManager).to receive(:instance).and_return(y2storage_manager)
       allow(Agama::Storage::Proposal).to receive(:new).and_return(proposal)
       allow(Agama::Storage::ISCSI::Manager).to receive(:new).and_return(iscsi)
+
+      allow(y2storage_manager).to receive(:raw_probed).and_return(raw_devicegraph)
+
+      allow(proposal).to receive(:issues).and_return(proposal_issues)
+      allow(proposal).to receive(:available_devices).and_return(devices)
+      allow(proposal).to receive(:settings).and_return(settings)
+      allow(proposal).to receive(:calculate)
+
+      allow(config).to receive(:pick_product)
+      allow(iscsi).to receive(:activate)
+      allow(y2storage_manager).to receive(:activate)
+      allow(iscsi).to receive(:probe)
+      allow(y2storage_manager).to receive(:probe)
     end
 
-    let(:proposal) do
-      instance_double(Agama::Storage::Proposal,
-        settings:          settings,
-        calculate:         nil,
-        available_devices: devices)
+    let(:raw_devicegraph) do
+      instance_double(Y2Storage::Devicegraph, probing_issues: probing_issues)
     end
+
+    let(:proposal) { Agama::Storage::Proposal.new(logger, config) }
+
+    let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
 
     let(:devices) { [disk1, disk2] }
     let(:settings) { nil }
@@ -75,15 +173,9 @@ describe Agama::Storage::Manager do
     let(:disk1) { instance_double(Y2Storage::Disk, name: "/dev/vda") }
     let(:disk2) { instance_double(Y2Storage::Disk, name: "/dev/vdb") }
 
-    let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
+    let(:probing_issues) { [Y2Storage::Issue.new("probing issue")] }
 
-    before do
-      allow(config).to receive(:pick_product)
-      allow(iscsi).to receive(:activate)
-      allow(y2storage_manager).to receive(:activate)
-      allow(iscsi).to receive(:probe)
-      allow(y2storage_manager).to receive(:probe)
-    end
+    let(:proposal_issues) { [Agama::Issue.new("proposal issue")] }
 
     it "probes the storage devices and calculates a proposal" do
       expect(config).to receive(:pick_product).with("ALP")
@@ -101,7 +193,47 @@ describe Agama::Storage::Manager do
       storage.deprecated_system = true
       storage.probe
 
-      expect(storage.deprecated_system).to eq(false)
+      expect(storage.deprecated_system?).to eq(false)
+    end
+
+    it "adds the probing issues" do
+      storage.probe
+
+      expect(storage.issues).to include(
+        an_object_having_attributes(description: /probing issue/)
+      )
+    end
+
+    it "adds the proposal issues" do
+      storage.probe
+
+      expect(storage.issues).to include(
+        an_object_having_attributes(description: /proposal issue/)
+      )
+    end
+
+    context "if there are available devices" do
+      let(:devices) { [disk1] }
+
+      it "does not add an issue for available devices" do
+        storage.probe
+
+        expect(storage.issues).to_not include(
+          an_object_having_attributes(description: /no suitable device/)
+        )
+      end
+    end
+
+    context "if there are not available devices" do
+      let(:devices) { [] }
+
+      it "adds an issue for available devices" do
+        storage.probe
+
+        expect(storage.issues).to include(
+          an_object_having_attributes(description: /no suitable device/)
+        )
+      end
     end
 
     context "when there are settings from a previous proposal" do
@@ -229,30 +361,7 @@ describe Agama::Storage::Manager do
     end
   end
 
-  describe "#validate" do
-    let(:errors) { [double("error 1")] }
-    let(:proposal) do
-      instance_double(Agama::Storage::Proposal, validate: errors)
-    end
+  include_examples "progress"
 
-    before do
-      allow(Agama::Storage::Proposal).to receive(:new).and_return(proposal)
-    end
-
-    it "returns the proposal errors" do
-      expect(storage.validate).to eq(errors)
-    end
-
-    context "if the system is deprecated" do
-      before do
-        storage.deprecated_system = true
-      end
-
-      it "includes an error" do
-        error = storage.validate.find { |e| e.message.match?(/devices have changed/) }
-
-        expect(error).to_not be_nil
-      end
-    end
-  end
+  include_examples "issues"
 end
