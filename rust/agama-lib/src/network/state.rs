@@ -97,4 +97,20 @@ mod tests {
             nmstate::InterfaceType::Ethernet
         );
     }
+
+    #[test]
+    fn test_get_iface() {
+        let inner_state: nmstate::NetworkState = serde_json::from_str(
+            r#"{
+              "interfaces": [
+                { "name": "eth0", "type": "ethernet" }
+              ]
+            }"#,
+        )
+        .unwrap();
+        let state = super::NetworkState(inner_state);
+        let iface = state.get_iface("eth0").unwrap();
+        assert_eq!(iface.base_iface().name, "eth0");
+        assert!(state.get_iface("eth1").is_none());
+    }
 }
