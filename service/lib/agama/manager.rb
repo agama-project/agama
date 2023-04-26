@@ -196,7 +196,7 @@ module Agama
     # Whatever has to be done at the end of installation
     def finish_installation
       cmd = if iguana?
-        "systemctl stop cockpit-wsinstance-http.service"
+        "systemctl stop agama"
       else
         "/usr/sbin/shutdown -r now"
       end
