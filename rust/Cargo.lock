@@ -37,6 +37,7 @@ dependencies = [
  "futures",
  "futures-util",
  "jsonschema",
+ "nmstate",
  "serde",
  "serde_json",
  "tempfile",

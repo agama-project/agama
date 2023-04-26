@@ -18,3 +18,4 @@ thiserror = "1.0.39"
 anyhow = "1.0"
 futures = "0.3.27"
 futures-util = "0.3.27"
+nmstate = { version = "2.2.8", default-features = false, features = ["nispor", "query_apply", "zbus"] }

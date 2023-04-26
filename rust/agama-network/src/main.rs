@@ -1,10 +1,8 @@
-mod dbus;
-mod state;
-
-use agama_lib::connection;
+use agama_lib::{
+    connection,
+    network::{NetworkService, NetworkState},
+};
 use async_std;
-use dbus::NetworkService;
-use state::NetworkState;
 
 #[async_std::main]
 async fn main() {

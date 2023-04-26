@@ -1,7 +1,7 @@
-use crate::dbus::dns;
-use crate::dbus::interface;
-use crate::state::NetworkState;
-use agama_lib::error::ServiceError;
+use super::dns;
+use super::interface;
+use crate::error::ServiceError;
+use crate::network::NetworkState;
 use nmstate;
 use std::error::Error;
 use std::sync::{Arc, Mutex};
