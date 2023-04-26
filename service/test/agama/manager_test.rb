@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
+require_relative "./with_progress_examples"
 require "agama/manager"
 require "agama/config"
 require "agama/question"
@@ -213,4 +214,6 @@ describe Agama::Manager do
       expect(path).to eq("/tmp/y2log-hWBn95.tar.xz")
     end
   end
+
+  include_examples "progress"
 end

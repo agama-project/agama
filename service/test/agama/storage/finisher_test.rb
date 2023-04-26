@@ -21,6 +21,7 @@
 
 require_relative "../../test_helper"
 require_relative "storage_helpers"
+require_relative "../with_progress_examples"
 require "agama/helpers"
 require "agama/config"
 require "agama/security"
@@ -137,4 +138,6 @@ describe Agama::Storage::Finisher do
       subject.run
     end
   end
+
+  include_examples "progress"
 end
