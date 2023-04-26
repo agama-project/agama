@@ -1,0 +1,78 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/org/opensuse/Agama/Users1">
+  <interface name="org.opensuse.Agama.Users1">
+    <!--
+        SetRootPassword:
+
+        If @Encrypted is set to true, it means that already encrypted password is sent
+
+        Example:
+        <programlisting>SetRootPassword("test", false)</programlisting>
+    -->
+    <method name="SetRootPassword">
+      <arg name="Value" direction="in" type="s"/>
+      <arg name="Encrypted" direction="in" type="b"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+
+    <method name="RemoveRootPassword">
+      <arg name="result" direction="out" type="u"/>
+    </method>
+
+    <!--
+        SetRootSSHKey:
+
+        Set root ssh public keys. Use empty string to unset it.
+
+        Example:
+        <programlisting>SetRootSSHKey("idrsa long key")</programlisting>
+    -->
+    <method name="SetRootSSHKey">
+      <arg name="Value" direction="in" type="s"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+
+    <!--
+        SetFirstUser:
+
+        Sets one non root user after installation.
+        @FullName and @UserName have to follow restrictions
+        for respective /etc/passwd entry. To unset it use empty @UserName.
+    -->
+    <method name="SetFirstUser">
+      <arg name="FullName" direction="in" type="s"/>
+      <arg name="UserName" direction="in" type="s"/>
+      <arg name="Password" direction="in" type="s"/>
+      <arg name="AutoLogin" direction="in" type="b"/>
+      <arg name="data" direction="in" type="a{sv}"/>
+      <arg name="result" direction="out" type="(bas)"/>
+    </method>
+    <method name="RemoveFirstUser">
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="Write">
+      <arg name="result" direction="out" type="u"/>
+    </method>
+
+    <!--
+        RootPasswordSet:
+        whenever root password will be set by installer
+    -->
+    <property type="b" name="RootPasswordSet" access="read"/>
+
+    <!--
+        RootSSHKey:
+        Root public ssh key that can be used to login to machine.
+        Can be empty which means not set
+    -->
+    <property type="s" name="RootSSHKey" access="read"/>
+
+    <!--
+        FirstUser:
+        struct( string FullName, string UserName, string Password, boolean AutoLogin, map AdditionalData)
+        Info about first user to set. if Username is empty, it means not set and other values can be ignored
+    -->
+    <property type="(sssba{sv})" name="FirstUser" access="read"/>
+  </interface>
+</node>

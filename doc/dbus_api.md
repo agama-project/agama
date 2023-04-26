@@ -630,42 +630,10 @@ Summary readable a{s(uub)}
 
 ## Users
 
-### iface o.o.Agama.Users1
+See the new-style [reference][usr-ref] ([source][usr-src]).
 
-#### methods:
-
--  SetRootPassword(string value, boolean encrypted) -> void
-    sets root password. If encrypted is set to true, it means that already encrypted password
-    is send.
-    example:
-
-      SetRootPassword("test", false) -> ()
-
--  SetRootSSHKey(string value) -> void
-    set root ssh public keys. Use empty string to unset it.
-    example:
-
-      SetRootSSHKey("idrsa long key") -> ()
-
-- SetFirstUser(string FullName, string UserName, string Password, boolean AutoLogin, map AdditionalData) -> void
-    sets one non root user after installation. FullName and UserName has to follow restrictions
-    for respective passwd entry. To unset it use empty UserName.
-    example:
-
-      SetRootSSHKey("idrsa long key") -> ()
-
-#### Properties (all read only):
-
-- RootPasswordSet -> boolean
-  whenever root password will be set by installer
-
-- RootSSHKey -> string
-  root public ssh key that can be used to login to machine
-  Can be empty which means not set
-
-- FirstUser -> struct( string FullName, string UserName, string Password, boolean AutoLogin, map AdditionalData)
-  info about first user to set. if Username is empty, it means not set and other values can be ignored
-
+[usr-ref]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama.Users1.html
+[usr-src]: dbus/org.opensuse.Agama.Users1.doc.xml
 
 ## Questions
 
