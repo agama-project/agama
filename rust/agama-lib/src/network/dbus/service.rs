@@ -1,3 +1,5 @@
+//! Network D-Bus service
+
 use super::dns;
 use super::interface;
 use crate::error::ServiceError;
@@ -6,7 +8,7 @@ use nmstate;
 use std::error::Error;
 use std::sync::{Arc, Mutex};
 
-/// Represents the Agama networking service
+/// Represents the Agama networking D-Bus service
 ///
 /// It is responsible for:
 ///
@@ -19,6 +21,10 @@ pub struct NetworkService {
 }
 
 impl NetworkService {
+    /// Returns a new service around the given network configuration
+    ///
+    /// * `state`: network configuration
+    /// * `connection`: D-Bus connection to use (TODO: move this argument to [Self::listen()])
     pub fn new(state: NetworkState, connection: zbus::Connection) -> Self {
         Self {
             state: Arc::new(Mutex::new(state)),
@@ -26,6 +32,7 @@ impl NetworkService {
         }
     }
 
+    /// Starts listening on the D-Bus connection
     pub async fn listen(&self) -> Result<(), Box<dyn Error>> {
         self.publish_devices().await?;
         self.connection

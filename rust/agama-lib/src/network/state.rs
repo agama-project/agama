@@ -1,3 +1,7 @@
+//! Network data model
+//!
+//! This module contains the network's data model. It is based on
+//! [nmstate](https://crates.io/crates/nmstate), adding some features that Agama need.
 use nmstate;
 use std::error::Error;
 use thiserror;
@@ -18,10 +22,10 @@ impl From<NetworkStateError> for zbus::fdo::Error {
     }
 }
 
-/// Network state
+/// Network configuration, including interfaces, DNS settings, etc.
 ///
-/// It is a wrapper around `nmstate::NetworkState` that, in the future, will add support for
-/// stuff that is missing in nmstate. Additionally, it allows us to extend the API.
+/// It is a wrapper around [nmstate::NetworkState] that adds support for missing stuff in nmstate.
+/// It also allows extending the API to fit Agama's use case better.
 #[derive(Debug)]
 pub struct NetworkState(nmstate::NetworkState);
 
@@ -33,22 +37,27 @@ impl NetworkState {
         Ok(Self(net_state))
     }
 
-    /// Returns a vector containing the interfaces
+    /// Returns a vector containing known interfaces
     pub fn interfaces(&self) -> &nmstate::Interfaces {
         &self.0.interfaces
     }
 
-    /// Returns the DnsState
+    /// Returns the DNS configuration
     pub fn dns(&self) -> &nmstate::DnsState {
         &self.0.dns
     }
 
-    /// Returns the DnsState
+    /// Returns the DNS configuration as mutable
     pub fn dns_mut(&mut self) -> &mut nmstate::DnsState {
         &mut self.0.dns
     }
 
-    /// Update an interface
+    /// Updates a network device
+    ///
+    /// If a device with the same name exist, it merge boths devices into one. Otherwise, it adds
+    /// the given device.
+    ///
+    /// * `device`: new device to replace the old one.
     pub fn update_device(&mut self, device: nmstate::Interface) -> Result<(), NetworkStateError> {
         let mut devices = nmstate::Interfaces::new();
         devices.push(device.clone());
@@ -56,7 +65,9 @@ impl NetworkState {
         Ok(())
     }
 
-    /// Get network interface
+    /// Returns a network interface git the given name
+    ///
+    /// * `name` - Interface name
     pub fn get_iface(&self, name: &str) -> Option<&nmstate::Interface> {
         self.0
             .interfaces
