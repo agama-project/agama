@@ -673,33 +673,6 @@ TODO: seed a question object and a luks question object
   question is asked again (i.e., when the provided password did not work).
 
 
-## ServiceStatus
-
-Each service will have an status (*idle* or *busy*). The service should change its status to *busy*
-when it is going to start an expensive tasks. The status should be set back to *idle* once the long
-task is done.
-
-The main object of a service implements the following interface:
-
-### org.opensuse.Agama1.ServiceStatus
-
-#### Properties
-
-- All -> array(array(dict(string, variant))) (r)
-
-  All possible statuses:
-  ~~~
-  [
-    {"id" => 0, "label" => "idle"},
-    {"id" => 1, "label" => "busy"}
-  ]
-  ~~~
-
-- Current -> unsigned 32-bit integer (r)
-
-  Id of the current status.
-
-
 ## Progress
 
 The main object of a service implements the following interface:
