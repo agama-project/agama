@@ -22,7 +22,7 @@
 require "agama/dbus/clients/base"
 require "agama/dbus/clients/with_service_status"
 require "agama/dbus/clients/with_progress"
-require "agama/dbus/clients/with_validation"
+require "agama/dbus/clients/with_issues"
 
 module Agama
   module DBus
@@ -31,7 +31,7 @@ module Agama
       class Storage < Base
         include WithServiceStatus
         include WithProgress
-        include WithValidation
+        include WithIssues
 
         STORAGE_IFACE = "org.opensuse.Agama.Storage1"
         private_constant :STORAGE_IFACE
