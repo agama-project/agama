@@ -688,20 +688,6 @@ The main object of a service implements the following interface:
 - Finished: b (r)
   Whether the progress has finished.
 
-## Validation
-
-The main object of a service may implement the validation interface. It reports
-any issue that might block the installation.
-
-### org.opensuse.Agama1.Validation
-
-- Errors: array of strings (as)
-  List of validation errors.
-
-- Valid: boolean (b)
-  Whether there are validation errors. It is a way to check whether a service
-  is ready for installation without having to retrieve the list of errors.
-
 ## Manager
 
 See the new-style [reference][mgr-ref] ([source][mgr-src]).
