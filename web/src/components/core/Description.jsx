@@ -33,7 +33,7 @@ export default function Description ({ description, children, ...otherProps }) {
   if (description) {
     return (
       <Popover showClose={false} bodyContent={description} {...otherProps}>
-        <span className="with_description">{children}</span>
+        <span className="cursor-pointer">{children}</span>
       </Popover>
     );
   }
