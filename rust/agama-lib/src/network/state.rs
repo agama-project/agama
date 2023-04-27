@@ -2,7 +2,7 @@
 //!
 //! This module contains the network's data model. It is based on
 //! [nmstate](https://crates.io/crates/nmstate), adding some features that Agama need.
-use nmstate;
+use nmstate::{self};
 use std::error::Error;
 use thiserror;
 
@@ -50,6 +50,35 @@ impl NetworkState {
     /// Returns the DNS configuration as mutable
     pub fn dns_mut(&mut self) -> &mut nmstate::DnsState {
         &mut self.0.dns
+    }
+
+    /// Returns the configured static routes
+    pub fn routes(&mut self) -> &mut nmstate::Routes {
+        &mut self.0.routes
+    }
+    /// Returns the configured static routes as mutable
+    pub fn routes_mut(&mut self) -> &mut nmstate::Routes {
+        &mut self.0.routes
+    }
+
+    pub fn set_default_gateway(
+        &mut self,
+        address: &str,
+        device_name: &str,
+    ) -> Result<(), NetworkStateError> {
+        let routes = self.routes_mut().config.get_or_insert(Default::default());
+        routes.clear();
+        let mut gateway = nmstate::RouteEntry::new();
+        gateway.destination = Some(String::from("0.0.0.0/0"));
+        gateway.next_hop_iface = Some(device_name.to_string());
+        let mut delete_gateway = gateway.clone();
+        gateway.next_hop_addr = Some(address.to_string());
+        delete_gateway.state = Some(nmstate::RouteState::Absent);
+        // We need to mark it as absent first
+        routes.push(delete_gateway);
+        routes.push(gateway);
+
+        Ok(())
     }
 
     /// Updates a network device

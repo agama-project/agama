@@ -117,6 +117,34 @@ impl Ipv4 {
 #[dbus_interface(name = "org.opensuse.Agama.Network1.IPv4")]
 impl Ipv4 {
     #[dbus_interface(property)]
+    pub async fn default_gateway(&self) -> zbus::fdo::Result<String> {
+        let mut state = self.network.lock().unwrap();
+        let routes = state.routes().config.get_or_insert(Default::default());
+        let route =
+            routes.iter().find(
+                |r| match (r.destination.as_deref(), r.next_hop_iface.as_deref()) {
+                    (Some("0.0.0.0/0"), Some(name)) if name == &self.device_name => true,
+                    _ => false,
+                },
+            );
+
+        let result = match route {
+            Some(route) => route.next_hop_addr.as_deref().unwrap_or(""),
+            None => "",
+        };
+
+        // routes find destination == "0.0.0.0" and next_hop_interface == device.name
+        Ok(result.to_string())
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_default_gateway(&mut self, gateway: String) -> zbus::fdo::Result<()> {
+        let mut state = self.network.lock().unwrap();
+
+        Ok(state.set_default_gateway(&gateway, &self.device_name)?)
+    }
+
+    #[dbus_interface(property)]
     pub async fn enabled(&self) -> zbus::fdo::Result<bool> {
         Ok(self.with_ipv4(|i| i.enabled)?)
     }
