@@ -44,8 +44,8 @@ describe("Description", () => {
     screen.getByText(description);
   });
 
-  const empty_tester = async (subject) => {
-    const { user } = plainRender(subject);
+  const expectNoPopup = async (content) => {
+    const { user } = plainRender(content);
 
     const item_node = screen.getByText(item);
     await user.click(item_node);
@@ -55,14 +55,14 @@ describe("Description", () => {
   };
 
   it("displays the object without description when it is undefined", async () => {
-    empty_tester(<Description>{item}</Description>);
+    expectNoPopup(<Description>{item}</Description>);
   });
 
   it("displays the object without description when it is null", async () => {
-    empty_tester(<Description description={null}>{item}</Description>);
+    expectNoPopup(<Description description={null}>{item}</Description>);
   });
 
   it("displays the object without description when it is empty", async () => {
-    empty_tester(<Description description="">{item}</Description>);
+    expectNoPopup(<Description description="">{item}</Description>);
   });
 });

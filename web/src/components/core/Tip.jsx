@@ -31,10 +31,10 @@ import { Icon } from "~/components/layout";
  * If the label is not defined or is empty it behaves like a plain label.
  * @component
  *
- * @param {object} description details displayed after clicking the label
- * @param {object} children the content of the label
+ * @param {JSX.Element} description details displayed after clicking the label
+ * @param {JSX.Element} children the content of the label
  */
-export default function Attribute ({ description, children }) {
+export default function Tip ({ description, children }) {
   if (description) {
     return (
       <Description description={description}>

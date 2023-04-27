@@ -33,7 +33,7 @@ import {
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { filesize } from "filesize";
 
-import { Attribute, Em, If, Popup, RowActions } from '~/components/core';
+import { Em, If, Popup, RowActions, Tip } from '~/components/core';
 import { Icon } from '~/components/layout';
 import { noop } from "~/utils";
 
@@ -63,7 +63,7 @@ const sizeText = (size) => {
  * @function
  *
  * @param {object} volume - storage volume object
- * @returns {object} component to display (can be `null`)
+ * @returns {(ReactComponent|null)} component to display (can be `null`)
  */
 const AutoCalculatedHint = (volume) => {
   // no hint, the size is not affected by snapshots or other volumes
@@ -270,7 +270,7 @@ const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
     return (
       <div className="split">
         <span>{limits}</span>
-        <If condition={isAuto} then={<Attribute description={AutoCalculatedHint(volume)}>auto</Attribute>} />
+        <If condition={isAuto} then={<Tip description={AutoCalculatedHint(volume)}>auto</Tip>} />
       </div>
     );
   };

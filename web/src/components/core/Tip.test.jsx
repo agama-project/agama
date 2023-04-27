@@ -22,15 +22,15 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { Attribute } from "~/components/core";
+import { Tip } from "~/components/core";
 
-describe("Attribute", () => {
+describe("Tip", () => {
   const description = "Some great description";
   const label = "Label";
 
   describe("The description is not empty", () => {
     it("displays the label with the 'info' icon and show the description after click", async () => {
-      const { user, container } = plainRender(<Attribute description={description}>{label}</Attribute>);
+      const { user, container } = plainRender(<Tip description={description}>{label}</Tip>);
 
       // an icon is displayed
       expect(container.querySelector("svg")).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe("Attribute", () => {
 
   describe("The description is not defined", () => {
     it("displays the label without the 'info' icon and clicking does not show any popup", async () => {
-      const { user, container } = plainRender(<Attribute>{label}</Attribute>);
+      const { user, container } = plainRender(<Tip>{label}</Tip>);
 
       // no icon
       expect(container.querySelector("svg")).not.toBeInTheDocument();

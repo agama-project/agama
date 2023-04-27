@@ -26,8 +26,8 @@ import { Popover } from "@patternfly/react-core";
  * Displays details popup after clicking the children elements
  * @component
  *
- * @param {object} description content displayed in a popup
- * @param {object} children the wrapped content
+ * @param {(JSX.Element|null)} description content displayed in a popup
+ * @param {JSX.Element} children the wrapped content
  */
 export default function Description ({ description, children, ...otherProps }) {
   if (description) {
