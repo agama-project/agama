@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 module Agama
-  # Mixin for managing issues
+  # Mixin for managing issues, see {Issue}
   module WithIssues
     # The list of current issues
     #

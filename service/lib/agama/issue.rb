@@ -20,7 +20,20 @@
 # find current contact information at www.suse.com.
 
 module Agama
-  # Represents an issue
+  # This class represents an issue in Agama
+  #
+  # An issue is used for notifying about some unexpected or problematic situation, for example, to
+  # indicate that there is no device for installing the system.
+  #
+  # Issues have a description, details, source and severity:
+  # * Description: describes the issue, typically with a single sentence.
+  # * Details: provides more details about the problem. It is useful to report the output of a
+  #   command failure.
+  # * Source: indicates the source of the problem. In Agama, the issues usually comes from some
+  #   unexpected situation in the system (e.g., missing device, etc) or from a wrong config (e.g.,
+  #   missing user, etc).
+  # * Severity: sets the severity of the issue. For now, issues could have warn or error severity.
+  #   Error severity indicates that the installation cannot start.
   class Issue
     # Description of the issue
     #
@@ -48,7 +61,7 @@ module Agama
       CONFIG = :config
     end
 
-    # Defines different severities
+    # Defines different severity levels
     module Severity
       WARN = :warn
       ERROR = :error
