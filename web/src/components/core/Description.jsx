@@ -23,14 +23,21 @@ import React from "react";
 import { Popover } from "@patternfly/react-core";
 
 /**
+ * Displays details popup after clicking the children elements
  * @component
  *
- * @param {object} description - content displayed in a bubble after clicking the content
+ * @param {object} description content displayed in a popup
+ * @param {object} children the wrapped content
  */
 export default function Description ({ description, children, ...otherProps }) {
-  return (
-    <Popover showClose={false} bodyContent={description} {...otherProps}>
-      <span className="with_description">{children}</span>
-    </Popover>
-  );
+  if (description) {
+    return (
+      <Popover showClose={false} bodyContent={description} {...otherProps}>
+        <span className="with_description">{children}</span>
+      </Popover>
+    );
+  }
+
+  // none or empty description, just return the children
+  return children;
 }

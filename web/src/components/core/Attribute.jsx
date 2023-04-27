@@ -26,14 +26,18 @@ import { Description } from "~/components/core";
 import { Icon } from "~/components/layout";
 
 /**
+ * Display a label with additional details. The details are displayed after
+ * clicking the label and the "i" icon indicates available details.
+ * If the label is not defined or is empty it behaves  like a plain label.
  * @component
  *
- * @param {object} hint - content displayed in a bubble after clicking the content
+ * @param {object} description details displayed after clicking the label
+ * @param {object} children the content of the label
  */
-export default function Attribute ({ hint = null, children }) {
-  if (hint) {
+export default function Attribute ({ description, children }) {
+  if (description) {
     return (
-      <Description description={hint}>
+      <Description description={description}>
         <Label isCompact>{children}<Icon name="info" size="16" /></Label>
       </Description>
     );

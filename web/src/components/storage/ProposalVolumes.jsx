@@ -63,10 +63,11 @@ const sizeText = (size) => {
  * @function
  *
  * @param {object} volume - storage volume object
+ * @returns {object} component to display (can be `null`)
  */
 const AutoCalculatedHint = (volume) => {
   // no hint, the size is not affected by snapshots or other volumes
-  if (!volume.snapshotsAffectSizes && volume.sizeRelevantVolumes.length === 0) {
+  if (!volume.snapshotsAffectSizes && volume.sizeRelevantVolumes && volume.sizeRelevantVolumes.length === 0) {
     return null;
   }
 
@@ -76,7 +77,7 @@ const AutoCalculatedHint = (volume) => {
       <List>
         {volume.snapshotsAffectSizes &&
           <ListItem>The configuration of snapshots</ListItem>}
-        {volume.sizeRelevantVolumes.length > 0 &&
+        {volume.sizeRelevantVolumes && volume.sizeRelevantVolumes.length > 0 &&
           <ListItem>Presence of other volumes ({volume.sizeRelevantVolumes.join(", ")})</ListItem>}
       </List>
     </>
@@ -269,7 +270,7 @@ const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
     return (
       <div className="split">
         <span>{limits}</span>
-        <If condition={isAuto} then={<Attribute hint={AutoCalculatedHint(volume)}>auto</Attribute>} />
+        <If condition={isAuto} then={<Attribute description={AutoCalculatedHint(volume)}>auto</Attribute>} />
       </div>
     );
   };
