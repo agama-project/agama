@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,14 +20,29 @@
 # find current contact information at www.suse.com.
 
 module Agama
-  # Namespace for D-Bus API
-  module DBus
+  # Mixin for managing issues, see {Issue}
+  module WithIssues
+    # The list of current issues
+    #
+    # @return [Array<Issue>]
+    def issues
+      @issues || []
+    end
+
+    # Sets the list of current issues
+    #
+    # @param issues [Array<Issue>]
+    def issues=(issues)
+      @issues = issues
+      @on_issues_change_callbacks&.each(&:call)
+    end
+
+    # Registers a callback to be called when the list of issues changes
+    #
+    # @param block [Proc]
+    def on_issues_change(&block)
+      @on_issues_change_callbacks ||= []
+      @on_issues_change_callbacks << block
+    end
   end
 end
-
-require "agama/dbus/manager"
-require "agama/dbus/language"
-require "agama/dbus/software"
-require "agama/dbus/storage"
-require "agama/dbus/users"
-require "agama/dbus/questions"

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,15 +19,27 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module Agama
-  # Namespace for D-Bus API
-  module DBus
+require_relative "../test_helper"
+require "agama/issue"
+
+describe Agama::Issue do
+  subject { described_class.new("Issue test", severity: severity) }
+
+  describe "#error?" do
+    context "if the issue has warn severity" do
+      let(:severity) { Agama::Issue::Severity::WARN }
+
+      it "returns false" do
+        expect(subject.error?).to eq(false)
+      end
+    end
+
+    context "if the issue has error severity" do
+      let(:severity) { Agama::Issue::Severity::ERROR }
+
+      it "returns true" do
+        expect(subject.error?).to eq(true)
+      end
+    end
   end
 end
-
-require "agama/dbus/manager"
-require "agama/dbus/language"
-require "agama/dbus/software"
-require "agama/dbus/storage"
-require "agama/dbus/users"
-require "agama/dbus/questions"

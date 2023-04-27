@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,14 +20,14 @@
 # find current contact information at www.suse.com.
 
 module Agama
-  # Namespace for D-Bus API
   module DBus
+    # Namespace for generic D-Bus interfaces
+    module Interfaces
+    end
   end
 end
 
-require "agama/dbus/manager"
-require "agama/dbus/language"
-require "agama/dbus/software"
-require "agama/dbus/storage"
-require "agama/dbus/users"
-require "agama/dbus/questions"
+require "agama/dbus/interfaces/issues"
+require "agama/dbus/interfaces/progress"
+require "agama/dbus/interfaces/service_status"
+require "agama/dbus/interfaces/validation"

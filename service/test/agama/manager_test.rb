@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
+require_relative "./with_progress_examples"
 require "agama/manager"
 require "agama/config"
 require "agama/question"
@@ -52,7 +53,7 @@ describe Agama::Manager do
   let(:storage) do
     instance_double(
       Agama::DBus::Clients::Storage, probe: nil, install: nil, finish: nil,
-      on_service_status_change: nil, valid?: true
+      on_service_status_change: nil, errors?: false
     )
   end
 
@@ -180,9 +181,9 @@ describe Agama::Manager do
       end
     end
 
-    context "when the storage configuration is not valid" do
+    context "when there are storage errors" do
       before do
-        allow(storage).to receive(:valid?).and_return(false)
+        allow(storage).to receive(:errors?).and_return(true)
       end
 
       it "returns false" do
@@ -213,4 +214,6 @@ describe Agama::Manager do
       expect(path).to eq("/tmp/y2log-hWBn95.tar.xz")
     end
   end
+
+  include_examples "progress"
 end

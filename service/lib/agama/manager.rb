@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -178,7 +178,7 @@ module Agama
     #
     # @return [Boolean]
     def valid?
-      [storage, users, software].all?(&:valid?)
+      [users, software].all?(&:valid?) && !storage.errors?
     end
 
     # Collects the logs and stores them into an archive

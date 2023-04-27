@@ -40,11 +40,13 @@ describe Agama::DBus::Storage::Manager do
 
   let(:backend) do
     instance_double(Agama::Storage::Manager,
-      proposal:           proposal,
-      iscsi:              iscsi,
-      software:           software,
-      on_progress_change: nil,
-      on_progress_finish: nil)
+      proposal:                    proposal,
+      iscsi:                       iscsi,
+      software:                    software,
+      on_progress_change:          nil,
+      on_progress_finish:          nil,
+      on_issues_change:            nil,
+      on_deprecated_system_change: nil)
   end
 
   let(:proposal) do
@@ -68,7 +70,7 @@ describe Agama::DBus::Storage::Manager do
 
   describe "#deprecated_system" do
     before do
-      allow(backend).to receive(:deprecated_system).and_return(deprecated)
+      allow(backend).to receive(:deprecated_system?).and_return(deprecated)
     end
 
     context "if the system is set as deprecated" do

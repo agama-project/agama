@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,15 +19,31 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module Agama
-  # Namespace for D-Bus API
-  module DBus
+require_relative "../test_helper"
+require "agama/issue"
+
+shared_examples "issues" do
+  describe "#issues=" do
+    let(:issues) { [Agama::Issue.new("Issue 1"), Agama::Issue.new("Issue 2")] }
+
+    it "sets the given list of issues" do
+      expect(subject.issues).to be_empty
+
+      subject.issues = issues
+
+      expect(subject.issues).to contain_exactly(
+        an_object_having_attributes(description: /Issue 1/),
+        an_object_having_attributes(description: /Issue 2/)
+      )
+    end
+
+    it "executes the on_issues_change callbacks" do
+      callback = proc {}
+      subject.on_issues_change(&callback)
+
+      expect(callback).to receive(:call)
+
+      subject.issues = issues
+    end
   end
 end
-
-require "agama/dbus/manager"
-require "agama/dbus/language"
-require "agama/dbus/software"
-require "agama/dbus/storage"
-require "agama/dbus/users"
-require "agama/dbus/questions"

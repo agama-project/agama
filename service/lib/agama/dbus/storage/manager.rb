@@ -23,9 +23,9 @@ require "dbus"
 require "yast"
 require "agama/dbus/base_object"
 require "agama/dbus/with_service_status"
+require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
-require "agama/dbus/interfaces/validation"
 require "agama/dbus/storage/dasd_manager_interface"
 require "agama/dbus/storage/proposal"
 require "agama/dbus/storage/proposal_settings_converter"
@@ -43,9 +43,9 @@ module Agama
         include WithISCSIAuth
         include WithServiceStatus
         include ::DBus::ObjectManager
+        include DBus::Interfaces::Issues
         include DBus::Interfaces::Progress
         include DBus::Interfaces::ServiceStatus
-        include DBus::Interfaces::Validation
 
         PATH = "/org/opensuse/Agama/Storage1"
         private_constant :PATH
@@ -57,6 +57,7 @@ module Agama
         def initialize(backend, logger)
           super(PATH, logger: logger)
           @backend = backend
+          register_storage_callbacks
           register_proposal_callbacks
           register_progress_callbacks
           register_service_status_callbacks
@@ -68,14 +69,18 @@ module Agama
           register_and_extend_dasd_callbacks
         end
 
+        # List of issues, see {DBus::Interfaces::Issues}
+        #
+        # @return [Array<Agama::Issue>]
+        def issues
+          backend.issues
+        end
+
         STORAGE_INTERFACE = "org.opensuse.Agama.Storage1"
         private_constant :STORAGE_INTERFACE
 
         def probe
-          busy_while do
-            backend.probe
-            storage_properties_changed
-          end
+          busy_while { backend.probe }
         end
 
         def install
@@ -90,7 +95,7 @@ module Agama
         #
         # @return [Boolean]
         def deprecated_system
-          backend.deprecated_system
+          backend.deprecated_system?
         end
 
         dbus_interface STORAGE_INTERFACE do
@@ -241,11 +246,15 @@ module Agama
           backend.proposal
         end
 
+        def register_storage_callbacks
+          backend.on_issues_change { issues_properties_changed }
+          backend.on_deprecated_system_change { storage_properties_changed }
+        end
+
         def register_proposal_callbacks
           proposal.on_calculate do
             export_proposal
             proposal_properties_changed
-            update_validation
           end
         end
 
@@ -278,12 +287,6 @@ module Agama
           end
         end
 
-        def deprecate_system
-          backend.deprecated_system = true
-          storage_properties_changed
-          update_validation
-        end
-
         def storage_properties_changed
           properties = interfaces_and_properties[STORAGE_INTERFACE]
           dbus_properties_changed(STORAGE_INTERFACE, properties, [])
@@ -292,6 +295,10 @@ module Agama
         def proposal_properties_changed
           properties = interfaces_and_properties[PROPOSAL_CALCULATOR_INTERFACE]
           dbus_properties_changed(PROPOSAL_CALCULATOR_INTERFACE, properties, [])
+        end
+
+        def deprecate_system
+          backend.deprecated_system = true
         end
 
         def export_proposal

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,15 +20,8 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require "agama/with_progress"
 
-class WithProgressTest
-  include Agama::WithProgress
-end
-
-describe WithProgressTest do
-  let(:logger) { Logger.new($stdout, level: :warn) }
-
+shared_examples "progress" do
   describe "#progress" do
     context "if not progress was started" do
       it "returns nil" do
@@ -73,18 +66,20 @@ describe WithProgressTest do
       end
 
       it "configures the 'on_change' callbacks for the new progress" do
-        subject.on_progress_change { logger.info("progress changes") }
+        callback = proc {}
+        subject.on_progress_change(&callback)
 
-        expect(logger).to receive(:info).with(/progress changes/)
+        expect(callback).to receive(:call)
 
         subject.start_progress(1)
         subject.progress.step("step 1")
       end
 
       it "configures the 'on_finish' callbacks for the new progress" do
-        subject.on_progress_finish { logger.info("progress finishes") }
+        callback = proc {}
+        subject.on_progress_finish(&callback)
 
-        expect(logger).to receive(:info).with(/progress finishes/)
+        expect(callback).to receive(:call)
 
         subject.start_progress(1)
         subject.progress.finish
