@@ -8,7 +8,7 @@ use zbus::ConnectionBuilder;
 // Although we use `async-std` here, you can use any async runtime of choice.
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let locale = crate::locale::Locale { locale: "en_US.UTF-8".to_string(), keymap: "us".to_string(), timezone_id: "Europe/Prague".to_string() };
+    let locale = crate::locale::Locale::new();
     let _conn = ConnectionBuilder::session()? //TODO: use agama bus instead of session one
         .name("org.opensuse.Agama.Locale1")?
         .serve_at("/org/opensuse/Agama/Locale1", locale)?
