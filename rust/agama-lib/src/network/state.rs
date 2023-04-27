@@ -38,8 +38,10 @@ impl NetworkState {
     }
 
     pub fn apply(&mut self) -> Result<(), NetworkStateError> {
-        &self.0.set_verify_change(false);
-        &self.0.apply().expect("did not work");
+        self.0
+            .set_verify_change(false)
+            .apply()
+            .expect("did not work");
 
         Ok(())
     }
