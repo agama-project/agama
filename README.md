@@ -17,7 +17,7 @@ Agama is a new Linux installer born in the core of the YaST team. It is designed
 
 |||
 |-|-|
-| ![Storage page](./doc/images/screenshots/storage-page.png) | ![Storage settings](./doc/images/screenshots/storage-settings.png) |
+| ![Users page](./doc/images/screenshots/users-page.png) | ![Storage settings](./doc/images/screenshots/storage-page.png) |
 
 |||
 |-|-|

@@ -61,6 +61,8 @@ test.describe("The Installer", () => {
       // the the root password must be set
       await test.step("Set the root password", async () => {
         await page.locator("a[href='#/users']").click();
+        // Create users page screenshot
+        await page.screenshot({ path: "screenshots/users-page.png" });
         await page.locator("#actions-for-root-password").click();
         await page.getByRole("menuitem", { name: "Set" }).click();
         await page.locator("#password").fill("linux");
@@ -78,15 +80,8 @@ test.describe("The Installer", () => {
     await test.step("Storage configuration", async () => {
       // create storage page screenshot
       await page.locator("a[href='#/storage']").click();
-      await expect(page.getByRole("button", { name: "Settings" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Settings" })).toBeVisible();
       await page.screenshot({ path: "screenshots/storage-page.png" });
-
-      // create storage settings screenshot
-      await page.getByRole("button", { name: "Settings" }).click();
-      await expect(page.locator("[role='dialog']")).toBeVisible();
-      await page.screenshot({ path: "screenshots/storage-settings.png" });
-      await page.getByRole("button", { name: "Cancel" }).click();
-      await page.getByText("Back").click();
     });
 
     // confirm the installation only when explicitly set via the environment
