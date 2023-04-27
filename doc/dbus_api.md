@@ -672,22 +672,6 @@ TODO: seed a question object and a luks question object
   Current attempt to decrypt the device. This value is useful for clients to know if the very same
   question is asked again (i.e., when the provided password did not work).
 
-
-## Progress
-
-The main object of a service implements the following interface:
-
-### org.opensuse.Agama1.Progress
-
-- TotalSteps: unsigned 32-bit integer (r)
-  Number of steps.
-
-- CurrentStep: struct(unsigned 32-bit integer, string) (r)
-  Number of the current step and its description.
-
-- Finished: b (r)
-  Whether the progress has finished.
-
 ## Manager
 
 See the new-style [reference][mgr-ref] ([source][mgr-src]).
