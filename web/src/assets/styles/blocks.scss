@@ -196,3 +196,8 @@ section > .content {
     --pf-c-progress--GridGap: var(--spacer-small);
   }
 }
+
+// compact lists in popover
+.pf-c-popover li + li {
+  margin: 0;
+}

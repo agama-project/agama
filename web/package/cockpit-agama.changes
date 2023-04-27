@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 27 08:24:27 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
+
+- Display details for the "autocalculated" label in the storage
+  settings
+
+-------------------------------------------------------------------
 Tue Apr 25 13:42:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Fix dropdown content alignment at storage proposal page
