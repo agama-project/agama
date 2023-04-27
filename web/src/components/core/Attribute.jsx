@@ -38,7 +38,7 @@ export default function Attribute ({ description, children }) {
   if (description) {
     return (
       <Description description={description}>
-        <Label isCompact>{children}<Icon name="info" size="16" /></Label>
+        <Label isCompact>{children}&nbsp;<Icon name="info" size="16" /></Label>
       </Description>
     );
   }
