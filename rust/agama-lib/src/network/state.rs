@@ -2,7 +2,7 @@
 //!
 //! This module contains the network's data model. It is based on
 //! [nmstate](https://crates.io/crates/nmstate), adding some features that Agama need.
-use nmstate::{self};
+use nmstate;
 use std::error::Error;
 use thiserror;
 

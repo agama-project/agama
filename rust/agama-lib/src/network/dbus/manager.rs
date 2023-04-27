@@ -1,6 +1,5 @@
 //! D-Bus interfaces to expose networking settings
 use crate::network::NetworkState;
-use nmstate;
 use std::sync::{Arc, Mutex};
 use zbus::dbus_interface;
 
