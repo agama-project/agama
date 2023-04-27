@@ -3,6 +3,7 @@
 use super::dns;
 use super::interface;
 use crate::error::ServiceError;
+use crate::network::dbus::manager;
 use crate::network::NetworkState;
 use nmstate;
 use std::error::Error;
@@ -35,6 +36,14 @@ impl NetworkService {
     /// Starts listening on the D-Bus connection
     pub async fn listen(&self) -> Result<(), Box<dyn Error>> {
         self.publish_devices().await?;
+        self.connection
+            .object_server()
+            .at(
+                "/org/opensuse/Agama/Network1/Manager",
+                manager::Manager::new(Arc::clone(&self.state)),
+            )
+            .await?;
+
         self.connection
             .object_server()
             .at(

@@ -37,6 +37,13 @@ impl NetworkState {
         Ok(Self(net_state))
     }
 
+    pub fn apply(&mut self) -> Result<(), NetworkStateError> {
+        &self.0.set_verify_change(false);
+        &self.0.apply().expect("did not work");
+
+        Ok(())
+    }
+
     /// Returns a vector containing known interfaces
     pub fn interfaces(&self) -> &nmstate::Interfaces {
         &self.0.interfaces
