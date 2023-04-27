@@ -77,10 +77,9 @@ Tumbleweed:
     volumes:
     - mount_point: "/"
       fs_type: btrfs
-      desired_size: 10 GiB
       min_size: 5 GiB
-      max_size: unlimited
-      weight: 30
+      max_size: 15 GiB
+      weight: 1
 
       # There must always be a root
       proposed_configurable: false
@@ -120,21 +119,21 @@ Tumbleweed:
 
     - mount_point: "/home"
       fs_type: xfs
-      desired_size: 40 GiB
       min_size: 10 GiB
       max_size: unlimited
-      weight: 60
+      weight: 1
 
       proposed: false
       proposed_configurable: true
       disable_order: 1
+      fallback_for_max_size: "/"
 
     - mount_point: "swap"
       fs_type: swap
       desired_size: 2 GiB
       min_size: 1 GiB
       max_size: 2 GiB
-      weight: 10
+      weight: 1
 
       adjust_by_ram: false
       adjust_by_ram_configurable: true
@@ -187,11 +186,10 @@ ALP-Bedrock:
     volumes:
       - mount_point: "/"
         fs_type: btrfs
-        desired_size: 20 GiB
         min_size: 5 GiB
         fs_types:
           - btrfs
-        weight: 20
+        weight: 1
         snapshots: true
         snapshots_configurable: false
         proposed_configurable: false
@@ -262,11 +260,10 @@ ALP-Micro:
     volumes:
       - mount_point: "/"
         fs_type: btrfs
-        desired_size: 20 GiB
         min_size: 5 GiB
         fs_types:
           - btrfs
-        weight: 20
+        weight: 1
         snapshots: true
         snapshots_configurable: false
         proposed_configurable: false
@@ -335,11 +332,10 @@ Leap16:
     volumes:
       - mount_point: "/"
         fs_type: btrfs
-        desired_size: 20 GiB
         min_size: 5 GiB
         fs_types:
           - btrfs
-        weight: 20
+        weight: 1
         snapshots: true
         snapshots_configurable: false
         proposed_configurable: false

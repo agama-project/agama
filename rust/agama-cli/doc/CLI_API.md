@@ -15,7 +15,7 @@ Some naming recommendations from the guidelines:
 * Keep it short
 * Make it easy to type
 
-Currently we have two executable scripts: `d-installer` for managing the D-Bus services and `dinstallerctl` for configuring and performing the installation. We would need to re-consider which one should have the `ctl` suffix. Moreover, dashes are not recommended (`dinstaller` vs `d-installer`).
+Currently we have two executables: `agamactl` for managing the D-Bus services and `agama` for configuring and performing the installation.
 
 ## Subcommands
 
@@ -27,9 +27,9 @@ Let's list the recommendations from the guidelines:
 
 ## New CLI
 
-The API of the current CLI is not consistent. It sometimes uses verbs for the subcommand action (e.g., `agama user clear`), and for other subcommands adjectives or noums are used (e.g., `agama language selected <id>`). Moreover, there is a subcommand per each area, for example `agama language`, `agama software`, `agama storage`, etc. Having a subcommand for each area is not bad per se, but for some areas like storage the subcommand could grow with too many actions and options.
+The API of the current CLI is not consistent. It sometimes uses verbs for the subcommand action (e.g., `agama user clear`), and for other subcommands adjectives or nouns are used (e.g., `agama language selected <id>`). Moreover, there is a subcommand per each area, for example `agama language`, `agama software`, `agama storage`, etc. Having a subcommand for each area is not bad per se, but for some areas like storage the subcommand could grow with too many actions and options.
 
-The new CLI could be designed with more generic subcommands and verbs, allowing to configure any installation setting in a standart way. Note that the installation process can be already configured by means of a YAML config file with `agama config load <file>`. And the options currently supported by the config file are:
+The new CLI could be designed with more generic subcommands and verbs, allowing to configure any installation setting in a standard way. Note that the installation process can be already configured by means of a YAML config file with `agama config load <file>`. And the options currently supported by the config file are:
 
 ~~~
 ---

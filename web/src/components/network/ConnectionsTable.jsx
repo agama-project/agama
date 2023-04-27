@@ -20,37 +20,14 @@
  */
 
 import React from "react";
-import { TableComposable, Thead, Tr, Th, Tbody, Td, ActionsColumn } from '@patternfly/react-table';
-import { DropdownToggle } from "@patternfly/react-core";
+import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { RowActions } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { formatIp } from "~/client/network/utils";
 
 /**
  * @typedef {import("~/client/network/model").Connection} Connection
  */
-
-// TODO: extract to a common component since it's used in other tables (or stop using a custom toggler)
-const RowActions = ({ actions, connection, ...props }) => {
-  const actionsToggle = (props) => (
-    <DropdownToggle
-      id={`actions-for-connection-${connection.id}`}
-      toggleIndicator={null}
-      isDisabled={props.isDisabled}
-      onToggle={props.onToggle}
-      aria-label={`Actions for connection ${connection.name}`}
-    >
-      <Icon name="more_vert" size="24" />
-    </DropdownToggle>
-  );
-
-  return (
-    <ActionsColumn
-      items={actions}
-      actionsToggle={actionsToggle}
-      {...props}
-    />
-  );
-};
 
 /**
  *
@@ -100,7 +77,12 @@ export default function ConnectionsTable ({
               <Td dataLabel="Name">{connection.name}</Td>
               <Td dataLabel="Ip addresses">{connection.addresses.map(formatIp).join(", ")}</Td>
               <Td isActionCell>
-                <RowActions actions={actions} connection={connection} />
+                <RowActions
+                  id={`actions-for-connection-${connection.id}`}
+                  aria-label={`Actions for connection ${connection.name}`}
+                  actions={actions}
+                  connection={connection}
+                />
               </Td>
             </Tr>
           );

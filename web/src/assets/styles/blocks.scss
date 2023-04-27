@@ -3,7 +3,7 @@
 // section layouts.
 section {
   display: grid;
-  grid-template-columns: var(--icon-size-m) 1fr;
+  grid-template-columns: min-content 1fr;
   grid-template-areas:
     "icon title"
     ".... content";

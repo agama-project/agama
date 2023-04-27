@@ -1,6 +1,6 @@
 # Patching the Agama on a Live Medium
 
-The D-installer allows patching itself directly from the GitHub sources
+The Agama installer allows patching itself directly from the GitHub sources
 or from your local Git checkout using the [yupdate script](
 https://github.com/yast/yast-installation/blob/master/bin/yupdate).
 See more details in the [yupdate documentation](

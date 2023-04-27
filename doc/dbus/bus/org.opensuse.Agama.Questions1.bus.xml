@@ -1,0 +1,61 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/org/opensuse/Agama/Questions1">
+  <interface name="org.freedesktop.DBus.Properties">
+    <method name="Get">
+      <arg name="interface_name" direction="in" type="s"/>
+      <arg name="property_name" direction="in" type="s"/>
+      <arg name="value" direction="out" type="v"/>
+    </method>
+    <method name="Set">
+      <arg name="interface_name" direction="in" type="s"/>
+      <arg name="property_name" direction="in" type="s"/>
+      <arg name="val" direction="in" type="v"/>
+    </method>
+    <method name="GetAll">
+      <arg name="interface_name" direction="in" type="s"/>
+      <arg name="value" direction="out" type="a{sv}"/>
+    </method>
+    <signal name="PropertiesChanged">
+      <arg name="interface" type="s"/>
+      <arg name="changed_properties" type="a{sv}"/>
+      <arg name="invalidated_properties" type="as"/>
+    </signal>
+  </interface>
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
+      <arg name="xml_data" direction="out" type="s"/>
+    </method>
+  </interface>
+  <interface name="org.freedesktop.DBus.ObjectManager">
+    <method name="GetManagedObjects">
+      <arg name="res" direction="out" type="a{oa{sa{sv}}}"/>
+    </method>
+    <signal name="InterfacesAdded">
+      <arg name="object" type="o"/>
+      <arg name="interfaces_and_properties" type="a{sa{sv}}"/>
+    </signal>
+    <signal name="InterfacesRemoved">
+      <arg name="object" type="o"/>
+      <arg name="interfaces" type="as"/>
+    </signal>
+  </interface>
+  <interface name="org.opensuse.Agama.Questions1">
+    <method name="New">
+      <arg name="text" direction="in" type="s"/>
+      <arg name="options" direction="in" type="as"/>
+      <arg name="default_option" direction="in" type="as"/>
+      <arg name="q" direction="out" type="o"/>
+    </method>
+    <method name="NewLuksActivation">
+      <arg name="device" direction="in" type="s"/>
+      <arg name="label" direction="in" type="s"/>
+      <arg name="size" direction="in" type="s"/>
+      <arg name="attempt" direction="in" type="y"/>
+      <arg name="q" direction="out" type="o"/>
+    </method>
+    <method name="Delete">
+      <arg name="question" direction="in" type="o"/>
+    </method>
+  </interface>
+</node>

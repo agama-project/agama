@@ -23,7 +23,7 @@ require "dbus"
 
 module Agama
   module DBus
-    module Interfaces
+    module Storage
       # Mixin to define the D-Bus interface to manage DASD devices
       #
       # @note This mixin is expected to be included in a class inherited from
@@ -31,7 +31,7 @@ module Agama
       #
       # @note This mixin is expected to be included only if the namespace Y2S390 (which
       # traditionally lives in the yast2-s390 package) is available.
-      module Dasd
+      module DasdManagerInterface
         DASD_MANAGER_INTERFACE = "org.opensuse.Agama.Storage1.DASD.Manager"
         private_constant :DASD_MANAGER_INTERFACE
 

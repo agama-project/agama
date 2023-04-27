@@ -4,8 +4,7 @@
 # This is a hook script for the yupdate tool, it is automatically executed
 # before running "rake install" command.
 #
-# This script prepares the live system for compiling and installing new
-# D-Installer code.
+# This script prepares the live system for compiling and installing new code.
 #
 # The script does several tasks:
 # - it checks if there is enough RAM, if there is not enough RAM the system
@@ -21,8 +20,10 @@ if [ "$YUPDATE_SKIP_FRONTEND" == "1" ]; then
   exit 0
 fi
 
-# the needed packages for compiling the d-installer cockpit module
+# the needed packages for compiling the cockpit module
 PACKAGES=(appstream-glib-devel make npm)
+# name of the service
+SERVICE_NAME="agama"
 
 # add repositories
 function add_repos() {
@@ -52,7 +53,7 @@ function install_packages() {
 
 # restore the NPM cache if it is present
 function load_npm_cache() {
-  CACHEDIR="$HOME/.cache/d-installer-devel/"
+  CACHEDIR="$HOME/.cache/$SERVICE_NAME-devel/"
 
   if [ -d "$CACHEDIR/node_modules" ]; then
     echo "Restoring NPM cache..."

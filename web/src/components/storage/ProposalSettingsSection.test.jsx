@@ -20,126 +20,346 @@
  */
 
 import React from "react";
-import { screen, waitFor, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { screen, within } from "@testing-library/react";
+import { mockComponent, plainRender } from "~/test-utils";
 import { ProposalSettingsSection } from "~/components/storage";
 
-const FakeProposalSettingsForm = ({ id, onSubmit }) => {
-  const accept = (e) => {
-    e.preventDefault();
-    onSubmit({});
+jest.mock("@patternfly/react-core", () => {
+  const original = jest.requireActual("@patternfly/react-core");
+
+  return {
+    ...original,
+    Skeleton: mockComponent("PFSkeleton")
   };
-
-  return <form id={id} onSubmit={accept} aria-label="Settings form" />;
-};
-
-jest.mock("~/components/storage/ProposalSettingsForm", () => FakeProposalSettingsForm);
-
-const proposal = {
-  result: {
-    candidateDevices: ["/dev/sda"],
-    encryptionPassword: "",
-    lvm: false,
-    volumes: [{ mountPoint: "/test1" }, { mountPoint: "/test2" }]
-  }
-};
-
-it("renders the list of the volumes to create", () => {
-  plainRender(<ProposalSettingsSection proposal={proposal} />);
-
-  screen.getByText(/Create the following file systems/);
-  screen.getByText("/test1");
-  screen.getByText("/test2");
 });
 
-it("does not show the settings dialog by default", async () => {
-  plainRender(<ProposalSettingsSection proposal={proposal} />);
+let props;
 
-  await waitFor(() => {
+beforeEach(() => {
+  props = {};
+});
+
+describe("Installation device field", () => {
+  describe("if it is loading", () => {
+    beforeEach(() => {
+      props.isLoading = true;
+    });
+
+    describe("and there is no selected device yet", () => {
+      beforeEach(() => {
+        props.settings = { candidateDevices: [] };
+      });
+
+      it("does not render content", () => {
+        plainRender(<ProposalSettingsSection {...props} />);
+
+        expect(screen.queryByText(/Installation device/)).toBeNull();
+      });
+    });
+
+    describe("and there is a selected device", () => {
+      beforeEach(() => {
+        props.settings = { candidateDevices: ["/dev/vda"] };
+      });
+
+      it("renders the selected device", () => {
+        plainRender(<ProposalSettingsSection {...props} />);
+
+        screen.getByText(/Installation device/);
+        screen.getByText("/dev/vda");
+      });
+    });
+  });
+
+  describe("if there is no selected device yet", () => {
+    beforeEach(() => {
+      props.settings = { candidateDevices: [] };
+    });
+
+    it("renders a message indicating that the device is not selected", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
+
+      screen.getByText(/Installation device/);
+      screen.getByText(/No device selected/);
+    });
+  });
+
+  describe("if there is a selected device", () => {
+    beforeEach(() => {
+      props.settings = { candidateDevices: ["/dev/vda"] };
+    });
+
+    it("renders the selected device", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
+
+      screen.getByText(/Installation device/);
+      screen.getByText("/dev/vda");
+    });
+  });
+
+  it("allows selecting a device when clicking on the device name", async () => {
+    props = {
+      availableDevices: [{ id: "/dev/vda", label: "/dev/vda" }],
+      settings: { candidateDevices: ["/dev/vda"] },
+      onChange: jest.fn()
+    };
+
+    const { user } = plainRender(<ProposalSettingsSection {...props} />);
+
+    const button = screen.getByRole("button", { name: "/dev/vda" });
+    await user.click(button);
+
+    const popup = await screen.findByRole("dialog");
+    screen.getByText(/Device to use for the installation/);
+
+    const accept = within(popup).getByRole("button", { name: "Accept" });
+    await user.click(accept);
+
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(props.onChange).toHaveBeenCalled();
+  });
+
+  it("allows canceling the selection of the device", async () => {
+    props = {
+      availableDevices: [{ id: "/dev/vda", label: "/dev/vda" }],
+      settings: { candidateDevices: ["/dev/vda"] },
+      onChange: jest.fn()
+    };
+
+    const { user } = plainRender(<ProposalSettingsSection {...props} />);
+
+    const button = screen.getByRole("button", { name: "/dev/vda" });
+    await user.click(button);
+
+    const popup = await screen.findByRole("dialog");
+    screen.getByText(/Device to use for the installation/);
+
+    const cancel = within(popup).getByRole("button", { name: "Cancel" });
+    await user.click(cancel);
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(props.onChange).not.toHaveBeenCalled();
   });
 });
 
-it("allows editing the settings when the user clicks on the section title", async () => {
-  const calculateFn = jest.fn();
+describe("LVM field", () => {
+  describe("if LVM setting is not set yet", () => {
+    beforeEach(() => {
+      props.settings = { };
+    });
 
-  const { user } = plainRender(<ProposalSettingsSection proposal={proposal} calculateProposal={calculateFn} />);
+    it("does not render the LVM switch", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
 
-  const action = screen.getByRole("button", { name: "Settings" });
-  await user.click(action);
+      expect(screen.queryByLabelText(/Use logical volume/)).toBeNull();
+    });
+  });
 
-  const popup = await screen.findByRole("dialog");
-  const accept = within(popup).getByRole("button", { name: "Accept" });
-  await user.click(accept);
+  describe("if LVM setting is set", () => {
+    beforeEach(() => {
+      props.settings = { lvm: false };
+    });
 
-  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  expect(calculateFn).toHaveBeenCalled();
+    it("renders the LVM switch", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
+
+      screen.getByRole("checkbox", { name: /Use logical volume/ });
+    });
+  });
+
+  describe("if LVM is set to true", () => {
+    beforeEach(() => {
+      props.settings = { lvm: true };
+      props.onChange = jest.fn();
+    });
+
+    it("renders the LVM switch as selected", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
+
+      const checkbox = screen.getByRole("checkbox", { name: /Use logical volume/ });
+      expect(checkbox).toBeChecked();
+    });
+
+    it("changes the selection on click", async () => {
+      const { user } = plainRender(<ProposalSettingsSection {...props} />);
+
+      const checkbox = screen.getByRole("checkbox", { name: /Use logical volume/ });
+      await user.click(checkbox);
+
+      expect(checkbox).not.toBeChecked();
+      expect(props.onChange).toHaveBeenCalled();
+    });
+  });
+
+  describe("if LVM is set to false", () => {
+    beforeEach(() => {
+      props.settings = { lvm: false };
+      props.onChange = jest.fn();
+    });
+
+    it("renders the LVM switch as not selected", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
+
+      const checkbox = screen.getByRole("checkbox", { name: /Use logical volume/ });
+      expect(checkbox).not.toBeChecked();
+    });
+
+    it("changes the selection on click", async () => {
+      const { user } = plainRender(<ProposalSettingsSection {...props} />);
+
+      const checkbox = screen.getByRole("checkbox", { name: /Use logical volume/ });
+      await user.click(checkbox);
+
+      expect(checkbox).toBeChecked();
+      expect(props.onChange).toHaveBeenCalled();
+    });
+  });
 });
 
-it("allows aborting the settings edition when cancel is clicked", async () => {
-  const calculateFn = jest.fn();
+describe("Encryption field", () => {
+  describe("if encryption password setting is not set yet", () => {
+    beforeEach(() => {
+      props.settings = { };
+    });
 
-  const { user } = plainRender(<ProposalSettingsSection proposal={proposal} calculateProposal={calculateFn} />);
+    it("does not render the encryption switch", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
 
-  const action = screen.getByRole("button", { name: "Settings" });
-  await user.click(action);
-
-  const popup = await screen.findByRole("dialog");
-  const cancel = within(popup).getByRole("button", { name: "Cancel" });
-  await user.click(cancel);
-
-  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  expect(calculateFn).not.toHaveBeenCalled();
-});
-
-describe("when neither lvm nor encryption are selected", () => {
-  beforeEach(() => {
-    proposal.result.lvm = false;
-    proposal.result.encryptionPassword = "";
+      expect(screen.queryByLabelText(/Encrypt devices/)).toBeNull();
+    });
   });
 
-  it("renders the proper description for the current settings", () => {
-    plainRender(<ProposalSettingsSection proposal={proposal} />);
+  describe("if encryption password setting is set", () => {
+    beforeEach(() => {
+      props.settings = { encryptionPassword: "" };
+    });
 
-    screen.getByText(/Create file systems over partitions/);
-  });
-});
+    it("renders the encryption switch", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
 
-describe("when lvm is selected", () => {
-  beforeEach(() => {
-    proposal.result.lvm = true;
-    proposal.result.encryptionPassword = "";
-  });
-
-  it("renders the proper description for the current settings", () => {
-    plainRender(<ProposalSettingsSection proposal={proposal} />);
-
-    screen.getByText(/Create file systems over LVM volumes/);
-  });
-});
-
-describe("when encryption is selected", () => {
-  beforeEach(() => {
-    proposal.result.lvm = false;
-    proposal.result.encryptionPassword = "12345";
+      screen.getByRole("checkbox", { name: /Encrypt devices/ });
+    });
   });
 
-  it("renders the proper description for the current settings", () => {
-    plainRender(<ProposalSettingsSection proposal={proposal} />);
+  describe("if encryption password is not empty", () => {
+    beforeEach(() => {
+      props.settings = { encryptionPassword: "1234" };
+      props.onChange = jest.fn();
+    });
 
-    screen.getByText(/Create file systems over encrypted partitions/);
+    it("renders the encryption switch as selected", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
+
+      const checkbox = screen.getByRole("checkbox", { name: /Encrypt devices/ });
+      expect(checkbox).toBeChecked();
+    });
+
+    it("renders a button for changing the encryption settings", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
+
+      screen.getByRole("button", { name: /Encryption settings/ });
+    });
+
+    it("changes the selection on click", async () => {
+      const { user } = plainRender(<ProposalSettingsSection {...props} />);
+
+      const checkbox = screen.getByRole("checkbox", { name: /Encrypt devices/ });
+      await user.click(checkbox);
+
+      expect(checkbox).not.toBeChecked();
+      expect(props.onChange).toHaveBeenCalled();
+    });
+
+    it("allows changing the encryption settings when clicking on the settings button", async () => {
+      const { user } = plainRender(<ProposalSettingsSection {...props} />);
+
+      const button = screen.getByRole("button", { name: /Encryption settings/ });
+      await user.click(button);
+
+      const popup = await screen.findByRole("dialog");
+      screen.getByText(/Devices encryption/);
+
+      const accept = within(popup).getByRole("button", { name: "Accept" });
+      await user.click(accept);
+
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(props.onChange).toHaveBeenCalled();
+    });
+
+    it("allows canceling the changes of the encryption settings", async () => {
+      const { user } = plainRender(<ProposalSettingsSection {...props} />);
+
+      const button = screen.getByRole("button", { name: /Encryption settings/ });
+      await user.click(button);
+
+      const popup = await screen.findByRole("dialog");
+      screen.getByText(/Devices encryption/);
+
+      const cancel = within(popup).getByRole("button", { name: "Cancel" });
+      await user.click(cancel);
+
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(props.onChange).not.toHaveBeenCalled();
+    });
   });
-});
 
-describe("when LVM and encryption are selected", () => {
-  beforeEach(() => {
-    proposal.result.lvm = true;
-    proposal.result.encryptionPassword = "12345";
-  });
+  describe("if encryption password is empty", () => {
+    beforeEach(() => {
+      props.settings = { encryptionPassword: "" };
+      props.onChange = jest.fn();
+    });
 
-  it("renders the proper description for the current settings", () => {
-    plainRender(<ProposalSettingsSection proposal={proposal} />);
+    it("renders the encryption switch as not selected", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
 
-    screen.getByText(/Create file systems over encrypted LVM volumes/);
+      const checkbox = screen.getByRole("checkbox", { name: /Encrypt devices/ });
+      expect(checkbox).not.toBeChecked();
+    });
+
+    it("does not render a button for changing the encryption settings", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
+
+      const button = screen.queryByRole("button", { name: /Encryption settings/ });
+      expect(button).toBeNull();
+    });
+
+    it("changes the selection and allows changing the settings on click", async () => {
+      const { user } = plainRender(<ProposalSettingsSection {...props} />);
+
+      const checkbox = screen.getByRole("checkbox", { name: /Encrypt devices/ });
+      await user.click(checkbox);
+
+      const popup = await screen.findByRole("dialog");
+      screen.getByText(/Devices encryption/);
+
+      const passwordInput = screen.getByLabelText("Password");
+      const passwordConfirmInput = screen.getByLabelText("Password confirmation");
+      await user.type(passwordInput, "1234");
+      await user.type(passwordConfirmInput, "1234");
+      const accept = within(popup).getByRole("button", { name: "Accept" });
+      await user.click(accept);
+
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      expect(props.onChange).toHaveBeenCalled();
+      expect(checkbox).toBeChecked();
+    });
+
+    it("does not select encryption if the settings are canceled", async () => {
+      const { user } = plainRender(<ProposalSettingsSection {...props} />);
+
+      const checkbox = screen.getByRole("checkbox", { name: /Encrypt devices/ });
+      await user.click(checkbox);
+
+      const popup = await screen.findByRole("dialog");
+      screen.getByText(/Devices encryption/);
+
+      const cancel = within(popup).getByRole("button", { name: "Cancel" });
+      await user.click(cancel);
+
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(props.onChange).not.toHaveBeenCalled();
+      expect(checkbox).not.toBeChecked();
+    });
   });
 });

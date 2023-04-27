@@ -28,6 +28,10 @@ let openButtonRef = {};
 
 /**
  * Agama sidebar navigation
+ * @component
+ *
+ * @param {object} props
+ * @param {React.ReactElement} props.children
  */
 const Sidebar = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -132,8 +136,21 @@ const Sidebar = ({ children }) => {
   );
 };
 
-Sidebar.OpenButton = ({ children }) => (
-  <Button variant="link" isInline onClick={() => openButtonRef.current.click()}>{children}</Button>
-);
+/**
+ * Button for opening the sidebar
+ * @component
+ *
+ * @param {object} props
+ * @param {onClickFn} [props.onClick] - On click callback
+ * @param {React.ReactElement} props.children
+ */
+Sidebar.OpenButton = ({ onClick: onClickProp, children }) => {
+  const onClick = () => {
+    if (onClickProp !== undefined) onClickProp();
+    openButtonRef.current.click();
+  };
+
+  return <Button variant="link" isInline onClick={onClick}>{children}</Button>;
+};
 
 export default Sidebar;

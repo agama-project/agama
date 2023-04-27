@@ -20,11 +20,29 @@
  */
 
 import React, { useReducer, useEffect } from "react";
+import { Text } from "@patternfly/react-core";
+
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
-import { ProgressText, Section } from "~/components/core";
-import { ProposalSummary } from "~/components/storage";
+import { Em, ProgressText, Section } from "~/components/core";
+
+const ProposalSummary = ({ proposal }) => {
+  const { result } = proposal;
+
+  if (result === undefined) return <Text>Device not selected yet</Text>;
+
+  const [candidateDevice] = result.candidateDevices;
+  const device = proposal.availableDevices.find(d => d.id === candidateDevice);
+
+  const deviceLabel = device?.label || candidateDevice;
+
+  return (
+    <Text>
+      Install using device <Em>{deviceLabel}</Em> and deleting all its content
+    </Text>
+  );
+};
 
 const initialState = {
   busy: true,
@@ -58,7 +76,14 @@ const reducer = (state, action) => {
   }
 };
 
-export default function StorageSection({ showErrors }) {
+/**
+ * Section for storage config
+ * @component
+ *
+ * @param {object} props
+ * @param {boolean} [props.showErrors=false]
+ */
+export default function StorageSection({ showErrors = false }) {
   const { storage: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);

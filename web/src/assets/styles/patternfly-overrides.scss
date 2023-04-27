@@ -44,6 +44,11 @@
   --pf-c-button--m-primary--hover--BackgroundColor: var(--color-button-primary-hover);
 }
 
+// Make :hover style visible when the button is in a :focus state too
+.pf-c-button.pf-m-primary:focus:hover {
+  --pf-c-button--m-primary--BackgroundColor: var(--color-button-primary-hover);
+}
+
 .pf-c-button.pf-m-link {
   // Colors for buttons modifiers
   --pf-c-button--m-link--Color: var(--color-link);
@@ -59,6 +64,12 @@
 .pf-c-button.pf-m-secondary {
   --pf-c-button--m-secondary--hover--after--BorderColor: var(--color-link-hover);
   --pf-c-button--m-secondary--hover--Color: var(--color-link-hover);
+}
+
+// Make :hover style visible when the button is in a :focus state too
+.pf-c-button.pf-m-secondary:focus:hover {
+  --pf-c-button--after--BorderColor: var(--color-link-hover);
+  --pf-c-button--m-secondary--Color: var(--color-link-hover);
 }
 
 // SVG icons does not obey font-size
@@ -117,7 +128,15 @@ table td > .pf-c-empty-state {
 }
 
 .pf-c-toolbar {
+  --stack-gutter: 0;
+  --pf-c-toolbar--PaddingTop: 0;
+  --pf-c-toolbar--PaddingBottom: 0;
   border-block-end: 1px solid var(--color-gray-light);
+}
+
+.pf-c-toolbar__content {
+  --pf-c-toolbar__content--PaddingRight: 0;
+  --pf-c-toolbar__content--PaddingLeft: 0;
 }
 
 .pf-c-text-input-group__utilities .pf-c-button {
@@ -134,4 +153,15 @@ table td > .pf-c-empty-state {
       --pf-c-table-tr--responsive--border-width--base: 4px;
     }
   }
+}
+
+.pf-c-switch {
+  // We prefer having same label color for checked and not checked switches
+  --pf-c-switch__input--not-checked__label--Color: var(--pf-c-switch__input--checked__label--Color);
+}
+
+// Make the switch focus looks like the rest
+.pf-c-switch__input:focus ~ .pf-c-switch__toggle {
+  outline: none;
+  box-shadow: 0 0 0 1px var(--focus-color);
 }
