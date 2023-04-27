@@ -28,7 +28,7 @@ import { Icon } from "~/components/layout";
 /**
  * Display a label with additional details. The details are displayed after
  * clicking the label and the "i" icon indicates available details.
- * If the label is not defined or is empty it behaves  like a plain label.
+ * If the label is not defined or is empty it behaves like a plain label.
  * @component
  *
  * @param {object} description details displayed after clicking the label
