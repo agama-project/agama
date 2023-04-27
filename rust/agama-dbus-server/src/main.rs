@@ -1,13 +1,13 @@
 pub mod error;
 use crate::error::Error;
 
-use std::future::pending;
+use std::{future::pending, process::Command};
 use agama_locale_data::{parse_locale};
 use anyhow::Context;
 use zbus::{ConnectionBuilder, dbus_interface};
 
 struct Locale {
-    locale_id: String,
+    locale: String,
     keymap: String,
     timezone_id: String
 }
@@ -36,7 +36,7 @@ impl Locale {
     }
 
     fn set_locale(&mut self, locale: &str) {
-        self.locale_id = locale.to_string();
+        self.locale = locale.to_string();
     }
 
 /* support only keymaps for console for now
@@ -74,12 +74,28 @@ impl Locale {
     fn set_timezone(&mut self, timezone: &str) {
         self.timezone_id = timezone.to_string();
     }
+
+    // TODO: what should be returned value for commit?
+    fn commit(&mut self) -> Result<(), Error> {
+        const ROOT : &str = "/mnt";
+        Command::new("/usr/bin/systemd-firstboot")
+            .args(["root", ROOT, "--locale", self.locale.as_str()])
+            .status().context("Failed to execute systemd-firstboot")?;
+        Command::new("/usr/bin/systemd-firstboot")
+            .args(["root", ROOT, "--keymap", self.keymap.as_str()])
+            .status().context("Failed to execute systemd-firstboot")?;
+        Command::new("/usr/bin/systemd-firstboot")
+            .args(["root", ROOT, "--timezone", self.timezone_id.as_str()])
+            .status().context("Failed to execute systemd-firstboot")?;
+
+        Ok(())
+    }
 }
 
 // Although we use `async-std` here, you can use any async runtime of choice.
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let locale = Locale { locale_id: "en".to_string(), keymap: "us".to_string(), timezone_id: "Europe/Prague".to_string() };
+    let locale = Locale { locale: "en_US.UTF-8".to_string(), keymap: "us".to_string(), timezone_id: "Europe/Prague".to_string() };
     let _conn = ConnectionBuilder::session()? //TODO: use agama bus instead of session one
         .name("org.opensuse.Agama.Locale1")?
         .serve_at("/org/opensuse/Agama/Locale1", locale)?
