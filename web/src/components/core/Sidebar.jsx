@@ -22,17 +22,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon, AppActions } from "~/components/layout";
-import {
-  About,
-  Disclosure,
-  If,
-  IssuesLink,
-  LogsButton,
-  NotificationMark,
-  ShowLogButton,
-  ShowTerminalButton
-} from "~/components/core";
-import { ChangeProductLink } from "~/components/software";
+import { If, NotificationMark } from "~/components/core";
 import { useNotification } from "~/context/notification";
 
 /**
@@ -134,15 +124,7 @@ export default function Sidebar ({ children }) {
         </header>
 
         <div className="flex-stack" onClick={onClick}>
-          <ChangeProductLink />
-          <IssuesLink />
           { children }
-          <Disclosure label="Diagnostic tools" data-keep-sidebar-open>
-            <ShowLogButton />
-            <LogsButton data-keep-sidebar-open="true" />
-            <ShowTerminalButton />
-          </Disclosure>
-          <About />
         </div>
 
         <footer className="split justify-between" data-state="reversed">
