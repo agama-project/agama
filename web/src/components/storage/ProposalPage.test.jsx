@@ -69,7 +69,7 @@ beforeEach(() => {
           getData: jest.fn().mockResolvedValue(proposalData),
           calculate: jest.fn().mockResolvedValue(0)
         },
-        getValidationErrors: jest.fn().mockResolvedValue([]),
+        getErrors: jest.fn().mockResolvedValue([]),
         isDeprecated: isDeprecatedFn,
         onDeprecate: onDeprecateFn
       }
