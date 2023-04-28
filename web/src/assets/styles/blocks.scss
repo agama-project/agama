@@ -246,9 +246,19 @@ span.notification-mark[data-variant="sidebar"] {
 
   position: absolute;
   right: 0;
-  background: var(--color-primary-lighter);
-  border: var(--border-width) solid var(--color-primary);
-  width: var(--size);
-  height: var(--size);
-  border-radius: 999px;
+}
+
+.issue {
+  --icon-size: 1rem;
+
+  div:first-child {
+    svg {
+      width: var(--icon-size);
+      height: var(--icon-size);
+    }
+  }
+
+  div:nth-child(2) {
+    padding-left: calc(var(--icon-size) + var(--pf-c-helper-text__item-icon--MarginRight));
+  }
 }
