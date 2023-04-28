@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 agama-lib = { path="../agama-lib" }
 async-std = { version = "1.12.0", features = ["attributes"] }
+env_logger = "0.10.0"
+log = "0.4.17"

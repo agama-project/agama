@@ -3,6 +3,8 @@ use agama_lib::{
     network::{NetworkService, NetworkState},
 };
 use async_std;
+use env_logger;
+use log::{debug, info};
 
 #[async_std::main]
 async fn main() {
@@ -14,6 +16,9 @@ async fn main() {
     let service = NetworkService::new(state, connection);
 
     service.listen().await.expect("Could not start listening");
+
+    env_logger::init();
+    info!("Agama network service started");
 
     loop {
         std::future::pending::<()>().await;
