@@ -21,19 +21,36 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { plainRender, mockLayout } from "~/test-utils";
+import { installerRender, mockLayout } from "~/test-utils";
 import { Sidebar } from "~/components/core";
+import { createClient } from "~/client";
 
 jest.mock("~/components/layout/Layout", () => mockLayout());
 
+let hasIssues = false;
+
+jest.mock("~/client");
+
+beforeEach(() => {
+  createClient.mockImplementation(() => {
+    return {
+      issues: {
+        any: () => Promise.resolve(hasIssues),
+        onIssuesChange: jest.fn()
+      }
+    };
+  });
+});
+
 it("renders the sidebar initially hidden", async () => {
-  plainRender(<Sidebar />);
+  installerRender(<Sidebar />, { usingProvider: true });
+
   const nav = await screen.findByRole("navigation", { name: /options/i });
   expect(nav).toHaveAttribute("data-state", "hidden");
 });
 
 it("renders a link for displaying the sidebar", async () => {
-  const { user } = plainRender(<Sidebar />);
+  const { user } = installerRender(<Sidebar />, { usingProvider: true });
 
   const link = await screen.findByLabelText(/Show/i);
   const nav = await screen.findByRole("navigation", { name: /options/i });
@@ -44,7 +61,7 @@ it("renders a link for displaying the sidebar", async () => {
 });
 
 it("renders a link for hiding the sidebar", async () => {
-  const { user } = plainRender(<Sidebar />);
+  const { user } = installerRender(<Sidebar />, { usingProvider: true });
 
   const openLink = await screen.findByLabelText(/Show/i);
   const closeLink = await screen.findByLabelText(/Hide/i);
@@ -58,7 +75,7 @@ it("renders a link for hiding the sidebar", async () => {
 });
 
 it("moves the focus to the close action after opening it", async () => {
-  const { user } = plainRender(<Sidebar />);
+  const { user } = installerRender(<Sidebar />, { usingProvider: true });
 
   const openLink = await screen.findByLabelText(/Show/i);
   const closeLink = await screen.findByLabelText(/Hide/i);
@@ -70,13 +87,14 @@ it("moves the focus to the close action after opening it", async () => {
 
 describe("onClick bubbling", () => {
   it("hides the sidebar only if the user clicked on a link or button w/o keepSidebarOpen attribute", async () => {
-    const { user } = plainRender(
+    const { user } = installerRender(
       <Sidebar>
         <a href="#">Goes somewhere</a>
         <a href="#" data-keep-sidebar-open="true">Keep it open!</a>
         <button>Do something</button>
         <button data-keep-sidebar-open="true">Keep it open!</button>
-      </Sidebar>
+      </Sidebar>,
+      { UsingProvider: true }
     );
 
     const openLink = screen.getByLabelText(/Show/i);
@@ -111,5 +129,30 @@ describe("onClick bubbling", () => {
     const link = within(nav).getByRole("link", { name: "Goes somewhere" });
     await user.click(link);
     expect(nav).toHaveAttribute("data-state", "hidden");
+  });
+});
+
+describe("if there are issues", () => {
+  beforeEach(() => {
+    hasIssues = true;
+  });
+
+  it("includes a notification mark", async () => {
+    installerRender(<Sidebar />, { usingProvider: true });
+    const link = await screen.findByLabelText(/Show/i);
+    within(link).getByRole("status", { name: "See issues" });
+  });
+});
+
+describe("if there are not issues", () => {
+  beforeEach(() => {
+    hasIssues = false;
+  });
+
+  it("does not include a notification mark", async () => {
+    installerRender(<Sidebar />, { usingProvider: true });
+    const link = await screen.findByLabelText(/Show/i);
+    const mark = within(link).queryByRole("status", { name: "See issues" });
+    expect(mark).toBeNull();
   });
 });

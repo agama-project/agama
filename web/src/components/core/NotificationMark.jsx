@@ -19,24 +19,43 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
+
+import { useCancellablePromise } from "~/utils";
+import { useInstallerClient } from "~/context/installer";
+import { If } from "~/components/core";
 
 /**
- * A notification mark that  icon for catching the users attention when there is
+ * A notification mark for catching the users attention when there is
  * something that can be interesting for them but not urgent enough to use a
  * (blocking) Popup.
  *
  * @component
- *
- * Initially though to be displayed on top of the Sidebar icon.
  *
  * Use only when the information to show might be overlooked without risk and/or
  * when the information will be displayed sooner or later in other way (in a
  * confirmation dialog, for example).
  *
  * @param {object} props
- * @param {string} props.label - the label to be announced by screen readers
  */
-export default function NotificationMark ({ label }) {
-  return <span className="notification-mark" role="status" aria-label={label} />;
+export default function NotificationMark ({ ...props }) {
+  const [hasIssues, setHasIssues] = useState(false);
+  const { issues: client } = useInstallerClient();
+  const { cancellablePromise } = useCancellablePromise();
+
+  const checkIssues = useCallback(async () => {
+    setHasIssues(await cancellablePromise(client.any()));
+  }, [client, cancellablePromise, setHasIssues]);
+
+  useEffect(() => {
+    checkIssues();
+    return client.onIssuesChange(checkIssues);
+  }, [client, checkIssues]);
+
+  return (
+    <If
+      condition={hasIssues}
+      then={<span className="notification-mark" role="status" {...props} />}
+    />
+  );
 }

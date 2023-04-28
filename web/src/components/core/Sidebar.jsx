@@ -94,7 +94,7 @@ export default function Sidebar ({ children }) {
           aria-controls="navigation-and-options"
           aria-expanded={isOpen}
         >
-          <NotificationMark />
+          <NotificationMark data-variant="sidebar" aria-label="See issues" />
           <Icon name="menu" />
         </button>
       </AppActions>
