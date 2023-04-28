@@ -1,7 +1,7 @@
 use crate::error::Error;
 use anyhow::Context;
 use std::process::Command;
-use zbus::dbus_interface;
+use zbus::{dbus_interface, Connection, ConnectionBuilder};
 
 pub struct Locale {
     locales: Vec<String>,
@@ -11,13 +11,24 @@ pub struct Locale {
 }
 
 impl Locale {
-    pub fn new() -> Locale {
+    fn new() -> Locale {
         Locale {
             locales: vec!["en_US.UTF-8".to_string()],
             keymap: "us".to_string(),
             timezone_id: "America/Los_Angeles".to_string(),
             supported_locales: vec!["en_US.UTF-8".to_string()],
         }
+    }
+
+    pub async fn start_service() -> Result<Connection, Box<dyn std::error::Error>> {
+        let locale = Locale::new();
+        let conn = ConnectionBuilder::session()? //TODO: use agama bus instead of session one
+            .name("org.opensuse.Agama.Locale1")?
+            .serve_at("/org/opensuse/Agama/Locale1", locale)?
+            .build()
+            .await?;
+
+        Ok(conn)
     }
 }
 

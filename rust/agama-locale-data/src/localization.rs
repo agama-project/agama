@@ -8,11 +8,8 @@ pub struct Localization {
 impl Localization {
     pub fn name_for(&self, language: &str) -> Option<String> {
         let entry = self.name.iter()
-            .find(|n| n.language == language);
-        match entry {
-            Some(res) => Some(res.value.clone()),
-            None => None
-        }
+            .find(|n| n.language == language)?;
+        Some(entry.value.clone())
     }
 }
 

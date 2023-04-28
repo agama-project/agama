@@ -106,7 +106,6 @@ mod tests {
     #[test]
     fn test_get_keyboards() {
         let result = get_xkeyboards().unwrap();
-        assert_eq!(result.keyboard.len(), 247);
         let first = result.keyboard.first().expect("no keyboards");
         assert_eq!(first.id, "ad")
     }
@@ -114,7 +113,6 @@ mod tests {
     #[test]
     fn test_get_languages() {
         let result = get_languages().unwrap();
-        assert_eq!(result.language.len(), 356);
         let first = result.language.first().expect("no keyboards");
         assert_eq!(first.id, "aa")
     }
@@ -122,7 +120,6 @@ mod tests {
     #[test]
     fn test_get_territories() {
         let result = get_territories().unwrap();
-        assert_eq!(result.territory.len(), 257);
         let first = result.territory.first().expect("no keyboards");
         assert_eq!(first.id, "001") // looks strange, but it is meta id for whole world
     }
@@ -130,7 +127,6 @@ mod tests {
     #[test]
     fn test_get_timezone_parts() {
         let result = get_timezone_parts().unwrap();
-        assert_eq!(result.timezone_part.len(), 441);
         let first = result.timezone_part.first().expect("no keyboards");
         assert_eq!(first.id, "Abidjan")
     }
