@@ -178,8 +178,6 @@ impl Locale {
             .await
             .context(format!("Requesting name {SERVICE_NAME}"))?;
 
-        eprintln!("service started {:?}", conn);
-
         Ok(conn)
     }
 }
