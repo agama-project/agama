@@ -113,6 +113,10 @@ impl Locale {
 
     #[dbus_interface(property, name="VConsoleKeyboard")]
     fn set_keymap(&mut self, keyboard: &str) -> Result<(), zbus::fdo::Error> {
+        let exist = agama_locale_data::get_key_maps().unwrap().iter().find(|&k| k == keyboard).is_some();
+        if !exist {
+            return Err(zbus::fdo::Error::Failed("Invalid keyboard value".to_string()))
+        }
         self.keymap = keyboard.to_string();
         Ok(())
     }
