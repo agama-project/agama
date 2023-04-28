@@ -10,34 +10,13 @@ pub struct Locale {
     supported_locales: Vec<String>,
 }
 
-impl Locale {
-    fn new() -> Locale {
-        Locale {
-            locales: vec!["en_US.UTF-8".to_string()],
-            keymap: "us".to_string(),
-            timezone_id: "America/Los_Angeles".to_string(),
-            supported_locales: vec!["en_US.UTF-8".to_string()],
-        }
-    }
-
-    pub async fn start_service() -> Result<Connection, Box<dyn std::error::Error>> {
-        let locale = Locale::new();
-        let conn = ConnectionBuilder::session()? //TODO: use agama bus instead of session one
-            .name("org.opensuse.Agama.Locale1")?
-            .serve_at("/org/opensuse/Agama/Locale1", locale)?
-            .build()
-            .await?;
-
-        Ok(conn)
-    }
-}
-
 #[dbus_interface(name = "org.opensuse.Agama.Locale1")]
 impl Locale {
     // Can be `async` as well.
     /// get labels for given locale. The first pair is english language and territory
     /// and second one is localized one to target language from locale.
     ///
+    /// Note: check how often it is used and if often, it can be easily cached
     fn labels_for_locales(&self) -> Result<Vec<((String, String), (String, String))>, Error> {
         const DEFAULT_LANG: &str = "en";
         let mut res = Vec::with_capacity(self.supported_locales.len());
@@ -84,13 +63,25 @@ impl Locale {
 
     #[dbus_interface(property)]
     fn locales(&self) -> Vec<String> {
-        return self.locales.iter().map(|l| l.clone()).collect();
+        return self.locales.to_owned();
     }
 
     #[dbus_interface(property)]
     fn set_locales(&mut self, locales: Vec<String>) -> Result<(), zbus::fdo::Error> {
         // verify that all locales are supported
         self.locales = locales;
+        Ok(())
+    }
+
+    #[dbus_interface(property)]
+    fn supported_locales(&self) -> Vec<String> {
+        return self.supported_locales.to_owned();
+    }
+
+    #[dbus_interface(property)]
+    fn set_supported_locales(&mut self, locales: Vec<String>) -> Result<(), zbus::fdo::Error> {
+        self.supported_locales = locales;
+        // TODO: handle if current selected locale contain something that is no longer supported
         Ok(())
     }
 
@@ -164,3 +155,29 @@ impl Locale {
         Ok(())
     }
 }
+
+
+impl Locale {
+    fn new() -> Locale {
+        Locale {
+            locales: vec!["en_US.UTF-8".to_string()],
+            keymap: "us".to_string(),
+            timezone_id: "America/Los_Angeles".to_string(),
+            supported_locales: vec!["en_US.UTF-8".to_string()],
+        }
+    }
+
+    pub async fn start_service() -> Result<Connection, Box<dyn std::error::Error>> {
+        let locale = Locale::new();
+        let conn = ConnectionBuilder::session()? //TODO: use agama bus instead of session one
+            .name("org.opensuse.Agama.Locale1")?
+            .serve_at("/org/opensuse/Agama/Locale1", locale)?
+            .build()
+            .await?;
+
+        eprintln!("service started {:?}", conn);
+
+        Ok(conn)
+    }
+}
+
