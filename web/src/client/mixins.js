@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,6 +20,98 @@
  */
 
 // @ts-check
+
+const ISSUES_IFACE = "org.opensuse.Agama1.Issues";
+
+/**
+ * @typedef {[string, string, number, number]} DBusIssue
+ */
+
+/**
+ * @typedef {object} Issue
+ * @property {string} description
+ * @property {string} details
+ * @property {string} source - "unknown", "system" or "config"
+ * @property {string} severity - "warn", "error"
+ */
+
+/**
+* @callback IssuesHandler
+* @param {Issue[]} issues
+* @return {void}
+*/
+
+/**
+ * Builds an issue from a D-Bus issue
+ *
+ * @param {DBusIssue} dbusIssue
+ * @return {Issue}
+ */
+const buildIssue = (dbusIssue) => {
+  const source = (value) => {
+    switch (value) {
+      case 0: return "unknown";
+      case 1: return "system";
+      case 2: return "config";
+    }
+  };
+
+  const severity = (value) => {
+    return value === 0 ? "warn" : "error";
+  };
+
+  return {
+    description: dbusIssue[0],
+    details: dbusIssue[1],
+    source: source(dbusIssue[2]),
+    severity: severity(dbusIssue[3])
+  };
+};
+
+/**
+ * Extends the given class with methods to get the issues over D-Bus
+ * @param {string} object_path - object_path
+ * @param {T} superclass - superclass to extend
+ * @template {!WithDBusClient} T
+ */
+const WithIssues = (superclass, object_path) => class extends superclass {
+  /**
+   * Returns the issues
+   *
+   * @return {Promise<Issue[]>}
+   */
+  async getIssues() {
+    const proxy = await this.client.proxy(ISSUES_IFACE, object_path);
+    return proxy.All.map(buildIssue);
+  }
+
+  /**
+   * Gets all issues with error severity
+   *
+   * @return {Promise<Issue[]>}
+   */
+  async getErrors() {
+    const issues = await this.getIssues();
+    return issues.filter(i => i.severity === "error");
+  }
+
+  /**
+   * Registers a callback to run when the issues change
+   *
+   * @param {IssuesHandler} handler - callback function
+   * @return {import ("./dbus").RemoveFn} function to disable the callback
+   */
+  onIssuesChange(handler) {
+    return this.client.onObjectChanged(object_path, ISSUES_IFACE, (changes) => {
+      if ("All" in changes) {
+        const dbusIssues = changes.All.v;
+        const issues = dbusIssues.map(buildIssue);
+        handler(issues);
+      }
+    });
+  }
+};
+
 const STATUS_IFACE = "org.opensuse.Agama1.ServiceStatus";
 
 /**
@@ -179,4 +271,4 @@ const WithValidation = (superclass, object_path) => class extends superclass {
   }
 };
 
-export { WithStatus, WithProgress, WithValidation };
+export { WithIssues, WithStatus, WithProgress, WithValidation };

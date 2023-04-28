@@ -25,8 +25,8 @@ import cockpit from "../lib/cockpit";
 
 /**
  * @typedef {object} DBusValue
- * @property {string} s - type signature
- * @property {DBusValue | DBusValue[] | number | string | boolean | number[] | string[] | boolean[]} v - value
+ * @property {string} t - type signature
+ * @property { * } v - value
  */
 
 /**
@@ -149,7 +149,7 @@ class DBusClient {
 
     try {
       const result = await this.client.call(
-        path, "org.freedesktop.DBus.Properties", "Get", [iface, "Errors"]
+        path, "org.freedesktop.DBus.Properties", "Get", [iface, name]
       );
       property = result[0];
     } catch (error) {
