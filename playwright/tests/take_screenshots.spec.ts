@@ -80,7 +80,7 @@ test.describe("The Installer", () => {
     await test.step("Storage configuration", async () => {
       // create storage page screenshot
       await page.locator("a[href='#/storage']").click();
-      await expect(page.getByRole("heading", { name: "Settings" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Settings" })).toBeVisible({timeout: 1 * minute});
       await page.screenshot({ path: "screenshots/storage-page.png" });
     });
 
