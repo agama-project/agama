@@ -74,10 +74,7 @@ export default function ProposalPageOptions () {
 
   return (
     <PageOptions>
-      <PageOptions.Group
-        label="Configure"
-        key="devices-options"
-      >
+      <PageOptions.Group key="devices-options">
         <If condition={showDasdLink} then={<DASDLink />} />
         <ISCSILink />
       </PageOptions.Group>
