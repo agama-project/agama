@@ -49,7 +49,7 @@ const IssueItem = ({ issue }) => {
         </HelperTextItem>
         <If
           condition={hasDetails}
-          then={<HelperTextItem>{issue.details}</HelperTextItem>}
+          then={<HelperTextItem><pre>{issue.details}</pre></HelperTextItem>}
         />
       </HelperText>
     </div>
