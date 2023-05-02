@@ -35,8 +35,9 @@ pub fn get_xkeyboards() -> anyhow::Result<xkeyboard::XKeyboards> {
 /// Gets list of available keymaps
 /// 
 /// ## Examples
+/// Requires working localectl.
 /// 
-/// ```
+/// ```no_run
 /// let key_maps = agama_locale_data::get_key_maps().unwrap();
 /// assert!(key_maps.contains(&"us".to_string()))
 /// ```
