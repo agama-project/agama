@@ -39,7 +39,7 @@ export default function IssuesLink() {
       Show issues
       <If
         condition={notification.issues}
-        then={<NotificationMark aria-label="See issues" />}
+        then={<NotificationMark aria-label="There are new issues" />}
       />
     </Link>
   );

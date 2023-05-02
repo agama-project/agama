@@ -141,7 +141,7 @@ describe("if there are issues", () => {
   it("includes a notification mark", async () => {
     installerRender(withNotificationProvider(<Sidebar />));
     const link = await screen.findByLabelText(/Show/i);
-    within(link).getByRole("status", { name: "See issues" });
+    within(link).getByRole("status", { name: /New issues/ });
   });
 });
 
@@ -153,7 +153,7 @@ describe("if there are not issues", () => {
   it("does not include a notification mark", async () => {
     installerRender(withNotificationProvider(<Sidebar />));
     const link = await screen.findByLabelText(/Show/i);
-    const mark = within(link).queryByRole("status", { name: "See issues" });
+    const mark = within(link).queryByRole("status", { name: /New issues/ });
     expect(mark).toBeNull();
   });
 });

@@ -98,7 +98,7 @@ export default function Sidebar ({ children }) {
         >
           <If
             condition={notification.issues}
-            then={<NotificationMark data-variant="sidebar" aria-label="See issues" />}
+            then={<NotificationMark data-variant="sidebar" aria-label="New issues found" />}
           />
           <Icon name="menu" />
         </button>

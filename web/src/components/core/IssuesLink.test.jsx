@@ -53,8 +53,8 @@ describe("if there are issues", () => {
 
   it("includes a notification mark", async () => {
     installerRender(withNotificationProvider(<IssuesLink />));
-    const link = await screen.findByRole("link", { name: "Show issues" });
-    within(link).getByRole("status", { name: "See issues" });
+    const link = await screen.findByRole("link", { name: /new issues/ });
+    within(link).getByRole("status", { name: /new issues/ });
   });
 });
 
@@ -66,7 +66,7 @@ describe("if there are not issues", () => {
   it("does not include a notification mark", async () => {
     installerRender(withNotificationProvider(<IssuesLink />));
     const link = await screen.findByRole("link", { name: "Show issues" });
-    const mark = within(link).queryByRole("status", { name: "See issues" });
+    const mark = within(link).queryByRole("status", { name: /new issues/ });
     expect(mark).toBeNull();
   });
 });
