@@ -155,12 +155,14 @@ And legacy YaST has the console keyboard as the primary key. Must resolve this.
 node /org/opensuse/Agama/Locale1 {
   interface org.opensuse.Agama.Locale1 {
     methods:
-      ListLocales(
-        out a(sss) id_english_native # [('cs_CZ.UTF-8', 'Czech', 'Čeština'),…]
+      # In the same order as in SupportedLocales, pairs of
+      # (english_labels, native_labels), where foo_labels
+      # is a pair of (language, territory)
+      LabelsForLocales(
+        out a((ss)(ss)) id_english_native # [(("Spanish", "Spain"), ("Español", "España")), (('English', 'United States'), ('English', 'United States'))]
       )
-      # langtable has X11 keyboards and no localization of their labels
-      ListX11Keyboards(
-        out as    ids  # id like "layout(variant)"
+      ListVConsoleKeyboards(
+        out as    ids  # like ["cz", "cz-qwerty", "gb-intl", "us", "us-dvorak",…]
       )
 
       # ProposeKeyboard(); # not needed? adjusted automatically, same object
@@ -170,11 +172,20 @@ node /org/opensuse/Agama/Locale1 {
 
       Commit();
     properties:
+
+      # The locale service DOES NOT KNOW which locales are
+      # available for the product currently selected for installation.
+      # When the user chooses a product, SupportedLocales should be set.
+      # It affects the output of LabelsForLocales
+      # and the valid inputs for Locales.
+      readwrite as      SupportedLocales = ["es_ES.UTF-8", "en_US.UTF-8"];
+
       # NOTE: "as" has different meaning to systemd,
       # we have a list of LANG settings, 1st gets passed to systemd,
       # others affect package selection
-      readwrite as   Locale = ['cs_CZ.UTF-8', 'de_DE.UTF-8'];
-      readwrite s    VConsoleKeyboard = 'cz-qwerty';
+      readwrite (yas)   Locales = (23, ['cs_CZ.UTF-8', 'de_DE.UTF-8']);
+
+      readwrite (ys)    VConsoleKeyboard = (23, 'cz-qwerty');
   };
 };
 ```
