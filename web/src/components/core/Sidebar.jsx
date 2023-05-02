@@ -22,7 +22,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon, AppActions } from "~/components/layout";
-import { NotificationMark } from "~/components/core";
+import { If, NotificationMark } from "~/components/core";
+import { useNotification } from "~/context/notification";
 
 /**
  * Agama sidebar navigation
@@ -34,6 +35,7 @@ import { NotificationMark } from "~/components/core";
 export default function Sidebar ({ children }) {
   const [isOpen, setIsOpen] = useState(false);
   const closeButtonRef = useRef(null);
+  const [notification] = useNotification();
 
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
@@ -94,7 +96,10 @@ export default function Sidebar ({ children }) {
           aria-controls="navigation-and-options"
           aria-expanded={isOpen}
         >
-          <NotificationMark data-variant="sidebar" aria-label="See issues" />
+          <If
+            condition={notification.issues}
+            then={<NotificationMark data-variant="sidebar" aria-label="See issues" />}
+          />
           <Icon name="menu" />
         </button>
       </AppActions>

@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, withNotificationProvider } from "~/test-utils";
 import { createClient } from "~/client";
 import { IssuesLink } from "~/components/core";
 
@@ -41,7 +41,7 @@ beforeEach(() => {
 });
 
 it("renders a link for navigating to the issues page", async () => {
-  installerRender(<IssuesLink />, { usingProvider: true });
+  installerRender(withNotificationProvider(<IssuesLink />));
   const link = await screen.findByRole("link", { name: "Show issues" });
   expect(link).toHaveAttribute("href", "/issues");
 });
@@ -52,7 +52,7 @@ describe("if there are issues", () => {
   });
 
   it("includes a notification mark", async () => {
-    installerRender(<IssuesLink />, { usingProvider: true });
+    installerRender(withNotificationProvider(<IssuesLink />));
     const link = await screen.findByRole("link", { name: "Show issues" });
     within(link).getByRole("status", { name: "See issues" });
   });
@@ -64,7 +64,7 @@ describe("if there are not issues", () => {
   });
 
   it("does not include a notification mark", async () => {
-    installerRender(<IssuesLink />, { usingProvider: true });
+    installerRender(withNotificationProvider(<IssuesLink />));
     const link = await screen.findByRole("link", { name: "Show issues" });
     const mark = within(link).queryByRole("status", { name: "See issues" });
     expect(mark).toBeNull();

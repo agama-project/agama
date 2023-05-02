@@ -27,6 +27,7 @@ import { partition, useCancellablePromise } from "~/utils";
 import { If, Page, Section } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
+import { useNotification } from "~/context/notification";
 
 /**
  * Renders an issue
@@ -136,13 +137,15 @@ export default function IssuesPage() {
   const [issues, setIssues] = useState({});
   const { issues: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
+  const [, updateNotification] = useNotification();
 
   const loadIssues = useCallback(async () => {
     setIsLoading(true);
     const allIssues = await cancellablePromise(client.getAll());
     setIssues(allIssues);
     setIsLoading(false);
-  }, [client, cancellablePromise, setIssues, setIsLoading]);
+    updateNotification({ issues: false });
+  }, [client, cancellablePromise, setIssues, setIsLoading, updateNotification]);
 
   useEffect(() => {
     loadIssues();

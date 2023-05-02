@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockComponent } from "~/test-utils";
+import { installerRender, mockComponent, withNotificationProvider } from "~/test-utils";
 import { createClient } from "~/client";
 import { IssuesPage } from "~/components/core";
 
@@ -47,6 +47,7 @@ beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       issues: {
+        any: () => Promise.resolve(true),
         getAll: () => Promise.resolve(issues),
         onIssuesChange: jest.fn()
       }
@@ -55,14 +56,14 @@ beforeEach(() => {
 });
 
 it("loads the issues", async () => {
-  installerRender(<IssuesPage />);
+  installerRender(withNotificationProvider(<IssuesPage />));
 
   screen.getAllByText(/PFSkeleton/);
   await screen.findByText(/Issue 1/);
 });
 
 it("renders sections with issues", async () => {
-  installerRender(<IssuesPage />);
+  installerRender(withNotificationProvider(<IssuesPage />));
 
   const section = await screen.findByText(/Storage/);
   within(section).findByText(/Issue 1/);
@@ -75,7 +76,7 @@ describe("if there are not issues", () => {
   });
 
   it("renders a success message", async () => {
-    installerRender(<IssuesPage />);
+    installerRender(withNotificationProvider(<IssuesPage />));
 
     await screen.findByText(/No issues found/);
   });

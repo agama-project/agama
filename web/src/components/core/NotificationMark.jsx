@@ -19,11 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
-
-import { useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
-import { If } from "~/components/core";
+import React from "react";
 
 /**
  * A notification mark for catching the users attention when there is
@@ -39,23 +35,5 @@ import { If } from "~/components/core";
  * @param {object} props
  */
 export default function NotificationMark ({ ...props }) {
-  const [hasIssues, setHasIssues] = useState(false);
-  const { issues: client } = useInstallerClient();
-  const { cancellablePromise } = useCancellablePromise();
-
-  const checkIssues = useCallback(async () => {
-    setHasIssues(await cancellablePromise(client.any()));
-  }, [client, cancellablePromise, setHasIssues]);
-
-  useEffect(() => {
-    checkIssues();
-    return client.onIssuesChange(checkIssues);
-  }, [client, checkIssues]);
-
-  return (
-    <If
-      condition={hasIssues}
-      then={<span className="notification-mark" role="status" {...props} />}
-    />
-  );
+  return <span className="notification-mark" role="status" {...props} />;
 }

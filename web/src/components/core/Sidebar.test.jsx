@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockLayout } from "~/test-utils";
+import { installerRender, mockLayout, withNotificationProvider } from "~/test-utils";
 import { Sidebar } from "~/components/core";
 import { createClient } from "~/client";
 
@@ -43,14 +43,14 @@ beforeEach(() => {
 });
 
 it("renders the sidebar initially hidden", async () => {
-  installerRender(<Sidebar />, { usingProvider: true });
+  installerRender(withNotificationProvider(<Sidebar />));
 
   const nav = await screen.findByRole("navigation", { name: /options/i });
   expect(nav).toHaveAttribute("data-state", "hidden");
 });
 
 it("renders a link for displaying the sidebar", async () => {
-  const { user } = installerRender(<Sidebar />, { usingProvider: true });
+  const { user } = installerRender(withNotificationProvider(<Sidebar />));
 
   const link = await screen.findByLabelText(/Show/i);
   const nav = await screen.findByRole("navigation", { name: /options/i });
@@ -61,7 +61,7 @@ it("renders a link for displaying the sidebar", async () => {
 });
 
 it("renders a link for hiding the sidebar", async () => {
-  const { user } = installerRender(<Sidebar />, { usingProvider: true });
+  const { user } = installerRender(withNotificationProvider(<Sidebar />));
 
   const openLink = await screen.findByLabelText(/Show/i);
   const closeLink = await screen.findByLabelText(/Hide/i);
@@ -75,7 +75,7 @@ it("renders a link for hiding the sidebar", async () => {
 });
 
 it("moves the focus to the close action after opening it", async () => {
-  const { user } = installerRender(<Sidebar />, { usingProvider: true });
+  const { user } = installerRender(withNotificationProvider(<Sidebar />));
 
   const openLink = await screen.findByLabelText(/Show/i);
   const closeLink = await screen.findByLabelText(/Hide/i);
@@ -88,13 +88,14 @@ it("moves the focus to the close action after opening it", async () => {
 describe("onClick bubbling", () => {
   it("hides the sidebar only if the user clicked on a link or button w/o keepSidebarOpen attribute", async () => {
     const { user } = installerRender(
-      <Sidebar>
-        <a href="#">Goes somewhere</a>
-        <a href="#" data-keep-sidebar-open="true">Keep it open!</a>
-        <button>Do something</button>
-        <button data-keep-sidebar-open="true">Keep it open!</button>
-      </Sidebar>,
-      { UsingProvider: true }
+      withNotificationProvider(
+        <Sidebar>
+          <a href="#">Goes somewhere</a>
+          <a href="#" data-keep-sidebar-open="true">Keep it open!</a>
+          <button>Do something</button>
+          <button data-keep-sidebar-open="true">Keep it open!</button>
+        </Sidebar>
+      )
     );
 
     const openLink = screen.getByLabelText(/Show/i);
@@ -138,7 +139,7 @@ describe("if there are issues", () => {
   });
 
   it("includes a notification mark", async () => {
-    installerRender(<Sidebar />, { usingProvider: true });
+    installerRender(withNotificationProvider(<Sidebar />));
     const link = await screen.findByLabelText(/Show/i);
     within(link).getByRole("status", { name: "See issues" });
   });
@@ -150,7 +151,7 @@ describe("if there are not issues", () => {
   });
 
   it("does not include a notification mark", async () => {
-    installerRender(<Sidebar />, { usingProvider: true });
+    installerRender(withNotificationProvider(<Sidebar />));
     const link = await screen.findByLabelText(/Show/i);
     const mark = within(link).queryByRole("status", { name: "See issues" });
     expect(mark).toBeNull();

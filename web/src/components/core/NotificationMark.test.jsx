@@ -20,47 +20,11 @@
  */
 
 import React from "react";
-import { screen, waitFor } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
 import { NotificationMark } from "~/components/core";
-import { createClient } from "~/client";
 
-let hasIssues = false;
-
-jest.mock("~/client");
-
-beforeEach(() => {
-  createClient.mockImplementation(() => {
-    return {
-      issues: {
-        any: () => Promise.resolve(hasIssues),
-        onIssuesChange: jest.fn()
-      }
-    };
-  });
-});
-
-describe("if there are issues", () => {
-  beforeEach(() => {
-    hasIssues = true;
-  });
-
-  it("renders a span with status role", async () => {
-    installerRender(<NotificationMark aria-label="See issues" />, { usingProvider: true });
-    await screen.findByRole("status", { name: "See issues" });
-  });
-});
-
-describe("if there are not issues", () => {
-  beforeEach(() => {
-    hasIssues = false;
-  });
-
-  it("renders nothing", async () => {
-    installerRender(<NotificationMark aria-label="See issues" />, { usingProvider: true });
-    waitFor(async () => {
-      const mark = await screen.findByRole("status", { name: "See issues" });
-      expect(mark).toBeNull();
-    });
-  });
+it("renders a span with status role", async () => {
+  plainRender(<NotificationMark aria-label="See issues" />);
+  await screen.findByRole("status", { name: "See issues" });
 });
