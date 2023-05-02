@@ -66,6 +66,9 @@ install -m 0755 %{_builddir}/agama/target/release/agama %{buildroot}%{_bindir}/a
 install -m 0755 %{_builddir}/agama/target/release/agama %{buildroot}%{_bindir}/agama-dbus-server
 install -D -d -m 0755 %{buildroot}%{_datadir}/agama-cli
 install -m 0644 %{_builddir}/agama/agama-lib/share/profile.schema.json %{buildroot}%{_datadir}/agama-cli
+install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
+install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{_builddir}/agama/share/*.service
+
 
 %check
 %{cargo_test}
