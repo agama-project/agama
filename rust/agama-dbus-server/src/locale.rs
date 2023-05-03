@@ -179,7 +179,8 @@ impl Locale {
         const SERVICE_NAME: &str = "org.opensuse.Agama.Locale1";
 
         let locale = Locale::new();
-        let conn = ConnectionBuilder::session()? //TODO: use agama bus instead of session one
+        const ADDRESS : &str = "unix:path=/run/agama/bus";
+        let conn = ConnectionBuilder::address(ADDRESS)? //TODO: use agama bus instead of session one
             .name(SERVICE_NAME)?
             .serve_at("/org/opensuse/Agama/Locale1", locale)?
             .build()
