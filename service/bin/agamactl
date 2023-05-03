@@ -63,7 +63,7 @@ def start_service(name)
   service_runner.run
 end
 
-ORDERED_SERVICES = [:questions, :language, :software, :storage, :users, :manager].freeze
+ORDERED_SERVICES = [:questions, :software, :storage, :users, :manager].freeze
 
 # Normally the services are started by D-Bus activation.
 # This starts all the services sequentially without relying on that.
