@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { Popover } from "@patternfly/react-core";
+import { Popover, Button } from "@patternfly/react-core";
 
 /**
  * Displays details popup after clicking the children elements
@@ -33,7 +33,7 @@ export default function Description ({ description, children, ...otherProps }) {
   if (description) {
     return (
       <Popover showClose={false} bodyContent={description} {...otherProps}>
-        <span className="cursor-pointer">{children}</span>
+        <Button variant="link" isInline>{children}</Button>
       </Popover>
     );
   }
