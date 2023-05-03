@@ -1,8 +1,9 @@
-# Agama Command Line Interface
+# Agama Command Line and DBus Interface
 
 This project aims to build a command-line interface for
 [Agama](https://github.com/yast/agama), a service-based Linux installer featuring a nice
-web interface.
+web interface. The second aim is dbus service that does not depend heavily on YaST to
+reduce memory consumption and also provide better performance.
 
 ## Code organization
 
@@ -15,6 +16,9 @@ three packages:
 * [agama-cli](./agama-cli): code specific to the command line interface.
 * [agama-derive](./agama-derive): includes a [procedural
   macro](https://doc.rust-lang.org/reference/procedural-macros.html) to reduce the boilerplate code.
+* [agama-locale-data](./agama-locale-data): specific library to provide data for localization dbus
+  API
+* [agama-dbus-server](./agama-dbus-server): provides dbus API for services implemented in rust
 
 ## Status
 
@@ -24,6 +28,8 @@ Agama CLI is still a work in progress, although it is already capable of doing a
 * Handling the auto-installation profiles.
 * Triggering the *probing* and the *installation* processes.
 
+Agama DBus API is also a work in progress, but it is already used by Agama.
+
 ## Installation
 
 You can grab the [RPM package](https://build.opensuse.org/package/show/YaST:Head:Agama/agama-cli) from
@@ -32,14 +38,17 @@ the [YaST:Head:Agama](https://build.opensuse.org/project/show/YaST:Head:Agama) p
 If you prefer, you can install it from sources with [Cargo](https://doc.rust-lang.org/cargo/):
 
 ```
-git clone https://github.com/yast/agama-cli
+git clone https://github.com/openSUSE/agama
+cd rust
 cargo install --path .
 ```
 
 ## Running
 
-Take into account that you need to run `agama-cli` as root when you want to query or change the
-Agama configuration. Assuming that the Agama D-Bus service is running, the next command
+For DBus API just run as root agama-dbus-server binary and it will properly attach to DBus.
+
+For CLI take into account that you need to run `agama-cli` as root when you want to query or change
+the Agama configuration. Assuming that the Agama D-Bus service is running, the next command
 prints the current settings using JSON (hint: you can use `jq` to make result look better):
 
 ```
@@ -102,3 +111,15 @@ frontend](./agama-cli/doc/backend-for-testing.md)*.
 ## Caveats
 
 * If no product is selected, the `probe` command fails.
+
+## Packaging
+
+A packaging files lives in `package` directory. Agama follows
+[rust packaging guidelines](https://en.opensuse.org/openSUSE:Packaging_Rust_Software).
+For testing changes to spec file use simple `osc branch YaST:Head:Agama agama-cli`
+and copy modified spec file to that branch.
+If it needs also specific code from git branch, then modify `_service` file and
+change git branch name in `<revision>` tag. Then run `osc service runall`.
+Note: for leap `cargo_audit` does not work with older python, so comment out that
+service section for testing build.
+For testing build use common `osc build` on modified sources.
