@@ -187,7 +187,7 @@ jobs:
       run: mkdir -p /tmp/log/YaST2
 
     - name: start container
-      run: podman run --privileged --detach --name agama --ipc=host -v .:/checkout -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/agama-testing:latest
+      run: podman run --privileged --detach --name agama --ipc=host -v /dev:/dev -v .:/checkout -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/agama-testing:latest
 
     - name: Install Ruby gems
       run:  podman exec agama bash -c "cd /checkout/service && bundle config set --local path 'vendor/bundle' && bundle install"
