@@ -22,9 +22,9 @@
 // @ts-check
 import DBusClient from "./dbus";
 
-const LANGUAGE_SERVICE = "org.opensuse.Agama.Language1";
-const LANGUAGE_IFACE = "org.opensuse.Agama.Language1";
-const LANGUAGE_PATH = "/org/opensuse/Agama/Language1";
+const LANGUAGE_SERVICE = "org.opensuse.Agama.Locale1";
+const LANGUAGE_IFACE = "org.opensuse.Agama.Locale1";
+const LANGUAGE_PATH = "/org/opensuse/Agama/Locale1";
 
 /**
  * @typedef {object} Language
@@ -50,9 +50,12 @@ class LanguageClient {
    */
   async getLanguages() {
     const proxy = await this.client.proxy(LANGUAGE_IFACE);
-    return proxy.AvailableLanguages.map(lang => {
-      const [id, name] = lang;
-      return { id, name };
+    const locales = proxy.SupportedLocales;
+    const labels = proxy.LabelsForLocales;
+    return locales.map((locale, index) => {
+      // labels structure is [[en_lang, en_territory], [native_lang, native_territory]]
+      const [[en_lang,], [,]] = labels[index];
+      return { locale, en_lang };
     });
   }
 
@@ -63,7 +66,7 @@ class LanguageClient {
    */
   async getSelectedLanguages() {
     const proxy = await this.client.proxy(LANGUAGE_IFACE);
-    return proxy.MarkedForInstall;
+    return proxy.Locale;
   }
 
   /**
@@ -74,7 +77,7 @@ class LanguageClient {
    */
   async setLanguages(langIDs) {
     const proxy = await this.client.proxy(LANGUAGE_IFACE);
-    return proxy.ToInstall(langIDs);
+    proxy.Locale = langIDs;
   }
 
   /**
@@ -85,7 +88,7 @@ class LanguageClient {
    */
   onLanguageChange(handler) {
     return this.client.onObjectChanged(LANGUAGE_PATH, LANGUAGE_IFACE, changes => {
-      const selected = changes.MarkedForInstall.v[0];
+      const selected = changes.Locale.v[0];
       handler(selected);
     });
   }
