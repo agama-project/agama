@@ -176,14 +176,25 @@ impl Locale {
     }
 
     pub async fn start_service() -> Result<Connection, Box<dyn std::error::Error>> {
-        const SERVICE_NAME: &str = "org.opensuse.Agama.Locale1";
-
-        let locale = Locale::new();
         const ADDRESS : &str = "unix:path=/run/agama/bus";
-        let conn = ConnectionBuilder::address(ADDRESS)? //TODO: use agama bus instead of session one
-            .name(SERVICE_NAME)?
-            .serve_at("/org/opensuse/Agama/Locale1", locale)?
+        const SERVICE_NAME: &str = "org.opensuse.Agama.Locale1";
+        const SERVICE_PATH: &str = "/org/opensuse/Agama/Locale1";
+
+        // First connect to the Agama bus, then serve our API,
+        // for better error reporting.
+        let conn = ConnectionBuilder::address(ADDRESS)?
             .build()
+            .await
+            .context(format!("Connecting to the Agama bus at {ADDRESS}"))?;
+
+        // When serving, request the service name _after_ exposing the main object
+        let locale = Locale::new();
+        conn
+            .object_server()
+            .at(SERVICE_PATH, locale)
+            .await?;
+        conn
+            .request_name(SERVICE_NAME)
             .await
             .context(format!("Requesting name {SERVICE_NAME}"))?;
 
