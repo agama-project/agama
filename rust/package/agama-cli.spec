@@ -31,7 +31,7 @@ Source2:        cargo_config
 BuildRequires:  cargo-packaging
 BuildRequires:  pkgconfig(openssl)
 # used in tests for dbus service
-BuildRequires:  langtable-data
+BuildRequires:  python-langtable-data
 BuildRequires:  dbus-1-common
 Requires:       jsonnet
 Requires:       lshw
@@ -46,8 +46,8 @@ Release:        0
 Summary:        Agama rust dbus service
 License:        GPL-2.0-only
 Url:            https://github.com/opensuse/agama
-Requires:       langtable-data
-Requires:  dbus-1-common
+Requires:       python-langtable-data
+Requires:       dbus-1-common
 
 %description -n agama-dbus-server
 DBus service for agama project. It provides so far localization service.
