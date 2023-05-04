@@ -189,6 +189,9 @@ jobs:
     - name: Start container
       run: podman run --privileged --detach --name agama --ipc=host -e CI -e GITHUB_ACTIONS -v /dev:/dev -v .:/checkout -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/agama-testing:latest
 
+    - name: Environment
+      run:  podman exec agama bash -c "env | sort"
+
     - name: Install Ruby gems
       run:  podman exec agama bash -c "cd /checkout/service && bundle config set --local path 'vendor/bundle' && bundle install"
 
