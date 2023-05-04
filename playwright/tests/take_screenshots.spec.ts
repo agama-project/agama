@@ -80,7 +80,11 @@ test.describe("The Installer", () => {
     await test.step("Storage configuration", async () => {
       // create storage page screenshot
       await page.locator("a[href='#/storage']").click();
-      await expect(page.getByRole("heading", { name: "Settings" })).toBeVisible({timeout: 1 * minute});
+      await expect(page.getByRole("heading", { name: "Settings" })).toBeVisible();
+      // skip this in GitHub CI, there is no suitable disk for installation
+      if (process.env.GITHUB_ACTIONS !== undefined) {
+        await expect(page.getByText("Install using device")).toBeVisible({timeout: minute / 2});
+      }
       await page.screenshot({ path: "screenshots/storage-page.png" });
     });
 

@@ -183,11 +183,11 @@ jobs:
     - name: Git Checkout
       uses: actions/checkout@v3
 
-    - name: Created shared yast log distro
+    - name: Created shared YaST log directory
       run: mkdir -p /tmp/log/YaST2
 
-    - name: start container
-      run: podman run --privileged --detach --name agama --ipc=host -v /dev:/dev -v .:/checkout -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/agama-testing:latest
+    - name: Start container
+      run: podman run --privileged --detach --name agama --ipc=host -e CI -e GITHUB_ACTIONS -v /dev:/dev -v .:/checkout -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/agama-testing:latest
 
     - name: Install Ruby gems
       run:  podman exec agama bash -c "cd /checkout/service && bundle config set --local path 'vendor/bundle' && bundle install"
