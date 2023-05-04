@@ -54,7 +54,7 @@ beforeEach(() => {
           message: "Activating storage devices", current: 1, total: 4
         }),
         onProgressChange: noop,
-        getValidationErrors: jest.fn().mockResolvedValue(errors),
+        getErrors: jest.fn().mockResolvedValue(errors),
         onStatusChange: onStatusChangeFn,
         isDeprecated: jest.fn().mockResolvedValue(false),
         onDeprecate: noop
@@ -74,7 +74,7 @@ describe("when there is a proposal", () => {
 
   describe("with errors", () => {
     beforeEach(() => {
-      errors = [{ message: "Cannot make a proposal" }];
+      errors = [{ description: "Cannot make a proposal" }];
     });
 
     describe("and component has received the showErrors prop", () => {
@@ -115,7 +115,7 @@ describe("when there is a proposal", () => {
 describe("when there is no proposal yet", () => {
   beforeEach(() => {
     proposal = { result: undefined };
-    errors = [{ message: "Fake error" }];
+    errors = [{ description: "Fake error" }];
   });
 
   it("renders the progress", async () => {
@@ -134,7 +134,7 @@ describe("when there is no proposal yet", () => {
 describe("but storage service is busy", () => {
   beforeEach(() => {
     status = BUSY;
-    errors = [{ message: "Fake error" }];
+    errors = [{ description: "Fake error" }];
   });
 
   it("renders the progress", async () => {

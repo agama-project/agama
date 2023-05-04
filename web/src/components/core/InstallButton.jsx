@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,50 +22,75 @@
 import React, { useState } from "react";
 import { useInstallerClient } from "~/context/installer";
 
-import { Button, Text } from "@patternfly/react-core";
-import { Popup } from "~/components/core";
+import { Button } from "@patternfly/react-core";
+import { useNavigate } from "react-router-dom";
 
-const InstallConfirmationPopup = ({ onAccept, onClose }) => (
-  <Popup
-    title="Confirm Installation"
-    isOpen
-  >
-    <Text>
-      If you continue, partitions on your hard disk will be modified according to the
-      installation settings in the previous dialog.
-    </Text>
-    <Text>
-      Please, cancel and check the settings if you are unsure.
-    </Text>
+import { If, Popup } from "~/components/core";
 
-    <Popup.Actions>
-      <Popup.Confirm onClick={onAccept}>Continue</Popup.Confirm>
-      <Popup.Cancel onClick={onClose} autoFocus />
-    </Popup.Actions>
-  </Popup>
-);
+const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
+  const navigate = useNavigate();
+
+  const IssuesWarning = () => {
+    const IssuesLink = ({ text }) => {
+      return (
+        <Button variant="link" isInline onClick={() => navigate("/issues")}>
+          {text}
+        </Button>
+      );
+    };
+
+    return (
+      <p className="bold">
+        There are some reported issues. Please, check <IssuesLink text="the list of issues" /> before
+        proceeding with the installation.
+      </p>
+    );
+  };
+
+  return (
+    <Popup
+      title="Confirm Installation"
+      isOpen
+    >
+      <div className="stack">
+        <If condition={hasIssues} then={<IssuesWarning />} />
+        <p>
+          If you continue, partitions on your hard disk will be modified according to the provided
+          installation settings.
+        </p>
+        <p>
+          Please, cancel and check the settings if you are unsure.
+        </p>
+      </div>
+      <Popup.Actions>
+        <Popup.Confirm onClick={onAccept}>Continue</Popup.Confirm>
+        <Popup.Cancel onClick={onClose} autoFocus />
+      </Popup.Actions>
+    </Popup>
+  );
+};
 
 const CannotInstallPopup = ({ onClose }) => (
   <Popup
     title="Problems Found"
     isOpen
   >
-    <Text>
+    <p>
       Some problems were found when trying to start the installation.
-      Please, have a look to the reported issues and try again.
-    </Text>
+      Please, have a look to the reported errors and try again.
+    </p>
 
     <Popup.Actions>
-      <Popup.Cancel onClick={onClose} autoFocus />
+      <Popup.Cancel onClick={onClose} autoFocus>Accept</Popup.Cancel>
     </Popup.Actions>
   </Popup>
 );
 
-const renderPopup = (error, { onAccept, onClose }) => {
+const renderPopup = (error, hasIssues, { onAccept, onClose }) => {
   if (error) {
     return <CannotInstallPopup onClose={onClose} />;
   } else {
-    return <InstallConfirmationPopup onClose={onClose} onAccept={onAccept} />;
+    return <InstallConfirmationPopup onClose={onClose} onAccept={onAccept} hasIssues={hasIssues} />;
   }
 };
 
@@ -87,13 +112,14 @@ const InstallButton = ({ onClick }) => {
   const client = useInstallerClient();
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState(false);
+  const [hasIssues, setHasIssues] = useState(false);
 
-  const open = () => {
+  const open = async () => {
     if (onClick) onClick();
-    client.manager.canInstall().then(ok => {
-      setIsOpen(true);
-      setError(!ok);
-    });
+    const canInstall = await client.manager.canInstall();
+    if (canInstall) setHasIssues(await client.issues.any());
+    setIsOpen(true);
+    setError(!canInstall);
   };
   const close = () => setIsOpen(false);
   const install = () => client.manager.startInstallation();
@@ -104,7 +130,7 @@ const InstallButton = ({ onClick }) => {
         Install
       </Button>
 
-      { isOpen && renderPopup(error, { onAccept: install, onClose: close }) }
+      { isOpen && renderPopup(error, hasIssues, { onAccept: install, onClose: close }) }
     </>
   );
 };

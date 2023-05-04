@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr 28 15:16:04 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add issues for storage client.
+- Add issues page.
+- gh#openSUSE/agama#540
+
+-------------------------------------------------------------------
 Mon Apr 24 15:53:35 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Extract page options from the Sidebar to make them

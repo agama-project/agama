@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { classNames, partition, noop } from "./utils";
+import { classNames, partition, noop, toValidationError } from "./utils";
 
 describe("noop", () => {
   it("returns undefined", () => {
@@ -47,5 +47,17 @@ describe("classNames", () => {
       null,
       true && "w-24",
     )).toEqual("bg-yellow w-24");
+  });
+});
+
+describe("toValidationError", () => {
+  it("converts an issue to a validation error", () => {
+    const issue = {
+      description: "Issue 1",
+      details: "Details issue 1",
+      source: "config",
+      severity: "warn"
+    };
+    expect(toValidationError(issue)).toEqual({ message: "Issue 1" });
   });
 });

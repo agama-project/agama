@@ -228,9 +228,8 @@ module Agama
         y2storage_issues = Y2Storage::StorageManager.instance.raw_probed.probing_issues
 
         y2storage_issues.map do |y2storage_issue|
-          details = [y2storage_issue.description, y2storage_issue.details].compact.join("\n")
           Issue.new(y2storage_issue.message,
-            details:  details,
+            details:  y2storage_issue.details,
             source:   Issue::Source::SYSTEM,
             severity: Issue::Severity::WARN)
         end

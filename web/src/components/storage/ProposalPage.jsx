@@ -23,7 +23,7 @@ import React, { useCallback, useReducer, useEffect } from "react";
 import { Alert } from "@patternfly/react-core";
 
 import { useInstallerClient } from "~/context/installer";
-import { useCancellablePromise } from "~/utils";
+import { toValidationError, useCancellablePromise } from "~/utils";
 import { Icon } from "~/components/layout";
 import { Page } from "~/components/core";
 import { ProposalActionsSection, ProposalPageOptions, ProposalSettingsSection } from "~/components/storage";
@@ -79,7 +79,8 @@ export default function ProposalPage() {
 
   const loadProposal = useCallback(async () => {
     const proposal = await cancellablePromise(client.proposal.getData());
-    const errors = await cancellablePromise(client.getValidationErrors());
+    const issues = await cancellablePromise(client.getErrors());
+    const errors = issues.map(toValidationError);
     return { proposal, errors };
   }, [client, cancellablePromise]);
 

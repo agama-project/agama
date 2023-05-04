@@ -20,20 +20,27 @@
  */
 
 import React from "react";
+import { Link } from "react-router-dom";
+
+import { Icon } from "~/components/layout";
+import { If, NotificationMark } from "~/components/core";
+import { useNotification } from "~/context/notification";
 
 /**
- * A notification mark for catching the users attention when there is
- * something that can be interesting for them but not urgent enough to use a
- * (blocking) Popup.
- *
+ * Link to go to the issues page
  * @component
- *
- * Use only when the information to show might be overlooked without risk and/or
- * when the information will be displayed sooner or later in other way (in a
- * confirmation dialog, for example).
- *
- * @param {object} props
  */
-export default function NotificationMark ({ ...props }) {
-  return <span className="notification-mark" role="status" {...props} />;
+export default function IssuesLink() {
+  const [notification] = useNotification();
+
+  return (
+    <Link to="/issues">
+      <Icon name="problem" size="24" />
+      Show issues
+      <If
+        condition={notification.issues}
+        then={<NotificationMark aria-label="There are new issues" />}
+      />
+    </Link>
+  );
 }

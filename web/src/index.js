@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import "regenerator-runtime/runtime";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { InstallerClientProvider } from "~/context/installer";
 import { SoftwareProvider } from "~/context/software";
+import { NotificationProvider } from "~/context/notification";
 import { createClient } from "~/client";
 
 /**
@@ -44,6 +45,7 @@ import { ProposalPage as StoragePage, DASDPage, ISCSIPage } from "~/components/s
 import { UsersPage } from "~/components/users";
 import { L10nPage } from "~/components/l10n";
 import { NetworkPage } from "~/components/network";
+import { IssuesPage } from "~/components/core";
 
 /**
  * As JSX components might import CSS stylesheets, our styles must be imported
@@ -72,23 +74,26 @@ root.render(
   <LoginWrapper>
     <InstallerClientProvider client={createClient}>
       <SoftwareProvider>
-        <HashRouter>
-          <Routes>
-            <Route path="/" element={<App />}>
-              <Route path="/" element={<Main />}>
-                <Route index element={<Overview />} />
-                <Route path="/overview" element={<Overview />} />
-                <Route path="/l10n" element={<L10nPage />} />
-                <Route path="/storage" element={<StoragePage />} />
-                <Route path="/storage/iscsi" element={<ISCSIPage />} />
-                <Route path="/storage/dasd" element={<DASDPage />} />
-                <Route path="/network" element={<NetworkPage />} />
-                <Route path="/users" element={<UsersPage />} />
+        <NotificationProvider>
+          <HashRouter>
+            <Routes>
+              <Route path="/" element={<App />}>
+                <Route path="/" element={<Main />}>
+                  <Route index element={<Overview />} />
+                  <Route path="/overview" element={<Overview />} />
+                  <Route path="/l10n" element={<L10nPage />} />
+                  <Route path="/storage" element={<StoragePage />} />
+                  <Route path="/storage/iscsi" element={<ISCSIPage />} />
+                  <Route path="/storage/dasd" element={<DASDPage />} />
+                  <Route path="/network" element={<NetworkPage />} />
+                  <Route path="/users" element={<UsersPage />} />
+                  <Route path="/issues" element={<IssuesPage />} />
+                </Route>
+                <Route path="products" element={<ProductSelectionPage />} />
               </Route>
-              <Route path="products" element={<ProductSelectionPage />} />
-            </Route>
-          </Routes>
-        </HashRouter>
+            </Routes>
+          </HashRouter>
+        </NotificationProvider>
       </SoftwareProvider>
     </InstallerClientProvider>
   </LoginWrapper>

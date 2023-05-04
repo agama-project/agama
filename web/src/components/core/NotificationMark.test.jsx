@@ -25,6 +25,6 @@ import { plainRender } from "~/test-utils";
 import { NotificationMark } from "~/components/core";
 
 it("renders a span with status role", async () => {
-  plainRender(<NotificationMark label="Some issues detected, please have a look" />);
-  screen.getByRole("status", { name: "Some issues detected, please have a look" });
+  plainRender(<NotificationMark aria-label="See issues" />);
+  await screen.findByRole("status", { name: "See issues" });
 });

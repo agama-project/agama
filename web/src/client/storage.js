@@ -22,7 +22,7 @@
 // @ts-check
 
 import DBusClient from "./dbus";
-import { WithStatus, WithProgress, WithValidation } from "./mixins";
+import { WithIssues, WithStatus, WithProgress } from "./mixins";
 import { hex } from "~/utils";
 
 const STORAGE_IFACE = "org.opensuse.Agama.Storage1";
@@ -864,7 +864,7 @@ class StorageBaseClient {
 /**
  * Allows interacting with the storage settings
  */
-class StorageClient extends WithValidation(
+class StorageClient extends WithIssues(
   WithProgress(
     WithStatus(StorageBaseClient, STORAGE_OBJECT), STORAGE_OBJECT
   ), STORAGE_OBJECT

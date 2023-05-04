@@ -24,7 +24,15 @@ import React from "react";
 import logoUrl from "~/assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
 import { ChangeProductLink } from "~/components/software";
-import { About, Disclosure, LogsButton, Sidebar, ShowLogButton, ShowTerminalButton } from "~/components/core";
+import {
+  About,
+  Disclosure,
+  IssuesLink,
+  LogsButton,
+  Sidebar,
+  ShowLogButton,
+  ShowTerminalButton
+} from "~/components/core";
 
 const PageTitle = createTeleporter();
 const PageActions = createTeleporter();
@@ -86,6 +94,7 @@ function Layout({ children }) {
       <Sidebar>
         <>
           <ChangeProductLink />
+          <IssuesLink />
           <Disclosure label="Diagnostic tools" data-keep-sidebar-open>
             <ShowLogButton />
             <LogsButton data-keep-sidebar-open="true" />
