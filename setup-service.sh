@@ -39,6 +39,12 @@ sudosed() {
   bundle install
 )
 
+# - build also rust service
+(
+  cd $MYDIR/rust
+  cargo build
+)
+
 # - D-Bus configuration
 $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
 
@@ -54,6 +60,20 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
   done
   sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/service/bin/@" \
           systemd.service /usr/lib/systemd/system/agama.service
+)
+
+# and same for rust service
+(
+  cd $MYDIR/rust/share
+  DBUSDIR=/usr/share/dbus-1/agama-services
+  for SVC in org.opensuse.Agama*.service; do
+    # it is intention to use debug here to get more useful debugging output
+    sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/rust/target/debug/@" $SVC $DBUSDIR/$SVC
+  done
+)
+
+# systemd reload and start of service
+(
   $SUDO systemctl daemon-reload
   # Start the separate dbus-daemon for Agama
   $SUDO systemctl start agama.service
