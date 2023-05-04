@@ -77,7 +77,7 @@ simply set what we consider a good default for a newly set locale, because:
 
 ### Detailed Design: Prioritize
 
-But other cases may not be as simple, so here's a generic design:
+But other cases may not be as simple, so here's a generic design (NOT YET USED):
 
 All settings are wrapped in a `Priority<T>` generic type (an Enum in Rust),
 meaning, what is the source and importance of the setting:
@@ -183,9 +183,9 @@ node /org/opensuse/Agama/Locale1 {
       # NOTE: "as" has different meaning to systemd,
       # we have a list of LANG settings, 1st gets passed to systemd,
       # others affect package selection
-      readwrite (yas)   Locales = (23, ['cs_CZ.UTF-8', 'de_DE.UTF-8']);
+      readwrite as   Locales = ['cs_CZ.UTF-8', 'de_DE.UTF-8'];
 
-      readwrite (ys)    VConsoleKeyboard = (23, 'cz-qwerty');
+      readwrite s    VConsoleKeyboard = 'cz-qwerty';
   };
 };
 ```
@@ -230,8 +230,6 @@ $ busctl --system introspect org.freedesktop.locale1 /org/freedesktop/locale1
 
 ### Timezone
 
-(Using the `Priority<T>` design from above)
-
 ```
 node /org/opensuse/Agama/TimeDate1 {
   interface org.opensuse.Agama.TimeDate1 {
@@ -243,8 +241,8 @@ node /org/opensuse/Agama/TimeDate1 {
       # success? do we need a specific return value other than some Error?
       Commit();
     properties:
-      readwrite (ys) Timezone = (42, 'Europe/Prague');
-      readwrite (yb) LocalRTC = (42, false);
+      readwrite s Timezone = 'Europe/Prague';
+      readwrite b LocalRTC = false;
   };
 };
 ```
