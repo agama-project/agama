@@ -3,7 +3,7 @@
 // section layouts.
 section:not([class^="pf-c"]) {
   display: grid;
-  grid-template-columns: var(--icon-size-m) 1fr;
+  grid-template-columns: min-content 1fr;
   grid-template-areas:
     "icon title"
     ".... content";
@@ -261,4 +261,9 @@ span.notification-mark[data-variant="sidebar"] {
   div:nth-child(2) {
     padding-left: calc(var(--icon-size) + var(--pf-c-helper-text__item-icon--MarginRight));
   }
+}
+
+// compact lists in popover
+.pf-c-popover li + li {
+  margin: 0;
 }

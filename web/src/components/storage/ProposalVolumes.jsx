@@ -25,6 +25,7 @@ import React, { useState } from "react";
 import {
   Dropdown, DropdownToggle, DropdownItem,
   Form, FormGroup, FormSelect, FormSelectOption,
+  List, ListItem,
   Skeleton,
   TextInput,
   Toolbar, ToolbarContent, ToolbarItem
@@ -32,7 +33,7 @@ import {
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { filesize } from "filesize";
 
-import { Em, If, Popup, RowActions } from '~/components/core';
+import { Em, If, Popup, RowActions, Tip } from '~/components/core';
 import { Icon } from '~/components/layout';
 import { noop } from "~/utils";
 
@@ -54,6 +55,33 @@ const sizeText = (size) => {
   if (size === -1) return "Unlimited";
 
   return filesize(size, { base: 2 });
+};
+
+/**
+ * Generates an hint describing which attributes affect the auto-calculated limits.
+ * If the limits are not affected then it returns `null`.
+ * @function
+ *
+ * @param {object} volume - storage volume object
+ * @returns {(ReactComponent|null)} component to display (can be `null`)
+ */
+const AutoCalculatedHint = (volume) => {
+  // no hint, the size is not affected by snapshots or other volumes
+  if (!volume.snapshotsAffectSizes && volume.sizeRelevantVolumes && volume.sizeRelevantVolumes.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      These limits are affected by:
+      <List>
+        {volume.snapshotsAffectSizes &&
+          <ListItem>The configuration of snapshots</ListItem>}
+        {volume.sizeRelevantVolumes && volume.sizeRelevantVolumes.length > 0 &&
+          <ListItem>Presence of other volumes ({volume.sizeRelevantVolumes.join(", ")})</ListItem>}
+      </List>
+    </>
+  );
 };
 
 /**
@@ -181,6 +209,7 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
   return (
     <>
       <Dropdown
+        position="right"
         isOpen={isOpen}
         onSelect={closeActions}
         dropdownItems={[
@@ -238,12 +267,10 @@ const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
     const limits = `${sizeText(volume.minSize)} - ${sizeText(volume.maxSize)}`;
     const isAuto = volume.adaptiveSizes && !volume.fixedSizeLimits;
 
-    const autoModeIcon = <Icon name="auto_mode" size={12} />;
-
     return (
       <div className="split">
         <span>{limits}</span>
-        <If condition={isAuto} then={<Em icon={autoModeIcon}>auto-calculated</Em>} />
+        <If condition={isAuto} then={<Tip description={AutoCalculatedHint(volume)}>auto</Tip>} />
       </div>
     );
   };

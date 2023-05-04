@@ -1,0 +1,45 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/org/opensuse/Agama/Language1">
+  <!--
+      org.opensuse.Agama.Language1:
+
+      Implementation note about language identifiers:
+
+      Maybe use <ulink url="https://www.rubydoc.info/github/yast/yast-packager/master/LanguageTag">yast2-packager/LanguageTag</ulink>.
+      See <ulink url="https://lists.opensuse.org/archives/list/yast-devel&commat;lists.opensuse.org/message/D52PSZ7TRID2RVM6CE6K2C2RUNNGOS6Z/">its announcement on yast-devel</ulink>.
+      See also <ulink url="https://tools.ietf.org/html/rfc4647">RFC 4647 Matching of Language Tags</ulink>.
+  -->
+  <interface name="org.opensuse.Agama.Language1">
+    <!--
+        ToInstall:
+        @short_description: Set list of languages to install
+        @LangIDs: List of language IDs from #org.opensuse.Agama.Language1:AvailableLanguages
+
+        Example:
+        <programlisting>ToInstall(["cs_CZ", "de_DE"])</programlisting>
+    -->
+    <method name="ToInstall">
+      <arg name="LangIDs" direction="in" type="as"/>
+    </method>
+    <method name="Finish">
+    </method>
+    <!--
+        AvailableLanguages:
+        @short_description: List of all available languages to install on target system.
+        Elements are triples:
+             language ID, human readable language name, and
+             a dictionary for future extensions to provide more data
+
+        <programlisting>
+AvailableLanguages -&gt; [["cs_CZ", "Czech", {}]]
+        </programlisting>
+    -->
+    <property type="a(ssa{sv})" name="AvailableLanguages" access="read"/>
+    <!--
+        MarkedForInstall:
+        @short_description: List of languages to install. Same format as ToInstall
+    -->
+    <property type="as" name="MarkedForInstall" access="read"/>
+  </interface>
+</node>
