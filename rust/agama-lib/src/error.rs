@@ -8,6 +8,8 @@ use zbus;
 pub enum ServiceError {
     #[error("D-Bus service error: {0}")]
     DBus(#[from] zbus::Error),
+    #[error("Unexpected or missing data")]
+    MissingData,
     // it's fine to say only "Error" because the original
     // specific error will be printed too
     #[error("Error: {0}")]
