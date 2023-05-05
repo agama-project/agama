@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,3 +28,4 @@ module Agama
 end
 
 require "agama/storage/callbacks/activate"
+require "agama/storage/callbacks/commit"
