@@ -113,14 +113,18 @@ export default function ProposalPage() {
   }, [client, load]);
 
   useEffect(() => {
+    const proposalLoaded = () => state.settings.candidateDevices !== undefined;
+
     const statusHandler = (serviceStatus) => {
       // Load the proposal if no proposal has been loaded yet. This can happen if the proposal
       // page is visited before probing has finished.
-      if (serviceStatus === IDLE && state.settings.candidateDevices === undefined) load();
+      if (serviceStatus === IDLE && !proposalLoaded()) load();
     };
 
-    return client.onStatusChange(statusHandler);
-  });
+    if (!proposalLoaded()) {
+      return client.onStatusChange(statusHandler);
+    }
+  }, [client, load, state.settings]);
 
   const changeSettings = async (settings) => {
     const newSettings = { ...state.settings, ...settings };

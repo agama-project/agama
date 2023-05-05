@@ -178,10 +178,7 @@ describe("when there is a proposal", () => {
 
     await screen.findByText("/dev/vda");
 
-    proposalData.result.candidateDevices = ["/dev/vdb"];
-
     const [onStatusChangeCb] = callbacks;
-    await act(() => onStatusChangeCb(IDLE));
-    await screen.findByText("/dev/vda");
+    expect(onStatusChangeCb).toBeUndefined();
   });
 });
