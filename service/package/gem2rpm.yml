@@ -23,7 +23,7 @@
     Requires:       yast2-installation
     Requires:       yast2-network
     Requires:       yast2-proxy
-    Requires:       yast2-storage-ng
+    Requires:       yast2-storage-ng >= 4.6.8
     Requires:       open-iscsi
     Requires:       yast2-iscsi-client >= 4.5.7
     Requires:       yast2-users
