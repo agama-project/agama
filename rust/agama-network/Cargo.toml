@@ -9,3 +9,4 @@ edition = "2021"
 zbus = "3.12.0"
 agama-lib = { path="../agama-lib" }
 async-std = { version = "1.12.0", features = ["attributes"] }
+thiserror = "1.0.40"
