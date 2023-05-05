@@ -51,11 +51,11 @@ class LanguageClient {
   async getLanguages() {
     const proxy = await this.client.proxy(LANGUAGE_IFACE);
     const locales = proxy.SupportedLocales;
-    const labels = proxy.LabelsForLocales;
+    const labels = await proxy.LabelsForLocales();
     return locales.map((locale, index) => {
       // labels structure is [[en_lang, en_territory], [native_lang, native_territory]]
       const [[en_lang,], [,]] = labels[index];
-      return { locale, en_lang };
+      return { id: locale, name: en_lang };
     });
   }
 
@@ -66,7 +66,7 @@ class LanguageClient {
    */
   async getSelectedLanguages() {
     const proxy = await this.client.proxy(LANGUAGE_IFACE);
-    return proxy.Locale;
+    return proxy.Locales;
   }
 
   /**
@@ -77,7 +77,7 @@ class LanguageClient {
    */
   async setLanguages(langIDs) {
     const proxy = await this.client.proxy(LANGUAGE_IFACE);
-    proxy.Locale = langIDs;
+    proxy.Locales = langIDs;
   }
 
   /**
@@ -88,7 +88,7 @@ class LanguageClient {
    */
   onLanguageChange(handler) {
     return this.client.onObjectChanged(LANGUAGE_PATH, LANGUAGE_IFACE, changes => {
-      const selected = changes.Locale.v[0];
+      const selected = changes.Locales.v[0];
       handler(selected);
     });
   }
