@@ -83,7 +83,6 @@
     "stylelint-config-standard": "^33.0.0",
     "stylelint-config-standard-scss": "^8.0.0",
     "stylelint-webpack-plugin": "^4.1.0",
-    "surge": "^0.23.1",
     "terser-webpack-plugin": "^5.1.4",
     "ts-jest": "^29.0.3",
     "tsconfig-paths-webpack-plugin": "^4.0.0",
