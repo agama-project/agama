@@ -63,9 +63,6 @@ export default function L10nSection({ showErrors }) {
     if (busy) return <SectionSkeleton />;
 
     const selected = languages.find(lang => lang.id === language);
-    console.log(selected);
-    console.log(language);
-    console.log(languages);
 
     return (
       <Text>
