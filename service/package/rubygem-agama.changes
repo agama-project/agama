@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri May  5 15:20:25 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add callbacks for storage commit errors (gh#openSUSE/agama/558).
+
+-------------------------------------------------------------------
 Wed Apr 26 15:48:41 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Add D-Bus API for managing issues.
