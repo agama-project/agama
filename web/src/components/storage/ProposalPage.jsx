@@ -27,6 +27,7 @@ import { toValidationError, useCancellablePromise } from "~/utils";
 import { Icon } from "~/components/layout";
 import { Page } from "~/components/core";
 import { ProposalActionsSection, ProposalPageOptions, ProposalSettingsSection } from "~/components/storage";
+import { IDLE } from "~/client/status";
 
 const initialState = {
   loading: true,
@@ -49,7 +50,7 @@ const reducer = (state, action) => {
 
     case "UPDATE_PROPOSAL": {
       const { proposal, errors } = action.payload;
-      const { availableDevices, volumeTemplates, result } = proposal;
+      const { availableDevices, volumeTemplates, result = {} } = proposal;
       const { candidateDevices, lvm, encryptionPassword, volumes, actions } = result;
       return {
         ...state,
@@ -92,7 +93,7 @@ export default function ProposalPage() {
 
     const { proposal, errors } = await loadProposal();
     dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
-    dispatch({ type: "STOP_LOADING" });
+    if (proposal.result !== undefined) dispatch({ type: "STOP_LOADING" });
   }, [cancellablePromise, client, loadProposal]);
 
   const calculate = useCallback(async (settings) => {
@@ -110,6 +111,20 @@ export default function ProposalPage() {
 
     return client.onDeprecate(() => load());
   }, [client, load]);
+
+  useEffect(() => {
+    const proposalLoaded = () => state.settings.candidateDevices !== undefined;
+
+    const statusHandler = (serviceStatus) => {
+      // Load the proposal if no proposal has been loaded yet. This can happen if the proposal
+      // page is visited before probing has finished.
+      if (serviceStatus === IDLE && !proposalLoaded()) load();
+    };
+
+    if (!proposalLoaded()) {
+      return client.onStatusChange(statusHandler);
+    }
+  }, [client, load, state.settings]);
 
   const changeSettings = async (settings) => {
     const newSettings = { ...state.settings, ...settings };

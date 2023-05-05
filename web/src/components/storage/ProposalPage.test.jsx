@@ -23,6 +23,7 @@ import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
 import { createCallbackMock, installerRender, mockComponent } from "~/test-utils";
 import { createClient } from "~/client";
+import { IDLE } from "~/client/status";
 import { ProposalPage } from "~/components/storage";
 
 jest.mock("~/client");
@@ -56,10 +57,12 @@ const isDeprecatedFn = jest.fn();
 
 let onDeprecateFn = jest.fn();
 
+let onStatusChangeFn = jest.fn();
+
 beforeEach(() => {
   isDeprecatedFn.mockResolvedValue(false);
 
-  proposalData = defaultProposalData;
+  proposalData = { ...defaultProposalData };
 
   createClient.mockImplementation(() => {
     return {
@@ -71,7 +74,8 @@ beforeEach(() => {
         },
         getErrors: jest.fn().mockResolvedValue([]),
         isDeprecated: isDeprecatedFn,
-        onDeprecate: onDeprecateFn
+        onDeprecate: onDeprecateFn,
+        onStatusChange: onStatusChangeFn
       }
     };
   });
@@ -130,11 +134,51 @@ describe("when the storage devices become deprecated", () => {
 
     await screen.findByText("/dev/vda");
 
-    proposalData.result.candidateDevices = ["/dev/vdb"];
+    proposalData.result = { ...defaultProposalData.result, candidateDevices: ["/dev/vdb"] };
 
     const [onDeprecateCb] = callbacks;
     await act(() => onDeprecateCb());
 
     await screen.findByText("/dev/vdb");
+  });
+});
+
+describe("when there is no proposal yet", () => {
+  beforeEach(() => {
+    proposalData.result = undefined;
+  });
+
+  it("shows the page as loading", async () => {
+    installerRender(<ProposalPage />);
+
+    screen.getAllByText(/PFSkeleton/);
+    await waitFor(() => expect(screen.queryByText(/Installation device/)).toBeNull());
+  });
+
+  it("loads the proposal when the service finishes to calculate", async () => {
+    const [mockFunction, callbacks] = createCallbackMock();
+    onStatusChangeFn = mockFunction;
+    installerRender(<ProposalPage />);
+
+    screen.getAllByText(/PFSkeleton/);
+
+    proposalData.result = { ...defaultProposalData.result };
+
+    const [onStatusChangeCb] = callbacks;
+    await act(() => onStatusChangeCb(IDLE));
+    await screen.findByText("/dev/vda");
+  });
+});
+
+describe("when there is a proposal", () => {
+  it("does not load the proposal when the service finishes to calculate", async () => {
+    const [mockFunction, callbacks] = createCallbackMock();
+    onStatusChangeFn = mockFunction;
+    installerRender(<ProposalPage />);
+
+    await screen.findByText("/dev/vda");
+
+    const [onStatusChangeCb] = callbacks;
+    expect(onStatusChangeCb).toBeUndefined();
   });
 });
