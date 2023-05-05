@@ -39,3 +39,25 @@ impl Device {
         Ok(device.ty as u8)
     }
 }
+
+pub struct Connection {
+    network: Arc<Mutex<NetworkState>>,
+    conn_id: String,
+}
+
+impl Connection {
+    pub fn new(network: Arc<Mutex<NetworkState>>, conn_id: &str) -> Self {
+        Self {
+            network,
+            conn_id: conn_id.to_string(),
+        }
+    }
+}
+
+#[dbus_interface(name = "org.opensuse.Agama.Network1.Connection")]
+impl Connection {
+    #[dbus_interface(property)]
+    pub fn id(&self) -> &str {
+        &self.conn_id
+    }
+}

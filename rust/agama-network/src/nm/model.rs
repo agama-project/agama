@@ -23,9 +23,8 @@ impl NmDevice {
 /// NetworkManager connection
 #[derive(Debug, Default, PartialEq)]
 pub struct NmConnection {
+    /// Connection ID
     pub id: String,
-    /// Connection name
-    pub name: String,
     /// Wireless settings
     pub wireless: Option<NmWireless>,
     /// IPv4 configuration

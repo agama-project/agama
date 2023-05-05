@@ -33,6 +33,7 @@ impl NetworkService {
     /// Starts listening on the D-Bus connection
     pub async fn listen(&self) -> Result<(), Box<dyn Error>> {
         self.publish_devices().await?;
+        self.publish_connections().await?;
         self.connection
             .request_name("org.opensuse.Agama.Network1")
             .await?;
@@ -47,6 +48,21 @@ impl NetworkService {
             let path = format!("/org/opensuse/Agama/Network1/Device/{}", &device.name);
             self.add_interface(&path, &device.name, |s, n| interfaces::Device::new(s, n))
                 .await?;
+        }
+
+        Ok(())
+    }
+
+    // TODO: move this logic to a separate struct that registers all needed interfaces
+    async fn publish_connections(&self) -> Result<(), Box<dyn Error>> {
+        let state = self.state.lock().unwrap();
+
+        for (i, conn) in state.connections.iter().enumerate() {
+            let path = format!("/org/opensuse/Agama/Network1/Connection/{}", i);
+            self.add_interface(&path, &conn.name(), |s, n| {
+                interfaces::Connection::new(s, n)
+            })
+            .await?;
         }
 
         Ok(())

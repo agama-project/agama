@@ -1,5 +1,5 @@
 use super::model::*;
-use super::proxies::{DeviceProxy, NetworkManagerProxy};
+use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
 use agama_lib::error::ServiceError;
 use std::collections::HashMap;
 use zbus::zvariant;
@@ -47,6 +47,23 @@ impl<'a> NetworkManagerClient<'a> {
         }
 
         Ok(devs)
+    }
+
+    pub async fn connections(&self) -> Result<Vec<NmConnection>, ServiceError> {
+        let proxy = SettingsProxy::new(&self.connection).await?;
+        let paths = proxy.list_connections().await?;
+        let mut connections = vec![];
+        for path in paths {
+            let proxy = ConnectionProxy::builder(&self.connection)
+                .path(path.as_str())?
+                .build()
+                .await?;
+            let settings = proxy.get_settings().await?;
+            if let Some(connection) = self.connection_from_dbus(settings) {
+                connections.push(connection);
+            }
+        }
+        Ok(connections)
     }
 
     /// Returns the applied connection to a given device

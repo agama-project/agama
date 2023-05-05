@@ -1,20 +1,27 @@
 //! Network data model
 
-#![allow(dead_code)]
-
-use crate::nm::{NetworkManagerClient, NmDevice, NmDeviceType};
+use crate::nm::{NetworkManagerClient, NmConnection, NmDevice, NmDeviceType};
 use std::error::Error;
 
 pub async fn read_network_state() -> Result<NetworkState, Box<dyn Error>> {
     let nm_client = NetworkManagerClient::from_system().await?;
+
     let nm_devices = nm_client.devices().await?;
     let devices: Vec<Device> = nm_devices.into_iter().map(|d| d.into()).collect();
-    Ok(NetworkState { devices })
+
+    let nm_conns = nm_client.connections().await?;
+    let connections: Vec<Connection> = nm_conns.into_iter().map(|d| d.into()).collect();
+
+    Ok(NetworkState {
+        devices,
+        connections,
+    })
 }
 
 #[derive(Debug)]
 pub struct NetworkState {
     pub devices: Vec<Device>,
+    pub connections: Vec<Connection>,
 }
 
 impl NetworkState {
@@ -31,15 +38,6 @@ impl NetworkState {
 pub struct Device {
     pub name: String,
     pub ty: DeviceType,
-}
-
-impl Device {
-    fn from_nm_device(dev: NmDevice) -> Self {
-        Self {
-            name: dev.iface,
-            ty: DeviceType::Ethernet,
-        }
-    }
 }
 
 impl From<NmDevice> for Device {
@@ -85,4 +83,39 @@ impl From<NmDeviceType> for DeviceType {
             _ => DeviceType::Unknown,
         }
     }
+}
+
+/// Represents an available network connection
+#[derive(Debug)]
+pub enum Connection {
+    Ethernet(EthernetConnection),
+}
+
+impl Connection {
+    pub fn base(&self) -> &BaseConnection {
+        match &self {
+            Connection::Ethernet(conn) => &conn.base,
+        }
+    }
+
+    pub fn name(&self) -> &str {
+        self.base().id.as_str()
+    }
+}
+
+impl From<NmConnection> for Connection {
+    fn from(value: NmConnection) -> Self {
+        let base = BaseConnection { id: value.id };
+        Connection::Ethernet(EthernetConnection { base })
+    }
+}
+
+#[derive(Debug)]
+pub struct BaseConnection {
+    id: String,
+}
+
+#[derive(Debug)]
+pub struct EthernetConnection {
+    base: BaseConnection,
 }
