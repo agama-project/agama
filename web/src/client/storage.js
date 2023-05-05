@@ -114,7 +114,7 @@ class ProposalManager {
    * @typedef {object} ProposalData
    * @property {AvailableDevice[]} availableDevices
    * @property {Volume[]} volumeTemplates
-   * @property {Result} result
+   * @property {Result|undefined} result
    */
   async getData() {
     const availableDevices = await this.getAvailableDevices();
@@ -154,7 +154,7 @@ class ProposalManager {
   /**
    * Gets the values of the current proposal
    *
-   * @return {Promise<Result>}
+   * @return {Promise<Result|undefined>}
   */
   async getResult() {
     const proxy = await this.proposalProxy();
