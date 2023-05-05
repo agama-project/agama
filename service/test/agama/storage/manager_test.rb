@@ -271,6 +271,7 @@ describe Agama::Storage::Manager do
       allow(Yast::PackagesProposal).to receive(:SetResolvables)
       allow(Bootloader::ProposalClient).to receive(:new)
         .and_return(bootloader_proposal)
+      allow(Y2Storage::Clients::InstPrepdisk).to receive(:new).and_return(client)
     end
 
     let(:proposed_devicegraph) do
@@ -283,6 +284,8 @@ describe Agama::Storage::Manager do
 
     let(:bootloader_proposal) { instance_double(Bootloader::ProposalClient, make_proposal: nil) }
 
+    let(:client) { instance_double(Y2Storage::Clients::InstPrepdisk, run: nil) }
+
     it "adds storage software to install" do
       expect(Yast::PackagesProposal).to receive(:SetResolvables) do |_, _, packages|
         expect(packages).to contain_exactly("btrfsprogs", "snapper")
@@ -292,7 +295,12 @@ describe Agama::Storage::Manager do
     end
 
     it "runs the inst_prepdisk client" do
-      expect(Yast::WFM).to receive(:CallFunction).with("inst_prepdisk", [])
+      expect(Y2Storage::Clients::InstPrepdisk).to receive(:new) do |params|
+        expect(params[:commit_callbacks]).to be_a(Agama::Storage::Callbacks::Commit)
+      end.and_return(client)
+
+      expect(client).to receive(:run)
+
       storage.install
     end
   end

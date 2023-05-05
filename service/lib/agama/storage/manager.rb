@@ -22,6 +22,7 @@
 require "yast"
 require "bootloader/proposal_client"
 require "y2storage/storage_manager"
+require "y2storage/clients/inst_prepdisk"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/callbacks"
@@ -107,9 +108,7 @@ module Agama
           logger.debug "Bootloader proposal #{proposal.inspect}"
         end
         progress.step("Adding storage-related packages") { add_packages }
-        progress.step("Preparing the storage devices") do
-          Yast::WFM.CallFunction("inst_prepdisk", [])
-        end
+        progress.step("Preparing the storage devices") { perform_storage_actions }
         progress.step("Writing bootloader sysconfig") do
           # call inst bootloader to get properly initialized bootloader
           # sysconfig before package installation
@@ -202,6 +201,16 @@ module Agama
 
         logger.info "Selecting these packages for installation: #{packages}"
         Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, packages)
+      end
+
+      # Prepares the storage devices for installation
+      #
+      # @return [Boolean] true if the all actions were successful
+      def perform_storage_actions
+        callbacks = Callbacks::Commit.new(questions_client, logger: logger)
+
+        client = Y2Storage::Clients::InstPrepdisk.new(commit_callbacks: callbacks)
+        client.run == :next
       end
 
       # Recalculates the list of issues
