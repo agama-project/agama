@@ -104,11 +104,20 @@ impl<'a> NetworkManagerClient<'a> {
                 let prefix: &u32 = map.get("prefix")?.downcast_ref()?;
                 addresses.push((addr_str.to_string(), *prefix))
             }
-            let nm_ipv4 = NmIp4Config {
+            let mut nm_ipv4 = NmIp4Config {
                 method: NmMethod(method.to_string()),
                 addresses,
                 ..Default::default()
             };
+
+            if let Some(dns_data) = ipv4.get("dns-data") {
+                dbg!(&dns_data);
+                let dns_data = dns_data.downcast_ref::<zbus::zvariant::Array>()?;
+                for server in dns_data.get() {
+                    let server: &str = server.downcast_ref()?;
+                    nm_ipv4.nameservers.push(server.to_string());
+                }
+            }
             nm_connection.ipv4 = Some(nm_ipv4);
         }
 

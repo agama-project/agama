@@ -141,6 +141,7 @@ pub struct BaseConnection {
 pub struct Ipv4Config {
     pub method: IpMethod,
     pub addresses: Vec<(Ipv4Addr, u32)>,
+    pub nameservers: Vec<Ipv4Addr>,
     pub gateway: Option<Ipv4Addr>,
 }
 
@@ -152,9 +153,16 @@ impl From<NmIp4Config> for Ipv4Config {
             .filter_map(|(addr, prefix)| addr.parse().ok().map(|i| (i, prefix)))
             .collect();
 
+        let nameservers = value
+            .nameservers
+            .into_iter()
+            .filter_map(|ns| ns.parse().ok())
+            .collect();
+
         Ipv4Config {
             method: value.method.into(),
             addresses,
+            nameservers,
             ..Default::default()
         }
     }

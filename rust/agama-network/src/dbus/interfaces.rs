@@ -110,4 +110,9 @@ impl Ipv4 {
     pub fn method(&self) -> zbus::fdo::Result<u8> {
         self.with_ipv4(|ipv4| ipv4.method as u8)
     }
+
+    #[dbus_interface(property)]
+    pub fn nameservers(&self) -> zbus::fdo::Result<Vec<String>> {
+        self.with_ipv4(|ipv4| ipv4.nameservers.iter().map(|a| a.to_string()).collect())
+    }
 }
