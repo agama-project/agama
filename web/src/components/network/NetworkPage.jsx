@@ -24,35 +24,8 @@ import { Button, Skeleton } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
-import { Page, PageOptions, Section } from "~/components/core";
-import { ConnectionsTable, IpSettingsForm, WifiSelector } from "~/components/network";
-
-/**
- * Internal component for displaying the WifiSelector when applicable
- * @component
- *
- * @param {object} props
- * @param {boolean} props.supported - whether the system supports scanning WiFi networks
- * @param {string} [buttonVariant="link"] - the PF4/Button variant prop for the button. See {@link https://www.patternfly.org/v4/components/button#props }
- */
-const WifiScan = ({ supported, actionVariant = "link" }) => {
-  const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
-
-  if (!supported) return null;
-
-  return (
-    <>
-      <Button
-        variant={actionVariant}
-        onClick={() => setWifiSelectorOpen(true)}
-        icon={<Icon name="wifi_find" size="24" />}
-      >
-        Connect to a Wi-Fi network
-      </Button>
-      <WifiSelector isOpen={wifiSelectorOpen} onClose={() => setWifiSelectorOpen(false)} />
-    </>
-  );
-};
+import { If, Page, Section } from "~/components/core";
+import { ConnectionsTable, IpSettingsForm, NetworkPageOptions, WifiSelector } from "~/components/network";
 
 /**
  * Internal component for displaying info when none wire connection is found
@@ -72,8 +45,9 @@ const NoWiredConnections = () => {
  *
  * @param {object} props
  * @param {boolean} props.supported - whether the system supports scanning WiFi networks
+ * @param {boolean} props.openWifiSelector - the function for opening the WiFi selector
  */
-const NoWifiConnections = ({ wifiScanSupported }) => {
+const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
   const message = wifiScanSupported
     ? "The system has not been configured for connecting to a WiFi network yet."
     : "The system does not support WiFi connections, probably because of missing or disabled hardware.";
@@ -82,7 +56,20 @@ const NoWifiConnections = ({ wifiScanSupported }) => {
     <div className="stack">
       <div className="bold">No WiFi connections found</div>
       <div>{message}</div>
-      <WifiScan supported={wifiScanSupported} actionVariant="primary" />
+      <If
+        condition={wifiScanSupported}
+        then={
+          <>
+            <Button
+              variant="primary"
+              onClick={openWifiSelector}
+              icon={<Icon name="wifi_find" size="24" />}
+            >
+              Connect to a Wi-Fi network
+            </Button>
+          </>
+        }
+      />
     </div>
   );
 };
@@ -98,6 +85,10 @@ export default function NetworkPage() {
   const [connections, setConnections] = useState([]);
   const [selectedConnection, setSelectedConnection] = useState(null);
   const [wifiScanSupported, setWifiScanSupported] = useState(false);
+  const [wifiSelectorOpen, setWifiSelectorOpen] = useState(false);
+
+  const openWifiSelector = () => setWifiSelectorOpen(true);
+  const closeWifiSelector = () => setWifiSelectorOpen(false);
 
   useEffect(() => {
     client.setUp().then(() => setInitialized(true));
@@ -156,13 +147,13 @@ export default function NetworkPage() {
 
   const WifiConnections = () => {
     if (activeWifiConnections.length === 0) {
-      return <NoWifiConnections wifiScanSupported={wifiScanSupported} />;
+      return (
+        <NoWifiConnections wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
+      );
     }
 
     return (
-      <>
-        <ConnectionsTable connections={activeWifiConnections} onEdit={selectConnection} onForget={forgetConnection} />
-      </>
+      <ConnectionsTable connections={activeWifiConnections} onEdit={selectConnection} onForget={forgetConnection} />
     );
   };
 
@@ -182,12 +173,18 @@ export default function NetworkPage() {
         { ready ? <WifiConnections /> : <Skeleton /> }
       </Section>
 
+      <NetworkPageOptions wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
+
+      <If
+        condition={wifiScanSupported}
+        then={<WifiSelector isOpen={wifiSelectorOpen} onClose={closeWifiSelector} />}
+      />
+
       { /* TODO: improve the connections edition */ }
-      { selectedConnection && <IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} /> }
-      { wifiScanSupported &&
-        <PageOptions title="Network">
-          <WifiScan supported={wifiScanSupported} />
-        </PageOptions> }
+      <If
+        condition={selectedConnection}
+        then=<IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} />
+      />
     </Page>
   );
 }

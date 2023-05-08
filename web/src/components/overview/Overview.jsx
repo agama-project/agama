@@ -23,8 +23,7 @@ import React, { useState } from "react";
 import { useSoftware } from "~/context/software";
 import { Navigate } from "react-router-dom";
 
-import { Page, PageOptions, InstallButton } from "~/components/core";
-import { ChangeProductLink } from "~/components/software";
+import { Page, InstallButton } from "~/components/core";
 import {
   L10nSection,
   NetworkSection,
@@ -47,10 +46,6 @@ function Overview() {
       icon="inventory_2"
       action={<InstallButton onClick={() => setShowErrors(true)} />}
     >
-      <PageOptions>
-        <ChangeProductLink />
-      </PageOptions>
-
       <L10nSection />
       <NetworkSection />
       <StorageSection showErrors />

@@ -1,7 +1,7 @@
 // Standard section
 // In the future we might need to use an specific CSS class for it if we start having different
 // section layouts.
-section {
+section:not([class^="pf-c"]) {
   display: grid;
   grid-template-columns: min-content 1fr;
   grid-template-areas:
@@ -10,7 +10,7 @@ section {
   gap: var(--spacer-small);
 }
 
-section:not(:last-child) {
+section:not(:last-child, [class^="pf-c"]) {
   margin-block-end: var(--spacer-large);
 }
 
@@ -194,6 +194,72 @@ section > .content {
 .dasd-format-progress {
   .pf-c-progress {
     --pf-c-progress--GridGap: var(--spacer-small);
+  }
+}
+
+.page-options > button {
+  --pf-c-button--PaddingRight: 0
+}
+
+.page-options a {
+  font-size: 16px;
+  font-weight: var(--fw-bold);
+  text-decoration: none;
+
+  svg {
+    color: inherit;
+  }
+
+  &:hover {
+    color: var(--color-link-hover);
+
+    svg {
+      color: var(--color-link);
+    }
+  }
+}
+
+span.notification-mark {
+  --nm-border-width: 0;
+  --nm-border-color: transparent;
+  --nm-border: var(--nm-border-width) solid var(--nm-border-color);
+  --nm-size: 8px;
+  --nm-margin-inline: var(--nm-size, 5px);
+  --nm-display: inline-block;
+  --nm-color: #00BFFF; //deepskyblue
+
+  margin-inline: var(--nm-margin-inline);
+  display: var(--nm-display);
+  background: var(--nm-color);
+  border: var(--nm-border);
+  width: var(--nm-size);
+  height: var(--nm-size);
+  border-radius: 999px;
+}
+
+span.notification-mark[data-variant="sidebar"] {
+  --nm-size: calc(var(--fs-base) + var(--nm-border-width));
+  --nm-display: initial;
+  --nm-border-width: 2px;
+  --nm-border-color: var(--color-primary);
+  --nm-margin-inline: 0;
+
+  position: absolute;
+  right: 0;
+}
+
+.issue {
+  --icon-size: 1rem;
+
+  div:first-child {
+    svg {
+      width: var(--icon-size);
+      height: var(--icon-size);
+    }
+  }
+
+  div:nth-child(2) {
+    padding-left: calc(var(--icon-size) + var(--pf-c-helper-text__item-icon--MarginRight));
   }
 }
 

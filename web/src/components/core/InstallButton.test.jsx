@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,13 +31,18 @@ jest.mock("~/client", () => ({
   createClient: jest.fn()
 }));
 
-describe("when the button is clicked and there are not validation errors", () => {
+describe("when the button is clicked and there are not errors", () => {
+  let hasIssues = false;
+
   beforeEach(() => {
     createClient.mockImplementation(() => {
       return {
         manager: {
           startInstallation: startInstallationFn,
           canInstall: () => Promise.resolve(true),
+        },
+        issues: {
+          any: () => Promise.resolve(hasIssues)
         }
       };
     });
@@ -64,6 +69,36 @@ describe("when the button is clicked and there are not validation errors", () =>
 
     await waitFor(() => {
       expect(screen.queryByRole("button", { name: "Continue" })).not.toBeInTheDocument();
+    });
+  });
+
+  describe("if there are issues", () => {
+    beforeEach(() => {
+      hasIssues = true;
+    });
+
+    it("shows a link to go to the issues page", async () => {
+      const { user } = installerRender(<InstallButton />);
+      const button = await screen.findByRole("button", { name: "Install" });
+      await user.click(button);
+
+      await screen.findByRole("button", { name: /list of issues$/ });
+    });
+  });
+
+  describe("if there are not issues", () => {
+    beforeEach(() => {
+      hasIssues = false;
+    });
+
+    it("does not show a link to go to the issues page", async () => {
+      const { user } = installerRender(<InstallButton />);
+      const button = await screen.findByRole("button", { name: "Install" });
+      await user.click(button);
+      await waitFor(() => {
+        const link = screen.queryByRole("button", { name: /list of issues$/ });
+        expect(link).toBeNull();
+      });
     });
   });
 });

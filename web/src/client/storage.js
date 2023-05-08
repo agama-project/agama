@@ -22,7 +22,7 @@
 // @ts-check
 
 import DBusClient from "./dbus";
-import { WithStatus, WithProgress, WithValidation } from "./mixins";
+import { WithIssues, WithStatus, WithProgress } from "./mixins";
 import { hex } from "~/utils";
 
 const STORAGE_IFACE = "org.opensuse.Agama.Storage1";
@@ -114,7 +114,7 @@ class ProposalManager {
    * @typedef {object} ProposalData
    * @property {AvailableDevice[]} availableDevices
    * @property {Volume[]} volumeTemplates
-   * @property {Result} result
+   * @property {Result|undefined} result
    */
   async getData() {
     const availableDevices = await this.getAvailableDevices();
@@ -154,7 +154,7 @@ class ProposalManager {
   /**
    * Gets the values of the current proposal
    *
-   * @return {Promise<Result>}
+   * @return {Promise<Result|undefined>}
   */
   async getResult() {
     const proxy = await this.proposalProxy();
@@ -864,7 +864,7 @@ class StorageBaseClient {
 /**
  * Allows interacting with the storage settings
  */
-class StorageClient extends WithValidation(
+class StorageClient extends WithIssues(
   WithProgress(
     WithStatus(StorageBaseClient, STORAGE_OBJECT), STORAGE_OBJECT
   ), STORAGE_OBJECT

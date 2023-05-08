@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require_relative "with_validation_examples"
+require_relative "with_issues_examples"
 require "agama/dbus/clients/storage"
 require "dbus"
 
@@ -194,5 +194,5 @@ describe Agama::DBus::Clients::Storage do
     end
   end
 
-  include_examples "validation"
+  include_examples "issues"
 end

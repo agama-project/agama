@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
+require_relative "../with_progress_examples"
 require_relative File.join(
   SRC_PATH, "agama", "dbus", "y2dir", "software", "modules", "PackageCallbacks.rb"
 )
@@ -282,4 +283,6 @@ describe Agama::Software::Manager do
       end
     end
   end
+
+  include_examples "progress"
 end

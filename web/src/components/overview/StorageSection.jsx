@@ -22,7 +22,7 @@
 import React, { useReducer, useEffect } from "react";
 import { Text } from "@patternfly/react-core";
 
-import { useCancellablePromise } from "~/utils";
+import { toValidationError, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
 import { Em, ProgressText, Section } from "~/components/core";
@@ -104,7 +104,8 @@ export default function StorageSection({ showErrors = false }) {
       if (isDeprecated) await cancellablePromise(client.probe());
 
       const proposal = await cancellablePromise(client.proposal.getData());
-      const errors = await cancellablePromise(client.getValidationErrors());
+      const issues = await cancellablePromise(client.getErrors());
+      const errors = issues.map(toValidationError);
 
       dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
     };
