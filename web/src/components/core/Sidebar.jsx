@@ -92,8 +92,8 @@ export default function Sidebar ({ children }) {
         <button
           onClick={open}
           className="plain-control"
-          aria-label="Show navigation and other options"
-          aria-controls="navigation-and-options"
+          aria-label="Show global options"
+          aria-controls="global-options"
           aria-expanded={isOpen}
         >
           <If
@@ -104,10 +104,10 @@ export default function Sidebar ({ children }) {
         </button>
       </AppActions>
 
-      <nav
-        id="navigation-and-options"
+      <aside
+        id="global-options"
         className="wrapper sidebar"
-        aria-label="Navigation and other options"
+        aria-label="Global options"
         data-state={isOpen ? "visible" : "hidden"}
       >
         <header className="split justify-between">
@@ -133,7 +133,7 @@ export default function Sidebar ({ children }) {
           </a>
           { targetInfo }
         </footer>
-      </nav>
+      </aside>
     </>
   );
 }

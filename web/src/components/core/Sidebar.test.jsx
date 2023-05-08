@@ -21,11 +21,15 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockLayout, withNotificationProvider } from "~/test-utils";
+import { installerRender, mockLayout, mockComponent, withNotificationProvider } from "~/test-utils";
 import { Sidebar } from "~/components/core";
 import { createClient } from "~/client";
 
+// Mock layout
 jest.mock("~/components/layout/Layout", () => mockLayout());
+// Mock some components using contexts and not relevant for below tests
+jest.mock("~/components/core/LogsButton", () => mockComponent("LogsButton Mock"));
+jest.mock("~/components/software/ChangeProductLink", () => mockComponent("ChangeProductLink Mock"));
 
 let hasIssues = false;
 
@@ -45,7 +49,7 @@ beforeEach(() => {
 it("renders the sidebar initially hidden", async () => {
   installerRender(withNotificationProvider(<Sidebar />));
 
-  const nav = await screen.findByRole("navigation", { name: /options/i });
+  const nav = await screen.findByRole("complementary", { name: /options/i });
   expect(nav).toHaveAttribute("data-state", "hidden");
 });
 
@@ -53,11 +57,11 @@ it("renders a link for displaying the sidebar", async () => {
   const { user } = installerRender(withNotificationProvider(<Sidebar />));
 
   const link = await screen.findByLabelText(/Show/i);
-  const nav = await screen.findByRole("navigation", { name: /options/i });
+  const sidebar = await screen.findByRole("complementary", { name: /options/i });
 
-  expect(nav).toHaveAttribute("data-state", "hidden");
+  expect(sidebar).toHaveAttribute("data-state", "hidden");
   await user.click(link);
-  expect(nav).toHaveAttribute("data-state", "visible");
+  expect(sidebar).toHaveAttribute("data-state", "visible");
 });
 
 it("renders a link for hiding the sidebar", async () => {
@@ -66,12 +70,12 @@ it("renders a link for hiding the sidebar", async () => {
   const openLink = await screen.findByLabelText(/Show/i);
   const closeLink = await screen.findByLabelText(/Hide/i);
 
-  const nav = await screen.findByRole("navigation", { name: /options/i });
+  const sidebar = await screen.findByRole("complementary", { name: /options/i });
 
   await user.click(openLink);
-  expect(nav).toHaveAttribute("data-state", "visible");
+  expect(sidebar).toHaveAttribute("data-state", "visible");
   await user.click(closeLink);
-  expect(nav).toHaveAttribute("data-state", "hidden");
+  expect(sidebar).toHaveAttribute("data-state", "hidden");
 });
 
 it("moves the focus to the close action after opening it", async () => {
@@ -100,36 +104,36 @@ describe("onClick bubbling", () => {
 
     const openLink = screen.getByLabelText(/Show/i);
     await user.click(openLink);
-    const nav = screen.getByRole("navigation", { name: /options/i });
-    expect(nav).toHaveAttribute("data-state", "visible");
+    const sidebar = screen.getByRole("complementary", { name: /options/i });
+    expect(sidebar).toHaveAttribute("data-state", "visible");
 
     // user clicks in the sidebar body
-    await user.click(nav);
-    expect(nav).toHaveAttribute("data-state", "visible");
+    await user.click(sidebar);
+    expect(sidebar).toHaveAttribute("data-state", "visible");
 
     // user clicks on a button set for keeping the sidebar open
-    const keepOpenButton = within(nav).getByRole("button", { name: "Keep it open!" });
+    const keepOpenButton = within(sidebar).getByRole("button", { name: "Keep it open!" });
     await user.click(keepOpenButton);
-    expect(nav).toHaveAttribute("data-state", "visible");
+    expect(sidebar).toHaveAttribute("data-state", "visible");
 
     // user clicks a button NOT set for keeping the sidebar open
-    const button = within(nav).getByRole("button", { name: "Do something" });
+    const button = within(sidebar).getByRole("button", { name: "Do something" });
     await user.click(button);
-    expect(nav).toHaveAttribute("data-state", "hidden");
+    expect(sidebar).toHaveAttribute("data-state", "hidden");
 
     // open it again
     await user.click(openLink);
-    expect(nav).toHaveAttribute("data-state", "visible");
+    expect(sidebar).toHaveAttribute("data-state", "visible");
 
     // user clicks on link set for keeping the sidebar open
-    const keepOpenLink = within(nav).getByRole("link", { name: "Keep it open!" });
+    const keepOpenLink = within(sidebar).getByRole("link", { name: "Keep it open!" });
     await user.click(keepOpenLink);
-    expect(nav).toHaveAttribute("data-state", "visible");
+    expect(sidebar).toHaveAttribute("data-state", "visible");
 
     // user clicks on link NOT set for keeping the sidebar open
-    const link = within(nav).getByRole("link", { name: "Goes somewhere" });
+    const link = within(sidebar).getByRole("link", { name: "Goes somewhere" });
     await user.click(link);
-    expect(nav).toHaveAttribute("data-state", "hidden");
+    expect(sidebar).toHaveAttribute("data-state", "hidden");
   });
 });
 

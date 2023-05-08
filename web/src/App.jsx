@@ -26,8 +26,19 @@ import { useInstallerClient } from "~/context/installer";
 import { STARTUP, INSTALL } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
+import {
+  About,
+  Disclosure,
+  Installation,
+  IssuesLink,
+  LoadingEnvironment,
+  LogsButton,
+  ShowLogButton,
+  ShowTerminalButton,
+  Sidebar
+} from "~/components/core";
+import { ChangeProductLink } from "~/components/software";
 import { Layout, Title, DBusError } from "~/components/layout";
-import { Installation, LoadingEnvironment } from "~/components/core";
 
 function App() {
   const client = useInstallerClient();
@@ -71,10 +82,23 @@ function App() {
   };
 
   return (
-    <Layout>
-      <Title>Agama</Title>
-      <Content />
-    </Layout>
+    <>
+      <Sidebar>
+        <ChangeProductLink />
+        <IssuesLink />
+        <Disclosure label="Diagnostic tools" data-keep-sidebar-open>
+          <ShowLogButton />
+          <LogsButton data-keep-sidebar-open="true" />
+          <ShowTerminalButton />
+        </Disclosure>
+        <About />
+      </Sidebar>
+
+      <Layout>
+        <Title>Agama</Title>
+        <Content />
+      </Layout>
+    </>
   );
 }
 
