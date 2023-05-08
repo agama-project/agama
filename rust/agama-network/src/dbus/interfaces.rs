@@ -115,4 +115,12 @@ impl Ipv4 {
     pub fn nameservers(&self) -> zbus::fdo::Result<Vec<String>> {
         self.with_ipv4(|ipv4| ipv4.nameservers.iter().map(|a| a.to_string()).collect())
     }
+
+    #[dbus_interface(property)]
+    pub fn gateway(&self) -> zbus::fdo::Result<String> {
+        self.with_ipv4(|ipv4| match &ipv4.gateway {
+            Some(addr) => addr.to_string(),
+            None => "".to_string(),
+        })
+    }
 }

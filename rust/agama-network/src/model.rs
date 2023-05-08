@@ -159,10 +159,13 @@ impl From<NmIp4Config> for Ipv4Config {
             .filter_map(|ns| ns.parse().ok())
             .collect();
 
+        let gateway = value.gateway.map(|g| g.parse::<Ipv4Addr>().unwrap());
+
         Ipv4Config {
             method: value.method.into(),
             addresses,
             nameservers,
+            gateway,
             ..Default::default()
         }
     }

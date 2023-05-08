@@ -118,6 +118,12 @@ impl<'a> NetworkManagerClient<'a> {
                     nm_ipv4.nameservers.push(server.to_string());
                 }
             }
+
+            if let Some(gateway) = ipv4.get("gateway") {
+                let gateway: &str = gateway.downcast_ref()?;
+                nm_ipv4.gateway = Some(gateway.to_string());
+            }
+
             nm_connection.ipv4 = Some(nm_ipv4);
         }
 

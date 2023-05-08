@@ -124,5 +124,6 @@ impl NmMethod {
 pub struct NmIp4Config {
     pub addresses: Vec<(String, u32)>,
     pub nameservers: Vec<String>,
+    pub gateway: Option<String>,
     pub method: NmMethod,
 }
