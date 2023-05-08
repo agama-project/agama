@@ -78,7 +78,7 @@ it("renders a link for hiding the sidebar", async () => {
   expect(sidebar).toHaveAttribute("data-state", "hidden");
 });
 
-it("sets siblings as aria-hidden while it's open", async () => {
+it("sets siblings as inert and aria-hidden while it's open", async () => {
   const { user } = installerRender(withNotificationProvider(
     <>
       <div>A sidebar sibling</div>
@@ -90,10 +90,13 @@ it("sets siblings as aria-hidden while it's open", async () => {
   const closeLink = await screen.findByLabelText(/Hide/i);
   const sidebarSibling = screen.getByText("A sidebar sibling");
   expect(sidebarSibling).not.toHaveAttribute("aria-hidden");
+  expect(sidebarSibling).not.toHaveAttribute("inert");
   await user.click(openLink);
   expect(sidebarSibling).toHaveAttribute("aria-hidden");
+  expect(sidebarSibling).toHaveAttribute("inert");
   await user.click(closeLink);
   expect(sidebarSibling).not.toHaveAttribute("aria-hidden");
+  expect(sidebarSibling).not.toHaveAttribute("inert");
 });
 
 it("moves the focus to the close action after opening it", async () => {

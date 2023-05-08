@@ -52,12 +52,18 @@ export default function Sidebar ({ children }) {
 
   const open = () => {
     setIsOpen(true);
-    siblingsFor(asideRef.current).forEach(s => s.setAttribute('aria-hidden', true));
+    siblingsFor(asideRef.current).forEach(s => {
+      s.setAttribute('inert', '');
+      s.setAttribute('aria-hidden', true);
+    });
   };
 
   const close = () => {
     setIsOpen(false);
-    siblingsFor(asideRef.current).forEach(s => s.removeAttribute('aria-hidden'));
+    siblingsFor(asideRef.current).forEach(s => {
+      s.removeAttribute('inert');
+      s.removeAttribute('aria-hidden');
+    });
   };
 
   /**
