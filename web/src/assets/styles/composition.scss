@@ -23,3 +23,7 @@
 [data-state="reversed"] {
   flex-direction: row-reverse;
 }
+
+div[aria-hidden="true"] {
+  filter: grayscale(1) blur(2px);
+}
