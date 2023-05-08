@@ -1,7 +1,9 @@
 //! Network data model
 
-use crate::nm::{NetworkManagerClient, NmConnection, NmDevice, NmDeviceType};
-use std::error::Error;
+use crate::nm::{
+    NetworkManagerClient, NmConnection, NmDevice, NmDeviceType, NmIp4Config, NmMethod,
+};
+use std::{error::Error, net::Ipv4Addr};
 
 pub async fn read_network_state() -> Result<NetworkState, Box<dyn Error>> {
     let nm_client = NetworkManagerClient::from_system().await?;
@@ -30,6 +32,13 @@ impl NetworkState {
     /// * `name`: device name
     pub fn get_device(&self, name: &str) -> Option<&Device> {
         self.devices.iter().find(|d| d.name == name)
+    }
+
+    /// Get connection by name
+    ///
+    /// * `name`: connection name
+    pub fn get_connection(&self, name: &str) -> Option<&Connection> {
+        self.connections.iter().find(|c| c.name() == name)
     }
 }
 
@@ -101,18 +110,72 @@ impl Connection {
     pub fn name(&self) -> &str {
         self.base().id.as_str()
     }
+
+    pub fn ipv4(&self) -> &Ipv4Config {
+        &self.base().ipv4
+    }
 }
 
 impl From<NmConnection> for Connection {
     fn from(value: NmConnection) -> Self {
-        let base = BaseConnection { id: value.id };
+        let mut base = BaseConnection {
+            id: value.id,
+            ..Default::default()
+        };
+
+        if let Some(nm_ipv4) = value.ipv4 {
+            base.ipv4 = nm_ipv4.into();
+        }
+
         Connection::Ethernet(EthernetConnection { base })
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct BaseConnection {
     id: String,
+    ipv4: Ipv4Config,
+}
+
+#[derive(Debug, Default, PartialEq)]
+pub struct Ipv4Config {
+    pub method: IpMethod,
+    pub addresses: Vec<(Ipv4Addr, u32)>,
+    pub gateway: Option<Ipv4Addr>,
+}
+
+impl From<NmIp4Config> for Ipv4Config {
+    fn from(value: NmIp4Config) -> Self {
+        let addresses: Vec<(Ipv4Addr, u32)> = value
+            .addresses
+            .into_iter()
+            .filter_map(|(addr, prefix)| addr.parse().ok().map(|i| (i, prefix)))
+            .collect();
+
+        Ipv4Config {
+            method: value.method.into(),
+            addresses,
+            ..Default::default()
+        }
+    }
+}
+
+#[derive(Debug, Default, Copy, Clone, PartialEq)]
+pub enum IpMethod {
+    #[default]
+    Auto = 0,
+    Manual = 1,
+    Unknown = 2,
+}
+
+impl From<NmMethod> for IpMethod {
+    fn from(value: NmMethod) -> Self {
+        match value.as_str() {
+            "auto" => IpMethod::Auto,
+            "manual" => IpMethod::Manual,
+            _ => IpMethod::Unknown,
+        }
+    }
 }
 
 #[derive(Debug)]

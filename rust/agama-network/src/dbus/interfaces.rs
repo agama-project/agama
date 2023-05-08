@@ -1,4 +1,7 @@
-use crate::{error::NetworkStateError, model::NetworkState};
+use crate::{
+    error::NetworkStateError,
+    model::{Ipv4Config, NetworkState},
+};
 use std::sync::{Arc, Mutex};
 use zbus::dbus_interface;
 
@@ -59,5 +62,52 @@ impl Connection {
     #[dbus_interface(property)]
     pub fn id(&self) -> &str {
         &self.conn_id
+    }
+}
+
+/// D-Bus interface for IPv4 settings
+pub struct Ipv4 {
+    network: Arc<Mutex<NetworkState>>,
+    conn_name: String,
+}
+
+impl Ipv4 {
+    pub fn new(network: Arc<Mutex<NetworkState>>, conn_name: &str) -> Self {
+        Self {
+            network,
+            conn_name: conn_name.to_string(),
+        }
+    }
+
+    pub fn with_ipv4<T, F>(&self, func: F) -> zbus::fdo::Result<T>
+    where
+        F: FnOnce(&Ipv4Config) -> T,
+    {
+        let state = self.network.lock().unwrap();
+        let conn =
+            state
+                .get_connection(&self.conn_name)
+                .ok_or(NetworkStateError::UnknownConnection(
+                    self.conn_name.to_string(),
+                ))?;
+        Ok(func(&conn.ipv4()))
+    }
+}
+
+#[dbus_interface(name = "org.opensuse.Agama.Network1.IPv4")]
+impl Ipv4 {
+    #[dbus_interface(property)]
+    pub fn addresses(&self) -> zbus::fdo::Result<Vec<(String, u32)>> {
+        self.with_ipv4(|ipv4| {
+            ipv4.addresses
+                .iter()
+                .map(|(addr, prefix)| (addr.to_string(), *prefix))
+                .collect()
+        })
+    }
+
+    #[dbus_interface(property)]
+    pub fn method(&self) -> zbus::fdo::Result<u8> {
+        self.with_ipv4(|ipv4| ipv4.method as u8)
     }
 }

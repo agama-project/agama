@@ -122,6 +122,6 @@ impl NmMethod {
 
 #[derive(Debug, Default, PartialEq)]
 pub struct NmIp4Config {
-    pub addresses: Vec<String>,
+    pub addresses: Vec<(String, u32)>,
     pub method: NmMethod,
 }

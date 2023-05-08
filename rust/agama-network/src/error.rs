@@ -2,8 +2,10 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum NetworkStateError {
-    #[error("Invalid key name: '{0}'")]
+    #[error("Invalid device name: '{0}'")]
     UnknownDevice(String),
+    #[error("Invalid connection name: '{0}'")]
+    UnknownConnection(String),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {

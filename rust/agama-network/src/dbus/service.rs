@@ -63,6 +63,8 @@ impl NetworkService {
                 interfaces::Connection::new(s, n)
             })
             .await?;
+            self.add_interface(&path, &conn.name(), |s, n| interfaces::Ipv4::new(s, n))
+                .await?;
         }
 
         Ok(())

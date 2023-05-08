@@ -2,7 +2,7 @@ use super::model::*;
 use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
 use agama_lib::error::ServiceError;
 use std::collections::HashMap;
-use zbus::zvariant;
+use zbus::zvariant::{self, OwnedValue};
 use zbus::Connection;
 
 /// Simplified NetworkManager D-Bus client
@@ -94,8 +94,19 @@ impl<'a> NetworkManagerClient<'a> {
 
         if let Some(ipv4) = conn.get("ipv4") {
             let method: &str = ipv4.get("method")?.downcast_ref()?;
+            let address_data = ipv4.get("address-data")?;
+            let address_data = address_data.downcast_ref::<zbus::zvariant::Array>()?;
+            let mut addresses: Vec<(String, u32)> = vec![];
+            for addr in address_data.get() {
+                let dict = addr.downcast_ref::<zvariant::Dict>()?;
+                let map = <HashMap<String, zvariant::Value<'_>>>::try_from(dict.clone()).unwrap();
+                let addr_str: &str = map.get("address")?.downcast_ref()?;
+                let prefix: &u32 = map.get("prefix")?.downcast_ref()?;
+                addresses.push((addr_str.to_string(), *prefix))
+            }
             let nm_ipv4 = NmIp4Config {
                 method: NmMethod(method.to_string()),
+                addresses,
                 ..Default::default()
             };
             nm_connection.ipv4 = Some(nm_ipv4);
