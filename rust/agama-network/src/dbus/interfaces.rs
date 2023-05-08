@@ -1,6 +1,9 @@
 use crate::{
     error::NetworkStateError,
-    model::{Ipv4Config, NetworkState},
+    model::{
+        Connection as NetworkConnection, Ipv4Config, NetworkState, WirelessConfig,
+        WirelessConnection,
+    },
 };
 use std::sync::{Arc, Mutex};
 use zbus::dbus_interface;
@@ -122,5 +125,59 @@ impl Ipv4 {
             Some(addr) => addr.to_string(),
             None => "".to_string(),
         })
+    }
+}
+/// D-Bus interface for wireless settings
+pub struct Wireless {
+    network: Arc<Mutex<NetworkState>>,
+    conn_name: String,
+}
+
+impl Wireless {
+    pub fn new(network: Arc<Mutex<NetworkState>>, conn_name: &str) -> Self {
+        Self {
+            network,
+            conn_name: conn_name.to_string(),
+        }
+    }
+
+    pub fn with_wireless<T, F>(&self, func: F) -> zbus::fdo::Result<T>
+    where
+        F: FnOnce(&WirelessConfig) -> T,
+    {
+        let state = self.network.lock().unwrap();
+        let conn =
+            state
+                .get_connection(&self.conn_name)
+                .ok_or(NetworkStateError::UnknownConnection(
+                    self.conn_name.to_string(),
+                ))?;
+        match conn {
+            NetworkConnection::Wireless(config) => Ok(func(&config.wireless)),
+            _ => Err(NetworkStateError::InvalidConnectionType(self.conn_name.to_string()).into()),
+        }
+    }
+}
+
+#[dbus_interface(name = "org.opensuse.Agama.Network1.Wireless")]
+impl Wireless {
+    #[dbus_interface(property)]
+    pub fn ssid(&self) -> zbus::fdo::Result<Vec<u8>> {
+        self.with_wireless(|w| w.ssid.clone())
+    }
+
+    #[dbus_interface(property)]
+    pub fn mode(&self) -> zbus::fdo::Result<u8> {
+        self.with_wireless(|w| w.mode as u8)
+    }
+
+    #[dbus_interface(property)]
+    pub fn password(&self) -> zbus::fdo::Result<String> {
+        self.with_wireless(|w| w.password.clone().unwrap_or("".to_string()))
+    }
+
+    #[dbus_interface(property)]
+    pub fn security(&self) -> zbus::fdo::Result<u8> {
+        self.with_wireless(|w| w.security as u8)
     }
 }

@@ -1,9 +1,10 @@
 //! Network data model
 
 use crate::nm::{
-    NetworkManagerClient, NmConnection, NmDevice, NmDeviceType, NmIp4Config, NmMethod,
+    NetworkManagerClient, NmConnection, NmDevice, NmDeviceType, NmIp4Config, NmKeyManagement,
+    NmMethod, NmWireless, NmWirelessMode,
 };
-use std::{error::Error, net::Ipv4Addr};
+use std::{error::Error, fmt, net::Ipv4Addr};
 
 pub async fn read_network_state() -> Result<NetworkState, Box<dyn Error>> {
     let nm_client = NetworkManagerClient::from_system().await?;
@@ -98,12 +99,14 @@ impl From<NmDeviceType> for DeviceType {
 #[derive(Debug)]
 pub enum Connection {
     Ethernet(EthernetConnection),
+    Wireless(WirelessConnection),
 }
 
 impl Connection {
     pub fn base(&self) -> &BaseConnection {
         match &self {
             Connection::Ethernet(conn) => &conn.base,
+            Connection::Wireless(conn) => &conn.base,
         }
     }
 
@@ -127,6 +130,12 @@ impl From<NmConnection> for Connection {
             base.ipv4 = nm_ipv4.into();
         }
 
+        if let Some(wireless) = value.wireless {
+            return Connection::Wireless(WirelessConnection {
+                base,
+                wireless: wireless.into(),
+            });
+        }
         Connection::Ethernet(EthernetConnection { base })
     }
 }
@@ -192,4 +201,97 @@ impl From<NmMethod> for IpMethod {
 #[derive(Debug)]
 pub struct EthernetConnection {
     base: BaseConnection,
+}
+
+#[derive(Debug)]
+pub struct WirelessConnection {
+    base: BaseConnection,
+    pub wireless: WirelessConfig,
+}
+
+#[derive(Debug, Default)]
+pub struct WirelessConfig {
+    pub mode: WirelessMode,
+    pub ssid: Vec<u8>,
+    pub password: Option<String>,
+    pub security: SecurityProtocol,
+}
+
+impl From<NmWireless> for WirelessConfig {
+    fn from(value: NmWireless) -> Self {
+        Self {
+            mode: value.mode.into(),
+            ssid: value.ssid,
+            security: value.key_mgmt.into(),
+            ..Default::default()
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone, Copy)]
+pub enum WirelessMode {
+    Unknown,
+    AdHoc,
+    #[default]
+    Infra,
+    AP,
+    Mesh,
+}
+
+impl From<NmWirelessMode> for WirelessMode {
+    fn from(value: NmWirelessMode) -> Self {
+        match value.as_str() {
+            "infrastructure" => WirelessMode::Infra,
+            "adhoc" => WirelessMode::AdHoc,
+            "mesh" => WirelessMode::Mesh,
+            "ap" => WirelessMode::AP,
+            _ => WirelessMode::Unknown,
+        }
+    }
+}
+
+impl fmt::Display for WirelessMode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            WirelessMode::Unknown => "unknown",
+            WirelessMode::AdHoc => "adhoc",
+            WirelessMode::Infra => "infra",
+            WirelessMode::AP => "ap",
+            WirelessMode::Mesh => "mesh",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+pub enum SecurityProtocol {
+    // No encryption or WEP ("none")
+    #[default]
+    WEP,
+    // Opportunistic Wireless Encryption ("owe")
+    OWE,
+    // Dynamic WEP ("ieee8021x")
+    DynamicWEP,
+    // WPA2 + WPA3 personal ("wpa-psk")
+    WPA2,
+    // WPA3 personal only ("sae")
+    WPA3Personal,
+    // WPA2 + WPA3 Enterprise ("wpa-eap")
+    WPA2Enterprise,
+    // "wpa-eap-suite-b192"
+    WPA3Only,
+}
+
+impl From<NmKeyManagement> for SecurityProtocol {
+    fn from(value: NmKeyManagement) -> Self {
+        match value.as_str() {
+            "owe" => SecurityProtocol::OWE,
+            "ieee8021x" => SecurityProtocol::DynamicWEP,
+            "wpa-psk" => SecurityProtocol::WPA2,
+            "wpa-eap" => SecurityProtocol::WPA3Personal,
+            "sae" => SecurityProtocol::WPA2Enterprise,
+            "wpa-eap-suite-b192" => SecurityProtocol::WPA2Enterprise,
+            _ => SecurityProtocol::WEP,
+        }
+    }
 }

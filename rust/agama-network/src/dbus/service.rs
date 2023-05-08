@@ -1,5 +1,5 @@
 use crate::dbus::interfaces;
-use crate::model::NetworkState;
+use crate::model::{Connection, NetworkState};
 use agama_lib::error::ServiceError;
 use std::{
     error::Error,
@@ -63,8 +63,14 @@ impl NetworkService {
                 interfaces::Connection::new(s, n)
             })
             .await?;
+
             self.add_interface(&path, &conn.name(), |s, n| interfaces::Ipv4::new(s, n))
                 .await?;
+
+            if let Connection::Wireless(_) = &conn {
+                self.add_interface(&path, &conn.name(), |s, n| interfaces::Wireless::new(s, n))
+                    .await?;
+            }
         }
 
         Ok(())

@@ -6,6 +6,8 @@ pub enum NetworkStateError {
     UnknownDevice(String),
     #[error("Invalid connection name: '{0}'")]
     UnknownConnection(String),
+    #[error("Invalid connection type: '{0}'")]
+    InvalidConnectionType(String),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {
