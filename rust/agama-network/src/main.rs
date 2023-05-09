@@ -12,7 +12,7 @@ async fn main() {
         .await
         .expect("Could not connect to the D-Bus server");
 
-    let service = NetworkService::new(network, connection);
+    let mut service = NetworkService::new(network, connection);
     service.listen().await.expect("Could not start the service");
 
     loop {

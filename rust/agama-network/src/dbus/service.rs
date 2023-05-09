@@ -16,6 +16,8 @@ use std::{
 pub struct NetworkService {
     state: Arc<Mutex<NetworkState>>,
     connection: zbus::Connection,
+    devices: Arc<Mutex<Vec<String>>>,
+    connections: Vec<String>,
 }
 
 impl NetworkService {
@@ -27,11 +29,13 @@ impl NetworkService {
         Self {
             state: Arc::new(Mutex::new(state)),
             connection,
+            devices: Arc::new(Mutex::new(vec![])),
+            connections: vec![],
         }
     }
 
     /// Starts listening on the D-Bus connection
-    pub async fn listen(&self) -> Result<(), Box<dyn Error>> {
+    pub async fn listen(&mut self) -> Result<(), Box<dyn Error>> {
         self.publish_devices().await?;
         self.publish_connections().await?;
         self.connection
@@ -41,24 +45,31 @@ impl NetworkService {
     }
 
     // TODO: move this logic to a separate struct that registers all needed interfaces
-    async fn publish_devices(&self) -> Result<(), Box<dyn Error>> {
+    async fn publish_devices(&mut self) -> Result<(), Box<dyn Error>> {
         let state = self.state.lock().unwrap();
+        let mut devices = self.devices.lock().unwrap();
 
         for (i, device) in state.devices.iter().enumerate() {
-            let path = format!("/org/opensuse/Agama/Network1/Device/{}", i);
+            let path = format!("/org/opensuse/Agama/Network1/Devices/{}", i);
             self.add_interface(&path, &device.name, |s, n| interfaces::Device::new(s, n))
                 .await?;
+            devices.push(path.to_string());
         }
+
+        let path = "/org/opensuse/Agama/Network1/Devices".to_string();
+        let object_server = self.connection.object_server();
+        let iface = interfaces::Devices::new(Arc::clone(&self.devices));
+        object_server.at(path, iface).await?;
 
         Ok(())
     }
 
     // TODO: move this logic to a separate struct that registers all needed connections
-    async fn publish_connections(&self) -> Result<(), Box<dyn Error>> {
+    async fn publish_connections(&mut self) -> Result<(), Box<dyn Error>> {
         let state = self.state.lock().unwrap();
 
         for (i, conn) in state.connections.iter().enumerate() {
-            let path = format!("/org/opensuse/Agama/Network1/Connection/{}", i);
+            let path = format!("/org/opensuse/Agama/Network1/Connections/{}", i);
             self.add_interface(&path, &conn.name(), |s, n| {
                 interfaces::Connection::new(s, n)
             })
@@ -71,6 +82,8 @@ impl NetworkService {
                 self.add_interface(&path, &conn.name(), |s, n| interfaces::Wireless::new(s, n))
                     .await?;
             }
+
+            self.connections.push(path.to_string());
         }
 
         Ok(())

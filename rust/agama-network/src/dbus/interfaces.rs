@@ -5,6 +5,27 @@ use crate::{
 use std::sync::{Arc, Mutex};
 use zbus::dbus_interface;
 
+/// Devices D-Bus interface
+///
+/// It offers an API to query basic networking devices information
+pub struct Devices {
+    devices: Arc<Mutex<Vec<String>>>,
+}
+
+impl Devices {
+    pub fn new(devices: Arc<Mutex<Vec<String>>>) -> Self {
+        Self { devices }
+    }
+}
+
+#[dbus_interface(name = "org.opensuse.Agama.Network1.Devices")]
+impl Devices {
+    pub fn get_devices(&self) -> Vec<String> {
+        let devices = self.devices.lock().unwrap();
+        devices.clone()
+    }
+}
+
 /// Device D-Bus interface
 ///
 /// It offers an API to query basic networking devices information (e.g., name, whether it is
