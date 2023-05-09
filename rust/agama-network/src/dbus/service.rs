@@ -54,7 +54,7 @@ impl NetworkService {
                 interfaces::Device::new(Arc::clone(&self.state), &dev.name),
             )
             .await?;
-            objects.devices.push(path.to_string());
+            objects.devices.push(path);
         }
 
         self.add_interface(
@@ -90,7 +90,7 @@ impl NetworkService {
                 .await?;
             }
 
-            objects.connections.push(path.to_string());
+            objects.connections.push(path);
         }
 
         self.add_interface(
