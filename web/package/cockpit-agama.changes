@@ -1,9 +1,14 @@
 -------------------------------------------------------------------
+Tue May  9 22:36:12 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Keep the sidebar on top of other elements when it's open
+  (gh#openSUSE/agama#569).
+
+-------------------------------------------------------------------
 Mon May  8 15:20:14 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Set sidebar siblings as aria-hiden while it's open
   (gh#openSUSE/agama#563)
-
 -------------------------------------------------------------------
 Fri Apr 28 15:16:04 UTC 2023 - José Iván López González <jlopez@suse.com>
 
