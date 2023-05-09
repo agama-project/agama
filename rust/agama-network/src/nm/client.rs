@@ -1,3 +1,4 @@
+//! NetworkManager client.
 use super::model::*;
 use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
 use agama_lib::error::ServiceError;
@@ -5,24 +6,25 @@ use std::collections::HashMap;
 use zbus::zvariant;
 use zbus::Connection;
 
-/// Simplified NetworkManager D-Bus client
+/// Simplified NetworkManager D-Bus client.
 ///
-/// Implements a minimal API to be used internally.
+/// Implements a minimal API to be used internally. At this point, it allows to query the list of
+/// network devices and connections, converting them to its own data types.
 pub struct NetworkManagerClient<'a> {
     connection: zbus::Connection,
     nm_proxy: NetworkManagerProxy<'a>,
 }
 
 impl<'a> NetworkManagerClient<'a> {
-    /// Creates a NetworkManagerClient connecting to the system bus
+    /// Creates a NetworkManagerClient connecting to the system bus.
     pub async fn from_system() -> Result<NetworkManagerClient<'a>, ServiceError> {
         let connection = zbus::Connection::system().await?;
         Self::new(connection).await
     }
 
-    /// Creates a NetworkManagerClient using the given D-Bus connection
+    /// Creates a NetworkManagerClient using the given D-Bus connection.
     ///
-    /// * `connection`: D-Bus connection
+    /// * `connection`: D-Bus connection.
     pub async fn new(connection: Connection) -> Result<NetworkManagerClient<'a>, ServiceError> {
         Ok(Self {
             nm_proxy: NetworkManagerProxy::new(&connection).await?,
@@ -30,7 +32,7 @@ impl<'a> NetworkManagerClient<'a> {
         })
     }
 
-    /// Returns the list of network devices
+    /// Returns the list of network devices.
     pub async fn devices(&self) -> Result<Vec<NmDevice>, ServiceError> {
         let mut devs = vec![];
         for path in &self.nm_proxy.get_devices().await? {
@@ -49,6 +51,7 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(devs)
     }
 
+    /// Returns the list of network connections.
     pub async fn connections(&self) -> Result<Vec<NmConnection>, ServiceError> {
         let proxy = SettingsProxy::new(&self.connection).await?;
         let paths = proxy.list_connections().await?;

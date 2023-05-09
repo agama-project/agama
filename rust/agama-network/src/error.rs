@@ -1,5 +1,7 @@
+//! Network-related errors
 use thiserror::Error;
 
+/// Errors that are related to the network configuration.
 #[derive(Error, Debug)]
 pub enum NetworkStateError {
     #[error("Invalid device name: '{0}'")]

@@ -1,3 +1,7 @@
+//! Network D-Bus interfaces
+//!
+//! This module contains the set of D-Bus interfaces.
+
 use super::service::ObjectsPaths;
 use crate::{
     error::NetworkStateError,
@@ -6,7 +10,7 @@ use crate::{
 use std::sync::{Arc, Mutex};
 use zbus::{dbus_interface, zvariant::ObjectPath};
 
-/// Devices D-Bus interface
+/// D-Bus interface for the network devices collection
 ///
 /// It offers an API to query the devices collection.
 pub struct Devices {
@@ -14,6 +18,9 @@ pub struct Devices {
 }
 
 impl Devices {
+    /// Creates a Devices interface object.
+    ///
+    /// * `objects`: Objects paths registry.
     pub fn new(objects: Arc<Mutex<ObjectsPaths>>) -> Self {
         Self { objects }
     }
@@ -21,6 +28,7 @@ impl Devices {
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Devices")]
 impl Devices {
+    /// Returns the D-Bus paths of the network devices.
     pub fn get_devices(&self) -> Vec<ObjectPath> {
         let objects = self.objects.lock().unwrap();
         objects
@@ -31,16 +39,19 @@ impl Devices {
     }
 }
 
-/// Device D-Bus interface
+/// D-Bus interface for a network device
 ///
-/// It offers an API to query basic networking devices information (e.g., name, whether it is
-/// virtual, etc.).
+/// It offers an API to query basic networking devices information (e.g., the name).
 pub struct Device {
     network: Arc<Mutex<NetworkState>>,
     device_name: String,
 }
 
 impl Device {
+    /// Creates an interface object.
+    ///
+    /// * `network`: network state.
+    /// * `device_name`: device name.
     pub fn new(network: Arc<Mutex<NetworkState>>, device_name: &str) -> Self {
         Self {
             network,
@@ -69,7 +80,7 @@ impl Device {
     }
 }
 
-/// Connections D-Bus interface
+/// D-Bus interface for the set of connections.
 ///
 /// It offers an API to query the connections collection.
 pub struct Connections {
@@ -77,6 +88,9 @@ pub struct Connections {
 }
 
 impl Connections {
+    /// Creates a Connections interface object.
+    ///
+    /// * `objects`: Objects paths registry.
     pub fn new(objects: Arc<Mutex<ObjectsPaths>>) -> Self {
         Self { objects }
     }
@@ -84,6 +98,7 @@ impl Connections {
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connections")]
 impl Connections {
+    /// Returns the D-Bus paths of the network connections.
     pub fn get_connections(&self) -> Vec<ObjectPath> {
         let objects = self.objects.lock().unwrap();
         objects
@@ -94,14 +109,20 @@ impl Connections {
     }
 }
 
+/// D-Bus interface for a network connection
+///
+/// It offers an API to query a connection.
 pub struct Connection {
-    conn_id: String,
+    conn_name: String,
 }
 
 impl Connection {
-    pub fn new(conn_id: &str) -> Self {
+    /// Creates a Connection interface object.
+    ///
+    /// * `conn_name`: Connection ID.
+    pub fn new(conn_name: &str) -> Self {
         Self {
-            conn_id: conn_id.to_string(),
+            conn_name: conn_name.to_string(),
         }
     }
 }
@@ -110,7 +131,7 @@ impl Connection {
 impl Connection {
     #[dbus_interface(property)]
     pub fn id(&self) -> &str {
-        &self.conn_id
+        &self.conn_name
     }
 }
 
@@ -121,6 +142,10 @@ pub struct Ipv4 {
 }
 
 impl Ipv4 {
+    /// Creates a Ipv4 interface object.
+    ///
+    /// * `network`: network state.
+    /// * `conn_name`: connection name.
     pub fn new(network: Arc<Mutex<NetworkState>>, conn_name: &str) -> Self {
         Self {
             network,
@@ -180,6 +205,10 @@ pub struct Wireless {
 }
 
 impl Wireless {
+    /// Creates a Wireless interface object.
+    ///
+    /// * `network`: network state.
+    /// * `conn_name`: connection name.
     pub fn new(network: Arc<Mutex<NetworkState>>, conn_name: &str) -> Self {
         Self {
             network,
