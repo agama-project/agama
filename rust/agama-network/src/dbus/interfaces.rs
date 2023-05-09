@@ -4,7 +4,7 @@ use crate::{
     model::{Connection as NetworkConnection, Ipv4Config, NetworkState, WirelessConfig},
 };
 use std::sync::{Arc, Mutex};
-use zbus::dbus_interface;
+use zbus::{dbus_interface, zvariant::ObjectPath};
 
 /// Devices D-Bus interface
 ///
@@ -21,9 +21,13 @@ impl Devices {
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Devices")]
 impl Devices {
-    pub fn get_devices(&self) -> Vec<String> {
+    pub fn get_devices(&self) -> Vec<ObjectPath> {
         let objects = self.objects.lock().unwrap();
-        objects.devices.clone()
+        objects
+            .devices
+            .iter()
+            .filter_map(|c| ObjectPath::try_from(c.clone()).ok())
+            .collect()
     }
 }
 
@@ -80,9 +84,13 @@ impl Connections {
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connections")]
 impl Connections {
-    pub fn get_connections(&self) -> Vec<String> {
+    pub fn get_connections(&self) -> Vec<ObjectPath> {
         let objects = self.objects.lock().unwrap();
-        objects.connections.clone()
+        objects
+            .connections
+            .iter()
+            .filter_map(|c| ObjectPath::try_from(c.clone()).ok())
+            .collect()
     }
 }
 
