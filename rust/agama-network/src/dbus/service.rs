@@ -49,17 +49,21 @@ impl NetworkService {
         let state = self.state.lock().unwrap();
         let mut devices = self.devices.lock().unwrap();
 
-        for (i, device) in state.devices.iter().enumerate() {
+        for (i, dev) in state.devices.iter().enumerate() {
             let path = format!("/org/opensuse/Agama/Network1/Devices/{}", i);
-            self.add_interface(&path, &device.name, |s, n| interfaces::Device::new(s, n))
-                .await?;
+            self.add_interface(
+                &path,
+                interfaces::Device::new(Arc::clone(&self.state), &dev.name),
+            )
+            .await?;
             devices.push(path.to_string());
         }
 
-        let path = "/org/opensuse/Agama/Network1/Devices".to_string();
-        let object_server = self.connection.object_server();
-        let iface = interfaces::Devices::new(Arc::clone(&self.devices));
-        object_server.at(path, iface).await?;
+        self.add_interface(
+            "/org/opensuse/Agama/Network1/Devices",
+            interfaces::Devices::new(Arc::clone(&self.devices)),
+        )
+        .await?;
 
         Ok(())
     }
@@ -71,37 +75,43 @@ impl NetworkService {
 
         for (i, conn) in state.connections.iter().enumerate() {
             let path = format!("/org/opensuse/Agama/Network1/Connections/{}", i);
-            self.add_interface(&path, &conn.name(), |s, n| {
-                interfaces::Connection::new(s, n)
-            })
+            self.add_interface(
+                &path,
+                interfaces::Connection::new(Arc::clone(&self.state), conn.name()),
+            )
             .await?;
 
-            self.add_interface(&path, &conn.name(), |s, n| interfaces::Ipv4::new(s, n))
-                .await?;
+            self.add_interface(
+                &path,
+                interfaces::Ipv4::new(Arc::clone(&self.state), conn.name()),
+            )
+            .await?;
 
             if let Connection::Wireless(_) = &conn {
-                self.add_interface(&path, &conn.name(), |s, n| interfaces::Wireless::new(s, n))
-                    .await?;
+                self.add_interface(
+                    &path,
+                    interfaces::Wireless::new(Arc::clone(&self.state), conn.name()),
+                )
+                .await?;
             }
 
             connections.push(path.to_string());
         }
 
-        let path = "/org/opensuse/Agama/Network1/Connections".to_string();
-        let object_server = self.connection.object_server();
-        let iface = interfaces::Connections::new(Arc::clone(&self.connections));
-        object_server.at(path, iface).await?;
+        self.add_interface(
+            "/org/opensuse/Agama/Network1/Connections",
+            interfaces::Connections::new(Arc::clone(&self.devices)),
+        )
+        .await?;
 
         Ok(())
     }
 
-    async fn add_interface<F, T>(&self, path: &str, name: &str, f: F) -> Result<bool, ServiceError>
+    async fn add_interface<T>(&self, path: &str, iface: T) -> Result<bool, ServiceError>
     where
-        F: Fn(Arc<Mutex<NetworkState>>, &str) -> T,
         T: zbus::Interface,
     {
         let object_server = self.connection.object_server();
-        let iface = f(Arc::clone(&self.state), name);
         Ok(object_server.at(path.clone(), iface).await?)
     }
 }
