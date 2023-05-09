@@ -52,18 +52,19 @@ Based on the situation described above, we considered these approaches:
 2. Keep the status quo, extend the web UI and rely on `nmcli` for the CLI-based installation. For
    automation, we could rely on third-party tool.
 
-Although it might be harder, option 1 looks more consistent: you just need Agama D-Bus interface to
-perform an installation.
+Although it might be harder, option 1 looks more consistent: you can install your system just using
+Agama D-Bus interface.
 
 ## Adding our own D-Bus interface
 
 Adding a D-Bus interface does not mean that we need to implement a full solution to set up the
-network. Actually, we can leverage some third-party tool to do the hard work. The idea is to build a
-good enough interface to support our use cases.
+network. The idea is to build a good enough API to support our use cases.
 
-### Why not YaST2?
+Initially, we though about adding the D-Bus API on top of [nmstate](https://nmstate.io/), although
+it covers a different use-case. After playing a bit with this idea, we decided to come up with a
+solution more aligned with our needs.
 
-You might be wondering, why not use YaST2 itself? Let's see some reasons:
+As an alternative, you might be wondering why not use YaST2 itself? Let's see some reasons:
 
 * It does not implement support for reading the NetworkManager configuration.
 * It is not able to talk to NetworkManager D-Bus interface. It configures NetworkManager by writing
@@ -71,32 +72,21 @@ You might be wondering, why not use YaST2 itself? Let's see some reasons:
 * It is Ruby-based, so we might consider a Rust-based solution. It is not a language problem, but we
   would like to reduce the memory consumption.
 
-### The proposal
+## The proposal
 
-Our proposal is to build a D-Bus service that wraps around a third-party tool that takes care of the
-hard part. We considered [Netplan](https://netplan.io/) and [nmstate](https://nmstate.io/), although
-we decided to use the latter (see [Third-party tools](#third-party-tools)).
+Agama's network service is responsible for holding the network configuration for the installer. It
+should be agnostic from the used network service, although in the short-term it will support
+NetworkManager only. Therefore, the current solution is influenced by NetworkManager itself.
 
-Unfortunately, those tools are missing support for some cases (e.g., wireless configuration or udev
-handling), but we can add such a support in our wrapper.
+In a first version, the API is composed of the following objects:
 
-## Third-party tools
+* Network devices. Each one is available as an object under `/org/opensuse/Agama/Network1/Device/*`
+  exposing the current status[^1].
+* Connections (or configurations). They are exposed as `/org/opensuse/Agama/Network1/Connection/*`.
+  Depending on the type of connection, those objects implements different interfaces like
+  `org.opensuse.Agama.Network1.IPv4`, `org.opensuse.Agama.Network1.Wireless`, etc.
 
-Both [Netplan](https://netplan.io/) and [nmstate](https://nmstate.io/) are tools that are able to
-set up NetworkManager to meet a given configuration. Although we decided on `nmstate`, let's
-have a look to some of their characteristics:
+This API could be expanded in the future to provide a list of access points, emit signals when the
+configuration changes, provide more information about the network devices, etc.
 
-### nmstate
-
-- Based on devices/interfaces (the concept of connection does not exist).
-- Designed to support multiple network providers, but at this point only NetworkManager is
-  supported.
-- Offered as a Rust library.
-- Bindings for several languages and a CLI.
-- Support for WiFi and VPNs is missing.
-
-### Netplan
-
-- Written in Python. That's the main reason to discard this option.
-- Designed to support multiple network providers, nowadays it supports NetworkManager and networkd.
-- It offers a rather limited D-Bus API.
+[^1] By now it only exposes some basic data, as the current status is only needed by the web UI.
