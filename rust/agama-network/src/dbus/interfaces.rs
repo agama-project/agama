@@ -7,7 +7,7 @@ use zbus::dbus_interface;
 
 /// Devices D-Bus interface
 ///
-/// It offers an API to query basic networking devices information
+/// It offers an API to query the devices collection.
 pub struct Devices {
     devices: Arc<Mutex<Vec<String>>>,
 }
@@ -61,6 +61,27 @@ impl Device {
                     self.device_name.to_string(),
                 ))?;
         Ok(device.ty as u8)
+    }
+}
+
+/// Connections D-Bus interface
+///
+/// It offers an API to query the connections collection.
+pub struct Connections {
+    connections: Arc<Mutex<Vec<String>>>,
+}
+
+impl Connections {
+    pub fn new(connections: Arc<Mutex<Vec<String>>>) -> Self {
+        Self { connections }
+    }
+}
+
+#[dbus_interface(name = "org.opensuse.Agama.Network1.Connections")]
+impl Connections {
+    pub fn get_connections(&self) -> Vec<String> {
+        let connections = self.connections.lock().unwrap();
+        connections.clone()
     }
 }
 

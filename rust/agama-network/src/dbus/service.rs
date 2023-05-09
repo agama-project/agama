@@ -17,7 +17,7 @@ pub struct NetworkService {
     state: Arc<Mutex<NetworkState>>,
     connection: zbus::Connection,
     devices: Arc<Mutex<Vec<String>>>,
-    connections: Vec<String>,
+    connections: Arc<Mutex<Vec<String>>>,
 }
 
 impl NetworkService {
@@ -30,7 +30,7 @@ impl NetworkService {
             state: Arc::new(Mutex::new(state)),
             connection,
             devices: Arc::new(Mutex::new(vec![])),
-            connections: vec![],
+            connections: Arc::new(Mutex::new(vec![])),
         }
     }
 
@@ -67,6 +67,7 @@ impl NetworkService {
     // TODO: move this logic to a separate struct that registers all needed connections
     async fn publish_connections(&mut self) -> Result<(), Box<dyn Error>> {
         let state = self.state.lock().unwrap();
+        let mut connections = self.connections.lock().unwrap();
 
         for (i, conn) in state.connections.iter().enumerate() {
             let path = format!("/org/opensuse/Agama/Network1/Connections/{}", i);
@@ -83,8 +84,13 @@ impl NetworkService {
                     .await?;
             }
 
-            self.connections.push(path.to_string());
+            connections.push(path.to_string());
         }
+
+        let path = "/org/opensuse/Agama/Network1/Connections".to_string();
+        let object_server = self.connection.object_server();
+        let iface = interfaces::Connections::new(Arc::clone(&self.connections));
+        object_server.at(path, iface).await?;
 
         Ok(())
     }
