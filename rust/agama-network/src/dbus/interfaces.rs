@@ -1,3 +1,4 @@
+use super::service::ObjectsPaths;
 use crate::{
     error::NetworkStateError,
     model::{Connection as NetworkConnection, Ipv4Config, NetworkState, WirelessConfig},
@@ -9,20 +10,20 @@ use zbus::dbus_interface;
 ///
 /// It offers an API to query the devices collection.
 pub struct Devices {
-    devices: Arc<Mutex<Vec<String>>>,
+    objects: Arc<Mutex<ObjectsPaths>>,
 }
 
 impl Devices {
-    pub fn new(devices: Arc<Mutex<Vec<String>>>) -> Self {
-        Self { devices }
+    pub fn new(objects: Arc<Mutex<ObjectsPaths>>) -> Self {
+        Self { objects }
     }
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Devices")]
 impl Devices {
     pub fn get_devices(&self) -> Vec<String> {
-        let devices = self.devices.lock().unwrap();
-        devices.clone()
+        let objects = self.objects.lock().unwrap();
+        objects.devices.clone()
     }
 }
 
@@ -68,20 +69,20 @@ impl Device {
 ///
 /// It offers an API to query the connections collection.
 pub struct Connections {
-    connections: Arc<Mutex<Vec<String>>>,
+    objects: Arc<Mutex<ObjectsPaths>>,
 }
 
 impl Connections {
-    pub fn new(connections: Arc<Mutex<Vec<String>>>) -> Self {
-        Self { connections }
+    pub fn new(objects: Arc<Mutex<ObjectsPaths>>) -> Self {
+        Self { objects }
     }
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connections")]
 impl Connections {
     pub fn get_connections(&self) -> Vec<String> {
-        let connections = self.connections.lock().unwrap();
-        connections.clone()
+        let objects = self.objects.lock().unwrap();
+        objects.connections.clone()
     }
 }
 

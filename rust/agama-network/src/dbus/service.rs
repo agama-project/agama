@@ -14,10 +14,9 @@ use std::{
 /// * Publishing the objects in the D-Bus API.
 #[derive(Debug)]
 pub struct NetworkService {
+    objects: Arc<Mutex<ObjectsPaths>>,
     state: Arc<Mutex<NetworkState>>,
     connection: zbus::Connection,
-    devices: Arc<Mutex<Vec<String>>>,
-    connections: Arc<Mutex<Vec<String>>>,
 }
 
 impl NetworkService {
@@ -28,9 +27,8 @@ impl NetworkService {
     pub fn new(state: NetworkState, connection: zbus::Connection) -> Self {
         Self {
             state: Arc::new(Mutex::new(state)),
+            objects: Arc::new(Mutex::new(ObjectsPaths::default())),
             connection,
-            devices: Arc::new(Mutex::new(vec![])),
-            connections: Arc::new(Mutex::new(vec![])),
         }
     }
 
@@ -47,7 +45,7 @@ impl NetworkService {
     // TODO: move this logic to a separate struct that registers all needed interfaces
     async fn publish_devices(&mut self) -> Result<(), Box<dyn Error>> {
         let state = self.state.lock().unwrap();
-        let mut devices = self.devices.lock().unwrap();
+        let mut objects = self.objects.lock().unwrap();
 
         for (i, dev) in state.devices.iter().enumerate() {
             let path = format!("/org/opensuse/Agama/Network1/Devices/{}", i);
@@ -56,12 +54,12 @@ impl NetworkService {
                 interfaces::Device::new(Arc::clone(&self.state), &dev.name),
             )
             .await?;
-            devices.push(path.to_string());
+            objects.devices.push(path.to_string());
         }
 
         self.add_interface(
             "/org/opensuse/Agama/Network1/Devices",
-            interfaces::Devices::new(Arc::clone(&self.devices)),
+            interfaces::Devices::new(Arc::clone(&self.objects)),
         )
         .await?;
 
@@ -71,7 +69,7 @@ impl NetworkService {
     // TODO: move this logic to a separate struct that registers all needed connections
     async fn publish_connections(&mut self) -> Result<(), Box<dyn Error>> {
         let state = self.state.lock().unwrap();
-        let mut connections = self.connections.lock().unwrap();
+        let mut objects = self.objects.lock().unwrap();
 
         for (i, conn) in state.connections.iter().enumerate() {
             let path = format!("/org/opensuse/Agama/Network1/Connections/{}", i);
@@ -95,12 +93,12 @@ impl NetworkService {
                 .await?;
             }
 
-            connections.push(path.to_string());
+            objects.connections.push(path.to_string());
         }
 
         self.add_interface(
             "/org/opensuse/Agama/Network1/Connections",
-            interfaces::Connections::new(Arc::clone(&self.devices)),
+            interfaces::Connections::new(Arc::clone(&self.objects)),
         )
         .await?;
 
@@ -114,4 +112,11 @@ impl NetworkService {
         let object_server = self.connection.object_server();
         Ok(object_server.at(path.clone(), iface).await?)
     }
+}
+
+/// Objects paths for known devices and connections
+#[derive(Debug, Default)]
+pub struct ObjectsPaths {
+    pub devices: Vec<String>,
+    pub connections: Vec<String>,
 }
