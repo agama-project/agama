@@ -2,7 +2,7 @@ use super::model::*;
 use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
 use agama_lib::error::ServiceError;
 use std::collections::HashMap;
-use zbus::zvariant::{self, OwnedValue};
+use zbus::zvariant;
 use zbus::Connection;
 
 /// Simplified NetworkManager D-Bus client

@@ -1,9 +1,6 @@
 use crate::{
     error::NetworkStateError,
-    model::{
-        Connection as NetworkConnection, Ipv4Config, NetworkState, WirelessConfig,
-        WirelessConnection,
-    },
+    model::{Connection as NetworkConnection, Ipv4Config, NetworkState, WirelessConfig},
 };
 use std::sync::{Arc, Mutex};
 use zbus::dbus_interface;
