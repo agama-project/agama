@@ -1,7 +1,7 @@
-//! Network D-Bus interfaces
+//! Network D-Bus interfaces.
 //!
-//! This module contains the set of D-Bus interfaces.
-
+//! This module contains the set of D-Bus interfaces that are exposed by [D-Bus network
+//! service](crate::NetworkService).
 use super::service::ObjectsPaths;
 use crate::{
     error::NetworkStateError,

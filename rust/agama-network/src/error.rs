@@ -1,4 +1,4 @@
-//! Network-related errors
+//! Error types.
 use thiserror::Error;
 
 /// Errors that are related to the network configuration.
