@@ -150,3 +150,5 @@ For more details, please read the [contributing](CONTRIBUTING.md) guidelines.
 
 * [Packaging](PACKAGING.md)
 * [Working with the web UI](./web/README.md)
+* [D-Bus service API](https://opensuse.github.io/agama/dbus/) (generated)
+* [Web frontend documentation](https://opensuse.github.io/agama/jsdoc/) (generated)
