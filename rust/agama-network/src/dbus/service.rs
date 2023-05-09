@@ -44,8 +44,8 @@ impl NetworkService {
     async fn publish_devices(&self) -> Result<(), Box<dyn Error>> {
         let state = self.state.lock().unwrap();
 
-        for device in &state.devices {
-            let path = format!("/org/opensuse/Agama/Network1/Device/{}", &device.name);
+        for (i, device) in state.devices.iter().enumerate() {
+            let path = format!("/org/opensuse/Agama/Network1/Device/{}", i);
             self.add_interface(&path, &device.name, |s, n| interfaces::Device::new(s, n))
                 .await?;
         }
@@ -53,7 +53,7 @@ impl NetworkService {
         Ok(())
     }
 
-    // TODO: move this logic to a separate struct that registers all needed interfaces
+    // TODO: move this logic to a separate struct that registers all needed connections
     async fn publish_connections(&self) -> Result<(), Box<dyn Error>> {
         let state = self.state.lock().unwrap();
 
