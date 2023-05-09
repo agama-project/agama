@@ -66,21 +66,6 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(connections)
     }
 
-    /// Returns the applied connection to a given device
-    ///
-    /// NOTE: at this point we are using the D-Bus path as some kind of identifier. It might change
-    /// if we add support for another backend.
-    pub async fn applied_connection(&self, path: &str) -> Result<NmConnection, ServiceError> {
-        let proxy = DeviceProxy::builder(&self.connection)
-            .path(path)?
-            .build()
-            .await?;
-
-        let conn = proxy.get_applied_connection(0).await?;
-        self.connection_from_dbus(conn.0)
-            .ok_or(ServiceError::MissingData)
-    }
-
     fn connection_from_dbus(
         &self,
         conn: HashMap<String, HashMap<String, zvariant::OwnedValue>>,
