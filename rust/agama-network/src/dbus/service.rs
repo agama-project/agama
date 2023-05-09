@@ -73,11 +73,8 @@ impl NetworkService {
 
         for (i, conn) in state.connections.iter().enumerate() {
             let path = format!("/org/opensuse/Agama/Network1/Connections/{}", i);
-            self.add_interface(
-                &path,
-                interfaces::Connection::new(Arc::clone(&self.state), conn.name()),
-            )
-            .await?;
+            self.add_interface(&path, interfaces::Connection::new(conn.name()))
+                .await?;
 
             self.add_interface(
                 &path,

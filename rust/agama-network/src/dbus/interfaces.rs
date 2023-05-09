@@ -95,14 +95,12 @@ impl Connections {
 }
 
 pub struct Connection {
-    network: Arc<Mutex<NetworkState>>,
     conn_id: String,
 }
 
 impl Connection {
-    pub fn new(network: Arc<Mutex<NetworkState>>, conn_id: &str) -> Self {
+    pub fn new(conn_id: &str) -> Self {
         Self {
-            network,
             conn_id: conn_id.to_string(),
         }
     }
