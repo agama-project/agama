@@ -6,21 +6,6 @@ use crate::nm::{
 };
 use std::{error::Error, fmt, net::Ipv4Addr};
 
-pub async fn read_network_state() -> Result<NetworkState, Box<dyn Error>> {
-    let nm_client = NetworkManagerClient::from_system().await?;
-
-    let nm_devices = nm_client.devices().await?;
-    let devices: Vec<Device> = nm_devices.into_iter().map(|d| d.into()).collect();
-
-    let nm_conns = nm_client.connections().await?;
-    let connections: Vec<Connection> = nm_conns.into_iter().map(|d| d.into()).collect();
-
-    Ok(NetworkState {
-        devices,
-        connections,
-    })
-}
-
 #[derive(Debug)]
 pub struct NetworkState {
     pub devices: Vec<Device>,
@@ -28,6 +13,22 @@ pub struct NetworkState {
 }
 
 impl NetworkState {
+    /// Reads the network configuration using the NetworkManager D-Bus service.
+    pub async fn from_system() -> Result<NetworkState, Box<dyn Error>> {
+        let nm_client = NetworkManagerClient::from_system().await?;
+
+        let nm_devices = nm_client.devices().await?;
+        let devices: Vec<Device> = nm_devices.into_iter().map(|d| d.into()).collect();
+
+        let nm_conns = nm_client.connections().await?;
+        let connections: Vec<Connection> = nm_conns.into_iter().map(|d| d.into()).collect();
+
+        Ok(NetworkState {
+            devices,
+            connections,
+        })
+    }
+
     /// Get device by name
     ///
     /// * `name`: device name
