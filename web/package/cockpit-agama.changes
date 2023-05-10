@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May  8 15:20:14 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Set sidebar siblings as aria-hiden while it's open
+  (gh#openSUSE/agama#563)
+
+-------------------------------------------------------------------
 Fri Apr 28 15:16:04 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Add issues for storage client.

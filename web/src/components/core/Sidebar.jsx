@@ -26,6 +26,18 @@ import { If, NotificationMark } from "~/components/core";
 import { useNotification } from "~/context/notification";
 
 /**
+ * Returns siblings for given HTML node
+ *
+ * @param {HTMLElement} node
+ * @returns {HTMLElement[]}
+ */
+const siblingsFor = (node) => {
+  if (!node) return [];
+
+  return [...node.parentNode.children].filter(n => n !== node);
+};
+
+/**
  * Agama sidebar navigation
  * @component
  *
@@ -34,11 +46,25 @@ import { useNotification } from "~/context/notification";
  */
 export default function Sidebar ({ children }) {
   const [isOpen, setIsOpen] = useState(false);
+  const asideRef = useRef(null);
   const closeButtonRef = useRef(null);
   const [notification] = useNotification();
 
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
+  const open = () => {
+    setIsOpen(true);
+    siblingsFor(asideRef.current).forEach(s => {
+      s.setAttribute('inert', '');
+      s.setAttribute('aria-hidden', true);
+    });
+  };
+
+  const close = () => {
+    setIsOpen(false);
+    siblingsFor(asideRef.current).forEach(s => {
+      s.removeAttribute('inert');
+      s.removeAttribute('aria-hidden');
+    });
+  };
 
   /**
    * Handler for automatically closing the sidebar when a click bubbles from a
@@ -106,6 +132,7 @@ export default function Sidebar ({ children }) {
 
       <aside
         id="global-options"
+        ref={asideRef}
         className="wrapper sidebar"
         aria-label="Global options"
         data-state={isOpen ? "visible" : "hidden"}
