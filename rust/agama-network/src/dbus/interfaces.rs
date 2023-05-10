@@ -168,7 +168,7 @@ impl Ipv4 {
     }
 }
 
-#[dbus_interface(name = "org.opensuse.Agama.Network1.IPv4")]
+#[dbus_interface(name = "org.opensuse.Agama.Network1.Connection.IPv4")]
 impl Ipv4 {
     #[dbus_interface(property)]
     pub fn addresses(&self) -> zbus::fdo::Result<Vec<(String, u32)>> {
@@ -234,7 +234,7 @@ impl Wireless {
     }
 }
 
-#[dbus_interface(name = "org.opensuse.Agama.Network1.Wireless")]
+#[dbus_interface(name = "org.opensuse.Agama.Network1.Connection.Wireless")]
 impl Wireless {
     #[dbus_interface(property)]
     pub fn ssid(&self) -> zbus::fdo::Result<Vec<u8>> {
