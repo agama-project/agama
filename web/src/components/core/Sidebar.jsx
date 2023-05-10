@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon, AppActions } from "~/components/layout";
 import { If, NotificationMark } from "~/components/core";
@@ -32,7 +32,7 @@ import { useNotification } from "~/context/notification";
  * @returns {HTMLElement[]}
  */
 const siblingsFor = (node) => {
-  if (!node) return [];
+  if (!node?.parentNode) return [];
 
   return [...node.parentNode.children].filter(n => n !== node);
 };
@@ -85,6 +85,18 @@ export default function Sidebar ({ children }) {
   useEffect(() => {
     if (isOpen) closeButtonRef.current.focus();
   }, [isOpen]);
+
+  // Ensure not keeping siblings nodes as inert in case the component is unmount
+  useLayoutEffect(() => {
+    const aside = asideRef.current;
+
+    return () => {
+      siblingsFor(aside).forEach(s => {
+        s.removeAttribute('inert');
+        s.removeAttribute('aria-hidden');
+      });
+    };
+  }, []);
 
   // display additional info when running in a development server
   let targetInfo = null;
