@@ -1,5 +1,7 @@
-//! Network data model
-
+//! Representation of the network configuration
+//!
+//! * This module contains the types that represent the network concepts. They are supposed to be
+//! agnostic from the real network service (e.g., NetworkManager).
 use crate::nm::{
     NetworkManagerClient, NmConnection, NmDevice, NmDeviceType, NmIp4Config, NmKeyManagement,
     NmMethod, NmWireless, NmWirelessMode,

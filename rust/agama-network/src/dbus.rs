@@ -1,4 +1,4 @@
-//! D-Bus types and service.
+//! D-Bus service and interfaces.
 //!
 //! This module contains a [D-Bus network service](NetworkService) which expose the network
 //! configuration for Agama.

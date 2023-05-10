@@ -1,4 +1,4 @@
-//! NetworkManager model.
+//! Support for interacting with [NetworkManager](https://networkmanager.dev/).
 //!
 //! This module defines [a NetworkManager client](client::NetworkManagerClient) and a set of
 //! structs and enums to work with NetworkManager configuration. It is intended to be used
