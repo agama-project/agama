@@ -32,9 +32,9 @@ import { useNotification } from "~/context/notification";
  * @returns {HTMLElement[]}
  */
 const siblingsFor = (node) => {
-  if (!node?.parentNode) return [];
+  const parent = node?.parentNode;
 
-  return [...node.parentNode.children].filter(n => n !== node);
+  return parent ? [...parent.children].filter(n => n !== node) : [];
 };
 
 /**
@@ -50,20 +50,34 @@ export default function Sidebar ({ children }) {
   const closeButtonRef = useRef(null);
   const [notification] = useNotification();
 
-  const open = () => {
-    setIsOpen(true);
+  /**
+   * Set siblings as not discoverable and not interactive
+   */
+  const makeSiblingsInert = () => {
     siblingsFor(asideRef.current).forEach(s => {
       s.setAttribute('inert', '');
       s.setAttribute('aria-hidden', true);
     });
   };
 
-  const close = () => {
-    setIsOpen(false);
+  /**
+   * Set siblings as discoverable and interactive
+   */
+  const makeSiblingsAlive = () => {
     siblingsFor(asideRef.current).forEach(s => {
       s.removeAttribute('inert');
       s.removeAttribute('aria-hidden');
     });
+  };
+
+  const open = () => {
+    setIsOpen(true);
+    makeSiblingsInert();
+  };
+
+  const close = () => {
+    setIsOpen(false);
+    makeSiblingsAlive();
   };
 
   /**
@@ -86,16 +100,12 @@ export default function Sidebar ({ children }) {
     if (isOpen) closeButtonRef.current.focus();
   }, [isOpen]);
 
-  // Ensure not keeping siblings nodes as inert in case the component is unmount
   useLayoutEffect(() => {
-    const aside = asideRef.current;
-
-    return () => {
-      siblingsFor(aside).forEach(s => {
-        s.removeAttribute('inert');
-        s.removeAttribute('aria-hidden');
-      });
-    };
+    // Ensure siblings do not remain inert when the component is unmount.
+    // Using useLayoutEffect over useEffect for allowing the cleanup function to
+    // be executed immediately BEFORE unmounting the component and still having
+    // access to siblings.
+    return () => makeSiblingsAlive();
   }, []);
 
   // display additional info when running in a development server
