@@ -20,17 +20,17 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require "agama/dbus/clients/language"
+require "agama/dbus/clients/locale"
 require "dbus"
 
-describe Agama::DBus::Clients::Language do
+describe Agama::DBus::Clients::Locale do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.Agama.Language1").and_return(service)
-    allow(service).to receive(:object).with("/org/opensuse/Agama/Language1")
+    allow(bus).to receive(:service).with("org.opensuse.Agama.Locale1").and_return(service)
+    allow(service).to receive(:object).with("/org/opensuse/Agama/Locale1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Language1")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Locale1")
       .and_return(lang_iface)
   end
 
@@ -41,44 +41,13 @@ describe Agama::DBus::Clients::Language do
 
   subject { described_class.new }
 
-  describe "#available_languages" do
-    before do
-      allow(lang_iface).to receive(:[]).with("AvailableLanguages").and_return(
-        [
-          ["en_US", "English (US)", {}],
-          ["en_GB", "English (UK)", {}],
-          ["es_ES", "Español", {}]
-        ]
-      )
-    end
-
-    it "returns the id and name for all available languages" do
-      expect(subject.available_languages).to contain_exactly(
-        ["en_US", "English (US)"],
-        ["en_GB", "English (UK)"],
-        ["es_ES", "Español"]
-      )
-    end
-  end
-
-  describe "#selected_languages" do
-    before do
-      allow(lang_iface).to receive(:[]).with("MarkedForInstall").and_return(["en_US", "es_ES"])
-    end
-
-    it "returns the name of the selected languages" do
-      expect(subject.selected_languages).to contain_exactly("en_US", "es_ES")
-    end
-  end
-
-  describe "#select_languages" do
+  describe "#supported_locales=" do
     # Using partial double because methods are dynamically added to the proxy object
     let(:dbus_object) { double(::DBus::ProxyObject) }
 
-    it "selects the given languages" do
-      expect(dbus_object).to receive(:ToInstall).with(["en_GB"])
-
-      subject.select_languages(["en_GB"])
+    it "calls the D-Bus object" do
+      expect(dbus_object).to receive(:supported_locales=).with(["no", "se"])
+      subject.supported_locales = ["no", "se"]
     end
   end
 
@@ -86,7 +55,7 @@ describe Agama::DBus::Clients::Language do
     let(:dbus_object) { double(::DBus::ProxyObject) }
 
     it "calls the D-Bus finish method" do
-      expect(dbus_object).to receive(:Finish)
+      expect(dbus_object).to receive(:Commit)
       subject.finish
     end
   end
