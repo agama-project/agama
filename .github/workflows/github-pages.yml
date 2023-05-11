@@ -39,7 +39,7 @@ jobs:
           sudo apt-get --assume-yes --no-install-recommends install xmlto docbook-xsl xmlstarlet
 
       - name: Check that introspected API and its docs have not diverged
-        run: cd doc/dbus; make diff
+        run: make -C doc check
 
       - name: Build HTML via DocBook
         run: make -C doc

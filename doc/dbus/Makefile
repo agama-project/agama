@@ -13,6 +13,7 @@ all: ${distdir} ${tmpdir}
 	  docbook=${tmpdir}/ref-$${f%.doc.xml}.xml; \
 	  xmlto -o ${distdir} --skip-validation html-nochunks $$docbook; \
 	done
+	./make-index > index.html
 	cp index.html ${distdir}
 
 # 'foo 2> >(grep ... >&2)' greps stderr and keeps it as stderr
