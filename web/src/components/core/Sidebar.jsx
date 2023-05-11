@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon, AppActions } from "~/components/layout";
 import { If, NotificationMark } from "~/components/core";
@@ -32,9 +32,9 @@ import { useNotification } from "~/context/notification";
  * @returns {HTMLElement[]}
  */
 const siblingsFor = (node) => {
-  if (!node) return [];
+  const parent = node?.parentNode;
 
-  return [...node.parentNode.children].filter(n => n !== node);
+  return parent ? [...parent.children].filter(n => n !== node) : [];
 };
 
 /**
@@ -50,20 +50,34 @@ export default function Sidebar ({ children }) {
   const closeButtonRef = useRef(null);
   const [notification] = useNotification();
 
-  const open = () => {
-    setIsOpen(true);
+  /**
+   * Set siblings as not interactive and not discoverable
+   */
+  const makeSiblingsInert = () => {
     siblingsFor(asideRef.current).forEach(s => {
       s.setAttribute('inert', '');
       s.setAttribute('aria-hidden', true);
     });
   };
 
-  const close = () => {
-    setIsOpen(false);
+  /**
+   * Set siblings as interactive and discoverable
+   */
+  const makeSiblingsAlive = () => {
     siblingsFor(asideRef.current).forEach(s => {
       s.removeAttribute('inert');
       s.removeAttribute('aria-hidden');
     });
+  };
+
+  const open = () => {
+    setIsOpen(true);
+    makeSiblingsInert();
+  };
+
+  const close = () => {
+    setIsOpen(false);
+    makeSiblingsAlive();
   };
 
   /**
@@ -85,6 +99,14 @@ export default function Sidebar ({ children }) {
   useEffect(() => {
     if (isOpen) closeButtonRef.current.focus();
   }, [isOpen]);
+
+  useLayoutEffect(() => {
+    // Ensure siblings do not remain inert when the component is unmounted.
+    // Using useLayoutEffect over useEffect for allowing the cleanup function to
+    // be executed immediately BEFORE unmounting the component and still having
+    // access to siblings.
+    return () => makeSiblingsAlive();
+  }, []);
 
   // display additional info when running in a development server
   let targetInfo = null;
