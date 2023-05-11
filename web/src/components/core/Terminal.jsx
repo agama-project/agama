@@ -19,15 +19,11 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { Popup } from "~/components/core";
 
-export default function Terminal({ onCloseCallback }) {
-  // the popup is visible
-  const [isOpen, setIsOpen] = useState(true);
-
+export default function Terminal({ isOpen = false, onCloseCallback }) {
   const close = () => {
-    setIsOpen(false);
     if (onCloseCallback) onCloseCallback();
   };
 

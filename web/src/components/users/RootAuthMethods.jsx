@@ -28,13 +28,99 @@ import { RootPasswordPopup, RootSSHKeyPopup } from '~/components/users';
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 
+const RootPasswordRow = ({ isPasswordDefined }) => {
+  const { users: client } = useInstallerClient();
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const openForm = () => setIsFormOpen(true);
+  const closeForm = () => setIsFormOpen(false);
+
+  const passwordActions = [
+    {
+      title: isPasswordDefined ? "Change" : "Set",
+      onClick: openForm,
+
+    },
+    isPasswordDefined && {
+      title: "Discard",
+      onClick: () => client.removeRootPassword(),
+      className: "danger-action"
+    }
+  ].filter(Boolean);
+
+  const PasswordLabel = () => isPasswordDefined ? "Already set" : "Not set";
+
+  return (
+    <Tr>
+      <Td dataLabel="Method">Password</Td>
+      <Td dataLabel="Status"><PasswordLabel /></Td>
+      <Td isActionCell>
+        <RowActions actions={passwordActions} id="actions-for-root-password" />
+        <RootPasswordPopup
+          isOpen={isFormOpen}
+          title={isPasswordDefined ? "Change the root password" : "Set a root password"}
+          onClose={closeForm}
+        />
+      </Td>
+    </Tr>
+  );
+};
+
+const RootSSHKeyRow = ({ sshKey }) => {
+  const { users: client } = useInstallerClient();
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const openForm = () => setIsFormOpen(true);
+  const closeForm = () => setIsFormOpen(false);
+
+  const isSSHKeyDefined = sshKey !== "";
+
+  const sshKeyActions = [
+    {
+      title: isSSHKeyDefined ? "Change" : "Set",
+      onClick: openForm
+    },
+    sshKey && {
+      title: "Discard",
+      onClick: () => client.setRootSSHKey(""),
+      className: "danger-action"
+    }
+
+  ].filter(Boolean);
+
+  const SSHKeyLabel = () => {
+    if (!isSSHKeyDefined) return "Not set";
+
+    const trailingChars = Math.min(sshKey.length - sshKey.lastIndexOf(" "), 30);
+
+    return (
+      <Em>
+        <Truncate content={sshKey} trailingNumChars={trailingChars} position="middle" />
+      </Em>
+    );
+  };
+
+  return (
+    <Tr>
+      <Td dataLabel="Method">SSH Key</Td>
+      <Td dataLabel="Status"><SSHKeyLabel /></Td>
+      <Td isActionCell>
+        <RowActions actions={sshKeyActions} id="actions-for-root-sshKey" />
+        <RootSSHKeyPopup
+          isOpen={isFormOpen}
+          title={isSSHKeyDefined ? "Edit the SSH Public Key for root" : "Add a SSH Public Key for root" }
+          currentKey={sshKey}
+          onClose={closeForm}
+        />
+      </Td>
+    </Tr>
+
+  );
+};
+
 export default function RootAuthMethods() {
   const { users: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const [sshKey, setSSHKey] = useState("");
   const [isPasswordDefined, setIsPasswordDefined] = useState(false);
-  const [isSSHKeyFormOpen, setIsSSHKeyFormOpen] = useState(false);
-  const [isPasswordFormOpen, setIsPasswordFormOpen] = useState(false);
+  const [sshKey, setSSHKey] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -63,34 +149,6 @@ export default function RootAuthMethods() {
     });
   }, [client]);
 
-  const isSSHKeyDefined = sshKey !== "";
-
-  const passwordActions = [
-    {
-      title: isPasswordDefined ? "Change" : "Set",
-      onClick: () => setIsPasswordFormOpen(true),
-
-    },
-    isPasswordDefined && {
-      title: "Discard",
-      onClick: () => client.removeRootPassword(),
-      className: "danger-action"
-    }
-  ].filter(Boolean);
-
-  const sshKeyActions = [
-    {
-      title: isSSHKeyDefined ? "Change" : "Set",
-      onClick: () => setIsSSHKeyFormOpen(true),
-    },
-    sshKey && {
-      title: "Discard",
-      onClick: () => client.setRootSSHKey(""),
-      className: "danger-action"
-    }
-
-  ].filter(Boolean);
-
   if (isLoading) {
     return (
       <>
@@ -100,69 +158,19 @@ export default function RootAuthMethods() {
     );
   }
 
-  const closePasswordForm = () => setIsPasswordFormOpen(false);
-  const closeSSHKeyForm = () => setIsSSHKeyFormOpen(false);
-
-  const PasswordLabel = () => {
-    return isPasswordDefined
-      ? "Already set"
-      : "Not set";
-  };
-
-  const SSHKeyLabel = () => {
-    if (!isSSHKeyDefined) return "Not set";
-
-    const trailingChars = Math.min(sshKey.length - sshKey.lastIndexOf(" "), 30);
-
-    return (
-      <Em>
-        <Truncate content={sshKey} trailingNumChars={trailingChars} position="middle" />
-      </Em>
-    );
-  };
-
   return (
-    <>
-      <TableComposable variant="compact" gridBreakPoint="grid-md">
-        <Thead>
-          <Tr>
-            <Th width={25}>Method</Th>
-            <Th>Status</Th>
-            <Th />
-          </Tr>
-        </Thead>
-        <Tbody>
-          <Tr>
-            <Td dataLabel="Method">Password</Td>
-            <Td dataLabel="Status"><PasswordLabel /></Td>
-            <Td isActionCell>
-              <RowActions actions={passwordActions} id="actions-for-root-password" />
-            </Td>
-          </Tr>
-          <Tr>
-            <Td dataLabel="Method">SSH Key</Td>
-            <Td dataLabel="Status"><SSHKeyLabel /></Td>
-            <Td isActionCell>
-              <RowActions actions={sshKeyActions} id="actions-for-root-sshKey" />
-            </Td>
-          </Tr>
-        </Tbody>
-      </TableComposable>
-
-      { isPasswordFormOpen &&
-        <RootPasswordPopup
-          isOpen
-          title={isPasswordDefined ? "Change the root password" : "Set a root password"}
-          onClose={closePasswordForm}
-        /> }
-
-      { isSSHKeyFormOpen &&
-        <RootSSHKeyPopup
-          isOpen
-          title={isSSHKeyDefined ? "Edit the SSH Public Key for root" : "Add a SSH Public Key for root" }
-          currentKey={sshKey}
-          onClose={closeSSHKeyForm}
-        />}
-    </>
+    <TableComposable variant="compact" gridBreakPoint="grid-md">
+      <Thead>
+        <Tr>
+          <Th width={25}>Method</Th>
+          <Th>Status</Th>
+          <Th />
+        </Tr>
+      </Thead>
+      <Tbody>
+        <RootPasswordRow isPasswordDefined={isPasswordDefined} />
+        <RootSSHKeyRow sshKey={sshKey} />
+      </Tbody>
+    </TableComposable>
   );
 }

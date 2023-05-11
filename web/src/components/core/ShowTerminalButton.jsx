@@ -46,8 +46,7 @@ const ShowTerminalButton = () => {
         Open Terminal
       </Button>
 
-      { isTermDisplayed &&
-        <Terminal onCloseCallback={onClose} /> }
+      <Terminal onCloseCallback={onClose} isOpen={isTermDisplayed} />
     </>
   );
 };

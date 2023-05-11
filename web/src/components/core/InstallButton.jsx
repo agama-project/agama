@@ -27,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 
 import { If, Popup } from "~/components/core";
 
-const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
+const InstallConfirmationPopup = React.memo(({ isOpen, hasIssues, onAccept, onClose }) => {
   const navigate = useNavigate();
 
   const IssuesWarning = () => {
@@ -49,8 +49,8 @@ const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
 
   return (
     <Popup
+      isOpen={isOpen}
       title="Confirm Installation"
-      isOpen
     >
       <div className="stack">
         <If condition={hasIssues} then={<IssuesWarning />} />
@@ -68,12 +68,12 @@ const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
       </Popup.Actions>
     </Popup>
   );
-};
+});
 
-const CannotInstallPopup = ({ onClose }) => (
+const CannotInstallPopup = React.memo(({ isOpen, onClose }) => (
   <Popup
+    isOpen={isOpen}
     title="Problems Found"
-    isOpen
   >
     <p>
       Some problems were found when trying to start the installation.
@@ -84,15 +84,7 @@ const CannotInstallPopup = ({ onClose }) => (
       <Popup.Cancel onClick={onClose} autoFocus>Accept</Popup.Cancel>
     </Popup.Actions>
   </Popup>
-);
-
-const renderPopup = (error, hasIssues, { onAccept, onClose }) => {
-  if (error) {
-    return <CannotInstallPopup onClose={onClose} />;
-  } else {
-    return <InstallConfirmationPopup onClose={onClose} onAccept={onAccept} hasIssues={hasIssues} />;
-  }
-};
+));
 
 /**
  * Installation button
@@ -121,8 +113,9 @@ const InstallButton = ({ onClick }) => {
     setIsOpen(true);
     setError(!canInstall);
   };
-  const close = () => setIsOpen(false);
-  const install = () => client.manager.startInstallation();
+
+  const close = React.useCallback(() => setIsOpen(false), []);
+  const install = React.useCallback(() => client.manager.startInstallation(), [client.manager]);
 
   return (
     <>
@@ -130,7 +123,8 @@ const InstallButton = ({ onClick }) => {
         Install
       </Button>
 
-      { isOpen && renderPopup(error, hasIssues, { onAccept: install, onClose: close }) }
+      <CannotInstallPopup isOpen={isOpen && !error} onClose={close} />;
+      <InstallConfirmationPopup isOpen={isOpen && error} onClose={close} onAccept={install} hasIssues={hasIssues} />;
     </>
   );
 };

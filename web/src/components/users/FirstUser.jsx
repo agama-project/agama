@@ -185,75 +185,74 @@ export default function FirstUser() {
     <>
       { isUserDefined ? <UserData user={user} actions={actions} /> : <UserNotDefined actionCb={openForm} /> }
       { /* TODO: Extract this form to a component, if possible */ }
-      { isFormOpen &&
-        <Popup isOpen height="medium" title={isEditing ? "Edit user account" : "Create user account"}>
-          <Form id="createUser" onSubmit={(e) => accept("createUser", e)}>
-            { showErrors() &&
-              <Alert variant="warning" isInline title="Something went wrong">
-                { errors.map((e, i) => <p key={`error_${i}`}>{e}</p>) }
-              </Alert> }
+      <Popup isOpen={isFormOpen} height="medium" title={isEditing ? "Edit user account" : "Create user account"}>
+        <Form id="createUser" onSubmit={(e) => accept("createUser", e)}>
+          { showErrors() &&
+            <Alert variant="warning" isInline title="Something went wrong">
+              { errors.map((e, i) => <p key={`error_${i}`}>{e}</p>) }
+            </Alert> }
 
-            <FormGroup fieldId="userFullName" label="Full name">
-              <TextInput
-                id="userFullName"
-                name="fullName"
-                aria-label="User fullname"
-                value={formValues.fullName}
-                label="User full name"
-                onChange={handleInputChange}
-              />
-            </FormGroup>
-
-            <FormGroup fieldId="userName" label="Username" isRequired>
-              <TextInput
-                id="userName"
-                name="userName"
-                aria-label="Username"
-                value={formValues.userName}
-                label="Username"
-                isRequired
-                onChange={handleInputChange}
-              />
-            </FormGroup>
-
-            { isEditing &&
-              <Checkbox
-                aria-label="Edit password too"
-                id="edit-password"
-                name="edit-password"
-                label="Edit password too"
-                isChecked={isSettingPassword}
-                onChange={toggleShowPasswordField}
-              /> }
-
-            { isSettingPassword &&
-              <PasswordAndConfirmationInput
-                value={formValues.password}
-                onChange={(value, event) => {
-                  handleInputChange(value, event);
-                }}
-                onValidation={isValid => setIsValidPassword(isValid)}
-              /> }
-
-            <Checkbox
-              aria-label="user autologin"
-              id="autologin"
-              name="autologin"
-              label="Auto-login"
-              isChecked={formValues.autologin}
+          <FormGroup fieldId="userFullName" label="Full name">
+            <TextInput
+              id="userFullName"
+              name="fullName"
+              aria-label="User fullname"
+              value={formValues.fullName}
+              label="User full name"
               onChange={handleInputChange}
             />
-          </Form>
+          </FormGroup>
 
-          <Popup.Actions>
-            <Popup.Confirm
-              form="createUser"
-              type="submit"
-              isDisabled={submitDisable}
+          <FormGroup fieldId="userName" label="Username" isRequired>
+            <TextInput
+              id="userName"
+              name="userName"
+              aria-label="Username"
+              value={formValues.userName}
+              label="Username"
+              isRequired
+              onChange={handleInputChange}
             />
-            <Popup.Cancel onClick={closeForm} />
-          </Popup.Actions>
-        </Popup> }
+          </FormGroup>
+
+          { isEditing &&
+            <Checkbox
+              aria-label="Edit password too"
+              id="edit-password"
+              name="edit-password"
+              label="Edit password too"
+              isChecked={isSettingPassword}
+              onChange={toggleShowPasswordField}
+            /> }
+
+          { isSettingPassword &&
+            <PasswordAndConfirmationInput
+              value={formValues.password}
+              onChange={(value, event) => {
+                handleInputChange(value, event);
+              }}
+              onValidation={isValid => setIsValidPassword(isValid)}
+            /> }
+
+          <Checkbox
+            aria-label="user autologin"
+            id="autologin"
+            name="autologin"
+            label="Auto-login"
+            isChecked={formValues.autologin}
+            onChange={handleInputChange}
+          />
+        </Form>
+
+        <Popup.Actions>
+          <Popup.Confirm
+            form="createUser"
+            type="submit"
+            isDisabled={submitDisable}
+          />
+          <Popup.Cancel onClick={closeForm} />
+        </Popup.Actions>
+      </Popup>
     </>
   );
 }

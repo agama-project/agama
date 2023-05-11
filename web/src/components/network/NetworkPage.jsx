@@ -24,7 +24,7 @@ import { Button, Skeleton } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
-import { If, Page, Section } from "~/components/core";
+import { If, Page, Popup, Section } from "~/components/core";
 import { ConnectionsTable, IpSettingsForm, NetworkPageOptions, WifiSelector } from "~/components/network";
 
 /**
@@ -89,6 +89,7 @@ export default function NetworkPage() {
 
   const openWifiSelector = () => setWifiSelectorOpen(true);
   const closeWifiSelector = () => setWifiSelectorOpen(false);
+  const unselectConnection = () => setSelectedConnection(null);
 
   useEffect(() => {
     client.setUp().then(() => setInitialized(true));
@@ -133,7 +134,7 @@ export default function NetworkPage() {
     });
   });
 
-  const selectConnection = ({ id }) => {
+  const selectConnection = async ({ id }) => {
     client.getConnection(id).then(setSelectedConnection);
   };
 
@@ -175,15 +176,18 @@ export default function NetworkPage() {
 
       <NetworkPageOptions wifiScanSupported={wifiScanSupported} openWifiSelector={openWifiSelector} />
 
+      { /* TODO: improve the connections edition */ }
+      <Popup isOpen={selectedConnection !== null} height="medium" title={`Edit "${selectedConnection?.name}" connection`}>
+        <IpSettingsForm connection={selectedConnection} onClose={unselectConnection} />
+        <Popup.Actions>
+          <Popup.Confirm form="edit-connection" type="submit" />
+          <Popup.Cancel onClick={unselectConnection} />
+        </Popup.Actions>
+      </Popup>
+
       <If
         condition={wifiScanSupported}
         then={<WifiSelector isOpen={wifiSelectorOpen} onClose={closeWifiSelector} />}
-      />
-
-      { /* TODO: improve the connections edition */ }
-      <If
-        condition={selectedConnection}
-        then=<IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} />
       />
     </Page>
   );

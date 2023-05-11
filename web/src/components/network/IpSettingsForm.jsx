@@ -19,11 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, TextInput } from "@patternfly/react-core";
 
 import { useInstallerClient } from "~/context/installer";
-import { Popup } from "~/components/core";
 import { AddressesDataList, DnsDataList } from "~/components/network";
 
 const METHODS = {
@@ -35,14 +34,21 @@ const usingDHCP = (method) => method === METHODS.AUTO;
 
 export default function IpSettingsForm({ connection, onClose }) {
   const client = useInstallerClient();
-  const { ipv4 = {} } = connection;
-  const [addresses, setAddresses] = useState(ipv4.addresses);
-  const [nameServers, setNameServers] = useState(ipv4.nameServers.map(a => {
-    return { address: a };
-  }));
-  const [method, setMethod] = useState(ipv4.method || "auto");
-  const [gateway, setGateway] = useState(ipv4.gateway || "");
+  const [addresses, setAddresses] = useState([]);
+  const [nameServers, setNameServers] = useState([]);
+  const [method, setMethod] = useState("auto");
+  const [gateway, setGateway] = useState("");
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (!connection) return;
+
+    const ipv4 = connection.ipv4;
+    setAddresses(ipv4.addresses);
+    setNameServers(ipv4.nameServers.map(a => ({ address: a })));
+    setMethod(ipv4.method || "auto");
+    setGateway(ipv4.gateway || "");
+  }, [connection]);
 
   const isSetAsInvalid = field => Object.keys(errors).includes(field);
 
@@ -123,49 +129,42 @@ export default function IpSettingsForm({ connection, onClose }) {
   };
 
   return (
-    <Popup isOpen height="medium" title={`Edit "${connection.name}" connection`}>
-      <Form id="edit-connection" onSubmit={onSubmit}>
-        <FormGroup fieldId="method" label="Mode" isRequired>
-          <FormSelect
-            id="method"
-            name="method"
-            aria-label="Mode"
-            value={method}
-            label="Mode"
-            onChange={changeMethod}
-            validated={validatedAttrValue("method")}
-          >
-            <FormSelectOption key="auto" value={METHODS.AUTO} label="Automatic (DHCP)" />
-            <FormSelectOption key="manual" value={METHODS.MANUAL} label="Manual" />
-          </FormSelect>
-          {renderError("method")}
-        </FormGroup>
+    <Form id="edit-connection" onSubmit={onSubmit}>
+      <FormGroup fieldId="method" label="Mode" isRequired>
+        <FormSelect
+          id="method"
+          name="method"
+          aria-label="Mode"
+          value={method}
+          label="Mode"
+          onChange={changeMethod}
+          validated={validatedAttrValue("method")}
+        >
+          <FormSelectOption key="auto" value={METHODS.AUTO} label="Automatic (DHCP)" />
+          <FormSelectOption key="manual" value={METHODS.MANUAL} label="Manual" />
+        </FormSelect>
+        {renderError("method")}
+      </FormGroup>
 
-        <AddressesDataList
-          addresses={addresses}
-          updateAddresses={setAddresses}
-          allowEmpty={usingDHCP(method)}
+      <AddressesDataList
+        addresses={addresses}
+        updateAddresses={setAddresses}
+        allowEmpty={usingDHCP(method)}
+      />
+
+      <FormGroup fieldId="gateway" label="Gateway">
+        <TextInput
+          id="gateway"
+          name="gateway"
+          aria-label="Gateway"
+          value={gateway}
+          label="Gateway"
+          isDisabled={addresses?.length === 0}
+          onChange={setGateway}
         />
+      </FormGroup>
 
-        <FormGroup fieldId="gateway" label="Gateway">
-          <TextInput
-            id="gateway"
-            name="gateway"
-            aria-label="Gateway"
-            value={gateway}
-            label="Gateway"
-            isDisabled={addresses.length === 0}
-            onChange={setGateway}
-          />
-        </FormGroup>
-
-        <DnsDataList servers={nameServers} updateDnsServers={setNameServers} />
-      </Form>
-
-      <Popup.Actions>
-        <Popup.Confirm form="edit-connection" type="submit" />
-        <Popup.Cancel onClick={onClose} />
-      </Popup.Actions>
-    </Popup>
+      <DnsDataList servers={nameServers} updateDnsServers={setNameServers} />
+    </Form>
   );
 }
