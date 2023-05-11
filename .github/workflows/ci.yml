@@ -266,7 +266,8 @@ jobs:
     - name: Build
       run: cargo build --verbose
     - name: Run tests
-      run: cargo test --verbose
+      # FIXME: omit agama-locale-data until python-langtable-data is installed
+      run: cargo test --verbose -p agama-cli -p agama-dbus-server -p agama-lib
 
 
   finish:
