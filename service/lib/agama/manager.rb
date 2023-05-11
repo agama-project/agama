@@ -196,7 +196,7 @@ module Agama
     # Whatever has to be done at the end of installation
     def finish_installation
       cmd = if iguana?
-        "systemctl stop agama"
+        "/usr/bin/agamactl -k"
       else
         "/usr/sbin/shutdown -r now"
       end
