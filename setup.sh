@@ -20,7 +20,12 @@ fi
 
 # Install dependencies
 
+# this repo can be removed once python-language-data reaches Factory
+test -f /etc/zypp/repos.d/d_l_python.repo || \
+  $SUDO zypper --non-interactive --gpg-auto-import-keys \
+    addrepo https://download.opensuse.org/repositories/devel:/languages:/python/openSUSE_Tumbleweed/ d_l_python
 $SUDO zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel \
+  python-langtable-data \
   'npm>=18' git augeas-devel cockpit jemalloc-devel || exit 1
 
 # Backend setup
