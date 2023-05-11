@@ -160,14 +160,7 @@ impl Ipv4 {
     where
         F: FnOnce(&Ipv4Config) -> T,
     {
-        let state = self.network.lock().unwrap();
-        let conn =
-            state
-                .get_connection(&self.conn_name)
-                .ok_or(NetworkStateError::UnknownConnection(
-                    self.conn_name.to_string(),
-                ))?;
-        Ok(func(conn.ipv4()))
+        self.with_ipv4_mut(|ipv4| Ok(func(ipv4)))
     }
 
     pub fn with_ipv4_mut<T, F>(&self, func: F) -> zbus::fdo::Result<T>
