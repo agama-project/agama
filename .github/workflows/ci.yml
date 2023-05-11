@@ -189,38 +189,27 @@ jobs:
     - name: start container
       run: podman run --privileged --detach --name agama --ipc=host -v .:/checkout -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/agama-testing:latest
 
-    - name: Install Ruby gems
-      run:  podman exec agama bash -c "cd /checkout/service && bundle config set --local path 'vendor/bundle' && bundle install"
-
-    - name: Install the Agama D-Bus configuration
-      run:  podman exec agama bash -c "cp /checkout/service/share/dbus.conf /usr/share/dbus-1/system.d/org.opensuse.Agama.conf"
+    - name: Setup service
+      run:  podman exec agama bash -c "cd /checkout; ./setup-service.sh"
 
     - name: Set a testing Agama configuration
       # copy a simplified ALP config file, it skips the product selection at the beginning
       run:  podman exec agama bash -c "cp /checkout/playwright/config/agama.yaml /checkout/service/etc/agama.yaml"
 
-    - name: Start NetworkManager
-      # We need to run it manually as systemd dbus activation looks like failing
-      run:  podman exec agama /usr/sbin/NetworkManager
-
-    - name: Reload the D-Bus service
-      run:  podman exec agama systemctl reload dbus
-
-    - name: Start the Agama D-Bus services
-      # TODO: here is a potential race condition, but as building the frontend
-      # takes quite long time it should never happen™
-      run:  podman exec agama bash -c "cd /checkout/service && (bundle exec bin/agamactl > service.log 2>&1 &)"
-
     - name: Build the frontend
       run:  podman exec agama bash -c "cd /checkout/web && npm install && make"
 
+    - name: Show NetworkManager log
+      run:  podman exec agama journalctl -u NetworkManager
+
     - name: Show the D-Bus services log
-      run:  podman exec agama cat /checkout/service/service.log
+      run:  podman exec agama bash -c "journalctl | grep agama"
 
     - name: Check DBus socket
       run:  podman exec agama ls -l /var/run/dbus/system_bus_socket
 
-    - name: Show journal
+    - name: Show the complete journal
+      # maybe not necessary if the above filtered journalctl calls are enough
       run:  podman exec agama journalctl -b || echo "journal failed with $?"
 
     - name: Install the frontend
