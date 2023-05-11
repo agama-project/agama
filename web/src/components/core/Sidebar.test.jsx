@@ -198,7 +198,7 @@ describe("side effects on siblings", () => {
     expect(sidebarSibling).not.toHaveAttribute("inert");
   });
 
-  it("removes inert and aria-hidden siblings attributes if it's unmount", async () => {
+  it("removes inert and aria-hidden siblings attributes if it's unmounted", async () => {
     const { user } = installerRender(withNotificationProvider(<SidebarWithSiblings />));
 
     const openLink = await screen.findByLabelText(/Show/i);

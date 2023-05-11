@@ -101,7 +101,7 @@ export default function Sidebar ({ children }) {
   }, [isOpen]);
 
   useLayoutEffect(() => {
-    // Ensure siblings do not remain inert when the component is unmount.
+    // Ensure siblings do not remain inert when the component is unmounted.
     // Using useLayoutEffect over useEffect for allowing the cleanup function to
     // be executed immediately BEFORE unmounting the component and still having
     // access to siblings.
