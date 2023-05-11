@@ -35,7 +35,7 @@ import { useInstallerClient } from "~/context/installer";
 function InstallationFinished() {
   const client = useInstallerClient();
   const [iguana, setIguana] = useState(false);
-  const closingAction = client.manager.finishInstallation();
+  const closingAction = () => client.manager.finishInstallation();
   const buttonCaption = iguana ? "Finish" : "Reboot";
 
   useEffect(() => {

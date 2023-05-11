@@ -120,7 +120,7 @@ class ManagerBaseClient {
    */
   async finishInstallation() {
     const proxy = await this.client.proxy(MANAGER_IFACE);
-    return proxy.Finish;
+    return proxy.Finish();
   }
 
   /**
