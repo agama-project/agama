@@ -1,4 +1,6 @@
 //! Error types.
+use std::net::AddrParseError;
+
 use thiserror::Error;
 
 /// Errors that are related to the network configuration.
@@ -10,6 +12,10 @@ pub enum NetworkStateError {
     UnknownConnection(String),
     #[error("Invalid connection type: '{0}'")]
     InvalidConnectionType(String),
+    #[error("Invalid IP address")]
+    InvalidIpv4Addr(#[from] AddrParseError),
+    #[error("Invalid IP method: '{0}'")]
+    InvalidIpMethod(u8),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {

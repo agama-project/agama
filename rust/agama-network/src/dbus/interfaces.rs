@@ -7,7 +7,10 @@ use crate::{
     error::NetworkStateError,
     model::{Connection as NetworkConnection, Ipv4Config, NetworkState, WirelessConfig},
 };
-use std::sync::{Arc, Mutex};
+use std::{
+    net::{AddrParseError, Ipv4Addr},
+    sync::{Arc, Mutex},
+};
 use zbus::{dbus_interface, zvariant::ObjectPath};
 
 /// D-Bus interface for the network devices collection
@@ -164,7 +167,18 @@ impl Ipv4 {
                 .ok_or(NetworkStateError::UnknownConnection(
                     self.conn_name.to_string(),
                 ))?;
-        Ok(func(&conn.ipv4()))
+        Ok(func(conn.ipv4()))
+    }
+
+    pub fn with_ipv4_mut<T, F>(&self, func: F) -> zbus::fdo::Result<T>
+    where
+        F: FnOnce(&mut Ipv4Config) -> Result<T, NetworkStateError>,
+    {
+        let mut state = self.network.lock().unwrap();
+        let conn = state.get_connection_mut(&self.conn_name).ok_or(
+            NetworkStateError::UnknownConnection(self.conn_name.to_string()),
+        )?;
+        Ok(func(conn.ipv4_mut())?)
     }
 }
 
@@ -181,8 +195,25 @@ impl Ipv4 {
     }
 
     #[dbus_interface(property)]
+    pub fn set_addresses(&mut self, addresses: Vec<(String, u32)>) -> zbus::fdo::Result<()> {
+        self.with_ipv4_mut(|ipv4| {
+            addresses
+                .iter()
+                .map(|(addr, prefix)| addr.parse::<Ipv4Addr>().map(|a| (a, *prefix)))
+                .collect::<Result<Vec<(Ipv4Addr, u32)>, AddrParseError>>()
+                .and_then(|parsed| Ok(ipv4.addresses = parsed))
+                .map_err(|err| NetworkStateError::from(err))
+        })
+    }
+
+    #[dbus_interface(property)]
     pub fn method(&self) -> zbus::fdo::Result<u8> {
         self.with_ipv4(|ipv4| ipv4.method as u8)
+    }
+
+    #[dbus_interface(property)]
+    pub fn set_method(&mut self, method: u8) -> zbus::fdo::Result<()> {
+        Ok(self.with_ipv4_mut(|ipv4| Ok(ipv4.method = method.try_into()?))?)
     }
 
     #[dbus_interface(property)]
@@ -191,10 +222,32 @@ impl Ipv4 {
     }
 
     #[dbus_interface(property)]
+    pub fn set_nameservers(&mut self, addresses: Vec<String>) -> zbus::fdo::Result<()> {
+        self.with_ipv4_mut(|ipv4| {
+            addresses
+                .iter()
+                .map(|addr| addr.parse::<Ipv4Addr>())
+                .collect::<Result<Vec<Ipv4Addr>, AddrParseError>>()
+                .and_then(|parsed| Ok(ipv4.nameservers = parsed))
+                .map_err(|err| NetworkStateError::from(err))
+        })
+    }
+
+    #[dbus_interface(property)]
     pub fn gateway(&self) -> zbus::fdo::Result<String> {
         self.with_ipv4(|ipv4| match &ipv4.gateway {
             Some(addr) => addr.to_string(),
             None => "".to_string(),
+        })
+    }
+
+    #[dbus_interface(property)]
+    pub fn set_gateway(&mut self, gateway: String) -> zbus::fdo::Result<()> {
+        self.with_ipv4_mut(|ipv4| {
+            gateway
+                .parse::<Ipv4Addr>()
+                .and_then(|parsed| Ok(ipv4.gateway = Some(parsed)))
+                .map_err(|err| NetworkStateError::from(err))
         })
     }
 }

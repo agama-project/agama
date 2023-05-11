@@ -2,6 +2,7 @@
 //!
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //! agnostic from the real network service (e.g., NetworkManager).
+use crate::error::NetworkStateError;
 use crate::nm::NetworkManagerClient;
 use std::{error::Error, fmt, net::Ipv4Addr};
 
@@ -37,6 +38,13 @@ impl NetworkState {
     pub fn get_connection(&self, name: &str) -> Option<&Connection> {
         self.connections.iter().find(|c| c.name() == name)
     }
+
+    /// Get connection by name as mutable
+    ///
+    /// * `name`: connection name
+    pub fn get_connection_mut(&mut self, name: &str) -> Option<&mut Connection> {
+        self.connections.iter_mut().find(|c| c.name() == name)
+    }
 }
 
 /// Network device
@@ -68,12 +76,23 @@ impl Connection {
         }
     }
 
+    pub fn base_mut(&mut self) -> &mut BaseConnection {
+        match self {
+            Connection::Ethernet(conn) => &mut conn.base,
+            Connection::Wireless(conn) => &mut conn.base,
+        }
+    }
+
     pub fn name(&self) -> &str {
         self.base().id.as_str()
     }
 
     pub fn ipv4(&self) -> &Ipv4Config {
         &self.base().ipv4
+    }
+
+    pub fn ipv4_mut(&mut self) -> &mut Ipv4Config {
+        &mut self.base_mut().ipv4
     }
 }
 
@@ -97,6 +116,20 @@ pub enum IpMethod {
     Auto = 0,
     Manual = 1,
     Unknown = 2,
+}
+
+// NOTE: we could use num-derive.
+impl TryFrom<u8> for IpMethod {
+    type Error = NetworkStateError;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(IpMethod::Auto),
+            1 => Ok(IpMethod::Manual),
+            2 => Ok(IpMethod::Unknown),
+            _ => Err(NetworkStateError::InvalidIpMethod(value)),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq)]
