@@ -178,6 +178,11 @@ impl Settings for UserSettings {
             let first_user = self.first_user.get_or_insert(Default::default());
             first_user.merge(other_first_user);
         }
+
+        if let Some(other_root) = &other.root {
+            let root = self.root.get_or_insert(Default::default());
+            root.merge(other_root);
+        }
     }
 }
 
@@ -255,6 +260,26 @@ pub struct SoftwareSettings {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_user_settings_merge() {
+        let mut user1 = UserSettings::default();
+        let user2 = UserSettings {
+            first_user: Some(FirstUserSettings {
+                full_name: Some("Jane Doe".to_string()),
+                ..Default::default()
+            }),
+            root: Some(RootUserSettings {
+                password: Some("nots3cr3t".to_string()),
+                ..Default::default()
+            }),
+        };
+        user1.merge(&user2);
+        let first_user = user1.first_user.unwrap();
+        assert_eq!(first_user.full_name, Some("Jane Doe".to_string()));
+        let root_user = user1.root.unwrap();
+        assert_eq!(root_user.password, Some("nots3cr3t".to_string()));
+    }
 
     #[test]
     fn test_merge() {
