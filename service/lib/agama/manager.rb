@@ -203,14 +203,14 @@ module Agama
 
       logger.info("Finishing installation with #{cmd}")
 
-      return system(cmd)
+      system(cmd)
     end
 
     # Says whether running on iguana or not
     #
     # @return [Boolean] true when running on iguana
     def iguana?
-      return Dir.exist?("/iguana")
+      Dir.exist?("/iguana")
     end
 
   private
