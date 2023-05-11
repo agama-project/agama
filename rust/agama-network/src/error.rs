@@ -16,6 +16,8 @@ pub enum NetworkStateError {
     InvalidIpv4Addr(#[from] AddrParseError),
     #[error("Invalid IP method: '{0}'")]
     InvalidIpMethod(u8),
+    #[error("Invalid wireless mode: '{0}'")]
+    InvalidWirelessMode(u8),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {

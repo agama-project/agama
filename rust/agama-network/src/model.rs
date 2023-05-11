@@ -153,18 +153,32 @@ pub struct WirelessConfig {
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub enum WirelessMode {
-    Unknown,
-    AdHoc,
     #[default]
-    Infra,
-    AP,
-    Mesh,
+    Infra = 0,
+    AdHoc = 1,
+    Mesh = 2,
+    AP = 3,
+    Other = 4,
+}
+
+impl TryFrom<u8> for WirelessMode {
+    type Error = NetworkStateError;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            1 => Ok(WirelessMode::AdHoc),
+            2 => Ok(WirelessMode::Infra),
+            3 => Ok(WirelessMode::AP),
+            4 => Ok(WirelessMode::Mesh),
+            _ => Err(NetworkStateError::InvalidWirelessMode(value)),
+        }
+    }
 }
 
 impl fmt::Display for WirelessMode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name = match &self {
-            WirelessMode::Unknown => "unknown",
+            WirelessMode::Other => "unknown",
             WirelessMode::AdHoc => "adhoc",
             WirelessMode::Infra => "infra",
             WirelessMode::AP => "ap",

@@ -266,15 +266,19 @@ impl Wireless {
     where
         F: FnOnce(&WirelessConfig) -> T,
     {
-        let state = self.network.lock().unwrap();
-        let conn =
-            state
-                .get_connection(&self.conn_name)
-                .ok_or(NetworkStateError::UnknownConnection(
-                    self.conn_name.to_string(),
-                ))?;
+        self.with_wireless_mut(|w| Ok(func(w)))
+    }
+
+    pub fn with_wireless_mut<T, F>(&self, func: F) -> zbus::fdo::Result<T>
+    where
+        F: FnOnce(&mut WirelessConfig) -> Result<T, NetworkStateError>,
+    {
+        let mut state = self.network.lock().unwrap();
+        let conn = state.get_connection_mut(&self.conn_name).ok_or(
+            NetworkStateError::UnknownConnection(self.conn_name.to_string()),
+        )?;
         match conn {
-            NetworkConnection::Wireless(config) => Ok(func(&config.wireless)),
+            NetworkConnection::Wireless(config) => Ok(func(&mut config.wireless)?),
             _ => Err(NetworkStateError::InvalidConnectionType(self.conn_name.to_string()).into()),
         }
     }
@@ -288,13 +292,36 @@ impl Wireless {
     }
 
     #[dbus_interface(property)]
+    pub fn set_ssid(&mut self, ssid: Vec<u8>) -> zbus::fdo::Result<()> {
+        Ok(self.with_wireless_mut(|w| Ok(w.ssid = ssid))?)
+    }
+
+    #[dbus_interface(property)]
     pub fn mode(&self) -> zbus::fdo::Result<u8> {
         self.with_wireless(|w| w.mode as u8)
     }
 
     #[dbus_interface(property)]
+    pub fn set_mode(&mut self, mode: u8) -> zbus::fdo::Result<()> {
+        Ok(self.with_wireless_mut(|w| Ok(w.mode = mode.try_into()?))?)
+    }
+
+    #[dbus_interface(property)]
     pub fn password(&self) -> zbus::fdo::Result<String> {
         self.with_wireless(|w| w.password.clone().unwrap_or("".to_string()))
+    }
+
+    #[dbus_interface(property)]
+    pub fn set_password(&mut self, password: String) -> zbus::fdo::Result<()> {
+        self.with_wireless_mut(|w| {
+            if password.is_empty() {
+                w.password = None;
+            } else {
+                w.password = Some(password)
+            }
+            Ok(())
+        })?;
+        Ok(())
     }
 
     #[dbus_interface(property)]
