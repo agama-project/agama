@@ -201,6 +201,8 @@ module Agama
         "/usr/sbin/shutdown -r now"
       end
 
+      logger.info("Finishing installation with #{cmd}")
+
       return system(cmd)
     end
 
