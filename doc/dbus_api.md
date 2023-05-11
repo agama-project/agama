@@ -630,64 +630,19 @@ Summary readable a{s(uub)}
 
 ## Users
 
-### iface o.o.Agama.Users1
+See the new-style [reference][usr-ref] ([source][usr-src]).
 
-#### methods:
-
--  SetRootPassword(string value, boolean encrypted) -> void
-    sets root password. If encrypted is set to true, it means that already encrypted password
-    is send.
-    example:
-
-      SetRootPassword("test", false) -> ()
-
--  SetRootSSHKey(string value) -> void
-    set root ssh public keys. Use empty string to unset it.
-    example:
-
-      SetRootSSHKey("idrsa long key") -> ()
-
-- SetFirstUser(string FullName, string UserName, string Password, boolean AutoLogin, map AdditionalData) -> void
-    sets one non root user after installation. FullName and UserName has to follow restrictions
-    for respective passwd entry. To unset it use empty UserName.
-    example:
-
-      SetRootSSHKey("idrsa long key") -> ()
-
-#### Properties (all read only):
-
-- RootPasswordSet -> boolean
-  whenever root password will be set by installer
-
-- RootSSHKey -> string
-  root public ssh key that can be used to login to machine
-  Can be empty which means not set
-
-- FirstUser -> struct( string FullName, string UserName, string Password, boolean AutoLogin, map AdditionalData)
-  info about first user to set. if Username is empty, it means not set and other values can be ignored
-
+[usr-ref]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama.Users1.html
+[usr-src]: dbus/org.opensuse.Agama.Users1.doc.xml
 
 ## Questions
 
-Agamas offers a mechanism to communicate with clients. The D-Bus service exports a *Questions*
-object that implements the *org.freedesktop.DBus.ObjectManager* interface. Individual questions are
-dynamically exported in a tree under the */org/opensuse/Agama/Questions1* path, for example:
-
-~~~
-/org/opensuse/Agama/Questions1
-  /org/opensuse/Agama/Questions1/1
-  /org/opensuse/Agama/Questions1/2
-  /org/opensuse/Agama/Questions1/4
-~~~
-
-Each D-Bus question implements its own set of interfaces, depending on the type of question. For
-example, a generic question implements *org.opensuse.Agama.Question1*. And a question asking
-for the activation of a LUKS device also implements *org.opensuse.Agama.Questions1.LuksActivation*.
-Questions can be "unexported" from the ObjectManager tree. The service typically unexports a question
-when the question is answered.
 
 ### org.opensuse.Agama.Questions1
 
+<!--
+TODO: seed a question object and a luks question object
+-->
 #### Properties
 
 - Id -> unsigned 32-bit integer (r)
@@ -716,63 +671,6 @@ when the question is answered.
 - Attempt -> unsigned 32-bit integer (r)
   Current attempt to decrypt the device. This value is useful for clients to know if the very same
   question is asked again (i.e., when the provided password did not work).
-
-
-## ServiceStatus
-
-Each service will have an status (*idle* or *busy*). The service should change its status to *busy*
-when it is going to start an expensive tasks. The status should be set back to *idle* once the long
-task is done.
-
-The main object of a service implements the following interface:
-
-### org.opensuse.Agama1.ServiceStatus
-
-#### Properties
-
-- All -> array(array(dict(string, variant))) (r)
-
-  All possible statuses:
-  ~~~
-  [
-    {"id" => 0, "label" => "idle"},
-    {"id" => 1, "label" => "busy"}
-  ]
-  ~~~
-
-- Current -> unsigned 32-bit integer (r)
-
-  Id of the current status.
-
-
-## Progress
-
-The main object of a service implements the following interface:
-
-### org.opensuse.Agama1.Progress
-
-- TotalSteps: unsigned 32-bit integer (r)
-  Number of steps.
-
-- CurrentStep: struct(unsigned 32-bit integer, string) (r)
-  Number of the current step and its description.
-
-- Finished: b (r)
-  Whether the progress has finished.
-
-## Validation
-
-The main object of a service may implement the validation interface. It reports
-any issue that might block the installation.
-
-### org.opensuse.Agama1.Validation
-
-- Errors: array of strings (as)
-  List of validation errors.
-
-- Valid: boolean (b)
-  Whether there are validation errors. It is a way to check whether a service
-  is ready for installation without having to retrieve the list of errors.
 
 ## Manager
 

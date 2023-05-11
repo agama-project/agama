@@ -56,13 +56,13 @@ installed.
 
     <!--
         CurrentInstallationPhase:
-        @short_description: Id of the current phase.
+        Id of the current phase.
     -->
     <property type="u" name="CurrentInstallationPhase" access="read"/>
 
     <!--
         CurrentInstallationPhase:
-        @short_description: List of names of the currently busy services.
+        List of names of the currently busy services.
 
         Note that the services are blocked meanwhile they are performing a long task. For this
         reason, the *manager* service will store the status of each service and the clients will ask to

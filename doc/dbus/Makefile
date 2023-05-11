@@ -4,6 +4,7 @@ tmpdir=./tmp
 # build HTML for GitHub pages
 all: ${distdir} ${tmpdir}
 	for f in org.opensuse.Agama*.doc.xml; do \
+	  echo $$f; \
 	  gdbus-codegen \
 	    --interface-prefix=org.opensuse.Agama. \
 	    --output-directory=${tmpdir} \

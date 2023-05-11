@@ -1,0 +1,42 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/org/opensuse/Agama/Questions1">
+  <!--
+      org.opensuse.Agama.Questions1:
+
+Agama offers a mechanism to communicate with clients. The D-Bus service exports a *Questions*
+object that implements the *org.freedesktop.DBus.ObjectManager* interface. Individual questions are
+dynamically exported in a tree under the */org/opensuse/Agama/Questions1* path, for example:
+
+~~~
+/org/opensuse/Agama/Questions1
+  /org/opensuse/Agama/Questions1/1
+  /org/opensuse/Agama/Questions1/2
+  /org/opensuse/Agama/Questions1/4
+~~~
+
+Each D-Bus question implements its own set of interfaces, depending on the type of question. For
+example, a generic question implements *org.opensuse.Agama.Question1*. And a question asking
+for the activation of a LUKS device also implements *org.opensuse.Agama.Questions1.LuksActivation*.
+Questions can be "unexported" from the ObjectManager tree. The service typically unexports a question
+when the question is answered.
+  -->
+  <interface name="org.opensuse.Agama.Questions1">
+    <method name="New">
+      <arg name="text" direction="in" type="s"/>
+      <arg name="options" direction="in" type="as"/>
+      <arg name="default_option" direction="in" type="as"/>
+      <arg name="q" direction="out" type="o"/>
+    </method>
+    <method name="NewLuksActivation">
+      <arg name="device" direction="in" type="s"/>
+      <arg name="label" direction="in" type="s"/>
+      <arg name="size" direction="in" type="s"/>
+      <arg name="attempt" direction="in" type="y"/>
+      <arg name="q" direction="out" type="o"/>
+    </method>
+    <method name="Delete">
+      <arg name="question" direction="in" type="o"/>
+    </method>
+  </interface>
+</node>

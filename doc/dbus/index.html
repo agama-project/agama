@@ -1,6 +1,26 @@
+<!--
+echo "<ul>" ;\
+for F in tmp/ref-*.xml; do
+  F=${F#tmp/}
+  F=${F%.xml}
+  echo "<li><a href=\"${F}.html\""
+  echo "                >${F#ref-}</a></li>"
+done; \
+echo "</ul>"
+-->
 <ul>
-<li><a
-href="ref-org.opensuse.Agama1.Manager.html">org.opensuse.Agama1.Manager</a></li>
-<li><a
-href="ref-org.opensuse.Agama.Language1.html">org.opensuse.Agama.Language1</a></li>
+<li><a href="ref-org.opensuse.Agama.Language1.html"
+                >org.opensuse.Agama.Language1</a></li>
+<li><a href="ref-org.opensuse.Agama.Questions1.html"
+                >org.opensuse.Agama.Questions1</a></li>
+<li><a href="ref-org.opensuse.Agama.Users1.html"
+                >org.opensuse.Agama.Users1</a></li>
+<li><a href="ref-org.opensuse.Agama1.Manager.html"
+                >org.opensuse.Agama1.Manager</a></li>
+<li><a href="ref-org.opensuse.Agama1.Progress.html"
+                >org.opensuse.Agama1.Progress</a></li>
+<li><a href="ref-org.opensuse.Agama1.ServiceStatus.html"
+                >org.opensuse.Agama1.ServiceStatus</a></li>
+<li><a href="ref-org.opensuse.Agama1.Validation.html"
+                >org.opensuse.Agama1.Validation</a></li>
 </ul>
