@@ -33,9 +33,14 @@ fn base_connection_from_dbus(
         return None;
     };
 
-    let mut base_connection = BaseConnection::default();
     let id: &str = connection.get("id")?.downcast_ref()?;
-    base_connection.id = id.to_string();
+    let uuid: &str = connection.get("uuid")?.downcast_ref()?;
+    let mut base_connection = BaseConnection {
+        id: id.to_string(),
+        uuid: uuid.to_string(),
+        ..Default::default()
+    };
+
     if let Some(ipv4) = conn.get("ipv4") {
         base_connection.ipv4 = ipv4_config_from_dbus(ipv4)?;
     }
@@ -115,7 +120,10 @@ mod test {
 
     #[test]
     fn test_connection_from_dbus() {
-        let connection_section = HashMap::from([("id".to_string(), Value::new("eth0").to_owned())]);
+        let connection_section = HashMap::from([
+            ("id".to_string(), Value::new("eth0").to_owned()),
+            ("uuid".to_string(), Value::new("aaa-bbb-ccc").to_owned()),
+        ]);
 
         let address_data = vec![HashMap::from([
             ("address".to_string(), Value::new("192.168.0.10")),
@@ -158,8 +166,10 @@ mod test {
 
     #[test]
     fn test_connection_from_dbus_wireless() {
-        let connection_section =
-            HashMap::from([("id".to_string(), Value::new("wlan0").to_owned())]);
+        let connection_section = HashMap::from([
+            ("id".to_string(), Value::new("wlan0").to_owned()),
+            ("uuid".to_string(), Value::new("aaa-bbb-ccc").to_owned()),
+        ]);
 
         let wireless_section = HashMap::from([
             ("mode".to_string(), Value::new("infrastructure").to_owned()),

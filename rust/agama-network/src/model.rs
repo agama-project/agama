@@ -87,6 +87,10 @@ impl Connection {
         self.base().id.as_str()
     }
 
+    pub fn uuid(&self) -> &str {
+        self.base().uuid.as_str()
+    }
+
     pub fn ipv4(&self) -> &Ipv4Config {
         &self.base().ipv4
     }
@@ -99,6 +103,7 @@ impl Connection {
 #[derive(Debug, Default, PartialEq)]
 pub struct BaseConnection {
     pub id: String,
+    pub uuid: String,
     pub ipv4: Ipv4Config,
 }
 

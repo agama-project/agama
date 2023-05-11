@@ -116,6 +116,7 @@ impl Connections {
 ///
 /// It offers an API to query a connection.
 pub struct Connection {
+    network: Arc<Mutex<NetworkState>>,
     conn_name: String,
 }
 
@@ -123,10 +124,22 @@ impl Connection {
     /// Creates a Connection interface object.
     ///
     /// * `conn_name`: Connection ID.
-    pub fn new(conn_name: &str) -> Self {
+    pub fn new(network: Arc<Mutex<NetworkState>>, conn_name: &str) -> Self {
         Self {
+            network,
             conn_name: conn_name.to_string(),
         }
+    }
+
+    pub fn with_connection<T, F>(&self, func: F) -> zbus::fdo::Result<T>
+    where
+        F: FnOnce(&NetworkConnection) -> T,
+    {
+        let mut state = self.network.lock().unwrap();
+        let conn = state.get_connection_mut(&self.conn_name).ok_or(
+            NetworkStateError::UnknownConnection(self.conn_name.to_string()),
+        )?;
+        Ok(func(conn))
     }
 }
 
@@ -135,6 +148,11 @@ impl Connection {
     #[dbus_interface(property)]
     pub fn id(&self) -> &str {
         &self.conn_name
+    }
+
+    #[dbus_interface(property)]
+    pub fn uuid(&self) -> zbus::fdo::Result<String> {
+        self.with_connection(|c| c.uuid().to_string())
     }
 }
 

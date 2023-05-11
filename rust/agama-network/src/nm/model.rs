@@ -36,7 +36,7 @@ impl From<NmWirelessMode> for WirelessMode {
             "adhoc" => WirelessMode::AdHoc,
             "mesh" => WirelessMode::Mesh,
             "ap" => WirelessMode::AP,
-            _ => WirelessMode::Unknown,
+            _ => WirelessMode::Other,
         }
     }
 }
