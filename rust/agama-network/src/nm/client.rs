@@ -81,11 +81,6 @@ fn connection_from_dbus(
     let id: &str = connection.get("id")?.downcast_ref()?;
     nm_connection.id = id.to_string();
 
-    if let Some(connection) = conn.get("connection") {
-        let id: &str = connection.get("id")?.downcast_ref()?;
-        nm_connection.id = id.to_string();
-    }
-
     if let Some(ipv4) = conn.get("ipv4") {
         let method: &str = ipv4.get("method")?.downcast_ref()?;
         let address_data = ipv4.get("address-data")?;
