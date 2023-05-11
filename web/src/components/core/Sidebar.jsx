@@ -51,7 +51,7 @@ export default function Sidebar ({ children }) {
   const [notification] = useNotification();
 
   /**
-   * Set siblings as not discoverable and not interactive
+   * Set siblings as not interactive and not discoverable
    */
   const makeSiblingsInert = () => {
     siblingsFor(asideRef.current).forEach(s => {
@@ -61,7 +61,7 @@ export default function Sidebar ({ children }) {
   };
 
   /**
-   * Set siblings as discoverable and interactive
+   * Set siblings as interactive and discoverable
    */
   const makeSiblingsAlive = () => {
     siblingsFor(asideRef.current).forEach(s => {
