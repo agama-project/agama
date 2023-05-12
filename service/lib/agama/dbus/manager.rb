@@ -126,7 +126,7 @@ module Agama
 
       # States whether installation runs on iguana
       def iguana_backend
-        return backend.iguana? ? IGUANA_USED : IGUANA_NOT_USED
+        backend.iguana? ? IGUANA_USED : IGUANA_NOT_USED
       end
 
       # Name of the services that are currently busy
