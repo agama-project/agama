@@ -1,14 +1,40 @@
+//! This module implements some functions to convert from/to D-Bus types
+//!
+//! Working with hash maps coming from D-Bus is rather tedious and it is even worse when working
+//! with nested hash maps (see [NestedHash]).
 use super::model::*;
 use crate::model::*;
 use std::collections::HashMap;
 use std::net::Ipv4Addr;
-use zbus::zvariant;
+use zbus::zvariant::{self, Value};
 
-/// Converts a HashMap from D-Bus into a Connection
+type NestedHash<'a> = HashMap<&'a str, HashMap<&'a str, zvariant::Value<'a>>>;
+
+/// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///
-/// Working with hash maps coming from D-Bus is rather tedious and it is even worse when working
-/// with nested hash maps. This functions tries to turn a HashMap coming from D-Bus into a
-/// Connection.
+/// * `conn`: Connection to cnvert.
+pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
+    let mut result = NestedHash::new();
+    let mut connection_dbus = HashMap::from([
+        ("id", conn.name().into()),
+        ("type", "802-3-ethernet".into()),
+    ]);
+    result.insert("ipv4", ipv4_to_dbus(conn.ipv4()));
+
+    if let Connection::Wireless(wireless) = conn {
+        connection_dbus.insert("type", "802-11-wireless".into());
+        let wireless_dbus = wireless_config_to_dbus(wireless);
+        for (k, v) in wireless_dbus {
+            result.insert(k, v);
+        }
+    }
+    result.insert("connection", connection_dbus);
+    result
+}
+
+/// Converts a HashMap from D-Bus into a Connection.
+///
+/// This functions tries to turn a HashMap coming from D-Bus into a Connection.
 pub fn connection_from_dbus(
     conn: HashMap<String, HashMap<String, zvariant::OwnedValue>>,
 ) -> Option<Connection> {
@@ -24,6 +50,58 @@ pub fn connection_from_dbus(
     Some(Connection::Ethernet(EthernetConnection {
         base: base_connection,
     }))
+}
+
+fn ipv4_to_dbus(ipv4: &Ipv4Config) -> HashMap<&str, zvariant::Value> {
+    let addresses: Vec<HashMap<&str, Value>> = ipv4
+        .addresses
+        .iter()
+        .map(|(addr, prefix)| {
+            HashMap::from([
+                ("address", Value::new(addr.to_string())),
+                ("prefix", Value::new(prefix)),
+            ])
+        })
+        .collect();
+    let address_data: Value = addresses.into();
+
+    let dns_data: Value = ipv4
+        .nameservers
+        .iter()
+        .map(|ns| ns.to_string().into())
+        .collect::<Vec<String>>()
+        .into();
+
+    let mut ipv4_dbus = HashMap::from([
+        ("address-data", address_data),
+        ("dns-data", dns_data),
+        ("method", ipv4.method.to_string().into()),
+    ]);
+
+    if let Some(gateway) = ipv4.gateway {
+        ipv4_dbus.insert("gateway", gateway.to_string().into());
+    }
+    ipv4_dbus
+}
+
+fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
+    let config = &conn.wireless;
+    let wireless: HashMap<&str, zvariant::Value> = HashMap::from([
+        ("mode", Value::new(config.mode.to_string())),
+        ("ssid", Value::new(&config.ssid)),
+    ]);
+
+    let mut security: HashMap<&str, zvariant::Value> =
+        HashMap::from([("key-mgmt", config.security.to_string().into())]);
+
+    if let Some(password) = &config.password {
+        security.insert("psk", password.to_string().into());
+    }
+
+    NestedHash::from([
+        ("802-11-wireless", wireless),
+        ("802-11-wireless-security", security),
+    ])
 }
 
 fn base_connection_from_dbus(
@@ -113,10 +191,10 @@ fn wireless_config_from_dbus(
 
 #[cfg(test)]
 mod test {
-    use super::connection_from_dbus;
+    use super::{connection_from_dbus, connection_to_dbus, NestedHash};
     use crate::model::*;
     use std::{collections::HashMap, net::Ipv4Addr};
-    use zbus::zvariant::{OwnedValue, Value};
+    use zbus::zvariant::{self, OwnedValue, Value};
 
     #[test]
     fn test_connection_from_dbus() {
@@ -195,5 +273,72 @@ mod test {
             assert_eq!(connection.wireless.mode, WirelessMode::Infra);
             assert_eq!(connection.wireless.security, SecurityProtocol::WPA2)
         }
+    }
+
+    #[test]
+    fn test_dbus_from_wireless_connection() {
+        let config = WirelessConfig {
+            mode: WirelessMode::Infra,
+            security: SecurityProtocol::WPA2,
+            ssid: "agama".as_bytes().into(),
+            ..Default::default()
+        };
+        let wireless = WirelessConnection {
+            base: build_base_connection(),
+            wireless: config,
+            ..Default::default()
+        };
+        let wireless = Connection::Wireless(wireless);
+        let wireless_dbus = connection_to_dbus(&wireless);
+
+        let wireless = wireless_dbus.get("802-11-wireless").unwrap();
+        let mode: &str = wireless.get("mode").unwrap().downcast_ref().unwrap();
+        assert_eq!(mode, "infra");
+
+        let ssid: &zvariant::Array = wireless.get("ssid").unwrap().downcast_ref().unwrap();
+        let ssid: Vec<u8> = ssid
+            .get()
+            .iter()
+            .map(|u| *u.downcast_ref::<u8>().unwrap())
+            .collect();
+        assert_eq!(ssid, "agama".as_bytes());
+
+        let security = wireless_dbus.get("802-11-wireless-security").unwrap();
+        let key_mgmt: &str = security.get("key-mgmt").unwrap().downcast_ref().unwrap();
+        assert_eq!(key_mgmt, "wpa-psk");
+    }
+
+    #[test]
+    fn test_dbus_from_ethernet_connection() {
+        let ethernet = EthernetConnection {
+            base: build_base_connection(),
+        };
+        let ethernet = Connection::Ethernet(ethernet);
+        let ethernet_dbus = connection_to_dbus(&ethernet);
+        test_dbus_base_connection(&ethernet_dbus);
+    }
+
+    fn build_base_connection() -> BaseConnection {
+        let addresses = vec![(Ipv4Addr::new(192, 168, 0, 2), 24)];
+        let ipv4 = Ipv4Config {
+            addresses,
+            gateway: Some(Ipv4Addr::new(192, 168, 0, 1)),
+            ..Default::default()
+        };
+        BaseConnection {
+            id: "agama".to_string(),
+            ipv4,
+            ..Default::default()
+        }
+    }
+
+    fn test_dbus_base_connection(conn_dbus: &NestedHash) {
+        let connection_dbus = conn_dbus.get("connection").unwrap();
+        let id: &str = connection_dbus.get("id").unwrap().downcast_ref().unwrap();
+        assert_eq!(id, "agama");
+
+        let ipv4_dbus = conn_dbus.get("ipv4").unwrap();
+        let gateway: &str = ipv4_dbus.get("gateway").unwrap().downcast_ref().unwrap();
+        assert_eq!(gateway, "192.168.0.1");
     }
 }

@@ -122,6 +122,16 @@ pub enum IpMethod {
     Manual = 1,
     Unknown = 2,
 }
+impl fmt::Display for IpMethod {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            IpMethod::Auto => "auto",
+            IpMethod::Manual => "manual",
+            IpMethod::Unknown => "auto",
+        };
+        write!(f, "{}", name)
+    }
+}
 
 // NOTE: we could use num-derive.
 impl TryFrom<u8> for IpMethod {
@@ -137,12 +147,12 @@ impl TryFrom<u8> for IpMethod {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Default, PartialEq)]
 pub struct EthernetConnection {
     pub base: BaseConnection,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Default, PartialEq)]
 pub struct WirelessConnection {
     pub base: BaseConnection,
     pub wireless: WirelessConfig,
@@ -195,19 +205,27 @@ impl fmt::Display for WirelessMode {
 
 #[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub enum SecurityProtocol {
-    // No encryption or WEP ("none")
     #[default]
-    WEP,
-    // Opportunistic Wireless Encryption ("owe")
-    OWE,
-    // Dynamic WEP ("ieee8021x")
-    DynamicWEP,
-    // WPA2 + WPA3 personal ("wpa-psk")
-    WPA2,
-    // WPA3 personal only ("sae")
-    WPA3Personal,
-    // WPA2 + WPA3 Enterprise ("wpa-eap")
-    WPA2Enterprise,
-    // "wpa-eap-suite-b192"
-    WPA3Only,
+    WEP, // No encryption or WEP ("none")
+    OWE,            // Opportunistic Wireless Encryption ("owe")
+    DynamicWEP,     // Dynamic WEP ("ieee8021x")
+    WPA2,           // WPA2 + WPA3 personal ("wpa-psk")
+    WPA3Personal,   // WPA3 personal only ("sae")
+    WPA2Enterprise, // WPA2 + WPA3 Enterprise ("wpa-eap")
+    WPA3Only,       // WPA3 only ("wpa-eap-suite-b192")
+}
+
+impl fmt::Display for SecurityProtocol {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let value = match &self {
+            SecurityProtocol::WEP => "none",
+            SecurityProtocol::OWE => "owe",
+            SecurityProtocol::DynamicWEP => "ieee8021x",
+            SecurityProtocol::WPA2 => "wpa-psk",
+            SecurityProtocol::WPA3Personal => "sae",
+            SecurityProtocol::WPA2Enterprise => "wpa-eap",
+            SecurityProtocol::WPA3Only => "wpa-eap-suite-b192",
+        };
+        write!(f, "{}", value)
+    }
 }
