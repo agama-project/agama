@@ -2,49 +2,12 @@
 //!
 //! This are meant to be used internally, so we omit everything it is not useful for us.
 
-/// NetworkManager device
-#[derive(Debug, Default)]
-pub struct NmDevice {
-    /// D-Bus path of the device. It is used as a sort of ID.
-    pub path: String,
-    /// Interface name
-    pub iface: String,
-    /// Device type
-    pub device_type: NmDeviceType,
-}
-
-impl NmDevice {
-    /// Determines whether it is a wireless device
-    pub fn is_wireless(&self) -> bool {
-        matches!(&self.device_type, NmDeviceType(2))
-    }
-}
-
-/// NetworkManager connection
-#[derive(Debug, Default, PartialEq)]
-pub struct NmConnection {
-    /// Connection ID
-    pub id: String,
-    /// Wireless settings
-    pub wireless: Option<NmWireless>,
-    /// IPv4 configuration
-    pub ipv4: Option<NmIp4Config>,
-}
-
-#[derive(Debug, Default, PartialEq)]
-pub struct NmWireless {
-    /// Network wireless mode
-    pub mode: NmWirelessMode,
-    /// Wireless SSID
-    pub ssid: Vec<u8>,
-    /// Key management
-    pub key_mgmt: NmKeyManagement,
-}
-
 /// NetworkManager wireless mode
 ///
 /// Using the newtype pattern around an String is enough. For proper support, we might replace this
 /// struct with an enum.
+use crate::model::{DeviceType, IpMethod, SecurityProtocol, WirelessMode};
+
 #[derive(Debug, PartialEq)]
 pub struct NmWirelessMode(pub String);
 
@@ -66,6 +29,18 @@ impl NmWirelessMode {
     }
 }
 
+impl From<NmWirelessMode> for WirelessMode {
+    fn from(value: NmWirelessMode) -> Self {
+        match value.as_str() {
+            "infrastructure" => WirelessMode::Infra,
+            "adhoc" => WirelessMode::AdHoc,
+            "mesh" => WirelessMode::Mesh,
+            "ap" => WirelessMode::AP,
+            _ => WirelessMode::Unknown,
+        }
+    }
+}
+
 /// Device types
 ///
 /// As we are using the number just to filter wireless devices, using the newtype
@@ -77,6 +52,16 @@ pub struct NmDeviceType(pub u32);
 impl Default for NmDeviceType {
     fn default() -> Self {
         NmDeviceType(0)
+    }
+}
+
+impl From<NmDeviceType> for DeviceType {
+    fn from(value: NmDeviceType) -> Self {
+        match value {
+            NmDeviceType(1) => DeviceType::Ethernet,
+            NmDeviceType(2) => DeviceType::Wireless,
+            _ => DeviceType::Unknown,
+        }
     }
 }
 
@@ -99,6 +84,20 @@ impl From<&str> for NmKeyManagement {
     }
 }
 
+impl From<NmKeyManagement> for SecurityProtocol {
+    fn from(value: NmKeyManagement) -> Self {
+        match value.as_str() {
+            "owe" => SecurityProtocol::OWE,
+            "ieee8021x" => SecurityProtocol::DynamicWEP,
+            "wpa-psk" => SecurityProtocol::WPA2,
+            "wpa-eap" => SecurityProtocol::WPA3Personal,
+            "sae" => SecurityProtocol::WPA2Enterprise,
+            "wpa-eap-suite-b192" => SecurityProtocol::WPA2Enterprise,
+            _ => SecurityProtocol::WEP,
+        }
+    }
+}
+
 impl NmKeyManagement {
     pub fn as_str(&self) -> &str {
         &self.0.as_str()
@@ -117,6 +116,16 @@ impl Default for NmMethod {
 impl NmMethod {
     pub fn as_str(&self) -> &str {
         &self.0.as_str()
+    }
+}
+
+impl From<NmMethod> for IpMethod {
+    fn from(value: NmMethod) -> Self {
+        match value.as_str() {
+            "auto" => IpMethod::Auto,
+            "manual" => IpMethod::Manual,
+            _ => IpMethod::Unknown,
+        }
     }
 }
 

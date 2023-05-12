@@ -5,8 +5,8 @@
 //! internally, so the API is focused on Agama's use cases.
 
 mod client;
+mod dbus;
 mod model;
 mod proxies;
 
 pub use client::NetworkManagerClient;
-pub use model::*;

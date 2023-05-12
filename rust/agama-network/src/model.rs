@@ -2,10 +2,7 @@
 //!
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //! agnostic from the real network service (e.g., NetworkManager).
-use crate::nm::{
-    NetworkManagerClient, NmConnection, NmDevice, NmDeviceType, NmIp4Config, NmKeyManagement,
-    NmMethod, NmWireless, NmWirelessMode,
-};
+use crate::nm::NetworkManagerClient;
 use std::{error::Error, fmt, net::Ipv4Addr};
 
 #[derive(Debug)]
@@ -18,12 +15,8 @@ impl NetworkState {
     /// Reads the network configuration using the NetworkManager D-Bus service.
     pub async fn from_system() -> Result<NetworkState, Box<dyn Error>> {
         let nm_client = NetworkManagerClient::from_system().await?;
-
-        let nm_devices = nm_client.devices().await?;
-        let devices: Vec<Device> = nm_devices.into_iter().map(|d| d.into()).collect();
-
-        let nm_conns = nm_client.connections().await?;
-        let connections: Vec<Connection> = nm_conns.into_iter().map(|d| d.into()).collect();
+        let devices = nm_client.devices().await?;
+        let connections = nm_client.connections().await?;
 
         Ok(NetworkState {
             devices,
@@ -53,34 +46,6 @@ pub struct Device {
     pub ty: DeviceType,
 }
 
-impl From<NmDevice> for Device {
-    fn from(value: NmDevice) -> Self {
-        Self {
-            name: value.iface,
-            ty: value.device_type.into(),
-        }
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::{Device, DeviceType};
-    use crate::nm::{NmDevice, NmDeviceType};
-
-    #[test]
-    fn test_from_nm_device() {
-        let nm_device = NmDevice {
-            iface: "eth0".to_string(),
-            device_type: NmDeviceType(2),
-            ..Default::default()
-        };
-
-        let device: Device = nm_device.into();
-        assert_eq!(device.name.as_str(), "eth0");
-        assert_eq!(device.ty, DeviceType::Wireless);
-    }
-}
-
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum DeviceType {
     Ethernet = 1,
@@ -88,18 +53,8 @@ pub enum DeviceType {
     Unknown = 3,
 }
 
-impl From<NmDeviceType> for DeviceType {
-    fn from(value: NmDeviceType) -> Self {
-        match value {
-            NmDeviceType(1) => DeviceType::Ethernet,
-            NmDeviceType(2) => DeviceType::Wireless,
-            _ => DeviceType::Unknown,
-        }
-    }
-}
-
 /// Represents an available network connection
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Connection {
     Ethernet(EthernetConnection),
     Wireless(WirelessConnection),
@@ -122,31 +77,10 @@ impl Connection {
     }
 }
 
-impl From<NmConnection> for Connection {
-    fn from(value: NmConnection) -> Self {
-        let mut base = BaseConnection {
-            id: value.id,
-            ..Default::default()
-        };
-
-        if let Some(nm_ipv4) = value.ipv4 {
-            base.ipv4 = nm_ipv4.into();
-        }
-
-        if let Some(wireless) = value.wireless {
-            return Connection::Wireless(WirelessConnection {
-                base,
-                wireless: wireless.into(),
-            });
-        }
-        Connection::Ethernet(EthernetConnection { base })
-    }
-}
-
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct BaseConnection {
-    id: String,
-    ipv4: Ipv4Config,
+    pub id: String,
+    pub ipv4: Ipv4Config,
 }
 
 #[derive(Debug, Default, PartialEq)]
@@ -157,32 +91,6 @@ pub struct Ipv4Config {
     pub gateway: Option<Ipv4Addr>,
 }
 
-impl From<NmIp4Config> for Ipv4Config {
-    fn from(value: NmIp4Config) -> Self {
-        let addresses: Vec<(Ipv4Addr, u32)> = value
-            .addresses
-            .into_iter()
-            .filter_map(|(addr, prefix)| addr.parse().ok().map(|i| (i, prefix)))
-            .collect();
-
-        let nameservers = value
-            .nameservers
-            .into_iter()
-            .filter_map(|ns| ns.parse().ok())
-            .collect();
-
-        let gateway = value.gateway.map(|g| g.parse::<Ipv4Addr>().unwrap());
-
-        Ipv4Config {
-            method: value.method.into(),
-            addresses,
-            nameservers,
-            gateway,
-            ..Default::default()
-        }
-    }
-}
-
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub enum IpMethod {
     #[default]
@@ -191,28 +99,18 @@ pub enum IpMethod {
     Unknown = 2,
 }
 
-impl From<NmMethod> for IpMethod {
-    fn from(value: NmMethod) -> Self {
-        match value.as_str() {
-            "auto" => IpMethod::Auto,
-            "manual" => IpMethod::Manual,
-            _ => IpMethod::Unknown,
-        }
-    }
-}
-
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct EthernetConnection {
-    base: BaseConnection,
+    pub base: BaseConnection,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct WirelessConnection {
-    base: BaseConnection,
+    pub base: BaseConnection,
     pub wireless: WirelessConfig,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
     pub ssid: Vec<u8>,
@@ -220,18 +118,7 @@ pub struct WirelessConfig {
     pub security: SecurityProtocol,
 }
 
-impl From<NmWireless> for WirelessConfig {
-    fn from(value: NmWireless) -> Self {
-        Self {
-            mode: value.mode.into(),
-            ssid: value.ssid,
-            security: value.key_mgmt.into(),
-            ..Default::default()
-        }
-    }
-}
-
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub enum WirelessMode {
     Unknown,
     AdHoc,
@@ -239,18 +126,6 @@ pub enum WirelessMode {
     Infra,
     AP,
     Mesh,
-}
-
-impl From<NmWirelessMode> for WirelessMode {
-    fn from(value: NmWirelessMode) -> Self {
-        match value.as_str() {
-            "infrastructure" => WirelessMode::Infra,
-            "adhoc" => WirelessMode::AdHoc,
-            "mesh" => WirelessMode::Mesh,
-            "ap" => WirelessMode::AP,
-            _ => WirelessMode::Unknown,
-        }
-    }
 }
 
 impl fmt::Display for WirelessMode {
@@ -266,7 +141,7 @@ impl fmt::Display for WirelessMode {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
 pub enum SecurityProtocol {
     // No encryption or WEP ("none")
     #[default]
@@ -283,18 +158,4 @@ pub enum SecurityProtocol {
     WPA2Enterprise,
     // "wpa-eap-suite-b192"
     WPA3Only,
-}
-
-impl From<NmKeyManagement> for SecurityProtocol {
-    fn from(value: NmKeyManagement) -> Self {
-        match value.as_str() {
-            "owe" => SecurityProtocol::OWE,
-            "ieee8021x" => SecurityProtocol::DynamicWEP,
-            "wpa-psk" => SecurityProtocol::WPA2,
-            "wpa-eap" => SecurityProtocol::WPA3Personal,
-            "sae" => SecurityProtocol::WPA2Enterprise,
-            "wpa-eap-suite-b192" => SecurityProtocol::WPA2Enterprise,
-            _ => SecurityProtocol::WEP,
-        }
-    }
 }
