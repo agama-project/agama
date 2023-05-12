@@ -118,7 +118,7 @@ describe("#rebootSystem", () => {
 
   it("returns whether the system reboot command was called or not", async () => {
     const client = new ManagerClient();
-    const reboot = await client.rebootSystem();
+    const reboot = await client.finishInstallation();
     expect(cockpit.spawn).toHaveBeenCalledWith(["/usr/sbin/shutdown", "-r", "now"]);
     expect(reboot).toEqual(true);
   });
