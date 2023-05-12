@@ -37,7 +37,8 @@ describe("InstallationFinished", () => {
     createClient.mockImplementation(() => {
       return {
         manager: {
-          finishInstallation: finishInstallationFn
+          finishInstallation: finishInstallationFn,
+          useIguana: () => Promise.resolve(false)
         },
         network: {
           config: () => Promise.resolve({ addresses: [], hostname: "example.net" })
