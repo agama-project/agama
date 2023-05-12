@@ -208,10 +208,6 @@ jobs:
     - name: Check DBus socket
       run:  podman exec agama ls -l /var/run/dbus/system_bus_socket
 
-    - name: Show the complete journal
-      # maybe not necessary if the above filtered journalctl calls are enough
-      run:  podman exec agama journalctl -b || echo "journal failed with $?"
-
     - name: Install the frontend
       run:  podman exec agama bash -c "ln -snfv /checkout/web/dist /usr/share/cockpit/agama"
 
@@ -228,6 +224,13 @@ jobs:
       # user authentication is not required when cockpit runs a local session
       # run the tests in the Chromium browser
       run:  podman exec agama bash -c "cd /checkout/playwright && SKIP_LOGIN=true playwright test --trace on --project chromium"
+
+    - name: Again show the D-Bus services log
+      run:  podman exec agama bash -c "journalctl | grep agama"
+
+    - name: Show the complete journal
+      # maybe not necessary if the above filtered journalctl calls are enough
+      run:  podman exec agama journalctl -b || echo "journal failed with $?"
 
     - name: Upload the test results
       uses: actions/upload-artifact@v3
