@@ -1,5 +1,5 @@
 //! NetworkManager client.
-use super::dbus::connection_from_dbus;
+use super::dbus::{connection_from_dbus, connection_to_dbus};
 use super::model::*;
 use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
 use crate::model::{Connection, Device};
@@ -68,5 +68,17 @@ impl<'a> NetworkManagerClient<'a> {
             }
         }
         Ok(connections)
+    }
+
+    /// Update a network connection.
+    pub async fn update_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
+        let proxy = SettingsProxy::new(&self.connection).await?;
+        let path = proxy.get_connection_by_uuid(conn.uuid()).await?;
+        let proxy = ConnectionProxy::builder(&self.connection)
+            .path(path.as_str())?
+            .build()
+            .await?;
+        proxy.update(connection_to_dbus(conn)).await?;
+        Ok(())
     }
 }

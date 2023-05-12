@@ -6,7 +6,9 @@ use super::service::ObjectsPaths;
 use crate::{
     error::NetworkStateError,
     model::{Connection as NetworkConnection, Ipv4Config, NetworkState, WirelessConfig},
+    nm::NetworkManagerClient,
 };
+use async_std::task;
 use std::{
     net::{AddrParseError, Ipv4Addr},
     sync::{Arc, Mutex},
@@ -153,6 +155,21 @@ impl Connection {
     #[dbus_interface(property)]
     pub fn uuid(&self) -> zbus::fdo::Result<String> {
         self.with_connection(|c| c.uuid().to_string())
+    }
+
+    /// Updates the network connection
+    pub async fn update_connection(&self) -> zbus::fdo::Result<()> {
+        self.with_connection(|conn| {
+            task::block_on(async {
+                // workaround for https://users.rust-lang.org/t/manually-drop-mutexguard-still-raise-future-is-not-send-error/70653/1
+                if let Ok(client) = NetworkManagerClient::from_system().await {
+                    if let Err(e) = client.update_connection(&conn).await {
+                        eprintln!("Could not update the connection {}: {}", &self.conn_name, e);
+                    }
+                }
+            });
+        })?;
+        Ok(())
     }
 }
 
