@@ -152,7 +152,7 @@ impl Connection {
         &self.conn_name
     }
 
-    #[dbus_interface(property)]
+    #[dbus_interface(property, name = "UUID")]
     pub fn uuid(&self) -> zbus::fdo::Result<String> {
         self.with_connection(|c| c.uuid().to_string())
     }
@@ -321,12 +321,12 @@ impl Wireless {
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connection.Wireless")]
 impl Wireless {
-    #[dbus_interface(property)]
+    #[dbus_interface(property, name = "SSID")]
     pub fn ssid(&self) -> zbus::fdo::Result<Vec<u8>> {
         self.with_wireless(|w| w.ssid.clone())
     }
 
-    #[dbus_interface(property)]
+    #[dbus_interface(property, name = "SSID")]
     pub fn set_ssid(&mut self, ssid: Vec<u8>) -> zbus::fdo::Result<()> {
         Ok(self.with_wireless_mut(|w| Ok(w.ssid = ssid))?)
     }

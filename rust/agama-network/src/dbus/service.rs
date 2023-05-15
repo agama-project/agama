@@ -51,7 +51,7 @@ impl NetworkService {
         let mut objects = self.objects.lock().unwrap();
 
         for (i, dev) in state.devices.iter().enumerate() {
-            let path = format!("/org/opensuse/Agama/Network1/Devices/{}", i);
+            let path = format!("/org/opensuse/Agama/Network1/devices/{}", i);
             self.add_interface(
                 &path,
                 interfaces::Device::new(Arc::clone(&self.state), &dev.name),
@@ -61,7 +61,7 @@ impl NetworkService {
         }
 
         self.add_interface(
-            "/org/opensuse/Agama/Network1/Devices",
+            "/org/opensuse/Agama/Network1/devices",
             interfaces::Devices::new(Arc::clone(&self.objects)),
         )
         .await?;
@@ -75,7 +75,7 @@ impl NetworkService {
         let mut objects = self.objects.lock().unwrap();
 
         for (i, conn) in state.connections.iter().enumerate() {
-            let path = format!("/org/opensuse/Agama/Network1/Connections/{}", i);
+            let path = format!("/org/opensuse/Agama/Network1/connections/{}", i);
             self.add_interface(
                 &path,
                 interfaces::Connection::new(Arc::clone(&self.state), conn.name()),
@@ -100,7 +100,7 @@ impl NetworkService {
         }
 
         self.add_interface(
-            "/org/opensuse/Agama/Network1/Connections",
+            "/org/opensuse/Agama/Network1/connections",
             interfaces::Connections::new(Arc::clone(&self.objects)),
         )
         .await?;
