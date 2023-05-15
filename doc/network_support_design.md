@@ -89,4 +89,4 @@ In a first version, the API is composed of the following objects:
 This API could be expanded in the future to provide a list of access points, emit signals when the
 configuration changes, provide more information about the network devices, etc.
 
-[^1] By now it only exposes some basic data, as the current status is only needed by the web UI.
+[^1]: By now it only exposes some basic data, as the current status is only needed by the web UI.
