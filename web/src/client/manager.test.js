@@ -36,6 +36,7 @@ const managerProxy = {
   wait: jest.fn(),
   Commit: jest.fn(),
   Probe: jest.fn(),
+  Finish: jest.fn().mockReturnValue(true),
   CanInstall: jest.fn(),
   CollectLogs: jest.fn(),
   CurrentInstallationPhase: 0
@@ -118,8 +119,7 @@ describe("#rebootSystem", () => {
 
   it("returns whether the system reboot command was called or not", async () => {
     const client = new ManagerClient();
-    const reboot = await client.rebootSystem();
-    expect(cockpit.spawn).toHaveBeenCalledWith(["/usr/sbin/shutdown", "-r", "now"]);
+    const reboot = await client.finishInstallation();
     expect(reboot).toEqual(true);
   });
 });

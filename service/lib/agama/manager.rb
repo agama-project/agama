@@ -193,6 +193,26 @@ module Agama
       path
     end
 
+    # Whatever has to be done at the end of installation
+    def finish_installation
+      cmd = if iguana?
+        "/usr/bin/agamactl -k"
+      else
+        "/usr/sbin/shutdown -r now"
+      end
+
+      logger.info("Finishing installation with #{cmd}")
+
+      system(cmd)
+    end
+
+    # Says whether running on iguana or not
+    #
+    # @return [Boolean] true when running on iguana
+    def iguana?
+      Dir.exist?("/iguana")
+    end
+
   private
 
     attr_reader :config
