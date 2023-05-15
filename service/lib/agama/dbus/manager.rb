@@ -56,9 +56,6 @@ module Agama
       CONFIG_PHASE = 1
       INSTALL_PHASE = 2
 
-      IGUANA_NOT_USED = false
-      IGUANA_USED = true
-
       dbus_interface MANAGER_INTERFACE do
         dbus_method(:Probe, "") { config_phase }
         dbus_method(:Commit, "") { install_phase }
@@ -126,7 +123,7 @@ module Agama
 
       # States whether installation runs on iguana
       def iguana_backend
-        backend.iguana? ? IGUANA_USED : IGUANA_NOT_USED
+        backend.iguana?
       end
 
       # Name of the services that are currently busy
