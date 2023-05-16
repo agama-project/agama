@@ -64,9 +64,9 @@ module Agama
         # @param devicegraph [Y2Storage::Devicegraph]
         def export_devices(devicegraph)
           # TODO: Right now, the goal of exporting the storage devices on D-Bus is to provide the
-          #   required information for the proposal candidate disks. For that reason, only the
-          #   potential candidate diks are exported (i.e., disk devices and MDs). Note that
-          #   partitons, LVM, etc are not exported yet.
+          #   required information of the available devices for calculating a proposal. For that
+          #   reason, only the potential candidate diks are exported (i.e., disk devices and MDs).
+          #   Note that partitons, LVM, etc are not exported yet.
           devices = devicegraph.disk_devices + devicegraph.software_raids
           devices.each { |d| export_device(d) }
         end
