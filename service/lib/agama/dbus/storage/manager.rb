@@ -27,7 +27,7 @@ require "agama/dbus/with_service_status"
 require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
-require "agama/dbus/storage/dasd_manager_interface"
+require "agama/dbus/storage/interfaces/dasd_manager"
 require "agama/dbus/storage/proposal"
 require "agama/dbus/storage/proposal_settings_converter"
 require "agama/dbus/storage/volume_converter"
@@ -67,7 +67,7 @@ module Agama
           register_software_callbacks
           return unless Yast::Arch.s390
 
-          singleton_class.include DasdManagerInterface
+          singleton_class.include Interfaces::DasdManager
           register_and_extend_dasd_callbacks
         end
 
