@@ -21,6 +21,7 @@
 
 require "dbus"
 require "yast"
+require "y2storage/storage_manager"
 require "agama/dbus/base_object"
 require "agama/dbus/with_service_status"
 require "agama/dbus/interfaces/issues"
@@ -32,6 +33,7 @@ require "agama/dbus/storage/proposal_settings_converter"
 require "agama/dbus/storage/volume_converter"
 require "agama/dbus/storage/with_iscsi_auth"
 require "agama/dbus/storage/iscsi_nodes_tree"
+require "agama/dbus/storage/devices_tree"
 
 Yast.import "Arch"
 
@@ -249,6 +251,7 @@ module Agama
         def register_storage_callbacks
           backend.on_issues_change { issues_properties_changed }
           backend.on_deprecated_system_change { storage_properties_changed }
+          backend.on_probe { refresh_system_devices }
         end
 
         def register_proposal_callbacks
@@ -307,6 +310,11 @@ module Agama
           @service.export(@dbus_proposal)
         end
 
+        def refresh_system_devices
+          devicegraph = Y2Storage::StorageManager.instance.probed
+          system_devices_tree.update(devicegraph)
+        end
+
         def refresh_iscsi_nodes
           nodes = backend.iscsi.nodes
           iscsi_nodes_tree.update(nodes)
@@ -314,6 +322,17 @@ module Agama
 
         def iscsi_nodes_tree
           @iscsi_nodes_tree ||= ISCSINodesTree.new(@service, backend.iscsi, logger: logger)
+        end
+
+        # FIXME: D-Bus trees should not be created by the Manager D-Bus object. Note that the
+        #   service (`@service`) is nil until the Manager object is exported. The service should
+        #   have the responsibility of creating the trees and pass them to Manager if needed.
+        def system_devices_tree
+          @system_devices_tree ||= DevicesTree.new(@service, tree_path("system"), logger: logger)
+        end
+
+        def tree_path(tree_root)
+          File.join(PATH, tree_root)
         end
       end
     end
