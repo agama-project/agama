@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,6 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require_relative "../../test_helper"
 require "rspec"
 require "y2storage"
 
@@ -51,7 +52,7 @@ module Agama
       #
       # @param hwinfo [Y2Storage::HWInfoDisk] disk information used for all the calls
       def mock_hwinfo(hwinfo)
-        allow_any_instance_of(Y2Storage::BlkDevice).to receive(:hwinfo).and_return(hwinfo)
+        allow_any_instance_of(Y2Storage::HWInfoReader).to receive(:for_device).and_return(hwinfo)
       end
     end
   end
