@@ -18,6 +18,8 @@ pub enum NetworkStateError {
     InvalidIpMethod(u8),
     #[error("Invalid wireless mode: '{0}'")]
     InvalidWirelessMode(u8),
+    #[error("Connection '{0}' already exists")]
+    ConnectionExists(String),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {

@@ -6,7 +6,7 @@ use crate::error::NetworkStateError;
 use crate::nm::NetworkManagerClient;
 use std::{error::Error, fmt, net::Ipv4Addr};
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct NetworkState {
     pub devices: Vec<Device>,
     pub connections: Vec<Connection>,
@@ -45,6 +45,141 @@ impl NetworkState {
     pub fn get_connection_mut(&mut self, name: &str) -> Option<&mut Connection> {
         self.connections.iter_mut().find(|c| c.name() == name)
     }
+
+    /// Adds a new connection.
+    ///
+    /// It uses the `id` to decide whether the connection already exists.
+    /// TODO: use the UUID, so it is possible to rename connections.
+    pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
+        if let Some(_) = self.get_connection(conn.name()) {
+            let conn_name = conn.name().to_string();
+            return Err(NetworkStateError::ConnectionExists(conn_name));
+        }
+
+        self.connections.push(conn);
+        Ok(())
+    }
+
+    /// Updates a connection with a new one.
+    ///
+    /// It uses the `id` to decide which connection to update.
+    /// TODO: use the UUID, so it is possible to rename connections.
+    ///
+    /// Additionally, it registers the connection to be removed when the changes are applied.
+    pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
+        let Some(old_conn) = self.get_connection_mut(conn.name()) else {
+            let conn_name = conn.name().to_string();
+            return Err(NetworkStateError::UnknownConnection(conn_name));
+        };
+
+        *old_conn = conn;
+        Ok(())
+    }
+
+    /// Removes a connection from the state.
+    ///
+    /// TODO: use the UUID.
+    /// Additionally, it registers the connection to be removed when the changes are applied.
+    pub fn remove_connection(&mut self, conn_name: &str) -> Result<(), NetworkStateError> {
+        let Some(index) = self.connections.iter().position(|i| i.name() == conn_name) else {
+            return Err(NetworkStateError::UnknownConnection(conn_name.to_string()));
+        };
+
+        self.connections.swap_remove(index);
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{BaseConnection, Connection, EthernetConnection, NetworkState};
+    use crate::error::NetworkStateError;
+
+    #[test]
+    fn test_add_connection() {
+        let mut state = NetworkState::default();
+        let id = "eth0".to_string();
+        let base = BaseConnection {
+            id: id.clone(),
+            ..Default::default()
+        };
+        let conn0 = Connection::Ethernet(EthernetConnection { base });
+        state.add_connection(conn0).unwrap();
+        let found = state.get_connection(&id).unwrap();
+        assert_eq!(found.name(), id);
+    }
+
+    #[test]
+    fn test_add_duplicated_connection() {
+        let mut state = NetworkState::default();
+        let id = "eth0".to_string();
+        let base = BaseConnection {
+            id: id.clone(),
+            ..Default::default()
+        };
+        let conn0 = Connection::Ethernet(EthernetConnection { base });
+        state.add_connection(conn0.clone()).unwrap();
+        let error = state.add_connection(conn0).unwrap_err();
+        assert!(matches!(error, NetworkStateError::ConnectionExists(_)));
+    }
+
+    #[test]
+    fn test_update_connection() {
+        let mut state = NetworkState::default();
+        let id = "eth0".to_string();
+        let base0 = BaseConnection {
+            id: id.clone(),
+            uuid: "12345".to_string(),
+            ..Default::default()
+        };
+        let conn0 = Connection::Ethernet(EthernetConnection { base: base0 });
+        state.add_connection(conn0).unwrap();
+
+        let base1 = BaseConnection {
+            id: id.clone(),
+            uuid: "12345".to_string(),
+            ..Default::default()
+        };
+        let conn2 = Connection::Ethernet(EthernetConnection { base: base1 });
+        state.update_connection(conn2).unwrap();
+        let found = state.get_connection(&id).unwrap();
+        assert_eq!(found.uuid(), "12345");
+    }
+
+    #[test]
+    fn test_update_unknown_connection() {
+        let mut state = NetworkState::default();
+        let id = "eth0".to_string();
+        let base = BaseConnection {
+            id: id.clone(),
+            ..Default::default()
+        };
+        let conn0 = Connection::Ethernet(EthernetConnection { base });
+        let error = state.update_connection(conn0).unwrap_err();
+        assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
+    }
+
+    #[test]
+    fn test_remove_connection() {
+        let mut state = NetworkState::default();
+        let id = "eth0".to_string();
+        let base0 = BaseConnection {
+            id: id.clone(),
+            uuid: "12345".to_string(),
+            ..Default::default()
+        };
+        let conn0 = Connection::Ethernet(EthernetConnection { base: base0 });
+        state.add_connection(conn0).unwrap();
+        state.remove_connection(&id).unwrap();
+        assert!(state.get_connection(&id).is_none());
+    }
+
+    #[test]
+    fn test_remove_unknown_connection() {
+        let mut state = NetworkState::default();
+        let error = state.remove_connection("eth0").unwrap_err();
+        assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
+    }
 }
 
 /// Network device
@@ -62,7 +197,7 @@ pub enum DeviceType {
 }
 
 /// Represents an available network connection
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Connection {
     Ethernet(EthernetConnection),
     Wireless(WirelessConnection),
@@ -100,14 +235,14 @@ impl Connection {
     }
 }
 
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct BaseConnection {
     pub id: String,
     pub uuid: String,
     pub ipv4: Ipv4Config,
 }
 
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct Ipv4Config {
     pub method: IpMethod,
     pub addresses: Vec<(Ipv4Addr, u32)>,
@@ -147,18 +282,18 @@ impl TryFrom<u8> for IpMethod {
     }
 }
 
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct EthernetConnection {
     pub base: BaseConnection,
 }
 
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct WirelessConnection {
     pub base: BaseConnection,
     pub wireless: WirelessConfig,
 }
 
-#[derive(Debug, Default, PartialEq)]
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
     pub ssid: Vec<u8>,
