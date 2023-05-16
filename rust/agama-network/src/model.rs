@@ -196,6 +196,19 @@ pub enum DeviceType {
     Unknown = 3,
 }
 
+impl TryFrom<u8> for DeviceType {
+    type Error = NetworkStateError;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(DeviceType::Ethernet),
+            1 => Ok(DeviceType::Wireless),
+            2 => Ok(DeviceType::Unknown),
+            _ => Err(NetworkStateError::InvalidDeviceType(value)),
+        }
+    }
+}
+
 /// Represents an available network connection
 #[derive(Debug, PartialEq, Clone)]
 pub enum Connection {
@@ -204,6 +217,20 @@ pub enum Connection {
 }
 
 impl Connection {
+    pub fn new(name: String, device_type: DeviceType) -> Self {
+        let base = BaseConnection {
+            id: name.to_string(),
+            ..Default::default()
+        };
+        match device_type {
+            DeviceType::Wireless => Connection::Wireless(WirelessConnection {
+                base,
+                ..Default::default()
+            }),
+            _ => Connection::Ethernet(EthernetConnection { base }),
+        }
+    }
+
     pub fn base(&self) -> &BaseConnection {
         match &self {
             Connection::Ethernet(conn) => &conn.base,

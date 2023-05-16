@@ -20,6 +20,8 @@ pub enum NetworkStateError {
     InvalidWirelessMode(u8),
     #[error("Connection '{0}' already exists")]
     ConnectionExists(String),
+    #[error("Invalid device type: '{0}'")]
+    InvalidDeviceType(u8),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {

@@ -210,6 +210,16 @@ impl Connection {
         self.with_connection(|c| Ok(c.uuid().to_string()))
     }
 
+    /// Adds a new network connection.
+    ///
+    /// * `name`: connection name.
+    /// * `ty`: connection type (see [crate::model::DeviceType]).
+    pub async fn add_connection(&mut self, name: String, ty: u8) -> zbus::fdo::Result<()> {
+        let mut state = self.network.lock().unwrap();
+        let connection = NetworkConnection::new(name, ty.try_into()?);
+        Ok(state.add_connection(connection)?)
+    }
+
     /// Updates the network connection
     pub async fn update_connection(&self) -> zbus::fdo::Result<()> {
         self.with_connection(|conn| {
