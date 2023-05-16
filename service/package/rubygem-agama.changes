@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 16 13:42:18 UTC 2023 - Knut Alejandro Anderssen González <kanderssen@suse.com>
+
+- Added ppc64le repositories for ALP Bedrock and ALP Micro products
+- gh#openSUSE/agama#577
+
+-------------------------------------------------------------------
 Fri May  5 15:20:25 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Add callbacks for storage commit errors (gh#openSUSE/agama/558).
