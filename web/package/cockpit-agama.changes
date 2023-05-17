@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 17 15:42:31 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Do not remain elements hidden form the accessibility API when
+  a modal dialog is unmounted (gh#openSUSE/agama#580).
+
+-------------------------------------------------------------------
 Tue May  9 22:36:12 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Keep the sidebar on top of other elements when it's open
