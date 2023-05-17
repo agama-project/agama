@@ -217,16 +217,16 @@ const Popup = ({
      */
     return () => {
       /**
-       *  Agama is not using the `appendTo` PF4/Modal prop in its code base.
-       *  Therefore, for this workaround it can be assumed that the default
-       *  document.body is the parent of any modal always.
+       * Agama is not using the `appendTo` PF4/Modal prop in its code base.
+       * Therefore, for this workaround it can be assumed that the default
+       * document.body is the parent of any modal always.
        *
-       *  See https://github.com/patternfly/patternfly-react/blob/a0f857c4de39dd415792a8701e7c6ac7fd853024/packages/react-core/src/components/Modal/Modal.tsx#L115
+       * See https://github.com/patternfly/patternfly-react/blob/a0f857c4de39dd415792a8701e7c6ac7fd853024/packages/react-core/src/components/Modal/Modal.tsx#L115
        *
-       *  Why? Because PF4/Modal is not forwarding its ref and which blocks us to
-       *  do something similar to what we already did in core/Sidebar.
+       * Why? Because PF4/Modal is not forwarding its ref and which blocks us to
+       * do something similar to what we already did in core/Sidebar.
        *
-       *  Read https://react.dev/learn/manipulating-the-dom-with-refs#accessing-another-components-dom-node
+       * Read https://react.dev/learn/manipulating-the-dom-with-refs#accessing-another-components-dom-node
        */
       const parent = document.body;
       [...parent.children].forEach(n => n.removeAttribute("aria-hidden"));
