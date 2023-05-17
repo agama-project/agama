@@ -27,7 +27,7 @@ import {
 } from "@patternfly/react-core";
 
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
-import { ProposalVolumes } from "~/components/storage";
+import { DeviceSelector, ProposalVolumes } from "~/components/storage";
 import { Icon } from "~/components/layout";
 import { deviceLabel } from "~/components/storage/utils";
 import { noop } from "~/utils";
@@ -391,6 +391,7 @@ export default function ProposalSettingsSection({
 
   return (
     <Section title="Settings" className="flex-stack">
+      <DeviceSelector />
       <InstallationDeviceField
         current={bootDevice}
         devices={availableDevices}

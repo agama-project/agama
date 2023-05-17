@@ -28,3 +28,4 @@ export { default as DASDPage } from "./DASDPage";
 export { default as DASDTable } from "./DASDTable";
 export { default as DASDFormatProgress } from "./DASDFormatProgress";
 export { default as ISCSIPage } from "./ISCSIPage";
+export { default as DeviceSelector } from "./DeviceSelector";
