@@ -21,8 +21,8 @@
 
 import React from 'react';
 
-// NOTE: "@icons" is an alias to use a shorter path to real icons location.
-//       Check the tsconfig.json file to see its value.
+// NOTE: "@icons" is an alias to use a shorter path to real @material-symbols
+// icons location. Check the tsconfig.json file to see its value.
 import AddAPhoto from "@icons/add_a_photo.svg?component";
 import AutoMode from "@icons/auto_mode.svg?component";
 import Apps from "@icons/apps.svg?component";
@@ -36,6 +36,7 @@ import Downloading from "@icons/downloading.svg?component";
 import Edit from "@icons/edit.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Error from "@icons/error.svg?component";
+import FlexWrap from "@icons/flex_wrap.svg?component";
 import ExpandMore from "@icons/expand_more.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Help from "@icons/help.svg?component";
@@ -63,6 +64,11 @@ import Warning from "@icons/warning.svg?component";
 import Wifi from "@icons/wifi.svg?component";
 import WifiFind from "@icons/wifi_find.svg?component";
 
+// Icons from react-simple-icons
+
+import { SiLinux, SiWindows } from "@icons-pack/react-simple-icons";
+
+// Icons from SVG
 import Loading from "./three-dots-loader-icon.svg?component";
 
 const icons = {
@@ -80,6 +86,7 @@ const icons = {
   edit_square: EditSquare,
   error: Error,
   expand_more: ExpandMore,
+  flex_wrap: FlexWrap,
   hard_drive: HardDrive,
   help: Help,
   home_storage: HomeStorage,
@@ -105,7 +112,10 @@ const icons = {
   tune: Tune,
   warning: Warning,
   wifi: Wifi,
-  wifi_find: WifiFind
+  wifi_find: WifiFind,
+  // brand icons
+  linux_logo: SiLinux,
+  windows_logo: SiWindows
 };
 
 /**
