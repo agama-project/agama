@@ -94,6 +94,7 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
+    "@icons-pack/react-simple-icons": "^7.2.0",
     "@material-symbols/svg-400": "^0.5.5",
     "@patternfly/patternfly": "^4.224.2",
     "@patternfly/react-core": "^4.276.8",
