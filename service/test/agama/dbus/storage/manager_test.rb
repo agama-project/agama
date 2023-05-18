@@ -43,6 +43,7 @@ describe Agama::DBus::Storage::Manager do
       proposal:                    proposal,
       iscsi:                       iscsi,
       software:                    software,
+      on_probe:                    nil,
       on_progress_change:          nil,
       on_progress_finish:          nil,
       on_issues_change:            nil,
