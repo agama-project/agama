@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed May 17 15:42:31 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Ensure siblings of an open modal dialog do not remain hidden from
+  the accessibility API if the dialog is unmounted instead of
+  set as closed (gh#openSUSE/agama#580).
+
+-------------------------------------------------------------------
 Tue May  9 22:36:12 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Keep the sidebar on top of other elements when it's open

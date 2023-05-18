@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
@@ -30,19 +30,26 @@ let isOpen;
 const confirmFn = jest.fn();
 const cancelFn = jest.fn();
 
-const TestingPopup = (props) => (
-  <Popup
-    title="Testing Popup component"
-    isOpen={isOpen}
-    { ...props }
-  >
-    <p>The Popup Content</p>
-    <Popup.Actions>
-      <Popup.Confirm onClick={confirmFn} isDisabled />
-      <Popup.Cancel onClick={cancelFn} />
-    </Popup.Actions>
-  </Popup>
-);
+const TestingPopup = (props) => {
+  const [isMounted, setIsMounted] = useState(true);
+
+  if (!isMounted) return null;
+
+  return (
+    <Popup
+      title="Testing Popup component"
+      isOpen={isOpen}
+      { ...props }
+    >
+      <p>The Popup Content</p>
+      <button onClick={() => setIsMounted(false)}>Unmount Popup</button>
+      <Popup.Actions>
+        <Popup.Confirm onClick={confirmFn} isDisabled />
+        <Popup.Cancel onClick={cancelFn} />
+      </Popup.Actions>
+    </Popup>
+  );
+};
 
 describe("Popup", () => {
   describe("when it is not open", () => {
@@ -83,6 +90,27 @@ describe("Popup", () => {
 
       within(footer).getByText("Confirm");
       within(footer).getByText("Cancel");
+    });
+
+    it("removes aria-hidden attributes from body children (workaround for patternfly/patternfly-react#9096)", async () => {
+      const { user } = installerRender(
+        <>
+          <article>Popup Sibling</article>
+          <TestingPopup />
+        </>,
+        // Force React Testing Library to render the component directly in the
+        // body for emulating the default behavior of the PF4/Modal when no
+        // appendTo prop is given.
+        // https://testing-library.com/docs/react-testing-library/api/#container
+        { container: document.body }
+      );
+
+      await screen.findByRole("dialog");
+      const sibling = screen.getByText("Popup Sibling");
+      const unmountButton = await screen.getByRole("button", { name: "Unmount Popup" });
+      expect(sibling).toHaveAttribute("aria-hidden");
+      await user.click(unmountButton);
+      expect(sibling).not.toHaveAttribute("aria-hidden");
     });
   });
 });
