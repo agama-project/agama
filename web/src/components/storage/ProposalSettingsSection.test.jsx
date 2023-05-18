@@ -99,7 +99,7 @@ describe("Installation device field", () => {
 
   it("allows selecting a device when clicking on the device name", async () => {
     props = {
-      availableDevices: [{ id: "/dev/vda", label: "/dev/vda" }],
+      availableDevices: [{ name: "/dev/vda" }],
       settings: { candidateDevices: ["/dev/vda"] },
       onChange: jest.fn()
     };
@@ -121,7 +121,7 @@ describe("Installation device field", () => {
 
   it("allows canceling the selection of the device", async () => {
     props = {
-      availableDevices: [{ id: "/dev/vda", label: "/dev/vda" }],
+      availableDevices: [{ name: "/dev/vda" }],
       settings: { candidateDevices: ["/dev/vda"] },
       onChange: jest.fn()
     };
