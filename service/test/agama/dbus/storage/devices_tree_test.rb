@@ -22,6 +22,7 @@
 require_relative "../../../test_helper"
 require_relative "../../storage/storage_helpers"
 require "agama/dbus/storage/devices_tree"
+require "y2storage"
 require "dbus"
 
 describe Agama::DBus::Storage::DevicesTree do
@@ -59,24 +60,32 @@ describe Agama::DBus::Storage::DevicesTree do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:root_node) { instance_double(::DBus::Node) }
+  describe "#path_for" do
+    let(:device) { instance_double(Y2Storage::Device, sid: 50) }
 
-  let(:dbus_objects) { [] }
+    it "returns a D-Bus object path" do
+      expect(subject.path_for(device)).to be_a(::DBus::ObjectPath)
+    end
 
-  let(:devicegraph) { Y2Storage::StorageManager.instance.probed }
-
-  before do
-    mock_storage(devicegraph: scenario)
-
-    allow(service).to receive(:get_node).with(root_path, anything).and_return(root_node)
-    allow(service).to receive(:export)
-    allow(service).to receive(:unexport)
-
-    allow(root_node).to receive(:descendant_objects).and_return(dbus_objects)
+    it "uses the device sid as basename" do
+      expect(subject.path_for(device)).to eq("#{root_path}/50")
+    end
   end
 
   describe "#update" do
+    before do
+      mock_storage(devicegraph: scenario)
+
+      allow(service).to receive(:get_node).with(root_path, anything).and_return(root_node)
+      allow(service).to receive(:export)
+      allow(service).to receive(:unexport)
+
+      allow(root_node).to receive(:descendant_objects).and_return(dbus_objects)
+    end
+
     let(:scenario) { "partitioned_md.yml" }
+
+    let(:root_node) { instance_double(::DBus::Node) }
 
     let(:dbus_objects) do
       [
@@ -84,6 +93,8 @@ describe Agama::DBus::Storage::DevicesTree do
         instance_double(Agama::DBus::Storage::Device, path: "#{root_path}/1002")
       ]
     end
+
+    let(:devicegraph) { Y2Storage::StorageManager.instance.probed }
 
     it "unexports the current objects" do
       expect(service).to unexport_object("#{root_path}/1001")

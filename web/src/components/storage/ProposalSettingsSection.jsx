@@ -29,7 +29,13 @@ import {
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { ProposalVolumes } from "~/components/storage";
 import { Icon } from "~/components/layout";
+import { deviceLabel } from "~/components/storage/utils";
 import { noop } from "~/utils";
+
+/**
+ * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
+ * @typedef {import ("~/clients/storage").Volume} Volume
+ */
 
 /**
  * Form for selecting the installation device
@@ -38,7 +44,7 @@ import { noop } from "~/utils";
  * @param {object} props
  * @param {string} props.id - Form ID
  * @param {string|undefined} props.current - Device name, if any
- * @param {object[]} props.devices - Available devices for the selection
+ * @param {StorageDevice[]} props.devices - Available devices for the selection
  * @param {onSubmitFn} props.onSubmit - On submit callback
  *
  * @callback onSubmitFn
@@ -49,10 +55,10 @@ const InstallationDeviceForm = ({ id, current, devices, onSubmit }) => {
 
   useEffect(() => {
     const isCurrentValid = () => {
-      return devices.find(d => d.id === current) !== undefined;
+      return devices.find(d => d.name === current) !== undefined;
     };
 
-    if (!isCurrentValid()) setDevice(devices[0]?.id);
+    if (!isCurrentValid()) setDevice(devices[0]?.name);
   }, [current, devices]);
 
   const submitForm = (e) => {
@@ -65,7 +71,7 @@ const InstallationDeviceForm = ({ id, current, devices, onSubmit }) => {
   const DeviceSelector = ({ current, devices, onChange }) => {
     const DeviceOptions = () => {
       const options = devices.map(device => {
-        return <FormSelectOption key={device.id} value={device.id} label={device.label} />;
+        return <FormSelectOption key={device.name} value={device.name} label={deviceLabel(device)} />;
       });
 
       return options;
@@ -103,7 +109,7 @@ const InstallationDeviceForm = ({ id, current, devices, onSubmit }) => {
  *
  * @param {object} props
  * @param {string|undefined} props.current - Device name, if any
- * @param {object[]} props.devices - Available devices for the selection
+ * @param {StorageDevice[]} props.devices - Available devices for the selection
  * @param {boolean} props.isLoading - Whether to show the selector as loading
  * @param {onChangeFn} props.onChange - On change callback
  *
@@ -344,8 +350,8 @@ const EncryptionPasswordField = ({ selected: selectedProp, password: passwordPro
  * @component
  *
  * @param {object} props
- * @param {object[]} [props.availableDevices=[]]
- * @param {object[]} [props.volumeTemplates=[]]
+ * @param {StorageDevice[]} [props.availableDevices=[]]
+ * @param {Volume[]} [props.volumeTemplates=[]]
  * @param {object} [props.settings={}]
  * @param {boolean} [isLoading=false]
  * @param {onChangeFn} [props.onChange=noop]

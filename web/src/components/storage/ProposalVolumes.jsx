@@ -19,8 +19,6 @@
  * find current contact information at www.suse.com.
  */
 
-// cspell:ignore filesize
-
 import React, { useState } from "react";
 import {
   Dropdown, DropdownToggle, DropdownItem,
@@ -31,31 +29,11 @@ import {
   Toolbar, ToolbarContent, ToolbarItem
 } from "@patternfly/react-core";
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
-import { filesize } from "filesize";
 
 import { Em, If, Popup, RowActions, Tip } from '~/components/core';
 import { Icon } from '~/components/layout';
+import { deviceSize } from '~/components/storage/utils';
 import { noop } from "~/utils";
-
-/**
- * Generates a disk size representation
- * @function
- *
- * @example
- * sizeText(1024)
- * // returns "1 kiB"
- *
- * sizeText(-1)
- * // returns "Unlimited"
- *
- * @param {number} size - Number of bytes. The value -1 represents an unlimited size.
- * @returns {string}
- */
-const sizeText = (size) => {
-  if (size === -1) return "Unlimited";
-
-  return filesize(size, { base: 2 });
-};
 
 /**
  * Generates an hint describing which attributes affect the auto-calculated limits.
@@ -147,7 +125,7 @@ const VolumeForm = ({ id, templates, onSubmit }) => {
           id="minSize"
           name="minSize"
           aria-label="Min size"
-          value={sizeText(volume.minSize)}
+          value={deviceSize(volume.minSize)}
           label="Minimum Size"
           isDisabled
         />
@@ -160,7 +138,7 @@ const VolumeForm = ({ id, templates, onSubmit }) => {
           id="maxSize"
           name="maxSize"
           aria-label="Max size"
-          value={sizeText(volume.maxSize)}
+          value={deviceSize(volume.maxSize)}
           label="Maximum Size"
           isDisabled
         />
@@ -264,7 +242,7 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
  */
 const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
   const SizeLimits = ({ volume }) => {
-    const limits = `${sizeText(volume.minSize)} - ${sizeText(volume.maxSize)}`;
+    const limits = `${deviceSize(volume.minSize)} - ${deviceSize(volume.maxSize)}`;
     const isAuto = volume.adaptiveSizes && !volume.fixedSizeLimits;
 
     return (

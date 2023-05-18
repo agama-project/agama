@@ -115,11 +115,9 @@ module Agama
         # Each device is represented by an array containing the name of the device and the label to
         # represent that device in the UI when further information is needed.
         #
-        # @return [Array<String, String, Hash>]
+        # @return [Array<::DBus::ObjectPath>]
         def available_devices
-          proposal.available_devices.map do |dev|
-            [dev.name, proposal.device_label(dev), {}]
-          end
+          proposal.available_devices.map { |d| system_devices_tree.path_for(d) }
         end
 
         # Volumes used as template for creating a new proposal
@@ -151,7 +149,7 @@ module Agama
         end
 
         dbus_interface PROPOSAL_CALCULATOR_INTERFACE do
-          dbus_reader :available_devices, "a(ssa{sv})"
+          dbus_reader :available_devices, "ao"
 
           dbus_reader :volume_templates, "aa{sv}"
 

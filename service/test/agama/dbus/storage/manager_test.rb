@@ -112,15 +112,15 @@ describe Agama::DBus::Storage::Manager do
 
       let(:devices) { [device1, device2] }
 
-      let(:device1) { instance_double(Y2Storage::Disk, name: "/dev/vda") }
-      let(:device2) { instance_double(Y2Storage::Disk, name: "/dev/vdb") }
+      let(:device1) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }
+      let(:device2) { instance_double(Y2Storage::Disk, name: "/dev/vdb", sid: 96) }
 
-      it "retuns the device name and label for each device" do
+      it "retuns the path of each device" do
         result = subject.available_devices
 
         expect(result).to contain_exactly(
-          ["/dev/vda", "Device 1", {}],
-          ["/dev/vdb", "Device 2", {}]
+          /system\/95/,
+          /system\/96/
         )
       end
     end

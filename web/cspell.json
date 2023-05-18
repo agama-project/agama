@@ -38,10 +38,12 @@
         "localdomain",
         "luks",
         "mgmt",
+        "multipath",
         "onboot",
         "partitioner",
         "patternfly",
         "rfkill",
+        "sata",
         "screenreader",
         "ssid",
         "ssids",
@@ -54,7 +56,8 @@
         "testfile",
         "testsuite",
         "textinput",
-        "tkip"
+        "tkip",
+        "udev"
       ]
     }
   ],

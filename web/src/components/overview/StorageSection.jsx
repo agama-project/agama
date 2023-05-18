@@ -25,6 +25,7 @@ import { Text } from "@patternfly/react-core";
 import { toValidationError, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
+import { deviceLabel } from "~/components/storage/utils";
 import { Em, ProgressText, Section } from "~/components/core";
 
 const ProposalSummary = ({ proposal }) => {
@@ -33,13 +34,13 @@ const ProposalSummary = ({ proposal }) => {
   if (result === undefined) return <Text>Device not selected yet</Text>;
 
   const [candidateDevice] = result.candidateDevices;
-  const device = proposal.availableDevices.find(d => d.id === candidateDevice);
+  const device = proposal.availableDevices.find(d => d.name === candidateDevice);
 
-  const deviceLabel = device?.label || candidateDevice;
+  const label = device ? deviceLabel(device) : candidateDevice;
 
   return (
     <Text>
-      Install using device <Em>{deviceLabel}</Em> and deleting all its content
+      Install using device <Em>{label}</Em> and deleting all its content
     </Text>
   );
 };
