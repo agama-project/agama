@@ -38,6 +38,14 @@ module Agama
           @logger = logger
         end
 
+        # Object path for the D-Bus object representing the given device
+        #
+        # @param device [Y2Storage::Device]
+        # @return [::DBus::ObjectPath]
+        def path_for(device)
+          ::DBus::ObjectPath.new(File.join(root_path, device.sid.to_s))
+        end
+
         # Updates the D-Bus tree according to the given devicegraph
         #
         # The current D-Bus nodes are all unexported.
@@ -82,14 +90,6 @@ module Agama
         # Unexports the currently exported D-Bus objects
         def unexport_devices
           dbus_objects.each { |n| service.unexport(n) }
-        end
-
-        # Object path for the D-Bus object representing the given device
-        #
-        # @param device [Y2Storage::Device]
-        # @return [::DBus::ObjectPath]
-        def path_for(device)
-          ::DBus::ObjectPath.new(File.join(root_path, device.sid.to_s))
         end
 
         # All exported D-Bus objects
