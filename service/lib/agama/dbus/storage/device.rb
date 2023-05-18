@@ -51,7 +51,7 @@ module Agama
         # @return [Y2Storage::Device]
         attr_reader :storage_device
 
-        # Adds the required interfaces according the the storage object
+        # Adds the required interfaces according to the storage object
         def add_interfaces
           interfaces = []
           interfaces << Interfaces::Drive if drive?
