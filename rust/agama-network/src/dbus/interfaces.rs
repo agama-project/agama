@@ -2,7 +2,7 @@
 //!
 //! This module contains the set of D-Bus interfaces that are exposed by [D-Bus network
 //! service](crate::NetworkService).
-use super::ObjectsPaths;
+use super::ObjectsRegistry;
 use crate::{
     error::NetworkStateError,
     model::{Connection as NetworkConnection, Ipv4Config, NetworkState, WirelessConfig},
@@ -73,14 +73,14 @@ trait WithConnection: zbus::Interface {
 ///
 /// It offers an API to query the devices collection.
 pub struct Devices {
-    objects: Arc<Mutex<ObjectsPaths>>,
+    objects: Arc<Mutex<ObjectsRegistry>>,
 }
 
 impl Devices {
     /// Creates a Devices interface object.
     ///
     /// * `objects`: Objects paths registry.
-    pub fn new(objects: Arc<Mutex<ObjectsPaths>>) -> Self {
+    pub fn new(objects: Arc<Mutex<ObjectsRegistry>>) -> Self {
         Self { objects }
     }
 }
@@ -143,7 +143,7 @@ impl Device {
 ///
 /// It offers an API to query the connections collection.
 pub struct Connections {
-    objects: Arc<Mutex<ObjectsPaths>>,
+    objects: Arc<Mutex<ObjectsRegistry>>,
     network: Arc<Mutex<NetworkState>>,
 }
 
@@ -151,7 +151,7 @@ impl Connections {
     /// Creates a Connections interface object.
     ///
     /// * `objects`: Objects paths registry.
-    pub fn new(objects: Arc<Mutex<ObjectsPaths>>, network: Arc<Mutex<NetworkState>>) -> Self {
+    pub fn new(objects: Arc<Mutex<ObjectsRegistry>>, network: Arc<Mutex<NetworkState>>) -> Self {
         Self { objects, network }
     }
 }

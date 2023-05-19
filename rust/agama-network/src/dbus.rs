@@ -8,4 +8,4 @@ pub mod service;
 mod tree_manager;
 
 pub use service::NetworkService;
-pub(crate) use tree_manager::{ObjectsPaths, TreeManager};
+pub(crate) use tree_manager::{ObjectsRegistry, TreeManager};

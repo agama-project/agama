@@ -6,12 +6,12 @@ use std::sync::{Arc, Mutex};
 
 /// Objects paths for known devices and connections
 #[derive(Debug, Default)]
-pub struct ObjectsPaths {
+pub struct ObjectsRegistry {
     pub devices: HashMap<String, String>,
     pub connections: HashMap<String, String>,
 }
 
-impl ObjectsPaths {
+impl ObjectsRegistry {
     pub fn add_device(&mut self, name: &str, path: &str) {
         self.devices.insert(name.to_string(), path.to_string());
     }
@@ -49,7 +49,7 @@ impl ObjectsPaths {
 pub struct TreeManager {
     connection: zbus::Connection,
     network: Arc<Mutex<NetworkState>>,
-    objects: Arc<Mutex<ObjectsPaths>>,
+    objects: Arc<Mutex<ObjectsRegistry>>,
 }
 
 impl TreeManager {
