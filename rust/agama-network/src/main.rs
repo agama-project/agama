@@ -1,10 +1,10 @@
 use agama_lib::connection;
-use agama_network::{NetworkService, NetworkState};
+use agama_network::{NetworkService, NetworkSystem};
 use async_std;
 
 #[async_std::main]
 async fn main() {
-    let network = NetworkState::from_system()
+    let network = NetworkSystem::from_system()
         .await
         .expect("Could not read network state");
 

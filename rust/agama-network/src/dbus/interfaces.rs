@@ -5,9 +5,9 @@
 use super::ObjectsRegistry;
 use crate::{
     error::NetworkStateError,
-    model::{Connection as NetworkConnection, Ipv4Config, NetworkState, WirelessConfig},
+    model::{Connection as NetworkConnection, Ipv4Config, WirelessConfig},
+    NetworkSystem,
 };
-use async_std::task;
 use std::{
     net::{AddrParseError, Ipv4Addr},
     sync::{Arc, Mutex},
@@ -18,7 +18,7 @@ use zbus::{dbus_interface, zvariant::ObjectPath};
 /// Implements functions that are common to D-Bus interfaces around connections
 trait WithConnection: zbus::Interface {
     /// Returns the mutex around the network state
-    fn state(&self) -> &Mutex<NetworkState>;
+    fn network(&self) -> &Mutex<NetworkSystem>;
 
     /// Returns the name of the connection associated to the D-Bus interface
     fn uuid(&self) -> Uuid;
@@ -33,9 +33,9 @@ trait WithConnection: zbus::Interface {
     where
         F: FnOnce(&NetworkConnection) -> Result<T, NetworkStateError>,
     {
-        let state = self.state();
-        let mut state = state.lock().unwrap();
-        let conn = state
+        let network = self.network();
+        let mut network = network.lock().unwrap();
+        let conn = network
             .get_connection_mut(self.uuid())
             .ok_or(NetworkStateError::UnknownConnection(self.uuid()))?;
         Ok(func(conn)?)
@@ -54,14 +54,14 @@ trait WithConnection: zbus::Interface {
     where
         F: FnOnce(&mut NetworkConnection) -> Result<(), NetworkStateError>,
     {
-        let state = self.state();
-        let mut state = state.lock().unwrap();
-        let conn = state
+        let network = self.network();
+        let mut network = network.lock().unwrap();
+        let conn = network
             .get_connection(self.uuid())
             .ok_or(NetworkStateError::UnknownConnection(self.uuid()))?;
         let mut new_conn = conn.clone();
         func(&mut new_conn)?;
-        state.update_connection(new_conn)?;
+        network.update_connection(new_conn)?;
         Ok(())
     }
 }
@@ -99,7 +99,7 @@ impl Devices {
 ///
 /// It offers an API to query basic networking devices information (e.g., the name).
 pub struct Device {
-    network: Arc<Mutex<NetworkState>>,
+    network: Arc<Mutex<NetworkSystem>>,
     device_name: String,
 }
 
@@ -108,7 +108,7 @@ impl Device {
     ///
     /// * `network`: network state.
     /// * `device_name`: device name.
-    pub fn new(network: Arc<Mutex<NetworkState>>, device_name: &str) -> Self {
+    pub fn new(network: Arc<Mutex<NetworkSystem>>, device_name: &str) -> Self {
         Self {
             network,
             device_name: device_name.to_string(),
@@ -125,9 +125,9 @@ impl Device {
 
     #[dbus_interface(property)]
     pub fn device_type(&self) -> zbus::fdo::Result<u8> {
-        let state = self.network.lock().unwrap();
+        let network = self.network.lock().unwrap();
         let device =
-            state
+            network
                 .get_device(&self.device_name)
                 .ok_or(NetworkStateError::UnknownDevice(
                     self.device_name.to_string(),
@@ -141,14 +141,14 @@ impl Device {
 /// It offers an API to query the connections collection.
 pub struct Connections {
     objects: Arc<Mutex<ObjectsRegistry>>,
-    network: Arc<Mutex<NetworkState>>,
+    network: Arc<Mutex<NetworkSystem>>,
 }
 
 impl Connections {
     /// Creates a Connections interface object.
     ///
     /// * `objects`: Objects paths registry.
-    pub fn new(objects: Arc<Mutex<ObjectsRegistry>>, network: Arc<Mutex<NetworkState>>) -> Self {
+    pub fn new(objects: Arc<Mutex<ObjectsRegistry>>, network: Arc<Mutex<NetworkSystem>>) -> Self {
         Self { objects, network }
     }
 }
@@ -190,12 +190,12 @@ impl Connections {
 ///
 /// It offers an API to query a connection.
 pub struct Connection {
-    network: Arc<Mutex<NetworkState>>,
+    network: Arc<Mutex<NetworkSystem>>,
     uuid: Uuid,
 }
 
 impl WithConnection for Connection {
-    fn state(&self) -> &Mutex<NetworkState> {
+    fn network(&self) -> &Mutex<NetworkSystem> {
         &self.network
     }
 
@@ -208,7 +208,7 @@ impl Connection {
     /// Creates a Connection interface object.
     ///
     /// * `UUID`: Connection UUID.
-    pub fn new(network: Arc<Mutex<NetworkState>>, uuid: Uuid) -> Self {
+    pub fn new(network: Arc<Mutex<NetworkSystem>>, uuid: Uuid) -> Self {
         Self { network, uuid }
     }
 }
@@ -228,7 +228,7 @@ impl Connection {
 
 /// D-Bus interface for IPv4 settings
 pub struct Ipv4 {
-    network: Arc<Mutex<NetworkState>>,
+    network: Arc<Mutex<NetworkSystem>>,
     uuid: Uuid,
 }
 
@@ -237,7 +237,7 @@ impl Ipv4 {
     ///
     /// * `network`: network state.
     /// * `conn_name`: connection name.
-    pub fn new(network: Arc<Mutex<NetworkState>>, uuid: Uuid) -> Self {
+    pub fn new(network: Arc<Mutex<NetworkSystem>>, uuid: Uuid) -> Self {
         Self { network, uuid }
     }
 
@@ -271,7 +271,7 @@ impl Ipv4 {
 }
 
 impl WithConnection for Ipv4 {
-    fn state(&self) -> &Mutex<NetworkState> {
+    fn network(&self) -> &Mutex<NetworkSystem> {
         &self.network
     }
 
@@ -351,7 +351,7 @@ impl Ipv4 {
 }
 /// D-Bus interface for wireless settings
 pub struct Wireless {
-    network: Arc<Mutex<NetworkState>>,
+    network: Arc<Mutex<NetworkSystem>>,
     uuid: Uuid,
 }
 
@@ -360,7 +360,7 @@ impl Wireless {
     ///
     /// * `network`: network state.
     /// * `uuid`: connection UUID.
-    pub fn new(network: Arc<Mutex<NetworkState>>, uuid: Uuid) -> Self {
+    pub fn new(network: Arc<Mutex<NetworkSystem>>, uuid: Uuid) -> Self {
         Self { network, uuid }
     }
 
@@ -386,7 +386,7 @@ impl Wireless {
 }
 
 impl WithConnection for Wireless {
-    fn state(&self) -> &Mutex<NetworkState> {
+    fn network(&self) -> &Mutex<NetworkSystem> {
         &self.network
     }
 

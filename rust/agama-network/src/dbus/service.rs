@@ -2,7 +2,7 @@
 //!
 //! This module defines a D-Bus service which exposes Agama's network configuration.
 use crate::dbus::TreeManager;
-use crate::model::{NetworkEvent, NetworkEventCallback, NetworkState};
+use crate::{NetworkEvent, NetworkEventCallback, NetworkSystem};
 use std::{
     error::Error,
     sync::{Arc, Mutex},
@@ -15,7 +15,7 @@ use std::{
 /// * Reading the current state.
 /// * Publishing the objects in the D-Bus API.
 pub struct NetworkService {
-    state: Arc<Mutex<NetworkState>>,
+    network: Arc<Mutex<NetworkSystem>>,
     tree: Arc<Mutex<TreeManager>>,
     connection: zbus::Connection,
 }
@@ -25,14 +25,14 @@ impl NetworkService {
     ///
     /// * `state`: network configuration
     /// * `connection`: D-Bus connection to use
-    pub fn new(state: NetworkState, connection: zbus::Connection) -> Self {
-        let state = Arc::new(Mutex::new(state));
+    pub fn new(network: NetworkSystem, connection: zbus::Connection) -> Self {
+        let network = Arc::new(Mutex::new(network));
         Self {
             tree: Arc::new(Mutex::new(TreeManager::new(
                 connection.clone(),
-                Arc::clone(&state),
+                Arc::clone(&network),
             ))),
-            state,
+            network,
             connection,
         }
     }
@@ -65,7 +65,7 @@ impl NetworkService {
             });
         });
 
-        let mut network = self.state.lock().unwrap();
+        let mut network = self.network.lock().unwrap();
         network.on_event(Arc::clone(&cb))
     }
 }

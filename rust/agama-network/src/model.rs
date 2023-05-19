@@ -5,42 +5,15 @@
 use uuid::Uuid;
 
 use crate::error::NetworkStateError;
-use crate::nm::NetworkManagerClient;
-use std::sync::Arc;
-use std::{error::Error, fmt, net::Ipv4Addr};
-
-#[derive(Debug, Clone)]
-pub enum NetworkEvent {
-    AddConnection(Connection),
-    RemoveConnection(Uuid),
-}
-
-pub type NetworkEventCallback = dyn Fn(NetworkEvent) + Send + Sync;
+use std::{fmt, net::Ipv4Addr};
 
 #[derive(Default)]
 pub struct NetworkState {
     pub devices: Vec<Device>,
     pub connections: Vec<Connection>,
-    pub callbacks: Vec<Arc<NetworkEventCallback>>,
 }
 
 impl NetworkState {
-    pub fn on_event(&mut self, callback: Arc<NetworkEventCallback>) {
-        self.callbacks.push(callback);
-    }
-    /// Reads the network configuration using the NetworkManager D-Bus service.
-    pub async fn from_system() -> Result<NetworkState, Box<dyn Error>> {
-        let nm_client = NetworkManagerClient::from_system().await?;
-        let devices = nm_client.devices().await?;
-        let connections = nm_client.connections().await?;
-
-        Ok(NetworkState {
-            devices,
-            connections,
-            callbacks: vec![],
-        })
-    }
-
     /// Get device by name
     ///
     /// * `name`: device name
@@ -65,14 +38,11 @@ impl NetworkState {
     /// Adds a new connection.
     ///
     /// It uses the `id` to decide whether the connection already exists.
-    /// TODO: use the UUID, so it is possible to rename connections.
     pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
         if let Some(_) = self.get_connection(conn.uuid()) {
             return Err(NetworkStateError::ConnectionExists(conn.uuid()));
         }
 
-        let event = NetworkEvent::AddConnection(conn.clone());
-        self.notify_event(event);
         self.connections.push(conn);
         Ok(())
     }
@@ -80,7 +50,6 @@ impl NetworkState {
     /// Updates a connection with a new one.
     ///
     /// It uses the `id` to decide which connection to update.
-    /// TODO: use the UUID, so it is possible to rename connections.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
     pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
@@ -94,22 +63,14 @@ impl NetworkState {
 
     /// Removes a connection from the state.
     ///
-    /// TODO: use the UUID.
     /// Additionally, it registers the connection to be removed when the changes are applied.
     pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
         let Some(index) = self.connections.iter().position(|i| i.uuid() == uuid) else {
             return Err(NetworkStateError::UnknownConnection(uuid));
         };
 
-        self.notify_event(NetworkEvent::RemoveConnection(uuid));
         self.connections.swap_remove(index);
         Ok(())
-    }
-
-    fn notify_event(&self, event: NetworkEvent) {
-        for cb in &self.callbacks {
-            cb(event.clone())
-        }
     }
 }
 

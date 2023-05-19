@@ -53,7 +53,7 @@
 //!     .expect("Could not connect to the system D-Bus");
 //!
 //!   // Read the network state
-//!   let network = NetworkState::from_system().await
+//!   let network = NetworkSystem::from_system().await
 //!     .expect("Could not read the network state");
 //!
 //!   // Build the service
@@ -67,6 +67,8 @@ pub mod dbus;
 pub mod error;
 pub mod model;
 mod nm;
+pub mod system;
 
 pub use dbus::NetworkService;
 pub use model::NetworkState;
+pub use system::{NetworkEvent, NetworkEventCallback, NetworkSystem};

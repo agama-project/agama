@@ -1,19 +1,19 @@
 use agama_lib::error::ServiceError;
 use uuid::Uuid;
 
-use crate::{dbus::interfaces, model::*, NetworkState};
+use crate::{dbus::interfaces, model::*, NetworkSystem};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 /// Handle the objects in the D-Bus tree for the network state
 pub struct TreeManager {
     connection: zbus::Connection,
-    network: Arc<Mutex<NetworkState>>,
+    network: Arc<Mutex<NetworkSystem>>,
     objects: Arc<Mutex<ObjectsRegistry>>,
 }
 
 impl TreeManager {
-    pub fn new(connection: zbus::Connection, network: Arc<Mutex<NetworkState>>) -> Self {
+    pub fn new(connection: zbus::Connection, network: Arc<Mutex<NetworkSystem>>) -> Self {
         Self {
             connection,
             network,
@@ -28,9 +28,9 @@ impl TreeManager {
     }
 
     async fn add_devices(&mut self) -> Result<(), ServiceError> {
-        let state = self.network.lock().unwrap();
+        let network = self.network.lock().unwrap();
 
-        for (i, dev) in state.devices.iter().enumerate() {
+        for (i, dev) in network.state.devices.iter().enumerate() {
             let path = format!("/org/opensuse/Agama/Network1/devices/{}", i);
             self.add_interface(
                 &path,
@@ -51,9 +51,9 @@ impl TreeManager {
     }
 
     async fn add_connections(&self) -> Result<(), ServiceError> {
-        let state = self.network.lock().unwrap();
+        let network = self.network.lock().unwrap();
 
-        for conn in state.connections.iter() {
+        for conn in network.state.connections.iter() {
             self.add_connection(conn).await?;
         }
 
