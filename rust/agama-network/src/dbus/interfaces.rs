@@ -2,7 +2,7 @@
 //!
 //! This module contains the set of D-Bus interfaces that are exposed by [D-Bus network
 //! service](crate::NetworkService).
-use super::service::ObjectsPaths;
+use super::ObjectsPaths;
 use crate::{
     error::NetworkStateError,
     model::{Connection as NetworkConnection, Ipv4Config, NetworkState, WirelessConfig},
@@ -91,7 +91,7 @@ impl Devices {
     pub fn get_devices(&self) -> Vec<ObjectPath> {
         let objects = self.objects.lock().unwrap();
         objects
-            .devices
+            .devices_paths()
             .iter()
             .filter_map(|c| ObjectPath::try_from(c.clone()).ok())
             .collect()

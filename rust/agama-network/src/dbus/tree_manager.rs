@@ -1,13 +1,48 @@
 use agama_lib::error::ServiceError;
 
 use crate::{dbus::interfaces, model::*, NetworkState};
+use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 /// Objects paths for known devices and connections
 #[derive(Debug, Default)]
 pub struct ObjectsPaths {
-    pub devices: Vec<String>,
-    pub connections: Vec<String>,
+    pub devices: HashMap<String, String>,
+    pub connections: HashMap<String, String>,
+}
+
+impl ObjectsPaths {
+    pub fn add_device(&mut self, name: &str, path: &str) {
+        self.devices.insert(name.to_string(), path.to_string());
+    }
+
+    pub fn add_connection(&mut self, name: &str, path: &str) {
+        self.connections.insert(name.to_string(), path.to_string());
+    }
+
+    pub fn device_path(&self, name: &str) -> Option<&str> {
+        self.devices.get(name).map(|p| p.as_str())
+    }
+
+    pub fn connection_path(&self, name: &str) -> Option<&str> {
+        self.connections.get(name).map(|p| p.as_str())
+    }
+
+    pub fn remove_device(&self, name: &str) -> Option<String> {
+        self.devices.remove(name)
+    }
+
+    pub fn remove_connection(&self, name: &str) -> Option<String> {
+        self.connections.remove(name)
+    }
+
+    pub fn devices_paths(&self) -> Vec<String> {
+        self.devices.keys().map(|p| p.to_string()).collect()
+    }
+
+    pub fn connections_paths(&self) -> Vec<String> {
+        self.connections.keys().map(|p| p.to_string()).collect()
+    }
 }
 
 /// Handle the objects in the D-Bus tree for the network state
