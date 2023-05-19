@@ -58,8 +58,8 @@ impl NetworkService {
                     NetworkEvent::AddConnection(conn) => {
                         tree.add_connection(&conn).await.unwrap();
                     }
-                    NetworkEvent::RemoveConnection(name) => {
-                        tree.remove_connection(&name).await.unwrap();
+                    NetworkEvent::RemoveConnection(uuid) => {
+                        tree.remove_connection(uuid).await.unwrap();
                     }
                 };
             });

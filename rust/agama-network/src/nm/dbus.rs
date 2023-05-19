@@ -6,6 +6,7 @@ use super::model::*;
 use crate::model::*;
 use std::collections::HashMap;
 use std::net::Ipv4Addr;
+use uuid::Uuid;
 use zbus::zvariant::{self, Value};
 
 type NestedHash<'a> = HashMap<&'a str, HashMap<&'a str, zvariant::Value<'a>>>;
@@ -15,10 +16,8 @@ type NestedHash<'a> = HashMap<&'a str, HashMap<&'a str, zvariant::Value<'a>>>;
 /// * `conn`: Connection to cnvert.
 pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
     let mut result = NestedHash::new();
-    let mut connection_dbus = HashMap::from([
-        ("id", conn.name().into()),
-        ("type", "802-3-ethernet".into()),
-    ]);
+    let mut connection_dbus =
+        HashMap::from([("id", conn.id().into()), ("type", "802-3-ethernet".into())]);
     result.insert("ipv4", ipv4_to_dbus(conn.ipv4()));
 
     if let Connection::Wireless(wireless) = conn {
@@ -113,9 +112,10 @@ fn base_connection_from_dbus(
 
     let id: &str = connection.get("id")?.downcast_ref()?;
     let uuid: &str = connection.get("uuid")?.downcast_ref()?;
+    let uuid: Uuid = uuid.try_into().ok()?;
     let mut base_connection = BaseConnection {
         id: id.to_string(),
-        uuid: uuid.to_string(),
+        uuid,
         ..Default::default()
     };
 
@@ -228,7 +228,7 @@ mod test {
 
         let connection = connection_from_dbus(dbus_conn).unwrap();
 
-        assert_eq!(connection.name(), "eth0");
+        assert_eq!(connection.id(), "eth0");
         let ipv4 = connection.ipv4();
         assert_eq!(ipv4.addresses, vec![(Ipv4Addr::new(192, 168, 0, 10), 24)]);
         assert_eq!(ipv4.nameservers, vec![Ipv4Addr::new(192, 168, 0, 2)]);

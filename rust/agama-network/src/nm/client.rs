@@ -73,7 +73,8 @@ impl<'a> NetworkManagerClient<'a> {
     /// Update a network connection.
     pub async fn update_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
         let proxy = SettingsProxy::new(&self.connection).await?;
-        let path = proxy.get_connection_by_uuid(conn.uuid()).await?;
+        let uuid_s = conn.uuid().to_string();
+        let path = proxy.get_connection_by_uuid(uuid_s.as_str()).await?;
         let proxy = ConnectionProxy::builder(&self.connection)
             .path(path.as_str())?
             .build()

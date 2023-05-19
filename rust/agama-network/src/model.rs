@@ -2,6 +2,8 @@
 //!
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //! agnostic from the real network service (e.g., NetworkManager).
+use uuid::Uuid;
+
 use crate::error::NetworkStateError;
 use crate::nm::NetworkManagerClient;
 use std::sync::Arc;
@@ -10,7 +12,7 @@ use std::{error::Error, fmt, net::Ipv4Addr};
 #[derive(Debug, Clone)]
 pub enum NetworkEvent {
     AddConnection(Connection),
-    RemoveConnection(String),
+    RemoveConnection(Uuid),
 }
 
 pub type NetworkEventCallback = dyn Fn(NetworkEvent) + Send + Sync;
@@ -46,18 +48,18 @@ impl NetworkState {
         self.devices.iter().find(|d| d.name == name)
     }
 
-    /// Get connection by name
+    /// Get connection by UUID
     ///
-    /// * `name`: connection name
-    pub fn get_connection(&self, name: &str) -> Option<&Connection> {
-        self.connections.iter().find(|c| c.name() == name)
+    /// * `uuid`: connection UUID
+    pub fn get_connection(&self, uuid: Uuid) -> Option<&Connection> {
+        self.connections.iter().find(|c| c.uuid() == uuid)
     }
 
-    /// Get connection by name as mutable
+    /// Get connection by UUID as mutable
     ///
-    /// * `name`: connection name
-    pub fn get_connection_mut(&mut self, name: &str) -> Option<&mut Connection> {
-        self.connections.iter_mut().find(|c| c.name() == name)
+    /// * `uuid`: connection UUID
+    pub fn get_connection_mut(&mut self, uuid: Uuid) -> Option<&mut Connection> {
+        self.connections.iter_mut().find(|c| c.uuid() == uuid)
     }
 
     /// Adds a new connection.
@@ -65,9 +67,8 @@ impl NetworkState {
     /// It uses the `id` to decide whether the connection already exists.
     /// TODO: use the UUID, so it is possible to rename connections.
     pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        if let Some(_) = self.get_connection(conn.name()) {
-            let conn_name = conn.name().to_string();
-            return Err(NetworkStateError::ConnectionExists(conn_name));
+        if let Some(_) = self.get_connection(conn.uuid()) {
+            return Err(NetworkStateError::ConnectionExists(conn.uuid()));
         }
 
         let event = NetworkEvent::AddConnection(conn.clone());
@@ -83,9 +84,8 @@ impl NetworkState {
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
     pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        let Some(old_conn) = self.get_connection_mut(conn.name()) else {
-            let conn_name = conn.name().to_string();
-            return Err(NetworkStateError::UnknownConnection(conn_name));
+        let Some(old_conn) = self.get_connection_mut(conn.uuid()) else {
+            return Err(NetworkStateError::UnknownConnection(conn.uuid()));
         };
 
         *old_conn = conn;
@@ -96,12 +96,12 @@ impl NetworkState {
     ///
     /// TODO: use the UUID.
     /// Additionally, it registers the connection to be removed when the changes are applied.
-    pub fn remove_connection(&mut self, conn_name: &str) -> Result<(), NetworkStateError> {
-        let Some(index) = self.connections.iter().position(|i| i.name() == conn_name) else {
-            return Err(NetworkStateError::UnknownConnection(conn_name.to_string()));
+    pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
+        let Some(index) = self.connections.iter().position(|i| i.uuid() == uuid) else {
+            return Err(NetworkStateError::UnknownConnection(uuid));
         };
 
-        self.notify_event(NetworkEvent::RemoveConnection(conn_name.to_string()));
+        self.notify_event(NetworkEvent::RemoveConnection(uuid));
         self.connections.swap_remove(index);
         Ok(())
     }
@@ -115,29 +115,31 @@ impl NetworkState {
 
 #[cfg(test)]
 mod tests {
+    use uuid::Uuid;
+
     use super::{BaseConnection, Connection, EthernetConnection, NetworkState};
     use crate::error::NetworkStateError;
 
     #[test]
     fn test_add_connection() {
         let mut state = NetworkState::default();
-        let id = "eth0".to_string();
+        let uuid = Uuid::new_v4();
         let base = BaseConnection {
-            id: id.clone(),
+            uuid,
             ..Default::default()
         };
         let conn0 = Connection::Ethernet(EthernetConnection { base });
         state.add_connection(conn0).unwrap();
-        let found = state.get_connection(&id).unwrap();
-        assert_eq!(found.name(), id);
+        let found = state.get_connection(uuid).unwrap();
+        assert_eq!(found.uuid(), uuid);
     }
 
     #[test]
     fn test_add_duplicated_connection() {
         let mut state = NetworkState::default();
-        let id = "eth0".to_string();
+        let uuid = Uuid::new_v4();
         let base = BaseConnection {
-            id: id.clone(),
+            uuid,
             ..Default::default()
         };
         let conn0 = Connection::Ethernet(EthernetConnection { base });
@@ -149,32 +151,30 @@ mod tests {
     #[test]
     fn test_update_connection() {
         let mut state = NetworkState::default();
-        let id = "eth0".to_string();
+        let uuid = Uuid::new_v4();
         let base0 = BaseConnection {
-            id: id.clone(),
-            uuid: "12345".to_string(),
+            uuid: Uuid::new_v4(),
             ..Default::default()
         };
         let conn0 = Connection::Ethernet(EthernetConnection { base: base0 });
         state.add_connection(conn0).unwrap();
 
         let base1 = BaseConnection {
-            id: id.clone(),
-            uuid: "12345".to_string(),
+            uuid: Uuid::new_v4(),
             ..Default::default()
         };
         let conn2 = Connection::Ethernet(EthernetConnection { base: base1 });
         state.update_connection(conn2).unwrap();
-        let found = state.get_connection(&id).unwrap();
-        assert_eq!(found.uuid(), "12345");
+        let found = state.get_connection(uuid).unwrap();
+        assert_eq!(found.uuid(), uuid);
     }
 
     #[test]
     fn test_update_unknown_connection() {
         let mut state = NetworkState::default();
-        let id = "eth0".to_string();
+        let uuid = Uuid::new_v4();
         let base = BaseConnection {
-            id: id.clone(),
+            uuid,
             ..Default::default()
         };
         let conn0 = Connection::Ethernet(EthernetConnection { base });
@@ -185,22 +185,21 @@ mod tests {
     #[test]
     fn test_remove_connection() {
         let mut state = NetworkState::default();
-        let id = "eth0".to_string();
+        let uuid = Uuid::new_v4();
         let base0 = BaseConnection {
-            id: id.clone(),
-            uuid: "12345".to_string(),
+            uuid: Uuid::new_v4(),
             ..Default::default()
         };
         let conn0 = Connection::Ethernet(EthernetConnection { base: base0 });
         state.add_connection(conn0).unwrap();
-        state.remove_connection(&id).unwrap();
-        assert!(state.get_connection(&id).is_none());
+        state.remove_connection(uuid).unwrap();
+        assert!(state.get_connection(uuid).is_none());
     }
 
     #[test]
     fn test_remove_unknown_connection() {
         let mut state = NetworkState::default();
-        let error = state.remove_connection("eth0").unwrap_err();
+        let error = state.remove_connection(Uuid::new_v4()).unwrap_err();
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
     }
 }
@@ -240,9 +239,9 @@ pub enum Connection {
 }
 
 impl Connection {
-    pub fn new(name: String, device_type: DeviceType) -> Self {
+    pub fn new(id: String, device_type: DeviceType) -> Self {
         let base = BaseConnection {
-            id: name.to_string(),
+            id: id.to_string(),
             ..Default::default()
         };
         match device_type {
@@ -268,12 +267,12 @@ impl Connection {
         }
     }
 
-    pub fn name(&self) -> &str {
+    pub fn id(&self) -> &str {
         self.base().id.as_str()
     }
 
-    pub fn uuid(&self) -> &str {
-        self.base().uuid.as_str()
+    pub fn uuid(&self) -> Uuid {
+        self.base().uuid
     }
 
     pub fn ipv4(&self) -> &Ipv4Config {
@@ -288,7 +287,7 @@ impl Connection {
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct BaseConnection {
     pub id: String,
-    pub uuid: String,
+    pub uuid: Uuid,
     pub ipv4: Ipv4Config,
 }
 

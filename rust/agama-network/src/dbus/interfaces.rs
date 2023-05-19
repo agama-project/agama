@@ -6,13 +6,13 @@ use super::ObjectsRegistry;
 use crate::{
     error::NetworkStateError,
     model::{Connection as NetworkConnection, Ipv4Config, NetworkState, WirelessConfig},
-    nm::NetworkManagerClient,
 };
 use async_std::task;
 use std::{
     net::{AddrParseError, Ipv4Addr},
     sync::{Arc, Mutex},
 };
+use uuid::Uuid;
 use zbus::{dbus_interface, zvariant::ObjectPath};
 
 /// Implements functions that are common to D-Bus interfaces around connections
@@ -21,7 +21,7 @@ trait WithConnection: zbus::Interface {
     fn state(&self) -> &Mutex<NetworkState>;
 
     /// Returns the name of the connection associated to the D-Bus interface
-    fn conn_name(&self) -> &str;
+    fn uuid(&self) -> Uuid;
 
     /// Runs the given function passing the associated connection.
     ///
@@ -35,9 +35,9 @@ trait WithConnection: zbus::Interface {
     {
         let state = self.state();
         let mut state = state.lock().unwrap();
-        let conn = state.get_connection_mut(&self.conn_name()).ok_or(
-            NetworkStateError::UnknownConnection(self.conn_name().to_string()),
-        )?;
+        let conn = state
+            .get_connection_mut(self.uuid())
+            .ok_or(NetworkStateError::UnknownConnection(self.uuid()))?;
         Ok(func(conn)?)
     }
 
@@ -56,12 +56,9 @@ trait WithConnection: zbus::Interface {
     {
         let state = self.state();
         let mut state = state.lock().unwrap();
-        let conn =
-            state
-                .get_connection(&self.conn_name())
-                .ok_or(NetworkStateError::UnknownConnection(
-                    self.conn_name().to_string(),
-                ))?;
+        let conn = state
+            .get_connection(self.uuid())
+            .ok_or(NetworkStateError::UnknownConnection(self.uuid()))?;
         let mut new_conn = conn.clone();
         func(&mut new_conn)?;
         state.update_connection(new_conn)?;
@@ -180,10 +177,12 @@ impl Connections {
 
     /// Removes a network connection.
     ///
-    /// * `name`: connection name.
-    pub async fn remove_connection(&mut self, name: String) -> zbus::fdo::Result<()> {
+    /// * `uuid`: connection UUID..
+    pub async fn remove_connection(&mut self, uuid: &str) -> zbus::fdo::Result<()> {
         let mut state = self.network.lock().unwrap();
-        Ok(state.remove_connection(&name)?)
+        let uuid =
+            Uuid::parse_str(uuid).map_err(|_| NetworkStateError::InvalidUuid(uuid.to_string()))?;
+        Ok(state.remove_connection(uuid)?)
     }
 }
 
@@ -192,7 +191,7 @@ impl Connections {
 /// It offers an API to query a connection.
 pub struct Connection {
     network: Arc<Mutex<NetworkState>>,
-    conn_name: String,
+    uuid: Uuid,
 }
 
 impl WithConnection for Connection {
@@ -200,55 +199,37 @@ impl WithConnection for Connection {
         &self.network
     }
 
-    fn conn_name(&self) -> &str {
-        &self.conn_name
+    fn uuid(&self) -> Uuid {
+        self.uuid
     }
 }
 
 impl Connection {
     /// Creates a Connection interface object.
     ///
-    /// * `conn_name`: Connection ID.
-    pub fn new(network: Arc<Mutex<NetworkState>>, conn_name: &str) -> Self {
-        Self {
-            network,
-            conn_name: conn_name.to_string(),
-        }
+    /// * `UUID`: Connection UUID.
+    pub fn new(network: Arc<Mutex<NetworkState>>, uuid: Uuid) -> Self {
+        Self { network, uuid }
     }
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connection")]
 impl Connection {
     #[dbus_interface(property)]
-    pub fn id(&self) -> &str {
-        &self.conn_name
+    pub fn id(&self) -> zbus::fdo::Result<String> {
+        self.with_connection(|c| Ok(c.id().to_string()))
     }
 
     #[dbus_interface(property, name = "UUID")]
-    pub fn uuid(&self) -> zbus::fdo::Result<String> {
-        self.with_connection(|c| Ok(c.uuid().to_string()))
-    }
-
-    /// Updates the network connection
-    pub async fn update_connection(&self) -> zbus::fdo::Result<()> {
-        self.with_connection(|conn| {
-            task::block_on(async {
-                // workaround for https://users.rust-lang.org/t/manually-drop-mutexguard-still-raise-future-is-not-send-error/70653/1
-                if let Ok(client) = NetworkManagerClient::from_system().await {
-                    if let Err(e) = client.update_connection(&conn).await {
-                        eprintln!("Could not update the connection {}: {}", &self.conn_name, e);
-                    }
-                }
-            });
-            Ok(())
-        })
+    pub fn uuid(&self) -> String {
+        self.uuid.to_string()
     }
 }
 
 /// D-Bus interface for IPv4 settings
 pub struct Ipv4 {
     network: Arc<Mutex<NetworkState>>,
-    conn_name: String,
+    uuid: Uuid,
 }
 
 impl Ipv4 {
@@ -256,11 +237,8 @@ impl Ipv4 {
     ///
     /// * `network`: network state.
     /// * `conn_name`: connection name.
-    pub fn new(network: Arc<Mutex<NetworkState>>, conn_name: &str) -> Self {
-        Self {
-            network,
-            conn_name: conn_name.to_string(),
-        }
+    pub fn new(network: Arc<Mutex<NetworkState>>, uuid: Uuid) -> Self {
+        Self { network, uuid }
     }
 
     pub fn with_ipv4<T, F>(&self, func: F) -> zbus::fdo::Result<T>
@@ -282,12 +260,9 @@ impl Ipv4 {
         F: FnOnce(&mut NetworkConnection) -> Result<(), NetworkStateError>,
     {
         let mut state = self.network.lock().unwrap();
-        let conn =
-            state
-                .get_connection(&self.conn_name)
-                .ok_or(NetworkStateError::UnknownConnection(
-                    self.conn_name.to_string(),
-                ))?;
+        let conn = state
+            .get_connection(self.uuid)
+            .ok_or(NetworkStateError::UnknownConnection(self.uuid))?;
         let mut new_conn = conn.clone();
         func(&mut new_conn)?;
         state.update_connection(new_conn).unwrap();
@@ -300,8 +275,8 @@ impl WithConnection for Ipv4 {
         &self.network
     }
 
-    fn conn_name(&self) -> &str {
-        &self.conn_name
+    fn uuid(&self) -> Uuid {
+        self.uuid
     }
 }
 
@@ -377,19 +352,16 @@ impl Ipv4 {
 /// D-Bus interface for wireless settings
 pub struct Wireless {
     network: Arc<Mutex<NetworkState>>,
-    conn_name: String,
+    uuid: Uuid,
 }
 
 impl Wireless {
     /// Creates a Wireless interface object.
     ///
     /// * `network`: network state.
-    /// * `conn_name`: connection name.
-    pub fn new(network: Arc<Mutex<NetworkState>>, conn_name: &str) -> Self {
-        Self {
-            network,
-            conn_name: conn_name.to_string(),
-        }
+    /// * `uuid`: connection UUID.
+    pub fn new(network: Arc<Mutex<NetworkState>>, uuid: Uuid) -> Self {
+        Self { network, uuid }
     }
 
     pub fn with_wireless<T, F>(&self, func: F) -> zbus::fdo::Result<T>
@@ -398,7 +370,7 @@ impl Wireless {
     {
         self.with_connection(|conn| match conn {
             NetworkConnection::Wireless(config) => Ok(func(&config.wireless)),
-            _ => Err(NetworkStateError::InvalidConnectionType(self.conn_name().to_string()).into()),
+            _ => Err(NetworkStateError::InvalidConnectionType(self.uuid()).into()),
         })
     }
 
@@ -408,7 +380,7 @@ impl Wireless {
     {
         self.with_connection_mut(|conn| match conn {
             NetworkConnection::Wireless(config) => func(&mut config.wireless),
-            _ => Err(NetworkStateError::InvalidConnectionType(self.conn_name.to_string()).into()),
+            _ => Err(NetworkStateError::InvalidConnectionType(self.uuid()).into()),
         })
     }
 }
@@ -418,8 +390,8 @@ impl WithConnection for Wireless {
         &self.network
     }
 
-    fn conn_name(&self) -> &str {
-        &self.conn_name
+    fn uuid(&self) -> Uuid {
+        self.uuid
     }
 }
 

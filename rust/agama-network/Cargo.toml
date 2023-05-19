@@ -10,3 +10,4 @@ zbus = "3.12.0"
 agama-lib = { path="../agama-lib" }
 async-std = { version = "1.12.0", features = ["attributes"] }
 thiserror = "1.0.40"
+uuid = { version = "1.3.3", features = ["v4"] }

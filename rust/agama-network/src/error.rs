@@ -2,6 +2,7 @@
 use std::net::AddrParseError;
 
 use thiserror::Error;
+use uuid::Uuid;
 
 /// Errors that are related to the network configuration.
 #[derive(Error, Debug)]
@@ -9,9 +10,11 @@ pub enum NetworkStateError {
     #[error("Invalid device name: '{0}'")]
     UnknownDevice(String),
     #[error("Invalid connection name: '{0}'")]
-    UnknownConnection(String),
+    UnknownConnection(Uuid),
     #[error("Invalid connection type: '{0}'")]
-    InvalidConnectionType(String),
+    InvalidConnectionType(Uuid),
+    #[error("Invalid connection UUID: '{0}'")]
+    InvalidUuid(String),
     #[error("Invalid IP address")]
     InvalidIpv4Addr(#[from] AddrParseError),
     #[error("Invalid IP method: '{0}'")]
@@ -19,7 +22,7 @@ pub enum NetworkStateError {
     #[error("Invalid wireless mode: '{0}'")]
     InvalidWirelessMode(u8),
     #[error("Connection '{0}' already exists")]
-    ConnectionExists(String),
+    ConnectionExists(Uuid),
     #[error("Invalid device type: '{0}'")]
     InvalidDeviceType(u8),
 }

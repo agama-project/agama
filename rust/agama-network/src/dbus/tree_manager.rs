@@ -1,4 +1,5 @@
 use agama_lib::error::ServiceError;
+use uuid::Uuid;
 
 use crate::{dbus::interfaces, model::*, NetworkState};
 use std::collections::HashMap;
@@ -74,39 +75,39 @@ impl TreeManager {
         );
         self.add_interface(
             &path,
-            interfaces::Connection::new(Arc::clone(&self.network), conn.name()),
+            interfaces::Connection::new(Arc::clone(&self.network), conn.uuid()),
         )
         .await?;
 
         self.add_interface(
             &path,
-            interfaces::Ipv4::new(Arc::clone(&self.network), conn.name()),
+            interfaces::Ipv4::new(Arc::clone(&self.network), conn.uuid()),
         )
         .await?;
 
         if let Connection::Wireless(_) = conn {
             self.add_interface(
                 &path,
-                interfaces::Wireless::new(Arc::clone(&self.network), conn.name()),
+                interfaces::Wireless::new(Arc::clone(&self.network), conn.uuid()),
             )
             .await?;
         }
 
-        objects.register_connection(conn.name(), &path);
+        objects.register_connection(conn.uuid(), &path);
         Ok(())
     }
 
     /// Removes a connection from the tree
-    pub async fn remove_connection(&mut self, name: &str) -> Result<(), ServiceError> {
+    pub async fn remove_connection(&mut self, uuid: Uuid) -> Result<(), ServiceError> {
         let mut objects = self.objects.lock().unwrap();
-        let path = objects.connection_path(name).unwrap();
+        let path = objects.connection_path(uuid).unwrap();
         let object_server = self.connection.object_server();
         _ = object_server.remove::<interfaces::Wireless, _>(path).await;
         object_server.remove::<interfaces::Ipv4, _>(path).await?;
         object_server
             .remove::<interfaces::Connection, _>(path)
             .await?;
-        objects.unregister_connection(name).unwrap();
+        objects.unregister_connection(uuid).unwrap();
         Ok(())
     }
 
@@ -123,7 +124,7 @@ impl TreeManager {
 #[derive(Debug, Default)]
 pub struct ObjectsRegistry {
     pub devices: HashMap<String, String>,
-    pub connections: HashMap<String, String>,
+    pub connections: HashMap<Uuid, String>,
 }
 
 impl ObjectsRegistry {
@@ -131,24 +132,24 @@ impl ObjectsRegistry {
         self.devices.insert(name.to_string(), path.to_string());
     }
 
-    pub fn register_connection(&mut self, name: &str, path: &str) {
-        self.connections.insert(name.to_string(), path.to_string());
+    pub fn register_connection(&mut self, uuid: Uuid, path: &str) {
+        self.connections.insert(uuid, path.to_string());
     }
 
     pub fn device_path(&self, name: &str) -> Option<&str> {
         self.devices.get(name).map(|p| p.as_str())
     }
 
-    pub fn connection_path(&self, name: &str) -> Option<&str> {
-        self.connections.get(name).map(|p| p.as_str())
+    pub fn connection_path(&self, uuid: Uuid) -> Option<&str> {
+        self.connections.get(&uuid).map(|p| p.as_str())
     }
 
     pub fn unregister_device(&mut self, name: &str) -> Option<String> {
         self.devices.remove(name)
     }
 
-    pub fn unregister_connection(&mut self, name: &str) -> Option<String> {
-        self.connections.remove(name)
+    pub fn unregister_connection(&mut self, uuid: Uuid) -> Option<String> {
+        self.connections.remove(&uuid)
     }
 
     pub fn devices_paths(&self) -> Vec<String> {
