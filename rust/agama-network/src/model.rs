@@ -9,7 +9,7 @@ use std::{error::Error, fmt, net::Ipv4Addr};
 
 #[derive(Debug, Clone)]
 pub enum NetworkEvent {
-    AddConnection(String, DeviceType),
+    AddConnection(Connection),
     RemoveConnection(String),
 }
 
@@ -70,7 +70,7 @@ impl NetworkState {
             return Err(NetworkStateError::ConnectionExists(conn_name));
         }
 
-        let event = NetworkEvent::AddConnection(conn.name().to_string(), conn.device_type());
+        let event = NetworkEvent::AddConnection(conn.clone());
         self.notify_event(event);
         self.connections.push(conn);
         Ok(())
@@ -282,13 +282,6 @@ impl Connection {
 
     pub fn ipv4_mut(&mut self) -> &mut Ipv4Config {
         &mut self.base_mut().ipv4
-    }
-
-    pub fn device_type(&self) -> DeviceType {
-        match &self {
-            Connection::Wireless(_) => DeviceType::Wireless,
-            _ => DeviceType::Ethernet,
-        }
     }
 }
 

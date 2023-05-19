@@ -94,8 +94,7 @@ impl TreeManager {
         let state = self.network.lock().unwrap();
 
         for conn in state.connections.iter() {
-            self.publish_connection(conn.name(), conn.device_type())
-                .await?;
+            self.publish_connection(conn).await?;
         }
 
         self.add_interface(
@@ -107,7 +106,7 @@ impl TreeManager {
         Ok(())
     }
 
-    pub async fn publish_connection(&self, name: &str, ty: DeviceType) -> Result<(), ServiceError> {
+    pub async fn publish_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
         let mut objects = self.objects.lock().unwrap();
 
         let path = format!(
@@ -116,25 +115,25 @@ impl TreeManager {
         );
         self.add_interface(
             &path,
-            interfaces::Connection::new(Arc::clone(&self.network), name),
+            interfaces::Connection::new(Arc::clone(&self.network), conn.name()),
         )
         .await?;
 
         self.add_interface(
             &path,
-            interfaces::Ipv4::new(Arc::clone(&self.network), name),
+            interfaces::Ipv4::new(Arc::clone(&self.network), conn.name()),
         )
         .await?;
 
-        if ty == DeviceType::Wireless {
+        if let Connection::Wireless(_) = conn {
             self.add_interface(
                 &path,
-                interfaces::Wireless::new(Arc::clone(&self.network), name),
+                interfaces::Wireless::new(Arc::clone(&self.network), conn.name()),
             )
             .await?;
         }
 
-        objects.add_connection(name, &path);
+        objects.add_connection(conn.name(), &path);
         Ok(())
     }
 

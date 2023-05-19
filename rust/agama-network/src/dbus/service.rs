@@ -55,8 +55,8 @@ impl NetworkService {
             async_std::task::block_on(async {
                 let mut tree = tree.lock().unwrap();
                 match event {
-                    NetworkEvent::AddConnection(name, ty) => {
-                        tree.publish_connection(&name, ty).await.unwrap();
+                    NetworkEvent::AddConnection(conn) => {
+                        tree.publish_connection(&conn).await.unwrap();
                     }
                     NetworkEvent::RemoveConnection(name) => {
                         tree.remove_connection(&name).await.unwrap();
