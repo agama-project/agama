@@ -28,29 +28,28 @@ impl ObjectsPaths {
         self.connections.get(name).map(|p| p.as_str())
     }
 
-    pub fn remove_device(&self, name: &str) -> Option<String> {
+    pub fn remove_device(&mut self, name: &str) -> Option<String> {
         self.devices.remove(name)
     }
 
-    pub fn remove_connection(&self, name: &str) -> Option<String> {
+    pub fn remove_connection(&mut self, name: &str) -> Option<String> {
         self.connections.remove(name)
     }
 
     pub fn devices_paths(&self) -> Vec<String> {
-        self.devices.keys().map(|p| p.to_string()).collect()
+        self.devices.values().map(|p| p.to_string()).collect()
     }
 
     pub fn connections_paths(&self) -> Vec<String> {
-        self.connections.keys().map(|p| p.to_string()).collect()
+        self.connections.values().map(|p| p.to_string()).collect()
     }
 }
 
 /// Handle the objects in the D-Bus tree for the network state
-#[derive(Debug)]
 pub struct TreeManager {
     connection: zbus::Connection,
     network: Arc<Mutex<NetworkState>>,
-    objects: ObjectsPaths,
+    objects: Arc<Mutex<ObjectsPaths>>,
 }
 
 impl TreeManager {
@@ -78,7 +77,8 @@ impl TreeManager {
                 interfaces::Device::new(Arc::clone(&self.network), &dev.name),
             )
             .await?;
-            self.objects.devices.push(path);
+            let mut objects = self.objects.lock().unwrap();
+            objects.add_device(&dev.name, &path);
         }
 
         self.add_interface(
@@ -90,40 +90,65 @@ impl TreeManager {
         Ok(())
     }
 
-    async fn publish_connections(&mut self) -> Result<(), ServiceError> {
+    async fn publish_connections(&self) -> Result<(), ServiceError> {
         let state = self.network.lock().unwrap();
 
-        for (i, conn) in state.connections.iter().enumerate() {
-            let path = format!("/org/opensuse/Agama/Network1/connections/{}", i);
-            self.add_interface(
-                &path,
-                interfaces::Connection::new(Arc::clone(&self.network), conn.name()),
-            )
-            .await?;
-
-            self.add_interface(
-                &path,
-                interfaces::Ipv4::new(Arc::clone(&self.network), conn.name()),
-            )
-            .await?;
-
-            if let Connection::Wireless(_) = &conn {
-                self.add_interface(
-                    &path,
-                    interfaces::Wireless::new(Arc::clone(&self.network), conn.name()),
-                )
+        for conn in state.connections.iter() {
+            self.publish_connection(conn.name(), conn.device_type())
                 .await?;
-            }
-
-            self.objects.connections.push(path);
         }
 
         self.add_interface(
             "/org/opensuse/Agama/Network1/connections",
-            interfaces::Connections::new(Arc::clone(&self.objects)),
+            interfaces::Connections::new(Arc::clone(&self.objects), Arc::clone(&self.network)),
         )
         .await?;
 
+        Ok(())
+    }
+
+    pub async fn publish_connection(&self, name: &str, ty: DeviceType) -> Result<(), ServiceError> {
+        let mut objects = self.objects.lock().unwrap();
+
+        let path = format!(
+            "/org/opensuse/Agama/Network1/connections/{}",
+            objects.connections.len()
+        );
+        self.add_interface(
+            &path,
+            interfaces::Connection::new(Arc::clone(&self.network), name),
+        )
+        .await?;
+
+        self.add_interface(
+            &path,
+            interfaces::Ipv4::new(Arc::clone(&self.network), name),
+        )
+        .await?;
+
+        if ty == DeviceType::Wireless {
+            self.add_interface(
+                &path,
+                interfaces::Wireless::new(Arc::clone(&self.network), name),
+            )
+            .await?;
+        }
+
+        objects.add_connection(name, &path);
+        Ok(())
+    }
+
+    /// Removes a connection from the tree
+    pub async fn remove_connection(&mut self, name: &str) -> Result<(), ServiceError> {
+        let mut objects = self.objects.lock().unwrap();
+        let path = objects.connection_path(name).unwrap();
+        let object_server = self.connection.object_server();
+        _ = object_server.remove::<interfaces::Wireless, _>(path).await;
+        object_server.remove::<interfaces::Ipv4, _>(path).await?;
+        object_server
+            .remove::<interfaces::Connection, _>(path)
+            .await?;
+        objects.remove_connection(name).unwrap();
         Ok(())
     }
 

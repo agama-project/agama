@@ -144,14 +144,15 @@ impl Device {
 /// It offers an API to query the connections collection.
 pub struct Connections {
     objects: Arc<Mutex<ObjectsPaths>>,
+    network: Arc<Mutex<NetworkState>>,
 }
 
 impl Connections {
     /// Creates a Connections interface object.
     ///
     /// * `objects`: Objects paths registry.
-    pub fn new(objects: Arc<Mutex<ObjectsPaths>>) -> Self {
-        Self { objects }
+    pub fn new(objects: Arc<Mutex<ObjectsPaths>>, network: Arc<Mutex<NetworkState>>) -> Self {
+        Self { objects, network }
     }
 }
 
@@ -161,10 +162,28 @@ impl Connections {
     pub fn get_connections(&self) -> Vec<ObjectPath> {
         let objects = self.objects.lock().unwrap();
         objects
-            .connections
+            .connections_paths()
             .iter()
             .filter_map(|c| ObjectPath::try_from(c.clone()).ok())
             .collect()
+    }
+
+    /// Adds a new network connection.
+    ///
+    /// * `name`: connection name.
+    /// * `ty`: connection type (see [crate::model::DeviceType]).
+    pub async fn add_connection(&mut self, name: String, ty: u8) -> zbus::fdo::Result<()> {
+        let mut state = self.network.lock().unwrap();
+        let connection = NetworkConnection::new(name, ty.try_into()?);
+        Ok(state.add_connection(connection)?)
+    }
+
+    /// Removes a network connection.
+    ///
+    /// * `name`: connection name.
+    pub async fn remove_connection(&mut self, name: String) -> zbus::fdo::Result<()> {
+        let mut state = self.network.lock().unwrap();
+        Ok(state.remove_connection(&name)?)
     }
 }
 
@@ -208,16 +227,6 @@ impl Connection {
     #[dbus_interface(property, name = "UUID")]
     pub fn uuid(&self) -> zbus::fdo::Result<String> {
         self.with_connection(|c| Ok(c.uuid().to_string()))
-    }
-
-    /// Adds a new network connection.
-    ///
-    /// * `name`: connection name.
-    /// * `ty`: connection type (see [crate::model::DeviceType]).
-    pub async fn add_connection(&mut self, name: String, ty: u8) -> zbus::fdo::Result<()> {
-        let mut state = self.network.lock().unwrap();
-        let connection = NetworkConnection::new(name, ty.try_into()?);
-        Ok(state.add_connection(connection)?)
     }
 
     /// Updates the network connection

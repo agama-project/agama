@@ -4,15 +4,28 @@
 //! agnostic from the real network service (e.g., NetworkManager).
 use crate::error::NetworkStateError;
 use crate::nm::NetworkManagerClient;
+use std::sync::Arc;
 use std::{error::Error, fmt, net::Ipv4Addr};
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone)]
+pub enum NetworkEvent {
+    AddConnection(String, DeviceType),
+    RemoveConnection(String),
+}
+
+pub type NetworkEventCallback = dyn Fn(NetworkEvent) + Send + Sync;
+
+#[derive(Default)]
 pub struct NetworkState {
     pub devices: Vec<Device>,
     pub connections: Vec<Connection>,
+    pub callbacks: Vec<Arc<NetworkEventCallback>>,
 }
 
 impl NetworkState {
+    pub fn on_event(&mut self, callback: Arc<NetworkEventCallback>) {
+        self.callbacks.push(callback);
+    }
     /// Reads the network configuration using the NetworkManager D-Bus service.
     pub async fn from_system() -> Result<NetworkState, Box<dyn Error>> {
         let nm_client = NetworkManagerClient::from_system().await?;
@@ -22,6 +35,7 @@ impl NetworkState {
         Ok(NetworkState {
             devices,
             connections,
+            callbacks: vec![],
         })
     }
 
@@ -56,6 +70,8 @@ impl NetworkState {
             return Err(NetworkStateError::ConnectionExists(conn_name));
         }
 
+        let event = NetworkEvent::AddConnection(conn.name().to_string(), conn.device_type());
+        self.notify_event(event);
         self.connections.push(conn);
         Ok(())
     }
@@ -85,8 +101,15 @@ impl NetworkState {
             return Err(NetworkStateError::UnknownConnection(conn_name.to_string()));
         };
 
+        self.notify_event(NetworkEvent::RemoveConnection(conn_name.to_string()));
         self.connections.swap_remove(index);
         Ok(())
+    }
+
+    fn notify_event(&self, event: NetworkEvent) {
+        for cb in &self.callbacks {
+            cb(event.clone())
+        }
     }
 }
 
@@ -259,6 +282,13 @@ impl Connection {
 
     pub fn ipv4_mut(&mut self) -> &mut Ipv4Config {
         &mut self.base_mut().ipv4
+    }
+
+    pub fn device_type(&self) -> DeviceType {
+        match &self {
+            Connection::Wireless(_) => DeviceType::Wireless,
+            _ => DeviceType::Ethernet,
+        }
     }
 }
 
