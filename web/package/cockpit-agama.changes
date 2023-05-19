@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 19 09:29:50 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: grayscale and blur not accessible div nodes
+  (gh#openSUSE/agama#564)
+
+-------------------------------------------------------------------
 Wed May 17 15:42:31 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Ensure siblings of an open modal dialog do not remain hidden from
