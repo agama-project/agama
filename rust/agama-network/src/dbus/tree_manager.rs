@@ -4,47 +4,6 @@ use crate::{dbus::interfaces, model::*, NetworkState};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
-/// Objects paths for known devices and connections
-#[derive(Debug, Default)]
-pub struct ObjectsRegistry {
-    pub devices: HashMap<String, String>,
-    pub connections: HashMap<String, String>,
-}
-
-impl ObjectsRegistry {
-    pub fn add_device(&mut self, name: &str, path: &str) {
-        self.devices.insert(name.to_string(), path.to_string());
-    }
-
-    pub fn add_connection(&mut self, name: &str, path: &str) {
-        self.connections.insert(name.to_string(), path.to_string());
-    }
-
-    pub fn device_path(&self, name: &str) -> Option<&str> {
-        self.devices.get(name).map(|p| p.as_str())
-    }
-
-    pub fn connection_path(&self, name: &str) -> Option<&str> {
-        self.connections.get(name).map(|p| p.as_str())
-    }
-
-    pub fn remove_device(&mut self, name: &str) -> Option<String> {
-        self.devices.remove(name)
-    }
-
-    pub fn remove_connection(&mut self, name: &str) -> Option<String> {
-        self.connections.remove(name)
-    }
-
-    pub fn devices_paths(&self) -> Vec<String> {
-        self.devices.values().map(|p| p.to_string()).collect()
-    }
-
-    pub fn connections_paths(&self) -> Vec<String> {
-        self.connections.values().map(|p| p.to_string()).collect()
-    }
-}
-
 /// Handle the objects in the D-Bus tree for the network state
 pub struct TreeManager {
     connection: zbus::Connection,
@@ -61,13 +20,13 @@ impl TreeManager {
         }
     }
 
-    pub async fn publish(&mut self) -> Result<(), ServiceError> {
-        self.publish_devices().await?;
-        self.publish_connections().await?;
+    pub async fn populate(&mut self) -> Result<(), ServiceError> {
+        self.add_devices().await?;
+        self.add_connections().await?;
         Ok(())
     }
 
-    async fn publish_devices(&mut self) -> Result<(), ServiceError> {
+    async fn add_devices(&mut self) -> Result<(), ServiceError> {
         let state = self.network.lock().unwrap();
 
         for (i, dev) in state.devices.iter().enumerate() {
@@ -78,7 +37,7 @@ impl TreeManager {
             )
             .await?;
             let mut objects = self.objects.lock().unwrap();
-            objects.add_device(&dev.name, &path);
+            objects.register_device(&dev.name, &path);
         }
 
         self.add_interface(
@@ -90,11 +49,11 @@ impl TreeManager {
         Ok(())
     }
 
-    async fn publish_connections(&self) -> Result<(), ServiceError> {
+    async fn add_connections(&self) -> Result<(), ServiceError> {
         let state = self.network.lock().unwrap();
 
         for conn in state.connections.iter() {
-            self.publish_connection(conn).await?;
+            self.add_connection(conn).await?;
         }
 
         self.add_interface(
@@ -106,7 +65,7 @@ impl TreeManager {
         Ok(())
     }
 
-    pub async fn publish_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
+    pub async fn add_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
         let mut objects = self.objects.lock().unwrap();
 
         let path = format!(
@@ -133,7 +92,7 @@ impl TreeManager {
             .await?;
         }
 
-        objects.add_connection(conn.name(), &path);
+        objects.register_connection(conn.name(), &path);
         Ok(())
     }
 
@@ -147,7 +106,7 @@ impl TreeManager {
         object_server
             .remove::<interfaces::Connection, _>(path)
             .await?;
-        objects.remove_connection(name).unwrap();
+        objects.unregister_connection(name).unwrap();
         Ok(())
     }
 
@@ -157,5 +116,46 @@ impl TreeManager {
     {
         let object_server = self.connection.object_server();
         Ok(object_server.at(path.clone(), iface).await?)
+    }
+}
+
+/// Objects paths for known devices and connections
+#[derive(Debug, Default)]
+pub struct ObjectsRegistry {
+    pub devices: HashMap<String, String>,
+    pub connections: HashMap<String, String>,
+}
+
+impl ObjectsRegistry {
+    pub fn register_device(&mut self, name: &str, path: &str) {
+        self.devices.insert(name.to_string(), path.to_string());
+    }
+
+    pub fn register_connection(&mut self, name: &str, path: &str) {
+        self.connections.insert(name.to_string(), path.to_string());
+    }
+
+    pub fn device_path(&self, name: &str) -> Option<&str> {
+        self.devices.get(name).map(|p| p.as_str())
+    }
+
+    pub fn connection_path(&self, name: &str) -> Option<&str> {
+        self.connections.get(name).map(|p| p.as_str())
+    }
+
+    pub fn unregister_device(&mut self, name: &str) -> Option<String> {
+        self.devices.remove(name)
+    }
+
+    pub fn unregister_connection(&mut self, name: &str) -> Option<String> {
+        self.connections.remove(name)
+    }
+
+    pub fn devices_paths(&self) -> Vec<String> {
+        self.devices.values().map(|p| p.to_string()).collect()
+    }
+
+    pub fn connections_paths(&self) -> Vec<String> {
+        self.connections.values().map(|p| p.to_string()).collect()
     }
 }

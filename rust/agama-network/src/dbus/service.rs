@@ -40,15 +40,15 @@ impl NetworkService {
     /// Starts listening on the D-Bus connection
     pub async fn listen(&mut self) -> Result<(), Box<dyn Error>> {
         let mut tree = self.tree.lock().unwrap();
-        tree.publish().await?;
-        self.set_callbacks();
+        tree.populate().await?;
+        self.set_events_callback();
         self.connection
             .request_name("org.opensuse.Agama.Network1")
             .await?;
         Ok(())
     }
 
-    pub fn set_callbacks(&self) {
+    fn set_events_callback(&self) {
         let tree = Arc::clone(&self.tree);
 
         let cb: Arc<NetworkEventCallback> = Arc::new(move |event| {
@@ -56,7 +56,7 @@ impl NetworkService {
                 let mut tree = tree.lock().unwrap();
                 match event {
                     NetworkEvent::AddConnection(conn) => {
-                        tree.publish_connection(&conn).await.unwrap();
+                        tree.add_connection(&conn).await.unwrap();
                     }
                     NetworkEvent::RemoveConnection(name) => {
                         tree.remove_connection(&name).await.unwrap();
