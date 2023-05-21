@@ -5,66 +5,16 @@
 use super::ObjectsRegistry;
 use crate::{
     error::NetworkStateError,
-    model::{Connection as NetworkConnection, Ipv4Config, WirelessConfig},
+    model::{Connection as NetworkConnection, WirelessConnection},
     NetworkSystem,
 };
+use parking_lot::{MappedMutexGuard, Mutex, MutexGuard};
 use std::{
     net::{AddrParseError, Ipv4Addr},
-    sync::{Arc, Mutex},
+    sync::Arc,
 };
 use uuid::Uuid;
-use zbus::{dbus_interface, zvariant::ObjectPath};
-
-/// Implements functions that are common to D-Bus interfaces around connections
-trait WithConnection: zbus::Interface {
-    /// Returns the mutex around the network state
-    fn network(&self) -> &Mutex<NetworkSystem>;
-
-    /// Returns the name of the connection associated to the D-Bus interface
-    fn uuid(&self) -> Uuid;
-
-    /// Runs the given function passing the associated connection.
-    ///
-    /// This code makes sure that the function runs before the MutexGuard (the result of calling
-    /// `lock`) is dropped.
-    ///
-    /// * `func`: function to run.
-    fn with_connection<T, F>(&self, func: F) -> zbus::fdo::Result<T>
-    where
-        F: FnOnce(&NetworkConnection) -> Result<T, NetworkStateError>,
-    {
-        let network = self.network();
-        let mut network = network.lock().unwrap();
-        let conn = network
-            .get_connection_mut(self.uuid())
-            .ok_or(NetworkStateError::UnknownConnection(self.uuid()))?;
-        Ok(func(conn)?)
-    }
-
-    /// Runs the given function on a connection and updates the state.
-    ///
-    /// The function receives a clone of the connection. If it runs successfully, it replaces the
-    /// original connection.
-    ///
-    /// This code makes sure that the function runs before the MutexGuard (the result of calling
-    /// `lock`) is dropped.
-    ///
-    /// * `func`: function to run which receives a clone of the connection.
-    fn with_connection_mut<F>(&self, func: F) -> zbus::fdo::Result<()>
-    where
-        F: FnOnce(&mut NetworkConnection) -> Result<(), NetworkStateError>,
-    {
-        let network = self.network();
-        let mut network = network.lock().unwrap();
-        let conn = network
-            .get_connection(self.uuid())
-            .ok_or(NetworkStateError::UnknownConnection(self.uuid()))?;
-        let mut new_conn = conn.clone();
-        func(&mut new_conn)?;
-        network.update_connection(new_conn)?;
-        Ok(())
-    }
-}
+use zbus::{dbus_interface, zvariant::ObjectPath, Interface};
 
 /// D-Bus interface for the network devices collection
 ///
@@ -86,7 +36,7 @@ impl Devices {
 impl Devices {
     /// Returns the D-Bus paths of the network devices.
     pub fn get_devices(&self) -> Vec<ObjectPath> {
-        let objects = self.objects.lock().unwrap();
+        let objects = self.objects.lock();
         objects
             .devices_paths()
             .iter()
@@ -125,7 +75,7 @@ impl Device {
 
     #[dbus_interface(property)]
     pub fn device_type(&self) -> zbus::fdo::Result<u8> {
-        let network = self.network.lock().unwrap();
+        let network = self.network.lock();
         let device =
             network
                 .get_device(&self.device_name)
@@ -157,7 +107,7 @@ impl Connections {
 impl Connections {
     /// Returns the D-Bus paths of the network connections.
     pub fn get_connections(&self) -> Vec<ObjectPath> {
-        let objects = self.objects.lock().unwrap();
+        let objects = self.objects.lock();
         objects
             .connections_paths()
             .iter()
@@ -170,7 +120,7 @@ impl Connections {
     /// * `name`: connection name.
     /// * `ty`: connection type (see [crate::model::DeviceType]).
     pub async fn add_connection(&mut self, name: String, ty: u8) -> zbus::fdo::Result<()> {
-        let mut state = self.network.lock().unwrap();
+        let mut state = self.network.lock();
         let connection = NetworkConnection::new(name, ty.try_into()?);
         Ok(state.add_connection(connection)?)
     }
@@ -179,7 +129,7 @@ impl Connections {
     ///
     /// * `uuid`: connection UUID..
     pub async fn remove_connection(&mut self, uuid: &str) -> zbus::fdo::Result<()> {
-        let mut state = self.network.lock().unwrap();
+        let mut state = self.network.lock();
         let uuid =
             Uuid::parse_str(uuid).map_err(|_| NetworkStateError::InvalidUuid(uuid.to_string()))?;
         Ok(state.remove_connection(uuid)?)
@@ -191,45 +141,46 @@ impl Connections {
 /// It offers an API to query a connection.
 pub struct Connection {
     network: Arc<Mutex<NetworkSystem>>,
-    uuid: Uuid,
-}
-
-impl WithConnection for Connection {
-    fn network(&self) -> &Mutex<NetworkSystem> {
-        &self.network
-    }
-
-    fn uuid(&self) -> Uuid {
-        self.uuid
-    }
+    connection: Arc<Mutex<NetworkConnection>>,
 }
 
 impl Connection {
     /// Creates a Connection interface object.
     ///
     /// * `UUID`: Connection UUID.
-    pub fn new(network: Arc<Mutex<NetworkSystem>>, uuid: Uuid) -> Self {
-        Self { network, uuid }
+    pub fn new(
+        network: Arc<Mutex<NetworkSystem>>,
+        connection: Arc<Mutex<NetworkConnection>>,
+    ) -> Self {
+        Self {
+            network,
+            connection,
+        }
+    }
+
+    /// Returns the underlying connection.
+    fn get_connection(&self) -> MutexGuard<NetworkConnection> {
+        self.connection.lock()
     }
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connection")]
 impl Connection {
     #[dbus_interface(property)]
-    pub fn id(&self) -> zbus::fdo::Result<String> {
-        self.with_connection(|c| Ok(c.id().to_string()))
+    pub fn id(&self) -> String {
+        self.get_connection().id().to_string()
     }
 
     #[dbus_interface(property, name = "UUID")]
     pub fn uuid(&self) -> String {
-        self.uuid.to_string()
+        self.get_connection().uuid().to_string()
     }
 }
 
 /// D-Bus interface for IPv4 settings
 pub struct Ipv4 {
     network: Arc<Mutex<NetworkSystem>>,
-    uuid: Uuid,
+    connection: Arc<Mutex<NetworkConnection>>,
 }
 
 impl Ipv4 {
@@ -237,206 +188,211 @@ impl Ipv4 {
     ///
     /// * `network`: network state.
     /// * `conn_name`: connection name.
-    pub fn new(network: Arc<Mutex<NetworkSystem>>, uuid: Uuid) -> Self {
-        Self { network, uuid }
+    pub fn new(
+        network: Arc<Mutex<NetworkSystem>>,
+        connection: Arc<Mutex<NetworkConnection>>,
+    ) -> Self {
+        Self {
+            network,
+            connection,
+        }
     }
 
-    pub fn with_ipv4<T, F>(&self, func: F) -> zbus::fdo::Result<T>
-    where
-        F: FnOnce(&Ipv4Config) -> T,
-    {
-        self.with_connection(|conn| Ok(func(conn.ipv4())))
+    /// Returns the underlying connection.
+    fn get_connection(&self) -> MutexGuard<NetworkConnection> {
+        self.connection.lock()
     }
 
-    pub fn with_ipv4_mut<F>(&self, func: F) -> zbus::fdo::Result<()>
-    where
-        F: FnOnce(&mut Ipv4Config) -> Result<(), NetworkStateError>,
-    {
-        Ok(self.with_connection_mut(|conn| func(conn.ipv4_mut()))?)
-    }
-
-    pub fn with_connection_mut<F>(&self, func: F) -> zbus::fdo::Result<()>
-    where
-        F: FnOnce(&mut NetworkConnection) -> Result<(), NetworkStateError>,
-    {
-        let mut state = self.network.lock().unwrap();
-        let conn = state
-            .get_connection(self.uuid)
-            .ok_or(NetworkStateError::UnknownConnection(self.uuid))?;
-        let mut new_conn = conn.clone();
-        func(&mut new_conn)?;
-        state.update_connection(new_conn).unwrap();
+    /// Updates the connection data in the NetworkSystem.
+    ///
+    /// * `connection`: Updated connection.
+    fn update_connection(
+        &self,
+        connection: MutexGuard<NetworkConnection>,
+    ) -> zbus::fdo::Result<()> {
+        let mut network = self.network.lock();
+        network.update_connection(connection.clone())?;
         Ok(())
-    }
-}
-
-impl WithConnection for Ipv4 {
-    fn network(&self) -> &Mutex<NetworkSystem> {
-        &self.network
-    }
-
-    fn uuid(&self) -> Uuid {
-        self.uuid
     }
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connection.IPv4")]
 impl Ipv4 {
     #[dbus_interface(property)]
-    pub fn addresses(&self) -> zbus::fdo::Result<Vec<(String, u32)>> {
-        self.with_ipv4(|ipv4| {
-            ipv4.addresses
-                .iter()
-                .map(|(addr, prefix)| (addr.to_string(), *prefix))
-                .collect()
-        })
+    pub fn addresses(&self) -> Vec<(String, u32)> {
+        let connection = self.get_connection();
+        connection
+            .ipv4()
+            .addresses
+            .iter()
+            .map(|(addr, prefix)| (addr.to_string(), *prefix))
+            .collect()
     }
 
     #[dbus_interface(property)]
     pub fn set_addresses(&mut self, addresses: Vec<(String, u32)>) -> zbus::fdo::Result<()> {
-        self.with_connection_mut(|conn| {
-            addresses
-                .iter()
-                .map(|(addr, prefix)| addr.parse::<Ipv4Addr>().map(|a| (a, *prefix)))
-                .collect::<Result<Vec<(Ipv4Addr, u32)>, AddrParseError>>()
-                .and_then(|parsed| Ok(conn.ipv4_mut().addresses = parsed))
-                .map_err(|err| NetworkStateError::from(err))
-        })
+        let mut connection = self.get_connection();
+        addresses
+            .iter()
+            .map(|(addr, prefix)| addr.parse::<Ipv4Addr>().map(|a| (a, *prefix)))
+            .collect::<Result<Vec<(Ipv4Addr, u32)>, AddrParseError>>()
+            .and_then(|parsed| Ok(connection.ipv4_mut().addresses = parsed))
+            .map_err(|err| NetworkStateError::from(err))?;
+        self.update_connection(connection)
     }
 
     #[dbus_interface(property)]
-    pub fn method(&self) -> zbus::fdo::Result<u8> {
-        self.with_ipv4(|ipv4| ipv4.method as u8)
+    pub fn method(&self) -> u8 {
+        let connection = self.get_connection();
+        connection.ipv4().method as u8
     }
 
     #[dbus_interface(property)]
     pub fn set_method(&mut self, method: u8) -> zbus::fdo::Result<()> {
-        Ok(self.with_ipv4_mut(|ipv4| Ok(ipv4.method = method.try_into()?))?)
+        let mut connection = self.get_connection();
+        connection.ipv4_mut().method = method.try_into()?;
+        self.update_connection(connection)
     }
 
     #[dbus_interface(property)]
-    pub fn nameservers(&self) -> zbus::fdo::Result<Vec<String>> {
-        self.with_ipv4(|ipv4| ipv4.nameservers.iter().map(|a| a.to_string()).collect())
+    pub fn nameservers(&self) -> Vec<String> {
+        let connection = self.get_connection();
+        connection
+            .ipv4()
+            .nameservers
+            .iter()
+            .map(|a| a.to_string())
+            .collect()
     }
 
     #[dbus_interface(property)]
     pub fn set_nameservers(&mut self, addresses: Vec<String>) -> zbus::fdo::Result<()> {
-        self.with_ipv4_mut(|ipv4| {
-            addresses
-                .iter()
-                .map(|addr| addr.parse::<Ipv4Addr>())
-                .collect::<Result<Vec<Ipv4Addr>, AddrParseError>>()
-                .and_then(|parsed| Ok(ipv4.nameservers = parsed))
-                .map_err(|err| NetworkStateError::from(err))
-        })
+        let mut connection = self.get_connection();
+        let ipv4 = connection.ipv4_mut();
+        addresses
+            .iter()
+            .map(|addr| addr.parse::<Ipv4Addr>())
+            .collect::<Result<Vec<Ipv4Addr>, AddrParseError>>()
+            .and_then(|parsed| Ok(ipv4.nameservers = parsed))
+            .map_err(|err| NetworkStateError::from(err))?;
+        self.update_connection(connection)
     }
 
     #[dbus_interface(property)]
-    pub fn gateway(&self) -> zbus::fdo::Result<String> {
-        self.with_ipv4(|ipv4| match &ipv4.gateway {
+    pub fn gateway(&self) -> String {
+        let connection = self.get_connection();
+        match connection.ipv4().gateway {
             Some(addr) => addr.to_string(),
             None => "".to_string(),
-        })
+        }
     }
 
     #[dbus_interface(property)]
     pub fn set_gateway(&mut self, gateway: String) -> zbus::fdo::Result<()> {
-        self.with_ipv4_mut(|ipv4| {
-            gateway
-                .parse::<Ipv4Addr>()
-                .and_then(|parsed| Ok(ipv4.gateway = Some(parsed)))
-                .map_err(|err| NetworkStateError::from(err))
-        })
+        let mut connection = self.get_connection();
+        let ipv4 = connection.ipv4_mut();
+        gateway
+            .parse::<Ipv4Addr>()
+            .and_then(|parsed| Ok(ipv4.gateway = Some(parsed)))
+            .map_err(|err| NetworkStateError::from(err))?;
+        self.update_connection(connection)
     }
 }
 /// D-Bus interface for wireless settings
 pub struct Wireless {
     network: Arc<Mutex<NetworkSystem>>,
-    uuid: Uuid,
+    connection: Arc<Mutex<NetworkConnection>>,
 }
 
 impl Wireless {
     /// Creates a Wireless interface object.
     ///
     /// * `network`: network state.
-    /// * `uuid`: connection UUID.
-    pub fn new(network: Arc<Mutex<NetworkSystem>>, uuid: Uuid) -> Self {
-        Self { network, uuid }
+    pub fn new(
+        network: Arc<Mutex<NetworkSystem>>,
+        connection: Arc<Mutex<NetworkConnection>>,
+    ) -> Self {
+        Self {
+            network,
+            connection,
+        }
     }
 
-    pub fn with_wireless<T, F>(&self, func: F) -> zbus::fdo::Result<T>
-    where
-        F: FnOnce(&WirelessConfig) -> T,
-    {
-        self.with_connection(|conn| match conn {
-            NetworkConnection::Wireless(config) => Ok(func(&config.wireless)),
-            _ => Err(NetworkStateError::InvalidConnectionType(self.uuid()).into()),
+    /// Gets the wireless connection.
+    ///
+    /// Beware that it crashes when it is not a wireless connection.
+    fn get_wireless(&self) -> MappedMutexGuard<WirelessConnection> {
+        MutexGuard::map(self.connection.lock(), |c| match c {
+            NetworkConnection::Wireless(config) => config,
+            _ => panic!("Not a wireless network. This is most probably a bug."),
         })
     }
 
-    pub fn with_wireless_mut<F>(&self, func: F) -> zbus::fdo::Result<()>
-    where
-        F: FnOnce(&mut WirelessConfig) -> Result<(), NetworkStateError>,
-    {
-        self.with_connection_mut(|conn| match conn {
-            NetworkConnection::Wireless(config) => func(&mut config.wireless),
-            _ => Err(NetworkStateError::InvalidConnectionType(self.uuid()).into()),
-        })
-    }
-}
-
-impl WithConnection for Wireless {
-    fn network(&self) -> &Mutex<NetworkSystem> {
-        &self.network
-    }
-
-    fn uuid(&self) -> Uuid {
-        self.uuid
+    /// Updates the connection data in the NetworkSystem.
+    ///
+    /// * `connection`: Updated connection.
+    fn update_connection(
+        &self,
+        connection: MappedMutexGuard<WirelessConnection>,
+    ) -> zbus::fdo::Result<()> {
+        let mut network = self.network.lock();
+        network.update_connection(NetworkConnection::Wireless(connection.clone()))?;
+        Ok(())
     }
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connection.Wireless")]
 impl Wireless {
     #[dbus_interface(property, name = "SSID")]
-    pub fn ssid(&self) -> zbus::fdo::Result<Vec<u8>> {
-        self.with_wireless(|w| w.ssid.clone())
+    pub fn ssid(&self) -> Vec<u8> {
+        let connection = self.get_wireless();
+        connection.wireless.ssid.clone()
     }
 
     #[dbus_interface(property, name = "SSID")]
     pub fn set_ssid(&mut self, ssid: Vec<u8>) -> zbus::fdo::Result<()> {
-        Ok(self.with_wireless_mut(|w| Ok(w.ssid = ssid))?)
+        let mut connection = self.get_wireless();
+        connection.wireless.ssid = ssid;
+        self.update_connection(connection)
     }
 
     #[dbus_interface(property)]
-    pub fn mode(&self) -> zbus::fdo::Result<u8> {
-        self.with_wireless(|w| w.mode as u8)
+    pub fn mode(&self) -> u8 {
+        let connection = self.get_wireless();
+        connection.wireless.mode as u8
     }
 
     #[dbus_interface(property)]
     pub fn set_mode(&mut self, mode: u8) -> zbus::fdo::Result<()> {
-        Ok(self.with_wireless_mut(|w| Ok(w.mode = mode.try_into()?))?)
+        let mut connection = self.get_wireless();
+        connection.wireless.mode = mode.try_into()?;
+        self.update_connection(connection)
     }
 
     #[dbus_interface(property)]
-    pub fn password(&self) -> zbus::fdo::Result<String> {
-        self.with_wireless(|w| w.password.clone().unwrap_or("".to_string()))
+    pub fn password(&self) -> String {
+        let connection = self.get_wireless();
+        connection
+            .wireless
+            .password
+            .clone()
+            .unwrap_or("".to_string())
     }
 
     #[dbus_interface(property)]
     pub fn set_password(&mut self, password: String) -> zbus::fdo::Result<()> {
-        self.with_wireless_mut(|w| {
-            if password.is_empty() {
-                w.password = None;
-            } else {
-                w.password = Some(password)
-            }
-            Ok(())
-        })?;
-        Ok(())
+        let mut connection = self.get_wireless();
+        connection.wireless.password = if password.is_empty() {
+            None
+        } else {
+            Some(password)
+        };
+        self.update_connection(connection)
     }
 
     #[dbus_interface(property)]
-    pub fn security(&self) -> zbus::fdo::Result<u8> {
-        self.with_wireless(|w| w.security as u8)
+    pub fn security(&self) -> u8 {
+        let connection = self.get_wireless();
+        connection.wireless.security as u8
     }
 }

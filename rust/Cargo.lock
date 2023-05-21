@@ -50,6 +50,7 @@ version = "0.1.0"
 dependencies = [
  "agama-lib",
  "async-std",
+ "parking_lot",
  "thiserror",
  "uuid",
  "zbus",

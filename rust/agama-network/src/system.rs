@@ -6,6 +6,7 @@ use std::error::Error;
 use std::sync::Arc;
 use uuid::Uuid;
 
+/// Signature for network events callbacks.
 pub type NetworkEventCallback = dyn Fn(NetworkEvent) + Send + Sync;
 
 /// Represents the network system, wrapping a [NetworkState] and adding the concept of events and
@@ -33,10 +34,12 @@ impl NetworkSystem {
         })
     }
 
+    /// Registers a callback for network configuration events.
     pub fn on_event(&mut self, callback: Arc<NetworkEventCallback>) {
         self.callbacks.push(callback);
     }
 
+    /// Adds a connection and notifies the event.
     pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
         let clone = conn.clone();
         self.state.add_connection(conn)?;
@@ -44,37 +47,42 @@ impl NetworkSystem {
         Ok(())
     }
 
+    /// Updates a connection.
     pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
         self.state.update_connection(conn)
     }
 
+    /// Removes a connection and notifies the event.
     pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
         self.state.remove_connection(uuid)?;
         self.notify_event(NetworkEvent::RemoveConnection(uuid));
         Ok(())
     }
 
-    /// Get device by name
+    /// Gets device by name.
     ///
     /// * `name`: device name
     pub fn get_device(&self, name: &str) -> Option<&Device> {
         self.state.get_device(name)
     }
 
-    /// Get connection by UUID
+    /// Gets connection by UUID.
     ///
     /// * `uuid`: connection UUID
     pub fn get_connection(&self, uuid: Uuid) -> Option<&Connection> {
         self.state.get_connection(uuid)
     }
 
-    /// Get connection by UUID as mutable
+    /// Gets connection by UUID as mutable
     ///
     /// * `uuid`: connection UUID
     pub fn get_connection_mut(&mut self, uuid: Uuid) -> Option<&mut Connection> {
         self.state.get_connection_mut(uuid)
     }
 
+    /// Notifies an event to all the subscribers.
+    ///
+    /// * `event`: network configuration event to notify.
     fn notify_event(&self, event: NetworkEvent) {
         for cb in &self.callbacks {
             cb(event.clone())
@@ -82,6 +90,9 @@ impl NetworkSystem {
     }
 }
 
+/// Network configuration event.
+///
+/// At this point, only adding and removing devices are considered.
 #[derive(Debug, Clone)]
 pub enum NetworkEvent {
     AddConnection(Connection),

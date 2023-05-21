@@ -1,9 +1,10 @@
 use agama_lib::error::ServiceError;
+use parking_lot::Mutex;
 use uuid::Uuid;
 
 use crate::{dbus::interfaces, model::*, NetworkSystem};
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 /// Handle the objects in the D-Bus tree for the network state
 pub struct TreeManager {
@@ -28,7 +29,7 @@ impl TreeManager {
     }
 
     async fn add_devices(&mut self) -> Result<(), ServiceError> {
-        let network = self.network.lock().unwrap();
+        let network = self.network.lock();
 
         for (i, dev) in network.state.devices.iter().enumerate() {
             let path = format!("/org/opensuse/Agama/Network1/devices/{}", i);
@@ -37,7 +38,7 @@ impl TreeManager {
                 interfaces::Device::new(Arc::clone(&self.network), &dev.name),
             )
             .await?;
-            let mut objects = self.objects.lock().unwrap();
+            let mut objects = self.objects.lock();
             objects.register_device(&dev.name, &path);
         }
 
@@ -51,7 +52,7 @@ impl TreeManager {
     }
 
     async fn add_connections(&self) -> Result<(), ServiceError> {
-        let network = self.network.lock().unwrap();
+        let network = self.network.lock();
 
         for conn in network.state.connections.iter() {
             self.add_connection(conn).await?;
@@ -67,28 +68,29 @@ impl TreeManager {
     }
 
     pub async fn add_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
-        let mut objects = self.objects.lock().unwrap();
+        let mut objects = self.objects.lock();
 
         let path = format!(
             "/org/opensuse/Agama/Network1/connections/{}",
             objects.connections.len()
         );
+        let cloned = Arc::new(Mutex::new(conn.clone()));
         self.add_interface(
             &path,
-            interfaces::Connection::new(Arc::clone(&self.network), conn.uuid()),
+            interfaces::Connection::new(Arc::clone(&self.network), Arc::clone(&cloned)),
         )
         .await?;
 
         self.add_interface(
             &path,
-            interfaces::Ipv4::new(Arc::clone(&self.network), conn.uuid()),
+            interfaces::Ipv4::new(Arc::clone(&self.network), Arc::clone(&cloned)),
         )
         .await?;
 
         if let Connection::Wireless(_) = conn {
             self.add_interface(
                 &path,
-                interfaces::Wireless::new(Arc::clone(&self.network), conn.uuid()),
+                interfaces::Wireless::new(Arc::clone(&self.network), Arc::clone(&cloned)),
             )
             .await?;
         }
@@ -99,7 +101,7 @@ impl TreeManager {
 
     /// Removes a connection from the tree
     pub async fn remove_connection(&mut self, uuid: Uuid) -> Result<(), ServiceError> {
-        let mut objects = self.objects.lock().unwrap();
+        let mut objects = self.objects.lock();
         let path = objects.connection_path(uuid).unwrap();
         let object_server = self.connection.object_server();
         _ = object_server.remove::<interfaces::Wireless, _>(path).await;

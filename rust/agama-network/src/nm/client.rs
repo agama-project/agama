@@ -70,7 +70,7 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(connections)
     }
 
-    /// Update a network connection.
+    /// Updates a network connection.
     pub async fn update_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
         let proxy = SettingsProxy::new(&self.connection).await?;
         let uuid_s = conn.uuid().to_string();

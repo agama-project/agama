@@ -3,10 +3,8 @@
 //! This module defines a D-Bus service which exposes Agama's network configuration.
 use crate::dbus::TreeManager;
 use crate::{NetworkEvent, NetworkEventCallback, NetworkSystem};
-use std::{
-    error::Error,
-    sync::{Arc, Mutex},
-};
+use parking_lot::Mutex;
+use std::{error::Error, sync::Arc};
 
 /// Represents the Agama networking D-Bus service
 ///
@@ -39,7 +37,7 @@ impl NetworkService {
 
     /// Starts listening on the D-Bus connection
     pub async fn listen(&mut self) -> Result<(), Box<dyn Error>> {
-        let mut tree = self.tree.lock().unwrap();
+        let mut tree = self.tree.lock();
         tree.populate().await?;
         self.set_events_callback();
         self.connection
@@ -53,7 +51,7 @@ impl NetworkService {
 
         let cb: Arc<NetworkEventCallback> = Arc::new(move |event| {
             async_std::task::block_on(async {
-                let mut tree = tree.lock().unwrap();
+                let mut tree = tree.lock();
                 match event {
                     NetworkEvent::AddConnection(conn) => {
                         tree.add_connection(&conn).await.unwrap();
@@ -65,7 +63,7 @@ impl NetworkService {
             });
         });
 
-        let mut network = self.network.lock().unwrap();
+        let mut network = self.network.lock();
         network.on_event(Arc::clone(&cb))
     }
 }
