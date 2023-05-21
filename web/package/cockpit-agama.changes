@@ -1,4 +1,47 @@
 -------------------------------------------------------------------
+Fri May 19 09:29:50 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: grayscale and blur not accessible div nodes
+  (gh#openSUSE/agama#564)
+
+-------------------------------------------------------------------
+Wed May 17 15:42:31 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Ensure siblings of an open modal dialog do not remain hidden from
+  the accessibility API if the dialog is unmounted instead of
+  set as closed (gh#openSUSE/agama#580).
+
+-------------------------------------------------------------------
+Tue May  9 22:36:12 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Keep the sidebar on top of other elements when it's open
+  (gh#openSUSE/agama#569).
+
+-------------------------------------------------------------------
+Mon May  8 15:20:14 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Set sidebar siblings as aria-hiden while it's open
+  (gh#openSUSE/agama#563)
+-------------------------------------------------------------------
+Fri Apr 28 15:16:04 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add issues for storage client.
+- Add issues page.
+- gh#openSUSE/agama#540
+
+-------------------------------------------------------------------
+Mon Apr 24 15:53:35 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Extract page options from the Sidebar to make them
+  more discoverable (gh#openSUSE/agama#545)
+
+-------------------------------------------------------------------
+Thu Apr 27 08:24:27 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
+
+- Display details for the "autocalculated" label in the storage
+  settings
+
+-------------------------------------------------------------------
 Tue Apr 25 13:42:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Fix dropdown content alignment at storage proposal page
@@ -7,7 +50,7 @@ Tue Apr 25 13:42:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
 -------------------------------------------------------------------
 Tue Apr 25 12:23:27 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
-- UI: Do not indent sections whitout icons (gh#openSUSE/agama#549).
+- UI: Do not indent sections without icons (gh#openSUSE/agama#549).
 
 -------------------------------------------------------------------
 Thu Apr 20 12:44:44 UTC 2023 - David Diaz <dgonzalez@suse.com>

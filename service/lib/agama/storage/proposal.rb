@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,7 +21,7 @@
 
 require "y2storage"
 require "y2storage/dialogs/guided_setup/helpers/disk"
-require "agama/validation_error"
+require "agama/issue"
 require "agama/storage/actions"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_settings_converter"
@@ -56,8 +56,20 @@ module Agama
         @on_calculate_callbacks = []
       end
 
+      # Resets the current proposal
       def reset
         @settings = nil
+      end
+
+      # List of issues
+      #
+      # @return [Array<Issue>]
+      def issues
+        [
+          empty_candidate_devices_issue,
+          missing_candidate_devices_issue,
+          proposal_issue
+        ].compact
       end
 
       # Stores callbacks to be call after calculating a proposal
@@ -76,6 +88,8 @@ module Agama
       #
       # @return [Array<String>]
       def candidate_devices
+        return [] unless proposal
+
         proposal.settings.candidate_devices
       end
 
@@ -145,20 +159,6 @@ module Agama
         return [] unless proposal&.devices
 
         Actions.new(logger, proposal.devices.actiongraph).all
-      end
-
-      # Validates the storage proposal
-      #
-      # @return [Array<ValidationError>] List of validation errors
-      def validate
-        return [] if proposal.nil?
-
-        [
-          empty_available_devices_error,
-          empty_candidate_devices_error,
-          missing_candidate_devices_error,
-          proposal_error
-        ].compact
       end
 
     private
@@ -258,30 +258,39 @@ module Agama
         Y2Storage::StorageManager.instance
       end
 
-      def empty_available_devices_error
-        return if available_devices.any?
+      # Returns an issue if there is no candidate device
+      #
+      # @return [Issue, nil]
+      def empty_candidate_devices_issue
+        return if !proposal || candidate_devices.any?
 
-        ValidationError.new("There is no suitable device for installation")
+        Issue.new("No devices are selected for installation",
+          source:   Issue::Source::CONFIG,
+          severity: Issue::Severity::ERROR)
       end
 
-      def empty_candidate_devices_error
-        return if candidate_devices.any?
-
-        ValidationError.new("No devices are selected for installation")
-      end
-
-      def missing_candidate_devices_error
+      # Returns an issue if any of the candidate devices is not found
+      #
+      # @return [Issue, nil]
+      def missing_candidate_devices_issue
         available_names = available_devices.map(&:name)
         missing = candidate_devices - available_names
         return if missing.none?
 
-        ValidationError.new("Some selected devices are not found in the system")
+        Issue.new("Some selected devices are not found in the system",
+          source:   Issue::Source::CONFIG,
+          severity: Issue::Severity::ERROR)
       end
 
-      def proposal_error
-        return unless proposal.failed?
+      # Returns an issue if the proposal is not valid
+      #
+      # @return [Issue, nil]
+      def proposal_issue
+        return unless proposal&.failed?
 
-        ValidationError.new("Cannot accommodate the required file systems for installation")
+        Issue.new("Cannot accommodate the required file systems for installation",
+          source:   Issue::Source::CONFIG,
+          severity: Issue::Severity::ERROR)
       end
 
       # Adjusts the encryption-related settings of the given Y2Storage::ProposalSettings object

@@ -23,10 +23,9 @@ import React from "react";
 
 import logoUrl from "~/assets/suse-horizontal-logo.svg";
 import { createTeleporter } from "react-teleporter";
-import { About, Disclosure, LogsButton, Sidebar, ShowLogButton, ShowTerminalButton } from "~/components/core";
 
 const PageTitle = createTeleporter();
-const PageOptions = createTeleporter();
+const PageActions = createTeleporter();
 const HeaderActions = createTeleporter();
 const HeaderIcon = createTeleporter();
 const FooterActions = createTeleporter();
@@ -51,7 +50,7 @@ const FooterInfoArea = createTeleporter();
  * @example
  *   <Layout>
  *     <PageIcon><DashboardIcon /></PageIcon>
- *     <PageActions><DashboardActions /></PageActions>
+ *     <AppActions><DashboardActions /></AppActions>
  *     <MainActions><Install /></MainActions>
  *     <Title>Dashboard</Title>
  *
@@ -76,22 +75,12 @@ function Layout({ children }) {
           <PageTitle.Target as="span" />
         </h1>
 
-        <HeaderActions.Target as="span" />
+        <div className="split">
+          <PageActions.Target as="span" />
+          <HeaderActions.Target as="span" />
+        </div>
+
       </header>
-
-      <Sidebar>
-        <>
-          <PageOptions.Target />
-
-          <h3>Other options</h3>
-          <Disclosure label="Diagnostic tools" data-keep-sidebar-open>
-            <ShowLogButton />
-            <LogsButton data-keep-sidebar-open="true" />
-            <ShowTerminalButton />
-          </Disclosure>
-          <About />
-        </>
-      </Sidebar>
 
       <main className="stack">
         {children}
@@ -138,7 +127,20 @@ const PageIcon = HeaderIcon.Source;
  *     <FancyButton onClick={() => console.log("do something")} />
  *   </PageActions>
  */
-const PageActions = HeaderActions.Source;
+const PageOptions = PageActions.Source;
+
+/**
+ * Component for setting global actions shown on the header right
+ *
+ * @example
+ *   import { AppActions } from "agama-layout";
+ *   import { FancyButton } from "somewhere";
+ *   ...
+ *   <AppActions>
+ *     <FancyButton onClick={() => console.log("do something")} />
+ *   </AppActions>
+ */
+const AppActions = HeaderActions.Source;
 
 /**
  * Component for setting the main actions shown on the footer right
@@ -169,23 +171,12 @@ const MainActions = FooterActions.Source;
  */
 const AdditionalInfo = FooterInfoArea.Source;
 
-/**
- * Component for setting the slot to place related options, usually in the Sidebar
- */
-const PageOptionsSlot = PageOptions.Target;
-
-/**
- * Component for teleport page related options to the PageOptions slot
- */
-const PageOptionsContent = PageOptions.Source;
-
 export {
   Layout as default,
   Title,
   PageIcon,
-  PageActions,
+  AppActions,
+  PageOptions,
   MainActions,
   AdditionalInfo,
-  PageOptionsSlot,
-  PageOptionsContent,
 };

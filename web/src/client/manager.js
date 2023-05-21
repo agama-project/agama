@@ -116,12 +116,19 @@ class ManagerBaseClient {
   }
 
   /**
-   * Returns whether calling the system reboot succeeded or not.
-   *
-   * @return {Promise<boolean>}
+   * Runs cleanup when installation is done
    */
-  rebootSystem() {
-    return cockpit.spawn(["/usr/sbin/shutdown", "-r", "now"]);
+  async finishInstallation() {
+    const proxy = await this.client.proxy(MANAGER_IFACE);
+    return proxy.Finish();
+  }
+
+  /**
+   * Returns whether Iguana is used on the system
+   */
+  async useIguana() {
+    const proxy = await this.client.proxy(MANAGER_IFACE);
+    return proxy.IguanaBackend;
   }
 }
 

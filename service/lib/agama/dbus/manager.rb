@@ -61,8 +61,10 @@ module Agama
         dbus_method(:Commit, "") { install_phase }
         dbus_method(:CanInstall, "out result:b") { can_install? }
         dbus_method(:CollectLogs, "out tarball_filesystem_path:s, in user:s") { |u| collect_logs(u) }
+        dbus_method(:Finish, "") { finish_phase }
         dbus_reader :installation_phases, "aa{sv}"
         dbus_reader :current_installation_phase, "u"
+        dbus_reader :iguana_backend, "b"
         dbus_reader :busy_services, "as"
       end
 
@@ -94,6 +96,11 @@ module Agama
         backend.collect_logs(user)
       end
 
+      # Last action for the installer
+      def finish_phase
+        backend.finish_installation
+      end
+
       # Description of all possible installation phase values
       #
       # @return [Array<Hash>]
@@ -112,6 +119,11 @@ module Agama
         return STARTUP_PHASE if backend.installation_phase.startup?
         return CONFIG_PHASE if backend.installation_phase.config?
         return INSTALL_PHASE if backend.installation_phase.install?
+      end
+
+      # States whether installation runs on iguana
+      def iguana_backend
+        backend.iguana?
       end
 
       # Name of the services that are currently busy

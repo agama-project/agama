@@ -17,7 +17,7 @@ Agama is a new Linux installer born in the core of the YaST team. It is designed
 
 |||
 |-|-|
-| ![Storage page](./doc/images/screenshots/storage-page.png) | ![Storage settings](./doc/images/screenshots/storage-settings.png) |
+| ![Users page](./doc/images/screenshots/users-page.png) | ![Storage settings](./doc/images/screenshots/storage-page.png) |
 
 |||
 |-|-|
@@ -154,3 +154,5 @@ For more details, please read the [contributing](CONTRIBUTING.md) guidelines.
 
 * [Packaging](PACKAGING.md)
 * [Working with the web UI](./web/README.md)
+* [D-Bus service API](https://opensuse.github.io/agama/dbus/) (generated)
+* [Web frontend documentation](https://opensuse.github.io/agama/jsdoc/) (generated)

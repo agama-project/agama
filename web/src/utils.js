@@ -167,11 +167,23 @@ const hex = (value) => {
   return parseInt(sanitizedValue, 16);
 };
 
+/**
+ * Converts an issue to a validation error
+ * @function
+ *
+ * @todo This conversion will not be needed after adapting Section to directly work with issues.
+ *
+ * @param {import("~/client/mixins").Issue} issues
+ * @returns {import("~/client/mixins").ValidationError}
+ */
+const toValidationError = (issue) => ({ message: issue.description });
+
 export {
   noop,
   partition,
   classNames,
   useCancellablePromise,
   useLocalStorage,
-  hex
+  hex,
+  toValidationError
 };

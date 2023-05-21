@@ -19,64 +19,120 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
-import React from "react";
-import { PageOptionsContent } from '~/components/layout';
+import React, { useState } from 'react';
+import { Button, Dropdown, DropdownItem, DropdownGroup } from '@patternfly/react-core';
+import { Icon, PageOptions as PageOptionsSlot } from "~/components/layout";
 
 /**
- * Wrapper for teleported page options that bubbles onClick
- * event to the slot element.
+ * Internal component to build the {PageOptions} toggler
+ * @component
  *
- * Needed to "dispatch" the onClick events bind to any
- * parent on the DOM tree for "teleported nodes", bypassing the
- * default React Portal behavior of bubbling events up through the
- * React tree only.
+ * @param {object} props
+ * @param {function} props.onClick
+ */
+const Toggler = ({ onClick }) => {
+  return (
+    <Button onClick={onClick} variant="plain">
+      <Icon name="expand_more" />
+    </Button>
+  );
+};
+
+/**
+ * A group of actions belonging to a {PageOptions} component
+ * @component
  *
- * @example <caption>Simple usage</caption>
- *   <PageOptions title="Storage options">
- *     <Link to="/storage/iscsi">Configure iSCSI devices</Link>
- *     <Button
- *       onClick={showStorageHwInfo}
- *       data-keep-sidebar-open
+ * Built on top of {@link https://www.patternfly.org/v4/components/dropdown/#dropdowngroup PF DropdownGroup}
+ *
+ * @see {PageOptions } examples.
+ *
+ * @param {object} props - PF DropdownItem props, See {@link https://www.patternfly.org/v4/components/dropdowngroup}
+ */
+const Group = ({ children, ...props }) => {
+  return (
+    <DropdownGroup {...props}>
+      {children}
+    </DropdownGroup>
+  );
+};
+
+/**
+ * An action belonging to a {PageOptions} component
+ * @component
+ *
+ * Built on top of {@link https://www.patternfly.org/v4/components/dropdown/#dropdownitem PF DropdownItem}
+ *
+ * @see {PageOptions } examples.
+ *
+ * @param {object} props - PF DropdownItem props, See {@link https://www.patternfly.org/v4/components/dropdownitem}
+ */
+const Item = ({ children, ...props }) => {
+  return (
+    <DropdownItem {...props}>
+      {children}
+    </DropdownItem>
+  );
+};
+
+/**
+ * Component for rendering actions related to the current page
+ * @component
+ *
+ * It consist in a {@link https://www.patternfly.org/v4/components/dropdown
+ * PatternFly Dropdown} "teleported" to the header, close to the
+ * action for opening the Sidebar
+ *
+ * @example <caption>Usage example</caption>
+ *   <PageOptions>
+ *     <PageOptions.Item
+ *       key="reprobe-link"
+ *       description="Run a storage device detection"
  *     >
- *       Show Storage Hardware info
- *     </Button>
+ *
+ *       Reprobe
+ *     </PageOptions.Item>
+ *     <PageOptions.Group key="configuration-links" label="Configure">
+ *       <PageOptions.Item
+ *         key="dasd-link"
+ *         href={href}
+ *         description="Manage and format"
+ *       >
+ *         DASD
+ *       </PageOptions.Item>
+ *       <PageOptions.Item
+ *         key="iscsi-link"
+ *         href={href}
+ *         description="Connect to iSCSI targets"
+ *        >
+ *         iSCSI
+ *       </PageOptions.Item>
+ *     </PageOptions.Group>
  *   </PageOptions>
  *
  * @param {object} props
- * @param {string} [props.title="Page options"] - a title for the group
- * @param {string} [props.className="flex-stack"] - CSS class for the wrapper div
- * @param {React.ReactElement} props.children - the teleported content
+ * @param {Group|Item|Array<Group|Item>} props.children
  */
-export default function PageOptions({
-  title = "Page options",
-  className = "flex-stack",
-  children
-}) {
-  const forwardEvents = (target) => {
-    return (
-      <div
-        className={className}
-        onClick={ e => {
-          // Using a CustomEvent because the originalTarget is needed to check the dataset.
-          // See Sidebar.jsx for better understanding
-          const customEvent = new CustomEvent(
-            e.type,
-            { ...e, detail: { originalTarget: e.target } }
-          );
-          target.dispatchEvent(customEvent);
-        }}
-      >
-        <h3>{title}</h3>
-        {children}
-      </div>
-    );
-  };
+const PageOptions = ({ children }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const onToggle = () => setIsOpen(!isOpen);
+  const onSelect = () => setIsOpen(false);
 
   return (
-    <PageOptionsContent>
-      { (target) => forwardEvents(target) }
-    </PageOptionsContent>
+    <PageOptionsSlot>
+      <Dropdown
+        isOpen={isOpen}
+        toggle={<Toggler onClick={onToggle} />}
+        onSelect={onSelect}
+        dropdownItems={Array(children)}
+        position="right"
+        className="page-options"
+        isGrouped
+      />
+    </PageOptionsSlot>
   );
-}
+};
+
+PageOptions.Group = Group;
+PageOptions.Item = Item;
+
+export default PageOptions;

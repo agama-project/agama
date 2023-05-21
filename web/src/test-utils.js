@@ -32,6 +32,7 @@ import { render } from "@testing-library/react";
 
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
+import { NotificationProvider } from "~/context/notification";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -144,11 +145,25 @@ const mockLayout = () => ({
   default: ({ children }) => children,
   Title: ({ children }) => children,
   PageIcon: ({ children }) => children,
-  PageActions: ({ children }) => children,
+  AppActions: ({ children }) => children,
+  PageOptions: ({ children }) => children,
   MainActions: ({ children }) => children,
   AdditionalInfo: ({ children }) => children,
-  PageOptionsContent: ({ children }) => children,
 });
+
+/**
+ * Wraps the content with a notification provider
+ *
+ * @param {React.ReactNode} content
+ * @returns {React.ReactNode}
+ */
+const withNotificationProvider = (content) => {
+  return (
+    <NotificationProvider>
+      {content}
+    </NotificationProvider>
+  );
+};
 
 export {
   plainRender,
@@ -158,4 +173,5 @@ export {
   mockLayout,
   mockNavigateFn,
   mockRoutes,
+  withNotificationProvider
 };

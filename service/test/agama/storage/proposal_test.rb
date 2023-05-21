@@ -53,6 +53,7 @@ describe Agama::Storage::Proposal do
   let(:y2storage_proposal) do
     instance_double(Y2Storage::MinGuidedProposal, propose: true, failed?: failed)
   end
+
   let(:failed) { false }
 
   describe "#calculate" do
@@ -100,18 +101,16 @@ describe Agama::Storage::Proposal do
     end
 
     it "runs all the callbacks" do
-      var1 = 5
-      var2 = 5
-      proposal.on_calculate do
-        var1 += 1
-      end
-      proposal.on_calculate { var2 *= 2 }
+      callback1 = proc {}
+      callback2 = proc {}
 
-      expect(var1).to eq 5
-      expect(var2).to eq 5
+      proposal.on_calculate(&callback1)
+      proposal.on_calculate(&callback2)
+
+      expect(callback1).to receive(:call)
+      expect(callback2).to receive(:call)
+
       proposal.calculate
-      expect(var1).to eq 6
-      expect(var2).to eq 10
     end
 
     it "stores the given settings" do
@@ -348,39 +347,22 @@ describe Agama::Storage::Proposal do
     end
   end
 
-  describe "#validate" do
-    let(:sda) { instance_double(Y2Storage::Disk, name: "/dev/sda") }
-    let(:available_devices) { [sda] }
-    let(:candidate_devices) { ["/dev/sda"] }
-
+  describe "#issues" do
     before do
+      allow(subject).to receive(:proposal).and_return(y2storage_proposal)
       allow(subject).to receive(:available_devices).and_return(available_devices)
       allow(subject).to receive(:candidate_devices).and_return(candidate_devices)
-      allow(subject).to receive(:proposal).and_return(y2storage_proposal)
     end
 
-    context "when the proposal was successful" do
-      let(:failed) { false }
-
-      it "returns an empty list" do
-        expect(subject.validate).to eq([])
-      end
-    end
+    let(:sda) { instance_double(Y2Storage::Disk, name: "/dev/sda") }
+    let(:available_devices) { [sda] }
+    let(:candidate_devices) { [] }
 
     context "when the proposal does not exist yet" do
       let(:y2storage_proposal) { nil }
 
       it "returns an empty list" do
-        expect(subject.validate).to eq([])
-      end
-    end
-
-    context "when there are not available storage devices" do
-      let(:available_devices) { [] }
-
-      it "returns a list of errors including the expected error" do
-        error = subject.validate.find { |e| e.message.match?(/no suitable device/) }
-        expect(error).to_not be_nil
+        expect(subject.issues).to eq([])
       end
     end
 
@@ -388,17 +370,19 @@ describe Agama::Storage::Proposal do
       let(:candidate_devices) { [] }
 
       it "returns a list of errors including the expected error" do
-        error = subject.validate.find { |e| e.message.match?(/No devices are selected/) }
-        expect(error).to_not be_nil
+        expect(subject.issues).to include(
+          an_object_having_attributes(description: /No devices are selected/)
+        )
       end
     end
 
-    context "when any candidate device is missing" do
+    context "when some candidate device is missing" do
       let(:candidate_devices) { ["/dev/vda"] }
 
       it "returns a list of errors including the expected error" do
-        error = subject.validate.find { |e| e.message.match?(/not found in the system/) }
-        expect(error).to_not be_nil
+        expect(subject.issues).to include(
+          an_object_having_attributes(description: /devices are not found/)
+        )
       end
     end
 
@@ -406,8 +390,9 @@ describe Agama::Storage::Proposal do
       let(:failed) { true }
 
       it "returns a list of errors including the expected error" do
-        error = subject.validate.find { |e| e.message.match?(/Cannot accommodate/) }
-        expect(error).to_not be_nil
+        expect(subject.issues).to include(
+          an_object_having_attributes(description: /Cannot accommodate/)
+        )
       end
     end
   end

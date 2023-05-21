@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -178,7 +178,7 @@ module Agama
     #
     # @return [Boolean]
     def valid?
-      [storage, users, software].all?(&:valid?)
+      [users, software].all?(&:valid?) && !storage.errors?
     end
 
     # Collects the logs and stores them into an archive
@@ -191,6 +191,26 @@ module Agama
       Yast::Execute.locally!("chown", "#{user}:", path)
 
       path
+    end
+
+    # Whatever has to be done at the end of installation
+    def finish_installation
+      cmd = if iguana?
+        "/usr/bin/agamactl -k"
+      else
+        "/usr/sbin/shutdown -r now"
+      end
+
+      logger.info("Finishing installation with #{cmd}")
+
+      system(cmd)
+    end
+
+    # Says whether running on iguana or not
+    #
+    # @return [Boolean] true when running on iguana
+    def iguana?
+      Dir.exist?("/iguana")
     end
 
   private

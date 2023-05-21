@@ -80,6 +80,16 @@ const contexts = {
   withVolumeTemplates: () => {
     cockpitProxies.proposalCalculator.VolumeTemplates = volumes;
   },
+  withoutIssues: () => {
+    cockpitProxies.issues = {
+      All: []
+    };
+  },
+  withIssues: () => {
+    cockpitProxies.issues = {
+      All: [["Issue 1", "", 1, 1], ["Issue 2", "", 1, 0], ["Issue 3", "", 2, 1]]
+    };
+  },
   withoutISCSINodes: () => {
     cockpitProxies.iscsiNodes = {};
   },
@@ -140,6 +150,7 @@ const contexts = {
 
 const mockProxy = (iface, path) => {
   switch (iface) {
+    case "org.opensuse.Agama1.Issues": return cockpitProxies.issues;
     case "org.opensuse.Agama.Storage1": return cockpitProxies.storage;
     case "org.opensuse.Agama.Storage1.Proposal": return cockpitProxies.proposal;
     case "org.opensuse.Agama.Storage1.Proposal.Calculator": return cockpitProxies.proposalCalculator;
@@ -171,6 +182,7 @@ const emitSignal = (path, iface, data) => {
 };
 
 const reset = () => {
+  cockpitProxies.issues = {};
   cockpitProxies.storage = {};
   cockpitProxies.proposalCalculator = {};
   cockpitProxies.proposal = null;
@@ -260,6 +272,67 @@ describe("#onDeprecate", () => {
     it("runs the handler", async () => {
       expect(handler).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe("#getIssues", () => {
+  describe("if there are no issues", () => {
+    beforeEach(() => {
+      contexts.withoutIssues();
+    });
+
+    it("returns an empty list", async () => {
+      client = new StorageClient();
+      const issues = await client.getIssues();
+      expect(issues).toEqual([]);
+    });
+  });
+
+  describe("if there are issues", () => {
+    beforeEach(() => {
+      contexts.withIssues();
+    });
+
+    it("returns the list of issues", async () => {
+      client = new StorageClient();
+      const issues = await client.getIssues();
+      expect(issues).toEqual(expect.arrayContaining([
+        { description: "Issue 1", details: "", source: "system", severity: "error" },
+        { description: "Issue 2", details: "", source: "system", severity: "warn" },
+        { description: "Issue 3", details: "", source: "config", severity: "error" }
+      ]));
+    });
+  });
+});
+
+describe("#getErrors", () => {
+  beforeEach(() => {
+    contexts.withIssues();
+  });
+
+  it("returns the issues with error severity", async () => {
+    client = new StorageClient();
+    const errors = await client.getErrors();
+    expect(errors.map(e => e.description)).toEqual(expect.arrayContaining(["Issue 1", "Issue 3"]));
+  });
+});
+
+describe("#onIssuesChange", () => {
+  it("runs the handler when the issues change", async () => {
+    client = new StorageClient();
+
+    const handler = jest.fn();
+    client.onIssuesChange(handler);
+
+    emitSignal(
+      "/org/opensuse/Agama/Storage1",
+      "org.opensuse.Agama1.Issues",
+      { All: { v: [["Issue 1", "", 1, 0], ["Issue 2", "", 2, 1]] } });
+
+    expect(handler).toHaveBeenCalledWith([
+      { description: "Issue 1", details: "", source: "system", severity: "warn" },
+      { description: "Issue 2", details: "", source: "config", severity: "error" },
+    ]);
   });
 });
 

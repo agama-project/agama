@@ -24,12 +24,11 @@ impl<'a> UsersStore<'a> {
             full_name: Some(first_user.full_name),
             password: Some(first_user.password),
         };
-        let ssh_public_key = self.users_client.root_ssh_key().await;
-        let root_user = RootUserSettings {
-            // todo: expose the password
-            password: None,
-            ssh_public_key: ssh_public_key.ok(),
-        };
+        let mut root_user = RootUserSettings::default();
+        let ssh_public_key = self.users_client.root_ssh_key().await?;
+        if !ssh_public_key.is_empty() {
+            root_user.ssh_public_key = Some(ssh_public_key)
+        }
         Ok(UserSettings {
             first_user: Some(first_user),
             root: Some(root_user),

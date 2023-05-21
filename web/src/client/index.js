@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2021] SUSE LLC
+ * Copyright (c) [2021-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -30,6 +30,7 @@ import { UsersClient } from "./users";
 import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
+import { IssuesClient } from "./issues";
 
 const SERVICE_NAME = "org.opensuse.Agama";
 
@@ -43,6 +44,7 @@ const SERVICE_NAME = "org.opensuse.Agama";
  * @property {StorageClient} storage - storage client
  * @property {UsersClient} users - users client
  * @property {QuestionsClient} questions - questions client
+ * @property {IssuesClient} issues - issues client
  */
 
 /**
@@ -51,15 +53,26 @@ const SERVICE_NAME = "org.opensuse.Agama";
  * @return {InstallerClient}
  */
 const createClient = (address = "unix:path=/run/agama/bus") => {
+  const language = new LanguageClient(address);
+  const manager = new ManagerClient(address);
+  const monitor = new Monitor(address, SERVICE_NAME);
+  const network = new NetworkClient();
+  const software = new SoftwareClient(address);
+  const storage = new StorageClient(address);
+  const users = new UsersClient(address);
+  const questions = new QuestionsClient(address);
+  const issues = new IssuesClient({ storage });
+
   return {
-    language: new LanguageClient(address),
-    manager: new ManagerClient(address),
-    monitor: new Monitor(address, SERVICE_NAME),
-    network: new NetworkClient(),
-    software: new SoftwareClient(address),
-    storage: new StorageClient(address),
-    users: new UsersClient(address),
-    questions: new QuestionsClient(address)
+    language,
+    manager,
+    monitor,
+    network,
+    software,
+    storage,
+    users,
+    questions,
+    issues
   };
 };
 

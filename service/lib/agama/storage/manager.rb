@@ -22,14 +22,16 @@
 require "yast"
 require "bootloader/proposal_client"
 require "y2storage/storage_manager"
+require "y2storage/clients/inst_prepdisk"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/callbacks"
 require "agama/storage/iscsi/manager"
 require "agama/storage/finisher"
+require "agama/issue"
+require "agama/with_issues"
 require "agama/with_progress"
 require "agama/security"
-require "agama/validation_error"
 require "agama/dbus/clients/questions"
 require "agama/dbus/clients/software"
 
@@ -39,7 +41,18 @@ module Agama
   module Storage
     # Manager to handle storage configuration
     class Manager
+      include WithIssues
       include WithProgress
+
+      # Constructor
+      #
+      # @param config [Config]
+      # @param logger [Logger]
+      def initialize(config, logger)
+        @config = config
+        @logger = logger
+        register_proposal_callbacks
+      end
 
       # Whether the system is in a deprecated status
       #
@@ -47,23 +60,43 @@ module Agama
       # example, when iSCSI sessions are created.
       #
       # A deprecated system means that the probed system could not match with the current system.
-      attr_accessor :deprecated_system
+      #
+      # @return [Boolean]
+      def deprecated_system?
+        !!@deprecated_system
+      end
 
-      def initialize(config, logger)
-        @config = config
-        @logger = logger
-        @deprecated_system = false
+      # Sets whether the system is deprecated
+      #
+      # If the deprecated status changes, then callbacks are executed and the issues are
+      # recalculated, see {#on_deprecated_system_change}.
+      #
+      # @param value [Boolean]
+      def deprecated_system=(value)
+        return if deprecated_system? == value
+
+        @deprecated_system = value
+        @on_deprecated_system_change_callbacks&.each(&:call)
+        update_issues
+      end
+
+      # Registers a callback to be called when the system is set as deprecated
+      #
+      # @param block [Proc]
+      def on_deprecated_system_change(&block)
+        @on_deprecated_system_change_callbacks ||= []
+        @on_deprecated_system_change_callbacks << block
       end
 
       # Probes storage devices and performs an initial proposal
       def probe
-        @deprecated_system = false
         start_progress(4)
         config.pick_product(software.selected_product)
         progress.step("Activating storage devices") { activate_devices }
         progress.step("Probing storage devices") { probe_devices }
         progress.step("Calculating the storage proposal") { calculate_proposal }
         progress.step("Selecting Linux Security Modules") { security.probe }
+        update_issues
       end
 
       # Prepares the partitioning to install the system
@@ -75,9 +108,7 @@ module Agama
           logger.debug "Bootloader proposal #{proposal.inspect}"
         end
         progress.step("Adding storage-related packages") { add_packages }
-        progress.step("Preparing the storage devices") do
-          Yast::WFM.CallFunction("inst_prepdisk", [])
-        end
+        progress.step("Preparing the storage devices") { perform_storage_actions }
         progress.step("Writing bootloader sysconfig") do
           # call inst bootloader to get properly initialized bootloader
           # sysconfig before package installation
@@ -104,14 +135,6 @@ module Agama
         @iscsi ||= ISCSI::Manager.new(logger: logger)
       end
 
-      # Validates the storage configuration
-      #
-      # @return [Array<ValidationError>] List of validation errors
-      def validate
-        errors = [deprecated_system_error] + proposal.validate
-        errors.compact
-      end
-
       # Returns the client to ask the software service
       #
       # @return [Agama::DBus::Clients::Software]
@@ -130,6 +153,11 @@ module Agama
       # @return [Config]
       attr_reader :config
 
+      # Issues are updated when the proposal is calculated
+      def register_proposal_callbacks
+        proposal.on_calculate { update_issues }
+      end
+
       # Activates the devices, calling activation callbacks if needed
       def activate_devices
         callbacks = Callbacks::Activate.new(questions_client, logger)
@@ -140,9 +168,13 @@ module Agama
 
       # Probes the devices
       def probe_devices
+        callbacks = Y2Storage::Callbacks::UserProbe.new
+
         iscsi.probe
-        # TODO: better probe callbacks that can report issue to user
-        Y2Storage::StorageManager.instance.probe(Y2Storage::Callbacks::UserProbe.new)
+        Y2Storage::StorageManager.instance.probe(callbacks)
+
+        # The system is not deprecated anymore
+        self.deprecated_system = false
       end
 
       # Calculates the proposal
@@ -171,13 +203,67 @@ module Agama
         Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, packages)
       end
 
-      # Returns an error if the system is deprecated
+      # Prepares the storage devices for installation
       #
-      # @return [ValidationError, nil]
-      def deprecated_system_error
-        return unless deprecated_system
+      # @return [Boolean] true if the all actions were successful
+      def perform_storage_actions
+        callbacks = Callbacks::Commit.new(questions_client, logger: logger)
 
-        ValidationError.new("The system devices have changed")
+        client = Y2Storage::Clients::InstPrepdisk.new(commit_callbacks: callbacks)
+        client.run == :next
+      end
+
+      # Recalculates the list of issues
+      def update_issues
+        self.issues = system_issues + proposal.issues
+      end
+
+      # Issues from the system
+      #
+      # @return [Array<Issue>]
+      def system_issues
+        issues = probing_issues + [
+          deprecated_system_issue,
+          available_devices_issue
+        ]
+
+        issues.compact
+      end
+
+      # Issues from the probing phase
+      #
+      # @return [Array<Issue>]
+      def probing_issues
+        y2storage_issues = Y2Storage::StorageManager.instance.raw_probed.probing_issues
+
+        y2storage_issues.map do |y2storage_issue|
+          Issue.new(y2storage_issue.message,
+            details:  y2storage_issue.details,
+            source:   Issue::Source::SYSTEM,
+            severity: Issue::Severity::WARN)
+        end
+      end
+
+      # Returns an issue if the system is deprecated
+      #
+      # @return [Issue, nil]
+      def deprecated_system_issue
+        return unless deprecated_system?
+
+        Issue.new("The system devices have changed",
+          source:   Issue::Source::SYSTEM,
+          severity: Issue::Severity::ERROR)
+      end
+
+      # Returns an issue if there is no available device for installation
+      #
+      # @return [Issue, nil]
+      def available_devices_issue
+        return if proposal.available_devices.any?
+
+        Issue.new("There is no suitable device for installation",
+          source:   Issue::Source::SYSTEM,
+          severity: Issue::Severity::ERROR)
       end
 
       # Security manager

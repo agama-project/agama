@@ -1,9 +1,32 @@
 -------------------------------------------------------------------
+Thu May 18 12:19:49 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Update ruby-dbus dependency to 0.22.x (gh#openSUSE/agama#581)
+
+-------------------------------------------------------------------
+Tue May 16 13:42:18 UTC 2023 - Knut Alejandro Anderssen González <kanderssen@suse.com>
+
+- Added ppc64le repositories for ALP Bedrock and ALP Micro products
+- gh#openSUSE/agama#577
+
+-------------------------------------------------------------------
+Fri May  5 15:20:25 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add callbacks for storage commit errors (gh#openSUSE/agama/558).
+
+-------------------------------------------------------------------
+Wed Apr 26 15:48:41 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add D-Bus API for managing issues.
+- Replace validation interface by issues in the storage service.
+- gh#openSUSE/agama#548
+
+-------------------------------------------------------------------
 Fri Apr 14 13:13:56 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Modify default storage settings.
 - Fix issue with volume templates.
-- gh#openSUSE/agama/521
+- gh#openSUSE/agama#521
 
 -------------------------------------------------------------------
 Mon Apr 10 10:14:39 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

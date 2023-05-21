@@ -19,12 +19,23 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
-import { Icon, PageActions } from "~/components/layout";
+import { Icon, AppActions } from "~/components/layout";
+import { If, NotificationMark } from "~/components/core";
+import { useNotification } from "~/context/notification";
 
-// FIXME: look for a better way to allow opening the Sidebar from outside
-let openButtonRef = {};
+/**
+ * Returns siblings for given HTML node
+ *
+ * @param {HTMLElement} node
+ * @returns {HTMLElement[]}
+ */
+const siblingsFor = (node) => {
+  const parent = node?.parentNode;
+
+  return parent ? [...parent.children].filter(n => n !== node) : [];
+};
 
 /**
  * Agama sidebar navigation
@@ -33,13 +44,41 @@ let openButtonRef = {};
  * @param {object} props
  * @param {React.ReactElement} props.children
  */
-const Sidebar = ({ children }) => {
+export default function Sidebar ({ children }) {
   const [isOpen, setIsOpen] = useState(false);
-  openButtonRef = useRef(null);
+  const asideRef = useRef(null);
   const closeButtonRef = useRef(null);
+  const [notification] = useNotification();
 
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
+  /**
+   * Set siblings as not interactive and not discoverable
+   */
+  const makeSiblingsInert = () => {
+    siblingsFor(asideRef.current).forEach(s => {
+      s.setAttribute('inert', '');
+      s.setAttribute('aria-hidden', true);
+    });
+  };
+
+  /**
+   * Set siblings as interactive and discoverable
+   */
+  const makeSiblingsAlive = () => {
+    siblingsFor(asideRef.current).forEach(s => {
+      s.removeAttribute('inert');
+      s.removeAttribute('aria-hidden');
+    });
+  };
+
+  const open = () => {
+    setIsOpen(true);
+    makeSiblingsInert();
+  };
+
+  const close = () => {
+    setIsOpen(false);
+    makeSiblingsAlive();
+  };
 
   /**
    * Handler for automatically closing the sidebar when a click bubbles from a
@@ -60,6 +99,14 @@ const Sidebar = ({ children }) => {
   useEffect(() => {
     if (isOpen) closeButtonRef.current.focus();
   }, [isOpen]);
+
+  useLayoutEffect(() => {
+    // Ensure siblings do not remain inert when the component is unmounted.
+    // Using useLayoutEffect over useEffect for allowing the cleanup function to
+    // be executed immediately BEFORE unmounting the component and still having
+    // access to siblings.
+    return () => makeSiblingsAlive();
+  }, []);
 
   // display additional info when running in a development server
   let targetInfo = null;
@@ -89,23 +136,27 @@ const Sidebar = ({ children }) => {
 
   return (
     <>
-      <PageActions>
+      <AppActions>
         <button
-          ref={openButtonRef}
           onClick={open}
           className="plain-control"
-          aria-label="Show navigation and other options"
-          aria-controls="navigation-and-options"
+          aria-label="Show global options"
+          aria-controls="global-options"
           aria-expanded={isOpen}
         >
+          <If
+            condition={notification.issues}
+            then={<NotificationMark data-variant="sidebar" aria-label="New issues found" />}
+          />
           <Icon name="menu" />
         </button>
-      </PageActions>
+      </AppActions>
 
-      <nav
-        id="navigation-and-options"
+      <aside
+        id="global-options"
+        ref={asideRef}
         className="wrapper sidebar"
-        aria-label="Navigation and other options"
+        aria-label="Global options"
         data-state={isOpen ? "visible" : "hidden"}
       >
         <header className="split justify-between">
@@ -131,26 +182,7 @@ const Sidebar = ({ children }) => {
           </a>
           { targetInfo }
         </footer>
-      </nav>
+      </aside>
     </>
   );
-};
-
-/**
- * Button for opening the sidebar
- * @component
- *
- * @param {object} props
- * @param {onClickFn} [props.onClick] - On click callback
- * @param {React.ReactElement} props.children
- */
-Sidebar.OpenButton = ({ onClick: onClickProp, children }) => {
-  const onClick = () => {
-    if (onClickProp !== undefined) onClickProp();
-    openButtonRef.current.click();
-  };
-
-  return <Button variant="link" isInline onClick={onClick}>{children}</Button>;
-};
-
-export default Sidebar;
+}

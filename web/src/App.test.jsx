@@ -36,6 +36,7 @@ jest.mock("~/components/layout/DBusError", () => mockComponent("D-BusError Mock"
 jest.mock("~/components/core/LoadingEnvironment", () => mockComponent("LoadingEnvironment Mock"));
 jest.mock("~/components/questions/Questions", () => mockComponent("Questions Mock"));
 jest.mock("~/components/core/Installation", () => mockComponent("Installation Mock"));
+jest.mock("~/components/core/Sidebar", () => mockComponent("Sidebar Mock"));
 
 // this object holds the mocked callbacks
 const callbacks = {};

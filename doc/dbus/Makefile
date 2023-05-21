@@ -4,6 +4,7 @@ tmpdir=./tmp
 # build HTML for GitHub pages
 all: ${distdir} ${tmpdir}
 	for f in org.opensuse.Agama*.doc.xml; do \
+	  echo $$f; \
 	  gdbus-codegen \
 	    --interface-prefix=org.opensuse.Agama. \
 	    --output-directory=${tmpdir} \
@@ -12,6 +13,7 @@ all: ${distdir} ${tmpdir}
 	  docbook=${tmpdir}/ref-$${f%.doc.xml}.xml; \
 	  xmlto -o ${distdir} --skip-validation html-nochunks $$docbook; \
 	done
+	./make-index > index.html
 	cp index.html ${distdir}
 
 # 'foo 2> >(grep ... >&2)' greps stderr and keeps it as stderr
