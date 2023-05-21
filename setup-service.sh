@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 
 # Using a git checkout in the current directory,
 # set up the service (backend) part of agama
@@ -76,7 +76,9 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
 (
   $SUDO systemctl daemon-reload
   # Start the separate dbus-daemon for Agama
-  $SUDO systemctl start agama.service
+  # (in CI we run a custom cockpit-ws which replaces the cockpit.socket
+  # dependency, continue in that case)
+  $SUDO systemctl start agama.service || pgrep cockpit-ws
 )
 
 # - Make sure NetworkManager is running

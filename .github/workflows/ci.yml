@@ -189,15 +189,23 @@ jobs:
     - name: start container
       run: podman run --privileged --detach --name agama --ipc=host -v .:/checkout -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/agama-testing:latest
 
+    - name: Build the frontend
+      run:  podman exec agama bash -c "cd /checkout/web && npm install && make"
+
+    - name: Install the frontend
+      run:  podman exec agama bash -c "ln -snfv /checkout/web/dist /usr/share/cockpit/agama"
+
+    # ./setup-service.sh will try setting up cockpit.socket
+    # which has a login page, so this local-session needs to be first
+    - name: Start Cockpit service
+      run:  podman exec --detach agama /usr/libexec/cockpit-ws --local-session=/usr/bin/cockpit-bridge
+
     - name: Setup service
       run:  podman exec agama bash -c "cd /checkout; ./setup-service.sh"
 
     - name: Set a testing Agama configuration
       # copy a simplified ALP config file, it skips the product selection at the beginning
       run:  podman exec agama bash -c "cp /checkout/playwright/config/agama.yaml /checkout/service/etc/agama.yaml"
-
-    - name: Build the frontend
-      run:  podman exec agama bash -c "cd /checkout/web && npm install && make"
 
     - name: Show NetworkManager log
       run:  podman exec agama journalctl -u NetworkManager
@@ -207,12 +215,6 @@ jobs:
 
     - name: Check DBus socket
       run:  podman exec agama ls -l /var/run/dbus/system_bus_socket
-
-    - name: Install the frontend
-      run:  podman exec agama bash -c "ln -snfv /checkout/web/dist /usr/share/cockpit/agama"
-
-    - name: Start Cockpit service
-      run:  podman exec --detach agama /usr/libexec/cockpit-ws --local-session=/usr/bin/cockpit-bridge
 
     - name: Run the Agama smoke test
       run:  podman exec agama curl http://localhost:9090/cockpit/@localhost/agama/index.html
