@@ -85,10 +85,12 @@ class DevicesManager {
    * @property {string} [model]
    * @property {string[]} [driver]
    * @property {string} [bus]
+   * @property {string} [busId] - DASD Bus ID (only for "dasd" type)
    * @property {string} [transport]
    * @property {boolean} [sdCard]
    * @property {boolean} [dellBOOS]
    * @property {string[]} [devices] - RAID devices (only for "raid" type)
+   * @property {string[]} [wires] - Multipath wires (only for "multipath" type)
    * @property {string} [level] - MD RAID level (only for "md" type)
    * @property {string} [uuid]
    * @property {string[]} [members] - Member devices for a MD RAID (only for "md" type)
@@ -111,6 +113,7 @@ class DevicesManager {
         device.model = dbusProperties.Model.v;
         device.driver = dbusProperties.Driver.v;
         device.bus = dbusProperties.Bus.v;
+        device.busId = dbusProperties.BusId.v;
         device.transport = dbusProperties.Transport.v;
         device.sdCard = dbusProperties.Info.v.SDCard.v;
         device.dellBOSS = dbusProperties.Info.v.DellBOSS.v;
@@ -118,6 +121,10 @@ class DevicesManager {
 
       const addRAIDProperties = (device, raidProperties) => {
         device.devices = raidProperties.Devices.v;
+      };
+
+      const addMultipathProperties = (device, multipathProperties) => {
+        device.wires = multipathProperties.Wires.v;
       };
 
       const addMDProperties = (device, mdProperties) => {
@@ -137,7 +144,10 @@ class DevicesManager {
       };
 
       const addPtableProperties = (device, ptableProperties) => {
-        device.partitionTable = { type: ptableProperties.Type.v };
+        device.partitionTable = {
+          type: ptableProperties.Type.v,
+          partitions: ptableProperties.Partitions.v
+        };
       };
 
       const device = {
@@ -150,6 +160,9 @@ class DevicesManager {
 
       const raidProperties = dbusDevice["org.opensuse.Agama.Storage1.RAID"];
       if (raidProperties !== undefined) addRAIDProperties(device, raidProperties);
+
+      const multipathProperties = dbusDevice["org.opensuse.Agama.Storage1.Multipath"];
+      if (multipathProperties !== undefined) addMultipathProperties(device, multipathProperties);
 
       const mdProperties = dbusDevice["org.opensuse.Agama.Storage1.MD"];
       if (mdProperties !== undefined) addMDProperties(device, mdProperties);
