@@ -17,6 +17,7 @@
       "name": "custom",
       "words": [
         "addrs",
+        "ahci",
         "apsens",
         "autologin",
         "autoconnect",
@@ -38,6 +39,7 @@
         "localdomain",
         "luks",
         "mgmt",
+        "mmcblk",
         "multipath",
         "onboot",
         "partitioner",

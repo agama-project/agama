@@ -20,7 +20,7 @@
  */
 
 // @ts-check
-// cspell:ignore ECKD ahci mmcblk
+// cspell:ignore ECKD dasda ddgdcbibhd
 
 import DBusClient from "./dbus";
 import { StorageClient } from "./storage";
