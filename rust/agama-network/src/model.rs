@@ -166,7 +166,7 @@ mod tests {
 }
 
 /// Network device
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Device {
     pub name: String,
     pub ty: DeviceType,
