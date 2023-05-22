@@ -247,7 +247,7 @@ describe("DeviceSelector", () => {
     });
 
     describe("when device is RAID", () => {
-      it("renders its wires", () => {
+      it("renders its devices", () => {
         plainRender(<DeviceSelector devices={[raid]} />);
         screen.getByText(/Devices/);
         screen.getByText(/sda/);
@@ -273,13 +273,6 @@ describe("DeviceSelector", () => {
       it("renders its bus id", () => {
         plainRender(<DeviceSelector devices={[dasd]} />);
         screen.getByText("DASD 0.0.0150");
-      });
-
-      it("renders its wires", () => {
-        plainRender(<DeviceSelector devices={[multipath]} />);
-        screen.getByText(/Wires/);
-        screen.getByText(/sdc/);
-        screen.getByText(/sdd/);
       });
     });
   });
