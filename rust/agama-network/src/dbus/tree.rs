@@ -75,11 +75,8 @@ impl Tree {
             objects.connections.len()
         );
         let cloned = Arc::new(Mutex::new(conn.clone()));
-        self.add_interface(
-            &path,
-            interfaces::Connection::new(Arc::clone(&self.network), Arc::clone(&cloned)),
-        )
-        .await?;
+        self.add_interface(&path, interfaces::Connection::new(Arc::clone(&cloned)))
+            .await?;
 
         self.add_interface(
             &path,

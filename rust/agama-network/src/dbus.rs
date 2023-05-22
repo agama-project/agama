@@ -5,7 +5,7 @@
 
 mod interfaces;
 pub mod service;
-mod tree_manager;
+mod tree;
 
 pub use service::NetworkService;
-pub(crate) use tree_manager::{ObjectsRegistry, TreeManager};
+pub(crate) use tree::{ObjectsRegistry, Tree};
