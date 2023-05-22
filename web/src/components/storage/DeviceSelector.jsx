@@ -222,7 +222,9 @@ const ItemContent = ({ device }) => {
 export default function DeviceSelector ({ selected, devices = [], onSelect = noop }) {
   const [selectedDevice, setSelectedDevice] = useState(selected);
 
-  const onChange = (device) => {
+  const onOptionClick = (device) => {
+    if (device === selectedDevice) return;
+
     setSelectedDevice(device);
     onSelect(device);
   };
@@ -232,7 +234,7 @@ export default function DeviceSelector ({ selected, devices = [], onSelect = noo
       { devices.map(device => (
         <ListBoxItem
           key={device.sid}
-          onClick={() => onChange(device)}
+          onClick={() => onOptionClick(device)}
           isSelected={device === selectedDevice}
         >
           <ItemContent device={device} />
