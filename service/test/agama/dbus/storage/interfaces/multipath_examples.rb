@@ -21,21 +21,15 @@
 
 require_relative "../../../../test_helper"
 
-shared_examples "PartitionTable interface" do
-  describe "PartitionTable D-Bus interface" do
-    let(:scenario) { "partitioned_md.yml" }
+shared_examples "Multipath interface" do
+  describe "Multipath D-Bus interface" do
+    let(:scenario) { "multipath-formatted.xml" }
 
-    let(:device) { devicegraph.find_by_name("/dev/md0") }
+    let(:device) { devicegraph.multipaths.first }
 
-    describe "#partition_table_type" do
-      it "returns the partition table type" do
-        expect(subject.partition_table_type).to eq("msdos")
-      end
-    end
-
-    describe "#partition_table_partitions" do
-      it "returns the name of the partitions" do
-        expect(subject.partition_table_partitions).to contain_exactly("/dev/md0p1")
+    describe "#multipath_wires" do
+      it "returns the name of the Multipath wires" do
+        expect(subject.multipath_wires).to contain_exactly("/dev/sda", "/dev/sdb")
       end
     end
   end

@@ -153,6 +153,28 @@ shared_examples "Drive interface" do
       end
     end
 
+    describe "#drive_bus_id" do
+      context "if the device is a DASD" do
+        let(:scenario) { "dasd.xml" }
+
+        let(:device) { devicegraph.find_by_name("/dev/dasda") }
+
+        it "returns the bus id" do
+          expect(subject.drive_bus_id).to eq("0.0.0150")
+        end
+      end
+
+      context "if the device is not a DASD" do
+        let(:scenario) { "partitioned_md.yml" }
+
+        let(:device) { devicegraph.find_by_name("/dev/sda") }
+
+        it "returns an empty string" do
+          expect(subject.drive_bus_id).to eq("")
+        end
+      end
+    end
+
     describe "#drive_driver" do
       before do
         allow(device).to receive(:driver).and_return(driver)

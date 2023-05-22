@@ -23,6 +23,7 @@ require "dbus"
 require "agama/dbus/base_object"
 require "agama/dbus/storage/interfaces/drive"
 require "agama/dbus/storage/interfaces/raid"
+require "agama/dbus/storage/interfaces/multipath"
 require "agama/dbus/storage/interfaces/md"
 require "agama/dbus/storage/interfaces/block"
 require "agama/dbus/storage/interfaces/partition_table"
@@ -52,11 +53,12 @@ module Agama
         attr_reader :storage_device
 
         # Adds the required interfaces according to the storage object
-        def add_interfaces
+        def add_interfaces # rubocop:disable Metrics/CyclomaticComplexity
           interfaces = []
           interfaces << Interfaces::Drive if drive?
           interfaces << Interfaces::Raid if storage_device.is?(:dm_raid)
           interfaces << Interfaces::Md if storage_device.is?(:md)
+          interfaces << Interfaces::Multipath if storage_device.is?(:multipath)
           interfaces << Interfaces::Block if storage_device.is?(:blk_device)
           interfaces << Interfaces::PartitionTable if partition_table?
 

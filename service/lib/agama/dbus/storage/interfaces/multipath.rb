@@ -19,20 +19,37 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "dbus"
+
 module Agama
   module DBus
     module Storage
-      # Module for storage specific D-Bus interfaces
       module Interfaces
+        # Interface for Multipath devices
+        #
+        # @note This interface is intended to be included by {Device} if needed.
+        module Multipath
+          MULTIPATH_INTERFACE = "org.opensuse.Agama.Storage1.Multipath"
+          private_constant :MULTIPATH_INTERFACE
+
+          # Multipath wires
+          #
+          # TODO: return object paths
+          #
+          # @return [Array<String>]
+          def multipath_wires
+            storage_device.parents.map(&:name)
+          end
+
+          def self.included(base)
+            base.class_eval do
+              dbus_interface MULTIPATH_INTERFACE do
+                dbus_reader :multipath_wires, "as", dbus_name: "Wires"
+              end
+            end
+          end
+        end
       end
     end
   end
 end
-
-require "agama/dbus/storage/interfaces/drive"
-require "agama/dbus/storage/interfaces/raid"
-require "agama/dbus/storage/interfaces/multipath"
-require "agama/dbus/storage/interfaces/md"
-require "agama/dbus/storage/interfaces/block"
-require "agama/dbus/storage/interfaces/partition_table"
-require "agama/dbus/storage/interfaces/dasd_manager"

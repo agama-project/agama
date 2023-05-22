@@ -70,6 +70,15 @@ module Agama
             storage_device.bus || ""
           end
 
+          # Bus Id for DASD
+          #
+          # @return [String]
+          def drive_bus_id
+            return "" unless storage_device.respond_to?(:bus_id)
+
+            storage_device.bus_id
+          end
+
           # Kernel drivers used by the device
           #
           # @return [Array<String>]
@@ -103,6 +112,7 @@ module Agama
                 dbus_reader :drive_vendor, "s", dbus_name: "Vendor"
                 dbus_reader :drive_model, "s", dbus_name: "Model"
                 dbus_reader :drive_bus, "s", dbus_name: "Bus"
+                dbus_reader :drive_bus_id, "s", dbus_name: "BusId"
                 dbus_reader :drive_driver, "as", dbus_name: "Driver"
                 dbus_reader :drive_transport, "s", dbus_name: "Transport"
                 dbus_reader :drive_info, "a{sv}", dbus_name: "Info"
