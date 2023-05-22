@@ -21,8 +21,8 @@
 
 import React from 'react';
 
-// NOTE: "@icons" is an alias to use a shorter path to real icons location.
-//       Check the tsconfig.json file to see its value.
+// NOTE: "@icons" is an alias to use a shorter path to real @material-symbols
+// icons location. Check the tsconfig.json file to see its value.
 import AddAPhoto from "@icons/add_a_photo.svg?component";
 import AutoMode from "@icons/auto_mode.svg?component";
 import Apps from "@icons/apps.svg?component";
@@ -37,6 +37,8 @@ import Edit from "@icons/edit.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Error from "@icons/error.svg?component";
 import ExpandMore from "@icons/expand_more.svg?component";
+import Folder from "@icons/folder.svg?component";
+import FolderOff from "@icons/folder_off.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Help from "@icons/help.svg?component";
 import HomeStorage from "@icons/home_storage.svg?component";
@@ -55,6 +57,7 @@ import SettingsApplications from "@icons/settings_applications.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import SettingsFill from "@icons/settings-fill.svg?component";
 import SignalCellularAlt from "@icons/signal_cellular_alt.svg?component";
+import Storage from "@icons/storage.svg?component";
 import TaskAlt from "@icons/task_alt.svg?component";
 import Terminal from "@icons/terminal.svg?component";
 import Translate from "@icons/translate.svg?component";
@@ -63,6 +66,11 @@ import Warning from "@icons/warning.svg?component";
 import Wifi from "@icons/wifi.svg?component";
 import WifiFind from "@icons/wifi_find.svg?component";
 
+// Icons from react-simple-icons
+
+import { SiLinux, SiWindows } from "@icons-pack/react-simple-icons";
+
+// Icons from SVG
 import Loading from "./three-dots-loader-icon.svg?component";
 
 const icons = {
@@ -80,6 +88,8 @@ const icons = {
   edit_square: EditSquare,
   error: Error,
   expand_more: ExpandMore,
+  folder: Folder,
+  folder_off: FolderOff,
   hard_drive: HardDrive,
   help: Help,
   home_storage: HomeStorage,
@@ -99,13 +109,17 @@ const icons = {
   settings_applications: SettingsApplications,
   settings_ethernet: SettingsEthernet,
   signal_cellular_alt: SignalCellularAlt,
+  storage: Storage,
   task_alt: TaskAlt,
   terminal: Terminal,
   translate: Translate,
   tune: Tune,
   warning: Warning,
   wifi: Wifi,
-  wifi_find: WifiFind
+  wifi_find: WifiFind,
+  // brand icons
+  linux_logo: SiLinux,
+  windows_logo: SiWindows
 };
 
 /**

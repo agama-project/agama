@@ -39,10 +39,20 @@ module Agama
             storage_device.partition_table.type.to_s
           end
 
+          # Name of the partitions
+          #
+          # TODO: return the path of the partition objects once the partitions are exported.
+          #
+          # @return [Array<String>]
+          def partition_table_partitions
+            storage_device.partition_table.partitions.map(&:name)
+          end
+
           def self.included(base)
             base.class_eval do
               dbus_interface PARTITION_TABLE_INTERFACE do
                 dbus_reader :partition_table_type, "s", dbus_name: "Type"
+                dbus_reader :partition_table_partitions, "as", dbus_name: "Partitions"
               end
             end
           end

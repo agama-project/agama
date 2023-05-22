@@ -22,14 +22,13 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
-  Form, FormGroup, FormSelect, FormSelectOption, Skeleton, Switch,
+  Form, Skeleton, Switch,
   Tooltip
 } from "@patternfly/react-core";
 
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
-import { ProposalVolumes } from "~/components/storage";
+import { DeviceSelector, ProposalVolumes } from "~/components/storage";
 import { Icon } from "~/components/layout";
-import { deviceLabel } from "~/components/storage/utils";
 import { noop } from "~/utils";
 
 /**
@@ -66,38 +65,16 @@ const InstallationDeviceForm = ({ id, current, devices, onSubmit }) => {
     if (device !== undefined) onSubmit(device);
   };
 
-  const changeDevice = (v) => setDevice(v);
+  const selectDevice = (d) => setDevice(d.name);
 
-  const DeviceSelector = ({ current, devices, onChange }) => {
-    const DeviceOptions = () => {
-      const options = devices.map(device => {
-        return <FormSelectOption key={device.name} value={device.name} label={deviceLabel(device)} />;
-      });
-
-      return options;
-    };
-
-    return (
-      <FormGroup fieldId="bootDevice" label="Device to use for the installation">
-        <FormSelect
-          id="bootDevice"
-          value={current}
-          aria-label="Device"
-          onChange={onChange}
-        >
-          <DeviceOptions />
-        </FormSelect>
-      </FormGroup>
-    );
-  };
+  const selected = devices.find(d => d.name === device);
 
   return (
     <Form id={id} onSubmit={submitForm}>
       <DeviceSelector
-        key={device}
-        current={device}
+        selected={selected}
         devices={devices}
-        onChange={changeDevice}
+        onSelect={selectDevice}
       />
     </Form>
   );
@@ -140,6 +117,9 @@ const InstallationDeviceField = ({ current, devices, isLoading, onChange }) => {
     return <Skeleton width="25%" />;
   }
 
+  const description = "Select in which device to install the system. All the file systems will " +
+    "be created on the selected device.";
+
   return (
     <>
       <div className="split">
@@ -147,8 +127,8 @@ const InstallationDeviceField = ({ current, devices, isLoading, onChange }) => {
         <DeviceContent device={device} />
       </div>
       <Popup
-        aria-label="Installation device"
         title="Installation device"
+        description={description}
         isOpen={isFormOpen}
       >
         <If
@@ -322,14 +302,14 @@ const EncryptionPasswordField = ({ selected: selectedProp, password: passwordPro
       <div className="split">
         <Switch
           id="encryption"
-          label="Encrypt devices"
+          label="Use encryption"
           isReversed
           isChecked={selected}
           onChange={changeSelected}
         />
         { selected && <ChangePasswordButton /> }
       </div>
-      <Popup aria-label="Devices encryption" title="Devices encryption" isOpen={isFormOpen}>
+      <Popup aria-label="Encryption settings" title="Encryption settings" isOpen={isFormOpen}>
         <EncryptionPasswordForm
           id="encryptionPasswordForm"
           password={password}

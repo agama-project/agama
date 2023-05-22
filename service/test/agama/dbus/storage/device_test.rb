@@ -23,6 +23,7 @@ require_relative "../../../test_helper"
 require_relative "../../storage/storage_helpers"
 require_relative "./interfaces/drive_examples"
 require_relative "./interfaces/raid_examples"
+require_relative "./interfaces/multipath_examples"
 require_relative "./interfaces/block_examples"
 require_relative "./interfaces/md_examples"
 require_relative "./interfaces/partition_table_examples"
@@ -128,9 +129,11 @@ describe Agama::DBus::Storage::Device do
 
   include_examples "RAID interface"
 
-  include_examples "Block interface"
+  include_examples "Multipath interface"
 
   include_examples "MD interface"
+
+  include_examples "Block interface"
 
   include_examples "PartitionTable interface"
 end
