@@ -35,6 +35,25 @@ jest.mock("@patternfly/react-core", () => {
 
 let props;
 
+const vda = {
+  sid: "59",
+  type: "disk",
+  vendor: "Micron",
+  model: "Micron 1100 SATA",
+  driver: ["ahci", "mmcblk"],
+  bus: "IDE",
+  transport: "usb",
+  dellBOSS: false,
+  sdCard: true,
+  active: true,
+  name: "/dev/vda",
+  size: 1024,
+  systems : ["Windows", "openSUSE Leap 15.2"],
+  udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
+  udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+  partitionTable: { type: "gpt", partitions: [] }
+};
+
 beforeEach(() => {
   props = {};
 });
@@ -99,7 +118,7 @@ describe("Installation device field", () => {
 
   it("allows selecting a device when clicking on the device name", async () => {
     props = {
-      availableDevices: [{ name: "/dev/vda" }],
+      availableDevices: [vda],
       settings: { candidateDevices: ["/dev/vda"] },
       onChange: jest.fn()
     };
@@ -110,7 +129,7 @@ describe("Installation device field", () => {
     await user.click(button);
 
     const popup = await screen.findByRole("dialog");
-    screen.getByText(/Device to use for the installation/);
+    within(popup).getByText("Installation device");
 
     const accept = within(popup).getByRole("button", { name: "Accept" });
     await user.click(accept);
@@ -121,7 +140,7 @@ describe("Installation device field", () => {
 
   it("allows canceling the selection of the device", async () => {
     props = {
-      availableDevices: [{ name: "/dev/vda" }],
+      availableDevices: [vda],
       settings: { candidateDevices: ["/dev/vda"] },
       onChange: jest.fn()
     };
@@ -132,7 +151,7 @@ describe("Installation device field", () => {
     await user.click(button);
 
     const popup = await screen.findByRole("dialog");
-    screen.getByText(/Device to use for the installation/);
+    within(popup).getByText("Installation device");
 
     const cancel = within(popup).getByRole("button", { name: "Cancel" });
     await user.click(cancel);
@@ -225,7 +244,7 @@ describe("Encryption field", () => {
     it("does not render the encryption switch", () => {
       plainRender(<ProposalSettingsSection {...props} />);
 
-      expect(screen.queryByLabelText(/Encrypt devices/)).toBeNull();
+      expect(screen.queryByLabelText("Use encryption")).toBeNull();
     });
   });
 
@@ -237,7 +256,7 @@ describe("Encryption field", () => {
     it("renders the encryption switch", () => {
       plainRender(<ProposalSettingsSection {...props} />);
 
-      screen.getByRole("checkbox", { name: /Encrypt devices/ });
+      screen.getByRole("checkbox", { name: "Use encryption" });
     });
   });
 
@@ -250,7 +269,7 @@ describe("Encryption field", () => {
     it("renders the encryption switch as selected", () => {
       plainRender(<ProposalSettingsSection {...props} />);
 
-      const checkbox = screen.getByRole("checkbox", { name: /Encrypt devices/ });
+      const checkbox = screen.getByRole("checkbox", { name: "Use encryption" });
       expect(checkbox).toBeChecked();
     });
 
@@ -263,7 +282,7 @@ describe("Encryption field", () => {
     it("changes the selection on click", async () => {
       const { user } = plainRender(<ProposalSettingsSection {...props} />);
 
-      const checkbox = screen.getByRole("checkbox", { name: /Encrypt devices/ });
+      const checkbox = screen.getByRole("checkbox", { name: "Use encryption" });
       await user.click(checkbox);
 
       expect(checkbox).not.toBeChecked();
@@ -277,7 +296,7 @@ describe("Encryption field", () => {
       await user.click(button);
 
       const popup = await screen.findByRole("dialog");
-      screen.getByText(/Devices encryption/);
+      screen.getByText("Encryption settings");
 
       const accept = within(popup).getByRole("button", { name: "Accept" });
       await user.click(accept);
@@ -293,7 +312,7 @@ describe("Encryption field", () => {
       await user.click(button);
 
       const popup = await screen.findByRole("dialog");
-      screen.getByText(/Devices encryption/);
+      screen.getByText("Encryption settings");
 
       const cancel = within(popup).getByRole("button", { name: "Cancel" });
       await user.click(cancel);
@@ -312,7 +331,7 @@ describe("Encryption field", () => {
     it("renders the encryption switch as not selected", () => {
       plainRender(<ProposalSettingsSection {...props} />);
 
-      const checkbox = screen.getByRole("checkbox", { name: /Encrypt devices/ });
+      const checkbox = screen.getByRole("checkbox", { name: "Use encryption" });
       expect(checkbox).not.toBeChecked();
     });
 
@@ -326,11 +345,11 @@ describe("Encryption field", () => {
     it("changes the selection and allows changing the settings on click", async () => {
       const { user } = plainRender(<ProposalSettingsSection {...props} />);
 
-      const checkbox = screen.getByRole("checkbox", { name: /Encrypt devices/ });
+      const checkbox = screen.getByRole("checkbox", { name: "Use encryption" });
       await user.click(checkbox);
 
       const popup = await screen.findByRole("dialog");
-      screen.getByText(/Devices encryption/);
+      screen.getByText("Encryption settings");
 
       const passwordInput = screen.getByLabelText("Password");
       const passwordConfirmInput = screen.getByLabelText("Password confirmation");
@@ -348,11 +367,11 @@ describe("Encryption field", () => {
     it("does not select encryption if the settings are canceled", async () => {
       const { user } = plainRender(<ProposalSettingsSection {...props} />);
 
-      const checkbox = screen.getByRole("checkbox", { name: /Encrypt devices/ });
+      const checkbox = screen.getByRole("checkbox", { name: "Use encryption" });
       await user.click(checkbox);
 
       const popup = await screen.findByRole("dialog");
-      screen.getByText(/Devices encryption/);
+      screen.getByText("Encryption settings");
 
       const cancel = within(popup).getByRole("button", { name: "Cancel" });
       await user.click(cancel);
