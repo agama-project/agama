@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 22 12:29:20 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Version 2
+
+-------------------------------------------------------------------
 Thu May 11 11:00:11 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Import root authentication settings when reading a Jsonnet file

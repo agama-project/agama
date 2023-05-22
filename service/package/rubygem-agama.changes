@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 22 12:28:46 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Version 2
+
+-------------------------------------------------------------------
 Thu May 18 12:19:49 UTC 2023 - Martin Vidner <mvidner@suse.com>
 
 - Update ruby-dbus dependency to 0.22.x (gh#openSUSE/agama#581)
