@@ -127,7 +127,6 @@ const InstallationDeviceField = ({ current, devices, isLoading, onChange }) => {
         <DeviceContent device={device} />
       </div>
       <Popup
-        aria-label="Installation device"
         title="Installation device"
         description={description}
         isOpen={isFormOpen}
