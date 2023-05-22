@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 22 10:42:35 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: Fix header and footer block size (gh#openSUSE/agama#583)
+
+-------------------------------------------------------------------
 Fri May 19 09:29:50 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: grayscale and blur not accessible div nodes
