@@ -5,7 +5,7 @@
 use super::ObjectsRegistry;
 use crate::{
     error::NetworkStateError,
-    model::{Connection as NetworkConnection, WirelessConnection},
+    model::{Connection as NetworkConnection, Device as NetworkDevice, WirelessConnection},
     NetworkSystem,
 };
 use parking_lot::{MappedMutexGuard, Mutex, MutexGuard};
@@ -49,20 +49,15 @@ impl Devices {
 ///
 /// It offers an API to query basic networking devices information (e.g., the name).
 pub struct Device {
-    network: Arc<Mutex<NetworkSystem>>,
-    device_name: String,
+    device: NetworkDevice,
 }
 
 impl Device {
     /// Creates an interface object.
     ///
-    /// * `network`: network state.
-    /// * `device_name`: device name.
-    pub fn new(network: Arc<Mutex<NetworkSystem>>, device_name: &str) -> Self {
-        Self {
-            network,
-            device_name: device_name.to_string(),
-        }
+    /// * `device`: network device.
+    pub fn new(device: NetworkDevice) -> Self {
+        Self { device }
     }
 }
 
@@ -70,19 +65,12 @@ impl Device {
 impl Device {
     #[dbus_interface(property)]
     pub fn name(&self) -> &str {
-        &self.device_name
+        &self.device.name
     }
 
     #[dbus_interface(property)]
-    pub fn device_type(&self) -> zbus::fdo::Result<u8> {
-        let network = self.network.lock();
-        let device =
-            network
-                .get_device(&self.device_name)
-                .ok_or(NetworkStateError::UnknownDevice(
-                    self.device_name.to_string(),
-                ))?;
-        Ok(device.ty as u8)
+    pub fn device_type(&self) -> u8 {
+        self.device.ty as u8
     }
 }
 
@@ -140,7 +128,6 @@ impl Connections {
 ///
 /// It offers an API to query a connection.
 pub struct Connection {
-    network: Arc<Mutex<NetworkSystem>>,
     connection: Arc<Mutex<NetworkConnection>>,
 }
 
@@ -148,14 +135,8 @@ impl Connection {
     /// Creates a Connection interface object.
     ///
     /// * `UUID`: Connection UUID.
-    pub fn new(
-        network: Arc<Mutex<NetworkSystem>>,
-        connection: Arc<Mutex<NetworkConnection>>,
-    ) -> Self {
-        Self {
-            network,
-            connection,
-        }
+    pub fn new(connection: Arc<Mutex<NetworkConnection>>) -> Self {
+        Self { connection }
     }
 
     /// Returns the underlying connection.
@@ -184,10 +165,10 @@ pub struct Ipv4 {
 }
 
 impl Ipv4 {
-    /// Creates a Ipv4 interface object.
+    /// Creates an IPv4 interface object.
     ///
     /// * `network`: network state.
-    /// * `conn_name`: connection name.
+    /// * `connection`: connection name.
     pub fn new(
         network: Arc<Mutex<NetworkSystem>>,
         connection: Arc<Mutex<NetworkConnection>>,
