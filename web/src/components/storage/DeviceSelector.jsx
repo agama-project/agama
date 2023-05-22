@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,13 +20,18 @@
  */
 
 import React, { useState } from "react";
+import { noop } from "~/utils";
 import { Icon } from "~/components/layout";
-import { Popup } from "~/components/core";
+import { If } from "~/components/core";
+import { deviceSize } from "~/components/storage/utils";
+
+/**
+ * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
+ */
 
 const ListBox = ({ children, ...props }) => <ul role="listbox" {...props}>{children}</ul>;
 
 const ListBoxItem = ({ isSelected, children, onClick }) => {
-  console.log("option", children, "is selected?", isSelected);
   const props = {};
   if (isSelected) props['aria-selected'] = true;
 
@@ -42,61 +47,197 @@ const ListBoxItem = ({ isSelected, children, onClick }) => {
 };
 
 /**
- * Component for selecting a storage device
+ * Content for a device item
  * @component
  *
+ * @param {Object} props
+ * @param {StorageDevice} props.device
  */
-export default function DeviceSelector ({ devices = ["Fake device", "Another fake device"] }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedDevices, setSelectedDevices] = useState([]);
+const ItemContent = ({ device }) => {
+  const BasicInfo = () => {
+    const DeviceIcon = () => {
+      const names = {
+        raid: "storage",
+        md: "storage"
+      };
 
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
-  const toggle = (element) => {
-    setSelectedDevices([element]);
-    // To allow multiple selection
-    // const currentSelected = [...selectedDevices];
-    // if (selectedDevices.includes(element)) {
-    //   setSelectedDevices(currentSelected.filter(e => e !== element));
-    // } else {
-    //   setSelectedDevices([...currentSelected, element]);
-    // }
+      const name = names[device.type] || "hard_drive";
+
+      return <Icon name={name} />;
+    };
+
+    const DeviceSize = () => {
+      if (device.size === undefined) return null;
+
+      return <div>{deviceSize(device.size)}</div>;
+    };
+
+    return (
+      <div>
+        <DeviceIcon />
+        <DeviceSize />
+      </div>
+    );
+  };
+
+  const ExtendedInfo = () => {
+    const DeviceName = () => {
+      if (device.name === undefined) return null;
+
+      return <div>{device.name}</div>;
+    };
+
+    const DeviceType = () => {
+      let type;
+
+      switch (device.type) {
+        case "multipath": {
+          type = "Multipath";
+          break;
+        }
+        case "dasd": {
+          type = `DASD ${device.busId}`;
+          break;
+        }
+        case "md": {
+          type = `Software ${device.level.toUpperCase()}`;
+          break;
+        }
+        case "disk": {
+          type = device.sdCard ? "SD Card" : `Transport ${device.transport}`;
+        }
+      }
+
+      return <If condition={type} then={<div>{type}</div>} />;
+    };
+
+    const DeviceModel = () => {
+      if (!device.model || device.model === "") return null;
+
+      return <div>{device.model}</div>;
+    };
+
+    const MDInfo = () => {
+      if (device.type !== "md") return null;
+
+      const members = device.members.map(m => m.split("/").at(-1));
+
+      return <div>Members: {members.join(", ")}</div>;
+    };
+
+    const RAIDInfo = () => {
+      if (device.type !== "raid") return null;
+
+      const devices = device.devices.map(m => m.split("/").at(-1));
+
+      return <div>Devices: {devices.join(", ")}</div>;
+    };
+
+    const MultipathInfo = () => {
+      if (device.type !== "multipath") return null;
+
+      const wires = device.wires.map(m => m.split("/").at(-1));
+
+      return <div>Wires: {wires.join(", ")}</div>;
+    };
+
+    return (
+      <div>
+        <DeviceName />
+        <DeviceType />
+        <DeviceModel />
+        <MDInfo />
+        <RAIDInfo />
+        <MultipathInfo />
+      </div>
+    );
+  };
+
+  const ContentInfo = () => {
+    const PTable = () => {
+      if (device.partitionTable === undefined) return null;
+
+      const type = device.partitionTable.type.toUpperCase();
+      const numPartitions = device.partitionTable.partitions.length;
+
+      const text = `${type} with ${numPartitions} partitions`;
+
+      return (
+        <div>
+          <Icon name="folder" size="14" /> {text}
+        </div>
+      );
+    };
+
+    const Systems = () => {
+      if (device.systems.length === 0) return null;
+
+      const System = ({ system }) => {
+        const logo = /windows/i.test(system) ? "windows_logo" : "linux_logo";
+
+        return <div><Icon name={logo} size="14" /> {system}</div>;
+      };
+
+      return device.systems.map((s, i) => <System key={i} system={s} />);
+    };
+
+    const NotFound = () => {
+      return <div><Icon name="folder_off" size="14" /> No content found</div>;
+    };
+
+    const hasContent = device.partitionTable || device.systems.length > 0;
+
+    return (
+      <div>
+        <If
+          condition={hasContent}
+          then={<><PTable /><Systems /></>}
+          else={<NotFound />}
+        />
+      </div>
+    );
   };
 
   return (
     <>
-      <button onClick={open}>Open the device selector</button>
-      <Popup title="Device Selector" isOpen={isOpen}>
-
-        <ListBox aria-label="Available devices" className="stack device-selector">
-          { devices.map(device => (
-            <ListBoxItem
-              key={device}
-              onClick={() => toggle(device)}
-              isSelected={selectedDevices.includes(device)}
-            >
-              <div>
-                <Icon name="hard_drive" />
-                <div>512 GiB</div>
-              </div>
-              <div>
-                <div>/dev/vda</div>
-                <div>Micron 1100 SATA</div>
-              </div>
-              <div>
-                <div>Content</div>
-                <div><Icon name="flex_wrap" size="14" /> GPT partition table</div>
-                <div><Icon name="linux_logo" size="14" /> openSUSE Leap 15.2</div>
-                <div><Icon name="windows_logo" size="14" /> Windows System</div>
-              </div>
-            </ListBoxItem>
-          ))}
-        </ListBox>
-
-        <Popup.Actions>
-          <Popup.Cancel onClick={close} />
-        </Popup.Actions>
-      </Popup>
+      <BasicInfo />
+      <ExtendedInfo />
+      <ContentInfo />
     </>
+  );
+};
+
+/**
+ * Component for selecting a storage device
+ * @component
+ *
+ * @param {Object} props
+ * @param {StorageDevice} [props.selected] - Default selected device, in any
+ * @param {StorageDevice[]=[]} [props.devices] - Devices to show in the selector
+ * @param {onSelectFn} [props.onSelect] - Function to be called when a device is selected
+ *
+ * @callback onSelectFn
+ * @param {StorageDevice} device - Selected device
+ */
+export default function DeviceSelector ({ selected, devices = [], onSelect = noop }) {
+  const [selectedDevice, setSelectedDevice] = useState(selected);
+
+  const onChange = (device) => {
+    setSelectedDevice(device);
+    onSelect(device);
+  };
+
+  return (
+    <ListBox aria-label="Available devices" className="stack device-selector">
+      { devices.map(device => (
+        <ListBoxItem
+          key={device.sid}
+          onClick={() => onChange(device)}
+          isSelected={device === selectedDevice}
+        >
+          <ItemContent device={device} />
+        </ListBoxItem>
+      ))}
+    </ListBox>
   );
 }
