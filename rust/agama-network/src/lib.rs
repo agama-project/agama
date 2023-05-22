@@ -63,12 +63,14 @@
 //!   service.listen().await.expect("Could not start the service");
 //! }
 //! ```
+mod adapter;
 pub mod dbus;
 pub mod error;
 pub mod model;
 mod nm;
 pub mod system;
 
+pub use adapter::Adapter;
 pub use dbus::NetworkService;
 pub use model::NetworkState;
 pub use system::{NetworkEvent, NetworkEventCallback, NetworkSystem};

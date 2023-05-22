@@ -14,6 +14,17 @@ pub struct NetworkState {
 }
 
 impl NetworkState {
+    /// Returns a NetworkState struct with the given devices and connections.
+    ///
+    /// * `devices`: devices to include in the state.
+    /// * `connections`: connections to include in the state.
+    pub fn new(devices: Vec<Device>, connections: Vec<Connection>) -> Self {
+        Self {
+            devices,
+            connections,
+        }
+    }
+
     /// Get device by name
     ///
     /// * `name`: device name
@@ -65,11 +76,11 @@ impl NetworkState {
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
     pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
-        let Some(index) = self.connections.iter().position(|i| i.uuid() == uuid) else {
+        let Some(conn) = self.get_connection_mut(uuid) else {
             return Err(NetworkStateError::UnknownConnection(uuid));
         };
 
-        self.connections.swap_remove(index);
+        conn.remove();
         Ok(())
     }
 }
@@ -114,14 +125,14 @@ mod tests {
         let mut state = NetworkState::default();
         let uuid = Uuid::new_v4();
         let base0 = BaseConnection {
-            uuid: Uuid::new_v4(),
+            uuid,
             ..Default::default()
         };
         let conn0 = Connection::Ethernet(EthernetConnection { base: base0 });
         state.add_connection(conn0).unwrap();
 
         let base1 = BaseConnection {
-            uuid: Uuid::new_v4(),
+            uuid,
             ..Default::default()
         };
         let conn2 = Connection::Ethernet(EthernetConnection { base: base1 });
@@ -148,13 +159,14 @@ mod tests {
         let mut state = NetworkState::default();
         let uuid = Uuid::new_v4();
         let base0 = BaseConnection {
-            uuid: Uuid::new_v4(),
+            uuid,
             ..Default::default()
         };
         let conn0 = Connection::Ethernet(EthernetConnection { base: base0 });
         state.add_connection(conn0).unwrap();
         state.remove_connection(uuid).unwrap();
-        assert!(state.get_connection(uuid).is_none());
+        let found = state.get_connection(uuid).unwrap();
+        assert!(found.is_missing());
     }
 
     #[test]
@@ -243,13 +255,35 @@ impl Connection {
     pub fn ipv4_mut(&mut self) -> &mut Ipv4Config {
         &mut self.base_mut().ipv4
     }
+
+    pub fn remove(&mut self) {
+        self.base_mut().status = Status::Missing;
+    }
+
+    pub fn is_missing(&self) -> bool {
+        self.base().status == Status::Missing
+    }
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct BaseConnection {
     pub id: String,
     pub uuid: Uuid,
     pub ipv4: Ipv4Config,
+    pub status: Status,
+}
+
+impl PartialEq for BaseConnection {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id && self.uuid == other.uuid && self.ipv4 == other.ipv4
+    }
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub enum Status {
+    #[default]
+    Present,
+    Missing,
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]

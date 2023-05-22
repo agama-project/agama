@@ -194,13 +194,15 @@ mod test {
     use super::{connection_from_dbus, connection_to_dbus, NestedHash};
     use crate::model::*;
     use std::{collections::HashMap, net::Ipv4Addr};
+    use uuid::Uuid;
     use zbus::zvariant::{self, OwnedValue, Value};
 
     #[test]
     fn test_connection_from_dbus() {
+        let uuid = Uuid::new_v4().to_string();
         let connection_section = HashMap::from([
             ("id".to_string(), Value::new("eth0").to_owned()),
-            ("uuid".to_string(), Value::new("aaa-bbb-ccc").to_owned()),
+            ("uuid".to_string(), Value::new(uuid).to_owned()),
         ]);
 
         let address_data = vec![HashMap::from([
@@ -244,9 +246,10 @@ mod test {
 
     #[test]
     fn test_connection_from_dbus_wireless() {
+        let uuid = Uuid::new_v4().to_string();
         let connection_section = HashMap::from([
             ("id".to_string(), Value::new("wlan0").to_owned()),
-            ("uuid".to_string(), Value::new("aaa-bbb-ccc").to_owned()),
+            ("uuid".to_string(), Value::new(uuid).to_owned()),
         ]);
 
         let wireless_section = HashMap::from([

@@ -4,7 +4,7 @@ use async_std;
 
 #[async_std::main]
 async fn main() {
-    let network = NetworkSystem::from_system()
+    let network = NetworkSystem::from_network_manager()
         .await
         .expect("Could not read network state");
 

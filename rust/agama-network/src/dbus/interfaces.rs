@@ -8,6 +8,7 @@ use crate::{
     model::{Connection as NetworkConnection, Device as NetworkDevice, WirelessConnection},
     NetworkSystem,
 };
+use async_std::task;
 use parking_lot::{MappedMutexGuard, Mutex, MutexGuard};
 use std::{
     net::{AddrParseError, Ipv4Addr},
@@ -121,6 +122,19 @@ impl Connections {
         let uuid =
             Uuid::parse_str(uuid).map_err(|_| NetworkStateError::InvalidUuid(uuid.to_string()))?;
         Ok(state.remove_connection(uuid)?)
+    }
+
+    /// Applies the network configuration.
+    ///
+    /// It includes adding, updating and removing connections as needed.
+    pub async fn apply(&self) -> zbus::fdo::Result<()> {
+        let state = self.network.lock();
+        task::block_on(async {
+            if let Err(e) = state.to_network_manager().await {
+                eprintln!("Could not update the configuration: {}", e);
+            }
+        });
+        Ok(())
     }
 }
 

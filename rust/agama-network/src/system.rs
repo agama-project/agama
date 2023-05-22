@@ -1,9 +1,8 @@
 use crate::{
-    error::NetworkStateError, model::Connection, model::Device, nm::NetworkManagerClient,
+    error::NetworkStateError, model::Connection, model::Device, nm::NetworkManagerAdapter, Adapter,
     NetworkState,
 };
-use std::error::Error;
-use std::sync::Arc;
+use std::{error::Error, sync::Arc};
 use uuid::Uuid;
 
 /// Signature for network events callbacks.
@@ -17,21 +16,28 @@ pub struct NetworkSystem {
 }
 
 impl NetworkSystem {
-    /// Reads the network configuration using the NetworkManager D-Bus service.
-    pub async fn from_system() -> Result<Self, Box<dyn Error>> {
-        let nm_client = NetworkManagerClient::from_system().await?;
-        let devices = nm_client.devices().await?;
-        let connections = nm_client.connections().await?;
-
-        let state = NetworkState {
-            devices,
-            connections,
-        };
-
-        Ok(Self {
+    pub fn new(state: NetworkState) -> Self {
+        Self {
             state,
             callbacks: vec![],
-        })
+        }
+    }
+
+    /// Reads the network configuration using the NetworkManager adapter.
+    pub async fn from_network_manager() -> Result<NetworkSystem, Box<dyn Error>> {
+        let adapter = NetworkManagerAdapter::from_system()
+            .await
+            .expect("Could not connect to NetworkManager to read the configuration.");
+        let state = adapter.read()?;
+        Ok(Self::new(state))
+    }
+
+    /// Writes the network configuration to NetworkManager.
+    pub async fn to_network_manager(&self) -> Result<(), Box<dyn Error>> {
+        let adapter = NetworkManagerAdapter::from_system()
+            .await
+            .expect("Could not connect to NetworkManager to write the changes.");
+        adapter.write(&self.state)
     }
 
     /// Registers a callback for network configuration events.

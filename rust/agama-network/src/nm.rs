@@ -4,9 +4,11 @@
 //! structs and enums to work with NetworkManager configuration. It is intended to be used
 //! internally, so the API is focused on Agama's use cases.
 
+mod adapter;
 mod client;
 mod dbus;
 mod model;
 mod proxies;
 
+pub use adapter::NetworkManagerAdapter;
 pub use client::NetworkManagerClient;

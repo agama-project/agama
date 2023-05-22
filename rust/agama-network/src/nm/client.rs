@@ -4,6 +4,7 @@ use super::model::*;
 use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
 use crate::model::{Connection, Device};
 use agama_lib::error::ServiceError;
+use uuid::Uuid;
 use zbus;
 
 /// Simplified NetworkManager D-Bus client.
@@ -70,16 +71,57 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(connections)
     }
 
-    /// Updates a network connection.
-    pub async fn update_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
+    /// Adds or updates a connection if it already exists.
+    ///
+    /// * `conn`: connection to add.
+    pub async fn add_or_update_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
         let proxy = SettingsProxy::new(&self.connection).await?;
         let uuid_s = conn.uuid().to_string();
-        let path = proxy.get_connection_by_uuid(uuid_s.as_str()).await?;
-        let proxy = ConnectionProxy::builder(&self.connection)
-            .path(path.as_str())?
-            .build()
-            .await?;
+        let conn_dbus = connection_to_dbus(conn);
+        if let Ok(path) = proxy.get_connection_by_uuid(uuid_s.as_str()).await {
+            let proxy = ConnectionProxy::builder(&self.connection)
+                .path(path.as_str())?
+                .build()
+                .await?;
+            proxy.update(conn_dbus).await?;
+        } else {
+            proxy.add_connection(conn_dbus).await?;
+        }
+        Ok(())
+    }
+
+    /// Adds a network connection.
+    ///
+    /// * `conn`: connection to add.
+    pub async fn add_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
+        let proxy = SettingsProxy::new(&self.connection).await?;
+        proxy.add_connection(connection_to_dbus(conn)).await?;
+        Ok(())
+    }
+
+    /// Updates a network connection.
+    ///
+    /// * `conn`: connection to update.
+    pub async fn update_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
+        let proxy = self.get_connection_proxy(conn.uuid()).await?;
         proxy.update(connection_to_dbus(conn)).await?;
         Ok(())
+    }
+
+    pub async fn remove_connection(&self, uuid: Uuid) -> Result<(), ServiceError> {
+        let proxy = self.get_connection_proxy(uuid).await?;
+        proxy.delete().await?;
+        Ok(())
+    }
+
+    async fn get_connection_proxy(&self, uuid: Uuid) -> Result<ConnectionProxy, ServiceError> {
+        let proxy = SettingsProxy::new(&self.connection).await?;
+        let uuid_s = uuid.to_string();
+        let path = proxy.get_connection_by_uuid(uuid_s.as_str()).await?;
+        let proxy = ConnectionProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+        Ok(proxy)
     }
 }
