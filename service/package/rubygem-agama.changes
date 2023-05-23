@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 23 08:05:14 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Initial version of storage D-Bus API for exporting system devices.
+- gh#openSUSE/agama#586
+
+-------------------------------------------------------------------
 Fri May  5 15:20:25 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Add callbacks for storage commit errors (gh#openSUSE/agama/558).
