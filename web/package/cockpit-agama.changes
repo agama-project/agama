@@ -5,6 +5,11 @@ Tue May 23 08:10:04 UTC 2023 - José Iván López González <jlopez@suse.com>
 - gh#openSUSE/agama#586
 
 -------------------------------------------------------------------
+Mon May 22 12:30:02 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Version 2
+
+-------------------------------------------------------------------
 Mon May 22 10:42:35 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Fix header and footer block size (gh#openSUSE/agama#583)
