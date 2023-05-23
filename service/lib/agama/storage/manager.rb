@@ -88,6 +88,14 @@ module Agama
         @on_deprecated_system_change_callbacks << block
       end
 
+      # Registers a callback to be called when the system is probed
+      #
+      # @param block [Proc]
+      def on_probe(&block)
+        @on_probe_callbacks ||= []
+        @on_probe_callbacks << block
+      end
+
       # Probes storage devices and performs an initial proposal
       def probe
         start_progress(4)
@@ -97,6 +105,7 @@ module Agama
         progress.step("Calculating the storage proposal") { calculate_proposal }
         progress.step("Selecting Linux Security Modules") { security.probe }
         update_issues
+        @on_probe_callbacks&.each(&:call)
       end
 
       # Prepares the partitioning to install the system

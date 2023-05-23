@@ -34,18 +34,18 @@ module Agama
       SERVICE_NAME = "org.opensuse.Agama.Storage1"
       private_constant :SERVICE_NAME
 
-      # D-Bus connection
-      #
-      # @return [::DBus::Connection]
-      attr_reader :bus
-
       # @param config [Config] Configuration object
       # @param logger [Logger]
       def initialize(config, logger = nil)
+        @config = config
         @logger = logger || Logger.new($stdout)
-        @bus = Bus.current
-        @backend = Agama::Storage::Manager.new(config, logger)
-        @backend.on_progress_change { dispatch }
+      end
+
+      # D-Bus connection
+      #
+      # @return [::DBus::Connection]
+      def bus
+        Bus.current
       end
 
       # Exports the storage proposal object through the D-Bus service
@@ -62,8 +62,17 @@ module Agama
 
     private
 
+      # @return [Config]
+      attr_reader :config
+
       # @return [Logger]
-      attr_reader :logger, :backend
+      attr_reader :logger
+
+      def manager
+        @manager ||= Agama::Storage::Manager.new(config, logger).tap do |manager|
+          manager.on_progress_change { dispatch }
+        end
+      end
 
       # @return [::DBus::Service]
       def service
@@ -72,9 +81,7 @@ module Agama
 
       # @return [Array<::DBus::Object>]
       def dbus_objects
-        @dbus_objects ||= [
-          Agama::DBus::Storage::Manager.new(@backend, logger)
-        ]
+        @dbus_objects ||= [Agama::DBus::Storage::Manager.new(manager, logger)]
       end
     end
   end

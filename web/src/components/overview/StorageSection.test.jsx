@@ -33,8 +33,8 @@ jest.mock("~/components/core/SectionSkeleton", () => mockComponent("Loading stor
 let status = IDLE;
 let proposal = {
   availableDevices: [
-    { id: "/dev/sda", label: "/dev/sda, 500 GiB" },
-    { id: "/dev/sdb", label: "/dev/sdb, 650 GiB" }
+    { name: "/dev/sda", size: 536870912000 },
+    { name: "/dev/sdb", size: 697932185600 }
   ],
   result: {
     candidateDevices: ["/dev/sda"],

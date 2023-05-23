@@ -17,6 +17,7 @@
       "name": "custom",
       "words": [
         "addrs",
+        "ahci",
         "apsens",
         "autologin",
         "autoconnect",
@@ -38,10 +39,13 @@
         "localdomain",
         "luks",
         "mgmt",
+        "mmcblk",
+        "multipath",
         "onboot",
         "partitioner",
         "patternfly",
         "rfkill",
+        "sata",
         "screenreader",
         "ssid",
         "ssids",
@@ -54,7 +58,8 @@
         "testfile",
         "testsuite",
         "textinput",
-        "tkip"
+        "tkip",
+        "udev"
       ]
     }
   ],

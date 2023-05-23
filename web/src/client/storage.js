@@ -20,6 +20,7 @@
  */
 
 // @ts-check
+// cspell:ignore ptable
 
 import DBusClient from "./dbus";
 import { WithIssues, WithStatus, WithProgress } from "./mixins";
@@ -38,6 +39,7 @@ const PROPOSAL_IFACE = "org.opensuse.Agama.Storage1.Proposal";
 const STORAGE_OBJECT = "/org/opensuse/Agama/Storage1";
 const STORAGE_JOB_IFACE = "org.opensuse.Agama.Storage1.Job";
 const STORAGE_JOBS_NAMESPACE = "/org/opensuse/Agama/Storage1/jobs";
+const STORAGE_SYSTEM_NAMESPACE = "/org/opensuse/Agama/Storage1/system";
 
 /**
  * Removes properties with undefined value
@@ -59,24 +61,152 @@ const removeUndefinedCockpitProperties = (cockpitObject) => {
 };
 
 /**
+ * Class providing an API for managing a devices tree through D-Bus
+ */
+class DevicesManager {
+  /**
+   * @param {DBusClient} client
+   * @param {string} rootPath - Root path of the devices tree
+   */
+  constructor(client, rootPath) {
+    this.client = client;
+    this.rootPath = rootPath;
+  }
+
+  /**
+   * Gets all the exported devices
+   *
+   * @returns {Promise<StorageDevice[]>}
+   *
+   * @typedef {object} StorageDevice
+   * @property {string} sid - Internal id that is used as D-Bus object basename
+   * @property {string} type - Type of device ("disk", "raid", "multipath", "dasd", "md")
+   * @property {string} [vendor]
+   * @property {string} [model]
+   * @property {string[]} [driver]
+   * @property {string} [bus]
+   * @property {string} [busId] - DASD Bus ID (only for "dasd" type)
+   * @property {string} [transport]
+   * @property {boolean} [sdCard]
+   * @property {boolean} [dellBOOS]
+   * @property {string[]} [devices] - RAID devices (only for "raid" type)
+   * @property {string[]} [wires] - Multipath wires (only for "multipath" type)
+   * @property {string} [level] - MD RAID level (only for "md" type)
+   * @property {string} [uuid]
+   * @property {string[]} [members] - Member devices for a MD RAID (only for "md" type)
+   * @property {boolean} [active]
+   * @property {string} [name] - Block device name
+   * @property {number} [size]
+   * @property {string[]} [systems] - Name of the installed systems
+   * @property {string[]} [udevIds]
+   * @property {string[]} [udevPaths]
+   * @property {PartitionTableData} [partitionTable]
+   *
+   * @typedef {object} PartitionTableData
+   * @property {string} type
+   */
+  async getDevices() {
+    const buildDevice = (path, dbusDevice) => {
+      const addDriveProperties = (device, dbusProperties) => {
+        device.type = dbusProperties.Type.v;
+        device.vendor = dbusProperties.Vendor.v;
+        device.model = dbusProperties.Model.v;
+        device.driver = dbusProperties.Driver.v;
+        device.bus = dbusProperties.Bus.v;
+        device.busId = dbusProperties.BusId.v;
+        device.transport = dbusProperties.Transport.v;
+        device.sdCard = dbusProperties.Info.v.SDCard.v;
+        device.dellBOSS = dbusProperties.Info.v.DellBOSS.v;
+      };
+
+      const addRAIDProperties = (device, raidProperties) => {
+        device.devices = raidProperties.Devices.v;
+      };
+
+      const addMultipathProperties = (device, multipathProperties) => {
+        device.wires = multipathProperties.Wires.v;
+      };
+
+      const addMDProperties = (device, mdProperties) => {
+        device.type = "md";
+        device.level = mdProperties.Level.v;
+        device.uuid = mdProperties.UUID.v;
+        device.members = mdProperties.Members.v;
+      };
+
+      const addBlockProperties = (device, blockProperties) => {
+        device.active = blockProperties.Active.v;
+        device.name = blockProperties.Name.v;
+        device.size = blockProperties.Size.v;
+        device.systems = blockProperties.Systems.v;
+        device.udevIds = blockProperties.UdevIds.v;
+        device.udevPaths = blockProperties.UdevPaths.v;
+      };
+
+      const addPtableProperties = (device, ptableProperties) => {
+        device.partitionTable = {
+          type: ptableProperties.Type.v,
+          partitions: ptableProperties.Partitions.v
+        };
+      };
+
+      const device = {
+        sid: path.split("/").pop(),
+        type: ""
+      };
+
+      const driveProperties = dbusDevice["org.opensuse.Agama.Storage1.Drive"];
+      if (driveProperties !== undefined) addDriveProperties(device, driveProperties);
+
+      const raidProperties = dbusDevice["org.opensuse.Agama.Storage1.RAID"];
+      if (raidProperties !== undefined) addRAIDProperties(device, raidProperties);
+
+      const multipathProperties = dbusDevice["org.opensuse.Agama.Storage1.Multipath"];
+      if (multipathProperties !== undefined) addMultipathProperties(device, multipathProperties);
+
+      const mdProperties = dbusDevice["org.opensuse.Agama.Storage1.MD"];
+      if (mdProperties !== undefined) addMDProperties(device, mdProperties);
+
+      const blockProperties = dbusDevice["org.opensuse.Agama.Storage1.Block"];
+      if (blockProperties !== undefined) addBlockProperties(device, blockProperties);
+
+      const ptableProperties = dbusDevice["org.opensuse.Agama.Storage1.PartitionTable"];
+      if (ptableProperties !== undefined) addPtableProperties(device, ptableProperties);
+
+      return device;
+    };
+
+    const managedObjects = await this.client.call(
+      STORAGE_OBJECT,
+      "org.freedesktop.DBus.ObjectManager",
+      "GetManagedObjects",
+      null
+    );
+
+    const dbusObjects = managedObjects.shift();
+    const systemPaths = Object.keys(dbusObjects).filter(k => k.startsWith(this.rootPath));
+
+    return systemPaths.map(p => buildDevice(p, dbusObjects[p]));
+  }
+}
+
+/**
  * Class providing an API for managing the storage proposal through D-Bus
  */
 class ProposalManager {
   /**
    * @param {DBusClient} client
+   * @param {DevicesManager} system
    */
-  constructor(client) {
+  constructor(client, system) {
     this.client = client;
+    this.system = system;
     this.proxies = {
       proposalCalculator: this.client.proxy(PROPOSAL_CALCULATOR_IFACE, STORAGE_OBJECT)
     };
   }
 
   /**
-   * @typedef {object} AvailableDevice
-   * @property {string} id - Device kernel name
-   * @property {string} label - Device description
-   *
    * @typedef {object} Volume
    * @property {string|undefined} [mountPoint]
    * @property {string|undefined} [deviceType]
@@ -112,7 +242,7 @@ class ProposalManager {
    * @returns {Promise<ProposalData>}
    *
    * @typedef {object} ProposalData
-   * @property {AvailableDevice[]} availableDevices
+   * @property {StorageDevice[]} availableDevices
    * @property {Volume[]} volumeTemplates
    * @property {Result|undefined} result
    */
@@ -127,18 +257,22 @@ class ProposalManager {
   /**
    * Gets the list of available devices
    *
-   * @returns {Promise<AvailableDevice[]>}
+   * @returns {Promise<StorageDevice[]>}
    */
   async getAvailableDevices() {
-    const buildDevice = dbusDevice => {
-      return {
-        id: dbusDevice[0],
-        label: dbusDevice[1]
-      };
+    const findDevice = (devices, path) => {
+      const sid = path.split("/").pop();
+      const device = devices.find(d => d.sid === sid);
+
+      if (device === undefined) console.log("D-Bus object not found: ", path);
+
+      return device;
     };
 
+    const systemDevices = await this.system.getDevices();
+
     const proxy = await this.proxies.proposalCalculator;
-    return proxy.AvailableDevices.map(buildDevice);
+    return proxy.AvailableDevices.map(path => findDevice(systemDevices, path)).filter(d => d);
   }
 
   /**
@@ -820,7 +954,8 @@ class StorageBaseClient {
    */
   constructor(address = undefined) {
     this.client = new DBusClient(StorageBaseClient.SERVICE, address);
-    this.proposal = new ProposalManager(this.client);
+    this.system = new DevicesManager(this.client, STORAGE_SYSTEM_NAMESPACE);
+    this.proposal = new ProposalManager(this.client, this.system);
     this.iscsi = new ISCSIManager(StorageBaseClient.SERVICE, address);
     this.dasd = new DASDManager(StorageBaseClient.SERVICE, address);
     this.proxies = {
