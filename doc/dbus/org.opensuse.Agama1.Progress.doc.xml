@@ -1,6 +1,7 @@
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/org/opensuse/Agama/Software1">
+  <node name="Proposal"></node>
   <!--
       org.opensuse.Agama1.Progress:
       The main object of a service implements the Progress interface

@@ -5,6 +5,17 @@ Tue May 23 08:05:14 UTC 2023 - José Iván López González <jlopez@suse.com>
 - gh#openSUSE/agama#586
 
 -------------------------------------------------------------------
+Thu May 18 12:19:49 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Update ruby-dbus dependency to 0.22.x (gh#openSUSE/agama#581)
+
+-------------------------------------------------------------------
+Tue May 16 13:42:18 UTC 2023 - Knut Alejandro Anderssen González <kanderssen@suse.com>
+
+- Added ppc64le repositories for ALP Bedrock and ALP Micro products
+- gh#openSUSE/agama#577
+
+-------------------------------------------------------------------
 Fri May  5 15:20:25 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Add callbacks for storage commit errors (gh#openSUSE/agama/558).
@@ -94,7 +105,7 @@ Tue Mar 21 21:51:48 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow to define architecture specific patterns and packages
   (gh#openSUSE/agama#486).
-  
+
 -------------------------------------------------------------------
 Tue Mar 21 16:44:27 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
 

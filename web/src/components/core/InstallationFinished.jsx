@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Title,
@@ -34,15 +34,26 @@ import { useInstallerClient } from "~/context/installer";
 
 function InstallationFinished() {
   const client = useInstallerClient();
-  const onRebootAction = () => client.manager.rebootSystem();
+  const [iguana, setIguana] = useState(false);
+  const closingAction = () => client.manager.finishInstallation();
+  const buttonCaption = iguana ? "Finish" : "Reboot";
+
+  useEffect(() => {
+    async function getIguana() {
+      const ret = await client.manager.useIguana();
+      setIguana(ret);
+    }
+
+    getIguana();
+  });
 
   return (
     <Center>
       <SectionTitle>Installation Finished</SectionTitle>
       <PageIcon><Icon name="task_alt" /></PageIcon>
       <MainActions>
-        <Button isLarge variant="primary" onClick={onRebootAction}>
-          Reboot
+        <Button isLarge variant="primary" onClick={closingAction}>
+          {buttonCaption}
         </Button>
       </MainActions>
 
@@ -55,7 +66,7 @@ function InstallationFinished() {
           <div>
             <Text>The installation on your machine is complete.</Text>
             <Text>
-              At this point you can 'Reboot' the machine to log in to the new system.
+              At this point you can {buttonCaption} the machine to log in to the new system.
             </Text>
             <Text>Have a lot of fun! Your openSUSE Development Team.</Text>
           </div>

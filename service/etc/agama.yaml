@@ -150,6 +150,8 @@ ALP-Bedrock:
         archs: aarch64
       - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/images/repo/ALP-Bedrock-0.1-s390x-Media1/
         archs: s390
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/images/repo/ALP-Bedrock-0.1-ppc64le-Media1/
+        archs: ppc
 
     mandatory_patterns:
       - alp-bedrock-base
@@ -224,6 +226,8 @@ ALP-Micro:
         archs: aarch64
       - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/images/repo/ALP-Micro-0.1-s390x-Media1/
         archs: s390
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/images/repo/ALP-Micro-0.1-ppc64le-Media1/
+        archs: ppc
 
     mandatory_patterns:
       - alp-micro-base

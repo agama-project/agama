@@ -30,14 +30,15 @@ import InstallationFinished from "./InstallationFinished";
 jest.mock("~/client");
 jest.mock("~/components/layout/Layout", () => mockLayout());
 
-const rebootSystemFn = jest.fn();
+const finishInstallationFn = jest.fn();
 
 describe("InstallationFinished", () => {
   beforeEach(() => {
     createClient.mockImplementation(() => {
       return {
         manager: {
-          rebootSystem: rebootSystemFn
+          finishInstallation: finishInstallationFn,
+          useIguana: () => Promise.resolve(false)
         },
         network: {
           config: () => Promise.resolve({ addresses: [], hostname: "example.net" })
@@ -62,6 +63,6 @@ describe("InstallationFinished", () => {
     const { user } = installerRender(<InstallationFinished />);
     const button = await screen.findByRole("button", { name: /Reboot/i });
     await user.click(button);
-    expect(rebootSystemFn).toHaveBeenCalled();
+    expect(finishInstallationFn).toHaveBeenCalled();
   });
 });
