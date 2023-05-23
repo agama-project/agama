@@ -408,3 +408,22 @@ impl fmt::Display for SecurityProtocol {
         write!(f, "{}", value)
     }
 }
+
+impl TryFrom<&str> for SecurityProtocol {
+    type Error = NetworkStateError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "none" => Ok(SecurityProtocol::WEP),
+            "owe" => Ok(SecurityProtocol::OWE),
+            "ieee8021x" => Ok(SecurityProtocol::DynamicWEP),
+            "wpa-psk" => Ok(SecurityProtocol::WPA2),
+            "sae" => Ok(SecurityProtocol::WPA3Personal),
+            "wpa-eap" => Ok(SecurityProtocol::WPA2Enterprise),
+            "wpa-eap-suite-b192" => Ok(SecurityProtocol::WPA3Only),
+            _ => Err(NetworkStateError::InvalidSecurityProtocol(
+                value.to_string(),
+            )),
+        }
+    }
+}

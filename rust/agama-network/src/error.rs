@@ -25,6 +25,8 @@ pub enum NetworkStateError {
     ConnectionExists(Uuid),
     #[error("Invalid device type: '{0}'")]
     InvalidDeviceType(u8),
+    #[error("Invalid security wireless protocol: '{0}'")]
+    InvalidSecurityProtocol(String),
 }
 
 impl From<NetworkStateError> for zbus::fdo::Error {

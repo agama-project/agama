@@ -390,4 +390,14 @@ impl Wireless {
         let connection = self.get_wireless();
         connection.wireless.security as u8
     }
+
+    #[dbus_interface(property)]
+    pub fn set_security(&mut self, security: &str) -> zbus::fdo::Result<()> {
+        let mut connection = self.get_wireless();
+        connection.wireless.security = security
+            .try_into()
+            .map_err(|_| NetworkStateError::InvalidSecurityProtocol(security.to_string()))?;
+        self.update_connection(connection)?;
+        Ok(())
+    }
 }
