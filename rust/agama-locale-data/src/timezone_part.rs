@@ -8,7 +8,7 @@ pub struct TimezoneIdPart {
     /// "Prague"
     pub id: String,
     /// [{language: "cs", value: "Praha"}, {"language": "de", value: "Prag"} ...]
-    pub names: crate::localization::Localization
+    pub names: crate::localization::Localization,
 }
 
 // Timezone id parts are useful mainly for localization of timezones
@@ -16,7 +16,7 @@ pub struct TimezoneIdPart {
 #[derive(Debug, Deserialize)]
 pub struct TimezoneIdParts {
     #[serde(rename(deserialize = "timezoneIdPart"))]
-    pub timezone_part: Vec<TimezoneIdPart>
+    pub timezone_part: Vec<TimezoneIdPart>,
 }
 
 impl TimezoneIdParts {
@@ -31,26 +31,36 @@ impl TimezoneIdParts {
     /// ```
     pub fn localize_timezones(&self, language: &str, timezones: &Vec<String>) -> Vec<String> {
         let mapping = self.construct_mapping(language);
-        timezones.iter().map(|tz| self.translate_timezone(&mapping, tz)).collect()
+        timezones
+            .iter()
+            .map(|tz| self.translate_timezone(&mapping, tz))
+            .collect()
     }
 
     fn construct_mapping(&self, language: &str) -> HashMap<String, String> {
         let mut res: HashMap<String, String> = HashMap::with_capacity(self.timezone_part.len());
-        self.timezone_part.iter()
-          .map(|part| (part.id.clone(), part.names.name_for(language)))
-          .for_each(|tuple| -> () {
-            // skip missing translations
-            if let Some(trans) = tuple.1 {
-                res.insert(tuple.0, trans);
-            }
-          }
-        );
-        return res
+        self.timezone_part
+            .iter()
+            .map(|part| (part.id.clone(), part.names.name_for(language)))
+            .for_each(|(time_id, names)| -> () {
+                // skip missing translations
+                if let Some(trans) = names {
+                    res.insert(time_id, trans);
+                }
+            });
+        return res;
     }
 
     fn translate_timezone(&self, mapping: &HashMap<String, String>, timezone: &str) -> String {
-        timezone.split("/")
-        .map(|tzp| mapping.get(&tzp.to_string()).expect(format!("Unknown timezone part {tzp}").as_str()).to_owned())
-        .collect::<Vec<String>>().join("/")
+        timezone
+            .split("/")
+            .map(|tzp| {
+                mapping
+                    .get(&tzp.to_string())
+                    .expect(format!("Unknown timezone part {tzp}").as_str())
+                    .to_owned()
+            })
+            .collect::<Vec<String>>()
+            .join("/")
     }
 }

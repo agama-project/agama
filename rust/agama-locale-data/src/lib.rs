@@ -23,6 +23,7 @@ fn file_reader(file_path: &str) -> anyhow::Result<impl BufRead> {
     Ok(reader)
 }
 
+/// Gets list of X11 keyboards structs
 pub fn get_xkeyboards() -> anyhow::Result<xkeyboard::XKeyboards> {
     const FILE_PATH: &str = "/usr/share/langtable/data/keyboards.xml.gz";
     let reader = file_reader(FILE_PATH)?;
@@ -66,6 +67,7 @@ pub fn parse_locale(locale: &str) -> anyhow::Result<(&str, &str)> {
     Ok((captures.get(1).unwrap().as_str(), captures.get(2).unwrap().as_str()))
 }
 
+/// Returns struct which contain list of known languages
 pub fn get_languages() -> anyhow::Result<language::Languages> {
     const FILE_PATH: &str = "/usr/share/langtable/data/languages.xml.gz";
     let reader = file_reader(FILE_PATH)?;
@@ -75,6 +77,7 @@ pub fn get_languages() -> anyhow::Result<language::Languages> {
     Ok(ret)
 }
 
+/// Returns struct which contain list of known territories
 pub fn get_territories() -> anyhow::Result<territory::Territories> {
     const FILE_PATH: &str = "/usr/share/langtable/data/territories.xml.gz";
     let reader = file_reader(FILE_PATH)?;
@@ -84,6 +87,7 @@ pub fn get_territories() -> anyhow::Result<territory::Territories> {
     Ok(ret)
 }
 
+/// Returns struct which contain list of known parts of timezones. Useful for translation
 pub fn get_timezone_parts() -> anyhow::Result<timezone_part::TimezoneIdParts> {
     const FILE_PATH: &str = "/usr/share/langtable/data/timezoneidparts.xml.gz";
     let reader = file_reader(FILE_PATH)?;
@@ -93,6 +97,8 @@ pub fn get_timezone_parts() -> anyhow::Result<timezone_part::TimezoneIdParts> {
     Ok(ret)
 }
 
+
+/// Gets list of non-deprecated timezones
 pub fn get_timezones() -> Vec<String> {
     chrono_tz::TZ_VARIANTS.iter()
     .filter(|&tz| !crate::deprecated_timezones::DEPRECATED_TIMEZONES.contains(&tz.name())) // Filter out deprecated asmera

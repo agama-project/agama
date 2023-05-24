@@ -62,10 +62,10 @@ impl Locale {
     }
 
     #[dbus_interface(property)]
-    fn set_locales(&mut self, locales: Vec<String>) -> Result<(), zbus::fdo::Error> {
+    fn set_locales(&mut self, locales: Vec<String>) -> zbus::fdo::Result<()> {
         for loc in &locales {
-            if !self.supported_locales.contains(&loc) {
-                return Err(zbus::fdo::Error::Failed(format!("Unsupported locale value '{loc}'").to_string()))
+            if !self.supported_locales.contains(loc) {
+                return Err(zbus::fdo::Error::Failed(format!("Unsupported locale value '{loc}'")))
             }
         }
         self.locales = locales;
@@ -74,7 +74,7 @@ impl Locale {
 
     #[dbus_interface(property)]
     fn supported_locales(&self) -> Vec<String> {
-        return self.supported_locales.to_owned();
+        self.supported_locales.to_owned()
     }
 
     #[dbus_interface(property)]
