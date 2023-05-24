@@ -8,13 +8,13 @@
 //! NetworkManager approach.
 //!
 //! Each network device is exposed as a D-Bus object using a path like
-//! `/org/opensuse/Agama/Network1/Devices/[0-9]+`. At this point, those objects expose a bit of
+//! `/org/opensuse/Agama/Network1/devices/[0-9]+`. At this point, those objects expose a bit of
 //! information about network devices. The entry point for the devices is the
-//! `/org/opensuse/Agama/Network1/Devices` object, that expose a `GetDevices` method that returns
+//! `/org/opensuse/Agama/Network1/devices` object, that expose a `GetDevices` method that returns
 //! the paths for the devices objects.
 //!
 //! The network configuration is exposed through the connections objects as
-//! `/org/opensuse/Agama/Network1/Connections/[0-9]+`. Those objects are composed of several
+//! `/org/opensuse/Agama/Network1/connections/[0-9]+`. Those objects are composed of several
 //! D-Bus interfaces depending on its type:
 //!
 //! * `org.opensuse.Agama.Network1.Connection` exposes common information across all connection
@@ -25,44 +25,19 @@
 //! connections.
 //!
 //! Analogous to the devices API, there is a special `/org/opensuse/Agama/Network1/Connections`
-//! object that implements a `GetConnections` to get the list of paths for the connections objects.
+//! object that implements a few methods that are related to the collection of connections like
+//! `GetConnections`, `AddConnection` and `RemoveConnection`. Additionally, it implements an
+//! `Apply` method to write the changes to the NetworkManager service.
 //!
 //! ## Limitations
 //!
 //! We expect to address the following problems as we evolve the API, but it is noteworthy to have
 //! them in mind:
 //!
-//! * By now, this is just a read-only API.
 //! * The devices list does not reflect the changes in the system. For instance, it is not updated
 //! when a device is connected to the system.
 //! * Many configuration types are still missing (bridges, bonding, etc.).
-//!
-//! ## Running the service
-//!
-//! Below there is an example to run the service on the system D-Bus.
-//!
-//! ```no_run
-//! use agama_network::{NetworkState, NetworkService};
-//! use zbus::Connection;
-//! use async_std;
-//!
-//! #[async_std::main]
-//! async fn main() {
-//!   // Use the system D-Bus, although Agama use its own service
-//!   let connection = zbus::Connection::system().await
-//!     .expect("Could not connect to the system D-Bus");
-//!
-//!   // Read the network state
-//!   let network = NetworkSystem::from_system().await
-//!     .expect("Could not read the network state");
-//!
-//!   // Build the service
-//!   let mut service = NetworkService::new(network, connection);
-//!
-//!   // Start the service
-//!   service.listen().await.expect("Could not start the service");
-//! }
-//! ```
+
 mod action;
 mod adapter;
 pub mod dbus;
@@ -71,6 +46,7 @@ pub mod model;
 mod nm;
 pub mod system;
 
+pub use action::Action;
 pub use adapter::Adapter;
 pub use dbus::NetworkService;
 pub use model::NetworkState;

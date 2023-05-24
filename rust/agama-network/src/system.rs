@@ -1,5 +1,5 @@
 use crate::dbus::Tree;
-use crate::{action::Action, model::Connection, nm::NetworkManagerAdapter, Adapter, NetworkState};
+use crate::{model::Connection, nm::NetworkManagerAdapter, Action, Adapter, NetworkState};
 use agama_lib::error::ServiceError;
 use std::error::Error;
 use std::sync::mpsc::{channel, Receiver, Sender};
@@ -9,7 +9,7 @@ pub struct NetworkSystem {
     /// Network state
     pub state: NetworkState,
     /// Side of the channel to send actions.
-    pub actions_tx: Sender<Action>,
+    actions_tx: Sender<Action>,
     actions_rx: Receiver<Action>,
     tree: Tree,
 }
@@ -45,12 +45,13 @@ impl NetworkSystem {
         adapter.write(&self.state)
     }
 
-    /// Returns the [Sender](https://doc.rust-lang.org/std/sync/mpsc/struct.Sender.html) to execute
+    /// Returns a clone of the [Sender](https://doc.rust-lang.org/std/sync/mpsc/struct.Sender.html) to execute
     /// [actions](Action).
     pub fn actions_tx(&self) -> Sender<Action> {
         self.actions_tx.clone()
     }
 
+    /// Populates the D-Bus tree with the known devices and connections.
     pub async fn setup(&mut self) -> Result<(), ServiceError> {
         self.tree.add_connections(&self.state.connections).await?;
         self.tree.add_devices(&self.state.devices).await?;
