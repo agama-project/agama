@@ -25,7 +25,7 @@ require "agama/network"
 require "agama/with_progress"
 require "agama/installation_phase"
 require "agama/service_status_recorder"
-require "agama/dbus/clients/language"
+require "agama/dbus/clients/locale"
 require "agama/dbus/clients/software"
 require "agama/dbus/clients/storage"
 require "agama/dbus/clients/users"
@@ -124,9 +124,9 @@ module Agama
 
     # Language manager
     #
-    # @return [DBus::Clients::Language]
+    # @return [DBus::Clients::Locale]
     def language
-      @language ||= DBus::Clients::Language.new
+      @language ||= DBus::Clients::Locale.new
     end
 
     # Users client

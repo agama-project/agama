@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.opensuse.Agama.Locale1
+Exec=/usr/bin/agama-dbus-server
+User=root

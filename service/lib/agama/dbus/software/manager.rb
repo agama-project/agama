@@ -22,7 +22,7 @@
 require "dbus"
 require "agama/dbus/base_object"
 require "agama/dbus/with_service_status"
-require "agama/dbus/clients/language"
+require "agama/dbus/clients/locale"
 require "agama/dbus/clients/network"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
@@ -135,7 +135,7 @@ module Agama
 
         # Registers callback to be called
         def register_callbacks
-          lang_client = Agama::DBus::Clients::Language.new
+          lang_client = Agama::DBus::Clients::Locale.new
           lang_client.on_language_selected do |language_ids|
             backend.languages = language_ids
           end

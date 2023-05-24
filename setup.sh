@@ -18,14 +18,14 @@ else
   SUDO=""
 fi
 
-# Install dependencies
-
-$SUDO zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel \
-  'npm>=18' git augeas-devel cockpit jemalloc-devel || exit 1
-
 # Backend setup
 
 $MYDIR/setup-service.sh
+
+# Install Frontend dependencies
+
+$SUDO zypper --non-interactive --gpg-auto-import-keys install \
+  make git 'npm>=18' cockpit || exit 1
 
 # Web Frontend
 

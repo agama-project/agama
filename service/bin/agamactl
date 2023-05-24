@@ -63,33 +63,16 @@ def start_service(name)
   service_runner.run
 end
 
-ORDERED_SERVICES = [:questions, :language, :software, :storage, :users, :manager].freeze
-
-# Normally the services are started by D-Bus activation.
-# This starts all the services sequentially without relying on that.
-# This is useful during development to have their log output on the terminal,
-# not mixed with other syslog/journal messages.
-# The downside is relying on an arbitrary delay, and a manually maintained ordering.
-#
-# @return [void]
-# @see ORDERED_SERVICES
-def start_all_services
-  ORDERED_SERVICES.map do |name|
-    puts "Starting #{name}:"
-    fork { exec("#{__FILE__} #{name}") }
-    sleep(7)
-  end
-end
+ORDERED_SERVICES = [:questions, :software, :storage, :users, :manager].freeze
 
 dbus_server_manager = Agama::DBus::ServerManager.new
 
 if ARGV.empty?
-  start_all_services
-  Signal.trap("SIGINT") do
-    puts "Stopping all services..."
-    exit
-  end
-  Process.wait
+  puts "ERROR: Using 'agamactl' to start all services no longer works."
+  puts "NOTE: It had race conditions all along and now there's a Rust service it can't reach too."
+  puts "NOTE: Use `systemctl start agama.service` instead"
+  puts "NOTE: which is setup by a) RPMs b) ./setup-service.sh"
+  exit 1
 elsif ["-h", "--help"].include?(ARGV[0])
   me = $PROGRAM_NAME
   puts "Usage:"
