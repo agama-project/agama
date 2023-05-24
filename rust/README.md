@@ -114,12 +114,15 @@ frontend](./agama-cli/doc/backend-for-testing.md)*.
 
 ## Packaging
 
-A packaging files lives in `package` directory. Agama follows
-[rust packaging guidelines](https://en.opensuse.org/openSUSE:Packaging_Rust_Software).
-For testing changes to spec file use simple `osc branch YaST:Head:Agama agama-cli`
-and copy modified spec file to that branch.
-If it needs also specific code from git branch, then modify `_service` file and
-change git branch name in `<revision>` tag. Then run `osc service runall`.
-Note: for leap `cargo_audit` does not work with older python, so comment out that
-service section for testing build.
-For testing build use common `osc build` on modified sources.
+Packaging files live in the `package' directory. Agama follows the
+[Rust packaging guidelines](https://en.opensuse.org/openSUSE:Packaging_Rust_Software).
+To test changes to the spec file, use a simple `osc branch YaST:Head:Agama agama-cli`.
+and copy the modified spec file to that branch.
+If it also needs specific code from a git branch, then modify `_service' file and
+put the git branch name in the `<revision>` tag. Then run `osc service runall`.
+
+Note: for openSUSE Leap, `cargo_audit` [does not work][c_a_bug] with older Python, so comment out that
+service section for the test build.
+For the test build, use the usual `osc build' on modified sources.
+
+[c_a_bug]: https://github.com/openSUSE/obs-service-cargo_audit/pull/6
