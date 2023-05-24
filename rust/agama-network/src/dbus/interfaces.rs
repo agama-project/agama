@@ -4,18 +4,17 @@
 //! service](crate::NetworkService).
 use super::ObjectsRegistry;
 use crate::{
+    action::Action,
     error::NetworkStateError,
     model::{Connection as NetworkConnection, Device as NetworkDevice, WirelessConnection},
-    NetworkSystem,
 };
-use async_std::task;
 use parking_lot::{MappedMutexGuard, Mutex, MutexGuard};
 use std::{
     net::{AddrParseError, Ipv4Addr},
-    sync::Arc,
+    sync::{mpsc::Sender, Arc},
 };
 use uuid::Uuid;
-use zbus::{dbus_interface, zvariant::ObjectPath, Interface};
+use zbus::{dbus_interface, zvariant::ObjectPath};
 
 /// D-Bus interface for the network devices collection
 ///
@@ -79,16 +78,19 @@ impl Device {
 ///
 /// It offers an API to query the connections collection.
 pub struct Connections {
+    actions: Arc<Mutex<Sender<Action>>>,
     objects: Arc<Mutex<ObjectsRegistry>>,
-    network: Arc<Mutex<NetworkSystem>>,
 }
 
 impl Connections {
     /// Creates a Connections interface object.
     ///
     /// * `objects`: Objects paths registry.
-    pub fn new(objects: Arc<Mutex<ObjectsRegistry>>, network: Arc<Mutex<NetworkSystem>>) -> Self {
-        Self { objects, network }
+    pub fn new(objects: Arc<Mutex<ObjectsRegistry>>, actions: Sender<Action>) -> Self {
+        Self {
+            objects,
+            actions: Arc::new(Mutex::new(actions)),
+        }
     }
 }
 
@@ -109,31 +111,30 @@ impl Connections {
     /// * `name`: connection name.
     /// * `ty`: connection type (see [crate::model::DeviceType]).
     pub async fn add_connection(&mut self, name: String, ty: u8) -> zbus::fdo::Result<()> {
-        let mut state = self.network.lock();
-        let connection = NetworkConnection::new(name, ty.try_into()?);
-        Ok(state.add_connection(connection)?)
+        let actions = self.actions.lock();
+        actions
+            .send(Action::AddConnection(name, ty.try_into()?))
+            .unwrap();
+        Ok(())
     }
 
     /// Removes a network connection.
     ///
     /// * `uuid`: connection UUID..
     pub async fn remove_connection(&mut self, uuid: &str) -> zbus::fdo::Result<()> {
-        let mut state = self.network.lock();
+        let actions = self.actions.lock();
         let uuid =
             Uuid::parse_str(uuid).map_err(|_| NetworkStateError::InvalidUuid(uuid.to_string()))?;
-        Ok(state.remove_connection(uuid)?)
+        actions.send(Action::RemoveConnection(uuid)).unwrap();
+        Ok(())
     }
 
     /// Applies the network configuration.
     ///
     /// It includes adding, updating and removing connections as needed.
     pub async fn apply(&self) -> zbus::fdo::Result<()> {
-        let state = self.network.lock();
-        task::block_on(async {
-            if let Err(e) = state.to_network_manager().await {
-                eprintln!("Could not update the configuration: {}", e);
-            }
-        });
+        let actions = self.actions.lock();
+        actions.send(Action::Apply).unwrap();
         Ok(())
     }
 }
@@ -174,21 +175,18 @@ impl Connection {
 
 /// D-Bus interface for IPv4 settings
 pub struct Ipv4 {
-    network: Arc<Mutex<NetworkSystem>>,
+    actions: Arc<Mutex<Sender<Action>>>,
     connection: Arc<Mutex<NetworkConnection>>,
 }
 
 impl Ipv4 {
     /// Creates an IPv4 interface object.
     ///
-    /// * `network`: network state.
-    /// * `connection`: connection name.
-    pub fn new(
-        network: Arc<Mutex<NetworkSystem>>,
-        connection: Arc<Mutex<NetworkConnection>>,
-    ) -> Self {
+    /// * `actions`: sending-half of a channel to send actions.
+    /// * `connection`: connection to expose over D-Bus.
+    pub fn new(actions: Sender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
         Self {
-            network,
+            actions: Arc::new(Mutex::new(actions)),
             connection,
         }
     }
@@ -205,8 +203,10 @@ impl Ipv4 {
         &self,
         connection: MutexGuard<NetworkConnection>,
     ) -> zbus::fdo::Result<()> {
-        let mut network = self.network.lock();
-        network.update_connection(connection.clone())?;
+        let actions = self.actions.lock();
+        actions
+            .send(Action::UpdateConnection(connection.clone()))
+            .unwrap();
         Ok(())
     }
 }
@@ -295,20 +295,18 @@ impl Ipv4 {
 }
 /// D-Bus interface for wireless settings
 pub struct Wireless {
-    network: Arc<Mutex<NetworkSystem>>,
+    actions: Arc<Mutex<Sender<Action>>>,
     connection: Arc<Mutex<NetworkConnection>>,
 }
 
 impl Wireless {
     /// Creates a Wireless interface object.
     ///
-    /// * `network`: network state.
-    pub fn new(
-        network: Arc<Mutex<NetworkSystem>>,
-        connection: Arc<Mutex<NetworkConnection>>,
-    ) -> Self {
+    /// * `actions`: sending-half of a channel to send actions.
+    /// * `connection`: connection to expose over D-Bus.
+    pub fn new(actions: Sender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
         Self {
-            network,
+            actions: Arc::new(Mutex::new(actions)),
             connection,
         }
     }
@@ -330,8 +328,9 @@ impl Wireless {
         &self,
         connection: MappedMutexGuard<WirelessConnection>,
     ) -> zbus::fdo::Result<()> {
-        let mut network = self.network.lock();
-        network.update_connection(NetworkConnection::Wireless(connection.clone()))?;
+        let actions = self.actions.lock();
+        let connection = NetworkConnection::Wireless(connection.clone());
+        actions.send(Action::UpdateConnection(connection)).unwrap();
         Ok(())
     }
 }

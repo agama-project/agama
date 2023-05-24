@@ -1,35 +1,40 @@
-use crate::{
-    error::NetworkStateError, model::Connection, model::Device, nm::NetworkManagerAdapter, Adapter,
-    NetworkState,
-};
-use std::{error::Error, sync::Arc};
-use uuid::Uuid;
+use crate::dbus::Tree;
+use crate::{action::Action, model::Connection, nm::NetworkManagerAdapter, Adapter, NetworkState};
+use agama_lib::error::ServiceError;
+use std::error::Error;
+use std::sync::mpsc::{channel, Receiver, Sender};
 
-/// Signature for network events callbacks.
-pub type NetworkEventCallback = dyn Fn(NetworkEvent) + Send + Sync;
-
-/// Represents the network system, wrapping a [NetworkState] and adding the concept of events and
-/// callbacks.
+/// Represents the network system, wrapping a [NetworkState] and setting up the D-Bus tree.
 pub struct NetworkSystem {
+    /// Network state
     pub state: NetworkState,
-    pub callbacks: Vec<Arc<NetworkEventCallback>>,
+    /// Side of the channel to send actions.
+    pub actions_tx: Sender<Action>,
+    actions_rx: Receiver<Action>,
+    tree: Tree,
 }
 
 impl NetworkSystem {
-    pub fn new(state: NetworkState) -> Self {
+    pub fn new(state: NetworkState, conn: zbus::Connection) -> Self {
+        let (actions_tx, actions_rx) = channel();
+        let tree = Tree::new(conn, actions_tx.clone());
         Self {
             state,
-            callbacks: vec![],
+            actions_tx,
+            actions_rx,
+            tree,
         }
     }
 
     /// Reads the network configuration using the NetworkManager adapter.
-    pub async fn from_network_manager() -> Result<NetworkSystem, Box<dyn Error>> {
+    pub async fn from_network_manager(
+        conn: zbus::Connection,
+    ) -> Result<NetworkSystem, Box<dyn Error>> {
         let adapter = NetworkManagerAdapter::from_system()
             .await
             .expect("Could not connect to NetworkManager to read the configuration.");
         let state = adapter.read()?;
-        Ok(Self::new(state))
+        Ok(Self::new(state, conn))
     }
 
     /// Writes the network configuration to NetworkManager.
@@ -40,67 +45,54 @@ impl NetworkSystem {
         adapter.write(&self.state)
     }
 
-    /// Registers a callback for network configuration events.
-    pub fn on_event(&mut self, callback: Arc<NetworkEventCallback>) {
-        self.callbacks.push(callback);
+    /// Returns the [Sender](https://doc.rust-lang.org/std/sync/mpsc/struct.Sender.html) to execute
+    /// [actions](Action).
+    pub fn actions_tx(&self) -> Sender<Action> {
+        self.actions_tx.clone()
     }
 
-    /// Adds a connection and notifies the event.
-    pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        let clone = conn.clone();
-        self.state.add_connection(conn)?;
-        self.notify_event(NetworkEvent::AddConnection(clone));
+    pub async fn setup(&mut self) -> Result<(), ServiceError> {
+        self.tree.add_connections(&self.state.connections).await?;
+        self.tree.add_devices(&self.state.devices).await?;
         Ok(())
     }
 
-    /// Updates a connection.
-    pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        self.state.update_connection(conn)
-    }
-
-    /// Removes a connection and notifies the event.
-    pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
-        self.state.remove_connection(uuid)?;
-        self.notify_event(NetworkEvent::RemoveConnection(uuid));
-        Ok(())
-    }
-
-    /// Gets device by name.
+    /// Process incoming actions.
     ///
-    /// * `name`: device name
-    pub fn get_device(&self, name: &str) -> Option<&Device> {
-        self.state.get_device(name)
-    }
-
-    /// Gets connection by UUID.
-    ///
-    /// * `uuid`: connection UUID
-    pub fn get_connection(&self, uuid: Uuid) -> Option<&Connection> {
-        self.state.get_connection(uuid)
-    }
-
-    /// Gets connection by UUID as mutable
-    ///
-    /// * `uuid`: connection UUID
-    pub fn get_connection_mut(&mut self, uuid: Uuid) -> Option<&mut Connection> {
-        self.state.get_connection_mut(uuid)
-    }
-
-    /// Notifies an event to all the subscribers.
-    ///
-    /// * `event`: network configuration event to notify.
-    fn notify_event(&self, event: NetworkEvent) {
-        for cb in &self.callbacks {
-            cb(event.clone())
+    /// This function is expected to be executed on a separate thread.
+    pub async fn listen(&mut self) {
+        while let Ok(action) = self.actions_rx.recv() {
+            if let Err(error) = self.dispatch_action(action).await {
+                eprintln!("Could not process the action: {}", error);
+            }
         }
     }
-}
 
-/// Network configuration event.
-///
-/// At this point, only adding and removing devices are considered.
-#[derive(Debug, Clone)]
-pub enum NetworkEvent {
-    AddConnection(Connection),
-    RemoveConnection(Uuid),
+    /// Dispatch an action.
+    pub async fn dispatch_action(&mut self, action: Action) -> Result<(), Box<dyn Error>> {
+        match action {
+            Action::AddConnection(name, ty) => {
+                let conn = Connection::new(name, ty);
+                self.tree.add_connection(&conn).await?;
+                self.state.add_connection(conn)?;
+            }
+            Action::UpdateConnection(conn) => {
+                self.state.update_connection(conn)?;
+            }
+            Action::RemoveConnection(uuid) => {
+                self.tree.remove_connection(uuid).await?;
+                self.state.remove_connection(uuid)?;
+            }
+            Action::Apply => {
+                self.to_network_manager().await?;
+                // TODO: re-creating the tree is kind of brute-force and it sends signals about
+                // adding/removing interfaces. We should add/update/delete objects as needed.
+                self.tree
+                    .refresh_connections(&self.state.connections)
+                    .await?;
+            }
+        }
+
+        Ok(())
+    }
 }
