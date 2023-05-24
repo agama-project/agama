@@ -32,7 +32,17 @@ sudosed() {
   sed -e "$1" "$2" | $SUDO tee "$3" > /dev/null
 }
 
-# - Install the service dependencies
+# - Install RPM dependencies
+
+# this repo can be removed once python-language-data reaches Factory
+test -f /etc/zypp/repos.d/d_l_python.repo || \
+  $SUDO zypper --non-interactive --gpg-auto-import-keys \
+    addrepo https://download.opensuse.org/repositories/devel:/languages:/python/openSUSE_Tumbleweed/ d_l_python
+$SUDO zypper --non-interactive install gcc gcc-c++ make openssl-devel ruby-devel \
+  python-langtable-data \
+  git augeas-devel jemalloc-devel || exit 1
+
+# - Install service rubygem dependencies
 (
   cd $MYDIR/service
   bundle config set --local path 'vendor/bundle'
