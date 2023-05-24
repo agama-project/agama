@@ -1,4 +1,10 @@
+Wed May 24 11:01:24 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: Ensure that blur and grayscale CSS filters are not applied to
+  any nodes other than <body> direct children (gh#openSUSE/agama#588).
+
 -------------------------------------------------------------------
+
 Tue May 23 11:51:26 UTC 2023 - Martin Vidner <mvidner@suse.com>
 
 - Version 2.1
