@@ -1,8 +1,8 @@
-# Agama Command Line and DBus Interface
+# Agama Command Line and D-Bus Interface
 
 This project aims to build a command-line interface for
 [Agama](https://github.com/yast/agama), a service-based Linux installer featuring a nice
-web interface. The second aim is dbus service that does not depend heavily on YaST to
+web interface. The second aim is D-Bus service that does not depend heavily on YaST to
 reduce memory consumption and also provide better performance.
 
 ## Code organization
@@ -11,14 +11,14 @@ We have set up [Cargo workspace](https://doc.rust-lang.org/book/ch14-03-cargo-wo
 three packages:
 
 * [agama-lib](./agama-lib): code that can be reused to access the
-  [Agama DBus API](https://github.com/yast/agama/blob/master/doc/dbus_api.md) and a
+  [Agama D-Bus API](https://github.com/yast/agama/blob/master/doc/dbus_api.md) and a
   model for the configuration settings.
 * [agama-cli](./agama-cli): code specific to the command line interface.
 * [agama-derive](./agama-derive): includes a [procedural
   macro](https://doc.rust-lang.org/reference/procedural-macros.html) to reduce the boilerplate code.
-* [agama-locale-data](./agama-locale-data): specific library to provide data for localization dbus
+* [agama-locale-data](./agama-locale-data): specific library to provide data for localization D-Bus
   API
-* [agama-dbus-server](./agama-dbus-server): provides dbus API for services implemented in rust
+* [agama-dbus-server](./agama-dbus-server): provides D-Bus API for services implemented in rust
 
 ## Status
 
@@ -28,7 +28,7 @@ Agama CLI is still a work in progress, although it is already capable of doing a
 * Handling the auto-installation profiles.
 * Triggering the *probing* and the *installation* processes.
 
-Agama DBus API is also a work in progress, but it is already used by Agama.
+Agama D-Bus API is also a work in progress, but it is already used by Agama.
 
 ## Installation
 
@@ -45,7 +45,7 @@ cargo install --path .
 
 ## Running
 
-For DBus API just run as root agama-dbus-server binary and it will properly attach to DBus.
+For D-Bus API just run as root agama-dbus-server binary and it will properly attach to D-Bus.
 
 For CLI take into account that you need to run `agama-cli` as root when you want to query or change
 the Agama configuration. Assuming that the Agama D-Bus service is running, the next command
