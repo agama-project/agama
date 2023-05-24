@@ -374,7 +374,7 @@ impl fmt::Display for WirelessMode {
         let name = match &self {
             WirelessMode::Other => "unknown",
             WirelessMode::AdHoc => "adhoc",
-            WirelessMode::Infra => "infra",
+            WirelessMode::Infra => "infrastructure",
             WirelessMode::AP => "ap",
             WirelessMode::Mesh => "mesh",
         };

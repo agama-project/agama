@@ -296,7 +296,7 @@ mod test {
 
         let wireless = wireless_dbus.get("802-11-wireless").unwrap();
         let mode: &str = wireless.get("mode").unwrap().downcast_ref().unwrap();
-        assert_eq!(mode, "infra");
+        assert_eq!(mode, "infrastructure");
 
         let ssid: &zvariant::Array = wireless.get("ssid").unwrap().downcast_ref().unwrap();
         let ssid: Vec<u8> = ssid
