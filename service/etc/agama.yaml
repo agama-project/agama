@@ -1,7 +1,7 @@
 products:
   ALP-Bedrock:
-    name: SUSE ALP Bedrock
-    description: 'SUSE ALP Bedrock is a flexible, secure, customizable and
+    name: SUSE ALP Server
+    description: 'SUSE ALP Server is a flexible, secure, customizable and
       modular Server allowing an enterprise to run a variety of services,
       workloads and application in a compartmentalized form. Based on an
       immutable root filesystem, security has been built into it from the ground.'
