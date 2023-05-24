@@ -199,6 +199,9 @@ jobs:
     - name: Setup service
       run:  podman exec agama bash -c "cd /checkout; ./setup-service.sh"
 
+    - name: Rust unit tests
+      run:  podman exec agama bash -c "cd /checkout/rust; cargo test --verbose"
+
     - name: Set a testing Agama configuration
       # copy a simplified ALP config file, it skips the product selection at the beginning
       run:  podman exec agama bash -c "cp /checkout/playwright/config/agama.yaml /checkout/service/etc/agama.yaml"
@@ -240,25 +243,6 @@ jobs:
         path: |
           playwright/test-results/**/*
           /tmp/log/YaST2/y2log
-
-  cli_build:
-    runs-on: ubuntu-latest
-
-    env:
-      CARGO_TERM_COLOR: always
-
-    defaults:
-      run:
-        working-directory: ./rust
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      # FIXME: omit agama-locale-data until python-langtable-data is installed
-      run: cargo test --verbose -p agama-cli -p agama-dbus-server -p agama-lib
-
 
   finish:
     runs-on: ubuntu-latest
