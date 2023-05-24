@@ -15,3 +15,9 @@ pub struct Language {
 pub struct Languages {
     pub language: Vec<Language>
 }
+
+impl Languages {
+    pub fn find_by_id(&self, id: &str) -> Option<&Language> {
+        self.language.iter().find(|t| t.id == id)
+    }
+}

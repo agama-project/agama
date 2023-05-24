@@ -12,3 +12,9 @@ pub struct Territory {
 pub struct Territories {
     pub territory: Vec<Territory>
 }
+
+impl Territories {
+    pub fn find_by_id(&self, id: &str) -> Option<&Territory> {
+        self.territory.iter().find(|t| t.id == id)
+    }
+}

@@ -20,19 +20,14 @@ impl Locale {
     fn labels_for_locales(&self) -> Result<Vec<((String, String), (String, String))>, Error> {
         const DEFAULT_LANG: &str = "en";
         let mut res = Vec::with_capacity(self.supported_locales.len());
+        let languages = agama_locale_data::get_languages()?;
+        let territories = agama_locale_data::get_territories()?;
         for locale in self.supported_locales.as_slice() {
             let (loc_language, loc_territory) = agama_locale_data::parse_locale(locale.as_str())?;
-            let languages = agama_locale_data::get_languages()?;
-            let territories = agama_locale_data::get_territories()?;
-            let language = languages
-                .language
-                .iter()
-                .find(|l| l.id == loc_language)
+
+            let language = languages.find_by_id(loc_language)
                 .context("language for passed locale not found")?;
-            let territory = territories
-                .territory
-                .iter()
-                .find(|t| t.id == loc_territory)
+            let territory = territories.find_by_id(loc_territory)
                 .context("territory for passed locale not found")?;
 
             let default_ret = (
