@@ -1,6 +1,6 @@
 //! NetworkManager client.
 use super::dbus::{connection_from_dbus, connection_to_dbus};
-use super::model::*;
+use super::model::NmDeviceType;
 use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
 use crate::model::{Connection, Device};
 use agama_lib::error::ServiceError;
@@ -90,24 +90,7 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(())
     }
 
-    /// Adds a network connection.
-    ///
-    /// * `conn`: connection to add.
-    pub async fn add_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
-        let proxy = SettingsProxy::new(&self.connection).await?;
-        proxy.add_connection(connection_to_dbus(conn)).await?;
-        Ok(())
-    }
-
-    /// Updates a network connection.
-    ///
-    /// * `conn`: connection to update.
-    pub async fn update_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
-        let proxy = self.get_connection_proxy(conn.uuid()).await?;
-        proxy.update(connection_to_dbus(conn)).await?;
-        Ok(())
-    }
-
+    /// Removes a network connection.
     pub async fn remove_connection(&self, uuid: Uuid) -> Result<(), ServiceError> {
         let proxy = self.get_connection_proxy(uuid).await?;
         proxy.delete().await?;
