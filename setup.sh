@@ -24,7 +24,7 @@ $MYDIR/setup-service.sh
 
 # Install Frontend dependencies
 
-$SUDO zypper --non-interactive install \
+$SUDO zypper --non-interactive --gpg-auto-import-keys install \
   make git 'npm>=18' cockpit || exit 1
 
 # Web Frontend
