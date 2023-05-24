@@ -43,7 +43,7 @@ Command line program to interact with the agama service.
 #               This will be set by osc services, that will run after this.
 Version:        0
 Release:        0
-Summary:        Agama rust dbus service
+Summary:        Agama Rust D-Bus service
 License:        GPL-2.0-only
 Url:            https://github.com/opensuse/agama
 Requires:       python-langtable-data
