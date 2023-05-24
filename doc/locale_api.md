@@ -1,6 +1,8 @@
 # Legacy-free Locale Service
 
-> D-Installer currently have a separate Language service, although it's rather
+Problem statement: (2023-03)
+
+> Agama currently has a separate Language service, although it's rather
 > simplistic. It just allows to set the language of the installed system using
 > Yast::Language.Set. And it's quite memory demanding for such an unimpressive
 > task.
@@ -10,6 +12,7 @@
 > overview on how much can we save.
 
 Original Plan:
+
 1. take the systemd APIs as a sensible starting point.
 2. deviate only where we add value
 
@@ -21,7 +24,7 @@ API. We may use `systemd-firstboot` instead but its API is much more limited.
 ## Localization
 
 This design includes localized labels in the API. In other contexts that would
-be a responsibility of the frontend, but here here the backend has the
+be a responsibility of the frontend, but here the backend has the
 information, provided by _langtable_.
 
 (Languages, Territories and Timezones have localized names. Keyboards do not.)
@@ -147,8 +150,8 @@ _convert_ parameter.
 (The other systemd keyboard settings are X11Model and X11Options, we don't
 have UI or data for that)
 
-**FIXME:** _langtable_ on the other hand only deals with the X11 keyboards.
-And legacy YaST has the console keyboard as the primary key. Must resolve this.
+NOTE: _langtable_ on the other hand only deals with the X11 keyboards,
+linking them to languages and territories.
 
 ```
 # this is gdbus syntax BTW
