@@ -2,6 +2,7 @@
 //!
 //! This module defines a D-Bus service which exposes Agama's network configuration.
 use crate::NetworkSystem;
+use agama_lib::connection_to;
 use std::{error::Error, thread};
 
 /// Represents the Agama networking D-Bus service.
@@ -11,7 +12,8 @@ pub struct NetworkService;
 
 impl NetworkService {
     /// Starts listening and dispatching events on the D-Bus connection.
-    pub async fn start(connection: zbus::Connection) -> Result<(), Box<dyn Error>> {
+    pub async fn start_service(address: &str) -> Result<(), Box<dyn Error>> {
+        let connection = connection_to(address).await?;
         let mut network = NetworkSystem::from_network_manager(connection.clone())
             .await
             .expect("Could not read network state");

@@ -1,7 +1,8 @@
 use crate::error::Error;
+use agama_lib::connection_to;
 use anyhow::Context;
 use std::process::Command;
-use zbus::{dbus_interface, Connection, ConnectionBuilder};
+use zbus::{dbus_interface, Connection};
 
 pub struct Locale {
     locales: Vec<String>,
@@ -159,7 +160,6 @@ impl Locale {
     }
 }
 
-
 impl Locale {
     fn new() -> Locale {
         Locale {
@@ -170,30 +170,22 @@ impl Locale {
         }
     }
 
-    pub async fn start_service() -> Result<Connection, Box<dyn std::error::Error>> {
-        const ADDRESS : &str = "unix:path=/run/agama/bus";
+    pub async fn start_service(address: &str) -> Result<Connection, Box<dyn std::error::Error>> {
         const SERVICE_NAME: &str = "org.opensuse.Agama.Locale1";
         const SERVICE_PATH: &str = "/org/opensuse/Agama/Locale1";
 
         // First connect to the Agama bus, then serve our API,
         // for better error reporting.
-        let conn = ConnectionBuilder::address(ADDRESS)?
-            .build()
-            .await
-            .context(format!("Connecting to the Agama bus at {ADDRESS}"))?;
+        let connection = connection_to(address).await?;
 
         // When serving, request the service name _after_ exposing the main object
         let locale = Locale::new();
-        conn
-            .object_server()
-            .at(SERVICE_PATH, locale)
-            .await?;
-        conn
+        connection.object_server().at(SERVICE_PATH, locale).await?;
+        connection
             .request_name(SERVICE_NAME)
             .await
             .context(format!("Requesting name {SERVICE_NAME}"))?;
 
-        Ok(conn)
+        Ok(connection)
     }
 }
-

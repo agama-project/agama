@@ -27,7 +27,9 @@ dependencies = [
 name = "agama-dbus-server"
 version = "0.1.0"
 dependencies = [
+ "agama-lib",
  "agama-locale-data",
+ "agama-network",
  "anyhow",
  "async-std",
  "zbus",
