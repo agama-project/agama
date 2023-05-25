@@ -10,6 +10,12 @@
 #   next yupdate run
 #
 
+set -e
+
+if [ "$DEBUG" == "1" ]; then
+  set -x
+fi
+
 SERVICE_NAME="agama"
 
 # restart the installer service if needed

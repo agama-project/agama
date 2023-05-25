@@ -16,6 +16,12 @@
 #   run the yupdate script several times
 #
 
+set -e
+
+if [ "$DEBUG" == "1" ]; then
+  set -x
+fi
+
 if [ "$YUPDATE_SKIP_FRONTEND" == "1" ]; then
   exit 0
 fi
@@ -47,8 +53,13 @@ function add_repos() {
 }
 
 function install_packages() {
+  # stop the service, it might hold the libzypp lock preventing from installing the packages
+  systemctl stop "$SERVICE_NAME"
+
   add_repos
   zypper --non-interactive install --no-recommends "${PACKAGES[@]}"
+
+  systemctl start "$SERVICE_NAME"
 }
 
 # restore the NPM cache if it is present
