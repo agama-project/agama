@@ -8,8 +8,6 @@ use zbus;
 pub enum ServiceError {
     #[error("D-Bus service error: {0}")]
     DBus(#[from] zbus::Error),
-    #[error("Unexpected or missing data")]
-    MissingData,
     // it's fine to say only "Error" because the original
     // specific error will be printed too
     #[error("Error: {0}")]
@@ -35,5 +33,5 @@ pub enum WrongParameter {
     #[error("Unknown product '{0}'. Available products: '{1:?}'")]
     UnknownProduct(String, Vec<String>),
     #[error("Wrong user parameters: '{0:?}'")]
-    WrongUser(Vec<String>)
+    WrongUser(Vec<String>),
 }

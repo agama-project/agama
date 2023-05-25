@@ -1,18 +1,13 @@
 //! Error types.
 use std::net::AddrParseError;
-
 use thiserror::Error;
 use uuid::Uuid;
 
 /// Errors that are related to the network configuration.
 #[derive(Error, Debug)]
 pub enum NetworkStateError {
-    #[error("Invalid device name: '{0}'")]
-    UnknownDevice(String),
     #[error("Invalid connection name: '{0}'")]
     UnknownConnection(Uuid),
-    #[error("Invalid connection type: '{0}'")]
-    InvalidConnectionType(Uuid),
     #[error("Invalid connection UUID: '{0}'")]
     InvalidUuid(String),
     #[error("Invalid IP address")]
