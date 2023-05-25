@@ -82,7 +82,7 @@ section > .content {
   position: absolute;
   padding: 0;
   right: 0;
-  z-index: 1;
+  z-index: 1000;
   inline-size: 70%;
   box-shadow: -10px 10px 20px 0 var(--color-primary);
 }
@@ -256,6 +256,43 @@ span.notification-mark[data-variant="sidebar"] {
 
   div:nth-child(2) {
     padding-left: calc(var(--icon-size) + var(--pf-c-helper-text__item-icon--MarginRight));
+  }
+}
+
+.device-selector {
+  [role="option"] {
+    cursor: pointer;
+    padding: var(--spacer-normal);
+    border: 2px solid var(--color-gray-dark);
+    background: var(--color-gray-light);
+
+    border-radius: 5px;
+    transition: all 0.2s ease-in-out;
+    display: grid;
+
+    gap: var(--spacer-small);
+    grid-template-columns: 1fr 2fr 2fr;
+    grid-template-areas:
+      "type-and-size drive-info drive-content"
+    ;
+
+    > :first-child {
+      align-self: center;
+      text-align: center;
+      justify-self: start;
+    }
+  }
+
+  [aria-selected] {
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 2px 5px 0 var(--color-gray-dark);
+    background: var(--color-primary);
+    color: white;
+    font-weight: 700;
+
+    svg {
+      fill: white;
+    }
   }
 }
 

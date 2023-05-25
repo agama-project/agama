@@ -24,54 +24,40 @@ require "agama/dbus/clients/base"
 module Agama
   module DBus
     module Clients
-      # D-Bus client for language configuration
-      class Language < Base
+      # D-Bus client for locale configuration
+      class Locale < Base
         def initialize
           super
 
-          @dbus_object = service.object("/org/opensuse/Agama/Language1")
+          @dbus_object = service.object("/org/opensuse/Agama/Locale1")
           @dbus_object.introspect
         end
 
         def service_name
-          @service_name ||= "org.opensuse.Agama.Language1"
+          @service_name ||= "org.opensuse.Agama.Locale1"
         end
 
-        # Available languages for the installation
+        # Sets the supported locales. It can differs per product.
         #
-        # @return [Array<Array<String, String>>] id and name of each language
-        def available_languages
-          dbus_object["org.opensuse.Agama.Language1"]["AvailableLanguages"].map { |l| l[0..1] }
-        end
-
-        # Languages selected to install
-        #
-        # @return [Array<String>] ids of the languages
-        def selected_languages
-          dbus_object["org.opensuse.Agama.Language1"]["MarkedForInstall"]
-        end
-
-        # Selects the languages to install
-        #
-        # @param ids [Array<String>]
-        def select_languages(ids)
-          dbus_object.ToInstall(ids)
+        # @param locales [Array<String>]
+        def supported_locales=(locales)
+          dbus_object.supported_locales = locales
         end
 
         # Finishes the language installation
         def finish
-          dbus_object.Finish
+          dbus_object.Commit
         end
 
-        # Registers a callback to run when the language changes
+        # Registers a callback to run when the selected locales changes
         #
         # @note Signal subscription is done only once. Otherwise, the latest subscription overrides
         #   the previous one.
         #
-        # @param block [Proc] Callback to run when a language is selected
+        # @param block [Proc] Callback to run when a locales are selected
         def on_language_selected(&block)
           on_properties_change(dbus_object) do |_, changes, _|
-            languages = changes["MarkedForInstall"]
+            languages = changes["Locales"]
             block.call(languages)
           end
         end

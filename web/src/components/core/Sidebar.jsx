@@ -19,11 +19,23 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon, AppActions } from "~/components/layout";
 import { If, NotificationMark } from "~/components/core";
 import { useNotification } from "~/context/notification";
+
+/**
+ * Returns siblings for given HTML node
+ *
+ * @param {HTMLElement} node
+ * @returns {HTMLElement[]}
+ */
+const siblingsFor = (node) => {
+  const parent = node?.parentNode;
+
+  return parent ? [...parent.children].filter(n => n !== node) : [];
+};
 
 /**
  * Agama sidebar navigation
@@ -34,11 +46,39 @@ import { useNotification } from "~/context/notification";
  */
 export default function Sidebar ({ children }) {
   const [isOpen, setIsOpen] = useState(false);
+  const asideRef = useRef(null);
   const closeButtonRef = useRef(null);
   const [notification] = useNotification();
 
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
+  /**
+   * Set siblings as not interactive and not discoverable
+   */
+  const makeSiblingsInert = () => {
+    siblingsFor(asideRef.current).forEach(s => {
+      s.setAttribute('inert', '');
+      s.setAttribute('aria-hidden', true);
+    });
+  };
+
+  /**
+   * Set siblings as interactive and discoverable
+   */
+  const makeSiblingsAlive = () => {
+    siblingsFor(asideRef.current).forEach(s => {
+      s.removeAttribute('inert');
+      s.removeAttribute('aria-hidden');
+    });
+  };
+
+  const open = () => {
+    setIsOpen(true);
+    makeSiblingsInert();
+  };
+
+  const close = () => {
+    setIsOpen(false);
+    makeSiblingsAlive();
+  };
 
   /**
    * Handler for automatically closing the sidebar when a click bubbles from a
@@ -59,6 +99,14 @@ export default function Sidebar ({ children }) {
   useEffect(() => {
     if (isOpen) closeButtonRef.current.focus();
   }, [isOpen]);
+
+  useLayoutEffect(() => {
+    // Ensure siblings do not remain inert when the component is unmounted.
+    // Using useLayoutEffect over useEffect for allowing the cleanup function to
+    // be executed immediately BEFORE unmounting the component and still having
+    // access to siblings.
+    return () => makeSiblingsAlive();
+  }, []);
 
   // display additional info when running in a development server
   let targetInfo = null;
@@ -106,6 +154,7 @@ export default function Sidebar ({ children }) {
 
       <aside
         id="global-options"
+        ref={asideRef}
         className="wrapper sidebar"
         aria-label="Global options"
         data-state={isOpen ? "visible" : "hidden"}

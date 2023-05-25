@@ -1,4 +1,22 @@
 -------------------------------------------------------------------
+Tue May 23 11:51:26 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Version 2.1
+
+-------------------------------------------------------------------
+Mon May 22 12:29:20 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Version 2
+
+-------------------------------------------------------------------
+Thu May 11 11:00:11 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Import root authentication settings when reading a Jsonnet file
+  (bsc#1211300, gh#openSUSE/agama#573).
+- Do not export the SSH public key as an empty string when it is
+  not defined.
+
+-------------------------------------------------------------------
 Fri Mar 24 14:36:36 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 0.2:

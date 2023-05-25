@@ -29,9 +29,10 @@ jest.mock("./dbus");
 
 const langProxy = {
   wait: jest.fn(),
-  AvailableLanguages: [
-    ["cs_CZ", "Cestina", {}]
-  ]
+  SupportedLocales: ["es_ES.UTF-8", "en_US.UTF-8"],
+  LabelsForLocales: jest.fn().mockResolvedValue(
+    [[["Spanish", "Spain"], ["Español", "España"]], [['English', 'United States'], ['English', 'United States']]]
+  ),
 };
 
 jest.mock("./dbus");
@@ -47,6 +48,9 @@ describe("#getLanguages", () => {
   it("returns the list of available languages", async () => {
     const client = new LanguageClient();
     const availableLanguages = await client.getLanguages();
-    expect(availableLanguages).toEqual([{ id: "cs_CZ", name: "Cestina" }]);
+    expect(availableLanguages).toEqual([
+      { id: "es_ES.UTF-8", name: "Spanish" },
+      { id: "en_US.UTF-8", name: "English" }
+    ]);
   });
 });

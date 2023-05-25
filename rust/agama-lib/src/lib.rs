@@ -16,8 +16,8 @@ use crate::error::ServiceError;
 use anyhow::Context;
 
 pub async fn connection() -> Result<zbus::Connection, ServiceError> {
-    let path = "/run/agama/bus";
-    let address = format!("unix:path={path}");
+    const PATH : &str = "/run/agama/bus";
+    let address : String = format!("unix:path={PATH}");
     let conn = zbus::ConnectionBuilder::address(address.as_str())?
         .build()
         .await

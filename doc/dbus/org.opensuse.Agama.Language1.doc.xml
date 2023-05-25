@@ -13,7 +13,7 @@
   <interface name="org.opensuse.Agama.Language1">
     <!--
         ToInstall:
-        @short_description: Set list of languages to install
+        Set list of languages to install
         @LangIDs: List of language IDs from #org.opensuse.Agama.Language1:AvailableLanguages
 
         Example:
@@ -26,7 +26,8 @@
     </method>
     <!--
         AvailableLanguages:
-        @short_description: List of all available languages to install on target system.
+        List of all available languages to install on target system.
+
         Elements are triples:
              language ID, human readable language name, and
              a dictionary for future extensions to provide more data
@@ -38,7 +39,7 @@ AvailableLanguages -&gt; [["cs_CZ", "Czech", {}]]
     <property type="a(ssa{sv})" name="AvailableLanguages" access="read"/>
     <!--
         MarkedForInstall:
-        @short_description: List of languages to install. Same format as ToInstall
+        List of languages to install. Same format as ToInstall
     -->
     <property type="as" name="MarkedForInstall" access="read"/>
   </interface>

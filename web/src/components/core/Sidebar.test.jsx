@@ -22,7 +22,7 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockLayout, mockComponent, withNotificationProvider } from "~/test-utils";
-import { Sidebar } from "~/components/core";
+import { If, Sidebar } from "~/components/core";
 import { createClient } from "~/client";
 
 // Mock layout
@@ -159,5 +159,58 @@ describe("if there are not issues", () => {
     const link = await screen.findByLabelText(/Show/i);
     const mark = within(link).queryByRole("status", { name: /New issues/ });
     expect(mark).toBeNull();
+  });
+});
+
+describe("side effects on siblings", () => {
+  const SidebarWithSiblings = () => {
+    const [isSidebarMount, setIsSidebarMount] = React.useState(true);
+
+    // NOTE: using the "data-keep-sidebar-open" to avoid triggering the #close
+    // function before unmounting the component.
+    const Content = () => (
+      <button data-keep-sidebar-open onClick={() => setIsSidebarMount(false)}>
+        Unmount Sidebar
+      </button>
+    );
+
+    return (
+      <>
+        <article>A sidebar sibling</article>
+        <If condition={isSidebarMount} then={<Sidebar><Content /></Sidebar>} />
+      </>
+    );
+  };
+
+  it("sets siblings as inert and aria-hidden while it's open", async () => {
+    const { user } = installerRender(withNotificationProvider(<SidebarWithSiblings />));
+
+    const openLink = await screen.findByLabelText(/Show/i);
+    const closeLink = await screen.findByLabelText(/Hide/i);
+    const sidebarSibling = screen.getByText("A sidebar sibling");
+    expect(sidebarSibling).not.toHaveAttribute("aria-hidden");
+    expect(sidebarSibling).not.toHaveAttribute("inert");
+    await user.click(openLink);
+    expect(sidebarSibling).toHaveAttribute("aria-hidden");
+    expect(sidebarSibling).toHaveAttribute("inert");
+    await user.click(closeLink);
+    expect(sidebarSibling).not.toHaveAttribute("aria-hidden");
+    expect(sidebarSibling).not.toHaveAttribute("inert");
+  });
+
+  it("removes inert and aria-hidden siblings attributes if it's unmounted", async () => {
+    const { user } = installerRender(withNotificationProvider(<SidebarWithSiblings />));
+
+    const openLink = await screen.findByLabelText(/Show/i);
+    const unmountButton = await screen.getByRole("button", { name: "Unmount Sidebar" });
+    const sidebarSibling = screen.getByText("A sidebar sibling");
+    expect(sidebarSibling).not.toHaveAttribute("aria-hidden");
+    expect(sidebarSibling).not.toHaveAttribute("inert");
+    await user.click(openLink);
+    expect(sidebarSibling).toHaveAttribute("aria-hidden");
+    expect(sidebarSibling).toHaveAttribute("inert");
+    await user.click(unmountButton);
+    expect(sidebarSibling).not.toHaveAttribute("aria-hidden");
+    expect(sidebarSibling).not.toHaveAttribute("inert");
   });
 });

@@ -1,7 +1,7 @@
 products:
   ALP-Bedrock:
-    name: SUSE ALP Bedrock
-    description: 'SUSE ALP Bedrock is a flexible, secure, customizable and
+    name: SUSE ALP Server
+    description: 'SUSE ALP Server is a flexible, secure, customizable and
       modular Server allowing an enterprise to run a variety of services,
       workloads and application in a compartmentalized form. Based on an
       immutable root filesystem, security has been built into it from the ground.'
@@ -121,12 +121,14 @@ Tumbleweed:
       fs_type: xfs
       min_size: 10 GiB
       max_size: unlimited
+      max_size_lvm: unlimited
       weight: 1
 
       proposed: false
       proposed_configurable: true
       disable_order: 1
       fallback_for_max_size: "/"
+      fallback_for_max_size_lvm: "/"
 
     - mount_point: "swap"
       fs_type: swap
@@ -150,6 +152,8 @@ ALP-Bedrock:
         archs: aarch64
       - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/images/repo/ALP-Bedrock-0.1-s390x-Media1/
         archs: s390
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/images/repo/ALP-Bedrock-0.1-ppc64le-Media1/
+        archs: ppc
 
     mandatory_patterns:
       - alp-bedrock-base
@@ -224,6 +228,8 @@ ALP-Micro:
         archs: aarch64
       - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/images/repo/ALP-Micro-0.1-s390x-Media1/
         archs: s390
+      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/images/repo/ALP-Micro-0.1-ppc64le-Media1/
+        archs: ppc
 
     mandatory_patterns:
       - alp-micro-base

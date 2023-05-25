@@ -21,17 +21,19 @@
 
 require "dbus"
 require "yast"
+require "y2storage/storage_manager"
 require "agama/dbus/base_object"
 require "agama/dbus/with_service_status"
 require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
-require "agama/dbus/storage/dasd_manager_interface"
+require "agama/dbus/storage/interfaces/dasd_manager"
 require "agama/dbus/storage/proposal"
 require "agama/dbus/storage/proposal_settings_converter"
 require "agama/dbus/storage/volume_converter"
 require "agama/dbus/storage/with_iscsi_auth"
 require "agama/dbus/storage/iscsi_nodes_tree"
+require "agama/dbus/storage/devices_tree"
 
 Yast.import "Arch"
 
@@ -65,7 +67,7 @@ module Agama
           register_software_callbacks
           return unless Yast::Arch.s390
 
-          singleton_class.include DasdManagerInterface
+          singleton_class.include Interfaces::DasdManager
           register_and_extend_dasd_callbacks
         end
 
@@ -113,11 +115,9 @@ module Agama
         # Each device is represented by an array containing the name of the device and the label to
         # represent that device in the UI when further information is needed.
         #
-        # @return [Array<String, String, Hash>]
+        # @return [Array<::DBus::ObjectPath>]
         def available_devices
-          proposal.available_devices.map do |dev|
-            [dev.name, proposal.device_label(dev), {}]
-          end
+          proposal.available_devices.map { |d| system_devices_tree.path_for(d) }
         end
 
         # Volumes used as template for creating a new proposal
@@ -149,7 +149,7 @@ module Agama
         end
 
         dbus_interface PROPOSAL_CALCULATOR_INTERFACE do
-          dbus_reader :available_devices, "a(ssa{sv})"
+          dbus_reader :available_devices, "ao"
 
           dbus_reader :volume_templates, "aa{sv}"
 
@@ -249,6 +249,7 @@ module Agama
         def register_storage_callbacks
           backend.on_issues_change { issues_properties_changed }
           backend.on_deprecated_system_change { storage_properties_changed }
+          backend.on_probe { refresh_system_devices }
         end
 
         def register_proposal_callbacks
@@ -307,6 +308,11 @@ module Agama
           @service.export(@dbus_proposal)
         end
 
+        def refresh_system_devices
+          devicegraph = Y2Storage::StorageManager.instance.probed
+          system_devices_tree.update(devicegraph)
+        end
+
         def refresh_iscsi_nodes
           nodes = backend.iscsi.nodes
           iscsi_nodes_tree.update(nodes)
@@ -314,6 +320,17 @@ module Agama
 
         def iscsi_nodes_tree
           @iscsi_nodes_tree ||= ISCSINodesTree.new(@service, backend.iscsi, logger: logger)
+        end
+
+        # FIXME: D-Bus trees should not be created by the Manager D-Bus object. Note that the
+        #   service (`@service`) is nil until the Manager object is exported. The service should
+        #   have the responsibility of creating the trees and pass them to Manager if needed.
+        def system_devices_tree
+          @system_devices_tree ||= DevicesTree.new(@service, tree_path("system"), logger: logger)
+        end
+
+        def tree_path(tree_root)
+          File.join(PATH, tree_root)
         end
       end
     end

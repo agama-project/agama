@@ -177,6 +177,8 @@ describe Agama::Storage::Manager do
 
     let(:proposal_issues) { [Agama::Issue.new("proposal issue")] }
 
+    let(:callback) { proc {} }
+
     it "probes the storage devices and calculates a proposal" do
       expect(config).to receive(:pick_product).with("ALP")
       expect(iscsi).to receive(:activate)
@@ -210,6 +212,14 @@ describe Agama::Storage::Manager do
       expect(storage.issues).to include(
         an_object_having_attributes(description: /proposal issue/)
       )
+    end
+
+    it "executes the on_probe callbacks" do
+      storage.on_probe(&callback)
+
+      expect(callback).to receive(:call)
+
+      storage.probe
     end
 
     context "if there are available devices" do

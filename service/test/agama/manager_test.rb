@@ -48,7 +48,7 @@ describe Agama::Manager do
       write: nil, on_service_status_change: nil, valid?: true
     )
   end
-  let(:language) { instance_double(Agama::DBus::Clients::Language, finish: nil) }
+  let(:locale) { instance_double(Agama::DBus::Clients::Locale, finish: nil) }
   let(:network) { instance_double(Agama::Network, install: nil) }
   let(:storage) do
     instance_double(
@@ -61,7 +61,7 @@ describe Agama::Manager do
 
   before do
     allow(Agama::Network).to receive(:new).and_return(network)
-    allow(Agama::DBus::Clients::Language).to receive(:new).and_return(language)
+    allow(Agama::DBus::Clients::Locale).to receive(:new).and_return(locale)
     allow(Agama::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(Agama::DBus::Clients::Users).to receive(:new).and_return(users)
@@ -119,7 +119,7 @@ describe Agama::Manager do
       expect(network).to receive(:install)
       expect(software).to receive(:install)
       expect(software).to receive(:finish)
-      expect(language).to receive(:finish)
+      expect(locale).to receive(:finish)
       expect(storage).to receive(:install)
       expect(storage).to receive(:finish)
       expect(users).to receive(:write)

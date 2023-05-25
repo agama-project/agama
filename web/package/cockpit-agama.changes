@@ -1,3 +1,54 @@
+Wed May 24 11:01:24 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: Ensure that blur and grayscale CSS filters are not applied to
+  any nodes other than <body> direct children (gh#openSUSE/agama#588).
+
+-------------------------------------------------------------------
+
+Tue May 23 11:51:26 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Version 2.1
+
+-------------------------------------------------------------------
+Tue May 23 08:10:04 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add new component for selecting devices.
+- gh#openSUSE/agama#586
+
+-------------------------------------------------------------------
+Mon May 22 12:30:02 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Version 2
+
+-------------------------------------------------------------------
+Mon May 22 10:42:35 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: Fix header and footer block size (gh#openSUSE/agama#583)
+
+-------------------------------------------------------------------
+Fri May 19 09:29:50 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: grayscale and blur not accessible div nodes
+  (gh#openSUSE/agama#564)
+
+-------------------------------------------------------------------
+Wed May 17 15:42:31 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Ensure siblings of an open modal dialog do not remain hidden from
+  the accessibility API if the dialog is unmounted instead of
+  set as closed (gh#openSUSE/agama#580).
+
+-------------------------------------------------------------------
+Tue May  9 22:36:12 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Keep the sidebar on top of other elements when it's open
+  (gh#openSUSE/agama#569).
+
+-------------------------------------------------------------------
+Mon May  8 15:20:14 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Set sidebar siblings as aria-hiden while it's open
+  (gh#openSUSE/agama#563)
 -------------------------------------------------------------------
 Fri Apr 28 15:16:04 UTC 2023 - José Iván López González <jlopez@suse.com>
 

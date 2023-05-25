@@ -108,6 +108,10 @@ Alternatively you can run a development server which works as a proxy for
 the cockpit server. See more details [in the documentation](
 web/README.md#using-a-development-server).
 
+Another alternative is to run source checkout inside container so system is not
+affected by doing testing run beside real actions really done by installer.
+See more details [in the documentation][doc/testing_using_container.md].
+
 * Start the services:
     * beware that Agama must run as root (like YaST does) to do
       hardware probing, partition the disks, install the software and so on.

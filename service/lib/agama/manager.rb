@@ -25,7 +25,7 @@ require "agama/network"
 require "agama/with_progress"
 require "agama/installation_phase"
 require "agama/service_status_recorder"
-require "agama/dbus/clients/language"
+require "agama/dbus/clients/locale"
 require "agama/dbus/clients/software"
 require "agama/dbus/clients/storage"
 require "agama/dbus/clients/users"
@@ -124,9 +124,9 @@ module Agama
 
     # Language manager
     #
-    # @return [DBus::Clients::Language]
+    # @return [DBus::Clients::Locale]
     def language
-      @language ||= DBus::Clients::Language.new
+      @language ||= DBus::Clients::Locale.new
     end
 
     # Users client
@@ -191,6 +191,26 @@ module Agama
       Yast::Execute.locally!("chown", "#{user}:", path)
 
       path
+    end
+
+    # Whatever has to be done at the end of installation
+    def finish_installation
+      cmd = if iguana?
+        "/usr/bin/agamactl -k"
+      else
+        "/usr/sbin/shutdown -r now"
+      end
+
+      logger.info("Finishing installation with #{cmd}")
+
+      system(cmd)
+    end
+
+    # Says whether running on iguana or not
+    #
+    # @return [Boolean] true when running on iguana
+    def iguana?
+      Dir.exist?("/iguana")
     end
 
   private

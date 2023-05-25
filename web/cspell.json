@@ -17,6 +17,7 @@
       "name": "custom",
       "words": [
         "addrs",
+        "ahci",
         "apsens",
         "autologin",
         "autoconnect",
@@ -25,6 +26,7 @@
         "dasd",
         "dasds",
         "dbus",
+        "España",
         "filecontent",
         "filename",
         "fullname",
@@ -38,10 +40,13 @@
         "localdomain",
         "luks",
         "mgmt",
+        "mmcblk",
+        "multipath",
         "onboot",
         "partitioner",
         "patternfly",
         "rfkill",
+        "sata",
         "screenreader",
         "ssid",
         "ssids",
@@ -54,7 +59,8 @@
         "testfile",
         "testsuite",
         "textinput",
-        "tkip"
+        "tkip",
+        "udev"
       ]
     }
   ],

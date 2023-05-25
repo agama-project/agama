@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 
 # Using a git checkout in the current directory,
 # set up the service (backend) part of agama
@@ -32,11 +32,27 @@ sudosed() {
   sed -e "$1" "$2" | $SUDO tee "$3" > /dev/null
 }
 
-# - Install the service dependencies
+# - Install RPM dependencies
+
+# this repo can be removed once python-language-data reaches Factory
+test -f /etc/zypp/repos.d/d_l_python.repo || \
+  $SUDO zypper --non-interactive \
+    addrepo https://download.opensuse.org/repositories/devel:/languages:/python/openSUSE_Tumbleweed/ d_l_python
+$SUDO zypper --non-interactive --gpg-auto-import-keys install gcc gcc-c++ make openssl-devel ruby-devel \
+  python-langtable-data \
+  git augeas-devel jemalloc-devel || exit 1
+
+# - Install service rubygem dependencies
 (
   cd $MYDIR/service
   bundle config set --local path 'vendor/bundle'
   bundle install
+)
+
+# - build also rust service
+(
+  cd $MYDIR/rust
+  cargo build
 )
 
 # - D-Bus configuration
@@ -54,9 +70,25 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
   done
   sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/service/bin/@" \
           systemd.service /usr/lib/systemd/system/agama.service
+)
+
+# and same for rust service
+(
+  cd $MYDIR/rust/share
+  DBUSDIR=/usr/share/dbus-1/agama-services
+  for SVC in org.opensuse.Agama*.service; do
+    # it is intention to use debug here to get more useful debugging output
+    sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/rust/target/debug/@" $SVC $DBUSDIR/$SVC
+  done
+)
+
+# systemd reload and start of service
+(
   $SUDO systemctl daemon-reload
   # Start the separate dbus-daemon for Agama
-  $SUDO systemctl start agama.service
+  # (in CI we run a custom cockpit-ws which replaces the cockpit.socket
+  # dependency, continue in that case)
+  $SUDO systemctl start agama.service || pgrep cockpit-ws
 )
 
 # - Make sure NetworkManager is running

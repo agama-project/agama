@@ -20,7 +20,7 @@
  */
 
 // @ts-check
-// cspell:ignore ECKD
+// cspell:ignore ECKD dasda ddgdcbibhd
 
 import DBusClient from "./dbus";
 import { StorageClient } from "./storage";
@@ -30,6 +30,8 @@ jest.mock("./dbus");
 const cockpitProxies = {};
 
 const cockpitCallbacks = {};
+
+let managedObjects = {};
 
 const volumes = [
   {
@@ -53,6 +55,118 @@ const volumes = [
   }
 ];
 
+const systemDevices = {
+  sda: {
+    sid: "59",
+    type: "disk",
+    vendor: "Micron",
+    model: "Micron 1100 SATA",
+    driver: ["ahci", "mmcblk"],
+    bus: "IDE",
+    busId: "",
+    transport: "usb",
+    dellBOSS: false,
+    sdCard: true,
+    active: true,
+    name: "/dev/sda",
+    size: 1024,
+    systems : ["Windows", "openSUSE Leap 15.2"],
+    udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
+    udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
+    partitionTable: {
+      type: "gpt",
+      partitions: ["/dev/sda1", "/dev/sda2"]
+    }
+  },
+  sdb: {
+    sid: "60",
+    type: "disk",
+    vendor: "Samsung",
+    model: "Samsung Evo 8 Pro",
+    driver: ["ahci"],
+    bus: "IDE",
+    busId: "",
+    transport: "",
+    dellBOSS: false,
+    sdCard: false,
+    active: true,
+    name: "/dev/sdb",
+    size: 2048,
+    systems : [],
+    udevIds: [],
+    udevPaths: ["pci-0000:00-19"]
+  },
+  md0: {
+    sid: "62",
+    type: "md",
+    level: "raid0",
+    uuid: "12345:abcde",
+    members: ["/dev/sdb"],
+    active: true,
+    name: "/dev/md0",
+    size: 2048,
+    systems : [],
+    udevIds: [],
+    udevPaths: []
+  },
+  raid: {
+    sid: "63",
+    type: "raid",
+    devices: ["/dev/sda", "/dev/sdb"],
+    vendor: "Dell",
+    model: "Dell BOSS-N1 Modular",
+    driver: [],
+    bus: "",
+    busId: "",
+    transport: "",
+    dellBOSS: true,
+    sdCard: false,
+    active: true,
+    name: "/dev/mapper/isw_ddgdcbibhd_244",
+    size: 2048,
+    systems : [],
+    udevIds: [],
+    udevPaths: []
+  },
+  multipath: {
+    sid: "64",
+    type: "multipath",
+    wires: ["/dev/sdc", "/dev/sdd"],
+    vendor: "",
+    model: "",
+    driver: [],
+    bus: "",
+    busId: "",
+    transport: "",
+    dellBOSS: false,
+    sdCard: false,
+    active: true,
+    name: "/dev/mapper/36005076305ffc73a00000000000013b4",
+    size: 2048,
+    systems : [],
+    udevIds: [],
+    udevPaths: []
+  },
+  dasd: {
+    sid: "65",
+    type: "dasd",
+    vendor: "IBM",
+    model: "IBM",
+    driver: [],
+    bus: "",
+    busId: "0.0.0150",
+    transport: "",
+    dellBOSS: false,
+    sdCard: false,
+    active: true,
+    name: "/dev/dasda",
+    size: 2048,
+    systems : [],
+    udevIds: [],
+    udevPaths: []
+  }
+};
+
 const contexts = {
   withoutProposal: () => {
     cockpitProxies.proposal = null;
@@ -73,8 +187,8 @@ const contexts = {
   },
   withAvailableDevices: () => {
     cockpitProxies.proposalCalculator.AvailableDevices = [
-      ["/dev/sda", "/dev/sda, 950 GiB, Windows"],
-      ["/dev/sdb", "/dev/sdb, 500 GiB"]
+      "/org/opensuse/Agama/Storage1/system/59",
+      "/org/opensuse/Agama/Storage1/system/60"
     ];
   },
   withVolumeTemplates: () => {
@@ -146,6 +260,133 @@ const contexts = {
       }
     };
   },
+  withSystemDevices: () => {
+    managedObjects["/org/opensuse/Agama/Storage1/system/59"] = {
+      "org.opensuse.Agama.Storage1.Drive": {
+        Type: { t: "s", v: "disk" },
+        Vendor: { t: "s", v: "Micron" },
+        Model: { t: "s", v: "Micron 1100 SATA" },
+        Driver: { t: "as", v: ["ahci", "mmcblk"] },
+        Bus: { t: "s", v: "IDE" },
+        BusId: { t: "s", v: "" },
+        Transport: { t: "s", v: "usb" },
+        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: true } } },
+      },
+      "org.opensuse.Agama.Storage1.Block": {
+        Active: { t: "b", v: true },
+        Name: { t: "s", v: "/dev/sda" },
+        Size: { t: "x", v: 1024 },
+        Systems: { t: "as", v: ["Windows", "openSUSE Leap 15.2"] },
+        UdevIds: { t: "as", v: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"] },
+        UdevPaths: { t: "as", v: ["pci-0000:00-12", "pci-0000:00-12-ata"] }
+      },
+      "org.opensuse.Agama.Storage1.PartitionTable": {
+        Type: { t: "s", v: "gpt" },
+        Partitions: { t: "as", v: ["/dev/sda1", "/dev/sda2"] }
+      }
+    };
+    managedObjects["/org/opensuse/Agama/Storage1/system/60"] = {
+      "org.opensuse.Agama.Storage1.Drive": {
+        Type: { t: "s", v: "disk" },
+        Vendor: { t: "s", v: "Samsung" },
+        Model: { t: "s", v: "Samsung Evo 8 Pro" },
+        Driver: { t: "as", v: ["ahci"] },
+        Bus: { t: "s", v: "IDE" },
+        BusId: { t: "s", v: "" },
+        Transport: { t: "s", v: "" },
+        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
+      },
+      "org.opensuse.Agama.Storage1.Block": {
+        Active: { t: "b", v: true },
+        Name: { t: "s", v: "/dev/sdb" },
+        Size: { t: "x", v: 2048 },
+        Systems: { t: "as", v: [] },
+        UdevIds: { t: "as", v: [] },
+        UdevPaths: { t: "as", v: ["pci-0000:00-19"] }
+      }
+    };
+    managedObjects["/org/opensuse/Agama/Storage1/system/62"] = {
+      "org.opensuse.Agama.Storage1.MD": {
+        Level: { t: "s", v: "raid0" },
+        UUID: { t: "s", v: "12345:abcde" },
+        Members: { t: "as", v: ["/dev/sdb"] }
+      },
+      "org.opensuse.Agama.Storage1.Block": {
+        Active: { t: "b", v: true },
+        Name: { t: "s", v: "/dev/md0" },
+        Size: { t: "x", v: 2048 },
+        Systems: { t: "as", v: [] },
+        UdevIds: { t: "as", v: [] },
+        UdevPaths: { t: "as", v: [] }
+      }
+    };
+    managedObjects["/org/opensuse/Agama/Storage1/system/63"] = {
+      "org.opensuse.Agama.Storage1.Drive": {
+        Type: { t: "s", v: "raid" },
+        Vendor: { t: "s", v: "Dell" },
+        Model: { t: "s", v: "Dell BOSS-N1 Modular" },
+        Driver: { t: "as", v: [] },
+        Bus: { t: "s", v: "" },
+        BusId: { t: "s", v: "" },
+        Transport: { t: "s", v: "" },
+        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: true }, SDCard: { t: "b", v: false } } },
+      },
+      "org.opensuse.Agama.Storage1.RAID" : {
+        Devices: { t: "as", v: ["/dev/sda", "/dev/sdb"] }
+      },
+      "org.opensuse.Agama.Storage1.Block": {
+        Active: { t: "b", v: true },
+        Name: { t: "s", v: "/dev/mapper/isw_ddgdcbibhd_244" },
+        Size: { t: "x", v: 2048 },
+        Systems: { t: "as", v: [] },
+        UdevIds: { t: "as", v: [] },
+        UdevPaths: { t: "as", v: [] }
+      }
+    };
+    managedObjects["/org/opensuse/Agama/Storage1/system/64"] = {
+      "org.opensuse.Agama.Storage1.Drive": {
+        Type: { t: "s", v: "multipath" },
+        Vendor: { t: "s", v: "" },
+        Model: { t: "s", v: "" },
+        Driver: { t: "as", v: [] },
+        Bus: { t: "s", v: "" },
+        BusId: { t: "s", v: "" },
+        Transport: { t: "s", v: "" },
+        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
+      },
+      "org.opensuse.Agama.Storage1.Multipath" : {
+        Wires: { t: "as", v: ["/dev/sdc", "/dev/sdd"] }
+      },
+      "org.opensuse.Agama.Storage1.Block": {
+        Active: { t: "b", v: true },
+        Name: { t: "s", v: "/dev/mapper/36005076305ffc73a00000000000013b4" },
+        Size: { t: "x", v: 2048 },
+        Systems: { t: "as", v: [] },
+        UdevIds: { t: "as", v: [] },
+        UdevPaths: { t: "as", v: [] }
+      }
+    };
+    managedObjects["/org/opensuse/Agama/Storage1/system/65"] = {
+      "org.opensuse.Agama.Storage1.Drive": {
+        Type: { t: "s", v: "dasd" },
+        Vendor: { t: "s", v: "IBM" },
+        Model: { t: "s", v: "IBM" },
+        Driver: { t: "as", v: [] },
+        Bus: { t: "s", v: "" },
+        BusId: { t: "s", v: "0.0.0150" },
+        Transport: { t: "s", v: "" },
+        Info: { t: "a{sv}", v: { DellBOSS: { t: "b", v: false }, SDCard: { t: "b", v: false } } },
+      },
+      "org.opensuse.Agama.Storage1.Block": {
+        Active: { t: "b", v: true },
+        Name: { t: "s", v: "/dev/dasda" },
+        Size: { t: "x", v: 2048 },
+        Systems: { t: "as", v: [] },
+        UdevIds: { t: "as", v: [] },
+        UdevPaths: { t: "as", v: [] }
+      }
+    };
+  }
 };
 
 const mockProxy = (iface, path) => {
@@ -181,6 +422,11 @@ const emitSignal = (path, iface, data) => {
   return handler(data);
 };
 
+const mockCall = (_path, iface, method) => {
+  if (iface === "org.freedesktop.DBus.ObjectManager" && method === "GetManagedObjects")
+    return [managedObjects];
+};
+
 const reset = () => {
   cockpitProxies.issues = {};
   cockpitProxies.storage = {};
@@ -191,6 +437,7 @@ const reset = () => {
   cockpitProxies.iscsiNode = {};
   cockpitProxies.dasdManager = {};
   cockpitProxies.dasdDevices = {};
+  managedObjects = {};
 };
 
 beforeEach(() => {
@@ -201,7 +448,8 @@ beforeEach(() => {
     return {
       proxy: mockProxy,
       proxies: mockProxies,
-      onObjectChanged: mockOnObjectChanged
+      onObjectChanged: mockOnObjectChanged,
+      call: mockCall
     };
   });
 });
@@ -336,12 +584,36 @@ describe("#onIssuesChange", () => {
   });
 });
 
+describe("#system", () => {
+  describe("#getDevices", () => {
+    describe("when there are devices", () => {
+      beforeEach(() => {
+        contexts.withSystemDevices();
+        client = new StorageClient();
+      });
+
+      it("returns the system devices", async () => {
+        const devices = await client.system.getDevices();
+        expect(devices).toEqual(Object.values(systemDevices));
+      });
+    });
+
+    describe("when there are not devices", () => {
+      beforeEach(() => {
+        client = new StorageClient();
+      });
+
+      it("returns an empty list", async () => {
+        const devices = await client.system.getDevices();
+        expect(devices).toEqual([]);
+      });
+    });
+  });
+});
+
 describe("#proposal", () => {
   const checkAvailableDevices = (availableDevices) => {
-    expect(availableDevices).toEqual([
-      { id: "/dev/sda", label: "/dev/sda, 950 GiB, Windows" },
-      { id: "/dev/sdb", label: "/dev/sdb, 500 GiB" }
-    ]);
+    expect(availableDevices).toEqual([systemDevices.sda, systemDevices.sdb]);
   };
 
   const checkVolumes = (volumes) => {
@@ -376,6 +648,7 @@ describe("#proposal", () => {
 
   describe("#getData", () => {
     beforeEach(() => {
+      contexts.withSystemDevices();
       contexts.withAvailableDevices();
       contexts.withVolumeTemplates();
       contexts.withProposal();
@@ -392,6 +665,7 @@ describe("#proposal", () => {
 
   describe("#getAvailableDevices", () => {
     beforeEach(() => {
+      contexts.withSystemDevices();
       contexts.withAvailableDevices();
       client = new StorageClient();
     });
