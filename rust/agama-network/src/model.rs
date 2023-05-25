@@ -186,6 +186,7 @@ pub struct Device {
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum DeviceType {
+    Loopback = 0,
     Ethernet = 1,
     Wireless = 2,
     Unknown = 3,
@@ -196,9 +197,10 @@ impl TryFrom<u8> for DeviceType {
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
-            0 => Ok(DeviceType::Ethernet),
-            1 => Ok(DeviceType::Wireless),
-            2 => Ok(DeviceType::Unknown),
+            0 => Ok(DeviceType::Loopback),
+            1 => Ok(DeviceType::Ethernet),
+            2 => Ok(DeviceType::Wireless),
+            3 => Ok(DeviceType::Unknown),
             _ => Err(NetworkStateError::InvalidDeviceType(value)),
         }
     }
@@ -209,6 +211,7 @@ impl TryFrom<u8> for DeviceType {
 pub enum Connection {
     Ethernet(EthernetConnection),
     Wireless(WirelessConnection),
+    Loopback(LoopbackConnection),
 }
 
 impl Connection {
@@ -230,6 +233,7 @@ impl Connection {
         match &self {
             Connection::Ethernet(conn) => &conn.base,
             Connection::Wireless(conn) => &conn.base,
+            Connection::Loopback(conn) => &conn.base,
         }
     }
 
@@ -237,6 +241,7 @@ impl Connection {
         match self {
             Connection::Ethernet(conn) => &mut conn.base,
             Connection::Wireless(conn) => &mut conn.base,
+            Connection::Loopback(conn) => &mut conn.base,
         }
     }
 
@@ -335,6 +340,11 @@ pub struct EthernetConnection {
 pub struct WirelessConnection {
     pub base: BaseConnection,
     pub wireless: WirelessConfig,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct LoopbackConnection {
+    pub base: BaseConnection,
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]

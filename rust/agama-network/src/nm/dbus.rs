@@ -31,24 +31,25 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
     result
 }
 
-/// Converts a HashMap from D-Bus into a Connection.
+/// Converts an OwnedNestedHash from D-Bus into a Connection.
 ///
-/// This functions tries to turn a HashMap coming from D-Bus into a Connection.
-pub fn connection_from_dbus(
-    conn: HashMap<String, HashMap<String, zvariant::OwnedValue>>,
-) -> Option<Connection> {
-    let base_connection = base_connection_from_dbus(&conn)?;
+/// This functions tries to turn a OwnedHashMap coming from D-Bus into a Connection.
+pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
+    let base = base_connection_from_dbus(&conn)?;
 
     if let Some(wireless_config) = wireless_config_from_dbus(&conn) {
         return Some(Connection::Wireless(WirelessConnection {
-            base: base_connection,
+            base,
             wireless: wireless_config,
         }));
     }
 
-    Some(Connection::Ethernet(EthernetConnection {
-        base: base_connection,
-    }))
+    if conn.get("loopback").is_some() {
+        return Some(Connection::Loopback(LoopbackConnection { base }));
+    };
+
+    Some(Connection::Ethernet(EthernetConnection { base }))
+}
 }
 
 fn ipv4_to_dbus(ipv4: &Ipv4Config) -> HashMap<&str, zvariant::Value> {
