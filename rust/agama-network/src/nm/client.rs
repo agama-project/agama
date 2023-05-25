@@ -1,5 +1,5 @@
 //! NetworkManager client.
-use super::dbus::{connection_from_dbus, connection_to_dbus};
+use super::dbus::{connection_from_dbus, connection_to_dbus, merge_dbus_connections};
 use super::model::NmDeviceType;
 use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
 use crate::model::{Connection, Device};
@@ -73,19 +73,16 @@ impl<'a> NetworkManagerClient<'a> {
 
     /// Adds or updates a connection if it already exists.
     ///
-    /// * `conn`: connection to add.
+    /// * `conn`: connection to add or update.
     pub async fn add_or_update_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
-        let proxy = SettingsProxy::new(&self.connection).await?;
-        let uuid_s = conn.uuid().to_string();
-        let conn_dbus = connection_to_dbus(conn);
-        if let Ok(path) = proxy.get_connection_by_uuid(uuid_s.as_str()).await {
-            let proxy = ConnectionProxy::builder(&self.connection)
-                .path(path.as_str())?
-                .build()
-                .await?;
-            proxy.update(conn_dbus).await?;
+        let new_conn = connection_to_dbus(conn);
+        if let Ok(proxy) = self.get_connection_proxy(conn.uuid()).await {
+            let original = proxy.get_settings().await?;
+            let merged = merge_dbus_connections(&original, &new_conn);
+            proxy.update(merged).await?;
         } else {
-            proxy.add_connection(conn_dbus).await?;
+            let proxy = SettingsProxy::new(&self.connection).await?;
+            proxy.add_connection(new_conn).await?;
         }
         Ok(())
     }

@@ -1,7 +1,7 @@
 //! This module implements some functions to convert from/to D-Bus types
 //!
 //! Working with hash maps coming from D-Bus is rather tedious and it is even worse when working
-//! with nested hash maps (see [NestedHash]).
+//! with nested hash maps (see [NestedHash] and [OwnedNestedHash]).
 use super::model::*;
 use crate::model::*;
 use std::collections::HashMap;
@@ -9,7 +9,10 @@ use std::net::Ipv4Addr;
 use uuid::Uuid;
 use zbus::zvariant::{self, Value};
 
+/// Nested hash to send to D-Bus.
 type NestedHash<'a> = HashMap<&'a str, HashMap<&'a str, zvariant::Value<'a>>>;
+/// Nested hash as it comes from D-Bus.
+type OwnedNestedHash = HashMap<String, HashMap<String, zvariant::OwnedValue>>;
 
 /// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///
@@ -50,6 +53,29 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
 
     Some(Connection::Ethernet(EthernetConnection { base }))
 }
+
+/// Merges a NestedHash and an OwnedNestedHash connections.
+///
+/// * `original`: original hash coming from D-Bus.
+/// * `updated`: updatde hash to write to D-Bus.
+pub fn merge_dbus_connections<'a>(
+    original: &'a OwnedNestedHash,
+    updated: &'a NestedHash,
+) -> NestedHash<'a> {
+    let mut merged = HashMap::new();
+    for (key, orig_section) in original {
+        let mut inner: HashMap<&str, zbus::zvariant::Value> = HashMap::new();
+        for (inner_key, value) in orig_section {
+            inner.insert(inner_key.as_str(), value.into());
+        }
+        if let Some(upd_section) = updated.get(key.as_str()) {
+            for (inner_key, value) in upd_section {
+                inner.insert(inner_key, value.clone());
+            }
+        }
+        merged.insert(key.as_str(), inner.into());
+    }
+    merged
 }
 
 fn ipv4_to_dbus(ipv4: &Ipv4Config) -> HashMap<&str, zvariant::Value> {
@@ -104,9 +130,7 @@ fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
     ])
 }
 
-fn base_connection_from_dbus(
-    conn: &HashMap<String, HashMap<String, zvariant::OwnedValue>>,
-) -> Option<BaseConnection> {
+fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
     let Some(connection) = conn.get("connection") else {
         return None;
     };
@@ -161,9 +185,7 @@ fn ipv4_config_from_dbus(ipv4: &HashMap<String, zvariant::OwnedValue>) -> Option
     Some(ipv4_config)
 }
 
-fn wireless_config_from_dbus(
-    conn: &HashMap<String, HashMap<String, zvariant::OwnedValue>>,
-) -> Option<WirelessConfig> {
+fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
     let Some(wireless) = conn.get("802-11-wireless") else {
         return None;
     };
@@ -192,7 +214,10 @@ fn wireless_config_from_dbus(
 
 #[cfg(test)]
 mod test {
-    use super::{connection_from_dbus, connection_to_dbus, NestedHash};
+    use super::{
+        connection_from_dbus, connection_to_dbus, merge_dbus_connections, NestedHash,
+        OwnedNestedHash,
+    };
     use crate::model::*;
     use std::{collections::HashMap, net::Ipv4Addr};
     use uuid::Uuid;
@@ -314,12 +339,9 @@ mod test {
 
     #[test]
     fn test_dbus_from_ethernet_connection() {
-        let ethernet = EthernetConnection {
-            base: build_base_connection(),
-        };
-        let ethernet = Connection::Ethernet(ethernet);
+        let ethernet = build_ethernet_connection();
         let ethernet_dbus = connection_to_dbus(&ethernet);
-        test_dbus_base_connection(&ethernet_dbus);
+        check_dbus_base_connection(&ethernet_dbus);
     }
 
     fn build_base_connection() -> BaseConnection {
@@ -336,7 +358,14 @@ mod test {
         }
     }
 
-    fn test_dbus_base_connection(conn_dbus: &NestedHash) {
+    fn build_ethernet_connection() -> Connection {
+        let ethernet = EthernetConnection {
+            base: build_base_connection(),
+        };
+        Connection::Ethernet(ethernet)
+    }
+
+    fn check_dbus_base_connection(conn_dbus: &NestedHash) {
         let connection_dbus = conn_dbus.get("connection").unwrap();
         let id: &str = connection_dbus.get("id").unwrap().downcast_ref().unwrap();
         assert_eq!(id, "agama");
@@ -344,5 +373,54 @@ mod test {
         let ipv4_dbus = conn_dbus.get("ipv4").unwrap();
         let gateway: &str = ipv4_dbus.get("gateway").unwrap().downcast_ref().unwrap();
         assert_eq!(gateway, "192.168.0.1");
+    }
+
+    #[test]
+    fn test_merge_dbus_connections() {
+        let mut original = OwnedNestedHash::new();
+        let connection = HashMap::from([
+            ("id".to_string(), Value::new("conn0".to_string()).to_owned()),
+            (
+                "type".to_string(),
+                Value::new("802-3-ethernet".to_string()).to_owned(),
+            ),
+        ]);
+        let ipv4 = HashMap::from([
+            (
+                "method".to_string(),
+                Value::new("manual".to_string()).to_owned(),
+            ),
+            (
+                "gateway".to_string(),
+                Value::new("192.168.1.1".to_string()).to_owned(),
+            ),
+        ]);
+        original.insert("connection".to_string(), connection);
+        original.insert("ipv4".to_string(), ipv4);
+
+        let base = BaseConnection {
+            id: "agama".to_string(),
+            ..Default::default()
+        };
+        let ethernet = EthernetConnection {
+            base,
+            ..Default::default()
+        };
+        let updated = Connection::Ethernet(ethernet);
+        let updated = connection_to_dbus(&updated);
+
+        let merged = merge_dbus_connections(&original, &updated);
+        let connection = merged.get("connection").unwrap();
+        assert_eq!(
+            *connection.get("id").unwrap(),
+            Value::new("agama".to_string())
+        );
+
+        let ipv4 = merged.get("ipv4").unwrap();
+        assert_eq!(*ipv4.get("method").unwrap(), Value::new("auto".to_string()));
+        assert_eq!(
+            *ipv4.get("gateway").unwrap(),
+            Value::new("192.168.1.1".to_string())
+        );
     }
 }

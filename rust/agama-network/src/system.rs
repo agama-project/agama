@@ -38,11 +38,13 @@ impl NetworkSystem {
     }
 
     /// Writes the network configuration to NetworkManager.
-    pub async fn to_network_manager(&self) -> Result<(), Box<dyn Error>> {
+    pub async fn to_network_manager(&mut self) -> Result<(), Box<dyn Error>> {
         let adapter = NetworkManagerAdapter::from_system()
             .await
             .expect("Could not connect to NetworkManager to write the changes.");
-        adapter.write(&self.state)
+        adapter.write(&self.state)?;
+        self.state = adapter.read()?;
+        Ok(())
     }
 
     /// Returns a clone of the [Sender](https://doc.rust-lang.org/std/sync/mpsc/struct.Sender.html) to execute
