@@ -51,7 +51,11 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
         return Some(Connection::Loopback(LoopbackConnection { base }));
     };
 
-    Some(Connection::Ethernet(EthernetConnection { base }))
+    if conn.get("ethernet").is_some() {
+        return Some(Connection::Ethernet(EthernetConnection { base }));
+    };
+
+    None
 }
 
 /// Merges a NestedHash and an OwnedNestedHash connections.
