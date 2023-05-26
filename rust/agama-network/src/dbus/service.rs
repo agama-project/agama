@@ -13,6 +13,8 @@ pub struct NetworkService;
 impl NetworkService {
     /// Starts listening and dispatching events on the D-Bus connection.
     pub async fn start(address: &str) -> Result<(), Box<dyn Error>> {
+        const SERVICE_NAME: &str = "org.opensuse.Agama.Network1";
+
         let connection = connection_to(address).await?;
         let mut network = NetworkSystem::from_network_manager(connection.clone())
             .await
@@ -25,9 +27,9 @@ impl NetworkService {
                     .await
                     .expect("Could not set up the D-Bus tree");
                 connection
-                    .request_name("org.opensuse.Agama.Network1")
+                    .request_name(SERVICE_NAME)
                     .await
-                    .expect("Could not get the 'org.opensuse.Agama.Network1' service");
+                    .expect(&format!("Could not request name {SERVICE_NAME}"));
 
                 network.listen().await;
             })
