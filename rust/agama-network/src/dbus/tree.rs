@@ -108,7 +108,6 @@ impl Tree {
     ///
     /// * `uuid`: UUID of the connection to remove.
     pub async fn remove_connection(&mut self, uuid: Uuid) -> Result<(), ServiceError> {
-        // TODO: better error
         let mut objects = self.objects.lock();
         let Some(path) = objects.connection_path(uuid) else {
             return Ok(())
