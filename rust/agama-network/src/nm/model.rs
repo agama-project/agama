@@ -6,7 +6,11 @@
 ///
 /// Using the newtype pattern around an String is enough. For proper support, we might replace this
 /// struct with an enum.
-use crate::model::{DeviceType, IpMethod, SecurityProtocol, WirelessMode};
+use crate::{
+    model::{DeviceType, IpMethod, SecurityProtocol, WirelessMode},
+    nm::error::NmError,
+};
+use std::fmt;
 
 #[derive(Debug, PartialEq)]
 pub struct NmWirelessMode(pub String);
@@ -46,8 +50,14 @@ impl From<NmWirelessMode> for WirelessMode {
 /// As we are using the number just to filter wireless devices, using the newtype
 /// pattern around an u32 is enough. For proper support, we might replace this
 /// struct with an enum.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct NmDeviceType(pub u32);
+
+impl From<NmDeviceType> for u32 {
+    fn from(value: NmDeviceType) -> u32 {
+        value.0
+    }
+}
 
 impl Default for NmDeviceType {
     fn default() -> Self {
@@ -55,12 +65,15 @@ impl Default for NmDeviceType {
     }
 }
 
-impl From<NmDeviceType> for DeviceType {
-    fn from(value: NmDeviceType) -> Self {
+impl TryFrom<NmDeviceType> for DeviceType {
+    type Error = NmError;
+
+    fn try_from(value: NmDeviceType) -> Result<Self, Self::Error> {
         match value {
-            NmDeviceType(1) => DeviceType::Ethernet,
-            NmDeviceType(2) => DeviceType::Wireless,
-            _ => DeviceType::Unknown,
+            NmDeviceType(0) => Ok(DeviceType::Loopback),
+            NmDeviceType(1) => Ok(DeviceType::Ethernet),
+            NmDeviceType(2) => Ok(DeviceType::Wireless),
+            NmDeviceType(_) => Err(NmError::UnsupportedDeviceType(value.into())),
         }
     }
 }
@@ -119,13 +132,23 @@ impl NmMethod {
     }
 }
 
-impl From<NmMethod> for IpMethod {
-    fn from(value: NmMethod) -> Self {
+impl TryFrom<NmMethod> for IpMethod {
+    type Error = NmError;
+
+    fn try_from(value: NmMethod) -> Result<Self, Self::Error> {
         match value.as_str() {
-            "auto" => IpMethod::Auto,
-            "manual" => IpMethod::Manual,
-            _ => IpMethod::Unknown,
+            "auto" => Ok(IpMethod::Auto),
+            "manual" => Ok(IpMethod::Manual),
+            "disabled" => Ok(IpMethod::Disabled),
+            "link-local" => Ok(IpMethod::LinkLocal),
+            _ => Err(NmError::UnsupportedIpMethod(value.to_string())),
         }
+    }
+}
+
+impl fmt::Display for NmMethod {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", &self.0)
     }
 }
 

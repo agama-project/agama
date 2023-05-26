@@ -189,7 +189,6 @@ pub enum DeviceType {
     Loopback = 0,
     Ethernet = 1,
     Wireless = 2,
-    Unknown = 3,
 }
 
 impl TryFrom<u8> for DeviceType {
@@ -200,7 +199,6 @@ impl TryFrom<u8> for DeviceType {
             0 => Ok(DeviceType::Loopback),
             1 => Ok(DeviceType::Ethernet),
             2 => Ok(DeviceType::Wireless),
-            3 => Ok(DeviceType::Unknown),
             _ => Err(NetworkStateError::InvalidDeviceType(value)),
         }
     }
@@ -225,7 +223,8 @@ impl Connection {
                 base,
                 ..Default::default()
             }),
-            _ => Connection::Ethernet(EthernetConnection { base }),
+            DeviceType::Loopback => Connection::Loopback(LoopbackConnection { base }),
+            DeviceType::Ethernet => Connection::Ethernet(EthernetConnection { base }),
         }
     }
 
@@ -302,16 +301,18 @@ pub struct Ipv4Config {
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub enum IpMethod {
     #[default]
-    Auto = 0,
-    Manual = 1,
-    Unknown = 2,
+    Disabled = 0,
+    Auto = 1,
+    Manual = 2,
+    LinkLocal = 3,
 }
 impl fmt::Display for IpMethod {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name = match &self {
+            IpMethod::Disabled => "disabled",
             IpMethod::Auto => "auto",
             IpMethod::Manual => "manual",
-            IpMethod::Unknown => "auto",
+            IpMethod::LinkLocal => "link-local",
         };
         write!(f, "{}", name)
     }
@@ -323,9 +324,10 @@ impl TryFrom<u8> for IpMethod {
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
-            0 => Ok(IpMethod::Auto),
-            1 => Ok(IpMethod::Manual),
-            2 => Ok(IpMethod::Unknown),
+            0 => Ok(IpMethod::Disabled),
+            1 => Ok(IpMethod::Auto),
+            2 => Ok(IpMethod::Manual),
+            3 => Ok(IpMethod::LinkLocal),
             _ => Err(NetworkStateError::InvalidIpMethod(value)),
         }
     }

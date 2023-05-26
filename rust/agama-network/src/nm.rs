@@ -7,6 +7,7 @@
 mod adapter;
 mod client;
 mod dbus;
+mod error;
 mod model;
 mod proxies;
 

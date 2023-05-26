@@ -173,7 +173,7 @@ fn ipv4_config_from_dbus(ipv4: &HashMap<String, zvariant::OwnedValue>) -> Option
         addresses.push((addr_str.parse().unwrap(), *prefix))
     }
     let mut ipv4_config = Ipv4Config {
-        method: NmMethod(method.to_string()).into(),
+        method: NmMethod(method.to_string()).try_into().ok()?,
         addresses,
         ..Default::default()
     };
@@ -361,7 +361,7 @@ mod test {
             ("id".to_string(), Value::new("conn0".to_string()).to_owned()),
             (
                 "type".to_string(),
-                Value::new("802-3-ethernet".to_string()).to_owned(),
+                Value::new(ETHERNET_KEY.to_string()).to_owned(),
             ),
         ]);
         let ipv4 = HashMap::from([
@@ -396,7 +396,10 @@ mod test {
         );
 
         let ipv4 = merged.get("ipv4").unwrap();
-        assert_eq!(*ipv4.get("method").unwrap(), Value::new("auto".to_string()));
+        assert_eq!(
+            *ipv4.get("method").unwrap(),
+            Value::new("disabled".to_string())
+        );
         assert_eq!(
             *ipv4.get("gateway").unwrap(),
             Value::new("192.168.1.1".to_string())

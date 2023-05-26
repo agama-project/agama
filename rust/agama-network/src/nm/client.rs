@@ -44,10 +44,16 @@ impl<'a> NetworkManagerClient<'a> {
                 .build()
                 .await?;
 
-            devs.push(Device {
-                name: proxy.interface().await?,
-                ty: NmDeviceType(proxy.device_type().await?).into(),
-            });
+            let device_type = NmDeviceType(proxy.device_type().await?);
+            if let Ok(device_type) = device_type.try_into() {
+                devs.push(Device {
+                    name: proxy.interface().await?,
+                    ty: device_type,
+                });
+            } else {
+                // TODO: use a logger
+                eprintln!("Unknown device type {:?}", &device_type);
+            }
         }
 
         Ok(devs)
@@ -64,6 +70,7 @@ impl<'a> NetworkManagerClient<'a> {
                 .build()
                 .await?;
             let settings = proxy.get_settings().await?;
+            // TODO: log an error if a connection is not found
             if let Some(connection) = connection_from_dbus(settings) {
                 connections.push(connection.into());
             }
