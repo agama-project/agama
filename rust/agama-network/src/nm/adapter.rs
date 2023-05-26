@@ -46,7 +46,7 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
                 if !Self::is_writable(conn) {
                     continue;
                 }
-                if conn.is_missing() {
+                if conn.is_removed() {
                     if let Err(e) = self.client.remove_connection(conn.uuid()).await {
                         eprintln!("Could not remove the connection {}: {}", conn.uuid(), e);
                     }

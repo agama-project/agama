@@ -166,7 +166,7 @@ mod tests {
         state.add_connection(conn0).unwrap();
         state.remove_connection(uuid).unwrap();
         let found = state.get_connection(uuid).unwrap();
-        assert!(found.is_missing());
+        assert!(found.is_removed());
     }
 
     #[test]
@@ -261,11 +261,11 @@ impl Connection {
     }
 
     pub fn remove(&mut self) {
-        self.base_mut().status = Status::Missing;
+        self.base_mut().status = Status::Removed;
     }
 
-    pub fn is_missing(&self) -> bool {
-        self.base().status == Status::Missing
+    pub fn is_removed(&self) -> bool {
+        self.base().status == Status::Removed
     }
 }
 
@@ -287,7 +287,7 @@ impl PartialEq for BaseConnection {
 pub enum Status {
     #[default]
     Present,
-    Missing,
+    Removed,
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
