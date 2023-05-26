@@ -8,6 +8,10 @@ pub enum NmError {
     UnsupportedIpMethod(String),
     #[error("Unsupported device type: '{0}'")]
     UnsupportedDeviceType(u32),
+    #[error("Unsupported security protocol: '{0}'")]
+    UnsupportedSecurityProtocol(String),
+    #[error("Unsupported wireless mode: '{0}'")]
+    UnsupporedWirelessMode(String),
 }
 
 impl From<NmError> for NetworkStateError {

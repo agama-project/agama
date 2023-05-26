@@ -207,14 +207,14 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
         .map(|u| *u.downcast_ref::<u8>().unwrap())
         .collect();
     let mut wireless_config = WirelessConfig {
-        mode: NmWirelessMode(mode.to_string()).into(),
+        mode: NmWirelessMode(mode.to_string()).try_into().ok()?,
         ssid,
         ..Default::default()
     };
 
     if let Some(security) = conn.get(WIRELESS_SECURITY_KEY) {
         let key_mgmt: &str = security.get("key-mgmt")?.downcast_ref()?;
-        wireless_config.security = NmKeyManagement(key_mgmt.to_string()).into();
+        wireless_config.security = NmKeyManagement(key_mgmt.to_string()).try_into().ok()?;
     }
 
     Some(wireless_config)

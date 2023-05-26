@@ -33,15 +33,23 @@ impl NmWirelessMode {
     }
 }
 
-impl From<NmWirelessMode> for WirelessMode {
-    fn from(value: NmWirelessMode) -> Self {
+impl TryFrom<NmWirelessMode> for WirelessMode {
+    type Error = NmError;
+
+    fn try_from(value: NmWirelessMode) -> Result<Self, Self::Error> {
         match value.as_str() {
-            "infrastructure" => WirelessMode::Infra,
-            "adhoc" => WirelessMode::AdHoc,
-            "mesh" => WirelessMode::Mesh,
-            "ap" => WirelessMode::AP,
-            _ => WirelessMode::Other,
+            "infrastructure" => Ok(WirelessMode::Infra),
+            "adhoc" => Ok(WirelessMode::AdHoc),
+            "mesh" => Ok(WirelessMode::Mesh),
+            "ap" => Ok(WirelessMode::AP),
+            _ => Err(NmError::UnsupporedWirelessMode(value.to_string())),
         }
+    }
+}
+
+impl fmt::Display for NmWirelessMode {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", &self.0)
     }
 }
 
@@ -97,16 +105,19 @@ impl From<&str> for NmKeyManagement {
     }
 }
 
-impl From<NmKeyManagement> for SecurityProtocol {
-    fn from(value: NmKeyManagement) -> Self {
+impl TryFrom<NmKeyManagement> for SecurityProtocol {
+    type Error = NmError;
+
+    fn try_from(value: NmKeyManagement) -> Result<Self, Self::Error> {
         match value.as_str() {
-            "owe" => SecurityProtocol::OWE,
-            "ieee8021x" => SecurityProtocol::DynamicWEP,
-            "wpa-psk" => SecurityProtocol::WPA2,
-            "wpa-eap" => SecurityProtocol::WPA3Personal,
-            "sae" => SecurityProtocol::WPA2Enterprise,
-            "wpa-eap-suite-b192" => SecurityProtocol::WPA2Enterprise,
-            _ => SecurityProtocol::WEP,
+            "owe" => Ok(SecurityProtocol::OWE),
+            "ieee8021x" => Ok(SecurityProtocol::DynamicWEP),
+            "wpa-psk" => Ok(SecurityProtocol::WPA2),
+            "wpa-eap" => Ok(SecurityProtocol::WPA3Personal),
+            "sae" => Ok(SecurityProtocol::WPA2Enterprise),
+            "wpa-eap-suite-b192" => Ok(SecurityProtocol::WPA2Enterprise),
+            "none" => Ok(SecurityProtocol::WEP),
+            _ => Err(NmError::UnsupportedSecurityProtocol(value.to_string())),
         }
     }
 }
@@ -114,6 +125,12 @@ impl From<NmKeyManagement> for SecurityProtocol {
 impl NmKeyManagement {
     pub fn as_str(&self) -> &str {
         &self.0.as_str()
+    }
+}
+
+impl fmt::Display for NmKeyManagement {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", &self.0)
     }
 }
 
