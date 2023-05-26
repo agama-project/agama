@@ -228,6 +228,8 @@ impl Connection {
         }
     }
 
+    /// TODO: implement a macro to reduce the amount of repetitive code. The same applies to
+    /// the base_mut function.
     pub fn base(&self) -> &BaseConnection {
         match &self {
             Connection::Ethernet(conn) => &conn.base,
