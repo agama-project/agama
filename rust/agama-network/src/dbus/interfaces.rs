@@ -286,10 +286,14 @@ impl Ipv4 {
     pub fn set_gateway(&mut self, gateway: String) -> zbus::fdo::Result<()> {
         let mut connection = self.get_connection();
         let ipv4 = connection.ipv4_mut();
-        gateway
-            .parse::<Ipv4Addr>()
-            .and_then(|parsed| Ok(ipv4.gateway = Some(parsed)))
-            .map_err(|err| NetworkStateError::from(err))?;
+        if gateway.is_empty() {
+            ipv4.gateway = None;
+        } else {
+            let parsed: Ipv4Addr = gateway
+                .parse()
+                .map_err(|err| NetworkStateError::from(err))?;
+            ipv4.gateway = Some(parsed);
+        }
         self.update_connection(connection)
     }
 }
