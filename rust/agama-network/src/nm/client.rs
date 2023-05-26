@@ -63,7 +63,7 @@ impl<'a> NetworkManagerClient<'a> {
     pub async fn connections(&self) -> Result<Vec<Connection>, ServiceError> {
         let proxy = SettingsProxy::new(&self.connection).await?;
         let paths = proxy.list_connections().await?;
-        let mut connections: Vec<Connection> = vec![];
+        let mut connections: Vec<Connection> = Vec::with_capacity(paths.len());
         for path in paths {
             let proxy = ConnectionProxy::builder(&self.connection)
                 .path(path.as_str())?
