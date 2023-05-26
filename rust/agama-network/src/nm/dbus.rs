@@ -69,7 +69,7 @@ pub fn merge_dbus_connections<'a>(
     original: &'a OwnedNestedHash,
     updated: &'a NestedHash,
 ) -> NestedHash<'a> {
-    let mut merged = HashMap::new();
+    let mut merged = HashMap::with_capacity(original.len());
     for (key, orig_section) in original {
         let mut inner: HashMap<&str, zbus::zvariant::Value> =
             HashMap::with_capacity(orig_section.len());
