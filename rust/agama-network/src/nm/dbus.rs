@@ -4,6 +4,7 @@
 //! with nested hash maps (see [NestedHash] and [OwnedNestedHash]).
 use super::model::*;
 use crate::model::*;
+use agama_lib::dbus::{NestedHash, OwnedNestedHash};
 use std::collections::HashMap;
 use std::net::Ipv4Addr;
 use uuid::Uuid;
@@ -13,11 +14,6 @@ const ETHERNET_KEY: &str = "802-3-ethernet";
 const WIRELESS_KEY: &str = "802-11-wireless";
 const WIRELESS_SECURITY_KEY: &str = "802-11-wireless-security";
 const LOOPBACK_KEY: &str = "loopback";
-
-/// Nested hash to send to D-Bus.
-type NestedHash<'a> = HashMap<&'a str, HashMap<&'a str, zvariant::Value<'a>>>;
-/// Nested hash as it comes from D-Bus.
-type OwnedNestedHash = HashMap<String, HashMap<String, zvariant::OwnedValue>>;
 
 /// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///

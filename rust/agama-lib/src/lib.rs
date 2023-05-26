@@ -7,6 +7,7 @@ pub mod software;
 pub mod storage;
 pub mod users;
 // TODO: maybe expose only clients when we have it?
+pub mod dbus;
 pub mod progress;
 pub mod proxies;
 mod store;
