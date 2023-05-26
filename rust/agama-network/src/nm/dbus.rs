@@ -61,8 +61,10 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
 
 /// Merges a NestedHash and an OwnedNestedHash connections.
 ///
+/// Only the top-level sections that are present in the `original` hash are considered for update.
+///
 /// * `original`: original hash coming from D-Bus.
-/// * `updated`: updatde hash to write to D-Bus.
+/// * `updated`: updated hash to write to D-Bus.
 pub fn merge_dbus_connections<'a>(
     original: &'a OwnedNestedHash,
     updated: &'a NestedHash,

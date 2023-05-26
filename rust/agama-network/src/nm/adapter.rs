@@ -57,6 +57,7 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
                 }
             }
         });
+        // FIXME: indicate which connections could not be written.
         Ok(())
     }
 }
