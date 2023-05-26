@@ -71,7 +71,8 @@ pub fn merge_dbus_connections<'a>(
 ) -> NestedHash<'a> {
     let mut merged = HashMap::new();
     for (key, orig_section) in original {
-        let mut inner: HashMap<&str, zbus::zvariant::Value> = HashMap::new();
+        let mut inner: HashMap<&str, zbus::zvariant::Value> =
+            HashMap::with_capacity(orig_section.len());
         for (inner_key, value) in orig_section {
             inner.insert(inner_key.as_str(), value.into());
         }
