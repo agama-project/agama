@@ -12,7 +12,7 @@ pub struct NetworkService;
 
 impl NetworkService {
     /// Starts listening and dispatching events on the D-Bus connection.
-    pub async fn start_service(address: &str) -> Result<(), Box<dyn Error>> {
+    pub async fn start(address: &str) -> Result<(), Box<dyn Error>> {
         let connection = connection_to(address).await?;
         let mut network = NetworkSystem::from_network_manager(connection.clone())
             .await

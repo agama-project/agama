@@ -4,7 +4,7 @@ use anyhow::Context;
 use std::process::Command;
 use zbus::{dbus_interface, Connection};
 
-pub struct Locale {
+pub struct LocaleService {
     locales: Vec<String>,
     keymap: String,
     timezone_id: String,
@@ -12,7 +12,7 @@ pub struct Locale {
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Locale1")]
-impl Locale {
+impl LocaleService {
     // Can be `async` as well.
     /// get labels for given locale. The first pair is english language and territory
     /// and second one is localized one to target language from locale.
@@ -160,9 +160,9 @@ impl Locale {
     }
 }
 
-impl Locale {
-    fn new() -> Locale {
-        Locale {
+impl LocaleService {
+    fn new() -> Self {
+        Self {
             locales: vec!["en_US.UTF-8".to_string()],
             keymap: "us".to_string(),
             timezone_id: "America/Los_Angeles".to_string(),
@@ -170,7 +170,7 @@ impl Locale {
         }
     }
 
-    pub async fn start_service(address: &str) -> Result<Connection, Box<dyn std::error::Error>> {
+    pub async fn start(address: &str) -> Result<Connection, Box<dyn std::error::Error>> {
         const SERVICE_NAME: &str = "org.opensuse.Agama.Locale1";
         const SERVICE_PATH: &str = "/org/opensuse/Agama/Locale1";
 
@@ -179,7 +179,7 @@ impl Locale {
         let connection = connection_to(address).await?;
 
         // When serving, request the service name _after_ exposing the main object
-        let locale = Locale::new();
+        let locale = Self::new();
         connection.object_server().at(SERVICE_PATH, locale).await?;
         connection
             .request_name(SERVICE_NAME)
