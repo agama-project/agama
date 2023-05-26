@@ -149,7 +149,7 @@ pub struct Connection {
 impl Connection {
     /// Creates a Connection interface object.
     ///
-    /// * `UUID`: Connection UUID.
+    /// * `connection`: connection to expose over D-Bus.
     pub fn new(connection: Arc<Mutex<NetworkConnection>>) -> Self {
         Self { connection }
     }
