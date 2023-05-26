@@ -26,9 +26,11 @@ impl LocaleService {
         for locale in self.supported_locales.as_slice() {
             let (loc_language, loc_territory) = agama_locale_data::parse_locale(locale.as_str())?;
 
-            let language = languages.find_by_id(loc_language)
+            let language = languages
+                .find_by_id(loc_language)
                 .context("language for passed locale not found")?;
-            let territory = territories.find_by_id(loc_territory)
+            let territory = territories
+                .find_by_id(loc_territory)
                 .context("territory for passed locale not found")?;
 
             let default_ret = (
@@ -66,7 +68,9 @@ impl LocaleService {
     fn set_locales(&mut self, locales: Vec<String>) -> zbus::fdo::Result<()> {
         for loc in &locales {
             if !self.supported_locales.contains(loc) {
-                return Err(zbus::fdo::Error::Failed(format!("Unsupported locale value '{loc}'")))
+                return Err(zbus::fdo::Error::Failed(format!(
+                    "Unsupported locale value '{loc}'"
+                )));
             }
         }
         self.locales = locales;
@@ -100,22 +104,28 @@ impl LocaleService {
         }
     */
 
-    #[dbus_interface(name="ListVConsoleKeyboards")]
+    #[dbus_interface(name = "ListVConsoleKeyboards")]
     fn list_keyboards(&self) -> Result<Vec<String>, Error> {
         let res = agama_locale_data::get_key_maps()?;
         Ok(res)
     }
 
-    #[dbus_interface(property, name="VConsoleKeyboard")]
+    #[dbus_interface(property, name = "VConsoleKeyboard")]
     fn keymap(&self) -> &str {
         return &self.keymap.as_str();
     }
 
-    #[dbus_interface(property, name="VConsoleKeyboard")]
+    #[dbus_interface(property, name = "VConsoleKeyboard")]
     fn set_keymap(&mut self, keyboard: &str) -> Result<(), zbus::fdo::Error> {
-        let exist = agama_locale_data::get_key_maps().unwrap().iter().find(|&k| k == keyboard).is_some();
+        let exist = agama_locale_data::get_key_maps()
+            .unwrap()
+            .iter()
+            .find(|&k| k == keyboard)
+            .is_some();
         if !exist {
-            return Err(zbus::fdo::Error::Failed("Invalid keyboard value".to_string()))
+            return Err(zbus::fdo::Error::Failed(
+                "Invalid keyboard value".to_string(),
+            ));
         }
         self.keymap = keyboard.to_string();
         Ok(())
@@ -135,7 +145,8 @@ impl LocaleService {
     }
 
     #[dbus_interface(property)]
-    fn set_timezone(&mut self, timezone: &str) -> Result<(), zbus::fdo::Error> { // NOTE: cannot use crate::Error as property expect this one
+    fn set_timezone(&mut self, timezone: &str) -> Result<(), zbus::fdo::Error> {
+        // NOTE: cannot use crate::Error as property expect this one
         self.timezone_id = timezone.to_string();
         Ok(())
     }
@@ -144,7 +155,12 @@ impl LocaleService {
     fn commit(&mut self) -> Result<(), Error> {
         const ROOT: &str = "/mnt";
         Command::new("/usr/bin/systemd-firstboot")
-            .args(["root", ROOT, "--locale", self.locales.first().context("missing locale")?.as_str()])
+            .args([
+                "root",
+                ROOT,
+                "--locale",
+                self.locales.first().context("missing locale")?.as_str(),
+            ])
             .status()
             .context("Failed to execute systemd-firstboot")?;
         Command::new("/usr/bin/systemd-firstboot")
