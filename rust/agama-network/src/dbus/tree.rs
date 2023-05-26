@@ -30,6 +30,30 @@ impl Tree {
         }
     }
 
+    /// Refreshes the list of connections.
+    ///
+    /// TODO: re-creating the tree is kind of brute-force and it sends signals about
+    /// adding/removing interfaces. We should add/update/delete objects as needed.
+    ///
+    /// * `connections`: list of connections.
+    pub async fn refresh_connections(
+        &self,
+        connections: &Vec<Connection>,
+    ) -> Result<(), ServiceError> {
+        self.remove_connections().await?;
+        self.add_connections(connections).await?;
+        Ok(())
+    }
+
+    /// Refreshes the list of devices.
+    ///
+    /// * `devices`: list of devices.
+    pub async fn refresh_devices(&mut self, devices: &Vec<Device>) -> Result<(), ServiceError> {
+        self.remove_devices().await?;
+        self.add_devices(devices).await?;
+        Ok(())
+    }
+
     /// Adds devices to the D-Bus tree.
     ///
     /// * `devices`: list of devices.
@@ -45,23 +69,6 @@ impl Tree {
         self.add_interface(
             DEVICES_PATH,
             interfaces::Devices::new(Arc::clone(&self.objects)),
-        )
-        .await?;
-
-        Ok(())
-    }
-
-    /// Adds connections to the D-Bus tree.
-    ///
-    /// * `connections`: list of connections.
-    pub async fn add_connections(&self, connections: &Vec<Connection>) -> Result<(), ServiceError> {
-        for conn in connections.iter() {
-            self.add_connection(conn).await?;
-        }
-
-        self.add_interface(
-            CONNECTIONS_PATH,
-            interfaces::Connections::new(Arc::clone(&self.objects), self.actions.clone()),
         )
         .await?;
 
@@ -111,6 +118,23 @@ impl Tree {
         Ok(())
     }
 
+    /// Adds connections to the D-Bus tree.
+    ///
+    /// * `connections`: list of connections.
+    async fn add_connections(&self, connections: &Vec<Connection>) -> Result<(), ServiceError> {
+        for conn in connections.iter() {
+            self.add_connection(conn).await?;
+        }
+
+        self.add_interface(
+            CONNECTIONS_PATH,
+            interfaces::Connections::new(Arc::clone(&self.objects), self.actions.clone()),
+        )
+        .await?;
+
+        Ok(())
+    }
+
     /// Clears all the connections from the tree.
     async fn remove_connections(&self) -> Result<(), ServiceError> {
         let mut objects = self.objects.lock();
@@ -121,16 +145,16 @@ impl Tree {
         Ok(())
     }
 
-    /// Refreshes the list of connections.
-    ///
-    /// TODO: re-creating the tree is kind of brute-force and it sends signals about
-    /// adding/removing interfaces. We should add/update/delete objects as needed.
-    pub async fn refresh_connections(
-        &self,
-        connections: &Vec<Connection>,
-    ) -> Result<(), ServiceError> {
-        self.remove_connections().await?;
-        self.add_connections(connections).await?;
+    /// Clears all the devices from the tree.
+    async fn remove_devices(&mut self) -> Result<(), ServiceError> {
+        let object_server = self.connection.object_server();
+        let mut objects = self.objects.lock();
+        for path in objects.devices.values() {
+            object_server
+                .remove::<interfaces::Device, _>(path.as_str())
+                .await?;
+        }
+        objects.devices.clear();
         Ok(())
     }
 

@@ -55,8 +55,10 @@ impl NetworkSystem {
 
     /// Populates the D-Bus tree with the known devices and connections.
     pub async fn setup(&mut self) -> Result<(), ServiceError> {
-        self.tree.add_connections(&self.state.connections).await?;
-        self.tree.add_devices(&self.state.devices).await?;
+        self.tree
+            .refresh_connections(&self.state.connections)
+            .await?;
+        self.tree.refresh_devices(&self.state.devices).await?;
         Ok(())
     }
 
