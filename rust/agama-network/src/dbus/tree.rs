@@ -36,7 +36,7 @@ impl Tree {
     /// adding/removing interfaces. We should add/update/delete objects as needed.
     ///
     /// * `connections`: list of connections.
-    pub async fn refresh_connections(
+    pub async fn set_connections(
         &self,
         connections: &Vec<Connection>,
     ) -> Result<(), ServiceError> {
@@ -48,7 +48,7 @@ impl Tree {
     /// Refreshes the list of devices.
     ///
     /// * `devices`: list of devices.
-    pub async fn refresh_devices(&mut self, devices: &Vec<Device>) -> Result<(), ServiceError> {
+    pub async fn set_devices(&mut self, devices: &Vec<Device>) -> Result<(), ServiceError> {
         self.remove_devices().await?;
         self.add_devices(devices).await?;
         Ok(())

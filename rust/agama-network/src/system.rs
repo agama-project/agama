@@ -56,9 +56,9 @@ impl NetworkSystem {
     /// Populates the D-Bus tree with the known devices and connections.
     pub async fn setup(&mut self) -> Result<(), ServiceError> {
         self.tree
-            .refresh_connections(&self.state.connections)
+            .set_connections(&self.state.connections)
             .await?;
-        self.tree.refresh_devices(&self.state.devices).await?;
+        self.tree.set_devices(&self.state.devices).await?;
         Ok(())
     }
 
@@ -93,7 +93,7 @@ impl NetworkSystem {
                 // TODO: re-creating the tree is kind of brute-force and it sends signals about
                 // adding/removing interfaces. We should add/update/delete objects as needed.
                 self.tree
-                    .refresh_connections(&self.state.connections)
+                    .set_connections(&self.state.connections)
                     .await?;
             }
         }
