@@ -366,7 +366,6 @@ pub enum WirelessMode {
     AdHoc = 1,
     Mesh = 2,
     AP = 3,
-    Other = 4,
 }
 
 impl TryFrom<u8> for WirelessMode {
@@ -386,7 +385,6 @@ impl TryFrom<u8> for WirelessMode {
 impl fmt::Display for WirelessMode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name = match &self {
-            WirelessMode::Other => "unknown",
             WirelessMode::AdHoc => "adhoc",
             WirelessMode::Infra => "infrastructure",
             WirelessMode::AP => "ap",
