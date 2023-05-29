@@ -105,11 +105,6 @@ describe Agama::DBus::Storage::Manager do
     end
 
     context "if there are available devices" do
-      before do
-        allow(proposal).to receive(:device_label).with(device1).and_return("Device 1")
-        allow(proposal).to receive(:device_label).with(device2).and_return("Device 2")
-      end
-
       let(:devices) { [device1, device2] }
 
       let(:device1) { instance_double(Y2Storage::Disk, name: "/dev/vda", sid: 95) }

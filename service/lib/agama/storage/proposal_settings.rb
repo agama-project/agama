@@ -29,19 +29,20 @@ module Agama
 
       # Whether to use LVM
       #
-      # @return [Boolean, nil] nil if undetermined
+      # @return [LvmSettings, nil] nil if undetermined
       attr_accessor :lvm
 
-      # @!attribute encryption_password
-      #   Password to use when creating new encryption devices
-      #   @return [String, nil] nil if undetermined
-      secret_attr :encryption_password
+      # @return [EncryptionSettings, nil] nil if undetermined
+      attr_accessor :encryption
 
-      # Device names of the disks that can be used for the installation. If nil, the proposal will
-      # try find suitable devices
+      # Device name of the disk that XXXXXXcan be used for the installation. If nil, the proposal
+      # will try to find a suitable device
       #
-      # @return [Array<String>]
-      attr_accessor :candidate_devices
+      # @return [String]
+      attr_accessor :boot_device
+
+      # @return [SpaceSettings, nil] nil if undetermined
+      attr_accessor :space
 
       # Set of volumes to create
       #
@@ -52,7 +53,6 @@ module Agama
       attr_accessor :volumes
 
       def initialize
-        @candidate_devices = []
         @volumes = []
       end
 

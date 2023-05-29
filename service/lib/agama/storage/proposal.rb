@@ -93,24 +93,6 @@ module Agama
         proposal.settings.candidate_devices
       end
 
-      # Label that should be used to represent the given disk in the UI
-      #
-      # NOTE: this is likely a temporary solution. The label should not be calculated in the backend
-      # in the future. See the note about available_devices at {DBus::Storage::Proposal}.
-      #
-      # The label has the form: "NAME, SIZE, [USB], INSTALLED_SYSTEMS".
-      #
-      # Examples:
-      #
-      #   "/dev/sda, 250.00 GiB, Windows, OpenSUSE"
-      #   "/dev/sdb, 8.00 GiB, USB"
-      #
-      # @param device [Y2Storage::Device]
-      # @return [String]
-      def device_label(device)
-        disk_helper.label(device)
-      end
-
       # Volume definitions to be used as templates in the interface
       #
       # Based on the configuration and/or on Y2Storage internals, these volumes may really
