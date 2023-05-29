@@ -1,0 +1,12 @@
+
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.opensuse.Agama.Network1.Connection.IPv4">
+    <property name="Addresses" type="a(su)" access="readwrite"/>
+    <property name="Gateway" type="s" access="readwrite"/>
+    <property name="Method" type="y" access="readwrite"/>
+    <property name="Nameservers" type="as" access="readwrite"/>
+  </interface>
+</node>
+
