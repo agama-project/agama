@@ -4,15 +4,18 @@
 <node>
   <interface name="org.opensuse.Agama.Network1.Connections">
     <!--
+     GetConnections:
      Returns the D-Bus paths of the network connections.
      -->
     <method name="GetConnections">
       <arg type="ao" direction="out"/>
     </method>
     <!--
+     AddConnection:
      Adds a new network connection.
 
      * `name`: connection name.
+
      * `ty`: connection type (see [crate::model::DeviceType]).
      -->
     <method name="AddConnection">
@@ -20,6 +23,7 @@
       <arg name="ty" type="y" direction="in"/>
     </method>
     <!--
+     RemoveConnection:
      Removes a network connection.
 
      * `uuid`: connection UUID..
@@ -28,6 +32,7 @@
       <arg name="uuid" type="s" direction="in"/>
     </method>
     <!--
+     Apply:
      Applies the network configuration.
 
      It includes adding, updating and removing connections as needed.
