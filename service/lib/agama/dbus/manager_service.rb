@@ -21,9 +21,11 @@
 
 require "dbus"
 require "agama/manager"
+require "agama/users"
 require "agama/cockpit_manager"
 require "agama/dbus/bus"
 require "agama/dbus/manager"
+require "agama/dbus/users"
 require "agama/dbus/storage/proposal"
 
 module Agama
@@ -70,7 +72,12 @@ module Agama
 
       # Exports the installer object through the D-Bus service
       def export
+        # users service initialization
+        users_service = bus.request_service("org.opensuse.Agama.Users1")
+
+        # manager service initialization
         dbus_objects.each { |o| service.export(o) }
+        service.export(Agama::DBus::Users.new(Agama::Users.new(logger), logger))
 
         paths = dbus_objects.map(&:path).join(", ")
         logger.info "Exported #{paths} objects"
