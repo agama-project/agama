@@ -1,6 +1,8 @@
 ## Questions
 
-Questions are mechanism that allows user to react on certain situations that happen in installer.
+[Questions][] are mechanism that allows user to react on certain situations that happen in installer.
+
+[Questions]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama.Questions1.html
 
 ### Questions and Unattended Installation
 
