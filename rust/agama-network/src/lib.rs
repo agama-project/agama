@@ -24,7 +24,7 @@
 //! * `org.opensuse.Agama.Network1.Connection.Wireless` exposes the configuration for wireless
 //! connections.
 //!
-//! Analogous to the devices API, there is a special `/org/opensuse/Agama/Network1/Connections`
+//! Analogous to the devices API, there is a special `/org/opensuse/Agama/Network1/connections`
 //! object that implements a few methods that are related to the collection of connections like
 //! `GetConnections`, `AddConnection` and `RemoveConnection`. Additionally, it implements an
 //! `Apply` method to write the changes to the NetworkManager service.

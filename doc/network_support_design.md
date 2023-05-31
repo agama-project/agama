@@ -80,9 +80,9 @@ NetworkManager only. Therefore, the current solution is influenced by NetworkMan
 
 In a first version, the API is composed of the following objects:
 
-* Network devices. Each one is available as an object under `/org/opensuse/Agama/Network1/Device/*`
+* Network devices. Each one is available as an object under `/org/opensuse/Agama/Network1/devices/*`
   exposing the current status[^1].
-* Connections (or configurations). They are exposed as `/org/opensuse/Agama/Network1/Connection/*`.
+* Connections (or configurations). They are exposed as `/org/opensuse/Agama/Network1/connections/*`.
   Depending on the type of connection, those objects implements different interfaces like
   `org.opensuse.Agama.Network1.IPv4`, `org.opensuse.Agama.Network1.Wireless`, etc.
 
