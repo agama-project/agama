@@ -44,15 +44,19 @@ impl<'a> NetworkManagerClient<'a> {
                 .build()
                 .await?;
 
+            let device_name = proxy.interface().await?;
             let device_type = NmDeviceType(proxy.device_type().await?);
             if let Ok(device_type) = device_type.try_into() {
                 devs.push(Device {
-                    name: proxy.interface().await?,
+                    name: device_name,
                     ty: device_type,
                 });
             } else {
                 // TODO: use a logger
-                eprintln!("Unknown device type {:?}", &device_type);
+                eprintln!(
+                    "Unsupported device type {:?} for {}",
+                    &device_type, &device_name
+                );
             }
         }
 
