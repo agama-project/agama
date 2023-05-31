@@ -182,7 +182,9 @@ impl Tree {
 /// Objects paths for known devices and connections
 #[derive(Debug, Default)]
 pub struct ObjectsRegistry {
+    /// device_name (eth0) -> object_path
     pub devices: HashMap<String, String>,
+    /// uuid -> object_path
     pub connections: HashMap<Uuid, String>,
 }
 
