@@ -180,6 +180,8 @@ impl Tree {
 }
 
 /// Objects paths for known devices and connections
+///
+/// TODO: use zvariant::OwnedObjectPath instead of String as values.
 #[derive(Debug, Default)]
 pub struct ObjectsRegistry {
     /// device_name (eth0) -> object_path
