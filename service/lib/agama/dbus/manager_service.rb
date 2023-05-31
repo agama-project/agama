@@ -35,11 +35,14 @@ module Agama
     # It connects to the system D-Bus and answers requests on objects below
     # `/org/opensuse/Agama1`.
     class ManagerService
-      # Service name
+      # List of d-bus services exposed by this class
       #
-      # @return [String]
-      SERVICE_NAME = "org.opensuse.Agama1"
-      private_constant :SERVICE_NAME
+      # This basically allows to define "aliases" - all exposed services holds the same objects
+      # but under different names
+      #
+      # @return [Array<String>]
+      SERVICE_NAMES = [ "org.opensuse.Agama1", "org.opensuse.Agama.Users1" ]
+      private_constant :SERVICE_NAMES
 
       # System D-Bus
       #
@@ -51,11 +54,17 @@ module Agama
       # @return [Agama::Manager]
       attr_reader :manager
 
+      # Users manager
+      #
+      # @return [Agama::Users]
+      attr_reader :users
+
       # @param config [Config] Configuration
       # @param logger [Logger]
       def initialize(config, logger = nil)
         @config = config
         @manager = Agama::Manager.new(config, logger)
+        @users = Agama::Users.new(logger)
         @logger = logger || Logger.new($stdout)
         @bus = Bus.current
       end
@@ -72,12 +81,8 @@ module Agama
 
       # Exports the installer object through the D-Bus service
       def export
-        # users service initialization
-        users_service = bus.request_service("org.opensuse.Agama.Users1")
-
         # manager service initialization
         dbus_objects.each { |o| service.export(o) }
-        service.export(Agama::DBus::Users.new(Agama::Users.new(logger), logger))
 
         paths = dbus_objects.map(&:path).join(", ")
         logger.info "Exported #{paths} objects"
@@ -101,20 +106,27 @@ module Agama
         cockpit.setup(config.data["web"])
       end
 
+      # It registers all D-Bus services
+      #
       # @return [::DBus::Service]
       def service
-        @service ||= bus.request_service(SERVICE_NAME)
+        @service ||= SERVICE_NAMES.reduce { |acc, s| acc = bus.request_service(s) }
       end
 
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          manager_dbus
+          manager_dbus,
+          users_dbus
         ]
       end
 
       def manager_dbus
         @manager_dbus ||= Agama::DBus::Manager.new(manager, logger)
+      end
+
+      def users_dbus
+        @users_dbus ||= Agama::DBus::Users.new(users, logger)
       end
     end
   end
