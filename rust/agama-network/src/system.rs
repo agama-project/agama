@@ -27,6 +27,9 @@ impl NetworkSystem {
     }
 
     /// Reads the network configuration using the NetworkManager adapter.
+    ///
+    /// * `conn`: connection where self will be exposed. Another connection will be made internally
+    ///   to talk with NetworkManager (which may be on a different bus even).
     pub async fn from_network_manager(
         conn: zbus::Connection,
     ) -> Result<NetworkSystem, Box<dyn Error>> {
