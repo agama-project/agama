@@ -83,7 +83,24 @@ pub fn merge_dbus_connections<'a>(
         }
         merged.insert(key.as_str(), inner.into());
     }
+    cleanup_dbus_connection(&mut merged);
     merged
+}
+
+/// Cleans up the NestedHash that represents a connection.
+///
+/// By now it just removes the "addresses" key from the "ipv4" and "ipv6" objects, which is
+/// replaced with "address-data". However, if "addresses" is present, it takes precedence.
+///
+/// * `conn`: connection represented as a NestedHash.
+fn cleanup_dbus_connection<'a>(conn: &'a mut NestedHash) {
+    if let Some(ipv4) = conn.get_mut("ipv4") {
+        ipv4.remove("addresses");
+    }
+
+    if let Some(ipv6) = conn.get_mut("ipv6") {
+        ipv6.remove("addresses");
+    }
 }
 
 fn ipv4_to_dbus(ipv4: &Ipv4Config) -> HashMap<&str, zvariant::Value> {
@@ -372,6 +389,10 @@ mod test {
                 "gateway".to_string(),
                 Value::new("192.168.1.1".to_string()).to_owned(),
             ),
+            (
+                "addresses".to_string(),
+                Value::new(vec!["192.168.1.1"]).to_owned(),
+            ),
         ]);
         original.insert("connection".to_string(), connection);
         original.insert("ipv4".to_string(), ipv4);
@@ -403,6 +424,7 @@ mod test {
             *ipv4.get("gateway").unwrap(),
             Value::new("192.168.1.1".to_string())
         );
+        assert!(ipv4.get("addresses").is_none());
     }
 
     fn build_ethernet_section_from_dbus() -> HashMap<String, OwnedValue> {
