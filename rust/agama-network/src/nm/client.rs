@@ -49,7 +49,7 @@ impl<'a> NetworkManagerClient<'a> {
             if let Ok(device_type) = device_type.try_into() {
                 devs.push(Device {
                     name: device_name,
-                    ty: device_type,
+                    type_: device_type,
                 });
             } else {
                 // TODO: use a logger

@@ -181,7 +181,7 @@ mod tests {
 #[derive(Debug, Clone)]
 pub struct Device {
     pub name: String,
-    pub ty: DeviceType,
+    pub type_: DeviceType,
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]

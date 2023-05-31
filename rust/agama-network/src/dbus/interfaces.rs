@@ -70,7 +70,7 @@ impl Device {
 
     #[dbus_interface(property, name = "Type")]
     pub fn device_type(&self) -> u8 {
-        self.device.ty as u8
+        self.device.type_ as u8
     }
 }
 
