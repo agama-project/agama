@@ -59,10 +59,11 @@ The current package is
 It relies on [OBS Source
 Services](https://openbuildservice.org/help/manuals/obs-user-guide/cha.obs.source_service.html) to
 fetch the sources (including the dependencies), set the version and build the package. You can
-figure out most details by checking the [_service](_./web/package/_service) file. 
+figure out most details by checking the [_service](web/package/_service) file.
 
 To update the package in the build service, you just need to type:
 
+      sudo zypper install obs-service-node_modules
       osc service manualrun
       osc commit -m "Update sources"
 
@@ -81,6 +82,7 @@ The current package is
 [YaST:Head:Agama](https://build.opensuse.org/package/show/YaST:Head:Agama/agama-cli). To update the
 package in the build service, run the following commands:
 
+      sudo zypper install obs-service-cargo_vendor obs-service-cargo_audit   # from Factory or devel:languages:rust
       osc service manualrun
       osc addremove *
       osc commit -m "Update sources"
