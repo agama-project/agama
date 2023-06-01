@@ -1,9 +1,10 @@
 use crate::error::Error;
+use agama_lib::connection_to;
 use anyhow::Context;
 use std::process::Command;
-use zbus::{dbus_interface, Connection, ConnectionBuilder};
+use zbus::{dbus_interface, Connection};
 
-pub struct Locale {
+pub struct LocaleService {
     locales: Vec<String>,
     keymap: String,
     timezone_id: String,
@@ -11,7 +12,7 @@ pub struct Locale {
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Locale1")]
-impl Locale {
+impl LocaleService {
     // Can be `async` as well.
     /// get labels for given locale. The first pair is english language and territory
     /// and second one is localized one to target language from locale.
@@ -25,9 +26,11 @@ impl Locale {
         for locale in self.supported_locales.as_slice() {
             let (loc_language, loc_territory) = agama_locale_data::parse_locale(locale.as_str())?;
 
-            let language = languages.find_by_id(loc_language)
+            let language = languages
+                .find_by_id(loc_language)
                 .context("language for passed locale not found")?;
-            let territory = territories.find_by_id(loc_territory)
+            let territory = territories
+                .find_by_id(loc_territory)
                 .context("territory for passed locale not found")?;
 
             let default_ret = (
@@ -65,7 +68,9 @@ impl Locale {
     fn set_locales(&mut self, locales: Vec<String>) -> zbus::fdo::Result<()> {
         for loc in &locales {
             if !self.supported_locales.contains(loc) {
-                return Err(zbus::fdo::Error::Failed(format!("Unsupported locale value '{loc}'")))
+                return Err(zbus::fdo::Error::Failed(format!(
+                    "Unsupported locale value '{loc}'"
+                )));
             }
         }
         self.locales = locales;
@@ -99,22 +104,28 @@ impl Locale {
         }
     */
 
-    #[dbus_interface(name="ListVConsoleKeyboards")]
+    #[dbus_interface(name = "ListVConsoleKeyboards")]
     fn list_keyboards(&self) -> Result<Vec<String>, Error> {
         let res = agama_locale_data::get_key_maps()?;
         Ok(res)
     }
 
-    #[dbus_interface(property, name="VConsoleKeyboard")]
+    #[dbus_interface(property, name = "VConsoleKeyboard")]
     fn keymap(&self) -> &str {
         return &self.keymap.as_str();
     }
 
-    #[dbus_interface(property, name="VConsoleKeyboard")]
+    #[dbus_interface(property, name = "VConsoleKeyboard")]
     fn set_keymap(&mut self, keyboard: &str) -> Result<(), zbus::fdo::Error> {
-        let exist = agama_locale_data::get_key_maps().unwrap().iter().find(|&k| k == keyboard).is_some();
+        let exist = agama_locale_data::get_key_maps()
+            .unwrap()
+            .iter()
+            .find(|&k| k == keyboard)
+            .is_some();
         if !exist {
-            return Err(zbus::fdo::Error::Failed("Invalid keyboard value".to_string()))
+            return Err(zbus::fdo::Error::Failed(
+                "Invalid keyboard value".to_string(),
+            ));
         }
         self.keymap = keyboard.to_string();
         Ok(())
@@ -134,7 +145,8 @@ impl Locale {
     }
 
     #[dbus_interface(property)]
-    fn set_timezone(&mut self, timezone: &str) -> Result<(), zbus::fdo::Error> { // NOTE: cannot use crate::Error as property expect this one
+    fn set_timezone(&mut self, timezone: &str) -> Result<(), zbus::fdo::Error> {
+        // NOTE: cannot use crate::Error as property expect this one
         self.timezone_id = timezone.to_string();
         Ok(())
     }
@@ -143,7 +155,12 @@ impl Locale {
     fn commit(&mut self) -> Result<(), Error> {
         const ROOT: &str = "/mnt";
         Command::new("/usr/bin/systemd-firstboot")
-            .args(["root", ROOT, "--locale", self.locales.first().context("missing locale")?.as_str()])
+            .args([
+                "root",
+                ROOT,
+                "--locale",
+                self.locales.first().context("missing locale")?.as_str(),
+            ])
             .status()
             .context("Failed to execute systemd-firstboot")?;
         Command::new("/usr/bin/systemd-firstboot")
@@ -159,10 +176,9 @@ impl Locale {
     }
 }
 
-
-impl Locale {
-    fn new() -> Locale {
-        Locale {
+impl LocaleService {
+    fn new() -> Self {
+        Self {
             locales: vec!["en_US.UTF-8".to_string()],
             keymap: "us".to_string(),
             timezone_id: "America/Los_Angeles".to_string(),
@@ -170,30 +186,22 @@ impl Locale {
         }
     }
 
-    pub async fn start_service() -> Result<Connection, Box<dyn std::error::Error>> {
-        const ADDRESS : &str = "unix:path=/run/agama/bus";
+    pub async fn start(address: &str) -> Result<Connection, Box<dyn std::error::Error>> {
         const SERVICE_NAME: &str = "org.opensuse.Agama.Locale1";
         const SERVICE_PATH: &str = "/org/opensuse/Agama/Locale1";
 
         // First connect to the Agama bus, then serve our API,
         // for better error reporting.
-        let conn = ConnectionBuilder::address(ADDRESS)?
-            .build()
-            .await
-            .context(format!("Connecting to the Agama bus at {ADDRESS}"))?;
+        let connection = connection_to(address).await?;
 
         // When serving, request the service name _after_ exposing the main object
-        let locale = Locale::new();
-        conn
-            .object_server()
-            .at(SERVICE_PATH, locale)
-            .await?;
-        conn
+        let locale = Self::new();
+        connection.object_server().at(SERVICE_PATH, locale).await?;
+        connection
             .request_name(SERVICE_NAME)
             .await
             .context(format!("Requesting name {SERVICE_NAME}"))?;
 
-        Ok(conn)
+        Ok(connection)
     }
 }
-

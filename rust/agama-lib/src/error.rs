@@ -33,5 +33,5 @@ pub enum WrongParameter {
     #[error("Unknown product '{0}'. Available products: '{1:?}'")]
     UnknownProduct(String, Vec<String>),
     #[error("Wrong user parameters: '{0:?}'")]
-    WrongUser(Vec<String>)
+    WrongUser(Vec<String>),
 }
