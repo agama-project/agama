@@ -1,6 +1,6 @@
 ## Questions
 
-[Questions][] are a mechanism that allows the installer to ask for additional data which are needed without knowing it in advance.
+[Questions][] are a mechanism that allows the installer to ask for additional data which is needed without knowing it in advance.
 Examples are Luks password when Luks encrypted partition occur or when software repository is signed with unknown GPG key.
 
 [Questions]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama.Questions1.html
