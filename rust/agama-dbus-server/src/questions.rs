@@ -1,7 +1,7 @@
 use crate::error::Error;
 use agama_lib::connection_to;
 use anyhow::Context;
-use zbus::{dbus_interface, zvariant::ObjectPath};
+use zbus::{dbus_interface, zvariant::ObjectPath, fdo::ObjectManager};
 
 pub struct QuestionsService {
     questions: Vec<String>,
@@ -45,6 +45,7 @@ impl QuestionsService {
         // When serving, request the service name _after_ exposing the main object
         let questions = Self::new();
         connection.object_server().at(SERVICE_PATH, questions).await?;
+        connection.object_server().at(SERVICE_PATH, ObjectManager).await?;
         connection
             .request_name(SERVICE_NAME)
             .await
