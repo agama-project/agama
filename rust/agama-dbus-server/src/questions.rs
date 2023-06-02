@@ -1,10 +1,67 @@
 use crate::error::Error;
 use agama_lib::connection_to;
 use anyhow::Context;
-use zbus::{dbus_interface, zvariant::ObjectPath, fdo::ObjectManager};
+use zbus::{dbus_interface, zvariant::ObjectPath, fdo::ObjectManager, Connection};
+
+pub struct GenericQuestion {
+    id: u32,
+    text: String,
+    options: Vec<String>,
+    default_option: String,
+    answer: String,
+}
+
+impl GenericQuestion {
+    pub fn new(id: u32, text: String, options: Vec<String>, default_option: String) -> Self {
+        Self {
+            id,
+            text,
+            options,
+            default_option,
+            answer: String::from("")
+        }
+    }
+}
+
+#[dbus_interface(name = "org.opensuse.Agama.Questions1.Generic")]
+impl GenericQuestion {
+    #[dbus_interface(property)]
+    pub fn id(&self) -> u32 {
+        self.id
+    }
+
+    #[dbus_interface(property)]
+    pub fn text(&self) -> &str {
+        self.text.as_str()
+    }
+
+    #[dbus_interface(property)]
+    pub fn options(&self) -> Vec<String> {
+        self.options.to_owned()
+    }
+
+    #[dbus_interface(property)]
+    pub fn default_option(&self) -> &str {
+        self.default_option.as_str()
+    }
+
+    #[dbus_interface(property)]
+    pub fn answer(&self) -> &str {
+        &self.answer
+    }
+
+    #[dbus_interface(property)]
+    pub fn set_answer(&mut self, value: &str) -> Result<(), zbus::fdo::Error> {
+        // TODO verify if answer exists in options or if it is valid in other way
+        self.answer = value.to_string();
+
+        Ok(())
+    }
+}
 
 pub struct QuestionsService {
     questions: Vec<String>,
+    connection: Connection,
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Questions1")]
@@ -28,9 +85,10 @@ impl QuestionsService {
 }
 
 impl QuestionsService {
-    fn new() -> Self {
+    fn new(connection: &Connection) -> Self {
         Self {
             questions: vec![],
+            connection: connection.to_owned(),
         }
     }
 
@@ -43,7 +101,7 @@ impl QuestionsService {
         let connection = connection_to(address).await?;
 
         // When serving, request the service name _after_ exposing the main object
-        let questions = Self::new();
+        let questions = Self::new(&connection);
         connection.object_server().at(SERVICE_PATH, questions).await?;
         connection.object_server().at(SERVICE_PATH, ObjectManager).await?;
         connection
