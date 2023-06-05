@@ -1,8 +1,18 @@
+use std::collections::HashMap;
+
 use crate::error::Error;
 use agama_lib::connection_to;
 use anyhow::Context;
+use async_std::task::block_on;
 use zbus::{dbus_interface, zvariant::ObjectPath, fdo::ObjectManager, Connection};
 
+/// Trait that all questions has to implement to be able to be easily added or removed
+pub trait Question {
+    fn attach(&self, connection: &Connection) -> Result<(), zbus::fdo::Error>;
+    fn detach(&self, connection: &Connection) -> Result<(), zbus::fdo::Error>;
+}
+
+#[derive(Clone,Debug)]
 pub struct GenericQuestion {
     id: u32,
     text: String,
@@ -20,6 +30,11 @@ impl GenericQuestion {
             default_option,
             answer: String::from("")
         }
+    }
+
+    pub fn object_path(&self) -> ObjectPath {
+        let path = format!("/org/opensuse/Agama/Questions1/{}", self.id);
+        ObjectPath::try_from(path).unwrap()
     }
 }
 
@@ -59,6 +74,26 @@ impl GenericQuestion {
     }
 }
 
+impl Question for GenericQuestion {
+    fn attach(&self, connection: &Connection) -> Result<(), zbus::fdo::Error> {
+        block_on(async {
+            // TODO: is this to_owned needed? it means we basically have two copy of each question
+            connection.object_server().at(self.object_path(), (*self).to_owned()).await
+        })?;
+
+        Ok(())
+    }
+
+    fn detach(&self, connection: &Connection) -> Result<(), zbus::fdo::Error> {
+        block_on(async {
+            connection.object_server().remove::<Self,_>(self.object_path()).await
+        })?;
+
+        Ok(())
+    }
+}
+
+#[derive(Clone,Debug)]
 pub struct LuksQuestion {
     password: String,
     attempt: u8,
@@ -112,27 +147,61 @@ impl LuksQuestion {
     }
 }
 
+impl Question for LuksQuestion {
+    fn attach(&self, connection: &Connection) -> Result<(), zbus::fdo::Error> {
+        self.generic_question.attach(connection)?;
+        block_on(async {
+            connection.object_server().at(self.generic_question.object_path(), (*self).to_owned()).await
+        })?;
+
+        Ok(())
+    }
+
+    fn detach(&self, connection: &Connection) -> Result<(), zbus::fdo::Error> {
+        self.generic_question.detach(connection)?;
+        block_on(async {
+            connection.object_server().remove::<Self,_>(self.generic_question.object_path()).await
+        })?;
+
+        Ok(())
+    }
+}
+
 pub struct QuestionsService {
-    questions: Vec<String>,
+    questions: HashMap<u32, Box<dyn Question + Send + Sync>>,
     connection: Connection,
+    last_id: u32
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Questions1")]
 impl QuestionsService {
     #[dbus_interface(name = "New")]
-    fn new_question(&self, text: &str, options: Vec<&str>, default_option: Vec<&str>) -> Result<ObjectPath, Error> {
-        // TODO: implement it
-        // TODO: why default option is array? Taken from old service in ruby
-        Ok(ObjectPath::from_static_str("TODO").unwrap())
+    async fn new_question(&mut self, text: &str, options: Vec<&str>, default_option: Vec<&str>) -> Result<ObjectPath, zbus::fdo::Error> {
+        let id = self.last_id;
+        self.last_id += 1; // TODO use some thread safety
+        let options = options.iter().map(|o| o.to_string()).collect();
+        let question = GenericQuestion::new(id, text.to_string(), options, default_option.first().unwrap().to_string());
+
+        question.detach(&self.connection)?;
+        self.questions.insert(id, Box::new(question.clone())); // TODO: is clone here needed?
+        Ok(question.object_path().to_owned())
     }
 
-    fn new_luks_activation(&self, device: &str, label: &str, size: &str, attempt: u8) -> Result<ObjectPath, Error> {
-        // TODO: implement it
-        Ok(ObjectPath::from_static_str("TODO").unwrap())
+    fn new_luks_activation(&mut self, device: &str, label: &str, size: &str, attempt: u8) -> Result<ObjectPath, zbus::fdo::Error> {
+        let id = self.last_id;
+        self.last_id += 1; // TODO use some thread safety
+        let question = LuksQuestion::new(id, device.to_string(), label.to_string(), size.to_string(), attempt);
+
+        question.detach(&self.connection)?;
+        self.questions.insert(id, Box::new(question.clone())); // TODO: is clone here needed?
+        Ok(question.generic_question.object_path().to_owned())
     }
 
-    fn delete(&self, question: ObjectPath) -> Result<(), Error>{
-        // TODO: implement it
+    fn delete(&mut self, question: ObjectPath) -> Result<(), Error>{
+        // TODO: error checking
+        let id : u32 = question.rsplit("/").next().unwrap().parse().unwrap();
+        self.questions.get(&id).unwrap().detach(&self.connection).unwrap();
+        self.questions.remove(&id);
         Ok(())
     }
 }
@@ -140,8 +209,9 @@ impl QuestionsService {
 impl QuestionsService {
     fn new(connection: &Connection) -> Self {
         Self {
-            questions: vec![],
+            questions: HashMap::new(),
             connection: connection.to_owned(),
+            last_id: 0
         }
     }
 
