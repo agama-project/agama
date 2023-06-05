@@ -1,7 +1,5 @@
 use crate::error::ServiceError;
-use crate::install_settings::NetworkSettings;
-use crate::network::NetworkClient;
-use std::default::Default;
+use crate::network::{NetworkClient, NetworkSettings};
 use std::error::Error;
 use zbus::Connection;
 
@@ -20,7 +18,6 @@ impl<'a> NetworkStore<'a> {
     // TODO: read the settings from the service
     pub async fn load(&self) -> Result<NetworkSettings, Box<dyn Error>> {
         let connections = self.network_client.connections().await?;
-        connections.iter().map( |c| self.network_client.connection)
 
         Ok(NetworkSettings { connections })
     }

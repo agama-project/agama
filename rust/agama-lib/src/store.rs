@@ -1,11 +1,10 @@
-mod network;
 mod software;
 mod storage;
 mod users;
 
 use crate::error::ServiceError;
 use crate::install_settings::{InstallSettings, Scope};
-use crate::store::network::NetworkStore;
+use crate::network::NetworkStore;
 use crate::store::software::SoftwareStore;
 use crate::store::storage::StorageStore;
 use crate::store::users::UsersStore;
