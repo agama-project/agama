@@ -1,3 +1,5 @@
+use std::{result, fmt::format};
+
 use crate::error::Error;
 use agama_lib::connection_to;
 use anyhow::Context;
@@ -56,6 +58,59 @@ impl GenericQuestion {
         self.answer = value.to_string();
 
         Ok(())
+    }
+}
+
+pub struct LuksQuestion {
+    password: String,
+    attempt: u8,
+    generic_question: GenericQuestion,
+}
+
+impl LuksQuestion {
+    fn device_info(device: &str, label: &str, size: &str) -> String{
+        let mut result = device.to_string();
+        if !label.is_empty() {
+            result = format!("{} {}", result, label);
+        }
+
+        if !size.is_empty() {
+            result = format!("{} ({})", result, size);
+        }
+
+        return result.to_string();
+    }
+
+    pub fn new(id: u32, device: String, label: String, size: String, attempt: u8) -> Self {
+        let msg = format!("The device {} is encrypted.", Self::device_info(device.as_str(), label.as_str(), size.as_str()));
+        Self {
+            password: "".to_string(),
+            attempt,
+            generic_question: GenericQuestion::new(id, msg,
+                 vec!["skip".to_string(), "decrypt".to_string()],"skip".to_string()),
+        }
+    }
+
+    pub fn generic_question(&self) -> &GenericQuestion {
+        &self.generic_question
+    }
+}
+
+#[dbus_interface(name = "org.opensuse.Agama.Questions1.LuksActivation")]
+impl LuksQuestion {
+    #[dbus_interface(property)]
+    pub fn luks_password(&self) -> &str {
+        self.password.as_str()
+    }
+
+    #[dbus_interface(property)]
+    pub fn set_luks_password(&mut self, value: &str) -> () {
+        self.password = value.to_string();
+    }
+
+    #[dbus_interface(property)]
+    pub fn activation_attempt(&self) -> u8 {
+        self.attempt
     }
 }
 
