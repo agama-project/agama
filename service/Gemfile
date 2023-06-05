@@ -23,7 +23,7 @@
 source "https://rubygems.org"
 
 gemspec
-
+gem "ruby-dbus", git: "https://github.com/mvidner/ruby-dbus.git", branch: "service-vs-proxy-service"
 group :development do
   gem "byebug"
 end
