@@ -1,5 +1,3 @@
-use std::{result, fmt::format};
-
 use crate::error::Error;
 use agama_lib::connection_to;
 use anyhow::Context;
