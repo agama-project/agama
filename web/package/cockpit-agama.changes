@@ -57,12 +57,6 @@ Fri Apr 28 15:16:04 UTC 2023 - José Iván López González <jlopez@suse.com>
 - gh#openSUSE/agama#540
 
 -------------------------------------------------------------------
-Mon Apr 24 15:53:35 UTC 2023 - David Diaz <dgonzalez@suse.com>
-
-- Extract page options from the Sidebar to make them
-  more discoverable (gh#openSUSE/agama#545)
-
--------------------------------------------------------------------
 Thu Apr 27 08:24:27 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
 
 - Display details for the "autocalculated" label in the storage
@@ -78,6 +72,12 @@ Tue Apr 25 13:42:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
 Tue Apr 25 12:23:27 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Do not indent sections without icons (gh#openSUSE/agama#549).
+
+-------------------------------------------------------------------
+Mon Apr 24 15:53:35 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Extract page options from the Sidebar to make them
+  more discoverable (gh#openSUSE/agama#545)
 
 -------------------------------------------------------------------
 Thu Apr 20 12:44:44 UTC 2023 - David Diaz <dgonzalez@suse.com>
