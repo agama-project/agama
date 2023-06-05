@@ -83,16 +83,14 @@ module Agama
 
       # Exports the installer object through the D-Bus service
       def export
-        s = bus.request_service(MANAGER_SERVICE)
-        s ||= bus.request_service(USERS_SERVICE)
-
         # manager service initialization
-        # dbus_objects.each { |o| service.export(o) }
-        s.export(dbus_objects[0])
-        s.export(dbus_objects[1])
-
+        dbus_objects.each { |o| service.export(o) }
         paths = dbus_objects.map(&:path).join(", ")
         logger.info "Exported #{paths} objects"
+
+        # Request our service names only when we're ready to serve the objects
+        bus.request_name(SERVICE_NAME)
+        bus.request_name("org.opensuse.Agama.Users1")
       end
 
       # Call this from some main loop to dispatch the D-Bus messages
@@ -113,20 +111,16 @@ module Agama
         cockpit.setup(config.data["web"])
       end
 
-      # It registers all D-Bus services
-      #
-      # @return [::DBus::Service]
-      def service
-        @service ||= service_aliases.reduce { |_, s| 
-          logger.info("Requesting service: #{s}")
-          bus.request_service(s) }
-      end
-
       def service_aliases
         @service_aliases ||= [
           MANAGER_SERVICE,
           USERS_SERVICE
         ]
+      end
+
+      # @return [::DBus::ObjectServer]
+      def service
+        @service ||= bus.object_server
       end
 
       # @return [Array<::DBus::Object>]
