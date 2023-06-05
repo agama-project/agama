@@ -16,6 +16,34 @@
         }
       }
     },
+    "network": {
+      "description": "Network settings",
+      "type": "object",
+      "properties": {
+        "connections": {
+          "description": "Network connections to be defined",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "description": "Connection ID",
+                "type": "string"
+              },
+              "uuid": {
+                "description": "Connection UUID",
+                "type": "string"
+              },
+              "type": {
+                "description": "Connection Type",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "user": {
       "description": "First user settings",
       "type": "object",
