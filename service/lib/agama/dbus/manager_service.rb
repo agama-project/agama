@@ -46,9 +46,9 @@ module Agama
       private_constant :MANAGER_SERVICE
       private_constant :USERS_SERVICE
 
-      # System D-Bus
+      # Agama D-Bus
       #
-      # @return [::DBus::Connection]
+      # @return [::DBus::BusConnection]
       attr_reader :bus
 
       # Installation manager

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,41 +21,38 @@
 
 require "dbus"
 require "agama/dbus/bus"
-require "agama/dbus/storage"
-require "agama/storage"
+require "agama/dbus/language"
+require "agama/language"
 
 module Agama
   module DBus
-    # D-Bus service (org.opensuse.Agama.Storage1)
+    # D-Bus service (org.opensuse.Agama.Language1)
     #
     # It connects to the system D-Bus and answers requests on objects below
-    # `/org/opensuse/Agama/Storage1`.
-    class StorageService
-      SERVICE_NAME = "org.opensuse.Agama.Storage1"
+    # `/org/opensuse/Agama/Language1`.
+    class LanguageService
+      # Service name
+      #
+      # @return [String]
+      SERVICE_NAME = "org.opensuse.Agama.Language1"
       private_constant :SERVICE_NAME
 
-      # D-Bus connection
+      # Agama D-Bus
       #
       # @return [::DBus::BusConnection]
       attr_reader :bus
 
-      # @param config [Config] Configuration object
+      # @param _config [Config] Configuration object
       # @param logger [Logger]
-      def initialize(config, logger = nil)
-        @config = config
+      def initialize(_config, logger = nil)
         @logger = logger || Logger.new($stdout)
+        @bus = Bus.current
       end
 
-      # D-Bus connection
-      #
-      # @return [::DBus::Connection]
-      def bus
-        Bus.current
-      end
-
-      # Exports the storage proposal object through the D-Bus service
+      # Exports the installer object through the D-Bus service
       def export
         dbus_objects.each { |o| service.export(o) }
+
         paths = dbus_objects.map(&:path).join(", ")
         logger.info "Exported #{paths} objects"
       end
@@ -67,17 +64,8 @@ module Agama
 
     private
 
-      # @return [Config]
-      attr_reader :config
-
       # @return [Logger]
       attr_reader :logger
-
-      def manager
-        @manager ||= Agama::Storage::Manager.new(config, logger).tap do |manager|
-          manager.on_progress_change { dispatch }
-        end
-      end
 
       # @return [::DBus::Service]
       def service
@@ -86,7 +74,19 @@ module Agama
 
       # @return [Array<::DBus::Object>]
       def dbus_objects
-        @dbus_objects ||= [Agama::DBus::Storage::Manager.new(manager, logger)]
+        @dbus_objects ||= [
+          language_dbus
+        ]
+      end
+
+      # @return [Agama::DBus::Language]
+      def language_dbus
+        @language_dbus ||= Agama::DBus::Language.new(language_backend(logger), logger)
+      end
+
+      # @return [Agama::Language]
+      def language_backend(logger)
+        @language_backend ||= Agama::Language.new(logger).tap(&:probe)
       end
     end
   end

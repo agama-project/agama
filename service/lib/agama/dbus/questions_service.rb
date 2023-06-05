@@ -35,7 +35,7 @@ module Agama
 
       # D-Bus connection
       #
-      # @return [::DBus::Connection]
+      # @return [::DBus::BusConnection]
       attr_reader :bus
 
       # Constructor
