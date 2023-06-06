@@ -34,7 +34,7 @@ describe Agama::DBus::Clients::Network do
   end
 
   let(:bus) { instance_double(DBus::SystemBus) }
-  let(:service) { instance_double(DBus::Service) }
+  let(:service) { instance_double(DBus::ProxyService) }
   let(:dbus_object) { instance_double(DBus::ProxyObject) }
   let(:network_iface) { instance_double(DBus::ProxyObjectInterface) }
 

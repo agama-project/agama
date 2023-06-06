@@ -40,7 +40,7 @@ describe Agama::DBus::Clients::Users do
   end
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
-  let(:service) { instance_double(::DBus::Service) }
+  let(:service) { instance_double(::DBus::ProxyService) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:users_iface) { instance_double(::DBus::ProxyObjectInterface) }
   let(:service_status_iface) { instance_double(::DBus::ProxyObjectInterface) }

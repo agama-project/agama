@@ -41,7 +41,7 @@ describe Agama::DBus::Clients::Manager do
   end
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
-  let(:service) { instance_double(::DBus::Service) }
+  let(:service) { instance_double(::DBus::ProxyService) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:manager_iface) { instance_double(::DBus::ProxyObjectInterface) }
   let(:properties_iface) { instance_double(::DBus::ProxyObjectInterface, on_signal: nil) }
