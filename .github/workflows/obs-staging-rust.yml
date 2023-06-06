@@ -63,5 +63,6 @@ jobs:
         working-directory: ./systemsmanagement:Agama:Staging/agama-cli
 
       - name: Commit agama-cli
-        run: osc commit -m "Updating to Git commit $GITHUB_SHA"
+        run: |-
+          osc commit -m "Updated to $(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama.obsinfo) ($GITHUB_SHA)"
         working-directory: ./systemsmanagement:Agama:Staging/agama-cli
