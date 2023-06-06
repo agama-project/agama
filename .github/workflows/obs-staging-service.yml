@@ -28,12 +28,6 @@ jobs:
 
     steps:
 
-      - name: Git Checkout
-        uses: actions/checkout@v3
-        with:
-          # fetch all history, we need to find the latest tag and offset for the version number
-          fetch-depth: 0
-
       - name: Configure and refresh repositories
         # disable unused repositories to have a faster refresh
         run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
@@ -44,6 +38,12 @@ jobs:
              osc
              ruby
              'rubygem(gem2rpm)'
+
+      - name: Git Checkout
+        uses: actions/checkout@v3
+        with:
+          # fetch all history, we need to find the latest tag and offset for the version number
+          fetch-depth: 0
 
       - name: Generate version number
         run: git describe --tags | sed -e 's/-\([0-9]*\)-g[a-fA-F0-9]*$/.devel\1/' -e 's/^v//' > service/VERSION
