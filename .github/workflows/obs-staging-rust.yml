@@ -33,7 +33,7 @@ jobs:
 
       - name: Configure and refresh repositories
         # disable unused repositories to have a faster refresh
-        run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
+        run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
 
       - name: Install tools
         run: zypper --non-interactive install --no-recommends
