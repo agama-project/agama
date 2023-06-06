@@ -3,14 +3,7 @@ use std::collections::HashMap;
 use crate::error::Error;
 use agama_lib::connection_to;
 use anyhow::Context;
-use async_std::task::block_on;
 use zbus::{dbus_interface, zvariant::ObjectPath, fdo::ObjectManager, Connection};
-
-/// Trait that all questions has to implement to be able to be easily added or removed
-pub trait Question {
-    fn attach(&self, connection: &Connection) -> Result<(), zbus::fdo::Error>;
-    fn detach(&self, connection: &Connection) -> Result<(), zbus::fdo::Error>;
-}
 
 #[derive(Clone,Debug)]
 pub struct GenericQuestion {
@@ -32,9 +25,8 @@ impl GenericQuestion {
         }
     }
 
-    pub fn object_path(&self) -> ObjectPath {
-        let path = format!("/org/opensuse/Agama/Questions1/{}", self.id);
-        ObjectPath::try_from(path).unwrap()
+    pub fn object_path(&self) -> String {
+        format!("/org/opensuse/Agama/Questions1/{}", self.id)
     }
 }
 
@@ -69,25 +61,6 @@ impl GenericQuestion {
     pub fn set_answer(&mut self, value: &str) -> Result<(), zbus::fdo::Error> {
         // TODO verify if answer exists in options or if it is valid in other way
         self.answer = value.to_string();
-
-        Ok(())
-    }
-}
-
-impl Question for GenericQuestion {
-    fn attach(&self, connection: &Connection) -> Result<(), zbus::fdo::Error> {
-        block_on(async {
-            // TODO: is this to_owned needed? it means we basically have two copy of each question
-            connection.object_server().at(self.object_path(), (*self).to_owned()).await
-        })?;
-
-        Ok(())
-    }
-
-    fn detach(&self, connection: &Connection) -> Result<(), zbus::fdo::Error> {
-        block_on(async {
-            connection.object_server().remove::<Self,_>(self.object_path()).await
-        })?;
 
         Ok(())
     }
@@ -147,66 +120,65 @@ impl LuksQuestion {
     }
 }
 
-impl Question for LuksQuestion {
-    fn attach(&self, connection: &Connection) -> Result<(), zbus::fdo::Error> {
-        self.generic_question.attach(connection)?;
-        block_on(async {
-            connection.object_server().at(self.generic_question.object_path(), (*self).to_owned()).await
-        })?;
-
-        Ok(())
-    }
-
-    fn detach(&self, connection: &Connection) -> Result<(), zbus::fdo::Error> {
-        self.generic_question.detach(connection)?;
-        block_on(async {
-            connection.object_server().remove::<Self,_>(self.generic_question.object_path()).await
-        })?;
-
-        Ok(())
-    }
+enum QuestionType {
+    Generic,
+    Luks
 }
 
-pub struct QuestionsService {
-    questions: HashMap<u32, Box<dyn Question + Send + Sync>>,
+pub struct Questions {
+    questions: HashMap<u32, QuestionType>,
     connection: Connection,
     last_id: u32
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Questions1")]
-impl QuestionsService {
+impl Questions {
     #[dbus_interface(name = "New")]
     async fn new_question(&mut self, text: &str, options: Vec<&str>, default_option: Vec<&str>) -> Result<ObjectPath, zbus::fdo::Error> {
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
         let options = options.iter().map(|o| o.to_string()).collect();
         let question = GenericQuestion::new(id, text.to_string(), options, default_option.first().unwrap().to_string());
-
-        question.attach(&self.connection)?;
-        self.questions.insert(id, Box::new(question.clone())); // TODO: is clone here needed?
-        Ok(question.object_path().to_owned())
+        let object_path = ObjectPath::try_from(question.object_path()).unwrap();
+        
+        self.connection.object_server().at(question.object_path(), question).await?;
+        self.questions.insert(id, QuestionType::Generic);
+        Ok(object_path)
     }
 
-    fn new_luks_activation(&mut self, device: &str, label: &str, size: &str, attempt: u8) -> Result<ObjectPath, zbus::fdo::Error> {
+    async fn new_luks_activation(&mut self, device: &str, label: &str, size: &str, attempt: u8) -> Result<ObjectPath, zbus::fdo::Error> {
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
         let question = LuksQuestion::new(id, device.to_string(), label.to_string(), size.to_string(), attempt);
+        let object_path = ObjectPath::try_from(question.generic_question.object_path()).unwrap();
 
-        question.attach(&self.connection)?;
-        self.questions.insert(id, Box::new(question.clone())); // TODO: is clone here needed?
-        Ok(question.generic_question.object_path().to_owned())
+        self.connection.object_server().at(question.generic_question.object_path(), question.generic_question.clone()).await?;
+        self.connection.object_server().at(question.generic_question.object_path(), question).await?;
+        
+        
+        self.questions.insert(id, QuestionType::Luks);
+        Ok(object_path)
     }
 
-    fn delete(&mut self, question: ObjectPath) -> Result<(), Error>{
+    async fn delete(&mut self, question: ObjectPath<'_>) -> Result<(), Error>{
         // TODO: error checking
         let id : u32 = question.rsplit("/").next().unwrap().parse().unwrap();
-        self.questions.get(&id).unwrap().detach(&self.connection).unwrap();
+        let qtype = self.questions.get(&id).unwrap();
+        match qtype {
+            QuestionType::Generic => {
+                self.connection.object_server().remove::<GenericQuestion,_>(question.clone()).await?;
+            },
+            QuestionType::Luks => {
+                self.connection.object_server().remove::<GenericQuestion,_>(question.clone()).await?;
+                self.connection.object_server().remove::<LuksQuestion,_>(question.clone()).await?;
+            },          
+        };
         self.questions.remove(&id);
         Ok(())
     }
 }
 
-impl QuestionsService {
+impl Questions {
     fn new(connection: &Connection) -> Self {
         Self {
             questions: HashMap::new(),
@@ -214,8 +186,9 @@ impl QuestionsService {
             last_id: 0
         }
     }
+}
 
-    pub async fn start(address: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn start_service(address: &str) -> Result<(), Box<dyn std::error::Error>> {
         const SERVICE_NAME: &str = "org.opensuse.Agama.Questions1";
         const SERVICE_PATH: &str = "/org/opensuse/Agama/Questions1";
 
@@ -224,7 +197,7 @@ impl QuestionsService {
         let connection = connection_to(address).await?;
 
         // When serving, request the service name _after_ exposing the main object
-        let questions = Self::new(&connection);
+        let questions = Questions::new(&connection);
         connection.object_server().at(SERVICE_PATH, questions).await?;
         connection.object_server().at(SERVICE_PATH, ObjectManager).await?;
         connection
@@ -234,4 +207,4 @@ impl QuestionsService {
 
         Ok(())
     }
-}
+
