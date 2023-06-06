@@ -182,7 +182,7 @@ impl QuestionsService {
         let options = options.iter().map(|o| o.to_string()).collect();
         let question = GenericQuestion::new(id, text.to_string(), options, default_option.first().unwrap().to_string());
 
-        question.detach(&self.connection)?;
+        question.attach(&self.connection)?;
         self.questions.insert(id, Box::new(question.clone())); // TODO: is clone here needed?
         Ok(question.object_path().to_owned())
     }
@@ -192,7 +192,7 @@ impl QuestionsService {
         self.last_id += 1; // TODO use some thread safety
         let question = LuksQuestion::new(id, device.to_string(), label.to_string(), size.to_string(), attempt);
 
-        question.detach(&self.connection)?;
+        question.attach(&self.connection)?;
         self.questions.insert(id, Box::new(question.clone())); // TODO: is clone here needed?
         Ok(question.generic_question.object_path().to_owned())
     }
