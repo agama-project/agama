@@ -62,5 +62,5 @@ jobs:
 
       - name: Commit cockpit-agama-playwright
         run: |-
-          osc commit -m "Updated to $(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama.obsinfo) ($GITHUB_SHA)"
+          osc commit -m "Updated to $(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama.obsinfo) ($(sed -e '/^commit:/!d' -e 's/commit: *\(.*\)/\1/' agama.obsinfo))"
         working-directory: ./systemsmanagement:Agama:Staging/cockpit-agama-playwright
