@@ -1,4 +1,4 @@
-name: OBS Staging (agama-cli)
+name: OBS Staging (cockpit-agama-playwright)
 
 on:
   # runs on pushes targeting the default branch
@@ -9,9 +9,9 @@ on:
       - obs_sync
     # FIXME: enable before merging
     # paths:
-    #   # run only when a Rust source is changed
+    #   # run only when a Playwright source is changed
     #   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
-    #   - rust/**
+    #   - playwright/**
 
   # allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -38,8 +38,6 @@ jobs:
       - name: Install tools
         run: zypper --non-interactive install --no-recommends
              cpio
-             obs-service-cargo_audit
-             obs-service-cargo_vendor
              obs-service-download_files
              obs-service-format_spec_file
              obs-service-obs_scm
@@ -51,17 +49,17 @@ jobs:
           OBS_USER:     ${{ secrets.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Checkout agama-cli
-        run: osc co systemsmanagement:Agama:Staging agama-cli
+      - name: Checkout cockpit-agama-playwright
+        run: osc co systemsmanagement:Agama:Staging cockpit-agama-playwright
   
-      - name: Update agama-cli
+      - name: Update cockpit-agama-playwright
         run: osc service manualrun
-        working-directory: ./systemsmanagement:Agama:Staging/agama-cli
+        working-directory: ./systemsmanagement:Agama:Staging/cockpit-agama-playwright
 
-      - name: Check agama-cli
+      - name: Check cockpit-agama-playwright
         run: osc status
-        working-directory: ./systemsmanagement:Agama:Staging/agama-cli
+        working-directory: ./systemsmanagement:Agama:Staging/cockpit-agama-playwright
 
-      - name: Commit agama-cli
+      - name: Commit cockpit-agama-playwright
         run: osc commit -m "Updating to Git commit $GITHUB_SHA"
-        working-directory: ./systemsmanagement:Agama:Staging/agama-cli
+        working-directory: ./systemsmanagement:Agama:Staging/cockpit-agama-playwright

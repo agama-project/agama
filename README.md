@@ -1,6 +1,10 @@
 [![CI Status](https://github.com/openSUSE/agama/actions/workflows/ci.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/openSUSE/agama/badge.svg?branch=master)](https://coveralls.io/github/openSUSE/agama?branch=master)
 
+**[OBS systemsmanagement:Agama:Staging](https://build.opensuse.org/project/show/systemsmanagement:Agama:Staging)**
+
+[![OBS Staging (agama-cli)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-rust.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-rust.yml)
+
 # Agama: A Service-based Linux Installer
 
 Agama is a new Linux installer born in the core of the YaST team. It is designed to offer re-usability, integration with third party tools and the possibility of building advanced user interfaces over it.
