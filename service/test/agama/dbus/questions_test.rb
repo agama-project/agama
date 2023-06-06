@@ -34,7 +34,9 @@ describe Agama::DBus::Questions do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:service) { instance_double(DBus::ObjectServer, export: nil, unexport: nil, connection: connection) }
+  let(:service) do
+    instance_double(DBus::ObjectServer, export: nil, unexport: nil, connection: connection)
+  end
 
   let(:connection) { instance_double(DBus::Connection, emit: nil) }
 
