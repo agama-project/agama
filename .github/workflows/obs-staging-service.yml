@@ -45,6 +45,9 @@ jobs:
           # fetch all history, we need to find the latest tag and offset for the version number
           fetch-depth: 0
 
+      - name: Fix file owner
+        run: chown -R -c 0 .
+
       - name: Generate version number
         run: git describe --tags | sed -e 's/-\([0-9]*\)-g[a-fA-F0-9]*$/.devel\1/' -e 's/^v//' > service/VERSION
 
