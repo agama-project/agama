@@ -41,8 +41,10 @@ module Agama
       # but under different names
       #
       # @return [Array<String>]
-      SERVICE_NAMES = [ "org.opensuse.Agama1", "org.opensuse.Agama.Users1" ]
-      private_constant :SERVICE_NAMES
+      MANAGER_SERVICE = "org.opensuse.Agama1"
+      USERS_SERVICE = "org.opensuse.Agama.Users1"
+      private_constant :MANAGER_SERVICE
+      private_constant :USERS_SERVICE
 
       # System D-Bus
       #
@@ -81,8 +83,13 @@ module Agama
 
       # Exports the installer object through the D-Bus service
       def export
+        s = bus.request_service(MANAGER_SERVICE)
+        s ||= bus.request_service(USERS_SERVICE)
+
         # manager service initialization
-        dbus_objects.each { |o| service.export(o) }
+        # dbus_objects.each { |o| service.export(o) }
+        s.export(dbus_objects[0])
+        s.export(dbus_objects[1])
 
         paths = dbus_objects.map(&:path).join(", ")
         logger.info "Exported #{paths} objects"
@@ -110,7 +117,16 @@ module Agama
       #
       # @return [::DBus::Service]
       def service
-        @service ||= SERVICE_NAMES.reduce { |acc, s| acc = bus.request_service(s) }
+        @service ||= service_aliases.reduce { |_, s| 
+          logger.info("Requesting service: #{s}")
+          bus.request_service(s) }
+      end
+
+      def service_aliases
+        @service_aliases ||= [
+          MANAGER_SERVICE,
+          USERS_SERVICE
+        ]
       end
 
       # @return [Array<::DBus::Object>]
