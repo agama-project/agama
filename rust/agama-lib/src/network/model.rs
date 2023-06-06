@@ -17,19 +17,34 @@ pub struct NetworkSettings {
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
+pub struct WirelessSettings {
+    pub password: String,
+    pub security: u8,
+    pub ssid: Vec<u8>,
+    pub mode: u8,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct NetworkConnection {
-    pub id: String,
+    pub name: String,
+    pub dhcp4: bool,
+    pub dhcp6: bool,
+    pub gateway: String,
+    pub addresses: Vec<String>,
+    pub nameservers: Vec<String>,
+    pub wireless: Option<WirelessSettings>,
 }
 
 impl TryFrom<SettingObject> for NetworkConnection {
     type Error = &'static str;
 
     fn try_from(value: SettingObject) -> Result<Self, Self::Error> {
-        match value.0.get("id") {
+        match value.0.get("name") {
             Some(name) => Ok(NetworkConnection {
-                id: name.clone().try_into()?,
+                name: name.clone().try_into()?,
+                ..Default::default()
             }),
-            None => Err("'id' key not found"),
+            None => Err("'name' key not found"),
         }
     }
 }

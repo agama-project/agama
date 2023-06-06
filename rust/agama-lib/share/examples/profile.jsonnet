@@ -32,7 +32,7 @@ local findBiggestDisk(disks) =
   network: {
     connections: [
       {
-        id: 'AgamaNetwork'
+        name: 'AgamaNetwork'
         uuid: '486051f7-a6ee-4a40-afe0-d3aebf1c4672',
         type: 'wifi',
         dhcp: true,
@@ -43,7 +43,7 @@ local findBiggestDisk(disks) =
         }
       },
       {
-        id: "Etherned device 1",
+        name: "Etherned device 1",
         type: ethernet,
         dhcp4: false,
         gateway: "192.168.122.1",
