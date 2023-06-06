@@ -1,0 +1,67 @@
+name: OBS Staging (agama-cli)
+
+on:
+  # runs on pushes targeting the default branch
+  push:
+    branches:
+      - master
+      # FIXME: remove this before merging
+      - obs_sync
+    paths:
+      # run only when a Rust source is changed
+      - rust/**
+
+  # allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  update_staging:
+    # do not run in forks
+    if: github.repository == 'openSUSE/agama'
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+
+    steps:
+
+      - name: Git Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure and refresh repositories
+        # disable unused repositories to have a faster refresh
+        run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
+
+      - name: Install tools
+        run: zypper --non-interactive install --no-recommends
+             cpio
+             obs-service-cargo_audit
+             obs-service-cargo_vendor
+             obs-service-download_files
+             obs-service-format_spec_file
+             obs-service-obs_scm
+             obs-service-set_version
+             obs-service-tar
+             osc
+
+      - name: Configure osc
+        run: .github/workflows/configure_osc.sh
+        env:
+          OBS_USER:     ${{ secrets.OBS_USER }}
+          OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
+
+      - name: Checkout agama-cli
+        run: osc co systemsmanagement:Agama:Staging agama-cli
+  
+      - name: Update agama-cli
+        run: osc service runall
+        working-directory: ./systemsmanagement:Agama:Staging/agama-cli
+
+      - name: Check agama-cli
+        run: osc status
+        working-directory: ./systemsmanagement:Agama:Staging/agama-cli
+
+      - name: Commit agama-cli
+        run: osc commit -m "Updating to Git commit $GITHUB_SHA"
+        working-directory: ./systemsmanagement:Agama:Staging/agama-cli
