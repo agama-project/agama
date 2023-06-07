@@ -27,7 +27,6 @@ require "agama/dbus/with_service_status"
 require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
-require "agama/dbus/storage/interfaces/dasd_manager"
 require "agama/dbus/storage/proposal"
 require "agama/dbus/storage/proposal_settings_converter"
 require "agama/dbus/storage/volume_converter"
@@ -65,10 +64,8 @@ module Agama
           register_service_status_callbacks
           register_iscsi_callbacks
           register_software_callbacks
-          return unless Yast::Arch.s390
 
-          singleton_class.include Interfaces::DasdManager
-          register_and_extend_dasd_callbacks
+          add_s390_interfaces if Yast::Arch.s390
         end
 
         # List of issues, see {DBus::Interfaces::Issues}
@@ -241,6 +238,17 @@ module Agama
         # @return [DBus::Storage::Proposal, nil]
         attr_reader :dbus_proposal
 
+        def add_s390_interfaces
+          require "agama/dbus/storage/interfaces/dasd_manager"
+          require "agama/dbus/storage/interfaces/zfcp_manager"
+
+          singleton_class.include Interfaces::DasdManager
+          singleton_class.include Interfaces::ZFCPManager
+
+          register_dasd_callbacks
+          register_zfcp_callbacks
+        end
+
         # @return [Agama::Storage::Proposal]
         def proposal
           backend.proposal
@@ -277,14 +285,6 @@ module Agama
         def register_software_callbacks
           backend.software.on_product_selected do |_product|
             backend.proposal.reset
-          end
-        end
-
-        def register_and_extend_dasd_callbacks
-          register_dasd_callbacks
-
-          dasd_backend.on_refresh do |_|
-            deprecate_system
           end
         end
 
