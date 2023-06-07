@@ -34,6 +34,7 @@ jobs:
              osc
              ruby
              'rubygem(gem2rpm)'
+             'rubygem(yast-rake)'
 
       - name: Git Checkout
         uses: actions/checkout@v3
