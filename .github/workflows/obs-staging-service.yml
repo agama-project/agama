@@ -33,6 +33,7 @@ jobs:
         run: zypper --non-interactive install --no-recommends
              build
              git
+             obs-service-format_spec_file
              osc
              ruby
              'rubygem(gem2rpm)'
