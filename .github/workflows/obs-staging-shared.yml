@@ -21,17 +21,15 @@ on:
 
 jobs:
   update_staging_package:
+    # do not run in forks
+    if: github.repository == 'openSUSE/agama'
+
     runs-on: ubuntu-latest
 
     container:
       image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
-      - name: Test ${{ inputs.package_name }}
-        run: |-
-          echo Inputs ${{ inputs.install_packages }} ${{ inputs.package_name }}
-          exit 1
-
       - name: Git Checkout
         uses: actions/checkout@v3
 
@@ -46,7 +44,7 @@ jobs:
              obs-service-format_spec_file
              obs-service-obs_scm
              osc
-             $INPUT_INSTALL_PACKAGES
+             ${{ inputs.install_packages }}
 
       - name: Configure osc
         run: .github/workflows/configure_osc.sh
@@ -54,18 +52,18 @@ jobs:
           OBS_USER:     ${{ secrets.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Checkout $INPUT_PACKAGE_NAME - ${{ vars.INPUT_PACKAGE_NAME }}
-        run: osc co systemsmanagement:Agama:Staging $INPUT_PACKAGE_NAME
+      - name: Checkout ${{ inputs.package_name }}
+        run: osc co systemsmanagement:Agama:Staging ${{ inputs.package_name }}
   
-      - name: Update cockpit-agama
+      - name: Update ${{ inputs.package_name }}
         run: osc service manualrun
-        working-directory: ./systemsmanagement:Agama:Staging/cockpit-agama
+        working-directory: ./systemsmanagement:Agama:Staging/${{ inputs.package_name }}
 
-      - name: Check cockpit-agama
+      - name: Check ${{ inputs.package_name }}
         run: osc status
-        working-directory: ./systemsmanagement:Agama:Staging/${{ vars.INPUT_PACKAGE_NAME }}
+        working-directory: ./systemsmanagement:Agama:Staging/${{ inputs.package_name }}
 
-      - name: Commit cockpit-agama
+      - name: Commit ${{ inputs.package_name }}
         run: |-
           osc commit -m "Updated to $(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama.obsinfo) ($(sed -e '/^commit:/!d' -e 's/commit: *\(.*\)/\1/' agama.obsinfo))"
-        working-directory: ./systemsmanagement:Agama:Staging/cockpit-agama
+        working-directory: ./systemsmanagement:Agama:Staging/${{ inputs.package_name }}

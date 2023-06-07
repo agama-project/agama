@@ -18,8 +18,6 @@ on:
 
 jobs:
   update_staging:
-    # do not run in forks
-    if: github.repository == 'openSUSE/agama'
     uses: ./.github/workflows/obs-staging-shared.yml
     # pass all secrets
     secrets: inherit
