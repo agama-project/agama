@@ -300,3 +300,42 @@ span.notification-mark[data-variant="sidebar"] {
 .pf-c-popover li + li {
   margin: 0;
 }
+
+.radio-group {
+  .pf-c-radio {
+    position: relative;
+    padding-block-end: var(--spacer-small);
+    padding-inline-end: var(--spacer-small);
+
+    &.selected::after {
+      --arrow-size: var(--spacer-small, 10px);
+
+      content:'';
+      position: absolute;
+      bottom: -1px;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-bottom: solid var(--arrow-size) var(--color-gray);
+      border-left: solid var(--arrow-size) transparent;
+      border-right: solid var(--arrow-size) transparent;
+    }
+  }
+}
+
+.highlighted-live-region {
+  padding: 10px;
+  background: var(--color-gray);
+}
+
+.size-input-group {
+  max-inline-size: 20ch;
+
+  input {
+    text-align: end;
+  }
+
+  select {
+    inline-size: 8ch;
+  }
+}

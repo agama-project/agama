@@ -160,7 +160,7 @@ describe("if there are volumes", () => {
     within(body).getByRole("row", { name: "/home XFS partition 1 KiB - 2 KiB" });
   });
 
-  it("allows to delete the volume", async () => {
+  it("allows deleting the volume", async () => {
     props.onChange = jest.fn();
 
     const { user } = plainRender(<ProposalVolumes {...props} />);
@@ -173,6 +173,24 @@ describe("if there are volumes", () => {
     await user.click(deleteAction);
 
     expect(props.onChange).toHaveBeenCalledWith(expect.not.arrayContaining([volumes.home]));
+  });
+
+  it("allows editing the volume", async () => {
+    props.onChange = jest.fn();
+
+    const { user } = plainRender(<ProposalVolumes {...props} />);
+
+    const [, body] = await screen.findAllByRole("rowgroup");
+    const row = within(body).getByRole("row", { name: "/home XFS partition 1 KiB - 2 KiB" });
+    const actions = within(row).getByRole("button", { name: "Actions" });
+    await user.click(actions);
+    const editAction = within(row).queryByRole("menuitem", { name: "Edit" });
+    await user.click(editAction);
+
+    const popup = await screen.findByRole("dialog");
+    within(popup).getByText("Edit file system");
+    const mountPointSelector = within(popup).getByRole("combobox", { name: "mount point" });
+    expect(mountPointSelector).toHaveAttribute("disabled");
   });
 });
 

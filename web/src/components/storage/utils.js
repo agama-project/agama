@@ -19,9 +19,29 @@
  * find current contact information at www.suse.com.
  */
 
-// cspell:ignore filesize
+// cspell:ignore xbytes
 
-import { filesize } from "filesize";
+import xbytes from "xbytes";
+
+/**
+ * @typedef {Object} SizeObject
+ * @property {number} size - The "amount" of size
+ * @property {string} unit - The size unit
+ */
+
+const SIZE_METHODS = Object.freeze({
+  AUTO: "auto",
+  MANUAL: "manual",
+  RANGE: "range"
+});
+
+const SIZE_UNITS = Object.freeze({
+  K: "KiB",
+  M: "MiB",
+  G: "GiB",
+  T: "TiB",
+  P: "PiB",
+});
 
 /**
  * Generates a disk size representation
@@ -29,7 +49,7 @@ import { filesize } from "filesize";
  *
  * @example
  * deviceSize(1024)
- * // returns "1 kiB"
+ * // returns "1 KiB"
  *
  * deviceSize(-1)
  * // returns "Unlimited"
@@ -40,7 +60,43 @@ import { filesize } from "filesize";
 const deviceSize = (size) => {
   if (size === -1) return "Unlimited";
 
-  return filesize(size, { base: 2 });
+  return xbytes(size, { iec: true });
+};
+
+/**
+ * Generates a size object
+ *
+ * @param {number|string|undefined} size
+ * @returns {SizeObject}
+ */
+const splitSize = (size) => {
+  const validSize = size && size !== -1;
+  const [parsedSize, parsedUnit] = xbytes(size, { iec: true }).split(" ");
+
+  return {
+    size: validSize ? parsedSize : "",
+    unit: validSize ? parsedUnit : "GiB"
+  };
+};
+
+/**
+ * Generates a disk size from parsed input
+ * @function
+ *
+ * @example
+ * parseSize(1024)
+ * // returns "1024"
+ *
+ * parseSize("1 KiB")
+ * // returns "1024"
+ *
+ * @param {string|number} size
+ * @returns {string}
+ */
+const parseSize = (size) => {
+  const value = xbytes.parseSize(size, { iec: true }) || parseInt(size);
+  // TODO: evaluate if we really want to avoid decimal numbers
+  return Math.trunc(value);
 };
 
 /**
@@ -56,4 +112,11 @@ const deviceLabel = (device) => {
   return size ? `${name}, ${deviceSize(size)}` : name;
 };
 
-export { deviceSize, deviceLabel };
+export {
+  SIZE_UNITS,
+  SIZE_METHODS,
+  deviceSize,
+  deviceLabel,
+  parseSize,
+  splitSize,
+};

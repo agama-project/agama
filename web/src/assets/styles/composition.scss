@@ -16,6 +16,10 @@
   gap: var(--split-gutter);
 }
 
+[data-items-alignment="start"] {
+  align-items: start;
+}
+
 .wrapped {
   flex-wrap: wrap;
 }
