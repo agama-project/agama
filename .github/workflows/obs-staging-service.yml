@@ -69,8 +69,9 @@ jobs:
         run: osc co systemsmanagement:Agama:Staging rubygem-agama
 
       - name: Update files
-        run: rm ./systemsmanagement:Agama:Staging/rubygem-agama/*;
-             cp service/agama-*.gem service/package/* ./systemsmanagement:Agama:Staging/rubygem-agama
+        run: |-
+            rm ./systemsmanagement:Agama:Staging/rubygem-agama/*
+            cp service/agama-*.gem service/package/* ./systemsmanagement:Agama:Staging/rubygem-agama
 
       - name: Check rubygem-agama
         run: osc addremove && osc status
