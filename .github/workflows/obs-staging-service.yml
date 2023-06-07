@@ -61,7 +61,7 @@ jobs:
             user=${{ secrets.OBS_USER }}
             pass=${{ secrets.OBS_PASSWORD }}
             credentials_mgr_class=osc.credentials.PlaintextConfigFileCredentialsManager
-            trusted_prj=openSUSE:Factory
+            trusted_prj=openSUSE:Factory openSUSE:Tumbleweed
 
       - name: Build the package
         run: rake osc:commit
