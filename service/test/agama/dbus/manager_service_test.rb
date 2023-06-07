@@ -31,7 +31,7 @@ describe Agama::DBus::ManagerService do
   let(:manager) { Agama::Manager.new(config, logger) }
   let(:bus) { instance_double(Agama::DBus::Bus) }
   let(:bus_service) do
-    instance_double(::DBus::Service, export: nil)
+    instance_double(::DBus::ObjectServer, export: nil)
   end
   let(:cockpit) { instance_double(Agama::CockpitManager, setup: nil) }
   let(:software_client) do

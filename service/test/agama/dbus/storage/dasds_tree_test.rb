@@ -27,7 +27,7 @@ require "dbus"
 describe Agama::DBus::Storage::DasdsTree do
   subject { described_class.new(service, logger: logger) }
 
-  let(:service) { instance_double(::DBus::Service) }
+  let(:service) { instance_double(::DBus::ObjectServer) }
   let(:root_node) { instance_double(::DBus::Node) }
   let(:logger) { Logger.new($stdout, level: :warn) }
 

@@ -1,0 +1,33 @@
+
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
+      <arg type="s" direction="out"/>
+    </method>
+  </interface>
+  <interface name="org.opensuse.Agama.Locale1">
+    <!--
+     Get labels for locales. The first pair is english language and territory
+     and second one is localized one to target language from locale.
+     -->
+    <method name="LabelsForLocales">
+      <arg type="a((ss)(ss))" direction="out"/>
+    </method>
+    <method name="ListVConsoleKeyboards">
+      <arg type="as" direction="out"/>
+    </method>
+    <method name="ListTimezones">
+      <arg name="locale" type="s" direction="in"/>
+      <arg type="a(ss)" direction="out"/>
+    </method>
+    <method name="Commit">
+    </method>
+    <property name="Locales" type="as" access="readwrite"/>
+    <property name="SupportedLocales" type="as" access="readwrite"/>
+    <property name="Timezone" type="s" access="readwrite"/>
+    <property name="VConsoleKeyboard" type="s" access="readwrite"/>
+  </interface>
+</node>
+

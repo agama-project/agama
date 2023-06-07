@@ -34,9 +34,11 @@ describe Agama::DBus::Questions do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:service) { instance_double(DBus::Service, export: nil, unexport: nil, bus: system_bus) }
+  let(:service) do
+    instance_double(DBus::ObjectServer, export: nil, unexport: nil, connection: connection)
+  end
 
-  let(:system_bus) { instance_double(DBus::SystemBus) }
+  let(:connection) { instance_double(DBus::Connection, emit: nil) }
 
   describe "Questions interface" do
     let(:interface) { "org.opensuse.Agama.Questions1" }
