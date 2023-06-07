@@ -43,7 +43,7 @@ $SUDO zypper --non-interactive --gpg-auto-import-keys install gcc gcc-c++ make o
   git augeas-devel jemalloc-devel || exit 1
 
 # only install cargo if it is not available (avoid conflicts with rustup)
-test -f /usr/bin/cargo || $SUDO zypper --non-interactive install cargo
+which cargo || $SUDO zypper --non-interactive install cargo
 
 # - Install service rubygem dependencies
 (
