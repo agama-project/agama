@@ -35,7 +35,7 @@ module Agama
 
         # Constructor
         #
-        # @param service [::DBus::Service]
+        # @param service [::DBus::ObjectServer]
         # @param logger [Logger, nil]
         def initialize(service, logger: nil)
           super(service, ROOT_PATH, logger: logger)

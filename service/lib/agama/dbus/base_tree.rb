@@ -32,7 +32,7 @@ module Agama
     class BaseTree
       # Constructor
       #
-      # @param service [::DBus::Service]
+      # @param service [::DBus::ObjectServer]
       # @param root_path [::DBus::ObjectPath] Root path of the tree
       # @param logger [Logger, nil]
       def initialize(service, root_path, logger: nil)
@@ -54,7 +54,7 @@ module Agama
 
     private
 
-      # @return [::DBus::Service]
+      # @return [::DBus::ObjectServer]
       attr_reader :service
 
       # @return [::DBus::ObjectPath]

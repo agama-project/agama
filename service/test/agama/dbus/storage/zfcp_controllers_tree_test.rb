@@ -28,7 +28,7 @@ require "dbus"
 describe Agama::DBus::Storage::ZFCPControllersTree do
   subject { described_class.new(service, manager, logger: logger) }
 
-  let(:service) { instance_double(::DBus::Service) }
+  let(:service) { instance_double(::DBus::ObjectServer) }
 
   let(:manager) { Agama::Storage::ZFCP::Manager.new(logger: logger) }
 

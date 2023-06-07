@@ -35,7 +35,7 @@ module Agama
 
         # Constructor
         #
-        # @param service [::DBus::Service]
+        # @param service [::DBus::ObjectServer]
         # @param zfcp_manager [Agama::Storage::ZFCP::Manager]
         # @param logger [Logger, nil]
         def initialize(service, zfcp_manager, logger: nil)

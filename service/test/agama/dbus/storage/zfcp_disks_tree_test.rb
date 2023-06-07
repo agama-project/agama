@@ -27,7 +27,7 @@ require "dbus"
 describe Agama::DBus::Storage::ZFCPDisksTree do
   subject { described_class.new(service, logger: logger) }
 
-  let(:service) { instance_double(::DBus::Service) }
+  let(:service) { instance_double(::DBus::ObjectServer) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
