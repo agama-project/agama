@@ -36,6 +36,7 @@ jobs:
              ruby
              'rubygem(gem2rpm)'
              'rubygem(yast-rake)'
+             sudo
 
       - name: Git Checkout
         uses: actions/checkout@v3
