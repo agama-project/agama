@@ -68,13 +68,13 @@ const splitSize = (size) => {
  * // returns "1 KiB"
  *
  * deviceSize(-1)
- * // returns "Unlimited"
+ * // returns undefined
  *
  * @param {number} size - Number of bytes. The value -1 represents an unlimited size.
- * @returns {string}
+ * @returns {string|undefined}
  */
 const deviceSize = (size) => {
-  if (size === -1) return "Unlimited";
+  if (size === -1) return undefined;
 
   // Sadly, we cannot returns directly the xbytes(size, , { iec: true }) because
   // it does not have an option for dropping/ignoring trailing zeros and we do

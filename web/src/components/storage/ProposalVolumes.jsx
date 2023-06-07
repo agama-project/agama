@@ -167,12 +167,17 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
   };
 
   const SizeLimits = ({ volume }) => {
-    const limits = `${deviceSize(volume.minSize)} - ${deviceSize(volume.maxSize)}`;
+    const minSize = deviceSize(volume.minSize);
+    const maxSize = deviceSize(volume.maxSize);
     const isAuto = volume.adaptiveSizes && !volume.fixedSizeLimits;
+
+    let size = minSize;
+    if (minSize && maxSize && minSize !== maxSize) size = `${minSize} - ${maxSize}`;
+    if (maxSize === undefined) size = `At least ${minSize}`;
 
     return (
       <div className="split">
-        <span>{limits}</span>
+        <span>{size}</span>
         <If condition={isAuto} then={<Tip description={AutoCalculatedHint(volume)}>auto</Tip>} />
       </div>
     );
@@ -278,7 +283,7 @@ const VolumesTable = ({ volumes, isLoading, onVolumesChange }) => {
   const columns = {
     mountPoint: "At",
     details: "Details",
-    size: "Size limits",
+    size: "Size",
     actions: "Actions"
   };
 

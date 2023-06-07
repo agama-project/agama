@@ -22,9 +22,9 @@
 import { deviceSize, deviceLabel } from "./utils";
 
 describe("deviceSize", () => {
-  it("returns unlimited is size is -1", () => {
+  it("returns undefined is size is -1", () => {
     const result = deviceSize(-1);
-    expect(result).toEqual("Unlimited");
+    expect(result).toBeUndefined();
   });
 
   it("returns the size with units", () => {
