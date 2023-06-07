@@ -35,7 +35,7 @@ module Agama
     # It connects to the system D-Bus and answers requests on objects below
     # `/org/opensuse/Agama1`.
     class ManagerService
-      # List of d-bus services exposed by this class
+      # List of D-Bus services exposed by this class
       #
       # This basically allows to define "aliases" - all exposed services holds the same objects
       # but under different names
