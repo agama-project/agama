@@ -44,6 +44,22 @@ const SIZE_UNITS = Object.freeze({
 });
 
 /**
+ * Generates a size object
+ *
+ * @param {number|string|undefined} size
+ * @returns {SizeObject}
+ */
+const splitSize = (size) => {
+  const validSize = size && size !== -1;
+  const [parsedSize, parsedUnit] = xbytes(size, { iec: true }).split(" ");
+
+  return {
+    size: validSize ? parsedSize : "",
+    unit: validSize ? parsedUnit : "GiB"
+  };
+};
+
+/**
  * Generates a disk size representation
  * @function
  *
@@ -60,23 +76,11 @@ const SIZE_UNITS = Object.freeze({
 const deviceSize = (size) => {
   if (size === -1) return "Unlimited";
 
-  return xbytes(size, { iec: true });
-};
-
-/**
- * Generates a size object
- *
- * @param {number|string|undefined} size
- * @returns {SizeObject}
- */
-const splitSize = (size) => {
-  const validSize = size && size !== -1;
-  const [parsedSize, parsedUnit] = xbytes(size, { iec: true }).split(" ");
-
-  return {
-    size: validSize ? parsedSize : "",
-    unit: validSize ? parsedUnit : "GiB"
-  };
+  // Sadly, we cannot returns directly the xbytes(size, , { iec: true }) because
+  // it does not have an option for dropping/ignoring trailing zeros and we do
+  // not want to render them.
+  const result = splitSize(size);
+  return `${Number(result.size)} ${result.unit}`;
 };
 
 /**
