@@ -25,7 +25,7 @@ require "agama/dbus/server_manager"
 module Agama
   module DBus
     # Represents the Agama bus, a distinct one from the system and session buses.
-    class Bus < ::DBus::Connection
+    class Bus < ::DBus::BusConnection
       class << self
         # Returns the current D-Bus connection
         #

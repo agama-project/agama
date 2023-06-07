@@ -67,6 +67,11 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
 (
   cd $MYDIR/service/share
   DBUSDIR=/usr/share/dbus-1/agama-services
+
+  # cleanup previous installation
+  [[ -d $DBUSDIR ]] && $SUDO rm -r $DBUSDIR
+
+  # create services 
   $SUDO mkdir -p $DBUSDIR
   for SVC in org.opensuse.Agama*.service; do
     sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/service/bin/@" $SVC $DBUSDIR/$SVC
