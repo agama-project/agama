@@ -7,11 +7,13 @@ on:
         required: true
       OBS_PASSWORD:
         required: true
+
     inputs:
       install_packages:
         description: Additional packages to install
         required: false
         type: string
+
       package_name:
           description: OBS package name
           required: true
@@ -25,8 +27,10 @@ jobs:
       image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
-      - name: Test
-        run: echo -- "$INPUT_INSTALL_PACKAGES $INPUT_PACKAGE_NAME"
+      - name: Test ${{ inputs.package_name }}
+        run: |-
+          echo Inputs ${{ inputs.install_packages }} ${{ inputs.package_name }}
+          exit 1
 
       - name: Git Checkout
         uses: actions/checkout@v3
