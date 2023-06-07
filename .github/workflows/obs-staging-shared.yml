@@ -1,0 +1,67 @@
+name: Update OBS Staging
+
+on:
+  workflow_call:
+    secrets:
+      OBS_USER:
+        required: true
+      OBS_PASSWORD:
+        required: true
+    inputs:
+      install_packages:
+        description: Additional packages to install
+        required: false
+        type: string
+      package_name:
+          description: OBS package name
+          required: true
+          type: string
+
+jobs:
+  update_staging_package:
+    runs-on: ubuntu-latest
+
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+
+    steps:
+      - name: Test
+        run: echo -- "$INPUT_INSTALL_PACKAGES $INPUT_PACKAGE_NAME"
+
+      - name: Git Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure and refresh repositories
+        # disable unused repositories to have a faster refresh
+        run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+
+      - name: Install tools
+        run: zypper --non-interactive install --no-recommends
+             cpio
+             obs-service-download_files
+             obs-service-format_spec_file
+             obs-service-obs_scm
+             osc
+             $INPUT_INSTALL_PACKAGES
+
+      - name: Configure osc
+        run: .github/workflows/configure_osc.sh
+        env:
+          OBS_USER:     ${{ secrets.OBS_USER }}
+          OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
+
+      - name: Checkout $INPUT_PACKAGE_NAME - ${{ vars.INPUT_PACKAGE_NAME }}
+        run: osc co systemsmanagement:Agama:Staging $INPUT_PACKAGE_NAME
+  
+      - name: Update cockpit-agama
+        run: osc service manualrun
+        working-directory: ./systemsmanagement:Agama:Staging/cockpit-agama
+
+      - name: Check cockpit-agama
+        run: osc status
+        working-directory: ./systemsmanagement:Agama:Staging/${{ vars.INPUT_PACKAGE_NAME }}
+
+      - name: Commit cockpit-agama
+        run: |-
+          osc commit -m "Updated to $(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama.obsinfo) ($(sed -e '/^commit:/!d' -e 's/commit: *\(.*\)/\1/' agama.obsinfo))"
+        working-directory: ./systemsmanagement:Agama:Staging/cockpit-agama
