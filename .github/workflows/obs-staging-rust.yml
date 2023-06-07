@@ -18,51 +18,9 @@ on:
 
 jobs:
   update_staging:
-    # do not run in forks
-    if: github.repository == 'openSUSE/agama'
-
-    runs-on: ubuntu-latest
-
-    container:
-      image: registry.opensuse.org/opensuse/tumbleweed:latest
-
-    steps:
-
-      - name: Git Checkout
-        uses: actions/checkout@v3
-
-      - name: Configure and refresh repositories
-        # disable unused repositories to have a faster refresh
-        run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
-
-      - name: Install tools
-        run: zypper --non-interactive install --no-recommends
-             cpio
-             obs-service-cargo_audit
-             obs-service-cargo_vendor
-             obs-service-download_files
-             obs-service-format_spec_file
-             obs-service-obs_scm
-             osc
-
-      - name: Configure osc
-        run: .github/workflows/configure_osc.sh
-        env:
-          OBS_USER:     ${{ secrets.OBS_USER }}
-          OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
-
-      - name: Checkout agama-cli
-        run: osc co systemsmanagement:Agama:Staging agama-cli
-  
-      - name: Update agama-cli
-        run: osc service manualrun
-        working-directory: ./systemsmanagement:Agama:Staging/agama-cli
-
-      - name: Check agama-cli
-        run: osc status
-        working-directory: ./systemsmanagement:Agama:Staging/agama-cli
-
-      - name: Commit agama-cli
-        run: |-
-          osc commit -m "Updated to $(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama.obsinfo) ($(sed -e '/^commit:/!d' -e 's/commit: *\(.*\)/\1/' agama.obsinfo))"
-        working-directory: ./systemsmanagement:Agama:Staging/agama-cli
+    uses: ./.github/workflows/obs-staging-shared.yml
+    # pass all secrets
+    secrets: inherit
+    with:
+      install_packages: obs-service-cargo_audit obs-service-cargo_vendor
+      package_name: agama-cli

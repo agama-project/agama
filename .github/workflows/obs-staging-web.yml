@@ -24,4 +24,3 @@ jobs:
     with:
       install_packages: obs-service-node_modules
       package_name: cockpit-agama
-
