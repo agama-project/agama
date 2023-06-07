@@ -42,24 +42,8 @@ jobs:
           fetch-depth: 0
 
       - name: Fix file owner
+        # workaround for a strict git check
         run: chown -R -c 0 .
-
-      - name: Generate version number
-        # the version is <version_tag>.devel<number_of_commits_since_the_tag>
-        # or just <version_tag> if there are no additional commits
-        run: |-
-          git describe --tags | sed -e 's/-\([0-9]*\)-g[a-fA-F0-9]*$/.devel\1/' -e 's/^v//' > VERSION
-          echo -n "Version: "
-          cat VERSION
-        working-directory: ./service
-
-      - name: Update agma rubygem
-        run: gem build agama.gemspec
-        working-directory: ./service
-
-      - name: Generate RPM spec file
-        run: gem2rpm --local --config package/gem2rpm.yml agama-*.gem > package/rubygem-agama.spec
-        working-directory: ./service
 
       - name: Configure osc
         run: |-
@@ -76,18 +60,6 @@ jobs:
             pass=${{ secrets.OBS_PASSWORD }}
             credentials_mgr_class=osc.credentials.PlaintextConfigFileCredentialsManager
 
-      - name: Checkout rubygem-agama
-        run: osc co systemsmanagement:Agama:Staging rubygem-agama
-
-      - name: Update files
-        run: |-
-            rm ./systemsmanagement:Agama:Staging/rubygem-agama/*
-            cp service/agama-*.gem service/package/* ./systemsmanagement:Agama:Staging/rubygem-agama
-
-      - name: Check rubygem-agama
-        run: osc addremove && osc status
-        working-directory: ./systemsmanagement:Agama:Staging/rubygem-agama
-
-      - name: Commit rubygem-agama
-        run: osc commit -m "Updating to $(cat ../../service/VERSION) ($GITHUB_SHA)"
-        working-directory: ./systemsmanagement:Agama:Staging/rubygem-agama
+      - name: Build the package
+        run: rake osc:commit
+        working-directory: ./service

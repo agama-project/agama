@@ -22,7 +22,9 @@
 
 Gem::Specification.new do |spec|
   spec.name = "agama"
-  spec.version = File.read("VERSION").chomp
+  # the version is <version_tag>.devel<number_of_commits_since_the_tag>
+  # or just <version_tag> if there are no additional commits
+  spec.version = `git describe --tags`.chomp.sub(/^v/, "").sub(/-([0-9]+)-g\h+\Z/, ".devel\\1")
   spec.summary = "Agama Installer Service"
   spec.description = "System service for Agama, an experimental YaST-based installer."
   spec.author = "YaST Team"
