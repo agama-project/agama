@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
 Wed Jun  7 08:54:58 UTC 2023 - Michal Filka <mfilka@suse.com>
 
-- Merged Users service into the main one to safe some resources
+- Merge the users D-Bus service into the main one to save some resources
+  (gh#openSUSE/agama#596).
 
 -------------------------------------------------------------------
 Wed Jun  7 05:33:27 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
