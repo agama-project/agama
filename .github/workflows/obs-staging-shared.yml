@@ -1,3 +1,5 @@
+# this is a shared workflow, not called as a top level workflow
+
 name: Update OBS Staging
 
 on:
@@ -61,11 +63,11 @@ jobs:
       - name: Checkout ${{ inputs.package_name }}
         run: osc co systemsmanagement:Agama:Staging ${{ inputs.package_name }}
   
-      - name: Update ${{ inputs.package_name }}
+      - name: Run services
         run: osc service manualrun
         working-directory: ./systemsmanagement:Agama:Staging/${{ inputs.package_name }}
 
-      - name: Check ${{ inputs.package_name }}
+      - name: Check status
         run: osc status
         working-directory: ./systemsmanagement:Agama:Staging/${{ inputs.package_name }}
 

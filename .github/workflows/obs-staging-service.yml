@@ -13,9 +13,6 @@ on:
     #   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
     #   - service/**
 
-  # allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
 jobs:
   update_staging:
     # do not run in forks
@@ -27,7 +24,6 @@ jobs:
       image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
-
       - name: Configure and refresh repositories
         # disable unused repositories to have a faster refresh
         run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
@@ -49,7 +45,13 @@ jobs:
         run: chown -R -c 0 .
 
       - name: Generate version number
-        run: git describe --tags | sed -e 's/-\([0-9]*\)-g[a-fA-F0-9]*$/.devel\1/' -e 's/^v//' > service/VERSION
+        # the version is <version_tag>.devel<number_of_commits_since_the_tag>
+        # or just <version_tag> if there are no additional commits
+        run: |-
+          git describe --tags | sed -e 's/-\([0-9]*\)-g[a-fA-F0-9]*$/.devel\1/' -e 's/^v//' > VERSION
+          echo -n "Version: "
+          cat VERSION
+        working-directory: ./service
 
       - name: Update agma rubygem
         run: gem build agama.gemspec
@@ -60,10 +62,19 @@ jobs:
         working-directory: ./service
 
       - name: Configure osc
-        run: .github/workflows/configure_osc.sh
+        run: |-
+          CONFIG_FILE="$HOME/.config/osc/oscrc"
+          mkdir -p $(dirname "$CONFIG_FILE")
+          echo "$TEMPLATE" > "$CONFIG_FILE"
         env:
-          OBS_USER:     ${{ secrets.OBS_USER }}
-          OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
+          TEMPLATE: |-
+            [general]
+            apiurl = https://api.opensuse.org
+
+            [https://api.opensuse.org]
+            user=${{ secrets.OBS_USER }}
+            pass=${{ secrets.OBS_PASSWORD }}
+            credentials_mgr_class=osc.credentials.PlaintextConfigFileCredentialsManager
 
       - name: Checkout rubygem-agama
         run: osc co systemsmanagement:Agama:Staging rubygem-agama

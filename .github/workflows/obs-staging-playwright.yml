@@ -13,9 +13,6 @@ on:
     #   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
     #   - playwright/**
 
-  # allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
 jobs:
   update_staging:
     uses: ./.github/workflows/obs-staging-shared.yml
