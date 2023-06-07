@@ -31,6 +31,7 @@ jobs:
       - name: Install tools
         run: zypper --non-interactive install --no-recommends
              git
+             obs-service-format_spec_file
              osc
              ruby
              'rubygem(gem2rpm)'
