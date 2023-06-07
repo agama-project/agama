@@ -4,6 +4,9 @@
 **[OBS systemsmanagement:Agama:Staging](https://build.opensuse.org/project/show/systemsmanagement:Agama:Staging)**
 
 [![OBS Staging (agama-cli)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-rust.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-rust.yml)
+[![OBS:Staging (cockpit-agama)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-web.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-web.yml)
+[![OBS:Staging (rubygem-agama)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-service.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-service.yml)
+[![OBS:Staging (cockpit-agama-playwright)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-playwright.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/obs-staging-playwright.yml)
 
 # Agama: A Service-based Linux Installer
 
