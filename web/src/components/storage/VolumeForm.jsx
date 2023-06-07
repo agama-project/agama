@@ -48,9 +48,9 @@ import { parseSize, splitSize, SIZE_METHODS, SIZE_UNITS } from '~/components/sto
  * @param {object} props @see {@link https://www.patternfly.org/v4/components/form-select#props}
  * @returns {ReactComponent}
  */
-const SizeUnitFormSelect = ({ id, value, onChange }) => {
+const SizeUnitFormSelect = ({ ...formSelectProps }) => {
   return (
-    <FormSelect id={id} value={value} onChange={onChange}>
+    <FormSelect { ...formSelectProps }>
       { Object.values(SIZE_UNITS).map(unit => <FormSelectOption key={unit} value={unit} label={unit} />) }
     </FormSelect>
   );
@@ -115,7 +115,12 @@ const SizeManual = ({ errors, formData, onChange }) => {
             onChange={(size) => onChange({ size })}
             validated={errors.size && 'error'}
           />
-          <SizeUnitFormSelect onChange={(sizeUnit) => onChange({ sizeUnit })} id="sizeUnit" value={formData.sizeUnit || "GiB"} />
+          <SizeUnitFormSelect
+            id="sizeUnit"
+            aria-label="Size unit"
+            value={formData.sizeUnit || "GiB"}
+            onChange={(sizeUnit) => onChange({ sizeUnit })}
+          />
         </InputGroup>
       </FormGroup>
     </div>
@@ -159,7 +164,12 @@ const SizeRange = ({ errors, formData, onChange }) => {
               onChange={(minSize) => onChange({ minSize })}
               validated={errors.minSize && 'error'}
             />
-            <SizeUnitFormSelect onChange={(minSizeUnit) => onChange({ minSizeUnit })} id="minSizeUnit" value={formData.minSizeUnit || "GiB"} />
+            <SizeUnitFormSelect
+              id="minSizeUnit"
+              aria-label="Min size unit"
+              value={formData.minSizeUnit || "GiB"}
+              onChange={(minSizeUnit) => onChange({ minSizeUnit })}
+            />
           </InputGroup>
         </FormGroup>
         <FormGroup
@@ -180,7 +190,12 @@ const SizeRange = ({ errors, formData, onChange }) => {
               onChange={(maxSize) => onChange({ maxSize })}
 
             />
-            <SizeUnitFormSelect onChange={(maxSizeUnit) => onChange({ maxSizeUnit })} id="maxSizeUnit" value={formData.maxSizeUnit || formData.minSizeUnit || "GiB"} />
+            <SizeUnitFormSelect
+              id="maxSizeUnit"
+              aria-label="Max size unit"
+              value={formData.maxSizeUnit || formData.minSizeUnit || "GiB"}
+              onChange={(maxSizeUnit) => onChange({ maxSizeUnit })}
+            />
           </InputGroup>
         </FormGroup>
       </div>
@@ -355,6 +370,11 @@ const reducer = (state, action) => {
  * Form used for adding a new file system from a list of templates
  * @component
  *
+ * @note VolumeForm does not provide a submit button. It is the consumer's
+ * responsibility to provide both: the button for triggering the submission by
+ * using the form id and the callback function used to perform the submission
+ * once the form has been validated.
+ *
  * @param {object} props
  * @param {string} props.id - Form ID
  * @param {object[]} props.templates - Volume templates
@@ -406,11 +426,9 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
     const volume = createUpdatedVolume(originalVolume, formData);
     const errors = validateVolumeSize(formData.sizeMethod, volume);
 
-    if (Object.keys(errors).length) {
-      dispatch({ type: "SET_ERRORS", payload: errors });
-    } else {
-      onSubmit(volume);
-    }
+    dispatch({ type: "SET_ERRORS", payload: errors });
+
+    if (!Object.keys(errors).length) onSubmit(volume);
   };
 
   const volumeOptions = () => {
@@ -426,7 +444,6 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
       <FormGroup isRequired label="Mount point" fieldId="mountPoint">
         <FormSelect
           id="mountPoint"
-          aria-label="mount point"
           value={state.formData.mountPoint}
           onChange={changeVolume}
           isDisabled={currentVolume !== undefined}
@@ -438,9 +455,7 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
         <TextInput
           id="fsType"
           name="fsType"
-          aria-label="Fs type"
           value={state.volume.fsType}
-          label="File system type"
           isDisabled
         />
       </FormGroup>

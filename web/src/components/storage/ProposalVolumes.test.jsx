@@ -202,7 +202,7 @@ describe("if there are volumes", () => {
 
     const popup = await screen.findByRole("dialog");
     within(popup).getByText("Edit file system");
-    const mountPointSelector = within(popup).getByRole("combobox", { name: "mount point" });
+    const mountPointSelector = within(popup).getByRole("combobox", { name: "Mount point" });
     expect(mountPointSelector).toHaveAttribute("disabled");
   });
 });
