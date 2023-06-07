@@ -120,6 +120,7 @@ impl LuksQuestion {
     }
 }
 
+/// Question types used to be able to properly remove object from dbus
 enum QuestionType {
     Generic,
     Luks
@@ -138,6 +139,7 @@ impl Questions {
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
         let options = options.iter().map(|o| o.to_string()).collect();
+        // TODO: enforce default option and do not use array for it to avoid that unwrap
         let question = GenericQuestion::new(id, text.to_string(), options, default_option.first().unwrap().to_string());
         let object_path = ObjectPath::try_from(question.object_path()).unwrap();
         
@@ -179,6 +181,8 @@ impl Questions {
 }
 
 impl Questions {
+    /// Creates new questions interface with clone of connection to be able to
+    /// attach or detach question objects
     fn new(connection: &Connection) -> Self {
         Self {
             questions: HashMap::new(),
@@ -188,6 +192,7 @@ impl Questions {
     }
 }
 
+/// Starts questions dbus service together with Object manager
 pub async fn start_service(address: &str) -> Result<(), Box<dyn std::error::Error>> {
         const SERVICE_NAME: &str = "org.opensuse.Agama.Questions1";
         const SERVICE_PATH: &str = "/org/opensuse/Agama/Questions1";
