@@ -22,6 +22,7 @@ jobs:
 
     container:
       image: registry.opensuse.org/opensuse/tumbleweed:latest
+      options: --privileged
 
     steps:
       - name: Configure and refresh repositories
