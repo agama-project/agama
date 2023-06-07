@@ -30,6 +30,7 @@ jobs:
 
       - name: Install tools
         run: zypper --non-interactive install --no-recommends
+             build
              git
              osc
              ruby
