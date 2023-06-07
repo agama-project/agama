@@ -37,9 +37,9 @@ module Agama
       SERVICE_NAME = "org.opensuse.Agama.Language1"
       private_constant :SERVICE_NAME
 
-      # System D-Bus
+      # Agama D-Bus
       #
-      # @return [::DBus::Connection]
+      # @return [::DBus::BusConnection]
       attr_reader :bus
 
       # @param _config [Config] Configuration object

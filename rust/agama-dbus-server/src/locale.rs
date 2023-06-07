@@ -13,11 +13,11 @@ pub struct LocaleService {
 
 #[dbus_interface(name = "org.opensuse.Agama.Locale1")]
 impl LocaleService {
-    // Can be `async` as well.
-    /// get labels for given locale. The first pair is english language and territory
+    /// Get labels for locales. The first pair is english language and territory
     /// and second one is localized one to target language from locale.
     ///
-    /// Note: check how often it is used and if often, it can be easily cached
+    // Can be `async` as well.
+    // NOTE: check how often it is used and if often, it can be easily cached
     fn labels_for_locales(&self) -> Result<Vec<((String, String), (String, String))>, Error> {
         const DEFAULT_LANG: &str = "en";
         let mut res = Vec::with_capacity(self.supported_locales.len());

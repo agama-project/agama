@@ -21,9 +21,11 @@
 
 require "dbus"
 require "agama/manager"
+require "agama/users"
 require "agama/cockpit_manager"
 require "agama/dbus/bus"
 require "agama/dbus/manager"
+require "agama/dbus/users"
 require "agama/dbus/storage/proposal"
 
 module Agama
@@ -33,15 +35,20 @@ module Agama
     # It connects to the system D-Bus and answers requests on objects below
     # `/org/opensuse/Agama1`.
     class ManagerService
-      # Service name
+      # List of D-Bus services exposed by this class
       #
-      # @return [String]
-      SERVICE_NAME = "org.opensuse.Agama1"
-      private_constant :SERVICE_NAME
+      # This basically allows to define "aliases" - all exposed services holds the same objects
+      # but under different names
+      #
+      # @return [Array<String>]
+      MANAGER_SERVICE = "org.opensuse.Agama1"
+      USERS_SERVICE = "org.opensuse.Agama.Users1"
+      private_constant :MANAGER_SERVICE
+      private_constant :USERS_SERVICE
 
-      # System D-Bus
+      # Agama D-Bus
       #
-      # @return [::DBus::Connection]
+      # @return [::DBus::BusConnection]
       attr_reader :bus
 
       # Installation manager
@@ -49,11 +56,17 @@ module Agama
       # @return [Agama::Manager]
       attr_reader :manager
 
+      # Users manager
+      #
+      # @return [Agama::Users]
+      attr_reader :users
+
       # @param config [Config] Configuration
       # @param logger [Logger]
       def initialize(config, logger = nil)
         @config = config
         @manager = Agama::Manager.new(config, logger)
+        @users = Agama::Users.new(logger)
         @logger = logger || Logger.new($stdout)
         @bus = Bus.current
       end
@@ -70,10 +83,14 @@ module Agama
 
       # Exports the installer object through the D-Bus service
       def export
+        # manager service initialization
         dbus_objects.each { |o| service.export(o) }
 
         paths = dbus_objects.map(&:path).join(", ")
         logger.info "Exported #{paths} objects"
+
+        # Request our service names only when we're ready to serve the objects
+        service_aliases.each { |s| bus.request_name(s) }
       end
 
       # Call this from some main loop to dispatch the D-Bus messages
@@ -94,20 +111,32 @@ module Agama
         cockpit.setup(config.data["web"])
       end
 
-      # @return [::DBus::Service]
+      def service_aliases
+        @service_aliases ||= [
+          MANAGER_SERVICE,
+          USERS_SERVICE
+        ]
+      end
+
+      # @return [::DBus::ObjectServer]
       def service
-        @service ||= bus.request_service(SERVICE_NAME)
+        @service ||= bus.object_server
       end
 
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          manager_dbus
+          manager_dbus,
+          users_dbus
         ]
       end
 
       def manager_dbus
         @manager_dbus ||= Agama::DBus::Manager.new(manager, logger)
+      end
+
+      def users_dbus
+        @users_dbus ||= Agama::DBus::Users.new(users, logger)
       end
     end
   end

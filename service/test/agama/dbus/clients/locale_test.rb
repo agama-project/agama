@@ -35,7 +35,7 @@ describe Agama::DBus::Clients::Locale do
   end
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
-  let(:service) { instance_double(::DBus::Service) }
+  let(:service) { instance_double(::DBus::ProxyService) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:lang_iface) { instance_double(::DBus::ProxyObjectInterface) }
 

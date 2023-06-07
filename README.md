@@ -63,7 +63,7 @@ Agama consists on a set of D-Bus services and a web client (an experimental CLI 
 * Agama service: it is the main service which manages and controls the installation process.
 * Software service: configures the product and software to install.
 * Users service: manages first user creation and configuration for root.
-* Language service: allows to configure the language and keyboard settings.
+* Localization service: allows to configure the language and keyboard settings.
 * Storage service: analyzes and prepares the storage devices in order to perform the installation.
 * Questions service: helper service used for requesting information from clients.
 
@@ -138,10 +138,10 @@ $ busctl --address=unix:path=/run/agama/bus \
 
 $ busctl --address=unix:path=/run/agama/bus \
     call \
-    org.opensuse.Agama.Language1 \
-   /org/opensuse/Agama/Language1 \
+    org.opensuse.Agama.Locale1 \
+   /org/opensuse/Agama/Locale1 \
     org.freedesktop.DBus.Properties \
-    GetAll s org.opensuse.Agama.Language1
+    GetAll s org.opensuse.Agama.Locale1
 ```
 
 ## How to Contribute

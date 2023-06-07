@@ -54,7 +54,7 @@ describe Agama::DBus::Storage::DevicesTree do
 
   subject { described_class.new(service, root_path, logger: logger) }
 
-  let(:service) { instance_double(::DBus::Service) }
+  let(:service) { instance_double(::DBus::ObjectServer) }
 
   let(:root_path) { "/test/system" }
 

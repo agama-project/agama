@@ -37,7 +37,7 @@ describe Agama::DBus::Clients::Question do
   end
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
-  let(:service) { instance_double(::DBus::Service) }
+  let(:service) { instance_double(::DBus::ProxyService) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:generic_iface) { instance_double(::DBus::ProxyObjectInterface) }
   let(:luks_iface) { instance_double(::DBus::ProxyObjectInterface) }

@@ -38,9 +38,12 @@ sudosed() {
 test -f /etc/zypp/repos.d/d_l_python.repo || \
   $SUDO zypper --non-interactive \
     addrepo https://download.opensuse.org/repositories/devel:/languages:/python/openSUSE_Tumbleweed/ d_l_python
-$SUDO zypper --non-interactive --gpg-auto-import-keys install cargo gcc gcc-c++ make openssl-devel ruby-devel \
+$SUDO zypper --non-interactive --gpg-auto-import-keys install gcc gcc-c++ make openssl-devel ruby-devel \
   python-langtable-data \
   git augeas-devel jemalloc-devel || exit 1
+
+# only install cargo if it is not available (avoid conflicts with rustup)
+which cargo || $SUDO zypper --non-interactive install cargo
 
 # - Install service rubygem dependencies
 (
@@ -64,6 +67,11 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
 (
   cd $MYDIR/service/share
   DBUSDIR=/usr/share/dbus-1/agama-services
+
+  # cleanup previous installation
+  [[ -d $DBUSDIR ]] && $SUDO rm -r $DBUSDIR
+
+  # create services 
   $SUDO mkdir -p $DBUSDIR
   for SVC in org.opensuse.Agama*.service; do
     sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/service/bin/@" $SVC $DBUSDIR/$SVC
