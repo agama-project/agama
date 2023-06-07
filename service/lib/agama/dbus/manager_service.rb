@@ -85,12 +85,12 @@ module Agama
       def export
         # manager service initialization
         dbus_objects.each { |o| service.export(o) }
+
         paths = dbus_objects.map(&:path).join(", ")
         logger.info "Exported #{paths} objects"
 
         # Request our service names only when we're ready to serve the objects
-        bus.request_name(SERVICE_NAME)
-        bus.request_name("org.opensuse.Agama.Users1")
+        service_aliases.each { |s| bus.request_name(s) }
       end
 
       # Call this from some main loop to dispatch the D-Bus messages
