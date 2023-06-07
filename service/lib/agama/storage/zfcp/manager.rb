@@ -71,7 +71,7 @@ module Agama
           yast_zfcp.controllers.map { |c| controller_from(c) }
         end
 
-        # Current active LUN disks
+        # Current active zFCP disks
         #
         # @return [Array<Disk>]
         def disks
@@ -80,11 +80,13 @@ module Agama
 
         # Activates the controller with the given channel id
         #
+        # @note: If "allow_lun_scan" is active, then all LUNs are automatically activated.
+        #
         # @param channel [String]
         # @return [Integer] Exit code of the chzdev command (0 on success)
         def activate_controller(channel)
           output = yast_zfcp.activate_controller(channel)
-          probe if output["exit"] == 0
+          update_disks if output["exit"] == 0
           output["exit"]
         end
 
@@ -112,6 +114,8 @@ module Agama
         end
 
         # Deactivates a zFCP disk
+        #
+        # @note: If "allow_lun_scan" is active, then the disk cannot be deactivated.
         #
         # @param channel [String]
         # @param wwpn [String]
@@ -149,9 +153,14 @@ module Agama
         # @return [Logger]
         attr_reader :logger
 
-        # Probes and runs the on_disk_change callbacsk
+        # Probes and runs the on_disk_change callbacsk if disks have changed
         def update_disks
+          disk_records = yast_zfcp.disks.sort_by { |d| d["dev_name"] }
           probe
+          new_disk_records = yast_zfcp.disks.sort_by { |d| d["dev_name"] }
+
+          return if disk_records == new_disk_records
+
           @on_disks_change_callbacks&.each { |c| c.call(disks) }
         end
 
