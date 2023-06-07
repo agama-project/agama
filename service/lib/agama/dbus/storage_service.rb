@@ -34,11 +34,6 @@ module Agama
       SERVICE_NAME = "org.opensuse.Agama.Storage1"
       private_constant :SERVICE_NAME
 
-      # D-Bus connection
-      #
-      # @return [::DBus::BusConnection]
-      attr_reader :bus
-
       # @param config [Config] Configuration object
       # @param logger [Logger]
       def initialize(config, logger = nil)
