@@ -74,8 +74,11 @@ end
 
 # Removes the "package" task to redefine it later.
 Rake::Task["package"].clear
+
 # Disables the osc:build
-# Rake::Task["osc:build"].clear
+if ENV["SKIP_OSC_BUILD"] == "1"
+  Rake::Task["osc:build"].clear
+end
 
 # TODO: redefine :tarball instead of :package
 desc "Prepare sources for rpm build"

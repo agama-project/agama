@@ -22,7 +22,6 @@ jobs:
 
     container:
       image: registry.opensuse.org/opensuse/tumbleweed:latest
-      options: --privileged
 
     steps:
       - name: Configure and refresh repositories
@@ -31,14 +30,11 @@ jobs:
 
       - name: Install tools
         run: zypper --non-interactive install --no-recommends
-             build
              git
-             obs-service-format_spec_file
              osc
              ruby
              'rubygem(gem2rpm)'
              'rubygem(yast-rake)'
-             sudo
 
       - name: Git Checkout
         uses: actions/checkout@v3
@@ -64,8 +60,9 @@ jobs:
             user=${{ secrets.OBS_USER }}
             pass=${{ secrets.OBS_PASSWORD }}
             credentials_mgr_class=osc.credentials.PlaintextConfigFileCredentialsManager
-            trusted_prj=openSUSE:Factory openSUSE:Tumbleweed
 
-      - name: Build the package
+      - name: Commit the rubygem-agama package
         run: rake osc:commit
         working-directory: ./service
+        env:
+          SKIP_OSC_BUILD: 1
