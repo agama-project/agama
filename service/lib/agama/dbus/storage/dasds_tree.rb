@@ -26,6 +26,8 @@ module Agama
   module DBus
     module Storage
       # Class representing the tree of DASDs exported on D-Bus
+      #
+      # TODO: inherit from BaseTree class
       class DasdsTree
         include WithPathGenerator
 

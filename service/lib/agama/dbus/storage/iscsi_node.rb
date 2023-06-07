@@ -38,8 +38,8 @@ module Agama
 
         # Constructor
         #
-        # @param iscsi_manager [Agama::Storage::Iscsi::Manager]
-        # @param iscsi_node [Agama::Storage::Iscsi::Node]
+        # @param iscsi_manager [Agama::Storage::ISCSI::Manager]
+        # @param iscsi_node [Agama::Storage::ISCSI::Node]
         # @param path [DBus::ObjectPath] Path in which the object is exported
         # @param logger [Logger, nil]
         def initialize(iscsi_manager, iscsi_node, path, logger: nil)

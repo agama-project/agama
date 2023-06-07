@@ -26,6 +26,8 @@ module Agama
   module DBus
     module Storage
       # Class representing the iSCSI nodes tree exported on D-Bus
+      #
+      # TODO: inherit from BaseTree class
       class ISCSINodesTree
         include WithPathGenerator
 
