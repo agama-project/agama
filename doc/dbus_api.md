@@ -19,7 +19,7 @@ should be prevented and instead use for that struct or dictionary object.
 
 ### Localization
 
-We also discuss aproach how to solve localization of some strings like language human names,
+We also discuss approach how to solve localization of some strings like language human names,
 error messages from some scripts or strings from libraries.
 Setting locale for whole service is basically discouraged as there can be multiple clients
 working with given service, e.g. some log collector beside user doing setup.
@@ -44,12 +44,12 @@ We use these resources to get more familiar with D-Bus API designing.
 
 ## Language
 
-Iface: o.o.Agama.Language1
+Iface: o.o.Agama.Locale1
 
 See the new-style [reference][lang-ref] ([source][lang-src]).
 
-[lang-ref]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama.Language1.html
-[lang-src]: dbus/org.opensuse.Agama.Language1.doc.xml
+[lang-ref]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama.Locale1.html
+[lang-src]: dbus/org.opensuse.Agama.Locale1.doc.xml
 
 ## Base Product
 
