@@ -29,16 +29,19 @@ describe Agama::DBus::Question do
   subject { described_class.new(path, backend, logger) }
 
   before do
-    subject.instance_variable_set(:@service, service)
+    # ruby-dbus.0.23.0.beta2 but avoid the writer to work with beta1
+    subject.instance_variable_set(:@object_server, service)
+    # ruby-dbus.0.23.0.beta1
+    subject.instance_variable_set(:@connection, connection)
   end
 
   let(:path) { "/org/test" }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:service) { instance_double(DBus::Service, bus: system_bus) }
+  let(:service) { instance_double(DBus::ObjectServer, connection: connection) }
 
-  let(:system_bus) { instance_double(DBus::SystemBus, emit: nil) }
+  let(:connection) { instance_double(DBus::Connection, emit: nil) }
 
   describe ".new" do
     shared_examples "Generic interface" do

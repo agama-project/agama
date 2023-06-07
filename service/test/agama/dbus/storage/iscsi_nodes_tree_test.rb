@@ -29,7 +29,7 @@ require "dbus"
 describe Agama::DBus::Storage::ISCSINodesTree do
   subject { described_class.new(service, iscsi_manager, logger: logger) }
 
-  let(:service) { instance_double(::DBus::Service) }
+  let(:service) { instance_double(::DBus::ObjectServer) }
 
   let(:iscsi_manager) { Agama::Storage::ISCSI::Manager.new }
 

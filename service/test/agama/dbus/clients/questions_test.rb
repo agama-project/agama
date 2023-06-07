@@ -38,7 +38,7 @@ describe Agama::DBus::Clients::Questions do
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
-  let(:service) { instance_double(::DBus::Service) }
+  let(:service) { instance_double(::DBus::ProxyService) }
   let(:dbus_object) { instance_double(::DBus::ProxyObject) }
   let(:properties_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
