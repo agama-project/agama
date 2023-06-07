@@ -15,7 +15,7 @@ look() {
             > $DD.$1.bus.xml
 }
 
-look Language1
+look Locale1
 look Questions1
 look Software1
 look Software1.Proposal
