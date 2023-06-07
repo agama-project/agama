@@ -1,4 +1,0 @@
-
-(d-feet:7501): Gtk-CRITICAL **: 04:52:58.062: gtk_label_set_text: assertion 'GTK_IS_LABEL (label)' failed
-
-(d-feet:7501): Gtk-CRITICAL **: 04:52:58.072: gtk_container_foreach: assertion 'GTK_IS_CONTAINER (container)' failed
