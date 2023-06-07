@@ -21,25 +21,25 @@
 
 require "dbus"
 require "agama/dbus/bus"
-require "agama/dbus/users"
-require "agama/users"
+require "agama/dbus/language"
+require "agama/language"
 
 module Agama
   module DBus
-    # D-Bus service (org.opensuse.Agama.Users1)
+    # D-Bus service (org.opensuse.Agama.Language1)
     #
     # It connects to the system D-Bus and answers requests on objects below
-    # `/org/opensuse/Agama/Users1`.
-    class UsersService
+    # `/org/opensuse/Agama/Language1`.
+    class LanguageService
       # Service name
       #
       # @return [String]
-      SERVICE_NAME = "org.opensuse.Agama.Users1"
+      SERVICE_NAME = "org.opensuse.Agama.Language1"
       private_constant :SERVICE_NAME
 
-      # System D-Bus
+      # Agama D-Bus
       #
-      # @return [::DBus::Connection]
+      # @return [::DBus::BusConnection]
       attr_reader :bus
 
       # @param _config [Config] Configuration object
@@ -75,18 +75,18 @@ module Agama
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          users_dbus
+          language_dbus
         ]
       end
 
-      # @return [Agama::DBus::Users]
-      def users_dbus
-        @users_dbus ||= Agama::DBus::Users.new(users_backend(logger), logger)
+      # @return [Agama::DBus::Language]
+      def language_dbus
+        @language_dbus ||= Agama::DBus::Language.new(language_backend(logger), logger)
       end
 
-      # @return [Agama::Users]
-      def users_backend(logger)
-        @users_backend ||= Agama::Users.new(logger)
+      # @return [Agama::Language]
+      def language_backend(logger)
+        @language_backend ||= Agama::Language.new(logger).tap(&:probe)
       end
     end
   end

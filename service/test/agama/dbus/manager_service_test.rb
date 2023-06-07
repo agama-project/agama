@@ -29,7 +29,7 @@ describe Agama::DBus::ManagerService do
   let(:config) { Agama::Config.new }
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:manager) { Agama::Manager.new(config, logger) }
-  let(:bus) { instance_double(Agama::DBus::Bus) }
+  let(:bus) { instance_double(Agama::DBus::Bus, request_name: nil) }
   let(:bus_service) do
     instance_double(::DBus::ObjectServer, export: nil)
   end
@@ -40,7 +40,7 @@ describe Agama::DBus::ManagerService do
 
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:request_service).and_return(bus_service)
+    allow(bus).to receive(:object_server).and_return(bus_service)
     allow(Agama::Manager).to receive(:new).with(config, logger).and_return(manager)
     allow(Agama::CockpitManager).to receive(:new).and_return(cockpit)
     allow(manager).to receive(:software).and_return(software_client)
