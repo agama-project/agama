@@ -2,7 +2,7 @@ use crate::error::Error;
 use agama_lib::connection_to;
 use anyhow::Context;
 use std::process::Command;
-use zbus::dbus_interface;
+use zbus::{dbus_interface, Connection};
 
 pub struct Locale {
     locales: Vec<String>,
@@ -187,7 +187,7 @@ impl Locale {
     }
 }
 
-pub async fn start_service(address: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn start_service(address: &str) -> Result<Connection, Box<dyn std::error::Error>> {
     const SERVICE_NAME: &str = "org.opensuse.Agama.Locale1";
     const SERVICE_PATH: &str = "/org/opensuse/Agama/Locale1";
 
@@ -203,5 +203,5 @@ pub async fn start_service(address: &str) -> Result<(), Box<dyn std::error::Erro
         .await
         .context(format!("Requesting name {SERVICE_NAME}"))?;
 
-    Ok(())
+    Ok(connection)
 }
