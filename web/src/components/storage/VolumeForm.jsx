@@ -108,7 +108,6 @@ const SizeManual = ({ errors, formData, onChange }) => {
         <InputGroup className="size-input-group">
           <TextInput
             id="size"
-            key="manual-size"
             name="size"
             aria-label="Desired size"
             value={formData.size}
@@ -158,7 +157,6 @@ const SizeRange = ({ errors, formData, onChange }) => {
             <TextInput
               id="minSize"
               name="minSize"
-              key="range-min-size"
               aria-label="Minimum desired size"
               value={formData.minSize}
               onChange={(minSize) => onChange({ minSize })}
@@ -184,7 +182,6 @@ const SizeRange = ({ errors, formData, onChange }) => {
               id="maxSize"
               name="maxSize"
               validated={errors.maxSize && 'error'}
-              key="range-max-size"
               aria-label="Maximum desired size"
               value={formData.maxSize}
               onChange={(maxSize) => onChange({ maxSize })}
@@ -460,11 +457,7 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
         />
       </FormGroup>
       <FormGroup fieldId="size" label="Size" isRequired>
-        <SizeOptions
-          key="size-options-component"
-          { ...state }
-          onChange={updateData}
-        />
+        <SizeOptions { ...state } onChange={updateData} />
       </FormGroup>
     </Form>
   );
