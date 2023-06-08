@@ -29,7 +29,7 @@ import {
 } from "@patternfly/react-core";
 
 import { If } from '~/components/core';
-import { parseSize, splitSize, SIZE_METHODS, SIZE_UNITS } from '~/components/storage/utils';
+import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseSize, splitSize } from '~/components/storage/utils';
 
 /**
  * Callback function for notifying a form input change
@@ -118,7 +118,7 @@ const SizeManual = ({ errors, formData, onChange }) => {
           <SizeUnitFormSelect
             id="sizeUnit"
             aria-label="Size unit"
-            value={formData.sizeUnit || "GiB"}
+            value={formData.sizeUnit || DEFAULT_SIZE_UNIT}
             onChange={(sizeUnit) => onChange({ sizeUnit })}
           />
         </InputGroup>
@@ -167,7 +167,7 @@ const SizeRange = ({ errors, formData, onChange }) => {
             <SizeUnitFormSelect
               id="minSizeUnit"
               aria-label="Min size unit"
-              value={formData.minSizeUnit || "GiB"}
+              value={formData.minSizeUnit || DEFAULT_SIZE_UNIT }
               onChange={(minSizeUnit) => onChange({ minSizeUnit })}
             />
           </InputGroup>
@@ -193,7 +193,7 @@ const SizeRange = ({ errors, formData, onChange }) => {
             <SizeUnitFormSelect
               id="maxSizeUnit"
               aria-label="Max size unit"
-              value={formData.maxSizeUnit || formData.minSizeUnit || "GiB"}
+              value={formData.maxSizeUnit || formData.minSizeUnit || DEFAULT_SIZE_UNIT }
               onChange={(maxSizeUnit) => onChange({ maxSizeUnit })}
             />
           </InputGroup>

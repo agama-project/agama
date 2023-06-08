@@ -43,6 +43,8 @@ const SIZE_UNITS = Object.freeze({
   P: "PiB",
 });
 
+const DEFAULT_SIZE_UNIT = "GiB";
+
 /**
  * Convenience method for generating a size object based on given input
  *
@@ -128,10 +130,11 @@ const deviceLabel = (device) => {
 };
 
 export {
-  SIZE_UNITS,
+  DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
-  deviceSize,
+  SIZE_UNITS,
   deviceLabel,
+  deviceSize,
   parseSize,
   splitSize,
 };
