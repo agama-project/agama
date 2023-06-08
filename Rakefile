@@ -74,8 +74,11 @@ end
 
 # Removes the "package" task to redefine it later.
 Rake::Task["package"].clear
+
 # Disables the osc:build
-# Rake::Task["osc:build"].clear
+if ENV["SKIP_OSC_BUILD"] == "1"
+  Rake::Task["osc:build"].clear
+end
 
 # TODO: redefine :tarball instead of :package
 desc "Prepare sources for rpm build"
@@ -87,7 +90,7 @@ task package: [] do
     sh "gem build #{name}.gemspec"
     gem = find_gem(dir).first
     gem2rpm = File.join(package_dir, "gem2rpm.yml")
-    sh "gem2rpm --config #{gem2rpm} --template opensuse #{gem} > package/#{package_name}.spec"
+    sh "gem2rpm --local --config #{gem2rpm} --template opensuse #{gem} > package/#{package_name}.spec"
     FileUtils.mv(gem, package_dir)
   end
 end

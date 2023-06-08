@@ -1,4 +1,6 @@
 *.gem
+# the spec file is generated
+/package/*.spec
 *.rbc
 /.config
 /coverage/
