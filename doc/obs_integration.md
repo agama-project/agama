@@ -32,6 +32,10 @@ Because the process of updating a package is the same for several packages
 the definition is shared in the [obs-staging-shared.yml](
 ../.github/workflows/obs-staging-shared.yml) file.
 
+The packages in staging are updated only when a respective source file is
+changed. That saves some resources for rebuilding and makes synchronization
+faster. But that also means the packages might not have exactly same version.
+
 ### Details
 
 The packages in OBS are updated by running the OBS service which downloads the
