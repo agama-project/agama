@@ -33,6 +33,7 @@ require "agama/dbus/storage/proposal_settings_converter"
 require "agama/dbus/storage/volume_converter"
 require "agama/dbus/storage/with_iscsi_auth"
 require "agama/dbus/storage/iscsi_nodes_tree"
+require "agama/dbus/storage/fcoe_interfaces_tree"
 require "agama/dbus/storage/devices_tree"
 
 Yast.import "Arch"
@@ -64,6 +65,7 @@ module Agama
           register_progress_callbacks
           register_service_status_callbacks
           register_iscsi_callbacks
+          register_fcoe_callbacks
           register_software_callbacks
           return unless Yast::Arch.s390
 
@@ -233,6 +235,15 @@ module Agama
           dbus_method(:Delete, "in node:o, out result:u") { |n| iscsi_delete(n) }
         end
 
+        FCOE_MANAGER_INTERFACE = "org.opensuse.Agama.Storage1.FCOE.Manager"
+        private_constant :FCOE_MANAGER_INTERFACE
+
+        dbus_interface ISCSI_INITIATOR_INTERFACE do
+          dbus_method :Probe do
+            busy_while { backend.fcoe.probe }
+          end
+        end
+
       private
 
         # @return [Agama::Storage::Manager]
@@ -270,6 +281,16 @@ module Agama
           end
 
           backend.iscsi.on_sessions_change do
+            deprecate_system
+          end
+        end
+
+        def register_fcoe_callbacks
+          backend.fcoe.on_probe do
+            refresh_fcoe_interfaces
+          end
+
+          backend.fcoe.on_interfaces_change do
             deprecate_system
           end
         end
@@ -318,8 +339,17 @@ module Agama
           iscsi_nodes_tree.update(nodes)
         end
 
+        def refresh_fcoe_interfaces
+          ifaces = backend.fcoe.interfaces
+          fcoe_interfaces_tree.update(ifaces)
+        end
+
         def iscsi_nodes_tree
           @iscsi_nodes_tree ||= ISCSINodesTree.new(@service, backend.iscsi, logger: logger)
+        end
+
+        def fcoe_interfaces_tree
+          @fcoe_interfaces_tree ||= FcoeInterfacesTree.new(@service, backend.fcoe, logger: logger)
         end
 
         # FIXME: D-Bus trees should not be created by the Manager D-Bus object. Note that the

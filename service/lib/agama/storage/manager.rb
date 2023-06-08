@@ -27,7 +27,8 @@ require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/storage/callbacks"
 require "agama/storage/iscsi/manager"
-require "agama/storage/finisher"
+require "agama/storage/fcoe"
+require "agama/storage/fiscsiinisher"
 require "agama/issue"
 require "agama/with_issues"
 require "agama/with_progress"
@@ -142,6 +143,13 @@ module Agama
       # @return [Storage::ISCSI::Manager]
       def iscsi
         @iscsi ||= ISCSI::Manager.new(logger: logger)
+      end
+
+      # FCoE manager
+      #
+      # @return [Storage::Fcoe::Manager]
+      def fcoe
+        @fcoe ||= Fcoe::Manager.new(logger: logger)
       end
 
       # Returns the client to ask the software service
