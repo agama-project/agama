@@ -57,6 +57,25 @@ const SizeUnitFormSelect = ({ ...formSelectProps }) => {
 };
 
 /**
+ * Form control for selecting a mount point
+ * @component
+ *
+ * Based on {@link PF/FormSelect https://www.patternfly.org/v4/components/form-select}
+ *
+ * @param {object} props
+ * @param {Array<import(~/clients/storage).Volume>} props.volumes - a collection of storage volumes
+ * @param {object} props.formSelectProps - @see {@link https://www.patternfly.org/v4/components/form-select#props}
+ * @returns {ReactComponent}
+ */
+const MountPointFormSelect = ({ volumes, ...formSelectProps }) => {
+  return (
+    <FormSelect { ...formSelectProps }>
+      { volumes.map(v => <FormSelectOption key={v.mountPoint} value={v.mountPoint} label={v.mountPoint} />) }
+    </FormSelect>
+  );
+};
+
+/**
  * Widget for rendering the size option content when SIZE_UNITS.AUTO is selected
  * @component
  *
@@ -428,25 +447,16 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
     if (!Object.keys(errors).length) onSubmit(volume);
   };
 
-  const volumeOptions = () => {
-    const volumes = currentVolume ? [currentVolume] : templates;
-
-    return volumes.map((volume, index) => (
-      <FormSelectOption key={index} value={volume.mountPoint} label={volume.mountPoint} />
-    ));
-  };
-
   return (
     <Form id={id} onSubmit={submitForm}>
       <FormGroup isRequired label="Mount point" fieldId="mountPoint">
-        <FormSelect
+        <MountPointFormSelect
           id="mountPoint"
           value={state.formData.mountPoint}
           onChange={changeVolume}
+          volumes={currentVolume ? [currentVolume] : templates}
           isDisabled={currentVolume !== undefined}
-        >
-          {volumeOptions()}
-        </FormSelect>
+        />
       </FormGroup>
       <FormGroup isRequired label="File system type" fieldId="fsType">
         <TextInput
