@@ -3,14 +3,20 @@ use std::collections::HashMap;
 use crate::error::Error;
 use agama_lib::connection_to;
 use anyhow::Context;
-use zbus::{dbus_interface, zvariant::ObjectPath, fdo::ObjectManager, Connection};
+use zbus::{dbus_interface, fdo::ObjectManager, zvariant::ObjectPath, Connection};
 
-#[derive(Clone,Debug)]
+/// Basic generic question that fits question without special needs
+#[derive(Clone, Debug)]
 pub struct GenericQuestion {
+    /// numeric id used to indetify question on dbus
     id: u32,
+    /// Textual representation of question. Expected to be read by people
     text: String,
+    /// possible answers for question
     options: Vec<String>,
+    /// default answer. Can be used as hint or preselection
     default_option: String,
+    /// Confirmed answer. If empty then not answered yet.
     answer: String,
 }
 
@@ -21,7 +27,7 @@ impl GenericQuestion {
             text,
             options,
             default_option,
-            answer: String::from("")
+            answer: String::from(""),
         }
     }
 
@@ -66,15 +72,19 @@ impl GenericQuestion {
     }
 }
 
-#[derive(Clone,Debug)]
+/// Specialized question for Luks partition activation
+#[derive(Clone, Debug)]
 pub struct LuksQuestion {
+    /// Luks password. Empty means no password set.
     password: String,
+    /// number of previous attempts to decrypt partition
     attempt: u8,
+    /// rest of question data that is same as for other questions
     generic_question: GenericQuestion,
 }
 
 impl LuksQuestion {
-    fn device_info(device: &str, label: &str, size: &str) -> String{
+    fn device_info(device: &str, label: &str, size: &str) -> String {
         let mut result = device.to_string();
         if !label.is_empty() {
             result = format!("{} {}", result, label);
@@ -84,20 +94,29 @@ impl LuksQuestion {
             result = format!("{} ({})", result, size);
         }
 
-        return result.to_string();
+        result
     }
 
     pub fn new(id: u32, device: String, label: String, size: String, attempt: u8) -> Self {
-        let msg = format!("The device {} is encrypted.", Self::device_info(device.as_str(), label.as_str(), size.as_str()));
+        let msg = format!(
+            "The device {} is encrypted.",
+            Self::device_info(device.as_str(), label.as_str(), size.as_str())
+        );
+        let base = GenericQuestion::new(
+            id,
+            msg,
+            vec!["skip".to_string(), "decrypt".to_string()],
+            "skip".to_string(),
+        );
+
         Self {
             password: "".to_string(),
             attempt,
-            generic_question: GenericQuestion::new(id, msg,
-                 vec!["skip".to_string(), "decrypt".to_string()],"skip".to_string()),
+            generic_question: base,
         }
     }
 
-    pub fn generic_question(&self) -> &GenericQuestion {
+    pub fn base(&self) -> &GenericQuestion {
         &self.generic_question
     }
 }
@@ -123,57 +142,100 @@ impl LuksQuestion {
 /// Question types used to be able to properly remove object from dbus
 enum QuestionType {
     Generic,
-    Luks
+    Luks,
 }
 
 pub struct Questions {
     questions: HashMap<u32, QuestionType>,
     connection: Connection,
-    last_id: u32
+    last_id: u32,
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Questions1")]
 impl Questions {
+    /// creates new generic question without answer
     #[dbus_interface(name = "New")]
-    async fn new_question(&mut self, text: &str, options: Vec<&str>, default_option: Vec<&str>) -> Result<ObjectPath, zbus::fdo::Error> {
+    async fn new_question(
+        &mut self,
+        text: &str,
+        options: Vec<&str>,
+        default_option: Vec<&str>,
+    ) -> Result<ObjectPath, zbus::fdo::Error> {
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
         let options = options.iter().map(|o| o.to_string()).collect();
         // TODO: enforce default option and do not use array for it to avoid that unwrap
-        let question = GenericQuestion::new(id, text.to_string(), options, default_option.first().unwrap().to_string());
+        let question = GenericQuestion::new(
+            id,
+            text.to_string(),
+            options,
+            default_option.first().unwrap().to_string(),
+        );
         let object_path = ObjectPath::try_from(question.object_path()).unwrap();
-        
-        self.connection.object_server().at(question.object_path(), question).await?;
+
+        self.connection
+            .object_server()
+            .at(question.object_path(), question)
+            .await?;
         self.questions.insert(id, QuestionType::Generic);
         Ok(object_path)
     }
 
-    async fn new_luks_activation(&mut self, device: &str, label: &str, size: &str, attempt: u8) -> Result<ObjectPath, zbus::fdo::Error> {
+    /// creates new specialized luks activation question without answer and password
+    async fn new_luks_activation(
+        &mut self,
+        device: &str,
+        label: &str,
+        size: &str,
+        attempt: u8,
+    ) -> Result<ObjectPath, zbus::fdo::Error> {
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
-        let question = LuksQuestion::new(id, device.to_string(), label.to_string(), size.to_string(), attempt);
-        let object_path = ObjectPath::try_from(question.generic_question.object_path()).unwrap();
+        let question = LuksQuestion::new(
+            id,
+            device.to_string(),
+            label.to_string(),
+            size.to_string(),
+            attempt,
+        );
+        let object_path = ObjectPath::try_from(question.base().object_path()).unwrap();
 
-        self.connection.object_server().at(question.generic_question.object_path(), question.generic_question.clone()).await?;
-        self.connection.object_server().at(question.generic_question.object_path(), question).await?;
-        
-        
+        let base = question.base();
+        self.connection
+            .object_server()
+            .at(base.object_path(), base.clone())
+            .await?;
+        self.connection
+            .object_server()
+            .at(base.object_path(), question)
+            .await?;
+
         self.questions.insert(id, QuestionType::Luks);
         Ok(object_path)
     }
 
-    async fn delete(&mut self, question: ObjectPath<'_>) -> Result<(), Error>{
+    /// Removes question at given object path
+    async fn delete(&mut self, question: ObjectPath<'_>) -> Result<(), Error> {
         // TODO: error checking
-        let id : u32 = question.rsplit("/").next().unwrap().parse().unwrap();
+        let id: u32 = question.rsplit("/").next().unwrap().parse().unwrap();
         let qtype = self.questions.get(&id).unwrap();
         match qtype {
             QuestionType::Generic => {
-                self.connection.object_server().remove::<GenericQuestion,_>(question.clone()).await?;
-            },
+                self.connection
+                    .object_server()
+                    .remove::<GenericQuestion, _>(question.clone())
+                    .await?;
+            }
             QuestionType::Luks => {
-                self.connection.object_server().remove::<GenericQuestion,_>(question.clone()).await?;
-                self.connection.object_server().remove::<LuksQuestion,_>(question.clone()).await?;
-            },          
+                self.connection
+                    .object_server()
+                    .remove::<GenericQuestion, _>(question.clone())
+                    .await?;
+                self.connection
+                    .object_server()
+                    .remove::<LuksQuestion, _>(question.clone())
+                    .await?;
+            }
         };
         self.questions.remove(&id);
         Ok(())
@@ -187,29 +249,34 @@ impl Questions {
         Self {
             questions: HashMap::new(),
             connection: connection.to_owned(),
-            last_id: 0
+            last_id: 0,
         }
     }
 }
 
 /// Starts questions dbus service together with Object manager
 pub async fn start_service(address: &str) -> Result<(), Box<dyn std::error::Error>> {
-        const SERVICE_NAME: &str = "org.opensuse.Agama.Questions1";
-        const SERVICE_PATH: &str = "/org/opensuse/Agama/Questions1";
+    const SERVICE_NAME: &str = "org.opensuse.Agama.Questions1";
+    const SERVICE_PATH: &str = "/org/opensuse/Agama/Questions1";
 
-        // First connect to the Agama bus, then serve our API,
-        // for better error reporting.
-        let connection = connection_to(address).await?;
+    // First connect to the Agama bus, then serve our API,
+    // for better error reporting.
+    let connection = connection_to(address).await?;
 
-        // When serving, request the service name _after_ exposing the main object
-        let questions = Questions::new(&connection);
-        connection.object_server().at(SERVICE_PATH, questions).await?;
-        connection.object_server().at(SERVICE_PATH, ObjectManager).await?;
-        connection
-            .request_name(SERVICE_NAME)
-            .await
-            .context(format!("Requesting name {SERVICE_NAME}"))?;
+    // When serving, request the service name _after_ exposing the main object
+    let questions = Questions::new(&connection);
+    connection
+        .object_server()
+        .at(SERVICE_PATH, questions)
+        .await?;
+    connection
+        .object_server()
+        .at(SERVICE_PATH, ObjectManager)
+        .await?;
+    connection
+        .request_name(SERVICE_NAME)
+        .await
+        .context(format!("Requesting name {SERVICE_NAME}"))?;
 
-        Ok(())
-    }
-
+    Ok(())
+}

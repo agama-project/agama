@@ -11,7 +11,7 @@ const ADDRESS: &str = "unix:path=/run/agama/bus";
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // When adding more services here, the order might be important.
     crate::questions::start_service(ADDRESS).await?;
-    let _con = crate::locale::LocaleService::start(ADDRESS).await?;
+    crate::locale::start_service(ADDRESS).await?;
     NetworkService::start(ADDRESS).await?;
 
     // Do other things or go to wait forever
