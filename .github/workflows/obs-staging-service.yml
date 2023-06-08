@@ -5,13 +5,9 @@ on:
   push:
     branches:
       - master
-      # FIXME: remove this before merging
-      - obs_sync
-    # FIXME: enable before merging
-    # paths:
-    #   # run only when a service source is changed
-    #   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
-    #   - service/**
+    paths:
+      # run only when a service source is changed
+      - service/**
 
 jobs:
   update_staging:

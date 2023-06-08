@@ -5,13 +5,9 @@ on:
   push:
     branches:
       - master
-      # FIXME: remove this before merging
-      - obs_sync
-    # FIXME: enable before merging
-    # paths:
-    #   # run only when a web frontend source is changed
-    #   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
-    #   - web/**
+    paths:
+      # run only when a web frontend source is changed
+      - web/**
 
 jobs:
   update_staging:
