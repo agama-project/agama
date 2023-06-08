@@ -124,17 +124,17 @@ impl LuksQuestion {
 #[dbus_interface(name = "org.opensuse.Agama.Questions1.LuksActivation")]
 impl LuksQuestion {
     #[dbus_interface(property)]
-    pub fn luks_password(&self) -> &str {
+    pub fn password(&self) -> &str {
         self.password.as_str()
     }
 
     #[dbus_interface(property)]
-    pub fn set_luks_password(&mut self, value: &str) -> () {
+    pub fn set_password(&mut self, value: &str) -> () {
         self.password = value.to_string();
     }
 
     #[dbus_interface(property)]
-    pub fn activation_attempt(&self) -> u8 {
+    pub fn attempt(&self) -> u8 {
         self.attempt
     }
 }
