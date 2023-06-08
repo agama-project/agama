@@ -45,13 +45,15 @@ import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseSize, splitSize } fro
  *
  * Based on {@link PF/FormSelect https://www.patternfly.org/v4/components/form-select}
  *
- * @param {object} props @see {@link https://www.patternfly.org/v4/components/form-select#props}
+ * @param {object} props
+ * @param {Array<String>} props.units - a collection of size units
+ * @param {object} props.formSelectProps - @see {@link https://www.patternfly.org/v4/components/form-select#props}
  * @returns {ReactComponent}
  */
-const SizeUnitFormSelect = ({ ...formSelectProps }) => {
+const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
   return (
     <FormSelect { ...formSelectProps }>
-      { Object.values(SIZE_UNITS).map(unit => <FormSelectOption key={unit} value={unit} label={unit} />) }
+      { units.map(unit => <FormSelectOption key={unit} value={unit} label={unit} />) }
     </FormSelect>
   );
 };
@@ -136,6 +138,7 @@ const SizeManual = ({ errors, formData, onChange }) => {
           <SizeUnitFormSelect
             id="sizeUnit"
             aria-label="Size unit"
+            units={Object.values(SIZE_UNITS)}
             value={formData.sizeUnit || DEFAULT_SIZE_UNIT}
             onChange={(sizeUnit) => onChange({ sizeUnit })}
           />
@@ -184,6 +187,7 @@ const SizeRange = ({ errors, formData, onChange }) => {
             <SizeUnitFormSelect
               id="minSizeUnit"
               aria-label="Min size unit"
+              units={Object.values(SIZE_UNITS)}
               value={formData.minSizeUnit || DEFAULT_SIZE_UNIT }
               onChange={(minSizeUnit) => onChange({ minSizeUnit })}
             />
@@ -209,6 +213,7 @@ const SizeRange = ({ errors, formData, onChange }) => {
             <SizeUnitFormSelect
               id="maxSizeUnit"
               aria-label="Max size unit"
+              units={Object.values(SIZE_UNITS)}
               value={formData.maxSizeUnit || formData.minSizeUnit || DEFAULT_SIZE_UNIT }
               onChange={(maxSizeUnit) => onChange({ maxSizeUnit })}
             />
