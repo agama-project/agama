@@ -19,11 +19,15 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast2/equatable"
+
 module Agama
   module Storage
     module ZFCP
       # zFCP controller
       class Controller
+        include Yast2::Equatable
+
         # zFCP controller channel id
         #
         # @return [String]
@@ -31,6 +35,8 @@ module Agama
 
         # @return [Boolean]
         attr_writer :active
+
+        eql_attr :channel, :active?
 
         # Constructor
         #

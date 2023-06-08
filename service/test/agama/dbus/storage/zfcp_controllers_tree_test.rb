@@ -83,17 +83,17 @@ describe Agama::DBus::Storage::ZFCPControllersTree do
     end
 
     context "if a given zFCP controller is already exported" do
-      # controller2 is equal to controller3 (same channel)
+      # controller2 and controller3 have same channel
       let(:controllers) { [controller3] }
 
       let(:controller3) { Agama::Storage::ZFCP::Controller.new("0.0.fb00") }
 
       it "updates the D-Bus object" do
-        expect(dbus_object2.controller).to_not eq(controller3)
+        expect(dbus_object2.controller).to_not equal(controller3)
 
         subject.objects = controllers
 
-        expect(dbus_object2.controller).to eq(controller3)
+        expect(dbus_object2.controller).to equal(controller3)
       end
     end
 

@@ -110,11 +110,14 @@ module Agama
 
         # Sets the represented zFCP controller
         #
-        # @note A properties changed signal is always emitted.
+        # @note A properties changed signal is emitted if the controller changes.
         #
         # @param value [Agama::Storage::ZFCP::Controller]
         def controller=(value)
+          emit_signal = controller != value
+
           @controller = value
+          return unless emit_signal
 
           properties = interfaces_and_properties[ZFCP_CONTROLLER_INTERFACE]
           dbus_properties_changed(ZFCP_CONTROLLER_INTERFACE, properties, [])

@@ -19,11 +19,15 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast2/equatable"
+
 module Agama
   module Storage
     module ZFCP
       # zFCP disk
       class Disk
+        include Yast2::Equatable
+
         # Device name
         #
         # @return [String] e.g., "/dev/sda"
@@ -43,6 +47,8 @@ module Agama
         #
         # @return [String]
         attr_reader :lun
+
+        eql_attr :name, :channel, :wwpn, :lun
 
         # Constructor
         #

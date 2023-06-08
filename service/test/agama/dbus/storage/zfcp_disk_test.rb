@@ -79,10 +79,32 @@ describe Agama::DBus::Storage::ZFCPDisk do
       expect(subject.disk).to eq(sdb)
     end
 
-    it "emits properties changed signal" do
-      expect(subject).to receive(:dbus_properties_changed)
+    context "if the given disk is different to the current one" do
+      let(:new_disk) do
+        Agama::Storage::ZFCP::Disk.new(
+          "/dev/sdb", "0.0.fa00", "0x500507630708d3b3", "0x0013000000000000"
+        )
+      end
 
-      subject.disk = sdb
+      it "emits properties changed signal" do
+        expect(subject).to receive(:dbus_properties_changed)
+
+        subject.disk = new_disk
+      end
+    end
+
+    context "if the given disk is equal to the current one" do
+      let(:new_disk) do
+        Agama::Storage::ZFCP::Disk.new(
+          "/dev/sda", "0.0.fa00", "0x500507630708d3b3", "0x0013000000000000"
+        )
+      end
+
+      it "does not emit properties changed signal" do
+        expect(subject).to_not receive(:dbus_properties_changed)
+
+        subject.disk = new_disk
+      end
     end
   end
 end

@@ -73,11 +73,14 @@ module Agama
 
         # Sets the represented zFCP disk
         #
-        # @note A properties changed signal is always emitted.
+        # @note A properties changed signal is emitted if the disk changes.
         #
         # @param value [Agama::Storage::ZFCP::Disk]
         def disk=(value)
+          emit_signal = disk != value
+
           @disk = value
+          return unless emit_signal
 
           properties = interfaces_and_properties[ZFCP_DISK_INTERFACE]
           dbus_properties_changed(ZFCP_DISK_INTERFACE, properties, [])

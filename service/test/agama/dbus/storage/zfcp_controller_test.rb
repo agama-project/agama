@@ -128,10 +128,26 @@ describe Agama::DBus::Storage::ZFCPController do
       expect(subject.controller).to eq(controller2)
     end
 
-    it "emits properties changed signal" do
-      expect(subject).to receive(:dbus_properties_changed)
+    context "if the given controller is different to the current one" do
+      let(:controller2) do
+        Agama::Storage::ZFCP::Controller.new("0.0.fa00").tap { |c| c.active = true }
+      end
 
-      subject.controller = controller2
+      it "emits properties changed signal" do
+        expect(subject).to receive(:dbus_properties_changed)
+
+        subject.controller = controller2
+      end
+    end
+
+    context "if the given controller is equal to the current one" do
+      let(:controller2) { Agama::Storage::ZFCP::Controller.new("0.0.fa00") }
+
+      it "does not emit properties changed signal" do
+        expect(subject).to_not receive(:dbus_properties_changed)
+
+        subject.controller = controller2
+      end
     end
   end
 end
