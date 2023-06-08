@@ -48,19 +48,10 @@ jobs:
         run: chown -R -c 0 .
 
       - name: Configure osc
-        run: |-
-          CONFIG_FILE="$HOME/.config/osc/oscrc"
-          mkdir -p $(dirname "$CONFIG_FILE")
-          echo "$TEMPLATE" > "$CONFIG_FILE"
+        run: .github/workflows/configure_osc.sh
         env:
-          TEMPLATE: |-
-            [general]
-            apiurl = https://api.opensuse.org
-
-            [https://api.opensuse.org]
-            user=${{ secrets.OBS_USER }}
-            pass=${{ secrets.OBS_PASSWORD }}
-            credentials_mgr_class=osc.credentials.PlaintextConfigFileCredentialsManager
+          OBS_USER:     ${{ secrets.OBS_USER }}
+          OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
       - name: Commit the rubygem-agama package
         run: rake osc:commit
