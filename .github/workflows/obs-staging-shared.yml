@@ -32,6 +32,9 @@ jobs:
       image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
+
       - name: Configure and refresh repositories
         # disable unused repositories to have a faster refresh
         run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
@@ -46,19 +49,10 @@ jobs:
              ${{ inputs.install_packages }}
 
       - name: Configure osc
-        run: |-
-          CONFIG_FILE="$HOME/.config/osc/oscrc"
-          mkdir -p $(dirname "$CONFIG_FILE")
-          echo "$TEMPLATE" > "$CONFIG_FILE"
+        run: .github/workflows/configure_osc.sh
         env:
-          TEMPLATE: |-
-            [general]
-            apiurl = https://api.opensuse.org
-
-            [https://api.opensuse.org]
-            user=${{ secrets.OBS_USER }}
-            pass=${{ secrets.OBS_PASSWORD }}
-            credentials_mgr_class=osc.credentials.PlaintextConfigFileCredentialsManager
+          OBS_USER:     ${{ secrets.OBS_USER }}
+          OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
       - name: Checkout ${{ inputs.package_name }}
         run: osc co systemsmanagement:Agama:Staging ${{ inputs.package_name }}
