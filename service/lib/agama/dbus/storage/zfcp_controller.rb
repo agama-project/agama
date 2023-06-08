@@ -79,16 +79,11 @@ module Agama
 
         # Activates the controller
         #
+        # @note: If "allow_lun_scan" is active, then all LUNs are automatically activated.
+        #
         # @return [Integer] Exit code of the chzdev command
         def activate
           zfcp_manager.activate_controller(controller.channel)
-        end
-
-        # Deactivates the controller
-        #
-        # @return [Integer] Exit code of the chzdev command
-        def deactivate
-          zfcp_manager.deactivate_controller(controller.channel)
         end
 
         # Activates a zFCP disk
@@ -102,6 +97,8 @@ module Agama
         end
 
         # Deactivates a zFCP disk
+        #
+        # @note: If "allow_lun_scan" is active, then the disk cannot be deactivated.
         #
         # @param wwpn [String]
         # @param lun [String]
@@ -126,6 +123,8 @@ module Agama
         ZFCP_CONTROLLER_INTERFACE = "org.opensuse.Agama.Storage1.ZFCP.Controller"
         private_constant :ZFCP_CONTROLLER_INTERFACE
 
+        # This interface does not have a method to deactivate a controller (controller deactivation
+        # could be problematic). For more details see https://github.com/openSUSE/agama/pull/594.
         dbus_interface ZFCP_CONTROLLER_INTERFACE do
           dbus_reader(:active, "b")
 
@@ -136,8 +135,6 @@ module Agama
           dbus_method(:GetLUNs, "in wwpn:s, out result:as") { |wwpn| [find_luns(wwpn)] }
 
           dbus_method(:Activate, "out result:u") { activate }
-
-          dbus_method(:Deactivate, "out result:u") { deactivate }
 
           dbus_method(:ActivateDisk, "in wwpn:s, in lun:s, out result:u") do |wwpn, lun|
             activate_disk(wwpn, lun)

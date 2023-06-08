@@ -90,16 +90,6 @@ module Agama
           output["exit"]
         end
 
-        # Deactivates the controller with the given channel id
-        #
-        # @param channel [String]
-        # @return [Integer] Exit code of the chzdev command (0 on success)
-        def deactivate_controller(channel)
-          output = yast_zfcp.deactivate_controller(channel)
-          update_disks if output["exit"] == 0
-          output["exit"]
-        end
-
         # Activates a zFCP disk
         #
         # @param channel [String]

@@ -99,14 +99,6 @@ describe Agama::DBus::Storage::ZFCPController do
     end
   end
 
-  describe "#deactivate" do
-    it "tries to deactivate the controller and returns the exit code" do
-      expect(manager).to receive(:deactivate_controller).with("0.0.fa00").and_return(0)
-
-      expect(subject.deactivate).to eq(0)
-    end
-  end
-
   describe "#activate_disk" do
     it "tries to activate the indicated zFCP disk and returns the exit code" do
       expect(manager).to receive(:activate_disk)
