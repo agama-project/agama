@@ -333,7 +333,7 @@ const prepareFormData = (volume) => {
   return {
     size: minSize,
     sizeUnit: minSizeUnit,
-    minSize, // : minSize.replace(/\.0+$/, ""),
+    minSize,
     minSizeUnit,
     maxSize,
     maxSizeUnit,
