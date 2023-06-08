@@ -24,11 +24,10 @@ import React, { useReducer } from "react";
 import {
   InputGroup,
   Form, FormGroup, FormSelect, FormSelectOption,
-  Radio,
-  TextInput,
+  Radio
 } from "@patternfly/react-core";
 
-import { If } from '~/components/core';
+import { If, NumericTextInput } from '~/components/core';
 import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseSize, splitSize } from '~/components/storage/utils';
 
 /**
@@ -127,7 +126,7 @@ const SizeManual = ({ errors, formData, onChange }) => {
         validated={errors.size && 'error'}
       >
         <InputGroup className="size-input-group">
-          <TextInput
+          <NumericTextInput
             id="size"
             name="size"
             aria-label="Desired size"
@@ -176,7 +175,7 @@ const SizeRange = ({ errors, formData, onChange }) => {
           helperTextInvalid={errors.minSize}
         >
           <InputGroup>
-            <TextInput
+            <NumericTextInput
               id="minSize"
               name="minSize"
               aria-label="Minimum desired size"
@@ -201,7 +200,7 @@ const SizeRange = ({ errors, formData, onChange }) => {
           helperTextInvalid={errors.maxSize}
         >
           <InputGroup>
-            <TextInput
+            <NumericTextInput
               id="maxSize"
               name="maxSize"
               validated={errors.maxSize && 'error'}
@@ -464,7 +463,7 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
         />
       </FormGroup>
       <FormGroup isRequired label="File system type" fieldId="fsType">
-        <TextInput
+        <NumericTextInput
           id="fsType"
           name="fsType"
           value={state.volume.fsType}
