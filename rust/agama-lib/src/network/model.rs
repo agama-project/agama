@@ -20,7 +20,7 @@ pub struct NetworkSettings {
 pub struct WirelessSettings {
     pub password: String,
     pub security: String,
-    pub ssid: Vec<u8>,
+    pub ssid: String,
     pub mode: String,
 }
 

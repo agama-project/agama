@@ -1,4 +1,5 @@
 use super::model::{NetworkConnection, WirelessSettings};
+use super::types::SSID;
 use crate::error::ServiceError;
 
 use super::proxies::ConnectionsProxy;
@@ -68,7 +69,7 @@ impl<'a> NetworkClient<'a> {
             mode: wireless_proxy.mode().await?,
             password: wireless_proxy.password().await?,
             security: wireless_proxy.security().await?,
-            ssid: wireless_proxy.ssid().await?,
+            ssid: SSID(wireless_proxy.ssid().await?).to_string(),
         };
 
         Ok(wireless)

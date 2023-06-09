@@ -4,7 +4,10 @@
 //! with nested hash maps (see [NestedHash] and [OwnedNestedHash]).
 use super::model::*;
 use crate::model::*;
-use agama_lib::dbus::{NestedHash, OwnedNestedHash};
+use agama_lib::{
+    dbus::{NestedHash, OwnedNestedHash},
+    network::types::SSID,
+};
 use std::collections::HashMap;
 use std::net::Ipv4Addr;
 use uuid::Uuid;
@@ -139,7 +142,7 @@ fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
     let config = &conn.wireless;
     let wireless: HashMap<&str, zvariant::Value> = HashMap::from([
         ("mode", Value::new(config.mode.to_string())),
-        ("ssid", Value::new(&config.ssid)),
+        ("ssid", Value::new(config.ssid.to_vec())),
     ]);
 
     let mut security: HashMap<&str, zvariant::Value> =
@@ -225,7 +228,7 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
         .collect();
     let mut wireless_config = WirelessConfig {
         mode: NmWirelessMode(mode.to_string()).try_into().ok()?,
-        ssid,
+        ssid: SSID(ssid),
         ..Default::default()
     };
 
@@ -324,7 +327,7 @@ mod test {
         let connection = connection_from_dbus(dbus_conn).unwrap();
         assert!(matches!(connection, Connection::Wireless(_)));
         if let Connection::Wireless(connection) = connection {
-            assert_eq!(connection.wireless.ssid, vec![97, 103, 97, 109, 97]);
+            assert_eq!(connection.wireless.ssid, SSID(vec![97, 103, 97, 109, 97]));
             assert_eq!(connection.wireless.mode, WirelessMode::Infra);
             assert_eq!(connection.wireless.security, SecurityProtocol::WPA2)
         }
@@ -335,7 +338,7 @@ mod test {
         let config = WirelessConfig {
             mode: WirelessMode::Infra,
             security: SecurityProtocol::WPA2,
-            ssid: "agama".as_bytes().into(),
+            ssid: SSID(vec![97, 103, 97, 109, 97]),
             ..Default::default()
         };
         let wireless = WirelessConnection {

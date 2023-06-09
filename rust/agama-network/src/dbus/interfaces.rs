@@ -8,6 +8,8 @@ use crate::{
     error::NetworkStateError,
     model::{Connection as NetworkConnection, Device as NetworkDevice, WirelessConnection},
 };
+
+use agama_lib::network::types::SSID;
 use parking_lot::{MappedMutexGuard, Mutex, MutexGuard};
 use std::{
     net::{AddrParseError, Ipv4Addr},
@@ -344,13 +346,13 @@ impl Wireless {
     #[dbus_interface(property, name = "SSID")]
     pub fn ssid(&self) -> Vec<u8> {
         let connection = self.get_wireless();
-        connection.wireless.ssid.clone()
+        connection.wireless.ssid.clone().into()
     }
 
     #[dbus_interface(property, name = "SSID")]
     pub fn set_ssid(&mut self, ssid: Vec<u8>) -> zbus::fdo::Result<()> {
         let mut connection = self.get_wireless();
-        connection.wireless.ssid = ssid;
+        connection.wireless.ssid = SSID(ssid);
         self.update_connection(connection)
     }
 

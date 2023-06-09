@@ -41,7 +41,7 @@ trait Wireless {
     /// SSID property
     #[dbus_proxy(property, name = "SSID")]
     fn ssid(&self) -> zbus::Result<Vec<u8>>;
-    fn set_ssid(&self, value: &[u8]) -> zbus::Result<()>;
+    fn set_ssid(&self, value: Vec<u8>) -> zbus::Result<()>;
 
     /// Security property
     #[dbus_proxy(property)]

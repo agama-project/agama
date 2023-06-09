@@ -5,7 +5,8 @@
 use uuid::Uuid;
 
 use crate::error::NetworkStateError;
-use std::{fmt, net::Ipv4Addr};
+use agama_lib::network::types::SSID;
+use std::{fmt, net::Ipv4Addr, str};
 
 #[derive(Default)]
 pub struct NetworkState {
@@ -354,7 +355,7 @@ pub struct LoopbackConnection {
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
-    pub ssid: Vec<u8>,
+    pub ssid: SSID,
     pub password: Option<String>,
     pub security: SecurityProtocol,
 }
