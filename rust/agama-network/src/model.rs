@@ -369,17 +369,17 @@ pub enum WirelessMode {
     Mesh = 4,
 }
 
-impl TryFrom<u8> for WirelessMode {
+impl TryFrom<&str> for WirelessMode {
     type Error = NetworkStateError;
 
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
-            0 => Ok(WirelessMode::Unknown),
-            1 => Ok(WirelessMode::AdHoc),
-            2 => Ok(WirelessMode::Infra),
-            3 => Ok(WirelessMode::AP),
-            4 => Ok(WirelessMode::Mesh),
-            _ => Err(NetworkStateError::InvalidWirelessMode(value)),
+            "unknown" => Ok(WirelessMode::Unknown),
+            "adhoc" => Ok(WirelessMode::AdHoc),
+            "infrastructure" => Ok(WirelessMode::Infra),
+            "ap" => Ok(WirelessMode::AP),
+            "mesh" => Ok(WirelessMode::Mesh),
+            _ => Err(NetworkStateError::InvalidWirelessMode(value.to_string())),
         }
     }
 }

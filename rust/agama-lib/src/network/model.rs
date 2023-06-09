@@ -19,9 +19,9 @@ pub struct NetworkSettings {
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct WirelessSettings {
     pub password: String,
-    pub security: u8,
+    pub security: String,
     pub ssid: Vec<u8>,
-    pub mode: u8,
+    pub mode: String,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]

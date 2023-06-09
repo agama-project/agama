@@ -30,8 +30,8 @@ trait Connections {
 trait Wireless {
     /// Mode property
     #[dbus_proxy(property)]
-    fn mode(&self) -> zbus::Result<u8>;
-    fn set_mode(&self, value: u8) -> zbus::Result<()>;
+    fn mode(&self) -> zbus::Result<String>;
+    fn set_mode(&self, value: String) -> zbus::Result<()>;
 
     /// Password property
     #[dbus_proxy(property)]
@@ -45,8 +45,8 @@ trait Wireless {
 
     /// Security property
     #[dbus_proxy(property)]
-    fn security(&self) -> zbus::Result<u8>;
-    fn set_security(&self, value: u8) -> zbus::Result<()>;
+    fn security(&self) -> zbus::Result<String>;
+    fn set_security(&self, value: String) -> zbus::Result<()>;
 }
 
 #[dbus_proxy(

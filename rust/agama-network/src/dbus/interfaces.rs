@@ -355,13 +355,13 @@ impl Wireless {
     }
 
     #[dbus_interface(property)]
-    pub fn mode(&self) -> u8 {
+    pub fn mode(&self) -> String {
         let connection = self.get_wireless();
-        connection.wireless.mode as u8
+        connection.wireless.mode.to_string()
     }
 
     #[dbus_interface(property)]
-    pub fn set_mode(&mut self, mode: u8) -> zbus::fdo::Result<()> {
+    pub fn set_mode(&mut self, mode: &str) -> zbus::fdo::Result<()> {
         let mut connection = self.get_wireless();
         connection.wireless.mode = mode.try_into()?;
         self.update_connection(connection)
@@ -389,9 +389,9 @@ impl Wireless {
     }
 
     #[dbus_interface(property)]
-    pub fn security(&self) -> u8 {
+    pub fn security(&self) -> String {
         let connection = self.get_wireless();
-        connection.wireless.security as u8
+        connection.wireless.security.to_string()
     }
 
     #[dbus_interface(property)]
