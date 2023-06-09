@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { deviceSize, deviceLabel, parseSize, splitSize } from "./utils";
+import { deviceSize, deviceLabel, parseToBytes, splitSize } from "./utils";
 
 describe("deviceSize", () => {
   it("returns undefined is size is -1", () => {
@@ -45,22 +45,22 @@ describe("deviceLabel", () => {
   });
 });
 
-describe("parseSize", () => {
+describe("parseToBytes", () => {
   it("returns bytes from given input", () => {
-    expect(parseSize(1024)).toEqual(1024);
-    expect(parseSize("1024")).toEqual(1024);
-    expect(parseSize("1 KiB")).toEqual(1024);
-    expect(parseSize("2 MiB")).toEqual(2097152);
+    expect(parseToBytes(1024)).toEqual(1024);
+    expect(parseToBytes("1024")).toEqual(1024);
+    expect(parseToBytes("1 KiB")).toEqual(1024);
+    expect(parseToBytes("2 MiB")).toEqual(2097152);
   });
 
   it("returns 0 if given input is null, undefined, or empty string", () => {
-    expect(parseSize(null)).toEqual(0);
-    expect(parseSize(undefined)).toEqual(0);
-    expect(parseSize("")).toEqual(0);
+    expect(parseToBytes(null)).toEqual(0);
+    expect(parseToBytes(undefined)).toEqual(0);
+    expect(parseToBytes("")).toEqual(0);
   });
 
   it("does not include decimal part of resulting conversion", () => {
-    expect(parseSize("1024.32 KiB")).toEqual(1048903); // Not 1048903.68
+    expect(parseToBytes("1024.32 KiB")).toEqual(1048903); // Not 1048903.68
   });
 });
 
@@ -77,8 +77,16 @@ describe("splitSize", () => {
     expect(splitSize(null)).toEqual({ size: 0, unit: "B" });
   });
 
+  it("returns a size object with unknown unit when a string without unit is given", () => {
+    expect(splitSize("30")).toEqual({ size: 30, unit: undefined });
+  });
+
   it("returns an 'empty' size object when -1 is given", () => {
     expect(splitSize(-1)).toEqual({ size: undefined, unit: undefined });
+  });
+
+  it("returns an 'empty' size object when an unexpected string is given", () => {
+    expect(splitSize("GiB")).toEqual({ size: undefined, unit: undefined });
   });
 
   it("returns an 'empty' size object when empty string is given", () => {

@@ -22,7 +22,7 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { DEFAULT_SIZE_UNIT, parseSize } from "~/components/storage/utils";
+import { DEFAULT_SIZE_UNIT, parseToBytes } from "~/components/storage/utils";
 import { VolumeForm } from "~/components/storage";
 
 const volumes = {
@@ -159,7 +159,7 @@ it("calls the onSubmit callback with resulting volume when the form is submitted
   await user.click(submitForm);
 
   expect(onSubmitFn).toHaveBeenCalledWith({
-    ...volumes.root, minSize: parseSize("10 GiB"), maxSize: parseSize("25 GiB")
+    ...volumes.root, minSize: parseToBytes("10 GiB"), maxSize: parseToBytes("25 GiB")
   });
 });
 

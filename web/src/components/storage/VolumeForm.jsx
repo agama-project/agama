@@ -28,7 +28,7 @@ import {
 } from "@patternfly/react-core";
 
 import { If, NumericTextInput } from '~/components/core';
-import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseSize, splitSize } from '~/components/storage/utils';
+import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseToBytes, splitSize } from '~/components/storage/utils';
 
 /**
  * Callback function for notifying a form input change
@@ -81,7 +81,7 @@ const MountPointFormSelect = ({ volumes, ...formSelectProps }) => {
  * @component
  *
  * @param {object} props
- * @param {object} props.volume - storage volume object
+ * @param {import(~/clients/storage).Volume} volume - a storage volume object
  * @returns {ReactComponent}
  */
 const SizeAuto = ({ volume }) => {
@@ -230,7 +230,7 @@ const SizeRange = ({ errors, formData, onChange }) => {
  * @param {object} props
  * @param {object} props.errors - the form errors
  * @param {object} props.formData - the form data
- * @param {object} props.volume - the object representing the selected storage volume
+ * @param {import(~/clients/storage).Volume} volume - the selected storage volume
  * @param {onChangeFn} props.onChange - callback for notifying input changes
  *
  * @returns {ReactComponent}
@@ -276,15 +276,15 @@ const SizeOptions = ({ errors, formData, volume, onChange }) => {
 /**
  * Creates a new storage volume object based on given params
  *
- * @param {object} volume - a storage volume
+ * @param {import(~/clients/storage).Volume} volume - a storage volume
  * @param {object} formData - data used to calculate the volume updates
  * @returns {object} storage volume object
  */
 const createUpdatedVolume = (volume, formData) => {
   let updatedAttrs = {};
-  const size = parseSize(`${formData.size} ${formData.sizeUnit}`);
-  const minSize = parseSize(`${formData.minSize} ${formData.minSizeUnit}`);
-  const maxSize = parseSize(`${formData.maxSize} ${formData.maxSizeUnit}`);
+  const size = parseToBytes(`${formData.size} ${formData.sizeUnit}`);
+  const minSize = parseToBytes(`${formData.minSize} ${formData.minSizeUnit}`);
+  const maxSize = parseToBytes(`${formData.maxSize} ${formData.maxSizeUnit}`);
 
   switch (formData.sizeMethod) {
     case SIZE_METHODS.AUTO:
@@ -304,7 +304,7 @@ const createUpdatedVolume = (volume, formData) => {
 /**
  * Form-related helper for guessing the size method for given volume
  *
- * @param {object} volume - a storage volume object
+ * @param {import(~/clients/storage).Volume} volume - a storage volume
  * @return {string} corresponding size method
  */
 const sizeMethodFor = (volume) => {
@@ -322,7 +322,7 @@ const sizeMethodFor = (volume) => {
 /**
  * Form-related helper for preparing data based on given volume
  *
- * @param {object} volume - a storage volume object
+ * @param {import(~/clients/storage).Volume} volume - a storage volume object
  * @return {object} an object ready to be used as a "form state"
  */
 const prepareFormData = (volume) => {
@@ -344,7 +344,7 @@ const prepareFormData = (volume) => {
 /**
  * Initializer function for the React#useReducer used in the {@link VolumesForm}
  *
- * @param {object} volume - a storage volume object
+ * @param {import(~/clients/storage).Volume} volume - a storage volume object
  * @returns {object} a ready to use initial state
  */
 const createInitialState = (volume) => {
@@ -397,11 +397,11 @@ const reducer = (state, action) => {
  *
  * @param {object} props
  * @param {string} props.id - Form ID
- * @param {object[]} props.templates - Volume templates
+ * @param {Array<import(~/clients/storage).Volume>} props.volumes - a collection of storage volumes
  * @param {onSubmitFn} props.onSubmit - Function to use for submitting a new volume
  *
  * @callback onSubmitFn
- * @param {object} volume
+ * @param {import(~/clients/storage).Volume} volume - a storage volume object
  * @return {void}
  */
 export default function VolumeForm({ id, volume: currentVolume, templates = [], onSubmit }) {

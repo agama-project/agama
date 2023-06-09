@@ -25,8 +25,11 @@ import xbytes from "xbytes";
 
 /**
  * @typedef {Object} SizeObject
- * @property {number} size - The "amount" of size
- * @property {string} unit - The size unit
+ *
+ * @note undefined for either property means unknown
+ *
+ * @property {number|undefined} size - The "amount" of size (10, 128, ...)
+ * @property {string|undefined} unit - The size unit (MiB, GiB, ...)
  */
 
 const SIZE_METHODS = Object.freeze({
@@ -62,7 +65,14 @@ const splitSize = (size) => {
   const sanitizedSize = size !== -1 ? size : "";
   const parsedSize = typeof sanitizedSize === "string" ? sanitizedSize : xbytes(sanitizedSize, { iec: true });
   const [qty, unit] = parsedSize.split(" ");
-  return { unit, size: qty === "" ? undefined : Number(qty) };
+  // `Number` will remove trailing zeroes;
+  // parseFloat ensures Number does not transform "" into 0.
+  const sanitizedQty = Number(parseFloat(qty));
+
+  return {
+    unit,
+    size: isNaN(sanitizedQty) ? undefined : sanitizedQty
+  };
 };
 
 /**
@@ -94,19 +104,19 @@ const deviceSize = (size) => {
  * @function
  *
  * @example
- * parseSize(1024)
+ * parseToBytes(1024)
  * // returns 1024
  *
- * parseSize("1 KiB")
+ * parseToBytes("1 KiB")
  * // returns 1024
  *
- * parseSize("")
+ * parseToBytes("")
  * // returns 0
  *
  * @param {string|number} size
  * @returns {number}
  */
-const parseSize = (size) => {
+const parseToBytes = (size) => {
   if (!size || size === undefined || size === "") return 0;
 
   const value = xbytes.parseSize(size, { iec: true }) || parseInt(size);
@@ -134,6 +144,6 @@ export {
   SIZE_UNITS,
   deviceLabel,
   deviceSize,
-  parseSize,
+  parseToBytes,
   splitSize,
 };
