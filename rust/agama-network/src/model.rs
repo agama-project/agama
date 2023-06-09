@@ -361,11 +361,12 @@ pub struct WirelessConfig {
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub enum WirelessMode {
-    #[default]
-    Infra = 0,
+    Unknown = 0,
     AdHoc = 1,
-    Mesh = 2,
+    #[default]
+    Infra = 2,
     AP = 3,
+    Mesh = 4,
 }
 
 impl TryFrom<u8> for WirelessMode {
@@ -373,6 +374,7 @@ impl TryFrom<u8> for WirelessMode {
 
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
+            0 => Ok(WirelessMode::Unknown),
             1 => Ok(WirelessMode::AdHoc),
             2 => Ok(WirelessMode::Infra),
             3 => Ok(WirelessMode::AP),
@@ -385,6 +387,7 @@ impl TryFrom<u8> for WirelessMode {
 impl fmt::Display for WirelessMode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name = match &self {
+            WirelessMode::Unknown => "unknown",
             WirelessMode::AdHoc => "adhoc",
             WirelessMode::Infra => "infrastructure",
             WirelessMode::AP => "ap",
