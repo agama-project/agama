@@ -61,9 +61,8 @@ const splitSize = (size) => {
   // it means "leave it empty"
   const sanitizedSize = size !== -1 ? size : "";
   const parsedSize = typeof sanitizedSize === "string" ? sanitizedSize : xbytes(sanitizedSize, { iec: true });
-  const [qty = "", unit = ""] = parsedSize.split(" ");
-
-  return { unit, size: qty === "" ? qty : Number(qty) };
+  const [qty, unit] = parsedSize.split(" ");
+  return { unit, size: qty === "" ? undefined : Number(qty) };
 };
 
 /**

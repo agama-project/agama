@@ -78,10 +78,10 @@ describe("splitSize", () => {
   });
 
   it("returns an 'empty' size object when -1 is given", () => {
-    expect(splitSize(-1)).toEqual({ size: "", unit: "" });
+    expect(splitSize(-1)).toEqual({ size: undefined, unit: undefined });
   });
 
   it("returns an 'empty' size object when empty string is given", () => {
-    expect(splitSize("")).toEqual({ size: "", unit: "" });
+    expect(splitSize("")).toEqual({ size: undefined, unit: undefined });
   });
 });

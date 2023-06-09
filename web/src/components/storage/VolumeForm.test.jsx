@@ -22,7 +22,7 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { parseSize } from "~/components/storage/utils";
+import { DEFAULT_SIZE_UNIT, parseSize } from "~/components/storage/utils";
 import { VolumeForm } from "~/components/storage";
 
 const volumes = {
@@ -102,6 +102,20 @@ it("renders controls for setting the desired size", () => {
   screen.getByRole("radio", { name: "Auto" });
   screen.getByRole("radio", { name: "Manual" });
   screen.getByRole("radio", { name: "Range" });
+});
+
+it("uses the default size unit when min size unit is missing", () => {
+  plainRender(<VolumeForm volume={{ ...volumes.home, minSize: "" }} />);
+
+  const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Max size unit" });
+  expect(maxSizeUnitSelector).toHaveValue(DEFAULT_SIZE_UNIT);
+});
+
+it("uses the min size unit as max size unit when it is missing", () => {
+  plainRender(<VolumeForm volume={{ ...volumes.home, minSize: "1 TiB" }} />);
+
+  const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Max size unit" });
+  expect(maxSizeUnitSelector).toHaveValue("TiB");
 });
 
 it("renders the 'Auto' size option only when a volume with 'adaptive sizes' is selected", async () => {
@@ -193,7 +207,9 @@ describe("size validations", () => {
     });
 
     it("renders an error when max size is smaller than or equal to min size", async () => {
-      const { user } = plainRender(<VolumeFormWrapper volume={volumes.home} onSubmit={onSubmitFn} />);
+      // Let's start the test without predefined sizes
+      const volume = { ...volumes.home, minSize: "", maxSize: "" };
+      const { user } = plainRender(<VolumeFormWrapper volume={volume} onSubmit={onSubmitFn} />);
 
       const submitForm = screen.getByRole("button", { name: "Submit VolumeForm" });
       const rangeSize = screen.getByRole("radio", { name: "Range" });
@@ -201,34 +217,42 @@ describe("size validations", () => {
 
       const minSizeInput = screen.getByRole("textbox", { name: "Minimum desired size" });
       const minSizeUnitSelector = screen.getByRole("combobox", { name: "Min size unit" });
-      const minSizeGiBUnit = within(minSizeUnitSelector).getByRole("option", { name: "GiB" });
+      const minSizeMiBUnit = within(minSizeUnitSelector).getByRole("option", { name: "MiB" });
       const maxSizeInput = screen.getByRole("textbox", { name: "Maximum desired size" });
       const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Max size unit" });
       const maxSizeGiBUnit = within(maxSizeUnitSelector).getByRole("option", { name: "GiB" });
       const maxSizeMiBUnit = within(maxSizeUnitSelector).getByRole("option", { name: "MiB" });
 
+      // Max (11 GiB) > Min (10 GiB) BEFORE changing any unit size
       await user.clear(minSizeInput);
       await user.type(minSizeInput, "10");
-      await user.selectOptions(minSizeUnitSelector, minSizeGiBUnit);
+      await user.clear(maxSizeInput);
+      await user.type(maxSizeInput, "11");
+      await user.click(submitForm);
+      expect(screen.queryByText("Maximum must be greater than minimum")).toBeNull();
+
+      // Max (10 GiB) === Min (10 GiB)
       await user.clear(maxSizeInput);
       await user.type(maxSizeInput, "10");
-
-      // Max === Min
-      await user.selectOptions(maxSizeUnitSelector, maxSizeGiBUnit);
       await user.click(submitForm);
       screen.getByText("Maximum must be greater than minimum");
 
-      // Max < Min
+      // Max (10 MiB) < Min (10 GiB) because choosing a lower size unit
       await user.selectOptions(maxSizeUnitSelector, maxSizeMiBUnit);
       await user.click(submitForm);
       screen.getByText("Maximum must be greater than minimum");
 
-      // Max > Min
+      // Max (9 MiB) < Min (10 MiB) because choosing a lower size
+      await user.selectOptions(minSizeUnitSelector, minSizeMiBUnit);
+      await user.clear(maxSizeInput);
+      await user.type(maxSizeInput, "9");
+      await user.click(submitForm);
+      screen.getByText("Maximum must be greater than minimum");
+
+      // Max (11 MiB) > Min (10 MiB)
       await user.clear(maxSizeInput);
       await user.type(maxSizeInput, "11");
       await user.selectOptions(maxSizeUnitSelector, maxSizeGiBUnit);
-      await user.click(submitForm);
-      expect(screen.queryByText("Maximum must be greater than minimum")).toBeNull();
     });
   });
 });

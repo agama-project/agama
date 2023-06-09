@@ -138,7 +138,7 @@ const SizeManual = ({ errors, formData, onChange }) => {
             id="sizeUnit"
             aria-label="Size unit"
             units={Object.values(SIZE_UNITS)}
-            value={formData.sizeUnit || DEFAULT_SIZE_UNIT}
+            value={formData.sizeUnit }
             onChange={(sizeUnit) => onChange({ sizeUnit })}
           />
         </InputGroup>
@@ -187,7 +187,7 @@ const SizeRange = ({ errors, formData, onChange }) => {
               id="minSizeUnit"
               aria-label="Min size unit"
               units={Object.values(SIZE_UNITS)}
-              value={formData.minSizeUnit || DEFAULT_SIZE_UNIT }
+              value={formData.minSizeUnit }
               onChange={(minSizeUnit) => onChange({ minSizeUnit })}
             />
           </InputGroup>
@@ -213,7 +213,7 @@ const SizeRange = ({ errors, formData, onChange }) => {
               id="maxSizeUnit"
               aria-label="Max size unit"
               units={Object.values(SIZE_UNITS)}
-              value={formData.maxSizeUnit || formData.minSizeUnit || DEFAULT_SIZE_UNIT }
+              value={formData.maxSizeUnit || formData.minSizeUnit }
               onChange={(maxSizeUnit) => onChange({ maxSizeUnit })}
             />
           </InputGroup>
@@ -326,8 +326,8 @@ const sizeMethodFor = (volume) => {
  * @return {object} an object ready to be used as a "form state"
  */
 const prepareFormData = (volume) => {
-  const { size: minSize, unit: minSizeUnit } = splitSize(volume.minSize);
-  const { size: maxSize, unit: maxSizeUnit } = splitSize(volume.maxSize);
+  const { size: minSize = "", unit: minSizeUnit = DEFAULT_SIZE_UNIT } = splitSize(volume.minSize);
+  const { size: maxSize = "", unit: maxSizeUnit = minSizeUnit || DEFAULT_SIZE_UNIT } = splitSize(volume.maxSize);
 
   return {
     size: minSize,
