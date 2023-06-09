@@ -24,7 +24,8 @@ import React, { useReducer } from "react";
 import {
   InputGroup,
   Form, FormGroup, FormSelect, FormSelectOption,
-  Radio
+  Radio,
+  TextInput
 } from "@patternfly/react-core";
 
 import { If, NumericTextInput } from '~/components/core';
@@ -463,7 +464,7 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
         />
       </FormGroup>
       <FormGroup isRequired label="File system type" fieldId="fsType">
-        <NumericTextInput
+        <TextInput
           id="fsType"
           name="fsType"
           value={state.volume.fsType}
