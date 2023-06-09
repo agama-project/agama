@@ -129,20 +129,27 @@ module Agama
         # This interface does not have a method to deactivate a controller (controller deactivation
         # could be problematic). For more details see https://github.com/openSUSE/agama/pull/594.
         dbus_interface ZFCP_CONTROLLER_INTERFACE do
+          # @see #active
           dbus_reader(:active, "b")
 
+          # @see #channel
           dbus_reader(:channel, "s")
 
+          # @see #find_wwpns
           dbus_method(:GetWWPNs, "out result:as") { [find_wwpns] }
 
+          # @see #find_luns
           dbus_method(:GetLUNs, "in wwpn:s, out result:as") { |wwpn| [find_luns(wwpn)] }
 
+          # @see activate
           dbus_method(:Activate, "out result:u") { activate }
 
+          # @see activate_disk
           dbus_method(:ActivateDisk, "in wwpn:s, in lun:s, out result:u") do |wwpn, lun|
             activate_disk(wwpn, lun)
           end
 
+          # @see #deactivate_disk
           dbus_method(:DeactivateDisk, "in wwpn:s, in lun:s, out result:u") do |wwpn, lun|
             deactivate_disk(wwpn, lun)
           end

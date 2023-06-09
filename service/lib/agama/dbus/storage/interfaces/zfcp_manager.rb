@@ -72,9 +72,8 @@ module Agama
             base.class_eval do
               dbus_interface ZFCP_MANAGER_INTERFACE do
                 # Probes the zFCP controllers and disks
-                dbus_method(:Probe, "out result:u") do
+                dbus_method(:Probe) do
                   busy_while { zfcp_backend.probe }
-                  0
                 end
               end
             end

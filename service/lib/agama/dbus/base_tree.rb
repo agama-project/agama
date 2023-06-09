@@ -25,10 +25,10 @@ module Agama
   module DBus
     # Base class for a D-Bus tree exporting a collection of D-Bus objects
     #
-    # Derived classes must define these methods:
-    #   * {BaseTree#create_dbus_object}
-    #   * {BaseTree#update_dbus_object}
-    #   * {BaseTree#dbus_object?}
+    # @abstract Subclasses must define these methods:
+    #   * {#create_dbus_object}
+    #   * {#update_dbus_object}
+    #   * {#dbus_object?}
     class BaseTree
       # Constructor
       #
@@ -47,9 +47,9 @@ module Agama
       #
       # @param objects [Array]
       def objects=(objects)
-        add_objects(objects)
-        update_objects(objects)
-        delete_objects(objects)
+        try_add_objects(objects)
+        try_update_objects(objects)
+        try_delete_objects(objects)
       end
 
     private
@@ -78,7 +78,7 @@ module Agama
       # @param _object [Object]
       # @return [DBus::BaseObject]
       def create_dbus_object(_object)
-        raise "Undefined by derived class"
+        raise "Abstract method, derived classes must implement this"
       end
 
       # Updates the D-Bus object
@@ -88,7 +88,7 @@ module Agama
       # @param _dbus_object [DBus::BaseObject]
       # @param _object [Object]
       def update_dbus_object(_dbus_object, _object)
-        raise "undefined by derived class"
+        raise "Abstract method, derived classes must implement this"
       end
 
       # Whether the D-Bus object references to the given object
@@ -100,7 +100,7 @@ module Agama
       #
       # @return [Boolean]
       def dbus_object?(_dbus_object, _object)
-        raise "undefined by derived class"
+        raise "Abstract method, derived classes must implement this"
       end
 
       # All exported D-Bus objects in the tree
@@ -117,7 +117,7 @@ module Agama
       # it yet
       #
       # @param objects [Array<Object>]
-      def add_objects(objects)
+      def try_add_objects(objects)
         objects.each do |object|
           next if find_dbus_object(object)
 
@@ -129,7 +129,7 @@ module Agama
       # Updates the D-Bus objects that reference to an object included in the given list
       #
       # @param objects [Array<Object>]
-      def update_objects(objects)
+      def try_update_objects(objects)
         objects.each do |object|
           dbus_object = find_dbus_object(object)
           next unless dbus_object
@@ -141,7 +141,7 @@ module Agama
       # Unexports the D-Bus objects that reference to an object not included in the given list
       #
       # @param objects [Array<Object>]
-      def delete_objects(objects)
+      def try_delete_objects(objects)
         dbus_objects.each do |dbus_object|
           next if objects.any? { |o| dbus_object?(dbus_object, o) }
 

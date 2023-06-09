@@ -27,7 +27,7 @@ module Agama
     module Storage
       # Class representing the tree of DASDs exported on D-Bus
       #
-      # TODO: inherit from BaseTree class
+      # TODO: inherit from BaseTree class, see https://github.com/openSUSE/agama/issues/605.
       class DasdsTree
         include WithPathGenerator
 
