@@ -1,23 +1,33 @@
+#!/bin/bash
+set -x
+set -eu
+
 # https://build.opensuse.org/package/show/YaST:Head:Containers/agama-testing
 CIMAGE=registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/agama-testing:latest
 # rename this if you test multiple things
 CNAME=agama
-# the '?' here will report a shell error
-# if you accidentally paste a command without setting the variable first
-echo ${CNAME?}
 
 test -f service/agama.gemspec || echo "You should run this from a checkout of agama"
 
 # destroy the previous instance, can fail if there is no previous instance
-podman stop ${CNAME?}
-podman rm ${CNAME?}
+podman stop ${CNAME?} || : no problem if there was nothing to stop
+podman rm ${CNAME?} || : no problem if there was nothing to remove
 
 # Update our image
 podman pull ${CIMAGE?}
 
+# Optionally use a git version of ruby-dbus
+# because Agama pushes its limits so it's better
+# to set up for easy testing
+MORE_VOLUMES=()
+if [ "${WITH_RUBY_DBUS-}" = 1 ]; then
+  MORE_VOLUMES=(-v ../ruby-dbus:/checkout-ruby-dbus)
+fi
+
 podman run --name ${CNAME?} \
   --privileged --detach --ipc=host \
   -v .:/checkout \
+  ${MORE_VOLUMES[@]} \
   -p 9090:9090 \
   ${CIMAGE?}
 
