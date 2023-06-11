@@ -8,40 +8,29 @@ echo ${CNAME?}
 
 test -f service/agama.gemspec || echo "You should run this from a checkout of agama"
 
-# destroy the previous instance
+# destroy the previous instance, can fail if there is no previous instance
 podman stop ${CNAME?}
 podman rm ${CNAME?}
-
-mkdir -p ./mnt/log-yast2 # needed?
-mkdir -p ./mnt/run-agama # only needed for D-Bus access from outside, unused now
 
 # Update our image
 podman pull ${CIMAGE?}
 
 podman run --name ${CNAME?} \
   --privileged --detach --ipc=host \
-  -v .:/checkout -v ./mnt/run-agama:/run/agama -v ./mnt/log-yast2:/var/log/YaST2 \
+  -v .:/checkout \
+  -p 9090:9090 \
   ${CIMAGE?}
 
 # shortcut for the following
 CEXEC="podman exec ${CNAME?} bash -c"
 
-${CEXEC?} "cd /checkout && ./setup-services.sh"
-
-# Optional: explicit service start using a separate log file
-${CEXEC?} "cd /checkout/service && (bundle exec bin/agamactl > service.log 2>&1 &)"
+${CEXEC?} "cd /checkout && ./setup.sh"
 
 # Now the CLI is in the same repo, just symlink it
 ${CEXEC?} "ln -sfv /checkout/./rust/target/debug/agama /usr/bin/agama"
 
-# Optional: Play!
-${CEXEC?} "agama -f yaml config show"
-
-# Optional: show logs of autostarted services
-${CEXEC?} "journalctl --since=-5min"
-
-# Optional: show logs of explicitly started services
-${CEXEC?} "cat /checkout/service/service.log"
+# Manually start cockpit as socket activation does not work with port forwarding
+${CEXEC?} "systemctl start cockpit"
 
 # Optional: Interactive shell in the container
 podman exec --tty --interactive ${CNAME?} bash
