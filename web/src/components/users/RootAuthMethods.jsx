@@ -20,7 +20,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Skeleton, Truncate } from "@patternfly/react-core";
+import { Button, Skeleton, Truncate } from "@patternfly/react-core";
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { Em, RowActions } from '~/components/core';
 import { RootPasswordPopup, RootSSHKeyPopup } from '~/components/users';
@@ -28,6 +28,18 @@ import { RootPasswordPopup, RootSSHKeyPopup } from '~/components/users';
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 
+const MethodsNotDefined = ({ setPassword, setSSHKey }) => {
+  return (
+    <div className="stack">
+      <div className="bold">No root auth method defined yet</div>
+      <div>Please, define at least one root authentication method for being able to log into the system as administrative user.</div>
+      <div className="split">
+        <Button variant="primary" onClick={setPassword}>Set a password</Button>
+        <Button variant="secondary" onClick={setSSHKey}>Upload a SSH Public Key</Button>
+      </div>
+    </div>
+  );
+};
 export default function RootAuthMethods() {
   const { users: client } = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
@@ -65,10 +77,15 @@ export default function RootAuthMethods() {
 
   const isSSHKeyDefined = sshKey !== "";
 
+  const openPasswordForm = () => setIsPasswordFormOpen(true);
+  const openSSHKeyForm = () => setIsSSHKeyFormOpen(true);
+  const closePasswordForm = () => setIsPasswordFormOpen(false);
+  const closeSSHKeyForm = () => setIsSSHKeyFormOpen(false);
+
   const passwordActions = [
     {
       title: isPasswordDefined ? "Change" : "Set",
-      onClick: () => setIsPasswordFormOpen(true),
+      onClick: openPasswordForm
 
     },
     isPasswordDefined && {
@@ -81,7 +98,7 @@ export default function RootAuthMethods() {
   const sshKeyActions = [
     {
       title: isSSHKeyDefined ? "Change" : "Set",
-      onClick: () => setIsSSHKeyFormOpen(true),
+      onClick: openSSHKeyForm
     },
     sshKey && {
       title: "Discard",
@@ -99,9 +116,6 @@ export default function RootAuthMethods() {
       </>
     );
   }
-
-  const closePasswordForm = () => setIsPasswordFormOpen(false);
-  const closeSSHKeyForm = () => setIsSSHKeyFormOpen(false);
 
   const PasswordLabel = () => {
     return isPasswordDefined
@@ -121,8 +135,12 @@ export default function RootAuthMethods() {
     );
   };
 
-  return (
-    <>
+  const Content = () => {
+    if (!isPasswordDefined && !isSSHKeyDefined) {
+      return <MethodsNotDefined setPassword={openPasswordForm} setSSHKey={openSSHKeyForm} />;
+    }
+
+    return (
       <TableComposable variant="compact" gridBreakPoint="grid-md">
         <Thead>
           <Tr>
@@ -148,7 +166,12 @@ export default function RootAuthMethods() {
           </Tr>
         </Tbody>
       </TableComposable>
+    );
+  };
 
+  return (
+    <>
+      <Content />
       { isPasswordFormOpen &&
         <RootPasswordPopup
           isOpen
