@@ -32,7 +32,7 @@ git tag -a -m "Version 2.3.4" v2.3.4
 git push origin v2.3.4
 ```
 
-The GitHub Actions will publish the packages in the systemsmanagement:Agama:Devel
+The GitHub Actions will publish the packages in the [systemsmanagement:Agama:Devel](https://build.opensuse.org/project/show/systemsmanagement:Agama:Staging)
 project and create submit requests to openSUSE Factory.
 
 ## OBS Synchronization
