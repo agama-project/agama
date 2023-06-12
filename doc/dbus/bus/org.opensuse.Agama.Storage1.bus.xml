@@ -40,6 +40,9 @@
       <arg name="interfaces" type="as"/>
     </signal>
   </interface>
+  <interface name="org.opensuse.Agama1.Issues">
+    <property type="a(ssuu)" name="All" access="read"/>
+  </interface>
   <interface name="org.opensuse.Agama1.Progress">
     <property type="u" name="TotalSteps" access="read"/>
     <property type="(us)" name="CurrentStep" access="read"/>
@@ -48,10 +51,6 @@
   <interface name="org.opensuse.Agama1.ServiceStatus">
     <property type="aa{sv}" name="All" access="read"/>
     <property type="u" name="Current" access="read"/>
-  </interface>
-  <interface name="org.opensuse.Agama1.Validation">
-    <property type="as" name="Errors" access="read"/>
-    <property type="b" name="Valid" access="read"/>
   </interface>
   <interface name="org.opensuse.Agama.Storage1">
     <method name="Probe">
@@ -67,7 +66,7 @@
       <arg name="settings" direction="in" type="a{sv}"/>
       <arg name="result" direction="out" type="u"/>
     </method>
-    <property type="a(ssa{sv})" name="AvailableDevices" access="read"/>
+    <property type="ao" name="AvailableDevices" access="read"/>
     <property type="aa{sv}" name="VolumeTemplates" access="read"/>
     <property type="o" name="Result" access="read"/>
   </interface>
@@ -84,5 +83,31 @@
     </method>
     <property type="s" name="InitiatorName" access="readwrite"/>
     <property type="b" name="IBFT" access="read"/>
+  </interface>
+  <interface name="org.opensuse.Agama.Storage1.DASD.Manager">
+    <method name="Probe">
+    </method>
+    <method name="Enable">
+      <arg name="devices" direction="in" type="ao"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="Disable">
+      <arg name="devices" direction="in" type="ao"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="SetDiag">
+      <arg name="devices" direction="in" type="ao"/>
+      <arg name="diag" direction="in" type="b"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <method name="Format">
+      <arg name="devices" direction="in" type="ao"/>
+      <arg name="result" direction="out" type="u"/>
+      <arg name="job" direction="out" type="o"/>
+    </method>
+  </interface>
+  <interface name="org.opensuse.Agama.Storage1.ZFCP.Manager">
+    <method name="Probe">
+    </method>
   </interface>
 </node>
