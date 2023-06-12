@@ -200,14 +200,16 @@ impl Questions {
         );
         let object_path = ObjectPath::try_from(question.base().object_path()).unwrap();
 
-        let base = question.base();
+        let base = question.base().clone();
+        self.connection
+        .object_server()
+        .at(base.object_path(), question)
+        .await?;
+        // NOTE: order here is important as each interface cause signal, so frontend should wait only for GenericQuestions
+        // which should be the last interface added
         self.connection
             .object_server()
-            .at(base.object_path(), base.clone())
-            .await?;
-        self.connection
-            .object_server()
-            .at(base.object_path(), question)
+            .at(base.object_path(), base)
             .await?;
 
         self.questions.insert(id, QuestionType::Luks);

@@ -132,7 +132,8 @@ class QuestionsClient {
     );
 
     // Note: dbusQuestions contains an empty object when there are no questions.
-    return dbusQuestions.filter(q => Object.keys(q).length !== 0).map(buildQuestion);
+    // Note: questions without id is not yet fully created with all interfaces.
+    return dbusQuestions.filter(q => Object.keys(q).length !== 0 && 'id' in q).map(buildQuestion);
   }
 
   /**
@@ -182,7 +183,10 @@ class QuestionsClient {
   onQuestionAdded(handler) {
     return this.onObjectsChanged("InterfacesAdded", (path, ifacesAndProperties) => {
       const question = buildQuestion({ [path]: ifacesAndProperties });
-      handler(question);
+      // questions without id is not fully created questions
+      if ('id' in question) {
+        handler(question);
+      }
     });
   }
 
