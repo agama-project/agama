@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 12 11:13:41 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: Makes more evident when there is none authentication method
+  defined for the root user (gh#openSUSE/agama#615).
+
+-------------------------------------------------------------------
 Fri Jun  9 09:38:05 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Storage: allow setting the volume size (gh#openSUSE/agama#590).
