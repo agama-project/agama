@@ -70,11 +70,11 @@ describe("when loading initial data", () => {
 });
 
 describe("when ready", () => {
-  describe("and none method is defined", () => {
+  describe("and no method is defined", () => {
     it("renders a text inviting the user to define at least one", async () => {
       installerRender(<RootAuthMethods />);
 
-      await screen.findByText("No root auth method defined yet");
+      await screen.findByText("No root authentication method defined yet");
       screen.getByText(/at least one/);
     });
 
