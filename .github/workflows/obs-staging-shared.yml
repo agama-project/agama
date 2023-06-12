@@ -1,6 +1,6 @@
 # this is a shared workflow, not called as a top level workflow
 
-name: Update OBS Staging
+name: Update OBS Packages
 
 on:
   workflow_call:
@@ -20,6 +20,11 @@ on:
           description: OBS package name
           required: true
           type: string
+
+      project_name:
+        description: OBS project name
+        required: true
+        type: string
 
 jobs:
   update_staging_package:
@@ -55,17 +60,31 @@ jobs:
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
       - name: Checkout ${{ inputs.package_name }}
-        run: osc co systemsmanagement:Agama:Staging ${{ inputs.package_name }}
-  
+        run: osc co ${{ inputs.project_name }} ${{ inputs.package_name }}
+
+      - name: Update service revision
+        # only when a tag has been pushed
+        if: ${{ github.ref_type == 'tag' }}
+        run: |-
+          echo "Updating revision to ${{ github.ref_name }}"
+          sed -i -e 's#<param name="revision">.*</param>#<param name="revision">${{ github.ref_name }}</param>#' _service
+        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
+
       - name: Run services
         run: osc service manualrun
-        working-directory: ./systemsmanagement:Agama:Staging/${{ inputs.package_name }}
+        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
 
       - name: Check status
-        run: osc status
-        working-directory: ./systemsmanagement:Agama:Staging/${{ inputs.package_name }}
+        run: osc diff && osc status
+        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
 
       - name: Commit ${{ inputs.package_name }}
         run: |-
           osc commit -m "Updated to $(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama.obsinfo) ($(sed -e '/^commit:/!d' -e 's/commit: *\(.*\)/\1/' agama.obsinfo))"
-        working-directory: ./systemsmanagement:Agama:Staging/${{ inputs.package_name }}
+        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
+
+      - name: Submit the package
+        # only when a tag has been pushed
+        if: ${{ github.ref_type == 'tag' }}
+        run: osc sr --yes -m "Releasing version ${{ github.ref_name }}"
+        working-directory: ./${{ inputs.project_name }}/${{ inputs.package_name }}
