@@ -116,6 +116,6 @@ describe("when none root auth method is set", () => {
   it("renders information about it", async () => {
     installerRender(<UsersSection />);
 
-    await screen.findByText(/none authentication method defined for root/i);
+    await screen.findByText("No root authentication method defined");
   });
 });

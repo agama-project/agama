@@ -96,7 +96,7 @@ export default function UsersSection({ showErrors }) {
     return (
       <div>
         <If condition={both} then={<>Root authentication set for using both, password and public SSH Key</>} />
-        <If condition={none} then={<>None authentication method defined for root user</>} />
+        <If condition={none} then={<>No root authentication method defined</>} />
         <If condition={onlyPassword} then={<>Root authentication set for using password</>} />
         <If condition={onlySSHKey} then={<>Root authentication set for using public SSH Key</>} />
       </div>
