@@ -27,19 +27,69 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "id": {
+              "name": {
                 "description": "Connection ID",
                 "type": "string"
               },
-              "uuid": {
-                "description": "Connection UUID",
+              "method": {
+                "description": "Connection IP4Config method (e.g., 'auto', 'manual', 'link-local', 'disabled')",
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "manual",
+                  "link-local",
+                  "disabled"
+                ]
+              },
+              "gateway": {
+                "description": "Connection gateway address (e.g. 192.168.122.1)",
                 "type": "string"
               },
-              "type": {
-                "description": "Connection Type",
-                "type": "string"
+              "addresses": {
+                "type": "array",
+                "items": {
+                  "description": "Connection addresses",
+                  "type": "string",
+                  "additionalProperties": false
+                }
+              },
+              "nameservers": {
+                "type": "array",
+                "items": {
+                  "description": "Connection nameservers",
+                  "type": "string",
+                  "additionalProperties": false
+                }
+              },
+              "wireless": {
+                "type": "object",
+                "description": "Wireless configuration",
+                "additionalProperties": false,
+                "properties": {
+                  "password": {
+                    "type": "string"
+                  },
+                  "security": {
+                    "type": "string"
+                  },
+                  "ssid": {
+                    "type": "string"
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "infrastructure",
+                      "adhoc",
+                      "mesh",
+                      "ap"
+                    ]
+                  }
+                }
               }
-            }
+            },
+            "required": [
+              "name"
+            ]
           }
         }
       }
