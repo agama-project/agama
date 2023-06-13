@@ -44,7 +44,7 @@ export default function EditNodeForm({ node, onSubmit: onSubmitProp, onCancel })
   const id = "iscsiEditNode";
 
   return (
-    <Popup isOpen height="medium" title={`Edit ${node.target}`}>
+    <Popup isOpen title={`Edit ${node.target}`}>
       <Form id={id} onSubmit={onSubmit}>
         <FormGroup fieldId="startup" label="Startup">
           <FormSelect
