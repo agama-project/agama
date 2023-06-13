@@ -19,7 +19,9 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "dbus"
+require "agama/dbus/storage/dasds_tree"
+require "agama/dbus/storage/jobs_tree"
+require "agama/storage/dasd/manager"
 
 module Agama
   module DBus
@@ -27,21 +29,12 @@ module Agama
       module Interfaces
         # Mixin to define the D-Bus interface to manage DASD devices
         #
-        # @note This mixin is expected to be included in a class inherited from
-        # {Agama::DBus::BaseObject}
-        #
-        # @note This mixin is expected to be included only if the namespace Y2S390 (which
-        # traditionally lives in the yast2-s390 package) is available.
+        # @note This mixin is expected to be included by {Agama::DBus::Storage::Manager}.
         module DasdManager
           DASD_MANAGER_INTERFACE = "org.opensuse.Agama.Storage1.DASD.Manager"
           private_constant :DASD_MANAGER_INTERFACE
 
           def self.included(base)
-            # Require the optional dependencies only if the module is included
-            require "agama/dbus/storage/dasds_tree"
-            require "agama/dbus/storage/jobs_tree"
-            require "agama/storage/dasd/manager"
-
             base.class_eval do
               dbus_interface DASD_MANAGER_INTERFACE do
                 # Finds DASDs in the system and populates the D-Bus objects tree according
@@ -189,6 +182,7 @@ module Agama
 
             dasd_backend.on_refresh do |dasds|
               dasds_tree.update(dasds)
+              deprecate_system
             end
           end
 

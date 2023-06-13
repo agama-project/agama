@@ -26,6 +26,8 @@ module Agama
   module DBus
     module Storage
       # Class representing the tree of DASDs exported on D-Bus
+      #
+      # TODO: inherit from BaseTree class, see https://github.com/openSUSE/agama/issues/605.
       class DasdsTree
         include WithPathGenerator
 
@@ -35,7 +37,7 @@ module Agama
 
         # Constructor
         #
-        # @param service [::DBus::Service]
+        # @param service [::DBus::ObjectServer]
         # @param logger [Logger, nil]
         def initialize(service, logger: nil)
           @service = service
@@ -76,7 +78,7 @@ module Agama
 
       private
 
-        # @return [::DBus::Service]
+        # @return [::DBus::ObjectServer]
         attr_reader :service
 
         # @return [Logger]

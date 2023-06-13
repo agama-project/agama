@@ -1,0 +1,30 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/org/opensuse/Agama/Storage1">
+  <interface name="org.opensuse.Agama.Storage1">
+    <method name="Probe">
+    </method>
+    <method name="Install">
+    </method>
+    <method name="Finish">
+    </method>
+    <!--
+      Whether the system is in a deprecated status.
+
+      The system is usually set as deprecated as effect of managing some kind of devices, for
+      example, when iSCSI sessions are created or when a zFCP disk is activated.
+
+      A deprecated system means that the probed system could not match with the current system.
+
+      It is expected that clients probe devices again if the system is deprecated.
+    -->
+    <property type="b" name="DeprecatedSystem" access="read"/>
+  </interface>
+  <interface name="org.opensuse.Agama.Storage1.ZFCP.Manager">
+    <!--
+      Probes the zFCP controllers and disks.
+    -->
+    <method name="Probe">
+    </method>
+  </interface>
+</node>

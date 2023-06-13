@@ -1,0 +1,87 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <!--
+    Interface for managing a zFCP controller, see
+    https://www.ibm.com/docs/en/linux-on-systems?topic=cd-manually-configured-fcp-luns-1
+  -->
+  <interface name="org.opensuse.Agama.Storage1.ZFCP.Controller">
+    <!--
+      Gets the list of WWPNs (World Wide Port Name)
+    -->
+    <method name="GetWWPNs">
+      <!--
+        E.g., 0x500507630300c562 0x500507630300c563
+      -->
+      <arg name="result" direction="out" type="as"/>
+    </method>
+    <!--
+      Gets the list of LUNs (Local Unit Number)
+    -->
+    <method name="GetLUNs">
+      <!--
+        E.g., 0x500507630300c562
+      -->
+      <arg name="wwpn" direction="in" type="s"/>
+      <!--
+        E.g., 0x4010403300000000 0x4010403300000001 0x4010403300000002
+      -->
+      <arg name="result" direction="out" type="as"/>
+    </method>
+    <!--
+      Activates the zFCP controller.
+
+      If allow_lun_scan is active, then all LUNs are automatically activated.
+    -->
+    <method name="Activate">
+      <!--
+        Exit code of the chzdev command.
+      -->
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <!--
+      Activates a zFCP disk.
+    -->
+    <method name="ActivateDisk">
+      <!--
+        E.g., 0x500507630300c562
+      -->
+      <arg name="wwpn" direction="in" type="s"/>
+      <!--
+        E.g., 0x4010403300000000
+      -->
+      <arg name="lun" direction="in" type="s"/>
+      <!--
+        Exit code of the chzdev command.
+      -->
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <!--
+      Deactivates a zFCP disk.
+
+      If "allow_lun_scan" is active, then the disk cannot be deactivated.
+    -->
+    <method name="DeactivateDisk">
+      <!--
+        E.g., 0x500507630300c562
+      -->
+      <arg name="wwpn" direction="in" type="s"/>
+      <!--
+        E.g., 0x4010403300000000
+      -->
+      <arg name="lun" direction="in" type="s"/>
+      <!--
+        Exit code of the chzdev command.
+      -->
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <!--
+      Whether the controller is active.
+    -->
+    <property type="b" name="Active" access="read"/>
+    <!--
+      zFCP channel id (e.g., 0.0.fa00).
+    -->
+    <property type="s" name="Channel" access="read"/>
+  </interface>
+</node>

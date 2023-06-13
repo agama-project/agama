@@ -26,6 +26,8 @@ module Agama
   module DBus
     module Storage
       # Class representing the iSCSI nodes tree exported on D-Bus
+      #
+      # TODO: inherit from BaseTree class, see https://github.com/openSUSE/agama/issues/605.
       class ISCSINodesTree
         include WithPathGenerator
 
@@ -34,7 +36,7 @@ module Agama
 
         # Constructor
         #
-        # @param service [::DBus::Service]
+        # @param service [::DBus::ObjectServer]
         # @param iscsi_manager Agama::Storage::ISCSI::Manager]
         # @param logger [Logger, nil]
         def initialize(service, iscsi_manager, logger: nil)
@@ -63,7 +65,7 @@ module Agama
 
       private
 
-        # @return [::DBus::Service]
+        # @return [::DBus::ObjectServer]
         attr_reader :service
 
         # @return [Agama::Storage::ISCSI::Manager]

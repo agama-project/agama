@@ -19,18 +19,18 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/dbus/base_tree"
 require "agama/dbus/with_path_generator"
-require "agama/dbus/storage/dasds_format_job"
+require "agama/dbus/storage/zfcp_disk"
 
 module Agama
   module DBus
     module Storage
-      # Class representing the storage jobs (D-Bus objects representing long-running processes)
-      # exported on D-Bus
-      class JobsTree
+      # Tree of zFCP disks exported on D-Bus
+      class ZFCPDisksTree < BaseTree
         include WithPathGenerator
 
-        ROOT_PATH = "/org/opensuse/Agama/Storage1/jobs"
+        ROOT_PATH = "/org/opensuse/Agama/Storage1/zfcp_disks"
         path_generator ROOT_PATH
 
         # Constructor
@@ -38,31 +38,38 @@ module Agama
         # @param service [::DBus::ObjectServer]
         # @param logger [Logger, nil]
         def initialize(service, logger: nil)
-          @service = service
-          @logger = logger
-        end
-
-        # Registers a new job to format a set of DASDs
-        #
-        # @param initial [Array<Y2S390::FormatStatus] initial status information for all the
-        #   involved DASDs
-        # @param dasds_tree [DasdsTree] up-to-date representations of the DASDs in the D-Bus tree
-        # @return [DasdsFormatJob]
-        def add_dasds_format(initial, dasds_tree)
-          job = DBus::Storage::DasdsFormatJob.new(
-            initial, dasds_tree, next_path, logger: logger
-          )
-          service.export(job)
-          job
+          super(service, ROOT_PATH, logger: logger)
         end
 
       private
 
-        # @return [::DBus::ObjectServer]
-        attr_reader :service
+        # @see BaseTree#create_dbus_object
+        #
+        # @param object [Agama::Storage::ZFCP::Disk]
+        # @return [ZFCPDisk]
+        def create_dbus_object(object)
+          ZFCPDisk.new(object, next_path, logger: logger)
+        end
 
-        # @return [Logger]
-        attr_reader :logger
+        # @see BaseTree#update_dbus_object
+        #
+        # @param dbus_object [ZFCPDisk]
+        # @param object [Agama::Storage::ZFCP::Disk]
+        def update_dbus_object(dbus_object, object)
+          dbus_object.disk = object
+        end
+
+        # @see BaseTree#dbus_object?
+        #
+        # @param dbus_object [ZFCPDisk]
+        # @param object [Agama::Storage::ZFCP::Disk]
+        def dbus_object?(dbus_object, object)
+          disk = dbus_object.disk
+
+          disk.channel == object.channel &&
+            disk.wwpn == object.wwpn &&
+            disk.lun == object.lun
+        end
       end
     end
   end
