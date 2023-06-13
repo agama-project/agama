@@ -24,18 +24,9 @@ more details below.
 
 ## Releasing a New Version
 
-For releasing a new version just create a new version tag in form `v[0-9]+\..*`
-and push it to the server:
-
-```shell
-# consider using `git tag -s` option to create a GPG signed tag
-git tag -a -m "Version 2.3.4" v2.3.4
-git push origin v2.3.4
-```
-
-The GitHub Actions will publish the packages in the [systemsmanagement:Agama:Devel](
-https://build.opensuse.org/project/show/systemsmanagement:Agama:Devel)
-project and create submit requests to openSUSE Factory.
+For releasing a new version just create a new version tag. The process is then
+fully automated. See more details in the [Packaging documentation](
+../PACKAGING.md#bumping-the-version).
 
 ## OBS Synchronization
 
