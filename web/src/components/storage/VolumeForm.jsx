@@ -240,9 +240,9 @@ const SizeOptions = ({ errors, formData, volume, onChange }) => {
   const { sizeMethod } = formData;
   const sizeWidgetProps = { errors, formData, volume, onChange };
 
-  const sizeOptions = [SIZE_METHODS.RANGE, SIZE_METHODS.MANUAL];
+  const sizeOptions = [SIZE_METHODS.MANUAL, SIZE_METHODS.RANGE];
 
-  if (volume.adaptiveSizes) sizeOptions.unshift(SIZE_METHODS.AUTO);
+  if (volume.adaptiveSizes) sizeOptions.push(SIZE_METHODS.AUTO);
 
   return (
     <div>
