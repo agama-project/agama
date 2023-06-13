@@ -10,49 +10,9 @@ on:
       - service/**
 
 jobs:
-  update_staging:
-    # do not run in forks
-    if: github.repository == 'openSUSE/agama'
-
-    runs-on: ubuntu-latest
-
-    container:
-      image: registry.opensuse.org/opensuse/tumbleweed:latest
-
-    steps:
-      - name: Configure and refresh repositories
-        # disable unused repositories to have a faster refresh
-        run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
-
-      - name: Install tools
-        run: zypper --non-interactive install --no-recommends
-             git
-             obs-service-format_spec_file
-             osc
-             ruby
-             'rubygem(gem2rpm)'
-             'rubygem(yast-rake)'
-
-      - name: Git Checkout
-        uses: actions/checkout@v3
-        with:
-          # fetch all history, we need to find the latest tag and offset for the version number
-          fetch-depth: 0
-
-      - name: Fix file owner
-        # workaround for a strict git check
-        run: chown -R -c 0 .
-
-      - name: Configure osc
-        run: .github/workflows/configure_osc.sh
-        env:
-          OBS_USER:     ${{ secrets.OBS_USER }}
-          OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
-
-      - name: Commit the rubygem-agama package
-        run: rake osc:commit
-        working-directory: ./service
-        env:
-          # do not build the package with "osc", it takes long time
-          # and does not provide much value
-          SKIP_OSC_BUILD: 1
+  update_service:
+    uses: ./.github/workflows/obs-staging-shared.yml
+    # pass all secrets
+    secrets: inherit
+    with:
+      project_name: systemsmanagement:Agama:Staging

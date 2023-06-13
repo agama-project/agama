@@ -1,0 +1,80 @@
+# this is a shared workflow, not called as a top level workflow
+
+name: Update OBS Service Package
+
+on:
+  workflow_call:
+    secrets:
+      OBS_USER:
+        required: true
+      OBS_PASSWORD:
+        required: true
+
+    inputs:
+      project_name:
+        description: OBS project name
+        required: true
+        type: string
+
+jobs:
+  update_service:
+    # do not run in forks
+    if: github.repository == 'openSUSE/agama'
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+
+    steps:
+      - name: Configure and refresh repositories
+        # disable unused repositories to have a faster refresh
+        run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+
+      - name: Install tools
+        run: zypper --non-interactive install --no-recommends
+             git
+             obs-service-format_spec_file
+             osc
+             ruby
+             'rubygem(gem2rpm)'
+             'rubygem(yast-rake)'
+
+      - name: Git Checkout (full history)
+        if: ${{ github.ref_type != 'tag' }}
+        uses: actions/checkout@v3
+        with:
+          # fetch all history, we need to find the latest tag and offset for the version number
+          fetch-depth: 0
+
+      - name: Git Checkout (release tag only)
+        if: ${{ github.ref_type == 'tag' }}
+        uses: actions/checkout@v3
+
+      - name: Fix file owner
+        # workaround for a strict git check
+        run: chown -R -c 0 .
+
+      - name: Configure osc
+        run: .github/workflows/configure_osc.sh
+        env:
+          OBS_USER:     ${{ secrets.OBS_USER }}
+          OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
+
+      - name: Commit the rubygem-agama package to ${{ inputs.project_name }}
+        run: rake osc:commit
+        working-directory: ./service
+        env:
+          # do not build the package with "osc", it takes long time
+          # and does not provide much value
+          SKIP_OSC_BUILD: 1
+          OBS_PROJECT: ${{ inputs.project_name }}
+
+      - name: Submit the rubygem-agama package
+        # only when a tag has been pushed
+        if: ${{ github.ref_type == 'tag' }}
+        # the package has been comitted in the previous step, just submit it
+        run: rake osc:sr:force
+        working-directory: ./service
+        env:
+          OBS_PROJECT: ${{ inputs.project_name }}
