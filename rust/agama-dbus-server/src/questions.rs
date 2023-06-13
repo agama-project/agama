@@ -202,9 +202,9 @@ impl Questions {
 
         let base = question.base().clone();
         self.connection
-        .object_server()
-        .at(base.object_path(), question)
-        .await?;
+            .object_server()
+            .at(base.object_path(), question)
+            .await?;
         // NOTE: order here is important as each interface cause signal, so frontend should wait only for GenericQuestions
         // which should be the last interface added
         self.connection
