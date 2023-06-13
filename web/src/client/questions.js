@@ -133,7 +133,8 @@ class QuestionsClient {
 
     // Note: dbusQuestions contains an empty object when there are no questions.
     // Note: questions without id is not yet fully created with all interfaces.
-    return dbusQuestions.filter(q => Object.keys(q).length !== 0 && 'id' in q).map(buildQuestion);
+    return dbusQuestions.filter(q => Object.keys(q).length !== 0).map(buildQuestion)
+      .filter(q => "id" in q);
   }
 
   /**
@@ -185,7 +186,12 @@ class QuestionsClient {
       const question = buildQuestion({ [path]: ifacesAndProperties });
       // questions without id is not fully created questions
       if ('id' in question) {
-        handler(question);
+        // and here is second tricky part. As we get new interface, but not all interfaces, we do another
+        // dbus call to get all interfaces of question
+        this.getQuestions().then(questions => {
+          const changed_question = questions.find(q => q.id === question.id);
+          handler(changed_question);
+        });
       }
     });
   }
