@@ -247,6 +247,7 @@ mod test {
         OwnedNestedHash,
     };
     use crate::{model::*, nm::dbus::ETHERNET_KEY};
+    use agama_lib::network::types::SSID;
     use std::{collections::HashMap, net::Ipv4Addr};
     use uuid::Uuid;
     use zbus::zvariant::{self, OwnedValue, Value};
