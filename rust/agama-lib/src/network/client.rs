@@ -43,7 +43,10 @@ impl<'a> NetworkClient<'a> {
             .await?;
 
         let meth = ipv4_proxy.method().await?;
-        let gateway = ipv4_proxy.gateway().await?;
+        let gateway = match ipv4_proxy.gateway().await?.as_str() {
+            "" => None,
+            value => Some(value.to_string()),
+        };
         let nameservers = ipv4_proxy.nameservers().await?;
         let addresses = ipv4_proxy.addresses().await?;
         let addresses = addresses

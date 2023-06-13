@@ -29,9 +29,13 @@ pub struct NetworkConnection {
     pub name: String,
     pub dhcp4: bool,
     pub dhcp6: bool,
-    pub gateway: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gateway: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub addresses: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub nameservers: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub wireless: Option<WirelessSettings>,
 }
 
