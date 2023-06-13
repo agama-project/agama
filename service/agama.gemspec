@@ -22,9 +22,17 @@
 
 Gem::Specification.new do |spec|
   spec.name = "agama"
-  # the version is <version_tag>.devel<number_of_commits_since_the_tag>
-  # or just <version_tag> if there are no additional commits
-  spec.version = `git describe --tags`.chomp.sub(/^v/, "").sub(/-([0-9]+)-g\h+\Z/, ".devel\\1")
+
+  # in a git checkout?
+  if File.exist?(File.join(__dir__, "../.git"))
+    # the version is <version_tag>.devel<number_of_commits_since_the_tag>
+    # or just <version_tag> if there are no additional commits
+    spec.version = `git describe --tags`.chomp.sub(/^v/, "").sub(/-([0-9]+)-g\h+\Z/, ".devel\\1")
+  else
+    # running in yupdate script, use a fake version
+    spec.version = "99.yupdate"
+  end
+
   spec.summary = "Agama Installer Service"
   spec.description = "System service for Agama, an experimental YaST-based installer."
   spec.author = "YaST Team"
