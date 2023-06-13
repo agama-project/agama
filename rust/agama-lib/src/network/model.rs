@@ -18,6 +18,7 @@ pub struct NetworkSettings {
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct WirelessSettings {
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub password: String,
     pub security: String,
     pub ssid: String,
@@ -27,8 +28,7 @@ pub struct WirelessSettings {
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct NetworkConnection {
     pub name: String,
-    pub dhcp4: bool,
-    pub dhcp6: bool,
+    pub method: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gateway: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]

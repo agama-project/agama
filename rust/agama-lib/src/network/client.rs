@@ -2,6 +2,7 @@ use super::model::{NetworkConnection, WirelessSettings};
 use super::types::SSID;
 use crate::error::ServiceError;
 
+use super::proxies::ConnectionProxy;
 use super::proxies::ConnectionsProxy;
 use super::proxies::IPv4Proxy;
 use super::proxies::WirelessProxy;
@@ -37,12 +38,24 @@ impl<'a> NetworkClient<'a> {
         Ok(connections)
     }
     async fn connection_from(&self, path: &str) -> Result<NetworkConnection, ServiceError> {
+        let connection_proxy = ConnectionProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+        let name = connection_proxy.id().await?;
+
         let ipv4_proxy = IPv4Proxy::builder(&self.connection)
             .path(path)?
             .build()
             .await?;
 
-        let meth = ipv4_proxy.method().await?;
+        let method = match ipv4_proxy.method().await? {
+            0 => "auto",
+            1 => "manual",
+            2 => "link-local",
+            3 => "disable",
+            _ => "auto",
+        };
         let gateway = match ipv4_proxy.gateway().await?.as_str() {
             "" => None,
             value => Some(value.to_string()),
@@ -55,7 +68,8 @@ impl<'a> NetworkClient<'a> {
             .collect();
 
         Ok(NetworkConnection {
-            name: path.to_string(),
+            name,
+            method: method.to_string(),
             gateway,
             addresses,
             nameservers,
