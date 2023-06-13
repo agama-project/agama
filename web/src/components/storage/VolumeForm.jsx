@@ -130,7 +130,7 @@ const SizeManual = ({ errors, formData, onChange }) => {
           <NumericTextInput
             id="size"
             name="size"
-            aria-label="Desired size"
+            aria-label="Exact size"
             value={formData.size}
             onChange={(size) => onChange({ size })}
             validated={errors.size && 'error'}

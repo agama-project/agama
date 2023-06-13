@@ -174,7 +174,7 @@ describe("size validations", () => {
       const manualSize = screen.getByRole("radio", { name: "Fixed" });
       await user.click(manualSize);
 
-      const sizeInput = screen.getByRole("textbox", { name: "Desired size" });
+      const sizeInput = screen.getByRole("textbox", { name: "Exact size" });
       await user.clear(sizeInput);
       await user.click(submitForm);
       screen.getByText("A size value is required");
