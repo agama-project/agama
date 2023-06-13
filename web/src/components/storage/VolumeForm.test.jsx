@@ -100,7 +100,7 @@ it("renders controls for setting the desired size", () => {
   plainRender(<VolumeForm {...props} />);
 
   screen.getByRole("radio", { name: "Auto" });
-  screen.getByRole("radio", { name: "Manual" });
+  screen.getByRole("radio", { name: "Fixed" });
   screen.getByRole("radio", { name: "Range" });
 });
 
@@ -164,17 +164,17 @@ it("calls the onSubmit callback with resulting volume when the form is submitted
 });
 
 describe("size validations", () => {
-  describe("when 'Manual' size is selected", () => {
+  describe("when 'Fixed' size is selected", () => {
     beforeEach(() => { props.volume = volumes.home });
 
     it("renders an error when size is not given", async () => {
       const { user } = plainRender(<VolumeFormWrapper volume={volumes.home} onSubmit={onSubmitFn} />);
 
       const submitForm = screen.getByRole("button", { name: "Submit VolumeForm" });
-      const manualSize = screen.getByRole("radio", { name: "Manual" });
+      const manualSize = screen.getByRole("radio", { name: "Fixed" });
       await user.click(manualSize);
 
-      const sizeInput = screen.getByRole("textbox", { name: "Desired size" });
+      const sizeInput = screen.getByRole("textbox", { name: "Exact size" });
       await user.clear(sizeInput);
       await user.click(submitForm);
       screen.getByText("A size value is required");

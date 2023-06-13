@@ -130,7 +130,7 @@ const SizeManual = ({ errors, formData, onChange }) => {
           <NumericTextInput
             id="size"
             name="size"
-            aria-label="Desired size"
+            aria-label="Exact size"
             value={formData.size}
             onChange={(size) => onChange({ size })}
             validated={errors.size && 'error'}
@@ -242,7 +242,7 @@ const SizeOptions = ({ errors, formData, volume, onChange }) => {
 
   const sizeOptions = [SIZE_METHODS.MANUAL, SIZE_METHODS.RANGE];
 
-  if (volume.adaptiveSizes) sizeOptions.unshift(SIZE_METHODS.AUTO);
+  if (volume.adaptiveSizes) sizeOptions.push(SIZE_METHODS.AUTO);
 
   return (
     <div>
@@ -267,8 +267,8 @@ const SizeOptions = ({ errors, formData, volume, onChange }) => {
 
       <div aria-live="polite" className="highlighted-live-region">
         <If condition={sizeMethod === SIZE_METHODS.AUTO} then={<SizeAuto { ...sizeWidgetProps } />} />
-        <If condition={sizeMethod === SIZE_METHODS.MANUAL} then={<SizeManual { ...sizeWidgetProps } />} />
         <If condition={sizeMethod === SIZE_METHODS.RANGE} then={<SizeRange {...sizeWidgetProps } />} />
+        <If condition={sizeMethod === SIZE_METHODS.MANUAL} then={<SizeManual { ...sizeWidgetProps } />} />
       </div>
     </div>
   );
