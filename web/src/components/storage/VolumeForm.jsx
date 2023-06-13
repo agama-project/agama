@@ -240,7 +240,7 @@ const SizeOptions = ({ errors, formData, volume, onChange }) => {
   const { sizeMethod } = formData;
   const sizeWidgetProps = { errors, formData, volume, onChange };
 
-  const sizeOptions = [SIZE_METHODS.MANUAL, SIZE_METHODS.RANGE];
+  const sizeOptions = [SIZE_METHODS.RANGE, SIZE_METHODS.MANUAL];
 
   if (volume.adaptiveSizes) sizeOptions.unshift(SIZE_METHODS.AUTO);
 
@@ -267,8 +267,8 @@ const SizeOptions = ({ errors, formData, volume, onChange }) => {
 
       <div aria-live="polite" className="highlighted-live-region">
         <If condition={sizeMethod === SIZE_METHODS.AUTO} then={<SizeAuto { ...sizeWidgetProps } />} />
-        <If condition={sizeMethod === SIZE_METHODS.MANUAL} then={<SizeManual { ...sizeWidgetProps } />} />
         <If condition={sizeMethod === SIZE_METHODS.RANGE} then={<SizeRange {...sizeWidgetProps } />} />
+        <If condition={sizeMethod === SIZE_METHODS.MANUAL} then={<SizeManual { ...sizeWidgetProps } />} />
       </div>
     </div>
   );
