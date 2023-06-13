@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 13 06:59:12 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Storage: adjust volume size options wording and size
+   (gh#/openSUSE/agama#618).
+
+-------------------------------------------------------------------
 Mon Jun 12 11:13:41 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Makes more evident when there is none authentication method
