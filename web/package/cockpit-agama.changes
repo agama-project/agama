@@ -7,7 +7,7 @@ Tue Jun 13 06:59:12 UTC 2023 - David Diaz <dgonzalez@suse.com>
 -------------------------------------------------------------------
 Mon Jun 12 11:13:41 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
-- UI: Makes more evident when there is none authentication method
+- UI: makes more evident when there is none authentication method
   defined for the root user (gh#openSUSE/agama#615).
 
 -------------------------------------------------------------------
@@ -18,7 +18,7 @@ Fri Jun  9 09:38:05 UTC 2023 - David Diaz <dgonzalez@suse.com>
 -------------------------------------------------------------------
 Wed May 24 11:01:24 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
-- UI: Ensure that blur and grayscale CSS filters are not applied to
+- UI: ensure that blur and grayscale CSS filters are not applied to
   any nodes other than <body> direct children (gh#openSUSE/agama#588).
 
 -------------------------------------------------------------------
