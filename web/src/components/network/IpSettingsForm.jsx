@@ -123,7 +123,7 @@ export default function IpSettingsForm({ connection, onClose }) {
   };
 
   return (
-    <Popup isOpen height="medium" title={`Edit "${connection.name}" connection`}>
+    <Popup isOpen title={`Edit "${connection.name}" connection`}>
       <Form id="edit-connection" onSubmit={onSubmit}>
         <FormGroup fieldId="method" label="Mode" isRequired>
           <FormSelect
