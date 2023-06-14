@@ -65,7 +65,7 @@ end
 
 Yast::Tasks.configuration do |conf|
   conf.obs_api = "https://api.opensuse.org"
-  conf.obs_project = "systemsmanagement:Agama:Staging"
+  conf.obs_project = ENV["OBS_PROJECT"] || "systemsmanagement:Agama:Staging"
   conf.package_dir = File.join(Rake.original_dir, "package")
   conf.obs_target = "openSUSE_Tumbleweed"
   package_name = package_name_from(Rake.original_dir)
