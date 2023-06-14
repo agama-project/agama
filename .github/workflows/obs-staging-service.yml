@@ -11,7 +11,7 @@ on:
 
 jobs:
   update_service:
-    uses: ./.github/workflows/obs-staging-shared.yml
+    uses: ./.github/workflows/obs-service-shared.yml
     # pass all secrets
     secrets: inherit
     with:
