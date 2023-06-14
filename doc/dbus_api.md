@@ -635,43 +635,6 @@ See the new-style [reference][usr-ref] ([source][usr-src]).
 [usr-ref]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama.Users1.html
 [usr-src]: dbus/org.opensuse.Agama.Users1.doc.xml
 
-## Questions
-
-
-### org.opensuse.Agama.Questions1
-
-<!--
-TODO: seed a question object and a luks question object
--->
-#### Properties
-
-- Id -> unsigned 32-bit integer (r)
-  Question id. The question is exported at *root_path/id*.
-
-- Text -> string (r)
-  Text of the question. Clients show this text to the users.
-
-- Options -> array(string) (r)
-  Options for answering the question. The question only admits an option from the list as valid
-  answer.
-
-- DefaultOption -> string (r)
-  Clients should offer this option as default option for answering the question.
-
-- Answer -> string (rw)
-  Answer for the question. Clients set an option as answer.
-
-### org.opensuse.Agama.Questions1.LuksActivation
-
-#### Properties
-
-- Password -> string (rw)
-  Password provided to decrypt a LUKS device.
-
-- Attempt -> unsigned 32-bit integer (r)
-  Current attempt to decrypt the device. This value is useful for clients to know if the very same
-  question is asked again (i.e., when the provided password did not work).
-
 ## Manager
 
 See the new-style [reference][mgr-ref] ([source][mgr-src]).
