@@ -94,6 +94,8 @@ Rake::Task["package"].clear
 # Disables the osc:build
 if ENV["SKIP_OSC_BUILD"] == "1"
   Rake::Task["osc:build"].clear
+  # ensure the package sources are still built
+  task :"osc:build" => :package
 end
 
 # TODO: redefine :tarball instead of :package
