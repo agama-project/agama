@@ -8,6 +8,7 @@ on:
     paths:
       # run only when a service source is changed
       - service/**
+      - Rakefile
 
 jobs:
   update_service:
