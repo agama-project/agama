@@ -72,6 +72,22 @@ Yast::Tasks.configuration do |conf|
   conf.package_name = package_name if package_name
 end
 
+desc "Create a new version tag, the new version is <current major> + 1 or pass the version as a parameter"
+task :tag, [:version] do |t, args|
+  args.with_defaults = { :version => nil }
+
+  if args[:version]
+    new_version = args[:version]
+  else
+    new_version = `git describe --tags --match "v[0-9]*"`.match(/^v(\d+)/)[1].to_i + 1
+  end
+
+  system("git tag -s -m 'Version #{new_version}' v#{new_version}") || exit(1)
+
+  puts "Created version tag: v#{new_version}"
+  puts "To push the tag to the server run: git push origin v#{new_version}"
+end
+
 # Removes the "package" task to redefine it later.
 Rake::Task["package"].clear
 
