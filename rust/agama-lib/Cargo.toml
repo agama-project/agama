@@ -6,15 +6,16 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-zbus = "3.7.0"
-serde = { version = "1.0.152", features = ["derive"] }
 agama-derive = { path="../agama-derive" }
+anyhow = "1.0"
 async-std = "1.12.0"
 curl = { version = "0.4.44", features = ["protocol-ftp"] }
+futures = "0.3.27"
+futures-util = "0.3.27"
 jsonschema = { version = "0.16.1", default-features = false }
+log = "0.4"
+serde = { version = "1.0.152", features = ["derive"] }
 serde_json = "1.0.94"
 tempfile = "3.4.0"
 thiserror = "1.0.39"
-anyhow = "1.0"
-futures = "0.3.27"
-futures-util = "0.3.27"
+zbus = "3.7.0"
