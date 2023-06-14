@@ -1,6 +1,8 @@
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node name="/org/opensuse/Agama/Storage1">
+  <node name="zfcp_controllers" />
+  <node name="zfcp_disks" />
   <interface name="org.freedesktop.DBus.Properties">
     <method name="Get">
       <arg name="interface_name" direction="in" type="s"/>
@@ -109,5 +111,6 @@
   <interface name="org.opensuse.Agama.Storage1.ZFCP.Manager">
     <method name="Probe">
     </method>
+    <property type="b" name="AllowLUNScan" access="read"/>
   </interface>
 </node>

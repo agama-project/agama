@@ -55,6 +55,13 @@ module Agama
           controller.active?
         end
 
+        # Whether the controller is automatically scanning LUNs
+        #
+        # @return [Boolean]
+        def lun_scan
+          controller.lun_scan?
+        end
+
         # zFCP channel id
         #
         # @return [String]
@@ -131,6 +138,9 @@ module Agama
         dbus_interface ZFCP_CONTROLLER_INTERFACE do
           # @see #active
           dbus_reader(:active, "b")
+
+          # @see #lun_scan
+          dbus_reader(:lun_scan, "b", dbus_name: "LUNScan")
 
           # @see #channel
           dbus_reader(:channel, "s")

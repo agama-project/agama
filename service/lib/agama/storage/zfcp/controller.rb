@@ -33,8 +33,15 @@ module Agama
         # @return [String]
         attr_reader :channel
 
+        # @see #active?
+        #
         # @return [Boolean]
         attr_writer :active
+
+        # @see #lun_scan?
+        #
+        # @return [Boolean]
+        attr_writer :lun_scan
 
         eql_attr :channel, :active?
 
@@ -50,6 +57,13 @@ module Agama
         # @return [Boolean]
         def active?
           !!@active
+        end
+
+        # Whether the controller is automatically scanning LUNs
+        #
+        # @return [Booelan]
+        def lun_scan?
+          !!@lun_scan
         end
       end
     end

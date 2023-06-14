@@ -108,7 +108,10 @@ describe Agama::Storage::ZFCP::Manager do
 
     before do
       allow(yast_zfcp).to receive(:activated_controller?).with("0.0.fa00").and_return(true)
+      allow(yast_zfcp).to receive(:lun_scan_controller?).with("0.0.fa00").and_return(true)
+
       allow(yast_zfcp).to receive(:activated_controller?).with("0.0.fc00").and_return(false)
+      allow(yast_zfcp).to receive(:lun_scan_controller?).with("0.0.fc00").and_return(false)
     end
 
     it "returns the zFCP controllers" do
@@ -118,9 +121,11 @@ describe Agama::Storage::ZFCP::Manager do
 
       controller = controllers.find { |c| c.channel == "0.0.fa00" }
       expect(controller.active?).to eq(true)
+      expect(controller.lun_scan?).to eq(true)
 
       controller = controllers.find { |c| c.channel == "0.0.fc00" }
       expect(controller.active?).to eq(false)
+      expect(controller.lun_scan?).to eq(false)
     end
   end
 
@@ -146,6 +151,28 @@ describe Agama::Storage::ZFCP::Manager do
           lun:     "0x0000000000000004"
         )
       )
+    end
+  end
+
+  describe "#allow_lun_scan?" do
+    before do
+      allow(yast_zfcp).to receive(:allow_lun_scan?).and_return(active)
+    end
+
+    context "if allow_lun_scan is active" do
+      let(:active) { true }
+
+      it "returns true" do
+        expect(subject.allow_lun_scan?).to eq(true)
+      end
+    end
+
+    context "if allow_lun_scan is not active" do
+      let(:active) { false }
+
+      it "returns false" do
+        expect(subject.allow_lun_scan?).to eq(false)
+      end
     end
   end
 
