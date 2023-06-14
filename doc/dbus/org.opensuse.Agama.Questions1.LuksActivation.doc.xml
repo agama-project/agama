@@ -1,0 +1,9 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.opensuse.Agama.Questions1.LuksActivation">
+    <property name="Attempt" type="y" access="read"/>
+    <property name="Password" type="s" access="readwrite"/>
+  </interface>
+</node>
+

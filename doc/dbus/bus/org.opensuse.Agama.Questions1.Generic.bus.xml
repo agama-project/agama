@@ -33,16 +33,17 @@
       <arg type="s" direction="out"/>
     </method>
   </interface>
+  <interface name="org.opensuse.Agama.Questions1.Generic">
+    <property name="Answer" type="s" access="readwrite"/>
+    <property name="DefaultOption" type="s" access="read"/>
+    <property name="Id" type="u" access="read"/>
+    <property name="Options" type="as" access="read"/>
+    <property name="Text" type="s" access="read"/>
+  </interface>
   <interface name="org.freedesktop.DBus.Introspectable">
     <method name="Introspect">
-      <arg name="xml_data" direction="out" type="s"/>
+      <arg type="s" direction="out"/>
     </method>
   </interface>
-  <interface name="org.opensuse.Agama.Questions1">
-    <property type="u" name="Id" access="read"/>
-    <property type="s" name="Text" access="read"/>
-    <property type="as" name="Options" access="read"/>
-    <property type="s" name="DefaultOption" access="read"/>
-    <property type="s" name="Answer" access="readwrite"/>
-  </interface>
 </node>
+
