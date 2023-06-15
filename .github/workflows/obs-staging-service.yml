@@ -1,4 +1,4 @@
-name: OBS:Staging (rubygem-agama)
+name: Submit rubygem-agama
 
 on:
   # runs on pushes targeting the default branch
