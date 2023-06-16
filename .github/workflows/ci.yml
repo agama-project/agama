@@ -203,7 +203,7 @@ jobs:
       run:  podman exec agama bash -c "cd /checkout/rust; cargo test --verbose"
 
     - name: Check rust formatting
-      run:  podman exec agama bash -c "cd /checkout/rust; cargo install rustfmt; cargo fmt -- --check"
+      run:  podman exec agama bash -c "cd /checkout/rust; cargo install rustfmt-nightly; cargo fmt --all -- --check"
 
     - name: Set a testing Agama configuration
       # copy a simplified ALP config file, it skips the product selection at the beginning
