@@ -1,6 +1,6 @@
+use crate::error::WrongParameter;
 use crate::install_settings::{FirstUserSettings, RootUserSettings, UserSettings};
 use crate::users::{FirstUser, UsersClient};
-use crate::error::WrongParameter;
 use std::error::Error;
 use zbus::Connection;
 
@@ -57,7 +57,7 @@ impl<'a> UsersStore<'a> {
         };
         let (success, issues) = self.users_client.set_first_user(&first_user).await?;
         if !success {
-            return Err(Box::new(WrongParameter::WrongUser(issues)));  
+            return Err(Box::new(WrongParameter::WrongUser(issues)));
         }
         Ok(())
     }

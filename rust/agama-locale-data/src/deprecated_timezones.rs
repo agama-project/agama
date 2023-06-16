@@ -1,19 +1,19 @@
 /// List of timezones which are deprecated and langtables missing translations for it
-/// 
+///
 /// Filtering it out also helps with returning smaller list of real timezones.
 /// Sadly many libraries facing issues with deprecated timezones, see e.g.
-/// 
-pub(crate) const DEPRECATED_TIMEZONES : &[&str]= &[
-    "Africa/Asmera", // replaced by Africa/Asmara
-    "Africa/Timbuktu", // replaced by Africa/Bamako
+///
+pub(crate) const DEPRECATED_TIMEZONES: &[&str] = &[
+    "Africa/Asmera",                    // replaced by Africa/Asmara
+    "Africa/Timbuktu",                  // replaced by Africa/Bamako
     "America/Argentina/ComodRivadavia", // replaced by America/Argentina/Catamarca
-    "America/Atka", // replaced by America/Adak
-    "America/Ciudad_Juarez", // failed to find replacement
-    "America/Coral_Harbour", // replaced by America/Atikokan
-    "America/Ensenada", // replaced by America/Tijuana
+    "America/Atka",                     // replaced by America/Adak
+    "America/Ciudad_Juarez",            // failed to find replacement
+    "America/Coral_Harbour",            // replaced by America/Atikokan
+    "America/Ensenada",                 // replaced by America/Tijuana
     "America/Fort_Nelson",
     "America/Fort_Wayne", // replaced by America/Indiana/Indianapolis
-    "America/Knox_IN", // replaced by America/Indiana/Knox
+    "America/Knox_IN",    // replaced by America/Indiana/Knox
     "America/Nuuk",
     "America/Porto_Acre", // replaced by America/Rio_Branco
     "America/Punta_Arenas",

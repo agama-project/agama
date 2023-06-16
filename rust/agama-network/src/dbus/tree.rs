@@ -36,10 +36,7 @@ impl Tree {
     /// adding/removing interfaces. We should add/update/delete objects as needed.
     ///
     /// * `connections`: list of connections.
-    pub async fn set_connections(
-        &self,
-        connections: &Vec<Connection>,
-    ) -> Result<(), ServiceError> {
+    pub async fn set_connections(&self, connections: &Vec<Connection>) -> Result<(), ServiceError> {
         self.remove_connections().await?;
         self.add_connections(connections).await?;
         Ok(())
