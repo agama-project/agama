@@ -202,6 +202,9 @@ jobs:
     - name: Rust unit tests
       run:  podman exec agama bash -c "cd /checkout/rust; cargo test --verbose"
 
+    - name: Check rust formatting
+      run:  podman exec agama bash -c 'cd /checkout/rust; find agama-*/src -name '"'"'*.rs'"'"' -exec rustfmt --check --edition 2021 {} "+"'
+
     - name: Set a testing Agama configuration
       # copy a simplified ALP config file, it skips the product selection at the beginning
       run:  podman exec agama bash -c "cp /checkout/playwright/config/agama.yaml /checkout/service/etc/agama.yaml"
