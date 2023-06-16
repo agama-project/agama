@@ -10,6 +10,9 @@ anyhow = "1.0"
 agama-locale-data = { path="../agama-locale-data" }
 agama-network = { path="../agama-network" }
 agama-lib = { path="../agama-lib" }
+log = "0.4"
+simplelog = "0.12.1"
+systemd-journal-logger = "1.0"
 zbus = "3.7.0"
 zbus_macros = "3.7.0"
 async-std = { version = "1.12.0", features = ["attributes"]}

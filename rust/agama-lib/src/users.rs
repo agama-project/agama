@@ -78,10 +78,7 @@ impl<'a> UsersClient<'a> {
         value: &str,
         encrypted: bool,
     ) -> Result<u32, ServiceError> {
-        Ok(self
-            .users_proxy
-            .set_root_password(value, encrypted)
-            .await?)
+        Ok(self.users_proxy.set_root_password(value, encrypted).await?)
     }
 
     /// Whether the root password is set or not

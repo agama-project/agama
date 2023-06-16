@@ -8,15 +8,15 @@ mod profile;
 mod progress;
 
 use crate::error::CliError;
-use async_std::task::{self, block_on};
-use commands::Commands;
-use config::run as run_config_cmd;
 use agama_lib::error::ServiceError;
 use agama_lib::manager::ManagerClient;
 use agama_lib::progress::build_progress_monitor;
+use async_std::task::{self, block_on};
+use commands::Commands;
+use config::run as run_config_cmd;
 use printers::Format;
-use progress::InstallerProgress;
 use profile::run as run_profile_cmd;
+use progress::InstallerProgress;
 use std::error::Error;
 use std::time::Duration;
 
@@ -58,7 +58,10 @@ async fn show_progress() -> Result<(), ServiceError> {
     let conn = agama_lib::connection().await?;
     let mut monitor = build_progress_monitor(conn).await.unwrap();
     let presenter = InstallerProgress::new();
-    monitor.run(presenter).await.expect("failed to monitor the progress");
+    monitor
+        .run(presenter)
+        .await
+        .expect("failed to monitor the progress");
     Ok(())
 }
 

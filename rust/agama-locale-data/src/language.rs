@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::ranked::{RankedTerritories, RankedLocales};
+use crate::ranked::{RankedLocales, RankedTerritories};
 
 #[derive(Debug, Deserialize)]
 pub struct Language {
@@ -8,12 +8,12 @@ pub struct Language {
     pub id: String,
     pub territories: RankedTerritories,
     pub locales: RankedLocales,
-    pub names: crate::localization::Localization
+    pub names: crate::localization::Localization,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct Languages {
-    pub language: Vec<Language>
+    pub language: Vec<Language>,
 }
 
 impl Languages {
