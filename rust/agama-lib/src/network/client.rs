@@ -8,6 +8,7 @@ use super::proxies::IPv4Proxy;
 use super::proxies::WirelessProxy;
 use zbus::Connection;
 
+// D-BUS client for the network service
 pub struct NetworkClient<'a> {
     pub connection: Connection,
     connections_proxy: ConnectionsProxy<'a>,
