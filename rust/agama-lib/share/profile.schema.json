@@ -32,7 +32,7 @@
                 "type": "string"
               },
               "method": {
-                "description": "Connection IP4Config method (e.g., 'auto', 'manual', 'link-local', 'disabled')",
+                "description": "IPv4 configuration method (e.g., 'auto')",
                 "type": "string",
                 "enum": [
                   "auto",

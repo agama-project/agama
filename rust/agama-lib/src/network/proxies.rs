@@ -9,7 +9,10 @@ use zbus::dbus_proxy;
     default_path = "/org/opensuse/Agama/Network1/connections"
 )]
 trait Connections {
-    /// AddConnection method
+    /// Add a new network connection.
+    ///
+    /// `name`: connection name.
+    /// `ty`: connection type.
     fn add_connection(&self, name: &str, ty: u8) -> zbus::Result<()>;
 
     /// Apply method
