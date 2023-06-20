@@ -26,5 +26,9 @@
     -->
     <method name="Probe">
     </method>
+    <!--
+      Whether the option allow_lun_scan is active.
+    -->
+    <property type="b" name="AllowLUNScan" access="read"/>
   </interface>
 </node>

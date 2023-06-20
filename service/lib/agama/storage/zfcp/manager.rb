@@ -78,6 +78,17 @@ module Agama
           yast_zfcp.disks.map { |d| disk_from(d) }
         end
 
+        # Whether the option for allowing automatic LUN scan (allow_lun_scan) is active
+        #
+        # Having allow_lun_scan active has some implications:
+        #   * All LUNs are automatically activated when the controller is activated.
+        #   * LUNs cannot be deactivated.
+        #
+        # @return [Boolean]
+        def allow_lun_scan?
+          yast_zfcp.allow_lun_scan?
+        end
+
         # Activates the controller with the given channel id
         #
         # @note: If "allow_lun_scan" is active, then all LUNs are automatically activated.
@@ -161,6 +172,7 @@ module Agama
         def controller_from(record)
           Controller.new(record["sysfs_bus_id"]).tap do |controller|
             controller.active = yast_zfcp.activated_controller?(controller.channel)
+            controller.lun_scan = yast_zfcp.lun_scan_controller?(controller.channel)
           end
         end
 

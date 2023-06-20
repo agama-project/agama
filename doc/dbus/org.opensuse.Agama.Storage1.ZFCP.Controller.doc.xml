@@ -80,6 +80,10 @@
     -->
     <property type="b" name="Active" access="read"/>
     <!--
+      Whether the controller is performing auto LUN scan.
+    -->
+    <property type="b" name="LUNScan" access="read"/>
+    <!--
       zFCP channel id (e.g., 0.0.fa00).
     -->
     <property type="s" name="Channel" access="read"/>
