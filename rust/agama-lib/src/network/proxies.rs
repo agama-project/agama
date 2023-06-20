@@ -31,7 +31,9 @@ trait Connections {
     default_path = "/org/opensuse/Agama/Network1"
 )]
 trait Wireless {
-    /// Mode property
+    /// Returns the operating mode of the Wireless device
+    ///
+    /// Possible values are 'unknown', 'adhoc', 'infrastructure', 'ap' or 'mesh'
     #[dbus_proxy(property)]
     fn mode(&self) -> zbus::Result<String>;
     fn set_mode(&self, value: String) -> zbus::Result<()>;
@@ -46,7 +48,10 @@ trait Wireless {
     fn ssid(&self) -> zbus::Result<Vec<u8>>;
     fn set_ssid(&self, value: Vec<u8>) -> zbus::Result<()>;
 
-    /// Security property
+    /// Wireless Security property
+    ///
+    /// Possible values are 'none', 'owe', 'ieee8021x', 'wpa-psk', 'sae',
+    ///     'wpa-eap', 'wpa-eap-suite-b192'
     #[dbus_proxy(property)]
     fn security(&self) -> zbus::Result<String>;
     fn set_security(&self, value: String) -> zbus::Result<()>;
@@ -74,6 +79,8 @@ trait Connection {
 )]
 trait IPv4 {
     /// Addresses property
+    ///
+    /// By now just an array of IPv4 addresses in string format
     #[dbus_proxy(property)]
     fn addresses(&self) -> zbus::Result<Vec<(String, u32)>>;
     fn set_addresses(&self, value: &[(&str, u32)]) -> zbus::Result<()>;
@@ -89,6 +96,8 @@ trait IPv4 {
     fn set_method(&self, value: u8) -> zbus::Result<()>;
 
     /// Nameservers property
+    ///
+    /// By now just an array of IPv4 addresses in string format
     #[dbus_proxy(property)]
     fn nameservers(&self) -> zbus::Result<Vec<String>>;
     fn set_nameservers(&self, value: &[&str]) -> zbus::Result<()>;
