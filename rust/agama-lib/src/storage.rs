@@ -1,8 +1,8 @@
 mod client;
-mod model;
+mod settings;
 mod proxies;
 mod store;
 
 pub use client::StorageClient;
-pub use model::StorageSettings;
+pub use settings::StorageSettings;
 pub use store::StorageStore;

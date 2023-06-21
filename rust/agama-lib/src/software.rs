@@ -1,8 +1,8 @@
 mod client;
-mod model;
+mod settings;
 mod proxies;
 mod store;
 
 pub use client::SoftwareClient;
-pub use model::SoftwareSettings;
+pub use settings::SoftwareSettings;
 pub use store::SoftwareStore;
