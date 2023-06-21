@@ -40,14 +40,14 @@ local findBiggestDisk(disks) =
         }
       },
       {
-        name: "Etherned device 1",
-        method: "manual",
-        gateway: "192.168.122.1",
+        name: 'Etherned device 1',
+        method: 'manual',
+        gateway: '192.168.122.1',
         addresses: [
-          "192.168.122.100/24,"
+          '192.168.122.100/24,'
         ],
         nameservers: [
-          "1.2.3.4"
+          '1.2.3.4'
         ]
       ]
     }
