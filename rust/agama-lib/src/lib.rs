@@ -13,7 +13,7 @@ pub mod progress;
 pub mod proxies;
 mod store;
 pub use store::Store;
-
+pub mod questions;
 use crate::error::ServiceError;
 use anyhow::Context;
 

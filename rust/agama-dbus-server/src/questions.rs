@@ -1,141 +1,67 @@
 use std::collections::HashMap;
 
 use crate::error::Error;
-use agama_lib::connection_to;
+use log;
+use agama_lib::{connection_to,questions::{self, GenericQuestion}};
 use anyhow::Context;
 use zbus::{dbus_interface, fdo::ObjectManager, zvariant::ObjectPath, Connection};
 
-/// Basic generic question that fits question without special needs
 #[derive(Clone, Debug)]
-pub struct GenericQuestion {
-    /// numeric id used to indetify question on dbus
-    id: u32,
-    /// Textual representation of question. Expected to be read by people
-    text: String,
-    /// possible answers for question
-    options: Vec<String>,
-    /// default answer. Can be used as hint or preselection
-    default_option: String,
-    /// Confirmed answer. If empty then not answered yet.
-    answer: String,
-}
-
-impl GenericQuestion {
-    pub fn new(id: u32, text: String, options: Vec<String>, default_option: String) -> Self {
-        Self {
-            id,
-            text,
-            options,
-            default_option,
-            answer: String::from(""),
-        }
-    }
-
-    pub fn object_path(&self) -> String {
-        format!("/org/opensuse/Agama/Questions1/{}", self.id)
-    }
-}
+struct GenericQuestionObject(questions::GenericQuestion);
 
 #[dbus_interface(name = "org.opensuse.Agama.Questions1.Generic")]
-impl GenericQuestion {
+impl GenericQuestionObject {
     #[dbus_interface(property)]
     pub fn id(&self) -> u32 {
-        self.id
+        self.0.id
     }
 
     #[dbus_interface(property)]
     pub fn text(&self) -> &str {
-        self.text.as_str()
+        self.0.text.as_str()
     }
 
     #[dbus_interface(property)]
     pub fn options(&self) -> Vec<String> {
-        self.options.to_owned()
+        self.0.options.to_owned()
     }
 
     #[dbus_interface(property)]
     pub fn default_option(&self) -> &str {
-        self.default_option.as_str()
+        self.0.default_option.as_str()
     }
 
     #[dbus_interface(property)]
     pub fn answer(&self) -> &str {
-        &self.answer
+        &self.0.answer
     }
 
     #[dbus_interface(property)]
     pub fn set_answer(&mut self, value: &str) -> Result<(), zbus::fdo::Error> {
         // TODO verify if answer exists in options or if it is valid in other way
-        self.answer = value.to_string();
+        self.0.answer = value.to_string();
 
         Ok(())
     }
 }
 
-/// Specialized question for Luks partition activation
-#[derive(Clone, Debug)]
-pub struct LuksQuestion {
-    /// Luks password. Empty means no password set.
-    password: String,
-    /// number of previous attempts to decrypt partition
-    attempt: u8,
-    /// rest of question data that is same as for other questions
-    generic_question: GenericQuestion,
-}
-
-impl LuksQuestion {
-    fn device_info(device: &str, label: &str, size: &str) -> String {
-        let mut result = device.to_string();
-        if !label.is_empty() {
-            result = format!("{} {}", result, label);
-        }
-
-        if !size.is_empty() {
-            result = format!("{} ({})", result, size);
-        }
-
-        result
-    }
-
-    pub fn new(id: u32, device: String, label: String, size: String, attempt: u8) -> Self {
-        let msg = format!(
-            "The device {} is encrypted.",
-            Self::device_info(device.as_str(), label.as_str(), size.as_str())
-        );
-        let base = GenericQuestion::new(
-            id,
-            msg,
-            vec!["skip".to_string(), "decrypt".to_string()],
-            "skip".to_string(),
-        );
-
-        Self {
-            password: "".to_string(),
-            attempt,
-            generic_question: base,
-        }
-    }
-
-    pub fn base(&self) -> &GenericQuestion {
-        &self.generic_question
-    }
-}
+struct LuksQuestionObject(questions::LuksQuestion);
 
 #[dbus_interface(name = "org.opensuse.Agama.Questions1.LuksActivation")]
-impl LuksQuestion {
+impl LuksQuestionObject {
     #[dbus_interface(property)]
     pub fn password(&self) -> &str {
-        self.password.as_str()
+        self.0.password.as_str()
     }
 
     #[dbus_interface(property)]
     pub fn set_password(&mut self, value: &str) -> () {
-        self.password = value.to_string();
+        self.0.password = value.to_string();
     }
 
     #[dbus_interface(property)]
     pub fn attempt(&self) -> u8 {
-        self.attempt
+        self.0.attempt
     }
 }
 
@@ -145,10 +71,24 @@ enum QuestionType {
     Luks,
 }
 
+trait AnswerStrategy {
+    /// TODO: find way to be able to answer any type of question, not just generic
+    fn answer(&self, question: &GenericQuestion) -> Option<String>;
+}
+
+struct DefaultAnswers;
+
+impl AnswerStrategy for DefaultAnswers {
+    fn answer(&self, question: &GenericQuestion) -> Option<String> {
+        return Some(question.default_option.clone())
+    }
+}
+
 pub struct Questions {
     questions: HashMap<u32, QuestionType>,
     connection: Connection,
     last_id: u32,
+    answer_strategies: Vec<Box<dyn AnswerStrategy + Sync + Send>>
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Questions1")]
@@ -157,25 +97,31 @@ impl Questions {
     #[dbus_interface(name = "New")]
     async fn new_question(
         &mut self,
+        class: &str,
         text: &str,
         options: Vec<&str>,
-        default_option: Vec<&str>,
+        default_option: &str,
+        data: HashMap<String, String>
     ) -> Result<ObjectPath, zbus::fdo::Error> {
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
         let options = options.iter().map(|o| o.to_string()).collect();
         // TODO: enforce default option and do not use array for it to avoid that unwrap
-        let question = GenericQuestion::new(
+        let mut question = questions::GenericQuestion::new(
             id,
+            class.to_string(),
             text.to_string(),
             options,
-            default_option.first().unwrap().to_string(),
+            default_option.to_string(),
+            data,
         );
+        self.fill_answer(&mut question);
         let object_path = ObjectPath::try_from(question.object_path()).unwrap();
+        let question_object = GenericQuestionObject(question);
 
         self.connection
             .object_server()
-            .at(question.object_path(), question)
+            .at(object_path.clone(), question_object)
             .await?;
         self.questions.insert(id, QuestionType::Generic);
         Ok(object_path)
@@ -188,28 +134,34 @@ impl Questions {
         label: &str,
         size: &str,
         attempt: u8,
+        data: HashMap<String, String>,
     ) -> Result<ObjectPath, zbus::fdo::Error> {
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
-        let question = LuksQuestion::new(
+        let question = questions::LuksQuestion::new(
             id,
+            "storage.encryption.activation".to_string(),
             device.to_string(),
             label.to_string(),
             size.to_string(),
             attempt,
+            data
         );
-        let object_path = ObjectPath::try_from(question.base().object_path()).unwrap();
+        let object_path = ObjectPath::try_from(question.base.object_path()).unwrap();
 
-        let base = question.base().clone();
+        let mut base_question = question.base.clone();
+        self.fill_answer(&mut base_question);
+        let base_object = GenericQuestionObject(base_question);
+        
         self.connection
             .object_server()
-            .at(base.object_path(), question)
+            .at(object_path.clone(), LuksQuestionObject(question))
             .await?;
         // NOTE: order here is important as each interface cause signal, so frontend should wait only for GenericQuestions
         // which should be the last interface added
         self.connection
             .object_server()
-            .at(base.object_path(), base)
+            .at(object_path.clone(), base_object)
             .await?;
 
         self.questions.insert(id, QuestionType::Luks);
@@ -225,21 +177,28 @@ impl Questions {
             QuestionType::Generic => {
                 self.connection
                     .object_server()
-                    .remove::<GenericQuestion, _>(question.clone())
+                    .remove::<GenericQuestionObject, _>(question.clone())
                     .await?;
             }
             QuestionType::Luks => {
                 self.connection
                     .object_server()
-                    .remove::<GenericQuestion, _>(question.clone())
+                    .remove::<GenericQuestionObject, _>(question.clone())
                     .await?;
                 self.connection
                     .object_server()
-                    .remove::<LuksQuestion, _>(question.clone())
+                    .remove::<LuksQuestionObject, _>(question.clone())
                     .await?;
             }
         };
         self.questions.remove(&id);
+        Ok(())
+    }
+
+    /// sets questions to be answered by default answer instead of asking user
+    async fn use_default_answer(&mut self) -> Result<(), Error> {
+        log::info!("Answer questions with default option");
+        self.answer_strategies.push(Box::new(DefaultAnswers{}));
         Ok(())
     }
 }
@@ -252,6 +211,17 @@ impl Questions {
             questions: HashMap::new(),
             connection: connection.to_owned(),
             last_id: 0,
+            answer_strategies: vec![],
+        }
+    }
+
+    /// tries to provide answer to question using answer strategies
+    fn fill_answer(&self, question: &mut GenericQuestion) -> () {
+        for strategy in self.answer_strategies.iter() {
+            match strategy.answer(question) {
+                None => (),
+                Some(answer) => question.answer = answer,
+            }
         }
     }
 }
