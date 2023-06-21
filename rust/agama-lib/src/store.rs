@@ -1,13 +1,11 @@
-mod users;
-
 use crate::error::ServiceError;
 use crate::install_settings::{InstallSettings, Scope};
 use crate::{
     network::NetworkStore,
     storage::StorageStore,
-    software::SoftwareStore
+    software::SoftwareStore,
+    users::UsersStore
 };
-use crate::store::users::UsersStore;
 use std::error::Error;
 use zbus::Connection;
 
