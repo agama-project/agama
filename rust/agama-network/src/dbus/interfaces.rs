@@ -8,6 +8,8 @@ use crate::{
     error::NetworkStateError,
     model::{Connection as NetworkConnection, Device as NetworkDevice, WirelessConnection},
 };
+
+use agama_lib::network::types::SSID;
 use parking_lot::{MappedMutexGuard, Mutex, MutexGuard};
 use std::{
     net::{AddrParseError, Ipv4Addr},
@@ -344,24 +346,24 @@ impl Wireless {
     #[dbus_interface(property, name = "SSID")]
     pub fn ssid(&self) -> Vec<u8> {
         let connection = self.get_wireless();
-        connection.wireless.ssid.clone()
+        connection.wireless.ssid.clone().into()
     }
 
     #[dbus_interface(property, name = "SSID")]
     pub fn set_ssid(&mut self, ssid: Vec<u8>) -> zbus::fdo::Result<()> {
         let mut connection = self.get_wireless();
-        connection.wireless.ssid = ssid;
+        connection.wireless.ssid = SSID(ssid);
         self.update_connection(connection)
     }
 
     #[dbus_interface(property)]
-    pub fn mode(&self) -> u8 {
+    pub fn mode(&self) -> String {
         let connection = self.get_wireless();
-        connection.wireless.mode as u8
+        connection.wireless.mode.to_string()
     }
 
     #[dbus_interface(property)]
-    pub fn set_mode(&mut self, mode: u8) -> zbus::fdo::Result<()> {
+    pub fn set_mode(&mut self, mode: &str) -> zbus::fdo::Result<()> {
         let mut connection = self.get_wireless();
         connection.wireless.mode = mode.try_into()?;
         self.update_connection(connection)
@@ -389,9 +391,9 @@ impl Wireless {
     }
 
     #[dbus_interface(property)]
-    pub fn security(&self) -> u8 {
+    pub fn security(&self) -> String {
         let connection = self.get_wireless();
-        connection.wireless.security as u8
+        connection.wireless.security.to_string()
     }
 
     #[dbus_interface(property)]

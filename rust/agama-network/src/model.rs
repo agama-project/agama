@@ -5,7 +5,8 @@
 use uuid::Uuid;
 
 use crate::error::NetworkStateError;
-use std::{fmt, net::Ipv4Addr};
+use agama_lib::network::types::SSID;
+use std::{fmt, net::Ipv4Addr, str};
 
 #[derive(Default)]
 pub struct NetworkState {
@@ -354,30 +355,32 @@ pub struct LoopbackConnection {
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
-    pub ssid: Vec<u8>,
+    pub ssid: SSID,
     pub password: Option<String>,
     pub security: SecurityProtocol,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub enum WirelessMode {
-    #[default]
-    Infra = 0,
+    Unknown = 0,
     AdHoc = 1,
-    Mesh = 2,
+    #[default]
+    Infra = 2,
     AP = 3,
+    Mesh = 4,
 }
 
-impl TryFrom<u8> for WirelessMode {
+impl TryFrom<&str> for WirelessMode {
     type Error = NetworkStateError;
 
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value {
-            1 => Ok(WirelessMode::AdHoc),
-            2 => Ok(WirelessMode::Infra),
-            3 => Ok(WirelessMode::AP),
-            4 => Ok(WirelessMode::Mesh),
-            _ => Err(NetworkStateError::InvalidWirelessMode(value)),
+            "unknown" => Ok(WirelessMode::Unknown),
+            "adhoc" => Ok(WirelessMode::AdHoc),
+            "infrastructure" => Ok(WirelessMode::Infra),
+            "ap" => Ok(WirelessMode::AP),
+            "mesh" => Ok(WirelessMode::Mesh),
+            _ => Err(NetworkStateError::InvalidWirelessMode(value.to_string())),
         }
     }
 }
@@ -385,6 +388,7 @@ impl TryFrom<u8> for WirelessMode {
 impl fmt::Display for WirelessMode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name = match &self {
+            WirelessMode::Unknown => "unknown",
             WirelessMode::AdHoc => "adhoc",
             WirelessMode::Infra => "infrastructure",
             WirelessMode::AP => "ap",

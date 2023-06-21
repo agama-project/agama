@@ -1,6 +1,7 @@
 //! Configuration settings handling
 //!
 //! This module implements the mechanisms to load and store the installation settings.
+use crate::network::NetworkSettings;
 use crate::settings::{SettingObject, SettingValue, Settings};
 use agama_derive::Settings;
 use serde::{Deserialize, Serialize};
@@ -20,14 +21,21 @@ pub enum Scope {
     Software,
     /// Storage settings
     Storage,
+    /// Network settings
+    Network,
 }
 
 impl Scope {
     /// Returns known scopes
     ///
     // TODO: we can rely on strum so we do not forget to add them
-    pub fn all() -> [Scope; 3] {
-        [Scope::Software, Scope::Storage, Scope::Users]
+    pub fn all() -> [Scope; 4] {
+        [
+            Scope::Network,
+            Scope::Software,
+            Scope::Storage,
+            Scope::Users,
+        ]
     }
 }
 
@@ -39,6 +47,7 @@ impl FromStr for Scope {
             "users" => Ok(Self::Users),
             "software" => Ok(Self::Software),
             "storage" => Ok(Self::Storage),
+            "network" => Ok(Self::Network),
             _ => Err("Unknown section"),
         }
     }
@@ -57,6 +66,8 @@ pub struct InstallSettings {
     pub software: Option<SoftwareSettings>,
     #[serde(default)]
     pub storage: Option<StorageSettings>,
+    #[serde(default)]
+    pub network: Option<NetworkSettings>,
 }
 
 impl InstallSettings {
@@ -73,6 +84,9 @@ impl InstallSettings {
         if self.software.is_some() {
             scopes.push(Scope::Software);
         }
+        if self.network.is_some() {
+            scopes.push(Scope::Network);
+        }
         scopes
     }
 }
@@ -81,6 +95,10 @@ impl Settings for InstallSettings {
     fn add(&mut self, attr: &str, value: SettingObject) -> Result<(), &'static str> {
         if let Some((ns, id)) = attr.split_once('.') {
             match ns {
+                "network" => {
+                    let network = self.network.get_or_insert(Default::default());
+                    network.add(id, value)?
+                }
                 "software" => {
                     let software = self.software.get_or_insert(Default::default());
                     software.add(id, value)?
@@ -102,6 +120,10 @@ impl Settings for InstallSettings {
     fn set(&mut self, attr: &str, value: SettingValue) -> Result<(), &'static str> {
         if let Some((ns, id)) = attr.split_once('.') {
             match ns {
+                "network" => {
+                    let network = self.network.get_or_insert(Default::default());
+                    network.set(id, value)?
+                }
                 "software" => {
                     let software = self.software.get_or_insert(Default::default());
                     software.set(id, value)?
@@ -127,6 +149,11 @@ impl Settings for InstallSettings {
     }
 
     fn merge(&mut self, other: &Self) {
+        if let Some(other_network) = &other.network {
+            let network = self.network.get_or_insert(Default::default());
+            network.merge(other_network);
+        }
+
         if let Some(other_software) = &other.software {
             let software = self.software.get_or_insert(Default::default());
             software.merge(other_software);
