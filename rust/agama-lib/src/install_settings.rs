@@ -4,6 +4,7 @@
 use crate::{
     network::NetworkSettings,
     storage::StorageSettings,
+    software::SoftwareSettings
 };
 use crate::settings::{SettingObject, SettingValue, Settings};
 use agama_derive::Settings;
@@ -242,14 +243,6 @@ pub struct RootUserSettings {
     pub password: Option<String>,
     /// Root SSH public key
     pub ssh_public_key: Option<String>,
-}
-
-/// Software settings for installation
-#[derive(Debug, Default, Settings, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SoftwareSettings {
-    /// ID of the product to install (e.g., "ALP", "Tumbleweed", etc.)
-    pub product: Option<String>,
 }
 
 #[cfg(test)]
