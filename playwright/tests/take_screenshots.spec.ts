@@ -37,7 +37,7 @@ test.describe("The Installer", () => {
     // check for multiple texts in parallel, avoid waiting for timeouts
     let action = await Promise.any([
       page.getByText("Product selection").waitFor().then(() => actions.setProduct),
-      page.getByText("None authentication method").waitFor().then(() => actions.setPassword),
+      page.getByText("No root authentication method").waitFor().then(() => actions.setPassword),
       page.getByText("Root authentication set").waitFor().then(() => actions.done),
     ]);
 
@@ -52,7 +52,7 @@ test.describe("The Installer", () => {
 
       // update the action for the next step
       action = await Promise.any([
-        page.getByText("None authentication method").waitFor().then(() => actions.setPassword),
+        page.getByText("No root authentication method").waitFor().then(() => actions.setPassword),
         page.getByText("Root authentication set").waitFor().then(() => actions.done),
       ]);
     }
@@ -63,8 +63,8 @@ test.describe("The Installer", () => {
         await page.locator("a[href='#/users']").click();
         // Create users page screenshot
         await page.screenshot({ path: "screenshots/users-page.png" });
-        await page.locator("#actions-for-root-password").click();
-        await page.getByRole("menuitem", { name: "Set" }).click();
+        // click on the "Set a password" button
+        await page.getByRole("button", { name: "Set a password" }).click();
         await page.locator("#password").fill("linux");
         await page.locator("#passwordConfirmation").fill("linux");
         await page.locator('button[type="submit"]').click();

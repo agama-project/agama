@@ -1,0 +1,39 @@
+# Publish a new version
+# - Submit the packages to systemsmanagement:Agama:Devel
+# - Send submit requests
+
+name: Release
+
+on:
+  # runs when creating a release tag
+  push:
+    tags:
+      - v[0-9]+.**
+
+jobs:
+  # Note: cockpit-agama-playwright is currently not submitted
+
+  update_rust:
+    uses: ./.github/workflows/obs-staging-shared.yml
+    # pass all secrets
+    secrets: inherit
+    with:
+      install_packages: obs-service-cargo_audit obs-service-cargo_vendor
+      project_name: systemsmanagement:Agama:Devel
+      package_name: agama-cli
+
+  update_web:
+    uses: ./.github/workflows/obs-staging-shared.yml
+    # pass all secrets
+    secrets: inherit
+    with:
+      install_packages: obs-service-node_modules
+      project_name: systemsmanagement:Agama:Devel
+      package_name: cockpit-agama
+
+  update_service:
+    uses: ./.github/workflows/obs-service-shared.yml
+    # pass all secrets
+    secrets: inherit
+    with:
+      project_name: systemsmanagement:Agama:Devel

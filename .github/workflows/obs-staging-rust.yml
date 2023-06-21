@@ -1,0 +1,20 @@
+name: Submit agama-cli
+
+on:
+  # runs on pushes targeting the default branch
+  push:
+    branches:
+      - master
+    paths:
+      # run only when a Rust source is changed
+      - rust/**
+
+jobs:
+  update_staging:
+    uses: ./.github/workflows/obs-staging-shared.yml
+    # pass all secrets
+    secrets: inherit
+    with:
+      install_packages: obs-service-cargo_audit obs-service-cargo_vendor
+      project_name: systemsmanagement:Agama:Staging
+      package_name: agama-cli

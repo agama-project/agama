@@ -26,6 +26,9 @@
     Requires:       yast2-users
     # yast2 with ArchFilter
     Requires:       yast2 >= 4.5.20
+    %ifarch s390 s390x
+    Requires:       yast2-s390 >= 4.6.3
+    %endif
   :filelist: "%{_datadir}/dbus-1/agama.conf\n
     %dir %{_datadir}/dbus-1/agama-services\n
     %{_datadir}/dbus-1/agama-services/org.opensuse.Agama*.service\n

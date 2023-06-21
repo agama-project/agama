@@ -31,9 +31,11 @@ impl<'a> SoftwareStore<'a> {
             if ids.contains(&product) {
                 self.software_client.select_product(product).await?;
             } else {
-                return Err(Box::new(WrongParameter::UnknownProduct(product.clone(), ids)));
+                return Err(Box::new(WrongParameter::UnknownProduct(
+                    product.clone(),
+                    ids,
+                )));
             }
-            
         }
         Ok(())
     }

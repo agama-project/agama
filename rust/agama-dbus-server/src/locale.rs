@@ -4,7 +4,7 @@ use anyhow::Context;
 use std::process::Command;
 use zbus::{dbus_interface, Connection};
 
-pub struct LocaleService {
+pub struct Locale {
     locales: Vec<String>,
     keymap: String,
     timezone_id: String,
@@ -12,7 +12,7 @@ pub struct LocaleService {
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Locale1")]
-impl LocaleService {
+impl Locale {
     /// Get labels for locales. The first pair is english language and territory
     /// and second one is localized one to target language from locale.
     ///
@@ -176,7 +176,7 @@ impl LocaleService {
     }
 }
 
-impl LocaleService {
+impl Locale {
     fn new() -> Self {
         Self {
             locales: vec!["en_US.UTF-8".to_string()],
@@ -185,23 +185,23 @@ impl LocaleService {
             supported_locales: vec!["en_US.UTF-8".to_string()],
         }
     }
+}
 
-    pub async fn start(address: &str) -> Result<Connection, Box<dyn std::error::Error>> {
-        const SERVICE_NAME: &str = "org.opensuse.Agama.Locale1";
-        const SERVICE_PATH: &str = "/org/opensuse/Agama/Locale1";
+pub async fn start_service(address: &str) -> Result<Connection, Box<dyn std::error::Error>> {
+    const SERVICE_NAME: &str = "org.opensuse.Agama.Locale1";
+    const SERVICE_PATH: &str = "/org/opensuse/Agama/Locale1";
 
-        // First connect to the Agama bus, then serve our API,
-        // for better error reporting.
-        let connection = connection_to(address).await?;
+    // First connect to the Agama bus, then serve our API,
+    // for better error reporting.
+    let connection = connection_to(address).await?;
 
-        // When serving, request the service name _after_ exposing the main object
-        let locale = Self::new();
-        connection.object_server().at(SERVICE_PATH, locale).await?;
-        connection
-            .request_name(SERVICE_NAME)
-            .await
-            .context(format!("Requesting name {SERVICE_NAME}"))?;
+    // When serving, request the service name _after_ exposing the main object
+    let locale = Locale::new();
+    connection.object_server().at(SERVICE_PATH, locale).await?;
+    connection
+        .request_name(SERVICE_NAME)
+        .await
+        .context(format!("Requesting name {SERVICE_NAME}"))?;
 
-        Ok(connection)
-    }
+    Ok(connection)
 }

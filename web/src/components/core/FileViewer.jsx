@@ -59,8 +59,7 @@ export default function FileViewer({ file, title, onCloseCallback }) {
     <Popup
       isOpen={isOpen}
       title={title || file}
-      variant="large"
-      className="tallest"
+      className="large"
     >
       {state === "loading" && <Loading text="Reading file..." />}
       {(content === null || error) &&

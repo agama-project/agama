@@ -10,16 +10,13 @@ test.describe('The user section', () => {
     // See https://playwright.dev/docs/api/class-locator
 
     // initial expectation - the root password is not configured yet
-    await expect(page.getByText("None authentication method defined for root user")).toBeVisible();
+    await expect(page.getByText("No root authentication method defined")).toBeVisible();
 
     // click the "Users" header
     await page.locator("a[href='#/users']").click();
 
-    // display the actions menu for the root password
-    await page.locator("#actions-for-root-password").click();
-
-    // click the "Set" item
-    await page.getByRole("menuitem", { name: "Set" }).click();
+    // click on the "Set a password" button
+    await page.getByRole("button", { name: "Set a password" }).click();
 
     // fill a new password
     await page.locator('#password').fill('agama');

@@ -1,6 +1,7 @@
 use crate::error::ProfileError;
 use curl::easy::Easy;
 use jsonschema::JSONSchema;
+use log::info;
 use serde_json;
 use std::{
     fs, io,
@@ -10,7 +11,7 @@ use std::{
 };
 use tempfile::tempdir;
 
-/// Downloads a file a writes it to the stdout()
+/// Downloads a file and writes it to the stdout()
 ///
 /// TODO: move this code to a struct
 /// TODO: add support for YaST-specific URLs
@@ -65,6 +66,7 @@ impl ProfileValidator {
         } else {
             Path::new("/usr/share/agama-cli/profile.schema.json")
         };
+        info!("Validation with path {}", path.to_str().unwrap());
         Self::new(path)
     }
 

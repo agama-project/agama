@@ -52,3 +52,4 @@ export { default as Terminal } from "./Terminal";
 export { default as Tip } from "./Tip";
 export { default as ShowTerminalButton } from "./ShowTerminalButton";
 export { default as NotificationMark } from "./NotificationMark";
+export { default as NumericTextInput } from "./NumericTextInput";

@@ -26,8 +26,6 @@ module Agama
 end
 
 require "agama/dbus/manager"
-require "agama/dbus/language"
 require "agama/dbus/software"
 require "agama/dbus/storage"
 require "agama/dbus/users"
-require "agama/dbus/questions"

@@ -67,7 +67,7 @@ module Agama
       # @return [Logger]
       attr_reader :logger
 
-      # @return [::DBus::Service]
+      # @return [::DBus::ObjectServer]
       def service
         @service ||= bus.request_service(SERVICE_NAME)
       end

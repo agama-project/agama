@@ -1,0 +1,9 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/org/opensuse/Agama/Storage1">
+  <interface name="org.opensuse.Agama.Storage1.ZFCP.Manager">
+    <method name="Probe">
+    </method>
+    <property type="b" name="AllowLUNScan" access="read"/>
+  </interface>
+</node>

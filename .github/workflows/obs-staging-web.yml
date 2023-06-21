@@ -1,0 +1,20 @@
+name: Submit cockpit-agama
+
+on:
+  # runs on pushes targeting the default branch
+  push:
+    branches:
+      - master
+    paths:
+      # run only when a web frontend source is changed
+      - web/**
+
+jobs:
+  update_staging:
+    uses: ./.github/workflows/obs-staging-shared.yml
+    # pass all secrets
+    secrets: inherit
+    with:
+      install_packages: obs-service-node_modules
+      project_name: systemsmanagement:Agama:Staging
+      package_name: cockpit-agama

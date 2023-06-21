@@ -477,6 +477,14 @@ describe Agama::DBus::Storage::Manager do
         on_refresh: nil)
     end
 
+    it "includes interface for managing DASD devices" do
+      expect(subject.intfs.keys).to include("org.opensuse.Agama.Storage1.DASD.Manager")
+    end
+
+    it "includes interface for managing zFCP devices" do
+      expect(subject.intfs.keys).to include("org.opensuse.Agama.Storage1.ZFCP.Manager")
+    end
+
     describe "#dasd_enable" do
       before do
         allow(Agama::DBus::Storage::DasdsTree).to receive(:new).and_return(dasds_tree)

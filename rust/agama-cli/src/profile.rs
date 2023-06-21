@@ -1,7 +1,7 @@
-use clap::Subcommand;
 use agama_lib::error::ProfileError;
 use agama_lib::profile::{download, ProfileEvaluator, ProfileValidator, ValidationResult};
-use std::{path::Path};
+use clap::Subcommand;
+use std::path::Path;
 
 #[derive(Subcommand, Debug)]
 pub enum ProfileCommands {

@@ -46,13 +46,25 @@ const volumes = {
     fsType: "Btrfs",
     snapshots: true
   },
+  swap: {
+    mountPoint: "swap",
+    optional: true,
+    deviceType: "partition",
+    encrypted: false,
+    minSize: 1024,
+    maxSize: 1024,
+    adaptiveSizes: false,
+    fixedSizeLimits: true,
+    fsType: "Swap",
+    snapshots: false
+  },
   home: {
     mountPoint: "/home",
     optional: true,
     deviceType: "partition",
     encrypted: false,
     minSize: 1024,
-    maxSize: 2048,
+    maxSize: -1,
     adaptiveSizes: false,
     fixedSizeLimits: true,
     fsType: "XFS",
@@ -133,7 +145,7 @@ it("allows to cancel if add action is used", async () => {
 
 describe("if there are volumes", () => {
   beforeEach(() => {
-    props.volumes = [volumes.root, volumes.home];
+    props.volumes = [volumes.root, volumes.home, volumes.swap];
   });
 
   it("renders skeleton for each volume if loading", async () => {
@@ -144,10 +156,10 @@ describe("if there are volumes", () => {
     const [, body] = await screen.findAllByRole("rowgroup");
 
     const rows = within(body).getAllByRole("row");
-    expect(rows.length).toEqual(2);
+    expect(rows.length).toEqual(3);
 
     const loadingRows = within(body).getAllByRole("row", { name: "PFSkeleton" });
-    expect(loadingRows.length).toEqual(2);
+    expect(loadingRows.length).toEqual(3);
   });
 
   it("renders the information for each volume", async () => {
@@ -155,24 +167,43 @@ describe("if there are volumes", () => {
 
     const [, body] = await screen.findAllByRole("rowgroup");
 
-    expect(within(body).queryAllByRole("row").length).toEqual(2);
+    expect(within(body).queryAllByRole("row").length).toEqual(3);
     within(body).getByRole("row", { name: "/ Btrfs partition with snapshots 1 KiB - 2 KiB" });
-    within(body).getByRole("row", { name: "/home XFS partition 1 KiB - 2 KiB" });
+    within(body).getByRole("row", { name: "/home XFS partition At least 1 KiB" });
+    within(body).getByRole("row", { name: "swap Swap partition 1 KiB" });
   });
 
-  it("allows to delete the volume", async () => {
+  it("allows deleting the volume", async () => {
     props.onChange = jest.fn();
 
     const { user } = plainRender(<ProposalVolumes {...props} />);
 
     const [, body] = await screen.findAllByRole("rowgroup");
-    const row = within(body).getByRole("row", { name: "/home XFS partition 1 KiB - 2 KiB" });
+    const row = within(body).getByRole("row", { name: "/home XFS partition At least 1 KiB" });
     const actions = within(row).getByRole("button", { name: "Actions" });
     await user.click(actions);
     const deleteAction = within(row).queryByRole("menuitem", { name: "Delete" });
     await user.click(deleteAction);
 
     expect(props.onChange).toHaveBeenCalledWith(expect.not.arrayContaining([volumes.home]));
+  });
+
+  it("allows editing the volume", async () => {
+    props.onChange = jest.fn();
+
+    const { user } = plainRender(<ProposalVolumes {...props} />);
+
+    const [, body] = await screen.findAllByRole("rowgroup");
+    const row = within(body).getByRole("row", { name: "/home XFS partition At least 1 KiB" });
+    const actions = within(row).getByRole("button", { name: "Actions" });
+    await user.click(actions);
+    const editAction = within(row).queryByRole("menuitem", { name: "Edit" });
+    await user.click(editAction);
+
+    const popup = await screen.findByRole("dialog");
+    within(popup).getByText("Edit file system");
+    const mountPointSelector = within(popup).getByRole("combobox", { name: "Mount point" });
+    expect(mountPointSelector).toHaveAttribute("disabled");
   });
 });
 

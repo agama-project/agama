@@ -74,7 +74,7 @@ module Agama
         end
       end
 
-      # @return [::DBus::Service]
+      # @return [::DBus::ObjectServer]
       def service
         @service ||= bus.request_service(SERVICE_NAME)
       end

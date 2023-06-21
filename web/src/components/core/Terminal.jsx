@@ -37,8 +37,7 @@ export default function Terminal({ onCloseCallback }) {
   return (
     <Popup
       isOpen={isOpen}
-      variant="large"
-      className="tallest"
+      className="large"
       aria-label="terminal popup"
     >
 

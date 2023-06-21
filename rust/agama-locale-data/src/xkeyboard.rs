@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::ranked::{RankedTerritories, RankedLanguages};
+use crate::ranked::{RankedLanguages, RankedTerritories};
 
 #[derive(Debug, Deserialize)]
 pub struct XKeyboard {
@@ -12,10 +12,10 @@ pub struct XKeyboard {
     pub ascii: bool,
     pub comment: Option<String>,
     pub languages: RankedLanguages,
-    pub territories: RankedTerritories
+    pub territories: RankedTerritories,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct XKeyboards {
-    pub keyboard: Vec<XKeyboard>
+    pub keyboard: Vec<XKeyboard>,
 }

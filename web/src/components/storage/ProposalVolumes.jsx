@@ -22,16 +22,15 @@
 import React, { useState } from "react";
 import {
   Dropdown, DropdownToggle, DropdownItem,
-  Form, FormGroup, FormSelect, FormSelectOption,
   List, ListItem,
   Skeleton,
-  TextInput,
   Toolbar, ToolbarContent, ToolbarItem
 } from "@patternfly/react-core";
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
 import { Em, If, Popup, RowActions, Tip } from '~/components/core';
 import { Icon } from '~/components/layout';
+import { VolumeForm } from '~/components/storage';
 import { deviceSize } from '~/components/storage/utils';
 import { noop } from "~/utils";
 
@@ -59,91 +58,6 @@ const AutoCalculatedHint = (volume) => {
           <ListItem>Presence of other volumes ({volume.sizeRelevantVolumes.join(", ")})</ListItem>}
       </List>
     </>
-  );
-};
-
-/**
- * Form used for adding a new file system from a list of templates
- * @component
- *
- * @param {object} props
- * @param {string} props.id - Form ID
- * @param {object[]} props.templates - Volume templates
- * @param {onSubmitFn} props.onSubmit - Function to use for submitting a new volume
- *
- * @callback onSubmitFn
- * @param {object} volume
- * @return {void}
- */
-const VolumeForm = ({ id, templates, onSubmit }) => {
-  const [volume, setVolume] = useState(templates[0]);
-
-  const changeVolume = (mountPoint) => {
-    const volume = templates.find(t => t.mountPoint === mountPoint);
-    setVolume(volume);
-  };
-
-  const submitForm = (e) => {
-    e.preventDefault();
-    onSubmit(volume);
-  };
-
-  const volumeOptions = templates.map((template, index) => (
-    <FormSelectOption key={index} value={template.mountPoint} label={template.mountPoint} />
-  ));
-
-  return (
-    <Form id={id} onSubmit={submitForm}>
-      <FormGroup fieldId="mountPoint" label="Mount point">
-        <FormSelect
-          id="mountPoint"
-          aria-label="mount point"
-          value={volume.mountPoint}
-          onChange={changeVolume}
-        >
-          {volumeOptions}
-        </FormSelect>
-      </FormGroup>
-      <FormGroup
-        fieldId="fsType"
-        label="File system type"
-      >
-        <TextInput
-          id="fsType"
-          name="fsType"
-          aria-label="Fs type"
-          value={volume.fsType}
-          label="File system type"
-          isDisabled
-        />
-      </FormGroup>
-      <FormGroup
-        fieldId="minSize"
-        label="Minimum size"
-      >
-        <TextInput
-          id="minSize"
-          name="minSize"
-          aria-label="Min size"
-          value={deviceSize(volume.minSize)}
-          label="Minimum Size"
-          isDisabled
-        />
-      </FormGroup>
-      <FormGroup
-        fieldId="maxSize"
-        label="Maximum size"
-      >
-        <TextInput
-          id="maxSize"
-          name="maxSize"
-          aria-label="Max size"
-          value={deviceSize(volume.maxSize)}
-          label="Maximum Size"
-          isDisabled
-        />
-      </FormGroup>
-    </Form>
   );
 };
 
@@ -240,14 +154,30 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
  * @param {object} volume
  * @return {void}
  */
-const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
+const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+
+  const openForm = () => setIsFormOpen(true);
+
+  const closeForm = () => setIsFormOpen(false);
+
+  const acceptForm = (volume) => {
+    closeForm();
+    onEdit(volume);
+  };
+
   const SizeLimits = ({ volume }) => {
-    const limits = `${deviceSize(volume.minSize)} - ${deviceSize(volume.maxSize)}`;
+    const minSize = deviceSize(volume.minSize);
+    const maxSize = deviceSize(volume.maxSize);
     const isAuto = volume.adaptiveSizes && !volume.fixedSizeLimits;
+
+    let size = minSize;
+    if (minSize && maxSize && minSize !== maxSize) size = `${minSize} - ${maxSize}`;
+    if (maxSize === undefined) size = `At least ${minSize}`;
 
     return (
       <div className="split">
-        <span>{limits}</span>
+        <span>{size}</span>
         <If condition={isAuto} then={<Tip description={AutoCalculatedHint(volume)}>auto</Tip>} />
       </div>
     );
@@ -270,20 +200,24 @@ const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
     );
   };
 
-  const VolumeActions = ({ volume, onDelete }) => {
+  const VolumeActions = ({ volume, onEdit, onDelete }) => {
     const actions = () => {
       const actions = {
         delete: {
           title: "Delete",
           onClick: () => onDelete(volume),
           className: "danger-action"
+        },
+        edit: {
+          title: "Edit",
+          onClick: () => onEdit(volume)
         }
       };
 
       if (volume.optional)
-        return [actions.delete];
+        return [actions.edit, actions.delete];
       else
-        return [];
+        return [actions.edit];
     };
 
     const currentActions = actions();
@@ -302,17 +236,33 @@ const VolumeRow = ({ columns, volume, isLoading, onDelete }) => {
   }
 
   return (
-    <Tr>
-      <Td dataLabel={columns.mountPoint}>{volume.mountPoint}</Td>
-      <Td dataLabel={columns.details}><Details volume={volume} /></Td>
-      <Td dataLabel={columns.size}><SizeLimits volume={volume} /></Td>
-      <Td isActionCell>
-        <VolumeActions
+    <>
+      <Tr>
+        <Td dataLabel={columns.mountPoint}>{volume.mountPoint}</Td>
+        <Td dataLabel={columns.details}><Details volume={volume} /></Td>
+        <Td dataLabel={columns.size}><SizeLimits volume={volume} /></Td>
+        <Td isActionCell>
+          <VolumeActions
+            volume={volume}
+            onEdit={openForm}
+            onDelete={onDelete}
+          />
+        </Td>
+      </Tr>
+
+      <Popup title="Edit file system" isOpen={isFormOpen}>
+        <VolumeForm
+          id="editVolumeForm"
           volume={volume}
-          onDelete={onDelete}
+          templates={[]}
+          onSubmit={acceptForm}
         />
-      </Td>
-    </Tr>
+        <Popup.Actions>
+          <Popup.Confirm form="editVolumeForm" type="submit">Accept</Popup.Confirm>
+          <Popup.Cancel onClick={closeForm} />
+        </Popup.Actions>
+      </Popup>
+    </>
   );
 };
 
@@ -333,11 +283,18 @@ const VolumesTable = ({ volumes, isLoading, onVolumesChange }) => {
   const columns = {
     mountPoint: "At",
     details: "Details",
-    size: "Size limits",
+    size: "Size",
     actions: "Actions"
   };
 
   const VolumesContent = ({ volumes, isLoading, onVolumesChange }) => {
+    const editVolume = (volume) => {
+      const index = volumes.findIndex(v => v.mountPoint === volume.mountPoint);
+      const newVolumes = [...volumes];
+      newVolumes[index] = volume;
+      onVolumesChange(newVolumes);
+    };
+
     const deleteVolume = (volume) => {
       const newVolumes = volumes.filter(v => v.mountPoint !== volume.mountPoint);
       onVolumesChange(newVolumes);
@@ -353,6 +310,7 @@ const VolumesTable = ({ volumes, isLoading, onVolumesChange }) => {
           columns={columns}
           volume={volume}
           isLoading={isLoading}
+          onEdit={editVolume}
           onDelete={deleteVolume}
         />
       );

@@ -1,0 +1,19 @@
+name: Submit rubygem-agama
+
+on:
+  # runs on pushes targeting the default branch
+  push:
+    branches:
+      - master
+    paths:
+      # run only when a service source is changed
+      - service/**
+      - Rakefile
+
+jobs:
+  update_service:
+    uses: ./.github/workflows/obs-service-shared.yml
+    # pass all secrets
+    secrets: inherit
+    with:
+      project_name: systemsmanagement:Agama:Staging

@@ -65,7 +65,7 @@ cp %{SOURCE2} .cargo/config
 %install
 install -D -d -m 0755 %{buildroot}%{_bindir}
 install -m 0755 %{_builddir}/agama/target/release/agama %{buildroot}%{_bindir}/agama
-install -m 0755 %{_builddir}/agama/target/release/agama %{buildroot}%{_bindir}/agama-dbus-server
+install -m 0755 %{_builddir}/agama/target/release/agama-dbus-server %{buildroot}%{_bindir}/agama-dbus-server
 install -D -d -m 0755 %{buildroot}%{_datadir}/agama-cli
 install -m 0644 %{_builddir}/agama/agama-lib/share/profile.schema.json %{buildroot}%{_datadir}/agama-cli
 install --directory %{buildroot}%{_datadir}/dbus-1/agama-services
