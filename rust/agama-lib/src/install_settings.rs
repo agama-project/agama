@@ -1,11 +1,13 @@
 //! Configuration settings handling
 //!
 //! This module implements the mechanisms to load and store the installation settings.
-use crate::network::NetworkSettings;
+use crate::{
+    network::NetworkSettings,
+    storage::StorageSettings,
+};
 use crate::settings::{SettingObject, SettingValue, Settings};
 use agama_derive::Settings;
 use serde::{Deserialize, Serialize};
-use std::convert::TryFrom;
 use std::default::Default;
 use std::str::FromStr;
 
@@ -240,40 +242,6 @@ pub struct RootUserSettings {
     pub password: Option<String>,
     /// Root SSH public key
     pub ssh_public_key: Option<String>,
-}
-
-/// Storage settings for installation
-#[derive(Debug, Default, Settings, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct StorageSettings {
-    /// Whether LVM should be enabled
-    pub lvm: Option<bool>,
-    /// Encryption password for the storage devices (in clear text)
-    pub encryption_password: Option<String>,
-    /// Devices to use in the installation
-    #[collection_setting]
-    pub devices: Vec<Device>,
-}
-
-/// Device to use in the installation
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Device {
-    /// Device name (e.g., "/dev/sda")
-    pub name: String,
-}
-
-impl TryFrom<SettingObject> for Device {
-    type Error = &'static str;
-
-    fn try_from(value: SettingObject) -> Result<Self, Self::Error> {
-        match value.0.get("name") {
-            Some(name) => Ok(Device {
-                name: name.clone().try_into()?,
-            }),
-            None => Err("'name' key not found"),
-        }
-    }
 }
 
 /// Software settings for installation
