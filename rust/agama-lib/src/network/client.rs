@@ -22,7 +22,7 @@ impl<'a> NetworkClient<'a> {
         })
     }
 
-    // It returns an array of NetworkConnection using the connections_proxy
+    // Returns an array of network connections
     pub async fn connections(&self) -> Result<Vec<NetworkConnection>, ServiceError> {
         let connection_paths = self.connections_proxy.get_connections().await?;
         let mut connections = vec![];
@@ -42,7 +42,7 @@ impl<'a> NetworkClient<'a> {
 
     // It returns the NetworkConnection for the given connection path
     //
-    //  `path`: the connections path to get the config from
+    //  * `path`: the connections path to get the config from
     async fn connection_from(&self, path: &str) -> Result<NetworkConnection, ServiceError> {
         let connection_proxy = ConnectionProxy::builder(&self.connection)
             .path(path)?
@@ -84,8 +84,9 @@ impl<'a> NetworkClient<'a> {
         })
     }
 
-    // It resturs the [wireless settings][WirelessSettings] for the given connection path
-    //  `path`: the connections path to get the wireless config from
+    // Returns the [wireless settings][WirelessSettings] for the given connection
+    //
+    //  * `path`: the connections path to get the wireless config from
     async fn wireless_from(&self, path: &str) -> Result<WirelessSettings, ServiceError> {
         let wireless_proxy = WirelessProxy::builder(&self.connection)
             .path(path)?
