@@ -1,4 +1,4 @@
-//! Representation of the software settings
+//! Representation of the network settings
 
 use crate::settings::{SettingObject, Settings};
 use agama_derive::Settings;
