@@ -4,7 +4,7 @@
 //! agnostic from the real network service (e.g., NetworkManager).
 use uuid::Uuid;
 
-use crate::error::NetworkStateError;
+use crate::network::error::NetworkStateError;
 use agama_lib::network::types::SSID;
 use std::{fmt, net::Ipv4Addr, str};
 
@@ -91,7 +91,7 @@ mod tests {
     use uuid::Uuid;
 
     use super::{BaseConnection, Connection, EthernetConnection, NetworkState};
-    use crate::error::NetworkStateError;
+    use crate::network::error::NetworkStateError;
 
     #[test]
     fn test_add_connection() {

@@ -3,7 +3,7 @@
 //! This module contains the set of D-Bus interfaces that are exposed by [D-Bus network
 //! service](crate::NetworkService).
 use super::ObjectsRegistry;
-use crate::{
+use crate::network::{
     action::Action,
     error::NetworkStateError,
     model::{Connection as NetworkConnection, Device as NetworkDevice, WirelessConnection},

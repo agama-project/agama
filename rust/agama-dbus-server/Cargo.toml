@@ -8,8 +8,10 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0"
 agama-locale-data = { path="../agama-locale-data" }
-agama-network = { path="../agama-network" }
 agama-lib = { path="../agama-lib" }
 zbus = "3.7.0"
 zbus_macros = "3.7.0"
 async-std = { version = "1.12.0", features = ["attributes"]}
+uuid = { version = "1.3.4", features = ["v4"] }
+parking_lot = "0.12.1"
+thiserror = "1.0.40"

@@ -1,8 +1,9 @@
 pub mod error;
 pub mod locale;
 pub mod questions;
+pub mod network;
 
-use agama_network::NetworkService;
+use network::NetworkService;
 use std::future::pending;
 
 const ADDRESS: &str = "unix:path=/run/agama/bus";

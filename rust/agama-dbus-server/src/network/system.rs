@@ -1,5 +1,6 @@
-use crate::dbus::Tree;
-use crate::{model::Connection, nm::NetworkManagerAdapter, Action, Adapter, NetworkState};
+use crate::network::{
+    dbus::Tree, model::Connection, nm::NetworkManagerAdapter, Action, Adapter, NetworkState
+};
 use agama_lib::error::ServiceError;
 use std::error::Error;
 use std::sync::mpsc::{channel, Receiver, Sender};
