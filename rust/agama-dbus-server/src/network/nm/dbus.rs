@@ -3,7 +3,7 @@
 //! Working with hash maps coming from D-Bus is rather tedious and it is even worse when working
 //! with nested hash maps (see [NestedHash] and [OwnedNestedHash]).
 use super::model::*;
-use crate::model::*;
+use crate::network::model::*;
 use agama_lib::{
     dbus::{NestedHash, OwnedNestedHash},
     network::types::SSID,
@@ -246,7 +246,7 @@ mod test {
         connection_from_dbus, connection_to_dbus, merge_dbus_connections, NestedHash,
         OwnedNestedHash,
     };
-    use crate::{model::*, nm::dbus::ETHERNET_KEY};
+    use crate::network::{model::*, nm::dbus::ETHERNET_KEY};
     use agama_lib::network::types::SSID;
     use std::{collections::HashMap, net::Ipv4Addr};
     use uuid::Uuid;
