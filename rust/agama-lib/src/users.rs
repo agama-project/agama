@@ -1,3 +1,5 @@
+//! Implements support for handling the users settings
+
 mod client;
 mod settings;
 mod proxies;

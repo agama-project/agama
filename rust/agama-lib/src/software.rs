@@ -1,6 +1,8 @@
+//! Implements support for handling the software settings
+
 mod client;
-mod settings;
 mod proxies;
+mod settings;
 mod store;
 
 pub use client::SoftwareClient;

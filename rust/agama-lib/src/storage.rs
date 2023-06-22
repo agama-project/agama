@@ -1,6 +1,8 @@
+//! Implements support for handling the storage settings
+
 mod client;
-mod settings;
 mod proxies;
+mod settings;
 mod store;
 
 pub use client::StorageClient;

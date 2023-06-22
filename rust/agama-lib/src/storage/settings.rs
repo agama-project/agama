@@ -1,3 +1,5 @@
+//! Representation of the storage settings
+
 use crate::settings::{SettingObject, SettingValue, Settings};
 use agama_derive::Settings;
 use serde::{Deserialize, Serialize};

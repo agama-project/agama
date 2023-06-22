@@ -1,3 +1,5 @@
+//! Implements support for handling the network settings
+
 mod client;
 mod settings;
 mod proxies;
