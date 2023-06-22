@@ -202,6 +202,10 @@ jobs:
     - name: Rust unit tests
       run:  podman exec agama bash -c "cd /checkout/rust; cargo test --verbose"
 
+    # TODO: if it works, just add it to base container
+    - name: Prepare rustup
+      run: zypper --non-interactive install rustup
+
     - name: Check rust formatting
       run:  podman exec agama bash -c "cd /checkout/rust; rustup component add rustfmt; cargo fmt --all -- --check"
 
