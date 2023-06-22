@@ -1,6 +1,5 @@
 use crate::error::WrongParameter;
-use crate::install_settings::{FirstUserSettings, RootUserSettings, UserSettings};
-use crate::users::{FirstUser, UsersClient};
+use super::{FirstUserSettings, RootUserSettings, UserSettings, UsersClient, FirstUser};
 use std::error::Error;
 use zbus::Connection;
 

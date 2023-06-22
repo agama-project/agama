@@ -1,17 +1,17 @@
-mod software;
-mod storage;
-mod users;
+//! Load/store the settings from/to the D-Bus services.
 
 use crate::error::ServiceError;
 use crate::install_settings::{InstallSettings, Scope};
-use crate::network::NetworkStore;
-use crate::store::software::SoftwareStore;
-use crate::store::storage::StorageStore;
-use crate::store::users::UsersStore;
+use crate::{
+    network::NetworkStore, software::SoftwareStore, storage::StorageStore, users::UsersStore,
+};
 use std::error::Error;
 use zbus::Connection;
 
-/// Loading and storing the settings in the D-Bus service
+/// Struct that loads/stores the settings from/to the D-Bus services.
+///
+/// It is composed by a set of "stores" that are able to load/store the
+/// settings for each service.
 ///
 /// This struct uses the default connection built by [connection function](super::connection).
 pub struct Store<'a> {

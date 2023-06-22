@@ -1,4 +1,4 @@
-use super::model::{NetworkConnection, WirelessSettings};
+use super::settings::{NetworkConnection, WirelessSettings};
 use super::types::SSID;
 use crate::error::ServiceError;
 

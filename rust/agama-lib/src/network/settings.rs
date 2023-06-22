@@ -1,6 +1,5 @@
-//! Configuration network settings handling
-//!
-//! This module implements the mechanisms to load and store the installation settings.
+//! Representation of the network settings
+
 use crate::settings::{SettingObject, Settings};
 use agama_derive::Settings;
 use serde::{Deserialize, Serialize};

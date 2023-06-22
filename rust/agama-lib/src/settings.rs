@@ -24,9 +24,9 @@ use std::convert::TryFrom;
 /// In the example below, the trait is manually implemented for `InstallSettings` and derived for
 /// `UserSettings`.
 ///
-/// ```
-/// # use agama_derive::Settings;
+/// ```no_compile
 /// # use agama_lib::settings::{Settings, SettingValue};
+/// # use agama_derive::Settings;
 ///
 /// #[derive(Settings)]
 /// struct UserSettings {
