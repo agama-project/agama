@@ -1,4 +1,4 @@
-name: OBS:Staging (rubygem-agama)
+name: Submit rubygem-agama
 
 on:
   # runs on pushes targeting the default branch
@@ -8,6 +8,7 @@ on:
     paths:
       # run only when a service source is changed
       - service/**
+      - Rakefile
 
 jobs:
   update_service:

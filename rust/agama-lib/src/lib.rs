@@ -1,6 +1,32 @@
+//! # Interacting with Agama
+//!
+//! This library offers an API to interact with Agama services. At this point, the library allows:
+//!
+//! * Reading and writing [installation settings](install_settings::InstallSettings).
+//! * Monitoring the [progress](progress).
+//! * Triggering actions through the [manager] (e.g., starting installation).
+//!
+//! ## Handling installation settings
+//!
+//! Let's have a look to the components that are involved when dealing with the installation
+//! settings, as it is the most complex part of the library. The code is organized in a set of
+//! modules, one for each topic, like [network], [software], and so on.
+//!
+//! Each of those modules contains, at least:
+//!
+//! * A settings model: it is a representation of the installation settings for the given topic. It
+//! is expected to implement the [serde::Serialize], [serde::Deserialize] and [settings::Settings]
+//! traits.
+//! * A store: it is the responsible for reading/writing the settings to the service. Usually, it
+//! relies on a D-Bus client for communicating with the service, although it could implement that
+//! logic itself. Note: we are considering defining a trait for stores too.
+//!
+//! As said, those modules might implement additional stuff, like specific types, clients, etc.
+
 pub mod error;
 pub mod install_settings;
 pub mod manager;
+pub mod network;
 pub mod profile;
 pub mod settings;
 pub mod software;

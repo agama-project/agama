@@ -61,6 +61,28 @@ describe Agama::DBus::Storage::ZFCPController do
     end
   end
 
+  describe "#lun_scan" do
+    before do
+      controller1.lun_scan = lun_scan
+    end
+
+    context "if the controller is automatically scanning LUNs" do
+      let(:lun_scan) { true }
+
+      it "returns true" do
+        expect(subject.lun_scan).to eq(true)
+      end
+    end
+
+    context "if the controller is not automatically scanning LUNs" do
+      let(:lun_scan) { false }
+
+      it "returns false" do
+        expect(subject.lun_scan).to eq(false)
+      end
+    end
+  end
+
   describe "#channel" do
     it "returns the channel id of the controller" do
       expect(subject.channel).to eq("0.0.fa00")

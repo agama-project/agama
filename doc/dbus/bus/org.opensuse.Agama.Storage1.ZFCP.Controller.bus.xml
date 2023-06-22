@@ -49,6 +49,7 @@
       <arg name="result" direction="out" type="u"/>
     </method>
     <property type="b" name="Active" access="read"/>
+    <property type="b" name="LUNScan" access="read"/>
     <property type="s" name="Channel" access="read"/>
   </interface>
 </node>

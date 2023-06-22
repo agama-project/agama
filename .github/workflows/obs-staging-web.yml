@@ -1,4 +1,4 @@
-name: OBS:Staging (cockpit-agama)
+name: Submit cockpit-agama
 
 on:
   # runs on pushes targeting the default branch

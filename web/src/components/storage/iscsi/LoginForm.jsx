@@ -63,7 +63,7 @@ export default function LoginForm({ node, onSubmit: onSubmitProp, onCancel }) {
   const isDisabled = isLoading || !isValidAuth;
 
   return (
-    <Popup isOpen height="medium" title={`Login ${node.target}`}>
+    <Popup isOpen title={`Login ${node.target}`}>
       <Form id={id} onSubmit={onSubmit}>
         { isFailed &&
           <Alert variant="warning" isInline title="Something went wrong">

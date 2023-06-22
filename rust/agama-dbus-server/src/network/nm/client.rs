@@ -2,7 +2,7 @@
 use super::dbus::{connection_from_dbus, connection_to_dbus, merge_dbus_connections};
 use super::model::NmDeviceType;
 use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
-use crate::model::{Connection, Device};
+use crate::network::model::{Connection, Device};
 use agama_lib::error::ServiceError;
 use uuid::Uuid;
 use zbus;

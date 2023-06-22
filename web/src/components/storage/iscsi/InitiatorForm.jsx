@@ -38,7 +38,7 @@ export default function InitiatorForm({ initiator, onSubmit: onSubmitProp, onCan
   const isDisabled = data.name === "";
 
   return (
-    <Popup isOpen height="medium" title="Edit iSCSI Initiator">
+    <Popup isOpen title="Edit iSCSI Initiator">
       <Form id={id} onSubmit={onSubmit}>
         <FormGroup fieldId="initiatorName" label="Name" isRequired>
           <TextInput

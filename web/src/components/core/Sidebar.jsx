@@ -19,23 +19,12 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon, AppActions } from "~/components/layout";
 import { If, NotificationMark } from "~/components/core";
 import { useNotification } from "~/context/notification";
-
-/**
- * Returns siblings for given HTML node
- *
- * @param {HTMLElement} node
- * @returns {HTMLElement[]}
- */
-const siblingsFor = (node) => {
-  const parent = node?.parentNode;
-
-  return parent ? [...parent.children].filter(n => n !== node) : [];
-};
+import useNodeSiblings from "~/hooks/useNodeSiblings";
 
 /**
  * Agama sidebar navigation
@@ -49,35 +38,30 @@ export default function Sidebar ({ children }) {
   const asideRef = useRef(null);
   const closeButtonRef = useRef(null);
   const [notification] = useNotification();
+  const [addAttribute, removeAttribute] = useNodeSiblings(asideRef.current);
 
   /**
    * Set siblings as not interactive and not discoverable
    */
-  const makeSiblingsInert = () => {
-    siblingsFor(asideRef.current).forEach(s => {
-      s.setAttribute('inert', '');
-      s.setAttribute('aria-hidden', true);
-    });
-  };
+  const makeSiblingsInert = useCallback(() => {
+    addAttribute('inert', '');
+    addAttribute('aria-hidden', true);
+  }, [addAttribute]);
 
   /**
    * Set siblings as interactive and discoverable
    */
-  const makeSiblingsAlive = () => {
-    siblingsFor(asideRef.current).forEach(s => {
-      s.removeAttribute('inert');
-      s.removeAttribute('aria-hidden');
-    });
-  };
+  const makeSiblingsAlive = useCallback(() => {
+    removeAttribute('inert');
+    removeAttribute('aria-hidden');
+  }, [removeAttribute]);
 
   const open = () => {
     setIsOpen(true);
-    makeSiblingsInert();
   };
 
   const close = () => {
     setIsOpen(false);
-    makeSiblingsAlive();
   };
 
   /**
@@ -97,8 +81,13 @@ export default function Sidebar ({ children }) {
   };
 
   useEffect(() => {
-    if (isOpen) closeButtonRef.current.focus();
-  }, [isOpen]);
+    if (isOpen) {
+      closeButtonRef.current.focus();
+      makeSiblingsInert();
+    } else {
+      makeSiblingsAlive();
+    }
+  }, [isOpen, makeSiblingsInert, makeSiblingsAlive]);
 
   useLayoutEffect(() => {
     // Ensure siblings do not remain inert when the component is unmounted.
@@ -106,7 +95,7 @@ export default function Sidebar ({ children }) {
     // be executed immediately BEFORE unmounting the component and still having
     // access to siblings.
     return () => makeSiblingsAlive();
-  }, []);
+  }, [makeSiblingsAlive]);
 
   // display additional info when running in a development server
   let targetInfo = null;

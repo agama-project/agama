@@ -1,4 +1,4 @@
-name: OBS:Staging (agama-cli)
+name: Submit agama-cli
 
 on:
   # runs on pushes targeting the default branch

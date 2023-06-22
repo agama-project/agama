@@ -1,4 +1,4 @@
-use crate::model::{Connection, DeviceType};
+use crate::network::model::{Connection, DeviceType};
 use uuid::Uuid;
 
 /// Networking actions, like adding, updating or removing connections.

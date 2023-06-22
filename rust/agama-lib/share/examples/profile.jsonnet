@@ -29,4 +29,27 @@ local findBiggestDisk(disks) =
       },
     ],
   },
+  network: {
+    connections: [
+      {
+        name: 'AgamaNetwork',
+        wireless: {
+          password: 'agama.test',
+          security: 'wpa-psk',
+          ssid: 'AgamaNetwork'
+        }
+      },
+      {
+        name: 'Etherned device 1',
+        method: 'manual',
+        gateway: '192.168.122.1',
+        addresses: [
+          '192.168.122.100/24,'
+        ],
+        nameservers: [
+          '1.2.3.4'
+        ]
+      ]
+    }
+  ]
 }

@@ -1,4 +1,4 @@
-use crate::{
+use crate::network::{
     model::{Connection, NetworkState},
     nm::NetworkManagerClient,
     Adapter,

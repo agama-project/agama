@@ -31,6 +31,13 @@ module Agama
         #
         # @note This mixin is expected to be included by {Agama::DBus::Storage::Manager}.
         module ZFCPManager
+          # Whether the option for allowing automatic LUN scan is active
+          #
+          # @return [Boolean]
+          def allow_lun_scan
+            zfcp_backend.allow_lun_scan?
+          end
+
           # Registers callbacks to update the collection of zFCP controllers, the disks and
           # deprecate the system
           def register_zfcp_callbacks
@@ -71,6 +78,9 @@ module Agama
           def self.included(base)
             base.class_eval do
               dbus_interface ZFCP_MANAGER_INTERFACE do
+                # @see #allow_lun_scan
+                dbus_reader(:allow_lun_scan, "b", dbus_name: "AllowLUNScan")
+
                 # Probes the zFCP controllers and disks
                 dbus_method(:Probe) do
                   busy_while { zfcp_backend.probe }
