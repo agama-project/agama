@@ -23,7 +23,8 @@ SHELL=/bin/bash
 
 # check that the implementation and documentation haven't diverged
 # TODO: factor out a script to decouple Make syntax from the rest
-diff: ${tmpdir}
+diff: check
+check: ${tmpdir}
 	ALL_GOOD=true; \
 	for doc_xml in org.opensuse.Agama*.doc.xml; do \
 	  IFACE=$${doc_xml%.doc.xml}; \

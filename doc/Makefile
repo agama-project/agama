@@ -6,4 +6,4 @@ all:
 	cp index.html dist
 
 check:
-	$(MAKE) -C dbus diff
+	$(MAKE) -C dbus check

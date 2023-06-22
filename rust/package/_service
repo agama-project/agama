@@ -1,0 +1,28 @@
+<services>
+  <service name="obs_scm" mode="manual">
+    <param name="url">https://github.com/openSUSE/agama.git</param>
+    <param name="versionformat">@PARENT_TAG@+@TAG_OFFSET@</param>
+    <param name="versionrewrite-pattern">v(.*)</param>    
+    <param name="scm">git</param>
+    <param name="revision">master</param>
+    <param name="subdir">rust</param>
+    <param name="without-version">enable</param>
+    <param name="extract">package/agama-cli.changes</param>
+    <param name="extract">package/agama-cli.spec</param>
+  </service>
+  <service name="cargo_vendor" mode="manual">
+    <param name="srcdir">agama/rust</param>
+     <param name="compression">zst</param>
+     <param name="update">true</param>
+  </service>
+  <service name="cargo_audit" mode="manual">
+    <param name="srcdir">agama/rust</param>
+  </service>
+  <service mode="buildtime" name="tar">
+    <param name="obsinfo">agama.obsinfo</param>
+    <param name="filename">agama</param>
+  </service>
+  <service mode="buildtime" name="set_version">
+    <param name="basename">agama</param>
+  </service>
+</services>

@@ -1,4 +1,4 @@
-name: OBS:Staging (cockpit-agama-playwright)
+name: Submit cockpit-agama-playwright
 
 on:
   # runs on pushes targeting the default branch
@@ -15,4 +15,5 @@ jobs:
     # pass all secrets
     secrets: inherit
     with:
+      project_name: systemsmanagement:Agama:Staging
       package_name: cockpit-agama-playwright

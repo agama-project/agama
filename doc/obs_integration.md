@@ -19,7 +19,14 @@ The [systemsmanagement:Agama:Devel](https://build.opensuse.org/project/show/syst
 contains the latest released version of the Agama project. The packages should
 be more stable than in the Staging project.
 
-These packages are updated manually when a new version is released.
+These packages are updated automatically when a new version is released. See
+more details below.
+
+## Releasing a New Version
+
+For releasing a new version just create a new version tag. The process is then
+fully automated. See more details in the [Packaging documentation](
+../PACKAGING.md#bumping-the-version).
 
 ## OBS Synchronization
 

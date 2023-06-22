@@ -186,7 +186,7 @@ export default function FirstUser() {
       { isUserDefined ? <UserData user={user} actions={actions} /> : <UserNotDefined actionCb={openForm} /> }
       { /* TODO: Extract this form to a component, if possible */ }
       { isFormOpen &&
-        <Popup isOpen height="medium" title={isEditing ? "Edit user account" : "Create user account"}>
+        <Popup isOpen title={isEditing ? "Edit user account" : "Create user account"}>
           <Form id="createUser" onSubmit={(e) => accept("createUser", e)}>
             { showErrors() &&
               <Alert variant="warning" isInline title="Something went wrong">

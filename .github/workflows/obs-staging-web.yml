@@ -1,4 +1,4 @@
-name: OBS:Staging (cockpit-agama)
+name: Submit cockpit-agama
 
 on:
   # runs on pushes targeting the default branch
@@ -16,4 +16,5 @@ jobs:
     secrets: inherit
     with:
       install_packages: obs-service-node_modules
+      project_name: systemsmanagement:Agama:Staging
       package_name: cockpit-agama

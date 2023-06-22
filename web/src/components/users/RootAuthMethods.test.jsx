@@ -70,12 +70,50 @@ describe("when loading initial data", () => {
 });
 
 describe("when ready", () => {
-  it("renders a table holding available methods", async () => {
-    installerRender(<RootAuthMethods />);
+  describe("and no method is defined", () => {
+    it("renders a text inviting the user to define at least one", async () => {
+      installerRender(<RootAuthMethods />);
 
-    const table = await screen.findByRole("grid");
-    within(table).getByText("Password");
-    within(table).getByText("SSH Key");
+      await screen.findByText("No root authentication method defined yet");
+      screen.getByText(/at least one/);
+    });
+
+    it("renders buttons for setting either, a password or a SSH Public Key", async () => {
+      installerRender(<RootAuthMethods />);
+
+      await screen.findByRole("button", { name: "Set a password" });
+      screen.getByRole("button", { name: "Upload a SSH Public Key" });
+    });
+
+    it("allows setting the password", async () => {
+      const { user } = installerRender(<RootAuthMethods />);
+
+      const button = await screen.findByRole("button", { name: "Set a password" });
+      await user.click(button);
+
+      screen.getByRole("dialog", { name: "Set a root password" });
+    });
+
+    it("allows setting the SSH Public Key", async () => {
+      const { user } = installerRender(<RootAuthMethods />);
+
+      const button = await screen.findByRole("button", { name: "Upload a SSH Public Key" });
+      await user.click(button);
+
+      screen.getByRole("dialog", { name: "Add a SSH Public Key for root" });
+    });
+  });
+
+  describe("and at least one method is already defined", () => {
+    beforeEach(() => isRootPasswordSetFn.mockResolvedValue(true));
+
+    it("renders a table with available methods", async () => {
+      installerRender(<RootAuthMethods />);
+
+      const table = await screen.findByRole("grid");
+      within(table).getByText("Password");
+      within(table).getByText("SSH Key");
+    });
   });
 
   describe("and the password has been set", () => {
@@ -132,6 +170,9 @@ describe("when ready", () => {
   });
 
   describe("but the password is not set yet", () => {
+    // Mock another auth method for reaching the table
+    beforeEach(() => getRootSSHKeyFn.mockResolvedValue("Fake"));
+
     it("renders the 'Not set' status", async () => {
       installerRender(<RootAuthMethods />);
 
@@ -226,6 +267,9 @@ describe("when ready", () => {
   });
 
   describe("but the SSH Key is not set yet", () => {
+    // Mock another auth method for reaching the table
+    beforeEach(() => isRootPasswordSetFn.mockResolvedValue(true));
+
     it("renders the 'Not set' status", async () => {
       installerRender(<RootAuthMethods />);
 
@@ -266,6 +310,9 @@ describe("when ready", () => {
   });
 
   describe("and user settings changes", () => {
+    // Mock an auth method for reaching the table
+    beforeEach(() => isRootPasswordSetFn.mockResolvedValue(true));
+
     it("updates the UI accordingly", async () => {
       const [mockFunction, callbacks] = createCallbackMock();
       onUsersChangeFn = mockFunction;

@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Wed Jun 14 15:11:56 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Extend zFCP D-Bus API to provide allow_lun_scan info
+  (gh#openSUSE/agama/626).
+
+-------------------------------------------------------------------
+Wed Jun  7 11:13:49 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add D-Bus API for managing zFCP devices (gh#openSUSE/agama#594).
+
+-------------------------------------------------------------------
 Wed Jun  7 08:54:58 UTC 2023 - Michal Filka <mfilka@suse.com>
 
 - Merge the users D-Bus service into the main one to save some resources

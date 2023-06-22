@@ -34,7 +34,7 @@ import xbytes from "xbytes";
 
 const SIZE_METHODS = Object.freeze({
   AUTO: "auto",
-  MANUAL: "manual",
+  MANUAL: "fixed",
   RANGE: "range"
 });
 

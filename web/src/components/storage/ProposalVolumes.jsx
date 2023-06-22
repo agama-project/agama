@@ -250,7 +250,7 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
         </Td>
       </Tr>
 
-      <Popup title="Edit file system" height="medium" isOpen={isFormOpen}>
+      <Popup title="Edit file system" isOpen={isFormOpen}>
         <VolumeForm
           id="editVolumeForm"
           volume={volume}

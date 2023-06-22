@@ -35,7 +35,7 @@ module Agama
 
         # Constructor
         #
-        # @param service [::DBus::Service]
+        # @param service [::DBus::ObjectServer]
         # @param logger [Logger, nil]
         def initialize(service, logger: nil)
           @service = service
@@ -58,7 +58,7 @@ module Agama
 
       private
 
-        # @return [::DBus::Service]
+        # @return [::DBus::ObjectServer]
         attr_reader :service
 
         # @return [Logger]

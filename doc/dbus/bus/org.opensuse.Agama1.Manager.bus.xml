@@ -48,8 +48,11 @@
       <arg name="user" direction="in" type="s"/>
       <arg name="tarball_filesystem_path" direction="out" type="s"/>
     </method>
+    <method name="Finish">
+    </method>
     <property type="aa{sv}" name="InstallationPhases" access="read"/>
     <property type="u" name="CurrentInstallationPhase" access="read"/>
+    <property type="b" name="IguanaBackend" access="read"/>
     <property type="as" name="BusyServices" access="read"/>
   </interface>
 </node>

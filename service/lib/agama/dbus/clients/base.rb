@@ -42,7 +42,7 @@ module Agama
 
         # D-Bus service
         #
-        # @return [::DBus::Service]
+        # @return [::DBus::ObjectServer]
         def service
           @service ||= bus.service(service_name)
         end

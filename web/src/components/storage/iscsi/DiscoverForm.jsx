@@ -86,7 +86,7 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
   const isDisabled = isLoading || !isValidForm();
 
   return (
-    <Popup isOpen height="medium" title="Discover iSCSI Targets">
+    <Popup isOpen title="Discover iSCSI Targets">
       <Form id={id} onSubmit={onSubmit}>
         { isFailed &&
           <Alert variant="warning" isInline title="Something went wrong">
