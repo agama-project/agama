@@ -1,5 +1,5 @@
 use crate::network::{
-    dbus::Tree, model::Connection, nm::NetworkManagerAdapter, Action, Adapter, NetworkState
+    dbus::Tree, model::Connection, nm::NetworkManagerAdapter, Action, Adapter, NetworkState,
 };
 use agama_lib::error::ServiceError;
 use std::error::Error;

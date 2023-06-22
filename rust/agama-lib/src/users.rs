@@ -1,10 +1,10 @@
 //! Implements support for handling the users settings
 
 mod client;
-mod settings;
 mod proxies;
+mod settings;
 mod store;
 
-pub use client::{UsersClient, FirstUser};
+pub use client::{FirstUser, UsersClient};
 pub use settings::{FirstUserSettings, RootUserSettings, UserSettings};
 pub use store::UsersStore;
