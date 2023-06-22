@@ -1,6 +1,6 @@
 //! Representation of the software settings
 
-use crate::settings::{Settings, SettingValue};
+use crate::settings::Settings;
 use agama_derive::Settings;
 use serde::{Deserialize, Serialize};
 

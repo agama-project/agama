@@ -52,7 +52,7 @@ fn expand_set_fn(field_name: &Vec<Ident>) -> TokenStream2 {
     }
 
     quote! {
-        fn set(&mut self, attr: &str, value: SettingValue) -> Result<(), &'static str> {
+        fn set(&mut self, attr: &str, value: crate::settings::SettingValue) -> Result<(), &'static str> {
             match attr {
                 #(stringify!(#field_name) => self.#field_name = value.try_into()?,)*
                 _ => return Err("unknown attribute")
