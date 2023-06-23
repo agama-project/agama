@@ -36,8 +36,8 @@ impl NetworkState {
     /// Get connection by UUID
     ///
     /// * `uuid`: connection UUID
-    pub fn get_connection(&self, uuid: Uuid) -> Option<&Connection> {
-        self.connections.iter().find(|c| c.uuid() == uuid)
+    pub fn get_connection(&self, id: &str) -> Option<&Connection> {
+        self.connections.iter().find(|c| c.id() == id)
     }
 
     /// Get connection by UUID as mutable
@@ -51,7 +51,7 @@ impl NetworkState {
     ///
     /// It uses the `id` to decide whether the connection already exists.
     pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        if let Some(_) = self.get_connection(conn.uuid()) {
+        if let Some(_) = self.get_connection(conn.id()) {
             return Err(NetworkStateError::ConnectionExists(conn.uuid()));
         }
 
@@ -98,12 +98,13 @@ mod tests {
         let mut state = NetworkState::default();
         let uuid = Uuid::new_v4();
         let base = BaseConnection {
+            id: "eth0".to_string(),
             uuid,
             ..Default::default()
         };
         let conn0 = Connection::Ethernet(EthernetConnection { base });
         state.add_connection(conn0).unwrap();
-        let found = state.get_connection(uuid).unwrap();
+        let found = state.get_connection("eth0").unwrap();
         assert_eq!(found.uuid(), uuid);
     }
 
@@ -124,21 +125,23 @@ mod tests {
     #[test]
     fn test_update_connection() {
         let mut state = NetworkState::default();
-        let uuid = Uuid::new_v4();
         let base0 = BaseConnection {
-            uuid,
+            id: "eth0".to_string(),
+            uuid: Uuid::new_v4(),
             ..Default::default()
         };
         let conn0 = Connection::Ethernet(EthernetConnection { base: base0 });
         state.add_connection(conn0).unwrap();
 
+        let uuid = Uuid::new_v4();
         let base1 = BaseConnection {
+            id: "eth0".to_string(),
             uuid,
             ..Default::default()
         };
         let conn2 = Connection::Ethernet(EthernetConnection { base: base1 });
         state.update_connection(conn2).unwrap();
-        let found = state.get_connection(uuid).unwrap();
+        let found = state.get_connection("eth0").unwrap();
         assert_eq!(found.uuid(), uuid);
     }
 
@@ -168,7 +171,7 @@ mod tests {
         let conn0 = Connection::Ethernet(EthernetConnection { base: base0 });
         state.add_connection(conn0).unwrap();
         state.remove_connection("eth0").unwrap();
-        let found = state.get_connection(uuid).unwrap();
+        let found = state.get_connection("eth0").unwrap();
         assert!(found.is_removed());
     }
 
