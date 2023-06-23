@@ -55,7 +55,7 @@ impl<'a> NetworkClient<'a> {
             .build()
             .await?;
 
-        /// TODO: consider using the `IPMethod` struct from `agama-network`.
+        // TODO: consider using the `IPMethod` struct from `agama-network`.
         let method = match ipv4_proxy.method().await? {
             0 => "auto",
             1 => "manual",
