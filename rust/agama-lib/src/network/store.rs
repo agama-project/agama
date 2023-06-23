@@ -22,7 +22,7 @@ impl<'a> NetworkStore<'a> {
         Ok(NetworkSettings { connections })
     }
 
-    pub async fn store(&self, settings: &NetworkSettings) -> Result<(), Box<dyn Error>> {
+    pub async fn store(&self, _settings: &NetworkSettings) -> Result<(), Box<dyn Error>> {
         Ok(())
     }
 }
