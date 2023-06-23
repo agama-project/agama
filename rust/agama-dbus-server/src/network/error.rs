@@ -6,8 +6,8 @@ use uuid::Uuid;
 /// Errors that are related to the network configuration.
 #[derive(Error, Debug)]
 pub enum NetworkStateError {
-    #[error("Invalid connection name: '{0}'")]
-    UnknownConnection(Uuid),
+    #[error("Unknown connection with ID: '{0}'")]
+    UnknownConnection(String),
     #[error("Invalid connection UUID: '{0}'")]
     InvalidUuid(String),
     #[error("Invalid IP address")]

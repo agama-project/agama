@@ -43,8 +43,8 @@ impl NetworkState {
     /// Get connection by UUID as mutable
     ///
     /// * `uuid`: connection UUID
-    pub fn get_connection_mut(&mut self, uuid: Uuid) -> Option<&mut Connection> {
-        self.connections.iter_mut().find(|c| c.uuid() == uuid)
+    pub fn get_connection_mut(&mut self, id: &str) -> Option<&mut Connection> {
+        self.connections.iter_mut().find(|c| c.id() == id)
     }
 
     /// Adds a new connection.
@@ -65,8 +65,8 @@ impl NetworkState {
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
     pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        let Some(old_conn) = self.get_connection_mut(conn.uuid()) else {
-            return Err(NetworkStateError::UnknownConnection(conn.uuid()));
+        let Some(old_conn) = self.get_connection_mut(conn.id()) else {
+            return Err(NetworkStateError::UnknownConnection(conn.id().to_string()));
         };
 
         *old_conn = conn;
@@ -76,9 +76,9 @@ impl NetworkState {
     /// Removes a connection from the state.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
-    pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
-        let Some(conn) = self.get_connection_mut(uuid) else {
-            return Err(NetworkStateError::UnknownConnection(uuid));
+    pub fn remove_connection(&mut self, id: &str) -> Result<(), NetworkStateError> {
+        let Some(conn) = self.get_connection_mut(id) else {
+            return Err(NetworkStateError::UnknownConnection(id.to_string()));
         };
 
         conn.remove();
@@ -158,14 +158,16 @@ mod tests {
     #[test]
     fn test_remove_connection() {
         let mut state = NetworkState::default();
+        let id = "eth0".to_string();
         let uuid = Uuid::new_v4();
         let base0 = BaseConnection {
+            id,
             uuid,
             ..Default::default()
         };
         let conn0 = Connection::Ethernet(EthernetConnection { base: base0 });
         state.add_connection(conn0).unwrap();
-        state.remove_connection(uuid).unwrap();
+        state.remove_connection("eth0").unwrap();
         let found = state.get_connection(uuid).unwrap();
         assert!(found.is_removed());
     }
@@ -173,7 +175,7 @@ mod tests {
     #[test]
     fn test_remove_unknown_connection() {
         let mut state = NetworkState::default();
-        let error = state.remove_connection(Uuid::new_v4()).unwrap_err();
+        let error = state.remove_connection("eth0").unwrap_err();
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
     }
 }

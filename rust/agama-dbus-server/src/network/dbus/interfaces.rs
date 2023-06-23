@@ -15,7 +15,6 @@ use std::{
     net::{AddrParseError, Ipv4Addr},
     sync::{mpsc::Sender, Arc},
 };
-use uuid::Uuid;
 use zbus::{dbus_interface, zvariant::ObjectPath};
 
 /// D-Bus interface for the network devices collection
@@ -123,11 +122,11 @@ impl Connections {
     /// Removes a network connection.
     ///
     /// * `uuid`: connection UUID..
-    pub async fn remove_connection(&mut self, uuid: &str) -> zbus::fdo::Result<()> {
+    pub async fn remove_connection(&mut self, id: &str) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock();
-        let uuid =
-            Uuid::parse_str(uuid).map_err(|_| NetworkStateError::InvalidUuid(uuid.to_string()))?;
-        actions.send(Action::RemoveConnection(uuid)).unwrap();
+        actions
+            .send(Action::RemoveConnection(id.to_string()))
+            .unwrap();
         Ok(())
     }
 
