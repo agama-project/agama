@@ -54,7 +54,7 @@ jobs:
         flag-name: frontend
         parallel: true
 
-  backend_tests:
+  ruby_tests:
     runs-on: ubuntu-latest
     env:
       COVERAGE: 1
@@ -100,7 +100,7 @@ jobs:
         flag-name: backend
         parallel: true
 
-  backend_linter:
+  ruby_linter:
     runs-on: ubuntu-latest
 
     defaults:
@@ -123,7 +123,7 @@ jobs:
     - name: Rubocop
       run: /usr/bin/rubocop.*-1.24.1
 
-  backend_doc:
+  ruby_doc:
     runs-on: ubuntu-latest
     env:
       COVERAGE: 1
@@ -161,6 +161,44 @@ jobs:
     - name: Check that introspected API and its docs have not diverged
       run: make -C ../doc check
 
+  rust_ci:
+    runs-on: ubuntu-latest
+    env:
+      COVERAGE: 1
+
+    defaults:
+      run:
+        working-directory: ./rust
+
+    strategy:
+      fail-fast: false
+
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure and refresh repositories
+      # disable unused repositories to have faster refresh
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
+
+    - name: Install Rust development files
+      run: zypper --non-interactive install rustup
+
+    - name: Install required packages
+      run: zypper --non-interactive install  python-langtable-data openssl-3 libopenssl-3-devel
+
+    - name: Install Rust toolchains
+      run: rustup toolchain install stable
+
+    - name: Run the tests
+      run: cargo test --verbose
+
+    - name: Lint formatting
+      run: cargo fmt --all -- --check
 
   integration-tests:
     timeout-minutes: 60
@@ -202,9 +240,6 @@ jobs:
 
     - name: Setup service
       run:  podman exec agama bash -c "cd /checkout; ./setup-service.sh"
-
-    - name: Rust unit tests
-      run:  podman exec agama bash -c "cd /checkout/rust; cargo test --verbose"
 
     - name: Set a testing Agama configuration
       # copy a simplified ALP config file, it skips the product selection at the beginning
@@ -251,7 +286,7 @@ jobs:
   finish:
     runs-on: ubuntu-latest
 
-    needs: [frontend_build, backend_tests]
+    needs: [frontend_build, ruby_tests]
 
     steps:
 

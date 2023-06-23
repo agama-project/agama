@@ -1,7 +1,7 @@
 //! Implements the store for the storage settings.
 
+use super::{SoftwareClient, SoftwareSettings};
 use crate::error::{ServiceError, WrongParameter};
-use super::{SoftwareSettings, SoftwareClient};
 use std::error::Error;
 use zbus::Connection;
 

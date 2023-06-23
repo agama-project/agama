@@ -103,4 +103,3 @@ trait StorageProposal {
         &self,
     ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>>;
 }
-

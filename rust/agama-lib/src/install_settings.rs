@@ -1,13 +1,11 @@
 //! Configuration settings handling
 //!
 //! This module implements the mechanisms to load and store the installation settings.
-use crate::{
-    network::NetworkSettings,
-    storage::StorageSettings,
-    software::SoftwareSettings,
-    users::UserSettings
-};
 use crate::settings::{SettingObject, SettingValue, Settings};
+use crate::{
+    network::NetworkSettings, software::SoftwareSettings, storage::StorageSettings,
+    users::UserSettings,
+};
 use serde::{Deserialize, Serialize};
 use std::default::Default;
 use std::str::FromStr;

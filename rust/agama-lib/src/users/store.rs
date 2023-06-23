@@ -1,5 +1,5 @@
+use super::{FirstUser, FirstUserSettings, RootUserSettings, UserSettings, UsersClient};
 use crate::error::WrongParameter;
-use super::{FirstUserSettings, RootUserSettings, UserSettings, UsersClient, FirstUser};
 use std::error::Error;
 use zbus::Connection;
 
