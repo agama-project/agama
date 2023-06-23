@@ -86,9 +86,9 @@ impl NetworkSystem {
             Action::UpdateConnection(conn) => {
                 self.state.update_connection(conn)?;
             }
-            Action::RemoveConnection(uuid) => {
-                self.tree.remove_connection(uuid).await?;
-                self.state.remove_connection(uuid)?;
+            Action::RemoveConnection(id) => {
+                self.tree.remove_connection(&id).await?;
+                self.state.remove_connection(&id)?;
             }
             Action::Apply => {
                 self.to_network_manager().await?;

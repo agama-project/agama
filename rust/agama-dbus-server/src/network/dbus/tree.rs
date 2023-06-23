@@ -1,6 +1,5 @@
 use agama_lib::error::ServiceError;
 use parking_lot::Mutex;
-use uuid::Uuid;
 
 use crate::network::{action::Action, dbus::interfaces, model::*};
 use std::collections::HashMap;
@@ -97,20 +96,20 @@ impl Tree {
             .await?;
         }
 
-        objects.register_connection(conn.uuid(), &path);
+        objects.register_connection(conn.id(), &path);
         Ok(())
     }
 
     /// Removes a connection from the tree
     ///
     /// * `uuid`: UUID of the connection to remove.
-    pub async fn remove_connection(&mut self, uuid: Uuid) -> Result<(), ServiceError> {
+    pub async fn remove_connection(&mut self, id: &str) -> Result<(), ServiceError> {
         let mut objects = self.objects.lock();
-        let Some(path) = objects.connection_path(uuid) else {
+        let Some(path) = objects.connection_path(id) else {
             return Ok(())
         };
         self.remove_connection_on(path).await?;
-        objects.deregister_connection(uuid).unwrap();
+        objects.deregister_connection(id).unwrap();
         Ok(())
     }
 
@@ -182,40 +181,40 @@ impl Tree {
 #[derive(Debug, Default)]
 pub struct ObjectsRegistry {
     /// device_name (eth0) -> object_path
-    pub devices: HashMap<String, String>,
-    /// uuid -> object_path
-    pub connections: HashMap<Uuid, String>,
+    devices: HashMap<String, String>,
+    /// id -> object_path
+    connections: HashMap<String, String>,
 }
 
 impl ObjectsRegistry {
     /// Registers a network device.
     ///
-    /// * `name`: device name.
+    /// * `id`: device name.
     /// * `path`: object path.
-    pub fn register_device(&mut self, name: &str, path: &str) {
-        self.devices.insert(name.to_string(), path.to_string());
+    pub fn register_device(&mut self, id: &str, path: &str) {
+        self.devices.insert(id.to_string(), path.to_string());
     }
 
     /// Registers a network connection.
     ///
-    /// * `uuid`: connection UUID.
+    /// * `id`: connection ID.
     /// * `path`: object path.
-    pub fn register_connection(&mut self, uuid: Uuid, path: &str) {
-        self.connections.insert(uuid, path.to_string());
+    pub fn register_connection(&mut self, id: &str, path: &str) {
+        self.connections.insert(id.to_string(), path.to_string());
     }
 
     /// Returns the path for a connection.
     ///
-    /// * `uuid`: connection UUID.
-    pub fn connection_path(&self, uuid: Uuid) -> Option<&str> {
-        self.connections.get(&uuid).map(|p| p.as_str())
+    /// * `id`: connection ID.
+    pub fn connection_path(&self, id: &str) -> Option<&str> {
+        self.connections.get(id).map(|p| p.as_str())
     }
 
     /// Deregisters a network connection.
     ///
-    /// * `uuid`: connection UUID.
-    pub fn deregister_connection(&mut self, uuid: Uuid) -> Option<String> {
-        self.connections.remove(&uuid)
+    /// * `id`: connection ID.
+    pub fn deregister_connection(&mut self, id: &str) -> Option<String> {
+        self.connections.remove(id)
     }
 
     /// Returns all devices paths.

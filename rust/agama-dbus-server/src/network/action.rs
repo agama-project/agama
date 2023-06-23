@@ -1,5 +1,4 @@
 use crate::network::model::{Connection, DeviceType};
-use uuid::Uuid;
 
 /// Networking actions, like adding, updating or removing connections.
 ///
@@ -12,7 +11,7 @@ pub enum Action {
     /// Update a connection (replacing the old one).
     UpdateConnection(Connection),
     /// Remove the connection with the given Uuid.
-    RemoveConnection(Uuid),
+    RemoveConnection(String),
     /// Apply the current configuration.
     Apply,
 }
