@@ -15,7 +15,10 @@ use std::{
     net::{AddrParseError, Ipv4Addr},
     sync::{mpsc::Sender, Arc},
 };
-use zbus::{dbus_interface, zvariant::ObjectPath};
+use zbus::{
+    dbus_interface,
+    zvariant::{ObjectPath, OwnedObjectPath},
+};
 
 /// D-Bus interface for the network devices collection
 ///
@@ -111,12 +114,20 @@ impl Connections {
     ///
     /// * `name`: connection name.
     /// * `ty`: connection type (see [crate::model::DeviceType]).
-    pub async fn add_connection(&mut self, name: String, ty: u8) -> zbus::fdo::Result<()> {
+    pub async fn add_connection(&mut self, id: String, ty: u8) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock();
         actions
-            .send(Action::AddConnection(name, ty.try_into()?))
+            .send(Action::AddConnection(id, ty.try_into()?))
             .unwrap();
         Ok(())
+    }
+
+    pub async fn get_connection(&self, id: String) -> zbus::fdo::Result<OwnedObjectPath> {
+        let objects = self.objects.lock();
+        match objects.connection_path(&id) {
+            Some(path) => Ok(OwnedObjectPath::try_from(path).unwrap()),
+            None => Err(NetworkStateError::UnknownConnection(id.to_string()).into()),
+        }
     }
 
     /// Removes a network connection.
