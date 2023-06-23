@@ -1,5 +1,6 @@
 use agama_lib::error::ServiceError;
 use parking_lot::Mutex;
+use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
 use crate::network::{action::Action, dbus::interfaces, model::*};
 use std::collections::HashMap;
@@ -56,10 +57,11 @@ impl Tree {
     pub async fn add_devices(&mut self, devices: &Vec<Device>) -> Result<(), ServiceError> {
         for (i, dev) in devices.iter().enumerate() {
             let path = format!("{}/{}", DEVICES_PATH, i);
+            let path = ObjectPath::try_from(path.as_str()).unwrap();
             self.add_interface(&path, interfaces::Device::new(dev.clone()))
                 .await?;
             let mut objects = self.objects.lock();
-            objects.register_device(&dev.name, &path);
+            objects.register_device(&dev.name, path);
         }
 
         self.add_interface(
@@ -78,6 +80,7 @@ impl Tree {
         let mut objects = self.objects.lock();
 
         let path = format!("{}/{}", CONNECTIONS_PATH, objects.connections.len());
+        let path = ObjectPath::try_from(path).unwrap();
         let cloned = Arc::new(Mutex::new(conn.clone()));
         self.add_interface(&path, interfaces::Connection::new(Arc::clone(&cloned)))
             .await?;
@@ -96,7 +99,7 @@ impl Tree {
             .await?;
         }
 
-        objects.register_connection(conn.id(), &path);
+        objects.register_connection(conn.id(), path);
         Ok(())
     }
 
@@ -108,7 +111,7 @@ impl Tree {
         let Some(path) = objects.connection_path(id) else {
             return Ok(())
         };
-        self.remove_connection_on(path).await?;
+        self.remove_connection_on(path.as_str()).await?;
         objects.deregister_connection(id).unwrap();
         Ok(())
     }
@@ -181,9 +184,9 @@ impl Tree {
 #[derive(Debug, Default)]
 pub struct ObjectsRegistry {
     /// device_name (eth0) -> object_path
-    devices: HashMap<String, String>,
+    devices: HashMap<String, OwnedObjectPath>,
     /// id -> object_path
-    connections: HashMap<String, String>,
+    connections: HashMap<String, OwnedObjectPath>,
 }
 
 impl ObjectsRegistry {
@@ -191,29 +194,29 @@ impl ObjectsRegistry {
     ///
     /// * `id`: device name.
     /// * `path`: object path.
-    pub fn register_device(&mut self, id: &str, path: &str) {
-        self.devices.insert(id.to_string(), path.to_string());
+    pub fn register_device(&mut self, id: &str, path: ObjectPath) {
+        self.devices.insert(id.to_string(), path.into());
     }
 
     /// Registers a network connection.
     ///
     /// * `id`: connection ID.
     /// * `path`: object path.
-    pub fn register_connection(&mut self, id: &str, path: &str) {
-        self.connections.insert(id.to_string(), path.to_string());
+    pub fn register_connection(&mut self, id: &str, path: ObjectPath) {
+        self.connections.insert(id.to_string(), path.into());
     }
 
     /// Returns the path for a connection.
     ///
     /// * `id`: connection ID.
-    pub fn connection_path(&self, id: &str) -> Option<&str> {
-        self.connections.get(id).map(|p| p.as_str())
+    pub fn connection_path(&self, id: &str) -> Option<ObjectPath> {
+        self.connections.get(id).map(|p| p.as_ref())
     }
 
     /// Deregisters a network connection.
     ///
     /// * `id`: connection ID.
-    pub fn deregister_connection(&mut self, id: &str) -> Option<String> {
+    pub fn deregister_connection(&mut self, id: &str) -> Option<OwnedObjectPath> {
         self.connections.remove(id)
     }
 

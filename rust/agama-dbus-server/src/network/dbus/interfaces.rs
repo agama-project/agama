@@ -122,10 +122,13 @@ impl Connections {
         Ok(())
     }
 
-    pub async fn get_connection(&self, id: String) -> zbus::fdo::Result<OwnedObjectPath> {
+    /// Returns the D-Bus path of the network connection.
+    ///
+    /// * `id`: connection ID.
+    pub async fn get_connection(&self, id: &str) -> zbus::fdo::Result<OwnedObjectPath> {
         let objects = self.objects.lock();
         match objects.connection_path(&id) {
-            Some(path) => Ok(OwnedObjectPath::try_from(path).unwrap()),
+            Some(path) => Ok(path.into()),
             None => Err(NetworkStateError::UnknownConnection(id.to_string()).into()),
         }
     }
