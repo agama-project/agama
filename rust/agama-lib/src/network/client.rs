@@ -76,7 +76,7 @@ impl<'a> NetworkClient<'a> {
 
         Ok(NetworkConnection {
             name,
-            method: method.to_string(),
+            method: Some(method.to_string()),
             gateway,
             addresses,
             nameservers,
