@@ -41,48 +41,20 @@ impl GenericQuestion {
     }
 }
 
-/// Specialized question for Luks partition activation
+/// Composition for questions which include password.
+/// TODO: research a bit how ideally do mixins in rust
 #[derive(Clone, Debug)]
-pub struct LuksQuestion {
+pub struct WithPassword {
     /// Luks password. Empty means no password set.
     pub password: String,
-    /// number of previous attempts to decrypt partition
-    pub attempt: u8,
     /// rest of question data that is same as for other questions
     pub base: GenericQuestion,
 }
 
-impl LuksQuestion {
-    fn device_info(device: &str, label: &str, size: &str) -> String {
-        let mut result = device.to_string();
-        if !label.is_empty() {
-            result = format!("{} {}", result, label);
-        }
-
-        if !size.is_empty() {
-            result = format!("{} ({})", result, size);
-        }
-
-        result
-    }
-
-    pub fn new(id: u32, class: String, device: String, label: String, size: String, attempt: u8, data: HashMap<String, String>) -> Self {
-        let msg = format!(
-            "The device {} is encrypted.",
-            Self::device_info(device.as_str(), label.as_str(), size.as_str())
-        );
-        let base = GenericQuestion::new(
-            id,
-            class,
-            msg,
-            vec!["skip".to_string(), "decrypt".to_string()],
-            "skip".to_string(),
-            data,
-        );
-
+impl WithPassword {
+    pub fn new(base: GenericQuestion) -> Self {
         Self {
             password: "".to_string(),
-            attempt,
             base,
         }
     }
