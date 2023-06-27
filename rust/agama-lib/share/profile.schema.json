@@ -19,6 +19,7 @@
     "network": {
       "description": "Network settings",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "connections": {
           "description": "Network connections to be defined",
