@@ -49,7 +49,7 @@ local findBiggestDisk(disks) =
         nameservers: [
           '1.2.3.4'
         ]
-      ]
-    }
-  ]
+      }
+    ]
+  }
 }
