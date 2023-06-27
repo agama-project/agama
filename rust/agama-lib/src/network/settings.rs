@@ -42,12 +42,13 @@ pub struct WirelessSettings {
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct NetworkConnection {
     pub name: String,
-    pub method: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub method: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gateway: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub addresses: Vec<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub nameservers: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wireless: Option<WirelessSettings>,
