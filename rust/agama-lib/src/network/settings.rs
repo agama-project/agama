@@ -1,21 +1,36 @@
 //! Representation of the network settings
 
 use crate::settings::{SettingObject, Settings};
-use agama_derive::Settings;
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::default::Default;
 
 /// Network settings for installation
-#[derive(Debug, Default, Settings, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkSettings {
     /// Connections to use in the installation
-    #[collection_setting]
     pub connections: Vec<NetworkConnection>,
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+impl Settings for NetworkSettings {
+    fn add(&mut self, attr: &str, value: SettingObject) -> Result<(), &'static str> {
+        match attr {
+            "connections" => self.connections.push(value.try_into()?),
+            _ => return Err("unknown attribute"),
+        };
+        Ok(())
+    }
+
+    fn merge(&mut self, other: &Self)
+    where
+        Self: Sized,
+    {
+        self.connections = other.connections.clone();
+    }
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct WirelessSettings {
     #[serde(skip_serializing_if = "String::is_empty")]
     pub password: String,
@@ -24,7 +39,7 @@ pub struct WirelessSettings {
     pub mode: String,
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct NetworkConnection {
     pub name: String,
     pub method: String,
