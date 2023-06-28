@@ -129,23 +129,50 @@ impl<'a> NetworkClient<'a> {
         path: &OwnedObjectPath,
         conn: &NetworkConnection,
     ) -> Result<(), ServiceError> {
-        let ipv4_proxy = IPv4Proxy::builder(&self.connection)
+        let proxy = IPv4Proxy::builder(&self.connection)
             .path(path)?
             .build()
             .await?;
 
         if let Some(ref method) = conn.method {
-            ipv4_proxy.set_method(method.as_str()).await?;
+            proxy.set_method(method.as_str()).await?;
         }
 
         let addresses: Vec<_> = conn.addresses.iter().map(String::as_ref).collect();
-        ipv4_proxy.set_addresses(addresses.as_slice()).await?;
+        proxy.set_addresses(addresses.as_slice()).await?;
 
         let nameservers: Vec<_> = conn.nameservers.iter().map(String::as_ref).collect();
-        ipv4_proxy.set_nameservers(nameservers.as_slice()).await?;
+        proxy.set_nameservers(nameservers.as_slice()).await?;
 
         let gateway = conn.gateway.as_ref().map(|g| g.as_str()).unwrap_or("");
-        ipv4_proxy.set_gateway(gateway).await?;
+        proxy.set_gateway(gateway).await?;
+
+        if let Some(ref wireless) = conn.wireless {
+            self.update_wireless_settings(&path, wireless).await?;
+        }
+        Ok(())
+    }
+
+    /// Updates the wireless settings for network connection.
+    ///
+    /// * `path`: connection D-Bus path.
+    /// * `wireless`: wireless settings of the network connection.
+    async fn update_wireless_settings(
+        &self,
+        path: &OwnedObjectPath,
+        wireless: &WirelessSettings,
+    ) -> Result<(), ServiceError> {
+        let proxy = WirelessProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+
+        proxy.set_ssid(wireless.ssid.as_bytes()).await?;
+        proxy.set_mode(wireless.mode.to_string().as_str()).await?;
+        proxy
+            .set_security(wireless.security.to_string().as_str())
+            .await?;
+        proxy.set_password(&wireless.password).await?;
         Ok(())
     }
 }
