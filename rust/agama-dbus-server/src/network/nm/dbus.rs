@@ -98,10 +98,12 @@ pub fn merge_dbus_connections<'a>(
 fn cleanup_dbus_connection<'a>(conn: &'a mut NestedHash) {
     if let Some(ipv4) = conn.get_mut("ipv4") {
         ipv4.remove("addresses");
+        ipv4.remove("dns");
     }
 
     if let Some(ipv6) = conn.get_mut("ipv6") {
         ipv6.remove("addresses");
+        ipv6.remove("dns");
     }
 }
 
