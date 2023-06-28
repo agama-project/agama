@@ -4,6 +4,7 @@ use super::model::NmDeviceType;
 use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
 use crate::network::model::{Connection, Device};
 use agama_lib::error::ServiceError;
+use log;
 use uuid::Uuid;
 use zbus;
 
@@ -53,9 +54,10 @@ impl<'a> NetworkManagerClient<'a> {
                 });
             } else {
                 // TODO: use a logger
-                eprintln!(
-                    "Unsupported device type {:?} for {}",
-                    &device_type, &device_name
+                log::warn!(
+                    "Ignoring network device '{}' (unsupported type '{}')",
+                    &device_name,
+                    &device_type
                 );
             }
         }
