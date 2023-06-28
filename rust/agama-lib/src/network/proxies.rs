@@ -18,6 +18,11 @@ trait Connections {
     /// Apply method
     fn apply(&self) -> zbus::Result<()>;
 
+    /// Gets a connection D-Bus path by its ID
+    ///
+    /// * `id`: connection ID.
+    fn get_connection(&self, id: &str) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+
     /// GetConnections method
     fn get_connections(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 
@@ -82,17 +87,20 @@ trait IPv4 {
     ///
     /// By now just an array of IPv4 addresses in string format
     #[dbus_proxy(property)]
-    fn addresses(&self) -> zbus::Result<Vec<(String, u32)>>;
-    fn set_addresses(&self, value: Vec<String>) -> zbus::Result<()>;
+    fn addresses(&self) -> zbus::Result<Vec<String>>;
+    #[dbus_proxy(property)]
+    fn set_addresses(&self, value: &[&str]) -> zbus::Result<()>;
 
     /// Gateway property
     #[dbus_proxy(property)]
     fn gateway(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
     fn set_gateway(&self, value: &str) -> zbus::Result<()>;
 
     /// Method property
     #[dbus_proxy(property)]
     fn method(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
     fn set_method(&self, value: &str) -> zbus::Result<()>;
 
     /// Nameservers property
@@ -100,5 +108,6 @@ trait IPv4 {
     /// By now just an array of IPv4 addresses in string format
     #[dbus_proxy(property)]
     fn nameservers(&self) -> zbus::Result<Vec<String>>;
+    #[dbus_proxy(property)]
     fn set_nameservers(&self, value: &[&str]) -> zbus::Result<()>;
 }
