@@ -68,6 +68,12 @@ impl From<NmDeviceType> for u32 {
     }
 }
 
+impl fmt::Display for NmDeviceType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 impl Default for NmDeviceType {
     fn default() -> Self {
         NmDeviceType(0)
