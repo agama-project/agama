@@ -1,4 +1,5 @@
-use crate::network::model::{Connection, DeviceType};
+use crate::network::model::Connection;
+use agama_lib::network::types::DeviceType;
 
 /// Networking actions, like adding, updating or removing connections.
 ///

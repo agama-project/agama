@@ -5,7 +5,7 @@
 use uuid::Uuid;
 
 use crate::network::error::NetworkStateError;
-use agama_lib::network::types::SSID;
+use agama_lib::network::types::{DeviceType, SSID};
 use std::{
     fmt,
     net::{AddrParseError, Ipv4Addr},
@@ -193,26 +193,6 @@ mod tests {
 pub struct Device {
     pub name: String,
     pub type_: DeviceType,
-}
-
-#[derive(Debug, PartialEq, Copy, Clone)]
-pub enum DeviceType {
-    Loopback = 0,
-    Ethernet = 1,
-    Wireless = 2,
-}
-
-impl TryFrom<u8> for DeviceType {
-    type Error = NetworkStateError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(DeviceType::Loopback),
-            1 => Ok(DeviceType::Ethernet),
-            2 => Ok(DeviceType::Wireless),
-            _ => Err(NetworkStateError::InvalidDeviceType(value)),
-        }
-    }
 }
 
 /// Represents an available network connection
@@ -519,4 +499,3 @@ impl fmt::Display for IpAddress {
         write!(f, "{}/{}", self.0.to_string(), self.1)
     }
 }
-
