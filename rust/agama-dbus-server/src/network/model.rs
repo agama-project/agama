@@ -291,6 +291,10 @@ pub struct Ipv4Config {
     pub gateway: Option<Ipv4Addr>,
 }
 
+#[derive(Debug, Error)]
+#[error("Unknown IP configuration method name: {0}")]
+pub struct UnknownIpMethod(String);
+
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub enum IpMethod {
     #[default]
@@ -311,18 +315,23 @@ impl fmt::Display for IpMethod {
     }
 }
 
-// NOTE: we could use num-derive.
-impl TryFrom<u8> for IpMethod {
-    type Error = NetworkStateError;
+impl FromStr for IpMethod {
+    type Err = UnknownIpMethod;
 
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(IpMethod::Disabled),
-            1 => Ok(IpMethod::Auto),
-            2 => Ok(IpMethod::Manual),
-            3 => Ok(IpMethod::LinkLocal),
-            _ => Err(NetworkStateError::InvalidIpMethod(value)),
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "disabled" => Ok(IpMethod::Disabled),
+            "auto" => Ok(IpMethod::Auto),
+            "manual" => Ok(IpMethod::Manual),
+            "link-local" => Ok(IpMethod::LinkLocal),
+            _ => Err(UnknownIpMethod(s.to_string())),
         }
+    }
+}
+
+impl From<UnknownIpMethod> for zbus::fdo::Error {
+    fn from(value: UnknownIpMethod) -> zbus::fdo::Error {
+        zbus::fdo::Error::Failed(value.to_string())
     }
 }
 

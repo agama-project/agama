@@ -260,15 +260,15 @@ impl Ipv4 {
     }
 
     #[dbus_interface(property)]
-    pub fn method(&self) -> u8 {
+    pub fn method(&self) -> String {
         let connection = self.get_connection();
-        connection.ipv4().method as u8
+        connection.ipv4().method.to_string()
     }
 
     #[dbus_interface(property)]
-    pub fn set_method(&mut self, method: u8) -> zbus::fdo::Result<()> {
+    pub fn set_method(&mut self, method: &str) -> zbus::fdo::Result<()> {
         let mut connection = self.get_connection();
-        connection.ipv4_mut().method = method.try_into()?;
+        connection.ipv4_mut().method = method.parse()?;
         self.update_connection(connection)
     }
 

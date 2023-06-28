@@ -92,8 +92,8 @@ trait IPv4 {
 
     /// Method property
     #[dbus_proxy(property)]
-    fn method(&self) -> zbus::Result<u8>;
-    fn set_method(&self, value: u8) -> zbus::Result<()>;
+    fn method(&self) -> zbus::Result<String>;
+    fn set_method(&self, value: &str) -> zbus::Result<()>;
 
     /// Nameservers property
     ///
