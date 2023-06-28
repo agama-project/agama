@@ -6,8 +6,11 @@ use super::ObjectsRegistry;
 use crate::network::{
     action::Action,
     error::NetworkStateError,
-    model::{Connection as NetworkConnection, Device as NetworkDevice, WirelessConnection},
+    model::{
+        Connection as NetworkConnection, Device as NetworkDevice, IpAddress, WirelessConnection,
+    },
 };
+use log;
 
 use agama_lib::network::types::SSID;
 use parking_lot::{MappedMutexGuard, Mutex, MutexGuard};
@@ -229,25 +232,30 @@ impl Ipv4 {
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connection.IPv4")]
 impl Ipv4 {
     #[dbus_interface(property)]
-    pub fn addresses(&self) -> Vec<(String, u32)> {
+    pub fn addresses(&self) -> Vec<String> {
         let connection = self.get_connection();
         connection
             .ipv4()
             .addresses
             .iter()
-            .map(|(addr, prefix)| (addr.to_string(), *prefix))
+            .map(|ip| ip.to_string())
             .collect()
     }
 
     #[dbus_interface(property)]
-    pub fn set_addresses(&mut self, addresses: Vec<(String, u32)>) -> zbus::fdo::Result<()> {
+    pub fn set_addresses(&mut self, addresses: Vec<String>) -> zbus::fdo::Result<()> {
         let mut connection = self.get_connection();
-        addresses
-            .iter()
-            .map(|(addr, prefix)| addr.parse::<Ipv4Addr>().map(|a| (a, *prefix)))
-            .collect::<Result<Vec<(Ipv4Addr, u32)>, AddrParseError>>()
-            .and_then(|parsed| Ok(connection.ipv4_mut().addresses = parsed))
-            .map_err(|err| NetworkStateError::from(err))?;
+        let parsed: Vec<IpAddress> = addresses
+            .into_iter()
+            .filter_map(|ip| match ip.parse::<IpAddress>() {
+                Ok(address) => Some(address),
+                Err(error) => {
+                    log::error!("Ignoring the invalid IPv4 address: {} ({})", ip, error);
+                    None
+                }
+            })
+            .collect();
+        connection.ipv4_mut().addresses = parsed;
         self.update_connection(connection)
     }
 

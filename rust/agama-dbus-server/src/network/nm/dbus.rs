@@ -9,7 +9,6 @@ use agama_lib::{
     network::types::SSID,
 };
 use std::collections::HashMap;
-use std::net::Ipv4Addr;
 use uuid::Uuid;
 use zbus::zvariant::{self, Value};
 
@@ -110,10 +109,10 @@ fn ipv4_to_dbus(ipv4: &Ipv4Config) -> HashMap<&str, zvariant::Value> {
     let addresses: Vec<HashMap<&str, Value>> = ipv4
         .addresses
         .iter()
-        .map(|(addr, prefix)| {
+        .map(|ip| {
             HashMap::from([
-                ("address", Value::new(addr.to_string())),
-                ("prefix", Value::new(prefix)),
+                ("address", Value::new(ip.addr().to_string())),
+                ("prefix", Value::new(ip.prefix())),
             ])
         })
         .collect();
@@ -183,13 +182,13 @@ fn ipv4_config_from_dbus(ipv4: &HashMap<String, zvariant::OwnedValue>) -> Option
     let method: &str = ipv4.get("method")?.downcast_ref()?;
     let address_data = ipv4.get("address-data")?;
     let address_data = address_data.downcast_ref::<zbus::zvariant::Array>()?;
-    let mut addresses: Vec<(Ipv4Addr, u32)> = vec![];
+    let mut addresses: Vec<IpAddress> = vec![];
     for addr in address_data.get() {
         let dict = addr.downcast_ref::<zvariant::Dict>()?;
         let map = <HashMap<String, zvariant::Value<'_>>>::try_from(dict.clone()).unwrap();
         let addr_str: &str = map.get("address")?.downcast_ref()?;
         let prefix: &u32 = map.get("prefix")?.downcast_ref()?;
-        addresses.push((addr_str.parse().unwrap(), *prefix))
+        addresses.push(IpAddress::new(addr_str.parse().unwrap(), *prefix))
     }
     let mut ipv4_config = Ipv4Config {
         method: NmMethod(method.to_string()).try_into().ok()?,
@@ -288,7 +287,7 @@ mod test {
 
         assert_eq!(connection.id(), "eth0");
         let ipv4 = connection.ipv4();
-        assert_eq!(ipv4.addresses, vec![(Ipv4Addr::new(192, 168, 0, 10), 24)]);
+        assert_eq!(ipv4.addresses, vec!["192.168.0.10/24".parse().unwrap()]);
         assert_eq!(ipv4.nameservers, vec![Ipv4Addr::new(192, 168, 0, 2)]);
         assert_eq!(ipv4.method, IpMethod::Auto);
     }
@@ -436,7 +435,7 @@ mod test {
     }
 
     fn build_base_connection() -> BaseConnection {
-        let addresses = vec![(Ipv4Addr::new(192, 168, 0, 2), 24)];
+        let addresses = vec!["192.168.0.2/24".parse().unwrap()];
         let ipv4 = Ipv4Config {
             addresses,
             gateway: Some(Ipv4Addr::new(192, 168, 0, 1)),

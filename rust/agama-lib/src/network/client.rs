@@ -69,10 +69,6 @@ impl<'a> NetworkClient<'a> {
         };
         let nameservers = ipv4_proxy.nameservers().await?;
         let addresses = ipv4_proxy.addresses().await?;
-        let addresses = addresses
-            .into_iter()
-            .map(|(ip, prefix)| format!("{ip}/{prefix}"))
-            .collect();
 
         Ok(NetworkConnection {
             name,
