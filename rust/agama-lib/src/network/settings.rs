@@ -1,5 +1,6 @@
 //! Representation of the network settings
 
+use super::types::DeviceType;
 use crate::settings::{SettingObject, Settings};
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
@@ -52,6 +53,20 @@ pub struct NetworkConnection {
     pub nameservers: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wireless: Option<WirelessSettings>,
+}
+
+impl NetworkConnection {
+    /// Device type expected for the network connection.
+    ///
+    /// Which device type to use is inferred from the included settings. For instance, if it has
+    /// wireless settings, it should be applied to a wireless device.
+    pub fn device_type(&self) -> DeviceType {
+        if self.wireless.is_some() {
+            DeviceType::Wireless
+        } else {
+            DeviceType::Ethernet
+        }
+    }
 }
 
 impl TryFrom<SettingObject> for NetworkConnection {
