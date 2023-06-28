@@ -6,7 +6,12 @@ use uuid::Uuid;
 
 use crate::network::error::NetworkStateError;
 use agama_lib::network::types::SSID;
-use std::{fmt, net::Ipv4Addr, str};
+use std::{
+    fmt,
+    net::{AddrParseError, Ipv4Addr},
+    str::{self, FromStr},
+};
+use thiserror::Error;
 
 #[derive(Default)]
 pub struct NetworkState {
@@ -301,7 +306,7 @@ pub enum Status {
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Ipv4Config {
     pub method: IpMethod,
-    pub addresses: Vec<(Ipv4Addr, u32)>,
+    pub addresses: Vec<IpAddress>,
     pub nameservers: Vec<Ipv4Addr>,
     pub gateway: Option<Ipv4Addr>,
 }
@@ -448,3 +453,70 @@ impl TryFrom<&str> for SecurityProtocol {
         }
     }
 }
+
+/// Represents an IPv4 address with a prefix.
+#[derive(Debug, Clone, PartialEq)]
+pub struct IpAddress(Ipv4Addr, u32);
+
+#[derive(Error, Debug)]
+pub enum ParseIpAddressError {
+    #[error("Missing prefix")]
+    MissingPrefix,
+    #[error("Invalid prefix part '{0}'")]
+    InvalidPrefix(String),
+    #[error("Invalid address part: {0}")]
+    InvalidAddr(AddrParseError),
+}
+
+impl IpAddress {
+    /// Returns an new IpAddress object
+    ///
+    /// * `addr`: IPv4 address.
+    /// * `prefix`: IPv4 address prefix.
+    pub fn new(addr: Ipv4Addr, prefix: u32) -> Self {
+        IpAddress(addr, prefix)
+    }
+
+    /// Returns the IPv4 address.
+    pub fn addr(&self) -> &Ipv4Addr {
+        &self.0
+    }
+
+    /// Returns the prefix.
+    pub fn prefix(&self) -> u32 {
+        self.1
+    }
+}
+
+impl From<IpAddress> for (String, u32) {
+    fn from(value: IpAddress) -> Self {
+        (value.0.to_string(), value.1)
+    }
+}
+
+impl FromStr for IpAddress {
+    type Err = ParseIpAddressError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let Some((address, prefix)) = s.split_once("/") else {
+            return Err(ParseIpAddressError::MissingPrefix);
+        };
+
+        let address: Ipv4Addr = address
+            .parse()
+            .map_err(|e| ParseIpAddressError::InvalidAddr(e))?;
+
+        let prefix: u32 = prefix
+            .parse()
+            .map_err(|_| ParseIpAddressError::InvalidPrefix(prefix.to_string()))?;
+
+        Ok(IpAddress(address, prefix))
+    }
+}
+
+impl fmt::Display for IpAddress {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}/{}", self.0.to_string(), self.1)
+    }
+}
+

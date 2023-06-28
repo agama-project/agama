@@ -83,7 +83,7 @@ trait IPv4 {
     /// By now just an array of IPv4 addresses in string format
     #[dbus_proxy(property)]
     fn addresses(&self) -> zbus::Result<Vec<(String, u32)>>;
-    fn set_addresses(&self, value: &[(&str, u32)]) -> zbus::Result<()>;
+    fn set_addresses(&self, value: Vec<String>) -> zbus::Result<()>;
 
     /// Gateway property
     #[dbus_proxy(property)]
