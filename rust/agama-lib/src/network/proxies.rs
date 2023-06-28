@@ -41,7 +41,7 @@ trait Wireless {
     /// Possible values are 'unknown', 'adhoc', 'infrastructure', 'ap' or 'mesh'
     #[dbus_proxy(property)]
     fn mode(&self) -> zbus::Result<String>;
-    fn set_mode(&self, value: String) -> zbus::Result<()>;
+    fn set_mode(&self, value: &str) -> zbus::Result<()>;
 
     /// Password property
     #[dbus_proxy(property)]
@@ -51,7 +51,7 @@ trait Wireless {
     /// SSID property
     #[dbus_proxy(property, name = "SSID")]
     fn ssid(&self) -> zbus::Result<Vec<u8>>;
-    fn set_ssid(&self, value: Vec<u8>) -> zbus::Result<()>;
+    fn set_ssid(&self, value: &[u8]) -> zbus::Result<()>;
 
     /// Wireless Security property
     ///
@@ -59,7 +59,7 @@ trait Wireless {
     ///     'wpa-eap', 'wpa-eap-suite-b192'
     #[dbus_proxy(property)]
     fn security(&self) -> zbus::Result<String>;
-    fn set_security(&self, value: String) -> zbus::Result<()>;
+    fn set_security(&self, value: &str) -> zbus::Result<()>;
 }
 
 #[dbus_proxy(
