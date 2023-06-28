@@ -20,15 +20,16 @@
 # find current contact information at www.suse.com.
 
 module Agama
-  # This class represents a question
+  # This class represents a question to be created
   #
   # Questions are used when some information needs to be asked. For example, a question could be
   # created for asking whether to continue or not when an error is detected.
   class Question
-    # Each question is identified by an unique id
+    # Class of the question
+    # Helps with identification of same type of questions
     #
-    # @return [Integer]
-    attr_reader :id
+    # @return [String]
+    attr_reader :qclass
 
     # Text of the question
     #
@@ -44,7 +45,7 @@ module Agama
 
     # Default option to use as answer
     #
-    # @return [Symbol, nil]
+    # @return [Symbol]
     attr_reader :default_option
 
     # Answer of the question
@@ -52,50 +53,18 @@ module Agama
     # @return [Symbol, nil] nil if the question is not answered yet
     attr_reader :answer
 
-    def initialize(text, options: [], default_option: nil)
-      @id = IdGenerator.next
+    # Additional data to hold identify question or improve UI to display it
+    # It is tight with {qclass}.
+    #
+    # @return [Hash<String,String>]
+    attr_reader :data
+
+    def initialize(qclass:, text:, options:, default_option:, data: {})
+      @qclass = qclass
       @text = text
       @options = options
       @default_option = default_option
-    end
-
-    # Answers the question with an option
-    #
-    # @raise [ArgumentError] if the given value is not a valid answer.
-    #
-    # @param value [Symbol]
-    def answer=(value)
-      raise ArgumentError, "Invalid answer. Options: #{options}" unless valid_answer?(value)
-
-      @answer = value
-    end
-
-    # Whether the question is already answered
-    #
-    # @return [Boolean]
-    def answered?
-      !answer.nil?
-    end
-
-  private
-
-    # Checks whether the given value is a valid answer
-    #
-    # @param value [Symbol]
-    # @return [Boolean]
-    def valid_answer?(value)
-      options.include?(value)
-    end
-
-    # Helper class for generating unique ids
-    class IdGenerator
-      # Generates the next id to be used
-      #
-      # @return [Integer]
-      def self.next
-        @last_id ||= 0
-        @last_id += 1
-      end
+      @data = data
     end
   end
 end

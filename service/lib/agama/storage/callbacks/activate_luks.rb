@@ -67,12 +67,21 @@ module Agama
 
         # Question to ask for LUKS activation
         #
-        # @return [LuksActivationQuestion]
+        # @return [QuestionWithPassword]
         def question(info, attempt)
-          LuksActivationQuestion.new(info.device_name,
-            label:   info.label,
-            size:    formatted_size(info.size),
-            attempt: attempt)
+          data = {
+            "device"  => info.device_name,
+            "label"   => info.label,
+            "size"    => formatted_size(info.size),
+            "attempt" => attempt
+          }
+          QuestionWithPassword.new(
+            qclass:         "storage.luks_activation",
+            text:           generate_text(data),
+            options:        [:skip, :decrypt],
+            default_option: :decrypt,
+            data:           data
+          )
         end
 
         # Generates a formatted representation of the size
@@ -81,6 +90,24 @@ module Agama
         # @return [String]
         def formatted_size(value)
           Y2Storage::DiskSize.new(value).to_human_string
+        end
+
+        # Generate the text for the question
+        #
+        # @return [String]
+        def generate_text(data)
+          "The device #{device_info(data)} is encrypted."
+        end
+
+        # Device information to include in the question
+        #
+        # @return [String]
+        def device_info(data)
+          info = [data["device"]]
+          info << data["label"] unless data["label"].to_s.empty?
+          info << "(#{data["size"]})" unless data["size"].to_s.empty?
+
+          info.join(" ")
         end
       end
     end

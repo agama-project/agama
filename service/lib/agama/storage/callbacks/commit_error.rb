@@ -69,11 +69,17 @@ module Agama
         # Question to ask to continue
         #
         # @return [Question]
-        def question(message, _details)
+        def question(message, details)
           text = "There was an error performing the following action: #{message}. " \
                  "Do you want to continue with the rest of storage actions?"
 
-          Question.new(text, options: [:yes, :no])
+          Question.new(
+            qclass:         "storage.commit_error",
+            text:           text,
+            options:        [:yes, :no],
+            default_option: :no,
+            data:           { "details" => details }
+          )
         end
       end
     end

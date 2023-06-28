@@ -54,10 +54,14 @@ module Agama
         # @return [String]
         # @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
         # rubocop:disable Metrics/ParameterLists
-        def media_change(_error_code, error, _url, _product, _current, _current_label, _wanted,
+        def media_change(_error_code, error, url, _product, _current, _current_label, _wanted,
           _wanted_label, _double_sided, _devices, _current_device)
           question = Agama::Question.new(
-            error, options: [:Retry, :Skip], default_option: :Retry
+            qclass:         "software.medium_error",
+            text:           error,
+            options:        [:Retry, :Skip],
+            default_option: :Skip,
+            data:           { "url" => url }
           )
           questions_client.ask(question) do |question_client|
             (question_client.answer == :Retry) ? "" : "S"

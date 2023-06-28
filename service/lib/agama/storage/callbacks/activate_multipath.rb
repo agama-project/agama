@@ -64,7 +64,12 @@ module Agama
           text = "The system seems to have multipath hardware. " \
                  "Do you want to activate multipath?"
 
-          Question.new(text, options: [:yes, :no])
+          Question.new(
+            qclass:         "storage.activate_multipath",
+            text:           text,
+            options:        [:yes, :no],
+            default_option: :yes
+          )
         end
       end
     end

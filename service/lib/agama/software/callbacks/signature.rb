@@ -69,7 +69,11 @@ module Agama
           )
 
           question = Agama::Question.new(
-            message, options: [:Yes, :No], default_option: :No
+            qclass:         "software.unsigned_file",
+            text:           message,
+            options:        [:Yes, :No],
+            default_option: :No,
+            data:           { "filename" => filename }
           )
           questions_client.ask(question) do |question_client|
             question_client.answer == :Yes
@@ -89,7 +93,15 @@ module Agama
           )
 
           question = Agama::Question.new(
-            message, options: [:Trust, :Skip], default_option: :Skip
+            qclass:         "software.import_gpg",
+            text:           message,
+            options:        [:Trust, :Skip],
+            default_option: :Skip,
+            data:           {
+              "id"          => key["id"],
+              "name"        => key["name"],
+              "fingerprint" => fingerprint
+            }
           )
 
           questions_client.ask(question) do |question_client|
