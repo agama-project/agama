@@ -241,6 +241,10 @@ impl Connection {
         self.base().id.as_str()
     }
 
+    pub fn set_id(&mut self, id: &str) {
+        self.base_mut().id = id.to_string()
+    }
+
     pub fn uuid(&self) -> Uuid {
         self.base().uuid
     }
