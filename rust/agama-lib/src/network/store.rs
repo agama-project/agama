@@ -29,6 +29,7 @@ impl<'a> NetworkStore<'a> {
         for conn in &settings.connections {
             self.network_client.add_or_update_connection(&conn).await?;
         }
+        self.network_client.apply().await?;
 
         Ok(())
     }

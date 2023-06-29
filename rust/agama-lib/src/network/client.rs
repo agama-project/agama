@@ -38,6 +38,12 @@ impl<'a> NetworkClient<'a> {
         Ok(connections)
     }
 
+    /// Applies the network configuration.
+    pub async fn apply(&self) -> Result<(), ServiceError> {
+        self.connections_proxy.apply().await?;
+        Ok(())
+    }
+
     /// Returns the NetworkConnection for the given connection path
     ///
     ///  * `path`: the connections path to get the config from
