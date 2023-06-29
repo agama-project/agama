@@ -59,7 +59,9 @@ impl NetworkSystem {
 
     /// Populates the D-Bus tree with the known devices and connections.
     pub async fn setup(&mut self) -> Result<(), ServiceError> {
-        self.tree.set_connections(&self.state.connections).await?;
+        self.tree
+            .set_connections(&mut self.state.connections)
+            .await?;
         self.tree.set_devices(&self.state.devices).await?;
         Ok(())
     }
@@ -79,8 +81,8 @@ impl NetworkSystem {
     pub async fn dispatch_action(&mut self, action: Action) -> Result<(), Box<dyn Error>> {
         match action {
             Action::AddConnection(name, ty) => {
-                let conn = Connection::new(name, ty);
-                self.tree.add_connection(&conn).await?;
+                let mut conn = Connection::new(name, ty);
+                self.tree.add_connection(&mut conn).await?;
                 self.state.add_connection(conn)?;
             }
             Action::UpdateConnection(conn) => {
@@ -94,7 +96,9 @@ impl NetworkSystem {
                 self.to_network_manager().await?;
                 // TODO: re-creating the tree is kind of brute-force and it sends signals about
                 // adding/removing interfaces. We should add/update/delete objects as needed.
-                self.tree.set_connections(&self.state.connections).await?;
+                self.tree
+                    .set_connections(&mut self.state.connections)
+                    .await?;
             }
         }
 
