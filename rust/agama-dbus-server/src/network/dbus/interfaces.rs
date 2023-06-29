@@ -184,11 +184,6 @@ impl Connection {
     pub fn id(&self) -> String {
         self.get_connection().id().to_string()
     }
-
-    #[dbus_interface(property, name = "UUID")]
-    pub fn uuid(&self) -> String {
-        self.get_connection().uuid().to_string()
-    }
 }
 
 /// D-Bus interface for IPv4 settings

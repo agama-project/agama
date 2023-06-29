@@ -75,10 +75,6 @@ trait Connection {
     /// Id property
     #[dbus_proxy(property)]
     fn id(&self) -> zbus::Result<String>;
-
-    /// UUID property
-    #[dbus_proxy(property, name = "UUID")]
-    fn uuid(&self) -> zbus::Result<String>;
 }
 
 #[dbus_proxy(
