@@ -3,6 +3,7 @@ use parking_lot::Mutex;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
 use crate::network::{action::Action, dbus::interfaces, model::*};
+use log;
 use std::collections::HashMap;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
@@ -36,7 +37,10 @@ impl Tree {
     /// adding/removing interfaces. We should add/update/delete objects as needed.
     ///
     /// * `connections`: list of connections.
-    pub async fn set_connections(&self, connections: &Vec<Connection>) -> Result<(), ServiceError> {
+    pub async fn set_connections(
+        &self,
+        connections: &mut Vec<Connection>,
+    ) -> Result<(), ServiceError> {
         self.remove_connections().await?;
         self.add_connections(connections).await?;
         Ok(())
@@ -76,11 +80,15 @@ impl Tree {
     /// Adds a connection to the D-Bus tree.
     ///
     /// * `connection`: connection to add.
-    pub async fn add_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
+    pub async fn add_connection(&self, conn: &mut Connection) -> Result<(), ServiceError> {
         let mut objects = self.objects.lock();
 
-        let path = format!("{}/{}", CONNECTIONS_PATH, objects.connections.len());
-        let path = ObjectPath::try_from(path).unwrap();
+        let (id, path) = objects.register_connection(&conn);
+        if id != conn.id() {
+            conn.set_id(&id)
+        }
+        log::info!("Publishing network connection '{}'", id);
+
         let cloned = Arc::new(Mutex::new(conn.clone()));
         self.add_interface(&path, interfaces::Connection::new(Arc::clone(&cloned)))
             .await?;
@@ -99,13 +107,12 @@ impl Tree {
             .await?;
         }
 
-        objects.register_connection(conn.id(), path);
         Ok(())
     }
 
     /// Removes a connection from the tree
     ///
-    /// * `uuid`: UUID of the connection to remove.
+    /// * `id`: connection ID.
     pub async fn remove_connection(&mut self, id: &str) -> Result<(), ServiceError> {
         let mut objects = self.objects.lock();
         let Some(path) = objects.connection_path(id) else {
@@ -119,8 +126,8 @@ impl Tree {
     /// Adds connections to the D-Bus tree.
     ///
     /// * `connections`: list of connections.
-    async fn add_connections(&self, connections: &Vec<Connection>) -> Result<(), ServiceError> {
-        for conn in connections.iter() {
+    async fn add_connections(&self, connections: &mut Vec<Connection>) -> Result<(), ServiceError> {
+        for conn in connections.iter_mut() {
             self.add_connection(conn).await?;
         }
 
@@ -180,7 +187,7 @@ impl Tree {
 
 /// Objects paths for known devices and connections
 ///
-/// TODO: use zvariant::OwnedObjectPath instead of String as values.
+/// Connections are indexed by its Id, which is expected to be unique.
 #[derive(Debug, Default)]
 pub struct ObjectsRegistry {
     /// device_name (eth0) -> object_path
@@ -198,12 +205,21 @@ impl ObjectsRegistry {
         self.devices.insert(id.to_string(), path.into());
     }
 
-    /// Registers a network connection.
+    /// Registers a network connection and returns its D-Bus path.
     ///
-    /// * `id`: connection ID.
-    /// * `path`: object path.
-    pub fn register_connection(&mut self, id: &str, path: ObjectPath) {
-        self.connections.insert(id.to_string(), path.into());
+    /// It returns the connection Id and the D-Bus path. Bear in mind that the Id can be different
+    /// in case the original one already existed.
+    ///
+    /// * `conn`: network connection.
+    pub fn register_connection(&mut self, conn: &Connection) -> (String, ObjectPath) {
+        let path = format!("{}/{}", CONNECTIONS_PATH, self.connections.len());
+        let path = ObjectPath::try_from(path).unwrap();
+        let mut id = conn.id().to_string();
+        if self.connection_path(&id).is_some() {
+            id = self.propose_id(&id);
+        };
+        self.connections.insert(id.clone(), path.clone().into());
+        (id, path)
     }
 
     /// Returns the path for a connection.
@@ -228,5 +244,19 @@ impl ObjectsRegistry {
     /// Returns all connection paths.
     pub fn connections_paths(&self) -> Vec<String> {
         self.connections.values().map(|p| p.to_string()).collect()
+    }
+
+    /// Proposes a connection ID.
+    ///
+    /// * `id`: original connection ID.
+    fn propose_id(&self, id: &str) -> String {
+        let prefix = format!("{}-", id);
+        let filtered: Vec<_> = self
+            .connections
+            .keys()
+            .filter_map(|i| i.strip_prefix(&prefix).and_then(|n| n.parse::<u32>().ok()))
+            .collect();
+        let index = filtered.into_iter().max().unwrap_or(0);
+        format!("{}{}", prefix, index + 1)
     }
 }
