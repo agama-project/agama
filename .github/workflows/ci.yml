@@ -97,7 +97,6 @@ jobs:
         base-path: ./service
         flag-name: backend
         parallel: true
-        debug: true
 
   ruby_linter:
     runs-on: ubuntu-latest
@@ -217,7 +216,6 @@ jobs:
         format: cobertura
         flag-name: rust-backend
         parallel: true
-        debug: true
 
   integration-tests:
     timeout-minutes: 60
