@@ -47,10 +47,9 @@ jobs:
       run: npm test -- --coverage
 
     - name: Coveralls GitHub Action
-      uses: coverallsapp/github-action@v1
+      uses: coverallsapp/github-action@v2
       with:
         base-path: ./web
-        path-to-lcov: ./web/coverage/lcov.info
         flag-name: frontend
         parallel: true
 
@@ -93,12 +92,12 @@ jobs:
       run: bundle exec rspec
 
     - name: Coveralls GitHub Action
-      uses: coverallsapp/github-action@v1
+      uses: coverallsapp/github-action@v2
       with:
         base-path: ./service
-        path-to-lcov: ./service/coverage/lcov.info
         flag-name: backend
         parallel: true
+        debug: true
 
   ruby_linter:
     runs-on: ubuntu-latest
