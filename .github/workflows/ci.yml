@@ -171,9 +171,12 @@ jobs:
 
     strategy:
       fail-fast: false
+      matrix:
+        distro: [ "tumbleweed" ]
 
     container:
-      image: registry.opensuse.org/opensuse/tumbleweed:latest
+      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+      options: --security-opt seccomp=unconfined
 
     steps:
 
@@ -188,16 +191,33 @@ jobs:
       run: zypper --non-interactive install rustup
 
     - name: Install required packages
-      run: zypper --non-interactive install  python-langtable-data openssl-3 libopenssl-3-devel
+      run: zypper --non-interactive install  python-langtable-data openssl-3 libopenssl-3-devel jq
 
     - name: Install Rust toolchains
       run: rustup toolchain install stable
 
+    - name: Install cargo-binstall
+      uses: taiki-e/install-action@v2
+      with:
+        tool: cargo-binstall
+
+    - name: Install Tarpaulin (for code coverage)
+      run: cargo-binstall --no-confirm cargo-tarpaulin
+
     - name: Run the tests
-      run: cargo test --verbose
+      run: cargo tarpaulin --out xml
 
     - name: Lint formatting
       run: cargo fmt --all -- --check
+
+    - name: Coveralls GitHub Action
+      uses: coverallsapp/github-action@v2
+      with:
+        base-path: ./rust
+        format: cobertura
+        flag-name: rust-backend
+        parallel: true
+        debug: true
 
   integration-tests:
     timeout-minutes: 60
@@ -285,7 +305,7 @@ jobs:
   finish:
     runs-on: ubuntu-latest
 
-    needs: [frontend_build, ruby_tests]
+    needs: [frontend_build, ruby_tests, rust_ci]
 
     steps:
 
