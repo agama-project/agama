@@ -1,4 +1,4 @@
-use crate::NetworkState;
+use crate::network::NetworkState;
 use std::error::Error;
 
 /// A trait for the ability to read/write from/to a network service

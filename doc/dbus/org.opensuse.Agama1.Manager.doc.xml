@@ -13,6 +13,8 @@
       <arg name="user" direction="in" type="s"/>
       <arg name="tarball_filesystem_path" direction="out" type="s"/>
     </method>
+    <method name="Finish">
+    </method>
 
     <!--
         InstallationPhases:
@@ -59,6 +61,8 @@ installed.
         Id of the current phase.
     -->
     <property type="u" name="CurrentInstallationPhase" access="read"/>
+
+    <property access="read" name="IguanaBackend" type="b"></property>
 
     <!--
         CurrentInstallationPhase:

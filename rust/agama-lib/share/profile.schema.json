@@ -16,6 +16,84 @@
         }
       }
     },
+    "network": {
+      "description": "Network settings",
+      "type": "object",
+      "properties": {
+        "connections": {
+          "description": "Network connections to be defined",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "description": "Connection ID",
+                "type": "string"
+              },
+              "method": {
+                "description": "IPv4 configuration method (e.g., 'auto')",
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "manual",
+                  "link-local",
+                  "disabled"
+                ]
+              },
+              "gateway": {
+                "description": "Connection gateway address (e.g. 192.168.122.1)",
+                "type": "string"
+              },
+              "addresses": {
+                "type": "array",
+                "items": {
+                  "description": "Connection addresses",
+                  "type": "string",
+                  "additionalProperties": false
+                }
+              },
+              "nameservers": {
+                "type": "array",
+                "items": {
+                  "description": "Connection nameservers",
+                  "type": "string",
+                  "additionalProperties": false
+                }
+              },
+              "wireless": {
+                "type": "object",
+                "description": "Wireless configuration",
+                "additionalProperties": false,
+                "properties": {
+                  "password": {
+                    "type": "string"
+                  },
+                  "security": {
+                    "type": "string"
+                  },
+                  "ssid": {
+                    "type": "string"
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "infrastructure",
+                      "adhoc",
+                      "mesh",
+                      "ap"
+                    ]
+                  }
+                }
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        }
+      }
+    },
     "user": {
       "description": "First user settings",
       "type": "object",

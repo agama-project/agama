@@ -6,7 +6,7 @@
 ///
 /// Using the newtype pattern around an String is enough. For proper support, we might replace this
 /// struct with an enum.
-use crate::{
+use crate::network::{
     model::{DeviceType, IpMethod, SecurityProtocol, WirelessMode},
     nm::error::NmError,
 };

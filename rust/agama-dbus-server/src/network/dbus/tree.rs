@@ -2,7 +2,7 @@ use agama_lib::error::ServiceError;
 use parking_lot::Mutex;
 use uuid::Uuid;
 
-use crate::{action::Action, dbus::interfaces, model::*};
+use crate::network::{action::Action, dbus::interfaces, model::*};
 use std::collections::HashMap;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;

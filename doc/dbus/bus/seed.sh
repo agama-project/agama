@@ -22,17 +22,21 @@ look Software1.Proposal
 look Storage1
 look Users1
 
+abusctl introspect --xml-interface \
+  ${DD}.Questions1 \
+  ${SS}/Questions1 \
+  | sed -e '/  <node/,/  <\/node/d' \
+  > ${DD}.Questions1.bus.xml
+# ^ remove detailed introspection of subnodes
+
 abusctl call \
   ${DD}.Questions1 \
   ${SS}/Questions1 \
   ${DD}.Questions1 \
   New sasas "should I stay or should I go" 2 yes no 1 yes
-# FIXME: the ruby code talks about a Generic interface but then
-# we end up declaring the properties on org.opensuse.Agama.Questions1
-# which is the same as what the factory object uses. WTF.
 abusctl introspect --xml-interface \
   ${DD}.Questions1 \
-  ${SS}/Questions1/1 \
+  ${SS}/Questions1/0 \
   > ${DD}.Questions1.Generic.bus.xml
 
 abusctl call \
@@ -42,5 +46,5 @@ abusctl call \
    NewLuksActivation sssy "/dev/tape1" "ZX Spectrum games" "90 minutes" 1
 abusctl introspect --xml-interface \
   ${DD}.Questions1 \
-  ${SS}/Questions1/2 \
+  ${SS}/Questions1/1 \
   > ${DD}.Questions1.LuksActivation.bus.xml

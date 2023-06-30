@@ -1,5 +1,5 @@
 //! NetworkManager error types
-use crate::error::NetworkStateError;
+use crate::network::error::NetworkStateError;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
