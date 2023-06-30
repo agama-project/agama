@@ -86,12 +86,13 @@ pub trait Settings {
 ///   let value: bool = value.try_into().expect("the conversion failed");
 ///   assert_eq!(value, true);
 /// ```
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct SettingValue(pub String);
 
 /// Represents a string-based collection and allows converting to other types
 ///
 /// It wraps a hash which uses String as key and SettingValue as value.
+#[derive(Debug)]
 pub struct SettingObject(pub HashMap<String, SettingValue>);
 
 impl SettingObject {
