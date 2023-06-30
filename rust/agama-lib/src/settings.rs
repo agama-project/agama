@@ -94,6 +94,15 @@ pub struct SettingValue(pub String);
 /// It wraps a hash which uses String as key and SettingValue as value.
 pub struct SettingObject(pub HashMap<String, SettingValue>);
 
+impl SettingObject {
+    /// Returns the value for the given key.
+    ///
+    /// * `key`: setting key.
+    pub fn get(&self, key: &str) -> Option<&SettingValue> {
+        self.0.get(key)
+    }
+}
+
 impl From<HashMap<String, String>> for SettingObject {
     fn from(value: HashMap<String, String>) -> SettingObject {
         let mut hash: HashMap<String, SettingValue> = HashMap::new();
