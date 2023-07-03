@@ -1,7 +1,7 @@
 //! Representation of the network settings
 
 use super::types::DeviceType;
-use crate::settings::{SettingObject, Settings, SettingValue};
+use crate::settings::{SettingObject, SettingValue, Settings};
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::default::Default;
@@ -92,9 +92,9 @@ impl TryFrom<SettingObject> for NetworkConnection {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-    use crate::settings::{SettingObject, SettingValue};
     use super::*;
+    use crate::settings::{SettingObject, SettingValue};
+    use std::collections::HashMap;
 
     #[test]
     fn test_device_type() {
@@ -112,10 +112,7 @@ mod tests {
     fn test_add_connection_to_setting() {
         let name = SettingValue("Ethernet 1".to_string());
         let method = SettingValue("auto".to_string());
-        let conn = HashMap::from([
-            ("name".to_string(), name),
-            ("method".to_string(), method)
-        ]);
+        let conn = HashMap::from([("name".to_string(), name), ("method".to_string(), method)]);
         let conn = SettingObject(conn);
 
         let mut settings = NetworkSettings::default();
@@ -127,10 +124,7 @@ mod tests {
     fn test_setting_object_to_network_connection() {
         let name = SettingValue("Ethernet 1".to_string());
         let method = SettingValue("auto".to_string());
-        let settings = HashMap::from([
-            ("name".to_string(), name),
-            ("method".to_string(), method)
-        ]);
+        let settings = HashMap::from([("name".to_string(), name), ("method".to_string(), method)]);
         let settings = SettingObject(settings);
         let conn: NetworkConnection = settings.try_into().unwrap();
         assert_eq!(conn.name, "Ethernet 1");
