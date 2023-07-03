@@ -25,7 +25,7 @@ import { useInstallerClient } from "~/context/installer";
 import { If, PageOptions } from "~/components/core";
 
 /**
- * Internal component for build the link to Storage/DASD page
+ * Internal component for building the link to Storage/DASD page
  * @component
  */
 const DASDLink = () => {
@@ -43,7 +43,25 @@ const DASDLink = () => {
 };
 
 /**
- * Internal component for build the link to Storage/iSCSI page
+ * Internal component for building the link to Storage/zFCP page
+ * @component
+ */
+const ZFCPLink = () => {
+  const href = useHref("/storage/zfcp");
+
+  return (
+    <PageOptions.Item
+      key="zfcp-link"
+      href={href}
+      description="Activate disks"
+    >
+      zFCP
+    </PageOptions.Item>
+  );
+};
+
+/**
+ * Internal component for building the link to Storage/iSCSI page
  * @component
  */
 const ISCSILink = () => {
@@ -66,17 +84,20 @@ const ISCSILink = () => {
  */
 export default function ProposalPageOptions () {
   const [showDasdLink, setShowDasdLink] = useState(false);
+  const [showZFCPLink, setShowZFCPLink] = useState(false);
   const { storage: client } = useInstallerClient();
 
   useEffect(() => {
     client.dasd.isSupported().then(setShowDasdLink);
-  }, [client.dasd]);
+    client.zfcp.isSupported().then(setShowZFCPLink);
+  }, [client.dasd, client.zfcp]);
 
   return (
     <PageOptions>
       <PageOptions.Group key="devices-options">
         <If condition={showDasdLink} then={<DASDLink />} />
         <ISCSILink />
+        <If condition={showZFCPLink} then={<ZFCPLink />} />
       </PageOptions.Group>
     </PageOptions>
   );
