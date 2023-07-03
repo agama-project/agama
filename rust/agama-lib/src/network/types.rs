@@ -31,7 +31,7 @@ pub enum DeviceType {
     Wireless = 2,
 }
 
-#[derive(Debug, Error)]
+#[derive(Debug, Error, PartialEq)]
 #[error("Invalid device type: {0}")]
 pub struct InvalidDeviceType(u8);
 
@@ -51,5 +51,32 @@ impl TryFrom<u8> for DeviceType {
 impl From<InvalidDeviceType> for zbus::fdo::Error {
     fn from(value: InvalidDeviceType) -> zbus::fdo::Error {
         zbus::fdo::Error::Failed(format!("Network error: {}", value.to_string()))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_display_ssid() {
+        let ssid = SSID(vec![97, 103, 97, 109, 97]);
+        assert_eq!(format!("{}", ssid), "agama");
+    }
+
+    #[test]
+    fn test_ssid_to_vec() {
+        let vec = vec![97, 103, 97, 109, 97];
+        let ssid = SSID(vec.clone());
+        assert_eq!(ssid.to_vec(), &vec);
+    }
+
+    #[test]
+    fn test_device_type_from_u8() {
+        let dtype = DeviceType::try_from(0);
+        assert_eq!(dtype, Ok(DeviceType::Loopback));
+
+        let dtype = DeviceType::try_from(128);
+        assert_eq!(dtype, Err(InvalidDeviceType(128)));
     }
 }
