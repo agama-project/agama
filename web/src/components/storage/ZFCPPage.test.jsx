@@ -70,11 +70,16 @@ beforeEach(() => {
 });
 
 it("loads the zFCP devices", async () => {
+  client.getWWPNs = jest.fn().mockResolvedValue(["0x500507630703d3b3", "0x500507630704d3b3"]);
   installerRender(<ZFCPPage />);
 
   screen.getAllByText(/PFSkeleton/);
   expect(screen.queryAllByRole("grid").length).toBe(0);
   await waitFor(() => expect(client.probe).toHaveBeenCalled());
+  await waitFor(() => expect(client.getLUNs).toHaveBeenCalledWith(controllers[1], "0x500507630703d3b3"));
+  await waitFor(() => expect(client.getLUNs).toHaveBeenCalledWith(controllers[1], "0x500507630704d3b3"));
+  await waitFor(() => expect(client.getLUNs).not.toHaveBeenCalledWith(controllers[0], "0x500507630703d3b3"));
+  await waitFor(() => expect(client.getLUNs).not.toHaveBeenCalledWith(controllers[0], "0x500507630704d3b3"));
   expect(screen.getAllByRole("grid").length).toBe(2);
 });
 

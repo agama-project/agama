@@ -41,6 +41,7 @@ import { noop } from "~/utils";
  *
  * @callback onSubmitFn
  * @param {FormData}
+ * @returns {number} 0 on success
  *
  * @typedef {object} FormData
  * @property {string} channel

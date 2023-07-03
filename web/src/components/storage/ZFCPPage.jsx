@@ -144,6 +144,19 @@ class Manager {
   }
 
   /**
+   * Adds the given LUNs
+   *
+   * @param {LUN[]} luns
+   * @returns {void}
+   */
+  addLUNs(luns) {
+    for (const lun of luns) {
+      const existingLUN = this.luns.find(l => l.channel === lun.channel && l.wwpn === lun.wwpn && l.lun === lun.lun);
+      if (!existingLUN) this.luns.push(lun);
+    }
+  }
+
+  /**
    * Gets the list of inactive LUNs.
    *
    * @returns {LUN[]}
@@ -306,13 +319,13 @@ const ControllersTable = ({ client, manager }) => {
     let value;
 
     switch (column.id) {
-      case 'channel':
+      case "channel":
         value = controller.channel;
         break;
-      case 'status':
+      case "status":
         value = controller.active ? "Activated" : "Deactivated";
         break;
-      case 'lunScan':
+      case "lunScan":
         if (controller.active)
           value = controller.lunScan ? "Yes" : "No";
         else
@@ -637,6 +650,12 @@ const reducer = (state, action) => {
       return { ...state };
     }
 
+    case "ADD_LUNS": {
+      const { luns } = payload;
+      state.manager.addLUNs(luns);
+      return { ...state };
+    }
+
     default: {
       return state;
     }
@@ -658,6 +677,18 @@ export default function ZFCPPage() {
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const getLUNs = useCallback(async (controller) => {
+    const luns = [];
+    const wwpns = await cancellablePromise(client.zfcp.getWWPNs(controller));
+    for (const wwpn of wwpns) {
+      const all = await cancellablePromise(client.zfcp.getLUNs(controller, wwpn));
+      for (const lun of all) {
+        luns.push({ channel: controller.channel, wwpn, lun });
+      }
+    }
+    return luns;
+  }, [client.zfcp, cancellablePromise]);
+
   const load = useCallback(async () => {
     dispatch({ type: "START_LOADING" });
     await cancellablePromise(client.zfcp.probe());
@@ -665,18 +696,14 @@ export default function ZFCPPage() {
     const disks = await cancellablePromise(client.zfcp.getDisks());
     const luns = [];
     for (const controller of controllers) {
-      const wwpns = await cancellablePromise(client.zfcp.getWWPNs(controller));
-      for (const wwpn of wwpns) {
-        const all = await cancellablePromise(client.zfcp.getLUNs(controller, wwpn));
-        for (const lun of all) {
-          luns.push({ channel: controller.channel, wwpn, lun });
-        }
+      if (controller.active && !controller.lunScan) {
+        luns.push(await getLUNs(controller));
       }
     }
-    const manager = new Manager(controllers, disks, luns);
+    const manager = new Manager(controllers, disks, luns.flat());
     dispatch({ type: "SET_MANAGER", payload: { manager } });
     dispatch({ type: "STOP_LOADING" });
-  }, [client.zfcp, cancellablePromise]);
+  }, [client.zfcp, cancellablePromise, getLUNs]);
 
   useEffect(() => {
     load().catch(console.error);
@@ -689,7 +716,13 @@ export default function ZFCPPage() {
       const action = (type, payload) => dispatch({ type, payload });
 
       subscriptions.push(
-        await client.zfcp.onControllerChanged(c => action("UPDATE_CONTROLLER", { controller: c })),
+        await client.zfcp.onControllerChanged(async (controller) => {
+          action("UPDATE_CONTROLLER", { controller });
+          if (controller.active && !controller.lunScan) {
+            const luns = await getLUNs(controller);
+            action("ADD_LUNS", { luns });
+          }
+        }),
         await client.zfcp.onDiskAdded(d => action("ADD_DISK", { disk: d })),
         await client.zfcp.onDiskChanged(d => action("UPDATE_DISK", { disk: d })),
         await client.zfcp.onDiskRemoved(d => action("REMOVE_DISK", { disk: d }))
@@ -702,7 +735,7 @@ export default function ZFCPPage() {
 
     subscribe();
     return unsubscribe;
-  }, [client.zfcp, cancellablePromise]);
+  }, [client.zfcp, cancellablePromise, getLUNs]);
 
   return (
     <Page title="Storage zFCP" icon="hard_drive">
