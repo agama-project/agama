@@ -28,7 +28,7 @@
      Network gateway.
 
      An empty string removes the current value. It is not possible to set a gateway if the
-     addresses property is empty.
+     Addresses property is empty.
      -->
     <property name="Gateway" type="s" access="readwrite"/>
     <!--
