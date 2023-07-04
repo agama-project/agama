@@ -47,8 +47,17 @@
      * `ty`: connection type (see [crate::model::DeviceType]).
      -->
     <method name="AddConnection">
-      <arg name="name" type="s" direction="in"/>
+      <arg name="id" type="s" direction="in"/>
       <arg name="ty" type="y" direction="in"/>
+    </method>
+    <!--
+     Returns the D-Bus path of the network connection.
+
+     * `id`: connection ID.
+     -->
+    <method name="GetConnection">
+      <arg name="id" type="s" direction="in"/>
+      <arg type="o" direction="out"/>
     </method>
     <!--
      Removes a network connection.
@@ -56,7 +65,7 @@
      * `uuid`: connection UUID..
      -->
     <method name="RemoveConnection">
-      <arg name="uuid" type="s" direction="in"/>
+      <arg name="id" type="s" direction="in"/>
     </method>
     <!--
      Applies the network configuration.

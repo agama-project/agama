@@ -14,13 +14,22 @@
      AddConnection:
      Adds a new network connection.
 
-     * `name`: connection name.
-
+     * `id`: connection name.
      * `ty`: connection type (see [crate::model::DeviceType]).
      -->
     <method name="AddConnection">
-      <arg name="name" type="s" direction="in"/>
+      <arg name="id" type="s" direction="in"/>
       <arg name="ty" type="y" direction="in"/>
+    </method>
+    <!--
+     GetConnection:
+     Returns the D-Bus path of the network connection.
+
+     * `id`: connection ID.
+     -->
+    <method name="GetConnection">
+      <arg name="id" type="s" direction="in"/>
+      <arg type="o" direction="out"/>
     </method>
     <!--
      RemoveConnection:
@@ -29,7 +38,7 @@
      * `uuid`: connection UUID..
      -->
     <method name="RemoveConnection">
-      <arg name="uuid" type="s" direction="in"/>
+      <arg name="id" type="s" direction="in"/>
     </method>
     <!--
      Apply:
