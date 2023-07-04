@@ -19,10 +19,18 @@ impl<'a> NetworkStore<'a> {
     pub async fn load(&self) -> Result<NetworkSettings, Box<dyn Error>> {
         let connections = self.network_client.connections().await?;
 
-        Ok(NetworkSettings { connections })
+        Ok(NetworkSettings {
+            connections,
+            ..Default::default()
+        })
     }
 
     pub async fn store(&self, settings: &NetworkSettings) -> Result<(), Box<dyn Error>> {
+        for conn in &settings.connections {
+            self.network_client.add_or_update_connection(&conn).await?;
+        }
+        self.network_client.apply().await?;
+
         Ok(())
     }
 }

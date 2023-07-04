@@ -29,7 +29,7 @@ impl TryFrom<SettingObject> for Device {
     type Error = &'static str;
 
     fn try_from(value: SettingObject) -> Result<Self, Self::Error> {
-        match value.0.get("name") {
+        match value.get("name") {
             Some(name) => Ok(Device {
                 name: name.clone().try_into()?,
             }),

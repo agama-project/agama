@@ -5,8 +5,13 @@
 use uuid::Uuid;
 
 use crate::network::error::NetworkStateError;
-use agama_lib::network::types::SSID;
-use std::{fmt, net::Ipv4Addr, str};
+use agama_lib::network::types::{DeviceType, SSID};
+use std::{
+    fmt,
+    net::{AddrParseError, Ipv4Addr},
+    str::{self, FromStr},
+};
+use thiserror::Error;
 
 #[derive(Default)]
 pub struct NetworkState {
@@ -36,22 +41,22 @@ impl NetworkState {
     /// Get connection by UUID
     ///
     /// * `uuid`: connection UUID
-    pub fn get_connection(&self, uuid: Uuid) -> Option<&Connection> {
-        self.connections.iter().find(|c| c.uuid() == uuid)
+    pub fn get_connection(&self, id: &str) -> Option<&Connection> {
+        self.connections.iter().find(|c| c.id() == id)
     }
 
     /// Get connection by UUID as mutable
     ///
     /// * `uuid`: connection UUID
-    pub fn get_connection_mut(&mut self, uuid: Uuid) -> Option<&mut Connection> {
-        self.connections.iter_mut().find(|c| c.uuid() == uuid)
+    pub fn get_connection_mut(&mut self, id: &str) -> Option<&mut Connection> {
+        self.connections.iter_mut().find(|c| c.id() == id)
     }
 
     /// Adds a new connection.
     ///
     /// It uses the `id` to decide whether the connection already exists.
     pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        if let Some(_) = self.get_connection(conn.uuid()) {
+        if let Some(_) = self.get_connection(conn.id()) {
             return Err(NetworkStateError::ConnectionExists(conn.uuid()));
         }
 
@@ -65,8 +70,8 @@ impl NetworkState {
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
     pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        let Some(old_conn) = self.get_connection_mut(conn.uuid()) else {
-            return Err(NetworkStateError::UnknownConnection(conn.uuid()));
+        let Some(old_conn) = self.get_connection_mut(conn.id()) else {
+            return Err(NetworkStateError::UnknownConnection(conn.id().to_string()));
         };
 
         *old_conn = conn;
@@ -76,9 +81,9 @@ impl NetworkState {
     /// Removes a connection from the state.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
-    pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
-        let Some(conn) = self.get_connection_mut(uuid) else {
-            return Err(NetworkStateError::UnknownConnection(uuid));
+    pub fn remove_connection(&mut self, id: &str) -> Result<(), NetworkStateError> {
+        let Some(conn) = self.get_connection_mut(id) else {
+            return Err(NetworkStateError::UnknownConnection(id.to_string()));
         };
 
         conn.remove();
@@ -98,12 +103,13 @@ mod tests {
         let mut state = NetworkState::default();
         let uuid = Uuid::new_v4();
         let base = BaseConnection {
+            id: "eth0".to_string(),
             uuid,
             ..Default::default()
         };
         let conn0 = Connection::Ethernet(EthernetConnection { base });
         state.add_connection(conn0).unwrap();
-        let found = state.get_connection(uuid).unwrap();
+        let found = state.get_connection("eth0").unwrap();
         assert_eq!(found.uuid(), uuid);
     }
 
@@ -124,21 +130,23 @@ mod tests {
     #[test]
     fn test_update_connection() {
         let mut state = NetworkState::default();
-        let uuid = Uuid::new_v4();
         let base0 = BaseConnection {
-            uuid,
+            id: "eth0".to_string(),
+            uuid: Uuid::new_v4(),
             ..Default::default()
         };
         let conn0 = Connection::Ethernet(EthernetConnection { base: base0 });
         state.add_connection(conn0).unwrap();
 
+        let uuid = Uuid::new_v4();
         let base1 = BaseConnection {
+            id: "eth0".to_string(),
             uuid,
             ..Default::default()
         };
         let conn2 = Connection::Ethernet(EthernetConnection { base: base1 });
         state.update_connection(conn2).unwrap();
-        let found = state.get_connection(uuid).unwrap();
+        let found = state.get_connection("eth0").unwrap();
         assert_eq!(found.uuid(), uuid);
     }
 
@@ -158,22 +166,24 @@ mod tests {
     #[test]
     fn test_remove_connection() {
         let mut state = NetworkState::default();
+        let id = "eth0".to_string();
         let uuid = Uuid::new_v4();
         let base0 = BaseConnection {
+            id,
             uuid,
             ..Default::default()
         };
         let conn0 = Connection::Ethernet(EthernetConnection { base: base0 });
         state.add_connection(conn0).unwrap();
-        state.remove_connection(uuid).unwrap();
-        let found = state.get_connection(uuid).unwrap();
+        state.remove_connection("eth0").unwrap();
+        let found = state.get_connection("eth0").unwrap();
         assert!(found.is_removed());
     }
 
     #[test]
     fn test_remove_unknown_connection() {
         let mut state = NetworkState::default();
-        let error = state.remove_connection(Uuid::new_v4()).unwrap_err();
+        let error = state.remove_connection("eth0").unwrap_err();
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
     }
 }
@@ -183,26 +193,6 @@ mod tests {
 pub struct Device {
     pub name: String,
     pub type_: DeviceType,
-}
-
-#[derive(Debug, PartialEq, Copy, Clone)]
-pub enum DeviceType {
-    Loopback = 0,
-    Ethernet = 1,
-    Wireless = 2,
-}
-
-impl TryFrom<u8> for DeviceType {
-    type Error = NetworkStateError;
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(DeviceType::Loopback),
-            1 => Ok(DeviceType::Ethernet),
-            2 => Ok(DeviceType::Wireless),
-            _ => Err(NetworkStateError::InvalidDeviceType(value)),
-        }
-    }
 }
 
 /// Represents an available network connection
@@ -251,6 +241,10 @@ impl Connection {
         self.base().id.as_str()
     }
 
+    pub fn set_id(&mut self, id: &str) {
+        self.base_mut().id = id.to_string()
+    }
+
     pub fn uuid(&self) -> Uuid {
         self.base().uuid
     }
@@ -296,10 +290,14 @@ pub enum Status {
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct Ipv4Config {
     pub method: IpMethod,
-    pub addresses: Vec<(Ipv4Addr, u32)>,
+    pub addresses: Vec<IpAddress>,
     pub nameservers: Vec<Ipv4Addr>,
     pub gateway: Option<Ipv4Addr>,
 }
+
+#[derive(Debug, Error)]
+#[error("Unknown IP configuration method name: {0}")]
+pub struct UnknownIpMethod(String);
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
 pub enum IpMethod {
@@ -321,18 +319,23 @@ impl fmt::Display for IpMethod {
     }
 }
 
-// NOTE: we could use num-derive.
-impl TryFrom<u8> for IpMethod {
-    type Error = NetworkStateError;
+impl FromStr for IpMethod {
+    type Err = UnknownIpMethod;
 
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(IpMethod::Disabled),
-            1 => Ok(IpMethod::Auto),
-            2 => Ok(IpMethod::Manual),
-            3 => Ok(IpMethod::LinkLocal),
-            _ => Err(NetworkStateError::InvalidIpMethod(value)),
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "disabled" => Ok(IpMethod::Disabled),
+            "auto" => Ok(IpMethod::Auto),
+            "manual" => Ok(IpMethod::Manual),
+            "link-local" => Ok(IpMethod::LinkLocal),
+            _ => Err(UnknownIpMethod(s.to_string())),
         }
+    }
+}
+
+impl From<UnknownIpMethod> for zbus::fdo::Error {
+    fn from(value: UnknownIpMethod) -> zbus::fdo::Error {
+        zbus::fdo::Error::Failed(value.to_string())
     }
 }
 
@@ -441,5 +444,71 @@ impl TryFrom<&str> for SecurityProtocol {
                 value.to_string(),
             )),
         }
+    }
+}
+
+/// Represents an IPv4 address with a prefix.
+#[derive(Debug, Clone, PartialEq)]
+pub struct IpAddress(Ipv4Addr, u32);
+
+#[derive(Error, Debug)]
+pub enum ParseIpAddressError {
+    #[error("Missing prefix")]
+    MissingPrefix,
+    #[error("Invalid prefix part '{0}'")]
+    InvalidPrefix(String),
+    #[error("Invalid address part: {0}")]
+    InvalidAddr(AddrParseError),
+}
+
+impl IpAddress {
+    /// Returns an new IpAddress object
+    ///
+    /// * `addr`: IPv4 address.
+    /// * `prefix`: IPv4 address prefix.
+    pub fn new(addr: Ipv4Addr, prefix: u32) -> Self {
+        IpAddress(addr, prefix)
+    }
+
+    /// Returns the IPv4 address.
+    pub fn addr(&self) -> &Ipv4Addr {
+        &self.0
+    }
+
+    /// Returns the prefix.
+    pub fn prefix(&self) -> u32 {
+        self.1
+    }
+}
+
+impl From<IpAddress> for (String, u32) {
+    fn from(value: IpAddress) -> Self {
+        (value.0.to_string(), value.1)
+    }
+}
+
+impl FromStr for IpAddress {
+    type Err = ParseIpAddressError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let Some((address, prefix)) = s.split_once("/") else {
+            return Err(ParseIpAddressError::MissingPrefix);
+        };
+
+        let address: Ipv4Addr = address
+            .parse()
+            .map_err(|e| ParseIpAddressError::InvalidAddr(e))?;
+
+        let prefix: u32 = prefix
+            .parse()
+            .map_err(|_| ParseIpAddressError::InvalidPrefix(prefix.to_string()))?;
+
+        Ok(IpAddress(address, prefix))
+    }
+}
+
+impl fmt::Display for IpAddress {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}/{}", self.0.to_string(), self.1)
     }
 }

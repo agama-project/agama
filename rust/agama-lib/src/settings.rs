@@ -86,13 +86,23 @@ pub trait Settings {
 ///   let value: bool = value.try_into().expect("the conversion failed");
 ///   assert_eq!(value, true);
 /// ```
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct SettingValue(pub String);
 
 /// Represents a string-based collection and allows converting to other types
 ///
 /// It wraps a hash which uses String as key and SettingValue as value.
+#[derive(Debug)]
 pub struct SettingObject(pub HashMap<String, SettingValue>);
+
+impl SettingObject {
+    /// Returns the value for the given key.
+    ///
+    /// * `key`: setting key.
+    pub fn get(&self, key: &str) -> Option<&SettingValue> {
+        self.0.get(key)
+    }
+}
 
 impl From<HashMap<String, String>> for SettingObject {
     fn from(value: HashMap<String, String>) -> SettingObject {
