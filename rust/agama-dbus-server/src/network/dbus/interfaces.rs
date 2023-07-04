@@ -70,11 +70,19 @@ impl Device {
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Device")]
 impl Device {
+    /// Device name.
+    ///
+    /// Kernel device name, e.g., eth0, enp1s0, etc.
     #[dbus_interface(property)]
     pub fn name(&self) -> &str {
         &self.device.name
     }
 
+    /// Device type.
+    ///
+    /// Possible values: 0 = loopback, 1 = ethernet, 2 = wireless.
+    ///
+    /// See [crate::model::DeviceType].
     #[dbus_interface(property, name = "Type")]
     pub fn device_type(&self) -> u8 {
         self.device.type_ as u8
@@ -180,6 +188,11 @@ impl Connection {
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connection")]
 impl Connection {
+    /// Connection ID.
+    ///
+    /// Unique identifier of the network connection. It may or not be the same that the used by the
+    /// backend. For instance, when using NetworkManager (which is the only supported backend by
+    /// now), it uses the original ID but appending a number in case the ID is duplicated.
     #[dbus_interface(property)]
     pub fn id(&self) -> String {
         self.get_connection().id().to_string()
@@ -226,6 +239,9 @@ impl Ipv4 {
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connection.IPv4")]
 impl Ipv4 {
+    /// List of IP addresses.
+    ///
+    /// When the method is 'auto', these addresses are used as additional addresses.
     #[dbus_interface(property)]
     pub fn addresses(&self) -> Vec<String> {
         let connection = self.get_connection();
@@ -254,6 +270,11 @@ impl Ipv4 {
         self.update_connection(connection)
     }
 
+    /// IP configuration method.
+    ///
+    /// Possible values: "disabled", "auto", "manual" or "link-local".
+    ///
+    /// See [crate::model::IpMethod].
     #[dbus_interface(property)]
     pub fn method(&self) -> String {
         let connection = self.get_connection();
@@ -267,6 +288,7 @@ impl Ipv4 {
         self.update_connection(connection)
     }
 
+    /// Name server addresses.
     #[dbus_interface(property)]
     pub fn nameservers(&self) -> Vec<String> {
         let connection = self.get_connection();
@@ -291,6 +313,10 @@ impl Ipv4 {
         self.update_connection(connection)
     }
 
+    /// Network gateway.
+    ///
+    /// An empty string removes the current value. It is not possible to set a gateway if the
+    /// addresses property is empty.
     #[dbus_interface(property)]
     pub fn gateway(&self) -> String {
         let connection = self.get_connection();
@@ -359,6 +385,7 @@ impl Wireless {
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connection.Wireless")]
 impl Wireless {
+    /// Network SSID.
     #[dbus_interface(property, name = "SSID")]
     pub fn ssid(&self) -> Vec<u8> {
         let connection = self.get_wireless();
@@ -372,6 +399,11 @@ impl Wireless {
         self.update_connection(connection)
     }
 
+    /// Wireless connection mode.
+    ///
+    /// Possible values: "unknown", "adhoc", "infrastructure", "ap" or "mesh".
+    ///
+    /// See [crate::model::WirelessMode].
     #[dbus_interface(property)]
     pub fn mode(&self) -> String {
         let connection = self.get_wireless();
@@ -385,6 +417,7 @@ impl Wireless {
         self.update_connection(connection)
     }
 
+    /// Password to connect to the wireless network.
     #[dbus_interface(property)]
     pub fn password(&self) -> String {
         let connection = self.get_wireless();
@@ -406,6 +439,12 @@ impl Wireless {
         self.update_connection(connection)
     }
 
+    /// Wireless security protocol.
+    ///
+    /// Possible values: "none", "owe", "ieee8021x", "wpa-psk", "sae", "wpa-eap",
+    /// "wpa-eap-suite-b192".
+    ///
+    /// See [crate::model::WirelessMode].
     #[dbus_interface(property)]
     pub fn security(&self) -> String {
         let connection = self.get_wireless();
