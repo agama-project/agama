@@ -1,0 +1,106 @@
+
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
+      <arg type="s" direction="out"/>
+    </method>
+  </interface>
+  <interface name="org.opensuse.Agama.Network1.Connection">
+    <!--
+     Connection ID.
+
+     Unique identifier of the network connection. It may or not be the same that the used by the
+     backend. For instance, when using NetworkManager (which is the only supported backend by
+     now), it uses the original ID but appending a number in case the ID is duplicated.
+     -->
+    <property name="Id" type="s" access="read"/>
+  </interface>
+  <interface name="org.opensuse.Agama.Network1.Connection.IPv4">
+    <!--
+     List of IP addresses.
+
+     When the method is 'auto', these addresses are used as additional addresses.
+     -->
+    <property name="Addresses" type="as" access="readwrite"/>
+    <!--
+     Network gateway.
+
+     An empty string removes the current value. It is not possible to set a gateway if the
+     addresses property is empty.
+     -->
+    <property name="Gateway" type="s" access="readwrite"/>
+    <!--
+     IP configuration method.
+
+     Possible values: "disabled", "auto", "manual" or "link-local".
+
+     See [crate::model::IpMethod].
+     -->
+    <property name="Method" type="s" access="readwrite"/>
+    <!--
+     Name server addresses.
+     -->
+    <property name="Nameservers" type="as" access="readwrite"/>
+  </interface>
+  <interface name="org.opensuse.Agama.Network1.Connection.Wireless">
+    <!--
+     Wireless connection mode.
+
+     Possible values: "unknown", "adhoc", "infrastructure", "ap" or "mesh".
+
+     See [crate::model::WirelessMode].
+     -->
+    <property name="Mode" type="s" access="readwrite"/>
+    <!--
+     Password to connect to the wireless network.
+     -->
+    <property name="Password" type="s" access="readwrite"/>
+    <!--
+     Network SSID.
+     -->
+    <property name="SSID" type="ay" access="readwrite"/>
+    <!--
+     Wireless security protocol.
+
+     Possible values: "none", "owe", "ieee8021x", "wpa-psk", "sae", "wpa-eap",
+     "wpa-eap-suite-b192".
+
+     See [crate::model::WirelessMode].
+     -->
+    <property name="Security" type="s" access="readwrite"/>
+  </interface>
+  <interface name="org.freedesktop.DBus.Peer">
+    <method name="Ping">
+    </method>
+    <method name="GetMachineId">
+      <arg type="s" direction="out"/>
+    </method>
+  </interface>
+  <interface name="org.freedesktop.DBus.Properties">
+    <method name="Get">
+      <arg name="interface_name" type="s" direction="in"/>
+      <arg name="property_name" type="s" direction="in"/>
+      <arg type="v" direction="out"/>
+    </method>
+    <method name="Set">
+      <arg name="interface_name" type="s" direction="in"/>
+      <arg name="property_name" type="s" direction="in"/>
+      <arg name="value" type="v" direction="in"/>
+    </method>
+    <method name="GetAll">
+      <arg name="interface_name" type="s" direction="in"/>
+      <arg type="a{sv}" direction="out"/>
+    </method>
+    <!--
+     Emits the `org.freedesktop.DBus.Properties.PropertiesChanged` signal.
+     -->
+    <signal name="PropertiesChanged">
+      <arg name="interface_name" type="s"/>
+      <arg name="changed_properties" type="a{sv}"/>
+      <arg name="invalidated_properties" type="as"/>
+    </signal>
+  </interface>
+</node>
+
