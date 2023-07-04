@@ -20,7 +20,7 @@
  */
 
 // @ts-check
-// cspell:ignore ECKD dasda ddgdcbibhd
+// cspell:ignore ECKD dasda ddgdcbibhd wwpns
 
 import DBusClient from "./dbus";
 import { StorageClient } from "./storage";
@@ -260,6 +260,46 @@ const contexts = {
       }
     };
   },
+  withoutZFCPControllers: () => {
+    cockpitProxies.zfcpControllers = {};
+  },
+  withZFCPControllers: () => {
+    cockpitProxies.zfcpControllers = {
+      "/org/opensuse/Agama/Storage1/zfcp_controllers/1": {
+        path: "/org/opensuse/Agama/Storage1/zfcp_controllers/1",
+        Active: false,
+        LUNScan: false,
+        Channel: "0.0.fa00"
+      },
+      "/org/opensuse/Agama/Storage1/zfcp_controllers/2": {
+        path: "/org/opensuse/Agama/Storage1/zfcp_controllers/2",
+        Active: false,
+        LUNScan: false,
+        Channel: "0.0.fc00"
+      }
+    };
+  },
+  withoutZFCPDisks: () => {
+    cockpitProxies.zfcpDisks = {};
+  },
+  withZFCPDisks: () => {
+    cockpitProxies.zfcpDisks = {
+      "/org/opensuse/Agama/Storage1/zfcp_disks/1": {
+        path: "/org/opensuse/Agama/Storage1/zfcp_disks/1",
+        Name: "/dev/sda",
+        Channel: "0.0.fa00",
+        WWPN: "0x500507630703d3b3",
+        LUN: "0x0000000000000000"
+      },
+      "/org/opensuse/Agama/Storage1/zfcp_disks/2": {
+        path: "/org/opensuse/Agama/Storage1/zfcp_disks/2",
+        Name: "/dev/sdb",
+        Channel: "0.0.fa00",
+        WWPN: "0x500507630703d3b3",
+        LUN: "0x0000000000000001"
+      }
+    };
+  },
   withSystemDevices: () => {
     managedObjects["/org/opensuse/Agama/Storage1/system/59"] = {
       "org.opensuse.Agama.Storage1.Drive": {
@@ -398,6 +438,8 @@ const mockProxy = (iface, path) => {
     case "org.opensuse.Agama.Storage1.ISCSI.Initiator": return cockpitProxies.iscsiInitiator;
     case "org.opensuse.Agama.Storage1.ISCSI.Node": return cockpitProxies.iscsiNode[path];
     case "org.opensuse.Agama.Storage1.DASD.Manager": return cockpitProxies.dasdManager;
+    case "org.opensuse.Agama.Storage1.ZFCP.Manager": return cockpitProxies.zfcpManager;
+    case "org.opensuse.Agama.Storage1.ZFCP.Controller": return cockpitProxies.zfcpController[path];
   }
 };
 
@@ -405,6 +447,8 @@ const mockProxies = (iface) => {
   switch (iface) {
     case "org.opensuse.Agama.Storage1.ISCSI.Node": return cockpitProxies.iscsiNodes;
     case "org.opensuse.Agama.Storage1.DASD.Device": return cockpitProxies.dasdDevices;
+    case "org.opensuse.Agama.Storage1.ZFCP.Controller": return cockpitProxies.zfcpControllers;
+    case "org.opensuse.Agama.Storage1.ZFCP.Disk": return cockpitProxies.zfcpDisks;
   }
 };
 
@@ -437,6 +481,10 @@ const reset = () => {
   cockpitProxies.iscsiNode = {};
   cockpitProxies.dasdManager = {};
   cockpitProxies.dasdDevices = {};
+  cockpitProxies.zfcpManager = {};
+  cockpitProxies.zfcpControllers = {};
+  cockpitProxies.zfcpDisks = {};
+  cockpitProxies.zfcpController = {};
   managedObjects = {};
 };
 
@@ -883,6 +931,413 @@ describe("#dasd", () => {
     it("requests for disabling given devices", async () => {
       await client.dasd.disableDevices([sampleDasdDevice]);
       expect(disableFn).toHaveBeenCalledWith(["/org/opensuse/Agama/Storage1/dasds/8"]);
+    });
+  });
+});
+
+describe("#zfcp", () => {
+  const probeFn = jest.fn();
+  let controllersCallbacks;
+  let disksCallbacks;
+
+  const mockEventListener = (proxy, callbacks) => {
+    proxy.addEventListener = jest.fn().mockImplementation(
+      (signal, handler) => {
+        if (!callbacks[signal]) callbacks[signal] = [];
+        callbacks[signal].push(handler);
+      }
+    );
+
+    proxy.removeEventListener = jest.fn();
+  };
+
+  const emitSignals = (callbacks, signal, proxy) => {
+    callbacks[signal].forEach(handler => handler(null, proxy));
+  };
+
+  beforeEach(() => {
+    client = new StorageClient();
+    cockpitProxies.zfcpManager = {
+      Probe: probeFn,
+      AllowLUNScan: true
+    };
+
+    controllersCallbacks = {};
+    mockEventListener(cockpitProxies.zfcpControllers, controllersCallbacks);
+
+    disksCallbacks = {};
+    mockEventListener(cockpitProxies.zfcpDisks, disksCallbacks);
+  });
+
+  describe("#isSupported", () => {
+    describe("if zFCP manager is available", () => {
+      it("returns true", async () => {
+        const result = await client.zfcp.isSupported();
+        expect(result).toEqual(true);
+      });
+    });
+
+    describe("if zFCP manager is not available", () => {
+      beforeEach(() => {
+        cockpitProxies.zfcpManager = undefined;
+      });
+
+      it("returns false", async () => {
+        const result = await client.zfcp.isSupported();
+        expect(result).toEqual(false);
+      });
+    });
+  });
+
+  describe("#getAllowLUNScan", () => {
+    it("returns whether allow_lun_scan is active", async () => {
+      const result = await client.zfcp.getAllowLUNScan();
+      expect(result).toEqual(true);
+    });
+
+    describe("if zFCP manager is not available", () => {
+      beforeEach(() => {
+        cockpitProxies.zfcpManager = undefined;
+      });
+
+      it("returns undefined", async () => {
+        const result = await client.zfcp.getAllowLUNScan();
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe("#probe", () => {
+    it("triggers probing", async () => {
+      await client.zfcp.probe();
+      expect(probeFn).toHaveBeenCalled();
+    });
+
+    describe("if zFCP manager is not available", () => {
+      beforeEach(() => {
+        cockpitProxies.zfcpManager = undefined;
+      });
+
+      it("returns undefined", async () => {
+        const result = await client.zfcp.probe();
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe("#getControllers", () => {
+    describe("if there is no exported zFCP controllers yet", () => {
+      beforeEach(() => {
+        contexts.withoutZFCPControllers();
+      });
+
+      it("returns an empty list", async () => {
+        const result = await client.zfcp.getControllers();
+        expect(result).toStrictEqual([]);
+      });
+    });
+
+    describe("if there are exported ZFCP controllers", () => {
+      beforeEach(() => {
+        contexts.withZFCPControllers();
+      });
+
+      it("returns a list with the exported ZFCP controllers", async () => {
+        const result = await client.zfcp.getControllers();
+        expect(result.length).toEqual(2);
+        expect(result).toContainEqual({
+          id: "1",
+          active: false,
+          lunScan: false,
+          channel: "0.0.fa00"
+        });
+        expect(result).toContainEqual({
+          id: "2",
+          active: false,
+          lunScan: false,
+          channel: "0.0.fc00"
+        });
+      });
+    });
+  });
+
+  describe("#getDisks", () => {
+    describe("if there is no exported zFCP disks yet", () => {
+      beforeEach(() => {
+        contexts.withoutZFCPDisks();
+      });
+
+      it("returns an empty list", async () => {
+        const result = await client.zfcp.getDisks();
+        expect(result).toStrictEqual([]);
+      });
+    });
+
+    describe("if there are exported ZFCP disks", () => {
+      beforeEach(() => {
+        contexts.withZFCPDisks();
+      });
+
+      it("returns a list with the exported ZFCP disks", async () => {
+        const result = await client.zfcp.getDisks();
+        expect(result.length).toEqual(2);
+        expect(result).toContainEqual({
+          id: "1",
+          name: "/dev/sda",
+          channel: "0.0.fa00",
+          wwpn: "0x500507630703d3b3",
+          lun: "0x0000000000000000"
+        });
+        expect(result).toContainEqual({
+          id: "2",
+          name: "/dev/sdb",
+          channel: "0.0.fa00",
+          wwpn: "0x500507630703d3b3",
+          lun: "0x0000000000000001"
+        });
+      });
+    });
+  });
+
+  describe("#getWWPNs", () => {
+    const wwpns = ["0x500507630703d3b3", "0x500507630708d3b3"];
+
+    const controllerProxy = {
+      GetWWPNs: jest.fn().mockReturnValue(wwpns)
+    };
+
+    beforeEach(() => {
+      cockpitProxies.zfcpController = {
+        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy
+      };
+    });
+
+    it("returns a list with the WWPNs of the zFCP controller", async () => {
+      const result = await client.zfcp.getWWPNs({ id: "1" });
+      expect(result).toStrictEqual(wwpns);
+    });
+
+    describe("if there is no proxy", () => {
+      beforeEach(() => {
+        cockpitProxies.zfcpController = {};
+      });
+
+      it("returns undefined", async () => {
+        const result = await client.zfcp.getWWPNs({ id: "1" });
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe("#getLUNs", () => {
+    const luns = {
+      "0x500507630703d3b3": ["0x0000000000000000", "0x0000000000000001", "0x0000000000000002"]
+    };
+
+    const controllerProxy = {
+      GetLUNs: jest.fn().mockImplementation(wwpn => luns[wwpn])
+    };
+
+    beforeEach(() => {
+      cockpitProxies.zfcpController = {
+        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy
+      };
+    });
+
+    it("returns a list with the LUNs for a WWPN of the zFCP controller", async () => {
+      const result = await client.zfcp.getLUNs({ id: "1" }, "0x500507630703d3b3");
+      expect(result).toStrictEqual(luns["0x500507630703d3b3"]);
+    });
+
+    describe("if there is no proxy", () => {
+      beforeEach(() => {
+        cockpitProxies.zfcpController = {};
+      });
+
+      it("returns undefined", async () => {
+        const result = await client.zfcp.getLUNs({ id: "1" }, "0x500507630703d3b3");
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe("#activateController", () => {
+    const activateFn = jest.fn().mockReturnValue(0);
+
+    const controllerProxy = {
+      Activate: activateFn
+    };
+
+    beforeEach(() => {
+      cockpitProxies.zfcpController = {
+        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy
+      };
+    });
+
+    it("tries to activate the given zFCP controller", async () => {
+      const result = await client.zfcp.activateController({ id: "1" });
+      expect(activateFn).toHaveBeenCalled();
+      expect(result).toEqual(0);
+    });
+
+    describe("if there is no proxy", () => {
+      beforeEach(() => {
+        cockpitProxies.zfcpController = {};
+      });
+
+      it("returns undefined", async () => {
+        const result = await client.zfcp.activateController({ id: "1" });
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe("#activateDisk", () => {
+    const activateDiskFn = jest.fn().mockReturnValue(0);
+
+    const controllerProxy = {
+      ActivateDisk: activateDiskFn
+    };
+
+    beforeEach(() => {
+      cockpitProxies.zfcpController = {
+        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy
+      };
+    });
+
+    it("tries to activate the given zFCP disk", async () => {
+      const result = await client.zfcp.activateDisk({ id: "1" }, "0x500507630703d3b3", "0x0000000000000000");
+      expect(activateDiskFn).toHaveBeenCalledWith("0x500507630703d3b3", "0x0000000000000000");
+      expect(result).toEqual(0);
+    });
+
+    describe("if there is no proxy", () => {
+      beforeEach(() => {
+        cockpitProxies.zfcpController = {};
+      });
+
+      it("returns undefined", async () => {
+        const result = await client.zfcp.activateDisk({ id: "1" }, "0x500507630703d3b3", "0x0000000000000000");
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe("#deactivateDisk", () => {
+    const deactivateDiskFn = jest.fn().mockReturnValue(0);
+
+    const controllerProxy = {
+      ActivateDisk: deactivateDiskFn
+    };
+
+    beforeEach(() => {
+      cockpitProxies.zfcpController = {
+        "/org/opensuse/Agama/Storage1/zfcp_controllers/1": controllerProxy
+      };
+    });
+
+    it("tries to deactivate the given zFCP disk", async () => {
+      const result = await client.zfcp.activateDisk({ id: "1" }, "0x500507630703d3b3", "0x0000000000000000");
+      expect(deactivateDiskFn).toHaveBeenCalledWith("0x500507630703d3b3", "0x0000000000000000");
+      expect(result).toEqual(0);
+    });
+
+    describe("if there is no proxy", () => {
+      beforeEach(() => {
+        cockpitProxies.zfcpController = {};
+      });
+
+      it("returns undefined", async () => {
+        const result = await client.zfcp.deactivateDisk({ id: "1" }, "0x500507630703d3b3", "0x0000000000000000");
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe("#onControllerChanged", () => {
+    it("runs the handler when a zFCP controller changes", async () => {
+      const handler = jest.fn();
+      await client.zfcp.onControllerChanged(handler);
+
+      emitSignals(controllersCallbacks, "changed", {
+        path: "/org/opensuse/Agama/Storage1/zfcp_controllers/1",
+        Active: true,
+        LUNScan: true,
+        Channel: "0.0.fa00"
+      });
+
+      expect(handler).toHaveBeenCalledWith({
+        id: "1", active: true, lunScan: true, channel: "0.0.fa00"
+      });
+    });
+  });
+
+  describe("#onDiskAdded", () => {
+    it("runs the handler when a zFCP disk is added", async () => {
+      const handler = jest.fn();
+      await client.zfcp.onDiskAdded(handler);
+
+      emitSignals(disksCallbacks, "added", {
+        path: "/org/opensuse/Agama/Storage1/zfcp_disks/1",
+        Name: "/dev/sda",
+        Channel: "0.0.fa00",
+        WWPN: "0x500507630703d3b3",
+        LUN: "0x0000000000000000"
+      });
+
+      expect(handler).toHaveBeenCalledWith({
+        id: "1",
+        name: "/dev/sda",
+        channel: "0.0.fa00",
+        wwpn: "0x500507630703d3b3",
+        lun: "0x0000000000000000"
+      });
+    });
+  });
+
+  describe("#onDiskChanged", () => {
+    it("runs the handler when a zFCP disk changes", async () => {
+      const handler = jest.fn();
+      await client.zfcp.onDiskChanged(handler);
+
+      emitSignals(disksCallbacks, "changed", {
+        path: "/org/opensuse/Agama/Storage1/zfcp_disks/1",
+        Name: "/dev/sda",
+        Channel: "0.0.fa00",
+        WWPN: "0x500507630703d3b3",
+        LUN: "0x0000000000000000"
+      });
+
+      expect(handler).toHaveBeenCalledWith({
+        id: "1",
+        name: "/dev/sda",
+        channel: "0.0.fa00",
+        wwpn: "0x500507630703d3b3",
+        lun: "0x0000000000000000"
+      });
+    });
+  });
+
+  describe("#onDiskRemoved", () => {
+    it("runs the handler when a zFCP disk is removed", async () => {
+      const handler = jest.fn();
+      await client.zfcp.onDiskRemoved(handler);
+
+      emitSignals(disksCallbacks, "removed", {
+        path: "/org/opensuse/Agama/Storage1/zfcp_disks/1",
+        Name: "/dev/sda",
+        Channel: "0.0.fa00",
+        WWPN: "0x500507630703d3b3",
+        LUN: "0x0000000000000000"
+      });
+
+      expect(handler).toHaveBeenCalledWith({
+        id: "1",
+        name: "/dev/sda",
+        channel: "0.0.fa00",
+        wwpn: "0x500507630703d3b3",
+        lun: "0x0000000000000000"
+      });
     });
   });
 });

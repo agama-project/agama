@@ -1,15 +1,20 @@
 -------------------------------------------------------------------
+Mon Jul  3 10:18:32 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add page for managing zFCP devices (gh#openSUSE/agama#634).
+
+-------------------------------------------------------------------
 Wed Jun 21 09:05:21 UTC 2023 - Balsa Asanovic <balsaasanovic95@gmail.com>
 
 - Moved the logic for adding and removing HTML element's
   attributes from sidebar component to custom hook
-  (gh#openSUSE/agama#565) .
+  (gh#openSUSE/agama#565).
 
 -------------------------------------------------------------------
 Tue Jun 13 15:40:01 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: stop using fixed sizes for modal dialogs
-  (gh#openSUSE/agama#620) .
+  (gh#openSUSE/agama#620).
 
 -------------------------------------------------------------------
 Tue Jun 13 06:59:12 UTC 2023 - David Diaz <dgonzalez@suse.com>
