@@ -34,12 +34,19 @@ const dasd = {
   isSupported: isDASDSupportedFn
 };
 
+const isZFCPSupportedFn = jest.fn();
+
+const zfcp = {
+  isSupported: isZFCPSupportedFn
+};
+
 beforeEach(() => {
   isDASDSupportedFn.mockResolvedValue(false);
+  isZFCPSupportedFn.mockResolvedValue(false);
 
   createClient.mockImplementation(() => {
     return {
-      storage: { dasd }
+      storage: { dasd, zfcp }
     };
   });
 });
@@ -61,6 +68,22 @@ it("contains an entry for configuring DASD when is supported", async () => {
 
 it("does not contain an entry for configuring DASD when is NOT supported", async () => {
   isDASDSupportedFn.mockResolvedValue(false);
+  const { user } = installerRender(<ProposalPageOptions />);
+  const toggler = screen.getByRole("button");
+  await user.click(toggler);
+  expect(screen.queryByRole("menuitem", { name: /DASD/ })).toBeNull();
+});
+
+it("contains an entry for configuring zFCP when is supported", async () => {
+  isZFCPSupportedFn.mockResolvedValue(true);
+  const { user } = installerRender(<ProposalPageOptions />);
+  const toggler = screen.getByRole("button");
+  await user.click(toggler);
+  screen.getByRole("menuitem", { name: /zFCP/ });
+});
+
+it("does not contain an entry for configuring zFCP when is NOT supported", async () => {
+  isZFCPSupportedFn.mockResolvedValue(false);
   const { user } = installerRender(<ProposalPageOptions />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
