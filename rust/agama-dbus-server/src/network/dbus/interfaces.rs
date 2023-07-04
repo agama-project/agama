@@ -444,7 +444,7 @@ impl Wireless {
     /// Possible values: "none", "owe", "ieee8021x", "wpa-psk", "sae", "wpa-eap",
     /// "wpa-eap-suite-b192".
     ///
-    /// See [crate::model::WirelessMode].
+    /// See [crate::model::SecurityProtocol].
     #[dbus_interface(property)]
     pub fn security(&self) -> String {
         let connection = self.get_wireless();
