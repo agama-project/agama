@@ -123,7 +123,7 @@ impl Connections {
 
     /// Adds a new network connection.
     ///
-    /// * `name`: connection name.
+    /// * `id`: connection name.
     /// * `ty`: connection type (see [crate::model::DeviceType]).
     pub async fn add_connection(&mut self, id: String, ty: u8) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock();
