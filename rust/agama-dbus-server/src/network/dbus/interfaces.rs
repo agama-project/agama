@@ -316,7 +316,7 @@ impl Ipv4 {
     /// Network gateway.
     ///
     /// An empty string removes the current value. It is not possible to set a gateway if the
-    /// addresses property is empty.
+    /// Addresses property is empty.
     #[dbus_interface(property)]
     pub fn gateway(&self) -> String {
         let connection = self.get_connection();
