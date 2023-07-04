@@ -26,20 +26,25 @@ import DBusClient from "./dbus";
 import { WithIssues, WithStatus, WithProgress } from "./mixins";
 import { hex } from "~/utils";
 
-const STORAGE_IFACE = "org.opensuse.Agama.Storage1";
-const PROPOSAL_CALCULATOR_IFACE = "org.opensuse.Agama.Storage1.Proposal.Calculator";
-const ISCSI_NODE_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Node";
-const ISCSI_NODES_NAMESPACE = "/org/opensuse/Agama/Storage1/iscsi_nodes";
-const ISCSI_INITIATOR_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator";
-const DASD_DEVICE_IFACE = "org.opensuse.Agama.Storage1.DASD.Device";
-const DASD_DEVICES_NAMESPACE = "/org/opensuse/Agama/Storage1/dasds";
-const DASD_MANAGER_IFACE = "org.opensuse.Agama.Storage1.DASD.Manager";
-const DASD_STATUS_IFACE = "org.opensuse.Agama.Storage1.DASD.Format";
-const PROPOSAL_IFACE = "org.opensuse.Agama.Storage1.Proposal";
 const STORAGE_OBJECT = "/org/opensuse/Agama/Storage1";
-const STORAGE_JOB_IFACE = "org.opensuse.Agama.Storage1.Job";
+const STORAGE_IFACE = "org.opensuse.Agama.Storage1";
 const STORAGE_JOBS_NAMESPACE = "/org/opensuse/Agama/Storage1/jobs";
+const STORAGE_JOB_IFACE = "org.opensuse.Agama.Storage1.Job";
 const STORAGE_SYSTEM_NAMESPACE = "/org/opensuse/Agama/Storage1/system";
+const PROPOSAL_IFACE = "org.opensuse.Agama.Storage1.Proposal";
+const PROPOSAL_CALCULATOR_IFACE = "org.opensuse.Agama.Storage1.Proposal.Calculator";
+const ISCSI_INITIATOR_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Initiator";
+const ISCSI_NODES_NAMESPACE = "/org/opensuse/Agama/Storage1/iscsi_nodes";
+const ISCSI_NODE_IFACE = "org.opensuse.Agama.Storage1.ISCSI.Node";
+const DASD_MANAGER_IFACE = "org.opensuse.Agama.Storage1.DASD.Manager";
+const DASD_DEVICES_NAMESPACE = "/org/opensuse/Agama/Storage1/dasds";
+const DASD_DEVICE_IFACE = "org.opensuse.Agama.Storage1.DASD.Device";
+const DASD_STATUS_IFACE = "org.opensuse.Agama.Storage1.DASD.Format";
+const ZFCP_MANAGER_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Manager";
+const ZFCP_CONTROLLERS_NAMESPACE = "/org/opensuse/Agama/Storage1/zfcp_controllers";
+const ZFCP_CONTROLLER_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Controller";
+const ZFCP_DISKS_NAMESPACE = "/org/opensuse/Agama/Storage1/zfcp_disks";
+const ZFCP_DISK_IFACE = "org.opensuse.Agama.Storage1.ZFCP.Disk";
 
 /**
  * Removes properties with undefined value
@@ -59,6 +64,18 @@ const removeUndefinedCockpitProperties = (cockpitObject) => {
   const filtered = Object.entries(cockpitObject).filter(([, { v }]) => v !== undefined);
   return Object.fromEntries(filtered);
 };
+
+/**
+ * Gets the basename of a D-Bus path
+ *
+ * @example
+ * dbusBasename("/org/opensuse/Agama/Storage1/object1");
+ * //returns "object1"
+ *
+ * @param {string} path
+ * @returns {string}
+ */
+const dbusBasename = (path) => path.split("/").slice(-1)[0];
 
 /**
  * Class providing an API for managing a devices tree through D-Bus
@@ -689,6 +706,375 @@ class DASDManager {
 }
 
 /**
+ * Class providing an API for managing zFCP through D-Bus
+ */
+class ZFCPManager {
+  /**
+   * @param {string} service - D-Bus service name
+   * @param {string} address - D-Bus address
+   */
+  constructor(service, address) {
+    this.service = service;
+    this.address = address;
+    this.proxies = {};
+  }
+
+  /**
+   * @return {DBusClient} client
+   */
+  client() {
+    if (!this._client) {
+      this._client = new DBusClient(this.service, this.address);
+    }
+
+    return this._client;
+  }
+
+  /**
+   * Whether zFCP is supported
+   *
+   * @todo Use info from ObjectManager instead, see
+   *  https://github.com/openSUSE/Agama/pull/501#discussion_r1147707515
+   *
+   * @returns {Promise<Boolean>}
+   */
+  async isSupported() {
+    const proxy = await this.managerProxy();
+    return proxy !== undefined;
+  }
+
+  /**
+   * Whether allow_lun_scan option is active
+   *
+   * @returns {Promise<boolean|undefined>}
+   */
+  async getAllowLUNScan() {
+    const proxy = await this.managerProxy();
+    return proxy?.AllowLUNScan;
+  }
+
+  /**
+   * Probes the zFCP devices
+   *
+   * @returns {Promise<void|undefined>}
+   */
+  async probe() {
+    const proxy = await this.managerProxy();
+    return proxy?.Probe();
+  }
+
+  /**
+   * Gets the list of probed zFCP controllers
+   *
+   * @returns {Promise<ZFCPController[]>}
+   */
+  async getControllers() {
+    const proxy = await this.controllersProxy();
+    return Object.values(proxy).map(this.buildController);
+  }
+
+  /**
+   * Gets the list of probed zFCP controllers
+   *
+   * @returns {Promise<ZFCPDisk[]>}
+   */
+  async getDisks() {
+    const proxy = await this.disksProxy();
+    return Object.values(proxy).map(this.buildDisk);
+  }
+
+  /**
+   * Gets the list of available WWPNs for the given zFCP controller
+   *
+   * @param {ZFCPController} controller
+   * @returns {Promise<string[]|undefined>} e.g., ["0x500507630703d3b3", 0x500507630708d3b3]
+   */
+  async getWWPNs(controller) {
+    const proxy = await this.controllerProxy(controller);
+    return proxy?.GetWWPNs();
+  }
+
+  /**
+   * Gets the list of available LUNs for the WWPN of the given zFCP controller
+   *
+   * @param {ZFCPController} controller
+   * @param {string} wwpn
+   * @returns {Promise<string[]|undefined>} e.g., ["0x0000000000000000", "0x0000000000000001"]
+   */
+  async getLUNs(controller, wwpn) {
+    const proxy = await this.controllerProxy(controller);
+    return proxy?.GetLUNs(wwpn);
+  }
+
+  /**
+   * Tries to activate the given zFCP controller
+   *
+   * @param {ZFCPController} controller
+   * @returns {Promise<number|undefined>} Exit code of chzdev command (0 success)
+   */
+  async activateController(controller) {
+    const proxy = await this.controllerProxy(controller);
+    return proxy?.Activate();
+  }
+
+  /**
+   * Tries to activate the given zFCP LUN
+   *
+   * @param {ZFCPController} controller
+   * @param {string} wwpn
+   * @param {string} lun
+   * @returns {Promise<number|undefined>} Exit code of chzdev command (0 success)
+   */
+  async activateDisk(controller, wwpn, lun) {
+    const proxy = await this.controllerProxy(controller);
+    return proxy?.ActivateDisk(wwpn, lun);
+  }
+
+  /**
+   * Tries to deactivate the given zFCP LUN
+   *
+   * @param {ZFCPController} controller
+   * @param {string} wwpn
+   * @param {string} lun
+   * @returns {Promise<number|undefined>} Exit code of chzdev command (0 success)
+   */
+  async deactivateDisk(controller, wwpn, lun) {
+    const proxy = await this.controllerProxy(controller);
+    return proxy?.DeactivateDisk(wwpn, lun);
+  }
+
+  /**
+   * Subscribes to signal that is emitted when a zFCP controller changes
+   *
+   * @param {ZFCPControllerSignalHandler} handler
+   * @returns {Promise<function>} Unsubscribe function
+   */
+  async onControllerChanged(handler) {
+    const unsubscribeFn = this.controllerEventListener("changed", handler);
+    return unsubscribeFn;
+  }
+
+  /**
+   * Subscribes to signal that is emitted when a zFCP disk is added
+   *
+   * @param {ZFCPDiskSignalHandler} handler
+   * @returns {Promise<function>} Unsubscribe function
+   */
+  async onDiskAdded(handler) {
+    const unsubscribeFn = this.diskEventListener("added", handler);
+    return unsubscribeFn;
+  }
+
+  /**
+   * Subscribes to signal that is emitted when a zFCP disk is changed
+   *
+   * @param {ZFCPDiskSignalHandler} handler
+   * @returns {Promise<function>} Unsubscribe function
+   */
+  async onDiskChanged(handler) {
+    const unsubscribeFn = this.diskEventListener("changed", handler);
+    return unsubscribeFn;
+  }
+
+  /**
+   * Subscribes to signal that is emitted when a zFCP disk is removed
+   *
+   * @param {ZFCPDiskSignalHandler} handler
+   * @returns {Promise<function>} Unsubscribe function
+   */
+  async onDiskRemoved(handler) {
+    const unsubscribeFn = this.diskEventListener("removed", handler);
+    return unsubscribeFn;
+  }
+
+  /**
+   * @private
+   * Proxy for org.opensuse.Agama.Storage1.ZFCP.Manager iface
+   *
+   * @returns {Promise<ZFCPManagerProxy|undefined>}
+   *
+   * @typedef {object} ZFCPManagerProxy
+   * @property {boolean} AllowLUNScan
+   * @property {function} Probe
+   */
+  async managerProxy() {
+    if (!this.proxies.manager) {
+      this.proxies.manager = await this.client().proxy(ZFCP_MANAGER_IFACE, STORAGE_OBJECT);
+    }
+
+    return this.proxies.manager;
+  }
+
+  /**
+   * @private
+   * Proxy for objects implementing org.opensuse.Agama.Storage1.ZFCP.Controller iface
+   *
+   * @note The zFCP controllers are dynamically exported.
+   *
+   * @returns {Promise<object>}
+   */
+  async controllersProxy() {
+    if (!this.proxies.controllers)
+      this.proxies.controllers = await this.client().proxies(ZFCP_CONTROLLER_IFACE, ZFCP_CONTROLLERS_NAMESPACE);
+
+    return this.proxies.controllers;
+  }
+
+  /**
+   * @private
+   * Proxy for objects implementing org.opensuse.Agama.Storage1.ZFCP.Disk iface
+   *
+   * @note The zFCP disks are dynamically exported.
+   *
+   * @returns {Promise<object>}
+   */
+  async disksProxy() {
+    if (!this.proxies.disks)
+      this.proxies.disks = await this.client().proxies(ZFCP_DISK_IFACE, ZFCP_DISKS_NAMESPACE);
+
+    return this.proxies.disks;
+  }
+
+  /**
+   * @private
+   * Proxy for org.opensuse.Agama.Storage1.ZFCP.Controller iface
+   *
+   * @param {ZFCPController} controller
+   * @returns {Promise<ZFCPControllerProxy|undefined>}
+   *
+   * @typedef {object} ZFCPControllerProxy
+   * @property {string} path
+   * @property {boolean} Active
+   * @property {boolean} LUNScan
+   * @property {string} Channel
+   * @property {function} GetWWPNs
+   * @property {function} GetLUNs
+   * @property {function} Activate
+   * @property {function} ActivateDisk
+   * @property {function} DeactivateDisk
+   */
+  async controllerProxy(controller) {
+    const path = this.controllerPath(controller);
+    const proxy = await this.client().proxy(ZFCP_CONTROLLER_IFACE, path);
+    return proxy;
+  }
+
+  /**
+   * @private
+   * Subscribes to a signal from a zFCP controller
+   *
+   * @param {string} signal - "added", "changed", "removed"
+   * @param {ZFCPControllerSignalHandler} handler
+   * @returns {Promise<function>} Unsubscribe function
+   *
+   * @callback ZFCPControllerSignalHandler
+   * @param {ZFCPController} controller
+   */
+  async controllerEventListener(signal, handler) {
+    const proxy = await this.controllersProxy();
+    const eventHandler = (_, proxy) => handler(this.buildController(proxy));
+    const unsubscribeFn = await this.addEventListener(proxy, signal, eventHandler);
+    return unsubscribeFn;
+  }
+
+  /**
+   * @private
+   * Subscribes to a signal from a zFCP disk
+   *
+   * @param {string} signal - "added", "changed", "removed"
+   * @param {ZFCPDiskSignalHandler} handler
+   * @returns {Promise<function>} Unsubscribe function
+   *
+   * @callback ZFCPDiskSignalHandler
+   * @param {ZFCPDisk} disk
+   */
+  async diskEventListener(signal, handler) {
+    const proxy = await this.disksProxy();
+    const eventHandler = (_, proxy) => handler(this.buildDisk(proxy));
+    const unsubscribeFn = await this.addEventListener(proxy, signal, eventHandler);
+    return unsubscribeFn;
+  }
+
+  /**
+   * @private
+   * Subscribes to a signal
+   *
+   * @param {object} proxy
+   * @param {string} signal
+   * @param {function} handler
+   * @returns {Promise<function>} Unsubscribe function
+   */
+  async addEventListener(proxy, signal, handler) {
+    proxy.addEventListener(signal, handler);
+    return () => proxy.removeEventListener(signal, handler);
+  }
+
+  /**
+   * @private
+   * Builds a controller object
+   *
+   * @param {ZFCPControllerProxy} proxy
+   * @returns {ZFCPController}
+   *
+   * @typedef {object} ZFCPController
+   * @property {string} id
+   * @property {boolean} active
+   * @property {boolean} lunScan
+   * @property {string} channel
+   */
+  buildController(proxy) {
+    return {
+      id: dbusBasename(proxy.path),
+      active: proxy.Active,
+      lunScan: proxy.LUNScan,
+      channel: proxy.Channel
+    };
+  }
+
+  /**
+   * @private
+   * Builds a disk object
+   *
+   * @param {ZFCPDiskProxy} proxy
+   * @returns {ZFCPDisk}
+   *
+   * @typedef {object} ZFCPDiskProxy
+   * @property {string} path
+   * @property {string} Name
+   * @property {string} Channel
+   * @property {string} WWPN
+   * @property {string} LUN
+   *
+   * @typedef {object} ZFCPDisk
+   * @property {string} id
+   * @property {string} name
+   * @property {string} channel
+   * @property {string} wwpn
+   * @property {string} lun
+   */
+  buildDisk(proxy) {
+    return {
+      id: dbusBasename(proxy.path),
+      name: proxy.Name,
+      channel: proxy.Channel,
+      wwpn: proxy.WWPN,
+      lun: proxy.LUN
+    };
+  }
+
+  /**
+   * @private
+   * Builds the D-Bus path for the given zFCP controller
+   *
+   * @param {ZFCPController} controller
+   * @returns {string}
+   */
+  controllerPath(controller) {
+    return ZFCP_CONTROLLERS_NAMESPACE + "/" + controller.id;
+  }
+}
+
+/**
  * Class providing an API for managing iSCSI through D-Bus
  */
 class ISCSIManager {
@@ -958,6 +1344,7 @@ class StorageBaseClient {
     this.proposal = new ProposalManager(this.client, this.system);
     this.iscsi = new ISCSIManager(StorageBaseClient.SERVICE, address);
     this.dasd = new DASDManager(StorageBaseClient.SERVICE, address);
+    this.zfcp = new ZFCPManager(StorageBaseClient.SERVICE, address);
     this.proxies = {
       storage: this.client.proxy(STORAGE_IFACE)
     };
