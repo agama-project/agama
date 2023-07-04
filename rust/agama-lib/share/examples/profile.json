@@ -25,7 +25,7 @@
   "network": {
     "connections": [
       {
-        "name": "Ethernet network device 1",
+        "id": "Ethernet network device 1",
         "method": "manual",
         "addresses": [
           "192.168.122.100/24"

@@ -28,7 +28,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "name": {
+              "id": {
                 "description": "Connection ID",
                 "type": "string"
               },
@@ -89,7 +89,7 @@
               }
             },
             "required": [
-              "name"
+              "id"
             ]
           }
         }
