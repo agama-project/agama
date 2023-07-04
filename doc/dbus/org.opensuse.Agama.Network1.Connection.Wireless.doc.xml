@@ -3,10 +3,58 @@
  "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
   <interface name="org.opensuse.Agama.Network1.Connection.Wireless">
-    <property name="Mode" type="y" access="readwrite"/>
+    <!--
+     Wireless connection mode.
+
+     Possible values: "unknown", "adhoc", "infrastructure", "ap" or "mesh".
+
+     See [crate::model::WirelessMode].
+     -->
+    <property name="Mode" type="s" access="readwrite"/>
+    <!--
+     Password to connect to the wireless network.
+     -->
     <property name="Password" type="s" access="readwrite"/>
+    <!--
+     Network SSID.
+     -->
     <property name="SSID" type="ay" access="readwrite"/>
-    <property name="Security" type="y" access="readwrite"/>
+    <!--
+     Wireless security protocol.
+
+     Possible values: "none", "owe", "ieee8021x", "wpa-psk", "sae", "wpa-eap",
+     "wpa-eap-suite-b192".
+
+     See [crate::model::WirelessMode].
+     -->
+    <property name="Security" type="s" access="readwrite"/>
+  </interface>
+  <interface name="org.opensuse.Agama.Network1.Connection.IPv4">
+    <!--
+     List of IP addresses.
+
+     When the method is 'auto', these addresses are used as additional addresses.
+     -->
+    <property name="Addresses" type="as" access="readwrite"/>
+    <!--
+     Network gateway.
+
+     An empty string removes the current value. It is not possible to set a gateway if the
+     addresses property is empty.
+     -->
+    <property name="Gateway" type="s" access="readwrite"/>
+    <!--
+     IP configuration method.
+
+     Possible values: "disabled", "auto", "manual" or "link-local".
+
+     See [crate::model::IpMethod].
+     -->
+    <property name="Method" type="s" access="readwrite"/>
+    <!--
+     Name server addresses.
+     -->
+    <property name="Nameservers" type="as" access="readwrite"/>
   </interface>
 </node>
 
