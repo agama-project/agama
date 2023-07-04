@@ -37,7 +37,7 @@ import { noop } from "~/utils";
  * @param {string} props.id - Form Id
  * @param {import(~/components/storage/ZFCPPage).LUN[]} [props.luns]
  * @param {onSubmitFn} [props.onSubmit] - Callback to be called when the form is submitted.
- * @param {onValidateFn} [props.onValidate] - Callback to be called when the form is validated.
+ * @param {onLoadingFn} [props.onValidate] - Callback to be called when the form starts/stops loading.
  *
  * @callback onSubmitFn
  * @param {FormData}
@@ -48,18 +48,17 @@ import { noop } from "~/utils";
  * @property {string} wwpn
  * @property {string} lun
  *
- * @callback onValidateFn
- * @param {boolean} valid - Whether the form data is valid.
+ * @callback onLoadingFn
+ * @param {boolean} isLoading - Whether the form is loading.
  */
-export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onValidate = noop }) {
+export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading = noop }) {
   const [formData, setFormData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
 
   useEffect(() => {
-    const valid = formData.channel !== undefined;
-    onValidate(valid);
-  }, [onValidate, formData]);
+    onLoading(isLoading);
+  }, [onLoading, isLoading]);
 
   const getChannels = () => {
     const channels = [...new Set(luns.map(l => l.channel))];

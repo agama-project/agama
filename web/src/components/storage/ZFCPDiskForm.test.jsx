@@ -51,7 +51,7 @@ beforeEach(() => {
     id: "ZFCPDiskForm",
     luns,
     onSubmit: jest.fn().mockResolvedValue(0),
-    onValidate: jest.fn()
+    onLoading: jest.fn()
   };
 });
 

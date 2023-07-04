@@ -484,7 +484,9 @@ const DiskPopup = ({ client, manager, onClose = noop }) => {
     if (result === 0) onClose();
   };
 
-  const onValidate = (valid) => setIsAcceptDisabled(!valid);
+  const onLoading = (isLoading) => {
+    setIsAcceptDisabled(isLoading);
+  };
 
   const formId = "ZFCPDiskForm";
 
@@ -494,7 +496,7 @@ const DiskPopup = ({ client, manager, onClose = noop }) => {
         id={formId}
         luns={manager.getInactiveLUNs()}
         onSubmit={onSubmit}
-        onValidate={onValidate}
+        onLoading={onLoading}
       />
       <Popup.Actions>
         <Popup.Confirm
