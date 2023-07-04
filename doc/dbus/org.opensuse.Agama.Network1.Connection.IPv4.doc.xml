@@ -3,9 +3,30 @@
  "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
   <interface name="org.opensuse.Agama.Network1.Connection.IPv4">
-    <property name="Addresses" type="a(su)" access="readwrite"/>
+    <!--
+     List of IP addresses.
+
+     When the method is 'auto', these addresses are used as additional addresses.
+     -->
+    <property name="Addresses" type="as" access="readwrite"/>
+    <!--
+     Network gateway.
+
+     An empty string removes the current value. It is not possible to set a gateway if the
+     addresses property is empty.
+     -->
     <property name="Gateway" type="s" access="readwrite"/>
-    <property name="Method" type="y" access="readwrite"/>
+    <!--
+     IP configuration method.
+
+     Possible values: "disabled", "auto", "manual" or "link-local".
+
+     See [crate::model::IpMethod].
+     -->
+    <property name="Method" type="s" access="readwrite"/>
+    <!--
+     Name server addresses.
+     -->
     <property name="Nameservers" type="as" access="readwrite"/>
   </interface>
 </node>
