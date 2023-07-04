@@ -52,7 +52,7 @@ impl<'a> NetworkClient<'a> {
             .path(path)?
             .build()
             .await?;
-        let name = connection_proxy.id().await?;
+        let id = connection_proxy.id().await?;
 
         let ipv4_proxy = IPv4Proxy::builder(&self.connection)
             .path(path)?
@@ -68,7 +68,7 @@ impl<'a> NetworkClient<'a> {
         let addresses = ipv4_proxy.addresses().await?;
 
         Ok(NetworkConnection {
-            name,
+            id,
             method: Some(method.to_string()),
             gateway,
             addresses,
@@ -105,7 +105,7 @@ impl<'a> NetworkClient<'a> {
         &self,
         conn: &NetworkConnection,
     ) -> Result<(), ServiceError> {
-        let path = match self.connections_proxy.get_connection(&conn.name).await {
+        let path = match self.connections_proxy.get_connection(&conn.id).await {
             Ok(path) => path,
             Err(_) => self.add_connection(&conn).await?,
         };
@@ -121,9 +121,9 @@ impl<'a> NetworkClient<'a> {
         conn: &NetworkConnection,
     ) -> Result<OwnedObjectPath, ServiceError> {
         self.connections_proxy
-            .add_connection(&conn.name, conn.device_type() as u8)
+            .add_connection(&conn.id, conn.device_type() as u8)
             .await?;
-        Ok(self.connections_proxy.get_connection(&conn.name).await?)
+        Ok(self.connections_proxy.get_connection(&conn.id).await?)
     }
 
     /// Updates a network connection.

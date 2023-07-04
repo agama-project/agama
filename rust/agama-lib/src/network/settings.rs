@@ -42,7 +42,7 @@ pub struct WirelessSettings {
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct NetworkConnection {
-    pub name: String,
+    pub id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub method: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -73,15 +73,15 @@ impl TryFrom<SettingObject> for NetworkConnection {
     type Error = &'static str;
 
     fn try_from(value: SettingObject) -> Result<Self, Self::Error> {
-        let Some(name) = value.get("name") else {
-            return Err("The 'name' key is missing");
+        let Some(id) = value.get("id") else {
+            return Err("The 'id' key is missing");
         };
 
         let default_method = SettingValue("disabled".to_string());
         let method = value.get("method").unwrap_or(&default_method);
 
         let conn = NetworkConnection {
-            name: name.clone().try_into()?,
+            id: id.clone().try_into()?,
             method: method.clone().try_into()?,
             ..Default::default()
         };
@@ -112,7 +112,7 @@ mod tests {
     fn test_add_connection_to_setting() {
         let name = SettingValue("Ethernet 1".to_string());
         let method = SettingValue("auto".to_string());
-        let conn = HashMap::from([("name".to_string(), name), ("method".to_string(), method)]);
+        let conn = HashMap::from([("id".to_string(), name), ("method".to_string(), method)]);
         let conn = SettingObject(conn);
 
         let mut settings = NetworkSettings::default();
@@ -124,10 +124,10 @@ mod tests {
     fn test_setting_object_to_network_connection() {
         let name = SettingValue("Ethernet 1".to_string());
         let method = SettingValue("auto".to_string());
-        let settings = HashMap::from([("name".to_string(), name), ("method".to_string(), method)]);
+        let settings = HashMap::from([("id".to_string(), name), ("method".to_string(), method)]);
         let settings = SettingObject(settings);
         let conn: NetworkConnection = settings.try_into().unwrap();
-        assert_eq!(conn.name, "Ethernet 1");
+        assert_eq!(conn.id, "Ethernet 1");
         assert_eq!(conn.method, Some("auto".to_string()));
     }
 }
