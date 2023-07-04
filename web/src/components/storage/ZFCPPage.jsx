@@ -120,18 +120,6 @@ class Manager {
   }
 
   /**
-   * Updates the info about the given disk.
-   * @param {Disk} disk
-   * @returns {void}
-   */
-  updateDisk(disk) {
-    const index = this.findDisk(disk.channel, disk.wwpn, disk.lun);
-    if (index === -1) return;
-
-    this.disks[index] = disk;
-  }
-
-  /**
    * Removes the given disk from the list of disks.
    * @param {Disk} disk
    * @returns {void}
@@ -638,12 +626,6 @@ const reducer = (state, action) => {
       return { ...state };
     }
 
-    case "UPDATE_DISK": {
-      const { disk } = payload;
-      state.manager.updateDisk(disk);
-      return { ...state };
-    }
-
     case "REMOVE_DISK": {
       const { disk } = payload;
       state.manager.removeDisk(disk);
@@ -724,7 +706,6 @@ export default function ZFCPPage() {
           }
         }),
         await client.zfcp.onDiskAdded(d => action("ADD_DISK", { disk: d })),
-        await client.zfcp.onDiskChanged(d => action("UPDATE_DISK", { disk: d })),
         await client.zfcp.onDiskRemoved(d => action("REMOVE_DISK", { disk: d }))
       );
     };
