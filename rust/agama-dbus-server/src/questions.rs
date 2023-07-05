@@ -15,13 +15,18 @@ pub struct GenericQuestion {
     /// possible answers for question
     options: Vec<String>,
     /// default answer. Can be used as hint or preselection
-    default_option: String,
+    default_option: Option<String>,
     /// Confirmed answer. If empty then not answered yet.
     answer: String,
 }
 
 impl GenericQuestion {
-    pub fn new(id: u32, text: String, options: Vec<String>, default_option: String) -> Self {
+    pub fn new(
+        id: u32,
+        text: String,
+        options: Vec<String>,
+        default_option: Option<String>,
+    ) -> Self {
         Self {
             id,
             text,
@@ -55,7 +60,10 @@ impl GenericQuestion {
 
     #[dbus_interface(property)]
     pub fn default_option(&self) -> &str {
-        self.default_option.as_str()
+        match self.default_option {
+            Some(ref option) => option.as_str(),
+            None => "",
+        }
     }
 
     #[dbus_interface(property)]
@@ -106,7 +114,7 @@ impl LuksQuestion {
             id,
             msg,
             vec!["skip".to_string(), "decrypt".to_string()],
-            "skip".to_string(),
+            Some("skip".to_string()),
         );
 
         Self {
@@ -164,12 +172,12 @@ impl Questions {
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
         let options = options.iter().map(|o| o.to_string()).collect();
-        // TODO: enforce default option and do not use array for it to avoid that unwrap
+        // TODO: enforce default option and do not use an array
         let question = GenericQuestion::new(
             id,
             text.to_string(),
             options,
-            default_option.first().unwrap().to_string(),
+            default_option.first().map(|o| o.to_string()),
         );
         let object_path = ObjectPath::try_from(question.object_path()).unwrap();
 
