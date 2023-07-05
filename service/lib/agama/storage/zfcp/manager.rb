@@ -91,13 +91,22 @@ module Agama
 
         # Activates the controller with the given channel id
         #
-        # @note: If "allow_lun_scan" is active, then all LUNs are automatically activated.
+        # @note: If "allow_lun_scan" is active, then all its LUNs are automatically activated.
         #
         # @param channel [String]
         # @return [Integer] Exit code of the chzdev command (0 on success)
         def activate_controller(channel)
           output = yast_zfcp.activate_controller(channel)
-          update_disks if output["exit"] == 0
+          if output["exit"] == 0
+            # LUNs activation could delay after activating the controller. This usually happens when
+            # activating a controller for first time because some SCSI initialization. Probing the
+            # disks should be done after all disks are activated.
+            #
+            # FIXME: waiting 2 seconds should be enough, but there is no guarantee that the disks
+            # are actually exported.
+            sleep(2)
+            update_disks
+          end
           output["exit"]
         end
 

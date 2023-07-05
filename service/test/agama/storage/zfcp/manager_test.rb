@@ -179,6 +179,7 @@ describe Agama::Storage::ZFCP::Manager do
   describe "#activate_controller" do
     before do
       allow(yast_zfcp).to receive(:activate_controller).and_return(output)
+      allow(subject).to receive(:sleep)
 
       subject.on_disks_change(&callback)
     end
