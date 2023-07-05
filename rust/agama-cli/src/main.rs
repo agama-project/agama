@@ -18,6 +18,7 @@ use printers::Format;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
 use std::error::Error;
+use std::thread::sleep;
 use std::time::Duration;
 
 #[derive(Parser)]
@@ -39,17 +40,42 @@ async fn probe() -> Result<(), Box<dyn Error>> {
     Ok(probe.await?)
 }
 
-async fn install(manager: &ManagerClient<'_>) -> Result<(), Box<dyn Error>> {
+/// Starts the installation process
+///
+/// Before starting, it makes sure that the manager is idle.
+///
+/// * `manager`: the manager client.
+async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> Result<(), Box<dyn Error>> {
     if !manager.can_install().await? {
         // TODO: add some hints what is wrong or add dedicated command for it?
         eprintln!("There are issues with configuration. Cannot install.");
         return Err(Box::new(CliError::ValidationError));
     }
-    let another_manager = build_manager().await?;
-    let install = task::spawn(async move { another_manager.install().await });
-    show_progress().await?;
 
-    Ok(install.await?)
+    // Display the progress (if needed) and makes sure that the manager is ready
+    show_progress().await?;
+    manager.wait().await?;
+
+    // Try to start the installation up to max_attempts times.
+    let mut attempts = 1;
+    loop {
+        match manager.install().await {
+            Ok(()) => break,
+            Err(e) => {
+                eprintln!(
+                    "Could not start the installation process: {e}. Attempt {}/{}.",
+                    attempts, max_attempts
+                );
+            }
+        }
+        if attempts == max_attempts {
+            eprintln!("Giving up.");
+            return Err(Box::new(CliError::InstallationError));
+        }
+        attempts += 1;
+        sleep(Duration::from_secs(1));
+    }
+    Ok(())
 }
 
 async fn show_progress() -> Result<(), ServiceError> {
@@ -96,7 +122,7 @@ async fn run_command(cli: Cli) -> Result<(), Box<dyn Error>> {
         Commands::Install => {
             let manager = build_manager().await?;
             block_on(wait_for_services(&manager))?;
-            block_on(install(&manager))
+            block_on(install(&manager, 3))
         }
         _ => unimplemented!(),
     }
