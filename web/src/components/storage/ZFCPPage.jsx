@@ -422,26 +422,31 @@ const ControllersSection = ({ client, manager, load = noop, isLoading = false })
   };
 
   const Content = () => {
-    const AllowLUNScan = () => {
+    const LUNScanInfo = () => {
       return (
-        <p>
-          The system is configured to perform automatic LUN scan. If a controller is running in
-          NPIV mode, then all its LUNs are automatically activated.
-        </p>
+        <If
+          condition={allowLUNScan}
+          then={
+            <p>
+              Automatic LUN scan is <b>enabled</b>. Activating a controller which is running in NPIV
+              mode will automatically configures all its LUNs.
+            </p>
+          }
+          else={
+            <p>
+              Automatic LUN scan is <b>disabled</b>. LUNs have to be manually configured after
+              activating a controller.
+            </p>
+          }
+        />
       );
     };
 
     return (
-      <If
-        condition={manager.controllers.length === 0}
-        then={<EmptyState />}
-        else={
-          <>
-            <If condition={allowLUNScan} then={<AllowLUNScan />} />
-            <ControllersTable client={client} manager={manager} />
-          </>
-        }
-      />
+      <>
+        <LUNScanInfo />
+        <ControllersTable client={client} manager={manager} />
+      </>
     );
   };
 

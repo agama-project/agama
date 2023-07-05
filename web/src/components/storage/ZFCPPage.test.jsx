@@ -98,7 +98,7 @@ describe("if allow-lun-scan is activated", () => {
   it("renders an explanation about allow-lun-scan", async () => {
     installerRender(<ZFCPPage />);
 
-    await screen.findByText(/is configured to perform automatic LUN scan/);
+    await screen.findByText(/automatically configures all its LUNs/);
   });
 });
 
@@ -107,10 +107,10 @@ describe("if allow-lun-scan is not activated", () => {
     client.getAllowLUNScan = jest.fn().mockResolvedValue(false);
   });
 
-  it("does not render an explanation about allow-lun-scan", async () => {
+  it("renders an explanation about not using allow-lun-scan", async () => {
     installerRender(<ZFCPPage />);
 
-    await waitFor(() => expect(screen.queryByText(/is configured to perform automatic LUN scan/)).toBeNull());
+    await screen.findByText(/LUNs have to be manually configured/);
   });
 });
 
