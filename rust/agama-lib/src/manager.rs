@@ -43,9 +43,19 @@ impl<'a> ManagerClient<'a> {
         Progress::from_proxy(&self.progress_proxy).await
     }
 
+    /// Returns whether the service is busy or not
+    ///
+    /// TODO: move this code to a trait with functions related to the service status.
+    pub async fn is_busy(&self) -> bool {
+        if let Ok(status) = self.status_proxy.current().await {
+            return status != 0;
+        }
+        true
+    }
+
     /// Waits until the manager is idle.
     pub async fn wait(&self) -> Result<(), ServiceError> {
-        if self.status_proxy.current().await? == 0 {
+        if !self.is_busy().await {
             return Ok(());
         }
 

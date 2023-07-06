@@ -46,10 +46,13 @@ async fn probe() -> Result<(), Box<dyn Error>> {
 ///
 /// * `manager`: the manager client.
 async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> Result<(), Box<dyn Error>> {
+    if manager.is_busy().await {
+        println!("Agama's manager is busy. Waiting until it is ready...");
+    }
+
     if !manager.can_install().await? {
         return Err(Box::new(CliError::ValidationError));
     }
-
     // Display the progress (if needed) and makes sure that the manager is ready
     manager.wait().await?;
 
@@ -72,6 +75,7 @@ async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> Result<(), Bo
         attempts += 1;
         sleep(Duration::from_secs(1));
     }
+    println!("The installation process has started.");
     Ok(())
 }
 
