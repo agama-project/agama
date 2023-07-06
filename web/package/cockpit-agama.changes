@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul  5 13:59:58 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add info about deactivated zFCP auto_lun_scan and sort members in
+  device selector (gh#openSUSE/agama#650).
+
+-------------------------------------------------------------------
 Mon Jul  3 10:18:32 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Add page for managing zFCP devices (gh#openSUSE/agama#634).

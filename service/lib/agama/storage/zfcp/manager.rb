@@ -21,6 +21,7 @@
 
 require "yast"
 require "y2s390/zfcp"
+require "y2storage/storage_manager"
 require "agama/storage/zfcp/controller"
 require "agama/storage/zfcp/disk"
 
@@ -54,14 +55,20 @@ module Agama
 
         # Probes zFCP
         #
-        # Callbacks are called at the end, see {#on_probe}.
+        # Callbacks {#on_probe} are called after probing, and callbacks {#on_disks_change} are
+        # called if there is any change in the disks.
         def probe
           logger.info "Probing zFCP"
 
+          previous_disks = disks
           yast_zfcp.probe_controllers
           yast_zfcp.probe_disks
 
           @on_probe_callbacks&.each { |c| c.call(controllers, disks) }
+
+          return unless disks_changed?(previous_disks)
+
+          @on_disks_change_callbacks&.each { |c| c.call(disks) }
         end
 
         # zFCP controllers
@@ -91,13 +98,22 @@ module Agama
 
         # Activates the controller with the given channel id
         #
-        # @note: If "allow_lun_scan" is active, then all LUNs are automatically activated.
+        # @note: If "allow_lun_scan" is active, then all its LUNs are automatically activated.
         #
         # @param channel [String]
         # @return [Integer] Exit code of the chzdev command (0 on success)
         def activate_controller(channel)
           output = yast_zfcp.activate_controller(channel)
-          update_disks if output["exit"] == 0
+          if output["exit"] == 0
+            # LUNs activation could delay after activating the controller. This usually happens when
+            # activating a controller for first time because some SCSI initialization. Probing the
+            # disks should be done after all disks are activated.
+            #
+            # FIXME: waiting 2 seconds should be enough, but there is no guarantee that all the
+            # disks are actually activated.
+            sleep(2)
+            probe
+          end
           output["exit"]
         end
 
@@ -110,7 +126,7 @@ module Agama
         # @return [Integer] Exit code of the chzdev command (0 on success)
         def activate_disk(channel, wwpn, lun)
           output = yast_zfcp.activate_disk(channel, wwpn, lun)
-          update_disks if output["exit"] == 0
+          probe if output["exit"] == 0
           output["exit"]
         end
 
@@ -125,7 +141,7 @@ module Agama
         # @return [Integer] Exit code of the chzdev command (0 on success)
         def deactivate_disk(channel, wwpn, lun)
           output = yast_zfcp.deactivate_disk(channel, wwpn, lun)
-          update_disks if output["exit"] == 0
+          probe if output["exit"] == 0
           output["exit"]
         end
 
@@ -154,15 +170,28 @@ module Agama
         # @return [Logger]
         attr_reader :logger
 
-        # Probes and runs the on_disk_change callbacsk if disks have changed
-        def update_disks
-          disk_records = yast_zfcp.disks.sort_by { |d| d["dev_name"] }
-          probe
-          new_disk_records = yast_zfcp.disks.sort_by { |d| d["dev_name"] }
+        # Whether threre is any change in the disks
+        #
+        # Checks whether any of the removed disks is still probed or whether any of the current
+        # disks is not probed yet.
+        #
+        # @param previous_disks [Array<Disk>] Previously activated disks (before zFCP (re)probing)
+        # @return [Booelan]
+        def disks_changed?(previous_disks)
+          removed_disks = previous_disks - disks
 
-          return if disk_records == new_disk_records
+          return true if removed_disks.any? { |d| exist_disk?(d) }
+          return true if disks.any? { |d| !exist_disk?(d) }
 
-          @on_disks_change_callbacks&.each { |c| c.call(disks) }
+          false
+        end
+
+        # Whether the given disk is probed
+        #
+        # @param disk [Disk]
+        # @return [Booelan]
+        def exist_disk?(disk)
+          !Y2Storage::StorageManager.instance.probed.find_by_name(disk.name).nil?
         end
 
         # Creates a zFCP controller from YaST data
