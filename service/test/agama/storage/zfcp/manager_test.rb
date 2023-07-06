@@ -23,6 +23,9 @@ require_relative "../../../test_helper"
 require "agama/storage/zfcp/manager"
 require "agama/storage/zfcp/controller"
 require "agama/storage/zfcp/disk"
+require "y2storage/storage_manager"
+require "y2storage/devicegraph"
+require "y2storage/disk"
 
 # yast2-s390 is not available for all architectures. Defining Y2S390::ZFCP constant here in order to
 # make possible to mock that class independently on the architecture. Note that Y2S390 classes are
@@ -38,6 +41,9 @@ describe Agama::Storage::ZFCP::Manager do
 
   before do
     allow(Y2S390::ZFCP).to receive(:new).and_return(yast_zfcp)
+    allow(Y2Storage::StorageManager).to receive(:instance).and_return(storage_manager)
+    allow(storage_manager).to receive(:probed).and_return(devicegraph)
+    allow(devicegraph).to receive(:find_by_name).and_return(storage_disk)
     allow(yast_zfcp).to receive(:probe_controllers)
     allow(yast_zfcp).to receive(:probe_disks)
     allow(yast_zfcp).to receive(:controllers).and_return(*controller_records)
@@ -45,6 +51,12 @@ describe Agama::Storage::ZFCP::Manager do
   end
 
   let(:yast_zfcp) { double(Y2S390::ZFCP) }
+
+  let(:storage_manager) { instance_double(Y2Storage::StorageManager) }
+
+  let(:devicegraph) { instance_double(Y2Storage::Devicegraph) }
+
+  let(:storage_disk) { instance_double(Y2Storage::Disk) }
 
   let(:controller_records) { [[]] }
 
@@ -80,14 +92,54 @@ describe Agama::Storage::ZFCP::Manager do
       subject.probe
     end
 
-    let(:callback) { proc { |_, _| } }
-
     it "runs the on_probe callbacks" do
+      callback = proc { |_, _| }
       subject.on_probe(&callback)
 
       expect(callback).to receive(:call).with([], [])
 
       subject.probe
+    end
+
+    context "if any zFCP disk was deactivated" do
+      let(:disk_records) { [[sda_record, sdb_record], [sda_record]] }
+
+      it "runs the on_disks_change callbacks" do
+        callback = proc { |_| }
+        subject.on_disks_change(&callback)
+
+        expect(callback).to receive(:call)
+
+        subject.probe
+      end
+    end
+
+    context "if any new zFCP disk was activated" do
+      let(:disk_records) { [[sda_record], [sda_record, sdb_record]] }
+
+      let(:storage_disk) { nil }
+
+      it "runs the on_disks_change callbacks" do
+        callback = proc { |_| }
+        subject.on_disks_change(&callback)
+
+        expect(callback).to receive(:call)
+
+        subject.probe
+      end
+    end
+
+    context "if the zFCP disks have not changed" do
+      let(:disk_records) { [[sda_record, sdb_record], [sda_record, sdb_record]] }
+
+      it "does not run the on_disks_change callbacks" do
+        callback = proc { |_| }
+        subject.on_disks_change(&callback)
+
+        expect(callback).to_not receive(:call)
+
+        subject.probe
+      end
     end
   end
 
@@ -180,13 +232,9 @@ describe Agama::Storage::ZFCP::Manager do
     before do
       allow(yast_zfcp).to receive(:activate_controller).and_return(output)
       allow(subject).to receive(:sleep)
-
-      subject.on_disks_change(&callback)
     end
 
     let(:output) { { "exit" => 3 } }
-
-    let(:callback) { proc { |_| } }
 
     it "tries to activate the controller with the given channel id" do
       expect(yast_zfcp).to receive(:activate_controller).with("0.0.fa00")
@@ -208,26 +256,6 @@ describe Agama::Storage::ZFCP::Manager do
 
         subject.activate_controller("0.0.fa00")
       end
-
-      context "and the zFCP disks have changed" do
-        let(:disk_records) { [[sda_record], [sdb_record]] }
-
-        it "runs the on_disks_change callbacks" do
-          expect(callback).to receive(:call)
-
-          subject.activate_controller("0.0.fa00")
-        end
-      end
-
-      context "and the zFCP disks have not changed" do
-        let(:disk_records) { [[sda_record], [sda_record]] }
-
-        it "does not run the on_disks_change callbacks" do
-          expect(callback).to_not receive(:call)
-
-          subject.activate_controller("0.0.fa00")
-        end
-      end
     end
 
     context "if the controller was not activated" do
@@ -238,25 +266,15 @@ describe Agama::Storage::ZFCP::Manager do
 
         subject.activate_controller("0.0.fa00")
       end
-
-      it "does not run the on_disks_change callbacks" do
-        expect(callback).to_not receive(:call)
-
-        subject.activate_controller("0.0.fa00")
-      end
     end
   end
 
   describe "#activate_disk" do
     before do
       allow(yast_zfcp).to receive(:activate_disk).and_return(output)
-
-      subject.on_disks_change(&callback)
     end
 
     let(:output) { { "exit" => 3 } }
-
-    let(:callback) { proc { |_| } }
 
     it "tries to activate the zFCP diks with the given channel id, WWPN and LUN" do
       expect(yast_zfcp)
@@ -279,26 +297,6 @@ describe Agama::Storage::ZFCP::Manager do
 
         subject.activate_disk("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
       end
-
-      context "and the zFCP disks have changed" do
-        let(:disk_records) { [[sda_record], [sdb_record]] }
-
-        it "runs the on_disks_change callbacks" do
-          expect(callback).to receive(:call)
-
-          subject.activate_disk("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
-        end
-      end
-
-      context "and the zFCP disks have not changed" do
-        let(:disk_records) { [[sda_record], [sda_record]] }
-
-        it "does not run the on_disks_change callbacks" do
-          expect(callback).to_not receive(:call)
-
-          subject.activate_disk("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
-        end
-      end
     end
 
     context "if the zFCP disk was not activated" do
@@ -309,25 +307,15 @@ describe Agama::Storage::ZFCP::Manager do
 
         subject.activate_disk("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
       end
-
-      it "does not run the on_disks_change callbacks" do
-        expect(callback).to_not receive(:call)
-
-        subject.activate_disk("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
-      end
     end
   end
 
   describe "#deactivate_disk" do
     before do
       allow(yast_zfcp).to receive(:deactivate_disk).and_return(output)
-
-      subject.on_disks_change(&callback)
     end
 
     let(:output) { { "exit" => 3 } }
-
-    let(:callback) { proc { |_| } }
 
     it "tries to deactivate the zFCP diks with the given channel id, WWPN and LUN" do
       expect(yast_zfcp)
@@ -350,26 +338,6 @@ describe Agama::Storage::ZFCP::Manager do
 
         subject.deactivate_disk("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
       end
-
-      context "and the zFCP disks have changed" do
-        let(:disk_records) { [[sda_record], [sdb_record]] }
-
-        it "runs the on_disks_change callbacks" do
-          expect(callback).to receive(:call)
-
-          subject.deactivate_disk("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
-        end
-      end
-
-      context "and the zFCP disks have not changed" do
-        let(:disk_records) { [[sda_record], [sda_record]] }
-
-        it "does not run the on_disks_change callbacks" do
-          expect(callback).to_not receive(:call)
-
-          subject.deactivate_disk("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
-        end
-      end
     end
 
     context "if the zFCP disk was not deactivated" do
@@ -377,12 +345,6 @@ describe Agama::Storage::ZFCP::Manager do
 
       it "does not probe again" do
         expect(subject).to_not receive(:probe)
-
-        subject.deactivate_disk("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
-      end
-
-      it "does not run the on_disks_change callbacks" do
-        expect(callback).to_not receive(:call)
 
         subject.deactivate_disk("0.0.fa00", "0x500507630708d3b3", "0x0013000000000000")
       end
