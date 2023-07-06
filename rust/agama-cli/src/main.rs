@@ -47,13 +47,10 @@ async fn probe() -> Result<(), Box<dyn Error>> {
 /// * `manager`: the manager client.
 async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> Result<(), Box<dyn Error>> {
     if !manager.can_install().await? {
-        // TODO: add some hints what is wrong or add dedicated command for it?
-        eprintln!("There are issues with configuration. Cannot install.");
         return Err(Box::new(CliError::ValidationError));
     }
 
     // Display the progress (if needed) and makes sure that the manager is ready
-    show_progress().await?;
     manager.wait().await?;
 
     // Try to start the installation up to max_attempts times.
@@ -121,7 +118,6 @@ async fn run_command(cli: Cli) -> Result<(), Box<dyn Error>> {
         Commands::Profile(subcommand) => Ok(run_profile_cmd(subcommand)?),
         Commands::Install => {
             let manager = build_manager().await?;
-            block_on(wait_for_services(&manager))?;
             block_on(install(&manager, 3))
         }
         _ => unimplemented!(),
