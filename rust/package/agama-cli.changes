@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jul  7 14:12:03 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the progress reporting (gh#openSUSE/agama#653).
+
+-------------------------------------------------------------------
 Thu Jul  6 09:13:47 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve the waiting logic and implement a retry mechanism for the
