@@ -1,42 +1,61 @@
 use agama_lib::progress::{Progress, ProgressPresenter};
-use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
+use console::style;
+use indicatif::{ProgressBar, ProgressStyle};
+use std::time::Duration;
 
+/// Reports the installer progress through the terminal
 pub struct InstallerProgress {
-    progress: MultiProgress,
-    bars: Vec<ProgressBar>,
+    bar: Option<ProgressBar>,
 }
 
 impl InstallerProgress {
     pub fn new() -> Self {
-        let progress = MultiProgress::new();
-        Self {
-            progress,
-            bars: vec![],
-        }
+        Self { bar: None }
+    }
+
+    fn update_bar(&mut self, progress: &Progress) {
+        let bar = self.bar.get_or_insert_with(|| {
+            let style = ProgressStyle::with_template("{spinner:.green} {msg}").unwrap();
+            let bar = ProgressBar::new(0).with_style(style);
+            bar.enable_steady_tick(Duration::from_millis(120));
+            bar
+        });
+        bar.set_length(progress.max_steps.into());
+        bar.set_position(progress.current_step.into());
+        bar.set_message(progress.current_title.to_owned());
     }
 }
 
 impl ProgressPresenter for InstallerProgress {
-    fn start(&mut self, progress: &[Progress]) {
-        let style =
-            ProgressStyle::with_template("{bar:40.green/white} {pos:>3}/{len:3} {msg}").unwrap();
-        for info in progress.iter() {
-            let bar = self.progress.add(ProgressBar::new(info.max_steps.into()));
-            bar.set_style(style.clone());
-            self.bars.push(bar);
+    fn start(&mut self, progress: &Progress) {
+        if !progress.finished {
+            self.update_main(&progress);
         }
     }
 
-    fn update(&mut self, progress: &[Progress]) {
-        for (i, info) in progress.iter().enumerate() {
-            let bar = &self.bars.get(i).unwrap();
-            if info.finished {
-                bar.finish_with_message("Done");
-            } else {
-                bar.set_length(info.max_steps.into());
-                bar.set_position(info.current_step.into());
-                bar.set_message(info.current_title.to_owned());
+    fn update_main(&mut self, progress: &Progress) {
+        let counter = format!("[{}/{}]", &progress.current_step, &progress.max_steps);
+
+        println!(
+            "{} {}",
+            style(&counter).bold().green(),
+            &progress.current_title
+        );
+    }
+
+    fn update_detail(&mut self, progress: &Progress) {
+        if progress.finished {
+            if let Some(bar) = self.bar.take() {
+                bar.finish_and_clear();
             }
+        } else {
+            self.update_bar(&progress);
+        }
+    }
+
+    fn finish(&mut self) {
+        if let Some(bar) = self.bar.take() {
+            bar.finish_and_clear();
         }
     }
 }
