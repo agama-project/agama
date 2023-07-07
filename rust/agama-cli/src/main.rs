@@ -10,7 +10,7 @@ mod progress;
 use crate::error::CliError;
 use agama_lib::error::ServiceError;
 use agama_lib::manager::ManagerClient;
-use agama_lib::progress::build_progress_monitor;
+use agama_lib::progress::ProgressMonitor;
 use async_std::task::{self, block_on};
 use commands::Commands;
 use config::run as run_config_cmd;
@@ -83,7 +83,7 @@ async fn show_progress() -> Result<(), ServiceError> {
     // wait 1 second to give other task chance to start, so progress can display something
     task::sleep(Duration::from_secs(1)).await;
     let conn = agama_lib::connection().await?;
-    let mut monitor = build_progress_monitor(conn).await.unwrap();
+    let mut monitor = ProgressMonitor::new(conn).await.unwrap();
     let presenter = InstallerProgress::new();
     monitor
         .run(presenter)

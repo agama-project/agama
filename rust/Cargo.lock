@@ -15,6 +15,7 @@ dependencies = [
  "agama-lib",
  "async-std",
  "clap",
+ "console",
  "convert_case",
  "indicatif",
  "serde",
