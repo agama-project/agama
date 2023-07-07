@@ -53,9 +53,11 @@ async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> Result<(), Bo
     if !manager.can_install().await? {
         return Err(Box::new(CliError::ValidationError));
     }
+
     // Display the progress (if needed) and makes sure that the manager is ready
     manager.wait().await?;
 
+    let progress = task::spawn(async { show_progress().await });
     // Try to start the installation up to max_attempts times.
     let mut attempts = 1;
     loop {
@@ -75,7 +77,7 @@ async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> Result<(), Bo
         attempts += 1;
         sleep(Duration::from_secs(1));
     }
-    println!("The installation process has started.");
+    let _ = progress.await;
     Ok(())
 }
 
@@ -96,7 +98,7 @@ async fn wait_for_services(manager: &ManagerClient<'_>) -> Result<(), Box<dyn Er
     let services = manager.busy_services().await?;
     // TODO: having it optional
     if !services.is_empty() {
-        eprintln!("There are busy services {services:?}. Waiting for them.");
+        eprintln!("The Agama service is busy. Waiting for it to be available...");
         show_progress().await?
     }
     Ok(())
