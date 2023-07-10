@@ -72,7 +72,8 @@ module Agama
           # ProductFeatures mechanism in place).
           y2storage_settings = Y2Storage::ProposalSettings.new_for_current_product
           y2storage_settings.lvm = settings.lvm unless settings.lvm.nil?
-          y2storage_settings.encryption_password = settings.encryption_password
+
+          configure_encryption(y2storage_settings)
 
           devices = settings.candidate_devices
           y2storage_settings.candidate_devices = devices if devices.any?
@@ -126,6 +127,18 @@ module Agama
           specs
         end
 
+        # Sets the attributes related to encryption
+        #
+        # @param y2storage_settings [Y2Storage::ProposalSettings] target settings to be adapted
+        def configure_encryption(y2storage_settings)
+          enc = settings.encryption
+          return unless enc
+
+          y2storage_settings.encryption_password = enc.password
+          y2storage_settings.encryption_method = enc.method if enc.method
+          y2storage_settings.encryption_pbkdf = enc.pbkdf if enc.pbkdf
+        end
+
         # Object to perform the conversion of the volumes
         def volume_converter
           @volume_converter ||= VolumeConverter.new(default_specs: default_specs)
@@ -150,7 +163,7 @@ module Agama
           ProposalSettings.new.tap do |settings|
             settings.candidate_devices = y2storage_settings.candidate_devices
             settings.lvm = y2storage_settings.lvm
-            settings.encryption_password = y2storage_settings.encryption_password
+            settings.encryption = encryption_settings
 
             specs = y2storage_settings.volumes.select(&:proposed?)
             settings.volumes = specs.map { |s| to_volume(s) }
@@ -179,6 +192,15 @@ module Agama
           volume_converter.to_agama(spec, devices: devices).tap do |volume|
             volume.encrypted = y2storage_settings.use_encryption
           end
+        end
+
+        # @see #convert
+        def encryption_settings
+          enc = EncryptionSettings.new
+          enc.password = y2storage_settings.encryption_password
+          enc.method = y2storage_settings.encryption_method
+          enc.pbkdf = y2storage_settings.encryption_pbkdf
+          enc
         end
 
         # Object to perform the conversion of the volumes

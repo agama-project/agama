@@ -24,6 +24,7 @@ require "y2storage/dialogs/guided_setup/helpers/disk"
 require "agama/issue"
 require "agama/storage/actions"
 require "agama/storage/proposal_settings"
+require "agama/storage/volume_template"
 require "agama/storage/proposal_settings_converter"
 require "agama/storage/volume_converter"
 
@@ -93,16 +94,15 @@ module Agama
         proposal.settings.candidate_devices
       end
 
-      # Volume definitions to be used as templates in the interface
+      # Volume definitions to be used as templates in the interface and to fill the
+      # information missing in the volumes.
       #
-      # Based on the configuration and/or on Y2Storage internals, these volumes may really
-      # exist or not in the real context of the proposal and its settings.
-      #
-      # @return [Array<Volumes>]
+      # @return [Array<VolumeTemplate>]
       def volume_templates
-        converter = VolumeConverter.new(default_specs: default_specs)
+        return @volume_templates if @volume_templates
 
-        default_specs.map { |s| converter.to_agama(s) }
+        config_volumes = config.data.fetch("storage", {}).fetch("volumes", [])
+        VolumeTemplate.read(config_volumes)
       end
 
       # Settings with the data used during the calculation of the storage proposal
@@ -168,30 +168,6 @@ module Agama
         guided
       end
 
-      # Volume specs to use by default
-      #
-      # These specs are used for generating volume templates and also for calculating the storage
-      # proposal settings.
-      #
-      # @see #volume_templates
-      # @see ProposalSettingsGenerator
-      #
-      # @return [Array<Y2Storage::VolumeSpecification>]
-      def default_specs
-        specs = specs_from_config
-        return specs if specs.any?
-
-        Y2Storage::ProposalSettings.new_for_current_product.volumes
-      end
-
-      # Volume specs from the Agama config file
-      #
-      # @return [Array<Y2Storage::VolumeSpecification>]
-      def specs_from_config
-        config_volumes = config.data.fetch("storage", {}).fetch("volumes", [])
-        config_volumes.map { |v| Y2Storage::VolumeSpecification.new(v) }
-      end
-
       # Converts a Agama::Storage::ProposalSettings object to its equivalent
       # Y2Storage::ProposalSettings one
       #
@@ -199,7 +175,7 @@ module Agama
       # @return [Y2Storage::ProposalSettings]
       def to_y2storage_settings(settings)
         y2storage_settings =
-          ProposalSettingsConverter.new(default_specs: default_specs).to_y2storage(settings)
+          ProposalSettingsConverter.new(templates: volume_templates).to_y2storage(settings)
         adjust_encryption(y2storage_settings)
         force_cleanup(y2storage_settings)
         y2storage_settings
@@ -213,7 +189,7 @@ module Agama
       #
       # @return [ProposalSettings]
       def to_agama_settings(settings, devices: [])
-        converter = ProposalSettingsConverter.new(default_specs: default_specs)
+        converter = ProposalSettingsConverter.new(templates: volume_templates)
         converter.to_agama(settings, devices: devices)
       end
 
