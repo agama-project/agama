@@ -10,11 +10,11 @@
 //! # use zbus;
 //!
 //! // Custom presenter
-//! struct SimplePresenter {};
+//! struct SimplePresenter {}
 //!
 //! impl SimplePresenter {
 //!   fn report_progress(&self, progress: &Progress) {
-//!       println!("{}/{} {}", &progress.current_step, &progress.max_steps, &progress.title);
+//!       println!("{}/{} {}", &progress.current_step, &progress.max_steps, &progress.current_title);
 //!   }
 //! }
 //!
@@ -24,7 +24,11 @@
 //!        self.report_progress(progress);
 //!     }
 //!
-//!     fn update(&mut self, progress: &Progress) {
+//!     fn update_main(&mut self, progress: &Progress) {
+//!        self.report_progress(progress);
+//!     }
+//!
+//!     fn update_detail(&mut self, progress: &Progress) {
 //!        self.report_progress(progress);
 //!     }
 //!
