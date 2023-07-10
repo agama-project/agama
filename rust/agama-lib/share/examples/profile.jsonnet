@@ -1,4 +1,10 @@
+// This is a Jsonnet file. Please, check https://jsonnet.org/ for more
+// information about the language.
+
+// The hw.libsonnet file contains hardware information from the "lshw" tool.
 local agama = import 'hw.libsonnet';
+
+// Find the biggest disk which is suitable for installing the system.
 local findBiggestDisk(disks) =
   local sizedDisks = std.filter(function(d) std.objectHas(d, 'size'), disks);
   local sorted = std.sort(sizedDisks, function(x) x.size);
