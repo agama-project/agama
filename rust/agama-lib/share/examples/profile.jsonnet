@@ -1,5 +1,7 @@
 // This is a Jsonnet file. Please, check https://jsonnet.org/ for more
 // information about the language.
+// For the schema, see
+// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/profile.schema.json
 
 // The hw.libsonnet file contains hardware information from the "lshw" tool.
 local agama = import 'hw.libsonnet';
