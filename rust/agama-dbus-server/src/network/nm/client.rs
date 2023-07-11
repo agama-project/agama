@@ -2,10 +2,12 @@
 use super::dbus::{connection_from_dbus, connection_to_dbus, merge_dbus_connections};
 use super::model::NmDeviceType;
 use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
-use crate::model::{Connection, Device};
+use crate::network::model::{Connection, Device};
 use agama_lib::error::ServiceError;
+use log;
 use uuid::Uuid;
 use zbus;
+use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
 /// Simplified NetworkManager D-Bus client.
 ///
@@ -53,9 +55,10 @@ impl<'a> NetworkManagerClient<'a> {
                 });
             } else {
                 // TODO: use a logger
-                eprintln!(
-                    "Unsupported device type {:?} for {}",
-                    &device_type, &device_name
+                log::warn!(
+                    "Ignoring network device '{}' (unsupported type '{}')",
+                    &device_name,
+                    &device_type
                 );
             }
         }
@@ -87,14 +90,16 @@ impl<'a> NetworkManagerClient<'a> {
     /// * `conn`: connection to add or update.
     pub async fn add_or_update_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
         let new_conn = connection_to_dbus(conn);
-        if let Ok(proxy) = self.get_connection_proxy(conn.uuid()).await {
+        let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid()).await {
             let original = proxy.get_settings().await?;
             let merged = merge_dbus_connections(&original, &new_conn);
             proxy.update(merged).await?;
+            OwnedObjectPath::from(proxy.path().to_owned())
         } else {
             let proxy = SettingsProxy::new(&self.connection).await?;
-            proxy.add_connection(new_conn).await?;
-        }
+            proxy.add_connection(new_conn).await?
+        };
+        self.activate_connection(path).await?;
         Ok(())
     }
 
@@ -102,6 +107,18 @@ impl<'a> NetworkManagerClient<'a> {
     pub async fn remove_connection(&self, uuid: Uuid) -> Result<(), ServiceError> {
         let proxy = self.get_connection_proxy(uuid).await?;
         proxy.delete().await?;
+        Ok(())
+    }
+
+    /// Activates a NetworkManager connection.
+    ///
+    /// * `path`: D-Bus patch of the connection.
+    async fn activate_connection(&self, path: OwnedObjectPath) -> Result<(), ServiceError> {
+        let proxy = NetworkManagerProxy::new(&self.connection).await?;
+        let root = ObjectPath::try_from("/").unwrap();
+        proxy
+            .activate_connection(&path.as_ref(), &root, &root)
+            .await?;
         Ok(())
     }
 

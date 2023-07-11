@@ -1,11 +1,9 @@
-use super::model::{NetworkConnection, WirelessSettings};
+use super::settings::{NetworkConnection, WirelessSettings};
 use super::types::SSID;
 use crate::error::ServiceError;
 
-use super::proxies::ConnectionProxy;
-use super::proxies::ConnectionsProxy;
-use super::proxies::IPv4Proxy;
-use super::proxies::WirelessProxy;
+use super::proxies::{ConnectionProxy, ConnectionsProxy, IPv4Proxy, WirelessProxy};
+use zbus::zvariant::OwnedObjectPath;
 use zbus::Connection;
 
 /// D-BUS client for the network service
@@ -40,6 +38,12 @@ impl<'a> NetworkClient<'a> {
         Ok(connections)
     }
 
+    /// Applies the network configuration.
+    pub async fn apply(&self) -> Result<(), ServiceError> {
+        self.connections_proxy.apply().await?;
+        Ok(())
+    }
+
     /// Returns the NetworkConnection for the given connection path
     ///
     ///  * `path`: the connections path to get the config from
@@ -48,35 +52,24 @@ impl<'a> NetworkClient<'a> {
             .path(path)?
             .build()
             .await?;
-        let name = connection_proxy.id().await?;
+        let id = connection_proxy.id().await?;
 
         let ipv4_proxy = IPv4Proxy::builder(&self.connection)
             .path(path)?
             .build()
             .await?;
 
-        /// TODO: consider using the `IPMethod` struct from `agama-network`.
-        let method = match ipv4_proxy.method().await? {
-            0 => "auto",
-            1 => "manual",
-            2 => "link-local",
-            3 => "disable",
-            _ => "auto",
-        };
+        let method = ipv4_proxy.method().await?;
         let gateway = match ipv4_proxy.gateway().await?.as_str() {
             "" => None,
             value => Some(value.to_string()),
         };
         let nameservers = ipv4_proxy.nameservers().await?;
         let addresses = ipv4_proxy.addresses().await?;
-        let addresses = addresses
-            .into_iter()
-            .map(|(ip, prefix)| format!("{ip}/{prefix}"))
-            .collect();
 
         Ok(NetworkConnection {
-            name,
-            method: method.to_string(),
+            id,
+            method: Some(method.to_string()),
             gateway,
             addresses,
             nameservers,
@@ -100,5 +93,92 @@ impl<'a> NetworkClient<'a> {
         };
 
         Ok(wireless)
+    }
+
+    /// Adds or updates a network connection.
+    ///
+    /// If a network connection with the same name exists, it updates its settings. Otherwise, it
+    /// adds a new connection.
+    ///
+    /// * `conn`: settings of the network connection to add/update.
+    pub async fn add_or_update_connection(
+        &self,
+        conn: &NetworkConnection,
+    ) -> Result<(), ServiceError> {
+        let path = match self.connections_proxy.get_connection(&conn.id).await {
+            Ok(path) => path,
+            Err(_) => self.add_connection(&conn).await?,
+        };
+        self.update_connection(&path, &conn).await?;
+        Ok(())
+    }
+
+    /// Adds a network connection.
+    ///
+    /// * `conn`: settings of the network connection to add.
+    async fn add_connection(
+        &self,
+        conn: &NetworkConnection,
+    ) -> Result<OwnedObjectPath, ServiceError> {
+        self.connections_proxy
+            .add_connection(&conn.id, conn.device_type() as u8)
+            .await?;
+        Ok(self.connections_proxy.get_connection(&conn.id).await?)
+    }
+
+    /// Updates a network connection.
+    ///
+    /// * `path`: connection D-Bus path.
+    /// * `conn`: settings of the network connection.
+    async fn update_connection(
+        &self,
+        path: &OwnedObjectPath,
+        conn: &NetworkConnection,
+    ) -> Result<(), ServiceError> {
+        let proxy = IPv4Proxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+
+        if let Some(ref method) = conn.method {
+            proxy.set_method(method.as_str()).await?;
+        }
+
+        let addresses: Vec<_> = conn.addresses.iter().map(String::as_ref).collect();
+        proxy.set_addresses(addresses.as_slice()).await?;
+
+        let nameservers: Vec<_> = conn.nameservers.iter().map(String::as_ref).collect();
+        proxy.set_nameservers(nameservers.as_slice()).await?;
+
+        let gateway = conn.gateway.as_ref().map(|g| g.as_str()).unwrap_or("");
+        proxy.set_gateway(gateway).await?;
+
+        if let Some(ref wireless) = conn.wireless {
+            self.update_wireless_settings(&path, wireless).await?;
+        }
+        Ok(())
+    }
+
+    /// Updates the wireless settings for network connection.
+    ///
+    /// * `path`: connection D-Bus path.
+    /// * `wireless`: wireless settings of the network connection.
+    async fn update_wireless_settings(
+        &self,
+        path: &OwnedObjectPath,
+        wireless: &WirelessSettings,
+    ) -> Result<(), ServiceError> {
+        let proxy = WirelessProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+
+        proxy.set_ssid(wireless.ssid.as_bytes()).await?;
+        proxy.set_mode(wireless.mode.to_string().as_str()).await?;
+        proxy
+            .set_security(wireless.security.to_string().as_str())
+            .await?;
+        proxy.set_password(&wireless.password).await?;
+        Ok(())
     }
 }

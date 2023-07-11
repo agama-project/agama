@@ -19,6 +19,7 @@
     "network": {
       "description": "Network settings",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "connections": {
           "description": "Network connections to be defined",
@@ -27,7 +28,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "name": {
+              "id": {
                 "description": "Connection ID",
                 "type": "string"
               },
@@ -88,7 +89,7 @@
               }
             },
             "required": [
-              "name"
+              "id"
             ]
           }
         }

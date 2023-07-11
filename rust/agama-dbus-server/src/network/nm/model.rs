@@ -6,10 +6,11 @@
 ///
 /// Using the newtype pattern around an String is enough. For proper support, we might replace this
 /// struct with an enum.
-use crate::{
-    model::{DeviceType, IpMethod, SecurityProtocol, WirelessMode},
+use crate::network::{
+    model::{IpMethod, SecurityProtocol, WirelessMode},
     nm::error::NmError,
 };
+use agama_lib::network::types::DeviceType;
 use std::fmt;
 
 #[derive(Debug, PartialEq)]
@@ -64,6 +65,12 @@ pub struct NmDeviceType(pub u32);
 impl From<NmDeviceType> for u32 {
     fn from(value: NmDeviceType) -> u32 {
         value.0
+    }
+}
+
+impl fmt::Display for NmDeviceType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 

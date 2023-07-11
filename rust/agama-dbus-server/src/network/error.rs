@@ -6,8 +6,8 @@ use uuid::Uuid;
 /// Errors that are related to the network configuration.
 #[derive(Error, Debug)]
 pub enum NetworkStateError {
-    #[error("Invalid connection name: '{0}'")]
-    UnknownConnection(Uuid),
+    #[error("Unknown connection with ID: '{0}'")]
+    UnknownConnection(String),
     #[error("Invalid connection UUID: '{0}'")]
     InvalidUuid(String),
     #[error("Invalid IP address")]
@@ -18,8 +18,6 @@ pub enum NetworkStateError {
     InvalidWirelessMode(String),
     #[error("Connection '{0}' already exists")]
     ConnectionExists(Uuid),
-    #[error("Invalid device type: '{0}'")]
-    InvalidDeviceType(u8),
     #[error("Invalid security wireless protocol: '{0}'")]
     InvalidSecurityProtocol(String),
     #[error("Adapter error: '{0}'")]

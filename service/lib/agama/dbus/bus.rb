@@ -42,13 +42,6 @@ module Agama
           @current = nil
         end
       end
-
-      # @param address [String] a connectable address
-      # @see https://dbus.freedesktop.org/doc/dbus-specification.html#addresses
-      def initialize(address)
-        super(address)
-        send_hello
-      end
     end
   end
 end

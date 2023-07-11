@@ -1,7 +1,7 @@
 //! Network D-Bus service.
 //!
 //! This module defines a D-Bus service which exposes Agama's network configuration.
-use crate::NetworkSystem;
+use crate::network::NetworkSystem;
 use agama_lib::connection_to;
 use std::{error::Error, thread};
 

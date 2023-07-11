@@ -1,9 +1,11 @@
+//! Implements support for handling the network settings
+
 mod client;
-mod model;
 mod proxies;
+mod settings;
 mod store;
 pub mod types;
 
 pub use client::NetworkClient;
-pub use model::NetworkSettings;
+pub use settings::NetworkSettings;
 pub use store::NetworkStore;

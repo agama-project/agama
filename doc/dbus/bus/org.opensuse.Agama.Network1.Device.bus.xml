@@ -39,7 +39,19 @@
     </signal>
   </interface>
   <interface name="org.opensuse.Agama.Network1.Device">
+    <!--
+     Device name.
+
+     Kernel device name, e.g., eth0, enp1s0, etc.
+     -->
     <property name="Name" type="s" access="read"/>
+    <!--
+     Device type.
+
+     Possible values: 0 = loopback, 1 = ethernet, 2 = wireless.
+
+     See [crate::model::DeviceType].
+     -->
     <property name="Type" type="y" access="read"/>
   </interface>
 </node>

@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Fri Jul  7 14:12:03 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the progress reporting (gh#openSUSE/agama#653).
+
+-------------------------------------------------------------------
+Thu Jul  6 09:13:47 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the waiting logic and implement a retry mechanism for the
+  "agama install" command (bsc#1213047).
+
+-------------------------------------------------------------------
+Wed Jul  5 11:11:20 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the questions service to handle questions with no default
+  option (gh#openSUSE/agama#649).
+
+-------------------------------------------------------------------
 Thu Jun  1 08:14:14 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add a localization D-Bus service (gh#openSUSE/agama#533).

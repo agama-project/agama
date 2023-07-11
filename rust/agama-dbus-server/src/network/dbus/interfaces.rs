@@ -3,11 +3,14 @@
 //! This module contains the set of D-Bus interfaces that are exposed by [D-Bus network
 //! service](crate::NetworkService).
 use super::ObjectsRegistry;
-use crate::{
+use crate::network::{
     action::Action,
     error::NetworkStateError,
-    model::{Connection as NetworkConnection, Device as NetworkDevice, WirelessConnection},
+    model::{
+        Connection as NetworkConnection, Device as NetworkDevice, IpAddress, WirelessConnection,
+    },
 };
+use log;
 
 use agama_lib::network::types::SSID;
 use parking_lot::{MappedMutexGuard, Mutex, MutexGuard};
@@ -15,8 +18,10 @@ use std::{
     net::{AddrParseError, Ipv4Addr},
     sync::{mpsc::Sender, Arc},
 };
-use uuid::Uuid;
-use zbus::{dbus_interface, zvariant::ObjectPath};
+use zbus::{
+    dbus_interface,
+    zvariant::{ObjectPath, OwnedObjectPath},
+};
 
 /// D-Bus interface for the network devices collection
 ///
@@ -65,11 +70,19 @@ impl Device {
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Device")]
 impl Device {
+    /// Device name.
+    ///
+    /// Kernel device name, e.g., eth0, enp1s0, etc.
     #[dbus_interface(property)]
     pub fn name(&self) -> &str {
         &self.device.name
     }
 
+    /// Device type.
+    ///
+    /// Possible values: 0 = loopback, 1 = ethernet, 2 = wireless.
+    ///
+    /// See [crate::model::DeviceType].
     #[dbus_interface(property, name = "Type")]
     pub fn device_type(&self) -> u8 {
         self.device.type_ as u8
@@ -110,24 +123,35 @@ impl Connections {
 
     /// Adds a new network connection.
     ///
-    /// * `name`: connection name.
+    /// * `id`: connection name.
     /// * `ty`: connection type (see [crate::model::DeviceType]).
-    pub async fn add_connection(&mut self, name: String, ty: u8) -> zbus::fdo::Result<()> {
+    pub async fn add_connection(&mut self, id: String, ty: u8) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock();
         actions
-            .send(Action::AddConnection(name, ty.try_into()?))
+            .send(Action::AddConnection(id, ty.try_into()?))
             .unwrap();
         Ok(())
+    }
+
+    /// Returns the D-Bus path of the network connection.
+    ///
+    /// * `id`: connection ID.
+    pub async fn get_connection(&self, id: &str) -> zbus::fdo::Result<OwnedObjectPath> {
+        let objects = self.objects.lock();
+        match objects.connection_path(&id) {
+            Some(path) => Ok(path.into()),
+            None => Err(NetworkStateError::UnknownConnection(id.to_string()).into()),
+        }
     }
 
     /// Removes a network connection.
     ///
     /// * `uuid`: connection UUID..
-    pub async fn remove_connection(&mut self, uuid: &str) -> zbus::fdo::Result<()> {
+    pub async fn remove_connection(&mut self, id: &str) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock();
-        let uuid =
-            Uuid::parse_str(uuid).map_err(|_| NetworkStateError::InvalidUuid(uuid.to_string()))?;
-        actions.send(Action::RemoveConnection(uuid)).unwrap();
+        actions
+            .send(Action::RemoveConnection(id.to_string()))
+            .unwrap();
         Ok(())
     }
 
@@ -164,14 +188,14 @@ impl Connection {
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connection")]
 impl Connection {
+    /// Connection ID.
+    ///
+    /// Unique identifier of the network connection. It may or not be the same that the used by the
+    /// backend. For instance, when using NetworkManager (which is the only supported backend by
+    /// now), it uses the original ID but appending a number in case the ID is duplicated.
     #[dbus_interface(property)]
     pub fn id(&self) -> String {
         self.get_connection().id().to_string()
-    }
-
-    #[dbus_interface(property, name = "UUID")]
-    pub fn uuid(&self) -> String {
-        self.get_connection().uuid().to_string()
     }
 }
 
@@ -215,42 +239,56 @@ impl Ipv4 {
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connection.IPv4")]
 impl Ipv4 {
+    /// List of IP addresses.
+    ///
+    /// When the method is 'auto', these addresses are used as additional addresses.
     #[dbus_interface(property)]
-    pub fn addresses(&self) -> Vec<(String, u32)> {
+    pub fn addresses(&self) -> Vec<String> {
         let connection = self.get_connection();
         connection
             .ipv4()
             .addresses
             .iter()
-            .map(|(addr, prefix)| (addr.to_string(), *prefix))
+            .map(|ip| ip.to_string())
             .collect()
     }
 
     #[dbus_interface(property)]
-    pub fn set_addresses(&mut self, addresses: Vec<(String, u32)>) -> zbus::fdo::Result<()> {
+    pub fn set_addresses(&mut self, addresses: Vec<String>) -> zbus::fdo::Result<()> {
         let mut connection = self.get_connection();
-        addresses
-            .iter()
-            .map(|(addr, prefix)| addr.parse::<Ipv4Addr>().map(|a| (a, *prefix)))
-            .collect::<Result<Vec<(Ipv4Addr, u32)>, AddrParseError>>()
-            .and_then(|parsed| Ok(connection.ipv4_mut().addresses = parsed))
-            .map_err(|err| NetworkStateError::from(err))?;
+        let parsed: Vec<IpAddress> = addresses
+            .into_iter()
+            .filter_map(|ip| match ip.parse::<IpAddress>() {
+                Ok(address) => Some(address),
+                Err(error) => {
+                    log::error!("Ignoring the invalid IPv4 address: {} ({})", ip, error);
+                    None
+                }
+            })
+            .collect();
+        connection.ipv4_mut().addresses = parsed;
         self.update_connection(connection)
     }
 
+    /// IP configuration method.
+    ///
+    /// Possible values: "disabled", "auto", "manual" or "link-local".
+    ///
+    /// See [crate::model::IpMethod].
     #[dbus_interface(property)]
-    pub fn method(&self) -> u8 {
+    pub fn method(&self) -> String {
         let connection = self.get_connection();
-        connection.ipv4().method as u8
+        connection.ipv4().method.to_string()
     }
 
     #[dbus_interface(property)]
-    pub fn set_method(&mut self, method: u8) -> zbus::fdo::Result<()> {
+    pub fn set_method(&mut self, method: &str) -> zbus::fdo::Result<()> {
         let mut connection = self.get_connection();
-        connection.ipv4_mut().method = method.try_into()?;
+        connection.ipv4_mut().method = method.parse()?;
         self.update_connection(connection)
     }
 
+    /// Name server addresses.
     #[dbus_interface(property)]
     pub fn nameservers(&self) -> Vec<String> {
         let connection = self.get_connection();
@@ -275,6 +313,10 @@ impl Ipv4 {
         self.update_connection(connection)
     }
 
+    /// Network gateway.
+    ///
+    /// An empty string removes the current value. It is not possible to set a gateway if the
+    /// Addresses property is empty.
     #[dbus_interface(property)]
     pub fn gateway(&self) -> String {
         let connection = self.get_connection();
@@ -343,6 +385,7 @@ impl Wireless {
 
 #[dbus_interface(name = "org.opensuse.Agama.Network1.Connection.Wireless")]
 impl Wireless {
+    /// Network SSID.
     #[dbus_interface(property, name = "SSID")]
     pub fn ssid(&self) -> Vec<u8> {
         let connection = self.get_wireless();
@@ -356,6 +399,11 @@ impl Wireless {
         self.update_connection(connection)
     }
 
+    /// Wireless connection mode.
+    ///
+    /// Possible values: "unknown", "adhoc", "infrastructure", "ap" or "mesh".
+    ///
+    /// See [crate::model::WirelessMode].
     #[dbus_interface(property)]
     pub fn mode(&self) -> String {
         let connection = self.get_wireless();
@@ -369,6 +417,7 @@ impl Wireless {
         self.update_connection(connection)
     }
 
+    /// Password to connect to the wireless network.
     #[dbus_interface(property)]
     pub fn password(&self) -> String {
         let connection = self.get_wireless();
@@ -390,6 +439,12 @@ impl Wireless {
         self.update_connection(connection)
     }
 
+    /// Wireless security protocol.
+    ///
+    /// Possible values: "none", "owe", "ieee8021x", "wpa-psk", "sae", "wpa-eap",
+    /// "wpa-eap-suite-b192".
+    ///
+    /// See [crate::model::SecurityProtocol].
     #[dbus_interface(property)]
     pub fn security(&self) -> String {
         let connection = self.get_wireless();

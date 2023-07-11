@@ -1,9 +1,10 @@
-use crate::{
+use crate::network::{
     model::{Connection, NetworkState},
     nm::NetworkManagerClient,
     Adapter,
 };
 use agama_lib::error::ServiceError;
+use log;
 
 /// An adapter for NetworkManager
 pub struct NetworkManagerAdapter<'a> {
@@ -48,11 +49,11 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
                 }
                 if conn.is_removed() {
                     if let Err(e) = self.client.remove_connection(conn.uuid()).await {
-                        eprintln!("Could not remove the connection {}: {}", conn.uuid(), e);
+                        log::error!("Could not remove the connection {}: {}", conn.uuid(), e);
                     }
                 } else {
                     if let Err(e) = self.client.add_or_update_connection(conn).await {
-                        eprintln!("Could not add/update the connection {}: {}", conn.uuid(), e);
+                        log::error!("Could not add/update the connection {}: {}", conn.uuid(), e);
                     }
                 }
             }

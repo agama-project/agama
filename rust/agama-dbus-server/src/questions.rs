@@ -38,7 +38,10 @@ impl GenericQuestionObject {
 
     #[dbus_interface(property)]
     pub fn default_option(&self) -> &str {
-        self.0.default_option.as_str()
+        match self.default_option {
+            Some(ref option) => option.as_str(),
+            None => "",
+        }
     }
 
     #[dbus_interface(property)]

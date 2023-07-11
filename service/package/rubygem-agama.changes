@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul  5 14:02:23 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Delay zFCP probing after activating a controller and ensure the
+  system is marked as deprecated if needed after probing zFCP
+  (gh#openSUSE/agama#650).
+
+-------------------------------------------------------------------
 Wed Jun 14 15:11:56 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Extend zFCP D-Bus API to provide allow_lun_scan info

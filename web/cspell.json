@@ -23,6 +23,7 @@
         "autoconnect",
         "btrfs",
         "ccmp",
+        "chzdev",
         "dasd",
         "dasds",
         "dbus",
@@ -60,7 +61,9 @@
         "testsuite",
         "textinput",
         "tkip",
-        "udev"
+        "udev",
+        "wwpn",
+        "zfcp"
       ]
     }
   ],

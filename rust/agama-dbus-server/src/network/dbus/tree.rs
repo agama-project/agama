@@ -1,8 +1,9 @@
 use agama_lib::error::ServiceError;
 use parking_lot::Mutex;
-use uuid::Uuid;
+use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
-use crate::{action::Action, dbus::interfaces, model::*};
+use crate::network::{action::Action, dbus::interfaces, model::*};
+use log;
 use std::collections::HashMap;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
@@ -36,7 +37,10 @@ impl Tree {
     /// adding/removing interfaces. We should add/update/delete objects as needed.
     ///
     /// * `connections`: list of connections.
-    pub async fn set_connections(&self, connections: &Vec<Connection>) -> Result<(), ServiceError> {
+    pub async fn set_connections(
+        &self,
+        connections: &mut Vec<Connection>,
+    ) -> Result<(), ServiceError> {
         self.remove_connections().await?;
         self.add_connections(connections).await?;
         Ok(())
@@ -57,10 +61,11 @@ impl Tree {
     pub async fn add_devices(&mut self, devices: &Vec<Device>) -> Result<(), ServiceError> {
         for (i, dev) in devices.iter().enumerate() {
             let path = format!("{}/{}", DEVICES_PATH, i);
+            let path = ObjectPath::try_from(path.as_str()).unwrap();
             self.add_interface(&path, interfaces::Device::new(dev.clone()))
                 .await?;
             let mut objects = self.objects.lock();
-            objects.register_device(&dev.name, &path);
+            objects.register_device(&dev.name, path);
         }
 
         self.add_interface(
@@ -75,10 +80,15 @@ impl Tree {
     /// Adds a connection to the D-Bus tree.
     ///
     /// * `connection`: connection to add.
-    pub async fn add_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
+    pub async fn add_connection(&self, conn: &mut Connection) -> Result<(), ServiceError> {
         let mut objects = self.objects.lock();
 
-        let path = format!("{}/{}", CONNECTIONS_PATH, objects.connections.len());
+        let (id, path) = objects.register_connection(&conn);
+        if id != conn.id() {
+            conn.set_id(&id)
+        }
+        log::info!("Publishing network connection '{}'", id);
+
         let cloned = Arc::new(Mutex::new(conn.clone()));
         self.add_interface(&path, interfaces::Connection::new(Arc::clone(&cloned)))
             .await?;
@@ -97,28 +107,27 @@ impl Tree {
             .await?;
         }
 
-        objects.register_connection(conn.uuid(), &path);
         Ok(())
     }
 
     /// Removes a connection from the tree
     ///
-    /// * `uuid`: UUID of the connection to remove.
-    pub async fn remove_connection(&mut self, uuid: Uuid) -> Result<(), ServiceError> {
+    /// * `id`: connection ID.
+    pub async fn remove_connection(&mut self, id: &str) -> Result<(), ServiceError> {
         let mut objects = self.objects.lock();
-        let Some(path) = objects.connection_path(uuid) else {
+        let Some(path) = objects.connection_path(id) else {
             return Ok(())
         };
-        self.remove_connection_on(path).await?;
-        objects.deregister_connection(uuid).unwrap();
+        self.remove_connection_on(path.as_str()).await?;
+        objects.deregister_connection(id).unwrap();
         Ok(())
     }
 
     /// Adds connections to the D-Bus tree.
     ///
     /// * `connections`: list of connections.
-    async fn add_connections(&self, connections: &Vec<Connection>) -> Result<(), ServiceError> {
-        for conn in connections.iter() {
+    async fn add_connections(&self, connections: &mut Vec<Connection>) -> Result<(), ServiceError> {
+        for conn in connections.iter_mut() {
             self.add_connection(conn).await?;
         }
 
@@ -178,44 +187,53 @@ impl Tree {
 
 /// Objects paths for known devices and connections
 ///
-/// TODO: use zvariant::OwnedObjectPath instead of String as values.
+/// Connections are indexed by its Id, which is expected to be unique.
 #[derive(Debug, Default)]
 pub struct ObjectsRegistry {
     /// device_name (eth0) -> object_path
-    pub devices: HashMap<String, String>,
-    /// uuid -> object_path
-    pub connections: HashMap<Uuid, String>,
+    devices: HashMap<String, OwnedObjectPath>,
+    /// id -> object_path
+    connections: HashMap<String, OwnedObjectPath>,
 }
 
 impl ObjectsRegistry {
     /// Registers a network device.
     ///
-    /// * `name`: device name.
+    /// * `id`: device name.
     /// * `path`: object path.
-    pub fn register_device(&mut self, name: &str, path: &str) {
-        self.devices.insert(name.to_string(), path.to_string());
+    pub fn register_device(&mut self, id: &str, path: ObjectPath) {
+        self.devices.insert(id.to_string(), path.into());
     }
 
-    /// Registers a network connection.
+    /// Registers a network connection and returns its D-Bus path.
     ///
-    /// * `uuid`: connection UUID.
-    /// * `path`: object path.
-    pub fn register_connection(&mut self, uuid: Uuid, path: &str) {
-        self.connections.insert(uuid, path.to_string());
+    /// It returns the connection Id and the D-Bus path. Bear in mind that the Id can be different
+    /// in case the original one already existed.
+    ///
+    /// * `conn`: network connection.
+    pub fn register_connection(&mut self, conn: &Connection) -> (String, ObjectPath) {
+        let path = format!("{}/{}", CONNECTIONS_PATH, self.connections.len());
+        let path = ObjectPath::try_from(path).unwrap();
+        let mut id = conn.id().to_string();
+        if self.connection_path(&id).is_some() {
+            id = self.propose_id(&id);
+        };
+        self.connections.insert(id.clone(), path.clone().into());
+        (id, path)
     }
 
     /// Returns the path for a connection.
     ///
-    /// * `uuid`: connection UUID.
-    pub fn connection_path(&self, uuid: Uuid) -> Option<&str> {
-        self.connections.get(&uuid).map(|p| p.as_str())
+    /// * `id`: connection ID.
+    pub fn connection_path(&self, id: &str) -> Option<ObjectPath> {
+        self.connections.get(id).map(|p| p.as_ref())
     }
 
     /// Deregisters a network connection.
     ///
-    /// * `uuid`: connection UUID.
-    pub fn deregister_connection(&mut self, uuid: Uuid) -> Option<String> {
-        self.connections.remove(&uuid)
+    /// * `id`: connection ID.
+    pub fn deregister_connection(&mut self, id: &str) -> Option<OwnedObjectPath> {
+        self.connections.remove(id)
     }
 
     /// Returns all devices paths.
@@ -226,5 +244,19 @@ impl ObjectsRegistry {
     /// Returns all connection paths.
     pub fn connections_paths(&self) -> Vec<String> {
         self.connections.values().map(|p| p.to_string()).collect()
+    }
+
+    /// Proposes a connection ID.
+    ///
+    /// * `id`: original connection ID.
+    fn propose_id(&self, id: &str) -> String {
+        let prefix = format!("{}-", id);
+        let filtered: Vec<_> = self
+            .connections
+            .keys()
+            .filter_map(|i| i.strip_prefix(&prefix).and_then(|n| n.parse::<u32>().ok()))
+            .collect();
+        let index = filtered.into_iter().max().unwrap_or(0);
+        format!("{}{}", prefix, index + 1)
     }
 }

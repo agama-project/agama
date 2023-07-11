@@ -122,7 +122,7 @@ const ItemContent = ({ device }) => {
 
       const members = device.members.map(m => m.split("/").at(-1));
 
-      return <div>Members: {members.join(", ")}</div>;
+      return <div>Members: {members.sort().join(", ")}</div>;
     };
 
     const RAIDInfo = () => {
@@ -130,7 +130,7 @@ const ItemContent = ({ device }) => {
 
       const devices = device.devices.map(m => m.split("/").at(-1));
 
-      return <div>Devices: {devices.join(", ")}</div>;
+      return <div>Devices: {devices.sort().join(", ")}</div>;
     };
 
     const MultipathInfo = () => {
@@ -138,7 +138,7 @@ const ItemContent = ({ device }) => {
 
       const wires = device.wires.map(m => m.split("/").at(-1));
 
-      return <div>Wires: {wires.join(", ")}</div>;
+      return <div>Wires: {wires.sort().join(", ")}</div>;
     };
 
     return (

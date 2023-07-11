@@ -18,6 +18,11 @@ trait Connections {
     /// Apply method
     fn apply(&self) -> zbus::Result<()>;
 
+    /// Gets a connection D-Bus path by its ID
+    ///
+    /// * `id`: connection ID.
+    fn get_connection(&self, id: &str) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+
     /// GetConnections method
     fn get_connections(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 
@@ -36,17 +41,20 @@ trait Wireless {
     /// Possible values are 'unknown', 'adhoc', 'infrastructure', 'ap' or 'mesh'
     #[dbus_proxy(property)]
     fn mode(&self) -> zbus::Result<String>;
-    fn set_mode(&self, value: String) -> zbus::Result<()>;
+    #[dbus_proxy(property)]
+    fn set_mode(&self, value: &str) -> zbus::Result<()>;
 
     /// Password property
     #[dbus_proxy(property)]
     fn password(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
     fn set_password(&self, value: &str) -> zbus::Result<()>;
 
     /// SSID property
     #[dbus_proxy(property, name = "SSID")]
     fn ssid(&self) -> zbus::Result<Vec<u8>>;
-    fn set_ssid(&self, value: Vec<u8>) -> zbus::Result<()>;
+    #[dbus_proxy(property, name = "SSID")]
+    fn set_ssid(&self, value: &[u8]) -> zbus::Result<()>;
 
     /// Wireless Security property
     ///
@@ -54,7 +62,8 @@ trait Wireless {
     ///     'wpa-eap', 'wpa-eap-suite-b192'
     #[dbus_proxy(property)]
     fn security(&self) -> zbus::Result<String>;
-    fn set_security(&self, value: String) -> zbus::Result<()>;
+    #[dbus_proxy(property)]
+    fn set_security(&self, value: &str) -> zbus::Result<()>;
 }
 
 #[dbus_proxy(
@@ -66,10 +75,6 @@ trait Connection {
     /// Id property
     #[dbus_proxy(property)]
     fn id(&self) -> zbus::Result<String>;
-
-    /// UUID property
-    #[dbus_proxy(property, name = "UUID")]
-    fn uuid(&self) -> zbus::Result<String>;
 }
 
 #[dbus_proxy(
@@ -82,23 +87,27 @@ trait IPv4 {
     ///
     /// By now just an array of IPv4 addresses in string format
     #[dbus_proxy(property)]
-    fn addresses(&self) -> zbus::Result<Vec<(String, u32)>>;
-    fn set_addresses(&self, value: &[(&str, u32)]) -> zbus::Result<()>;
+    fn addresses(&self) -> zbus::Result<Vec<String>>;
+    #[dbus_proxy(property)]
+    fn set_addresses(&self, value: &[&str]) -> zbus::Result<()>;
 
     /// Gateway property
     #[dbus_proxy(property)]
     fn gateway(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
     fn set_gateway(&self, value: &str) -> zbus::Result<()>;
 
     /// Method property
     #[dbus_proxy(property)]
-    fn method(&self) -> zbus::Result<u8>;
-    fn set_method(&self, value: u8) -> zbus::Result<()>;
+    fn method(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_method(&self, value: &str) -> zbus::Result<()>;
 
     /// Nameservers property
     ///
     /// By now just an array of IPv4 addresses in string format
     #[dbus_proxy(property)]
     fn nameservers(&self) -> zbus::Result<Vec<String>>;
+    #[dbus_proxy(property)]
     fn set_nameservers(&self, value: &[&str]) -> zbus::Result<()>;
 }

@@ -10,7 +10,7 @@ mod progress;
 use crate::error::CliError;
 use agama_lib::error::ServiceError;
 use agama_lib::manager::ManagerClient;
-use agama_lib::progress::build_progress_monitor;
+use agama_lib::progress::ProgressMonitor;
 use async_std::task::{self, block_on};
 use commands::Commands;
 use config::run as run_config_cmd;
@@ -18,6 +18,7 @@ use printers::Format;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
 use std::error::Error;
+use std::thread::sleep;
 use std::time::Duration;
 
 #[derive(Parser)]
@@ -39,24 +40,52 @@ async fn probe() -> Result<(), Box<dyn Error>> {
     Ok(probe.await?)
 }
 
-async fn install(manager: &ManagerClient<'_>) -> Result<(), Box<dyn Error>> {
+/// Starts the installation process
+///
+/// Before starting, it makes sure that the manager is idle.
+///
+/// * `manager`: the manager client.
+async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> Result<(), Box<dyn Error>> {
+    if manager.is_busy().await {
+        println!("Agama's manager is busy. Waiting until it is ready...");
+    }
+
     if !manager.can_install().await? {
-        // TODO: add some hints what is wrong or add dedicated command for it?
-        eprintln!("There are issues with configuration. Cannot install.");
         return Err(Box::new(CliError::ValidationError));
     }
-    let another_manager = build_manager().await?;
-    let install = task::spawn(async move { another_manager.install().await });
-    show_progress().await?;
 
-    Ok(install.await?)
+    // Display the progress (if needed) and makes sure that the manager is ready
+    manager.wait().await?;
+
+    let progress = task::spawn(async { show_progress().await });
+    // Try to start the installation up to max_attempts times.
+    let mut attempts = 1;
+    loop {
+        match manager.install().await {
+            Ok(()) => break,
+            Err(e) => {
+                eprintln!(
+                    "Could not start the installation process: {e}. Attempt {}/{}.",
+                    attempts, max_attempts
+                );
+            }
+        }
+        if attempts == max_attempts {
+            eprintln!("Giving up.");
+            return Err(Box::new(CliError::InstallationError));
+        }
+        attempts += 1;
+        sleep(Duration::from_secs(1));
+    }
+    let _ = progress.await;
+    Ok(())
 }
 
 async fn show_progress() -> Result<(), ServiceError> {
     // wait 1 second to give other task chance to start, so progress can display something
     task::sleep(Duration::from_secs(1)).await;
     let conn = agama_lib::connection().await?;
-    let mut monitor = build_progress_monitor(conn).await.unwrap();
+    let mut monitor = ProgressMonitor::new(conn).await.unwrap();
     let presenter = InstallerProgress::new();
     monitor
         .run(presenter)
@@ -69,7 +98,7 @@ async fn wait_for_services(manager: &ManagerClient<'_>) -> Result<(), Box<dyn Er
     let services = manager.busy_services().await?;
     // TODO: having it optional
     if !services.is_empty() {
-        eprintln!("There are busy services {services:?}. Waiting for them.");
+        eprintln!("The Agama service is busy. Waiting for it to be available...");
         show_progress().await?
     }
     Ok(())
@@ -95,8 +124,7 @@ async fn run_command(cli: Cli) -> Result<(), Box<dyn Error>> {
         Commands::Profile(subcommand) => Ok(run_profile_cmd(subcommand)?),
         Commands::Install => {
             let manager = build_manager().await?;
-            block_on(wait_for_services(&manager))?;
-            block_on(install(&manager))
+            block_on(install(&manager, 3))
         }
         _ => unimplemented!(),
     }
