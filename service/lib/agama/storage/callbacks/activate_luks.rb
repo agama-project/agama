@@ -73,7 +73,7 @@ module Agama
             "device"  => info.device_name,
             "label"   => info.label,
             "size"    => formatted_size(info.size),
-            "attempt" => attempt
+            "attempt" => attempt.to_s
           }
           QuestionWithPassword.new(
             qclass:         "storage.luks_activation",
