@@ -21,7 +21,7 @@
 
 require "agama/dbus/clients/base"
 require "agama/dbus/clients/question"
-require "agama/luks_activation_question"
+require "agama/dbus/clients/question_with_password"
 
 module Agama
   module DBus

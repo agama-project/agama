@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/luks_activation_question"
+require "agama/question_with_password"
 require "y2storage/disk_size"
 
 module Agama
