@@ -1,5 +1,5 @@
-use agama_lib::error::ProfileError;
 use agama_lib::profile::{download, ProfileEvaluator, ProfileValidator, ValidationResult};
+use anyhow::{anyhow, Context};
 use clap::Subcommand;
 use std::path::Path;
 
@@ -15,7 +15,7 @@ pub enum ProfileCommands {
     Evaluate { path: String },
 }
 
-fn validate(path: String) -> Result<(), ProfileError> {
+fn validate(path: String) -> anyhow::Result<()> {
     let validator = ProfileValidator::default_schema()?;
     let path = Path::new(&path);
     let result = validator.validate_file(path)?;
@@ -33,14 +33,14 @@ fn validate(path: String) -> Result<(), ProfileError> {
     Ok(())
 }
 
-fn evaluate(path: String) -> Result<(), ProfileError> {
+fn evaluate(path: String) -> anyhow::Result<()> {
     let evaluator = ProfileEvaluator {};
-    evaluator.evaluate(Path::new(&path))
+    Ok(evaluator.evaluate(Path::new(&path))?)
 }
 
-pub fn run(subcommand: ProfileCommands) -> Result<(), ProfileError> {
+pub fn run(subcommand: ProfileCommands) -> anyhow::Result<()> {
     match subcommand {
-        ProfileCommands::Download { url } => download(&url),
+        ProfileCommands::Download { url } => Ok(download(&url)?),
         ProfileCommands::Validate { path } => validate(path),
         ProfileCommands::Evaluate { path } => evaluate(path),
     }

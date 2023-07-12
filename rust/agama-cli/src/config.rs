@@ -31,7 +31,7 @@ pub enum ConfigAction {
     Load(String),
 }
 
-pub async fn run(subcommand: ConfigCommands, format: Format) -> Result<(), Box<dyn Error>> {
+pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<()> {
     let store = SettingsStore::new(connection().await?).await?;
 
     match parse_config_command(subcommand) {
@@ -44,7 +44,7 @@ pub async fn run(subcommand: ConfigCommands, format: Format) -> Result<(), Box<d
             for (key, value) in changes {
                 model.set(&key.to_case(Case::Snake), SettingValue(value))?;
             }
-            store.store(&model).await
+            Ok(store.store(&model).await?)
         }
         ConfigAction::Show => {
             let model = store.load(None).await?;
@@ -55,7 +55,7 @@ pub async fn run(subcommand: ConfigCommands, format: Format) -> Result<(), Box<d
             let scope = key_to_scope(&key).unwrap();
             let mut model = store.load(Some(vec![scope])).await?;
             model.add(&key.to_case(Case::Snake), SettingObject::from(values))?;
-            store.store(&model).await
+            Ok(store.store(&model).await?)
         }
         ConfigAction::Load(path) => {
             let contents = std::fs::read_to_string(path)?;
@@ -63,7 +63,7 @@ pub async fn run(subcommand: ConfigCommands, format: Format) -> Result<(), Box<d
             let scopes = result.defined_scopes();
             let mut model = store.load(Some(scopes)).await?;
             model.merge(&result);
-            store.store(&model).await
+            Ok(store.store(&model).await?)
         }
     }
 }

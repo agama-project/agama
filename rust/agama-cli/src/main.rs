@@ -18,7 +18,6 @@ use printers::Format;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
 use std::{
-    error::Error,
     process::{ExitCode, Termination},
     thread::sleep,
     time::Duration,
@@ -35,7 +34,7 @@ struct Cli {
     pub format: Format,
 }
 
-async fn probe() -> Result<(), Box<dyn Error>> {
+async fn probe() -> anyhow::Result<()> {
     let another_manager = build_manager().await?;
     let probe = task::spawn(async move { another_manager.probe().await });
     show_progress().await?;
@@ -48,13 +47,13 @@ async fn probe() -> Result<(), Box<dyn Error>> {
 /// Before starting, it makes sure that the manager is idle.
 ///
 /// * `manager`: the manager client.
-async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> Result<(), Box<dyn Error>> {
+async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> anyhow::Result<()> {
     if manager.is_busy().await {
         println!("Agama's manager is busy. Waiting until it is ready...");
     }
 
     if !manager.can_install().await? {
-        return Err(Box::new(CliError::ValidationError));
+        return Err(CliError::ValidationError)?;
     }
 
     // Display the progress (if needed) and makes sure that the manager is ready
@@ -75,7 +74,7 @@ async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> Result<(), Bo
         }
         if attempts == max_attempts {
             eprintln!("Giving up.");
-            return Err(Box::new(CliError::InstallationError));
+            return Err(CliError::InstallationError)?;
         }
         attempts += 1;
         sleep(Duration::from_secs(1));
@@ -97,7 +96,7 @@ async fn show_progress() -> Result<(), ServiceError> {
     Ok(())
 }
 
-async fn wait_for_services(manager: &ManagerClient<'_>) -> Result<(), Box<dyn Error>> {
+async fn wait_for_services(manager: &ManagerClient<'_>) -> Result<(), ServiceError> {
     let services = manager.busy_services().await?;
     // TODO: having it optional
     if !services.is_empty() {
@@ -107,12 +106,12 @@ async fn wait_for_services(manager: &ManagerClient<'_>) -> Result<(), Box<dyn Er
     Ok(())
 }
 
-async fn build_manager<'a>() -> Result<ManagerClient<'a>, Box<dyn Error>> {
+async fn build_manager<'a>() -> anyhow::Result<ManagerClient<'a>> {
     let conn = agama_lib::connection().await?;
     Ok(ManagerClient::new(conn).await?)
 }
 
-async fn run_command(cli: Cli) -> Result<(), Box<dyn Error>> {
+async fn run_command(cli: Cli) -> anyhow::Result<()> {
     match cli.command {
         Commands::Config(subcommand) => {
             let manager = build_manager().await?;
@@ -152,7 +151,7 @@ async fn main() -> CliResult {
     let cli = Cli::parse();
 
     if let Err(error) = run_command(cli).await {
-        eprintln!("{}", error);
+        eprintln!("{:?}", error);
         return CliResult::Error;
     }
     CliResult::Ok

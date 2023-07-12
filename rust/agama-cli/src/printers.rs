@@ -1,5 +1,5 @@
+use anyhow;
 use serde::Serialize;
-use std::error;
 use std::fmt::Debug;
 use std::io::Write;
 
@@ -16,7 +16,7 @@ use std::io::Write;
 /// print(user, io::stdout(), Some(Format::Json))
 ///   .expect("Something went wrong!")
 /// ```
-pub fn print<T, W>(content: T, writer: W, format: Format) -> Result<(), Box<dyn error::Error>>
+pub fn print<T, W>(content: T, writer: W, format: Format) -> anyhow::Result<()>
 where
     T: serde::Serialize + Debug,
     W: Write,
@@ -38,7 +38,7 @@ pub enum Format {
 }
 
 pub trait Printer<T, W> {
-    fn print(self: Box<Self>) -> Result<(), Box<dyn error::Error>>;
+    fn print(self: Box<Self>) -> anyhow::Result<()>;
 }
 
 pub struct JsonPrinter<T, W> {
@@ -47,7 +47,7 @@ pub struct JsonPrinter<T, W> {
 }
 
 impl<T: Serialize + Debug, W: Write> Printer<T, W> for JsonPrinter<T, W> {
-    fn print(self: Box<Self>) -> Result<(), Box<dyn error::Error>> {
+    fn print(self: Box<Self>) -> anyhow::Result<()> {
         Ok(serde_json::to_writer(self.writer, &self.content)?)
     }
 }
@@ -57,7 +57,7 @@ pub struct TextPrinter<T, W> {
 }
 
 impl<T: Serialize + Debug, W: Write> Printer<T, W> for TextPrinter<T, W> {
-    fn print(mut self: Box<Self>) -> Result<(), Box<dyn error::Error>> {
+    fn print(mut self: Box<Self>) -> anyhow::Result<()> {
         Ok(write!(self.writer, "{:?}", &self.content)?)
     }
 }
@@ -68,7 +68,7 @@ pub struct YamlPrinter<T, W> {
 }
 
 impl<T: Serialize + Debug, W: Write> Printer<T, W> for YamlPrinter<T, W> {
-    fn print(self: Box<Self>) -> Result<(), Box<dyn error::Error>> {
+    fn print(self: Box<Self>) -> anyhow::Result<()> {
         Ok(serde_yaml::to_writer(self.writer, &self.content)?)
     }
 }
