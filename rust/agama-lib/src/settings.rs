@@ -17,6 +17,8 @@ use std::collections::HashMap;
 ///
 /// TODO: derive for top-level structs too
 use std::convert::TryFrom;
+use std::fmt::Display;
+use thiserror::Error;
 
 /// Implements support for easily settings attributes values given an ID (`"users.name"`) and a
 /// string value (`"Foo bar"`).
@@ -58,12 +60,12 @@ use std::convert::TryFrom;
 /// assert_eq!(&settings.user.name.unwrap(), "foo.bar");
 /// ```
 pub trait Settings {
-    fn add(&mut self, _attr: &str, _value: SettingObject) -> Result<(), &'static str> {
-        Err("unknown collection")
+    fn add(&mut self, attr: &str, _value: SettingObject) -> Result<(), SettingsError> {
+        Err(SettingsError::UnknownCollection(attr.to_string()))
     }
 
-    fn set(&mut self, _attr: &str, _value: SettingValue) -> Result<(), &'static str> {
-        Err("unknown attribute")
+    fn set(&mut self, attr: &str, _value: SettingValue) -> Result<(), SettingsError> {
+        Err(SettingsError::UnknownAttribute(attr.to_string()))
     }
 
     fn merge(&mut self, _other: &Self)
@@ -88,6 +90,12 @@ pub trait Settings {
 /// ```
 #[derive(Clone, Debug)]
 pub struct SettingValue(pub String);
+
+impl Display for SettingValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
 
 /// Represents a string-based collection and allows converting to other types
 ///
@@ -115,19 +123,19 @@ impl From<HashMap<String, String>> for SettingObject {
 }
 
 impl TryFrom<SettingValue> for bool {
-    type Error = &'static str;
+    type Error = SettingsError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         match value.0.to_lowercase().as_str() {
             "true" | "yes" | "t" => Ok(true),
             "false" | "no" | "f" => Ok(false),
-            _ => Err("not a valid boolean"),
+            _ => Err(SettingsError::InvalidValue(value.to_string())),
         }
     }
 }
 
 impl TryFrom<SettingValue> for Option<bool> {
-    type Error = &'static str;
+    type Error = SettingsError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         Ok(Some(value.try_into()?))
@@ -135,7 +143,7 @@ impl TryFrom<SettingValue> for Option<bool> {
 }
 
 impl TryFrom<SettingValue> for String {
-    type Error = &'static str;
+    type Error = SettingsError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         Ok(value.0)
@@ -143,7 +151,7 @@ impl TryFrom<SettingValue> for String {
 }
 
 impl TryFrom<SettingValue> for Option<String> {
-    type Error = &'static str;
+    type Error = SettingsError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         Ok(Some(value.try_into()?))
@@ -171,4 +179,16 @@ mod tests {
         let value: String = value.try_into().unwrap();
         assert_eq!(value, "some value");
     }
+}
+
+#[derive(Error, Debug)]
+pub enum SettingsError {
+    #[error("Unknown attribute '{0}'")]
+    UnknownAttribute(String),
+    #[error("Unknown collection '{0}'")]
+    UnknownCollection(String),
+    #[error("Invalid value '{0}'")]
+    InvalidValue(String),
+    #[error("Missing key '{0}'")]
+    MissingKey(String),
 }

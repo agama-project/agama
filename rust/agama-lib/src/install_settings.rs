@@ -1,7 +1,7 @@
 //! Configuration settings handling
 //!
 //! This module implements the mechanisms to load and store the installation settings.
-use crate::settings::{SettingObject, SettingValue, Settings};
+use crate::settings::{SettingObject, SettingValue, Settings, SettingsError};
 use crate::{
     network::NetworkSettings, software::SoftwareSettings, storage::StorageSettings,
     users::UserSettings,
@@ -93,7 +93,7 @@ impl InstallSettings {
 }
 
 impl Settings for InstallSettings {
-    fn add(&mut self, attr: &str, value: SettingObject) -> Result<(), &'static str> {
+    fn add(&mut self, attr: &str, value: SettingObject) -> Result<(), SettingsError> {
         if let Some((ns, id)) = attr.split_once('.') {
             match ns {
                 "network" => {
@@ -112,13 +112,13 @@ impl Settings for InstallSettings {
                     let storage = self.storage.get_or_insert(Default::default());
                     storage.add(id, value)?
                 }
-                _ => return Err("unknown attribute"),
+                _ => return Err(SettingsError::UnknownCollection(attr.to_string())),
             }
         }
         Ok(())
     }
 
-    fn set(&mut self, attr: &str, value: SettingValue) -> Result<(), &'static str> {
+    fn set(&mut self, attr: &str, value: SettingValue) -> Result<(), SettingsError> {
         if let Some((ns, id)) = attr.split_once('.') {
             match ns {
                 "network" => {
@@ -143,7 +143,7 @@ impl Settings for InstallSettings {
                     let storage = self.storage.get_or_insert(Default::default());
                     storage.set(id, value)?
                 }
-                _ => return Err("unknown attribute"),
+                _ => return Err(SettingsError::UnknownAttribute(attr.to_string())),
             }
         }
         Ok(())

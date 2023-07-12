@@ -1,4 +1,4 @@
-use crate::settings::{SettingValue, Settings};
+use crate::settings::{SettingValue, Settings, SettingsError};
 use agama_derive::Settings;
 use serde::{Deserialize, Serialize};
 
@@ -14,7 +14,7 @@ pub struct UserSettings {
 }
 
 impl Settings for UserSettings {
-    fn set(&mut self, attr: &str, value: SettingValue) -> Result<(), &'static str> {
+    fn set(&mut self, attr: &str, value: SettingValue) -> Result<(), SettingsError> {
         if let Some((ns, id)) = attr.split_once('.') {
             match ns {
                 "user" => {
@@ -25,7 +25,7 @@ impl Settings for UserSettings {
                     let root_user = self.root.get_or_insert(Default::default());
                     root_user.set(id, value)?
                 }
-                _ => return Err("unknown attribute"),
+                _ => return Err(SettingsError::UnknownAttribute(attr.to_string())),
             }
         }
         Ok(())
