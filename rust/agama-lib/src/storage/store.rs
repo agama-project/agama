@@ -17,9 +17,13 @@ impl<'a> StorageStore<'a> {
         })
     }
 
-    // TODO: read the settings from the service
     pub async fn load(&self) -> Result<StorageSettings, ServiceError> {
-        Ok(Default::default())
+        let names = self.storage_client.candidate_devices().await?;
+        let devices = names.into_iter().map(|n| n.into()).collect();
+        Ok(StorageSettings {
+            devices,
+            ..Default::default()
+        })
     }
 
     pub async fn store(&self, settings: &StorageSettings) -> Result<(), ServiceError> {

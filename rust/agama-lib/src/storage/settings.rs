@@ -25,6 +25,12 @@ pub struct Device {
     pub name: String,
 }
 
+impl From<String> for Device {
+    fn from(value: String) -> Self {
+        Self { name: value }
+    }
+}
+
 impl TryFrom<SettingObject> for Device {
     type Error = SettingsError;
 
