@@ -51,7 +51,7 @@ module Agama
 
           questions_client.ask(question) do |question_client|
             # TODO: remove!
-            @logger.info("answer: #{question_client.answer.inspect} pwd #{question.password.inspect}")
+            @logger.info("answer: #{question_client.answer.inspect} pwd #{question_client.password.inspect}")
             activate = question_client.answer == :decrypt
             password = question_client.password
 
