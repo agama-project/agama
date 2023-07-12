@@ -20,13 +20,11 @@ pub enum ServiceError {
 
 #[derive(Error, Debug)]
 pub enum ProfileError {
-    #[error("Cannot read the profile '{0}'")]
+    #[error("Could not read the profile")]
     Unreachable(#[from] curl::Error),
-    #[error("No hardware information available: '{0}'")]
-    NoHardwareInfo(io::Error),
-    #[error("Could not evaluate the profile: '{0}'")]
-    EvaluationError(io::Error),
-    #[error("Input/output error: '{0}'")]
+    #[error("Jsonnet evaluation failed:\n{0}")]
+    EvaluationError(String),
+    #[error("I/O error: '{0}'")]
     InputOutputError(#[from] io::Error),
     #[error("The profile is not a valid JSON file")]
     FormatError(#[from] serde_json::Error),

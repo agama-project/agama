@@ -1,5 +1,5 @@
 use agama_lib::profile::{download, ProfileEvaluator, ProfileValidator, ValidationResult};
-use anyhow::{anyhow, Context};
+use anyhow::Context;
 use clap::Subcommand;
 use std::path::Path;
 
@@ -18,13 +18,15 @@ pub enum ProfileCommands {
 fn validate(path: String) -> anyhow::Result<()> {
     let validator = ProfileValidator::default_schema()?;
     let path = Path::new(&path);
-    let result = validator.validate_file(path)?;
+    let result = validator
+        .validate_file(path)
+        .context("Could not validate the profile")?;
     match result {
         ValidationResult::Valid => {
             println!("The profile is valid")
         }
         ValidationResult::NotValid(errors) => {
-            println!("The profile is not valid. Please, check the following errors:\n");
+            eprintln!("The profile is not valid. Please, check the following errors:\n");
             for error in errors {
                 println!("* {error}")
             }
@@ -35,7 +37,10 @@ fn validate(path: String) -> anyhow::Result<()> {
 
 fn evaluate(path: String) -> anyhow::Result<()> {
     let evaluator = ProfileEvaluator {};
-    Ok(evaluator.evaluate(Path::new(&path))?)
+    evaluator
+        .evaluate(Path::new(&path))
+        .context(format!("Could not evaluate the profile"))?;
+    Ok(())
 }
 
 pub fn run(subcommand: ProfileCommands) -> anyhow::Result<()> {
