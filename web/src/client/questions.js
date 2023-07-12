@@ -144,9 +144,13 @@ class QuestionsClient {
    * @param {Object} question
    */
   async answer(question) {
+    console.log("answering question");
     const path = DBUS_CONFIG.questions.path + "/" + question.id;
 
     if (question.type === QUESTION_TYPES.withPassword) {
+      console.log("answering question with password");
+      // TODO: REMOVE
+      console.log(question);
       const proxy = await this.client.proxy(DBUS_CONFIG.question.ifaces.withPassword, path);
       proxy.Password = question.password;
     }
