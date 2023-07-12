@@ -42,8 +42,10 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
   console.log(question);
 
   const actionCallback = (option) => {
+    console.log("answering question");
     question.password = password;
     question.answer = option;
+    console.log(question)
     answerCallback(question);
   };
 
