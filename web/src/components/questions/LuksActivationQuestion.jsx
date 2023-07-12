@@ -38,6 +38,9 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
   const conditions = { disable: { decrypt: password === "" } };
   const defaultAction = "decrypt";
 
+  console.log("luks question:");
+  console.log(question);
+
   const actionCallback = (option) => {
     question.password = password;
     question.answer = option;
