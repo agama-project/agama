@@ -35,6 +35,8 @@ const renderAlert = (attempt) => {
 
 export default function LuksActivationQuestion({ question, answerCallback }) {
   const [password, setPassword] = useState(question.password || "");
+  console.log("password value");
+  console.log(password);
   const conditions = { disable: { decrypt: password === "" } };
   const defaultAction = "decrypt";
 
@@ -50,6 +52,9 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
   };
 
   const triggerDefaultAction = (e) => {
+    console.log("form action");
+    console.log("password value");
+    console.log(password);
     e.preventDefault();
     if (!conditions.disable?.[defaultAction]) {
       actionCallback(defaultAction);
