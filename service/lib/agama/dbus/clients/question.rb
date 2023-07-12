@@ -59,11 +59,11 @@ module Agama
           @dbus_iface["Answer"].to_sym
         end
 
-        # @return [String,nil] Password or nil if there is no LUKS interface
+        # @return [String,nil] Password or nil if there is no withPassword interface
         def password
-          return nil unless @luks_iface
+          return nil unless @password_iface
 
-          @luks_iface["Password"]
+          @password_iface["Password"]
         end
 
         # Whether the question is already answered

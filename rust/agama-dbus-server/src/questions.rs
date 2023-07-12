@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::error::Error;
-use log;
+use log::{self, info};
 use agama_lib::{connection_to,questions::{self, GenericQuestion, WithPassword}};
 use anyhow::Context;
 use zbus::{dbus_interface, fdo::ObjectManager, zvariant::ObjectPath, Connection};
@@ -62,11 +62,13 @@ struct WithPasswordObject(questions::WithPassword);
 impl WithPasswordObject {
     #[dbus_interface(property)]
     pub fn password(&self) -> &str {
+        info!("Reading password {}", self.0.password.as_str());
         self.0.password.as_str()
     }
 
     #[dbus_interface(property)]
     pub fn set_password(&mut self, value: &str) -> () {
+        info!("Setting password to {}", value);
         self.0.password = value.to_string();
     }
 }
