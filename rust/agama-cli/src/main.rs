@@ -17,9 +17,12 @@ use config::run as run_config_cmd;
 use printers::Format;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
-use std::error::Error;
-use std::thread::sleep;
-use std::time::Duration;
+use std::{
+    error::Error,
+    process::{ExitCode, Termination},
+    thread::sleep,
+    time::Duration,
+};
 
 #[derive(Parser)]
 #[command(name = "agama", version, about, long_about = None)]
@@ -130,13 +133,27 @@ async fn run_command(cli: Cli) -> Result<(), Box<dyn Error>> {
     }
 }
 
+/// Represents the result of execution.
+pub enum CliResult {
+    /// Successful execution.
+    Ok = 0,
+    /// Something went wrong.
+    Error = 1,
+}
+
+impl Termination for CliResult {
+    fn report(self) -> ExitCode {
+        ExitCode::from(self as u8)
+    }
+}
+
 #[async_std::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+async fn main() -> CliResult {
     let cli = Cli::parse();
 
     if let Err(error) = run_command(cli).await {
         eprintln!("{}", error);
-        return Err(error);
+        return CliResult::Error;
     }
-    Ok(())
+    CliResult::Ok
 }
