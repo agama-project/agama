@@ -47,8 +47,9 @@ pub struct JsonPrinter<T, W> {
 }
 
 impl<T: Serialize + Debug, W: Write> Printer<T, W> for JsonPrinter<T, W> {
-    fn print(self: Box<Self>) -> anyhow::Result<()> {
-        Ok(serde_json::to_writer(self.writer, &self.content)?)
+    fn print(mut self: Box<Self>) -> anyhow::Result<()> {
+        let json = serde_json::to_string(&self.content)?;
+        Ok(writeln!(self.writer, "{}", json)?)
     }
 }
 pub struct TextPrinter<T, W> {
@@ -58,7 +59,7 @@ pub struct TextPrinter<T, W> {
 
 impl<T: Serialize + Debug, W: Write> Printer<T, W> for TextPrinter<T, W> {
     fn print(mut self: Box<Self>) -> anyhow::Result<()> {
-        Ok(write!(self.writer, "{:?}", &self.content)?)
+        Ok(writeln!(self.writer, "{:?}", &self.content)?)
     }
 }
 
