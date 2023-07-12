@@ -84,6 +84,7 @@ function buildQuestion(dbusQuestion) {
   const ifacesAndProperties = getIfacesAndProperties(dbusQuestion);
 
   if (ifaces.includes(DBUS_CONFIG.question.ifaces.generic)) {
+    console.log("adding generic question");
     const dbusProperties = ifacesAndProperties[DBUS_CONFIG.question.ifaces.generic];
 
     question.type = QUESTION_TYPES.generic;
@@ -97,6 +98,7 @@ function buildQuestion(dbusQuestion) {
   }
 
   if (ifaces.includes(DBUS_CONFIG.question.ifaces.withPassword)) {
+    console.log("adding withPassword interface");
     const dbusProperties = ifacesAndProperties[DBUS_CONFIG.question.ifaces.withPassword];
 
     question.type = QUESTION_TYPES.withPassword;

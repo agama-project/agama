@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use log::info;
 
 /// module holdings data model for agama questions
 
@@ -25,6 +26,7 @@ pub struct GenericQuestion {
 
 impl GenericQuestion {
     pub fn new(id: u32, class: String, text: String, options: Vec<String>, default_option: String, data: HashMap<String, String>) -> Self {
+        info!("Creating new generic question with text {}", text);
         Self {
             id,
             class,
@@ -53,6 +55,7 @@ pub struct WithPassword {
 
 impl WithPassword {
     pub fn new(base: GenericQuestion) -> Self {
+        info!("Adding to question with password interface.");
         Self {
             password: "".to_string(),
             base,
