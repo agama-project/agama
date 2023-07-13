@@ -44,7 +44,7 @@ describe Agama::DBus::Clients::Questions do
 
   let(:question1) { Agama::Question.new("What?", options: [:this, :that]) }
   let(:question2) do
-    Agama::Question.new("When?", options: [:now, :later], default_option: :now)
+    Agama::Question.new(text: "When?", qclass: "test", options: [:now, :later], default_option: :now)
   end
   let(:question1_proxy) do
     instance_double(::DBus::ProxyObject, path: "/org/opensuse/Agama/Questions1/33")
