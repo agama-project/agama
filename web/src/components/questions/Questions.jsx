@@ -63,12 +63,10 @@ export default function Questions() {
   // Renders the first pending question
   const [currentQuestion] = pendingQuestions;
   let QuestionComponent = GenericQuestion;
-  console.log(currentQuestion);
   // show specialized popup for luks activation question
   // more can follow as it will be needed
   if (currentQuestion.class === "storage.luks_activation") {
     QuestionComponent = LuksActivationQuestion;
-    console.log("get luks question");
   }
   return <QuestionComponent question={currentQuestion} answerCallback={answerQuestion} />;
 }
