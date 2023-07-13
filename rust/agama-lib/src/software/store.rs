@@ -28,7 +28,7 @@ impl<'a> SoftwareStore<'a> {
         if let Some(product) = &settings.product {
             let products = self.software_client.products().await?;
             let ids: Vec<String> = products.into_iter().map(|p| p.id).collect();
-            if ids.contains(&product) {
+            if ids.contains(product) {
                 self.software_client.select_product(product).await?;
             } else {
                 return Err(ServiceError::UnknownProduct(product.clone(), ids));

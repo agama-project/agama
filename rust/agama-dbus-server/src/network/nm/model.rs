@@ -30,7 +30,7 @@ impl From<&str> for NmWirelessMode {
 
 impl NmWirelessMode {
     pub fn as_str(&self) -> &str {
-        &self.0.as_str()
+        self.0.as_str()
     }
 }
 
@@ -59,7 +59,7 @@ impl fmt::Display for NmWirelessMode {
 /// As we are using the number just to filter wireless devices, using the newtype
 /// pattern around an u32 is enough. For proper support, we might replace this
 /// struct with an enum.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct NmDeviceType(pub u32);
 
 impl From<NmDeviceType> for u32 {
@@ -71,12 +71,6 @@ impl From<NmDeviceType> for u32 {
 impl fmt::Display for NmDeviceType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
-    }
-}
-
-impl Default for NmDeviceType {
-    fn default() -> Self {
-        NmDeviceType(0)
     }
 }
 
@@ -131,7 +125,7 @@ impl TryFrom<NmKeyManagement> for SecurityProtocol {
 
 impl NmKeyManagement {
     pub fn as_str(&self) -> &str {
-        &self.0.as_str()
+        self.0.as_str()
     }
 }
 
@@ -152,7 +146,7 @@ impl Default for NmMethod {
 
 impl NmMethod {
     pub fn as_str(&self) -> &str {
-        &self.0.as_str()
+        self.0.as_str()
     }
 }
 

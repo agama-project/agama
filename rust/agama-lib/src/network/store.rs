@@ -18,15 +18,12 @@ impl<'a> NetworkStore<'a> {
     pub async fn load(&self) -> Result<NetworkSettings, ServiceError> {
         let connections = self.network_client.connections().await?;
 
-        Ok(NetworkSettings {
-            connections,
-            ..Default::default()
-        })
+        Ok(NetworkSettings { connections })
     }
 
     pub async fn store(&self, settings: &NetworkSettings) -> Result<(), ServiceError> {
         for conn in &settings.connections {
-            self.network_client.add_or_update_connection(&conn).await?;
+            self.network_client.add_or_update_connection(conn).await?;
         }
         self.network_client.apply().await?;
 

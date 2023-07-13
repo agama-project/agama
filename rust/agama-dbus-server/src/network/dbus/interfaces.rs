@@ -138,7 +138,7 @@ impl Connections {
     /// * `id`: connection ID.
     pub async fn get_connection(&self, id: &str) -> zbus::fdo::Result<OwnedObjectPath> {
         let objects = self.objects.lock();
-        match objects.connection_path(&id) {
+        match objects.connection_path(id) {
             Some(path) => Ok(path.into()),
             None => Err(NetworkStateError::UnknownConnection(id.to_string()).into()),
         }
@@ -308,8 +308,8 @@ impl Ipv4 {
             .iter()
             .map(|addr| addr.parse::<Ipv4Addr>())
             .collect::<Result<Vec<Ipv4Addr>, AddrParseError>>()
-            .and_then(|parsed| Ok(ipv4.nameservers = parsed))
-            .map_err(|err| NetworkStateError::from(err))?;
+            .map(|parsed| ipv4.nameservers = parsed)
+            .map_err(NetworkStateError::from)?;
         self.update_connection(connection)
     }
 
@@ -335,7 +335,7 @@ impl Ipv4 {
         } else {
             let parsed: Ipv4Addr = gateway
                 .parse()
-                .map_err(|err| NetworkStateError::from(err))?;
+                .map_err(NetworkStateError::from)?;
             ipv4.gateway = Some(parsed);
         }
         self.update_connection(connection)

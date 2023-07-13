@@ -136,9 +136,9 @@ impl ProfileEvaluator {
             .output()
             .context("Failed to run lshw")?;
         let mut file = fs::File::create(path)?;
-        file.write(b"{ \"disks\":\n")?;
+        file.write_all(b"{ \"disks\":\n")?;
         file.write_all(&result.stdout)?;
-        file.write(b"\n}")?;
+        file.write_all(b"\n}")?;
         Ok(())
     }
 }

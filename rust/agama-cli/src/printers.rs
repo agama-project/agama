@@ -1,4 +1,3 @@
-use anyhow;
 use serde::Serialize;
 use std::fmt::Debug;
 use std::io::Write;
