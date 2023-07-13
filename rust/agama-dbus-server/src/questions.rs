@@ -1,9 +1,12 @@
 use std::collections::HashMap;
 
 use crate::error::Error;
-use log::{self, info};
-use agama_lib::{connection_to,questions::{self, GenericQuestion, WithPassword}};
+use agama_lib::{
+    connection_to,
+    questions::{self, GenericQuestion, WithPassword},
+};
 use anyhow::Context;
+use log::{self, info};
 use zbus::{dbus_interface, fdo::ObjectManager, zvariant::ObjectPath, Connection};
 
 #[derive(Clone, Debug)]
@@ -90,11 +93,11 @@ struct DefaultAnswers;
 
 impl AnswerStrategy for DefaultAnswers {
     fn answer(&self, question: &GenericQuestion) -> Option<String> {
-        return Some(question.default_option.clone())
+        return Some(question.default_option.clone());
     }
 
     fn answer_with_password(&self, question: &WithPassword) -> (Option<String>, Option<String>) {
-        return (Some(question.base.default_option.clone()), None)
+        return (Some(question.base.default_option.clone()), None);
     }
 }
 
@@ -102,7 +105,7 @@ pub struct Questions {
     questions: HashMap<u32, QuestionType>,
     connection: Connection,
     last_id: u32,
-    answer_strategies: Vec<Box<dyn AnswerStrategy + Sync + Send>>
+    answer_strategies: Vec<Box<dyn AnswerStrategy + Sync + Send>>,
 }
 
 #[dbus_interface(name = "org.opensuse.Agama.Questions1")]
@@ -115,7 +118,7 @@ impl Questions {
         text: &str,
         options: Vec<&str>,
         default_option: &str,
-        data: HashMap<String, String>
+        data: HashMap<String, String>,
     ) -> Result<ObjectPath, zbus::fdo::Error> {
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
@@ -147,11 +150,11 @@ impl Questions {
         text: &str,
         options: Vec<&str>,
         default_option: &str,
-        data: HashMap<String, String>
+        data: HashMap<String, String>,
     ) -> Result<ObjectPath, zbus::fdo::Error> {
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
-        // TODO: share code better
+                           // TODO: share code better
         let options = options.iter().map(|o| o.to_string()).collect();
         let base = questions::GenericQuestion::new(
             id,
@@ -161,15 +164,13 @@ impl Questions {
             default_option.to_string(),
             data,
         );
-        let mut question = questions::WithPassword::new(
-            base
-        );
+        let mut question = questions::WithPassword::new(base);
         let object_path = ObjectPath::try_from(question.base.object_path()).unwrap();
 
         let base_question = question.base.clone();
         self.fill_answer_with_password(&mut question);
         let base_object = GenericQuestionObject(base_question);
-        
+
         self.connection
             .object_server()
             .at(object_path.clone(), WithPasswordObject(question))
@@ -215,7 +216,7 @@ impl Questions {
     /// sets questions to be answered by default answer instead of asking user
     async fn use_default_answer(&mut self) -> Result<(), Error> {
         log::info!("Answer questions with default option");
-        self.answer_strategies.push(Box::new(DefaultAnswers{}));
+        self.answer_strategies.push(Box::new(DefaultAnswers {}));
         Ok(())
     }
 }
@@ -242,18 +243,18 @@ impl Questions {
         }
     }
 
-        /// tries to provide answer to question using answer strategies
-        fn fill_answer_with_password(&self, question: &mut WithPassword) -> () {
-            for strategy in self.answer_strategies.iter() {
-                let (answer, password) = strategy.answer_with_password(question);
-                if let Some(password) = password {
-                    question.password = password;
-                }
-                if let Some(answer) = answer {
-                    question.base.answer = answer;
-                }
+    /// tries to provide answer to question using answer strategies
+    fn fill_answer_with_password(&self, question: &mut WithPassword) -> () {
+        for strategy in self.answer_strategies.iter() {
+            let (answer, password) = strategy.answer_with_password(question);
+            if let Some(password) = password {
+                question.password = password;
+            }
+            if let Some(answer) = answer {
+                question.base.answer = answer;
             }
         }
+    }
 }
 
 /// Starts questions dbus service together with Object manager

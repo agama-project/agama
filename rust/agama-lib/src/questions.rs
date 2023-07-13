@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use log::info;
+use std::collections::HashMap;
 
 /// module holdings data model for agama questions
 
@@ -9,7 +9,7 @@ pub struct GenericQuestion {
     /// numeric id used to indetify question on dbus
     pub id: u32,
     /// class of questions. Similar kinds of questions share same class.
-    /// It is dot separated list of elements. Examples are 
+    /// It is dot separated list of elements. Examples are
     /// `storage.luks.actication` or `software.repositories.unknown_gpg`
     pub class: String,
     /// Textual representation of question. Expected to be read by people
@@ -25,7 +25,14 @@ pub struct GenericQuestion {
 }
 
 impl GenericQuestion {
-    pub fn new(id: u32, class: String, text: String, options: Vec<String>, default_option: String, data: HashMap<String, String>) -> Self {
+    pub fn new(
+        id: u32,
+        class: String,
+        text: String,
+        options: Vec<String>,
+        default_option: String,
+        data: HashMap<String, String>,
+    ) -> Self {
         info!("Creating new generic question with text {}", text);
         Self {
             id,
