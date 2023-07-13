@@ -39,7 +39,7 @@ impl Tree {
     /// * `connections`: list of connections.
     pub async fn set_connections(
         &self,
-        connections: &mut Vec<Connection>,
+        connections: &mut [Connection],
     ) -> Result<(), ServiceError> {
         self.remove_connections().await?;
         self.add_connections(connections).await?;
@@ -49,7 +49,7 @@ impl Tree {
     /// Refreshes the list of devices.
     ///
     /// * `devices`: list of devices.
-    pub async fn set_devices(&mut self, devices: &Vec<Device>) -> Result<(), ServiceError> {
+    pub async fn set_devices(&mut self, devices: &[Device]) -> Result<(), ServiceError> {
         self.remove_devices().await?;
         self.add_devices(devices).await?;
         Ok(())
@@ -58,7 +58,7 @@ impl Tree {
     /// Adds devices to the D-Bus tree.
     ///
     /// * `devices`: list of devices.
-    pub async fn add_devices(&mut self, devices: &Vec<Device>) -> Result<(), ServiceError> {
+    pub async fn add_devices(&mut self, devices: &[Device]) -> Result<(), ServiceError> {
         for (i, dev) in devices.iter().enumerate() {
             let path = format!("{}/{}", DEVICES_PATH, i);
             let path = ObjectPath::try_from(path.as_str()).unwrap();
@@ -83,7 +83,7 @@ impl Tree {
     pub async fn add_connection(&self, conn: &mut Connection) -> Result<(), ServiceError> {
         let mut objects = self.objects.lock();
 
-        let (id, path) = objects.register_connection(&conn);
+        let (id, path) = objects.register_connection(conn);
         if id != conn.id() {
             conn.set_id(&id)
         }
@@ -126,7 +126,7 @@ impl Tree {
     /// Adds connections to the D-Bus tree.
     ///
     /// * `connections`: list of connections.
-    async fn add_connections(&self, connections: &mut Vec<Connection>) -> Result<(), ServiceError> {
+    async fn add_connections(&self, connections: &mut [Connection]) -> Result<(), ServiceError> {
         for conn in connections.iter_mut() {
             self.add_connection(conn).await?;
         }
@@ -181,7 +181,7 @@ impl Tree {
         T: zbus::Interface,
     {
         let object_server = self.connection.object_server();
-        Ok(object_server.at(path.clone(), iface).await?)
+        Ok(object_server.at(path, iface).await?)
     }
 }
 

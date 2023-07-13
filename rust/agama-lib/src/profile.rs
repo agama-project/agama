@@ -1,4 +1,5 @@
 use crate::error::ProfileError;
+use anyhow::Context;
 use curl::easy::Easy;
 use jsonschema::JSONSchema;
 use log::info;
@@ -101,7 +102,7 @@ impl ProfileValidator {
 pub struct ProfileEvaluator {}
 
 impl ProfileEvaluator {
-    pub fn evaluate(&self, profile_path: &Path) -> Result<(), ProfileError> {
+    pub fn evaluate(&self, profile_path: &Path) -> anyhow::Result<()> {
         let dir = tempdir()?;
 
         let working_path = dir.path().join("profile.jsonnet");
@@ -109,13 +110,18 @@ impl ProfileEvaluator {
 
         let hwinfo_path = dir.path().join("hw.libsonnet");
         self.write_hwinfo(&hwinfo_path)
-            .map_err(ProfileError::NoHardwareInfo)?;
+            .context("Failed to read system's hardware information")?;
 
         let result = Command::new("/usr/bin/jsonnet")
             .arg("profile.jsonnet")
             .current_dir(&dir)
             .output()
-            .map_err(ProfileError::EvaluationError)?;
+            .context("Failed to run jsonnet")?;
+        if !result.status.success() {
+            let message =
+                String::from_utf8(result.stderr).context("Invalid UTF-8 sequence from jsonnet")?;
+            return Err(ProfileError::EvaluationError(message).into());
+        }
         io::stdout().write_all(&result.stdout)?;
         Ok(())
     }
@@ -124,14 +130,15 @@ impl ProfileEvaluator {
     //
     // TODO: we need a better way to generate this information, as lshw and hwinfo are not usable
     // out of the box.
-    fn write_hwinfo(&self, path: &Path) -> Result<(), io::Error> {
+    fn write_hwinfo(&self, path: &Path) -> anyhow::Result<()> {
         let result = Command::new("/usr/sbin/lshw")
             .args(["-json", "-class", "disk"])
-            .output()?;
+            .output()
+            .context("Failed to run lshw")?;
         let mut file = fs::File::create(path)?;
-        file.write(b"{ \"disks\":\n")?;
+        file.write_all(b"{ \"disks\":\n")?;
         file.write_all(&result.stdout)?;
-        file.write(b"\n}")?;
+        file.write_all(b"\n}")?;
         Ok(())
     }
 }

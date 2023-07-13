@@ -52,10 +52,10 @@ fn expand_set_fn(field_name: &Vec<Ident>) -> TokenStream2 {
     }
 
     quote! {
-        fn set(&mut self, attr: &str, value: crate::settings::SettingValue) -> Result<(), &'static str> {
+        fn set(&mut self, attr: &str, value: crate::settings::SettingValue) -> Result<(), crate::settings::SettingsError> {
             match attr {
                 #(stringify!(#field_name) => self.#field_name = value.try_into()?,)*
-                _ => return Err("unknown attribute")
+                _ => return Err(SettingsError::UnknownAttribute(attr.to_string()))
             };
             Ok(())
         }
@@ -85,10 +85,10 @@ fn expand_add_fn(field_name: &Vec<Ident>) -> TokenStream2 {
     }
 
     quote! {
-        fn add(&mut self, attr: &str, value: SettingObject) -> Result<(), &'static str> {
+        fn add(&mut self, attr: &str, value: SettingObject) -> Result<(), crate::settings::SettingsError> {
             match attr {
                 #(stringify!(#field_name) => self.#field_name.push(value.try_into()?),)*
-                _ => return Err("unknown attribute")
+                _ => return Err(SettingsError::UnknownCollection(attr.to_string()))
             };
             Ok(())
         }

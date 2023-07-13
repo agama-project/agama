@@ -1,6 +1,5 @@
 use crate::error::ServiceError;
 use crate::network::{NetworkClient, NetworkSettings};
-use std::error::Error;
 use zbus::Connection;
 
 /// Loads and stores the network settings from/to the D-Bus service.
@@ -16,18 +15,15 @@ impl<'a> NetworkStore<'a> {
     }
 
     // TODO: read the settings from the service
-    pub async fn load(&self) -> Result<NetworkSettings, Box<dyn Error>> {
+    pub async fn load(&self) -> Result<NetworkSettings, ServiceError> {
         let connections = self.network_client.connections().await?;
 
-        Ok(NetworkSettings {
-            connections,
-            ..Default::default()
-        })
+        Ok(NetworkSettings { connections })
     }
 
-    pub async fn store(&self, settings: &NetworkSettings) -> Result<(), Box<dyn Error>> {
+    pub async fn store(&self, settings: &NetworkSettings) -> Result<(), ServiceError> {
         for conn in &settings.connections {
-            self.network_client.add_or_update_connection(&conn).await?;
+            self.network_client.add_or_update_connection(conn).await?;
         }
         self.network_client.apply().await?;
 

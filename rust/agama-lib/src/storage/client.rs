@@ -53,7 +53,16 @@ impl<'a> StorageClient<'a> {
 
     /// Returns the candidate devices for the proposal
     pub async fn candidate_devices(&self) -> Result<Vec<String>, ServiceError> {
-        Ok(self.proposal_proxy().await?.candidate_devices().await?)
+        let proxy = self.proposal_proxy().await?;
+        match proxy.candidate_devices().await {
+            Ok(devices) => Ok(devices),
+            Err(zbus::Error::MethodError(name, _, _))
+                if name.as_str() == "org.freedesktop.DBus.Error.UnknownObject" =>
+            {
+                Ok(vec![])
+            }
+            Err(e) => Err(e.into()),
+        }
     }
 
     /// Runs the probing process

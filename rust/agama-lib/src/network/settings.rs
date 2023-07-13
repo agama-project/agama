@@ -1,7 +1,7 @@
 //! Representation of the network settings
 
 use super::types::DeviceType;
-use crate::settings::{SettingObject, SettingValue, Settings};
+use crate::settings::{SettingObject, SettingValue, Settings, SettingsError};
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::default::Default;
@@ -15,10 +15,10 @@ pub struct NetworkSettings {
 }
 
 impl Settings for NetworkSettings {
-    fn add(&mut self, attr: &str, value: SettingObject) -> Result<(), &'static str> {
+    fn add(&mut self, attr: &str, value: SettingObject) -> Result<(), SettingsError> {
         match attr {
             "connections" => self.connections.push(value.try_into()?),
-            _ => return Err("unknown attribute"),
+            _ => return Err(SettingsError::UnknownAttribute(attr.to_string())),
         };
         Ok(())
     }
@@ -70,11 +70,11 @@ impl NetworkConnection {
 }
 
 impl TryFrom<SettingObject> for NetworkConnection {
-    type Error = &'static str;
+    type Error = SettingsError;
 
     fn try_from(value: SettingObject) -> Result<Self, Self::Error> {
         let Some(id) = value.get("id") else {
-            return Err("The 'id' key is missing");
+            return Err(SettingsError::MissingKey("id".to_string()));
         };
 
         let default_method = SettingValue("disabled".to_string());

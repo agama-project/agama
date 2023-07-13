@@ -3,7 +3,6 @@
 use super::{StorageClient, StorageSettings};
 use crate::error::ServiceError;
 use std::default::Default;
-use std::error::Error;
 use zbus::Connection;
 
 /// Loads and stores the storage settings from/to the D-Bus service.
@@ -18,12 +17,16 @@ impl<'a> StorageStore<'a> {
         })
     }
 
-    // TODO: read the settings from the service
-    pub async fn load(&self) -> Result<StorageSettings, Box<dyn Error>> {
-        Ok(Default::default())
+    pub async fn load(&self) -> Result<StorageSettings, ServiceError> {
+        let names = self.storage_client.candidate_devices().await?;
+        let devices = names.into_iter().map(|n| n.into()).collect();
+        Ok(StorageSettings {
+            devices,
+            ..Default::default()
+        })
     }
 
-    pub async fn store(&self, settings: &StorageSettings) -> Result<(), Box<dyn Error>> {
+    pub async fn store(&self, settings: &StorageSettings) -> Result<(), ServiceError> {
         self.storage_client
             .calculate(
                 settings.devices.iter().map(|d| d.name.clone()).collect(),

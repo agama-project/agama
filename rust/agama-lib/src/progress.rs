@@ -46,7 +46,6 @@ use crate::error::ServiceError;
 use crate::proxies::ProgressProxy;
 use futures::stream::{SelectAll, StreamExt};
 use futures_util::{future::try_join3, Stream};
-use std::error::Error;
 use zbus::Connection;
 
 /// Represents the progress for an Agama service.
@@ -107,10 +106,7 @@ impl<'a> ProgressMonitor<'a> {
     }
 
     /// Runs the monitor until the current operation finishes.
-    pub async fn run(
-        &mut self,
-        mut presenter: impl ProgressPresenter,
-    ) -> Result<(), Box<dyn Error>> {
+    pub async fn run(&mut self, mut presenter: impl ProgressPresenter) -> Result<(), ServiceError> {
         presenter.start(&self.main_progress().await);
         let mut changes = self.build_stream().await;
 

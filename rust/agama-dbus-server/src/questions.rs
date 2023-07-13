@@ -69,7 +69,7 @@ impl WithPasswordObject {
     }
 
     #[dbus_interface(property)]
-    pub fn set_password(&mut self, value: &str) -> () {
+    pub fn set_password(&mut self, value: &str) {
         self.0.password = value.to_string();
     }
 }
@@ -187,7 +187,7 @@ impl Questions {
     /// Removes question at given object path
     async fn delete(&mut self, question: ObjectPath<'_>) -> Result<(), Error> {
         // TODO: error checking
-        let id: u32 = question.rsplit("/").next().unwrap().parse().unwrap();
+        let id: u32 = question.rsplit('/').next().unwrap().parse().unwrap();
         let qtype = self.questions.get(&id).unwrap();
         match qtype {
             QuestionType::Base => {

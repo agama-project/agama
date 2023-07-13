@@ -26,6 +26,6 @@ pub enum NetworkStateError {
 
 impl From<NetworkStateError> for zbus::fdo::Error {
     fn from(value: NetworkStateError) -> zbus::fdo::Error {
-        zbus::fdo::Error::Failed(format!("Network error: {}", value.to_string()))
+        zbus::fdo::Error::Failed(format!("Network error: {value}"))
     }
 }

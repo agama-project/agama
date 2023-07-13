@@ -1,8 +1,7 @@
 //! Implements the store for the storage settings.
 
 use super::{SoftwareClient, SoftwareSettings};
-use crate::error::{ServiceError, WrongParameter};
-use std::error::Error;
+use crate::error::ServiceError;
 use zbus::Connection;
 
 /// Loads and stores the software settings from/to the D-Bus service.
@@ -17,7 +16,7 @@ impl<'a> SoftwareStore<'a> {
         })
     }
 
-    pub async fn load(&self) -> Result<SoftwareSettings, Box<dyn Error>> {
+    pub async fn load(&self) -> Result<SoftwareSettings, ServiceError> {
         let product = self.software_client.product().await?;
 
         Ok(SoftwareSettings {
@@ -25,17 +24,14 @@ impl<'a> SoftwareStore<'a> {
         })
     }
 
-    pub async fn store(&self, settings: &SoftwareSettings) -> Result<(), Box<dyn Error>> {
+    pub async fn store(&self, settings: &SoftwareSettings) -> Result<(), ServiceError> {
         if let Some(product) = &settings.product {
             let products = self.software_client.products().await?;
             let ids: Vec<String> = products.into_iter().map(|p| p.id).collect();
-            if ids.contains(&product) {
+            if ids.contains(product) {
                 self.software_client.select_product(product).await?;
             } else {
-                return Err(Box::new(WrongParameter::UnknownProduct(
-                    product.clone(),
-                    ids,
-                )));
+                return Err(ServiceError::UnknownProduct(product.clone(), ids));
             }
         }
         Ok(())

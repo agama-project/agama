@@ -29,7 +29,7 @@ impl NetworkService {
                 connection
                     .request_name(SERVICE_NAME)
                     .await
-                    .expect(&format!("Could not request name {SERVICE_NAME}"));
+                    .unwrap_or_else(|_| panic!("Could not request name {SERVICE_NAME}"));
 
                 network.listen().await;
             })

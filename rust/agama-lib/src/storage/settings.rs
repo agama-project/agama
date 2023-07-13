@@ -1,6 +1,6 @@
 //! Representation of the storage settings
 
-use crate::settings::{SettingObject, Settings};
+use crate::settings::{SettingObject, Settings, SettingsError};
 use agama_derive::Settings;
 use serde::{Deserialize, Serialize};
 
@@ -25,15 +25,21 @@ pub struct Device {
     pub name: String,
 }
 
+impl From<String> for Device {
+    fn from(value: String) -> Self {
+        Self { name: value }
+    }
+}
+
 impl TryFrom<SettingObject> for Device {
-    type Error = &'static str;
+    type Error = SettingsError;
 
     fn try_from(value: SettingObject) -> Result<Self, Self::Error> {
         match value.get("name") {
             Some(name) => Ok(Device {
                 name: name.clone().try_into()?,
             }),
-            None => Err("'name' key not found"),
+            _ => Err(SettingsError::MissingKey("name".to_string())),
         }
     }
 }

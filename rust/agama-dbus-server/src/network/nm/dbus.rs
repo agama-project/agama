@@ -83,7 +83,7 @@ pub fn merge_dbus_connections<'a>(
                 inner.insert(inner_key, value.clone());
             }
         }
-        merged.insert(key.as_str(), inner.into());
+        merged.insert(key.as_str(), inner);
     }
     cleanup_dbus_connection(&mut merged);
     merged
@@ -95,7 +95,7 @@ pub fn merge_dbus_connections<'a>(
 /// replaced with "address-data". However, if "addresses" is present, it takes precedence.
 ///
 /// * `conn`: connection represented as a NestedHash.
-fn cleanup_dbus_connection<'a>(conn: &'a mut NestedHash) {
+fn cleanup_dbus_connection(conn: &mut NestedHash) {
     if let Some(ipv4) = conn.get_mut("ipv4") {
         ipv4.remove("addresses");
         ipv4.remove("dns");
@@ -123,7 +123,7 @@ fn ipv4_to_dbus(ipv4: &Ipv4Config) -> HashMap<&str, zvariant::Value> {
     let dns_data: Value = ipv4
         .nameservers
         .iter()
-        .map(|ns| ns.to_string().into())
+        .map(|ns| ns.to_string())
         .collect::<Vec<String>>()
         .into();
 
@@ -263,7 +263,7 @@ mod test {
 
         let address_data = vec![HashMap::from([
             ("address".to_string(), Value::new("192.168.0.10")),
-            ("prefix".to_string(), Value::new(24 as u32)),
+            ("prefix".to_string(), Value::new(24_u32)),
         ])];
 
         let ipv4_section = HashMap::from([
