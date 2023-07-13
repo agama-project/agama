@@ -5,7 +5,6 @@ use crate::install_settings::{InstallSettings, Scope};
 use crate::{
     network::NetworkStore, software::SoftwareStore, storage::StorageStore, users::UsersStore,
 };
-use std::error::Error;
 use zbus::Connection;
 
 /// Struct that loads/stores the settings from/to the D-Bus services.
@@ -32,7 +31,7 @@ impl<'a> Store<'a> {
     }
 
     /// Loads the installation settings from the D-Bus service
-    pub async fn load(&self, only: Option<Vec<Scope>>) -> Result<InstallSettings, Box<dyn Error>> {
+    pub async fn load(&self, only: Option<Vec<Scope>>) -> Result<InstallSettings, ServiceError> {
         let scopes = match only {
             Some(scopes) => scopes,
             None => Scope::all().to_vec(),
@@ -59,7 +58,7 @@ impl<'a> Store<'a> {
     }
 
     /// Stores the given installation settings in the D-Bus service
-    pub async fn store(&self, settings: &InstallSettings) -> Result<(), Box<dyn Error>> {
+    pub async fn store(&self, settings: &InstallSettings) -> Result<(), ServiceError> {
         if let Some(network) = &settings.network {
             self.network.store(network).await?;
         }

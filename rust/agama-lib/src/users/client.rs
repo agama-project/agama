@@ -2,7 +2,7 @@
 
 use super::proxies::Users1Proxy;
 use crate::error::ServiceError;
-use crate::settings::{SettingValue, Settings};
+use crate::settings::{SettingValue, Settings, SettingsError};
 use serde::Serialize;
 use zbus::Connection;
 
@@ -43,13 +43,13 @@ impl FirstUser {
 }
 
 impl Settings for FirstUser {
-    fn set(&mut self, attr: &str, value: SettingValue) -> Result<(), &'static str> {
+    fn set(&mut self, attr: &str, value: SettingValue) -> Result<(), SettingsError> {
         match attr {
             "full_name" => self.full_name = value.try_into()?,
             "user_name" => self.user_name = value.try_into()?,
             "password" => self.password = value.try_into()?,
             "autologin" => self.autologin = value.try_into()?,
-            _ => return Err("unknown attribute"),
+            _ => return Err(SettingsError::UnknownAttribute(attr.to_string())),
         }
         Ok(())
     }
