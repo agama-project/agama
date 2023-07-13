@@ -56,7 +56,7 @@ impl NetworkState {
     ///
     /// It uses the `id` to decide whether the connection already exists.
     pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        if let Some(_) = self.get_connection(conn.id()) {
+        if self.get_connection(conn.id()).is_some() {
             return Err(NetworkStateError::ConnectionExists(conn.uuid()));
         }
 
@@ -206,7 +206,7 @@ pub enum Connection {
 impl Connection {
     pub fn new(id: String, device_type: DeviceType) -> Self {
         let base = BaseConnection {
-            id: id.to_string(),
+            id,
             ..Default::default()
         };
         match device_type {
@@ -491,13 +491,11 @@ impl FromStr for IpAddress {
     type Err = ParseIpAddressError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let Some((address, prefix)) = s.split_once("/") else {
+        let Some((address, prefix)) = s.split_once('/') else {
             return Err(ParseIpAddressError::MissingPrefix);
         };
 
-        let address: Ipv4Addr = address
-            .parse()
-            .map_err(|e| ParseIpAddressError::InvalidAddr(e))?;
+        let address: Ipv4Addr = address.parse().map_err(ParseIpAddressError::InvalidAddr)?;
 
         let prefix: u32 = prefix
             .parse()
@@ -509,6 +507,6 @@ impl FromStr for IpAddress {
 
 impl fmt::Display for IpAddress {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}/{}", self.0.to_string(), self.1)
+        write!(f, "{}/{}", self.0, self.1)
     }
 }

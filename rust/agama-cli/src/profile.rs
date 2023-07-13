@@ -39,7 +39,7 @@ fn evaluate(path: String) -> anyhow::Result<()> {
     let evaluator = ProfileEvaluator {};
     evaluator
         .evaluate(Path::new(&path))
-        .context(format!("Could not evaluate the profile"))?;
+        .context("Could not evaluate the profile".to_string())?;
     Ok(())
 }
 

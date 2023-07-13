@@ -29,7 +29,7 @@ impl TimezoneIdParts {
     /// let result = vec!["Evropa/Praha".to_string(), "Evropa/Berlín".to_string()];
     /// assert_eq!(parts.localize_timezones("cs", &timezones), result);
     /// ```
-    pub fn localize_timezones(&self, language: &str, timezones: &Vec<String>) -> Vec<String> {
+    pub fn localize_timezones(&self, language: &str, timezones: &[String]) -> Vec<String> {
         let mapping = self.construct_mapping(language);
         timezones
             .iter()
@@ -42,22 +42,22 @@ impl TimezoneIdParts {
         self.timezone_part
             .iter()
             .map(|part| (part.id.clone(), part.names.name_for(language)))
-            .for_each(|(time_id, names)| -> () {
+            .for_each(|(time_id, names)| {
                 // skip missing translations
                 if let Some(trans) = names {
                     res.insert(time_id, trans);
                 }
             });
-        return res;
+        res
     }
 
     fn translate_timezone(&self, mapping: &HashMap<String, String>, timezone: &str) -> String {
         timezone
-            .split("/")
+            .split('/')
             .map(|tzp| {
                 mapping
                     .get(&tzp.to_string())
-                    .expect(format!("Unknown timezone part {tzp}").as_str())
+                    .unwrap_or_else(|| panic!("Unknown timezone part {tzp}"))
                     .to_owned()
             })
             .collect::<Vec<String>>()

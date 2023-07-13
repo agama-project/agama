@@ -29,7 +29,7 @@ impl InstallerProgress {
 impl ProgressPresenter for InstallerProgress {
     fn start(&mut self, progress: &Progress) {
         if !progress.finished {
-            self.update_main(&progress);
+            self.update_main(progress);
         }
     }
 
@@ -49,7 +49,7 @@ impl ProgressPresenter for InstallerProgress {
                 bar.finish_and_clear();
             }
         } else {
-            self.update_bar(&progress);
+            self.update_bar(progress);
         }
     }
 

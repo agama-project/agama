@@ -39,7 +39,7 @@ impl TryFrom<SettingObject> for Device {
             Some(name) => Ok(Device {
                 name: name.clone().try_into()?,
             }),
-            _ => return Err(SettingsError::MissingKey("name".to_string())),
+            _ => Err(SettingsError::MissingKey("name".to_string())),
         }
     }
 }

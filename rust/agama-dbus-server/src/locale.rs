@@ -61,7 +61,7 @@ impl Locale {
 
     #[dbus_interface(property)]
     fn locales(&self) -> Vec<String> {
-        return self.locales.to_owned();
+        self.locales.to_owned()
     }
 
     #[dbus_interface(property)]
@@ -112,7 +112,7 @@ impl Locale {
 
     #[dbus_interface(property, name = "VConsoleKeyboard")]
     fn keymap(&self) -> &str {
-        return &self.keymap.as_str();
+        self.keymap.as_str()
     }
 
     #[dbus_interface(property, name = "VConsoleKeyboard")]
@@ -120,8 +120,7 @@ impl Locale {
         let exist = agama_locale_data::get_key_maps()
             .unwrap()
             .iter()
-            .find(|&k| k == keyboard)
-            .is_some();
+            .any(|k| k == keyboard);
         if !exist {
             return Err(zbus::fdo::Error::Failed(
                 "Invalid keyboard value".to_string(),
@@ -141,7 +140,7 @@ impl Locale {
 
     #[dbus_interface(property)]
     fn timezone(&self) -> &str {
-        return &self.timezone_id.as_str();
+        self.timezone_id.as_str()
     }
 
     #[dbus_interface(property)]

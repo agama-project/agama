@@ -107,9 +107,9 @@ impl<'a> NetworkClient<'a> {
     ) -> Result<(), ServiceError> {
         let path = match self.connections_proxy.get_connection(&conn.id).await {
             Ok(path) => path,
-            Err(_) => self.add_connection(&conn).await?,
+            Err(_) => self.add_connection(conn).await?,
         };
-        self.update_connection(&path, &conn).await?;
+        self.update_connection(&path, conn).await?;
         Ok(())
     }
 
@@ -150,11 +150,11 @@ impl<'a> NetworkClient<'a> {
         let nameservers: Vec<_> = conn.nameservers.iter().map(String::as_ref).collect();
         proxy.set_nameservers(nameservers.as_slice()).await?;
 
-        let gateway = conn.gateway.as_ref().map(|g| g.as_str()).unwrap_or("");
+        let gateway = conn.gateway.as_deref().unwrap_or("");
         proxy.set_gateway(gateway).await?;
 
         if let Some(ref wireless) = conn.wireless {
-            self.update_wireless_settings(&path, wireless).await?;
+            self.update_wireless_settings(path, wireless).await?;
         }
         Ok(())
     }

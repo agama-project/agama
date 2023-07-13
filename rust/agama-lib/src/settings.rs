@@ -166,11 +166,11 @@ mod tests {
     fn test_try_from_bool() {
         let value = SettingValue("true".to_string());
         let value: bool = value.try_into().unwrap();
-        assert_eq!(value, true);
+        assert!(value);
 
         let value = SettingValue("false".to_string());
         let value: bool = value.try_into().unwrap();
-        assert_eq!(value, false);
+        assert!(!value);
     }
 
     #[test]
