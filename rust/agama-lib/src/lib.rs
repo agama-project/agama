@@ -40,7 +40,6 @@ mod store;
 pub use store::Store;
 
 use crate::error::ServiceError;
-use anyhow::Context;
 
 const ADDRESS: &str = "unix:path=/run/agama/bus";
 
@@ -52,6 +51,6 @@ pub async fn connection_to(address: &str) -> Result<zbus::Connection, ServiceErr
     let connection = zbus::ConnectionBuilder::address(address)?
         .build()
         .await
-        .context(format!("Connecting to Agama bus at {ADDRESS}"))?;
+        .map_err(|e| ServiceError::DBusConnectionError(ADDRESS.to_string(), e))?;
     Ok(connection)
 }
