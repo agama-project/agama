@@ -114,12 +114,18 @@ impl Tree {
     ///
     /// * `id`: connection ID.
     pub async fn remove_connection(&mut self, id: &str) -> Result<(), ServiceError> {
-        let mut objects = self.objects.lock();
-        let Some(path) = objects.connection_path(id) else {
-            return Ok(())
-        };
-        self.remove_connection_on(path.as_str()).await?;
-        objects.deregister_connection(id).unwrap();
+        let cloned_path;
+
+        {
+            let mut objects = self.objects.lock();
+            let Some(path) = objects.connection_path(id) else {
+                return Ok(())
+            };
+            cloned_path = path.to_string();
+            objects.deregister_connection(id).unwrap();
+        }
+
+        self.remove_connection_on(&cloned_path).await?;
         Ok(())
     }
 
@@ -142,24 +148,32 @@ impl Tree {
 
     /// Clears all the connections from the tree.
     async fn remove_connections(&self) -> Result<(), ServiceError> {
-        let mut objects = self.objects.lock();
-        for path in objects.connections.values() {
+        let paths: Vec<_>;
+        {
+            let mut objects = self.objects.lock();
+            objects.connections.clear();
+            paths = objects.connections.values().cloned().collect();
+        }
+        for path in paths {
             self.remove_connection_on(path.as_str()).await?;
         }
-        objects.connections.clear();
         Ok(())
     }
 
     /// Clears all the devices from the tree.
     async fn remove_devices(&mut self) -> Result<(), ServiceError> {
+        let paths: Vec<_>;
         let object_server = self.connection.object_server();
-        let mut objects = self.objects.lock();
-        for path in objects.devices.values() {
+        {
+            let mut objects = self.objects.lock();
+            objects.devices.clear();
+            paths = objects.connections.values().cloned().collect();
+        }
+        for path in paths {
             object_server
                 .remove::<interfaces::Device, _>(path.as_str())
                 .await?;
         }
-        objects.devices.clear();
         Ok(())
     }
 
