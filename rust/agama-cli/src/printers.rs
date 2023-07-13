@@ -46,9 +46,10 @@ pub struct JsonPrinter<T, W> {
     writer: W,
 }
 
-impl<T: Serialize + Debug, W: Write> Printer<T, W> for JsonPrinter<T, W> {
-    fn print(self: Box<Self>) -> anyhow::Result<()> {
-        Ok(serde_json::to_writer(self.writer, &self.content)?)
+impl<T: Serialize, W: Write> Printer<T, W> for JsonPrinter<T, W> {
+    fn print(mut self: Box<Self>) -> anyhow::Result<()> {
+        let json = serde_json::to_string(&self.content)?;
+        Ok(writeln!(self.writer, "{}", json)?)
     }
 }
 pub struct TextPrinter<T, W> {
@@ -56,9 +57,9 @@ pub struct TextPrinter<T, W> {
     writer: W,
 }
 
-impl<T: Serialize + Debug, W: Write> Printer<T, W> for TextPrinter<T, W> {
+impl<T: Debug, W: Write> Printer<T, W> for TextPrinter<T, W> {
     fn print(mut self: Box<Self>) -> anyhow::Result<()> {
-        Ok(write!(self.writer, "{:?}", &self.content)?)
+        Ok(writeln!(self.writer, "{:?}", &self.content)?)
     }
 }
 
@@ -67,7 +68,7 @@ pub struct YamlPrinter<T, W> {
     writer: W,
 }
 
-impl<T: Serialize + Debug, W: Write> Printer<T, W> for YamlPrinter<T, W> {
+impl<T: Serialize, W: Write> Printer<T, W> for YamlPrinter<T, W> {
     fn print(self: Box<Self>) -> anyhow::Result<()> {
         Ok(serde_yaml::to_writer(self.writer, &self.content)?)
     }

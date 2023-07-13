@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 13 08:56:40 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Read the storage candidate devices and show them with
+  "agama config show" (gh#openSUSE/agama#658).
+
+-------------------------------------------------------------------
 Fri Jul  7 14:12:03 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve the progress reporting (gh#openSUSE/agama#653).
