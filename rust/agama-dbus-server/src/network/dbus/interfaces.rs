@@ -333,9 +333,7 @@ impl Ipv4 {
         if gateway.is_empty() {
             ipv4.gateway = None;
         } else {
-            let parsed: Ipv4Addr = gateway
-                .parse()
-                .map_err(NetworkStateError::from)?;
+            let parsed: Ipv4Addr = gateway.parse().map_err(NetworkStateError::from)?;
             ipv4.gateway = Some(parsed);
         }
         self.update_connection(connection)
