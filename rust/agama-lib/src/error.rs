@@ -6,8 +6,10 @@ use zbus;
 
 #[derive(Error, Debug)]
 pub enum ServiceError {
-    #[error("D-Bus service error: {0}")]
+    #[error("D-Bus service error")]
     DBus(#[from] zbus::Error),
+    #[error("Could not connect to Agama bus at '{0}'")]
+    DBusConnectionError(String, #[source] zbus::Error),
     #[error("Unknown product '{0}'. Available products: '{1:?}'")]
     UnknownProduct(String, Vec<String>),
     // it's fine to say only "Error" because the original
@@ -24,7 +26,7 @@ pub enum ProfileError {
     Unreachable(#[from] curl::Error),
     #[error("Jsonnet evaluation failed:\n{0}")]
     EvaluationError(String),
-    #[error("I/O error: '{0}'")]
+    #[error("I/O error")]
     InputOutputError(#[from] io::Error),
     #[error("The profile is not a valid JSON file")]
     FormatError(#[from] serde_json::Error),
