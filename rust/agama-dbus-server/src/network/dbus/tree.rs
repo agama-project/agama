@@ -1,5 +1,5 @@
 use agama_lib::error::ServiceError;
-use parking_lot::Mutex;
+use futures::lock::Mutex;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
 use crate::network::{action::Action, dbus::interfaces, model::*};
@@ -64,7 +64,7 @@ impl Tree {
             let path = ObjectPath::try_from(path.as_str()).unwrap();
             self.add_interface(&path, interfaces::Device::new(dev.clone()))
                 .await?;
-            let mut objects = self.objects.lock();
+            let mut objects = self.objects.lock().await;
             objects.register_device(&dev.name, path);
         }
 
@@ -81,7 +81,7 @@ impl Tree {
     ///
     /// * `connection`: connection to add.
     pub async fn add_connection(&self, conn: &mut Connection) -> Result<(), ServiceError> {
-        let mut objects = self.objects.lock();
+        let mut objects = self.objects.lock().await;
 
         let (id, path) = objects.register_connection(conn);
         if id != conn.id() {
@@ -114,7 +114,7 @@ impl Tree {
     ///
     /// * `id`: connection ID.
     pub async fn remove_connection(&mut self, id: &str) -> Result<(), ServiceError> {
-        let mut objects = self.objects.lock();
+        let mut objects = self.objects.lock().await;
         let Some(path) = objects.connection_path(id) else {
             return Ok(())
         };
@@ -142,7 +142,7 @@ impl Tree {
 
     /// Clears all the connections from the tree.
     async fn remove_connections(&self) -> Result<(), ServiceError> {
-        let mut objects = self.objects.lock();
+        let mut objects = self.objects.lock().await;
         for path in objects.connections.values() {
             self.remove_connection_on(path.as_str()).await?;
         }
@@ -153,7 +153,7 @@ impl Tree {
     /// Clears all the devices from the tree.
     async fn remove_devices(&mut self) -> Result<(), ServiceError> {
         let object_server = self.connection.object_server();
-        let mut objects = self.objects.lock();
+        let mut objects = self.objects.lock().await;
         for path in objects.devices.values() {
             object_server
                 .remove::<interfaces::Device, _>(path.as_str())
