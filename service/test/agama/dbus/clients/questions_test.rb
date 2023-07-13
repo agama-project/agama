@@ -62,7 +62,7 @@ describe Agama::DBus::Clients::Questions do
     let(:dbus_object) { double(::DBus::ProxyObject) }
 
     it "asks the service to add a question and returns a stub object for it" do
-      expect(dbus_object).to receive(:New).with("What?", ["this", "that"], [])
+      expect(dbus_object).to receive(:New).with("test2", "What?", ["this", "that"], "this", {})
       expect(Agama::DBus::Clients::Question).to receive(:new).and_return(question1_stub)
       expect(subject.add(question1)).to eq question1_stub
     end
