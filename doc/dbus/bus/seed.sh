@@ -48,7 +48,7 @@ abusctl call \
   ${DD}.Questions1 \
   ${SS}/Questions1 \
   ${DD}.Questions1 \
-  New sasas "should I stay or should I go" 2 yes no 1 yes
+  New "ssassa{ss}" "org.bands.Clash" "should I stay or should I go" 2 yes no yes 0
 abusctl introspect --xml-interface \
   ${DD}.Questions1 \
   ${SS}/Questions1/0 \
@@ -59,9 +59,9 @@ abusctl call \
    ${DD}.Questions1 \
    ${SS}/Questions1 \
    ${DD}.Questions1 \
-   NewLuksActivation sssy "/dev/tape1" "ZX Spectrum games" "90 minutes" 1
+   NewWithPassword "ssassa{ss}" "world.MiddleEarth.Moria.gate1" "Speak friend and enter" 2 enter giveup giveup 0
 abusctl introspect --xml-interface \
   ${DD}.Questions1 \
   ${SS}/Questions1/1 \
   | cleanup \
-  > ${DD}.Questions1.LuksActivation.bus.xml
+  > ${DD}.Questions1.WithPassword.bus.xml

@@ -38,6 +38,8 @@
   </interface>
   <interface name="org.opensuse.Agama.Questions1.Generic">
     <property name="Answer" type="s" access="readwrite"/>
+    <property name="Class" type="s" access="read"/>
+    <property name="Data" type="a{ss}" access="read"/>
     <property name="DefaultOption" type="s" access="read"/>
     <property name="Id" type="u" access="read"/>
     <property name="Options" type="as" access="read"/>

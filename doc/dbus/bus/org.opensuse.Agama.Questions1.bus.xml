@@ -63,19 +63,22 @@
      creates new generic question without answer
      -->
     <method name="New">
+      <arg name="class" type="s" direction="in"/>
       <arg name="text" type="s" direction="in"/>
       <arg name="options" type="as" direction="in"/>
-      <arg name="default_option" type="as" direction="in"/>
+      <arg name="default_option" type="s" direction="in"/>
+      <arg name="data" type="a{ss}" direction="in"/>
       <arg type="o" direction="out"/>
     </method>
     <!--
      creates new specialized luks activation question without answer and password
      -->
-    <method name="NewLuksActivation">
-      <arg name="device" type="s" direction="in"/>
-      <arg name="label" type="s" direction="in"/>
-      <arg name="size" type="s" direction="in"/>
-      <arg name="attempt" type="y" direction="in"/>
+    <method name="NewWithPassword">
+      <arg name="class" type="s" direction="in"/>
+      <arg name="text" type="s" direction="in"/>
+      <arg name="options" type="as" direction="in"/>
+      <arg name="default_option" type="s" direction="in"/>
+      <arg name="data" type="a{ss}" direction="in"/>
       <arg type="o" direction="out"/>
     </method>
     <!--
@@ -83,6 +86,11 @@
      -->
     <method name="Delete">
       <arg name="question" type="o" direction="in"/>
+    </method>
+    <!--
+     sets questions to be answered by default answer instead of asking user
+     -->
+    <method name="UseDefaultAnswer">
     </method>
   </interface>
 </node>
