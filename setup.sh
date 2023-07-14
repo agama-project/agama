@@ -3,6 +3,9 @@
 # This script sets up the development environment without installing any
 # package. This script is supposed to run within a repository clone.
 
+# Exit on error; unset variables are an error
+set -eu
+
 MYDIR=$(realpath $(dirname $0))
 
 # Helper:
@@ -25,7 +28,7 @@ $MYDIR/setup-service.sh
 # Install Frontend dependencies
 
 $SUDO zypper --non-interactive --gpg-auto-import-keys install \
-  make git 'npm>=18' cockpit || exit 1
+  make git 'npm>=18' cockpit
 
 # Web Frontend
 
