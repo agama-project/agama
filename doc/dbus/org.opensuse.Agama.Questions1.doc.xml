@@ -36,9 +36,10 @@ when the question is answered and the answer is successfully read.
       @data: additional data that is specific to given question class. Can be
              used for additional details about question that helps with UI
              or with matching automatic answers.
-      @result: Object path of created question.
 
-      Creates new generic question
+      Creates new generic question.
+      Returns the object path of the created question.
+
     -->
     <method name="New">
       <arg name="class" direction="in" type="s"/>
@@ -46,10 +47,11 @@ when the question is answered and the answer is successfully read.
       <arg name="options" direction="in" type="as"/>
       <arg name="default_option" direction="in" type="s"/>
       <arg name="data" direction="in" type="a{ss}"/>
-      <arg name="result" direction="out" type="o"/>
+      <arg direction="out" type="o"/>
     </method>
+
     <!--
-      New:
+      NewWithPassword:
       @class: string identifier of the same questions. Useful to identify
               similar questions asked multiple times or for matching
               in automatic answers.
@@ -62,9 +64,9 @@ when the question is answered and the answer is successfully read.
       @data: additional data that is specific to given question class. Can be
              used for additional details about question that helps with UI
              or with matching automatic answers.
-      @result: Object path of created question.
 
       Creates new question with generic base and additional WithPassword interface.
+      Returns the object path of the created question.
     -->
     <method name="NewWithPassword">
       <arg name="class" direction="in" type="s"/>
@@ -72,11 +74,12 @@ when the question is answered and the answer is successfully read.
       <arg name="options" direction="in" type="as"/>
       <arg name="default_option" direction="in" type="s"/>
       <arg name="data" direction="in" type="a{ss}"/>
-      <arg name="result" direction="out" type="o"/>
+      <arg direction="out" type="o"/>
     </method>
     <method name="Delete">
       <arg name="question" direction="in" type="o"/>
     </method>
+
     <!--
       UseDefaultAnswer:
 
@@ -84,6 +87,7 @@ when the question is answered and the answer is successfully read.
       After this method call each follow up question is immediatelly answered.
       Useful for doing non interactive installation.
     -->
-    <method name="UseDefaultAnswer" />
+    <method name="UseDefaultAnswer">
+    </method>
   </interface>
 </node>
