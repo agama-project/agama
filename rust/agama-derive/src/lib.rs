@@ -19,7 +19,7 @@ pub fn agama_attributes_derive(input: TokenStream) -> TokenStream {
     let (collection, scalar): (Vec<_>, Vec<_>) = fields.clone().into_iter().partition(|f| {
         f.attrs
             .iter()
-            .any(|a| a.path.is_ident("collection_setting"))
+            .any(|a| a.path().is_ident("collection_setting"))
     });
 
     let scalar_field_names: Vec<Ident> =
