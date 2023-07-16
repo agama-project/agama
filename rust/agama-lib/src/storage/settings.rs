@@ -18,7 +18,7 @@ pub struct StorageSettings {
 }
 
 /// Device to use in the installation
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Device {
     /// Device name (e.g., "/dev/sda")

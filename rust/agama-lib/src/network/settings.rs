@@ -2,33 +2,18 @@
 
 use super::types::DeviceType;
 use crate::settings::{SettingObject, SettingValue, Settings, SettingsError};
+use agama_derive::Settings;
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::default::Default;
 
 /// Network settings for installation
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Settings, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkSettings {
     /// Connections to use in the installation
+    #[settings(collection)]
     pub connections: Vec<NetworkConnection>,
-}
-
-impl Settings for NetworkSettings {
-    fn add(&mut self, attr: &str, value: SettingObject) -> Result<(), SettingsError> {
-        match attr {
-            "connections" => self.connections.push(value.try_into()?),
-            _ => return Err(SettingsError::UnknownAttribute(attr.to_string())),
-        };
-        Ok(())
-    }
-
-    fn merge(&mut self, other: &Self)
-    where
-        Self: Sized,
-    {
-        self.connections = other.connections.clone();
-    }
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
