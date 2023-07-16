@@ -7,6 +7,7 @@ use syn::{parse_macro_input, DeriveInput, Fields};
 enum SettingKind {
     Scalar,
     Collection,
+    Nested,
 }
 
 /// Represents a setting and its configuration
@@ -19,11 +20,21 @@ struct SettingField {
 }
 
 /// List of setting fields
+#[derive(Debug)]
 struct SettingFieldsList(Vec<SettingField>);
 
 impl SettingFieldsList {
     pub fn by_type(&self, kind: SettingKind) -> Vec<&SettingField> {
         self.0.iter().filter(|f| f.kind == kind).collect()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    // TODO: implement Iterator?
+    pub fn all(&self) -> &Vec<SettingField> {
+        &self.0
     }
 }
 
@@ -43,12 +54,9 @@ pub fn agama_attributes_derive(input: TokenStream) -> TokenStream {
     let fields: Vec<&syn::Field> = fields.iter().collect();
     let settings = parse_setting_fields(fields);
 
-    let scalar_fields = settings.by_type(SettingKind::Scalar);
-    let set_fn = expand_set_fn(&scalar_fields);
-    let merge_fn = expand_merge_fn(&scalar_fields);
-
-    let collection_fields = settings.by_type(SettingKind::Collection);
-    let add_fn = expand_add_fn(&collection_fields);
+    let set_fn = expand_set_fn(&settings);
+    let add_fn = expand_add_fn(&settings);
+    let merge_fn = expand_merge_fn(&settings);
 
     let name = input.ident;
     let expanded = quote! {
@@ -62,53 +70,123 @@ pub fn agama_attributes_derive(input: TokenStream) -> TokenStream {
     expanded.into()
 }
 
-fn expand_set_fn(settings: &Vec<&SettingField>) -> TokenStream2 {
+fn expand_set_fn(settings: &SettingFieldsList) -> TokenStream2 {
     if settings.is_empty() {
         return quote! {};
     }
 
-    let field_name = settings.iter().map(|s| s.ident.clone());
-    quote! {
-        fn set(&mut self, attr: &str, value: crate::settings::SettingValue) -> Result<(), crate::settings::SettingsError> {
+    let mut scalar_handling = quote! {};
+    let scalar_fields = settings.by_type(SettingKind::Scalar);
+    if !scalar_fields.is_empty() {
+        let field_name = scalar_fields.iter().map(|s| s.ident.clone());
+        scalar_handling = quote! {
             match attr {
                 #(stringify!(#field_name) => self.#field_name = value.try_into()?,)*
-                _ => return Err(SettingsError::UnknownAttribute(attr.to_string()))
-            };
-            Ok(())
+                _ => return Err(crate::settings::SettingsError::UnknownAttribute(attr.to_string()))
+            }
         }
+    }
+
+    let mut nested_handling = quote! {};
+    let nested_fields = settings.by_type(SettingKind::Nested);
+    if !nested_fields.is_empty() {
+        let field_name = nested_fields.iter().map(|s| s.ident.clone());
+        nested_handling = quote! {
+            if let Some((ns, id)) = attr.split_once('.') {
+                match ns {
+                    #(stringify!(#field_name) => {
+                        let #field_name = self.#field_name.get_or_insert(Default::default());
+                        #field_name.set(id, value)?
+                    })*
+                    _ => return Err(crate::settings::SettingsError::UnknownAttribute(attr.to_string()))
+                }
+                return Ok(())
+            }
+        }
+    }
+
+    quote! {
+         fn set(&mut self, attr: &str, value: crate::settings::SettingValue) -> Result<(), crate::settings::SettingsError> {
+            #nested_handling
+            #scalar_handling
+            Ok(())
+         }
     }
 }
 
-fn expand_merge_fn(settings: &Vec<&SettingField>) -> TokenStream2 {
+fn expand_merge_fn(settings: &SettingFieldsList) -> TokenStream2 {
     if settings.is_empty() {
         return quote! {};
     }
 
-    let field_name = settings.iter().map(|s| s.ident.clone());
+    let arms = settings.all().iter().map(|s| {
+        let field_name = &s.ident;
+        match s.kind {
+            SettingKind::Scalar => quote! {
+                if let Some(value) = &other.#field_name {
+                    self.#field_name = Some(value.clone())
+                }
+            },
+            SettingKind::Nested => quote! {
+                if let Some(other_value) = &other.#field_name {
+                    let nested = self.#field_name.get_or_insert(Default::default());
+                    nested.merge(other_value);
+                }
+            },
+            SettingKind::Collection => quote! {
+                    self.#field_name = other.#field_name.clone();
+            },
+        }
+    });
+
     quote! {
         fn merge(&mut self, other: &Self)
         where
             Self: Sized,
         {
-            #(if let Some(value) = &other.#field_name {
-                self.#field_name = Some(value.clone())
-              })*
+            #(#arms)*
         }
     }
 }
 
-fn expand_add_fn(settings: &Vec<&SettingField>) -> TokenStream2 {
+fn expand_add_fn(settings: &SettingFieldsList) -> TokenStream2 {
     if settings.is_empty() {
         return quote! {};
     }
 
-    let field_name = settings.iter().map(|s| s.ident.clone());
-    quote! {
-        fn add(&mut self, attr: &str, value: SettingObject) -> Result<(), crate::settings::SettingsError> {
+    let mut collection_handling = quote! {};
+    let collection_fields = settings.by_type(SettingKind::Collection);
+    if !collection_fields.is_empty() {
+        let field_name = collection_fields.iter().map(|s| s.ident.clone());
+        collection_handling = quote! {
             match attr {
                 #(stringify!(#field_name) => self.#field_name.push(value.try_into()?),)*
-                _ => return Err(SettingsError::UnknownCollection(attr.to_string()))
-            };
+                _ => return Err(crate::settings::SettingsError::UnknownCollection(attr.to_string()))
+            }
+        };
+    }
+
+    let mut nested_handling = quote! {};
+    let nested_fields = settings.by_type(SettingKind::Nested);
+    if !nested_fields.is_empty() {
+        let field_name = nested_fields.iter().map(|s| s.ident.clone());
+        nested_handling = quote! {
+            if let Some((ns, id)) = attr.split_once('.') {
+                match ns {
+                    #(stringify!(#field_name) => {
+                        let #field_name = self.#field_name.get_or_insert(Default::default());
+                        #field_name.add(id, value)?
+                    })*
+                    _ => return Err(crate::settings::SettingsError::UnknownAttribute(attr.to_string()))
+                }
+            }
+        }
+    }
+
+    quote! {
+        fn add(&mut self, attr: &str, value: crate::settings::SettingObject) -> Result<(), crate::settings::SettingsError> {
+            #nested_handling
+            #collection_handling
             Ok(())
         }
     }
@@ -131,6 +209,10 @@ fn parse_setting_fields(fields: Vec<&syn::Field>) -> SettingFieldsList {
                 if meta.path.is_ident("collection") {
                     setting.kind = SettingKind::Collection;
                 };
+
+                if meta.path.is_ident("nested") {
+                    setting.kind = SettingKind::Nested;
+                }
 
                 Ok(())
             })
