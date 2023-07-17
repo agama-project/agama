@@ -23,50 +23,21 @@ require "pathname"
 
 module Agama
   module Storage
-    # Starting point to define a Volume. Each product/role will define a set of VolumeTemplates
-    # to be used as a base to define the storage proposal
-    class VolumeTemplate
-      # Mount path
-      #
-      # Used to match the volume being defined with the template to use as base.
-      #
-      # @return [String]
-      attr_accessor :mount_point
-
-      # Whether the corresponding volume should be in the initial list of volumes created by default
-      #
-      # @return [Boolean]
-      attr_reader :by_default
-      alias_method :by_default?, :by_default
-
+    # Set of rules and features used to fully define and validate a given volume
+    class VolumeOutline
       # Whether the volume is optional
       #
       # If this is false, the list of volumes used by the storage proposal will always contain a
-      # volume for this mount_path.
+      # this volume or an equivalent one (ie. one with the same mount_path).
       #
       # @return [Boolean]
       attr_reader :optional
       alias_method :optional?, :optional
 
-      # Default filesystem for the volume
-      #
-      # @return [Y2Storage::Filesystems::Type]
-      attr_accessor :fs_type
-
       # Possible filesystem types for the volume
       #
       # @return [Array<Y2Storage::Filesystems::Type>]
       attr_reader :fs_types
-
-      # Default values for the btrfs-related options if the volume uses Btrfs
-      #
-      # @return [BtrfsSettings, nil] nil if Btrfs is not one of the acceptable fs_types
-      attr_accessor :btrfs
-
-      # Default list of mount options
-      #
-      # @return [Array<String]
-      attr_accessor :mount_options
 
       # Base value to calculate the min size for the volume (if #auto_size is set to true
       # for that final volume) or to use as default value (if #auto_size is false)
@@ -112,23 +83,40 @@ module Agama
       # @return [Integer, nil]
       attr_reader :snapshots_percentage
 
-      # Constructor
-      def initialize(template_values)
-        apply_defaults
-        load_features(template_values)
+      def initialize
+        @optional = false
+        @fs_types = []
+        @base_min_size = Y2Storage::DiskSize.zero
+        @base_max_size = Y2Storage::DiskSize.Unlimited
+        @size_relevant_volumes = []
+        @adjust_by_ram = false
+        @fallback_for_max_size = ""
+        @fallback_for_min_size = ""
+        @snapshots_configurable = false
       end
 
-      def self.read(volumes_data)
-        templates = volumes_data.map { |v| VolumeTemplate.new(v) }
-        templates.each { |t| t.assign_size_relevant_volumes(templates) }
-        templates
+      def load_features(values)
+        size = values.fetch("size", {})
+        min = size["min"]
+        max = size["max"]
+        @base_min_size = DiskSize.parse(min, legacy_units: true) if min
+        @base_max_size = DiskSize.parse(max, legacy_units: true) if max
+
+        # @optional
+        # @fs_types
+        # @adjust_by_ram
+        # @fallback_for_max_size
+        # @fallback_for_min_size
+        # @snapshots_configurable
+        # @snapshots_size
+        # @snapshots_percentage
       end
 
       # Sets the mount points that affects the sizes of the volume
-      def assign_size_relevant_volumes(volumes)
+      def assign_size_relevant_volumes(volume, other_volumes)
         # FIXME: this should be a responsibility of the Proposal (since it's calculated by
         # Proposal::DevicesPlanner)
-        @size_relevant_volumes = specs.select { |s| fallback?(s) }.map(&:mount_point)
+        @size_relevant_volumes = other_volumes.select { |v| fallback?(volume, v) }.map(&:mount_path)
       end
 
       # Whether it makes sense to have automatic size limits for the volume
@@ -153,42 +141,16 @@ module Agama
         snapshots_percentage && !snapshots_percentage.zero?
       end
 
-      # Whether the mount point of the volume matches the given one
-      #
-      # @param path [String, nil] mount point to check
-      # @return [Boolean]
-      def mounted_at?(path)
-        return false if mount_point.nil? || path.nil?
-
-        Pathname.new(mount_point).cleanpath == Pathname.new(path).cleanpath
-      end
-
     private
 
-      def apply_defaults
-        @by_default = true
-        @optional = true
-        @btrfs = BtrfsSettings.new
-        @snapshots_configurable = false
-        @mount_options = []
-        @fs_types = []
-        @base_min_size = Y2Storage::DiskSize.zero
-        @base_max_size = Y2Storage::DiskSize.Unlimited
-        @adjust_by_ram = false
-        @fallback_for_min_size = nil
-        @fallback_for_max_size = nil
-        @size_relevant_volumes = []
-      end
-
-      def load_features(values)
-      end
-
-      # Whether the given volume template has this volume as fallback for sizes
+      # Whether the given volume outline has this volume as fallback for sizes
       #
-      # @param other [VolumeTemplate]
+      # @param volume [Volume] the volume of this outline
+      # @param other [Volume]
       # @return [Boolean]
-      def fallback?(other)
-        mounted_at?(spec.fallback_for_min_size) || mounted_at?(other.fallback_for_max_size)
+      def fallback?(volume, other)
+        volume.mounted_at?(other.outline.fallback_for_min_size) ||
+          volume.mounted_at?(other.outline.fallback_for_max_size)
       end
     end
   end

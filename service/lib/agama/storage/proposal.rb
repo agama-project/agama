@@ -102,7 +102,7 @@ module Agama
         return @volume_templates if @volume_templates
 
         config_volumes = config.data.fetch("storage", {}).fetch("volumes", [])
-        VolumeTemplate.read(config_volumes)
+        Volume.read(config_volumes)
       end
 
       # Settings with the data used during the calculation of the storage proposal

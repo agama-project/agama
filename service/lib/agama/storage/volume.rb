@@ -20,6 +20,8 @@
 # find current contact information at www.suse.com.
 
 require "pathname"
+require "agama/storage/btrfs_settings"
+require "agama/storage/volume_outline"
 
 module Agama
   module Storage
@@ -35,7 +37,10 @@ module Agama
       # Used also to match the corresponding volume template
       #
       # @return [String]
-      attr_accessor :mount_point
+      attr_accessor :mount_path
+
+      # @return [VolumeOutline]
+      attr_reader :outline
 
       # Filesystem for the volume
       #
@@ -49,10 +54,10 @@ module Agama
       # @return [BtrfsSettings, nil] nil if this does not represent a Btrfs file system
       attr_accessor :btrfs
 
-      # @return [Array<String]
+      # @return [Array<String>]
       attr_accessor :mount_options
 
-      # @return [Array<String]
+      # @return [Array<String>]
       attr_accessor :format_options
 
       # These two would be used to locate the volume in a separate disk
@@ -80,6 +85,58 @@ module Agama
       # @return [Boolean]
       attr_accessor :auto_size
       alias_method :auto_size?, :auto_size
+
+      # Constructor
+      def initialize(values)
+        apply_defaults
+        load_features(values)
+      end
+
+      # Whether the mount point of the volume matches the given one
+      #
+      # @param path [String, nil] mount point to check
+      # @return [Boolean]
+      def mounted_at?(path)
+        return false if mount_point.nil? || path.nil?
+
+        Pathname.new(mount_point).cleanpath == Pathname.new(path).cleanpath
+      end
+
+      def self.read(volumes_data)
+        volumes = volumes_data.map { |v| Volume.new(v) }
+        volumes.each { |v| v.outline.assign_size_relevant_volumes(v, volumes) }
+        volumes
+      end
+
+    private
+
+      def apply_defaults
+        @mount_options = []
+        @format_options = []
+        @btrfs = BtrfsSettings.new
+        @outline = VolumeOutline.new
+      end
+
+      def load_features(values)
+        @mount_path = values.fetch("mount", {}).fetch("path")
+        # @mount_options = xxx
+        # @format_options = xxx
+
+        type_str = values.fetch("filesystem", {}).fetch("type", "ext4")
+        @fs_type = Y2Storage::Filesystems::Type.find(type.downcase.to_sym)
+
+        btrfs.load_features(values)
+        outline.load_features(values)
+
+        # TODO: part of this logic should likely be moved elsewhere (auto_size setter?)
+        if outline.adaptative_sizes?
+          @auto_size = true
+        else
+          @auto_size = false
+          @min_size = outline.base_min_size
+          @max_size = outline.base_max_size
+        end
+      end
     end
   end
 end
