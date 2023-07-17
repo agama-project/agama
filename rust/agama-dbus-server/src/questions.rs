@@ -258,7 +258,7 @@ impl Questions {
                 None => (),
                 Some(answer) => {
                     question.answer = answer;
-                    return ;
+                    return;
                 }
             }
         }
@@ -277,7 +277,7 @@ impl Questions {
             }
             if let Some(answer) = answer {
                 question.base.answer = answer;
-                return ;
+                return;
             }
         }
     }
