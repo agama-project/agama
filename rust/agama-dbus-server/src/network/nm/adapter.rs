@@ -22,7 +22,7 @@ impl<'a> NetworkManagerAdapter<'a> {
     ///
     /// * `conn`: connection
     fn is_writable(conn: &Connection) -> bool {
-        matches!(conn, Connection::Loopback(_))
+        !conn.is_loopback()
     }
 }
 
@@ -46,10 +46,10 @@ impl<'a> Adapter for NetworkManagerAdapter<'a> {
                 }
                 if conn.is_removed() {
                     if let Err(e) = self.client.remove_connection(conn.uuid()).await {
-                        log::error!("Could not remove the connection {}: {}", conn.uuid(), e);
+                        log::error!("Could not remove the connection {}: {}", conn.id(), e);
                     }
                 } else if let Err(e) = self.client.add_or_update_connection(conn).await {
-                    log::error!("Could not add/update the connection {}: {}", conn.uuid(), e);
+                    log::error!("Could not add/update the connection {}: {}", conn.id(), e);
                 }
             }
         });
