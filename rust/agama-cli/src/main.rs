@@ -6,6 +6,7 @@ mod error;
 mod printers;
 mod profile;
 mod progress;
+mod questions;
 
 use crate::error::CliError;
 use agama_lib::error::ServiceError;
@@ -22,6 +23,7 @@ use std::{
     thread::sleep,
     time::Duration,
 };
+use questions::run as run_questions_cmd;
 
 #[derive(Parser)]
 #[command(name = "agama", version, about, long_about = None)]
@@ -128,6 +130,7 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
             let manager = build_manager().await?;
             block_on(install(&manager, 3))
         }
+        Commands::Questions(subcommand) => block_on(run_questions_cmd(subcommand)),
         _ => unimplemented!(),
     }
 }
