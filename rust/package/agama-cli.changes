@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Jul 18 15:42:30 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Move the settings functionality to a separate package,
+  agama-settings (gh#openSUSE/agama#666).
+- Make the "Settings" derive macro reusable from other crates.
+- Extend the "Settings" derive macro to generate code for
+  InstallSettings and NetworkSettings.
+
+-------------------------------------------------------------------
 Tue Jul 18 13:32:04 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Add to CLI "questions" subcommand with mode option to set
