@@ -95,7 +95,7 @@ impl NetworkState {
 mod tests {
     use uuid::Uuid;
 
-    use super::{BaseConnection, Connection, EthernetConnection, NetworkState};
+    use super::*;
     use crate::network::error::NetworkStateError;
 
     #[test]
@@ -186,6 +186,23 @@ mod tests {
         let error = state.remove_connection("eth0").unwrap_err();
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
     }
+
+    #[test]
+    fn test_is_loopback() {
+        let base = BaseConnection {
+            id: "eth0".to_string(),
+            ..Default::default()
+        };
+        let conn = Connection::Ethernet(EthernetConnection { base });
+        assert!(!conn.is_loopback());
+
+        let base = BaseConnection {
+            id: "lo".to_string(),
+            ..Default::default()
+        };
+        let conn = Connection::Loopback(LoopbackConnection { base });
+        assert!(conn.is_loopback());
+    }
 }
 
 /// Network device
@@ -263,6 +280,11 @@ impl Connection {
 
     pub fn is_removed(&self) -> bool {
         self.base().status == Status::Removed
+    }
+
+    /// Determines whether it is a loopback interface.
+    pub fn is_loopback(&self) -> bool {
+        matches!(self, Connection::Loopback(_))
     }
 }
 
