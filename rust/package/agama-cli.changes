@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Mon Jul 17 09:16:38 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
-- Adapt to new questions DBus API to allow automatic answering of
+- Adapt to new questions D-Bus API to allow automatic answering of
   questions when requested (gh#openSUSE/agama#637, reverts
   gh#openSUSE/agama#649 as now default option is mandatory)
 
