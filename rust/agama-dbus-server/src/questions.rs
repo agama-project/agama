@@ -6,7 +6,7 @@ use agama_lib::{
     questions::{self, GenericQuestion, WithPassword},
 };
 use anyhow::Context;
-use log::{self, info};
+use log;
 use zbus::{dbus_interface, fdo::ObjectManager, zvariant::ObjectPath, Connection};
 
 #[derive(Clone, Debug)]
@@ -80,13 +80,27 @@ enum QuestionType {
     BaseWithPassword,
 }
 
+/// Trait for objects that can provide answers to all kind of Question.
 trait AnswerStrategy {
     /// Provides answer for generic question
+    ///
+    /// I gets as argument the question to answer. Returned value is `answer`
+    /// property or None. If `None` is used, it means that this object does not
+    /// answer to given question.
     fn answer(&self, question: &GenericQuestion) -> Option<String>;
     /// Provides answer and password for base question with password
+    ///
+    /// I gets as argument the question to answer. Returned value is pair
+    /// of `answer` and `password` properties. If `None` is used in any
+    /// position it means that this object does not respond to given property.
+    ///
+    /// It is object responsibility to provide correct pair. For example if
+    /// possible answer can be "Ok" and "Cancel". Then for `Ok` password value 
+    /// should be provided and for `Cancel` it can be `None`.
     fn answer_with_password(&self, question: &WithPassword) -> (Option<String>, Option<String>);
 }
 
+/// AnswerStrategy that provides as answer the default option.
 struct DefaultAnswers;
 
 impl AnswerStrategy for DefaultAnswers {
@@ -118,6 +132,7 @@ impl Questions {
         default_option: &str,
         data: HashMap<String, String>,
     ) -> Result<ObjectPath, zbus::fdo::Error> {
+        log::info!("Creating new question with text: {}.", text);
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
         let options = options.iter().map(|o| o.to_string()).collect();
@@ -150,6 +165,7 @@ impl Questions {
         default_option: &str,
         data: HashMap<String, String>,
     ) -> Result<ObjectPath, zbus::fdo::Error> {
+        log::info!("Creating new question with password with text: {}.", text);
         let id = self.last_id;
         self.last_id += 1; // TODO use some thread safety
                            // TODO: share code better
@@ -232,16 +248,27 @@ impl Questions {
     }
 
     /// tries to provide answer to question using answer strategies
+    /// 
+    /// What happens underhood is that it user answer_strategies vector
+    /// and try to find the first strategy that provides answer. When
+    /// aswer is provided, it returns immediatelly.
     fn fill_answer(&self, question: &mut GenericQuestion) -> () {
         for strategy in self.answer_strategies.iter() {
             match strategy.answer(question) {
                 None => (),
-                Some(answer) => question.answer = answer,
+                Some(answer) => {
+                    question.answer = answer;
+                    return ()
+                }
             }
         }
     }
 
     /// tries to provide answer to question using answer strategies
+    /// 
+    /// What happens underhood is that it user answer_strategies vector
+    /// and try to find the first strategy that provides answer. When
+    /// aswer is provided, it returns immediatelly.
     fn fill_answer_with_password(&self, question: &mut WithPassword) -> () {
         for strategy in self.answer_strategies.iter() {
             let (answer, password) = strategy.answer_with_password(question);
@@ -250,6 +277,7 @@ impl Questions {
             }
             if let Some(answer) = answer {
                 question.base.answer = answer;
+                return ()
             }
         }
     }

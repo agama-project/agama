@@ -1,4 +1,3 @@
-use log::info;
 use std::collections::HashMap;
 
 /// module holdings data model for agama questions
@@ -33,7 +32,6 @@ impl GenericQuestion {
         default_option: String,
         data: HashMap<String, String>,
     ) -> Self {
-        info!("Creating new generic question with text {}", text);
         Self {
             id,
             class,
@@ -51,7 +49,21 @@ impl GenericQuestion {
 }
 
 /// Composition for questions which include password.
-/// TODO: research a bit how ideally do mixins in rust
+///
+/// ## Extension
+/// If there is need to provide more mixins, then this structure does not work
+/// well as it is hard do various combinations. Idea is when need for more
+/// mixins arise to convert it to Question Struct that have optional mixins
+/// inside like
+/// 
+/// struct Question {
+///   base: GenericQuestion,
+///   with_password: Option<WithPassword>,
+///   another_mixin: Option<AnotherMixin>
+/// }
+/// 
+/// This way all handling code can check if given mixin is used and
+/// act appropriate.
 #[derive(Clone, Debug)]
 pub struct WithPassword {
     /// Luks password. Empty means no password set.
@@ -62,7 +74,6 @@ pub struct WithPassword {
 
 impl WithPassword {
     pub fn new(base: GenericQuestion) -> Self {
-        info!("Adding to question with password interface.");
         Self {
             password: "".to_string(),
             base,
