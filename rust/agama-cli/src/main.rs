@@ -18,12 +18,12 @@ use config::run as run_config_cmd;
 use printers::Format;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
+use questions::run as run_questions_cmd;
 use std::{
     process::{ExitCode, Termination},
     thread::sleep,
     time::Duration,
 };
-use questions::run as run_questions_cmd;
 
 #[derive(Parser)]
 #[command(name = "agama", version, about, long_about = None)]
