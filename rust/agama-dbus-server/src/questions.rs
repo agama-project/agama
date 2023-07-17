@@ -249,9 +249,9 @@ impl Questions {
 
     /// tries to provide answer to question using answer strategies
     ///
-    /// What happens underhood is that it user answer_strategies vector
+    /// What happens under the hood is that it uses answer_strategies vector
     /// and try to find the first strategy that provides answer. When
-    /// aswer is provided, it returns immediatelly.
+    /// answer is provided, it returns immediately.
     fn fill_answer(&self, question: &mut GenericQuestion) {
         for strategy in self.answer_strategies.iter() {
             match strategy.answer(question) {
@@ -266,9 +266,9 @@ impl Questions {
 
     /// tries to provide answer to question using answer strategies
     ///
-    /// What happens underhood is that it user answer_strategies vector
+    /// What happens under the hood is that it uses answer_strategies vector
     /// and try to find the first strategy that provides answer. When
-    /// aswer is provided, it returns immediatelly.
+    /// answer is provided, it returns immediately.
     fn fill_answer_with_password(&self, question: &mut WithPassword) {
         for strategy in self.answer_strategies.iter() {
             let (answer, password) = strategy.answer_with_password(question);
