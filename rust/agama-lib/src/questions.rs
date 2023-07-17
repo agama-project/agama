@@ -55,13 +55,13 @@ impl GenericQuestion {
 /// well as it is hard do various combinations. Idea is when need for more
 /// mixins arise to convert it to Question Struct that have optional mixins
 /// inside like
-/// 
+///
 /// struct Question {
 ///   base: GenericQuestion,
 ///   with_password: Option<WithPassword>,
 ///   another_mixin: Option<AnotherMixin>
 /// }
-/// 
+///
 /// This way all handling code can check if given mixin is used and
 /// act appropriate.
 #[derive(Clone, Debug)]

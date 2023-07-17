@@ -95,7 +95,7 @@ trait AnswerStrategy {
     /// position it means that this object does not respond to given property.
     ///
     /// It is object responsibility to provide correct pair. For example if
-    /// possible answer can be "Ok" and "Cancel". Then for `Ok` password value 
+    /// possible answer can be "Ok" and "Cancel". Then for `Ok` password value
     /// should be provided and for `Cancel` it can be `None`.
     fn answer_with_password(&self, question: &WithPassword) -> (Option<String>, Option<String>);
 }
@@ -248,7 +248,7 @@ impl Questions {
     }
 
     /// tries to provide answer to question using answer strategies
-    /// 
+    ///
     /// What happens underhood is that it user answer_strategies vector
     /// and try to find the first strategy that provides answer. When
     /// aswer is provided, it returns immediatelly.
@@ -258,14 +258,14 @@ impl Questions {
                 None => (),
                 Some(answer) => {
                     question.answer = answer;
-                    return ()
+                    return ();
                 }
             }
         }
     }
 
     /// tries to provide answer to question using answer strategies
-    /// 
+    ///
     /// What happens underhood is that it user answer_strategies vector
     /// and try to find the first strategy that provides answer. When
     /// aswer is provided, it returns immediatelly.
@@ -277,7 +277,7 @@ impl Questions {
             }
             if let Some(answer) = answer {
                 question.base.answer = answer;
-                return ()
+                return ();
             }
         }
     }
