@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Jul 17 09:16:38 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Adapt to new questions DBus API to allow automatic answering of
+  questions when requested. No visible change in UI, just default
+  answer for luks partition activation is now Skip.
+  (gh#openSUSE/agama#637)
+
+-------------------------------------------------------------------
 Wed Jul  5 13:59:58 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Add info about deactivated zFCP auto_lun_scan and sort members in
