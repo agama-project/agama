@@ -21,7 +21,7 @@
 
 require "agama/dbus/clients/base"
 require "agama/dbus/clients/question"
-require "agama/luks_activation_question"
+require "agama/question_with_password"
 
 module Agama
   module DBus
@@ -116,8 +116,8 @@ module Agama
         # @param question [Agama::Question]
         # @return [::DBus::ObjectPath]
         def add_question(question)
-          if question.is_a?(Agama::LuksActivationQuestion)
-            add_luks_activation_question(question)
+          if question.is_a?(Agama::QuestionWithPassword)
+            add_question_with_password(question)
           else
             add_generic_question(question)
           end
@@ -129,19 +129,25 @@ module Agama
         # @return [::DBus::ObjectPath]
         def add_generic_question(question)
           @dbus_object.New(
+            question.qclass,
             question.text,
             question.options.map(&:to_s),
-            Array(question.default_option&.to_s)
+            question.default_option.to_s,
+            question.data
           )
         end
 
         # Adds a question for activating LUKS
         #
-        # @param question [Agama::LuksActivationQuestion]
+        # @param question [Agama::QuestionWithPassword]
         # @return [::DBus::ObjectPath]
-        def add_luks_activation_question(question)
-          @dbus_object.NewLuksActivation(
-            question.device, question.label, question.size, question.attempt
+        def add_question_with_password(question)
+          @dbus_object.NewWithPassword(
+            question.qclass,
+            question.text,
+            question.options.map(&:to_s),
+            question.default_option.to_s,
+            question.data
           )
         end
       end

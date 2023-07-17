@@ -21,7 +21,7 @@
 
 require_relative "../../../test_helper"
 require "agama/storage/callbacks/activate_luks"
-require "agama/luks_activation_question"
+require "agama/question_with_password"
 require "agama/dbus/clients/questions"
 require "agama/dbus/clients/question"
 require "storage"
@@ -51,7 +51,7 @@ describe Agama::Storage::Callbacks::ActivateLuks do
 
     it "asks a question to activate a LUKS device" do
       expect(questions_client).to receive(:ask) do |question|
-        expect(question).to be_a(Agama::LuksActivationQuestion)
+        expect(question).to be_a(Agama::QuestionWithPassword)
       end
 
       subject.call(luks_info, attempt)

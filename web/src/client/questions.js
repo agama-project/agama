@@ -35,14 +35,14 @@ const DBUS_CONFIG = {
   question: {
     ifaces: {
       generic: "org.opensuse.Agama.Questions1.Generic",
-      luksActivation: "org.opensuse.Agama.Questions1.LuksActivation"
+      withPassword: "org.opensuse.Agama.Questions1.WithPassword"
     }
   }
 };
 
 const QUESTION_TYPES = {
   generic: "generic",
-  luksActivation: "luksActivation"
+  withPassword: "withPassword"
 };
 
 /**
@@ -75,8 +75,6 @@ const fetchValue = (ifaceProperties, key) => {
 };
 
 /**
- * Builds a question from the given D-Bus question
- *
  * @param {Object} dbusQuestion
  * @return {Object}
 */
@@ -93,15 +91,16 @@ function buildQuestion(dbusQuestion) {
     question.options = fetchValue(dbusProperties, "Options");
     question.defaultOption = fetchValue(dbusProperties, "DefaultOption");
     question.text = fetchValue(dbusProperties, "Text");
+    question.class = fetchValue(dbusProperties, "Class");
+    question.data = fetchValue(dbusProperties, "Data");
     question.answer = fetchValue(dbusProperties, "Answer");
   }
 
-  if (ifaces.includes(DBUS_CONFIG.question.ifaces.luksActivation)) {
-    const dbusProperties = ifacesAndProperties[DBUS_CONFIG.question.ifaces.luksActivation];
+  if (ifaces.includes(DBUS_CONFIG.question.ifaces.withPassword)) {
+    const dbusProperties = ifacesAndProperties[DBUS_CONFIG.question.ifaces.withPassword];
 
-    question.type = QUESTION_TYPES.luksActivation;
+    question.type = QUESTION_TYPES.withPassword;
     question.password = fetchValue(dbusProperties, "Password");
-    question.attempt = fetchValue(dbusProperties, "Attempt");
   }
 
   return question;
@@ -145,8 +144,8 @@ class QuestionsClient {
   async answer(question) {
     const path = DBUS_CONFIG.questions.path + "/" + question.id;
 
-    if (question.type === QUESTION_TYPES.luksActivation) {
-      const proxy = await this.client.proxy(DBUS_CONFIG.question.ifaces.luksActivation, path);
+    if (question.type === QUESTION_TYPES.withPassword) {
+      const proxy = await this.client.proxy(DBUS_CONFIG.question.ifaces.withPassword, path);
       proxy.Password = question.password;
     }
 

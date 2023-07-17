@@ -1,7 +1,17 @@
-
-<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
- "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
 <node>
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
+      <arg type="s" direction="out"/>
+    </method>
+  </interface>
+  <interface name="org.freedesktop.DBus.Peer">
+    <method name="Ping">
+    </method>
+    <method name="GetMachineId">
+      <arg type="s" direction="out"/>
+    </method>
+  </interface>
   <interface name="org.freedesktop.DBus.Properties">
     <method name="Get">
       <arg name="interface_name" type="s" direction="in"/>
@@ -26,24 +36,13 @@
       <arg name="invalidated_properties" type="as"/>
     </signal>
   </interface>
-  <interface name="org.freedesktop.DBus.Peer">
-    <method name="Ping">
-    </method>
-    <method name="GetMachineId">
-      <arg type="s" direction="out"/>
-    </method>
-  </interface>
   <interface name="org.opensuse.Agama.Questions1.Generic">
     <property name="Answer" type="s" access="readwrite"/>
+    <property name="Class" type="s" access="read"/>
+    <property name="Data" type="a{ss}" access="read"/>
     <property name="DefaultOption" type="s" access="read"/>
     <property name="Id" type="u" access="read"/>
     <property name="Options" type="as" access="read"/>
     <property name="Text" type="s" access="read"/>
   </interface>
-  <interface name="org.freedesktop.DBus.Introspectable">
-    <method name="Introspect">
-      <arg type="s" direction="out"/>
-    </method>
-  </interface>
 </node>
-

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul 17 09:16:38 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Adapt to new questions D-Bus API to allow automatic answering of
+  questions when requested. All code using this API is adapted
+  (gh#openSUSE/agama#637)
+
+-------------------------------------------------------------------
 Wed Jul  5 14:02:23 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Delay zFCP probing after activating a controller and ensure the

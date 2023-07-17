@@ -26,14 +26,14 @@ jest.mock("./dbus");
 
 // NOTE: should we export them?
 const GENERIC_IFACE = "org.opensuse.Agama.Questions1.Generic";
-const LUKS_ACTIVATION_IFACE = "org.opensuse.Agama.Questions1.LuksActivation";
+const WITH_PASSWORD_IFACE = "org.opensuse.Agama.Questions1.WithPassword";
 
 const questionProxy = {
   wait: jest.fn(),
   Answer: ""
 };
 
-const luksActivationProxy = {
+const withPasswordProxy = {
   wait: jest.fn(),
   Password: ""
 };
@@ -45,6 +45,10 @@ const ifacesAndProperties = {
     Id: {
       t: "u",
       v: 432
+    },
+    Class: {
+      t: "s",
+      v: "storage.luks_activation"
     },
     Text: {
       t: "s",
@@ -59,22 +63,22 @@ const ifacesAndProperties = {
     },
     DefaultOption: {
       t: "s",
-      v: ""
+      v: "decrypt"
+    },
+    Data: {
+      t: "a{ss}",
+      v: { Attempt: "1" }
     },
     Answer: {
       t: "s",
       v: ""
     }
   },
-  "org.opensuse.Agama.Questions1.LuksActivation": {
+  "org.opensuse.Agama.Questions1.WithPassword": {
     Password: {
       t: "s",
       v: ""
     },
-    Attempt: {
-      t: "u",
-      v: 1
-    }
   }
 };
 
@@ -85,19 +89,20 @@ const getManagedObjectsMock = [
 const expectedQuestions = [
   {
     id: 432,
-    type: "luksActivation",
+    class: "storage.luks_activation",
+    type: "withPassword",
     text: "The device /dev/vdb1 (2.00 GiB) is encrypted. Do you want to decrypt it?",
     options: ["skip", "decrypt"],
-    defaultOption: "",
+    defaultOption: "decrypt",
     answer: "",
-    attempt: 1,
+    data: { Attempt: "1" },
     password: "",
   }
 ];
 
 const proxies = {
   [GENERIC_IFACE]: questionProxy,
-  [LUKS_ACTIVATION_IFACE]: luksActivationProxy
+  [WITH_PASSWORD_IFACE]: withPasswordProxy
 };
 
 beforeEach(() => {
@@ -133,14 +138,14 @@ describe("#answer", () => {
 
   describe("when answering a question implementing the LUKS activation interface", () => {
     beforeEach(() => {
-      question = { id: 432, type: 'luksActivation', answer: 'skip', password: 'notSecret' };
+      question = { id: 432, type: 'withPassword', class: 'storage.luks_activation', answer: 'skip', password: 'notSecret' };
     });
 
     it("sets given password", async () => {
       const client = new QuestionsClient();
       await client.answer(question);
 
-      expect(luksActivationProxy).toMatchObject({ Password: "notSecret" });
+      expect(withPasswordProxy).toMatchObject({ Password: "notSecret" });
     });
   });
 });

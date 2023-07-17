@@ -1,39 +1,8 @@
-
-<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
- "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
 <node>
-  <interface name="org.freedesktop.DBus.Peer">
-    <method name="Ping">
-    </method>
-    <method name="GetMachineId">
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
       <arg type="s" direction="out"/>
-    </method>
-  </interface>
-  <interface name="org.opensuse.Agama.Questions1">
-    <!--
-     creates new generic question without answer
-     -->
-    <method name="New">
-      <arg name="text" type="s" direction="in"/>
-      <arg name="options" type="as" direction="in"/>
-      <arg name="default_option" type="as" direction="in"/>
-      <arg type="o" direction="out"/>
-    </method>
-    <!--
-     creates new specialized luks activation question without answer and password
-     -->
-    <method name="NewLuksActivation">
-      <arg name="device" type="s" direction="in"/>
-      <arg name="label" type="s" direction="in"/>
-      <arg name="size" type="s" direction="in"/>
-      <arg name="attempt" type="y" direction="in"/>
-      <arg type="o" direction="out"/>
-    </method>
-    <!--
-     Removes question at given object path
-     -->
-    <method name="Delete">
-      <arg name="question" type="o" direction="in"/>
     </method>
   </interface>
   <interface name="org.freedesktop.DBus.ObjectManager">
@@ -57,6 +26,13 @@
       <arg name="object_path" type="o"/>
       <arg name="interfaces" type="as"/>
     </signal>
+  </interface>
+  <interface name="org.freedesktop.DBus.Peer">
+    <method name="Ping">
+    </method>
+    <method name="GetMachineId">
+      <arg type="s" direction="out"/>
+    </method>
   </interface>
   <interface name="org.freedesktop.DBus.Properties">
     <method name="Get">
@@ -82,10 +58,39 @@
       <arg name="invalidated_properties" type="as"/>
     </signal>
   </interface>
-  <interface name="org.freedesktop.DBus.Introspectable">
-    <method name="Introspect">
-      <arg type="s" direction="out"/>
+  <interface name="org.opensuse.Agama.Questions1">
+    <!--
+     creates new generic question without answer
+     -->
+    <method name="New">
+      <arg name="class" type="s" direction="in"/>
+      <arg name="text" type="s" direction="in"/>
+      <arg name="options" type="as" direction="in"/>
+      <arg name="default_option" type="s" direction="in"/>
+      <arg name="data" type="a{ss}" direction="in"/>
+      <arg type="o" direction="out"/>
+    </method>
+    <!--
+     creates new specialized luks activation question without answer and password
+     -->
+    <method name="NewWithPassword">
+      <arg name="class" type="s" direction="in"/>
+      <arg name="text" type="s" direction="in"/>
+      <arg name="options" type="as" direction="in"/>
+      <arg name="default_option" type="s" direction="in"/>
+      <arg name="data" type="a{ss}" direction="in"/>
+      <arg type="o" direction="out"/>
+    </method>
+    <!--
+     Removes question at given object path
+     -->
+    <method name="Delete">
+      <arg name="question" type="o" direction="in"/>
+    </method>
+    <!--
+     sets questions to be answered by default answer instead of asking user
+     -->
+    <method name="UseDefaultAnswer">
     </method>
   </interface>
 </node>
-

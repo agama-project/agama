@@ -58,7 +58,7 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       aria-label="Question"
       titleIconVariant={() => <Icon name="lock" size="24" />}
     >
-      { renderAlert(question.attempt) }
+      { renderAlert(parseInt(question.data.attempt)) }
       <Text>
         { question.text }
       </Text>
