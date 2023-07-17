@@ -105,11 +105,11 @@ struct DefaultAnswers;
 
 impl AnswerStrategy for DefaultAnswers {
     fn answer(&self, question: &GenericQuestion) -> Option<String> {
-        return Some(question.default_option.clone());
+        Some(question.default_option.clone())
     }
 
     fn answer_with_password(&self, question: &WithPassword) -> (Option<String>, Option<String>) {
-        return (Some(question.base.default_option.clone()), None);
+        (Some(question.base.default_option.clone()), None)
     }
 }
 
@@ -252,13 +252,13 @@ impl Questions {
     /// What happens underhood is that it user answer_strategies vector
     /// and try to find the first strategy that provides answer. When
     /// aswer is provided, it returns immediatelly.
-    fn fill_answer(&self, question: &mut GenericQuestion) -> () {
+    fn fill_answer(&self, question: &mut GenericQuestion) {
         for strategy in self.answer_strategies.iter() {
             match strategy.answer(question) {
                 None => (),
                 Some(answer) => {
                     question.answer = answer;
-                    return ();
+                    return ;
                 }
             }
         }
@@ -269,7 +269,7 @@ impl Questions {
     /// What happens underhood is that it user answer_strategies vector
     /// and try to find the first strategy that provides answer. When
     /// aswer is provided, it returns immediatelly.
-    fn fill_answer_with_password(&self, question: &mut WithPassword) -> () {
+    fn fill_answer_with_password(&self, question: &mut WithPassword) {
         for strategy in self.answer_strategies.iter() {
             let (answer, password) = strategy.answer_with_password(question);
             if let Some(password) = password {
@@ -277,7 +277,7 @@ impl Questions {
             }
             if let Some(answer) = answer {
                 question.base.answer = answer;
-                return ();
+                return ;
             }
         }
     }
