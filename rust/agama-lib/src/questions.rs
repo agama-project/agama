@@ -45,9 +45,9 @@ impl GenericQuestion {
 
     /// Gets object path of given question. It is useful as parameter
     /// for deleting it.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     ///   use std::collections::HashMap;
     ///   use agama_lib::questions::GenericQuestion;
