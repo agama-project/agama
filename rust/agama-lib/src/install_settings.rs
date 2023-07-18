@@ -5,7 +5,7 @@ use crate::{
     network::NetworkSettings, software::SoftwareSettings, storage::StorageSettings,
     users::UserSettings,
 };
-use agama_derive::Settings;
+use agama_settings::Settings;
 use serde::{Deserialize, Serialize};
 use std::default::Default;
 use std::str::FromStr;

@@ -1,4 +1,4 @@
-use agama_derive::Settings;
+use agama_settings::Settings;
 use serde::{Deserialize, Serialize};
 
 /// User settings

@@ -1,7 +1,6 @@
 //! Representation of the storage settings
 
-use agama_settings::{SettingsError, SettingObject};
-use agama_derive::Settings;
+use agama_settings::{SettingObject, Settings, SettingsError};
 use serde::{Deserialize, Serialize};
 
 /// Storage settings for installation

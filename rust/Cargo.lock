@@ -58,7 +58,6 @@ dependencies = [
 name = "agama-lib"
 version = "1.0.0"
 dependencies = [
- "agama-derive",
  "agama-settings",
  "anyhow",
  "async-std",

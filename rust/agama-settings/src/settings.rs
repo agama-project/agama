@@ -27,8 +27,7 @@ use std::fmt::Display;
 /// `UserSettings`.
 ///
 /// ```no_compile
-/// # use agama_settings::settings::{Settings, SettingValue};
-/// # use agama_derive::Settings;
+/// # use agama_settings::{Settings, settings::{Settings, SettingValue}};
 ///
 /// #[derive(Settings)]
 /// struct UserSettings {

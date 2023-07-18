@@ -1,6 +1,6 @@
 //! Representation of the software settings
 
-use agama_derive::Settings;
+use agama_settings::Settings;
 use serde::{Deserialize, Serialize};
 
 /// Software settings for installation

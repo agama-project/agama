@@ -1,8 +1,7 @@
 //! Representation of the network settings
 
 use super::types::DeviceType;
-use agama_settings::{SettingsError, SettingObject, SettingValue};
-use agama_derive::Settings;
+use agama_settings::{SettingObject, SettingValue, Settings, SettingsError};
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::default::Default;
@@ -78,7 +77,7 @@ impl TryFrom<SettingObject> for NetworkConnection {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use agama_settings::{SettingObject, SettingValue, settings::Settings};
+    use agama_settings::{settings::Settings, SettingObject, SettingValue};
     use std::collections::HashMap;
 
     #[test]
