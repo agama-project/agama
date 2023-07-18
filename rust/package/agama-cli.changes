@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 18 13:32:04 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Add to CLI "questions" subcommand with mode option to set
+  interactive and non-interactive mode (gh#openSUSE/agama#668)
+
+-------------------------------------------------------------------
 Mon Jul 17 13:36:56 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the logic to decide which network connections to write

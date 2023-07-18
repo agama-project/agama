@@ -43,6 +43,24 @@ impl GenericQuestion {
         }
     }
 
+    /// Gets object path of given question. It is useful as parameter
+    /// for deleting it.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    ///   use std::collections::HashMap;
+    ///   use agama_lib::questions::GenericQuestion;
+    ///   let question = GenericQuestion::new(
+    ///     2,
+    ///     "test_class".to_string(),
+    ///     "Really?".to_string(),
+    ///     vec!["Yes".to_string(), "No".to_string()],
+    ///     "No".to_string(),
+    ///     HashMap::new()
+    ///   );
+    ///   assert_eq!(question.object_path(), "/org/opensuse/Agama/Questions1/2".to_string());
+    /// ```
     pub fn object_path(&self) -> String {
         format!("/org/opensuse/Agama/Questions1/{}", self.id)
     }

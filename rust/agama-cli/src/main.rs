@@ -6,6 +6,7 @@ mod error;
 mod printers;
 mod profile;
 mod progress;
+mod questions;
 
 use crate::error::CliError;
 use agama_lib::error::ServiceError;
@@ -17,6 +18,7 @@ use config::run as run_config_cmd;
 use printers::Format;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
+use questions::run as run_questions_cmd;
 use std::{
     process::{ExitCode, Termination},
     thread::sleep,
@@ -128,6 +130,7 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
             let manager = build_manager().await?;
             block_on(install(&manager, 3))
         }
+        Commands::Questions(subcommand) => block_on(run_questions_cmd(subcommand)),
         _ => unimplemented!(),
     }
 }

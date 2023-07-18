@@ -1,5 +1,6 @@
 use crate::config::ConfigCommands;
 use crate::profile::ProfileCommands;
+use crate::questions::QuestionsCommands;
 use clap::Subcommand;
 
 #[derive(Subcommand, Debug)]
@@ -20,4 +21,7 @@ pub enum Commands {
     /// Autoinstallation profile handling
     #[command(subcommand)]
     Profile(ProfileCommands),
+    /// Questions handling
+    #[command(subcommand)]
+    Questions(QuestionsCommands),
 }
