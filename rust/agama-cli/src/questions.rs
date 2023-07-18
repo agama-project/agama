@@ -2,7 +2,7 @@ use agama_lib::connection;
 use agama_lib::proxies::Questions1Proxy;
 use anyhow::{Context, Ok};
 use clap::{Args, Subcommand, ValueEnum};
-use log;
+
 
 #[derive(Subcommand, Debug)]
 pub enum QuestionsCommands {
