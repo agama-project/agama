@@ -3,7 +3,6 @@ use agama_lib::proxies::Questions1Proxy;
 use anyhow::{Context, Ok};
 use clap::{Args, Subcommand, ValueEnum};
 
-
 #[derive(Subcommand, Debug)]
 pub enum QuestionsCommands {
     /// Set mode for answering questions.
