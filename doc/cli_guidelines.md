@@ -192,8 +192,9 @@ There are pending questions. Please, answer questions first: agama questions.
 
 ## Non Interactive Mode
 
-There is a `questions` subcommand that implements a `mode` subcommand to set the non-interactive mode. Another option is to use `answers` subcommand to pass a file with
-predefined answers.
+There is a `questions` subcommand that support `mode` and `answers` subcommands.
+The `mode` subcommand allows to set `interactive` and `non-interactive` modes.
+The `answers` allows to pass a file with predefined answers.
 
 ~~~
 agama questions mode non-interactive
