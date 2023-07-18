@@ -60,7 +60,7 @@ pub fn agama_attributes_derive(input: TokenStream) -> TokenStream {
 
     let name = input.ident;
     let expanded = quote! {
-        impl Settings for #name {
+        impl agama_settings::settings::Settings for #name {
             #set_fn
             #add_fn
             #merge_fn

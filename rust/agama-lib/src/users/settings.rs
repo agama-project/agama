@@ -1,4 +1,3 @@
-use agama_settings::settings::Settings;
 use agama_derive::Settings;
 use serde::{Deserialize, Serialize};
 
@@ -47,6 +46,7 @@ pub struct RootUserSettings {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use agama_settings::settings::Settings;
 
     #[test]
     fn test_user_settings_merge() {

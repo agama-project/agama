@@ -1,7 +1,6 @@
 //! Configuration settings handling
 //!
 //! This module implements the mechanisms to load and store the installation settings.
-use agama_settings::settings::Settings;
 use crate::{
     network::NetworkSettings, software::SoftwareSettings, storage::StorageSettings,
     users::UserSettings,
