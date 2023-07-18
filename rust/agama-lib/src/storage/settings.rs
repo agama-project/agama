@@ -1,6 +1,6 @@
 //! Representation of the storage settings
 
-use crate::settings::{SettingObject, Settings, SettingsError};
+use agama_settings::{SettingsError, SettingObject, settings::Settings};
 use agama_derive::Settings;
 use serde::{Deserialize, Serialize};
 

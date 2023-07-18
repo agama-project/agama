@@ -2,7 +2,7 @@
 
 use super::proxies::Users1Proxy;
 use crate::error::ServiceError;
-use crate::settings::{SettingValue, Settings, SettingsError};
+use agama_settings::{settings::Settings, SettingValue, SettingsError};
 use serde::Serialize;
 use zbus::Connection;
 

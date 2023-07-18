@@ -28,7 +28,6 @@ pub mod install_settings;
 pub mod manager;
 pub mod network;
 pub mod profile;
-pub mod settings;
 pub mod software;
 pub mod storage;
 pub mod users;

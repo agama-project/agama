@@ -82,7 +82,7 @@ fn expand_set_fn(settings: &SettingFieldsList) -> TokenStream2 {
         scalar_handling = quote! {
             match attr {
                 #(stringify!(#field_name) => self.#field_name = value.try_into()?,)*
-                _ => return Err(crate::settings::SettingsError::UnknownAttribute(attr.to_string()))
+                _ => return Err(agama_settings::SettingsError::UnknownAttribute(attr.to_string()))
             }
         }
     }
@@ -98,7 +98,7 @@ fn expand_set_fn(settings: &SettingFieldsList) -> TokenStream2 {
                         let #field_name = self.#field_name.get_or_insert(Default::default());
                         #field_name.set(id, value)?
                     })*
-                    _ => return Err(crate::settings::SettingsError::UnknownAttribute(attr.to_string()))
+                    _ => return Err(agama_settings::SettingsError::UnknownAttribute(attr.to_string()))
                 }
                 return Ok(())
             }
@@ -106,7 +106,7 @@ fn expand_set_fn(settings: &SettingFieldsList) -> TokenStream2 {
     }
 
     quote! {
-         fn set(&mut self, attr: &str, value: crate::settings::SettingValue) -> Result<(), crate::settings::SettingsError> {
+         fn set(&mut self, attr: &str, value: agama_settings::SettingValue) -> Result<(), agama_settings::SettingsError> {
             #nested_handling
             #scalar_handling
             Ok(())
@@ -161,7 +161,7 @@ fn expand_add_fn(settings: &SettingFieldsList) -> TokenStream2 {
         collection_handling = quote! {
             match attr {
                 #(stringify!(#field_name) => self.#field_name.push(value.try_into()?),)*
-                _ => return Err(crate::settings::SettingsError::UnknownCollection(attr.to_string()))
+                _ => return Err(agama_settings::SettingsError::UnknownCollection(attr.to_string()))
             }
         };
     }
@@ -177,14 +177,14 @@ fn expand_add_fn(settings: &SettingFieldsList) -> TokenStream2 {
                         let #field_name = self.#field_name.get_or_insert(Default::default());
                         #field_name.add(id, value)?
                     })*
-                    _ => return Err(crate::settings::SettingsError::UnknownAttribute(attr.to_string()))
+                    _ => return Err(agama_settings::SettingsError::UnknownAttribute(attr.to_string()))
                 }
             }
         }
     }
 
     quote! {
-        fn add(&mut self, attr: &str, value: crate::settings::SettingObject) -> Result<(), crate::settings::SettingsError> {
+        fn add(&mut self, attr: &str, value: agama_settings::SettingObject) -> Result<(), agama_settings::SettingsError> {
             #nested_handling
             #collection_handling
             Ok(())

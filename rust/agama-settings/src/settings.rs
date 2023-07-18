@@ -12,13 +12,13 @@
 //! taking care of the conversions automatically. The newtype [SettingValue] takes care of such a
 //! conversion.
 //!
+use crate::error::SettingsError;
 use std::collections::HashMap;
 /// For plain structs, the implementation can be derived.
 ///
 /// TODO: derive for top-level structs too
 use std::convert::TryFrom;
 use std::fmt::Display;
-use thiserror::Error;
 
 /// Implements support for easily settings attributes values given an ID (`"users.name"`) and a
 /// string value (`"Foo bar"`).
@@ -27,7 +27,7 @@ use thiserror::Error;
 /// `UserSettings`.
 ///
 /// ```no_compile
-/// # use agama_lib::settings::{Settings, SettingValue};
+/// # use agama_settings::settings::{Settings, SettingValue};
 /// # use agama_derive::Settings;
 ///
 /// #[derive(Settings)]
@@ -82,7 +82,7 @@ pub trait Settings {
 /// more types.
 ///
 /// ```
-///   # use agama_lib::settings::SettingValue;
+///   # use agama_settings::settings::SettingValue;
 //
 ///   let value = SettingValue("true".to_string());
 ///   let value: bool = value.try_into().expect("the conversion failed");
@@ -179,16 +179,4 @@ mod tests {
         let value: String = value.try_into().unwrap();
         assert_eq!(value, "some value");
     }
-}
-
-#[derive(Error, Debug)]
-pub enum SettingsError {
-    #[error("Unknown attribute '{0}'")]
-    UnknownAttribute(String),
-    #[error("Unknown collection '{0}'")]
-    UnknownCollection(String),
-    #[error("Invalid value '{0}'")]
-    InvalidValue(String),
-    #[error("Missing key '{0}'")]
-    MissingKey(String),
 }
