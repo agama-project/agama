@@ -34,27 +34,27 @@ module Agama
         #
         # @param dbus_settings [Hash]
         # @return [Agama::Storage::ProposalSettings]
-        def to_agama(dbus_settings)
-          ToAgama.new(dbus_settings).convert
+        def from_dbus(dbus_settings, config: nil)
+          FromDBus.new(dbus_settings, config: config).convert
         end
 
         # Internal class to generate a Agama proposal settings
-        class ToAgama
+        class FromDBus
           # Constructor
           #
           # @param dbus_settings [Hash]
-          def initialize(dbus_settings)
+          def initialize(dbus_settings, config: nil)
             @dbus_settings = dbus_settings
+            @config = config
           end
 
-          # Converts settings from D-Bus to Agama format
+          # Creates settings from D-Bus
           #
           # @return [Agama::Storage::ProposalSettings]
           def convert
-            Agama::Storage::ProposalSettings.new.tap do |proposal_settings|
+            Agama::Storage::ProposalSettings.new.tap do |settings|
               dbus_settings.each do |dbus_property, dbus_value|
-                setter, value_converter = SETTINGS_CONVERSIONS[dbus_property]
-                proposal_settings.public_send(setter, value_converter.call(dbus_value, self))
+                send(CONVERSIONS[dbus_property], settings, dbus_value)
               end
             end
           end
@@ -64,25 +64,54 @@ module Agama
           # @return [Hash]
           attr_reader :dbus_settings
 
+          attr_reader :config
+
           # Relationship between D-Bus settings and Agama proposal settings
           #
           # For each D-Bus setting there is a list with the setter to use and the conversion from a
           # D-Bus value to the value expected by the ProposalSettings setter.
-          SETTINGS_CONVERSIONS = {
-            "CandidateDevices"   => ["candidate_devices=", proc { |v| v }],
-            "LVM"                => ["lvm=", proc { |v| v }],
-            "EncryptionPassword" => ["encryption_password=", proc { |v| v.empty? ? nil : v }],
-            "Volumes"            => ["volumes=", proc { |v, o| o.send(:to_agama_volumes, v) }]
+          CONVERSIONS = {
+            "BootDevice"             => :boot_device_conversion,
+            "LVM"                    => :lvm_conversion,
+            "EncryptionPassword"     => :encryption_password_conversion,
+            "SpacePolicy"            => :space_policy_conversion,
+            "Volumes"                => :volumes_conversion
           }.freeze
-          private_constant :SETTINGS_CONVERSIONS
+          private_constant :CONVERSIONS
 
-          # Converts volumes from D-Bus to the Agama format
-          #
-          # @param dbus_volumes [Array<Hash>]
-          # @return [Array<Agama::Storage::Volume>]
-          def to_agama_volumes(dbus_volumes)
+          def boot_device_conversion(settings, value)
+            settings.boot_device = value
+          end
+
+          def lvm_conversion(settings, value)
+            settings.lvm.enabled = value
+          end
+
+          def encryption_password_conversion(settings, value)
+            settings.encryption.encryption_password = value.empty? ? nil : value
+          end
+
+          def space_policy_conversion(settings, value)
+            settings.space.policy = value.to_sym unless value.empty?
+          end
+
+          def volumes_conversion(settings, value)
             converter = VolumeConverter.new
-            dbus_volumes.map { |v| converter.to_agama(v) }
+            volumes = value.map { |v| converter.from_dbus(v, config: config) }
+            settings.volumes = volumes + missing_volumes(volumes)
+          end
+
+          def missing_volumes(volumes)
+            return [] unless volume_generator
+
+            mandatory_volumes = volume_generator.mandatory_volumes
+            mandatory_volumes.reject { |mv| volumes.any? { |v| v.mount_path == mv.mount_path } }
+          end
+
+          def volume_generator
+            return nil unless config
+
+            Agama::Storage::VolumeGenerator.new(config)
           end
         end
       end
