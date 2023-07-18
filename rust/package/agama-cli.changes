@@ -5,6 +5,13 @@ Tue Jul 18 13:32:04 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
   interactive and non-interactive mode (gh#openSUSE/agama#668)
 
 -------------------------------------------------------------------
+Mon Jul 17 13:36:56 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the logic to decide which network connections to write
+  due to a bug introduced in gh#openSUSE/agama#662
+  (gh#openSUSE/agama#667).
+
+-------------------------------------------------------------------
 Mon Jul 17 09:16:38 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Adapt to new questions D-Bus API to allow automatic answering of
