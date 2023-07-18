@@ -192,6 +192,10 @@ There are pending questions. Please, answer questions first: agama questions.
 
 ## Non Interactive Mode
 
-Commands should offer a `--non-interactive` option to make scripting possible. The non interactive mode should allow answering questions automatically.
+There are questions subcommand that support `mode` subcommand to set non-interactive mode. Another option is to use `answers` subcommand to pass file with
+predefined answers.
 
-TBD: Non interactive mode will be defined later in the next iteration.
+~~~
+agama questions mode non-interactive
+agama questions answers /tmp/answers.json
+~~~
