@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 19 21:21:15 UTC 2023 - Balsa Asanovic <balsaasanovic95@gmail.com>
+
+- Introduced functionality to close Dropdown automatically
+  when the user clicks outside of it.
+  (gh#openSUSE/agama#552).
+
+-------------------------------------------------------------------
 Mon Jul 17 09:16:38 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Adapt to new questions D-Bus API to allow automatic answering of
