@@ -81,6 +81,9 @@ enum QuestionType {
 }
 
 /// Trait for objects that can provide answers to all kind of Question.
+/// 
+/// If not strategy is used or all defined strategies does not know answer,
+/// then users need to answer it themself.
 trait AnswerStrategy {
     /// Id for quick runtime inspection of strategy type
     fn id(&self) -> u8;
@@ -245,9 +248,9 @@ impl Questions {
     fn interactive(&self) -> bool {
         let last = self.answer_strategies.last();
         if let Some(real_strategy) = last {
-            real_strategy.id() == DefaultAnswers::id()
+            real_strategy.id() != DefaultAnswers::id()
         } else {
-            false
+            true
         }
     }
 
