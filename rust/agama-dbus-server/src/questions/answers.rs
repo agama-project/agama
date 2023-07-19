@@ -73,11 +73,7 @@ impl crate::questions::AnswerStrategy for Answers {
 
     fn answer(&self, question: &agama_lib::questions::GenericQuestion) -> Option<String> {
         let answer = self.find_answer(question);
-        if let Some(answer) = answer {
-            Some(answer.answer.clone())
-        } else {
-            None
-        }
+        answer.map(|answer| answer.answer.clone())
     }
 
     fn answer_with_password(
