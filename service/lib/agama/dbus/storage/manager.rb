@@ -117,19 +117,20 @@ module Agama
           proposal.available_devices.map { |d| system_devices_tree.path_for(d) }
         end
 
-        # Volumes used as template for creating a new proposal
-        #
-        # @return [Hash]
-        def volume_templates
-          converter = VolumeConverter.new
-          proposal.volume_templates.map { |v| converter.to_dbus(v) }
-        end
-
         # Path of the D-Bus object containing the calculated proposal
         #
         # @return [::DBus::ObjectPath] Proposal object path or root path if no exported proposal yet
         def result
           dbus_proposal&.path || ::DBus::ObjectPath.new("/")
+        end
+
+        # Default volume uses as template
+        #
+        # @return [Hash]
+        def default_volume(mount_path)
+          generator = Agama::Storage::VolumeGenerator.new(backend.config)
+          volume = generator.volume_for(mount_path)
+          VolumeConverter.new.to_dbus(volume)
         end
 
         # Calculates a new proposal
@@ -139,8 +140,8 @@ module Agama
         def calculate_proposal(dbus_settings)
           logger.info("Calculating storage proposal from D-Bus settings: #{dbus_settings}")
 
-          converter = ProposalSettingsConverter.new
-          success = proposal.calculate(converter.to_agama(dbus_settings))
+          settings = ProposalSettingsConverter.new.from_dbus(dbus_settings, config: backend.config)
+          success = proposal.calculate(settings)
 
           success ? 0 : 1
         end
@@ -148,9 +149,11 @@ module Agama
         dbus_interface PROPOSAL_CALCULATOR_INTERFACE do
           dbus_reader :available_devices, "ao"
 
-          dbus_reader :volume_templates, "aa{sv}"
-
           dbus_reader :result, "o"
+
+          dbus_method :default_volume, "in mount_path:s , out volume:a{sv}" do |mount_path|
+            default_volume(mount_path)
+          end
 
           # result: 0 success; 1 error
           dbus_method :Calculate, "in settings:a{sv}, out result:u" do |settings|

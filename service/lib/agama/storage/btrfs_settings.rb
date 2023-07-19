@@ -27,9 +27,11 @@ module Agama
       #
       # @return [Boolean]
       attr_accessor :snapshots
+      alias_method :snapshtos?, :snapshots
 
       # @return [Boolean]
       attr_accessor :read_only
+      alias_method :read_only?, :read_only
 
       # @return [Array<String>, nil] if nil, a historical fallback list may be applied depending
       #   on the mount path of the volume

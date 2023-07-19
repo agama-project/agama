@@ -19,37 +19,29 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2storage/secret_attributes"
-require "y2storage/encryption_method"
+require "agama/dbus/storage/proposal_settings_conversion/from_dbus"
+require "agama/dbus/storage/proposal_settings_conversion/to_dbus"
 
 module Agama
-  module Storage
-    # Settings regarding encryption for the Agama storage proposal
-    class EncryptionSettings
-      include Y2Storage::SecretAttributes
-
-      # @!attribute encryption_password
-      #   Password to use when creating new encryption devices
-      #   @return [String, nil] nil if undetermined
-      secret_attr :password
-
-      # @return [Y2Storage::EncryptionMethod::Base]
-      attr_accessor :method
-
-      # @return [Y2Storage::PbkdFunction, nil]
-      attr_accessor :pbkd_function
-
-      def initialize
-        @method = Y2Storage::EncryptionMethod::LUKS1
-      end
-
-      # Whether the proposal must create encrypted devices
+  module DBus
+    module Storage
+      # Utility class offering methods to convert volumes between Agama and D-Bus formats
       #
-      # @return [Boolean]
-      def encrypt?
-        !(password.nil? || password.empty?)
+      # @note In the future this class might be not needed if proposal volumes and templates are
+      #   exported as objects in D-Bus.
+      module ProposalSettingsConversion
+        # Converts the given D-Bus settings to its equivalent Agama proposal settings
+        #
+        # @param dbus_settings [Hash]
+        # @return [Agama::Storage::ProposalSettings]
+        def from_dbus(dbus_settings, config: nil)
+          FromDBus.new(dbus_settings, config: config).convert
+        end
+
+        def to_dbus(settings)
+          ToDBus.new(settings).convert
+        end
       end
     end
   end
 end
-

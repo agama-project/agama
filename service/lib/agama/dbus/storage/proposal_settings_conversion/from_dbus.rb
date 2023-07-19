@@ -20,24 +20,18 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/proposal_settings"
-require "agama/dbus/storage/volume_converter"
+require "agama/dbus/storage/volume_conversion"
+require "y2storage/encryption_method"
+require "y2storage/pbkd_function"
 
 module Agama
   module DBus
     module Storage
-      # Utility class offering methods to convert volumes between Agama and D-Bus formats
-      #
-      # @note In the future this class might be not needed if proposal volumes and templates are
-      #   exported as objects in D-Bus.
-      class ProposalSettingsConverter
-        # Converts the given D-Bus settings to its equivalent Agama proposal settings
+      module ProposalSettingsConversion
+        # Utility class offering methods to convert volumes between Agama and D-Bus formats
         #
-        # @param dbus_settings [Hash]
-        # @return [Agama::Storage::ProposalSettings]
-        def from_dbus(dbus_settings, config: nil)
-          FromDBus.new(dbus_settings, config: config).convert
-        end
-
+        # @note In the future this class might be not needed if proposal volumes and templates are
+        #   exported as objects in D-Bus.
         # Internal class to generate a Agama proposal settings
         class FromDBus
           # Constructor
@@ -52,6 +46,7 @@ module Agama
           #
           # @return [Agama::Storage::ProposalSettings]
           def convert
+            # TODO read default settings from control file?
             Agama::Storage::ProposalSettings.new.tap do |settings|
               dbus_settings.each do |dbus_property, dbus_value|
                 send(CONVERSIONS[dbus_property], settings, dbus_value)
@@ -71,11 +66,13 @@ module Agama
           # For each D-Bus setting there is a list with the setter to use and the conversion from a
           # D-Bus value to the value expected by the ProposalSettings setter.
           CONVERSIONS = {
-            "BootDevice"             => :boot_device_conversion,
-            "LVM"                    => :lvm_conversion,
-            "EncryptionPassword"     => :encryption_password_conversion,
-            "SpacePolicy"            => :space_policy_conversion,
-            "Volumes"                => :volumes_conversion
+            "BootDevice"              => :boot_device_conversion,
+            "LVM"                     => :lvm_conversion,
+            "EncryptionPassword"      => :encryption_password_conversion,
+            "EncryptionMethod"        => :encryption_method_conversion,
+            "EncryptionPBKDFunction"  => :encryption_pbkd_function_conversion,
+            "SpacePolicy"             => :space_policy_conversion,
+            "Volumes"                 => :volumes_conversion
           }.freeze
           private_constant :CONVERSIONS
 
@@ -88,7 +85,21 @@ module Agama
           end
 
           def encryption_password_conversion(settings, value)
-            settings.encryption.encryption_password = value.empty? ? nil : value
+            settings.encryption.password = value.empty? ? nil : value
+          end
+
+          def encryption_method_conversion(settings, value)
+            method = Y2Storage::EncryptionMethod.find(value.to_sym)
+            return unless method
+
+            settings.encryption.method = method
+          end
+
+          def encryption_pbkd_function_conversion(settings, value)
+            function = Y2Storage::PbkdFunction.find(value)
+            return unless function
+
+            settings.encryption.pbkd_function = function
           end
 
           def space_policy_conversion(settings, value)
@@ -96,8 +107,7 @@ module Agama
           end
 
           def volumes_conversion(settings, value)
-            converter = VolumeConverter.new
-            volumes = value.map { |v| converter.from_dbus(v, config: config) }
+            volumes = value.map { |v| VolumeConversion.from_dbus(v, config: config) }
             settings.volumes = volumes + missing_volumes(volumes)
           end
 

@@ -21,7 +21,7 @@
 
 require "dbus"
 require "agama/dbus/base_object"
-require "agama/dbus/storage/volume_converter"
+require "agama/dbus/storage/proposal_settings_conversion"
 
 module Agama
   module DBus
@@ -44,50 +44,61 @@ module Agama
         private_constant :STORAGE_PROPOSAL_INTERFACE
 
         dbus_interface STORAGE_PROPOSAL_INTERFACE do
-          dbus_reader :candidate_devices, "as"
+          dbus_reader :boot_device, "s"
 
           dbus_reader :lvm, "b", dbus_name: "LVM"
 
           dbus_reader :encryption_password, "s"
+
+          dbus_reader :encryption_method, "s"
+
+          dbus_reader :encryption_pbdk_function, "s", dbus_name: "EncryptionPBKDFunction"
+
+          dbus_reader :space_policy, "s"
 
           dbus_reader :volumes, "aa{sv}"
 
           dbus_reader :actions, "aa{sv}"
         end
 
-        # Devices used by the storage proposal
+        # Device used as boot device by the storage proposal
         #
-        # @return [Array<String>]
-        def candidate_devices
-          return [] unless backend.calculated_settings
-
-          backend.calculated_settings.candidate_devices
+        # @return [String]
+        def boot_device
+          dbus_settings["BootDevice"]
         end
 
         # Whether the proposal creates logical volumes
         #
         # @return [Boolean]
         def lvm
-          return false unless backend.calculated_settings
-
-          backend.calculated_settings.lvm
+          dbus_settings["LVM"]
         end
 
         # Password for encrypting devices
         #
         # @return [String]
         def encryption_password
-          backend.calculated_settings&.encryption_password || ""
+          dbus_settings["EncryptionPassword"]
+        end
+
+        def encryption_method
+          dbus_settings["EncryptionMethod"]
+        end
+
+        def encryption_pbkd_function
+          dbus_settings["EncryptionPBKDFunction"]
+        end
+
+        def space_policy
+          dbus_settings["SpacePolicy"]
         end
 
         # Volumes used to calculate the storage proposal
         #
         # @return [Hash]
         def volumes
-          return [] unless backend.calculated_settings
-
-          converter = VolumeConverter.new
-          backend.calculated_settings.volumes.map { |v| converter.to_dbus(v) }
+          dbus_settings["Volumes"]
         end
 
         # List of sorted actions in D-Bus format
@@ -106,6 +117,10 @@ module Agama
 
         # @return [Logger]
         attr_reader :logger
+
+        def dbus_settings
+          @dbus_settings ||= ProposalSettingsConversion.to_dbus(backend.calculated_settings)
+        end
 
         # Converts an action to D-Bus format
         #

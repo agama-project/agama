@@ -26,27 +26,11 @@ require "y2storage/filesystems/type"
 module Agama
   module DBus
     module Storage
-      # Utility class offering methods to convert volumes between Agama and D-Bus formats
-      #
-      # @note In the future this class might be not needed if proposal volumes and templates are
-      #   exported as objects in D-Bus.
-      class VolumeConverter
-        # Converts the given D-Bus volume to its equivalent Agama::Volume object
+      module VolumeConversion
+        # Utility class offering methods to convert volumes between Agama and D-Bus formats
         #
-        # @param dbus_volume [Hash]
-        # @return [Storage::Volume]
-        def from_dbus(dbus_volume, config: nil)
-          FromDBus.new(dbus_volume, config: config).convert
-        end
-
-        # Converts the given volume to its equivalent D-Bus volume
-
-        # @param volume [Storage::Volume]
-        # @return [Hash]
-        def to_dbus(volume)
-          ToDBus.new(volume).convert
-        end
-
+        # @note In the future this class might be not needed if proposal volumes and templates are
+        #   exported as objects in D-Bus.
         # Internal class to generate a Agama volume
         class FromDBus
           # Constructor
@@ -81,6 +65,7 @@ module Agama
           def volume_generator
             return nil unless config
 
+            # TODO
             Agama::Storage::VolumeGenerator.new(config)
           end
 
@@ -90,10 +75,8 @@ module Agama
           # from a D-Bus value to the value expected by the Volume setter.
           CONVERSIONS = {
             "MountPath"       => :mount_path_conversion,
-            "DeviceType"      => :device_type_conversion,
             "TargetDevice"    => :target_device_conversion,
             "TargetVG"        => :target_vg_conversion,
-            "Encrypted"       => :encrypted_conversion,
             "FsType"          => :fs_type_conversion,
             "MinSize"         => :min_size_conversion,
             "MaxSize"         => :max_size_conversion,
@@ -106,20 +89,12 @@ module Agama
             volume.mount_path = value
           end
 
-          def device_type_conversion(volume, value)
-            volume.device_type = value.to_sym
-          end
-
           def target_device_conversion(volume, value)
-            volume.target_device = value
+            volume.device = value
           end
 
           def target_vg_conversion(volume, value)
-            volume.target_vg = value
-          end
-
-          def encrypted_conversion(volume, value)
-            volume.encrypted = value
+            volume.separate_vg_name = value
           end
 
           def fs_type_conversion(volume, value)
@@ -141,52 +116,6 @@ module Agama
 
           def snapshots_conversion(volume, value)
             volume.btrfs.snapshots = value
-          end
-        end
-
-        # Internal class to generate a D-Bus volume
-        class ToDBus
-          # Constructor
-          #
-          # @param volume [Storage::Volume]
-          def initialize(volume)
-            @volume = volume
-          end
-
-          # @return [Hash]
-          def convert # rubocop:disable Metrics/AbcSize
-            dbus_volume = {
-              "MountPath"            => volume.mount_path,
-              "DeviceType"            => volume.device_type.to_s,
-              "TargetDevice"          => volume.target_device.to_s,
-              "TargetVG"              => volume.target_vg.to_s,
-              "Encrypted"             => volume.encrypted,
-              "FsType"                => volume.fs_type&.to_human_string,
-              "MinSize"               => volume.min_size&.to_i,
-              "MaxSize"               => volume.max_size&.to_i,
-              "AutoSize"              => volume.auto_size?,
-              "Snapshots"             => volume.btrfs.snapshots,
-              "Outline"               => outline
-            }
-
-            dbus_volume.compact.reject { |_, v| v.respond_to?(:empty?) && v.empty? }
-          end
-
-        private
-
-          # @return [Storage::Volume]
-          attr_reader :volume
-
-          def outline
-            outline = volume.outline
-            {
-              "Optional"              => outline.optional?,
-              "FsTypes"               => outline.fs_types.map(&:to_human_string),
-              "SupportAutoSize"       => outline.support_auto_size?,
-              "SnapshotsConfigurable" => outline.snapshots_configurable?,
-              "SnapshotsAffectSizes"  => outline.snapshots_affect_sizes?,
-              "SizeRelevantVolumes"   => outline.size_relevant_volumes
-            }
           end
         end
       end

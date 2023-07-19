@@ -44,6 +44,9 @@ module Agama
       include WithIssues
       include WithProgress
 
+      # @return [Config]l
+      attr_reader :config
+
       # Constructor
       #
       # @param config [Config]
@@ -158,9 +161,6 @@ module Agama
 
       # @return [Logger]
       attr_reader :logger
-
-      # @return [Config]
-      attr_reader :config
 
       # Issues are updated when the proposal is calculated
       def register_proposal_callbacks
