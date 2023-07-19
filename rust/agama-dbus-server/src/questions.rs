@@ -82,6 +82,8 @@ enum QuestionType {
 
 /// Trait for objects that can provide answers to all kind of Question.
 trait AnswerStrategy {
+    /// Id for quick runtime inspection of strategy type
+    fn id(&self) -> u8;
     /// Provides answer for generic question
     ///
     /// I gets as argument the question to answer. Returned value is `answer`
@@ -103,7 +105,17 @@ trait AnswerStrategy {
 /// AnswerStrategy that provides as answer the default option.
 struct DefaultAnswers;
 
+impl DefaultAnswers {
+    pub fn id() -> u8 {
+        1
+    }
+}
+
 impl AnswerStrategy for DefaultAnswers {
+    fn id(&self) -> u8 {
+        DefaultAnswers::id()
+    }
+
     fn answer(&self, question: &GenericQuestion) -> Option<String> {
         Some(question.default_option.clone())
     }
@@ -227,10 +239,35 @@ impl Questions {
         Ok(())
     }
 
-    /// sets questions to be answered by default answer instead of asking user
-    async fn use_default_answer(&mut self) -> Result<(), Error> {
-        log::info!("Answer questions with default option");
-        self.answer_strategies.push(Box::new(DefaultAnswers {}));
+    /// property that defines if questions is interactive or automatically answered with
+    /// default answer
+    #[dbus_interface(property)]
+    fn interactive(&self) -> bool {
+        let last = self.answer_strategies.last();
+        if let Some(real_strategy) = last {
+            real_strategy.id() == DefaultAnswers::id()
+        } else {
+            false
+        }
+    }
+
+    #[dbus_interface(property)]
+    fn set_interactive(&mut self, value: bool) {
+        log::info!("set interactive to {}", value);
+        if value {
+            if !self.interactive() {
+                self.answer_strategies.pop();
+            }
+        } else {
+            if self.interactive() {
+                self.answer_strategies.push(Box::new(DefaultAnswers {}));
+            }
+        }
+    }
+
+    fn add_answer_file(&mut self, path: String) -> Result<(), zbus::fdo::Error> {
+        log::info!("Adding answer file {}", path);
+        log::info!("TODO: Not implemented yet.");
         Ok(())
     }
 }

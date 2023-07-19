@@ -7,6 +7,9 @@ use clap::{Args, Subcommand, ValueEnum};
 pub enum QuestionsCommands {
     /// Set mode for answering questions.
     Mode(ModesArgs),
+    Answers {
+        path: String,
+    },
 }
 
 #[derive(Args, Debug)]
@@ -44,5 +47,9 @@ async fn set_mode(value: Modes) -> anyhow::Result<()> {
 pub async fn run(subcommand: QuestionsCommands) -> anyhow::Result<()> {
     match subcommand {
         QuestionsCommands::Mode(value) => set_mode(value.value).await,
+        QuestionsCommands::Answers { path } => {
+            log::info!("TODO: implement answers");
+            Ok(())
+        }
     }
 }
