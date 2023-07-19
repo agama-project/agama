@@ -9,6 +9,8 @@ use anyhow::Context;
 use log;
 use zbus::{dbus_interface, fdo::ObjectManager, zvariant::ObjectPath, Connection};
 
+mod answers;
+
 #[derive(Clone, Debug)]
 struct GenericQuestionObject(questions::GenericQuestion);
 
@@ -269,10 +271,16 @@ impl Questions {
         }
     }
 
-    fn add_answer_file(&mut self, path: String) -> Result<(), zbus::fdo::Error> {
+    fn add_answer_file(&mut self, path: String) -> Result<(), Error> {
         log::info!("Adding answer file {}", path);
-        log::info!("TODO: Not implemented yet.");
-        Ok(())
+        let answers = answers::Answers::new_from_file(path.as_str());
+        match answers {
+            Ok(answers) => {
+                self.answer_strategies.push(Box::new(answers));
+                Ok(())
+            }
+            Err(e) => Err(e.into()),
+        }
     }
 }
 
