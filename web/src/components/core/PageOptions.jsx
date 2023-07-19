@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Dropdown, DropdownItem, DropdownGroup } from '@patternfly/react-core';
 import { Icon, PageOptions as PageOptionsSlot } from "~/components/layout";
 
@@ -114,20 +114,40 @@ const Item = ({ children, ...props }) => {
  */
 const PageOptions = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
   const onToggle = () => setIsOpen(!isOpen);
   const onSelect = () => setIsOpen(false);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
     <PageOptionsSlot>
-      <Dropdown
-        isOpen={isOpen}
-        toggle={<Toggler onClick={onToggle} />}
-        onSelect={onSelect}
-        dropdownItems={Array(children)}
-        position="right"
-        className="page-options"
-        isGrouped
-      />
+      <span ref={dropdownRef}>
+        <Dropdown
+          isOpen={isOpen}
+          toggle={<Toggler onClick={onToggle} />}
+          onSelect={onSelect}
+          dropdownItems={Array(children)}
+          position="right"
+          className="page-options"
+          isGrouped
+        />
+      </span>
     </PageOptionsSlot>
   );
 };
