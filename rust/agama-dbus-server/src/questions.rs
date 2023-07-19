@@ -81,7 +81,7 @@ enum QuestionType {
 }
 
 /// Trait for objects that can provide answers to all kind of Question.
-/// 
+///
 /// If not strategy is used or all defined strategies does not know answer,
 /// then users need to answer it themself.
 trait AnswerStrategy {
@@ -261,10 +261,8 @@ impl Questions {
             if !self.interactive() {
                 self.answer_strategies.pop();
             }
-        } else {
-            if self.interactive() {
-                self.answer_strategies.push(Box::new(DefaultAnswers {}));
-            }
+        } else if self.interactive() {
+            self.answer_strategies.push(Box::new(DefaultAnswers {}));
         }
     }
 

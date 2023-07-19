@@ -47,7 +47,7 @@ async fn set_mode(value: Modes) -> anyhow::Result<()> {
 pub async fn run(subcommand: QuestionsCommands) -> anyhow::Result<()> {
     match subcommand {
         QuestionsCommands::Mode(value) => set_mode(value.value).await,
-        QuestionsCommands::Answers { path } => {
+        QuestionsCommands::Answers { path: _ } => {
             log::info!("TODO: implement answers");
             Ok(())
         }
