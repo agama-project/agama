@@ -31,7 +31,8 @@ module Agama
       # @return [Boolean]
       attr_accessor :read_only
 
-      # @return [Array<String>]
+      # @return [Array<String>, nil] if nil, a historical fallback list may be applied depending
+      #   on the mount path of the volume
       attr_accessor :subvolumes
 
       # @return [String]
@@ -40,11 +41,7 @@ module Agama
       def initialize
         @snapshots = false
         @read_only = false
-        @subvolumes = []
-        @default_subvolume = "@"
-      end
-
-      def load_features(values)
+        @default_subvolume = ""
       end
     end
   end

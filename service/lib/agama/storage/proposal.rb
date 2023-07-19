@@ -97,12 +97,9 @@ module Agama
       # Volume definitions to be used as templates in the interface and to fill the
       # information missing in the volumes.
       #
-      # @return [Array<VolumeTemplate>]
-      def volume_templates
-        return @volume_templates if @volume_templates
-
-        config_volumes = config.data.fetch("storage", {}).fetch("volumes", [])
-        Volume.read(config_volumes)
+      # @return [<Volume>]
+      def volume_template(path)
+        volume_templates_builder.for(path)
       end
 
       # Settings with the data used during the calculation of the storage proposal
@@ -276,6 +273,14 @@ module Agama
         settings.other_delete_mode = :all
         # Setting #linux_delete_mode to :all is not enough to prevent VG reusing in all cases
         settings.lvm_vg_reuse = false
+      end
+
+      def volume_templates_builder
+        @volume_templates_builder ||= VolumeTemplatesBuilder.new(volume_templates_config)
+      end
+
+      def volume_templates_config
+        config.data.fetch("storage", {}).fetch("volume_templates", [])
       end
     end
   end

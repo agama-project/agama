@@ -87,9 +87,12 @@ module Agama
       alias_method :auto_size?, :auto_size
 
       # Constructor
-      def initialize(values)
-        apply_defaults
-        load_features(values)
+      def initialize(mount_path)
+        @mount_path = mount_path
+        @mount_options = []
+        @format_options = []
+        @btrfs = BtrfsSettings.new
+        @outline = VolumeOutline.new
       end
 
       # Whether the mount point of the volume matches the given one
@@ -100,42 +103,6 @@ module Agama
         return false if mount_point.nil? || path.nil?
 
         Pathname.new(mount_point).cleanpath == Pathname.new(path).cleanpath
-      end
-
-      def self.read(volumes_data)
-        volumes = volumes_data.map { |v| Volume.new(v) }
-        volumes.each { |v| v.outline.assign_size_relevant_volumes(v, volumes) }
-        volumes
-      end
-
-    private
-
-      def apply_defaults
-        @mount_options = []
-        @format_options = []
-        @btrfs = BtrfsSettings.new
-        @outline = VolumeOutline.new
-      end
-
-      def load_features(values)
-        @mount_path = values.fetch("mount", {}).fetch("path")
-        # @mount_options = xxx
-        # @format_options = xxx
-
-        type_str = values.fetch("filesystem", {}).fetch("type", "ext4")
-        @fs_type = Y2Storage::Filesystems::Type.find(type.downcase.to_sym)
-
-        btrfs.load_features(values)
-        outline.load_features(values)
-
-        # TODO: part of this logic should likely be moved elsewhere (auto_size setter?)
-        if outline.adaptative_sizes?
-          @auto_size = true
-        else
-          @auto_size = false
-          @min_size = outline.base_min_size
-          @max_size = outline.base_max_size
-        end
       end
     end
   end
