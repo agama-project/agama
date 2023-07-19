@@ -256,12 +256,15 @@ impl Questions {
 
     #[dbus_interface(property)]
     fn set_interactive(&mut self, value: bool) {
+        if value != self.interactive() {
+            log::info!("interactive value unchanged - {}", value);
+            return;
+        }
+
         log::info!("set interactive to {}", value);
         if value {
-            if !self.interactive() {
-                self.answer_strategies.pop();
-            }
-        } else if self.interactive() {
+            self.answer_strategies.pop();
+        } else {
             self.answer_strategies.push(Box::new(DefaultAnswers {}));
         }
     }
