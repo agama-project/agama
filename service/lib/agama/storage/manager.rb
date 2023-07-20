@@ -137,7 +137,7 @@ module Agama
       #
       # @return [Storage::Proposal]
       def proposal
-        @proposal ||= Proposal.new(logger, config)
+        @proposal ||= Proposal.new(config, logger: logger)
       end
 
       # iSCSI manager
@@ -190,16 +190,21 @@ module Agama
       #
       # It reuses the settings from the previous proposal, if any.
       def calculate_proposal
-        settings = proposal.settings
-
-        if !settings
-          settings = ProposalSettings.new
-          # FIXME: by now, the UI only allows to select one disk
-          device = proposal.available_devices.first&.name
-          settings.candidate_devices << device if device
-        end
+        settings = proposal.settings || default_settings
 
         proposal.calculate(settings)
+      end
+
+      def default_settings
+        settings = read_default_settings
+        device = proposal.available_devices.first&.name
+        settings.candidate_devices << device if device
+
+        settings
+      end
+
+      # TODO
+      def read_default_settings
       end
 
       # Adds the required packages to the list of resolvables to install

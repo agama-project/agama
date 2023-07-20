@@ -287,7 +287,7 @@ module Agama
 
         def register_software_callbacks
           backend.software.on_product_selected do |_product|
-            backend.proposal.reset
+            backend.proposal.invalidate
           end
         end
 

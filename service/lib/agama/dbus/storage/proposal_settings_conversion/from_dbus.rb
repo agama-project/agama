@@ -47,8 +47,7 @@ module Agama
           #
           # @return [Agama::Storage::ProposalSettings]
           def convert
-            # TODO read default settings from control file?
-            Agama::Storage::ProposalSettings.new.tap do |settings|
+            default_settings.tap do |settings|
               dbus_settings.each do |dbus_property, dbus_value|
                 send(CONVERSIONS[dbus_property], settings, dbus_value)
               end
@@ -61,6 +60,10 @@ module Agama
           attr_reader :dbus_settings
 
           attr_reader :config
+
+          # TODO
+          def default_settings
+          end
 
           # Relationship between D-Bus settings and Agama proposal settings
           #
@@ -108,6 +111,9 @@ module Agama
           end
 
           def volumes_conversion(settings, value)
+            # Keep default volumes if no volumes are given
+            return if value.empty?
+
             volumes = value.map { |v| VolumeConversion.from_dbus(v, config: config) }
             settings.volumes = volumes + missing_volumes(volumes)
           end

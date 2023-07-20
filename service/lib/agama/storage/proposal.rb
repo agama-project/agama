@@ -20,13 +20,9 @@
 # find current contact information at www.suse.com.
 
 require "y2storage"
-require "y2storage/dialogs/guided_setup/helpers/disk"
 require "agama/issue"
 require "agama/storage/actions"
-require "agama/storage/proposal_settings"
-require "agama/storage/volume_template"
-require "agama/storage/proposal_settings_converter"
-require "agama/storage/volume_converter"
+require "agama/storage/proposal_settings_conversion"
 
 module Agama
   module Storage
@@ -42,35 +38,31 @@ module Agama
     #   proposal.calculate(settings)  #=> true
     #   proposal.calculated_volumes   #=> [Volume, Volume]
     class Proposal
-      # Settings used for calculating the proposal
-      #
-      # @return [ProposalSettings, nil]
-      attr_reader :settings
-
       # Constructor
       #
       # @param logger [Logger]
       # @param config [Config] Agama config
-      def initialize(logger, config)
-        @logger = logger
+      def initialize(config, logger: nil)
         @config = config
+        @logger = logger || Logger.new($stdout)
         @on_calculate_callbacks = []
       end
 
-      # Resets the current proposal
-      def reset
-        @settings = nil
+      def success?
+        calculated? && !proposal.failed?
       end
 
-      # List of issues
-      #
-      # @return [Array<Issue>]
-      def issues
-        [
-          empty_candidate_devices_issue,
-          missing_candidate_devices_issue,
-          proposal_issue
-        ].compact
+      def calculated?
+        !invalidated? && !proposal.nil?
+      end
+
+      def invalidated?
+        !!@invalidated
+      end
+
+      # Resets the current proposal
+      def invalidate
+        @invalidated = true
       end
 
       # Stores callbacks to be call after calculating a proposal
@@ -85,50 +77,26 @@ module Agama
         disk_analyzer.candidate_disks
       end
 
-      # Name of devices where to perform the installation
-      #
-      # @return [Array<String>]
-      def candidate_devices
-        return [] unless proposal
-
-        proposal.settings.candidate_devices
-      end
-
-      # Volume definitions to be used as templates in the interface and to fill the
-      # information missing in the volumes.
-      #
-      # @return [<Volume>]
-      def volume_template(path)
-        volume_templates_builder.for(path)
-      end
-
-      # Settings with the data used during the calculation of the storage proposal
-      #
-      # Not to be confused with the settings passed to {#calculate}, which are used as starting
-      # point for creating the settings for the storage proposal.
-      #
-      # @return [ProposalSettings]
-      def calculated_settings
-        return nil unless proposal
-
-        to_agama_settings(proposal.settings, devices: proposal.planned_devices || [])
-      end
-
       # Calculates a new proposal
       #
-      # @param settings [ProposalSettings, nil] settings to calculate the proposal
+      # @param settings [ProposalSettings] settings to calculate the proposal
       # @return [Boolean] whether the proposal was correctly calculated
-      def calculate(settings = nil)
-        @settings = settings || ProposalSettings.new
-        @settings.freeze
-        y2storage_settings = to_y2storage_settings(@settings)
-
-        @proposal = new_proposal(y2storage_settings)
-        storage_manager.proposal = proposal
+      def calculate(settings)
+        storage_manager.proposal = calculate_proposal(settings)
 
         @on_calculate_callbacks.each(&:call)
+        @invalidated = false
 
-        !proposal.failed?
+        success?
+      end
+
+      # Settings used for calculating the proposal
+      #
+      # @return [ProposalSettings, nil]
+      def settings
+        return nil unless calculated?
+
+        ProposalSettingsConversion.from_y2storage(proposal.settings, config: config)
       end
 
       # Storage actions
@@ -140,66 +108,51 @@ module Agama
         Actions.new(logger, proposal.devices.actiongraph).all
       end
 
-    private
+      # List of issues
+      #
+      # @return [Array<Issue>]
+      def issues
+        return [] unless calculated?
 
-      # @return [Logger]
-      attr_reader :logger
+        [
+          boot_device_issue,
+          missing_devices_issue,
+          proposal_issue
+        ].compact
+      end
+
+    private
 
       # @return [Config]
       attr_reader :config
 
-      # @return [Y2Storage::MinGuidedProposal]
-      attr_reader :proposal
+      # @return [Logger]
+      attr_reader :logger
+
+      # @return [Y2Storage::MinGuidedProposal, nil]
+      def proposal
+        return nil if invalidated?
+
+        storage_manager.proposal
+      end
 
       # Instantiates and executes a Y2Storage proposal with the given settings
       #
       # @param proposal_settings [Y2Storage::ProposalSettings]
       # @return [Y2Storage::GuidedProposal]
-      def new_proposal(proposal_settings)
-        guided = Y2Storage::MinGuidedProposal.new(
-          settings:      proposal_settings,
+      def calculate_proposal(settings)
+        proposal = Y2Storage::MinGuidedProposal.new(
+          settings:      ProposalSettingsConversion.to_y2storage(settings),
           devicegraph:   probed_devicegraph,
           disk_analyzer: disk_analyzer
         )
-        guided.propose
-        guided
-      end
-
-      # Converts a Agama::Storage::ProposalSettings object to its equivalent
-      # Y2Storage::ProposalSettings one
-      #
-      # @param settings [ProposalSettings]
-      # @return [Y2Storage::ProposalSettings]
-      def to_y2storage_settings(settings)
-        y2storage_settings =
-          ProposalSettingsConverter.new(templates: volume_templates).to_y2storage(settings)
-        adjust_encryption(y2storage_settings)
-        force_cleanup(y2storage_settings)
-        y2storage_settings
-      end
-
-      # Converts a Y2Storage::ProposalSettings object to its equivalent
-      # Agama::Storage::ProposalSettings one
-      #
-      # @param settings [Y2Storage::ProposalSettings]
-      # @param devices [Array<Y2Storage::Planned::Device>]
-      #
-      # @return [ProposalSettings]
-      def to_agama_settings(settings, devices: [])
-        converter = ProposalSettingsConverter.new(templates: volume_templates)
-        converter.to_agama(settings, devices: devices)
+        proposal.propose
+        proposal
       end
 
       # @return [Y2Storage::DiskAnalyzer]
       def disk_analyzer
         storage_manager.probed_disk_analyzer
-      end
-
-      # Helper to generate a disk label
-      #
-      # @return [Y2Storage::Dialogs::GuidedSetup::Helpers::Disk]
-      def disk_helper
-        @disk_helper ||= Y2Storage::Dialogs::GuidedSetup::Helpers::Disk.new(disk_analyzer)
       end
 
       # Devicegraph representing the system
@@ -216,10 +169,10 @@ module Agama
       # Returns an issue if there is no candidate device
       #
       # @return [Issue, nil]
-      def empty_candidate_devices_issue
-        return if !proposal || candidate_devices.any?
+      def boot_device_issue
+        return if settings.boot_device
 
-        Issue.new("No devices are selected for installation",
+        Issue.new("No device selected for installation",
           source:   Issue::Source::CONFIG,
           severity: Issue::Severity::ERROR)
       end
@@ -227,12 +180,10 @@ module Agama
       # Returns an issue if any of the candidate devices is not found
       #
       # @return [Issue, nil]
-      def missing_candidate_devices_issue
-        available_names = available_devices.map(&:name)
-        missing = candidate_devices - available_names
-        return if missing.none?
+      def missing_devices_issue
+        return if available_devices.map(&:name).include?(settings.boot_device)
 
-        Issue.new("Some selected devices are not found in the system",
+        Issue.new("Selected device is not found in the system",
           source:   Issue::Source::CONFIG,
           severity: Issue::Severity::ERROR)
       end
@@ -241,46 +192,11 @@ module Agama
       #
       # @return [Issue, nil]
       def proposal_issue
-        return unless proposal&.failed?
+        return if success?
 
         Issue.new("Cannot accommodate the required file systems for installation",
           source:   Issue::Source::CONFIG,
           severity: Issue::Severity::ERROR)
-      end
-
-      # Adjusts the encryption-related settings of the given Y2Storage::ProposalSettings object
-      #
-      # @param settings [Y2Storage::ProposalSettings]
-      def adjust_encryption(settings)
-        enc_config = config.data.fetch("storage", {}).fetch("encryption", {})
-
-        method = Y2Storage::EncryptionMethod.find(enc_config["method"] || "")
-        settings.encryption_method = method if method
-
-        pbkdf = Y2Storage::PbkdFunction.find(enc_config["pbkdf"])
-        settings.encryption_pbkdf = pbkdf if pbkdf
-      end
-
-      # Temporary method to enforce a destructive proposal
-      #
-      # TODO: there is still no way to define which partitions or LVM structures should be kept
-      # or reused, so let's enforce a clean install for now.
-      #
-      # @param settings [Y2Storage::ProposalSettings]
-      def force_cleanup(settings)
-        settings.windows_delete_mode = :all
-        settings.linux_delete_mode = :all
-        settings.other_delete_mode = :all
-        # Setting #linux_delete_mode to :all is not enough to prevent VG reusing in all cases
-        settings.lvm_vg_reuse = false
-      end
-
-      def volume_templates_builder
-        @volume_templates_builder ||= VolumeTemplatesBuilder.new(volume_templates_config)
-      end
-
-      def volume_templates_config
-        config.data.fetch("storage", {}).fetch("volume_templates", [])
       end
     end
   end

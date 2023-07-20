@@ -65,40 +65,40 @@ module Agama
         #
         # @return [String]
         def boot_device
-          dbus_settings["BootDevice"]
+          dbus_settings.fetch("BootDevice", "")
         end
 
         # Whether the proposal creates logical volumes
         #
         # @return [Boolean]
         def lvm
-          dbus_settings["LVM"]
+          dbus_settings.fetch("LVM", false)
         end
 
         # Password for encrypting devices
         #
         # @return [String]
         def encryption_password
-          dbus_settings["EncryptionPassword"]
+          dbus_settings.fetch("EncryptionPassword", "")
         end
 
         def encryption_method
-          dbus_settings["EncryptionMethod"]
+          dbus_settings.fetch("EncryptionMethod", "")
         end
 
         def encryption_pbkd_function
-          dbus_settings["EncryptionPBKDFunction"]
+          dbus_settings.fetch("EncryptionPBKDFunction", "")
         end
 
         def space_policy
-          dbus_settings["SpacePolicy"]
+          dbus_settings.fetch("SpacePolicy", "")
         end
 
         # Volumes used to calculate the storage proposal
         #
         # @return [Hash]
         def volumes
-          dbus_settings["Volumes"]
+          dbus_settings.fetch("Volumes", [])
         end
 
         # List of sorted actions in D-Bus format
@@ -119,7 +119,9 @@ module Agama
         attr_reader :logger
 
         def dbus_settings
-          @dbus_settings ||= ProposalSettingsConversion.to_dbus(backend.calculated_settings)
+          return {} unless backend.settings
+
+          @dbus_settings ||= ProposalSettingsConversion.to_dbus(backend.settings)
         end
 
         # Converts an action to D-Bus format
