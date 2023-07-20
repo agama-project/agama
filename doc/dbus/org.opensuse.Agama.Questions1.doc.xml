@@ -76,9 +76,6 @@ when the question is answered and the answer is successfully read.
       <arg name="data" direction="in" type="a{ss}"/>
       <arg direction="out" type="o"/>
     </method>
-    <method name="Delete">
-      <arg name="question" direction="in" type="o"/>
-    </method>
     <!--
       Delete:
       @question: object path of question that should be deleted.
