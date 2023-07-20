@@ -89,3 +89,154 @@ impl crate::questions::AnswerStrategy for Answers {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use agama_lib::questions::{GenericQuestion, WithPassword};
+
+    use crate::questions::AnswerStrategy;
+
+    use super::*;
+
+    // set of fixtures for test
+    fn get_answers() -> Answers {
+        Answers {
+            list: vec![
+                Answer {
+                    class: Some("test".to_string()),
+                    data: None,
+                    text: None,
+                    answer: "Ok".to_string(),
+                    password: Some("testing pwd".to_string()), // ignored for generic question
+                },
+                Answer {
+                    class: Some("test2".to_string()),
+                    data: Some(HashMap::from([
+                        ("data1".to_string(), "value1".to_string()),
+                        ("data2".to_string(), "value2".to_string()),
+                    ])),
+                    text: None,
+                    answer: "Maybe".to_string(),
+                    password: None,
+                },
+                Answer {
+                    class: Some("test2".to_string()),
+                    data: Some(HashMap::from([(
+                        "data1".to_string(),
+                        "another_value1".to_string(),
+                    )])),
+                    text: None,
+                    answer: "Ok2".to_string(),
+                    password: None,
+                },
+            ],
+        }
+    }
+
+    #[test]
+    fn test_class_match() {
+        let answers = get_answers();
+        let question = GenericQuestion {
+            id: 1,
+            class: "test".to_string(),
+            text: "JFYI we will kill all bugs during installation.".to_string(),
+            options: vec!["Ok".to_string(), "Cancel".to_string()],
+            default_option: "Cancel".to_string(),
+            data: HashMap::new(),
+            answer: "".to_string(),
+        };
+        assert_eq!(Some("Ok".to_string()), answers.answer(&question));
+    }
+
+    #[test]
+    fn test_no_match() {
+        let answers = get_answers();
+        let question = GenericQuestion {
+            id: 1,
+            class: "non-existing".to_string(),
+            text: "Hard question?".to_string(),
+            options: vec!["Ok".to_string(), "Cancel".to_string()],
+            default_option: "Cancel".to_string(),
+            data: HashMap::new(),
+            answer: "".to_string(),
+        };
+        assert_eq!(None, answers.answer(&question));
+    }
+
+    #[test]
+    fn test_with_password() {
+        let answers = get_answers();
+        let question = GenericQuestion {
+            id: 1,
+            class: "test".to_string(),
+            text: "Please provide password for dooms day.".to_string(),
+            options: vec!["Ok".to_string(), "Cancel".to_string()],
+            default_option: "Cancel".to_string(),
+            data: HashMap::new(),
+            answer: "".to_string(),
+        };
+        let with_password = WithPassword {
+            password: "".to_string(),
+            base: question,
+        };
+        let expected = (Some("Ok".to_string()), Some("testing pwd".to_string()));
+        assert_eq!(expected, answers.answer_with_password(&with_password));
+    }
+
+    #[test]
+    fn test_partial_data_match() {
+        let answers = get_answers();
+        let question = GenericQuestion {
+            id: 1,
+            class: "test2".to_string(),
+            text: "Hard question?".to_string(),
+            options: vec!["Ok2".to_string(), "Maybe".to_string(), "Cancel".to_string()],
+            default_option: "Cancel".to_string(),
+            data: HashMap::from([
+                ("data1".to_string(), "value1".to_string()),
+                ("data2".to_string(), "value2".to_string()),
+                ("data3".to_string(), "value3".to_string()),
+            ]),
+            answer: "".to_string(),
+        };
+        assert_eq!(Some("Maybe".to_string()), answers.answer(&question));
+    }
+
+    #[test]
+    fn test_full_data_match() {
+        let answers = get_answers();
+        let question = GenericQuestion {
+            id: 1,
+            class: "test2".to_string(),
+            text: "Hard question?".to_string(),
+            options: vec!["Ok2".to_string(), "Maybe".to_string(), "Cancel".to_string()],
+            default_option: "Cancel".to_string(),
+            data: HashMap::from([
+                ("data1".to_string(), "another_value1".to_string()),
+                ("data2".to_string(), "value2".to_string()),
+                ("data3".to_string(), "value3".to_string()),
+            ]),
+            answer: "".to_string(),
+        };
+        assert_eq!(Some("Ok2".to_string()), answers.answer(&question));
+    }
+
+    #[test]
+    fn test_no_data_match() {
+        let answers = get_answers();
+        let question = GenericQuestion {
+            id: 1,
+            class: "test2".to_string(),
+            text: "Hard question?".to_string(),
+            options: vec!["Ok2".to_string(), "Maybe".to_string(), "Cancel".to_string()],
+            default_option: "Cancel".to_string(),
+            data: HashMap::from([
+                ("data1".to_string(), "different value".to_string()),
+                ("data2".to_string(), "value2".to_string()),
+                ("data3".to_string(), "value3".to_string()),
+            ]),
+            answer: "".to_string(),
+        };
+        assert_eq!(None, answers.answer(&question));
+    }
+}
