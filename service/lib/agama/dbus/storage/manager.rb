@@ -22,14 +22,15 @@
 require "dbus"
 require "yast"
 require "y2storage/storage_manager"
+require "agama/dbus/storage/proposal"
+require "agama/dbus/storage/proposal_settings_conversion"
+require "agama/dbus/storage/volume_conversion"
+require "agama/dbus/storage/volume_templates_builder"
 require "agama/dbus/base_object"
 require "agama/dbus/with_service_status"
 require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
-require "agama/dbus/storage/proposal"
-require "agama/dbus/storage/proposal_settings_converter"
-require "agama/dbus/storage/volume_converter"
 require "agama/dbus/storage/with_iscsi_auth"
 require "agama/dbus/storage/iscsi_nodes_tree"
 require "agama/dbus/storage/devices_tree"
@@ -128,9 +129,8 @@ module Agama
         #
         # @return [Hash]
         def default_volume(mount_path)
-          generator = Agama::Storage::VolumeGenerator.new(backend.config)
-          volume = generator.volume_for(mount_path)
-          VolumeConverter.new.to_dbus(volume)
+          volume = volume_templates_builder.for(mount_path)
+          VolumeConversion.to_dbus(volume)
         end
 
         # Calculates a new proposal
@@ -140,7 +140,7 @@ module Agama
         def calculate_proposal(dbus_settings)
           logger.info("Calculating storage proposal from D-Bus settings: #{dbus_settings}")
 
-          settings = ProposalSettingsConverter.new.from_dbus(dbus_settings, config: backend.config)
+          settings = ProposalSettingsConversion.from_dbus(dbus_settings, config: config)
           success = proposal.calculate(settings)
 
           success ? 0 : 1
@@ -334,6 +334,14 @@ module Agama
 
         def tree_path(tree_root)
           File.join(PATH, tree_root)
+        end
+
+        def config
+          backend.config
+        end
+
+        def volume_templates_builder
+          @volume_templates_builder ||= VolumeTemplatesBuilder.new_from_config(config)
         end
       end
     end

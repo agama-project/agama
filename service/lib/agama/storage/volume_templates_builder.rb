@@ -26,6 +26,11 @@ require "y2storage"
 module Agama
   module Storage
     class VolumeTemplatesBuilder
+      def self.new_from_config(config)
+        volume_templates = config.data.fetch("storage", {}).fetch("volume_templates", [])
+        new(volume_templates)
+      end
+
       def initialize(config_data)
         @data = {}
 
@@ -77,7 +82,7 @@ module Agama
 
           # values[:mount_options] = xxx
           # values[:format_options] = xxx
- 
+
           size = outline_data.fetch("size", {})
           values[:auto_size] = size.fetch("auto", false)
           values[:min_size] = parse_disksize(size["min"])

@@ -19,10 +19,11 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/proposal_settings"
-require "agama/dbus/storage/volume_conversion"
 require "y2storage/encryption_method"
 require "y2storage/pbkd_function"
+require "agama/storage/proposal_settings"
+require "agama/storage/volume_templates_builder"
+require "agama/dbus/storage/volume_conversion"
 
 module Agama
   module DBus
@@ -37,7 +38,7 @@ module Agama
           # Constructor
           #
           # @param dbus_settings [Hash]
-          def initialize(dbus_settings, config: nil)
+          def initialize(dbus_settings, config:)
             @dbus_settings = dbus_settings
             @config = config
           end
@@ -112,16 +113,14 @@ module Agama
           end
 
           def missing_volumes(volumes)
-            return [] unless volume_generator
+            required_volumes = volume_templates_builder.required_volumes
+            mount_paths = volumes.map(&:mount_path)
 
-            mandatory_volumes = volume_generator.mandatory_volumes
-            mandatory_volumes.reject { |mv| volumes.any? { |v| v.mount_path == mv.mount_path } }
+            required_volumes.reject { |v| mount_paths.include?(v.mount_path) }
           end
 
-          def volume_generator
-            return nil unless config
-
-            Agama::Storage::VolumeGenerator.new(config)
+          def volume_templates_builder
+            @volume_templates_builder ||= VolumeTemplatesBuilder.new_from_config(config)
           end
         end
       end

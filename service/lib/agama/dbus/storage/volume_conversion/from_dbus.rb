@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/volume"
+require "agama/storage/volume_templates_builder"
 require "y2storage/disk_size"
 require "y2storage/filesystems/type"
 
@@ -36,7 +37,7 @@ module Agama
           # Constructor
           #
           # @param dbus_volume [Hash]
-          def initialize(dbus_volume, config: nil)
+          def initialize(dbus_volume, config:)
             @dbus_volume = dbus_volume
             @config = config
           end
@@ -55,19 +56,6 @@ module Agama
           attr_reader :dbus_volume
 
           attr_reader :config
-
-          def volume_for(mount_path)
-            return Agama::Storage::Volume.new unless volume_generator
-
-            volume_generator.volume_for(mount_path)
-          end
-
-          def volume_generator
-            return nil unless config
-
-            # TODO
-            Agama::Storage::VolumeGenerator.new(config)
-          end
 
           # Relationship between D-Bus volumes and Volumes
           #
@@ -116,6 +104,14 @@ module Agama
 
           def snapshots_conversion(volume, value)
             volume.btrfs.snapshots = value
+          end
+
+          def volume_for(mount_path)
+            volume_templates_builder.for(mount_path)
+          end
+
+          def volume_templates_builder
+            @volume_templates_builder ||= VolumeTemplatesBuilder.new_from_config(config)
           end
         end
       end
