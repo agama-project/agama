@@ -79,15 +79,30 @@ when the question is answered and the answer is successfully read.
     <method name="Delete">
       <arg name="question" direction="in" type="o"/>
     </method>
-
     <!--
-      UseDefaultAnswer:
+      Delete:
+      @question: object path of question that should be deleted.
 
-      Switches questions to be automatically answered by default answer.
-      After this method call each follow up question is immediatelly answered.
-      Useful for doing non interactive installation.
+      Deletes question. Useful when question is answered and service that asks
+      already read answer. Usually called by the one that previously created it.
     -->
-    <method name="UseDefaultAnswer">
+    <method name="Delete">
+      <arg name="question" type="o" direction="in"/>
     </method>
+    <!--
+      AddAnswerFile:
+      @path: Local fs path to answers file in yaml format.
+
+      Adds file with list of predefined answers that will be used to
+      automatically answer matching questions.
+    -->
+    <method name="AddAnswerFile">
+      <arg name="path" type="s" direction="in"/>
+    </method>
+    <!--
+     property that defines if questions is interactive or automatically answered with
+     default answer
+     -->
+    <property name="Interactive" type="b" access="readwrite"/>
   </interface>
 </node>
