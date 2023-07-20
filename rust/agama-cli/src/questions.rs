@@ -1,6 +1,6 @@
 use agama_lib::connection;
 use agama_lib::proxies::Questions1Proxy;
-use anyhow::{Context, Ok};
+use anyhow::Context;
 use clap::{Args, Subcommand, ValueEnum};
 
 #[derive(Subcommand, Debug)]
@@ -23,33 +23,31 @@ pub enum Modes {
     Interactive,
     NonInteractive,
 }
-// TODO when more commands is added, refactor and add it to agama-lib and share a bit of functionality
-async fn set_mode(value: Modes) -> anyhow::Result<()> {
-    match value {
-        Modes::NonInteractive => {
-            let connection = connection().await?;
-            let proxy = Questions1Proxy::new(&connection)
-                .await
-                .context("Failed to connect to Questions service")?;
 
-            // TODO: how to print dbus error in that anyhow?
-            proxy
-                .use_default_answer()
-                .await
-                .context("Failed to set default answer")?;
-        }
-        Modes::Interactive => log::info!("not implemented"), //TODO do it
-    }
+async fn set_mode(proxy: Questions1Proxy<'_>, value: Modes) -> anyhow::Result<()> {
+    // TODO: how to print dbus error in that anyhow?
+    proxy
+        .set_interactive(value == Modes::Interactive)
+        .await
+        .context("Failed to set default answer")
+}
 
-    Ok(())
+async fn set_answers(proxy: Questions1Proxy<'_>, path: String) -> anyhow::Result<()> {
+    // TODO: how to print dbus error in that anyhow?
+    proxy
+        .add_answer_file(path.as_str())
+        .await
+        .context("Failed to set default answer")
 }
 
 pub async fn run(subcommand: QuestionsCommands) -> anyhow::Result<()> {
+    let connection = connection().await?;
+    let proxy = Questions1Proxy::new(&connection)
+        .await
+        .context("Failed to connect to Questions service")?;
+
     match subcommand {
-        QuestionsCommands::Mode(value) => set_mode(value.value).await,
-        QuestionsCommands::Answers { path: _ } => {
-            log::info!("TODO: implement answers");
-            Ok(())
-        }
+        QuestionsCommands::Mode(value) => set_mode(proxy, value.value).await,
+        QuestionsCommands::Answers { path } => set_answers(proxy, path).await,
     }
 }
