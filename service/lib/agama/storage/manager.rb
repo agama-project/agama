@@ -190,21 +190,21 @@ module Agama
       #
       # It reuses the settings from the previous proposal, if any.
       def calculate_proposal
-        settings = proposal.settings || default_settings
+        settings = proposal.settings || default_proposal_settings
 
         proposal.calculate(settings)
       end
 
-      def default_settings
-        settings = read_default_settings
+      def default_proposal_settings
+        settings = read_proposal_settings
         device = proposal.available_devices.first&.name
-        settings.candidate_devices << device if device
+        settings.boot_device = device if device
 
         settings
       end
 
-      # TODO
-      def read_default_settings
+      def read_proposal_settings
+        ProposalSettingsReader.new(config).read
       end
 
       # Adds the required packages to the list of resolvables to install

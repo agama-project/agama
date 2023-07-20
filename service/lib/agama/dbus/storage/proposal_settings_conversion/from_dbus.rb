@@ -23,6 +23,7 @@ require "y2storage/encryption_method"
 require "y2storage/pbkd_function"
 require "agama/storage/proposal_settings"
 require "agama/storage/volume_templates_builder"
+require "agama/storage/proposal_settings_reader"
 require "agama/dbus/storage/volume_conversion"
 
 module Agama
@@ -61,8 +62,8 @@ module Agama
 
           attr_reader :config
 
-          # TODO
           def default_settings
+            @default_settings ||= ProposalSettingsReader.new(config).read
           end
 
           # Relationship between D-Bus settings and Agama proposal settings

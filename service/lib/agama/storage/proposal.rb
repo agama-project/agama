@@ -82,7 +82,7 @@ module Agama
       # @param settings [ProposalSettings] settings to calculate the proposal
       # @return [Boolean] whether the proposal was correctly calculated
       def calculate(settings)
-        storage_manager.proposal = calculate_proposal(settings)
+        calculate_proposal(settings)
 
         @on_calculate_callbacks.each(&:call)
         @invalidated = false
@@ -147,7 +147,7 @@ module Agama
           disk_analyzer: disk_analyzer
         )
         proposal.propose
-        proposal
+        storage_manager.proposal = proposal
       end
 
       # @return [Y2Storage::DiskAnalyzer]
