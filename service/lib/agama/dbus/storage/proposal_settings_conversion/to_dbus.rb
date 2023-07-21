@@ -41,6 +41,7 @@ module Agama
               "EncryptionMethod"        => settings.encryption.method.id,
               "EncryptionPBKDFunction"  => settings.encryption.pbkd_function&.value || "",
               "SpacePolicy"             => settings.space.policy.to_s,
+              "SpaceActions"            => settings.space.actions,
               "Volumes"                 => settings.volumes.map { |v| VolumeConversion.to_dbus(v) }
             }
           end

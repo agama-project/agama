@@ -63,6 +63,7 @@ module Agama
           # from a D-Bus value to the value expected by the Volume setter.
           CONVERSIONS = {
             "MountPath"       => :mount_path_conversion,
+            "MountOptions"    => :mount_options_conversion,
             "TargetDevice"    => :target_device_conversion,
             "TargetVG"        => :target_vg_conversion,
             "FsType"          => :fs_type_conversion,
@@ -75,6 +76,10 @@ module Agama
 
           def mount_path_conversion(volume, value)
             volume.mount_path = value
+          end
+
+          def mount_options_conversion(volume, value)
+            volume.mount_options = value
           end
 
           def target_device_conversion(volume, value)

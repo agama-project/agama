@@ -78,6 +78,7 @@ module Agama
             "EncryptionMethod"        => :encryption_method_conversion,
             "EncryptionPBKDFunction"  => :encryption_pbkd_function_conversion,
             "SpacePolicy"             => :space_policy_conversion,
+            "SpaceActions"            => :space_actions_conversion,
             "Volumes"                 => :volumes_conversion
           }.freeze
           private_constant :CONVERSIONS
@@ -114,6 +115,10 @@ module Agama
 
           def space_policy_conversion(settings, value)
             settings.space.policy = value.to_sym unless value.empty?
+          end
+
+          def space_actions_conversion(settings, value)
+            settings.space.actions = value
           end
 
           def volumes_conversion(settings, value)

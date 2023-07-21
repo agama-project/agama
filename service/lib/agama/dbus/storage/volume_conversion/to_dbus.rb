@@ -40,6 +40,7 @@ module Agama
           def convert # rubocop:disable Metrics/AbcSize
             dbus_volume = {
               "MountPath"             => volume.mount_path.to_s,
+              "MountOptions"          => volume.mount_options,
               "TargetDevice"          => volume.target_device.to_s,
               "TargetVG"              => volume.target_vg.to_s,
               "FsType"                => volume.fs_type&.to_human_string,
