@@ -1,0 +1,89 @@
+# frozen_string_literal: true
+
+# Copyright (c) [2023] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
+require "y2storage/storage_manager"
+require "agama/storage/volume_templates_builder"
+
+module Agama
+  module Storage
+    module VolumeConversion
+      # Utility class offering methods to convert between Y2Storage::VolumeSpecification objects and
+      # Agama::Volume ones
+      # Internal class to generate a Agama volume
+      class FromY2Storage
+        # Constructor
+        #
+        # @param spec see {#spec}
+        # @param default_specs see #{default_specs}
+        # @param devices see {#devices}
+        def initialize(spec, config:)
+          @spec = spec
+          @config = config
+        end
+
+        # @see VolumeConverter#to_y2storage
+        def convert
+          volume = VolumeTemplatesBuilder.new_from_config(config).for(spec.mount_point)
+
+          volume.tap do |target|
+            target.device = spec.device
+            target.separate_vg_name = spec.separate_vg_name
+            target.mount_options = spec.mount_options
+            target.fs_type = spec.fs_type
+
+            sizes_conversion(target)
+            btrfs_conversion(target)
+          end
+        end
+
+      private
+
+        attr_reader :spec
+
+        attr_reader :config
+
+        def sizes_conversion(target)
+          target.auto_size = !(spec.ignore_fallback_sizes? && spec.ignore_fallback_sizes?)
+
+          planned = planned_device_for(spec.mount_point)
+          target.min_size = planned&.min || spec.min_size
+          target.max_size = planned&.max || spec.max_size
+        end
+
+        def btrfs_conversion(target)
+          target.btrfs.snapshots = spec.snapshots?
+          target.btrfs.subvolumes = spec.subvolumes
+          target.btrfs.default_subvolume = spec.btrfs_default_subvolume
+          target.btrfs.read_only = spec.btrfs_read_only
+        end
+
+        def planned_device_for(mount_path)
+          planned_devices = proposal&.planned_devices || []
+          planned_devices.find { |d| d.respond_to?(:mount_point) && d.mount_point == mount_path }
+        end
+
+        def proposal
+          Y2Storage::StorageManager.instance.proposal
+        end
+      end
+    end
+  end
+end

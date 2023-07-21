@@ -21,7 +21,7 @@
 
 require "y2storage"
 require "agama/storage/volume_conversion/to_y2storage"
-# require "agama/storage/volume_conversion/from_y2storage"
+require "agama/storage/volume_conversion/from_y2storage"
 
 module Agama
   module Storage
