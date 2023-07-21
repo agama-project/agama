@@ -113,7 +113,7 @@ trait Locale1 {
 
 #[dbus_proxy(
     interface = "org.opensuse.Agama.Questions1",
-    default_service = "org.opensuse.Agama.Questions",
+    default_service = "org.opensuse.Agama.Questions1",
     default_path = "/org/opensuse/Agama/Questions1"
 )]
 trait Questions1 {
