@@ -44,9 +44,12 @@ module Agama
 
           # @return [Storage::Volume]
           def convert
-            volume = volume_for(dbus_volume["MountPath"])
-            dbus_volume.each do |dbus_property, dbus_value|
-              send(CONVERSIONS[dbus_property], volume, dbus_value)
+            volume = VolumeTemplatesBuilder.new_from_config(config).for(dbus_volume["MountPath"])
+
+            volume.tap do |target|
+              dbus_volume.each do |dbus_property, dbus_value|
+                send(CONVERSIONS[dbus_property], target, dbus_value)
+              end
             end
           end
 
@@ -74,49 +77,41 @@ module Agama
           }.freeze
           private_constant :CONVERSIONS
 
-          def mount_path_conversion(volume, value)
-            volume.mount_path = value
+          def mount_path_conversion(target, value)
+            target.mount_path = value
           end
 
-          def mount_options_conversion(volume, value)
-            volume.mount_options = value
+          def mount_options_conversion(target, value)
+            target.mount_options = value
           end
 
-          def target_device_conversion(volume, value)
-            volume.device = value
+          def target_device_conversion(target, value)
+            target.device = value
           end
 
-          def target_vg_conversion(volume, value)
-            volume.separate_vg_name = value
+          def target_vg_conversion(target, value)
+            target.separate_vg_name = value
           end
 
-          def fs_type_conversion(volume, value)
+          def fs_type_conversion(target, value)
             fs_type = Y2Storage::Filesystems::Type.all.find { |t| t.to_human_string == value }
-            volume.fs_type = fs_type
+            target.fs_type = fs_type
           end
 
-          def min_size_conversion(volume, value)
-            volume.min_size = Y2Storage::DiskSize.new(value)
+          def min_size_conversion(target, value)
+            target.min_size = Y2Storage::DiskSize.new(value)
           end
 
-          def max_size_conversion(volume, value)
-            volume.max_size = Y2Storage::DiskSize.new(value)
+          def max_size_conversion(target, value)
+            target.max_size = Y2Storage::DiskSize.new(value)
           end
 
-          def auto_size_conversion(volume, value)
-            volume.auto_size = value
+          def auto_size_conversion(target, value)
+            target.auto_size = value
           end
 
-          def snapshots_conversion(volume, value)
-            volume.btrfs.snapshots = value
-          end
-
-          def volume_for(mount_path)
-            volume_templates_builder.for(mount_path)
-          end
-
-          def volume_templates_builder
-            @volume_templates_builder ||= VolumeTemplatesBuilder.new_from_config(config)
+          def snapshots_conversion(target, value)
+            target.btrfs.snapshots = value
           end
         end
       end

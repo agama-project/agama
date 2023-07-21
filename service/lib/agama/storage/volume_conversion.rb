@@ -42,8 +42,8 @@ module Agama
       # @param devices [Array<Y2Storage::Planned::Device] planned devices generated during the
       #   latest proposal attempt
       # @return [Volume]
-      def self.to_agama(spec, devices: [])
-        ToAgama.new(spec, default_specs, devices).convert
+      def from_y2storage(spec, config:)
+        FromY2Storage.new(spec, config: config).convert
       end
     end
   end

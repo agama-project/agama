@@ -22,7 +22,6 @@
 require "y2storage/encryption_method"
 require "y2storage/pbkd_function"
 require "agama/storage/proposal_settings"
-require "agama/storage/volume_templates_builder"
 require "agama/storage/proposal_settings_reader"
 require "agama/dbus/storage/volume_conversion"
 
@@ -48,9 +47,11 @@ module Agama
           #
           # @return [Agama::Storage::ProposalSettings]
           def convert
-            default_settings.tap do |settings|
+            settings = ProposalSettingsReader.new(config).read
+
+            settings.tap do |target|
               dbus_settings.each do |dbus_property, dbus_value|
-                send(CONVERSIONS[dbus_property], settings, dbus_value)
+                send(CONVERSIONS[dbus_property], target, dbus_value)
               end
             end
           end
@@ -61,10 +62,6 @@ module Agama
           attr_reader :dbus_settings
 
           attr_reader :config
-
-          def default_settings
-            @default_settings ||= ProposalSettingsReader.new(config).read
-          end
 
           # Relationship between D-Bus settings and Agama proposal settings
           #
@@ -83,61 +80,58 @@ module Agama
           }.freeze
           private_constant :CONVERSIONS
 
-          def boot_device_conversion(settings, value)
-            settings.boot_device = value
+          def boot_device_conversion(target, value)
+            target.boot_device = value
           end
 
-          def lvm_conversion(settings, value)
-            settings.lvm.enabled = value
+          def lvm_conversion(target, value)
+            target.lvm.enabled = value
           end
 
-          def system_vg_devices_conversion(settings, value)
-            settings.lvm.system_vg_devices = value
+          def system_vg_devices_conversion(target, value)
+            target.lvm.system_vg_devices = value
           end
 
-          def encryption_password_conversion(settings, value)
-            settings.encryption.password = value.empty? ? nil : value
+          def encryption_password_conversion(target, value)
+            target.encryption.password = value.empty? ? nil : value
           end
 
-          def encryption_method_conversion(settings, value)
+          def encryption_method_conversion(target, value)
             method = Y2Storage::EncryptionMethod.find(value.to_sym)
             return unless method
 
-            settings.encryption.method = method
+            target.encryption.method = method
           end
 
-          def encryption_pbkd_function_conversion(settings, value)
+          def encryption_pbkd_function_conversion(target, value)
             function = Y2Storage::PbkdFunction.find(value)
             return unless function
 
-            settings.encryption.pbkd_function = function
+            target.encryption.pbkd_function = function
           end
 
-          def space_policy_conversion(settings, value)
-            settings.space.policy = value.to_sym unless value.empty?
+          def space_policy_conversion(target, value)
+            target.space.policy = value.to_sym unless value.empty?
           end
 
-          def space_actions_conversion(settings, value)
-            settings.space.actions = value
+          def space_actions_conversion(target, value)
+            target.space.actions = value
           end
 
-          def volumes_conversion(settings, value)
+          def volumes_conversion(target, value)
             # Keep default volumes if no volumes are given
             return if value.empty?
 
+            required_volumes = target.volumes.select { |v| v.ouline.required? }
             volumes = value.map { |v| VolumeConversion.from_dbus(v, config: config) }
-            settings.volumes = volumes + missing_volumes(volumes)
+
+            target.volumes = volumes + missing_volumes(required_volumes, volumes)
           end
 
-          def missing_volumes(volumes)
-            required_volumes = volume_templates_builder.required_volumes
+          def missing_volumes(required_volumes, volumes)
             mount_paths = volumes.map(&:mount_path)
 
             required_volumes.reject { |v| mount_paths.include?(v.mount_path) }
-          end
-
-          def volume_templates_builder
-            @volume_templates_builder ||= VolumeTemplatesBuilder.new_from_config(config)
           end
         end
       end

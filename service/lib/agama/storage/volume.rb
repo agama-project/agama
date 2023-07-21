@@ -90,16 +90,6 @@ module Agama
         @btrfs = BtrfsSettings.new
         @outline = VolumeOutline.new
       end
-
-      # Whether the mount point of the volume matches the given one
-      #
-      # @param path [String, nil] mount point to check
-      # @return [Boolean]
-      def mounted_at?(path)
-        return false if mount_point.nil? || path.nil?
-
-        Pathname.new(mount_point).cleanpath == Pathname.new(path).cleanpath
-      end
     end
   end
 end

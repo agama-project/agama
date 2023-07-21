@@ -42,17 +42,15 @@ module Agama
           # Despite the "current_product" part in the name of the constructor, it only applies
           # generic default values that are independent of the product (there is no YaST
           # ProductFeatures mechanism in place).
-          y2storage_settings = Y2Storage::ProposalSettings.new_for_current_product
+          Y2Storage::ProposalSettings.new_for_current_product.tap do |target|
+            target.candidate_devices = candidate_devices
 
-          y2storage_settings.candidate_devices = candidate_devices
-
-          boot_device_conversion(y2storage_settings)
-          lvm_conversion(y2storage_settings)
-          encryption_conversion(y2storage_settings)
-          space_policy_conversion(y2storage_settings)
-          volumes_conversion(y2storage_settings)
-
-          y2storage_settings
+            boot_device_conversion(target)
+            lvm_conversion(target)
+            encryption_conversion(target)
+            space_policy_conversion(target)
+            volumes_conversion(target)
+          end
         end
 
       private
@@ -100,22 +98,24 @@ module Agama
 
         def volumes_conversion(target)
           target.volumes = settings.volumes.map { |v| VolumeConversion.to_y2storage(v) }
-          fallbacks_conversion(settings.volumes, target.volumes)
+          fallbacks_conversion(target)
         end
 
-        def fallbacks_conversion(volumes, target_volumes)
-          target_volumes.each do |spec|
-            spec.min_size_fallback = find_min_size_fallback(spec.mount_point, volumes)
-            spec.max_size_fallback = find_max_size_fallback(spec.mount_point, volumes)
+        def fallbacks_conversion(target)
+          target.volumes.each do |spec|
+            spec.min_size_fallback = find_min_size_fallback(spec.mount_point)
+            spec.max_size_fallback = find_max_size_fallback(spec.mount_point)
           end
         end
 
-        def find_min_size_fallback(mount_path, volumes)
-          volumes.find { |v| v.min_size_fallback_for.include?(mount_path) }
+        def find_min_size_fallback(mount_path)
+          volume = settings.volumes.find { |v| v.min_size_fallback_for.include?(mount_path) }
+          volume&.mount_path
         end
 
-        def find_max_size_fallback(mount_path, volumes)
-          volumes.find { |v| v.max_size_fallback_for.include?(mount_path) }
+        def find_max_size_fallback(mount_path)
+          volume = volumes.find { |v| v.max_size_fallback_for.include?(mount_path) }
+          volume&.mount_path
         end
 
         def candidate_devices
