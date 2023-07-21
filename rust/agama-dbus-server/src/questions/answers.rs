@@ -17,7 +17,7 @@ struct Answer {
 /// Data structure holding list of Answer.
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct Answers {
-    list: Vec<Answer>,
+    answers: Vec<Answer>
 }
 
 impl Answers {
@@ -34,7 +34,7 @@ impl Answers {
     }
 
     fn find_answer(&self, question: &agama_lib::questions::GenericQuestion) -> Option<&Answer> {
-        'main: for answerd in self.list.iter() {
+        'main: for answerd in self.answers.iter() {
             if let Some(v) = &answerd.class {
                 if !question.class.eq(v) {
                     continue;
@@ -101,7 +101,7 @@ mod tests {
     // set of fixtures for test
     fn get_answers() -> Answers {
         Answers {
-            list: vec![
+            answers: vec![
                 Answer {
                     class: Some("test".to_string()),
                     data: None,
@@ -238,5 +238,21 @@ mod tests {
             answer: "".to_string(),
         };
         assert_eq!(None, answers.answer(&question));
+    }
+
+    #[test]
+    fn test_loading_yaml() {
+        let file = r#"
+            answers:
+              - class: "test"
+                answer: "OK"
+              - class: "test2"
+                data:
+                  testk: testv
+                  testk2: testv2
+                answer: "Cancel"
+        "#;
+        let result: Answers = serde_yaml::from_str(file).expect("failed to load yaml string");
+        assert_eq!(result.answers.len(), 2);
     }
 }
