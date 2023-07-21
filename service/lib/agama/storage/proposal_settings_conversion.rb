@@ -19,32 +19,25 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/proposal_settings_conversion/to_y2storage"
+require "agama/storage/proposal_settings_conversion/from_y2storage"
+
 module Agama
   module Storage
-    # Settings regarding Btrfs for a given Volume
-    class BtrfsSettings
-      # Whether the volume contains Btrfs snapshots
+    # Utility class offering methods to convert between Y2Storage::ProposalSettings objects and
+    # Agama::ProposalSettings ones
+    module ProposalSettingsConversion
+      # Returns the Y2Storage::VolumeSpecification object that is equivalent to the given
+      # Agama::Volume one
       #
-      # @return [Boolean]
-      attr_accessor :snapshots
-      alias_method :snapshtos?, :snapshots
+      # @param settings [ProposalSettings]
+      # @return [Y2Storage::ProposalSettings]
+      def to_y2storage(settings)
+        ToY2Storage.new(settings).convert
+      end
 
-      # @return [Boolean]
-      attr_accessor :read_only
-      alias_method :read_only?, :read_only
-
-      # @return [Array<String>, nil] if nil, a historical fallback list may be applied depending
-      #   on the mount path of the volume
-      # TODO archs, nocow, limit
-      attr_accessor :subvolumes
-
-      # @return [String]
-      attr_accessor :default_subvolume
-
-      def initialize
-        @snapshots = false
-        @read_only = false
-        @default_subvolume = ""
+      def from_y2storage(settings, config:)
+        FromY2Storage.new(settings, config: config).convert
       end
     end
   end

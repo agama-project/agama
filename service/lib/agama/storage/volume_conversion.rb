@@ -1,0 +1,50 @@
+# frozen_string_literal: true
+
+# Copyright (c) [2023] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
+require "y2storage"
+require "agama/storage/volume_conversion/to_y2storage"
+require "agama/storage/volume_conversion/from_y2storage"
+
+module Agama
+  module Storage
+    module VolumeConversion
+      # Returns the Y2Storage::VolumeSpecification object that is equivalent to the given
+      # Agama::Volume one
+      #
+      # @param volume [Volume]
+      # @return [Y2Storage::VolumeSpecification]
+      def to_y2storage(volume)
+        ToY2Storage.new(volume, default_specs).convert
+      end
+
+      # Returns the Agama::Volume object that is equivalent to the given
+      # Y2Storage::VolumeSpecification one
+      #
+      # @param spec [Y2Storage::VolumeSpecification]
+      # @param devices [Array<Y2Storage::Planned::Device] planned devices generated during the
+      #   latest proposal attempt
+      # @return [Volume]
+      def to_agama(spec, devices: [])
+        ToAgama.new(spec, default_specs, devices).convert
+      end
+    end
+  end
+end

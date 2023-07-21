@@ -51,13 +51,6 @@ module Agama
       # @return [Y2Storage::DiskSize]
       attr_reader :base_max_size
 
-      # Related volumes that may affect the calculation of the automatic size limits
-      #
-      # @note This is set by calling to {#assign_size_relevant_volumes} method.
-      #
-      # @return [Array<String>]
-      attr_reader :size_relevant_volumes
-
       attr_reader :adjust_by_ram
       alias_method :adjust_by_ram?, :adjust_by_ram
 
@@ -92,6 +85,11 @@ module Agama
         @min_size_fallback_for = []
       end
 
+      # Related volumes that may affect the calculation of the automatic size limits
+      #
+      # @note This is set by calling to {#assign_size_relevant_volumes} method.
+      #
+      # @return [Array<String>]
       def size_relevant_volumes
         (max_size_fallbacks_for + min_size_fallbacks_for).sort.uniq
       end
