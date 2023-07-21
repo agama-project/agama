@@ -34,7 +34,7 @@ module Agama
         #
         # @param dbus_volume [Hash]
         # @return [Storage::Volume]
-        def from_dbus(dbus_volume, config: nil)
+        def self.from_dbus(dbus_volume, config:)
           FromDBus.new(dbus_volume, config: config).convert
         end
 
@@ -42,7 +42,7 @@ module Agama
 
         # @param volume [Storage::Volume]
         # @return [Hash]
-        def to_dbus(volume)
+        def self.to_dbus(volume)
           ToDBus.new(volume).convert
         end
       end

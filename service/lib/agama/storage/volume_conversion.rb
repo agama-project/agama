@@ -19,22 +19,12 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2storage"
-require "agama/storage/volume_conversion/to_y2storage"
 require "agama/storage/volume_conversion/from_y2storage"
+require "agama/storage/volume_conversion/to_y2storage"
 
 module Agama
   module Storage
     module VolumeConversion
-      # Returns the Y2Storage::VolumeSpecification object that is equivalent to the given
-      # Agama::Volume one
-      #
-      # @param volume [Volume]
-      # @return [Y2Storage::VolumeSpecification]
-      def self.to_y2storage(volume)
-        ToY2Storage.new(volume, default_specs).convert
-      end
-
       # Returns the Agama::Volume object that is equivalent to the given
       # Y2Storage::VolumeSpecification one
       #
@@ -42,8 +32,17 @@ module Agama
       # @param devices [Array<Y2Storage::Planned::Device] planned devices generated during the
       #   latest proposal attempt
       # @return [Volume]
-      def from_y2storage(spec, config:)
+      def self.from_y2storage(spec, config:)
         FromY2Storage.new(spec, config: config).convert
+      end
+
+      # Returns the Y2Storage::VolumeSpecification object that is equivalent to the given
+      # Agama::Volume one
+      #
+      # @param volume [Volume]
+      # @return [Y2Storage::VolumeSpecification]
+      def self.to_y2storage(volume)
+        ToY2Storage.new(volume).convert
       end
     end
   end

@@ -34,11 +34,11 @@ module Agama
         #
         # @param dbus_settings [Hash]
         # @return [Agama::Storage::ProposalSettings]
-        def from_dbus(dbus_settings, config: nil)
+        def self.from_dbus(dbus_settings, config:)
           FromDBus.new(dbus_settings, config: config).convert
         end
 
-        def to_dbus(settings)
+        def self.to_dbus(settings)
           ToDBus.new(settings).convert
         end
       end

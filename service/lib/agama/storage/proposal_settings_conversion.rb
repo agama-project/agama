@@ -19,14 +19,18 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/proposal_settings_conversion/to_y2storage"
 require "agama/storage/proposal_settings_conversion/from_y2storage"
+require "agama/storage/proposal_settings_conversion/to_y2storage"
 
 module Agama
   module Storage
     # Utility class offering methods to convert between Y2Storage::ProposalSettings objects and
     # Agama::ProposalSettings ones
     module ProposalSettingsConversion
+      def self.from_y2storage(settings, config:)
+        FromY2Storage.new(settings, config: config).convert
+      end
+
       # Returns the Y2Storage::VolumeSpecification object that is equivalent to the given
       # Agama::Volume one
       #
@@ -34,10 +38,6 @@ module Agama
       # @return [Y2Storage::ProposalSettings]
       def self.to_y2storage(settings)
         ToY2Storage.new(settings).convert
-      end
-
-      def self.from_y2storage(settings, config:)
-        FromY2Storage.new(settings, config: config).convert
       end
     end
   end
