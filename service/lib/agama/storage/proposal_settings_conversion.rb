@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/proposal_settings_conversion/to_y2storage"
-require "agama/storage/proposal_settings_conversion/from_y2storage"
+#require "agama/storage/proposal_settings_conversion/from_y2storage"
 
 module Agama
   module Storage
@@ -32,11 +32,11 @@ module Agama
       #
       # @param settings [ProposalSettings]
       # @return [Y2Storage::ProposalSettings]
-      def to_y2storage(settings)
+      def self.to_y2storage(settings)
         ToY2Storage.new(settings).convert
       end
 
-      def from_y2storage(settings, config:)
+      def self.from_y2storage(settings, config:)
         FromY2Storage.new(settings, config: config).convert
       end
     end

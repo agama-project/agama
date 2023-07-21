@@ -21,7 +21,7 @@
 
 require "y2storage"
 require "agama/storage/volume_conversion/to_y2storage"
-require "agama/storage/volume_conversion/from_y2storage"
+# require "agama/storage/volume_conversion/from_y2storage"
 
 module Agama
   module Storage
@@ -31,7 +31,7 @@ module Agama
       #
       # @param volume [Volume]
       # @return [Y2Storage::VolumeSpecification]
-      def to_y2storage(volume)
+      def self.to_y2storage(volume)
         ToY2Storage.new(volume, default_specs).convert
       end
 
@@ -42,7 +42,7 @@ module Agama
       # @param devices [Array<Y2Storage::Planned::Device] planned devices generated during the
       #   latest proposal attempt
       # @return [Volume]
-      def to_agama(spec, devices: [])
+      def self.to_agama(spec, devices: [])
         ToAgama.new(spec, default_specs, devices).convert
       end
     end
