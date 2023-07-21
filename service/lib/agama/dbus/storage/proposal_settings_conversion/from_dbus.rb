@@ -73,6 +73,7 @@ module Agama
           CONVERSIONS = {
             "BootDevice"              => :boot_device_conversion,
             "LVM"                     => :lvm_conversion,
+            "SystemVGDevices"         => :system_vg_devices_conversion,
             "EncryptionPassword"      => :encryption_password_conversion,
             "EncryptionMethod"        => :encryption_method_conversion,
             "EncryptionPBKDFunction"  => :encryption_pbkd_function_conversion,
@@ -87,6 +88,10 @@ module Agama
 
           def lvm_conversion(settings, value)
             settings.lvm.enabled = value
+          end
+
+          def system_vg_devices_conversion(settings, value)
+            settings.lvm.system_vg_devices = value
           end
 
           def encryption_password_conversion(settings, value)

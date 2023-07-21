@@ -48,6 +48,8 @@ module Agama
 
           dbus_reader :lvm, "b", dbus_name: "LVM"
 
+          dbus_reader :system_vg_devices, "aas", dbus_name: "SystemVGDevices"
+
           dbus_reader :encryption_password, "s"
 
           dbus_reader :encryption_method, "s"
@@ -73,6 +75,10 @@ module Agama
         # @return [Boolean]
         def lvm
           dbus_settings.fetch("LVM", false)
+        end
+
+        def system_vg_devices
+          dbus_settings.fetch("SystemVGDevices", [])
         end
 
         # Password for encrypting devices

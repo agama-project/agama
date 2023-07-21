@@ -36,6 +36,7 @@ module Agama
             {
               "BootDevice"              => settings.boot_device.to_s,
               "LVM"                     => settings.lvm,
+              "SystemVGDevices"         => settings.lvm.system_vg_devices,
               "EncryptionPassword"      => settings.encryption.password,
               "EncryptionMethod"        => settings.encryption.method.id,
               "EncryptionPBKDFunction"  => settings.encryption.pbkd_function&.value || "",

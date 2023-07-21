@@ -28,8 +28,11 @@ module Agama
       # @return [Boolean]
       attr_accessor :enabled
 
+      attr_accessor :system_vg_devices
+
       def initialize
         @enabled = false
+        @system_lv_devices = []
       end
 
       # @return [Boolean]
