@@ -80,9 +80,6 @@ module Agama
           values[:filesystem] ||= values[:outline].filesystems.first
           values[:filesystem] ||= Y2Storage::Filesystems::Type::EXT4
 
-          # values[:mount_options] = xxx
-          # values[:format_options] = xxx
-
           size = outline_data.fetch("size", {})
           values[:auto_size] = size.fetch("auto", false)
           values[:min_size] = parse_disksize(size["min"])

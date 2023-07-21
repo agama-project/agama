@@ -57,9 +57,6 @@ module Agama
       # @return [Array<String>]
       attr_accessor :mount_options
 
-      # @return [Array<String>]
-      attr_accessor :format_options
-
       # These two would be used to locate the volume in a separate disk
       attr_accessor :device
       attr_accessor :separate_vg_name
@@ -90,7 +87,6 @@ module Agama
       def initialize(mount_path)
         @mount_path = mount_path
         @mount_options = []
-        @format_options = []
         @btrfs = BtrfsSettings.new
         @outline = VolumeOutline.new
       end
