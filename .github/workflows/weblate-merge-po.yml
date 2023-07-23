@@ -1,0 +1,107 @@
+name: Weblate Merge PO
+
+on:
+  schedule:
+    # run every Monday at 2:42AM UTC
+    - cron: "42 2 * * 0"
+
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  merge-po:
+    # allow pushing and creating pull requests
+    permissions:
+      contents: write
+      pull-requests: write
+
+    # do not run in forks
+    if: github.repository == 'openSUSE/agama'
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+
+    steps:
+      - name: Configure and refresh repositories
+        run: |
+          # install the GitHub command line tool "gh"
+          zypper addrepo https://cli.github.com/packages/rpm/gh-cli.repo
+          # disable unused repositories to have a faster refresh
+          zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && \
+            zypper --non-interactive --gpg-auto-import-keys ref
+
+      - name: Install tools
+        run: zypper --non-interactive install --no-recommends gh git gettext-tools
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "YaST Bot"
+          git config --global user.email "yast-devel@opensuse.org"
+
+      - name: Checkout sources
+        uses: actions/checkout@v3
+        with:
+          path: agama
+
+      - name: Checkout Agama-weblate sources
+        uses: actions/checkout@v3
+        with:
+          path: agama-weblate
+          repository: openSUSE/agama-weblate
+
+      - name: Update PO files
+        working-directory: ./agama
+        run: |
+          mkdir -p web/po
+          # delete the current translations
+          find web/po -name '*.po' -exec git rm '{}' ';'
+
+          # copy the new ones
+          cp -a ../agama-weblate/web/*.po web/po
+          git add web/po/*.po
+
+      - name: Validate the PO files
+        working-directory: ./agama
+        run:  msgfmt --check-format -o /dev/null web/po/*.po
+
+      # any changes besides the timestamps in the PO files?
+      - name: Check changes
+        id: check_changes
+        working-directory: ./agama
+        run: |
+          git diff --staged --ignore-matching-lines="POT-Creation-Date:" \
+            --ignore-matching-lines="PO-Revision-Date:" web/po > po.diff
+
+          if [ -s po.diff ]; then
+            echo "PO files updated"
+            echo "po_updated=true" >> $GITHUB_OUTPUT
+          else
+            echo "PO files unchanged"
+            echo "po_updated=false" >> $GITHUB_OUTPUT
+          fi
+
+          rm po.diff
+
+      - name: Push updated PO files
+        # run only when a PO file has been updated
+        if: steps.check_changes.outputs.po_updated == 'true'
+        working-directory: ./agama
+        run: |
+          # use a unique branch to avoid possible conflicts with already existing branches
+          git checkout -b "po_merge_${GITHUB_RUN_ID}"
+          git commit -a -m "Update PO files"$'\n\n'"Agama-weblate commit: `git -C ../agama-weblate rev-parse HEAD`"
+          git push origin "po_merge_${GITHUB_RUN_ID}"
+
+      - name: Create pull request
+        # run only when a PO file has been updated
+        if: steps.check_changes.outputs.po_updated == 'true'
+        working-directory: ./agama
+        run: |
+          gh pr create -B master -H "po_merge_${GITHUB_RUN_ID}" \
+            --label translations --label bot \
+            --title "Update PO files" \
+            --body "Updating the translation files from the agama-weblate repository"
+        env:
+          GH_TOKEN: ${{ github.token }}
