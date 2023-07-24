@@ -17,7 +17,7 @@ struct Answer {
 /// Data structure holding list of Answer.
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct Answers {
-    answers: Vec<Answer>
+    answers: Vec<Answer>,
 }
 
 impl Answers {
