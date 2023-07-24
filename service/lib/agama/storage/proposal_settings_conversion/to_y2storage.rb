@@ -25,18 +25,15 @@ require "agama/storage/volume_conversion"
 module Agama
   module Storage
     module ProposalSettingsConversion
-      # Utility class offering methods to convert between Y2Storage::ProposalSettings objects and
-      # Agama::ProposalSettings ones
-      # Internal class to generate a Y2Storage::ProposalSettings object
+      # Proposal settings conversion to Y2Storage format.
       class ToY2Storage
-        # Constructor
-        #
-        # @param settings [ProposalSettings]
-        # @param default_specs [Array<Y2Storage::VolumeSpecification>]
+        # @param settings [Agama::Storage::ProposalSettings]
         def initialize(settings)
           @settings = settings
         end
 
+        # Performs the conversion to Y2Storage format.
+        #
         # @return [Y2Storage::ProposalSettings]
         def convert
           # Despite the "current_product" part in the name of the constructor, it only applies
@@ -55,14 +52,15 @@ module Agama
 
       private
 
-        # @see ProposalSettingsConverter#to_y2storage
-        # @return [ProposalSettings]
+        # @return [Agama::Storage::ProposalSettings]
         attr_reader :settings
 
+        # @param target [Y2Storage::ProposalSettings]
         def boot_device_conversion(target)
           target.root_device = settings.boot_device
         end
 
+        # @param target [Y2Storage::ProposalSettings]
         def lvm_conversion(target)
           lvm = settings.lvm.enabled?
 
@@ -70,15 +68,14 @@ module Agama
           target.separate_vgs = lvm
         end
 
-        # Sets the attributes related to encryption
-        #
-        # @param y2storage_settings [Y2Storage::ProposalSettings] target settings to be adapted
+        # @param target [Y2Storage::ProposalSettings]
         def encryption_conversion(target)
           target.encryption_password = settings.encryption.password
           target.encryption_method = settings.encryption.method
           target.encryption_pbkdf = settings.encryption.pbkd_function
         end
 
+        # @param target [Y2Storage::ProposalSettings]
         def space_policy_conversion(target)
           target.space_settings.strategy = :bigger_resize
 
@@ -96,11 +93,13 @@ module Agama
           target.space_settings.actions = actions
         end
 
+        # @param target [Y2Storage::ProposalSettings]
         def volumes_conversion(target)
           target.volumes = settings.volumes.map { |v| VolumeConversion.to_y2storage(v) }
           fallbacks_conversion(target)
         end
 
+        # @param target [Y2Storage::ProposalSettings]
         def fallbacks_conversion(target)
           target.volumes.each do |spec|
             spec.min_size_fallback = find_min_size_fallback(spec.mount_point)
@@ -108,16 +107,19 @@ module Agama
           end
         end
 
+        # @param mount_path [String]
         def find_min_size_fallback(mount_path)
           volume = settings.volumes.find { |v| v.min_size_fallback_for.include?(mount_path) }
           volume&.mount_path
         end
 
+        # @param mount_path [String]
         def find_max_size_fallback(mount_path)
           volume = volumes.find { |v| v.max_size_fallback_for.include?(mount_path) }
           volume&.mount_path
         end
 
+        # @return [Array<String>]
         def candidate_devices
           devices = [settings.boot_device]
           devices += settings.lvm.system_vg_devices if settings.lvm.enabled?
@@ -125,6 +127,13 @@ module Agama
           devices.compact.uniq
         end
 
+        # All block devices affected by the space policy.
+        #
+        # This includes the partitions from the candidate devices and from the devices directly
+        # assigned to a volume as target device. If a device is not partitioned, then the device
+        # itself is included.
+        #
+        # @return [Array<String>]
         def all_devices
           devices = candidate_devices
           devices += settings.volumes.map { |v| v.device }
@@ -132,12 +141,15 @@ module Agama
           devices.uniq.map { |d| device_or_partitions(d) }.flatten
         end
 
+        # @param device [String]
+        # @return [String, Array<String>]
         def device_or_partitions(device)
           partitions = devicegraph.find_by_name(device).partitions.map(&:name)
 
           partitions.any? ? partitions : device
         end
 
+        # @return [Y2Storage::Devicegraph]
         def devicegraph
           Y2Storage::StorageManager.instance.probed
         end

@@ -23,19 +23,15 @@ module Agama
   module DBus
     module Storage
       module VolumeConversion
-        # Utility class offering methods to convert volumes between Agama and D-Bus formats
-        #
-        # @note In the future this class might be not needed if proposal volumes and templates are
-        #   exported as objects in D-Bus.
-        # Internal class to generate a D-Bus volume
+        # Volume conversion to D-Bus format.
         class ToDBus
-          # Constructor
-          #
-          # @param volume [Storage::Volume]
+          # @param volume [Agama::Storage::Volume]
           def initialize(volume)
             @volume = volume
           end
 
+          # Performs the conversion to D-Bus format.
+          #
           # @return [Hash]
           def convert # rubocop:disable Metrics/AbcSize
             {
@@ -48,16 +44,17 @@ module Agama
               "MaxSize"               => volume.max_size&.to_i,
               "AutoSize"              => volume.auto_size?,
               "Snapshots"             => volume.btrfs.snapshots?,
-              "Outline"               => outline
+              "Outline"               => outline_conversion
             }
           end
 
         private
 
-          # @return [Storage::Volume]
+          # @return [Agama::Storage::Volume]
           attr_reader :volume
 
-          def outline
+          # @return [Hash]
+          def outline_conversion
             outline = volume.outline
             {
               "Required"              => outline.required?,

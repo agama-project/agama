@@ -25,22 +25,21 @@ require "agama/dbus/storage/volume_conversion/to_dbus"
 module Agama
   module DBus
     module Storage
-      # Utility class offering methods to convert volumes between Agama and D-Bus formats
-      #
-      # @note In the future this class might be not needed if proposal volumes and templates are
-      #   exported as objects in D-Bus.
+      # Conversions for a volume.
       module VolumeConversion
-        # Converts the given D-Bus volume to its equivalent Agama::Volume object
+        # Performs conversion from D-Bus format.
         #
         # @param dbus_volume [Hash]
-        # @return [Storage::Volume]
+        # @param config [Agama::Config]
+        #
+        # @return [Agama::Storage::Volume]
         def self.from_dbus(dbus_volume, config:)
           FromDBus.new(dbus_volume, config: config).convert
         end
 
-        # Converts the given volume to its equivalent D-Bus volume
-
-        # @param volume [Storage::Volume]
+        # Performs conversion to D-Bus format.
+        #
+        # @param settings [Agama::Storage::Volume]
         # @return [Hash]
         def self.to_dbus(volume)
           ToDBus.new(volume).convert

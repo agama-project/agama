@@ -25,7 +25,7 @@ require "agama/storage/space_settings"
 
 module Agama
   module Storage
-    # Settings used to calculate an Agama storage proposal
+    # Settings used to calculate an storage proposal.
     class ProposalSettings
       # Configuration of LVM
       #

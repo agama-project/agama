@@ -23,22 +23,23 @@ module Agama
   module DBus
     module Storage
       module ProposalSettingsConversion
-        # Utility class offering methods to convert volumes between Agama and D-Bus formats
-        #
-        # @note In the future this class might be not needed if proposal volumes and templates are
-        #   exported as objects in D-Bus.
+        # Proposal settings conversion to D-Bus format.
         class ToDBus
+          # @param settings [Agama::Storage::ProposalSettings]
           def initialize(settings)
             @settings = settings
           end
 
+          # Performs the conversion to D-Bus format.
+          #
+          # @return [Hash]
           def convert
             {
               "BootDevice"              => settings.boot_device.to_s,
               "LVM"                     => settings.lvm,
               "SystemVGDevices"         => settings.lvm.system_vg_devices,
               "EncryptionPassword"      => settings.encryption.password,
-              "EncryptionMethod"        => settings.encryption.method.id,
+              "EncryptionMethod"        => settings.encryption.method.id.to_s,
               "EncryptionPBKDFunction"  => settings.encryption.pbkd_function&.value || "",
               "SpacePolicy"             => settings.space.policy.to_s,
               "SpaceActions"            => settings.space.actions,
@@ -48,6 +49,7 @@ module Agama
 
         private
 
+          # @return [Agama::Storage::ProposalSettings]
           attr_reader :settings
         end
       end

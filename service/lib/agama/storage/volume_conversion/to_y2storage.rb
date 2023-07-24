@@ -25,19 +25,16 @@ require "agama/storage/volume"
 module Agama
   module Storage
     module VolumeConversion
-      # Utility class offering methods to convert between Y2Storage::VolumeSpecification objects and
-      # Agama::Volume ones
-      # Internal class to generate a Y2Storage volume specification
+      # Volume conversion to Y2Storage format.
       class ToY2Storage
-        # Constructor
-        #
-        # @param volume see {#volume}
-        # @param default_specs see #{default_specs}
+        # @param volume [Agama::Storage::Volume]
         def initialize(volume)
           @volume = volume
         end
 
-        # @see VolumeConverter#to_y2storage
+        # Performs the conversion to Y2Storage format.
+        #
+        # @return [Y2Storage::VolumeSpecification]
         def convert
           Y2Storage::VolumeSpecification.new({}).tap do |target|
             target.device = volume.device
@@ -58,12 +55,10 @@ module Agama
 
       private
 
-        # @see VolumeConverter#to_y2storage
+        # @return [Agama::Storage::Volume]
         attr_reader :volume
 
-        # Configures size related attributes
-        #
-        # @param spec [Y2Storage::VolumeSpecification] The spec is modified
+        # @param target [Y2Storage::VolumeSpecification]
         def sizes_conversion(target)
           auto = volume.auto_size?
 
@@ -74,6 +69,7 @@ module Agama
           target.max_size = auto ? volume.outline.base_max_size : volume.max_size
         end
 
+        # @param target [Y2Storage::VolumeSpecification]
         def btrfs_conversion(target)
           target.snapshots = volume.btrfs.snapshots?
           target.snapshots_configurable = volume.outline.snapshots_configurable?

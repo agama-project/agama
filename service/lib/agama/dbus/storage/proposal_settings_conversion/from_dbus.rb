@@ -29,21 +29,16 @@ module Agama
   module DBus
     module Storage
       module ProposalSettingsConversion
-        # Utility class offering methods to convert volumes between Agama and D-Bus formats
-        #
-        # @note In the future this class might be not needed if proposal volumes and templates are
-        #   exported as objects in D-Bus.
-        # Internal class to generate a Agama proposal settings
+        # Proposal settings conversion from D-Bus format.
         class FromDBus
-          # Constructor
-          #
           # @param dbus_settings [Hash]
+          # @param config [Agama::Config]
           def initialize(dbus_settings, config:)
             @dbus_settings = dbus_settings
             @config = config
           end
 
-          # Creates settings from D-Bus
+          # Performs the conversion from D-Bus format.
           #
           # @return [Agama::Storage::ProposalSettings]
           def convert
@@ -61,12 +56,10 @@ module Agama
           # @return [Hash]
           attr_reader :dbus_settings
 
+          # @return [Agama::Config]
           attr_reader :config
 
-          # Relationship between D-Bus settings and Agama proposal settings
-          #
-          # For each D-Bus setting there is a list with the setter to use and the conversion from a
-          # D-Bus value to the value expected by the ProposalSettings setter.
+          # D-Bus attributes and their converters.
           CONVERSIONS = {
             "BootDevice"              => :boot_device_conversion,
             "LVM"                     => :lvm_conversion,
@@ -80,22 +73,32 @@ module Agama
           }.freeze
           private_constant :CONVERSIONS
 
+          # @param target [Agama::Storage::ProposalSettings]
+          # @param value [String]
           def boot_device_conversion(target, value)
             target.boot_device = value
           end
 
+          # @param target [Agama::Storage::ProposalSettings]
+          # @param value [Boolean]
           def lvm_conversion(target, value)
             target.lvm.enabled = value
           end
 
+          # @param target [Agama::Storage::ProposalSettings]
+          # @param value [Array<String>]
           def system_vg_devices_conversion(target, value)
             target.lvm.system_vg_devices = value
           end
 
+          # @param target [Agama::Storage::ProposalSettings]
+          # @param value [String]
           def encryption_password_conversion(target, value)
             target.encryption.password = value.empty? ? nil : value
           end
 
+          # @param target [Agama::Storage::ProposalSettings]
+          # @param value [String]
           def encryption_method_conversion(target, value)
             method = Y2Storage::EncryptionMethod.find(value.to_sym)
             return unless method
@@ -103,6 +106,8 @@ module Agama
             target.encryption.method = method
           end
 
+          # @param target [Agama::Storage::ProposalSettings]
+          # @param value [String]
           def encryption_pbkd_function_conversion(target, value)
             function = Y2Storage::PbkdFunction.find(value)
             return unless function
@@ -110,14 +115,20 @@ module Agama
             target.encryption.pbkd_function = function
           end
 
+          # @param target [Agama::Storage::ProposalSettings]
+          # @param value [String]
           def space_policy_conversion(target, value)
             target.space.policy = value.to_sym unless value.empty?
           end
 
+          # @param target [Agama::Storage::ProposalSettings]
+          # @param value [Hash]
           def space_actions_conversion(target, value)
             target.space.actions = value
           end
 
+          # @param target [Agama::Storage::ProposalSettings]
+          # @param value [Array<Hash>]
           def volumes_conversion(target, value)
             # Keep default volumes if no volumes are given
             return if value.empty?
@@ -128,6 +139,12 @@ module Agama
             target.volumes = volumes + missing_volumes(required_volumes, volumes)
           end
 
+          # Missing required volumes
+          #
+          # @param required_volumes [Array<Agama::Storage::Volume>]
+          # @param volumes [Array<Agama::Storage::Volume>]
+          #
+          # @return [Array<Agama::Storage::Volume>]
           def missing_volumes(required_volumes, volumes)
             mount_paths = volumes.map(&:mount_path)
 

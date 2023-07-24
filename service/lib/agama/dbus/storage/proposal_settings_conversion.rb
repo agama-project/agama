@@ -25,19 +25,22 @@ require "agama/dbus/storage/proposal_settings_conversion/to_dbus"
 module Agama
   module DBus
     module Storage
-      # Utility class offering methods to convert volumes between Agama and D-Bus formats
-      #
-      # @note In the future this class might be not needed if proposal volumes and templates are
-      #   exported as objects in D-Bus.
+      # Conversions for the proposal settings.
       module ProposalSettingsConversion
-        # Converts the given D-Bus settings to its equivalent Agama proposal settings
+        # Performs conversion from D-Bus format.
         #
         # @param dbus_settings [Hash]
+        # @param config [Agama::Config]
+        #
         # @return [Agama::Storage::ProposalSettings]
         def self.from_dbus(dbus_settings, config:)
           FromDBus.new(dbus_settings, config: config).convert
         end
 
+        # Performs conversion to D-Bus format.
+        #
+        # @param settings [Agama::Storage::ProposalSettings]
+        # @return [Hash]
         def self.to_dbus(settings)
           ToDBus.new(settings).convert
         end

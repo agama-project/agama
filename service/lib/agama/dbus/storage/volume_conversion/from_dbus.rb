@@ -28,21 +28,18 @@ module Agama
   module DBus
     module Storage
       module VolumeConversion
-        # Utility class offering methods to convert volumes between Agama and D-Bus formats
-        #
-        # @note In the future this class might be not needed if proposal volumes and templates are
-        #   exported as objects in D-Bus.
-        # Internal class to generate a Agama volume
+        # Volume conversion from D-Bus format.
         class FromDBus
-          # Constructor
-          #
           # @param dbus_volume [Hash]
+          # @param config [Agama::Config]
           def initialize(dbus_volume, config:)
             @dbus_volume = dbus_volume
             @config = config
           end
 
-          # @return [Storage::Volume]
+          # Performs the conversion from D-Bus format.
+          #
+          # @return [Agama::Storage::Volume]
           def convert
             volume = VolumeTemplatesBuilder.new_from_config(config).for(dbus_volume["MountPath"])
 
@@ -58,12 +55,10 @@ module Agama
           # @return [Hash]
           attr_reader :dbus_volume
 
+          # @return [Agama::Config]
           attr_reader :config
 
-          # Relationship between D-Bus volumes and Volumes
-          #
-          # For each D-Bus volume setting there is a list with the setter to use and the conversion
-          # from a D-Bus value to the value expected by the Volume setter.
+          # D-Bus attributes and their converters.
           CONVERSIONS = {
             "MountPath"       => :mount_path_conversion,
             "MountOptions"    => :mount_options_conversion,
@@ -77,39 +72,57 @@ module Agama
           }.freeze
           private_constant :CONVERSIONS
 
+          # @param target [Agama::Storage::Volume]
+          # @param value [String]
           def mount_path_conversion(target, value)
             target.mount_path = value
           end
 
+          # @param target [Agama::Storage::Volume]
+          # @param value [Array<String>]
           def mount_options_conversion(target, value)
             target.mount_options = value
           end
 
+          # @param target [Agama::Storage::Volume]
+          # @param value [String]
           def target_device_conversion(target, value)
             target.device = value
           end
 
+          # @param target [Agama::Storage::Volume]
+          # @param value [String]
           def target_vg_conversion(target, value)
             target.separate_vg_name = value
           end
 
+          # @param target [Agama::Storage::Volume]
+          # @param value [String]
           def fs_type_conversion(target, value)
             fs_type = Y2Storage::Filesystems::Type.all.find { |t| t.to_human_string == value }
             target.fs_type = fs_type
           end
 
+          # @param target [Agama::Storage::Volume]
+          # @param value [Integer]
           def min_size_conversion(target, value)
             target.min_size = Y2Storage::DiskSize.new(value)
           end
 
+          # @param target [Agama::Storage::Volume]
+          # @param value [Integer]
           def max_size_conversion(target, value)
             target.max_size = Y2Storage::DiskSize.new(value)
           end
 
+          # @param target [Agama::Storage::Volume]
+          # @param value [Boolean]
           def auto_size_conversion(target, value)
             target.auto_size = value
           end
 
+          # @param target [Agama::Storage::Volume]
+          # @param value [Booelan]
           def snapshots_conversion(target, value)
             target.btrfs.snapshots = value
           end

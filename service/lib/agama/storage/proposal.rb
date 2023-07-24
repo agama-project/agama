@@ -26,61 +26,62 @@ require "agama/storage/proposal_settings_conversion"
 
 module Agama
   module Storage
-    # Backend class to calculate a storage proposal
-    #
-    # @example
-    #   proposal = Proposal.new(logger, config)
-    #   proposal.on_calculate { puts "proposal calculated" }
-    #   proposal.calculated_volumes   #=> []
-    #
-    #   settings = ProposalSettings.new
-    #
-    #   proposal.calculate(settings)  #=> true
-    #   proposal.calculated_volumes   #=> [Volume, Volume]
+    # Backend class to calculate a storage proposal.
     class Proposal
-      # Constructor
-      #
-      # @param logger [Logger]
       # @param config [Config] Agama config
+      # @param logger [Logger]
       def initialize(config, logger: nil)
         @config = config
         @logger = logger || Logger.new($stdout)
         @on_calculate_callbacks = []
       end
 
+      # Whether the proposal was successfully calculated.
+      #
+      # @note: The proposal must not be invalidated.
+      #
+      # @return [Boolean]
       def success?
         calculated? && !proposal.failed?
       end
 
+      # Whether the proposal was already calculated.
+      #
+      # @note: The proposal must not be invalidated.
+      #
+      # @return [Boolean]
       def calculated?
         !invalidated? && !proposal.nil?
       end
 
+      # Whether the proposal was invalidated.
+      #
+      # @return [Boolean]
       def invalidated?
         !!@invalidated
       end
 
-      # Resets the current proposal
+      # Invalidates the current proposal.
       def invalidate
         @invalidated = true
       end
 
-      # Stores callbacks to be call after calculating a proposal
+      # Stores callbacks to be call after calculating a proposal.
       def on_calculate(&block)
         @on_calculate_callbacks << block
       end
 
-      # Available devices for installation
+      # Available devices for installation.
       #
       # @return [Array<Y2Storage::Device>]
       def available_devices
         disk_analyzer.candidate_disks
       end
 
-      # Calculates a new proposal
+      # Calculates a new proposal.
       #
-      # @param settings [ProposalSettings] settings to calculate the proposal
-      # @return [Boolean] whether the proposal was correctly calculated
+      # @param settings [ProposalSettings] settings to calculate the proposal.
+      # @return [Boolean] whether the proposal was correctly calculated.
       def calculate(settings)
         calculate_proposal(settings)
 
@@ -90,7 +91,7 @@ module Agama
         success?
       end
 
-      # Settings used for calculating the proposal
+      # Settings used for calculating the proposal.
       #
       # @return [ProposalSettings, nil]
       def settings
@@ -99,7 +100,7 @@ module Agama
         ProposalSettingsConversion.from_y2storage(proposal.settings, config: config)
       end
 
-      # Storage actions
+      # Storage actions.
       #
       # @return [Array<Y2Storage::CompoundAction>]
       def actions
@@ -108,7 +109,7 @@ module Agama
         Actions.new(logger, proposal.devices.actiongraph).all
       end
 
-      # List of issues
+      # List of issues.
       #
       # @return [Array<Issue>]
       def issues
@@ -166,7 +167,7 @@ module Agama
         Y2Storage::StorageManager.instance
       end
 
-      # Returns an issue if there is no candidate device
+      # Returns an issue if there is no boot device.
       #
       # @return [Issue, nil]
       def boot_device_issue
@@ -177,7 +178,7 @@ module Agama
           severity: Issue::Severity::ERROR)
       end
 
-      # Returns an issue if any of the candidate devices is not found
+      # Returns an issue if any of the boot device is not found
       #
       # @return [Issue, nil]
       def missing_devices_issue
@@ -188,7 +189,7 @@ module Agama
           severity: Issue::Severity::ERROR)
       end
 
-      # Returns an issue if the proposal is not valid
+      # Returns an issue if the proposal is not valid.
       #
       # @return [Issue, nil]
       def proposal_issue

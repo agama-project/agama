@@ -25,12 +25,19 @@ require "y2storage"
 
 module Agama
   module Storage
+    # Class for creating a volume from the volume templates information provided by the config
+    # file.
     class VolumeTemplatesBuilder
+      # Creates a new instance from a config file
+      #
+      # @param config [Agama::Config]
+      # @return [VolumeTemplateBuilder]
       def self.new_from_config(config)
         volume_templates = config.data.fetch("storage", {}).fetch("volume_templates", [])
         new(volume_templates)
       end
 
+      # @param config_data [Hash] Value of volume_templates key from a config file
       def initialize(config_data)
         @data = {}
 
@@ -40,27 +47,30 @@ module Agama
         end
       end
 
+      # Generates a default volume for the given path
+      #
+      # @param path [String]
+      # @return [Agama::Storage::Volume]
       def for(path)
         data = @data[cleanpath(path)] || @data[""]
 
-        Volume.new(path).tap do |vol|
-          vol.btrfs = data[:btrfs]
-          vol.outline = data[:outline]
-          vol.filesystem = data[:filesystem]
-          # vol.mount_options = xxx
-          # vol.format_options = xxx
+        Volume.new(path).tap do |volume|
+          volume.btrfs = data[:btrfs]
+          volume.outline = data[:outline]
+          volume.filesystem = data[:filesystem]
+          volume.mount_options = data[:mount_options]
 
-          if data[:auto_size] && vol.outline.adaptative_sizes?
-            vol.auto_size = true
+          if data[:auto_size] && volume.adaptive_sizes?
+            volume.auto_size = true
           else
-            vol.auto_size = false
-            vol.min_size = data[:min_size] if data[:min_size]
-            vol.max_size = data[:max_size] if data[:max_size]
+            volume.auto_size = false
+            volume.min_size = data[:min_size] if data[:min_size]
+            volume.max_size = data[:max_size] if data[:max_size]
           end
         end
       end
 
-      private
+    private
 
       def key(data)
         path = data["mount_path"]
@@ -73,6 +83,7 @@ module Agama
         Hash.new.tap do |values|
           values[:btrfs] = btrfs(data)
           values[:outline] = outline(data)
+          values[:mount_options] = data.fetch("mount_options", [])
 
           # TODO: maybe ensure consistency of values[:filesystem] and values[:outline].filesystems ?
           fs = data["filesystem"]

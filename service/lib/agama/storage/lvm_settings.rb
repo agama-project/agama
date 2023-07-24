@@ -28,11 +28,14 @@ module Agama
       # @return [Boolean]
       attr_accessor :enabled
 
+      # Devices to use for the system LVM volume group
+      #
+      # @return [Array<String>]
       attr_accessor :system_vg_devices
 
       def initialize
         @enabled = false
-        @system_lv_devices = []
+        @system_vg_devices = []
       end
 
       # @return [Boolean]

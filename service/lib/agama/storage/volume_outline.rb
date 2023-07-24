@@ -87,26 +87,16 @@ module Agama
 
       # Related volumes that may affect the calculation of the automatic size limits
       #
-      # @note This is set by calling to {#assign_size_relevant_volumes} method.
-      #
       # @return [Array<String>]
       def size_relevant_volumes
         (max_size_fallbacks_for + min_size_fallbacks_for).sort.uniq
       end
 
-      # Whether it makes sense to have automatic size limits for the volume
-      #
-      # @return [Boolean]
-      def adaptive_sizes?
-        # FIXME: this should be a responsibility of the Proposal (since it's calculated by
-        # Proposal::DevicesPlanner)
-        snapshots_affect_sizes? || size_relevant_volumes.any?
-      end
-
       # Whether snapshots affect the automatic calculation of the size limits
       #
+      # @param snapshots [Booelan] Whether snapshots is active
       # @return [Boolean]
-      def snapshots_affect_sizes?
+      def snapshots_affect_sizes?(snapshots)
         # FIXME: this should be a responsibility of the Proposal (since it's calculated by
         # Proposal::DevicesPlanner)
         return false unless snapshots || snapshots_configurable

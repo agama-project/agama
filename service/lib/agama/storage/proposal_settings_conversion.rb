@@ -24,17 +24,21 @@ require "agama/storage/proposal_settings_conversion/to_y2storage"
 
 module Agama
   module Storage
-    # Utility class offering methods to convert between Y2Storage::ProposalSettings objects and
-    # Agama::ProposalSettings ones
+    # Conversions for the proposal settings.
     module ProposalSettingsConversion
+      # Performs conversion from Y2Storage format.
+      #
+      # @param settings [Y2Storage::ProposalSettings]
+      # @param config [Agama::Config]
+      #
+      # @return [Agama::Storage::ProposalSettings]
       def self.from_y2storage(settings, config:)
         FromY2Storage.new(settings, config: config).convert
       end
 
-      # Returns the Y2Storage::VolumeSpecification object that is equivalent to the given
-      # Agama::Volume one
+      # Performs conversion to Y2Storage format.
       #
-      # @param settings [ProposalSettings]
+      # @param settings [Agama::Storage::ProposalSettings]
       # @return [Y2Storage::ProposalSettings]
       def self.to_y2storage(settings)
         ToY2Storage.new(settings).convert

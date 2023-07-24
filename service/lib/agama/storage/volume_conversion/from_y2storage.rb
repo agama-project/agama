@@ -25,21 +25,18 @@ require "agama/storage/volume_templates_builder"
 module Agama
   module Storage
     module VolumeConversion
-      # Utility class offering methods to convert between Y2Storage::VolumeSpecification objects and
-      # Agama::Volume ones
-      # Internal class to generate a Agama volume
+      # Volume conversion from Y2Storage format.
       class FromY2Storage
-        # Constructor
-        #
-        # @param spec see {#spec}
-        # @param default_specs see #{default_specs}
-        # @param devices see {#devices}
+        # @param spec [Y2Storage::VolumeSpecification]
+        # @param config [Agama::Config]
         def initialize(spec, config:)
           @spec = spec
           @config = config
         end
 
-        # @see VolumeConverter#to_y2storage
+        # Performs the conversion from Y2Storage format.
+        #
+        # @return [Agama::Storage::Volume]
         def convert
           volume = VolumeTemplatesBuilder.new_from_config(config).for(spec.mount_point)
 
@@ -56,10 +53,13 @@ module Agama
 
       private
 
+        # @return [Y2Storage::VolumeSpecification]
         attr_reader :spec
 
+        # @return [Agama::Config]
         attr_reader :config
 
+        # @param target [Agama::Storage::Volume]
         def sizes_conversion(target)
           target.auto_size = !(spec.ignore_fallback_sizes? && spec.ignore_fallback_sizes?)
 
@@ -68,6 +68,7 @@ module Agama
           target.max_size = planned&.max || spec.max_size
         end
 
+        # @param target [Agama::Storage::Volume]
         def btrfs_conversion(target)
           target.btrfs.snapshots = spec.snapshots?
           target.btrfs.subvolumes = spec.subvolumes
@@ -75,11 +76,18 @@ module Agama
           target.btrfs.read_only = spec.btrfs_read_only
         end
 
+        # Planned device for the given mount path.
+
+        # @param mount_path [String]
+        # @return [Y2Storage::Planned::Device, nil]
         def planned_device_for(mount_path)
           planned_devices = proposal&.planned_devices || []
           planned_devices.find { |d| d.respond_to?(:mount_point) && d.mount_point == mount_path }
         end
 
+        # Current proposal.
+        #
+        # @return [Y2Storage::Proposal, nil]
         def proposal
           Y2Storage::StorageManager.instance.proposal
         end

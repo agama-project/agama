@@ -25,20 +25,18 @@ require "agama/storage/volume_outline"
 
 module Agama
   module Storage
-    # A volume is used by the Agama proposal to communicate to the D-Bus layer about the
-    # characteristics of a file-system to create in the system. A volume only provides the
-    # meaningful options from D-Bus and Agama point of views.
+    # A volume represents the characteristics of a file system to create in the system.
     #
-    # The Agama proposal calculates a storage proposal with a set of Y2Storage::VolumeSpecification
-    # created from the volumes.
+    # A volume is converted to D-Bus and to Y2Storage formats in order to provide the volume
+    # information with the expected representation, see {VolumeConversion}.
     class Volume
       # Mount path
-      #
-      # Used also to match the corresponding volume template
       #
       # @return [String]
       attr_accessor :mount_path
 
+      # Outline of the volume
+      #
       # @return [VolumeOutline]
       attr_reader :outline
 
@@ -51,7 +49,7 @@ module Agama
       #
       # Only relevant if #fs_type is Btrfs
       #
-      # @return [BtrfsSettings, nil] nil if this does not represent a Btrfs file system
+      # @return [BtrfsSettings]
       attr_accessor :btrfs
 
       # @return [Array<String>]
@@ -71,24 +69,30 @@ module Agama
       # @return [Y2Storage::DiskSize]
       attr_accessor :max_size
 
-      # Whether {#min_size} and {#max_size} should be automatically calculated by the proposal
-      # based on the attributes of the corresponding template.
+      # Whether {#min_size} and {#max_size} should be automatically calculated by the proposal.
       #
-      # If set to false, {#min_size} and {#max_size} must be handled by the proposal caller (ie. must be
-      # explicitly set).
+      # If set to false, {#min_size} and {#max_size} must be handled by the proposal caller (i.e.,
+      # must be explicitly set).
       #
-      # It can only be true for volumes with a template where VolumeTemplate#adaptative_sizes? is true.
+      # It can only be true for volumes with adaptive sizes, see {#adaptive_sizes?}.
       #
       # @return [Boolean]
       attr_accessor :auto_size
       alias_method :auto_size?, :auto_size
 
-      # Constructor
+      # @param mount_path [String]
       def initialize(mount_path)
         @mount_path = mount_path
         @mount_options = []
         @btrfs = BtrfsSettings.new
         @outline = VolumeOutline.new
+      end
+
+      # Whether it makes sense to have automatic size limits for the volume
+      #
+      # @return [Boolean]
+      def adaptive_sizes?
+        outlilne.snapshots_affect_sizes?(btrfs.snapshots?) || outline.size_relevant_volumes.any?
       end
     end
   end

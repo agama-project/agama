@@ -24,22 +24,21 @@ require "agama/storage/volume_conversion/to_y2storage"
 
 module Agama
   module Storage
+    # Conversions for a volume
     module VolumeConversion
-      # Returns the Agama::Volume object that is equivalent to the given
-      # Y2Storage::VolumeSpecification one
+      # Performs conversion from Y2Storage format.
       #
       # @param spec [Y2Storage::VolumeSpecification]
-      # @param devices [Array<Y2Storage::Planned::Device] planned devices generated during the
-      #   latest proposal attempt
-      # @return [Volume]
+      # @param config [Agama::Config]
+      #
+      # @return [Agama::Storage::Volume]
       def self.from_y2storage(spec, config:)
         FromY2Storage.new(spec, config: config).convert
       end
 
-      # Returns the Y2Storage::VolumeSpecification object that is equivalent to the given
-      # Agama::Volume one
+      # Performs conversion to Y2Storage format.
       #
-      # @param volume [Volume]
+      # @param volume [Agama::Storage::Volume]
       # @return [Y2Storage::VolumeSpecification]
       def self.to_y2storage(volume)
         ToY2Storage.new(volume).convert

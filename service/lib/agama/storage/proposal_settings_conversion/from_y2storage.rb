@@ -25,21 +25,18 @@ require "agama/storage/volume_conversion"
 module Agama
   module Storage
     module ProposalSettingsConversion
-      # Utility class offering methods to convert between Y2Storage::ProposalSettings objects and
-      # Agama::ProposalSettings ones
-      # Internal class to generate a ProposalSettings object
+      # Proposal settings conversion from Y2Storage format.
       class FromY2Storage
-        # Constructor
-        #
-        # @param y2storage_settings [Y2Storage::ProposalSettings]
-        # @param default_specs [Array<Y2Storage::VolumeSpecification>]
-        # @param devices [Array<Y2Storage::Planned::Device>]
+        # @param settings [Y2Storage::ProposalSettings]
+        # @param config [Agama::Config]
         def initialize(settings, config:)
           @settings = settings
           @config = config
         end
 
-        # @return [ProposalSettings]
+        # Performs the conversion from Y2Storage format.
+        #
+        # @return [Agama::Storage::ProposalSettings]
         def convert
           ProposalSettings.new.tap do |target|
             boot_devices_conversion(target)
@@ -52,25 +49,31 @@ module Agama
 
       private
 
+        # @return [Y2Storage::ProposalSettings]
         attr_reader :settings
 
+        # @return [Agama::Config]
         attr_reader :config
 
+        # @param target [Agama::Storage::ProposalSettings]
         def boot_device_conversion(target)
           target.boot_device = settings.root_device
         end
 
+        # @param target [Agama::Storage::ProposalSettings]
         def lvm_conversion(target)
           target.lvm.enabled = settings.lvm
           target.lvm.system_vg_devices = settings.candidate_devices if settings.lvm
         end
 
+        # @param target [Agama::Storage::ProposalSettings]
         def encryption_conversion(target)
           target.encryption.password = settings.encryption_password
           target.encryption.method = settings.encryption_method
           target.encryption.pbkd_function = settings.encryption_pbkdf
         end
 
+        # @param target [Agama::Storage::ProposalSettings]
         def space_policy_conversion(target)
           policy = settings.space_settings.strategy
 
@@ -78,6 +81,7 @@ module Agama
           target.space.actions = settings.space_settings.actions if policy == :bigger_resize
         end
 
+        # @param target [Agama::Storage::ProposalSettings]
         def volumes_conversion(target)
           target.volumes = settings.volumes.map do |spec|
             VolumeConversion.from_y2storage(spec, config: config)
@@ -86,6 +90,7 @@ module Agama
           fallbacks_conversion(target)
         end
 
+        # @param target [Agama::Storage::ProposalSettings]
         def fallbacks_conversion(target)
           target.volumes.each do |volume|
             volume.min_size_fallback_for = volumes_with_min_size_fallback(volume.mount_path)
@@ -93,11 +98,15 @@ module Agama
           end
         end
 
+        # @param mount_path [String]
+        # @return [Array<String>]
         def volumes_with_min_size_fallback(mount_path)
           specs = settings.volumes.select { |s| s.min_size_fallback == mount_path }
           specs.map(&:mount_point)
         end
 
+        # @param mount_path [String]
+        # @return [Array<String>]
         def volumes_with_max_size_fallback(mount_path)
           specs = settings.volumes.select { |s| s.max_size_fallback == mount_path }
           specs.map(&:mount_point)

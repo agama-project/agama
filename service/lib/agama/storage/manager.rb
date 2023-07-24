@@ -44,7 +44,7 @@ module Agama
       include WithIssues
       include WithProgress
 
-      # @return [Config]l
+      # @return [Config]
       attr_reader :config
 
       # Constructor
@@ -195,6 +195,11 @@ module Agama
         proposal.calculate(settings)
       end
 
+      # Default proposal settings from the config file.
+      #
+      # The first device is selected as boot device.
+      #
+      # @return [ProposalSettings]
       def default_proposal_settings
         settings = read_proposal_settings
         device = proposal.available_devices.first&.name
@@ -203,6 +208,9 @@ module Agama
         settings
       end
 
+      # Reads the default proposal settings from the config file.
+      #
+      # @return [ProposalSettings]
       def read_proposal_settings
         ProposalSettingsReader.new(config).read
       end

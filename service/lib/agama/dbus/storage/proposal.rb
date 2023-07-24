@@ -88,14 +88,23 @@ module Agama
           dbus_settings.fetch("EncryptionPassword", "")
         end
 
+        # Encryption method
+        #
+        # @return [String] For the possible values, check Y2Storage::EncryptionMethod.all
         def encryption_method
           dbus_settings.fetch("EncryptionMethod", "")
         end
 
+        # PBKD function
+        #
+        # @return [String] For the possible values, check Y2Storage::PbkdFunction.all
         def encryption_pbkd_function
           dbus_settings.fetch("EncryptionPBKDFunction", "")
         end
 
+        # Space policy strategy
+        #
+        # @return [String] For the possible values, check Y2Storage::ProposalSpaceSettings
         def space_policy
           dbus_settings.fetch("SpacePolicy", "")
         end
@@ -124,6 +133,7 @@ module Agama
         # @return [Logger]
         attr_reader :logger
 
+        # @return [Hash]
         def dbus_settings
           return {} unless backend.settings
 

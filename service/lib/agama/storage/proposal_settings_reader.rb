@@ -33,7 +33,7 @@ module Agama
       def read
         settings = ProposalSettings.new
         config.fetch("storage", {}).each do |key, value|
-          send(CONFIG_READERS[key], settings, value)
+          send(READERS[key], settings, value)
         end
       end
 
@@ -41,20 +41,20 @@ module Agama
 
       attr_reader :config
 
-      CONFIG_READERS = {
-        "lvm"          => :read_lvm,
-        "encrypttion"  => :read_encryption,
-        "space_policy" => :read_space_policy,
-        "volumes"      => :read_volumes
+      READERS = {
+        "lvm"          => :lvm_reader,
+        "encrypttion"  => :encryption_reader,
+        "space_policy" => :space_policy_reader,
+        "volumes"      => :volumes_reader
       }.freeze
 
       private_constant :CONFIG_READERS
 
-      def read_lvm(settings, value)
+      def lvm_reader(settings, value)
         settings.lvm.enabled = value
       end
 
-      def read_encryption(settings, encryption)
+      def encryption_reader(settings, encryption)
         method = Y2Storage::EncryptionMethod.find(encryption.fetch("method", ""))
         pbkd_function = Y2Storage::PbkdFunction.find(encryption.fetch("pbkd_function", ""))
 
@@ -62,11 +62,11 @@ module Agama
         settings.encryption.pbkd_function = pbkd_function if pbkd_function
       end
 
-      def read_space_policy(settings, value)
+      def space_policy_reader(settings, value)
         settings.space.policy = value.to_sym
       end
 
-      def read_volumes(settings, volumes)
+      def volumes_reader(settings, volumes)
         builder = VolumeTemplatesBuilder.new_from_config(config)
         mount_paths = volumes.map { |v| v["mount_path"] }.compact
 

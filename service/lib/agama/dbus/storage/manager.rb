@@ -125,7 +125,7 @@ module Agama
           dbus_proposal&.path || ::DBus::ObjectPath.new("/")
         end
 
-        # Default volume uses as template
+        # Default volume used as template
         #
         # @return [Hash]
         def default_volume(mount_path)
@@ -336,10 +336,12 @@ module Agama
           File.join(PATH, tree_root)
         end
 
+        # @return [Agama::Config]
         def config
           backend.config
         end
 
+        # @return [Agama::VolumeTemplatesBuilder]
         def volume_templates_builder
           @volume_templates_builder ||= VolumeTemplatesBuilder.new_from_config(config)
         end
