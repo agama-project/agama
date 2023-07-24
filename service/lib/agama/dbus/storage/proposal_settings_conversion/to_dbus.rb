@@ -35,15 +35,15 @@ module Agama
           # @return [Hash]
           def convert
             {
-              "BootDevice"              => settings.boot_device.to_s,
-              "LVM"                     => settings.lvm,
-              "SystemVGDevices"         => settings.lvm.system_vg_devices,
-              "EncryptionPassword"      => settings.encryption.password,
-              "EncryptionMethod"        => settings.encryption.method.id.to_s,
-              "EncryptionPBKDFunction"  => settings.encryption.pbkd_function&.value || "",
-              "SpacePolicy"             => settings.space.policy.to_s,
-              "SpaceActions"            => settings.space.actions,
-              "Volumes"                 => settings.volumes.map { |v| VolumeConversion.to_dbus(v) }
+              "BootDevice"             => settings.boot_device.to_s,
+              "LVM"                    => settings.lvm,
+              "SystemVGDevices"        => settings.lvm.system_vg_devices,
+              "EncryptionPassword"     => settings.encryption.password,
+              "EncryptionMethod"       => settings.encryption.method.id.to_s,
+              "EncryptionPBKDFunction" => settings.encryption.pbkd_function&.value || "",
+              "SpacePolicy"            => settings.space.policy.to_s,
+              "SpaceActions"           => settings.space.actions,
+              "Volumes"                => settings.volumes.map { |v| VolumeConversion.to_dbus(v) }
             }
           end
 

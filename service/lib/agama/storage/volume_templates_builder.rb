@@ -80,7 +80,7 @@ module Agama
       end
 
       def values(data)
-        Hash.new.tap do |values|
+        {}.tap do |values|
           values[:btrfs] = btrfs(data)
           values[:outline] = outline(data)
           values[:mount_options] = data.fetch("mount_options", [])
@@ -105,14 +105,12 @@ module Agama
           btrfs.read_only = btrfs_data.fetch("read_only", false)
           btrfs.default_subvolume = btrfs_data.fetch("default_subvolume", "")
           btrfs.subvolumes = btrfs_data["subvolumes"]
-          if btrfs.subvolumes
-            btrfs.subvolumes.map! { |subvol_data| subvolume(subvol_data) }
-          end
+          btrfs.subvolumes.map! { |subvol_data| subvolume(subvol_data) } if btrfs.subvolumes
         end
       end
 
       def subvolume(data)
-        return Y2Storage::SubvolSpecification.new(data) if data.kind_of?(String)
+        return Y2Storage::SubvolSpecification.new(data) if data.is_a?(String)
 
         Y2Storage::SubvolSpecification.new(
           data["path"], copy_on_write: data["copy_on_write"], archs: data["archs"]
@@ -138,7 +136,6 @@ module Agama
           outline.max_size_fallback_for = Array(size["max_fallback_for"])
           outline.max_size_fallback_for.map! { |p| cleanpath(p) }
 
-
           assign_snapshots_increment(outline, size["snapshots_increment"])
         end
       end
@@ -147,7 +144,7 @@ module Agama
         return if increment.nil
 
         if increment =~ /(\d+)\s*%/
-          outline.snapshots_percentage = $1.to_i
+          outline.snapshots_percentage = Regexp.last_match(1).to_i
         else
           outline.snapshots_size = Y2Storage::DiskSize.parse(increment, legacy_units: true)
         end

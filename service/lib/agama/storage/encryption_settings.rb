@@ -52,4 +52,3 @@ module Agama
     end
   end
 end
-

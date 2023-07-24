@@ -33,18 +33,18 @@ module Agama
           # Performs the conversion to D-Bus format.
           #
           # @return [Hash]
-          def convert # rubocop:disable Metrics/AbcSize
+          def convert
             {
-              "MountPath"             => volume.mount_path.to_s,
-              "MountOptions"          => volume.mount_options,
-              "TargetDevice"          => volume.target_device.to_s,
-              "TargetVG"              => volume.target_vg.to_s,
-              "FsType"                => volume.fs_type&.to_human_string,
-              "MinSize"               => volume.min_size&.to_i,
-              "MaxSize"               => volume.max_size&.to_i,
-              "AutoSize"              => volume.auto_size?,
-              "Snapshots"             => volume.btrfs.snapshots?,
-              "Outline"               => outline_conversion
+              "MountPath"    => volume.mount_path.to_s,
+              "MountOptions" => volume.mount_options,
+              "TargetDevice" => volume.target_device.to_s,
+              "TargetVG"     => volume.target_vg.to_s,
+              "FsType"       => volume.fs_type&.to_human_string,
+              "MinSize"      => volume.min_size&.to_i,
+              "MaxSize"      => volume.max_size&.to_i,
+              "AutoSize"     => volume.auto_size?,
+              "Snapshots"    => volume.btrfs.snapshots?,
+              "Outline"      => outline_conversion
             }
           end
 

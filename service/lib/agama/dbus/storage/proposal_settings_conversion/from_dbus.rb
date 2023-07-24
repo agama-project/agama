@@ -61,15 +61,15 @@ module Agama
 
           # D-Bus attributes and their converters.
           CONVERSIONS = {
-            "BootDevice"              => :boot_device_conversion,
-            "LVM"                     => :lvm_conversion,
-            "SystemVGDevices"         => :system_vg_devices_conversion,
-            "EncryptionPassword"      => :encryption_password_conversion,
-            "EncryptionMethod"        => :encryption_method_conversion,
-            "EncryptionPBKDFunction"  => :encryption_pbkd_function_conversion,
-            "SpacePolicy"             => :space_policy_conversion,
-            "SpaceActions"            => :space_actions_conversion,
-            "Volumes"                 => :volumes_conversion
+            "BootDevice"             => :boot_device_conversion,
+            "LVM"                    => :lvm_conversion,
+            "SystemVGDevices"        => :system_vg_devices_conversion,
+            "EncryptionPassword"     => :encryption_password_conversion,
+            "EncryptionMethod"       => :encryption_method_conversion,
+            "EncryptionPBKDFunction" => :encryption_pbkd_function_conversion,
+            "SpacePolicy"            => :space_policy_conversion,
+            "SpaceActions"           => :space_actions_conversion,
+            "Volumes"                => :volumes_conversion
           }.freeze
           private_constant :CONVERSIONS
 

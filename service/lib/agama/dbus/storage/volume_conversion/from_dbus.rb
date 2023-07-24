@@ -60,15 +60,15 @@ module Agama
 
           # D-Bus attributes and their converters.
           CONVERSIONS = {
-            "MountPath"       => :mount_path_conversion,
-            "MountOptions"    => :mount_options_conversion,
-            "TargetDevice"    => :target_device_conversion,
-            "TargetVG"        => :target_vg_conversion,
-            "FsType"          => :fs_type_conversion,
-            "MinSize"         => :min_size_conversion,
-            "MaxSize"         => :max_size_conversion,
-            "AutoSize"        => :auto_size_conversion,
-            "Snapshots"       => :snapshots_conversion
+            "MountPath"    => :mount_path_conversion,
+            "MountOptions" => :mount_options_conversion,
+            "TargetDevice" => :target_device_conversion,
+            "TargetVG"     => :target_vg_conversion,
+            "FsType"       => :fs_type_conversion,
+            "MinSize"      => :min_size_conversion,
+            "MaxSize"      => :max_size_conversion,
+            "AutoSize"     => :auto_size_conversion,
+            "Snapshots"    => :snapshots_conversion
           }.freeze
           private_constant :CONVERSIONS
 

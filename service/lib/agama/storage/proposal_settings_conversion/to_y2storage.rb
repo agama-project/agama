@@ -80,14 +80,14 @@ module Agama
           target.space_settings.strategy = :bigger_resize
 
           actions = case settings.space.policy
-            when :delete
-              all_devices.each_with_object({}) { |d, a| a[d] = :force_delete }
-            when :resize
-              all_devices.each_with_object({}) { |d, a| a[d] = :resize }
-            when :keep
-              {}
-            when :custom
-              settings.space.actions
+          when :delete
+            all_devices.each_with_object({}) { |d, a| a[d] = :force_delete }
+          when :resize
+            all_devices.each_with_object({}) { |d, a| a[d] = :resize }
+          when :keep
+            {}
+          when :custom
+            settings.space.actions
           end
 
           target.space_settings.actions = actions
