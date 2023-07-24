@@ -25,11 +25,16 @@ require "agama/storage/volume_templates_builder"
 
 module Agama
   module Storage
+    # Proposal settings reader.
     class ProposalSettingsReader
+      # @param config [Agama::Config]
       def initialize(config)
         @config = config
       end
 
+      # Reads the proposal settings from the control file.
+      #
+      # @return [ProposalSettings]
       def read
         settings = ProposalSettings.new
         config.fetch("storage", {}).each do |key, value|
@@ -39,8 +44,10 @@ module Agama
 
     private
 
+      # @return [Agama::Config]
       attr_reader :config
 
+      # Settings from control file and their readers.
       READERS = {
         "lvm"          => :lvm_reader,
         "encrypttion"  => :encryption_reader,
@@ -50,10 +57,14 @@ module Agama
 
       private_constant :CONFIG_READERS
 
+      # @param settings [Agama::Storage::ProposalSettings]
+      # @param value [Boolean]
       def lvm_reader(settings, value)
         settings.lvm.enabled = value
       end
 
+      # @param settings [Agama::Storage::ProposalSettings]
+      # @param encryption [Hash]
       def encryption_reader(settings, encryption)
         method = Y2Storage::EncryptionMethod.find(encryption.fetch("method", ""))
         pbkd_function = Y2Storage::PbkdFunction.find(encryption.fetch("pbkd_function", ""))
@@ -62,10 +73,14 @@ module Agama
         settings.encryption.pbkd_function = pbkd_function if pbkd_function
       end
 
+      # @param settings [Agama::Storage::ProposalSettings]
+      # @param value [String]
       def space_policy_reader(settings, value)
         settings.space.policy = value.to_sym
       end
 
+      # @param settings [Agama::Storage::ProposalSettings]
+      # @param volumes [Array<Hash>]
       def volumes_reader(settings, volumes)
         builder = VolumeTemplatesBuilder.new_from_config(config)
         mount_paths = volumes.map { |v| v["mount_path"] }.compact

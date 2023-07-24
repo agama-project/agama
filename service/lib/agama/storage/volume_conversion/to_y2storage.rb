@@ -35,7 +35,7 @@ module Agama
         # Performs the conversion to Y2Storage format.
         #
         # @return [Y2Storage::VolumeSpecification]
-        def convert
+        def convert # rubocop:disable Metrics/AbcSize
           Y2Storage::VolumeSpecification.new({}).tap do |target|
             target.device = volume.device
             target.separate_vg_name = volume.separate_vg_name

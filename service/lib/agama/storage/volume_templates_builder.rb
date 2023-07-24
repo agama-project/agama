@@ -79,7 +79,7 @@ module Agama
         cleanpath(path)
       end
 
-      def values(data)
+      def values(data) # rubocop:disable Metrics/AbcSize
         {}.tap do |values|
           values[:btrfs] = btrfs(data)
           values[:outline] = outline(data)
@@ -105,7 +105,7 @@ module Agama
           btrfs.read_only = btrfs_data.fetch("read_only", false)
           btrfs.default_subvolume = btrfs_data.fetch("default_subvolume", "")
           btrfs.subvolumes = btrfs_data["subvolumes"]
-          btrfs.subvolumes.map! { |subvol_data| subvolume(subvol_data) } if btrfs.subvolumes
+          btrfs.subvolumes&.map! { |subvol_data| subvolume(subvol_data) }
         end
       end
 
@@ -117,7 +117,7 @@ module Agama
         )
       end
 
-      def outline(data)
+      def outline(data) # rubocop:disable Metrics/AbcSize
         outline_data = data.fetch("outline", {})
         VolumeOutline.new.tap do |outline|
           outline.required = outline_data.fetch("required", false)

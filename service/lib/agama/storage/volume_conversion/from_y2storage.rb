@@ -61,7 +61,7 @@ module Agama
 
         # @param target [Agama::Storage::Volume]
         def sizes_conversion(target)
-          target.auto_size = !(spec.ignore_fallback_sizes? && spec.ignore_fallback_sizes?)
+          target.auto_size = !(spec.ignore_fallback_sizes? && spec.ignore_snapshots_sizes?)
 
           planned = planned_device_for(spec.mount_point)
           target.min_size = planned&.min || spec.min_size

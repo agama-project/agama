@@ -136,7 +136,7 @@ module Agama
         # @return [Array<String>]
         def all_devices
           devices = candidate_devices
-          devices += settings.volumes.map { |v| v.device }
+          devices += settings.volumes.map(&:device)
 
           devices.uniq.map { |d| device_or_partitions(d) }.flatten
         end

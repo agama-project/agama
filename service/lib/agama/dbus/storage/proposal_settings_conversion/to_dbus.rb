@@ -33,7 +33,7 @@ module Agama
           # Performs the conversion to D-Bus format.
           #
           # @return [Hash]
-          def convert
+          def convert # rubocop:disable Metrics/AbcSize
             {
               "BootDevice"             => settings.boot_device.to_s,
               "LVM"                    => settings.lvm,
