@@ -74,11 +74,13 @@ impl GenericQuestion {
 /// mixins arise to convert it to Question Struct that have optional mixins
 /// inside like
 ///
+/// ```no_compile
 /// struct Question {
 ///   base: GenericQuestion,
 ///   with_password: Option<WithPassword>,
 ///   another_mixin: Option<AnotherMixin>
 /// }
+/// ```
 ///
 /// This way all handling code can check if given mixin is used and
 /// act appropriate.

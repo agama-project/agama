@@ -3,7 +3,7 @@ use agama_lib::network::types::DeviceType;
 
 /// Networking actions, like adding, updating or removing connections.
 ///
-/// These actions are meant to be processed by [crate::system::NetworkSystem], updating the model
+/// These actions are meant to be processed by [crate::network::system::NetworkSystem], updating the model
 /// and the D-Bus tree as needed.
 #[derive(Debug)]
 pub enum Action {
