@@ -79,7 +79,7 @@ module Agama
       def initialize
         @filesystems = []
         @base_min_size = Y2Storage::DiskSize.zero
-        @base_max_size = Y2Storage::DiskSize.Unlimited
+        @base_max_size = Y2Storage::DiskSize.unlimited
         @size_relevant_volumes = []
         @max_size_fallback_for = []
         @min_size_fallback_for = []
@@ -89,21 +89,23 @@ module Agama
       #
       # @return [Array<String>]
       def size_relevant_volumes
-        (max_size_fallbacks_for + min_size_fallbacks_for).sort.uniq
+        (max_size_fallback_for + min_size_fallback_for).sort.uniq
       end
 
       # Whether snapshots affect the automatic calculation of the size limits
       #
-      # @param snapshots [Booelan] Whether snapshots is active
       # @return [Boolean]
-      def snapshots_affect_sizes?(snapshots)
-        # FIXME: this should be a responsibility of the Proposal (since it's calculated by
-        # Proposal::DevicesPlanner)
-        return false unless snapshots || snapshots_configurable
-
+      def snapshots_affect_sizes?
         return true if snapshots_size && !snapshots_size.zero?
 
         snapshots_percentage && !snapshots_percentage.zero?
+      end
+
+      # Whether it makes sense to have automatic size limits for the volume
+      #
+      # @return [Boolean]
+      def adaptive_sizes?
+        size_relevant_volumes.any? || adjust_by_ram? || snapshots_affect_sizes?
       end
     end
   end

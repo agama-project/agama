@@ -91,8 +91,12 @@ module Agama
       # Whether it makes sense to have automatic size limits for the volume
       #
       # @return [Boolean]
-      def adaptive_sizes?
-        outlilne.snapshots_affect_sizes?(btrfs.snapshots?) || outline.size_relevant_volumes.any?
+      def auto_size_supported?
+        # At some point, this method contained logic for ignoring outline.snapshots_affect_sizes?
+        # when both btrfs.snapshots and outline.snapshots_configurable? were false. But we don't
+        # need to have such a senseless scenario into account (a product that contains size rules
+        # for the snapshots but does not allow to enable them).
+        outline.adaptive_sizes?
       end
     end
   end

@@ -60,7 +60,7 @@ module Agama
           volume.filesystem = data[:filesystem]
           volume.mount_options = data[:mount_options]
 
-          if data[:auto_size] && volume.adaptive_sizes?
+          if data[:auto_size] && volume.auto_size_supported?
             volume.auto_size = true
           else
             volume.auto_size = false

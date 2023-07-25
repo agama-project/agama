@@ -55,7 +55,7 @@ module Agama
         "volumes"      => :volumes_reader
       }.freeze
 
-      private_constant :CONFIG_READERS
+      private_constant :READERS
 
       # @param settings [Agama::Storage::ProposalSettings]
       # @param value [Boolean]

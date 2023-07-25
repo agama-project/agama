@@ -32,28 +32,27 @@ describe Agama::DBus::Storage::Proposal do
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:backend) do
-    instance_double(Agama::Storage::Proposal, calculated_settings: settings)
+    instance_double(Agama::Storage::Proposal, settings: settings)
   end
 
   let(:settings) { nil }
 
-  describe "#candidate_devices" do
+  describe "#boot_device" do
     context "if a proposal has not been calculated yet" do
       let(:settings) { nil }
 
-      it "returns an empty list" do
-        expect(subject.candidate_devices).to eq([])
+      it "returns an empty string" do
+        expect(subject.boot_device).to eq ""
       end
     end
 
     context "if a proposal has been calculated" do
       let(:settings) do
-        instance_double(Agama::Storage::ProposalSettings,
-          candidate_devices: ["/dev/vda", "/dev/vdb"])
+        Agama::Storage::ProposalSettings.new.tap { |s| s.boot_device = "/dev/vda" }
       end
 
       it "returns the candidate devices used by the proposal" do
-        expect(subject.candidate_devices).to contain_exactly("/dev/vda", "/dev/vdb")
+        expect(subject.boot_device).to eq "/dev/vda"
       end
     end
   end
@@ -69,7 +68,7 @@ describe Agama::DBus::Storage::Proposal do
 
     context "if a proposal has been calculated" do
       let(:settings) do
-        instance_double(Agama::Storage::ProposalSettings, lvm: true)
+        Agama::Storage::ProposalSettings.new.tap { |s| s.lvm.enabled = true }
       end
 
       it "return whether LVM was used" do
@@ -89,7 +88,7 @@ describe Agama::DBus::Storage::Proposal do
 
     context "if a proposal has been calculated" do
       let(:settings) do
-        instance_double(Agama::Storage::ProposalSettings, encryption_password: "n0ts3cr3t")
+        Agama::Storage::ProposalSettings.new.tap { |s| s.encryption.password = "n0ts3cr3t" }
       end
 
       it "return the encryption password used by the proposal" do
@@ -113,18 +112,8 @@ describe Agama::DBus::Storage::Proposal do
 
     context "if the calculated settings has volumes" do
       let(:calculated_volumes) { [calculated_volume1, calculated_volume2] }
-
-      let(:calculated_volume1) do
-        Agama::Storage::Volume.new.tap do |volume|
-          volume.mount_point = "/test1"
-        end
-      end
-
-      let(:calculated_volume2) do
-        Agama::Storage::Volume.new.tap do |volume|
-          volume.mount_point = "/test2"
-        end
-      end
+      let(:calculated_volume1) { Agama::Storage::Volume.new("/test1") }
+      let(:calculated_volume2) { Agama::Storage::Volume.new("/test2") }
 
       it "returns a list with a hash for each volume" do
         expect(subject.volumes.size).to eq(2)
@@ -132,8 +121,8 @@ describe Agama::DBus::Storage::Proposal do
 
         volume1, volume2 = subject.volumes
 
-        expect(volume1).to include("MountPoint" => "/test1")
-        expect(volume2).to include("MountPoint" => "/test2")
+        expect(volume1).to include("MountPath" => "/test1")
+        expect(volume2).to include("MountPath" => "/test2")
       end
     end
   end

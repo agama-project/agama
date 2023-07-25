@@ -27,7 +27,7 @@ module Agama
       #
       # @return [Boolean]
       attr_accessor :snapshots
-      alias_method :snapshtos?, :snapshots
+      alias_method :snapshots?, :snapshots
 
       # @return [Boolean]
       attr_accessor :read_only

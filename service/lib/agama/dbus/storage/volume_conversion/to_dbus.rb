@@ -37,8 +37,8 @@ module Agama
             {
               "MountPath"    => volume.mount_path.to_s,
               "MountOptions" => volume.mount_options,
-              "TargetDevice" => volume.target_device.to_s,
-              "TargetVG"     => volume.target_vg.to_s,
+              "TargetDevice" => volume.device.to_s,
+              "TargetVG"     => volume.separate_vg_name.to_s,
               "FsType"       => volume.fs_type&.to_human_string,
               "MinSize"      => volume.min_size&.to_i,
               "MaxSize"      => volume.max_size&.to_i,
@@ -58,8 +58,8 @@ module Agama
             outline = volume.outline
             {
               "Required"              => outline.required?,
-              "FsTypes"               => outline.fs_types.map(&:to_human_string),
-              "SupportAutoSize"       => outline.support_auto_size?,
+              "FsTypes"               => outline.filesystems.map(&:to_human_string),
+              "SupportAutoSize"       => outline.adaptive_sizes?,
               "SnapshotsConfigurable" => outline.snapshots_configurable?,
               "SnapshotsAffectSizes"  => outline.snapshots_affect_sizes?,
               "SizeRelevantVolumes"   => outline.size_relevant_volumes
