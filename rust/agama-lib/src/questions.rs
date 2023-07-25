@@ -1,11 +1,11 @@
-use std::collections::HashMap;
+//! Data model for Agama questions
 
-/// module holdings data model for agama questions
+use std::collections::HashMap;
 
 /// Basic generic question that fits question without special needs
 #[derive(Clone, Debug)]
 pub struct GenericQuestion {
-    /// numeric id used to indetify question on dbus
+    /// numeric id used to identify question on D-Bus
     pub id: u32,
     /// class of questions. Similar kinds of questions share same class.
     /// It is dot separated list of elements. Examples are

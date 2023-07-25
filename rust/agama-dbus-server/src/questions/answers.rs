@@ -4,17 +4,24 @@ use anyhow::Context;
 use serde::{Deserialize, Serialize};
 
 /// Data structure for single yaml answer. For variables specification see
-/// corresponding GenericQuestion fields.
+/// corresponding [agama_lib::questions::GenericQuestion] fields.
+/// The *matcher* part is: `class`, `text`, `data`.
+/// The *answer* part is: `answer`, `password`.
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 struct Answer {
     pub class: Option<String>,
     pub text: Option<String>,
+    /// A matching GenericQuestion can have other data fields too
     pub data: Option<HashMap<String, String>>,
-    pub answer: String,           // answer text is only mandatory part of answer
-    pub password: Option<String>, // all possible mixins have to be here, so can be specified in answer
+    /// The answer text is the only mandatory part of an Answer
+    pub answer: String,
+    /// All possible mixins have to be here, so they can be specified in an Answer
+    pub password: Option<String>,
 }
 
 /// Data structure holding list of Answer.
+/// The first matching Answer is used, even if there is
+/// a better (more specific) match later in the list.
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct Answers {
     answers: Vec<Answer>,
@@ -183,6 +190,8 @@ mod tests {
         assert_eq!(expected, answers.answer_with_password(&with_password));
     }
 
+    /// An Answer matches on *data* if all its keys and values are in the GenericQuestion *data*.
+    /// The GenericQuestion can have other *data* keys.
     #[test]
     fn test_partial_data_match() {
         let answers = get_answers();
