@@ -22,7 +22,7 @@
 import React from "react";
 
 import { screen, waitFor, within } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { mockGettext, plainRender } from "~/test-utils";
 import { FileViewer } from "~/components/core";
 import cockpit from "../../lib/cockpit";
 
@@ -43,6 +43,8 @@ cockpit.file.mockImplementation(fileFn);
 const file_name = "/testfile";
 const content = "Read file content";
 const title = "YaST Logs";
+
+mockGettext();
 
 describe("FileViewer", () => {
   beforeEach(() => {

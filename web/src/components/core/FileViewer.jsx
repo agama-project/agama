@@ -26,6 +26,9 @@ import { Loading } from "~/components/layout";
 
 import cockpit from "../../lib/cockpit";
 
+// FIXME: replace by a wrapper, this is just for testing
+const _ = cockpit.gettext;
+
 export default function FileViewer({ file, title, onCloseCallback }) {
   // the popup is visible
   const [isOpen, setIsOpen] = useState(true);
@@ -61,13 +64,13 @@ export default function FileViewer({ file, title, onCloseCallback }) {
       title={title || file}
       className="large"
     >
-      {state === "loading" && <Loading text="Reading file..." />}
+      {state === "loading" && <Loading text={_("Reading file...")} />}
       {(content === null || error) &&
         <Alert
           isInline
           isPlain
           variant="warning"
-          title="Cannot read the file"
+          title={_("Cannot read the file")}
         >
           {error}
         </Alert>}
@@ -76,7 +79,7 @@ export default function FileViewer({ file, title, onCloseCallback }) {
       </div>
 
       <Popup.Actions>
-        <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
+        <Popup.Confirm onClick={close} autoFocus>{_("Close")}</Popup.Confirm>
       </Popup.Actions>
     </Popup>
   );
