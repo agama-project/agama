@@ -110,14 +110,14 @@ mod tests {
         Answers {
             answers: vec![
                 Answer {
-                    class: Some("test".to_string()),
+                    class: Some("without_data".to_string()),
                     data: None,
                     text: None,
                     answer: "Ok".to_string(),
                     password: Some("testing pwd".to_string()), // ignored for generic question
                 },
                 Answer {
-                    class: Some("test2".to_string()),
+                    class: Some("with_data".to_string()),
                     data: Some(HashMap::from([
                         ("data1".to_string(), "value1".to_string()),
                         ("data2".to_string(), "value2".to_string()),
@@ -127,7 +127,7 @@ mod tests {
                     password: None,
                 },
                 Answer {
-                    class: Some("test2".to_string()),
+                    class: Some("with_data".to_string()),
                     data: Some(HashMap::from([(
                         "data1".to_string(),
                         "another_value1".to_string(),
@@ -145,7 +145,7 @@ mod tests {
         let answers = get_answers();
         let question = GenericQuestion {
             id: 1,
-            class: "test".to_string(),
+            class: "without_data".to_string(),
             text: "JFYI we will kill all bugs during installation.".to_string(),
             options: vec!["Ok".to_string(), "Cancel".to_string()],
             default_option: "Cancel".to_string(),
@@ -175,7 +175,7 @@ mod tests {
         let answers = get_answers();
         let question = GenericQuestion {
             id: 1,
-            class: "test".to_string(),
+            class: "without_data".to_string(),
             text: "Please provide password for dooms day.".to_string(),
             options: vec!["Ok".to_string(), "Cancel".to_string()],
             default_option: "Cancel".to_string(),
@@ -197,7 +197,7 @@ mod tests {
         let answers = get_answers();
         let question = GenericQuestion {
             id: 1,
-            class: "test2".to_string(),
+            class: "with_data".to_string(),
             text: "Hard question?".to_string(),
             options: vec!["Ok2".to_string(), "Maybe".to_string(), "Cancel".to_string()],
             default_option: "Cancel".to_string(),
@@ -216,7 +216,7 @@ mod tests {
         let answers = get_answers();
         let question = GenericQuestion {
             id: 1,
-            class: "test2".to_string(),
+            class: "with_data".to_string(),
             text: "Hard question?".to_string(),
             options: vec!["Ok2".to_string(), "Maybe".to_string(), "Cancel".to_string()],
             default_option: "Cancel".to_string(),
@@ -235,7 +235,7 @@ mod tests {
         let answers = get_answers();
         let question = GenericQuestion {
             id: 1,
-            class: "test2".to_string(),
+            class: "with_data".to_string(),
             text: "Hard question?".to_string(),
             options: vec!["Ok2".to_string(), "Maybe".to_string(), "Cancel".to_string()],
             default_option: "Cancel".to_string(),
@@ -249,13 +249,37 @@ mod tests {
         assert_eq!(None, answers.answer(&question));
     }
 
+    // A "universal answer" with unspecified class+text+data is possible
+    #[test]
+    fn test_universal_match() {
+        let answers = Answers {
+            answers: vec![Answer {
+                class: None,
+                text: None,
+                data: None,
+                answer: "Yes".into(),
+                password: None,
+            }],
+        };
+        let question = GenericQuestion {
+            id: 1,
+            class: "without_data".to_string(),
+            text: "JFYI we will kill all bugs during installation.".to_string(),
+            options: vec!["Ok".to_string(), "Cancel".to_string()],
+            default_option: "Cancel".to_string(),
+            data: HashMap::new(),
+            answer: "".to_string(),
+        };
+        assert_eq!(Some("Yes".to_string()), answers.answer(&question));
+    }
+
     #[test]
     fn test_loading_yaml() {
         let file = r#"
             answers:
-              - class: "test"
+              - class: "without_data"
                 answer: "OK"
-              - class: "test2"
+              - class: "with_data"
                 data:
                   testk: testv
                   testk2: testv2
