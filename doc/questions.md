@@ -53,3 +53,14 @@ Sensitive answers or params will be replaced, so the user has to explicitly spec
    default answer instead of asking user.
 4. I have my own vendor iso and want to pre-configure installer using CLI before showing web UI. And some actions can/will
    questions that I want to answer before user sees UI -> Use answers.yml file
+
+### Question Types
+
+| class  | description  | possible answers  | available data  | notes  |
+|---     |---           |---                |---              |---     |
+| software.medium\_error | When there is issue with access to medium  | `Retry` `Skip`  | `url` with url where failed access happen  |   |
+| software.unsigned\_file  | When file from repository is not digitally signed. If it should be used  | `Yes` `No`  | `filename` with name of file  |   |
+| software.import\_gpg  | When signature is sign with unknown GPG key  | `Trust` `Skip`  | `id` of key `name` of key and `fingerprint` of key |   |
+| storage.activate\_multipath | When it looks like system has multipath and if it should be activated | `yes` `no` |  | Here it is used lower case. It should be unified. |
+| storage.commit\_error | When some storage actions failed and if it should continue | `yes` `no` |  | Also here it is lowercase |
+| storage.luks\_activation | When LUKS encrypted device is detected and it needs password to probe it | `skip` `decrypt` | `device` name, `label` of device, `size` of device and `attempt` the number of attempt | Answer contain additional field password that has to be filled if answer is `decrypt`. Attempt data can be used to limit passing wrong password. |
