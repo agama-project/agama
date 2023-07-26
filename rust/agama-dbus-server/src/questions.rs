@@ -84,8 +84,7 @@ enum QuestionType {
 
 /// Trait for objects that can provide answers to all kind of Question.
 ///
-/// If not strategy is used or all defined strategies does not know answer,
-/// then users need to answer it themself.
+/// If no strategy is selected or the answer is unknown, then ask to the user.
 trait AnswerStrategy {
     /// Id for quick runtime inspection of strategy type
     fn id(&self) -> u8;
