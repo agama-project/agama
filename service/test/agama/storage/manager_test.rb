@@ -72,7 +72,7 @@ describe Agama::Storage::Manager do
 
     let(:raw_devicegraph) { instance_double(Y2Storage::Devicegraph, probing_issues: []) }
 
-    let(:proposal) { Agama::Storage::Proposal.new(logger, config) }
+    let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
 
     let(:callback) { proc {} }
 
@@ -163,7 +163,7 @@ describe Agama::Storage::Manager do
       instance_double(Y2Storage::Devicegraph, probing_issues: probing_issues)
     end
 
-    let(:proposal) { Agama::Storage::Proposal.new(logger, config) }
+    let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
 
     let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
 

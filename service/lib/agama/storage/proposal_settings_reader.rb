@@ -40,6 +40,7 @@ module Agama
         config.data.fetch("storage", {}).each do |key, value|
           send(READERS[key], settings, value)
         end
+        settings
       end
 
     private
