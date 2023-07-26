@@ -39,7 +39,7 @@ module Agama
         # @return [Agama::Storage::ProposalSettings]
         def convert
           ProposalSettings.new.tap do |target|
-            boot_devices_conversion(target)
+            boot_device_conversion(target)
             lvm_conversion(target)
             encryption_conversion(target)
             space_policy_conversion(target)
@@ -101,14 +101,14 @@ module Agama
         # @param mount_path [String]
         # @return [Array<String>]
         def volumes_with_min_size_fallback(mount_path)
-          specs = settings.volumes.select { |s| s.min_size_fallback == mount_path }
+          specs = settings.volumes.select { |s| s.fallback_for_min_size == mount_path }
           specs.map(&:mount_point)
         end
 
         # @param mount_path [String]
         # @return [Array<String>]
         def volumes_with_max_size_fallback(mount_path)
-          specs = settings.volumes.select { |s| s.max_size_fallback == mount_path }
+          specs = settings.volumes.select { |s| s.fallback_for_max_size == mount_path }
           specs.map(&:mount_point)
         end
       end

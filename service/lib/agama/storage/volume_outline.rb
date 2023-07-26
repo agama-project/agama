@@ -31,27 +31,27 @@ module Agama
       # this volume or an equivalent one (ie. one with the same mount_path).
       #
       # @return [Boolean]
-      attr_reader :required
+      attr_accessor :required
       alias_method :required?, :required
 
       # Possible filesystem types for the volume
       #
       # @return [Array<Y2Storage::Filesystems::Type>]
-      attr_reader :filesystems
+      attr_accessor :filesystems
 
       # Base value to calculate the min size for the volume (if #auto_size is set to true
       # for that final volume) or to use as default value (if #auto_size is false)
       #
       # @return [Y2Storage::DiskSize]
-      attr_reader :base_min_size
+      attr_accessor :base_min_size
 
       # Base value to calculate the max size for the volume (if #auto_size is set to true
       # for that final volume) or to use as default value (if #auto_size is false)
       #
       # @return [Y2Storage::DiskSize]
-      attr_reader :base_max_size
+      attr_accessor :base_max_size
 
-      attr_reader :adjust_by_ram
+      attr_accessor :adjust_by_ram
       alias_method :adjust_by_ram?, :adjust_by_ram
 
       # @return [Array<String>] mount paths of other volumes
@@ -63,18 +63,18 @@ module Agama
       # Whether snapshots option can be configured
       #
       # @return [Boolean]
-      attr_reader :snapshots_configurable
+      attr_accessor :snapshots_configurable
       alias_method :snapshots_configurable?, :snapshots_configurable
 
       # Size required for snapshots
       #
       # @return [Y2Storage::DiskSize, nil]
-      attr_reader :snapshots_size
+      attr_accessor :snapshots_size
 
       # Percentage of space required for snapshots
       #
       # @return [Integer, nil]
-      attr_reader :snapshots_percentage
+      attr_accessor :snapshots_percentage
 
       def initialize
         @filesystems = []

@@ -52,12 +52,12 @@ module Agama
       # @param path [String]
       # @return [Agama::Storage::Volume]
       def for(path)
-        data = @data[cleanpath(path)] || @data[""]
+        data = @data[cleanpath(path)] || @data[""] || empty_data
 
         Volume.new(path).tap do |volume|
           volume.btrfs = data[:btrfs]
           volume.outline = data[:outline]
-          volume.filesystem = data[:filesystem]
+          volume.fs_type = data[:filesystem]
           volume.mount_options = data[:mount_options]
 
           if data[:auto_size] && volume.auto_size_supported?
@@ -79,6 +79,16 @@ module Agama
         cleanpath(path)
       end
 
+      # Temporary method to avoid crashes if there is no default template
+      def empty_data
+        {
+          btrfs: BtrfsSettings.new,
+          outline: VolumeOutline.new,
+          mount_options: [],
+          filesystem: Y2Storage::Filesystems::Type::EXT4
+        }
+      end
+
       def values(data) # rubocop:disable Metrics/AbcSize
         {}.tap do |values|
           values[:btrfs] = btrfs(data)
@@ -91,7 +101,7 @@ module Agama
           values[:filesystem] ||= values[:outline].filesystems.first
           values[:filesystem] ||= Y2Storage::Filesystems::Type::EXT4
 
-          size = outline_data.fetch("size", {})
+          size = data.fetch("size", {})
           values[:auto_size] = size.fetch("auto", false)
           values[:min_size] = parse_disksize(size["min"])
           values[:max_size] = parse_disksize(size["max"])
@@ -141,7 +151,7 @@ module Agama
       end
 
       def assign_snapshots_increment(outline, increment)
-        return if increment.nil
+        return if increment.nil?
 
         if increment =~ /(\d+)\s*%/
           outline.snapshots_percentage = Regexp.last_match(1).to_i

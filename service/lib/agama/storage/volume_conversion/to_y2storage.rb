@@ -40,7 +40,7 @@ module Agama
             target.device = volume.device
             target.separate_vg_name = volume.separate_vg_name
             target.mount_point = volume.mount_path
-            target.mount_options = volume.mount_options
+            target.mount_options = volume.mount_options.join(",")
             target.proposed = true
             target.proposed_configurable = !volume.outline.required?
             target.fs_types = volume.outline.filesystems

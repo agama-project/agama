@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "pathname"
+require "forwardable"
 require "agama/storage/btrfs_settings"
 require "agama/storage/volume_outline"
 
@@ -30,6 +30,8 @@ module Agama
     # A volume is converted to D-Bus and to Y2Storage formats in order to provide the volume
     # information with the expected representation, see {VolumeConversion}.
     class Volume
+      extend Forwardable
+
       # Mount path
       #
       # @return [String]
@@ -38,7 +40,7 @@ module Agama
       # Outline of the volume
       #
       # @return [VolumeOutline]
-      attr_reader :outline
+      attr_accessor :outline
 
       # Filesystem for the volume
       #
@@ -87,6 +89,10 @@ module Agama
         @btrfs = BtrfsSettings.new
         @outline = VolumeOutline.new
       end
+
+      def_delegators :outline,
+        :min_size_fallback_for, :min_size_fallback_for=,
+        :max_size_fallback_for, :max_size_fallback_for=
 
       # Whether it makes sense to have automatic size limits for the volume
       #

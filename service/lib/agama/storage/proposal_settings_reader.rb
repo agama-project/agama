@@ -37,7 +37,7 @@ module Agama
       # @return [ProposalSettings]
       def read
         settings = ProposalSettings.new
-        config.fetch("storage", {}).each do |key, value|
+        config.data.fetch("storage", {}).each do |key, value|
           send(READERS[key], settings, value)
         end
       end

@@ -102,8 +102,8 @@ module Agama
         # @param target [Y2Storage::ProposalSettings]
         def fallbacks_conversion(target)
           target.volumes.each do |spec|
-            spec.min_size_fallback = find_min_size_fallback(spec.mount_point)
-            spec.max_size_fallback = find_max_size_fallback(spec.mount_point)
+            spec.fallback_for_min_size = find_min_size_fallback(spec.mount_point)
+            spec.fallback_for_max_size = find_max_size_fallback(spec.mount_point)
           end
         end
 
@@ -115,7 +115,7 @@ module Agama
 
         # @param mount_path [String]
         def find_max_size_fallback(mount_path)
-          volume = volumes.find { |v| v.max_size_fallback_for.include?(mount_path) }
+          volume = settings.volumes.find { |v| v.max_size_fallback_for.include?(mount_path) }
           volume&.mount_path
         end
 
@@ -136,7 +136,7 @@ module Agama
         # @return [Array<String>]
         def all_devices
           devices = candidate_devices
-          devices += settings.volumes.map(&:device)
+          devices += settings.volumes.map(&:device).compact
 
           devices.uniq.map { |d| device_or_partitions(d) }.flatten
         end
