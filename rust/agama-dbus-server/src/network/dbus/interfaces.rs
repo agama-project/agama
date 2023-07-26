@@ -82,7 +82,7 @@ impl Device {
     ///
     /// Possible values: 0 = loopback, 1 = ethernet, 2 = wireless.
     ///
-    /// See [crate::model::DeviceType].
+    /// See [agama_lib::network::types::DeviceType].
     #[dbus_interface(property, name = "Type")]
     pub fn device_type(&self) -> u8 {
         self.device.type_ as u8
@@ -124,7 +124,7 @@ impl Connections {
     /// Adds a new network connection.
     ///
     /// * `id`: connection name.
-    /// * `ty`: connection type (see [crate::model::DeviceType]).
+    /// * `ty`: connection type (see [agama_lib::network::types::DeviceType]).
     pub async fn add_connection(&mut self, id: String, ty: u8) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock();
         actions
@@ -274,7 +274,7 @@ impl Ipv4 {
     ///
     /// Possible values: "disabled", "auto", "manual" or "link-local".
     ///
-    /// See [crate::model::IpMethod].
+    /// See [crate::network::model::IpMethod].
     #[dbus_interface(property)]
     pub fn method(&self) -> String {
         let connection = self.get_connection();
@@ -401,7 +401,7 @@ impl Wireless {
     ///
     /// Possible values: "unknown", "adhoc", "infrastructure", "ap" or "mesh".
     ///
-    /// See [crate::model::WirelessMode].
+    /// See [crate::network::model::WirelessMode].
     #[dbus_interface(property)]
     pub fn mode(&self) -> String {
         let connection = self.get_wireless();
@@ -442,7 +442,7 @@ impl Wireless {
     /// Possible values: "none", "owe", "ieee8021x", "wpa-psk", "sae", "wpa-eap",
     /// "wpa-eap-suite-b192".
     ///
-    /// See [crate::model::SecurityProtocol].
+    /// See [crate::network::model::SecurityProtocol].
     #[dbus_interface(property)]
     pub fn security(&self) -> String {
         let connection = self.get_wireless();
