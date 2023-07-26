@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/dbus/storage/volume_conversion"
+
 module Agama
   module DBus
     module Storage
@@ -38,7 +40,7 @@ module Agama
               "BootDevice"             => settings.boot_device.to_s,
               "LVM"                    => settings.lvm.enabled,
               "SystemVGDevices"        => settings.lvm.system_vg_devices,
-              "EncryptionPassword"     => settings.encryption.password,
+              "EncryptionPassword"     => settings.encryption.password.to_s,
               "EncryptionMethod"       => settings.encryption.method.id.to_s,
               "EncryptionPBKDFunction" => settings.encryption.pbkd_function&.value || "",
               "SpacePolicy"            => settings.space.policy.to_s,

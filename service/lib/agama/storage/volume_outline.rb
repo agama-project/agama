@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "pathname"
+require "y2storage/disk_size"
 
 module Agama
   module Storage
@@ -51,6 +52,7 @@ module Agama
       # @return [Y2Storage::DiskSize]
       attr_accessor :base_max_size
 
+      # @return [Boolean]
       attr_accessor :adjust_by_ram
       alias_method :adjust_by_ram?, :adjust_by_ram
 
@@ -77,6 +79,9 @@ module Agama
       attr_accessor :snapshots_percentage
 
       def initialize
+        @required = false
+        @adjust_by_ram = false
+        @snapshots_configurable = true
         @filesystems = []
         @base_min_size = Y2Storage::DiskSize.zero
         @base_max_size = Y2Storage::DiskSize.unlimited
@@ -97,8 +102,9 @@ module Agama
       # @return [Boolean]
       def snapshots_affect_sizes?
         return true if snapshots_size && !snapshots_size.zero?
+        return false unless snapshots_percentage
 
-        snapshots_percentage && !snapshots_percentage.zero?
+        !snapshots_percentage.zero?
       end
 
       # Whether it makes sense to have automatic size limits for the volume

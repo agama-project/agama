@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "forwardable"
+require "y2storage/disk_size"
 require "agama/storage/btrfs_settings"
 require "agama/storage/volume_outline"
 
@@ -44,7 +45,7 @@ module Agama
 
       # Filesystem for the volume
       #
-      # @return [Y2Storage::Filesystems::Type]
+      # @return [Y2Storage::Filesystems::Type, nil]
       attr_accessor :fs_type
 
       # Btrfs-related options
@@ -57,8 +58,14 @@ module Agama
       # @return [Array<String>]
       attr_accessor :mount_options
 
-      # These two would be used to locate the volume in a separate disk
+      # Used to locate the volume in a separate disk
+      #
+      # @return [String, nil]
       attr_accessor :device
+
+      # Used to locate the volume in a separate VG
+      #
+      # @return [String, nil]
       attr_accessor :separate_vg_name
 
       # Min size for the volume
@@ -86,6 +93,9 @@ module Agama
       def initialize(mount_path)
         @mount_path = mount_path
         @mount_options = []
+        @auto_size = false
+        @min_size = Y2Storage::DiskSize.zero
+        @max_size = Y2Storage::DiskSize.zero
         @btrfs = BtrfsSettings.new
         @outline = VolumeOutline.new
       end

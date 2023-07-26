@@ -39,7 +39,7 @@ module Agama
               "MountOptions" => volume.mount_options,
               "TargetDevice" => volume.device.to_s,
               "TargetVG"     => volume.separate_vg_name.to_s,
-              "FsType"       => volume.fs_type&.to_human_string,
+              "FsType"       => volume.fs_type&.to_human_string || "",
               "MinSize"      => volume.min_size&.to_i,
               "MaxSize"      => volume.max_size&.to_i,
               "AutoSize"     => volume.auto_size?,
