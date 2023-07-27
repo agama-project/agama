@@ -36,11 +36,12 @@ module Agama
       #
       # @return [ProposalSettings]
       def read
-        settings = ProposalSettings.new
-        config.data.fetch("storage", {}).each do |key, value|
-          send(READERS[key], settings, value)
+        ProposalSettings.new.tap do |settings|
+          config.data.fetch("storage", {}).each do |key, value|
+            reader = READERS[key]
+            send(reader, settings, value) if reader
+          end
         end
-        settings
       end
 
     private
@@ -51,7 +52,7 @@ module Agama
       # Settings from control file and their readers.
       READERS = {
         "lvm"          => :lvm_reader,
-        "encrypttion"  => :encryption_reader,
+        "encryption"   => :encryption_reader,
         "space_policy" => :space_policy_reader,
         "volumes"      => :volumes_reader
       }.freeze
@@ -86,7 +87,7 @@ module Agama
         builder = VolumeTemplatesBuilder.new_from_config(config)
         mount_paths = volumes.map { |v| v["mount_path"] }.compact
 
-        settings.volumes = mount_paths.map { |mp| buider.for(mp) }
+        settings.volumes = mount_paths.map { |mp| builder.for(mp) }
       end
     end
   end

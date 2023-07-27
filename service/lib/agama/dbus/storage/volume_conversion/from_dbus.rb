@@ -41,7 +41,8 @@ module Agama
           #
           # @return [Agama::Storage::Volume]
           def convert
-            volume = VolumeTemplatesBuilder.new_from_config(config).for(dbus_volume["MountPath"])
+            builder = Agama::Storage::VolumeTemplatesBuilder.new_from_config(config)
+            volume = builder.for(dbus_volume["MountPath"])
 
             volume.tap do |target|
               dbus_volume.each do |dbus_property, dbus_value|

@@ -42,7 +42,7 @@ module Agama
           #
           # @return [Agama::Storage::ProposalSettings]
           def convert
-            settings = ProposalSettingsReader.new(config).read
+            settings = Agama::Storage::ProposalSettingsReader.new(config).read
 
             settings.tap do |target|
               dbus_settings.each do |dbus_property, dbus_value|
@@ -133,7 +133,7 @@ module Agama
             # Keep default volumes if no volumes are given
             return if value.empty?
 
-            required_volumes = target.volumes.select { |v| v.ouline.required? }
+            required_volumes = target.volumes.select { |v| v.outline.required? }
             volumes = value.map { |v| VolumeConversion.from_dbus(v, config: config) }
 
             target.volumes = volumes + missing_volumes(required_volumes, volumes)
