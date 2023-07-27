@@ -1,6 +1,14 @@
+**Checks**
+
 [![CI Status](https://github.com/openSUSE/agama/actions/workflows/ci.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/openSUSE/agama/badge.svg?branch=master)](https://coveralls.io/github/openSUSE/agama?branch=master)
 [![GitHub Pages](https://github.com/openSUSE/agama/actions/workflows/github-pages.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/github-pages.yml)
+
+**Translations**
+
+[![Weblate Update POT](https://github.com/openSUSE/agama/actions/workflows/weblate-update-pot.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/weblate-update-pot.yml)
+[![Weblate Merge PO](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-po.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-po.yml)
+[![Translation Status](https://l10n.opensuse.org/widgets/agama/-/agama-web/svg-badge.svg)](https://l10n.opensuse.org/engage/agama/)
 
 **[OBS systemsmanagement:Agama:Staging](https://build.opensuse.org/project/show/systemsmanagement:Agama:Staging)**
 
