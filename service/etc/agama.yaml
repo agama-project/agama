@@ -152,7 +152,6 @@ ALP-Dolomite:
     mandatory_patterns:
       - patterns-alp-base
       - patterns-alp-cockpit
-      - patterns-alp-container_runtime
       - patterns-alp-hardware
     optional_patterns: null # no optional pattern shared
     mandatory_packages:
