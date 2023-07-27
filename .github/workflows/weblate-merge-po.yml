@@ -76,6 +76,8 @@ jobs:
 
           if [ -s po.diff ]; then
             echo "PO files updated"
+            # this is an Output Parameter
+            # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-output-parameter
             echo "po_updated=true" >> $GITHUB_OUTPUT
           else
             echo "PO files unchanged"
