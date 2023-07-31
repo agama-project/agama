@@ -13,6 +13,7 @@ const StylelintPlugin = require('stylelint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const webpack = require('webpack');
+const po_handler = require("./src/lib/webpack-po-handler");
 
 /* A standard nodejs and webpack pattern */
 const production = process.env.NODE_ENV === 'production';
@@ -114,6 +115,12 @@ module.exports = {
     // hot replacement does not support wss:// transport when running over https://,
     // as a workaround use sockjs (which uses standard https:// protocol)
     webSocketServer: "sockjs",
+
+    // Cockpit handles the "po.js" requests specially
+    setupMiddlewares: (middlewares, devServer) => {
+      devServer.app.get("/po.js", (req, res) => po_handler(req, res));
+      return middlewares;
+    }
   },
   devtool: "source-map",
   stats: "errors-warnings",
