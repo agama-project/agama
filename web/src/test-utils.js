@@ -33,6 +33,7 @@ import { render } from "@testing-library/react";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { NotificationProvider } from "~/context/notification";
+import cockpit from "./lib/cockpit";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -165,11 +166,25 @@ const withNotificationProvider = (content) => {
   );
 };
 
+/**
+ * Mocks the cockpit.gettext() method with an identity function (returns
+ * the original untranslated text)
+ */
+const mockGettext = () => {
+  const gettextFn = jest.fn();
+  gettextFn.mockImplementation((text) => {
+    return text;
+  });
+
+  cockpit.gettext.mockImplementation(gettextFn);
+};
+
 export {
   plainRender,
   installerRender,
   createCallbackMock,
   mockComponent,
+  mockGettext,
   mockLayout,
   mockNavigateFn,
   mockRoutes,

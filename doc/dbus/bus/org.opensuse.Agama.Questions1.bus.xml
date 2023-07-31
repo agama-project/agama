@@ -87,10 +87,13 @@
     <method name="Delete">
       <arg name="question" type="o" direction="in"/>
     </method>
-    <!--
-     sets questions to be answered by default answer instead of asking user
-     -->
-    <method name="UseDefaultAnswer">
+    <method name="AddAnswerFile">
+      <arg name="path" type="s" direction="in"/>
     </method>
+    <!--
+     property that defines if questions is interactive or automatically answered with
+     default answer
+     -->
+    <property name="Interactive" type="b" access="readwrite"/>
   </interface>
 </node>

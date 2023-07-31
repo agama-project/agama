@@ -1,11 +1,19 @@
 -------------------------------------------------------------------
-Tue Jul 18 15:42:30 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Mon Jul 31 06:58:15 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Move the settings functionality to a separate package,
   agama-settings (gh#openSUSE/agama#666).
 - Make the "Settings" derive macro reusable from other crates.
 - Extend the "Settings" derive macro to generate code for
   InstallSettings and NetworkSettings.
+
+-------------------------------------------------------------------
+Wed Jul 26 11:08:09 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: add to "questions" command "answers" subcommand to set
+  file with predefined answers
+- dbus-server: add "AddAnswersFile" method to Questions service
+  (gh#openSUSE/agama#669)
 
 -------------------------------------------------------------------
 Tue Jul 18 13:32:04 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
