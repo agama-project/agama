@@ -8,12 +8,20 @@ pub struct Main {
     product: Option<String>,
     #[settings(collection)]
     patterns: Vec<Pattern>,
+    #[settings(nested)]
+    network: Option<Network>,
 }
 
 /// Software patterns
 #[derive(Debug, Clone)]
 pub struct Pattern {
     id: String,
+}
+
+#[derive(Default, Debug, Settings)]
+pub struct Network {
+    enabled: Option<bool>,
+    ssid: Option<String>,
 }
 
 /// TODO: deriving this trait could be easy.
@@ -37,10 +45,32 @@ fn test_set() {
         .unwrap();
 
     assert_eq!(main.product, Some("Tumbleweed".to_string()));
-    assert!(matches!(
-        main.set("missing", SettingValue("".to_string())),
-        Err(SettingsError::UnknownAttribute(_))
-    ));
+    main.set("network.enabled", SettingValue("true".to_string()))
+        .unwrap();
+    let network = main.network.unwrap();
+    assert_eq!(network.enabled, Some(true));
+}
+
+#[test]
+fn test_set_unknown_attribute() {
+    let mut main = Main::default();
+    let error = main
+        .set("missing", SettingValue("".to_string()))
+        .unwrap_err();
+    assert_eq!(error.to_string(), "Unknown attribute 'missing'");
+}
+
+#[test]
+fn test_invalid_set() {
+    let mut main = Main::default();
+
+    let error = main
+        .set("network.enabled", SettingValue("fasle".to_string()))
+        .unwrap_err();
+    assert_eq!(
+        error.to_string(),
+        "Invalid value 'fasle', expected a boolean"
+    );
 }
 
 #[test]
@@ -66,6 +96,7 @@ fn test_merge() {
     let main1 = Main {
         product: Some("ALP".to_string()),
         patterns,
+        ..Default::default()
     };
 
     main0.merge(&main1);

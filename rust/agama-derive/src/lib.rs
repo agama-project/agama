@@ -182,6 +182,7 @@ fn expand_add_fn(settings: &SettingFieldsList) -> TokenStream2 {
                     })*
                     _ => return Err(agama_settings::SettingsError::UnknownAttribute(attr.to_string()))
                 }
+                return Ok(())
             }
         }
     }
