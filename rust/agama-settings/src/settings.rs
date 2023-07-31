@@ -128,7 +128,10 @@ impl TryFrom<SettingValue> for bool {
         match value.0.to_lowercase().as_str() {
             "true" | "yes" | "t" => Ok(true),
             "false" | "no" | "f" => Ok(false),
-            _ => Err(SettingsError::InvalidValue(value.to_string())),
+            _ => Err(SettingsError::InvalidValue(
+                value.to_string(),
+                "boolean".to_string(),
+            )),
         }
     }
 }
@@ -170,6 +173,14 @@ mod tests {
         let value = SettingValue("false".to_string());
         let value: bool = value.try_into().unwrap();
         assert!(!value);
+
+        let value = SettingValue("fasle".to_string());
+        let value: Result<bool, SettingsError> = value.try_into();
+        let error = value.unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "Invalid value 'fasle', expected a boolean"
+        );
     }
 
     #[test]
