@@ -10,5 +10,11 @@
   <body>
     <div id="root"></div>
     <script type="module" src="./index.js"></script>
+    <!--
+      The Cockpit server returns "po.<LANG>.js" content for the "po.js" request,
+      the requested language is obtained from the "CockpitLang" cookie sent in
+      the HTTP header. For missing translations it returns an empty string.
+    -->
+    <script src="po.js" defer></script>
   </body>
 </html>
