@@ -42,7 +42,7 @@ impl SettingFieldsList {
 }
 
 /// Derive Settings, typically for a FooSettings struct.
-/// (see agama_lib::settings::Settings but I cannot link to it without a circular dependency)
+/// (see the trait agama_settings::settings::Settings but I cannot link to it without a circular dependency)
 #[proc_macro_derive(Settings, attributes(settings))]
 pub fn agama_attributes_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
