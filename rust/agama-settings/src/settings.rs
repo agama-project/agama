@@ -12,7 +12,7 @@
 //! taking care of the conversions automatically. The newtype [SettingValue] takes care of such a
 //! conversion.
 //!
-use crate::error::SettingsError;
+use crate::error::{ConversionError, SettingsError};
 use std::collections::HashMap;
 /// For plain structs, the implementation can be derived.
 ///
@@ -60,7 +60,7 @@ use std::fmt::Display;
 /// ```
 pub trait Settings {
     fn add(&mut self, attr: &str, _value: SettingObject) -> Result<(), SettingsError> {
-        Err(SettingsError::UnknownCollection(attr.to_string()))
+        Err(SettingsError::UnknownAttribute(attr.to_string()))
     }
 
     fn set(&mut self, attr: &str, _value: SettingValue) -> Result<(), SettingsError> {
@@ -122,13 +122,13 @@ impl From<HashMap<String, String>> for SettingObject {
 }
 
 impl TryFrom<SettingValue> for bool {
-    type Error = SettingsError;
+    type Error = ConversionError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         match value.0.to_lowercase().as_str() {
             "true" | "yes" | "t" => Ok(true),
             "false" | "no" | "f" => Ok(false),
-            _ => Err(SettingsError::InvalidValue(
+            _ => Err(ConversionError::InvalidValue(
                 value.to_string(),
                 "boolean".to_string(),
             )),
@@ -137,7 +137,7 @@ impl TryFrom<SettingValue> for bool {
 }
 
 impl TryFrom<SettingValue> for Option<bool> {
-    type Error = SettingsError;
+    type Error = ConversionError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         Ok(Some(value.try_into()?))
@@ -145,7 +145,7 @@ impl TryFrom<SettingValue> for Option<bool> {
 }
 
 impl TryFrom<SettingValue> for String {
-    type Error = SettingsError;
+    type Error = ConversionError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         Ok(value.0)
@@ -153,7 +153,7 @@ impl TryFrom<SettingValue> for String {
 }
 
 impl TryFrom<SettingValue> for Option<String> {
-    type Error = SettingsError;
+    type Error = ConversionError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         Ok(Some(value.try_into()?))
@@ -175,7 +175,7 @@ mod tests {
         assert!(!value);
 
         let value = SettingValue("fasle".to_string());
-        let value: Result<bool, SettingsError> = value.try_into();
+        let value: Result<bool, ConversionError> = value.try_into();
         let error = value.unwrap_err();
         assert_eq!(
             error.to_string(),

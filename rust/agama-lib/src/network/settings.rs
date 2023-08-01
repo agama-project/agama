@@ -1,7 +1,8 @@
 //! Representation of the network settings
 
 use super::types::DeviceType;
-use agama_settings::{SettingObject, SettingValue, Settings, SettingsError};
+use agama_settings::error::ConversionError;
+use agama_settings::{SettingObject, SettingValue, Settings};
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::default::Default;
@@ -54,11 +55,11 @@ impl NetworkConnection {
 }
 
 impl TryFrom<SettingObject> for NetworkConnection {
-    type Error = SettingsError;
+    type Error = ConversionError;
 
     fn try_from(value: SettingObject) -> Result<Self, Self::Error> {
         let Some(id) = value.get("id") else {
-            return Err(SettingsError::MissingKey("id".to_string()));
+            return Err(ConversionError::MissingKey("id".to_string()));
         };
 
         let default_method = SettingValue("disabled".to_string());

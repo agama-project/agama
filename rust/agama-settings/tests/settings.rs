@@ -1,5 +1,6 @@
-use agama_settings::settings::Settings;
-use agama_settings::{SettingObject, SettingValue, Settings, SettingsError};
+use agama_settings::{
+    error::ConversionError, settings::Settings, SettingObject, SettingValue, Settings,
+};
 use std::collections::HashMap;
 
 /// Main settings
@@ -26,14 +27,14 @@ pub struct Network {
 
 /// TODO: deriving this trait could be easy.
 impl TryFrom<SettingObject> for Pattern {
-    type Error = SettingsError;
+    type Error = ConversionError;
 
     fn try_from(value: SettingObject) -> Result<Self, Self::Error> {
         match value.get("id") {
             Some(id) => Ok(Pattern {
-                id: id.clone().try_into()?,
+                id: id.clone().to_string(),
             }),
-            _ => Err(SettingsError::MissingKey("id".to_string())),
+            _ => Err(ConversionError::MissingKey("id".to_string())),
         }
     }
 }
@@ -69,7 +70,7 @@ fn test_invalid_set() {
         .unwrap_err();
     assert_eq!(
         error.to_string(),
-        "Invalid value 'fasle', expected a boolean"
+        "Could not update 'network.enabled': Invalid value 'fasle', expected a boolean"
     );
 }
 

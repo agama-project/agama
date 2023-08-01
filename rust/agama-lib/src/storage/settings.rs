@@ -1,6 +1,6 @@
 //! Representation of the storage settings
 
-use agama_settings::{SettingObject, Settings, SettingsError};
+use agama_settings::{error::ConversionError, SettingObject, Settings};
 use serde::{Deserialize, Serialize};
 
 /// Storage settings for installation
@@ -31,14 +31,14 @@ impl From<String> for Device {
 }
 
 impl TryFrom<SettingObject> for Device {
-    type Error = SettingsError;
+    type Error = ConversionError;
 
     fn try_from(value: SettingObject) -> Result<Self, Self::Error> {
         match value.get("name") {
             Some(name) => Ok(Device {
                 name: name.clone().try_into()?,
             }),
-            _ => Err(SettingsError::MissingKey("name".to_string())),
+            _ => Err(ConversionError::MissingKey("name".to_string())),
         }
     }
 }

@@ -84,7 +84,9 @@ fn expand_set_fn(settings: &SettingFieldsList) -> TokenStream2 {
         let field_name = scalar_fields.iter().map(|s| s.ident.clone());
         scalar_handling = quote! {
             match attr {
-                #(stringify!(#field_name) => self.#field_name = value.try_into()?,)*
+                #(stringify!(#field_name) => self.#field_name = value.try_into().map_err(|e| {
+                    agama_settings::SettingsError::UpdateFailed(attr.to_string(), e)
+                })?,)*
                 _ => return Err(agama_settings::SettingsError::UnknownAttribute(attr.to_string()))
             }
         }
@@ -99,7 +101,7 @@ fn expand_set_fn(settings: &SettingFieldsList) -> TokenStream2 {
                 match ns {
                     #(stringify!(#field_name) => {
                         let #field_name = self.#field_name.get_or_insert(Default::default());
-                        #field_name.set(id, value)?
+                        #field_name.set(id, value).map_err(|e| e.with_attr(attr))?
                     })*
                     _ => return Err(agama_settings::SettingsError::UnknownAttribute(attr.to_string()))
                 }
@@ -163,8 +165,13 @@ fn expand_add_fn(settings: &SettingFieldsList) -> TokenStream2 {
         let field_name = collection_fields.iter().map(|s| s.ident.clone());
         collection_handling = quote! {
             match attr {
-                #(stringify!(#field_name) => self.#field_name.push(value.try_into()?),)*
-                _ => return Err(agama_settings::SettingsError::UnknownCollection(attr.to_string()))
+                #(stringify!(#field_name) => {
+                    let converted = value.try_into().map_err(|e| {
+                        agama_settings::SettingsError::UpdateFailed(attr.to_string(), e)
+                    })?;
+                    self.#field_name.push(converted)
+                },)*
+                _ => return Err(agama_settings::SettingsError::UnknownAttribute(attr.to_string()))
             }
         };
     }
@@ -178,7 +185,7 @@ fn expand_add_fn(settings: &SettingFieldsList) -> TokenStream2 {
                 match ns {
                     #(stringify!(#field_name) => {
                         let #field_name = self.#field_name.get_or_insert(Default::default());
-                        #field_name.add(id, value)?
+                        #field_name.add(id, value).map_err(|e| e.with_attr(attr))?
                     })*
                     _ => return Err(agama_settings::SettingsError::UnknownAttribute(attr.to_string()))
                 }
