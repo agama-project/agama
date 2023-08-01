@@ -7,16 +7,16 @@ use syn::{parse_macro_input, DeriveInput, Fields};
 enum SettingKind {
     /// A single value; the default.
     Scalar,
-    /// An array of scalars, use `#[settings(collection)]`
+    /// An array of scalars, use `#[settings(collection)]`.
     Collection,
-    /// The value is another FooSettings, use `#[settings(nested)]`
+    /// The value is another FooSettings, use `#[settings(nested)]`.
     Nested,
 }
 
 /// Represents a setting and its configuration
 #[derive(Debug, Clone)]
 struct SettingField {
-    /// Setting ident ("A word of Rust code, may be a keyword or variable name")
+    /// Setting ident ("A word of Rust code, may be a keyword or variable name").
     pub ident: syn::Ident,
     /// Setting kind (scalar, collection, struct).
     pub kind: SettingKind,
@@ -198,7 +198,7 @@ fn expand_add_fn(settings: &SettingFieldsList) -> TokenStream2 {
 
 // Extracts information about the settings fields.
 //
-// syn::Field is "A field of a struct or enum variant.", 
+// syn::Field is "A field of a struct or enum variant.",
 // has .ident .ty(pe) .mutability .vis(ibility)...
 fn parse_setting_fields(fields: Vec<&syn::Field>) -> SettingFieldsList {
     let mut settings = vec![];
