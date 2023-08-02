@@ -262,6 +262,14 @@ impl Connection {
         self.base_mut().id = id.to_string()
     }
 
+    pub fn interface(&self) -> &str {
+        self.base().interface.as_str()
+    }
+
+    pub fn set_interface(&mut self, interface: &str) {
+        self.base_mut().interface = interface.to_string()
+    }
+
     pub fn uuid(&self) -> Uuid {
         self.base().uuid
     }
@@ -272,6 +280,14 @@ impl Connection {
 
     pub fn ipv4_mut(&mut self) -> &mut Ipv4Config {
         &mut self.base_mut().ipv4
+    }
+
+    pub fn match_config(&self) -> &MatchConfig {
+        &self.base().match_config
+    }
+
+    pub fn match_config_mut(&mut self) -> &mut MatchConfig {
+        &mut self.base_mut().match_config
     }
 
     pub fn remove(&mut self) {
@@ -294,6 +310,8 @@ pub struct BaseConnection {
     pub uuid: Uuid,
     pub ipv4: Ipv4Config,
     pub status: Status,
+    pub interface: String,
+    pub match_config: MatchConfig,
 }
 
 impl PartialEq for BaseConnection {
@@ -315,6 +333,14 @@ pub struct Ipv4Config {
     pub addresses: Vec<IpAddress>,
     pub nameservers: Vec<Ipv4Addr>,
     pub gateway: Option<Ipv4Addr>,
+}
+
+#[derive(Debug, Default, Clone)]
+pub struct MatchConfig {
+    pub driver: Vec<String>,
+    pub interface: Vec<String>,
+    pub path: Vec<String>,
+    pub kernel: Vec<String>,
 }
 
 #[derive(Debug, Error)]

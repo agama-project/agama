@@ -17,6 +17,27 @@ pub struct NetworkSettings {
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct MatchSettings {
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub driver: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub paths: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub kernel: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub interface: Vec<String>,
+}
+
+impl MatchSettings {
+    pub fn is_empty(&self) -> bool {
+        self.paths.is_empty()
+            && self.driver.is_empty()
+            && self.kernel.is_empty()
+            && self.interface.is_empty()
+    }
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct WirelessSettings {
     #[serde(skip_serializing_if = "String::is_empty")]
     pub password: String,
@@ -38,6 +59,10 @@ pub struct NetworkConnection {
     pub nameservers: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wireless: Option<WirelessSettings>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub interface: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub match_settings: Option<MatchSettings>,
 }
 
 impl NetworkConnection {
