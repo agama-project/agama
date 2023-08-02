@@ -111,14 +111,21 @@ trait Locale1 {
     fn set_vconsole_keyboard(&self, value: &str) -> zbus::Result<()>;
 }
 
-#[dbus_proxy(interface = "org.opensuse.Agama.Questions1", assume_defaults = true)]
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Questions1",
+    default_service = "org.opensuse.Agama.Questions1",
+    default_path = "/org/opensuse/Agama/Questions1"
+)]
 trait Questions1 {
+    /// AddAnswerFile method
+    fn add_answer_file(&self, path: &str) -> zbus::Result<()>;
+
     /// Delete method
     fn delete(&self, question: &zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()>;
 
     /// New method
     #[dbus_proxy(name = "New")]
-    fn new_generic(
+    fn new_quetion(
         &self,
         class: &str,
         text: &str,
@@ -137,6 +144,8 @@ trait Questions1 {
         data: std::collections::HashMap<&str, &str>,
     ) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
-    /// UseDefaultAnswer method
-    fn use_default_answer(&self) -> zbus::Result<()>;
+    /// Interactive property
+    #[dbus_proxy(property)]
+    fn interactive(&self) -> zbus::Result<bool>;
+    fn set_interactive(&self, value: bool) -> zbus::Result<()>;
 }

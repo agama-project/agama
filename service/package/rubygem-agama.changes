@@ -1,4 +1,19 @@
 -------------------------------------------------------------------
+Wed Aug  2 10:03:13 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 3
+
+-------------------------------------------------------------------
+Wed Aug  2 10:03:09 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+
+-------------------------------------------------------------------
+Wed Jul 26 10:00:39 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Adapt config file to install ALP Dolomite instead of ALP Micro
+  and remove ALP Bedrock (gh#openSUSE/agama#674).
+
+-------------------------------------------------------------------
 Mon Jul 17 09:16:38 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Adapt to new questions D-Bus API to allow automatic answering of
