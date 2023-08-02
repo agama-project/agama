@@ -137,7 +137,7 @@ const PageOptions = ({ children }) => {
 
   return (
     <PageOptionsSlot>
-      <span ref={dropdownRef}>
+      <div ref={dropdownRef}>
         <Dropdown
           isOpen={isOpen}
           toggle={<Toggler onClick={onToggle} />}
@@ -147,7 +147,7 @@ const PageOptions = ({ children }) => {
           className="page-options"
           isGrouped
         />
-      </span>
+      </div>
     </PageOptionsSlot>
   );
 };
