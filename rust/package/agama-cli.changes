@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Aug  2 10:03:18 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 3
+
+-------------------------------------------------------------------
 Wed Jul 26 11:08:09 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - CLI: add to "questions" command "answers" subcommand to set

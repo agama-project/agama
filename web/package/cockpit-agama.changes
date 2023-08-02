@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Aug  2 10:03:23 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 3
+
+-------------------------------------------------------------------
 Mon Jul 17 09:16:38 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Adapt to new questions D-Bus API to allow automatic answering of
