@@ -6,6 +6,8 @@ Mon Jul 31 06:58:15 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 - Make the "Settings" derive macro reusable from other crates.
 - Extend the "Settings" derive macro to generate code for
   InstallSettings and NetworkSettings.
+- Improve error reporting when working with the "config"
+  subcommand.
 
 -------------------------------------------------------------------
 Wed Jul 26 11:08:09 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
