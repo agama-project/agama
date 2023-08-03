@@ -72,7 +72,7 @@ impl Answers {
         2
     }
 
-    fn find_answer(&self, question: &agama_lib::questions::GenericQuestion) -> Option<&Answer> {
+    fn find_answer(&self, question: &GenericQuestion) -> Option<&Answer> {
         self.answers.iter().find(|a| a.responds(&question))
     }
 }
@@ -82,7 +82,7 @@ impl crate::questions::AnswerStrategy for Answers {
         Answers::id()
     }
 
-    fn answer(&self, question: &agama_lib::questions::GenericQuestion) -> Option<String> {
+    fn answer(&self, question: &GenericQuestion) -> Option<String> {
         let answer = self.find_answer(question);
         answer.map(|answer| answer.answer.clone())
     }
