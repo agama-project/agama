@@ -26,13 +26,13 @@ impl Answer {
     /// * `question`: question to compare with.
     pub fn responds(&self, question: &GenericQuestion) -> bool {
         if let Some(class) = &self.class {
-            if !question.class.eq(class) {
+            if question.class != *class {
                 return false;
             }
         }
 
         if let Some(text) = &self.text {
-            if !question.text.eq(text) {
+            if question.text != *text {
                 return false;
             }
         }
@@ -43,7 +43,7 @@ impl Answer {
                     return false;
                 };
 
-                e_val.eq(value)
+                e_val == value
             });
         }
 
