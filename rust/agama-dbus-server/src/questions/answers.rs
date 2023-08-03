@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use agama_lib::questions::GenericQuestion;
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
 
@@ -17,6 +18,37 @@ struct Answer {
     pub answer: String,
     /// All possible mixins have to be here, so they can be specified in an Answer
     pub password: Option<String>,
+}
+
+impl Answer {
+    /// Determines whether the answer responds to the given question.
+    ///
+    /// * `question`: question to compare with.
+    pub fn responds(&self, question: &GenericQuestion) -> bool {
+        if let Some(class) = &self.class {
+            if !question.class.eq(class) {
+                return false;
+            }
+        }
+
+        if let Some(text) = &self.text {
+            if !question.text.eq(text) {
+                return false;
+            }
+        }
+
+        if let Some(data) = &self.data {
+            return data.iter().all(|(key, value)| {
+                let Some(e_val) = question.data.get(key) else {
+                    return false;
+                };
+
+                e_val.eq(value)
+            });
+        }
+
+        true
+    }
 }
 
 /// Data structure holding list of Answer.
@@ -41,35 +73,7 @@ impl Answers {
     }
 
     fn find_answer(&self, question: &agama_lib::questions::GenericQuestion) -> Option<&Answer> {
-        'main: for answerd in self.answers.iter() {
-            if let Some(v) = &answerd.class {
-                if !question.class.eq(v) {
-                    continue;
-                }
-            }
-            if let Some(v) = &answerd.text {
-                if !question.text.eq(v) {
-                    continue;
-                }
-            }
-            if let Some(v) = &answerd.data {
-                for (key, value) in v {
-                    // all keys defined in answer has to match
-                    let entry = question.data.get(key);
-                    if let Some(e_val) = entry {
-                        if !e_val.eq(value) {
-                            continue 'main;
-                        }
-                    } else {
-                        continue 'main;
-                    }
-                }
-            }
-
-            return Some(answerd);
-        }
-
-        None
+        self.answers.iter().find(|a| a.responds(&question))
     }
 }
 
