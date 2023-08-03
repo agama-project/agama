@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Aug  3 08:34:14 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Move the settings functionality to a separate package,
+  agama-settings (gh#openSUSE/agama#666).
+- Make the "Settings" derive macro reusable from other crates.
+- Extend the "Settings" derive macro to generate code for
+  InstallSettings and NetworkSettings.
+- Improve error reporting when working with the "config"
+  subcommand.
+  
+-------------------------------------------------------------------
 Wed Aug  2 10:03:18 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 3

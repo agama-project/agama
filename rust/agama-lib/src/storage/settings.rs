@@ -1,7 +1,6 @@
 //! Representation of the storage settings
 
-use crate::settings::{SettingObject, Settings, SettingsError};
-use agama_derive::Settings;
+use agama_settings::{error::ConversionError, SettingObject, Settings};
 use serde::{Deserialize, Serialize};
 
 /// Storage settings for installation
@@ -13,12 +12,12 @@ pub struct StorageSettings {
     /// Encryption password for the storage devices (in clear text)
     pub encryption_password: Option<String>,
     /// Devices to use in the installation
-    #[collection_setting]
+    #[settings(collection)]
     pub devices: Vec<Device>,
 }
 
 /// Device to use in the installation
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Device {
     /// Device name (e.g., "/dev/sda")
@@ -32,14 +31,14 @@ impl From<String> for Device {
 }
 
 impl TryFrom<SettingObject> for Device {
-    type Error = SettingsError;
+    type Error = ConversionError;
 
     fn try_from(value: SettingObject) -> Result<Self, Self::Error> {
         match value.get("name") {
             Some(name) => Ok(Device {
                 name: name.clone().try_into()?,
             }),
-            _ => Err(SettingsError::MissingKey("name".to_string())),
+            _ => Err(ConversionError::MissingKey("name".to_string())),
         }
     }
 }

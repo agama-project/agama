@@ -12,13 +12,13 @@
 //! taking care of the conversions automatically. The newtype [SettingValue] takes care of such a
 //! conversion.
 //!
+use crate::error::{ConversionError, SettingsError};
 use std::collections::HashMap;
 /// For plain structs, the implementation can be derived.
 ///
 /// TODO: derive for top-level structs too
 use std::convert::TryFrom;
 use std::fmt::Display;
-use thiserror::Error;
 
 /// Implements support for easily settings attributes values given an ID (`"users.name"`) and a
 /// string value (`"Foo bar"`).
@@ -27,8 +27,7 @@ use thiserror::Error;
 /// `UserSettings`.
 ///
 /// ```no_compile
-/// # use agama_lib::settings::{Settings, SettingValue};
-/// # use agama_derive::Settings;
+/// # use agama_settings::{Settings, settings::{Settings, SettingValue}};
 ///
 /// #[derive(Settings)]
 /// struct UserSettings {
@@ -61,7 +60,7 @@ use thiserror::Error;
 /// ```
 pub trait Settings {
     fn add(&mut self, attr: &str, _value: SettingObject) -> Result<(), SettingsError> {
-        Err(SettingsError::UnknownCollection(attr.to_string()))
+        Err(SettingsError::UnknownAttribute(attr.to_string()))
     }
 
     fn set(&mut self, attr: &str, _value: SettingValue) -> Result<(), SettingsError> {
@@ -82,7 +81,7 @@ pub trait Settings {
 /// more types.
 ///
 /// ```
-///   # use agama_lib::settings::SettingValue;
+///   # use agama_settings::settings::SettingValue;
 //
 ///   let value = SettingValue("true".to_string());
 ///   let value: bool = value.try_into().expect("the conversion failed");
@@ -123,19 +122,22 @@ impl From<HashMap<String, String>> for SettingObject {
 }
 
 impl TryFrom<SettingValue> for bool {
-    type Error = SettingsError;
+    type Error = ConversionError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         match value.0.to_lowercase().as_str() {
             "true" | "yes" | "t" => Ok(true),
             "false" | "no" | "f" => Ok(false),
-            _ => Err(SettingsError::InvalidValue(value.to_string())),
+            _ => Err(ConversionError::InvalidValue(
+                value.to_string(),
+                "boolean".to_string(),
+            )),
         }
     }
 }
 
 impl TryFrom<SettingValue> for Option<bool> {
-    type Error = SettingsError;
+    type Error = ConversionError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         Ok(Some(value.try_into()?))
@@ -143,7 +145,7 @@ impl TryFrom<SettingValue> for Option<bool> {
 }
 
 impl TryFrom<SettingValue> for String {
-    type Error = SettingsError;
+    type Error = ConversionError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         Ok(value.0)
@@ -151,7 +153,7 @@ impl TryFrom<SettingValue> for String {
 }
 
 impl TryFrom<SettingValue> for Option<String> {
-    type Error = SettingsError;
+    type Error = ConversionError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         Ok(Some(value.try_into()?))
@@ -171,6 +173,14 @@ mod tests {
         let value = SettingValue("false".to_string());
         let value: bool = value.try_into().unwrap();
         assert!(!value);
+
+        let value = SettingValue("fasle".to_string());
+        let value: Result<bool, ConversionError> = value.try_into();
+        let error = value.unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "Invalid value 'fasle', expected a boolean"
+        );
     }
 
     #[test]
@@ -179,16 +189,4 @@ mod tests {
         let value: String = value.try_into().unwrap();
         assert_eq!(value, "some value");
     }
-}
-
-#[derive(Error, Debug)]
-pub enum SettingsError {
-    #[error("Unknown attribute '{0}'")]
-    UnknownAttribute(String),
-    #[error("Unknown collection '{0}'")]
-    UnknownCollection(String),
-    #[error("Invalid value '{0}'")]
-    InvalidValue(String),
-    #[error("Missing key '{0}'")]
-    MissingKey(String),
 }

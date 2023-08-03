@@ -1,47 +1,17 @@
-use crate::settings::{SettingValue, Settings, SettingsError};
-use agama_derive::Settings;
+use agama_settings::Settings;
 use serde::{Deserialize, Serialize};
 
 /// User settings
 ///
 /// Holds the user settings for the installation.
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Settings, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UserSettings {
     #[serde(rename = "user")]
+    #[settings(nested)]
     pub first_user: Option<FirstUserSettings>,
+    #[settings(nested)]
     pub root: Option<RootUserSettings>,
-}
-
-impl Settings for UserSettings {
-    fn set(&mut self, attr: &str, value: SettingValue) -> Result<(), SettingsError> {
-        if let Some((ns, id)) = attr.split_once('.') {
-            match ns {
-                "user" => {
-                    let first_user = self.first_user.get_or_insert(Default::default());
-                    first_user.set(id, value)?
-                }
-                "root" => {
-                    let root_user = self.root.get_or_insert(Default::default());
-                    root_user.set(id, value)?
-                }
-                _ => return Err(SettingsError::UnknownAttribute(attr.to_string())),
-            }
-        }
-        Ok(())
-    }
-
-    fn merge(&mut self, other: &Self) {
-        if let Some(other_first_user) = &other.first_user {
-            let first_user = self.first_user.get_or_insert(Default::default());
-            first_user.merge(other_first_user);
-        }
-
-        if let Some(other_root) = &other.root {
-            let root = self.root.get_or_insert(Default::default());
-            root.merge(other_root);
-        }
-    }
 }
 
 /// First user settings
@@ -76,6 +46,7 @@ pub struct RootUserSettings {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use agama_settings::settings::Settings;
 
     #[test]
     fn test_user_settings_merge() {

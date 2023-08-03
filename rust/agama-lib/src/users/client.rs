@@ -2,7 +2,7 @@
 
 use super::proxies::Users1Proxy;
 use crate::error::ServiceError;
-use crate::settings::{SettingValue, Settings, SettingsError};
+use agama_settings::{settings::Settings, SettingValue, SettingsError};
 use serde::Serialize;
 use zbus::Connection;
 
@@ -42,13 +42,31 @@ impl FirstUser {
     }
 }
 
+// TODO: use the Settings macro (add support for ignoring fields to the macro and use Option for
+// FirstUser fields)
 impl Settings for FirstUser {
     fn set(&mut self, attr: &str, value: SettingValue) -> Result<(), SettingsError> {
         match attr {
-            "full_name" => self.full_name = value.try_into()?,
-            "user_name" => self.user_name = value.try_into()?,
-            "password" => self.password = value.try_into()?,
-            "autologin" => self.autologin = value.try_into()?,
+            "full_name" => {
+                self.full_name = value
+                    .try_into()
+                    .map_err(|e| SettingsError::UpdateFailed(attr.to_string(), e))?
+            }
+            "user_name" => {
+                self.user_name = value
+                    .try_into()
+                    .map_err(|e| SettingsError::UpdateFailed(attr.to_string(), e))?
+            }
+            "password" => {
+                self.full_name = value
+                    .try_into()
+                    .map_err(|e| SettingsError::UpdateFailed(attr.to_string(), e))?
+            }
+            "autologin" => {
+                self.full_name = value
+                    .try_into()
+                    .map_err(|e| SettingsError::UpdateFailed(attr.to_string(), e))?
+            }
             _ => return Err(SettingsError::UnknownAttribute(attr.to_string())),
         }
         Ok(())
