@@ -34,7 +34,8 @@ pub enum ConfigAction {
 pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<()> {
     let store = SettingsStore::new(connection().await?).await?;
 
-    match parse_config_command(subcommand) {
+    let command = parse_config_command(subcommand)?;
+    match command {
         ConfigAction::Set(changes) => {
             let scopes = changes
                 .keys()
@@ -68,26 +69,26 @@ pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<(
     }
 }
 
-fn parse_config_command(subcommand: ConfigCommands) -> ConfigAction {
+fn parse_config_command(subcommand: ConfigCommands) -> Result<ConfigAction, CliError> {
     match subcommand {
-        ConfigCommands::Add { key, values } => ConfigAction::Add(key, parse_keys_values(values)),
-        ConfigCommands::Show => ConfigAction::Show,
-        ConfigCommands::Set { values } => ConfigAction::Set(parse_keys_values(values)),
-        ConfigCommands::Load { path } => ConfigAction::Load(path),
+        ConfigCommands::Add { key, values } => {
+            Ok(ConfigAction::Add(key, parse_keys_values(values)?))
+        }
+        ConfigCommands::Show => Ok(ConfigAction::Show),
+        ConfigCommands::Set { values } => Ok(ConfigAction::Set(parse_keys_values(values)?)),
+        ConfigCommands::Load { path } => Ok(ConfigAction::Load(path)),
     }
 }
 
-fn parse_keys_values(keys_values: Vec<String>) -> HashMap<String, String> {
-    keys_values
-        .iter()
-        .filter_map(|s| {
-            if let Some((key, value)) = s.split_once('=') {
-                Some((key.to_string(), value.to_string()))
-            } else {
-                None
-            }
-        })
-        .collect()
+fn parse_keys_values(keys_values: Vec<String>) -> Result<HashMap<String, String>, CliError> {
+    let mut changes = HashMap::new();
+    for s in keys_values {
+        let Some((key, value)) = s.split_once('=') else {
+            return Err(CliError::MissingSeparator(s));
+        };
+        changes.insert(key.to_string(), value.to_string());
+    }
+    Ok(changes)
 }
 
 fn key_to_scope(key: &str) -> Result<Scope, Box<dyn Error>> {
