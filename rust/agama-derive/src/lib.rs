@@ -74,12 +74,13 @@ pub fn agama_attributes_derive(input: TokenStream) -> TokenStream {
 }
 
 fn expand_set_fn(settings: &SettingFieldsList) -> TokenStream2 {
-    if settings.is_empty() {
+    let scalar_fields = settings.by_type(SettingKind::Scalar);
+    let nested_fields = settings.by_type(SettingKind::Nested);
+    if scalar_fields.is_empty() && nested_fields.is_empty() {
         return quote! {};
     }
 
-    let mut scalar_handling = quote! {};
-    let scalar_fields = settings.by_type(SettingKind::Scalar);
+    let mut scalar_handling = quote! { Ok(()) };
     if !scalar_fields.is_empty() {
         let field_name = scalar_fields.iter().map(|s| s.ident.clone());
         scalar_handling = quote! {
@@ -89,11 +90,11 @@ fn expand_set_fn(settings: &SettingFieldsList) -> TokenStream2 {
                 })?,)*
                 _ => return Err(agama_settings::SettingsError::UnknownAttribute(attr.to_string()))
             }
+            Ok(())
         }
     }
 
     let mut nested_handling = quote! {};
-    let nested_fields = settings.by_type(SettingKind::Nested);
     if !nested_fields.is_empty() {
         let field_name = nested_fields.iter().map(|s| s.ident.clone());
         nested_handling = quote! {
@@ -114,7 +115,6 @@ fn expand_set_fn(settings: &SettingFieldsList) -> TokenStream2 {
          fn set(&mut self, attr: &str, value: agama_settings::SettingValue) -> Result<(), agama_settings::SettingsError> {
             #nested_handling
             #scalar_handling
-            Ok(())
          }
     }
 }
@@ -155,12 +155,13 @@ fn expand_merge_fn(settings: &SettingFieldsList) -> TokenStream2 {
 }
 
 fn expand_add_fn(settings: &SettingFieldsList) -> TokenStream2 {
-    if settings.is_empty() {
+    let collection_fields = settings.by_type(SettingKind::Collection);
+    let nested_fields = settings.by_type(SettingKind::Nested);
+    if collection_fields.is_empty() && nested_fields.is_empty() {
         return quote! {};
     }
 
-    let mut collection_handling = quote! {};
-    let collection_fields = settings.by_type(SettingKind::Collection);
+    let mut collection_handling = quote! { Ok(()) };
     if !collection_fields.is_empty() {
         let field_name = collection_fields.iter().map(|s| s.ident.clone());
         collection_handling = quote! {
@@ -173,11 +174,11 @@ fn expand_add_fn(settings: &SettingFieldsList) -> TokenStream2 {
                 },)*
                 _ => return Err(agama_settings::SettingsError::UnknownAttribute(attr.to_string()))
             }
+            Ok(())
         };
     }
 
     let mut nested_handling = quote! {};
-    let nested_fields = settings.by_type(SettingKind::Nested);
     if !nested_fields.is_empty() {
         let field_name = nested_fields.iter().map(|s| s.ident.clone());
         nested_handling = quote! {
@@ -193,12 +194,10 @@ fn expand_add_fn(settings: &SettingFieldsList) -> TokenStream2 {
             }
         }
     }
-
     quote! {
         fn add(&mut self, attr: &str, value: agama_settings::SettingObject) -> Result<(), agama_settings::SettingsError> {
             #nested_handling
             #collection_handling
-            Ok(())
         }
     }
 }
