@@ -14,7 +14,7 @@ module.exports = function (req, res) {
   const language = req.headers.cookie.replace(/(?:(?:^|.*;\s*)CockpitLang\s*=\s*([^;]*).*$)|^.*$/, "$1") || "";
   // the cookie uses "pt-br" format while the PO file is "pt_BR" :-/
   let [lang, country] = language.split("-");
-  if (country) country = country.toUpperCase();
+  country = country?.toUpperCase();
 
   // first check the full locale ("pt_BR") PO file
   if (fs.existsSync(path.join(__dirname, "..", "..", "po", `${lang}_${country}.po`))) {
