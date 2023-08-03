@@ -59,6 +59,7 @@ jobs:
           find web/po -name '*.po' -exec git rm '{}' ';'
 
           # copy the new ones
+          mkdir -p web/po
           cp -a ../agama-weblate/web/*.po web/po
           git add web/po/*.po
 

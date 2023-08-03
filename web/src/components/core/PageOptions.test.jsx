@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, fireEvent } from "@testing-library/react";
 import { plainRender, mockLayout } from "~/test-utils";
 import { PageOptions } from "~/components/core";
 
@@ -73,4 +73,26 @@ it("hide the component content when the user clicks on one of its actions", asyn
   await user.click(action);
 
   expect(screen.queryByRole("menuitem", { name: "A dummy action" })).toBeNull();
+});
+
+it('should close the dropdown on click outside', async () => {
+  const { user } = plainRender(
+    <PageOptions>
+      <PageOptions.Item><>Item 1</></PageOptions.Item>
+      <PageOptions.Item><>Item 2</></PageOptions.Item>
+    </PageOptions>
+  );
+
+  // Open the dropdown
+  const toggler = screen.getByRole("button");
+  await user.click(toggler);
+
+  // Ensure the dropdown is open
+  screen.getByRole("menuitem", { name: "Item 2" });
+
+  // Click outside the dropdown
+  fireEvent.click(document);
+
+  // Ensure the dropdown is closed
+  expect(screen.queryByRole("menuitem", { name: "Item 2" })).toBeNull();
 });

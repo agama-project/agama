@@ -150,9 +150,8 @@ ALP-Dolomite:
         archs: ppc
 
     mandatory_patterns:
-      - patterns-alp-base
-      - patterns-alp-cockpit
-      - patterns-alp-hardware
+      - alp_base
+      - alp_hardware
     optional_patterns: null # no optional pattern shared
     mandatory_packages:
       - package: device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
@@ -171,7 +170,7 @@ ALP-Dolomite:
       #     - apparmor
       selinux:
         patterns:
-          - patterns-alp-selinux
+          - alp_selinux
         policy: enforcing
       none:
         patterns: null
