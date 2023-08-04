@@ -1,6 +1,7 @@
 **Checks**
 
 [![CI Status](https://github.com/openSUSE/agama/actions/workflows/ci.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci.yml)
+[![CI - Integration Tests](https://github.com/openSUSE/agama/actions/workflows/ci-integration-tests.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-integration-tests.yml)
 [![Coverage Status](https://coveralls.io/repos/github/openSUSE/agama/badge.svg?branch=master)](https://coveralls.io/github/openSUSE/agama?branch=master)
 [![GitHub Pages](https://github.com/openSUSE/agama/actions/workflows/github-pages.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/github-pages.yml)
 
