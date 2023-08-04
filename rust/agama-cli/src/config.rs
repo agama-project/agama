@@ -80,6 +80,18 @@ fn parse_config_command(subcommand: ConfigCommands) -> Result<ConfigAction, CliE
     }
 }
 
+/// Split the elements on '=' to make a hash of them.
+///
+/// ```
+/// let happy_in = vec!["one=first".to_string(), "two=second".to_string()];
+/// let happy_out = HashMap::from([
+///     ("one".to_string(), "first".to_string()),
+///     ("two".to_string(), "second".to_string())
+/// ]);
+/// let r = parse_keys_values(happy_in);
+/// assert!(r.is_ok());
+/// assert_eq!(r.unwrap(), happy_out);
+/// ```
 fn parse_keys_values(keys_values: Vec<String>) -> Result<HashMap<String, String>, CliError> {
     let mut changes = HashMap::new();
     for s in keys_values {
@@ -89,6 +101,22 @@ fn parse_keys_values(keys_values: Vec<String>) -> Result<HashMap<String, String>
         changes.insert(key.to_string(), value.to_string());
     }
     Ok(changes)
+}
+
+#[test]
+fn test_parse_keys_values() {
+    // an empty list is fine
+    let empty_vec = Vec::<String>::new();
+    let empty_hash = HashMap::<String, String>::new();
+    let r = parse_keys_values(empty_vec);
+    assert!(r.is_ok());
+    assert_eq!(r.unwrap(), empty_hash);
+
+    // an empty member fails
+    let empty_string = vec!["".to_string(), "two=second".to_string()];
+    let r = parse_keys_values(empty_string);
+    assert!(r.is_err());
+    assert_eq!(format!("{}", r.unwrap_err()), "Missing the '=' separator in ''");
 }
 
 fn key_to_scope(key: &str) -> Result<Scope, Box<dyn Error>> {
