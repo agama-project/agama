@@ -8,6 +8,7 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CompressionPlugin = require("compression-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
 const CockpitPoPlugin = require("./src/lib/cockpit-po-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CockpitRsyncPlugin = require("./src/lib/cockpit-rsync-plugin");
 const StylelintPlugin = require('stylelint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
@@ -37,15 +38,16 @@ const packageJson = JSON.parse(fs.readFileSync('package.json'));
 
 // Non-JS files which are copied verbatim to dist/
 const copy_files = [
-  "./src/index.html",
-  "./src/manifest.json",
-  // TODO: consider using something more complete like https://github.com/jantimon/favicons-webpack-plugin
-  "./src/assets/favicon.svg",
+  "./src/manifest.json"
 ];
 
 const plugins = [
   new Copy({ patterns: copy_files }),
   new Extract({ filename: "[name].css" }),
+  new HtmlWebpackPlugin({
+    template: "./src/index.html",
+    favicon: "./src/assets/favicon.svg"
+  }),
   new CockpitPoPlugin(),
   new CockpitRsyncPlugin({ dest: packageJson.name }),
   development && new ReactRefreshWebpackPlugin({ overlay: false }),
