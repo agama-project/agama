@@ -81,17 +81,6 @@ fn parse_config_command(subcommand: ConfigCommands) -> Result<ConfigAction, CliE
 }
 
 /// Split the elements on '=' to make a hash of them.
-///
-/// ```
-/// let happy_in = vec!["one=first".to_string(), "two=second".to_string()];
-/// let happy_out = HashMap::from([
-///     ("one".to_string(), "first".to_string()),
-///     ("two".to_string(), "second".to_string())
-/// ]);
-/// let r = parse_keys_values(happy_in);
-/// assert!(r.is_ok());
-/// assert_eq!(r.unwrap(), happy_out);
-/// ```
 fn parse_keys_values(keys_values: Vec<String>) -> Result<HashMap<String, String>, CliError> {
     let mut changes = HashMap::new();
     for s in keys_values {
@@ -105,6 +94,16 @@ fn parse_keys_values(keys_values: Vec<String>) -> Result<HashMap<String, String>
 
 #[test]
 fn test_parse_keys_values() {
+    // happy path, make a hash out of the vec
+    let happy_in = vec!["one=first".to_string(), "two=second".to_string()];
+    let happy_out = HashMap::from([
+        ("one".to_string(), "first".to_string()),
+        ("two".to_string(), "second".to_string())
+    ]);
+    let r = parse_keys_values(happy_in);
+    assert!(r.is_ok());
+    assert_eq!(r.unwrap(), happy_out);
+
     // an empty list is fine
     let empty_vec = Vec::<String>::new();
     let empty_hash = HashMap::<String, String>::new();
