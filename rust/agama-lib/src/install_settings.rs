@@ -62,7 +62,7 @@ impl FromStr for Scope {
 #[serde(rename_all = "camelCase")]
 pub struct InstallSettings {
     #[serde(default, flatten)]
-    #[settings(nested)]
+    #[settings(nested, flatten, alias = "root")]
     pub user: Option<UserSettings>,
     #[serde(default)]
     #[settings(nested)]

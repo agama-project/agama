@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct UserSettings {
     #[serde(rename = "user")]
-    #[settings(nested)]
+    #[settings(nested, alias = "user")]
     pub first_user: Option<FirstUserSettings>,
     #[settings(nested)]
     pub root: Option<RootUserSettings>,
