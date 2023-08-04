@@ -131,7 +131,7 @@ jobs:
     - name: Show the D-Bus services log
       run:  podman exec agama bash -c "journalctl | grep agama"
 
-    - name: Check DBus socket
+    - name: Check D-Bus socket
       run:  podman exec agama ls -l /var/run/dbus/system_bus_socket
 
     - name: Run the Agama smoke test
