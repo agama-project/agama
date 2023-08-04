@@ -67,6 +67,8 @@ describe("L10nWrapper", () => {
     });
 
     describe("when the Cockpit language is not set", () => {
+      // so far this is only done in "test" and "development" environments,
+      // not in "production"!!
       it("sets the preferred language from browser and reloads", () => {
         render(<L10nWrapper>Testing content</L10nWrapper>);
 
