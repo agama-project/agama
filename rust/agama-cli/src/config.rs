@@ -98,7 +98,7 @@ fn test_parse_keys_values() {
     let happy_in = vec!["one=first".to_string(), "two=second".to_string()];
     let happy_out = HashMap::from([
         ("one".to_string(), "first".to_string()),
-        ("two".to_string(), "second".to_string())
+        ("two".to_string(), "second".to_string()),
     ]);
     let r = parse_keys_values(happy_in);
     assert!(r.is_ok());
@@ -115,7 +115,10 @@ fn test_parse_keys_values() {
     let empty_string = vec!["".to_string(), "two=second".to_string()];
     let r = parse_keys_values(empty_string);
     assert!(r.is_err());
-    assert_eq!(format!("{}", r.unwrap_err()), "Missing the '=' separator in ''");
+    assert_eq!(
+        format!("{}", r.unwrap_err()),
+        "Missing the '=' separator in ''"
+    );
 }
 
 fn key_to_scope(key: &str) -> Result<Scope, Box<dyn Error>> {
