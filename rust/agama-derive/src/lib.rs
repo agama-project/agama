@@ -1,3 +1,33 @@
+//! Implements a derive macro to implement the Settings from the `agama_settings` crate.
+//!
+//! ```no_compile
+//! use agama_settings::{Settings, settings::Settings};
+//!
+//! #[derive(Default, Settings)]
+//! struct UserSettings {
+//!   name: Option<String>,
+//!   enabled: Option<bool>
+//! }
+//!
+//! #[derive(Default, Settings)]
+//! struct InstallSettings {
+//!   #[settings(nested, alias = "first_user")]
+//!   user: Option<UserSettings>,
+//!   reboot: Option<bool>
+//!   product: Option<String>,
+//!   #[settings(collection)]
+//!   packages: Vec<String>
+//! }
+//!
+//! ## Supported attributes
+//!
+//! * `nested`: the field is another struct that implements `Settings`.
+//! * `collection`: the attribute is a vector of elements of type T. You might need to implement
+//!   `TryFrom<SettingObject> for T` for your custom types.
+//! * `flatten`: the field is flatten (in serde jargon).
+//! * `alias`: and alternative name for the field. It can be specified several times.
+//! ```
+
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
