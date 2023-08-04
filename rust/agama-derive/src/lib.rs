@@ -1,7 +1,7 @@
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
-use syn::{parse_macro_input, DeriveInput, Fields};
+use syn::{parse_macro_input, DeriveInput, Fields, LitStr};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum SettingKind {
@@ -20,6 +20,21 @@ struct SettingField {
     pub ident: syn::Ident,
     /// Setting kind (scalar, collection, struct).
     pub kind: SettingKind,
+    /// Whether it is a flatten (in serde jargon) value.
+    pub flatten: bool,
+    /// Aliases for the field (especially useful for flatten fields).
+    pub aliases: Vec<String>,
+}
+
+impl SettingField {
+    pub fn new(ident: syn::Ident) -> Self {
+        Self {
+            ident,
+            kind: SettingKind::Scalar,
+            flatten: false,
+            aliases: vec![],
+        }
+    }
 }
 
 /// List of setting fields
@@ -97,12 +112,16 @@ fn expand_set_fn(settings: &SettingFieldsList) -> TokenStream2 {
     let mut nested_handling = quote! {};
     if !nested_fields.is_empty() {
         let field_name = nested_fields.iter().map(|s| s.ident.clone());
+        let aliases = quote_fields_aliases(&nested_fields);
+        let attr = nested_fields
+            .iter()
+            .map(|s| if s.flatten { quote!(attr) } else { quote!(id) });
         nested_handling = quote! {
             if let Some((ns, id)) = attr.split_once('.') {
                 match ns {
-                    #(stringify!(#field_name) => {
+                    #(stringify!(#field_name) #aliases => {
                         let #field_name = self.#field_name.get_or_insert(Default::default());
-                        #field_name.set(id, value).map_err(|e| e.with_attr(attr))?
+                        #field_name.set(#attr, value).map_err(|e| e.with_attr(attr))?
                     })*
                     _ => return Err(agama_settings::SettingsError::UnknownAttribute(attr.to_string()))
                 }
@@ -209,15 +228,13 @@ fn expand_add_fn(settings: &SettingFieldsList) -> TokenStream2 {
 fn parse_setting_fields(fields: Vec<&syn::Field>) -> SettingFieldsList {
     let mut settings = vec![];
     for field in fields {
-        let mut setting = SettingField {
-            ident: field.ident.clone().expect("to find a field ident"),
-            kind: SettingKind::Scalar,
-        };
-
+        let ident = field.ident.clone().expect("to find a field ident");
+        let mut setting = SettingField::new(ident);
         for attr in &field.attrs {
             if !attr.path().is_ident("settings") {
                 continue;
             }
+
             attr.parse_nested_meta(|meta| {
                 if meta.path.is_ident("collection") {
                     setting.kind = SettingKind::Collection;
@@ -227,6 +244,16 @@ fn parse_setting_fields(fields: Vec<&syn::Field>) -> SettingFieldsList {
                     setting.kind = SettingKind::Nested;
                 }
 
+                if meta.path.is_ident("flatten") {
+                    setting.flatten = true;
+                }
+
+                if meta.path.is_ident("alias") {
+                    let value = meta.value()?;
+                    let alias: LitStr = value.parse()?;
+                    setting.aliases.push(alias.value());
+                }
+
                 Ok(())
             })
             .expect("settings arguments do not follow the expected structure");
@@ -234,4 +261,18 @@ fn parse_setting_fields(fields: Vec<&syn::Field>) -> SettingFieldsList {
         settings.push(setting);
     }
     SettingFieldsList(settings)
+}
+
+fn quote_fields_aliases(nested_fields: &Vec<&SettingField>) -> Vec<TokenStream2> {
+    nested_fields
+        .iter()
+        .map(|f| {
+            let aliases = f.aliases.clone();
+            if aliases.is_empty() {
+                quote! {}
+            } else {
+                quote! { #(| #aliases)* }
+            }
+        })
+        .collect()
 }
