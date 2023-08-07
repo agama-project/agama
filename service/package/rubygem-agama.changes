@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug  7 10:52:35 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not consider the architecture when filtering the configuration
+  file through the filter-config.rb script (gh#openSUSE/agama#691).
+
+-------------------------------------------------------------------
 Wed Aug  2 10:03:13 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 3
