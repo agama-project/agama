@@ -41,17 +41,17 @@ unless File.exist?(path)
   exit(2)
 end
 
-config = Agama::Config.from_file(path)
+config = YAML.load_file(path)
 
-unknown_products = product_ids - config.products.keys
+unknown_products = product_ids - config["products"].keys
 unless unknown_products.empty?
   warn(format("The following products are unknown: %{products}.",
     products: unknown_products.join(", ")))
   exit(3)
 end
 
-keys_to_filter = (["products"] + config.products.keys) - product_ids
-products = product_ids.reduce({}) { |all, id| all.merge(id => config.data["products"][id]) }
+keys_to_filter = (["products"] + config["products"].keys) - product_ids
+products = product_ids.reduce({}) { |all, id| all.merge(id => config["products"][id]) }
 new_config = { "products" => products }
-new_config.merge!(config.pure_data.reject { |k, _v| keys_to_filter.include?(k) })
+new_config.merge!(config.reject { |k, _v| keys_to_filter.include?(k) })
 puts YAML.dump(new_config)
