@@ -34,7 +34,7 @@ require "y2storage"
 require "dbus"
 
 describe Agama::DBus::Storage::Manager do
-  subject { described_class.new(backend, logger) }
+  subject(:manager) { described_class.new(backend, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
@@ -43,6 +43,7 @@ describe Agama::DBus::Storage::Manager do
       proposal:                    proposal,
       iscsi:                       iscsi,
       software:                    software,
+      config:                      config,
       on_probe:                    nil,
       on_progress_change:          nil,
       on_progress_finish:          nil,
@@ -50,8 +51,11 @@ describe Agama::DBus::Storage::Manager do
       on_deprecated_system_change: nil)
   end
 
+  let(:config) { Agama::Config.new(config_data) }
+  let(:config_data) { {} }
+
   let(:proposal) do
-    instance_double(Agama::Storage::Proposal, on_calculate: nil, calculated_settings: settings)
+    instance_double(Agama::Storage::Proposal, on_calculate: nil, settings: settings)
   end
 
   let(:settings) { nil }
@@ -121,75 +125,83 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
-  describe "#volume_templates" do
-    before do
-      allow(proposal).to receive(:volume_templates).and_return(templates)
+  describe "#default_volume" do
+    let(:config_data) do
+      { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
     end
 
-    context "if there are no volume templates" do
-      let(:templates) { [] }
+    context "with no storage section in the configuration" do
+      let(:cfg_templates) { [] }
 
-      it "returns an empty list" do
-        expect(subject.volume_templates).to eq([])
+      it "returns the same generic default volume for any path" do
+        generic = {
+          "FsType" => "Ext4", "MountOptions" => [],
+          "MinSize" => 0, "MaxSize" => 0, "AutoSize" => false
+        }
+        generic_outline = { "Required" => false, "FsTypes" => [], "SupportAutoSize" => false}
+
+        expect(subject.default_volume("/")).to include(generic)
+        expect(subject.default_volume("/")["Outline"]).to include(generic_outline)
+
+        expect(subject.default_volume("swap")).to include(generic)
+        expect(subject.default_volume("swap")["Outline"]).to include(generic_outline)
+
+        expect(subject.default_volume("/foo")).to include(generic)
+        expect(subject.default_volume("/foo")["Outline"]).to include(generic_outline)
       end
     end
 
-    context "if there are volume templates" do
-      let(:templates) { [volume1_template, volume2_template] }
-
-      let(:volume1_template) do
-        spec = Y2Storage::VolumeSpecification.new({
-          "min_size" => "5 GiB",
-          "max_size" => "10 GiB"
-        })
-
-        Agama::Storage::Volume.new(spec).tap do |volume|
-          volume.mount_point = "/test"
-          volume.device_type = :partition
-          volume.encrypted = true
-          volume.fs_type = Y2Storage::Filesystems::Type::EXT3
-          volume.fixed_size_limits = true
-          volume.snapshots = true
-        end
+    context "with a set of volume templates in the configuration" do
+      let(:cfg_templates) do
+        [
+          {
+            "mount_path" => "/", "filesystem" => "btrfs", "size" => { "auto" => true },
+            "outline" => {
+              "required" => true,
+              "auto_size" => {
+                "base_min" => "5 GiB", "base_max" => "20 GiB", "min_fallback_for" => "/home"
+              },
+              "filesystems" => ["btrfs"]
+            }
+          },
+          {
+            "mount_path" => "swap", "filesystem" => "swap",
+            "size" => { "auto" => false, "min" => "1 GiB", "max" => "2 GiB" },
+            "outline" => { "required" => false, "filesystems" => ["swap"] }
+          },
+          {
+            "mount_path" => "/home", "filesystem" => "xfs",
+            "size" => { "auto" => false, "min" => "10 GiB" },
+            "outline" => { "required" => false, "filesystems" => ["xfs", "ext2"] }
+          },
+          {
+            "filesystem" => "ext4", "size" => { "auto" => false, "min" => "10 GiB" },
+            "outline" => { "filesystems" => ["ext3", "ext4", "xfs"] }
+          }
+        ]
       end
 
-      let(:volume2_template) { Agama::Storage::Volume.new }
+      it "returns the appropriate volume if there is a corresponding template" do
+        expect(subject.default_volume("/")).to include("FsType" => "Btrfs", "AutoSize" => true)
+        expect(subject.default_volume("/")["Outline"]).to include(
+          "Required" => true, "FsTypes" => ["Btrfs"],
+          "SupportAutoSize" => true, "SizeRelevantVolumes" => ["/home"]
+        )
 
-      before do
-        allow(volume1_template).to receive(:size_relevant_volumes).and_return(["/home"])
-        allow(volume1_template).to receive(:fs_types)
-          .and_return([Y2Storage::Filesystems::Type::EXT3])
+        expect(subject.default_volume("swap")).to include(
+          "FsType" => "Swap", "AutoSize" => false, "MinSize" => 1024**3, "MaxSize" => 2*(1024**3)
+        )
+        expect(subject.default_volume("swap")["Outline"]).to include(
+          "Required" => false, "FsTypes" => ["Swap"], "SupportAutoSize" => false
+        )
       end
 
-      it "returns a list with a hash for each volume template" do
-        expect(subject.volume_templates.size).to eq(2)
-        expect(subject.volume_templates).to all(be_a(Hash))
+      it "returns the default volume for any path without a template" do
+        default = { "FsType" => "Ext4", "AutoSize" => false, "MinSize" => 10*(1024**3) }
+        default_outline = { "FsTypes" => ["Ext3", "Ext4", "XFS"], "SupportAutoSize" => false}
 
-        template1, template2 = subject.volume_templates
-
-        expect(template1).to eq({
-          "MountPoint"            => "/test",
-          "Optional"              => false,
-          "DeviceType"            => "partition",
-          "Encrypted"             => true,
-          "FsTypes"               => ["Ext3"],
-          "FsType"                => "Ext3",
-          "MinSize"               => Y2Storage::DiskSize.GiB(5).to_i,
-          "MaxSize"               => Y2Storage::DiskSize.GiB(10).to_i,
-          "FixedSizeLimits"       => true,
-          "AdaptiveSizes"         => true,
-          "Snapshots"             => true,
-          "SnapshotsConfigurable" => false,
-          "SnapshotsAffectSizes"  => false,
-          "SizeRelevantVolumes"   => ["/home"]
-        })
-
-        expect(template2).to eq({
-          "Optional"              => true,
-          "AdaptiveSizes"         => false,
-          "SnapshotsConfigurable" => false,
-          "SnapshotsAffectSizes"  => false
-        })
+        expect(subject.default_volume("/foo")).to include(default)
+        expect(subject.default_volume("/foo")["Outline"]).to include(default_outline)
       end
     end
   end
@@ -221,7 +233,7 @@ describe Agama::DBus::Storage::Manager do
   describe "#calculate_proposal" do
     let(:dbus_settings) do
       {
-        "CandidateDevices"   => ["/dev/vda"],
+        "BootDevice"         => "/dev/vda",
         "LVM"                => true,
         "EncryptionPassword" => "n0ts3cr3t",
         "Volumes"            => dbus_volumes
@@ -230,20 +242,22 @@ describe Agama::DBus::Storage::Manager do
 
     let(:dbus_volumes) do
       [
-        { "MountPoint" => "/" },
-        { "MountPoint" => "swap" }
+        { "MountPath" => "/" },
+        { "MountPath" => "swap" }
       ]
     end
 
     it "calculates a proposal with settings having values from D-Bus" do
       expect(proposal).to receive(:calculate) do |settings|
         expect(settings).to be_a(Agama::Storage::ProposalSettings)
-        expect(settings.candidate_devices).to contain_exactly("/dev/vda")
-        expect(settings.lvm).to eq(true)
-        expect(settings.encryption_password).to eq("n0ts3cr3t")
+        expect(settings.boot_device).to eq "/dev/vda"
+        expect(settings.lvm).to be_a(Agama::Storage::LvmSettings)
+        expect(settings.lvm.enabled).to eq true
+        expect(settings.encryption).to be_a(Agama::Storage::EncryptionSettings)
+        expect(settings.encryption.password).to eq("n0ts3cr3t")
         expect(settings.volumes).to contain_exactly(
-          an_object_having_attributes(mount_point: "/"),
-          an_object_having_attributes(mount_point: "swap")
+          an_object_having_attributes(mount_path: "/"),
+          an_object_having_attributes(mount_path: "swap")
         )
       end
 
@@ -253,13 +267,28 @@ describe Agama::DBus::Storage::Manager do
     context "when the D-Bus settings does not include some values" do
       let(:dbus_settings) { {} }
 
-      it "calculates a proposal with settings having default values for the missing settings" do
+      it "calculates a proposal with default/empty values for the missing settings" do
         expect(proposal).to receive(:calculate) do |settings|
           expect(settings).to be_a(Agama::Storage::ProposalSettings)
-          expect(settings.candidate_devices).to eq([])
-          expect(settings.lvm).to be_nil
-          expect(settings.encryption_password).to be_nil
+          expect(settings.boot_device).to eq nil
+          expect(settings.lvm).to be_a(Agama::Storage::LvmSettings)
+          expect(settings.lvm.enabled).to eq false
+          expect(settings.encryption).to be_a(Agama::Storage::EncryptionSettings)
+          expect(settings.encryption.password).to be_nil
           expect(settings.volumes).to eq([])
+        end
+
+        subject.calculate_proposal(dbus_settings)
+      end
+    end
+
+    context "when the D-Bus settings include some unexpected attribute" do
+      let(:dbus_settings) { { "CandidateDevices" => ["/dev/vda"] } }
+
+      # This is likely a temporary behavior
+      it "calculates a proposal ignoring the unknown attributes" do
+        expect(proposal).to receive(:calculate) do |settings|
+          expect(settings).to be_a(Agama::Storage::ProposalSettings)
         end
 
         subject.calculate_proposal(dbus_settings)
@@ -271,14 +300,12 @@ describe Agama::DBus::Storage::Manager do
 
       let(:dbus_volume1) do
         {
-          "DeviceType"      => "lvm_lv",
-          "Encrypted"       => true,
-          "MountPoint"      => "/",
-          "FixedSizeLimits" => true,
-          "MinSize"         => 1024,
-          "MaxSize"         => 2048,
-          "FsType"          => "Ext3",
-          "Snapshots"       => true
+          "MountPath"  => "/",
+          "AutoSize"   => false,
+          "MinSize"    => 1024,
+          "MaxSize"    => 2048,
+          "FsType"     => "Btrfs",
+          "Snapshots"  => true
         }
       end
 
@@ -286,32 +313,44 @@ describe Agama::DBus::Storage::Manager do
         expect(proposal).to receive(:calculate) do |settings|
           volume = settings.volumes.first
 
-          expect(volume.device_type).to eq(:lvm_lv)
-          expect(volume.encrypted).to eq(true)
-          expect(volume.mount_point).to eq("/")
-          expect(volume.fixed_size_limits).to eq(true)
+          expect(volume.mount_path).to eq("/")
+          expect(volume.auto_size).to eq(false)
           expect(volume.min_size.to_i).to eq(1024)
           expect(volume.max_size.to_i).to eq(2048)
-          expect(volume.snapshots).to eq(true)
+          expect(volume.btrfs.snapshots).to eq(true)
         end
 
         subject.calculate_proposal(dbus_settings)
       end
 
       context "and the D-Bus volume does not include some values" do
-        let(:dbus_volume1) { { "MountPoint" => "/" } }
+        let(:dbus_volume1) { { "MountPath" => "/" } }
 
-        it "calculates a proposal with settings having a volume with missing values" do
+        let(:config_data) do
+          { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
+        end
+
+        let(:cfg_templates) do
+          [
+            {
+              "mount_path" => "/", "filesystem" => "btrfs",
+              "size" => { "auto" => false, "min" => "5 GiB", "max" => "20 GiB" },
+              "outline" => {
+                "filesystems" => ["btrfs"]
+              }
+            }
+          ]
+        end
+
+        it "calculates a proposal with a volume completed with its default settings" do
           expect(proposal).to receive(:calculate) do |settings|
             volume = settings.volumes.first
 
-            expect(volume.device_type).to be_nil
-            expect(volume.encrypted).to be_nil
-            expect(volume.mount_point).to eq("/")
-            expect(volume.fixed_size_limits).to be_nil
-            expect(volume.min_size).to be_nil
-            expect(volume.max_size).to be_nil
-            expect(volume.snapshots).to be_nil
+            expect(volume.mount_path).to eq("/")
+            expect(volume.auto_size).to eq(false)
+            expect(volume.min_size.to_i).to eq(5*(1024**3))
+            expect(volume.max_size.to_i).to eq(20*(1024**3))
+            expect(volume.btrfs.snapshots).to eq(false)
           end
 
           subject.calculate_proposal(dbus_settings)

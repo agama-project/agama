@@ -38,7 +38,7 @@ module Agama
         #
         # @return [Agama::Storage::Volume]
         def convert
-          volume = VolumeTemplatesBuilder.new_from_config(config).for(spec.mount_point)
+          volume = VolumeTemplatesBuilder.new_from_config(config).for(spec.mount_point || "")
 
           volume.tap do |target|
             target.device = spec.device

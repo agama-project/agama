@@ -52,7 +52,7 @@ module Agama
       # @param path [String]
       # @return [Agama::Storage::Volume]
       def for(path)
-        data = @data[cleanpath(path)] || @data[""] || empty_data
+        data = @data[path_key(path)] || @data[""] || empty_data
 
         Volume.new(path).tap do |volume|
           volume.btrfs = data[:btrfs]
@@ -72,9 +72,20 @@ module Agama
 
     private
 
+      def fetch(hash, key, default = nil)
+        key_s = key.to_s
+        return hash[key_s] if hash.key?(key_s)
+
+        hash.fetch(key.to_sym, default)
+      end
+
       def key(data)
-        path = data["mount_path"]
-        return "" unless path
+        path = fetch(data, :mount_path, "")
+        path_key(path)
+      end
+
+      def path_key(path)
+        return "" if path.empty?
 
         cleanpath(path)
       end
@@ -93,28 +104,28 @@ module Agama
         {}.tap do |values|
           values[:btrfs] = btrfs(data)
           values[:outline] = outline(data)
-          values[:mount_options] = data.fetch("mount_options", [])
+          values[:mount_options] = fetch(data, :mount_options, [])
 
           # TODO: maybe ensure consistency of values[:filesystem] and values[:outline].filesystems ?
-          fs = data["filesystem"]
-          values[:filesystem] = Y2Storage::Filesystems::Type.find(fs.downcase.to_sym) if fs
+          fs = fetch(data, :filesystem)
+          values[:filesystem] = fs_type(fs) if fs
           values[:filesystem] ||= values[:outline].filesystems.first
           values[:filesystem] ||= Y2Storage::Filesystems::Type::EXT4
 
-          size = data.fetch("size", {})
-          values[:auto_size] = size.fetch("auto", false)
-          values[:min_size] = parse_disksize(size["min"])
-          values[:max_size] = parse_disksize(size["max"])
+          size = fetch(data, :size, {})
+          values[:auto_size] = fetch(size, :auto, false)
+          values[:min_size] = parse_disksize(fetch(size, :min))
+          values[:max_size] = parse_disksize(fetch(size, :max))
         end
       end
 
       def btrfs(data)
-        btrfs_data = data.fetch("btrfs", {})
+        btrfs_data = fetch(data, "btrfs", {})
         BtrfsSettings.new.tap do |btrfs|
-          btrfs.snapshots = btrfs_data.fetch("snapshots", false)
-          btrfs.read_only = btrfs_data.fetch("read_only", false)
-          btrfs.default_subvolume = btrfs_data.fetch("default_subvolume", "")
-          btrfs.subvolumes = btrfs_data["subvolumes"]
+          btrfs.snapshots = fetch(btrfs_data, "snapshots", false)
+          btrfs.read_only = fetch(btrfs_data, "read_only", false)
+          btrfs.default_subvolume = fetch(btrfs_data, "default_subvolume", "")
+          btrfs.subvolumes = fetch(btrfs_data, "subvolumes")
           btrfs.subvolumes&.map! { |subvol_data| subvolume(subvol_data) }
         end
       end
@@ -123,30 +134,30 @@ module Agama
         return Y2Storage::SubvolSpecification.new(data) if data.is_a?(String)
 
         Y2Storage::SubvolSpecification.new(
-          data["path"], copy_on_write: data["copy_on_write"], archs: data["archs"]
+          fetch(data, :path), copy_on_write: fetch(data, :copy_on_write), archs: fetch(data, :archs)
         )
       end
 
       def outline(data) # rubocop:disable Metrics/AbcSize
-        outline_data = data.fetch("outline", {})
+        outline_data = fetch(data, "outline", {})
         VolumeOutline.new.tap do |outline|
-          outline.required = outline_data.fetch("required", false)
-          outline.filesystems = outline_data.fetch("filesystems", [])
-          outline.filesystems.map! { |fs| Y2Storage::Filesystems::Type.find(fs.downcase.to_sym) }
-          outline.snapshots_configurable = outline_data.fetch("snapshots_configurable", true)
+          outline.required = fetch(outline_data, "required", false)
+          outline.filesystems = fetch(outline_data, "filesystems", [])
+          outline.filesystems.map! { |fs| fs_type(fs) }
+          outline.snapshots_configurable = fetch(outline_data, "snapshots_configurable", true)
 
-          size = outline_data.fetch("auto_size", {})
-          min = parse_disksize(size["min"])
-          max = parse_disksize(size["max"])
+          size = fetch(outline_data, "auto_size", {})
+          min = parse_disksize(fetch(size, :min))
+          max = parse_disksize(fetch(size, :max))
           outline.base_min_size = min if min
           outline.base_max_size = max if max
-          outline.adjust_by_ram = size.fetch("adjust_by_ram", false)
-          outline.min_size_fallback_for = Array(size["min_fallback_for"])
+          outline.adjust_by_ram = fetch(size, :adjust_by_ram, false)
+          outline.min_size_fallback_for = Array(fetch(size, :min_fallback_for))
           outline.min_size_fallback_for.map! { |p| cleanpath(p) }
-          outline.max_size_fallback_for = Array(size["max_fallback_for"])
+          outline.max_size_fallback_for = Array(fetch(size, :max_fallback_for))
           outline.max_size_fallback_for.map! { |p| cleanpath(p) }
 
-          assign_snapshots_increment(outline, size["snapshots_increment"])
+          assign_snapshots_increment(outline, fetch(size, :snapshots_increment))
         end
       end
 
@@ -167,7 +178,13 @@ module Agama
       end
 
       def cleanpath(path)
-        Pathname.new(path).cleanpath
+        Pathname.new(path).cleanpath.to_s
+      end
+
+      def fs_type(fs)
+        return fs if fs.is_a?(Y2Storage::Filesystems::Type)
+
+        Y2Storage::Filesystems::Type.find(fs.downcase.to_sym)
       end
     end
   end

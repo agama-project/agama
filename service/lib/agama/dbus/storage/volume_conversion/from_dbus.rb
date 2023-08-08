@@ -42,11 +42,15 @@ module Agama
           # @return [Agama::Storage::Volume]
           def convert
             builder = Agama::Storage::VolumeTemplatesBuilder.new_from_config(config)
-            volume = builder.for(dbus_volume["MountPath"])
+            volume = builder.for(dbus_volume["MountPath"] || "")
 
             volume.tap do |target|
               dbus_volume.each do |dbus_property, dbus_value|
-                send(CONVERSIONS[dbus_property], target, dbus_value)
+                meth = CONVERSIONS[dbus_property]
+                # FIXME: likely ignoring the wrong attribute is not the best
+                next unless meth
+
+                send(meth, target, dbus_value)
               end
             end
           end

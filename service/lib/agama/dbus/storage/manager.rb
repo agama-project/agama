@@ -25,7 +25,7 @@ require "y2storage/storage_manager"
 require "agama/dbus/storage/proposal"
 require "agama/dbus/storage/proposal_settings_conversion"
 require "agama/dbus/storage/volume_conversion"
-require "agama/dbus/storage/volume_templates_builder"
+require "agama/storage/volume_templates_builder"
 require "agama/dbus/base_object"
 require "agama/dbus/with_service_status"
 require "agama/dbus/interfaces/issues"
@@ -343,7 +343,8 @@ module Agama
 
         # @return [Agama::VolumeTemplatesBuilder]
         def volume_templates_builder
-          @volume_templates_builder ||= VolumeTemplatesBuilder.new_from_config(config)
+          @volume_templates_builder ||=
+            Agama::Storage::VolumeTemplatesBuilder.new_from_config(config)
         end
       end
     end
