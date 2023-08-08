@@ -5,6 +5,7 @@ const Copy = require("copy-webpack-plugin");
 const Extract = require("mini-css-extract-plugin");
 const TerserJSPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
 const CockpitPoPlugin = require("./src/lib/cockpit-po-plugin");
@@ -93,7 +94,6 @@ module.exports = {
     ignored: /node_modules/,
   },
   entry: {
-    reactRefreshSetup: '@pmmmwh/react-refresh-webpack-plugin/client/ReactRefreshEntry.js',
     index: ["./src/index.js"],
   },
   // cockpit.js gets included via <script>, everything else should be bundled
@@ -139,6 +139,8 @@ module.exports = {
           },
         },
       }),
+      // remove also the spaces between the tags
+      new HtmlMinimizerPlugin({ minimizerOptions: { conservativeCollapse: false } }),
       new CssMinimizerPlugin()
     ],
   },
