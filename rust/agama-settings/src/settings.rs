@@ -1,72 +1,31 @@
-//! This module offers a mechanism to easily map the values from the command
-//! line to proper installation settings.
-//!
-//! To specify a value in the command line, the user needs specify:
-//!
-//! * a setting ID (`"users.name"`, `"storage.lvm"`, and so on), that must be used to find the
-//!   setting within a [super::settings::Settings] struct.
-//! * a value, which is captured as a string (`"Foo Bar"`, `"true"`, etc.) and it should be
-//!   converted to the proper type.
-//!
-//! Implementing the [Settings] trait adds support for setting the value in an straightforward,
-//! taking care of the conversions automatically. The newtype [SettingValue] takes care of such a
-//! conversion.
-//!
 use crate::error::{ConversionError, SettingsError};
 use std::collections::HashMap;
-/// For plain structs, the implementation can be derived.
-///
-/// TODO: derive for top-level structs too
 use std::convert::TryFrom;
 use std::fmt::Display;
 
 /// Implements support for easily settings attributes values given an ID (`"users.name"`) and a
 /// string value (`"Foo bar"`).
-///
-/// In the example below, the trait is manually implemented for `InstallSettings` and derived for
-/// `UserSettings`.
-///
-/// ```no_compile
-/// # use agama_settings::{Settings, settings::{Settings, SettingValue}};
-///
-/// #[derive(Settings)]
-/// struct UserSettings {
-///   name: Option<String>,
-///   enabled: Option<bool>
-/// }
-///
-/// struct InstallSettings {
-///   user: UserSettings
-/// }
-///
-/// impl Settings for InstallSettings {
-///   fn set(&mut self, attr: &str, value: SettingValue) -> Result<(), &'static str> {
-///     if let Some((ns, id)) = attr.split_once('.') {
-///       match ns {
-///         "user" => self.user.set(id, value)?,
-///         _ => return Err("unknown attribute")
-///       }
-///     }
-///     Ok(())
-///   }
-/// }
-///
-/// let user = UserSettings { name: Some(String::from("foo")), enabled: Some(false) };
-/// let mut settings = InstallSettings { user };
-/// settings.set("user.name", SettingValue("foo.bar".to_string()));
-/// settings.set("user.enabled", SettingValue("true".to_string()));
-/// assert!(&settings.user.enabled.unwrap());
-/// assert_eq!(&settings.user.name.unwrap(), "foo.bar");
-/// ```
 pub trait Settings {
+    /// Adds a new element to a collection.
+    ///
+    /// * `attr`: attribute name (e.g., `user.name`, `product`).
+    /// * `_value`: element to add to the collection.
     fn add(&mut self, attr: &str, _value: SettingObject) -> Result<(), SettingsError> {
         Err(SettingsError::UnknownAttribute(attr.to_string()))
     }
 
+    /// Sets an attribute's value.
+    ///
+    /// * `attr`: attribute name (e.g., `user.name`, `product`).
+    /// * `_value`: string-based value coming from the CLI. It will automatically
+    ///   converted to the underlying type.
     fn set(&mut self, attr: &str, _value: SettingValue) -> Result<(), SettingsError> {
         Err(SettingsError::UnknownAttribute(attr.to_string()))
     }
 
+    /// Merges two settings structs.
+    ///
+    /// * `_other`: struct to copy the values from.
     fn merge(&mut self, _other: &Self)
     where
         Self: Sized,

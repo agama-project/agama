@@ -8,4 +8,6 @@ pub enum CliError {
     ValidationError,
     #[error("Could not start the installation")]
     InstallationError,
+    #[error("Missing the '=' separator in '{0}'")]
+    MissingSeparator(String),
 }
