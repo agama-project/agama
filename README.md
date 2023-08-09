@@ -65,15 +65,13 @@ Agama is a new Linux installer born in the core of the YaST team. It is designed
 
 ## Table of Content
 
-- [Agama: A Service-based Linux Installer](#agama-a-service-based-linux-installer)
-  - [Table of Content](#table-of-content)
-  - [Why a New Installer](#why-a-new-installer)
-  - [Architecture](#architecture)
-  - [How to run](#how-to-run)
-    - [Live ISO Image](#live-iso-image)
-    - [Manual Configuration](#manual-configuration)
-  - [How to Contribute](#how-to-contribute)
-  - [Development Notes](#development-notes)
+* [Why a New Installer](#why-a-new-installer)
+* [Architecture](#architecture)
+* [How to Run](#how-to-run)
+  * [Live ISO Image](#live-iso-image)
+  * [Manual Configuration](#manual-configuration)
+* [How to Contribute](#how-to-contribute)
+* [Development Notes](#development-notes)
 
 ## Why a New Installer
 
