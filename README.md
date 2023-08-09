@@ -2,6 +2,7 @@
 
 [![CI Status](https://github.com/openSUSE/agama/actions/workflows/ci.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci.yml)
 [![CI - Rubocop](https://github.com/openSUSE/agama/actions/workflows/ci-rubocop.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-rubocop.yml)
+[![CI - Documentation Check](https://github.com/openSUSE/agama/actions/workflows/ci-doc-check.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-doc-check.yml)
 [![CI - Integration Tests](https://github.com/openSUSE/agama/actions/workflows/ci-integration-tests.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-integration-tests.yml)
 [![Coverage Status](https://coveralls.io/repos/github/openSUSE/agama/badge.svg?branch=master)](https://coveralls.io/github/openSUSE/agama?branch=master)
 [![GitHub Pages](https://github.com/openSUSE/agama/actions/workflows/github-pages.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/github-pages.yml)
@@ -64,13 +65,15 @@ Agama is a new Linux installer born in the core of the YaST team. It is designed
 
 ## Table of Content
 
-* [Why a New Installer](#why-a-new-installer)
-* [Architecture](#architecture)
-* [How to Run](#how-to-run)
-  * [Live ISO Image](#live-iso-image)
-  * [Manual Configuration](#manual-configuration)
-* [How to Contribute](#how-to-contribute)
-* [Development Notes](#development-notes)
+- [Agama: A Service-based Linux Installer](#agama-a-service-based-linux-installer)
+  - [Table of Content](#table-of-content)
+  - [Why a New Installer](#why-a-new-installer)
+  - [Architecture](#architecture)
+  - [How to run](#how-to-run)
+    - [Live ISO Image](#live-iso-image)
+    - [Manual Configuration](#manual-configuration)
+  - [How to Contribute](#how-to-contribute)
+  - [Development Notes](#development-notes)
 
 ## Why a New Installer
 

@@ -1,0 +1,78 @@
+name: "CI - Documentation Check"
+
+on:
+  push:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used below for the pull request event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-doc-check.yml
+      # all Ruby files
+      - service/Gemfile*
+      - service/*.gemspec
+      - service/**.rb
+      # the D-Bus introspection files
+      - doc/dbus/**.xml
+
+  pull_request:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used above for the push event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-doc-check.yml
+      # all Ruby files
+      - service/Gemfile*
+      - service/*.gemspec
+      - service/**.rb
+      # the D-Bus introspection files
+      - doc/dbus/**.xml
+
+jobs:
+  doc_check:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [ "tumbleweed" ]
+
+    container:
+      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v3
+
+    - name: Fix the file owner
+      # fix the file owner
+      run:  chown -R -c 0 .
+
+    - name: Configure and refresh repositories
+      # disable unused repositories to have faster refresh
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+
+    - name: Install Ruby development files and XML tooling
+      run: zypper --non-interactive install gcc gcc-c++ make libopenssl-devel ruby-devel augeas-devel xmlstarlet
+
+    - name: Cache RubyGems
+      uses: actions/cache@v3
+      with:
+        key: "Gemfile-${{ hashFiles('service/Gemfile.lock') }}"
+        path: service/vendor/bundle
+
+    - name: Install RubyGems
+      run: |
+        bundle config set --local path 'vendor/bundle'
+        bundle install
+      working-directory: ./service
+
+    - name: Generate doc
+      run: bundle exec yardoc --fail-on-warning
+      working-directory: ./service
+
+    - name: Check that introspected API and its docs have not diverged
+      run: make check
+      working-directory: ./doc
