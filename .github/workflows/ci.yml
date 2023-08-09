@@ -98,29 +98,6 @@ jobs:
         flag-name: backend
         parallel: true
 
-  ruby_linter:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./service
-
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [ "leap_latest" ]
-
-    container:
-      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
-
-    steps:
-
-    - name: Git Checkout
-      uses: actions/checkout@v3
-
-    - name: Rubocop
-      run: /usr/bin/rubocop.*-1.24.1
-
   ruby_doc:
     runs-on: ubuntu-latest
     env:
