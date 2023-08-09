@@ -33,13 +33,8 @@ jobs:
   doc_check:
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [ "tumbleweed" ]
-
     container:
-      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
 
     steps:
 
@@ -55,7 +50,9 @@ jobs:
       run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
 
     - name: Install Ruby development files and XML tooling
-      run: zypper --non-interactive install gcc gcc-c++ make libopenssl-devel ruby-devel augeas-devel xmlstarlet
+      run: zypper --non-interactive install --no-recommends
+           gcc gcc-c++ make libopenssl-devel ruby-devel augeas-devel diff
+           libxslt-devel libxml2-devel xmlstarlet
 
     - name: Cache RubyGems
       uses: actions/cache@v3
@@ -64,6 +61,8 @@ jobs:
         path: service/vendor/bundle
 
     - name: Install RubyGems
+      env:
+        NOKOGIRI_USE_SYSTEM_LIBRARIES: 1
       run: |
         bundle config set --local path 'vendor/bundle'
         bundle install
