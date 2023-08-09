@@ -40,7 +40,7 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://github.com/openSUSE/agama"
   spec.license = "GPL-2.0-only"
   spec.files = Dir["lib/**/*.rb", "bin/*", "share/*", "etc/*"]
-  spec.executables = ["agamactl"]
+  spec.executables = ["agamactl", "agama-proxy-setup"]
   spec.metadata = { "rubygems_mfa_required" => "true" }
 
   spec.required_ruby_version = ">= 2.5.0"
