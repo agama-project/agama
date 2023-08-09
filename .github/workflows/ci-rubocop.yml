@@ -1,0 +1,54 @@
+name: "CI - Rubocop"
+
+on:
+  push:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used below for the pull request event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-rubocop.yml
+      # Rubocop configuration
+      - service/.rubocop.yml
+      # all Ruby files
+      - service/Gemfile
+      - service/bin/agamactl
+      - service/**.rb
+
+  pull_request:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used above for the push event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-rubocop.yml
+      # Rubocop configuration
+      - service/.rubocop.yml
+      # all Ruby files
+      - service/Gemfile
+      - service/bin/agamactl
+      - service/**.rb
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./service
+
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [ "leap_latest" ]
+
+    container:
+      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v3
+
+    - name: Rubocop
+      run: /usr/bin/rubocop.*-1.24.1
