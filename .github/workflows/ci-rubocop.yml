@@ -12,7 +12,7 @@ on:
       - service/.rubocop.yml
       # all Ruby files
       - service/Gemfile
-      - service/bin/agamactl
+      - service/bin/**
       - service/**.rb
 
   pull_request:
@@ -26,7 +26,7 @@ on:
       - service/.rubocop.yml
       # all Ruby files
       - service/Gemfile
-      - service/bin/agamactl
+      - service/bin/**
       - service/**.rb
 
 jobs:
