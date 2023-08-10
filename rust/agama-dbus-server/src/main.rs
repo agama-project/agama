@@ -1,10 +1,6 @@
-pub mod error;
-pub mod locale;
-pub mod network;
-pub mod questions;
+use agama_dbus_server::{locale, network::NetworkService, questions};
 
 use log::LevelFilter;
-use network::NetworkService;
 use std::future::pending;
 
 const ADDRESS: &str = "unix:path=/run/agama/bus";
@@ -28,9 +24,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .unwrap(); // unwrap here as we are sure no other logger active
     }
     // When adding more services here, the order might be important.
-    crate::questions::start_service(ADDRESS).await?;
+    questions::start_service(ADDRESS).await?;
     log::info!("Started questions interface");
-    let _conn = crate::locale::start_service(ADDRESS).await?;
+    let _conn = locale::start_service(ADDRESS).await?;
     log::info!("Started locale interface");
     NetworkService::start(ADDRESS).await?;
     log::info!("Started network interface");
