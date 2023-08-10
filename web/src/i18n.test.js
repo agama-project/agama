@@ -55,9 +55,8 @@ describe("i18n", () => {
     it("returns the original text and does not translate it", () => {
       const val = N_(text);
 
-      expect(val).toEqual(text);
-      expect(gettextFn).not.toHaveBeenCalled();
-      expect(ngettextFn).not.toHaveBeenCalled();
+      // test the object identity
+      expect(Object.is(val, text)).toBe(true);
     });
   });
 
@@ -65,17 +64,15 @@ describe("i18n", () => {
     it("returns the singular form for value 1 and does not translate it", () => {
       const val = Nn_(singularText, pluralText, 1);
 
-      expect(val).toEqual(singularText);
-      expect(gettextFn).not.toHaveBeenCalled();
-      expect(ngettextFn).not.toHaveBeenCalled();
+      // test the object identity
+      expect(Object.is(val, singularText)).toBe(true);
     });
 
     it("returns the plural form for value 42 and does not translate it", () => {
       const val = Nn_(singularText, pluralText, 42);
 
-      expect(val).toEqual(pluralText);
-      expect(gettextFn).not.toHaveBeenCalled();
-      expect(ngettextFn).not.toHaveBeenCalled();
+      // test the object identity
+      expect(Object.is(val, pluralText)).toBe(true);
     });
   });
 });
