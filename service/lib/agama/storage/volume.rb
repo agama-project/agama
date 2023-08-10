@@ -95,7 +95,7 @@ module Agama
         @mount_options = []
         @auto_size = false
         @min_size = Y2Storage::DiskSize.zero
-        @max_size = Y2Storage::DiskSize.zero
+        @max_size = Y2Storage::DiskSize.unlimited
         @btrfs = BtrfsSettings.new
         @outline = VolumeOutline.new
       end

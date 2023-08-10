@@ -85,9 +85,15 @@ module Agama
       # @param volumes [Array<Hash>]
       def volumes_reader(settings, volumes)
         builder = VolumeTemplatesBuilder.new_from_config(config)
-        mount_paths = volumes.map { |v| v["mount_path"] }.compact
+        mount_paths = volumes.map { |v| volume_path(v) }.compact
 
         settings.volumes = mount_paths.map { |mp| builder.for(mp) }
+      end
+
+      def volume_path(volume)
+        return volume if volume.is_a?(String)
+
+        volume["mount_path"]
       end
     end
   end

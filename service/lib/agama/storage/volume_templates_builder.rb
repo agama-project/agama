@@ -147,8 +147,8 @@ module Agama
           outline.snapshots_configurable = fetch(outline_data, "snapshots_configurable", true)
 
           size = fetch(outline_data, "auto_size", {})
-          min = parse_disksize(fetch(size, :min))
-          max = parse_disksize(fetch(size, :max))
+          min = parse_disksize(fetch(size, :base_min))
+          max = parse_disksize(fetch(size, :base_max))
           outline.base_min_size = min if min
           outline.base_max_size = max if max
           outline.adjust_by_ram = fetch(size, :adjust_by_ram, false)

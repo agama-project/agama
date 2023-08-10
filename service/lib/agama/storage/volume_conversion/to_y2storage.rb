@@ -73,8 +73,8 @@ module Agama
         def btrfs_conversion(target)
           target.snapshots = volume.btrfs.snapshots?
           target.snapshots_configurable = volume.outline.snapshots_configurable?
-          target.snapshots_size = volume.outline.snapshots_size
-          target.snapshots_percentage = volume.outline.snapshots_percentage
+          target.snapshots_size = volume.outline.snapshots_size || Y2Storage::DiskSize.zero
+          target.snapshots_percentage = volume.outline.snapshots_percentage || 0
           target.subvolumes = volume.btrfs.subvolumes
           target.btrfs_default_subvolume = volume.btrfs.default_subvolume
           target.btrfs_read_only = volume.btrfs.read_only?

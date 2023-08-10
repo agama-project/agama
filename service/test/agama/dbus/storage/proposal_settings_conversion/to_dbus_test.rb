@@ -74,7 +74,6 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
             "TargetVG"     => "",
             "FsType"       => "",
             "MinSize"      => 0,
-            "MaxSize"      => 0,
             "AutoSize"     => false,
             "Snapshots"    => false,
             "Outline"      => {

@@ -62,7 +62,6 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
         "TargetVG"     => "",
         "FsType"       => "",
         "MinSize"      => 0,
-        "MaxSize"      => 0,
         "AutoSize"     => false,
         "Snapshots"    => false,
         "Outline"      => {
