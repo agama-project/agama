@@ -23,11 +23,9 @@ import React, { useState, useEffect } from "react";
 import { Popup } from "~/components/core";
 import { Alert } from "@patternfly/react-core";
 import { Loading } from "~/components/layout";
+import { _ } from "~/i18n";
 
 import cockpit from "../../lib/cockpit";
-
-// FIXME: replace by a wrapper, this is just for testing
-const _ = cockpit.gettext;
 
 export default function FileViewer({ file, title, onCloseCallback }) {
   // the popup is visible
