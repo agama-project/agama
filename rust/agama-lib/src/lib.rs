@@ -50,6 +50,6 @@ pub async fn connection_to(address: &str) -> Result<zbus::Connection, ServiceErr
     let connection = zbus::ConnectionBuilder::address(address)?
         .build()
         .await
-        .map_err(|e| ServiceError::DBusConnectionError(ADDRESS.to_string(), e))?;
+        .map_err(|e| ServiceError::DBusConnectionError(address.to_string(), e))?;
     Ok(connection)
 }
