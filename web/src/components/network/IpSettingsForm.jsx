@@ -21,13 +21,12 @@
 
 import React, { useState } from "react";
 import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, TextInput } from "@patternfly/react-core";
+import format from "format-util";
 
 import { useInstallerClient } from "~/context/installer";
 import { Popup } from "~/components/core";
 import { AddressesDataList, DnsDataList } from "~/components/network";
 import { _ } from "~/i18n";
-
-import cockpit from "~/lib/cockpit";
 
 const METHODS = {
   MANUAL: "manual",
@@ -127,8 +126,9 @@ export default function IpSettingsForm({ connection, onClose }) {
   };
 
   // TRANSLATORS: manual network configuration mode with a static IP address
+  // %s is replaced by the connection name
   return (
-    <Popup isOpen title={cockpit.format(_("Edit $0 connection"), connection.name)}>
+    <Popup isOpen title={format(_("Edit %s connection"), connection.name)}>
       <Form id="edit-connection" onSubmit={onSubmit}>
         <FormGroup fieldId="method" label={_("Mode")} isRequired>
           <FormSelect

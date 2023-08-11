@@ -32,15 +32,10 @@ jobs:
           path: agama
 
       - name: Generate POT file
-        # TODO: use a shared script for this
         run: |
           cd agama/web
-          xgettext --default-domain=agama --output=agama.pot --language=JavaScript --keyword= \
-            --keyword=_:1 --keyword=N_:1 --keyword=n_:1,2,3t --keyword=Nn_:1,2,3t \
-            --foreign-user --copyright-holder="SuSE Linux Products GmbH, Nuernberg" \
-            --from-code=UTF-8 --add-comments=TRANSLATORS --sort-by-file \
-            $(find . ! -name cockpit.js -name '*.js' -o ! -name '*.test.jsx' -name '*.jsx')
-            msgfmt --statistics agama.pot
+          ./build_pot
+          msgfmt --statistics agama.pot
 
       - name: Validate the generated POT file
         run:  msgfmt --check-format agama/web/agama.pot
