@@ -25,6 +25,7 @@ import { useCancellablePromise } from "~/utils";
 
 import { Alert, Button } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
+import { _ } from "~/i18n";
 
 const FILENAME = "y2logs.tar.xz";
 const FILETYPE = "application/x-xz";
@@ -94,7 +95,7 @@ const LogsButton = ({ ...props }) => {
         icon={isCollecting ? null : <Icon name="download" size="24" />}
         {...props}
       >
-        {isCollecting ? "Collecting logs..." : "Download logs"}
+        {isCollecting ? _("Collecting logs...") : _("Download logs")}
       </Button>
 
       { isCollecting &&
@@ -102,7 +103,7 @@ const LogsButton = ({ ...props }) => {
           isInline
           isPlain
           variant="info"
-          title="The browser will run the logs download as soon as they are ready. Please, be patient."
+          title={_("The browser will run the logs download as soon as they are ready. Please, be patient.")}
         /> }
 
       { error &&
@@ -110,7 +111,7 @@ const LogsButton = ({ ...props }) => {
           isInline
           isPlain
           variant="warning"
-          title="Something went wrong while collecting logs. Please, try again."
+          title={_("Something went wrong while collecting logs. Please, try again.")}
         /> }
     </>
   );

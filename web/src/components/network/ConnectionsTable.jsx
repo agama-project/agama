@@ -24,6 +24,9 @@ import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-tab
 import { RowActions } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { formatIp } from "~/client/network/utils";
+import { _ } from "~/i18n";
+
+import cockpit from "~/lib/cockpit";
 
 /**
  * @typedef {import("~/client/network/model").Connection} Connection
@@ -50,8 +53,10 @@ export default function ConnectionsTable ({
     <TableComposable variant="compact">
       <Thead>
         <Tr>
-          <Th width={25}>Name</Th>
-          <Th>Ip addresses</Th>
+          {/* TRANSLATORS: table header */}
+          <Th width={25}>{_("Name")}</Th>
+          {/* TRANSLATORS: table header */}
+          <Th>{_("IP addresses")}</Th>
           <Th />
         </Tr>
       </Thead>
@@ -59,13 +64,17 @@ export default function ConnectionsTable ({
         { connections.map(connection => {
           const actions = [
             {
-              title: "Edit",
-              "aria-label": `Edit connection ${connection.name}`,
+              title: _("Edit"),
+              "aria-label":
+                // TRANSLATORS: $0 is replaced by a network connection name
+                cockpit.format(_("Edit connection $0"), connection.name),
               onClick: () => onEdit(connection)
             },
             typeof onForget === 'function' && {
-              title: "Forget",
-              "aria-label": `Forget connection ${connection.name}`,
+              title: _("Forget"),
+              "aria-label":
+                // TRANSLATORS: $0 is replaced by a network connection name
+                cockpit.format(_("Forget connection $0"), connection.name),
               className: "danger-action",
               icon: <Icon name="delete" size="24" />,
               onClick: () => onForget(connection)
@@ -74,12 +83,13 @@ export default function ConnectionsTable ({
 
           return (
             <Tr key={connection.id}>
-              <Td dataLabel="Name">{connection.name}</Td>
-              <Td dataLabel="Ip addresses">{connection.addresses.map(formatIp).join(", ")}</Td>
+              <Td dataLabel={_("Name")}>{connection.name}</Td>
+              <Td dataLabel={_("IP addresses")}>{connection.addresses.map(formatIp).join(", ")}</Td>
               <Td isActionCell>
                 <RowActions
                   id={`actions-for-connection-${connection.id}`}
-                  aria-label={`Actions for connection ${connection.name}`}
+                  // TRANSLATORS: $0 is replaced by a network connection name
+                  aria-label={cockpit.format(_("Actions for connection $0"), connection.name)}
                   actions={actions}
                   connection={connection}
                 />

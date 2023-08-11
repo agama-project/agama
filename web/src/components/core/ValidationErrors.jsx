@@ -31,6 +31,9 @@ import {
 } from "@patternfly/react-core";
 
 import { Icon } from '~/components/layout';
+import { _, n_ } from "~/i18n";
+
+import cockpit from "~/lib/cockpit";
 
 /**
  * @param {import("~/client/mixins").ValidationError[]} errors - Validation errors
@@ -58,7 +61,7 @@ const popoverContent = (errors) => {
  * @param {string} props.title - A title for the Popover
  * @param {import("~/client/mixins").ValidationError[]} props.errors - Validation errors
  */
-const ValidationErrors = ({ title = "Errors", errors }) => {
+const ValidationErrors = ({ title = _("Errors"), errors }) => {
   const [popoverVisible, setPopoverVisible] = useState(false);
 
   if (!errors || errors.length === 0) return null;
@@ -78,14 +81,20 @@ const ValidationErrors = ({ title = "Errors", errors }) => {
             className="plain-control color-warn"
             onClick={() => setPopoverVisible(true)}
           >
-            { warningIcon } {`${errors.length} errors found`}
+            { warningIcon } {
+              cockpit.format(
+                // TRANSLATORS: $0 is replaced with the number of errors found
+                n_("$0 error found", "$0 errors found", errors.length),
+                errors.length
+              )
+            }
           </button>
           <Popover
             isVisible={popoverVisible}
             position="right"
             shouldClose={() => setPopoverVisible(false)}
             shouldOpen={() => setPopoverVisible(true)}
-            aria-label="Basic popover"
+            aria-label={_("Basic popover")}
             headerContent={title}
             bodyContent={popoverContent(errors)}
           >

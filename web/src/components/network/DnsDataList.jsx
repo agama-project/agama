@@ -38,6 +38,7 @@ import {
 
 import { FormLabel } from "~/components/core";
 import { IpAddressInput } from "~/components/network";
+import { _ } from "~/i18n";
 
 let index = 0;
 
@@ -73,15 +74,17 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
               <IpAddressInput
                 defaultValue={address}
                 onChange={value => updateServer(id, "address", value)}
-                placeholder="Server IP"
-                aria-label="Server IP"
+                // TRANSLATORS: input field name
+                placeholder={_("Server IP")}
+                aria-label={_("Server IP")}
               />
             </DataListCell>
           ]}
           />
           <DataListAction>
             <Button isSmall variant="link" className="remove-link" onClick={() => deleteServer(id)}>
-              Remove
+              {/* TRANSLATORS: button label */}
+              {_("Remove")}
             </Button>
           </DataListAction>
         </DataListItemRow>
@@ -89,12 +92,13 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
     );
   };
 
-  const newDnsButtonText = servers.length ? "Add another DNS" : "Add DNS";
+  // TRANSLATORS: button label
+  const newDnsButtonText = servers.length ? _("Add another DNS") : _("Add DNS");
 
   return (
     <>
       <div className="split justify-between">
-        <FormLabel>DNS</FormLabel>
+        <FormLabel>{_("DNS")}</FormLabel>
         <Button isSmall variant="secondary" onClick={addServer}>
           {newDnsButtonText}
         </Button>

@@ -31,6 +31,9 @@ import { ConnectionState } from "~/client/network/model";
 
 import { Icon } from "~/components/layout";
 import { WifiNetworkMenu, WifiConnectionForm } from "~/components/network";
+import { _ } from "~/i18n";
+
+import cockpit from "~/lib/cockpit";
 
 const networkState = (state) => {
   switch (state) {
@@ -87,9 +90,10 @@ function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCance
           onClick={onSelect}
         />
         <div className="split">
-          {showSpinner && <Spinner isSVG size="md" aria-label={`${network.ssid} connection is waiting for an state change`} /> }
+          {/* TRANSLATORS: $0 is replaced by a WiFi network name */}
+          {showSpinner && <Spinner isSVG size="md" aria-label={cockpit.format(_("$0 connection is waiting for an state change"), network.ssid)} /> }
           <Text component="small" className="keep-words">
-            { showSpinner && !network.connection && "Connecting" }
+            { showSpinner && !network.connection && _("Connecting") }
             { networkState(network.connection?.state)}
           </Text>
           { network.settings &&

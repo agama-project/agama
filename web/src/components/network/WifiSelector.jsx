@@ -25,6 +25,7 @@ import { useInstallerClient } from "~/context/installer";
 import { NetworkEventTypes } from "~/client/network";
 import { Popup } from "~/components/core";
 import { WifiNetworksList } from "~/components/network";
+import { _ } from "~/i18n";
 
 const networksFromValues = (networks) => Object.values(networks).flat();
 const baseHiddenNetwork = { ssid: undefined, hidden: true };
@@ -130,7 +131,7 @@ function WifiSelector({ isOpen = false, onClose }) {
   });
 
   return (
-    <Popup isOpen={isOpen} title="Connect to a Wi-Fi network">
+    <Popup isOpen={isOpen} title={_("Connect to a Wi-Fi network")}>
       <WifiNetworksList
         networks={networksFromValues(networks)}
         hiddenNetwork={baseHiddenNetwork}
@@ -147,7 +148,7 @@ function WifiSelector({ isOpen = false, onClose }) {
         onCancelSelectionCallback={() => switchSelectedNetwork(activeNetwork) }
       />
       <Popup.Actions>
-        <Popup.SecondaryAction onClick={onClose}>Close</Popup.SecondaryAction>
+        <Popup.SecondaryAction onClick={onClose}>{_("Close")}</Popup.SecondaryAction>
       </Popup.Actions>
     </Popup>
   );

@@ -24,6 +24,7 @@ import React from "react";
 import { Button } from "@patternfly/react-core";
 
 import WifiConnectionForm from "./WifiConnectionForm";
+import { _ } from "~/i18n";
 
 /**
  * Component to render a form for connecting to a hidden Wi-Fi Network
@@ -45,7 +46,8 @@ function WifiHiddenNetworkForm({ network, visible, beforeDisplaying, beforeHidin
         /> }
       { !visible &&
         <Button variant="link" className="horizontally-centered" onClick={beforeDisplaying}>
-          Connect to hidden network
+          {/* TRANSLATORS: button label */}
+          {_("Connect to hidden network")}
         </Button> }
     </>
   );

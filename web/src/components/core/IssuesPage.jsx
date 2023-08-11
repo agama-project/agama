@@ -28,6 +28,7 @@ import { If, Page, Section } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { useNotification } from "~/context/notification";
+import { _ } from "~/i18n";
 
 /**
  * Renders an issue
@@ -111,7 +112,7 @@ const IssuesContent = ({ issues }) => {
     return (
       <HelperText className="issue">
         <HelperTextItem variant="success" hasIcon icon={<Icon name="task_alt" />}>
-          No issues found. Everything looks ok.
+          {_("No issues found. Everything looks ok.")}
         </HelperTextItem>
       </HelperText>
     );

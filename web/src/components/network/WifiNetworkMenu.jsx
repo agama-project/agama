@@ -24,6 +24,7 @@ import { DropdownItem } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { KebabMenu } from "~/components/core";
 import { useInstallerClient } from "~/context/installer";
+import { _ } from "~/i18n";
 
 export default function WifiNetworkMenu({ settings, position = "right" }) {
   const client = useInstallerClient();
@@ -40,7 +41,8 @@ export default function WifiNetworkMenu({ settings, position = "right" }) {
           icon={<Icon name="delete" size="24" />}
           className="danger-action"
         >
-          Forget network
+          {/* TRANSLATORS: menu label, remove the selected WiFi network settings */}
+          {_("Forget network")}
         </DropdownItem>
       ]}
     />

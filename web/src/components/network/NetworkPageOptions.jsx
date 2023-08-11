@@ -21,6 +21,7 @@
 
 import React from "react";
 import { PageOptions } from "~/components/core";
+import { _ } from "~/i18n";
 
 /**
  * Component for rendering the options available from Network page
@@ -41,7 +42,7 @@ export default function NetworkPageOptions ({
   return (
     <PageOptions>
       <PageOptions.Item key="open-wifi-selector" onClick={openWifiSelector}>
-        <>Connect to a Wi-Fi network</>
+        <>{_("Connect to a Wi-Fi network")}</>
       </PageOptions.Item>
     </PageOptions>
   );

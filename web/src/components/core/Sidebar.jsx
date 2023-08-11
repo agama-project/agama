@@ -25,6 +25,7 @@ import { Icon, AppActions } from "~/components/layout";
 import { If, NotificationMark } from "~/components/core";
 import { useNotification } from "~/context/notification";
 import useNodeSiblings from "~/hooks/useNodeSiblings";
+import { _ } from "~/i18n";
 
 /**
  * Agama sidebar navigation
@@ -129,13 +130,13 @@ export default function Sidebar ({ children }) {
         <button
           onClick={open}
           className="plain-control"
-          aria-label="Show global options"
+          aria-label={_("Show global options")}
           aria-controls="global-options"
           aria-expanded={isOpen}
         >
           <If
             condition={notification.issues}
-            then={<NotificationMark data-variant="sidebar" aria-label="New issues found" />}
+            then={<NotificationMark data-variant="sidebar" aria-label={_("New issues found")} />}
           />
           <Icon name="menu" />
         </button>
@@ -145,17 +146,20 @@ export default function Sidebar ({ children }) {
         id="global-options"
         ref={asideRef}
         className="wrapper sidebar"
-        aria-label="Global options"
+        aria-label={_("Global options")}
         data-state={isOpen ? "visible" : "hidden"}
       >
         <header className="split justify-between">
-          <h2>Options</h2>
+          <h2>
+            {/* TRANSLATORS: sidebar header */}
+            {_("Options")}
+          </h2>
 
           <button
             onClick={close}
             ref={closeButtonRef}
             className="plain-control"
-            aria-label="Hide navigation and other options"
+            aria-label={_("Hide navigation and other options")}
           >
             <Icon name="menu_open" data-variant="flip-X" onClick={close} />
           </button>
@@ -167,7 +171,9 @@ export default function Sidebar ({ children }) {
 
         <footer className="split justify-between" data-state="reversed">
           <a onClick={close}>
-            Close <Icon size="16" name="menu_open" data-variant="flip-X" />
+            {/* TRANSLATORS: button label */}
+            {_("Close")}
+            <Icon size="16" name="menu_open" data-variant="flip-X" />
           </a>
           { targetInfo }
         </footer>

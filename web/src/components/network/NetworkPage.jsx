@@ -26,6 +26,7 @@ import { useInstallerClient } from "~/context/installer";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { If, Page, Section } from "~/components/core";
 import { ConnectionsTable, IpSettingsForm, NetworkPageOptions, WifiSelector } from "~/components/network";
+import { _ } from "~/i18n";
 
 /**
  * Internal component for displaying info when none wire connection is found
@@ -49,12 +50,12 @@ const NoWiredConnections = () => {
  */
 const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
   const message = wifiScanSupported
-    ? "The system has not been configured for connecting to a WiFi network yet."
-    : "The system does not support WiFi connections, probably because of missing or disabled hardware.";
+    ? _("The system has not been configured for connecting to a WiFi network yet.")
+    : _("The system does not support WiFi connections, probably because of missing or disabled hardware.");
 
   return (
     <div className="stack">
-      <div className="bold">No WiFi connections found</div>
+      <div className="bold">{_("No WiFi connections found")}</div>
       <div>{message}</div>
       <If
         condition={wifiScanSupported}
@@ -65,7 +66,8 @@ const NoWifiConnections = ({ wifiScanSupported, openWifiSelector }) => {
               onClick={openWifiSelector}
               icon={<Icon name="wifi_find" size="24" />}
             >
-              Connect to a Wi-Fi network
+              {/* TRANSLATORS: button label */}
+              {_("Connect to a Wi-Fi network")}
             </Button>
           </>
         }
@@ -164,12 +166,15 @@ export default function NetworkPage() {
   };
 
   return (
-    <Page title="Network" icon="settings_ethernet" actionLabel="Back" actionVariant="secondary">
-      <Section title="Wired networks" icon="lan">
+    // TRANSLATORS: page title
+    <Page title={_("Network")} icon="settings_ethernet" actionLabel="Back" actionVariant="secondary">
+      { /* TRANSLATORS: page section */ }
+      <Section title={_("Wired networks")} icon="lan">
         { ready ? <WiredConnections /> : <Skeleton /> }
       </Section>
 
-      <Section title="WiFi networks" icon="wifi">
+      { /* TRANSLATORS: page section */ }
+      <Section title={_("WiFi networks")} icon="wifi">
         { ready ? <WifiConnections /> : <Skeleton /> }
       </Section>
 

@@ -38,6 +38,7 @@ import {
 
 import { FormLabel } from "~/components/core";
 import { IpAddressInput, IpPrefixInput } from "~/components/network";
+import { _ } from "~/i18n";
 
 let index = 0;
 
@@ -76,7 +77,8 @@ export default function AddressesDataList({
       return (
         <DataListAction>
           <Button isSmall variant="link" className="remove-link" onClick={() => deleteAddress(id)}>
-            Remove
+            {/* TRANSLATORS: button label */}
+            {_("Remove")}
           </Button>
         </DataListAction>
       );
@@ -87,16 +89,18 @@ export default function AddressesDataList({
         <IpAddressInput
           defaultValue={address}
           onChange={value => updateAddress(id, "address", value)}
-          placeholder="IP Address"
-          aria-label="IP Address"
+          // TRANSLATORS: input field name
+          placeholder={_("IP Address")}
+          aria-label={_("IP Address")}
         />
       </DataListCell>,
       <DataListCell key={`address-${id}-prefix`}>
         <IpPrefixInput
           defaultValue={prefix}
           onChange={value => updateAddress(id, "prefix", value)}
-          placeholder="Prefix length or netmask"
-          aria-label="Prefix length or netmask"
+          // TRANSLATORS: input field name
+          placeholder={_("Prefix length or netmask")}
+          aria-label={_("Prefix length or netmask")}
         />
       </DataListCell>
     ];
@@ -111,17 +115,18 @@ export default function AddressesDataList({
     );
   };
 
-  const newAddressButtonText = addresses.length ? "Add another address" : "Add an address";
+  // TRANSLATORS: button label
+  const newAddressButtonText = addresses.length ? _("Add another address") : _("Add an address");
 
   return (
     <>
       <div className="split justify-between">
-        <FormLabel isRequired={!allowEmpty}>Addresses</FormLabel>
+        <FormLabel isRequired={!allowEmpty}>{_("Addresses")}</FormLabel>
         <Button isSmall variant="secondary" onClick={addAddress}>
           {newAddressButtonText}
         </Button>
       </div>
-      <DataList isCompact gridBreakpoint="none" title="Addresses data list">
+      <DataList isCompact gridBreakpoint="none" title={_("Addresses data list")}>
         {addresses.map(address => renderAddress(address))}
       </DataList>
     </>
