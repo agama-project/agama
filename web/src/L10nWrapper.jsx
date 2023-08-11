@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-// import React from "react";
+import cockpit from "./lib/cockpit";
 
 /**
  * Helper function for storing the Cockpit language.
@@ -60,7 +60,12 @@ export default function L10nWrapper({ children }) {
   if (langQuery) {
     // convert "pt_BR" to Cockpit compatible "pt-br"
     langQuery = langQuery.toLowerCase().replace("_", "-");
-    if (langCookie !== langQuery) {
+
+    // special handling for the testing "xx" language
+    if (langQuery === "xx" || langQuery === "xx-xx") {
+      // just activate the language, there are no real translations to load
+      cockpit.language = "xx";
+    } else if (langCookie !== langQuery) {
       setLang(langQuery);
       reload();
     }
