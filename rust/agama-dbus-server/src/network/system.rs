@@ -2,8 +2,8 @@ use crate::network::{
     dbus::Tree, model::Connection, nm::NetworkManagerAdapter, Action, Adapter, NetworkState,
 };
 use agama_lib::error::ServiceError;
+use async_std::channel::{unbounded, Receiver, Sender};
 use std::error::Error;
-use std::sync::mpsc::{channel, Receiver, Sender};
 
 /// Represents the network system, wrapping a [NetworkState] and setting up the D-Bus tree.
 pub struct NetworkSystem {
@@ -17,7 +17,7 @@ pub struct NetworkSystem {
 
 impl NetworkSystem {
     pub fn new(state: NetworkState, conn: zbus::Connection) -> Self {
-        let (actions_tx, actions_rx) = channel();
+        let (actions_tx, actions_rx) = unbounded();
         let tree = Tree::new(conn, actions_tx.clone());
         Self {
             state,
@@ -70,7 +70,7 @@ impl NetworkSystem {
     ///
     /// This function is expected to be executed on a separate thread.
     pub async fn listen(&mut self) {
-        while let Ok(action) = self.actions_rx.recv() {
+        while let Ok(action) = self.actions_rx.recv().await {
             if let Err(error) = self.dispatch_action(action).await {
                 eprintln!("Could not process the action: {}", error);
             }
