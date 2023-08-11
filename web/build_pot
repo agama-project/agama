@@ -1,0 +1,17 @@
+#! /bin/sh
+
+# This script builds the POT file with the translatable texts from the web UI.
+
+# always run in the directory of this script to ensure the file paths
+# saved in the POT file are always the same
+cd "$(dirname "$0")"
+
+OUTPUT="${1:-agama.pot}"
+
+find . ! -name cockpit.js ! -name '*.test.js' -name '*.js' -o ! -name '*.test.jsx' -name '*.jsx' |
+grep -vE "node_modules/|dist/|coverage/" | \
+xgettext --default-domain=agama --output=- --language=C --files-from=- \
+  --keyword= --keyword=_:1 --keyword=N_:1 --keyword=n_:1,2,3t --keyword=Nn_:1,2,3t \
+  --foreign-user --copyright-holder="SuSE Linux Products GmbH, Nuernberg" \
+  --from-code=UTF-8 --add-comments=TRANSLATORS --sort-by-file | \
+  sed '/^#/ s/, c-format/, javascript-format/' > "$OUTPUT"

@@ -21,11 +21,11 @@
 
 import React, { useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
+import format from "format-util";
+
 import { Icon } from "~/components/layout";
 import { Popup } from "~/components/core";
 import { _ } from "~/i18n";
-
-import cockpit from "~/lib/cockpit";
 
 export default function About() {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,19 +50,19 @@ export default function About() {
         <Text>
           {
             // TRANSLATORS: content of the "About" popup (1/2)
-            _(`Agama is an experimental installer for (open)SUSE systems. It
-still under development so, please, do not use it in
-production environments. If you want to give it a try, we
-recommend to use a virtual machine to prevent any possible
-data loss.`)
+            _("Agama is an experimental installer for (open)SUSE systems. It \
+still under development so, please, do not use it in \
+production environments. If you want to give it a try, we \
+recommend to use a virtual machine to prevent any possible \
+data loss.")
           }
         </Text>
         <Text>
           {
-            cockpit.format(
+            format(
               // TRANSLATORS: content of the "About" popup (2/2)
-              // $0 is replaced by the project URL
-              _("For more information, please visit the project's repository at $0."),
+              // %s is replaced by the project URL
+              _("For more information, please visit the project's repository at %s."),
               "https://github.com/openSUSE/agama"
             )
           }

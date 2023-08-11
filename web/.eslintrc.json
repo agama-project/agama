@@ -32,6 +32,7 @@
             }],
         "newline-per-chained-call": ["error", { "ignoreChainWithDepth": 2 }],
         "no-var": "error",
+        "no-multi-str": "off",
         "no-use-before-define": "off",
         "@typescript-eslint/no-unused-vars": ["warn", { "ignoreRestSiblings": true }],
         "@typescript-eslint/no-use-before-define": "warn",

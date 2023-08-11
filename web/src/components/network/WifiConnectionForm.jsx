@@ -108,8 +108,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
       <FormGroup fieldId="security" label={_("Security")}>
         <FormSelect
           id="security"
-          // TRANSLATORS: Wifi security configuration (password protected or not)
-          aria-label={_("security")}
+          aria-label={_("Security")}
           value={security}
           onChange={setSecurity}
         >

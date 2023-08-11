@@ -21,12 +21,12 @@
 
 import React from "react";
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import format from "format-util";
+
 import { RowActions } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { formatIp } from "~/client/network/utils";
 import { _ } from "~/i18n";
-
-import cockpit from "~/lib/cockpit";
 
 /**
  * @typedef {import("~/client/network/model").Connection} Connection
@@ -66,15 +66,15 @@ export default function ConnectionsTable ({
             {
               title: _("Edit"),
               "aria-label":
-                // TRANSLATORS: $0 is replaced by a network connection name
-                cockpit.format(_("Edit connection $0"), connection.name),
+                // TRANSLATORS: %s is replaced by a network connection name
+                format(_("Edit connection %s"), connection.name),
               onClick: () => onEdit(connection)
             },
             typeof onForget === 'function' && {
               title: _("Forget"),
               "aria-label":
-                // TRANSLATORS: $0 is replaced by a network connection name
-                cockpit.format(_("Forget connection $0"), connection.name),
+                // TRANSLATORS: %s is replaced by a network connection name
+                format(_("Forget connection %s"), connection.name),
               className: "danger-action",
               icon: <Icon name="delete" size="24" />,
               onClick: () => onForget(connection)
@@ -88,8 +88,8 @@ export default function ConnectionsTable ({
               <Td isActionCell>
                 <RowActions
                   id={`actions-for-connection-${connection.id}`}
-                  // TRANSLATORS: $0 is replaced by a network connection name
-                  aria-label={cockpit.format(_("Actions for connection $0"), connection.name)}
+                  // TRANSLATORS: %s is replaced by a network connection name
+                  aria-label={format(_("Actions for connection %s"), connection.name)}
                   actions={actions}
                   connection={connection}
                 />

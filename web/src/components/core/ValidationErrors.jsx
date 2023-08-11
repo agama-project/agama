@@ -29,11 +29,10 @@ import {
   ListItem,
   Popover
 } from "@patternfly/react-core";
+import format from "format-util";
 
 import { Icon } from '~/components/layout';
 import { _, n_ } from "~/i18n";
-
-import cockpit from "~/lib/cockpit";
 
 /**
  * @param {import("~/client/mixins").ValidationError[]} errors - Validation errors
@@ -82,9 +81,9 @@ const ValidationErrors = ({ title = _("Errors"), errors }) => {
             onClick={() => setPopoverVisible(true)}
           >
             { warningIcon } {
-              cockpit.format(
-                // TRANSLATORS: $0 is replaced with the number of errors found
-                n_("$0 error found", "$0 errors found", errors.length),
+              format(
+                // TRANSLATORS: %d is replaced with the number of errors found
+                n_("%d error found", "%d errors found", errors.length),
                 errors.length
               )
             }
