@@ -83,8 +83,8 @@ export default function ConnectionsTable ({
 
           return (
             <Tr key={connection.id}>
-              <Td dataLabel="Name">{connection.name}</Td>
-              <Td dataLabel="IP addresses">{connection.addresses.map(formatIp).join(", ")}</Td>
+              <Td dataLabel={_("Name")}>{connection.name}</Td>
+              <Td dataLabel={_("IP addresses")}>{connection.addresses.map(formatIp).join(", ")}</Td>
               <Td isActionCell>
                 <RowActions
                   id={`actions-for-connection-${connection.id}`}
