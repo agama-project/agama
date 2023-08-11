@@ -23,8 +23,9 @@ import React from "react";
 import { Title, EmptyState, EmptyStateIcon } from "@patternfly/react-core";
 
 import { Center, Icon } from "~/components/layout";
+import { _ } from "~/i18n";
 
-function Loading({ text = "Loading installation environment, please wait." }) {
+function Loading({ text = _("Loading installation environment, please wait.") }) {
   return (
     <Center>
       <EmptyState>

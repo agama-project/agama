@@ -69,8 +69,10 @@ const n_ = (str1, strN, n) => cockpit.ngettext(str1, strN, n);
  * @example <caption>Constants</caption>
  *   // ERROR_MSG will not be translated, but the string will be found
  *   // by gettext when creating the POT file
- *   const ERROR_MSG = N_("Download failed");
- *   const OK_MSG = N_("Success");
+ *   const RESULT = {
+ *     ERROR: N_("Download failed"),
+ *     OK: N_("Success")
+ *   };
  *
  *   // assume that "result" contains one of the constants above
  *   const result = ...;

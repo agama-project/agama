@@ -24,6 +24,7 @@ import {
   FormGroup,
   TextInput
 } from "@patternfly/react-core";
+import { _ } from "~/i18n";
 
 const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisabled, split = false }) => {
   const [confirmation, setConfirmation] = useState(value || "");
@@ -33,7 +34,7 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
     let newError = "";
 
     if (password !== passwordConfirmation) {
-      newError = "Passwords do not match";
+      newError = _("Passwords do not match");
     }
 
     setError(newError);
@@ -54,12 +55,12 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
 
   return (
     <div className={split ? "split" : "stack"}>
-      <FormGroup fieldId="password" label="Password">
+      <FormGroup fieldId="password" label={_("Password")}>
         <TextInput
           id="password"
           name="password"
           type="password"
-          aria-label="User password"
+          aria-label={_("User password")}
           value={value}
           isDisabled={isDisabled}
           onChange={onChangeValue}
@@ -68,7 +69,7 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
       </FormGroup>
       <FormGroup
         fieldId="passwordConfirmation"
-        label="Password confirmation"
+        label={_("Password confirmation")}
         helperTextInvalid={error}
         validated={error === "" ? "default" : "error"}
       >
@@ -76,7 +77,7 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
           id="passwordConfirmation"
           name="passwordConfirmation"
           type="password"
-          aria-label="User password confirmation"
+          aria-label={_("User password confirmation")}
           value={confirmation}
           isDisabled={isDisabled}
           onChange={onChangeConfirmation}

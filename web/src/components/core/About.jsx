@@ -23,6 +23,9 @@ import React, { useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { Popup } from "~/components/core";
+import { _ } from "~/i18n";
+
+import cockpit from "~/lib/cockpit";
 
 export default function About() {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,23 +40,35 @@ export default function About() {
         icon={<Icon name="help" size="24" />}
         onClick={open}
       >
-        About Agama
+        {_("About Agama")}
       </Button>
 
       <Popup
         isOpen={isOpen}
-        title="About Agama"
+        title={_("About Agama")}
       >
         <Text>
-          Agama is an <strong>experimental installer</strong> for (open)SUSE systems. It is
-          still under development so, please, do not use it in production environments. If you want
-          to give it a try, we recommend to use a virtual machine to prevent any possible data loss.
+          {
+            // TRANSLATORS: content of the "About" popup (1/2)
+            _(`Agama is an experimental installer for (open)SUSE systems. It
+still under development so, please, do not use it in
+production environments. If you want to give it a try, we
+recommend to use a virtual machine to prevent any possible
+data loss.`)
+          }
         </Text>
         <Text>
-          For more information, please visit the project's repository at https://github.com/openSUSE/Agama.
+          {
+            cockpit.format(
+              // TRANSLATORS: content of the "About" popup (2/2)
+              // $0 is replaced by the project URL
+              _("For more information, please visit the project's repository at $0."),
+              "https://github.com/openSUSE/agama"
+            )
+          }
         </Text>
         <Popup.Actions>
-          <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
+          <Popup.Confirm onClick={close} autoFocus>{_("Close")}</Popup.Confirm>
         </Popup.Actions>
       </Popup>
     </>

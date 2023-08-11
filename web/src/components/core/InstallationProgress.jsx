@@ -24,11 +24,12 @@ import React from "react";
 import ProgressReport from "./ProgressReport";
 import { Center, Icon, Title, PageIcon } from "~/components/layout";
 import { Questions } from "~/components/questions";
+import { _ } from "~/i18n";
 
 function InstallationProgress() {
   return (
     <>
-      <Title>Installing</Title>
+      <Title>{_("Installing")}</Title>
       <PageIcon><Icon name="downloading" /></PageIcon>
       <Center><ProgressReport /></Center>
       <Questions />

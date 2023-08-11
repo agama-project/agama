@@ -21,6 +21,7 @@
 
 import React, { useState } from "react";
 import { Popup } from "~/components/core";
+import { _ } from "~/i18n";
 
 export default function Terminal({ onCloseCallback }) {
   // the popup is visible
@@ -44,7 +45,7 @@ export default function Terminal({ onCloseCallback }) {
       <iframe className="vertically-centered" src="/cockpit/@localhost/system/terminal.html" />
 
       <Popup.Actions>
-        <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
+        <Popup.Confirm onClick={close} autoFocus>{_("Close")}</Popup.Confirm>
       </Popup.Actions>
     </Popup>
   );

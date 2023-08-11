@@ -21,16 +21,17 @@
 
 import React from "react";
 import { Skeleton } from "@patternfly/react-core";
+import { _ } from "~/i18n";
 
 const SectionSkeleton = () => (
   <>
     <Skeleton
-      screenreaderText="Waiting..."
+      screenreaderText={_("Waiting")}
       fontSize="sm"
       width="50%"
     />
     <Skeleton
-      screenreaderText="Waiting..."
+      screenreaderText={_("Waiting")}
       fontSize="sm"
       width="25%"
     />

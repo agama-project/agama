@@ -23,6 +23,7 @@ import React, { useState } from "react";
 import { FileViewer } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { Button } from "@patternfly/react-core";
+import { _ } from "~/i18n";
 
 /**
  * Button for displaying the YaST logs
@@ -42,12 +43,14 @@ const ShowLogButton = () => {
         isDisabled={isLogDisplayed}
         icon={<Icon name="description" size="24" />}
       >
-        Show Logs
+        {/* TRANSLATORS: button label */}
+        {_("Show Logs")}
       </Button>
 
       { isLogDisplayed &&
         <FileViewer
-          title="YaST Logs"
+          // TRANSLATORS: popup dialog title
+          title={_("YaST Logs")}
           file="/var/log/YaST2/y2log"
           onCloseCallback={onClose}
         /> }
