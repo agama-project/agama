@@ -28,13 +28,51 @@
 import cockpit from "./lib/cockpit";
 
 /**
+ * Tests whether a special testing language is used.
+ *
+ * @returns {boolean} true if the testing language is set
+ */
+const isTestingLanguage = () => cockpit.language === "xx";
+
+/**
+ * "Translate" the string to special "xx" testing language.
+ * It just replaces all alpha characters with "x".
+ * It keeps the percent placeholders like "%s" or "%d" unmodified.
+ *
+ * @param {string} str input string
+ * @returns {string} "translated" string
+ */
+const xTranslate = (str) => {
+  let result = "";
+
+  let wasPercent = false;
+  for (let index = 0; index < str.length; index++) {
+    const char = str[index];
+
+    if (wasPercent) {
+      result += char;
+      wasPercent = false;
+    } else {
+      if (char === "%") {
+        result += char;
+        wasPercent = true;
+      } else {
+        result += char.replace(/[a-z]/, "x").replace(/[A-Z]/, "X");
+      }
+    }
+  }
+
+  return result;
+};
+
+/**
  * Returns a translated text in the current locale or the original text if the
  * translation is not found.
  *
  * @param {string} str the input string to translate
  * @return {string} translated or original text
  */
-const _ = (str) => cockpit.gettext(str);
+const _ = (str) => isTestingLanguage() ? xTranslate(str) : cockpit.gettext(str);
 
 /**
  * Similar to the _() function. This variant returns singular or plural form
@@ -47,7 +85,11 @@ const _ = (str) => cockpit.gettext(str);
  *   singular or plural form
  * @return {string} translated or original text
  */
-const n_ = (str1, strN, n) => cockpit.ngettext(str1, strN, n);
+const n_ = (str1, strN, n) => {
+  return isTestingLanguage()
+    ? xTranslate((n === 1) ? str1 : strN)
+    : cockpit.ngettext(str1, strN, n);
+};
 
 /**
  * This is a no-op function, it can be used only for marking the text for
