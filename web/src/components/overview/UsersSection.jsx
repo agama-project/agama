@@ -23,6 +23,7 @@ import React, { useReducer, useEffect } from "react";
 import { If, Em, Section, SectionSkeleton } from "~/components/core";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
+import { _ } from "~/i18n";
 
 const initialState = {
   busy: true,
@@ -75,13 +76,15 @@ export default function UsersSection({ showErrors }) {
 
   const errors = showErrors ? state.errors : [];
 
+  // TRANSLATORS: %s will be replaced by the user name
+  const [msg1, msg2] = _("User %s will be created").split("%s");
   const UserSummary = () => {
     return (
       <div>
         <If
           condition={user?.userName !== ""}
-          then={<>User <Em>{state.user.userName}</Em> will be created</>}
-          else={<>No user defined yet</>}
+          then={<>{msg1}<Em>{state.user.userName}</Em>{msg2}</>}
+          else={<>{_("No user defined yet")}</>}
         />
       </div>
     );
@@ -95,10 +98,10 @@ export default function UsersSection({ showErrors }) {
 
     return (
       <div>
-        <If condition={both} then={<>Root authentication set for using both, password and public SSH Key</>} />
-        <If condition={none} then={<>No root authentication method defined</>} />
-        <If condition={onlyPassword} then={<>Root authentication set for using password</>} />
-        <If condition={onlySSHKey} then={<>Root authentication set for using public SSH Key</>} />
+        <If condition={both} then={<>{_("Root authentication set for using both, password and public SSH Key")}</>} />
+        <If condition={none} then={<>{_("No root authentication method defined")}</>} />
+        <If condition={onlyPassword} then={<>{_("Root authentication set for using password")}</>} />
+        <If condition={onlySSHKey} then={<>{_("Root authentication set for using public SSH Key")}</>} />
       </div>
     );
   };
@@ -113,7 +116,8 @@ export default function UsersSection({ showErrors }) {
   return (
     <Section
       key="users-section"
-      title="Users"
+      // TRANSLATORS: page section title
+      title={_("Users")}
       icon="manage_accounts"
       loading={state.busy}
       errors={errors}

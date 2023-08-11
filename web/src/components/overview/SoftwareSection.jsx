@@ -26,13 +26,14 @@ import { Icon } from "~/components/layout";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
+import { _ } from "~/i18n";
 
 const initialState = {
   busy: true,
   errors: [],
   errorsRead: false,
   size: "",
-  progress: { message: "Reading software repositories", current: 0, total: 0, finished: false }
+  progress: { message: _("Reading software repositories"), current: 0, total: 0, finished: false }
 };
 
 const reducer = (state, action) => {
@@ -114,8 +115,11 @@ export default function SoftwareSection({ showErrors }) {
   const UsedSize = () => {
     if (state.size === "" || state.size === "0 B") return null;
 
+    // TRANSLATORS: %s will be replaced by the estimated installation size,
+    // example: "728.8 MiB"
+    const [msg1, msg2] = _("Installation will take %s").split("%s");
     return (
-      <>Installation will take <Em>{state.size}</Em></>
+      <>{msg1}<Em>{state.size}</Em>{msg2}</>
     );
   };
 
@@ -137,7 +141,8 @@ export default function SoftwareSection({ showErrors }) {
             icon={<Icon name="refresh" size="16" />}
             onClick={probe}
           >
-            Refresh the repositories
+            {/* TRANSLATORS: clickable link label */}
+            {_("Refresh the repositories")}
           </Button>}
       </>
     );
@@ -146,7 +151,8 @@ export default function SoftwareSection({ showErrors }) {
   return (
     <Section
       key="software-section"
-      title="Software"
+      // TRANSLATORS: page section
+      title={_("Software")}
       icon="apps"
       loading={state.busy}
       errors={errors}

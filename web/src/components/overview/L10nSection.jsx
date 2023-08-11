@@ -24,6 +24,7 @@ import { Text } from "@patternfly/react-core";
 import { Em, Section, SectionSkeleton } from "~/components/core";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
+import { _ } from "~/i18n";
 
 const initialState = {
   busy: true,
@@ -64,9 +65,12 @@ export default function L10nSection({ showErrors }) {
 
     const selected = languages.find(lang => lang.id === language);
 
+    // TRANSLATORS: %s will be replaced by a language name and code,
+    // example: "English (en_US.UTF-8)"
+    const [msg1, msg2] = _("The system will use %s as its default language.").split("%s");
     return (
       <Text>
-        The system will use <Em>{`${selected.name} (${selected.id})`}</Em> as its default language.
+        {msg1}<Em>{`${selected.name} (${selected.id})`}</Em>{msg2}
       </Text>
     );
   };
@@ -74,7 +78,8 @@ export default function L10nSection({ showErrors }) {
   return (
     <Section
       key="l10n-section"
-      title="Localization"
+      // TRANSLATORS: page section
+      title={_("Localization")}
       loading={state.busy}
       icon="translate"
       path="/l10n"

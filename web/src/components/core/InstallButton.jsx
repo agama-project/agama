@@ -40,24 +40,17 @@ const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
       );
     };
 
+    // TRANSLATORS: the installer reports some errors,
+    // the part in curly brackets {} is a clickable link
+    const [msgStart, msgLink, msgEnd] = _("There are some reported issues. \
+Please, check {the list of issues} \
+before proceeding with the installation.").split(/[{}]/);
+
     return (
       <p className="bold">
-        {
-          // TRANSLATORS: the installer reports some errors,
-          // the beginning (1/3)
-          _("There are some reported issues. Please, check")
-        }
-        <IssuesLink text={
-          // TRANSLATORS: the installer reports some errors,
-          // the middle part (a clickable link) (2/3)
-          _("the list of issues")
-        }
-        />
-        {
-          // TRANSLATORS: the installer reports some errors,
-          // the end (3/3)
-          _("before proceeding with the installation.")
-        }
+        {msgStart}
+        <IssuesLink text={msgLink} />
+        {msgEnd}
       </p>
     );
   };
