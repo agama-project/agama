@@ -1,7 +1,7 @@
 //! Network D-Bus service.
 //!
 //! This module defines a D-Bus service which exposes Agama's network configuration.
-use crate::network::NetworkSystem;
+use crate::network::{nm::NetworkManagerAdapter, NetworkSystem};
 use agama_lib::connection_to;
 use std::error::Error;
 
@@ -15,10 +15,11 @@ impl NetworkService {
     pub async fn start(address: &str) -> Result<(), Box<dyn Error>> {
         const SERVICE_NAME: &str = "org.opensuse.Agama.Network1";
 
-        let connection = connection_to(address).await?;
-        let mut network = NetworkSystem::from_network_manager(connection.clone())
+        let adapter = NetworkManagerAdapter::from_system()
             .await
-            .expect("Could not read network state");
+            .expect("Could not connect to NetworkManager to read the configuration.");
+        let connection = connection_to(address).await?;
+        let mut network = NetworkSystem::new(connection.clone(), adapter);
 
         async_std::task::spawn(async move {
             network

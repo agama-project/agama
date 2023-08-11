@@ -1,53 +1,36 @@
-use crate::network::{
-    dbus::Tree, model::Connection, nm::NetworkManagerAdapter, Action, Adapter, NetworkState,
-};
-use agama_lib::error::ServiceError;
+use crate::network::{dbus::Tree, model::Connection, Action, Adapter, NetworkState};
 use async_std::channel::{unbounded, Receiver, Sender};
 use std::error::Error;
 
-/// Represents the network system, wrapping a [NetworkState] and setting up the D-Bus tree.
-pub struct NetworkSystem {
+/// Represents the network system using holding the state and setting up the D-Bus tree.
+pub struct NetworkSystem<T: Adapter> {
     /// Network state
     pub state: NetworkState,
     /// Side of the channel to send actions.
     actions_tx: Sender<Action>,
     actions_rx: Receiver<Action>,
     tree: Tree,
+    /// Adapter to read/write the network state.
+    adapter: T,
 }
 
-impl NetworkSystem {
-    pub fn new(state: NetworkState, conn: zbus::Connection) -> Self {
+impl<T: Adapter> NetworkSystem<T> {
+    pub fn new(conn: zbus::Connection, adapter: T) -> Self {
         let (actions_tx, actions_rx) = unbounded();
         let tree = Tree::new(conn, actions_tx.clone());
         Self {
-            state,
+            state: NetworkState::default(),
             actions_tx,
             actions_rx,
             tree,
+            adapter,
         }
     }
 
-    /// Reads the network configuration using the NetworkManager adapter.
-    ///
-    /// * `conn`: connection where self will be exposed. Another connection will be made internally
-    ///   to talk with NetworkManager (which may be on a different bus even).
-    pub async fn from_network_manager(
-        conn: zbus::Connection,
-    ) -> Result<NetworkSystem, Box<dyn Error>> {
-        let adapter = NetworkManagerAdapter::from_system()
-            .await
-            .expect("Could not connect to NetworkManager to read the configuration.");
-        let state = adapter.read()?;
-        Ok(Self::new(state, conn))
-    }
-
-    /// Writes the network configuration to NetworkManager.
-    pub async fn to_network_manager(&mut self) -> Result<(), Box<dyn Error>> {
-        let adapter = NetworkManagerAdapter::from_system()
-            .await
-            .expect("Could not connect to NetworkManager to write the changes.");
-        adapter.write(&self.state)?;
-        self.state = adapter.read()?;
+    /// Writes the network configuration.
+    pub async fn write(&mut self) -> Result<(), Box<dyn Error>> {
+        self.adapter.write(&self.state)?;
+        self.state = self.adapter.read()?;
         Ok(())
     }
 
@@ -58,7 +41,8 @@ impl NetworkSystem {
     }
 
     /// Populates the D-Bus tree with the known devices and connections.
-    pub async fn setup(&mut self) -> Result<(), ServiceError> {
+    pub async fn setup(&mut self) -> Result<(), Box<dyn Error>> {
+        self.state = self.adapter.read()?;
         self.tree
             .set_connections(&mut self.state.connections)
             .await?;
@@ -93,7 +77,7 @@ impl NetworkSystem {
                 self.state.remove_connection(&id)?;
             }
             Action::Apply => {
-                self.to_network_manager().await?;
+                self.write().await?;
                 // TODO: re-creating the tree is kind of brute-force and it sends signals about
                 // adding/removing interfaces. We should add/update/delete objects as needed.
                 self.tree
