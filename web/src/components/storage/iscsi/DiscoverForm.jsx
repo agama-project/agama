@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Form, FormGroup,
@@ -46,10 +46,20 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [isValidAuth, setIsValidAuth] = useState(true);
+  const alertRef = useRef(null);
 
   useEffect(() => {
     setData(savedData);
   }, [setData, savedData]);
+
+  useEffect(() => {
+    // Scroll the alert into view
+    if (isFailed)
+      alertRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+  });
 
   const updateData = (key, value) => setData({ ...data, [key]: value });
   const onAddressChange = v => updateData("address", v);
@@ -89,9 +99,15 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
     <Popup isOpen title="Discover iSCSI Targets">
       <Form id={id} onSubmit={onSubmit}>
         { isFailed &&
-          <Alert variant="warning" isInline title="Something went wrong">
-            <p>Make sure you provide the correct values</p>
-          </Alert> }
+          <div ref={alertRef}>
+            <Alert
+              variant="warning"
+              isInline
+              title="Something went wrong"
+            >
+              <p>Make sure you provide the correct values</p>
+            </Alert>
+          </div> }
         <FormGroup
           fieldId="address"
           label="IP address"
