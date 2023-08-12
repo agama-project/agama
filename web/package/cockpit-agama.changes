@@ -2,7 +2,7 @@
 Sat Aug 12 11:35:12 UTC 2023 - Balsa Asanovic <balsaasanovic95@gmail.com>
 
 - Added scroll up functionality to the discover iSCSI form when
-  the warning shows up after the submit action.
+  the warning shows up after the submit action
   (gh#openSUSE/agama#468).
   
 -------------------------------------------------------------------
