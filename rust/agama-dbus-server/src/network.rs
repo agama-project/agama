@@ -50,6 +50,7 @@ pub use action::Action;
 pub use adapter::Adapter;
 pub use dbus::NetworkService;
 pub use model::NetworkState;
+pub use nm::NetworkManagerAdapter;
 pub use system::NetworkSystem;
 
 pub async fn start_service(address: &str) -> Result<(), Box<dyn std::error::Error>> {

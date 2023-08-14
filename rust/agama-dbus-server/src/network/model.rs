@@ -13,7 +13,7 @@ use std::{
 };
 use thiserror::Error;
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct NetworkState {
     pub devices: Vec<Device>,
     pub connections: Vec<Connection>,
