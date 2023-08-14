@@ -34,27 +34,21 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::FromDBus do
   let(:config_data) do
     {
       "storage" => {
-        "lvm" => true,
-        "encryption" => {
-          "method" => "luks2",
+        "lvm"              => true,
+        "space_policy"     => "delete",
+        "encryption"       => {
+          "method"        => "luks2",
           "pbkd_function" => "argon2id"
         },
-        "space_policy" => "delete",
-        "volumes" => [
-          { "mount_path" => "/" }
-        ],
+        "volumes"          => [{ "mount_path" => "/" }],
         "volume_templates" => [
           {
             "mount_path" => "/",
-            "outline" => {
-              "required" => true
-            }
+            "outline"    => { "required" => true }
           },
           {
             "mount_path" => "swap",
-            "outline" => {
-              "required" => false
-            }
+            "outline"    => { "required" => false }
           }
         ]
       }

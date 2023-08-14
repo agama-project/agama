@@ -45,7 +45,7 @@ describe Agama::Storage::Proposal do
       "mount_path" => "/", "filesystem" => "btrfs", "size" => { "auto" => true },
       "outline" => {
         "snapshots_configurable" => true,
-        "auto_size" => {
+        "auto_size"              => {
           "base_min" => "10 GiB", "base_max" => "20 GiB",
           "min_fallback_for" => ["/home"], "snapshots_increment" => "300%"
         }

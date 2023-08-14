@@ -25,7 +25,7 @@ require "agama/storage/volume"
 require "agama/storage/volume_templates_builder"
 require "agama/dbus/storage/volume_conversion/from_dbus"
 
-# TODO Move to a better place. It would be useful in other test files.
+# TODO: Move to a better place. It would be useful in other test files.
 RSpec::Matchers.define(:eq_outline) do |expected|
   match do |received|
     methods = [
@@ -39,8 +39,8 @@ RSpec::Matchers.define(:eq_outline) do |expected|
 
   failure_message do |received|
     "Volume outline does not match.\n" \
-    "Expected: #{expected.inspect}\n" \
-    "Received: #{received.inspect}"
+      "Expected: #{expected.inspect}\n" \
+      "Received: #{received.inspect}"
   end
 end
 
@@ -55,9 +55,7 @@ describe Agama::DBus::Storage::VolumeConversion::FromDBus do
         "volume_templates" => [
           {
             "mount_path" => "/test",
-            "outline" => {
-              "required" => true
-            }
+            "outline"    => { "required" => true }
           }
         ]
       }
@@ -67,7 +65,7 @@ describe Agama::DBus::Storage::VolumeConversion::FromDBus do
   describe "#convert" do
     let(:dbus_volume) do
       {
-        "MountPath" => "/test",
+        "MountPath"    => "/test",
         "MountOptions" => ["rw", "default"],
         "TargetDevice" => "/dev/sda",
         "TargetVG"     => "/dev/system",
@@ -102,6 +100,7 @@ describe Agama::DBus::Storage::VolumeConversion::FromDBus do
       let(:dbus_settings) { {} }
 
       xit "generates a volume with default values from config" do
+        # TODO
       end
     end
   end

@@ -70,11 +70,11 @@ describe Agama::DBus::Storage::Manager do
         "mount_path" => "/", "filesystem" => "btrfs", "size" => { "auto" => true },
         "mount_options" => ["whatever=foo"],
         "outline" => {
-          "required" => true,
-          "auto_size" => {
+          "required"    => true,
+          "filesystems" => ["btrfs"],
+          "auto_size"   => {
             "base_min" => "5 GiB", "base_max" => "20 GiB", "min_fallback_for" => ["/home"]
-          },
-          "filesystems" => ["btrfs"]
+          }
         }
       },
       {
@@ -94,8 +94,8 @@ describe Agama::DBus::Storage::Manager do
       },
       {
         "filesystem" => "ext4",
-        "size" => { "auto" => false, "min" => "10 GiB" },
-        "outline" => { "filesystems" => ["ext3", "ext4", "xfs"] }
+        "size"       => { "auto" => false, "min" => "10 GiB" },
+        "outline"    => { "filesystems" => ["ext3", "ext4", "xfs"] }
       }
     ]
   end
@@ -133,14 +133,14 @@ describe Agama::DBus::Storage::Manager do
 
     context "when the D-Bus settings omit some mandatory volumes" do
       let(:dbus_settings) { { "Volumes" => dbus_volumes } }
-      let(:dbus_volumes) { [dbus_root_vol, dbus_foo_vol ] }
+      let(:dbus_volumes) { [dbus_root_vol, dbus_foo_vol] }
       let(:dbus_root_vol) do
         {
-          "MountPath"  => "/",
-          "AutoSize"   => false,
-          "MinSize"    => 1024,
-          "MaxSize"    => 2048,
-          "Snapshots"  => true
+          "MountPath" => "/",
+          "AutoSize"  => false,
+          "MinSize"   => 1024,
+          "MaxSize"   => 2048,
+          "Snapshots" => true
         }
       end
       let(:dbus_foo_vol) { { "MountPath" => "/foo" } }
@@ -199,11 +199,11 @@ describe Agama::DBus::Storage::Manager do
           swap = settings.volumes.find { |v| v.mount_path == "swap" }
           expect(swap.auto_size).to eq(false)
           expect(swap.min_size.to_i).to eq(1024**3)
-          expect(swap.max_size.to_i).to eq(2*(1024**3))
+          expect(swap.max_size.to_i).to eq(2 * (1024**3))
 
           foo = settings.volumes.find { |v| v.mount_path == "/foo" }
           expect(foo.auto_size).to eq(false)
-          expect(foo.min_size.to_i).to eq(10*(1024**3))
+          expect(foo.min_size.to_i).to eq(10 * (1024**3))
           expect(foo.max_size).to eq Y2Storage::DiskSize.unlimited
           expect(foo.fs_type).to eq Y2Storage::Filesystems::Type::EXT4
         end
@@ -213,9 +213,11 @@ describe Agama::DBus::Storage::Manager do
     end
 
     xcontext "when the D-Bus settings include changes in the volume outline" do
+      # TODO
     end
 
     xcontext "when the D-Bus settings specify auto_size for an unsupported volume" do
+      # TODO
     end
 
     xcontext "when the D-Bus settings specify a filesystem type not listed in the outline" do
@@ -224,6 +226,7 @@ describe Agama::DBus::Storage::Manager do
     end
 
     xcontext "when the D-Bus settings specify a forbidden configuration for snapshots" do
+      # TODO
     end
   end
 end

@@ -29,7 +29,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
   let(:default_volume) { Agama::Storage::Volume.new("/test") }
 
   let(:custom_volume) do
-    outline = Agama::Storage::VolumeOutline.new.tap do |outline|
+    volume_outline = Agama::Storage::VolumeOutline.new.tap do |outline|
       outline.required = true
       outline.filesystems = [Y2Storage::Filesystems::Type::EXT3, Y2Storage::Filesystems::Type::EXT4]
       outline.adjust_by_ram = true
@@ -41,7 +41,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
     end
 
     Agama::Storage::Volume.new("/test").tap do |volume|
-      volume.outline = outline
+      volume.outline = volume_outline
       volume.fs_type = Y2Storage::Filesystems::Type::EXT4
       volume.btrfs.snapshots = true
       volume.mount_options = ["rw", "default"]
@@ -56,7 +56,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
   describe "#convert" do
     it "converts the volume to a D-Bus hash" do
       expect(described_class.new(default_volume).convert).to eq(
-        "MountPath" => "/test",
+        "MountPath"    => "/test",
         "MountOptions" => [],
         "TargetDevice" => "",
         "TargetVG"     => "",
@@ -75,7 +75,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
       )
 
       expect(described_class.new(custom_volume).convert).to eq(
-        "MountPath" => "/test",
+        "MountPath"    => "/test",
         "MountOptions" => ["rw", "default"],
         "TargetDevice" => "/dev/sda",
         "TargetVG"     => "/dev/system",

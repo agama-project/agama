@@ -34,17 +34,7 @@ module Agama
           #
           # @return [Hash]
           def convert
-            hash = {
-              "MountPath"    => volume.mount_path.to_s,
-              "MountOptions" => volume.mount_options,
-              "TargetDevice" => volume.device.to_s,
-              "TargetVG"     => volume.separate_vg_name.to_s,
-              "FsType"       => volume.fs_type&.to_human_string || "",
-              "MinSize"      => volume.min_size&.to_i,
-              "AutoSize"     => volume.auto_size?,
-              "Snapshots"    => volume.btrfs.snapshots?,
-              "Outline"      => outline_conversion
-            }
+            hash = base_conversion
             return hash if volume.max_size.nil? || volume.max_size.unlimited?
 
             hash["MaxSize"] = volume.max_size.to_i
@@ -55,6 +45,21 @@ module Agama
 
           # @return [Agama::Storage::Volume]
           attr_reader :volume
+
+          # @return [Hash]
+          def base_conversion
+            {
+              "MountPath"    => volume.mount_path.to_s,
+              "MountOptions" => volume.mount_options,
+              "TargetDevice" => volume.device.to_s,
+              "TargetVG"     => volume.separate_vg_name.to_s,
+              "FsType"       => volume.fs_type&.to_human_string || "",
+              "MinSize"      => volume.min_size&.to_i,
+              "AutoSize"     => volume.auto_size?,
+              "Snapshots"    => volume.btrfs.snapshots?,
+              "Outline"      => outline_conversion
+            }
+          end
 
           # @return [Hash]
           def outline_conversion

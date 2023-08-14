@@ -93,14 +93,14 @@ module Agama
       # Temporary method to avoid crashes if there is no default template
       def empty_data
         {
-          btrfs: BtrfsSettings.new,
-          outline: VolumeOutline.new,
+          btrfs:         BtrfsSettings.new,
+          outline:       VolumeOutline.new,
           mount_options: [],
-          filesystem: Y2Storage::Filesystems::Type::EXT4
+          filesystem:    Y2Storage::Filesystems::Type::EXT4
         }
       end
 
-      def values(data) # rubocop:disable Metrics/AbcSize
+      def values(data)
         {}.tap do |values|
           values[:btrfs] = btrfs(data)
           values[:outline] = outline(data)
@@ -181,10 +181,10 @@ module Agama
         Pathname.new(path).cleanpath.to_s
       end
 
-      def fs_type(fs)
-        return fs if fs.is_a?(Y2Storage::Filesystems::Type)
+      def fs_type(filesystem)
+        return filesystem if filesystem.is_a?(Y2Storage::Filesystems::Type)
 
-        Y2Storage::Filesystems::Type.find(fs.downcase.to_sym)
+        Y2Storage::Filesystems::Type.find(filesystem.downcase.to_sym)
       end
     end
   end

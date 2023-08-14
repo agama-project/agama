@@ -138,7 +138,7 @@ describe Agama::DBus::Storage::Manager do
           "FsType" => "Ext4", "MountOptions" => [],
           "MinSize" => 0, "MaxSize" => 0, "AutoSize" => false
         }
-        generic_outline = { "Required" => false, "FsTypes" => [], "SupportAutoSize" => false}
+        generic_outline = { "Required" => false, "FsTypes" => [], "SupportAutoSize" => false }
 
         expect(subject.default_volume("/")).to include(generic)
         expect(subject.default_volume("/")["Outline"]).to include(generic_outline)
@@ -157,11 +157,11 @@ describe Agama::DBus::Storage::Manager do
           {
             "mount_path" => "/", "filesystem" => "btrfs", "size" => { "auto" => true },
             "outline" => {
-              "required" => true,
-              "auto_size" => {
+              "required"    => true,
+              "filesystems" => ["btrfs"],
+              "auto_size"   => {
                 "base_min" => "5 GiB", "base_max" => "20 GiB", "min_fallback_for" => "/home"
-              },
-              "filesystems" => ["btrfs"]
+              }
             }
           },
           {
@@ -189,7 +189,7 @@ describe Agama::DBus::Storage::Manager do
         )
 
         expect(subject.default_volume("swap")).to include(
-          "FsType" => "Swap", "AutoSize" => false, "MinSize" => 1024**3, "MaxSize" => 2*(1024**3)
+          "FsType" => "Swap", "AutoSize" => false, "MinSize" => 1024**3, "MaxSize" => 2 * (1024**3)
         )
         expect(subject.default_volume("swap")["Outline"]).to include(
           "Required" => false, "FsTypes" => ["Swap"], "SupportAutoSize" => false
@@ -197,8 +197,8 @@ describe Agama::DBus::Storage::Manager do
       end
 
       it "returns the default volume for any path without a template" do
-        default = { "FsType" => "Ext4", "AutoSize" => false, "MinSize" => 10*(1024**3) }
-        default_outline = { "FsTypes" => ["Ext3", "Ext4", "XFS"], "SupportAutoSize" => false}
+        default = { "FsType" => "Ext4", "AutoSize" => false, "MinSize" => 10 * (1024**3) }
+        default_outline = { "FsTypes" => ["Ext3", "Ext4", "XFS"], "SupportAutoSize" => false }
 
         expect(subject.default_volume("/foo")).to include(default)
         expect(subject.default_volume("/foo")["Outline"]).to include(default_outline)
@@ -300,12 +300,12 @@ describe Agama::DBus::Storage::Manager do
 
       let(:dbus_volume1) do
         {
-          "MountPath"  => "/",
-          "AutoSize"   => false,
-          "MinSize"    => 1024,
-          "MaxSize"    => 2048,
-          "FsType"     => "Btrfs",
-          "Snapshots"  => true
+          "MountPath" => "/",
+          "AutoSize"  => false,
+          "MinSize"   => 1024,
+          "MaxSize"   => 2048,
+          "FsType"    => "Btrfs",
+          "Snapshots" => true
         }
       end
 
@@ -348,8 +348,8 @@ describe Agama::DBus::Storage::Manager do
 
             expect(volume.mount_path).to eq("/")
             expect(volume.auto_size).to eq(false)
-            expect(volume.min_size.to_i).to eq(5*(1024**3))
-            expect(volume.max_size.to_i).to eq(20*(1024**3))
+            expect(volume.min_size.to_i).to eq(5 * (1024**3))
+            expect(volume.max_size.to_i).to eq(20 * (1024**3))
             expect(volume.btrfs.snapshots).to eq(false)
           end
 
