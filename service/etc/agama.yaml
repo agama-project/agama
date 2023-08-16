@@ -150,7 +150,8 @@ ALP-Dolomite:
         archs: ppc
 
     mandatory_patterns:
-      - alp_base
+      - alp_base_zypper
+      - alp_cockpit
       - alp_hardware
     optional_patterns: null # no optional pattern shared
     mandatory_packages:
