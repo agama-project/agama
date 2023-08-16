@@ -19,8 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-# Helper script to create a configuration file for a selected list of products.
-
 require "yast"
 require "uri"
 
