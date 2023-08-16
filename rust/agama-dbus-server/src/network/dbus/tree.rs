@@ -3,10 +3,9 @@ use futures::lock::Mutex;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
 use crate::network::{action::Action, dbus::interfaces, model::*};
+use async_std::{channel::Sender, sync::Arc};
 use log;
 use std::collections::HashMap;
-use std::sync::mpsc::Sender;
-use std::sync::Arc;
 
 const CONNECTIONS_PATH: &str = "/org/opensuse/Agama/Network1/connections";
 const DEVICES_PATH: &str = "/org/opensuse/Agama/Network1/devices";

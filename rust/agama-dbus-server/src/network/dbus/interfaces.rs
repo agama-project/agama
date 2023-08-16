@@ -13,11 +13,9 @@ use crate::network::{
 use log;
 
 use agama_lib::network::types::SSID;
+use async_std::{channel::Sender, sync::Arc};
 use futures::lock::{MappedMutexGuard, Mutex, MutexGuard};
-use std::{
-    net::{AddrParseError, Ipv4Addr},
-    sync::{mpsc::Sender, Arc},
-};
+use std::net::{AddrParseError, Ipv4Addr};
 use zbus::{
     dbus_interface,
     zvariant::{ObjectPath, OwnedObjectPath},
@@ -129,6 +127,7 @@ impl Connections {
         let actions = self.actions.lock().await;
         actions
             .send(Action::AddConnection(id, ty.try_into()?))
+            .await
             .unwrap();
         Ok(())
     }
@@ -151,6 +150,7 @@ impl Connections {
         let actions = self.actions.lock().await;
         actions
             .send(Action::RemoveConnection(id.to_string()))
+            .await
             .unwrap();
         Ok(())
     }
@@ -160,7 +160,7 @@ impl Connections {
     /// It includes adding, updating and removing connections as needed.
     pub async fn apply(&self) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock().await;
-        actions.send(Action::Apply).unwrap();
+        actions.send(Action::Apply).await.unwrap();
         Ok(())
     }
 }
@@ -232,6 +232,7 @@ impl Ipv4 {
         let actions = self.actions.lock().await;
         actions
             .send(Action::UpdateConnection(connection.clone()))
+            .await
             .unwrap();
         Ok(())
     }
@@ -376,7 +377,10 @@ impl Wireless {
     ) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock().await;
         let connection = NetworkConnection::Wireless(connection.clone());
-        actions.send(Action::UpdateConnection(connection)).unwrap();
+        actions
+            .send(Action::UpdateConnection(connection))
+            .await
+            .unwrap();
         Ok(())
     }
 }
