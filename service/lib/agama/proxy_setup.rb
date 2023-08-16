@@ -75,33 +75,33 @@ module Agama
     end
 
     def proxy_import_settings
-      ex = Proxy.Export
       proto = proxy.scheme
-
       # save user name and password separately
-      ex["proxy_user"] = proxy.user
+      settings = {
+        "proxy_user"     => proxy.user,
+        "proxy_password" => proxy.password,
+        "enabled"        => true
+      }
       proxy.user = nil
-      ex["proxy_password"] = proxy.password
       proxy.password = nil
-      ex["#{proto}_proxy"] = proxy.to_s
+
+      settings["#{proto}_proxy"] = proxy.to_s
       # Use the proxy also for https and ftp
       if proto == "http"
-        ex["https_proxy"] = proxy.to_s
-        ex["ftp_proxy"] = proxy.to_s
+        settings["https_proxy"] = proxy.to_s
+        settings["ftp_proxy"] = proxy.to_s
       end
-      ex["enabled"] = true
-      ex
+      settings
     end
 
     def write
       return unless proxy
 
-      Proxy.Read
-      ex = proxy_import_settings
-      Proxy.Import(ex)
+      settings = proxy_import_settings
+      Proxy.Import(settings)
 
       log.info "Writing proxy settings: #{proxy.scheme}_proxy = '#{proxy}'"
-      log.debug "Writing proxy settings: #{ex}"
+      log.debug "Writing proxy settings: #{settings}"
 
       Proxy.Write
     end
