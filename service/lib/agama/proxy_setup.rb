@@ -32,9 +32,10 @@ module Agama
     include Yast
     include Logger
 
-    CMDLINE_PATH = "/etc/cmdline"
+    CMDLINE_PATH = "/proc/cmdline"
     CMDLINE_MENU_CONF = "/etc/cmdline-menu.conf"
 
+    # @return [URI::Generic]
     attr_accessor :proxy
 
     # Constructor

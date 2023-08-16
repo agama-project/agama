@@ -30,7 +30,7 @@ Changing complex options (e.g., collections) is not supported yet.
 ## Proxy Setup
 
 Agama supports proxy setup using the `proxy=` kernel command line option like 
-`proxy=http:192.168.122.1:3128`.
+`proxy=http://192.168.122.1:3128`.
 
 When the installation system boots, the agama-proxy-setup service will read the proxy url to be
 used from the kernel command line options or through the dracut ask prompt configuration file 
