@@ -34,17 +34,21 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::FromDBus do
   let(:config_data) do
     {
       "storage" => {
-        "lvm"              => true,
+        "lvm"              => false,
         "space_policy"     => "delete",
         "encryption"       => {
           "method"        => "luks2",
           "pbkd_function" => "argon2id"
         },
-        "volumes"          => [{ "mount_path" => "/" }],
+        "volumes"          => ["/", "swap"],
         "volume_templates" => [
           {
             "mount_path" => "/",
             "outline"    => { "required" => true }
+          },
+          {
+            "mount_path" => "/home",
+            "outline"    => { "required" => false }
           },
           {
             "mount_path" => "swap",
@@ -67,44 +71,83 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::FromDBus do
         "SpacePolicy"            => "custom",
         "SpaceActions"           => { "/dev/sda" => "force_delete" },
         "Volumes"                => [
+          { "MountPath" => "/" },
           { "MountPath" => "/test" }
         ]
       }
     end
 
-    it "generates proposal settings from D-Bus values" do
+    it "generates proposal settings with the values provided from D-Bus" do
       settings = subject.convert
 
       expect(settings).to be_a(Agama::Storage::ProposalSettings)
       expect(settings.boot_device).to eq("/dev/sda")
-      expect(settings.lvm.enabled).to eq(true)
+      expect(settings.lvm.enabled?).to eq(true)
       expect(settings.lvm.system_vg_devices).to contain_exactly("/dev/sda", "/dev/sdb")
       expect(settings.encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS1)
       expect(settings.encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::PBKDF2)
       expect(settings.space.policy).to eq(:custom)
       expect(settings.space.actions).to eq({ "/dev/sda" => "force_delete" })
-      expect(settings.volumes.map(&:mount_path)).to include("/test")
-    end
-
-    it "adds missing required volumes" do
-      settings = subject.convert
-
       expect(settings.volumes.map(&:mount_path)).to contain_exactly("/", "/test")
     end
 
-    context "when a value is not provided from D-Bus" do
+    context "when some values are not provided from D-Bus" do
       let(:dbus_settings) { {} }
 
-      it "generates proposal settings with default values from config" do
+      it "completes missing values with default values from config" do
         settings = subject.convert
 
         expect(settings).to be_a(Agama::Storage::ProposalSettings)
         expect(settings.boot_device).to be_nil
-        expect(settings.lvm.enabled).to eq(true)
+        expect(settings.lvm.enabled?).to eq(false)
         expect(settings.encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
         expect(settings.encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2ID)
         expect(settings.space.policy).to eq(:delete)
-        expect(settings.volumes.map(&:mount_path)).to contain_exactly("/")
+        expect(settings.volumes.map(&:mount_path)).to contain_exactly("/", "swap")
+      end
+    end
+
+    context "when volumes are not provided from D-Bus" do
+      let(:dbus_settings) { { "Volumes" => [] } }
+
+      it "completes the volumes with the default volumes from config" do
+        settings = subject.convert
+        expect(settings.volumes.map(&:mount_path)).to contain_exactly("/", "swap")
+      end
+
+      it "ignores templates of non-default volumes" do
+        settings = subject.convert
+        expect(settings.volumes.map(&:mount_path)).to_not include("/home")
+      end
+    end
+
+    context "when a mandatory volume is not provided from D-Bus" do
+      let(:dbus_settings) do
+        {
+          "Volumes" => [
+            { "MountPath" => "/test" }
+          ]
+        }
+      end
+
+      it "completes the volumes with the mandatory volumes" do
+        settings = subject.convert
+        expect(settings.volumes.map(&:mount_path)).to include("/")
+      end
+
+      it "includes the volumes provided from D-Bus" do
+        settings = subject.convert
+        expect(settings.volumes.map(&:mount_path)).to include("/test")
+      end
+
+      it "ignores default volumes that are not mandatory" do
+        settings = subject.convert
+        expect(settings.volumes.map(&:mount_path)).to_not include("swap")
+      end
+
+      it "ignores templates for excluded volumes" do
+        settings = subject.convert
+        expect(settings.volumes.map(&:mount_path)).to_not include("/home")
       end
     end
   end

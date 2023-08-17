@@ -104,7 +104,10 @@ module Agama
           # @param target [Agama::Storage::Volume]
           # @param value [String]
           def fs_type_conversion(target, value)
-            fs_type = target.outline.filesystems.find { |t| t.to_human_string == value }
+            fs_type = target.outline.filesystems.find do |type|
+              type.to_human_string.downcase == value.downcase
+            end
+
             return unless fs_type
 
             target.fs_type = fs_type

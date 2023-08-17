@@ -132,8 +132,7 @@ module Agama
           btrfs.snapshots = fetch(btrfs_data, "snapshots", false)
           btrfs.read_only = fetch(btrfs_data, "read_only", false)
           btrfs.default_subvolume = fetch(btrfs_data, "default_subvolume", "")
-          btrfs.subvolumes = fetch(btrfs_data, "subvolumes")
-          btrfs.subvolumes&.map! { |subvol_data| subvolume(subvol_data) }
+          btrfs.subvolumes = fetch(btrfs_data, "subvolumes", []).map { |s| subvolume(s) }
         end
       end
 
