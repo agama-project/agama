@@ -71,6 +71,7 @@ describe Agama::DBus::Storage::Manager do
         "mount_options" => ["whatever=foo"],
         "outline" => {
           "required"    => true,
+          "snapshots_configurable" => snapshots_configurable,
           "filesystems" => ["btrfs"],
           "auto_size"   => {
             "base_min" => "5 GiB", "base_max" => "20 GiB", "min_fallback_for" => ["/home"]
@@ -99,6 +100,8 @@ describe Agama::DBus::Storage::Manager do
       }
     ]
   end
+
+  let(:snapshots_configurable) { true }
 
   let(:proposal) do
     instance_double(Agama::Storage::Proposal, on_calculate: nil, settings: settings)
@@ -161,7 +164,7 @@ describe Agama::DBus::Storage::Manager do
         subject.calculate_proposal(dbus_settings)
       end
 
-      it "calculates a proposal ignoring ommitted default values that are not mandatory" do
+      it "calculates a proposal ignoring ommitted default volumes that are not mandatory" do
         expect(proposal).to receive(:calculate) do |settings|
           expect(settings.volumes.map(&:mount_path)).to_not include("/home")
         end
@@ -212,21 +215,87 @@ describe Agama::DBus::Storage::Manager do
       end
     end
 
-    xcontext "when the D-Bus settings include changes in the volume outline" do
-      # TODO
+    context "when the D-Bus settings include changes in the volume outline" do
+      let(:dbus_settings) { { "Volumes" => [dbus_root_vol] } }
+      let(:dbus_root_vol) do
+        {
+          "MountPath" => "/",
+          "AutoSize"  => true,
+          "Outline"   => {
+            "Required" => false
+          }
+        }
+      end
+
+      it "ignores the given outline values" do
+        expect(proposal).to receive(:calculate) do |settings|
+          root = settings.volumes.find { |v| v.mount_path == "/" }
+          expect(root.outline.required?).to eq(true)
+        end
+
+        subject.calculate_proposal(dbus_settings)
+      end
     end
 
-    xcontext "when the D-Bus settings specify auto_size for an unsupported volume" do
-      # TODO
+    context "when the D-Bus settings specify auto_size for an unsupported volume" do
+      let(:dbus_settings) { { "Volumes" => [dbus_home_vol] } }
+      let(:dbus_home_vol) do
+        {
+          "MountPath" => "/home",
+          "AutoSize"  => true
+        }
+      end
+
+      it "does not set auto size" do
+        expect(proposal).to receive(:calculate) do |settings|
+          home = settings.volumes.find { |v| v.mount_path == "/home" }
+          expect(home.auto_size?).to eq(false)
+        end
+
+        subject.calculate_proposal(dbus_settings)
+      end
     end
 
-    xcontext "when the D-Bus settings specify a filesystem type not listed in the outline" do
+    context "when the D-Bus settings specify a filesystem type not listed in the outline" do
       # NOTE: do we have some mechanism to specify that any type is allowed (for example,
       # empty or omitted #filesystems in an outline
+      let(:dbus_settings) { { "Volumes" => [dbus_root_vol] } }
+      let(:dbus_root_vol) do
+        {
+          "MountPath" => "/",
+          "FsType"    => "Ext3"
+        }
+      end
+
+      it "does not set the given filesystem type" do
+        expect(proposal).to receive(:calculate) do |settings|
+          root = settings.volumes.find { |v| v.mount_path == "/" }
+          expect(root.fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
+        end
+
+        subject.calculate_proposal(dbus_settings)
+      end
     end
 
-    xcontext "when the D-Bus settings specify a forbidden configuration for snapshots" do
-      # TODO
+    context "when the D-Bus settings specify a forbidden configuration for snapshots" do
+      let(:dbus_settings) { { "Volumes" => [dbus_home_vol] } }
+      let(:dbus_home_vol) do
+        {
+          "MountPath" => "/home",
+          "Snapshots" => true
+        }
+      end
+
+      let(:snapshots_configurable) { false }
+
+      it "does not set snapshots" do
+        expect(proposal).to receive(:calculate) do |settings|
+          root = settings.volumes.find { |v| v.mount_path == "/" }
+          expect(root.btrfs.snapshots?).to eq(false)
+        end
+
+        subject.calculate_proposal(dbus_settings)
+      end
     end
   end
 end

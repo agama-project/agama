@@ -83,7 +83,7 @@ module Agama
 
         # @param target [Agama::Storage::ProposalSettings]
         def volumes_conversion(target)
-          target.volumes = settings.volumes.map do |spec|
+          target.volumes = settings.volumes.select(&:proposed?).map do |spec|
             VolumeConversion.from_y2storage(spec, config: config)
           end
 

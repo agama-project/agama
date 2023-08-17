@@ -21,6 +21,7 @@
 
 require "y2storage"
 require "agama/storage/volume_conversion"
+require "agama/storage/volume_templates_builder"
 
 module Agama
   module Storage
@@ -28,8 +29,10 @@ module Agama
       # Proposal settings conversion to Y2Storage format.
       class ToY2Storage
         # @param settings [Agama::Storage::ProposalSettings]
-        def initialize(settings)
+        # @param config [Agama::Config]
+        def initialize(settings, config:)
           @settings = settings
+          @config = config
         end
 
         # Performs the conversion to Y2Storage format.
@@ -54,6 +57,9 @@ module Agama
 
         # @return [Agama::Storage::ProposalSettings]
         attr_reader :settings
+
+        # @return [Agama::Config]
+        attr_reader :config
 
         # @param target [Y2Storage::ProposalSettings]
         def boot_device_conversion(target)
@@ -95,8 +101,23 @@ module Agama
 
         # @param target [Y2Storage::ProposalSettings]
         def volumes_conversion(target)
-          target.volumes = settings.volumes.map { |v| VolumeConversion.to_y2storage(v) }
+          volumes = settings.volumes.map { |v| VolumeConversion.to_y2storage(v) }
+          disabled_volumes = missing_volumes.map do |volume|
+            VolumeConversion.to_y2storage(volume).tap { |v| v.proposed = false }
+          end
+
+          target.volumes = volumes + disabled_volumes
+
           fallbacks_conversion(target)
+        end
+
+        # @return [Array<Agama::Storage::Volume>]
+        def missing_volumes
+          mount_paths = settings.volumes.map(&:mount_path)
+
+          VolumeTemplatesBuilder.new_from_config(config).all
+            .reject { |t| mount_paths.include?(t.mount_path) }
+            .reject { |t| t.mount_path.empty? }
         end
 
         # @param target [Y2Storage::ProposalSettings]

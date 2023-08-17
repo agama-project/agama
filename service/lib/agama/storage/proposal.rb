@@ -143,7 +143,7 @@ module Agama
       # @return [Y2Storage::GuidedProposal]
       def calculate_proposal(settings)
         proposal = Y2Storage::MinGuidedProposal.new(
-          settings:      ProposalSettingsConversion.to_y2storage(settings),
+          settings:      ProposalSettingsConversion.to_y2storage(settings, config: config),
           devicegraph:   probed_devicegraph,
           disk_analyzer: disk_analyzer
         )

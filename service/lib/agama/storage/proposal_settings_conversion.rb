@@ -39,9 +39,11 @@ module Agama
       # Performs conversion to Y2Storage format.
       #
       # @param settings [Agama::Storage::ProposalSettings]
+      # @param config [Agama::Config]
+      #
       # @return [Y2Storage::ProposalSettings]
-      def self.to_y2storage(settings)
-        ToY2Storage.new(settings).convert
+      def self.to_y2storage(settings, config:)
+        ToY2Storage.new(settings, config: config).convert
       end
     end
   end

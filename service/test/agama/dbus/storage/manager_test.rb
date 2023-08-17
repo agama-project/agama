@@ -136,7 +136,7 @@ describe Agama::DBus::Storage::Manager do
       it "returns the same generic default volume for any path" do
         generic = {
           "FsType" => "Ext4", "MountOptions" => [],
-          "MinSize" => 0, "MaxSize" => 0, "AutoSize" => false
+          "MinSize" => 0, "AutoSize" => false
         }
         generic_outline = { "Required" => false, "FsTypes" => [], "SupportAutoSize" => false }
 

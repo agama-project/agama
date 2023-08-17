@@ -47,6 +47,13 @@ module Agama
         end
       end
 
+      # Generates all volumes from templates
+      #
+      # @return [Array<Agama::Storage::Volume>]
+      def all
+        @data.keys.map { |k| self.for(k) }
+      end
+
       # Generates a default volume for the given path
       #
       # @param path [String]

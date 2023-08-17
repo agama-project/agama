@@ -104,7 +104,9 @@ module Agama
           # @param target [Agama::Storage::Volume]
           # @param value [String]
           def fs_type_conversion(target, value)
-            fs_type = Y2Storage::Filesystems::Type.all.find { |t| t.to_human_string == value }
+            fs_type = target.outline.filesystems.find { |t| t.to_human_string == value }
+            return unless fs_type
+
             target.fs_type = fs_type
           end
 
@@ -123,12 +125,16 @@ module Agama
           # @param target [Agama::Storage::Volume]
           # @param value [Boolean]
           def auto_size_conversion(target, value)
+            return unless target.auto_size_supported?
+
             target.auto_size = value
           end
 
           # @param target [Agama::Storage::Volume]
           # @param value [Booelan]
           def snapshots_conversion(target, value)
+            return unless target.outline.snapshots_configurable?
+
             target.btrfs.snapshots = value
           end
         end
