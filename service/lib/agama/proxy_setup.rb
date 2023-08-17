@@ -24,7 +24,8 @@ require "uri"
 
 module Agama
   # This class is responsible of parsing the proxy url from the kernel cmdline or configured
-  # during the boot proccess of the system writing the configuration to /etc/sysconfig/proxy
+  # through the dracut ask prompt configuration file (/etc/cmdline-menu.conf) during the boot
+  # proccess of the system writing the configuration to /etc/sysconfig/proxy
   class ProxySetup
     include Singleton
     include Yast
@@ -52,7 +53,6 @@ module Agama
       self.proxy = proxy_from_cmdline || proxy_from_dracut
     end
 
-    # TODO
     def proxy_from_dracut
       return unless File.exist?(CMDLINE_MENU_CONF)
 

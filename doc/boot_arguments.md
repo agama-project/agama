@@ -31,9 +31,9 @@ Changing complex options (e.g., collections) is not supported yet.
 
 Agama supports proxy setup using the `proxy=` kernel command line option like 
 `proxy=http://192.168.122.1:3128` when the installation requires to use an HTTP, HTTPS or FTP
-source . The supported proxy URL format is: protocol://[user[:password]@]host[:port]
+source. The supported proxy URL format is: protocol://[user[:password]@]host[:port]
 
-When the installation system boots, the agama-proxy-setup service will read the proxy url to be
+When the installation system boots, the agama-proxy-setup service will read the proxy URL to be
 used from the kernel command line options or through the dracut ask prompt configuration file 
 writing it to the /etc/sysconfig/proxy. After that the microOS Tools setup-systemd-proxy-env 
 systemd service will make the proxy variables from that file available to all the systemd units
