@@ -34,20 +34,6 @@ module Agama
           #
           # @return [Hash]
           def convert
-            hash = base_conversion
-            return hash if volume.max_size.nil? || volume.max_size.unlimited?
-
-            hash["MaxSize"] = volume.max_size.to_i
-            hash
-          end
-
-        private
-
-          # @return [Agama::Storage::Volume]
-          attr_reader :volume
-
-          # @return [Hash]
-          def base_conversion
             {
               "MountPath"    => volume.mount_path.to_s,
               "MountOptions" => volume.mount_options,
@@ -56,15 +42,30 @@ module Agama
               "FsType"       => volume.fs_type&.to_human_string || "",
               "MinSize"      => volume.min_size&.to_i,
               "AutoSize"     => volume.auto_size?,
-              "Snapshots"    => volume.btrfs.snapshots?,
-              "Outline"      => outline_conversion
-            }
+              "Snapshots"    => volume.btrfs.snapshots?
+            }.tap do |target|
+              max_size_conversion(target)
+              outline_conversion(target)
+            end
           end
 
-          # @return [Hash]
-          def outline_conversion
+        private
+
+          # @return [Agama::Storage::Volume]
+          attr_reader :volume
+
+          # @param target [Hash]
+          def max_size_conversion(target)
+            return if volume.max_size.nil? || volume.max_size.unlimited?
+
+            target["MaxSize"] = volume.max_size.to_i
+          end
+
+          # @param target [Hash]
+          def outline_conversion(target)
             outline = volume.outline
-            {
+
+            target["Outline"] = {
               "Required"              => outline.required?,
               "FsTypes"               => outline.filesystems.map(&:to_human_string),
               "SupportAutoSize"       => outline.adaptive_sizes?,

@@ -46,11 +46,11 @@ module Agama
 
             volume.tap do |target|
               dbus_volume.each do |dbus_property, dbus_value|
-                meth = CONVERSIONS[dbus_property]
+                converter = CONVERSIONS[dbus_property]
                 # FIXME: likely ignoring the wrong attribute is not the best
-                next unless meth
+                next unless converter
 
-                send(meth, target, dbus_value)
+                send(converter, target, dbus_value)
               end
             end
           end
