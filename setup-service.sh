@@ -76,7 +76,7 @@ $SUDO cp -v $MYDIR/service/share/dbus.conf /usr/share/dbus-1/agama.conf
     sudosed "s@\(Exec\)=/usr/bin/@\1=$MYDIR/service/bin/@" $SVC $DBUSDIR/$SVC
   done
   sudosed "s@\(ExecStart\)=/usr/bin/@\1=$MYDIR/service/bin/@" \
-          systemd.service /usr/lib/systemd/system/agama.service
+    agama.service /usr/lib/systemd/system/agama.service
 )
 
 # and same for rust service
