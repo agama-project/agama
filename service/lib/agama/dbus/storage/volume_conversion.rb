@@ -39,7 +39,7 @@ module Agama
 
         # Performs conversion to D-Bus format.
         #
-        # @param settings [Agama::Storage::Volume]
+        # @param volume [Agama::Storage::Volume]
         # @return [Hash]
         def self.to_dbus(volume)
           ToDBus.new(volume).convert

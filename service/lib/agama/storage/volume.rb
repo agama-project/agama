@@ -83,7 +83,7 @@ module Agama
       # If set to false, {#min_size} and {#max_size} must be handled by the proposal caller (i.e.,
       # must be explicitly set).
       #
-      # It can only be true for volumes with adaptive sizes, see {#adaptive_sizes?}.
+      # It can only be true if auto size is supported, see {auto_size_supported?}.
       #
       # @return [Boolean]
       attr_accessor :auto_size

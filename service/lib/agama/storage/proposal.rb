@@ -139,7 +139,7 @@ module Agama
 
       # Instantiates and executes a Y2Storage proposal with the given settings
       #
-      # @param proposal_settings [Y2Storage::ProposalSettings]
+      # @param settings [Y2Storage::ProposalSettings]
       # @return [Y2Storage::GuidedProposal]
       def calculate_proposal(settings)
         proposal = Y2Storage::MinGuidedProposal.new(
