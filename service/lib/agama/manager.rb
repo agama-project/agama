@@ -25,6 +25,7 @@ require "agama/network"
 require "agama/with_progress"
 require "agama/installation_phase"
 require "agama/service_status_recorder"
+require "agama/dbus/service_status"
 require "agama/dbus/clients/locale"
 require "agama/dbus/clients/software"
 require "agama/dbus/clients/storage"
@@ -50,6 +51,9 @@ module Agama
     # @return [InstallationPhase]
     attr_reader :installation_phase
 
+    # @return [DBus::ServiceStatus]
+    attr_reader :service_status
+
     # Constructor
     #
     # @param logger [Logger]
@@ -58,18 +62,22 @@ module Agama
       @logger = logger
       @installation_phase = InstallationPhase.new
       @service_status_recorder = ServiceStatusRecorder.new
+      @service_status = DBus::ServiceStatus.new.busy
     end
 
     # Runs the startup phase
     def startup_phase
+      service_status.busy
       installation_phase.startup
       config_phase if software.selected_product
 
       logger.info("Startup phase done")
+      service_status.idle
     end
 
     # Runs the config phase
     def config_phase
+      service_status.busy
       installation_phase.config
 
       start_progress(2)
@@ -80,11 +88,14 @@ module Agama
     rescue StandardError => e
       logger.error "Startup error: #{e.inspect}. Backtrace: #{e.backtrace}"
       # TODO: report errors
+    ensure
+      service_status.idle
     end
 
     # Runs the install phase
     # rubocop:disable Metrics/AbcSize
     def install_phase
+      service_status.busy
       installation_phase.install
       start_progress(7)
 
@@ -108,6 +119,10 @@ module Agama
       end
 
       logger.info("Install phase done")
+    rescue StandardError => e
+      logger.error "Installation error: #{e.inspect}. Backtrace: #{e.backtrace}"
+    ensure
+      service_status.idle
     end
     # rubocop:enable Metrics/AbcSize
 
