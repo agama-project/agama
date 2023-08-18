@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug 18 14:17:13 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Add proxy setup support (bsc#1212677, gh#openSUSE/agama#696).
+
+-------------------------------------------------------------------
 Mon Aug  7 10:52:35 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not consider the architecture when filtering the configuration
