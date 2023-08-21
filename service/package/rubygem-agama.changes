@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Mon Aug 21 11:15:50 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Set the manager service as busy during the startup phase when
-  a single product is available (bsc#1213194).
+- Set the manager service as busy during the startup phase
+  (bsc#1213194).
 
 -------------------------------------------------------------------
 Fri Aug 18 14:17:13 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
