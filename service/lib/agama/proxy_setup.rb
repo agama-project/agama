@@ -33,6 +33,8 @@ module Agama
 
     CMDLINE_PATH = "/proc/cmdline"
     CMDLINE_MENU_CONF = "/etc/cmdline-menu.conf"
+    PACKAGES = ["microos-tools"].freeze
+    CONFIG_PATH = "/etc/sysconfig/proxy"
 
     # @return [URI::Generic]
     attr_accessor :proxy
@@ -104,6 +106,22 @@ module Agama
       log.debug "Writing proxy settings: #{settings}"
 
       Proxy.Write
+    end
+
+    def install
+      return unless proxy
+
+      copy_files
+      add_packages
+    end
+
+    def add_packages
+      log.info "Selecting these packages for installation: #{PACKAGES}"
+      Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, PACKAGES)
+    end
+
+    def copy_files
+      FileUtils.cp(CONFIG_PATH, File.join(Yast::Installation.destdir, CONFIG_PATH))
     end
   end
 end
