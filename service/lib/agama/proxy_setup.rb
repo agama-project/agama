@@ -109,7 +109,8 @@ module Agama
     end
 
     def install
-      return unless proxy
+      Proxy.Read
+      return unless Proxy.enabled
 
       copy_files
       add_packages
@@ -121,6 +122,7 @@ module Agama
     end
 
     def copy_files
+      log.info "Copying proxy configuration to the target system"
       FileUtils.cp(CONFIG_PATH, File.join(Yast::Installation.destdir, CONFIG_PATH))
     end
   end
