@@ -1,0 +1,12 @@
+[Unit]
+Description=Configure wide proxy setup for agama and systemd services
+Before=agama.service
+Wants=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/agama-proxy-setup
+
+[Install]
+WantedBy=default.target
+
