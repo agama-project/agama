@@ -54,12 +54,12 @@ async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> anyhow::Resul
         println!("Agama's manager is busy. Waiting until it is ready...");
     }
 
+    // Make sure that the manager is ready
+    manager.wait().await?;
+
     if !manager.can_install().await? {
         return Err(CliError::ValidationError)?;
     }
-
-    // Display the progress (if needed) and makes sure that the manager is ready
-    manager.wait().await?;
 
     let progress = task::spawn(async { show_progress().await });
     // Try to start the installation up to max_attempts times.

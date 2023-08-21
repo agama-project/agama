@@ -29,13 +29,15 @@ describe Agama::DBus::Manager do
   subject { described_class.new(backend, logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
+  let(:service_status) { Agama::DBus::ServiceStatus.new.idle }
 
   let(:backend) do
     instance_double(Agama::Manager,
       installation_phase:        installation_phase,
       software:                  software_client,
       on_services_status_change: nil,
-      valid?:                    true)
+      valid?:                    true,
+      service_status:            service_status)
   end
 
   let(:installation_phase) { Agama::InstallationPhase.new }
@@ -98,7 +100,7 @@ describe Agama::DBus::Manager do
   describe "#config_phase" do
     context "when the service is idle" do
       before do
-        subject.service_status.idle
+        service_status.idle
       end
 
       it "runs the config phase, setting the service as busy meanwhile" do
@@ -112,11 +114,11 @@ describe Agama::DBus::Manager do
 
     context "when the service is busy" do
       before do
-        subject.service_status.busy
+        service_status.busy
       end
 
       it "raises a D-Bus error" do
-        expect { subject.config_phase }.to raise_error(::DBus::Error)
+        expect { subject.config_phase }.to raise_error(DBus::Error)
       end
     end
   end
@@ -124,7 +126,7 @@ describe Agama::DBus::Manager do
   describe "#install_phase" do
     context "when the service is idle" do
       before do
-        subject.service_status.idle
+        service_status.idle
       end
 
       it "runs the install phase, setting the service as busy meanwhile" do
@@ -148,11 +150,11 @@ describe Agama::DBus::Manager do
 
     context "when the service is busy" do
       before do
-        subject.service_status.busy
+        service_status.busy
       end
 
       it "raises a D-Bus error" do
-        expect { subject.install_phase }.to raise_error(::DBus::Error)
+        expect { subject.install_phase }.to raise_error(DBus::Error)
       end
     end
   end
