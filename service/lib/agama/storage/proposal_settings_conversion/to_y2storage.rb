@@ -165,9 +165,17 @@ module Agama
         # @param device [String]
         # @return [String, Array<String>]
         def device_or_partitions(device)
-          partitions = devicegraph.find_by_name(device).partitions.map(&:name)
-
+          partitions = partitions(device)
           partitions.any? ? partitions : device
+        end
+
+        # @param device [String]
+        # @return [Array<String>]
+        def partitions(device)
+          device_object = devicegraph.find_by_name(device)
+          return [] unless device_object
+
+          device_object.partitions.map(&:name)
         end
 
         # @return [Y2Storage::Devicegraph]

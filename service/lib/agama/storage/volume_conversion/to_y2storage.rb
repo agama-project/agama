@@ -44,7 +44,7 @@ module Agama
             target.proposed = true
             target.proposed_configurable = !volume.outline.required?
             target.fs_types = volume.outline.filesystems
-            target.fs_type = volume.fs_type
+            target.fs_type = volume.fs_type if volume.fs_type
             target.weight = 100
             target.adjust_by_ram = volume.outline.adjust_by_ram?
 
