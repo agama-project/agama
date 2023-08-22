@@ -261,14 +261,13 @@ describe Agama::Storage::Manager do
       let(:new_settings) { Agama::Storage::ProposalSettings.new }
 
       before do
-        allow(Agama::Storage::ProposalSettings).to receive(:new).and_return(new_settings)
+        allow_any_instance_of(Agama::Storage::ProposalSettingsReader).to receive(:read)
+          .and_return(new_settings)
       end
 
-      it "calculates a proposal using new settings and the first available disk" do
+      it "calculates a proposal using default settings from the config file" do
         expect(proposal).to receive(:calculate).with(new_settings)
-        expect(new_settings.boot_device).to be_nil
         storage.probe
-        expect(new_settings.boot_device).to eq disk1.name
       end
     end
   end

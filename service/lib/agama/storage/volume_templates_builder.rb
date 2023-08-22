@@ -20,8 +20,10 @@
 # find current contact information at www.suse.com.
 
 require "pathname"
-require "yast"
 require "y2storage"
+require "agama/storage/volume"
+require "agama/storage/volume_outline"
+require "agama/storage/btrfs_settings"
 
 module Agama
   module Storage

@@ -191,22 +191,9 @@ module Agama
       #
       # It reuses the settings from the previous proposal, if any.
       def calculate_proposal
-        settings = proposal.settings || default_proposal_settings
+        settings = proposal.settings || read_proposal_settings
 
         proposal.calculate(settings)
-      end
-
-      # Default proposal settings from the config file.
-      #
-      # The first device is selected as boot device.
-      #
-      # @return [ProposalSettings]
-      def default_proposal_settings
-        settings = read_proposal_settings
-        device = proposal.available_devices.first&.name
-        settings.boot_device = device if device
-
-        settings
       end
 
       # Reads the default proposal settings from the config file.

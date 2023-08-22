@@ -76,12 +76,32 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
           settings.lvm.system_vg_devices = ["/dev/sdb"]
         end
 
-        it "uses the boot device as candidate device" do
-          y2storage_settings = subject.convert
+        context "and there is a boot device" do
+          before do
+            settings.boot_device = "/dev/sda"
+          end
 
-          expect(y2storage_settings).to have_attributes(
-            candidate_devices: contain_exactly("/dev/sda")
-          )
+          it "uses the boot device as candidate device" do
+            y2storage_settings = subject.convert
+
+            expect(y2storage_settings).to have_attributes(
+              candidate_devices: contain_exactly("/dev/sda")
+            )
+          end
+        end
+
+        context "and there is no boot device" do
+          before do
+            settings.boot_device = nil
+          end
+
+          it "does not set candidate devices" do
+            y2storage_settings = subject.convert
+
+            expect(y2storage_settings).to have_attributes(
+              candidate_devices: be_empty
+            )
+          end
         end
       end
 
@@ -91,12 +111,32 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
           settings.lvm.system_vg_devices = []
         end
 
-        it "uses the boot device as candidate device" do
-          y2storage_settings = subject.convert
+        context "and there is a boot device" do
+          before do
+            settings.boot_device = "/dev/sda"
+          end
 
-          expect(y2storage_settings).to have_attributes(
-            candidate_devices: contain_exactly("/dev/sda")
-          )
+          it "uses the boot device as candidate device" do
+            y2storage_settings = subject.convert
+
+            expect(y2storage_settings).to have_attributes(
+              candidate_devices: contain_exactly("/dev/sda")
+            )
+          end
+        end
+
+        context "and there is no boot device" do
+          before do
+            settings.boot_device = nil
+          end
+
+          it "does not set candidate device" do
+            y2storage_settings = subject.convert
+
+            expect(y2storage_settings).to have_attributes(
+              candidate_devices: be_empty
+            )
+          end
         end
       end
 

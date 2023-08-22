@@ -83,6 +83,9 @@ module Agama
       # @param settings [ProposalSettings] settings to calculate the proposal.
       # @return [Boolean] whether the proposal was correctly calculated.
       def calculate(settings)
+        # Use the first available device if no boot device is indicated.
+        settings.boot_device ||= available_devices.first&.name
+
         @original_settings = settings
 
         calculate_proposal(settings)
@@ -102,11 +105,15 @@ module Agama
       def settings
         return nil unless calculated?
 
-        settings = ProposalSettingsConversion.from_y2storage(proposal.settings, config: config)
-
-        # FIXME: Currently, the conversion from Y2Storage cannot infer the space policy. Copying
-        #   space settings from the original settings.
-        settings.space = original_settings.space.dup
+        ProposalSettingsConversion.from_y2storage(
+          proposal.settings,
+          config: config
+        ).tap do |settings|
+          # FIXME: Currently, the conversion from Y2Storage cannot infer the space policy. Copying
+          #   space settings from the original settings.
+          settings.space.policy = original_settings.space.policy
+          settings.space.actions = original_settings.space.actions
+        end
       end
 
       # Storage actions.

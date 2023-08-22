@@ -45,8 +45,6 @@ describe Agama::Storage::Proposal do
     before do
       allow(Y2Storage::StorageManager.instance).to receive(:proposal=)
 
-      # This is needed. Not filled by default.
-      settings.boot_device = "/dev/sda"
       settings.space.policy = policy
     end
 
@@ -248,11 +246,12 @@ describe Agama::Storage::Proposal do
 
     context "when there was already a proposal attempt" do
       before do
+        allow_any_instance_of(Y2Storage::DiskAnalyzer).to receive(:candidate_disks).and_return([])
+
         settings.boot_device = boot_device
         proposal.calculate(settings)
       end
 
-      let(:sda) { instance_double(Y2Storage::Disk, name: "/dev/sda") }
       let(:boot_device) { nil }
 
       context "but no boot device was selected" do

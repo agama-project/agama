@@ -71,7 +71,7 @@ module Agama
           candidate_devices = settings.lvm.system_vg_devices if settings.lvm.enabled?
           candidate_devices = [settings.boot_device] if candidate_devices.none?
 
-          target.candidate_devices = candidate_devices
+          target.candidate_devices = candidate_devices.compact
         end
 
         # @param target [Y2Storage::ProposalSettings]
