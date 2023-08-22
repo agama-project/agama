@@ -17,18 +17,16 @@ My first plan had a different finale, 4. Make the D-Bus service visible
 ouside the container, but I hit an issue with D-Bus authentication, hopefully
 solvable. (Update: `xdg-dbus-proxy` seems to work, ask mvidner about it)
 
-Josef wanted to test against a different container ([d-installer-backend][]) but that one was a
+Josef wanted to test against a different container (`d-installer-backend`) but that one was a
 bit old and the D-Bus API was mismatched between frontend and backend.
-
-[d-installer-backend]: https://build.opensuse.org/package/show/YaST:Head:Containers/d-installer-backend
 
 ## Details
 
 The container used is built in
-[OBS YaST:Head:Containers/agama-testing][agama-testing] and
+[OBS systemsmanagement:Agama:Staging/agama-testing][agama-testing] and
 downloaded from registry.o.o specified below.
 
-[agama-testing]: https://build.opensuse.org/package/show/YaST:Head:Containers/agama-testing
+[agama-testing]: https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-testing
 
 I basically picked the useful bits from the `integration-tests` part
 of [.github/workflows/ci.yml][ci.yml].
@@ -37,8 +35,8 @@ of [.github/workflows/ci.yml][ci.yml].
 
 
 ```sh
-# https://build.opensuse.org/package/show/YaST:Head:Containers/agama-testing
-CIMAGE=registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/agama-testing:latest
+# https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-testing
+CIMAGE=registry.opensuse.org/systemsmanagement/agama/staging/containers/opensuse/agama-testing:latest
 # rename this if you test multiple things
 CNAME=agama
 # the '?' here will report a shell error

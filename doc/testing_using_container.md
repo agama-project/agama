@@ -1,14 +1,14 @@
 ## Testing Using Container
 
-To test complex change that affects multiple parts of agama it is possible to
+To test complex change that affects multiple parts of Agama it is possible to
 run from sources using container that is used to run CI.
 
 Below is shell script that start container, provides web UI on port 9090 and
 also gives root access to container for more testing.
 
 ```sh
-# https://build.opensuse.org/package/show/YaST:Head:Containers/agama-testing
-CIMAGE=registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/agama-testing:latest
+# https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-testing
+CIMAGE=registry.opensuse.org/systemsmanagement/agama/staging/containers/opensuse/agama-testing:latest
 # rename this if you test multiple things
 CNAME=agama
 # the '?' here will report a shell error

@@ -32,8 +32,8 @@ Agama D-Bus API is also a work in progress, but it is already used by Agama.
 
 ## Installation
 
-You can grab the [RPM package](https://build.opensuse.org/package/show/YaST:Head:Agama/agama-cli) from
-the [YaST:Head:Agama](https://build.opensuse.org/project/show/YaST:Head:Agama) project.
+You can grab the [RPM package](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/agama-cli) from
+the [systemsmanagement:Agama:Devel](https://build.opensuse.org/project/show/systemsmanagement:Agama:Devel) project.
 
 If you prefer, you can install it from sources with [Cargo](https://doc.rust-lang.org/cargo/):
 
@@ -111,18 +111,5 @@ frontend](./agama-cli/doc/backend-for-testing.md)*.
 ## Caveats
 
 * If no product is selected, the `probe` command fails.
-
-## Packaging
-
-Packaging files live in the `package' directory. Agama follows the
-[Rust packaging guidelines](https://en.opensuse.org/openSUSE:Packaging_Rust_Software).
-To test changes to the spec file, use a simple `osc branch YaST:Head:Agama agama-cli`.
-and copy the modified spec file to that branch.
-If it also needs specific code from a git branch, then modify `_service' file and
-put the git branch name in the `<revision>` tag. Then run `osc service runall`.
-
-Note: for openSUSE Leap, `cargo_audit` [does not work][c_a_bug] with older Python, so comment out that
-service section for the test build.
-For the test build, use the usual `osc build' on modified sources.
 
 [c_a_bug]: https://github.com/openSUSE/obs-service-cargo_audit/pull/6
