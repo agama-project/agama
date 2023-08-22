@@ -22,6 +22,7 @@
 require "yast"
 require "agama/config"
 require "agama/network"
+require "agama/proxy_setup"
 require "agama/with_progress"
 require "agama/installation_phase"
 require "agama/service_status_recorder"

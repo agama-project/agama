@@ -22,6 +22,7 @@
 require "yast"
 require "uri"
 require "fileutils"
+require "agama/helpers"
 
 module Agama
   # This class is responsible of parsing the proxy url from the kernel cmdline or configured
@@ -31,6 +32,7 @@ module Agama
     include Singleton
     include Yast
     include Logger
+    include Helpers
 
     CMDLINE_PATH = "/proc/cmdline"
     CMDLINE_MENU_CONF = "/etc/cmdline-menu.conf"
@@ -54,11 +56,13 @@ module Agama
     end
 
     def install
-      Proxy.Read
-      return unless Proxy.enabled
+      on_local do
+        Proxy.Read
+        return unless Proxy.enabled
 
-      copy_files
-      add_packages
+        copy_files
+        add_packages
+      end
     end
 
   private
