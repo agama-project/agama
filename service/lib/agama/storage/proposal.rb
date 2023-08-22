@@ -83,6 +83,8 @@ module Agama
       # @param settings [ProposalSettings] settings to calculate the proposal.
       # @return [Boolean] whether the proposal was correctly calculated.
       def calculate(settings)
+        @original_settings = settings
+
         calculate_proposal(settings)
 
         @on_calculate_callbacks.each(&:call)
@@ -93,11 +95,18 @@ module Agama
 
       # Settings used for calculating the proposal.
       #
+      # Note that this settings might differ from the {#original_settings}. For example, the sizes
+      # of some volumes could be adjusted if auto size is set.
+      #
       # @return [ProposalSettings, nil]
       def settings
         return nil unless calculated?
 
-        ProposalSettingsConversion.from_y2storage(proposal.settings, config: config)
+        settings = ProposalSettingsConversion.from_y2storage(proposal.settings, config: config)
+
+        # FIXME: Currently, the conversion from Y2Storage cannot infer the space policy. Copying
+        #   space settings from the original settings.
+        settings.space = original_settings.space.dup
       end
 
       # Storage actions.
@@ -129,6 +138,11 @@ module Agama
 
       # @return [Logger]
       attr_reader :logger
+
+      # Settings originally used for calculating the proposal (without conversion from Y2Storage).
+      #
+      # @return [Agama::Storage::ProposalSettings]
+      attr_reader :original_settings
 
       # @return [Y2Storage::MinGuidedProposal, nil]
       def proposal

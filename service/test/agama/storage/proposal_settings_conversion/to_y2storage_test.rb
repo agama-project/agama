@@ -69,6 +69,53 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
       )
     end
 
+    context "candidate devices conversion" do
+      context "when LVM is not set" do
+        before do
+          settings.lvm.enabled = false
+          settings.lvm.system_vg_devices = ["/dev/sdb"]
+        end
+
+        it "uses the boot device as candidate device" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings).to have_attributes(
+            candidate_devices: contain_exactly("/dev/sda")
+          )
+        end
+      end
+
+      context "when LVM is set but no system VG devices are indicated" do
+        before do
+          settings.lvm.enabled = true
+          settings.lvm.system_vg_devices = []
+        end
+
+        it "uses the boot device as candidate device" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings).to have_attributes(
+            candidate_devices: contain_exactly("/dev/sda")
+          )
+        end
+      end
+
+      context "when LVM is set and some system VG devices are indicated" do
+        before do
+          settings.lvm.enabled = true
+          settings.lvm.system_vg_devices = ["/dev/sdb", "/dev/sdc"]
+        end
+
+        it "uses the system VG devices as candidate devices" do
+          y2storage_settings = subject.convert
+
+          expect(y2storage_settings).to have_attributes(
+            candidate_devices: contain_exactly("/dev/sdb", "/dev/sdc")
+          )
+        end
+      end
+    end
+
     context "space policy conversion" do
       before do
         mock_storage(devicegraph: "staging-plain-partitions.yaml")

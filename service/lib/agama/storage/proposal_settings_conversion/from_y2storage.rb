@@ -42,7 +42,7 @@ module Agama
             boot_device_conversion(target)
             lvm_conversion(target)
             encryption_conversion(target)
-            space_policy_conversion(target)
+            space_settings_conversion(target)
             volumes_conversion(target)
           end
         end
@@ -63,7 +63,12 @@ module Agama
         # @param target [Agama::Storage::ProposalSettings]
         def lvm_conversion(target)
           target.lvm.enabled = settings.lvm
-          target.lvm.system_vg_devices = settings.candidate_devices if settings.lvm
+
+          # Only assign system VG devices if candidate devices contains any device different to the
+          # root device.
+          return unless settings.candidate_devices.reject { |d| d == settings.root_device }.any?
+
+          target.lvm.system_vg_devices = settings.candidate_devices
         end
 
         # @param target [Agama::Storage::ProposalSettings]
@@ -74,11 +79,8 @@ module Agama
         end
 
         # @param target [Agama::Storage::ProposalSettings]
-        def space_policy_conversion(target)
-          policy = settings.space_settings.strategy
-
-          target.space.policy = policy
-          target.space.actions = settings.space_settings.actions if policy == :bigger_resize
+        def space_settings_conversion(target)
+          # FIXME: No way to infer space settings from Y2Storage.
         end
 
         # @param target [Agama::Storage::ProposalSettings]

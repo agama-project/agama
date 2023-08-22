@@ -43,9 +43,8 @@ module Agama
           # generic default values that are independent of the product (there is no YaST
           # ProductFeatures mechanism in place).
           Y2Storage::ProposalSettings.new_for_current_product.tap do |target|
-            target.candidate_devices = candidate_devices
-
             boot_device_conversion(target)
+            candidate_devices_conversion(target)
             lvm_conversion(target)
             encryption_conversion(target)
             space_policy_conversion(target)
@@ -64,6 +63,15 @@ module Agama
         # @param target [Y2Storage::ProposalSettings]
         def boot_device_conversion(target)
           target.root_device = settings.boot_device
+        end
+
+        # @param target [Y2Storage::ProposalSettings]
+        def candidate_devices_conversion(target)
+          candidate_devices = []
+          candidate_devices = settings.lvm.system_vg_devices if settings.lvm.enabled?
+          candidate_devices = [settings.boot_device] if candidate_devices.none?
+
+          target.candidate_devices = candidate_devices
         end
 
         # @param target [Y2Storage::ProposalSettings]
@@ -140,26 +148,19 @@ module Agama
           volume&.mount_path
         end
 
-        # @return [Array<String>]
-        def candidate_devices
-          devices = [settings.boot_device]
-          devices += settings.lvm.system_vg_devices if settings.lvm.enabled?
-
-          devices.compact.uniq
-        end
-
         # All block devices affected by the space policy.
         #
-        # This includes the partitions from the candidate devices and from the devices directly
-        # assigned to a volume as target device. If a device is not partitioned, then the device
-        # itself is included.
+        # This includes the partitions from the root device, the candidate devices and from the
+        # devices directly assigned to a volume as target device. If a device is not partitioned,
+        # then the device itself is included.
         #
         # @return [Array<String>]
         def all_devices
-          devices = candidate_devices
-          devices += settings.volumes.map(&:device).compact
+          devices = [settings.boot_device] +
+            settings.lvm.system_vg_devices +
+            settings.volumes.map(&:device)
 
-          devices.uniq.map { |d| device_or_partitions(d) }.flatten
+          devices.compact.uniq.map { |d| device_or_partitions(d) }.flatten
         end
 
         # @param device [String]
