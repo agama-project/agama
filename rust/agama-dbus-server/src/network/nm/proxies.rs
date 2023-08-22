@@ -162,6 +162,7 @@ trait NetworkManager {
     /// ConnectivityCheckEnabled property
     #[dbus_proxy(property)]
     fn connectivity_check_enabled(&self) -> zbus::Result<bool>;
+    #[dbus_proxy(property)]
     fn set_connectivity_check_enabled(&self, value: bool) -> zbus::Result<()>;
 
     /// ConnectivityCheckUri property
@@ -177,6 +178,7 @@ trait NetworkManager {
     fn global_dns_configuration(
         &self,
     ) -> zbus::Result<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>;
+    #[dbus_proxy(property)]
     fn set_global_dns_configuration(
         &self,
         value: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
@@ -221,6 +223,7 @@ trait NetworkManager {
     /// WimaxEnabled property
     #[dbus_proxy(property)]
     fn wimax_enabled(&self) -> zbus::Result<bool>;
+    #[dbus_proxy(property)]
     fn set_wimax_enabled(&self, value: bool) -> zbus::Result<()>;
 
     /// WimaxHardwareEnabled property
@@ -230,6 +233,7 @@ trait NetworkManager {
     /// WirelessEnabled property
     #[dbus_proxy(property)]
     fn wireless_enabled(&self) -> zbus::Result<bool>;
+    #[dbus_proxy(property)]
     fn set_wireless_enabled(&self, value: bool) -> zbus::Result<()>;
 
     /// WirelessHardwareEnabled property
@@ -239,6 +243,7 @@ trait NetworkManager {
     /// WwanEnabled property
     #[dbus_proxy(property)]
     fn wwan_enabled(&self) -> zbus::Result<bool>;
+    #[dbus_proxy(property)]
     fn set_wwan_enabled(&self, value: bool) -> zbus::Result<()>;
 
     /// WwanHardwareEnabled property
@@ -291,6 +296,7 @@ trait Device {
     /// Autoconnect property
     #[dbus_proxy(property)]
     fn autoconnect(&self) -> zbus::Result<bool>;
+    #[dbus_proxy(property)]
     fn set_autoconnect(&self, value: bool) -> zbus::Result<()>;
 
     /// AvailableConnections property
@@ -374,6 +380,7 @@ trait Device {
     /// Managed property
     #[dbus_proxy(property)]
     fn managed(&self) -> zbus::Result<bool>;
+    #[dbus_proxy(property)]
     fn set_managed(&self, value: bool) -> zbus::Result<()>;
 
     /// Metered property
