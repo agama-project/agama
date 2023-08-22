@@ -147,5 +147,6 @@ trait Questions1 {
     /// Interactive property
     #[dbus_proxy(property)]
     fn interactive(&self) -> zbus::Result<bool>;
+    #[dbus_proxy(property)]
     fn set_interactive(&self, value: bool) -> zbus::Result<()>;
 }
