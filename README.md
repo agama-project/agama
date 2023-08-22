@@ -114,12 +114,13 @@ The easiest way to give Agama a try is to grab a live ISO image and boot it in a
 machine. This is also the recommended way if you only want to play and see it in action. If you want
 to have a closer look, then clone and configure the project as explained in the next section.
 
-* [multi-product](https://build.opensuse.org/package/binaries/YaST:Head:Agama/agama-live:default/images):
-  it can be used to install different products, like *openSUSE Tumbleweed*, *Leap*, *Leap Micro* or
-  an experimental version of the *SUSE ALP ContainerHost OS*.
-* [ALP only](https://build.opensuse.org/package/binaries/YaST:Head:Agama/agama-live:ALP/images):
-  it only contains the definition for the experimental *SUSE ALP ContainerHost OS*, although
-  the rest of the content is pretty much the same than the multi-product version.
+There are two flavors of live ISO images:
+
+* openSUSE: it can be used to install different *openSUSE* distributions, like *Tumbleweed* or *Leap*.
+* ALP: it allows to install the development version of *SUSE ALP Dolomite*.
+
+You can download them from the [openSUSE Build
+Service](https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/).
 
 ### Manual Configuration
 
@@ -145,7 +146,7 @@ web/README.md#using-a-development-server).
 
 Another alternative is to run source checkout inside container so system is not
 affected by doing testing run beside real actions really done by installer.
-See more details [in the documentation][doc/testing_using_container.md].
+See more details [in the documentation](doc/testing_using_container.md).
 
 * Start the services:
     * beware that Agama must run as root (like YaST does) to do
