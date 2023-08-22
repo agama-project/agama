@@ -21,6 +21,7 @@
 
 require "yast"
 require "uri"
+require "fileutils"
 
 module Agama
   # This class is responsible of parsing the proxy url from the kernel cmdline or configured
@@ -35,6 +36,7 @@ module Agama
     CMDLINE_MENU_CONF = "/etc/cmdline-menu.conf"
     PACKAGES = ["microos-tools"].freeze
     CONFIG_PATH = "/etc/sysconfig/proxy"
+    PROPOSAL_ID = "network_proposal"
 
     # @return [URI::Generic]
     attr_accessor :proxy
@@ -42,11 +44,21 @@ module Agama
     # Constructor
     def initialize
       Yast.import "Proxy"
+      Yast.import "Installation"
+      Yast.import "PackagesProposal"
     end
 
     def run
       read
       write
+    end
+
+    def install
+      Proxy.Read
+      return unless Proxy.enabled
+
+      copy_files
+      add_packages
     end
 
   private
@@ -108,14 +120,6 @@ module Agama
       Proxy.Write
     end
 
-    def install
-      Proxy.Read
-      return unless Proxy.enabled
-
-      copy_files
-      add_packages
-    end
-
     def add_packages
       log.info "Selecting these packages for installation: #{PACKAGES}"
       Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, PACKAGES)
@@ -123,7 +127,7 @@ module Agama
 
     def copy_files
       log.info "Copying proxy configuration to the target system"
-      FileUtils.cp(CONFIG_PATH, File.join(Yast::Installation.destdir, CONFIG_PATH))
+      ::FileUtils.cp(CONFIG_PATH, File.join(Yast::Installation.destdir, CONFIG_PATH))
     end
   end
 end
