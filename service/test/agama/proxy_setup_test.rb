@@ -28,14 +28,14 @@ describe Agama::ProxySetup do
     proxy.proxy = nil
   end
 
+  before do
+    allow(Yast::Proxy).to receive(:Read)
+    allow(Yast::Proxy).to receive(:Write)
+  end
+
   describe "#run" do
     let(:file_content) { "proxy=#{proxy_url}" }
     let(:proxy_url) { "https://yast:1234@192.168.122.1:3128" }
-
-    before do
-      allow(Yast::Proxy).to receive(:Read)
-      allow(Yast::Proxy).to receive(:Write)
-    end
 
     context "when some configuration is given through the kernel command line" do
       before do
@@ -72,6 +72,47 @@ describe Agama::ProxySetup do
             "ftp_proxy" => "http://192.168.122.1:3128",
             "enabled" => true)
         end
+      end
+    end
+  end
+
+  describe "#install" do
+    let(:config) do
+      {
+        "enabled" => false
+      }
+    end
+
+    before do
+      Yast::Proxy.Import(config)
+      allow(Yast::Installation).to receive(:destdir).and_return("/mnt")
+    end
+
+    it "reads the current Proxy configuration from the inst-sys" do
+      expect(Yast::Proxy).to receive(:Read)
+
+      proxy.install
+    end
+
+    context "when the use of proxy is disabled" do
+      it "does not copy the configuration to the target system" do
+        expect(FileUtils).to_not receive(:cp)
+        proxy.install
+      end
+    end
+
+    context "when the use of proxy is enabled" do
+      let(:config) do
+        {
+          "enabled"    => true,
+          "http_proxy" => "http://192.168.122.1:3128"
+        }
+      end
+
+      it "copies the configuration to the target system" do
+        expect(FileUtils).to receive(:cp).with(described_class::CONFIG_PATH,
+          File.join("/mnt", described_class::CONFIG_PATH))
+        proxy.install
       end
     end
   end
