@@ -20,29 +20,11 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../test_helper"
+require_relative "../../../rspec/matchers/storage"
 require "agama/config"
 require "agama/storage/volume"
 require "agama/storage/volume_templates_builder"
 require "agama/dbus/storage/volume_conversion/from_dbus"
-
-# TODO: Move to a better place. It would be useful in other test files.
-RSpec::Matchers.define(:eq_outline) do |expected|
-  match do |received|
-    methods = [
-      :required?, :filesystems, :base_min_size, :base_max_size, :adjust_by_ram?,
-      :min_size_fallback_for, :max_size_fallback_for, :snapshots_configurable?, :snapshots_size,
-      :snapshots_percentage
-    ]
-
-    methods.all? { |m| received.public_send(m) == expected.public_send(m) }
-  end
-
-  failure_message do |received|
-    "Volume outline does not match.\n" \
-      "Expected: #{expected.inspect}\n" \
-      "Received: #{received.inspect}"
-  end
-end
 
 describe Agama::DBus::Storage::VolumeConversion::FromDBus do
   subject { described_class.new(dbus_volume, config: config) }
