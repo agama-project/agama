@@ -22,6 +22,7 @@
 require "y2storage/encryption_method"
 require "y2storage/pbkd_function"
 require "agama/storage/volume_templates_builder"
+require "agama/storage/space_settings"
 
 module Agama
   module Storage
@@ -78,7 +79,10 @@ module Agama
       # @param settings [Agama::Storage::ProposalSettings]
       # @param value [String]
       def space_policy_reader(settings, value)
-        settings.space.policy = value.to_sym
+        policy = value.to_sym
+        return unless SpaceSettings.policies.include?(policy)
+
+        settings.space.policy = policy
       end
 
       # @param settings [Agama::Storage::ProposalSettings]

@@ -23,11 +23,21 @@ module Agama
   module Storage
     # Settings regarding the Agama storage proposal for making space
     class SpaceSettings
+      POLICIES = [:delete, :keep, :resize, :custom].freeze
+      private_constant :POLICIES
+
       # @return [Symbol] :delete, :keep, :resize or :custom
       attr_accessor :policy
 
       # @return [Hash] used only for :custom
       attr_accessor :actions
+
+      # All possible policies
+      #
+      # @return [Array<Symbol>]
+      def self.policies
+        POLICIES
+      end
 
       def initialize
         @actions = {}

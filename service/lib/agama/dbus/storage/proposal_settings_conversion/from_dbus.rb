@@ -23,6 +23,7 @@ require "y2storage/encryption_method"
 require "y2storage/pbkd_function"
 require "agama/storage/proposal_settings"
 require "agama/storage/proposal_settings_reader"
+require "agama/storage/space_settings"
 require "agama/dbus/storage/volume_conversion"
 
 module Agama
@@ -122,7 +123,10 @@ module Agama
           # @param target [Agama::Storage::ProposalSettings]
           # @param value [String]
           def space_policy_conversion(target, value)
-            target.space.policy = value.to_sym unless value.empty?
+            policy = value.to_sym
+            return unless Agama::Storage::SpaceSettings.policies.include?(policy)
+
+            target.space.policy = policy
           end
 
           # @param target [Agama::Storage::ProposalSettings]
