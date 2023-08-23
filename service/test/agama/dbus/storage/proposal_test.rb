@@ -77,6 +77,26 @@ describe Agama::DBus::Storage::Proposal do
     end
   end
 
+  describe "#system_vg_devices" do
+    context "if a proposal has not been calculated yet" do
+      let(:settings) { nil }
+
+      it "returns an empty list" do
+        expect(subject.system_vg_devices).to eq([])
+      end
+    end
+
+    context "if a proposal has been calculated" do
+      let(:settings) do
+        Agama::Storage::ProposalSettings.new.tap { |s| s.lvm.system_vg_devices = ["/dev/vda"] }
+      end
+
+      it "returns the devices used for the system VG" do
+        expect(subject.system_vg_devices).to contain_exactly("/dev/vda")
+      end
+    end
+  end
+
   describe "#encryption_password" do
     context "if a proposal has not been calculated yet" do
       let(:settings) { nil }
@@ -93,6 +113,70 @@ describe Agama::DBus::Storage::Proposal do
 
       it "return the encryption password used by the proposal" do
         expect(subject.encryption_password).to eq("n0ts3cr3t")
+      end
+    end
+  end
+
+  describe "#encryption_method" do
+    context "if a proposal has not been calculated yet" do
+      let(:settings) { nil }
+
+      it "returns an empty string" do
+        expect(subject.encryption_method).to eq("")
+      end
+    end
+
+    context "if a proposal has been calculated" do
+      let(:settings) do
+        Agama::Storage::ProposalSettings.new.tap { |s| s.encryption.method = luks2 }
+      end
+
+      let(:luks2) { Y2Storage::EncryptionMethod::LUKS2 }
+
+      it "return the encryption method used by the proposal" do
+        expect(subject.encryption_method).to eq(luks2.id.to_s)
+      end
+    end
+  end
+
+  describe "#encryption_pbkd_function" do
+    context "if a proposal has not been calculated yet" do
+      let(:settings) { nil }
+
+      it "returns an empty string" do
+        expect(subject.encryption_pbkd_function).to eq("")
+      end
+    end
+
+    context "if a proposal has been calculated" do
+      let(:settings) do
+        Agama::Storage::ProposalSettings.new.tap { |s| s.encryption.pbkd_function = argon2id }
+      end
+
+      let(:argon2id) { Y2Storage::PbkdFunction::ARGON2ID }
+
+      it "return the encryption method used by the proposal" do
+        expect(subject.encryption_pbkd_function).to eq(argon2id.value)
+      end
+    end
+  end
+
+  describe "#space_policy" do
+    context "if a proposal has not been calculated yet" do
+      let(:settings) { nil }
+
+      it "returns an empty string" do
+        expect(subject.space_policy).to eq("")
+      end
+    end
+
+    context "if a proposal has been calculated" do
+      let(:settings) do
+        Agama::Storage::ProposalSettings.new.tap { |s| s.space.policy = :delete }
+      end
+
+      it "return the space policy used by the proposal" do
+        expect(subject.space_policy).to eq("delete")
       end
     end
   end

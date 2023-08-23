@@ -54,7 +54,7 @@ module Agama
 
           dbus_reader :encryption_method, "s"
 
-          dbus_reader :encryption_pbdk_function, "s", dbus_name: "EncryptionPBKDFunction"
+          dbus_reader :encryption_pbkd_function, "s", dbus_name: "EncryptionPBKDFunction"
 
           dbus_reader :space_policy, "s"
 
@@ -104,7 +104,7 @@ module Agama
 
         # Space policy strategy
         #
-        # @return [String] For the possible values, check Y2Storage::ProposalSpaceSettings
+        # @return [String] For the possible values, check Agama::Storage::SpaceSettings
         def space_policy
           dbus_settings.fetch("SpacePolicy", "")
         end
