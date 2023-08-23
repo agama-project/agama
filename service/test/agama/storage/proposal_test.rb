@@ -24,273 +24,273 @@ require_relative "storage_helpers"
 require "agama/storage/proposal"
 require "agama/storage/proposal_settings"
 require "agama/config"
+require "y2storage"
 
 describe Agama::Storage::Proposal do
   include Agama::RSpec::StorageHelpers
+
   before { mock_storage(devicegraph: "partitioned_md.yml") }
 
   subject(:proposal) { described_class.new(config, logger: logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
-  let(:config) { Agama::Config.new(config_data) }
-  let(:config_data) { {} }
 
-  let(:y2storage_proposal) do
-    instance_double(Y2Storage::MinGuidedProposal, propose: true, failed?: false)
+  let(:config) { Agama::Config.new }
+
+  let(:achievable_settings) do
+    Agama::Storage::ProposalSettings.new.tap do |settings|
+      settings.boot_device = "/dev/sdb"
+      settings.volumes = [Agama::Storage::Volume.new("/")]
+    end
   end
 
-  let(:settings) { Agama::Storage::ProposalSettings.new }
+  let(:impossible_settings) do
+    Agama::Storage::ProposalSettings.new.tap do |settings|
+      settings.boot_device = "/dev/sdb"
+      settings.volumes = [
+        # The boot disk size is 500 GiB, so it cannot accomodate a 1 TiB volume.
+        Agama::Storage::Volume.new("/").tap { |v| v.min_size = Y2Storage::DiskSize.TiB(1) }
+      ]
+    end
+  end
 
-  describe "#calculate" do
-    before do
-      allow(Y2Storage::StorageManager.instance).to receive(:proposal=)
-
-      settings.space.policy = policy
+  describe "#success?" do
+    it "returns false if calculate has not been called yet" do
+      expect(subject.success?).to eq(false)
     end
 
-    let(:policy) { :delete }
+    context "if calculate was already called" do
+      before do
+        subject.calculate(settings)
+      end
+
+      context "and the proposal was successful" do
+        let(:settings) { achievable_settings }
+
+        it "returns true" do
+          expect(subject.success?).to eq(true)
+        end
+
+        context "but the proposal was invalidated" do
+          before do
+            subject.invalidate
+          end
+
+          it "returns false" do
+            expect(subject.success?).to eq(false)
+          end
+        end
+      end
+
+      context "and the proposal failed" do
+        let(:settings) { impossible_settings }
+
+        it "returns false" do
+          expect(subject.success?).to eq(false)
+        end
+      end
+    end
+  end
+
+  describe "#invalidated?" do
+    it "returns false if the proposal has not been invalidated yet" do
+      expect(subject.invalidated?).to eq(false)
+    end
+
+    it "returns true if the proposal was invalidated" do
+      subject.invalidate
+
+      expect(subject.invalidated?).to eq(true)
+    end
+  end
+
+  describe "#calculate" do
+    it "calculates a new proposal with the given settings" do
+      expect(Y2Storage::StorageManager.instance.proposal).to be_nil
+
+      subject.calculate(achievable_settings)
+
+      expect(Y2Storage::StorageManager.instance.proposal).to_not be_nil
+      expect(Y2Storage::StorageManager.instance.proposal.settings).to have_attributes(
+        root_device: "/dev/sdb",
+        volumes:     contain_exactly(
+          an_object_having_attributes(mount_point: "/")
+        )
+      )
+    end
 
     it "runs all the callbacks" do
       callback1 = proc {}
       callback2 = proc {}
 
-      proposal.on_calculate(&callback1)
-      proposal.on_calculate(&callback2)
+      subject.on_calculate(&callback1)
+      subject.on_calculate(&callback2)
 
       expect(callback1).to receive(:call)
       expect(callback2).to receive(:call)
 
-      proposal.calculate(settings)
+      subject.calculate(achievable_settings)
     end
 
-    it "stores the given settings" do
-      allow(Y2Storage::StorageManager.instance).to receive(:proposal=).and_call_original
+    it "returns whether the proposal was successful" do
+      expect(subject.calculate(achievable_settings)).to eq(true)
+      expect(subject.calculate(impossible_settings)).to eq(false)
+    end
+
+    context "if the given settings does not indicate a boot device" do
+      let(:settings) do
+        achievable_settings.tap { |s| s.boot_device = nil }
+      end
+
+      it "calculates a new proposal using the first disk as boot device" do
+        subject.calculate(settings)
+
+        expect(Y2Storage::StorageManager.instance.proposal.settings).to have_attributes(
+          root_device: "/dev/sda"
+        )
+      end
+    end
+
+    context "if the previous proposal was invalidated" do
+      before do
+        subject.calculate(achievable_settings)
+        subject.invalidate
+      end
+
+      it "sets the new proposal as not invalidated" do
+        expect(subject.invalidated?).to eq(true)
+
+        subject.calculate(achievable_settings)
+
+        expect(subject.invalidated?).to eq(false)
+      end
+    end
+  end
+
+  describe "#settings" do
+    it "returns nil if calculate has not been called yet" do
       expect(proposal.settings).to be_nil
-
-      proposal.calculate(settings)
-
-      expect(proposal.settings).to_not be_nil
     end
 
-    context "when the Y2Storage proposal succeeds" do
-      it "returns true and saves the successful proposal" do
-        manager = Y2Storage::StorageManager.instance
-        expect(manager).to receive(:proposal=).and_call_original
-
-        expect(proposal.calculate(settings)).to eq true
-        expect(manager.proposal.failed?).to eq false
-      end
-    end
-
-    context "when the Y2Storage proposal fails" do
+    context "if the proposal was already calculated" do
       before do
-        # Enforce an impossible root of 10 TiB
-        root = Agama::Storage::Volume.new("/").tap do |vol|
-          vol.min_size = Y2Storage::DiskSize.TiB(10)
-          vol.fs_type = Y2Storage::Filesystems::Type::BTRFS
+        subject.calculate(settings)
+      end
+
+      let(:settings) do
+        achievable_settings.tap do |settings|
+          settings.space.policy = :custom
+          settings.space.actions = { "/dev/sda" => :force_delete }
         end
-        settings.volumes << root
       end
 
-      it "returns false and saves the failed proposal" do
-        manager = Y2Storage::StorageManager.instance
-        expect(manager).to receive(:proposal=).and_call_original
+      it "returns the settings used for calculating the proposal" do
+        expect(subject.settings).to be_a(Agama::Storage::ProposalSettings)
 
-        expect(proposal.calculate(settings)).to eq false
-        expect(manager.proposal.failed?).to eq true
-      end
-    end
-
-    context "with no encryption settings in the config" do
-      it "runs the Y2Storage proposal with default encryption settings" do
-        expect(Y2Storage::MinGuidedProposal).to receive(:new) do |**args|
-          expect(args[:settings].encryption_method).to eq Y2Storage::EncryptionMethod::LUKS1
-          expect(args[:settings].encryption_pbkdf).to be_nil
-          y2storage_proposal
-        end
-
-        proposal.calculate(settings)
-      end
-    end
-
-    context "with encryption settings in the config" do
-      before do
-        settings.encryption.method = Y2Storage::EncryptionMethod::LUKS2
-        settings.encryption.pbkd_function = Y2Storage::PbkdFunction::PBKDF2
+        expect(subject.settings).to have_attributes(
+          boot_device: "/dev/sdb",
+          volumes:     contain_exactly(
+            an_object_having_attributes(mount_path: "/")
+          ),
+          # Checking space settings explicitly here because the settings converter cannot infer the
+          # space settings from the Y2Storage settings. The space settings are directly recovered
+          # from the original settings passed to #calculate.
+          space:       an_object_having_attributes(
+            policy:  :custom,
+            actions: { "/dev/sda" => :force_delete }
+          )
+        )
       end
 
-      it "runs the Y2Storage proposal with default encryption settings" do
-        expect(Y2Storage::MinGuidedProposal).to receive(:new) do |**args|
-          expect(args[:settings].encryption_method).to eq Y2Storage::EncryptionMethod::LUKS2
-          expect(args[:settings].encryption_pbkdf).to eq Y2Storage::PbkdFunction::PBKDF2
-          y2storage_proposal
+      context "and the proposal was invalidated" do
+        before do
+          subject.invalidate
         end
 
-        proposal.calculate(settings)
-      end
-    end
-
-    def expect_space_actions(actions)
-      expect(Y2Storage::MinGuidedProposal).to receive(:new) do |**args|
-        expect(args[:settings]).to be_a(Y2Storage::ProposalSettings)
-        space = args[:settings].space_settings
-        expect(space.strategy).to eq :bigger_resize
-        expect(space.actions).to eq actions
-
-        y2storage_proposal
-      end
-    end
-
-    context "when preserving existing partitions" do
-      let(:policy) { :keep }
-
-      it "runs the Y2Storage proposal with an empty list of actions for :bigger_resize" do
-        expect_space_actions({})
-        proposal.calculate(settings)
-      end
-    end
-
-    context "when deleting existing partitions" do
-      let(:policy) { :delete }
-
-      it "runs the Y2Storage proposal with delete actions for every partition" do
-        expect_space_actions({ "/dev/sda1" => :force_delete, "/dev/sda2" => :force_delete })
-        proposal.calculate(settings)
-      end
-    end
-
-    context "when deleting existing partitions" do
-      let(:policy) { :resize }
-
-      it "runs the Y2Storage proposal with resize actions for every partition" do
-        expect_space_actions({ "/dev/sda1" => :resize, "/dev/sda2" => :resize })
-        proposal.calculate(settings)
+        it "returns nil" do
+          expect(proposal.settings).to be_nil
+        end
       end
     end
   end
 
   describe "#actions" do
-    before do
-      allow(subject).to receive(:proposal).and_return(y2storage_proposal)
+    it "returns an empty list if calculate has not been called yet" do
+      expect(subject.actions).to eq([])
     end
 
-    context "when there is no proposal" do
-      let(:y2storage_proposal) { nil }
+    context "if the proposal failed" do
+      before do
+        subject.calculate(impossible_settings)
+      end
 
       it "returns an empty list" do
         expect(subject.actions).to eq([])
       end
     end
 
-    context "when there is a proposal" do
-      let(:y2storage_proposal) { instance_double(Y2Storage::MinGuidedProposal, devices: devices) }
-
-      context "and the proposal failed" do
-        let(:devices) { nil }
-
-        it "returns an empty list" do
-          expect(subject.actions).to eq([])
-        end
-      end
-
-      context "and the proposal was successful" do
-        let(:devices) { instance_double(Y2Storage::Devicegraph, actiongraph: actiongraph) }
-        let(:actiongraph) { instance_double(Y2Storage::Actiongraph, compound_actions: actions) }
-
-        let(:actions) { [fs_action, subvol_action] }
-        let(:fs_action) { instance_double(Y2Storage::CompoundAction, delete?: false) }
-        let(:subvol_action) { instance_double(Y2Storage::CompoundAction, delete?: false) }
-
-        before do
-          allow(fs_action).to receive(:device_is?).with(:btrfs_subvolume).and_return false
-          allow(subvol_action).to receive(:device_is?).with(:btrfs_subvolume).and_return true
-        end
-
-        it "returns the actions from the actiongraph" do
-          expect(proposal.actions).to contain_exactly(fs_action, subvol_action)
-        end
-      end
-    end
-  end
-
-  describe "#settings" do
-    context "if #calculate has not been called yet" do
-      it "returns nil" do
-        expect(proposal.settings).to be_nil
-      end
-    end
-
-    context "if #calculate was called" do
+    context "if the proposal was successful" do
       before do
-        volume = Agama::Storage::Volume.new("/something").tap do |vol|
-          vol.min_size = Y2Storage::DiskSize.GiB(10)
-          vol.max_size = Y2Storage::DiskSize.unlimited
-          vol.fs_type = Y2Storage::Filesystems::Type::EXT2
-        end
-        settings.volumes << volume
-        proposal.calculate(settings)
+        subject.calculate(achievable_settings)
       end
 
-      it "returns the settings from the #calculate call" do
-        expect(proposal.settings.volumes.map(&:mount_path)).to include("/something")
+      it "returns the actions from the actiongraph" do
+        expect(proposal.actions).to include(
+          an_object_having_attributes(sentence: /Create partition \/dev\/sdb1/)
+        )
       end
     end
   end
 
   describe "#issues" do
-    context "when the proposal does not exist yet" do
-      it "returns an empty list" do
-        expect(subject.issues).to eq([])
-      end
+    it "returns an empty list if calculate has not been called yet" do
+      expect(subject.issues).to eq([])
     end
 
-    context "when there was already a proposal attempt" do
-      before do
-        allow_any_instance_of(Y2Storage::DiskAnalyzer).to receive(:candidate_disks).and_return([])
+    it "returns an empty list if the current proposal is successful" do
+      subject.calculate(achievable_settings)
 
-        settings.boot_device = boot_device
-        proposal.calculate(settings)
+      expect(subject.issues).to eq([])
+    end
+
+    context "if the current proposal is failed" do
+      let(:settings) { impossible_settings }
+
+      it "includes an error because the volumes cannot be accommodated" do
+        subject.calculate(settings)
+
+        expect(subject.issues).to include(
+          an_object_having_attributes(description: /Cannot accommodate/)
+        )
       end
 
-      let(:boot_device) { nil }
+      context "and the settings does not indicate a boot device" do
+        before do
+          # Avoid to automatically set the first device
+          allow(subject).to receive(:available_devices).and_return([])
+        end
 
-      context "but no boot device was selected" do
-        let(:boot_device) { nil }
+        let(:settings) { impossible_settings.tap { |s| s.boot_device = nil } }
 
-        it "returns a list of errors including the expected error" do
+        it "includes an error because a device is not selected" do
+          subject.calculate(settings)
+
           expect(subject.issues).to include(
             an_object_having_attributes(description: /No device selected/)
           )
         end
       end
 
-      context "but the boot device is missing" do
-        let(:boot_device) { "/dev/vda" }
+      context "and the boot device is missing in the system" do
+        let(:settings) { impossible_settings.tap { |s| s.boot_device = "/dev/vdz" } }
 
-        it "returns a list of errors including the expected error" do
+        it "includes an error because the device is not found" do
+          subject.calculate(settings)
+
           expect(subject.issues).to include(
             an_object_having_attributes(description: /device is not found/)
           )
         end
-      end
-    end
-
-    context "when there was a failed proposal attempt" do
-      before do
-        # Enforce an impossible root of 10 TiB
-        root = Agama::Storage::Volume.new("/").tap do |vol|
-          vol.min_size = Y2Storage::DiskSize.TiB(10)
-          vol.fs_type = Y2Storage::Filesystems::Type::BTRFS
-        end
-        settings.volumes << root
-        settings.boot_device = "/dev/sda"
-        proposal.calculate(settings)
-      end
-
-      it "returns a list of errors including the expected error" do
-        expect(subject.issues).to include(
-          an_object_having_attributes(description: /Cannot accommodate/)
-        )
       end
     end
   end

@@ -80,7 +80,7 @@ module Agama
 
       # Calculates a new proposal.
       #
-      # @param settings [ProposalSettings] settings to calculate the proposal.
+      # @param settings [Agamal::Storage::ProposalSettings] settings to calculate the proposal.
       # @return [Boolean] whether the proposal was correctly calculated.
       def calculate(settings)
         # Use the first available device if no boot device is indicated.
@@ -129,7 +129,7 @@ module Agama
       #
       # @return [Array<Issue>]
       def issues
-        return [] unless calculated?
+        return [] if !calculated? || success?
 
         [
           boot_device_issue,
@@ -199,10 +199,11 @@ module Agama
           severity: Issue::Severity::ERROR)
       end
 
-      # Returns an issue if any of the boot device is not found
+      # Returns an issue if any of the devices required for the proposal is not found
       #
       # @return [Issue, nil]
       def missing_devices_issue
+        # At this moment, only the boot device is checked.
         return if available_devices.map(&:name).include?(settings.boot_device)
 
         Issue.new("Selected device is not found in the system",
