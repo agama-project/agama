@@ -93,7 +93,7 @@ communication.
 
 ![Architecture](./doc/images/architecture.png)
 
-Agama consists on a set of D-Bus services and a web client (an experimental CLI is also available). The services use YaST-based libraries under the hood, reusing a lot logic already provided by YaST. Currently Agama comes with six separate services, although the list can increase in the future:
+Agama consists on a set of D-Bus services, a web client and a command-line interface. The services use YaST-based libraries under the hood, reusing a lot logic already provided by YaST. Currently Agama comes with six separate services, although the list can increase in the future:
 
 * Agama service: it is the main service which manages and controls the installation process.
 * Software service: configures the product and software to install.
@@ -136,49 +136,29 @@ Then point your browser to http://localhost:9090/cockpit/@localhost/agama/index.
 
 The [setup.sh](./setup.sh) script installs the required dependencies
 to build and run the project and it also configures the Agama services
-and cockpit. It uses `sudo` to install packages and files to system locations.
+and Cockpit. It uses `sudo` to install packages and files to system locations.
 The script is well commented so we refer you to it instead of repeating its
 steps here.
 
-Alternatively you can run a development server which works as a proxy for
-the cockpit server. See more details [in the documentation](
-web/README.md#using-a-development-server).
+Regarding the web user interface, alternatively you can run a development
+server which works as a proxy for the cockpit server. See more details [in the
+documentation]( web/README.md#using-a-development-server).
+
+To start or stop Agama D-Bus services at any time, use the `agama` systemd service:
+
+```console
+sudo systemctl start agama
+```
+
+If something goes wrong, you can use `journalctl` to get Agama logs:
+
+```console
+sudo journalctl -u agama
+```
 
 Another alternative is to run source checkout inside container so system is not
 affected by doing testing run beside real actions really done by installer.
 See more details [in the documentation](doc/testing_using_container.md).
-
-* Start the services:
-    * beware that Agama must run as root (like YaST does) to do
-      hardware probing, partition the disks, install the software and so on.
-    * Note that `setup.sh` sets up D-Bus activation so starting manually is
-      only needed when you prefer to see the log output upfront.
-
-```console
-$ cd service
-$ sudo bundle exec bin/agama
-```
-
-* Check that Agama services are working with a tool like
-[busctl](https://www.freedesktop.org/wiki/Software/dbus/) or
-[D-Feet](https://wiki.gnome.org/Apps/DFeet) if you prefer a graphical one:
-
-
-```console
-$ busctl --address=unix:path=/run/agama/bus \
-    call \
-    org.opensuse.Agama1 \
-   /org/opensuse/Agama1/Manager \
-    org.opensuse.Agama1.Manager \
-    CanInstall
-
-$ busctl --address=unix:path=/run/agama/bus \
-    call \
-    org.opensuse.Agama.Locale1 \
-   /org/opensuse/Agama/Locale1 \
-    org.freedesktop.DBus.Properties \
-    GetAll s org.opensuse.Agama.Locale1
-```
 
 ## How to Contribute
 
