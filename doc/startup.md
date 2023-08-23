@@ -32,9 +32,11 @@ If the `agama.auto` option is specified in the kernel command-line, the
 ## Web UI
 
 When discussing the web UI, we can distinguish two sides: the server process and the web browser.
-Regarding the server, Agama's web UI is implemented as a Cockpit module, so the only requisite is
+Regarding the server, Agama's web UI is implemented as a Cockpit module, so the only requirement is
 that the `cockpit.socket` is enabled. Then, you can connect to the UI using the
 `https://$SERVER_IP:9090/cockpit/@localhost/agama/index.html`.
 
 When using Agama Live, a local web browser is automatically started. In the default image, it is
-launched using an Icewm startup script.
+launched using an Icewm startup script[^1].
+
+[^1]: Check the `root.tar` file from the [agama-live](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/agama-live) sources.
