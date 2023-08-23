@@ -159,6 +159,8 @@ ALP-Dolomite:
       - package: fde-tools # Needed for FDE with TPM, hardcoded here temporarily
         archs: aarch64, x86_64
       - package: libtss2-tcti-device0 # Same than fde-tools
+      - package: ppc64-diag # Needed for hardware-based installations
+        archs: ppc
     optional_packages: null
     base_product: ALP-Dolomite
 
