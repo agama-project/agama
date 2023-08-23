@@ -125,6 +125,35 @@ describe Agama::DBus::Storage::Manager do
     end
   end
 
+  describe "#product_mount_points" do
+    let(:config_data) do
+      { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
+    end
+
+    context "with no storage section in the configuration" do
+      let(:cfg_templates) { [] }
+
+      it "returns an empty list" do
+        expect(subject.product_mount_points).to eq([])
+      end
+    end
+
+    context "with a set of volume templates in the configuration" do
+      let(:cfg_templates) do
+        [
+          { "mount_path" => "/" },
+          { "mount_path" => "swap" },
+          { "mount_path" => "/home" },
+          { "filesystem" => "ext4" }
+        ]
+      end
+
+      it "returns the mount points of each volume template" do
+        expect(subject.product_mount_points).to contain_exactly("/", "swap", "/home")
+      end
+    end
+  end
+
   describe "#default_volume" do
     let(:config_data) do
       { "storage" => { "volumes" => [], "volume_templates" => cfg_templates } }
