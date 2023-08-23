@@ -48,6 +48,8 @@ module Agama
       Yast.import "Proxy"
       Yast.import "Installation"
       Yast.import "PackagesProposal"
+
+      Proxy.Read
     end
 
     def run
@@ -55,13 +57,16 @@ module Agama
       write
     end
 
-    def install
-      on_local do
-        Proxy.Read
-        return unless Proxy.enabled
+    def propose
+      on_target { add_packages } if Proxy.enabled
+    end
 
+    def install
+      return unless Proxy.enabled
+
+      on_local do
         copy_files
-        add_packages
+        enable_services
       end
     end
 
@@ -132,6 +137,16 @@ module Agama
     def copy_files
       log.info "Copying proxy configuration to the target system"
       ::FileUtils.cp(CONFIG_PATH, File.join(Yast::Installation.destdir, CONFIG_PATH))
+    end
+
+    def enable_services
+      service = Yast2::Systemd::Service.find("setup-systemd-proxy-env")
+      if service.nil?
+        logger.error "setup-systemd-proxy-env service was not found"
+        return
+      end
+
+      Yast::Execute.on_target!("systemctl", "enable", "setup-systemd-proxy-env.path")
     end
   end
 end

@@ -109,6 +109,8 @@ module Agama
         software.propose
       end
 
+      ProxySetup.instance.propose
+
       progress.step("Installing Software") { software.install }
 
       on_target do
