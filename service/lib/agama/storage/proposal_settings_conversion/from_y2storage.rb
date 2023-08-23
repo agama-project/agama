@@ -66,7 +66,8 @@ module Agama
 
           # Only assign system VG devices if candidate devices contains any device different to the
           # root device.
-          return unless settings.candidate_devices.reject { |d| d == settings.root_device }.any?
+          candidate_devices = settings.candidate_devices || []
+          return unless candidate_devices.reject { |d| d == settings.root_device }.any?
 
           target.lvm.system_vg_devices = settings.candidate_devices
         end
@@ -85,7 +86,7 @@ module Agama
 
         # @param target [Agama::Storage::ProposalSettings]
         def volumes_conversion(target)
-          target.volumes = settings.volumes.select(&:proposed?).map do |spec|
+          target.volumes = volumes.select(&:proposed?).map do |spec|
             VolumeConversion.from_y2storage(spec, config: config)
           end
 
@@ -103,15 +104,24 @@ module Agama
         # @param mount_path [String]
         # @return [Array<String>]
         def volumes_with_min_size_fallback(mount_path)
-          specs = settings.volumes.select { |s| s.fallback_for_min_size == mount_path }
+          specs = volumes.select { |s| s.fallback_for_min_size == mount_path }
           specs.map(&:mount_point)
         end
 
         # @param mount_path [String]
         # @return [Array<String>]
         def volumes_with_max_size_fallback(mount_path)
-          specs = settings.volumes.select { |s| s.fallback_for_max_size == mount_path }
+          specs = volumes.select { |s| s.fallback_for_max_size == mount_path }
           specs.map(&:mount_point)
+        end
+
+        # Volumes from settings.
+        #
+        # Note that volumes might be nil in Y2Storage settings.
+        #
+        # @return [Array<Y2Storage::VolumeSpecification>]
+        def volumes
+          settings.volumes || []
         end
       end
     end
