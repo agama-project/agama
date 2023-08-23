@@ -1,10 +1,10 @@
 # Agama Startup Process
 
-This document summarizes how Agama's startup process.
+This document summarizes Agama's startup process.
 
 ## Overview
 
-As described in the [README](../README.md#architecture), Agama is composed by a set of D-Bus
+As described in the [README](../README.md#architecture), Agama is composed of a set of D-Bus
 services, a web client and a command-line interface. The startup process aims to get those D-Bus
 services up and running and make the web UI available. Additionally, the auto-installation procedure
 could be started if required by the user.
@@ -15,7 +15,7 @@ browser in the Agama Live image.
 ## Starting the D-Bus Services
 
 [agama.service](../service/share/agama.service) is responsible for starting up Agama's D-Bus daemon
-process using the `agamactl --daemon` command. This process uses a [specific
+process using the `agamactl --daemon` command. This process uses a dedicated bus with a [specific
 configuration](../service/share/dbus.conf).
 
 Once the daemon process is running, each D-Bus service will be automatically activated when
