@@ -20,6 +20,88 @@ web:
   ssl_cert: null
   ssl_key: null
 
+ALP-Dolomite:
+  software:
+    installation_repositories:
+      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/x86_64/product/
+        archs: x86_64
+      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/aarch64/product/
+        archs: aarch64
+      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/s390x/product/
+        archs: s390
+      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/ppc64le/product/
+        archs: ppc
+
+    mandatory_patterns:
+      - alp_base_zypper
+      - alp_cockpit
+      - alp_hardware
+    optional_patterns: null # no optional pattern shared
+    mandatory_packages:
+      - package: device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
+      - package: fde-tools # Needed for FDE with TPM, hardcoded here temporarily
+        archs: aarch64, x86_64
+      - package: libtss2-tcti-device0 # Same than fde-tools
+      - package: ppc64-diag # Needed for hardware-based installations
+        archs: ppc64
+    optional_packages: null
+    base_product: ALP-Dolomite
+
+  security:
+    tpm_luks_open: true
+    lsm: selinux
+    available_lsms:
+      # apparmor:
+      #   patterns:
+      #     - apparmor
+      selinux:
+        patterns:
+          - alp_selinux
+        policy: enforcing
+      none:
+        patterns: null
+
+  storage:
+    encryption:
+      method: luks2
+      pbkd_function: pbkdf2
+    volumes:
+      - "/"
+    volume_templates:
+      - mount_path: "/"
+        filesystem: btrfs
+        btrfs:
+          snapshots: true
+          read_only_root: true
+          default_subvolume: "@"
+          subvolumes:
+            - path: root
+            - path: home
+            - path: opt
+            - path: srv
+            - path: boot/writable
+            - path: usr/local
+            - path: boot/grub2/arm64-efi
+              archs: aarch64
+            - path: boot/grub2/i386-pc
+              archs: x86_64
+            - path: boot/grub2/powerpc-ieee1275
+              archs: ppc,!board_powernv
+            - path: boot/grub2/s390x-emu
+              archs: s390
+            - path: boot/grub2/x86_64-efi
+              archs: x86_64
+            - path: var
+              copy_on_write: false
+        size:
+          auto: false
+          min: 5 GiB
+        outline:
+          required: true
+          filesystems:
+            - btrfs
+          snapshots_configurable: false
+
 Tumbleweed:
   software:
     installation_repositories:
@@ -69,150 +151,66 @@ Tumbleweed:
 
   storage:
     volumes:
-    - mount_point: "/"
-      fs_type: btrfs
-      min_size: 5 GiB
-      max_size: 15 GiB
-      weight: 1
-
-      # There must always be a root
-      proposed_configurable: false
-
-      snapshots: true
-      snapshots_percentage: 250
-      snapshots_configurable: true
-      # Disable snapshots if there is not enough room
-      disable_order: 3
-
-      btrfs_default_subvolume: "@"
-      subvolumes:
-      - path: home
-      - path: opt
-      - path: root
-      - path: srv
-      - path: usr/local
-      # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
-      - path: var
-        copy_on_write: false
-
-      # Architecture specific subvolumes
-      - path: boot/grub2/arm64-efi
-        archs: aarch64
-      - path: boot/grub2/arm-efi
-        archs: arm
-      - path: boot/grub2/i386-pc
-        archs: x86_64
-      - path: boot/grub2/powerpc-ieee1275
-        archs: ppc,!board_powernv
-      - path: boot/grub2/s390x-emu
-        archs: s390
-      - path: boot/grub2/x86_64-efi
-        archs: x86_64
-      - path: boot/grub2/riscv64-efi
-        archs: riscv64
-
-    - mount_point: "/home"
-      fs_type: xfs
-      min_size: 10 GiB
-      max_size: unlimited
-      max_size_lvm: unlimited
-      weight: 1
-
-      proposed: false
-      proposed_configurable: true
-      disable_order: 1
-      fallback_for_max_size: "/"
-      fallback_for_max_size_lvm: "/"
-
-    - mount_point: "swap"
-      fs_type: swap
-      desired_size: 2 GiB
-      min_size: 1 GiB
-      max_size: 2 GiB
-      weight: 1
-
-      adjust_by_ram: false
-      adjust_by_ram_configurable: true
-
-      proposed_configurable: true
-      disable_order: 2
-
-ALP-Dolomite:
-  software:
-    installation_repositories:
-      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/x86_64/product/
-        archs: x86_64
-      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/aarch64/product/
-        archs: aarch64
-      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/s390x/product/
-        archs: s390
-      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/ppc64le/product/
-        archs: ppc
-
-    mandatory_patterns:
-      - alp_base_zypper
-      - alp_cockpit
-      - alp_hardware
-    optional_patterns: null # no optional pattern shared
-    mandatory_packages:
-      - package: device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
-      - package: fde-tools # Needed for FDE with TPM, hardcoded here temporarily
-        archs: aarch64, x86_64
-      - package: libtss2-tcti-device0 # Same than fde-tools
-      - package: ppc64-diag # Needed for hardware-based installations
-        archs: ppc64
-    optional_packages: null
-    base_product: ALP-Dolomite
-
-  security:
-    tpm_luks_open: true
-    lsm: selinux
-    available_lsms:
-      # apparmor:
-      #   patterns:
-      #     - apparmor
-      selinux:
-        patterns:
-          - alp_selinux
-        policy: enforcing
-      none:
-        patterns: null
-
-  storage:
-    encryption:
-      method: luks2
-      pbkdf: pbkdf2
-    volumes:
-      - mount_point: "/"
-        fs_type: btrfs
-        min_size: 5 GiB
-        fs_types:
-          - btrfs
-        weight: 1
-        snapshots: true
-        snapshots_configurable: false
-        proposed_configurable: false
-        btrfs_default_subvolume: "@"
-        btrfs_read_only: true
-        subvolumes:
-        - path: root
-        - path: home
-        - path: opt
-        - path: srv
-        - path: boot/writable
-        - path: usr/local
-        - path: boot/grub2/arm64-efi
-          archs: aarch64
-        - path: boot/grub2/i386-pc
-          archs: x86_64
-        - path: boot/grub2/powerpc-ieee1275
-          archs: ppc,!board_powernv
-        - path: boot/grub2/s390x-emu
-          archs: s390
-        - path: boot/grub2/x86_64-efi
-          archs: x86_64
-        - path: var
-          copy_on_write: false
+      - "/"
+      - "swap"
+    volume_templates:
+      - mount_path: "/"
+        filesystem: btrfs
+        btrfs:
+          snapshots: true
+          read_only_root: false
+          default_subvolume: "@"
+          subvolumes:
+            - path: home
+            - path: opt
+            - path: root
+            - path: srv
+            - path: usr/local
+            # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
+            - path: var
+              copy_on_write: false
+            # Architecture specific subvolumes
+            - path: boot/grub2/arm64-efi
+              archs: aarch64
+            - path: boot/grub2/arm-efi
+              archs: arm
+            - path: boot/grub2/i386-pc
+              archs: x86_64
+            - path: boot/grub2/powerpc-ieee1275
+              archs: ppc,!board_powernv
+            - path: boot/grub2/s390x-emu
+              archs: s390
+            - path: boot/grub2/x86_64-efi
+              archs: x86_64
+            - path: boot/grub2/riscv64-efi
+              archs: riscv64
+        size:
+          auto: true
+        outline:
+          required: true
+          auto_size:
+            base_min: 5 GiB
+            base_max: 15 GiB
+            snapshots_increment: 250%
+            max_fallback_for:
+              - "/home"
+          snapshots_configurable: true
+      - mount_path: "swap"
+        filesystem: swap
+        size:
+          auto: false
+          min: 1 GiB
+          max: 2 GiB
+        outline:
+          required: false
+      - mount_path: "/home"
+        filesystem: xfs
+        size:
+          auto: false
+          min: 10 GiB
+          max: unlimited
+        outline:
+          required: false
 
 Leap16:
   software:
@@ -253,35 +251,40 @@ Leap16:
   storage:
     encryption:
       method: luks2
-      pbkdf: pbkdf2
+      pbkd_function: pbkdf2
     volumes:
-      - mount_point: "/"
-        fs_type: btrfs
-        min_size: 5 GiB
-        fs_types:
-          - btrfs
-        weight: 1
-        snapshots: true
-        snapshots_configurable: false
-        proposed_configurable: false
-        btrfs_default_subvolume: "@"
-        btrfs_read_only: true
-        subvolumes:
-        - path: root
-        - path: home
-        - path: opt
-        - path: srv
-        - path: boot/writable
-        - path: usr/local
-        - path: boot/grub2/arm64-efi
-          archs: aarch64
-        - path: boot/grub2/i386-pc
-          archs: x86_64
-        - path: boot/grub2/powerpc-ieee1275
-          archs: ppc,!board_powernv
-        - path: boot/grub2/s390x-emu
-          archs: s390
-        - path: boot/grub2/x86_64-efi
-          archs: x86_64
-        - path: var
-          copy_on_write: false
+      - "/"
+    volume_templates:
+      - mount_path: "/"
+        filesystem: btrfs
+        btrfs:
+          snapshots: true
+          read_only_root: true
+          default_subvolume: "@"
+          subvolumes:
+            - path: root
+            - path: home
+            - path: opt
+            - path: srv
+            - path: boot/writable
+            - path: usr/local
+            - path: boot/grub2/arm64-efi
+              archs: aarch64
+            - path: boot/grub2/i386-pc
+              archs: x86_64
+            - path: boot/grub2/powerpc-ieee1275
+              archs: ppc,!board_powernv
+            - path: boot/grub2/s390x-emu
+              archs: s390
+            - path: boot/grub2/x86_64-efi
+              archs: x86_64
+            - path: var
+              copy_on_write: false
+        size:
+          auto: false
+          min: 5 GiB
+        outline:
+          required: true
+          filesystems:
+            - btrfs
+          snapshots_configurable: false
