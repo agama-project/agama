@@ -108,10 +108,10 @@ impl Locale {
     /// ```
     ///   use agama_dbus_server::locale::Locale;
     ///   let locale = Locale::new();
-    ///   assert!(locale.available_ui_locales().unwrap().len() > 0);
+    ///   assert!(locale.list_ui_locales().unwrap().len() > 0);
     /// ```
     #[dbus_interface(name = "ListUILocales")]
-    pub fn available_ui_locales(&self) -> Result<Vec<String>, Error> {
+    pub fn list_ui_locales(&self) -> Result<Vec<String>, Error> {
         // english is always available ui localization
         let mut result = vec!["en".to_string()];
         const DIR : &str = "/usr/share/YaST2/locale/";
