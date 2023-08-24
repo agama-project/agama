@@ -141,9 +141,8 @@ module Agama
       def subvolume(data)
         return Y2Storage::SubvolSpecification.new(data) if data.is_a?(String)
 
-        Y2Storage::SubvolSpecification.new(
-          fetch(data, :path), copy_on_write: fetch(data, :copy_on_write), archs: fetch(data, :archs)
-        )
+        attrs = { copy_on_write: fetch(data, :copy_on_write), archs: fetch(data, :archs) }.compact
+        Y2Storage::SubvolSpecification.new(fetch(data, :path), **attrs)
       end
 
       def outline(data) # rubocop:disable Metrics/AbcSize
