@@ -66,10 +66,8 @@ module Agama
     def install
       return unless Proxy.enabled
 
-      on_local do
-        copy_files
-        enable_services
-      end
+      on_local { copy_files }
+      enable_services
     end
 
   private
@@ -148,6 +146,7 @@ module Agama
         return
       end
 
+      Yast::Execute.on_target!("systemctl", "enable", "setup-systemd-proxy-env.service")
       Yast::Execute.on_target!("systemctl", "enable", "setup-systemd-proxy-env.path")
     end
   end
