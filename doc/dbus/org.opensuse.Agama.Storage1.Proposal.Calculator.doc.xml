@@ -1,0 +1,67 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/org/opensuse/Agama/Storage1">
+  <node name="zfcp_controllers" />
+  <node name="zfcp_disks" />
+  <!--
+    Interface for calculating a new storage proposal.
+  -->
+  <interface name="org.opensuse.Agama.Storage1.Proposal.Calculator">
+    <!--
+      Gets the default values for a volume with the given mount path.
+    -->
+    <method name="DefaultVolume">
+      <!--
+        E.g., /home
+      -->
+      <arg name="mount_path" direction="in" type="s"/>
+      <!--
+        MountPath               s
+        MountOptions            as
+        TargetDevice            s
+        TargetVG                s
+        FsType                  s
+        MinSize                 t
+        MaxSize                 t (optinal, max size is considered as unlimited if omitted)
+        AutoSize                b
+        Snapshots               b
+        Outline                 a{sv}
+          Required              b
+          FsTypes               as
+          SupportAutoSize       b
+          SnapshotsConfigurable b
+          SnapshotsAffectSizes  b
+          SizeRelevantVolumes   as
+      -->
+      <arg name="volume" direction="out" type="a{sv}"/>
+    </method>
+    <!--
+      Calculates a new proposal.
+    -->
+    <method name="Calculate">
+    <!--
+      BootDevice              s
+      LVM                     b
+      SystemVGDevices         as
+      EncryptionPassword      s
+      EncryptionMethod        s
+      EncryptionPBKDFunction  s
+      SpacePolicy             s
+      SpaceActions            a{ss}
+      Volumes                 aa{sv}
+        List of volumes to create. The values for each volume are the same as the values returned
+        by DefaultVolume method. The Outline (if given) would be ignored.
+    -->
+      <arg name="settings" direction="in" type="a{sv}"/>
+      <arg name="result" direction="out" type="u"/>
+    </method>
+    <property type="ao" name="AvailableDevices" access="read"/>
+    <!--
+      Relevant mount points for the selected product. Normally, the product defines some specific
+      values for these mount points (e.g., min and max sizes, file system type, etc).
+    -->
+    <property type="as" name="ProductMountPoints" access="read"/>
+    <property type="o" name="Result" access="read"/>
+  </interface>
+
+</node>
