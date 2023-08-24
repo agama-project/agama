@@ -20,12 +20,17 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
+require_relative "../storage_helpers"
 require_relative "../../rspec/matchers/storage"
 require "agama/storage/volume_conversion/from_y2storage"
 require "agama/config"
 require "y2storage"
 
 describe Agama::Storage::VolumeConversion::FromY2Storage do
+  include Agama::RSpec::StorageHelpers
+
+  before { mock_storage }
+
   subject { described_class.new(spec, config: config) }
 
   let(:config) { Agama::Config.new }
