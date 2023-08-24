@@ -43,6 +43,8 @@ module Agama
     # @return [URI::Generic]
     attr_accessor :proxy
 
+    alias_method :logger, :log
+
     # Constructor
     def initialize
       Yast.import "Proxy"
@@ -142,7 +144,7 @@ module Agama
     def enable_services
       service = Yast2::Systemd::Service.find("setup-systemd-proxy-env")
       if service.nil?
-        logger.error "setup-systemd-proxy-env service was not found"
+        log.error "setup-systemd-proxy-env service was not found"
         return
       end
 

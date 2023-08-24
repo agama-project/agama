@@ -76,7 +76,7 @@ describe Agama::ProxySetup do
     end
   end
 
-  describe "#install" do
+  describe "#propose" do
     let(:config) do
       {
         "enabled" => false
@@ -88,10 +88,34 @@ describe Agama::ProxySetup do
       allow(Yast::Installation).to receive(:destdir).and_return("/mnt")
     end
 
-    it "reads the current Proxy configuration from the inst-sys" do
-      expect(Yast::Proxy).to receive(:Read)
+    context "when the use of proxy is enabled" do
+      let(:config) do
+        {
+          "enabled"    => true,
+          "http_proxy" => "http://192.168.122.1:3128"
+        }
+      end
 
-      proxy.install
+      it "adds microos-tools package to the set of resolvables" do
+        expect(Yast::PackagesProposal).to receive(:SetResolvables) do |_, _, packages|
+          expect(packages).to contain_exactly("microos-tools")
+        end
+
+        proxy.propose
+      end
+    end
+  end
+
+  describe "#install" do
+    let(:config) do
+      {
+        "enabled" => false
+      }
+    end
+
+    before do
+      Yast::Proxy.Import(config)
+      allow(Yast::Installation).to receive(:destdir).and_return("/mnt")
     end
 
     context "when the use of proxy is disabled" do
