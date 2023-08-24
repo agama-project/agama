@@ -352,8 +352,7 @@ module Agama
 
         # @return [Agama::VolumeTemplatesBuilder]
         def volume_templates_builder
-          @volume_templates_builder ||=
-            Agama::Storage::VolumeTemplatesBuilder.new_from_config(config)
+          Agama::Storage::VolumeTemplatesBuilder.new_from_config(config)
         end
       end
     end
