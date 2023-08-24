@@ -111,7 +111,7 @@ module Agama
 
         # Volumes used to calculate the storage proposal
         #
-        # @return [Hash]
+        # @return [Array<Hash>]
         def volumes
           dbus_settings.fetch("Volumes", [])
         end

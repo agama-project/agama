@@ -160,7 +160,7 @@ module Agama
 
           dbus_reader :result, "o"
 
-          dbus_method :default_volume, "in mount_path:s , out volume:a{sv}" do |mount_path|
+          dbus_method :DefaultVolume, "in mount_path:s , out volume:a{sv}" do |mount_path|
             default_volume(mount_path)
           end
 
