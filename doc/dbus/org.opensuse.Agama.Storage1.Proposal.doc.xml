@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node name="/org/opensuse/Agama/Storage1/Proposal">
+  <!--
+    Interfaces with the properties of the calculated proposal.
+  -->
+  <interface name="org.opensuse.Agama.Storage1.Proposal">
+    <property type="s" name="BootDevice" access="read"/>
+    <property type="b" name="LVM" access="read"/>
+    <property type="aas" name="SystemVGDevices" access="read"/>
+    <property type="s" name="EncryptionPassword" access="read"/>
+    <property type="s" name="EncryptionMethod" access="read"/>
+    <property type="s" name="EncryptionPBKDFunction" access="read"/>
+    <property type="s" name="SpacePolicy" access="read"/>
+    <!--
+      List of volumes used for calculating the proposal.
+      Each volume has the following properties:
+        MountPath               s
+        MountOptions            as
+        TargetDevice            s
+        TargetVG                s
+        FsType                  s
+        MinSize                 t
+        MaxSize                 t (optinal, max size is considered as unlimited if omitted)
+        AutoSize                b
+        Snapshots               b
+        Outline                 a{sv}
+          Required              b
+          FsTypes               as
+          SupportAutoSize       b
+          SnapshotsConfigurable b
+          SnapshotsAffectSizes  b
+          SizeRelevantVolumes   as
+    -->
+    <property type="aa{sv}" name="Volumes" access="read"/>
+    <!--
+      Actions to perform in the system in order to create the volumes.
+      Each action has the following properties:
+        Text    s
+        Subvol  b
+        Delete  b
+    -->
+    <property type="aa{sv}" name="Actions" access="read"/>
+  </interface>
+</node>

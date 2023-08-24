@@ -87,12 +87,16 @@
     <property type="b" name="IBFT" access="read"/>
   </interface>
   <interface name="org.opensuse.Agama.Storage1.Proposal.Calculator">
+    <method name="DefaultVolume">
+      <arg name="mount_path" direction="in" type="s"/>
+      <arg name="volume" direction="out" type="a{sv}"/>
+    </method>
     <method name="Calculate">
       <arg name="settings" direction="in" type="a{sv}"/>
       <arg name="result" direction="out" type="u"/>
     </method>
     <property type="ao" name="AvailableDevices" access="read"/>
-    <property type="aa{sv}" name="VolumeTemplates" access="read"/>
+    <property type="as" name="ProductMountPoints" access="read"/>
     <property type="o" name="Result" access="read"/>
   </interface>
   <interface name="org.opensuse.Agama.Storage1.ZFCP.Manager">
