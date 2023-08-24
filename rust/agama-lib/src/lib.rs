@@ -15,8 +15,8 @@
 //! Each of those modules contains, at least:
 //!
 //! * A settings model: it is a representation of the installation settings for the given topic. It
-//! is expected to implement the [serde::Serialize], [serde::Deserialize] and [settings::Settings]
-//! traits.
+//! is expected to implement the [serde::Serialize], [serde::Deserialize] and
+//! [agama_settings::settings::Settings] traits.
 //! * A store: it is the responsible for reading/writing the settings to the service. Usually, it
 //! relies on a D-Bus client for communicating with the service, although it could implement that
 //! logic itself. Note: we are considering defining a trait for stores too.
@@ -28,7 +28,6 @@ pub mod install_settings;
 pub mod manager;
 pub mod network;
 pub mod profile;
-pub mod settings;
 pub mod software;
 pub mod storage;
 pub mod users;
@@ -38,9 +37,8 @@ pub mod progress;
 pub mod proxies;
 mod store;
 pub use store::Store;
-
+pub mod questions;
 use crate::error::ServiceError;
-use anyhow::Context;
 
 const ADDRESS: &str = "unix:path=/run/agama/bus";
 
@@ -52,6 +50,6 @@ pub async fn connection_to(address: &str) -> Result<zbus::Connection, ServiceErr
     let connection = zbus::ConnectionBuilder::address(address)?
         .build()
         .await
-        .context(format!("Connecting to Agama bus at {ADDRESS}"))?;
+        .map_err(|e| ServiceError::DBusConnectionError(ADDRESS.to_string(), e))?;
     Ok(connection)
 }

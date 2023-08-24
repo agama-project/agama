@@ -31,12 +31,17 @@ import {
 
 import { Center, Icon, Title as SectionTitle, PageIcon, MainActions } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
+import { _ } from "~/i18n";
 
 function InstallationFinished() {
   const client = useInstallerClient();
   const [iguana, setIguana] = useState(false);
   const closingAction = () => client.manager.finishInstallation();
-  const buttonCaption = iguana ? "Finish" : "Reboot";
+  const buttonCaption = iguana
+    // TRANSLATORS: button label
+    ? _("Finish")
+    // TRANSLATORS: button label
+    : _("Reboot");
 
   useEffect(() => {
     async function getIguana() {
@@ -49,7 +54,7 @@ function InstallationFinished() {
 
   return (
     <Center>
-      <SectionTitle>Installation Finished</SectionTitle>
+      <SectionTitle>{_("Installation Finished")}</SectionTitle>
       <PageIcon><Icon name="task_alt" /></PageIcon>
       <MainActions>
         <Button isLarge variant="primary" onClick={closingAction}>
@@ -60,15 +65,19 @@ function InstallationFinished() {
       <EmptyState>
         <EmptyStateIcon icon={({ ...props }) => <Icon name="check_circle" { ...props } />} className="color-success" />
         <Title headingLevel="h2" size="4xl">
-          Congratulations!
+          {_("Congratulations!")}
         </Title>
         <EmptyStateBody className="pf-c-content">
           <div>
-            <Text>The installation on your machine is complete.</Text>
+            <Text>{_("The installation on your machine is complete.")}</Text>
             <Text>
-              At this point you can {buttonCaption} the machine to log in to the new system.
+              {
+                iguana
+                  ? _("At this point you can power off the machine.")
+                  : _("At this point you can reboot the machine to log in to the new system.")
+              }
             </Text>
-            <Text>Have a lot of fun! Your openSUSE Development Team.</Text>
+            <Text>{_("Have a lot of fun! Your openSUSE Development Team.")}</Text>
           </div>
         </EmptyStateBody>
       </EmptyState>

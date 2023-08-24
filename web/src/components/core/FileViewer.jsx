@@ -23,6 +23,7 @@ import React, { useState, useEffect } from "react";
 import { Popup } from "~/components/core";
 import { Alert } from "@patternfly/react-core";
 import { Loading } from "~/components/layout";
+import { _ } from "~/i18n";
 
 import cockpit from "../../lib/cockpit";
 
@@ -61,13 +62,13 @@ export default function FileViewer({ file, title, onCloseCallback }) {
       title={title || file}
       className="large"
     >
-      {state === "loading" && <Loading text="Reading file..." />}
+      {state === "loading" && <Loading text={_("Reading file...")} />}
       {(content === null || error) &&
         <Alert
           isInline
           isPlain
           variant="warning"
-          title="Cannot read the file"
+          title={_("Cannot read the file")}
         >
           {error}
         </Alert>}
@@ -76,7 +77,7 @@ export default function FileViewer({ file, title, onCloseCallback }) {
       </div>
 
       <Popup.Actions>
-        <Popup.Confirm onClick={close} autoFocus>Close</Popup.Confirm>
+        <Popup.Confirm onClick={close} autoFocus>{_("Close")}</Popup.Confirm>
       </Popup.Actions>
     </Popup>
   );

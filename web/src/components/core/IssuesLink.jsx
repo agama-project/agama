@@ -25,6 +25,7 @@ import { Link } from "react-router-dom";
 import { Icon } from "~/components/layout";
 import { If, NotificationMark } from "~/components/core";
 import { useNotification } from "~/context/notification";
+import { _ } from "~/i18n";
 
 /**
  * Link to go to the issues page
@@ -36,10 +37,10 @@ export default function IssuesLink() {
   return (
     <Link to="/issues">
       <Icon name="problem" size="24" />
-      Show issues
+      {_("Show issues")}
       <If
         condition={notification.issues}
-        then={<NotificationMark aria-label="There are new issues" />}
+        then={<NotificationMark aria-label={_("There are new issues")} />}
       />
     </Link>
   );

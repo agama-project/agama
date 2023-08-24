@@ -27,20 +27,24 @@ import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
 import { deviceLabel } from "~/components/storage/utils";
 import { Em, ProgressText, Section } from "~/components/core";
+import { _ } from "~/i18n";
 
 const ProposalSummary = ({ proposal }) => {
   const { result } = proposal;
 
-  if (result === undefined) return <Text>Device not selected yet</Text>;
+  if (result === undefined) return <Text>{_("Device not selected yet")}</Text>;
 
   const [candidateDevice] = result.candidateDevices;
   const device = proposal.availableDevices.find(d => d.name === candidateDevice);
 
   const label = device ? deviceLabel(device) : candidateDevice;
 
+  // TRANSLATORS: %s will be replaced by the device name and its size,
+  // example: "/dev/sda, 20 GiB"
+  const [msg1, msg2] = _("Install using device %s and deleting all its content").split("%s");
   return (
     <Text>
-      Install using device <Em>{label}</Em> and deleting all its content
+      {msg1}<Em>{label}</Em>{msg2}
     </Text>
   );
 };
@@ -49,7 +53,7 @@ const initialState = {
   busy: true,
   proposal: undefined,
   errors: [],
-  progress: { message: "Probing storage devices", current: 0, total: 0 }
+  progress: { message: _("Probing storage devices"), current: 0, total: 0 }
 };
 
 const reducer = (state, action) => {
@@ -156,7 +160,8 @@ export default function StorageSection({ showErrors = false }) {
   return (
     <Section
       key="storage-section"
-      title="Storage"
+      // TRANSLATORS: page section title
+      title={_("Storage")}
       path="/storage"
       icon="hard_drive"
       loading={busy}

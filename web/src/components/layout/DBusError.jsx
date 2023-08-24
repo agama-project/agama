@@ -21,6 +21,7 @@
 
 import React from "react";
 import { Button, Title, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
+import { _ } from "~/i18n";
 
 import {
   Center,
@@ -33,24 +34,26 @@ import {
 // TODO: an example
 const ReloadAction = () => (
   <Button isLarge variant="primary" onClick={() => location.reload()}>
-    Reload
+    {/* TRANSLATORS: button label */}
+    {_("Reload")}
   </Button>
 );
 
 function DBusError() {
   return (
     <Center>
-      <PageTitle>D-Bus Error</PageTitle>
+      {/* TRANSLATORS: page title */}
+      <PageTitle>{_("D-Bus Error")}</PageTitle>
       <PageIcon><Icon name="problem" /></PageIcon>
       <MainActions><ReloadAction /></MainActions>
 
       <EmptyState>
         <EmptyStateIcon icon={({ ...props }) => <Icon name="error" { ...props } />} />
         <Title headingLevel="h2" size="4xl">
-          Cannot connect to D-Bus
+          {_("Cannot connect to D-Bus")}
         </Title>
         <EmptyStateBody>
-          Could not connect to the D-Bus service. Please, check whether it is running.
+          {_("Could not connect to the D-Bus service. Please, check whether it is running.")}
         </EmptyStateBody>
       </EmptyState>
     </Center>

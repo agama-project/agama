@@ -2,8 +2,8 @@ use crate::error::CliError;
 use crate::printers::{print, Format};
 use agama_lib::connection;
 use agama_lib::install_settings::{InstallSettings, Scope};
-use agama_lib::settings::{SettingObject, SettingValue, Settings};
 use agama_lib::Store as SettingsStore;
+use agama_settings::{settings::Settings, SettingObject, SettingValue};
 use clap::Subcommand;
 use convert_case::{Case, Casing};
 use std::str::FromStr;
@@ -31,10 +31,11 @@ pub enum ConfigAction {
     Load(String),
 }
 
-pub async fn run(subcommand: ConfigCommands, format: Format) -> Result<(), Box<dyn Error>> {
+pub async fn run(subcommand: ConfigCommands, format: Format) -> anyhow::Result<()> {
     let store = SettingsStore::new(connection().await?).await?;
 
-    match parse_config_command(subcommand) {
+    let command = parse_config_command(subcommand)?;
+    match command {
         ConfigAction::Set(changes) => {
             let scopes = changes
                 .keys()
@@ -44,7 +45,7 @@ pub async fn run(subcommand: ConfigCommands, format: Format) -> Result<(), Box<d
             for (key, value) in changes {
                 model.set(&key.to_case(Case::Snake), SettingValue(value))?;
             }
-            store.store(&model).await
+            Ok(store.store(&model).await?)
         }
         ConfigAction::Show => {
             let model = store.load(None).await?;
@@ -55,7 +56,7 @@ pub async fn run(subcommand: ConfigCommands, format: Format) -> Result<(), Box<d
             let scope = key_to_scope(&key).unwrap();
             let mut model = store.load(Some(vec![scope])).await?;
             model.add(&key.to_case(Case::Snake), SettingObject::from(values))?;
-            store.store(&model).await
+            Ok(store.store(&model).await?)
         }
         ConfigAction::Load(path) => {
             let contents = std::fs::read_to_string(path)?;
@@ -63,31 +64,61 @@ pub async fn run(subcommand: ConfigCommands, format: Format) -> Result<(), Box<d
             let scopes = result.defined_scopes();
             let mut model = store.load(Some(scopes)).await?;
             model.merge(&result);
-            store.store(&model).await
+            Ok(store.store(&model).await?)
         }
     }
 }
 
-fn parse_config_command(subcommand: ConfigCommands) -> ConfigAction {
+fn parse_config_command(subcommand: ConfigCommands) -> Result<ConfigAction, CliError> {
     match subcommand {
-        ConfigCommands::Add { key, values } => ConfigAction::Add(key, parse_keys_values(values)),
-        ConfigCommands::Show => ConfigAction::Show,
-        ConfigCommands::Set { values } => ConfigAction::Set(parse_keys_values(values)),
-        ConfigCommands::Load { path } => ConfigAction::Load(path),
+        ConfigCommands::Add { key, values } => {
+            Ok(ConfigAction::Add(key, parse_keys_values(values)?))
+        }
+        ConfigCommands::Show => Ok(ConfigAction::Show),
+        ConfigCommands::Set { values } => Ok(ConfigAction::Set(parse_keys_values(values)?)),
+        ConfigCommands::Load { path } => Ok(ConfigAction::Load(path)),
     }
 }
 
-fn parse_keys_values(keys_values: Vec<String>) -> HashMap<String, String> {
-    keys_values
-        .iter()
-        .filter_map(|s| {
-            if let Some((key, value)) = s.split_once('=') {
-                Some((key.to_string(), value.to_string()))
-            } else {
-                None
-            }
-        })
-        .collect()
+/// Split the elements on '=' to make a hash of them.
+fn parse_keys_values(keys_values: Vec<String>) -> Result<HashMap<String, String>, CliError> {
+    let mut changes = HashMap::new();
+    for s in keys_values {
+        let Some((key, value)) = s.split_once('=') else {
+            return Err(CliError::MissingSeparator(s));
+        };
+        changes.insert(key.to_string(), value.to_string());
+    }
+    Ok(changes)
+}
+
+#[test]
+fn test_parse_keys_values() {
+    // happy path, make a hash out of the vec
+    let happy_in = vec!["one=first".to_string(), "two=second".to_string()];
+    let happy_out = HashMap::from([
+        ("one".to_string(), "first".to_string()),
+        ("two".to_string(), "second".to_string()),
+    ]);
+    let r = parse_keys_values(happy_in);
+    assert!(r.is_ok());
+    assert_eq!(r.unwrap(), happy_out);
+
+    // an empty list is fine
+    let empty_vec = Vec::<String>::new();
+    let empty_hash = HashMap::<String, String>::new();
+    let r = parse_keys_values(empty_vec);
+    assert!(r.is_ok());
+    assert_eq!(r.unwrap(), empty_hash);
+
+    // an empty member fails
+    let empty_string = vec!["".to_string(), "two=second".to_string()];
+    let r = parse_keys_values(empty_string);
+    assert!(r.is_err());
+    assert_eq!(
+        format!("{}", r.unwrap_err()),
+        "Missing the '=' separator in ''"
+    );
 }
 
 fn key_to_scope(key: &str) -> Result<Scope, Box<dyn Error>> {

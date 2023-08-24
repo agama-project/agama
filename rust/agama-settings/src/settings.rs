@@ -1,71 +1,31 @@
-//! This module offers a mechanism to easily map the values from the command
-//! line to proper installation settings.
-//!
-//! To specify a value in the command line, the user needs specify:
-//!
-//! * a setting ID (`"users.name"`, `"storage.lvm"`, and so on), that must be used to find the
-//!   setting within a [super::settings::Settings] struct.
-//! * a value, which is captured as a string (`"Foo Bar"`, `"true"`, etc.) and it should be
-//!   converted to the proper type.
-//!
-//! Implementing the [Settings] trait adds support for setting the value in an straightforward,
-//! taking care of the conversions automatically. The newtype [SettingValue] takes care of such a
-//! conversion.
-//!
+use crate::error::{ConversionError, SettingsError};
 use std::collections::HashMap;
-/// For plain structs, the implementation can be derived.
-///
-/// TODO: derive for top-level structs too
 use std::convert::TryFrom;
+use std::fmt::Display;
 
 /// Implements support for easily settings attributes values given an ID (`"users.name"`) and a
 /// string value (`"Foo bar"`).
-///
-/// In the example below, the trait is manually implemented for `InstallSettings` and derived for
-/// `UserSettings`.
-///
-/// ```no_compile
-/// # use agama_lib::settings::{Settings, SettingValue};
-/// # use agama_derive::Settings;
-///
-/// #[derive(Settings)]
-/// struct UserSettings {
-///   name: Option<String>,
-///   enabled: Option<bool>
-/// }
-///
-/// struct InstallSettings {
-///   user: UserSettings
-/// }
-///
-/// impl Settings for InstallSettings {
-///   fn set(&mut self, attr: &str, value: SettingValue) -> Result<(), &'static str> {
-///     if let Some((ns, id)) = attr.split_once('.') {
-///       match ns {
-///         "user" => self.user.set(id, value)?,
-///         _ => return Err("unknown attribute")
-///       }
-///     }
-///     Ok(())
-///   }
-/// }
-///
-/// let user = UserSettings { name: Some(String::from("foo")), enabled: Some(false) };
-/// let mut settings = InstallSettings { user };
-/// settings.set("user.name", SettingValue("foo.bar".to_string()));
-/// settings.set("user.enabled", SettingValue("true".to_string()));
-/// assert!(&settings.user.enabled.unwrap());
-/// assert_eq!(&settings.user.name.unwrap(), "foo.bar");
-/// ```
 pub trait Settings {
-    fn add(&mut self, _attr: &str, _value: SettingObject) -> Result<(), &'static str> {
-        Err("unknown collection")
+    /// Adds a new element to a collection.
+    ///
+    /// * `attr`: attribute name (e.g., `user.name`, `product`).
+    /// * `_value`: element to add to the collection.
+    fn add(&mut self, attr: &str, _value: SettingObject) -> Result<(), SettingsError> {
+        Err(SettingsError::UnknownAttribute(attr.to_string()))
     }
 
-    fn set(&mut self, _attr: &str, _value: SettingValue) -> Result<(), &'static str> {
-        Err("unknown attribute")
+    /// Sets an attribute's value.
+    ///
+    /// * `attr`: attribute name (e.g., `user.name`, `product`).
+    /// * `_value`: string-based value coming from the CLI. It will automatically
+    ///   converted to the underlying type.
+    fn set(&mut self, attr: &str, _value: SettingValue) -> Result<(), SettingsError> {
+        Err(SettingsError::UnknownAttribute(attr.to_string()))
     }
 
+    /// Merges two settings structs.
+    ///
+    /// * `_other`: struct to copy the values from.
     fn merge(&mut self, _other: &Self)
     where
         Self: Sized,
@@ -80,7 +40,7 @@ pub trait Settings {
 /// more types.
 ///
 /// ```
-///   # use agama_lib::settings::SettingValue;
+///   # use agama_settings::settings::SettingValue;
 //
 ///   let value = SettingValue("true".to_string());
 ///   let value: bool = value.try_into().expect("the conversion failed");
@@ -88,6 +48,12 @@ pub trait Settings {
 /// ```
 #[derive(Clone, Debug)]
 pub struct SettingValue(pub String);
+
+impl Display for SettingValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
 
 /// Represents a string-based collection and allows converting to other types
 ///
@@ -115,19 +81,22 @@ impl From<HashMap<String, String>> for SettingObject {
 }
 
 impl TryFrom<SettingValue> for bool {
-    type Error = &'static str;
+    type Error = ConversionError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         match value.0.to_lowercase().as_str() {
             "true" | "yes" | "t" => Ok(true),
             "false" | "no" | "f" => Ok(false),
-            _ => Err("not a valid boolean"),
+            _ => Err(ConversionError::InvalidValue(
+                value.to_string(),
+                "boolean".to_string(),
+            )),
         }
     }
 }
 
 impl TryFrom<SettingValue> for Option<bool> {
-    type Error = &'static str;
+    type Error = ConversionError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         Ok(Some(value.try_into()?))
@@ -135,7 +104,7 @@ impl TryFrom<SettingValue> for Option<bool> {
 }
 
 impl TryFrom<SettingValue> for String {
-    type Error = &'static str;
+    type Error = ConversionError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         Ok(value.0)
@@ -143,7 +112,7 @@ impl TryFrom<SettingValue> for String {
 }
 
 impl TryFrom<SettingValue> for Option<String> {
-    type Error = &'static str;
+    type Error = ConversionError;
 
     fn try_from(value: SettingValue) -> Result<Self, Self::Error> {
         Ok(Some(value.try_into()?))
@@ -158,11 +127,19 @@ mod tests {
     fn test_try_from_bool() {
         let value = SettingValue("true".to_string());
         let value: bool = value.try_into().unwrap();
-        assert_eq!(value, true);
+        assert!(value);
 
         let value = SettingValue("false".to_string());
         let value: bool = value.try_into().unwrap();
-        assert_eq!(value, false);
+        assert!(!value);
+
+        let value = SettingValue("fasle".to_string());
+        let value: Result<bool, ConversionError> = value.try_into();
+        let error = value.unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "Invalid value 'fasle', expected a boolean"
+        );
     }
 
     #[test]

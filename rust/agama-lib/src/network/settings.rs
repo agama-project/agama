@@ -1,34 +1,19 @@
 //! Representation of the network settings
 
 use super::types::DeviceType;
-use crate::settings::{SettingObject, SettingValue, Settings};
+use agama_settings::error::ConversionError;
+use agama_settings::{SettingObject, SettingValue, Settings};
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::default::Default;
 
 /// Network settings for installation
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Settings, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkSettings {
     /// Connections to use in the installation
+    #[settings(collection)]
     pub connections: Vec<NetworkConnection>,
-}
-
-impl Settings for NetworkSettings {
-    fn add(&mut self, attr: &str, value: SettingObject) -> Result<(), &'static str> {
-        match attr {
-            "connections" => self.connections.push(value.try_into()?),
-            _ => return Err("unknown attribute"),
-        };
-        Ok(())
-    }
-
-    fn merge(&mut self, other: &Self)
-    where
-        Self: Sized,
-    {
-        self.connections = other.connections.clone();
-    }
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -70,11 +55,11 @@ impl NetworkConnection {
 }
 
 impl TryFrom<SettingObject> for NetworkConnection {
-    type Error = &'static str;
+    type Error = ConversionError;
 
     fn try_from(value: SettingObject) -> Result<Self, Self::Error> {
         let Some(id) = value.get("id") else {
-            return Err("The 'id' key is missing");
+            return Err(ConversionError::MissingKey("id".to_string()));
         };
 
         let default_method = SettingValue("disabled".to_string());
@@ -93,7 +78,7 @@ impl TryFrom<SettingObject> for NetworkConnection {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::settings::{SettingObject, SettingValue};
+    use agama_settings::{settings::Settings, SettingObject, SettingValue};
     use std::collections::HashMap;
 
     #[test]

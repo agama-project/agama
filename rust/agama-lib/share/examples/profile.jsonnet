@@ -1,7 +1,22 @@
+// This is a Jsonnet file. Please, check https://jsonnet.org/ for more
+// information about the language.
+// For the schema, see
+// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/profile.schema.json
+
+// The "hw.libsonnet" file contains hardware information of the storage devices
+// from the "lshw" tool. Agama generates this file at runtime by running (with
+// root privileges):
+//
+//   lshw -json -class disk
+//
+// However, it is expected to change in the near future to include information
+// from other subsystems (e.g., network).
 local agama = import 'hw.libsonnet';
+
+// Find the biggest disk which is suitable for installing the system.
 local findBiggestDisk(disks) =
   local sizedDisks = std.filter(function(d) std.objectHas(d, 'size'), disks);
-  local sorted = std.sort(sizedDisks, function(x) x.size);
+  local sorted = std.sort(sizedDisks, function(x) -x.size);
   sorted[0].logicalname;
 
 {

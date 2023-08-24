@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-agama-derive = { path="../agama-derive" }
+agama-settings = { path="../agama-settings" }
 anyhow = "1.0"
 async-std = "1.12.0"
 curl = { version = "0.4.44", features = ["protocol-ftp"] }

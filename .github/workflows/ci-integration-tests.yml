@@ -1,0 +1,164 @@
+name: "CI - Integration Tests"
+
+on:
+  push:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used below for the pull request event. Keep both lists in sync!!
+
+      # this file itself
+      - .github/workflows/ci-integration-tests.yml
+
+      # the web frontend
+      - web/**.json
+      - web/**.html
+      - web/**.scss
+      - web/**.jsx?
+      # ignore unit tests, we do not run them here
+      - "!web/**.test.jsx?"
+      - web/Makefile
+
+      # the service backend
+      - setup-service.sh
+      - service/lib/**.rb
+      - service/bin/agamactl
+      - service/Gemfile*
+      - service/*.gemspec
+      # D-Bus and systemd configs
+      - service/share/*.conf
+      - service/share/*.service
+      # Rust services
+      - rust/Cargo.lock
+      - rust/agama-dbus-server/**
+      - rust/agama-locale-data/**
+      - rust/agama-lib/**
+      # ignore the JSON profile and the examples
+      - "!rust/agama-lib/share/**"
+      - rust/share/*.service
+
+      # the playwright tests and configs
+      - playwright/**.ts
+      - playwright/config/agama.yaml
+
+  pull_request:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used above for the push event. Keep both lists in sync!!
+
+      # this file itself
+      - .github/workflows/ci-integration-tests.yml
+
+      # the web frontend
+      - web/**.json
+      - web/**.html
+      - web/**.scss
+      - web/**.jsx?
+      # ignore unit tests, we do not run them here
+      - "!web/**.test.jsx?"
+      - web/Makefile
+
+      # the service backend
+      - setup-service.sh
+      - service/lib/**.rb
+      - service/bin/agamactl
+      - service/Gemfile*
+      - service/*.gemspec
+      # D-Bus and systemd configs
+      - service/share/*.conf
+      - service/share/*.service
+      # Rust services
+      - rust/Cargo.lock
+      - rust/agama-dbus-server/**
+      - rust/agama-locale-data/**
+      - rust/agama-lib/**
+      # ignore the JSON profile and the examples
+      - "!rust/agama-lib/share/**"
+      - rust/share/*.service
+
+      # the playwright tests and configs
+      - playwright/**.ts
+      - playwright/config/agama.yaml
+
+jobs:
+  integration-tests:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # TW is needed because of the Cockpit packages
+        distro: [ "tumbleweed" ]
+
+    steps:
+
+    # TODO: Reuse/share building the frontend and backend with the other steps
+    # TODO: Cache the Ruby gems and node packages
+
+    - name: Git Checkout
+      uses: actions/checkout@v3
+
+    - name: Created shared YaST log directory
+      run: mkdir -p /tmp/log/YaST2
+
+    - name: Start container
+      run: podman run --privileged --detach --name agama --ipc=host -e CI -e GITHUB_ACTIONS -v /dev:/dev -v .:/checkout -v /tmp/log/YaST2:/var/log/YaST2 registry.opensuse.org/systemsmanagement/agama/staging/containers/opensuse/agama-testing:latest
+
+    - name: Environment
+      run:  podman exec agama bash -c "env | sort"
+
+    - name: Build the frontend
+      run:  podman exec agama bash -c "cd /checkout/web && npm install && make"
+
+    - name: Install the frontend
+      run:  podman exec agama bash -c "ln -snfv /checkout/web/dist /usr/share/cockpit/agama"
+
+    # ./setup-service.sh will try setting up cockpit.socket
+    # which has a login page, so this local-session needs to be first
+    - name: Start Cockpit service
+      run:  podman exec --detach agama /usr/libexec/cockpit-ws --local-session=/usr/bin/cockpit-bridge
+
+    - name: Setup service
+      run:  podman exec agama bash -c "cd /checkout; ./setup-service.sh"
+
+    - name: Set a testing Agama configuration
+      # copy a simplified ALP config file, it skips the product selection at the beginning
+      run:  podman exec agama bash -c "cp /checkout/playwright/config/agama.yaml /checkout/service/etc/agama.yaml"
+
+    - name: Show NetworkManager log
+      run:  podman exec agama journalctl -u NetworkManager
+
+    - name: Show the D-Bus services log
+      run:  podman exec agama bash -c "journalctl | grep agama"
+
+    - name: Check D-Bus socket
+      run:  podman exec agama ls -l /var/run/dbus/system_bus_socket
+
+    - name: Run the Agama smoke test
+      run:  podman exec agama curl http://localhost:9090/cockpit/@localhost/agama/index.html
+
+    - name: Check Playwright version
+      run:  podman exec agama playwright --version
+
+    - name: Run the Playwright tests
+      # user authentication is not required when cockpit runs a local session
+      # run the tests in the Chromium browser
+      run:  podman exec agama bash -c "cd /checkout/playwright && SKIP_LOGIN=true playwright test --trace on --project chromium"
+
+    - name: Again show the D-Bus services log
+      run:  podman exec agama bash -c "journalctl | grep agama"
+
+    - name: Show the complete journal
+      # maybe not necessary if the above filtered journalctl calls are enough
+      run:  podman exec agama journalctl -b || echo "journal failed with $?"
+
+    - name: Upload the test results
+      uses: actions/upload-artifact@v3
+      # run even when the previous step fails
+      if: always()
+      with:
+        name: test-results
+        retention-days: 30
+        path: |
+          playwright/test-results/**/*
+          /tmp/log/YaST2/y2log

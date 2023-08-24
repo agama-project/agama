@@ -26,8 +26,8 @@ module Agama
     module Clients
       # D-Bus client for asking a question.
       class Question < Base
-        LUKS_ACTIVATION_IFACE = "org.opensuse.Agama.Questions1.LuksActivation"
-        private_constant :LUKS_ACTIVATION_IFACE
+        WITH_PASSWORD_IFACE = "org.opensuse.Agama.Questions1.WithPassword"
+        private_constant :WITH_PASSWORD_IFACE
 
         # @return [::DBus::ProxyObject]
         attr_reader :dbus_object
@@ -39,9 +39,9 @@ module Agama
           @dbus_object = service[object_path]
           @dbus_iface = @dbus_object["org.opensuse.Agama.Questions1.Generic"]
           # one D-Bus client for all kinds of questions
-          return unless @dbus_object.has_iface?(LUKS_ACTIVATION_IFACE)
+          return unless @dbus_object.has_iface?(WITH_PASSWORD_IFACE)
 
-          @luks_iface = @dbus_object[LUKS_ACTIVATION_IFACE]
+          @password_iface = @dbus_object[WITH_PASSWORD_IFACE]
         end
 
         # @return [String]
@@ -59,11 +59,11 @@ module Agama
           @dbus_iface["Answer"].to_sym
         end
 
-        # @return [String,nil] Password or nil if there is no LUKS interface
+        # @return [String,nil] Password or nil if there is no withPassword interface
         def password
-          return nil unless @luks_iface
+          return nil unless @password_iface
 
-          @luks_iface["Password"]
+          @password_iface["Password"]
         end
 
         # Whether the question is already answered

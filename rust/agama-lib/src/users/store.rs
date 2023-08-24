@@ -1,6 +1,5 @@
 use super::{FirstUser, FirstUserSettings, RootUserSettings, UserSettings, UsersClient};
-use crate::error::WrongParameter;
-use std::error::Error;
+use crate::error::ServiceError;
 use zbus::Connection;
 
 /// Loads and stores the users settings from/to the D-Bus service.
@@ -9,13 +8,13 @@ pub struct UsersStore<'a> {
 }
 
 impl<'a> UsersStore<'a> {
-    pub async fn new(connection: Connection) -> Result<UsersStore<'a>, zbus::Error> {
+    pub async fn new(connection: Connection) -> Result<UsersStore<'a>, ServiceError> {
         Ok(Self {
             users_client: UsersClient::new(connection).await?,
         })
     }
 
-    pub async fn load(&self) -> Result<UserSettings, Box<dyn Error>> {
+    pub async fn load(&self) -> Result<UserSettings, ServiceError> {
         let first_user = self.users_client.first_user().await?;
         let first_user = FirstUserSettings {
             user_name: Some(first_user.user_name),
@@ -34,7 +33,7 @@ impl<'a> UsersStore<'a> {
         })
     }
 
-    pub async fn store(&self, settings: &UserSettings) -> Result<(), Box<dyn Error>> {
+    pub async fn store(&self, settings: &UserSettings) -> Result<(), ServiceError> {
         // fixme: improve
         if let Some(settings) = &settings.first_user {
             self.store_first_user(settings).await?;
@@ -46,7 +45,7 @@ impl<'a> UsersStore<'a> {
         Ok(())
     }
 
-    async fn store_first_user(&self, settings: &FirstUserSettings) -> Result<(), Box<dyn Error>> {
+    async fn store_first_user(&self, settings: &FirstUserSettings) -> Result<(), ServiceError> {
         let first_user = FirstUser {
             user_name: settings.user_name.clone().unwrap_or_default(),
             full_name: settings.full_name.clone().unwrap_or_default(),
@@ -56,12 +55,12 @@ impl<'a> UsersStore<'a> {
         };
         let (success, issues) = self.users_client.set_first_user(&first_user).await?;
         if !success {
-            return Err(Box::new(WrongParameter::WrongUser(issues)));
+            return Err(ServiceError::WrongUser(issues));
         }
         Ok(())
     }
 
-    async fn store_root_user(&self, settings: &RootUserSettings) -> Result<(), Box<dyn Error>> {
+    async fn store_root_user(&self, settings: &RootUserSettings) -> Result<(), ServiceError> {
         if let Some(root_password) = &settings.password {
             self.users_client
                 .set_root_password(root_password, false)

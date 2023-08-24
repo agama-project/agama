@@ -79,7 +79,7 @@ impl<'a> NetworkManagerClient<'a> {
             let settings = proxy.get_settings().await?;
             // TODO: log an error if a connection is not found
             if let Some(connection) = connection_from_dbus(settings) {
-                connections.push(connection.into());
+                connections.push(connection);
             }
         }
         Ok(connections)

@@ -1,0 +1,81 @@
+name: Weblate Update POT
+
+on:
+  schedule:
+    # run every working day (Monday-Friday) at 1:42AM UTC
+    - cron: "42 1 * * 0-4"
+
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  update-pot:
+    # do not run in forks
+    if: github.repository == 'openSUSE/agama'
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+
+    steps:
+      - name: Configure and refresh repositories
+        # disable unused repositories to have a faster refresh
+        run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+
+      - name: Install tools
+        run: zypper --non-interactive install --no-recommends diffutils git gettext-tools
+
+      - name: Checkout Agama sources
+        uses: actions/checkout@v3
+        with:
+          path: agama
+
+      - name: Generate POT file
+        run: |
+          cd agama/web
+          ./build_pot
+          msgfmt --statistics agama.pot
+
+      - name: Validate the generated POT file
+        run:  msgfmt --check-format agama/web/agama.pot
+
+      - name: Checkout Weblate sources
+        uses: actions/checkout@v3
+        with:
+          path: agama-weblate
+          repository: openSUSE/agama-weblate
+          token:  ${{ secrets.GH_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "YaST Bot"
+          git config --global user.email "yast-devel@opensuse.org"
+
+      - name: Update POT file
+        run: |
+          mkdir -p agama-weblate/web
+          cp agama/web/agama.pot agama-weblate/web/agama.pot
+
+      # any change besides the timestamp in the POT file?
+      - name: Check changes
+        id: check_changes
+        run: |
+          git -C agama-weblate diff --ignore-matching-lines="POT-Creation-Date:" web/agama.pot > pot.diff
+
+          if [ -s pot.diff ]; then
+            echo "POT file updated"
+            echo "pot_updated=true" >> $GITHUB_OUTPUT
+          else
+            echo "POT file unchanged"
+            echo "pot_updated=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Push updated POT file
+        # run only when the POT file has been updated
+        if: steps.check_changes.outputs.pot_updated == 'true'
+        run: |
+          cd agama-weblate
+          git add web/agama.pot
+          git commit -m "Update POT file"$'\n\n'"Agama commit: $GITHUB_SHA"
+          git push

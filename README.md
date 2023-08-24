@@ -1,6 +1,17 @@
+**Checks**
+
 [![CI Status](https://github.com/openSUSE/agama/actions/workflows/ci.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci.yml)
+[![CI - Rubocop](https://github.com/openSUSE/agama/actions/workflows/ci-rubocop.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-rubocop.yml)
+[![CI - Documentation Check](https://github.com/openSUSE/agama/actions/workflows/ci-doc-check.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-doc-check.yml)
+[![CI - Integration Tests](https://github.com/openSUSE/agama/actions/workflows/ci-integration-tests.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-integration-tests.yml)
 [![Coverage Status](https://coveralls.io/repos/github/openSUSE/agama/badge.svg?branch=master)](https://coveralls.io/github/openSUSE/agama?branch=master)
 [![GitHub Pages](https://github.com/openSUSE/agama/actions/workflows/github-pages.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/github-pages.yml)
+
+**Translations**
+
+[![Weblate Update POT](https://github.com/openSUSE/agama/actions/workflows/weblate-update-pot.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/weblate-update-pot.yml)
+[![Weblate Merge PO](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-po.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-po.yml)
+[![Translation Status](https://l10n.opensuse.org/widgets/agama/-/agama-web/svg-badge.svg)](https://l10n.opensuse.org/engage/agama/)
 
 **[OBS systemsmanagement:Agama:Staging](https://build.opensuse.org/project/show/systemsmanagement:Agama:Staging)**
 
@@ -82,7 +93,7 @@ communication.
 
 ![Architecture](./doc/images/architecture.png)
 
-Agama consists on a set of D-Bus services and a web client (an experimental CLI is also available). The services use YaST-based libraries under the hood, reusing a lot logic already provided by YaST. Currently Agama comes with six separate services, although the list can increase in the future:
+Agama consists on a set of D-Bus services, a web client and a command-line interface. The services use YaST-based libraries under the hood, reusing a lot logic already provided by YaST. Currently Agama comes with six separate services, although the list can increase in the future:
 
 * Agama service: it is the main service which manages and controls the installation process.
 * Software service: configures the product and software to install.
@@ -103,12 +114,13 @@ The easiest way to give Agama a try is to grab a live ISO image and boot it in a
 machine. This is also the recommended way if you only want to play and see it in action. If you want
 to have a closer look, then clone and configure the project as explained in the next section.
 
-* [multi-product](https://build.opensuse.org/package/binaries/YaST:Head:Agama/agama-live:default/images):
-  it can be used to install different products, like *openSUSE Tumbleweed*, *Leap*, *Leap Micro* or
-  an experimental version of the *SUSE ALP ContainerHost OS*.
-* [ALP only](https://build.opensuse.org/package/binaries/YaST:Head:Agama/agama-live:ALP/images):
-  it only contains the definition for the experimental *SUSE ALP ContainerHost OS*, although
-  the rest of the content is pretty much the same than the multi-product version.
+There are two flavors of live ISO images:
+
+* openSUSE: it can be used to install different *openSUSE* distributions, like *Tumbleweed* or *Leap*.
+* ALP: it allows to install the development version of *SUSE ALP Dolomite*.
+
+You can download them from the [openSUSE Build
+Service](https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Devel/images/iso/).
 
 ### Manual Configuration
 
@@ -124,49 +136,29 @@ Then point your browser to http://localhost:9090/cockpit/@localhost/agama/index.
 
 The [setup.sh](./setup.sh) script installs the required dependencies
 to build and run the project and it also configures the Agama services
-and cockpit. It uses `sudo` to install packages and files to system locations.
+and Cockpit. It uses `sudo` to install packages and files to system locations.
 The script is well commented so we refer you to it instead of repeating its
 steps here.
 
-Alternatively you can run a development server which works as a proxy for
-the cockpit server. See more details [in the documentation](
-web/README.md#using-a-development-server).
+Regarding the web user interface, alternatively you can run a development
+server which works as a proxy for the cockpit server. See more details [in the
+documentation]( web/README.md#using-a-development-server).
+
+To start or stop Agama D-Bus services at any time, use the `agama` systemd service:
+
+```console
+sudo systemctl start agama
+```
+
+If something goes wrong, you can use `journalctl` to get Agama logs:
+
+```console
+sudo journalctl -u agama
+```
 
 Another alternative is to run source checkout inside container so system is not
 affected by doing testing run beside real actions really done by installer.
-See more details [in the documentation][doc/testing_using_container.md].
-
-* Start the services:
-    * beware that Agama must run as root (like YaST does) to do
-      hardware probing, partition the disks, install the software and so on.
-    * Note that `setup.sh` sets up D-Bus activation so starting manually is
-      only needed when you prefer to see the log output upfront.
-
-```console
-$ cd service
-$ sudo bundle exec bin/agama
-```
-
-* Check that Agama services are working with a tool like
-[busctl](https://www.freedesktop.org/wiki/Software/dbus/) or
-[D-Feet](https://wiki.gnome.org/Apps/DFeet) if you prefer a graphical one:
-
-
-```console
-$ busctl --address=unix:path=/run/agama/bus \
-    call \
-    org.opensuse.Agama1 \
-   /org/opensuse/Agama1/Manager \
-    org.opensuse.Agama1.Manager \
-    CanInstall
-
-$ busctl --address=unix:path=/run/agama/bus \
-    call \
-    org.opensuse.Agama.Locale1 \
-   /org/opensuse/Agama/Locale1 \
-    org.freedesktop.DBus.Properties \
-    GetAll s org.opensuse.Agama.Locale1
-```
+See more details [in the documentation](doc/testing_using_container.md).
 
 ## How to Contribute
 

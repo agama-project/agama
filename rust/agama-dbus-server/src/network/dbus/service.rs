@@ -3,7 +3,7 @@
 //! This module defines a D-Bus service which exposes Agama's network configuration.
 use crate::network::NetworkSystem;
 use agama_lib::connection_to;
-use std::{error::Error, thread};
+use std::error::Error;
 
 /// Represents the Agama networking D-Bus service.
 ///
@@ -20,19 +20,17 @@ impl NetworkService {
             .await
             .expect("Could not read network state");
 
-        thread::spawn(move || {
-            async_std::task::block_on(async {
-                network
-                    .setup()
-                    .await
-                    .expect("Could not set up the D-Bus tree");
-                connection
-                    .request_name(SERVICE_NAME)
-                    .await
-                    .expect(&format!("Could not request name {SERVICE_NAME}"));
+        async_std::task::spawn(async move {
+            network
+                .setup()
+                .await
+                .expect("Could not set up the D-Bus tree");
+            connection
+                .request_name(SERVICE_NAME)
+                .await
+                .unwrap_or_else(|_| panic!("Could not request name {SERVICE_NAME}"));
 
-                network.listen().await;
-            })
+            network.listen().await;
         });
         Ok(())
     }

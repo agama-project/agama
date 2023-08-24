@@ -20,7 +20,7 @@ impl fmt::Display for SSID {
 
 impl From<SSID> for Vec<u8> {
     fn from(value: SSID) -> Self {
-        value.0.clone()
+        value.0
     }
 }
 
@@ -50,7 +50,7 @@ impl TryFrom<u8> for DeviceType {
 
 impl From<InvalidDeviceType> for zbus::fdo::Error {
     fn from(value: InvalidDeviceType) -> zbus::fdo::Error {
-        zbus::fdo::Error::Failed(format!("Network error: {}", value.to_string()))
+        zbus::fdo::Error::Failed(format!("Network error: {value}"))
     }
 }
 

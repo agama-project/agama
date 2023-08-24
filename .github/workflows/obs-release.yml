@@ -8,7 +8,7 @@ on:
   # runs when creating a release tag
   push:
     tags:
-      - v[0-9]+.**
+      - v[0-9]*
 
 jobs:
   # Note: cockpit-agama-playwright is currently not submitted

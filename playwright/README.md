@@ -14,7 +14,7 @@ npm install --no-save @playwright/test
 This will install the NPM packages into the `node_modules` subdirectory.
 
 Alternatively you can install it as an RPM package from the
-[YaST:Head:Agama](https://build.opensuse.org/project/show/YaST:Head:Agama)
+[systemsmanagement:Agama:Staging](https://build.opensuse.org/project/show/systemsmanagement:Agama:Staging)
 OBS project.
 
 ## Files
@@ -57,8 +57,8 @@ See the `playwright.config.ts` file for the list of configured projects.
 
 ### Running Tests Directly from the Live ISO
 
-You can download the `default-Playwright` image type from the [YaST:Head:Agama](
-https://download.opensuse.org/repositories/YaST:/Head:/Agama/images/iso/) repository.
+You can download the `default-Playwright` image type from the [systemsmanagement:Agama:Staging](
+https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Staging/images/iso/) repository.
 
 This ISO additionally includes the Playwright tool, Chromium browser and the
 Agama integration tests.
@@ -229,5 +229,5 @@ Additional help can be the `y2log` file in the artifacts (see above).
 
 ### Missing Package/Wrong Container
 
-Packages lives in container at https://build.opensuse.org/package/show/YaST:Head:Containers/agama-testing .
+Packages lives in container at https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-testing.
 Feel free to modify it as the only purpose of this container is CI testing.

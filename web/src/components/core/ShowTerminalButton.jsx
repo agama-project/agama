@@ -24,6 +24,7 @@ import { Button } from "@patternfly/react-core";
 
 import { Terminal } from "~/components/core";
 import { Icon } from "~/components/layout";
+import { _ } from "~/i18n";
 
 /**
  * Button for displaying the terminal application
@@ -43,7 +44,8 @@ const ShowTerminalButton = () => {
         isDisabled={isTermDisplayed}
         icon={<Icon name="terminal" size="24" />}
       >
-        Open Terminal
+        {/* TRANSLATORS: button label */}
+        {_("Open Terminal")}
       </Button>
 
       { isTermDisplayed &&

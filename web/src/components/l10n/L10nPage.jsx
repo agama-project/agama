@@ -22,6 +22,7 @@
 import React, { useState, useEffect } from "react";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
+import { _ } from "~/i18n";
 
 import {
   Form,
@@ -68,7 +69,7 @@ export default function LanguageSelector() {
       <FormGroup fieldId="language" label="Language">
         <FormSelect
           id="language"
-          aria-label="language"
+          aria-label={_("language")}
           value={selected}
           onChange={v => updateState({ language: v })}
         >
@@ -79,7 +80,8 @@ export default function LanguageSelector() {
   };
 
   return (
-    <Page title="Localization" icon="translate" actionCallback={accept}>
+    // TRANSLATORS: page header
+    <Page title={_("Localization")} icon="translate" actionCallback={accept}>
       <Form id="language-selector">
         <LanguageField selected={language} />
       </Form>

@@ -1,4 +1,49 @@
 -------------------------------------------------------------------
+Wed Aug 23 10:39:46 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Install the ppc64-diag package when running on ppc64le (related
+  to bsc#1206898).
+
+-------------------------------------------------------------------
+Mon Aug 21 11:15:50 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Set the manager service as busy during the startup phase
+  (bsc#1213194).
+
+-------------------------------------------------------------------
+Fri Aug 18 14:17:13 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Add proxy setup support (bsc#1212677, gh#openSUSE/agama#696).
+
+-------------------------------------------------------------------
+Mon Aug  7 10:52:35 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not consider the architecture when filtering the configuration
+  file through the filter-config.rb script (gh#openSUSE/agama#691).
+
+-------------------------------------------------------------------
+Wed Aug  2 10:03:13 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 3
+
+-------------------------------------------------------------------
+Wed Aug  2 10:03:09 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+
+-------------------------------------------------------------------
+Wed Jul 26 10:00:39 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Adapt config file to install ALP Dolomite instead of ALP Micro
+  and remove ALP Bedrock (gh#openSUSE/agama#674).
+
+-------------------------------------------------------------------
+Mon Jul 17 09:16:38 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Adapt to new questions D-Bus API to allow automatic answering of
+  questions when requested. All code using this API is adapted
+  (gh#openSUSE/agama#637)
+
+-------------------------------------------------------------------
 Wed Jul  5 14:02:23 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Delay zFCP probing after activating a controller and ensure the

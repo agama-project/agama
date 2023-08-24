@@ -59,7 +59,7 @@ describe("ConnectionsTable", () => {
 
       const table = screen.getByRole("grid");
       within(table).getByText("Name");
-      within(table).getByText("Ip addresses");
+      within(table).getByText("IP addresses");
       within(table).getByText("WiFi 1");
       within(table).getByText("192.168.69.200/24");
       within(table).getByText("WiFi 2");

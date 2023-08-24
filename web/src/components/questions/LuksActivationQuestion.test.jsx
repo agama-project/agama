@@ -35,9 +35,11 @@ describe("LuksActivationQuestion", () => {
   beforeEach(() => {
     question = {
       id: 1,
+      class: "storage.luks_activation",
       text: "A Luks device found. Do you want to open it?",
-      attempt: 1,
       options: ["decrypt", "skip"],
+      defaultOption: "decrypt",
+      data: { attempt: "1" },
     };
   });
 
@@ -67,9 +69,11 @@ describe("LuksActivationQuestion", () => {
     beforeEach(() => {
       question = {
         id: 1,
+        class: "storage.luks_activation",
         text: "A Luks device found. Do you want to open it?",
-        attempt: 3,
         options: ["decrypt", "skip"],
+        defaultOption: "decrypt",
+        data: { attempt: "3" },
       };
     });
 
@@ -84,9 +88,11 @@ describe("LuksActivationQuestion", () => {
     beforeEach(() => {
       question = {
         id: 1,
+        class: "storage.luks_activation",
         text: "A Luks device found. Do you want to open it?",
-        attempt: 1,
         options: ["decrypt", "skip"],
+        defaultOption: "decrypt",
+        data: { attempt: "1" },
       };
     });
 

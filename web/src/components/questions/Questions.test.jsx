@@ -33,7 +33,7 @@ jest.mock("~/components/questions/LuksActivationQuestion", () => mockComponent("
 
 const handlers = {};
 const genericQuestion = { id: 1, type: 'generic' };
-const luksActivationQuestion = { id: 1, type: 'luksActivation' };
+const luksActivationQuestion = { id: 1, class: "storage.luks_activation" };
 let pendingQuestions = [];
 
 beforeEach(() => {

@@ -24,6 +24,7 @@ import { DropdownToggle } from "@patternfly/react-core";
 import { ActionsColumn } from '@patternfly/react-table';
 
 import { Icon } from '~/components/layout';
+import { _ } from "~/i18n";
 
 /**
  * Renders icon for selecting the options of a row in a table
@@ -58,7 +59,7 @@ export default function RowActions({ id, actions, "aria-label": toggleAriaLabel,
   const actionsToggle = (props) => (
     <DropdownToggle
       id={id}
-      aria-label={toggleAriaLabel || "Actions"}
+      aria-label={toggleAriaLabel || _("Actions")}
       toggleIndicator={null}
       isDisabled={props.isDisabled}
       onToggle={props.onToggle}

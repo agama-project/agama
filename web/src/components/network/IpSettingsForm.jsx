@@ -21,10 +21,12 @@
 
 import React, { useState } from "react";
 import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, TextInput } from "@patternfly/react-core";
+import format from "format-util";
 
 import { useInstallerClient } from "~/context/installer";
 import { Popup } from "~/components/core";
 import { AddressesDataList, DnsDataList } from "~/components/network";
+import { _ } from "~/i18n";
 
 const METHODS = {
   MANUAL: "manual",
@@ -81,7 +83,8 @@ export default function IpSettingsForm({ connection, onClose }) {
     const nextErrors = {};
 
     if (!usingDHCP(method) && sanitizedAddresses.length === 0) {
-      nextErrors.method = "At least one address must be provided for selected mode";
+      // TRANSLATORS: error message
+      nextErrors.method = _("At least one address must be provided for selected mode");
     }
 
     setErrors(nextErrors);
@@ -122,21 +125,25 @@ export default function IpSettingsForm({ connection, onClose }) {
     );
   };
 
+  // TRANSLATORS: manual network configuration mode with a static IP address
+  // %s is replaced by the connection name
   return (
-    <Popup isOpen title={`Edit "${connection.name}" connection`}>
+    <Popup isOpen title={format(_("Edit %s connection"), connection.name)}>
       <Form id="edit-connection" onSubmit={onSubmit}>
-        <FormGroup fieldId="method" label="Mode" isRequired>
+        <FormGroup fieldId="method" label={_("Mode")} isRequired>
           <FormSelect
             id="method"
             name="method"
-            aria-label="Mode"
+            // TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
+            aria-label={_("Mode")}
             value={method}
-            label="Mode"
+            label={_("Mode")}
             onChange={changeMethod}
             validated={validatedAttrValue("method")}
           >
-            <FormSelectOption key="auto" value={METHODS.AUTO} label="Automatic (DHCP)" />
-            <FormSelectOption key="manual" value={METHODS.MANUAL} label="Manual" />
+            <FormSelectOption key="auto" value={METHODS.AUTO} label={_("Automatic (DHCP)")} />
+            {/* TRANSLATORS: manual network configuration mode with a static IP address */}
+            <FormSelectOption key="manual" value={METHODS.MANUAL} label={_("Manual")} />
           </FormSelect>
           {renderError("method")}
         </FormGroup>
@@ -151,9 +158,10 @@ export default function IpSettingsForm({ connection, onClose }) {
           <TextInput
             id="gateway"
             name="gateway"
-            aria-label="Gateway"
+            aria-label={_("Gateway")}
             value={gateway}
-            label="Gateway"
+            // TRANSLATORS: network gateway configuration
+            label={_("Gateway")}
             isDisabled={addresses.length === 0}
             onChange={setGateway}
           />

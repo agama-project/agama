@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, contact SUSE LLC.
- *
+ *Creating new
  * To contact SUSE LLC about this file by physical or electronic mail, you may
  * find current contact information at www.suse.com.
  */
@@ -24,11 +24,6 @@ import { useInstallerClient } from "~/context/installer";
 import { useCancellablePromise } from "~/utils";
 
 import { GenericQuestion, LuksActivationQuestion } from "~/components/questions";
-
-const QUESTION_TYPES = {
-  generic: GenericQuestion,
-  luksActivation: LuksActivationQuestion
-};
 
 export default function Questions() {
   const client = useInstallerClient();
@@ -67,6 +62,11 @@ export default function Questions() {
 
   // Renders the first pending question
   const [currentQuestion] = pendingQuestions;
-  const QuestionComponent = QUESTION_TYPES[currentQuestion.type];
+  let QuestionComponent = GenericQuestion;
+  // show specialized popup for luks activation question
+  // more can follow as it will be needed
+  if (currentQuestion.class === "storage.luks_activation") {
+    QuestionComponent = LuksActivationQuestion;
+  }
   return <QuestionComponent question={currentQuestion} answerCallback={answerQuestion} />;
 }

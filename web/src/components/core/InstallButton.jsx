@@ -26,6 +26,7 @@ import { Button } from "@patternfly/react-core";
 import { useNavigate } from "react-router-dom";
 
 import { If, Popup } from "~/components/core";
+import { _ } from "~/i18n";
 
 const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
   const navigate = useNavigate();
@@ -39,31 +40,41 @@ const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
       );
     };
 
+    // TRANSLATORS: the installer reports some errors,
+    // the part in curly brackets {} is a clickable link
+    const [msgStart, msgLink, msgEnd] = _("There are some reported issues. \
+Please, check {the list of issues} \
+before proceeding with the installation.").split(/[{}]/);
+
     return (
       <p className="bold">
-        There are some reported issues. Please, check <IssuesLink text="the list of issues" /> before
-        proceeding with the installation.
+        {msgStart}
+        <IssuesLink text={msgLink} />
+        {msgEnd}
       </p>
     );
   };
 
   return (
     <Popup
-      title="Confirm Installation"
+      title={_("Confirm Installation")}
       isOpen
     >
       <div className="stack">
         <If condition={hasIssues} then={<IssuesWarning />} />
         <p>
-          If you continue, partitions on your hard disk will be modified according to the provided
-          installation settings.
+          { _(`If you continue, partitions on your hard disk will be modified
+according to the provided installation settings.`) }
         </p>
         <p>
-          Please, cancel and check the settings if you are unsure.
+          {_("Please, cancel and check the settings if you are unsure.")}
         </p>
       </div>
       <Popup.Actions>
-        <Popup.Confirm onClick={onAccept}>Continue</Popup.Confirm>
+        <Popup.Confirm onClick={onAccept}>
+          {/* TRANSLATORS: button label */}
+          {_("Continue")}
+        </Popup.Confirm>
         <Popup.Cancel onClick={onClose} autoFocus />
       </Popup.Actions>
     </Popup>
@@ -72,16 +83,19 @@ const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
 
 const CannotInstallPopup = ({ onClose }) => (
   <Popup
-    title="Problems Found"
+    title={_("Problems Found")}
     isOpen
   >
     <p>
-      Some problems were found when trying to start the installation.
-      Please, have a look to the reported errors and try again.
+      {_(`Some problems were found when trying to start the installation.
+Please, have a look to the reported errors and try again.`)}
     </p>
 
     <Popup.Actions>
-      <Popup.Cancel onClick={onClose} autoFocus>Accept</Popup.Cancel>
+      <Popup.Cancel onClick={onClose} autoFocus>
+        {/* TRANSLATORS: button label */}
+        {_("Accept")}
+      </Popup.Cancel>
     </Popup.Actions>
   </Popup>
 );
@@ -127,7 +141,8 @@ const InstallButton = ({ onClick }) => {
   return (
     <>
       <Button isLarge variant="primary" onClick={open}>
-        Install
+        {/* TRANSLATORS: button label */}
+        {_("Install")}
       </Button>
 
       { isOpen && renderPopup(error, hasIssues, { onAccept: install, onClose: close }) }

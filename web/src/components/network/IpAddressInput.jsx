@@ -22,13 +22,15 @@
 import React, { useState } from 'react';
 import { isValidIp } from '~/client/network/utils';
 import { TextInput, ValidatedOptions } from '@patternfly/react-core';
+import { _ } from "~/i18n";
 
 const IpAddressInput = ({ placeholder, onError = () => null, ...props }) => {
   const [validated, setValidated] = useState("default");
 
   return (
     <TextInput
-      placeholder={ placeholder || "IP Address"}
+      // TRANSLATORS: input field name
+      placeholder={ placeholder || _("IP Address")}
       validated={ValidatedOptions[validated]}
       onFocus={() => setValidated("default")}
       onBlur={e => {

@@ -133,6 +133,13 @@ module Agama
         backend.busy_services
       end
 
+      # Redefines #service_status to use the one from the backend
+      #
+      # @return [DBus::ServiceStatus]
+      def service_status
+        backend.service_status
+      end
+
     private
 
       # @return [Agama::Manager]

@@ -117,24 +117,36 @@ trait Locale1 {
     default_path = "/org/opensuse/Agama/Questions1"
 )]
 trait Questions1 {
+    /// AddAnswerFile method
+    fn add_answer_file(&self, path: &str) -> zbus::Result<()>;
+
     /// Delete method
     fn delete(&self, question: &zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()>;
 
     /// New method
     #[dbus_proxy(name = "New")]
-    fn create(
+    fn new_quetion(
         &self,
+        class: &str,
         text: &str,
         options: &[&str],
-        default_option: &[&str],
+        default_option: &str,
+        data: std::collections::HashMap<&str, &str>,
     ) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
-    /// NewLuksActivation method
-    fn new_luks_activation(
+    /// NewWithPassword method
+    fn new_with_password(
         &self,
-        device: &str,
-        label: &str,
-        size: &str,
-        attempt: u8,
+        class: &str,
+        text: &str,
+        options: &[&str],
+        default_option: &str,
+        data: std::collections::HashMap<&str, &str>,
     ) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+
+    /// Interactive property
+    #[dbus_proxy(property)]
+    fn interactive(&self) -> zbus::Result<bool>;
+    #[dbus_proxy(property)]
+    fn set_interactive(&self, value: bool) -> zbus::Result<()>;
 }

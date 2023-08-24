@@ -20,10 +20,13 @@
  */
 
 import React, { useEffect, useState } from "react";
+import format from "format-util";
+
 import { Em, Section, SectionSkeleton } from "~/components/core";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { useInstallerClient } from "~/context/installer";
 import { formatIp } from "~/client/network/utils";
+import { _, n_ } from "~/i18n";
 
 export default function NetworkSection() {
   const { network: client } = useInstallerClient();
@@ -72,15 +75,22 @@ export default function NetworkSection() {
 
     const activeConnections = connections.filter(c => [ConnectionTypes.WIFI, ConnectionTypes.ETHERNET].includes(c.type));
 
-    if (activeConnections.length === 0) return "No network connections detected";
+    if (activeConnections.length === 0) return _("No network connections detected");
 
     const summary = activeConnections.map(connection => (
       <Em key={connection.id}>{connection.name} - {connection.addresses.map(formatIp)}</Em>
     ));
 
+    const msg = format(
+      // TRANSLATORS: header for the list of active network connections,
+      // %d is replaced by the number of active connections
+      n_("%d connection set:", "%d connections set:", activeConnections.length),
+      activeConnections.length
+    );
+
     return (
       <>
-        <div>{activeConnections.length} connection(s) set:</div>
+        <div>{msg}</div>
         <div className="split wrapped">{summary}</div>
       </>
     );
@@ -88,7 +98,8 @@ export default function NetworkSection() {
 
   return (
     <Section
-      title="Network"
+      // TRANSLATORS: page section title
+      title={_("Network")}
       icon="settings_ethernet"
       loading={!initialized}
       path="/network"

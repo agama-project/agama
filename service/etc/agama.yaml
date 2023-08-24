@@ -1,13 +1,7 @@
 products:
-  ALP-Bedrock:
-    name: SUSE ALP Server
-    description: 'SUSE ALP Server is a flexible, secure, customizable and
-      modular Server allowing an enterprise to run a variety of services,
-      workloads and application in a compartmentalized form. Based on an
-      immutable root filesystem, security has been built into it from the ground.'
-  ALP-Micro:
-    name: SUSE ALP Micro
-    description: 'SUSE ALP Micro is a minimum immutable OS core, focused on
+  ALP-Dolomite:
+    name: SUSE ALP Dolomite
+    description: 'SUSE ALP Dolomite is a minimum immutable OS core, focused on
       security to provide the bare minimum to run workloads and services as
       containers or virtual machines.'
   Tumbleweed:
@@ -143,107 +137,32 @@ Tumbleweed:
       proposed_configurable: true
       disable_order: 2
 
-ALP-Bedrock:
+ALP-Dolomite:
   software:
     installation_repositories:
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/images/repo/ALP-Bedrock-0.1-x86_64-Media1/
+      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/x86_64/product/
         archs: x86_64
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/images/repo/ALP-Bedrock-0.1-aarch64-Media1/
+      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/aarch64/product/
         archs: aarch64
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/images/repo/ALP-Bedrock-0.1-s390x-Media1/
+      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/s390x/product/
         archs: s390
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Bedrock:/0.1/images/repo/ALP-Bedrock-0.1-ppc64le-Media1/
+      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/ppc64le/product/
         archs: ppc
 
     mandatory_patterns:
-      - alp-bedrock-base
-      - alp-bedrock-cockpit
-      - alp-bedrock-hardware
-      - alp-bedrock-container_runtime
-    optional_patterns: null # no optional pattern shared
-    mandatory_packages:
-      - package: device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
-      - package: fde-tools # Needed for FDE with TPM, hardcoded here temporarily (aarch64, x86_64 specific)
-        archs: aarch64, x86_64
-      - package: libtss2-tcti-device0 # Same than fde-tools
-    optional_packages: null
-    base_product: ALP-Bedrock
-
-  security:
-    tpm_luks_open: true
-    lsm: selinux
-    available_lsms:
-      # apparmor:
-      #   patterns:
-      #     - apparmor
-      selinux:
-        patterns:
-          - alp-bedrock-selinux
-        policy: enforcing
-      none:
-        patterns: null
-
-  storage:
-    encryption:
-      method: luks2
-      pbkdf: pbkdf2
-    volumes:
-      - mount_point: "/"
-        fs_type: btrfs
-        min_size: 5 GiB
-        fs_types:
-          - btrfs
-        weight: 1
-        snapshots: true
-        snapshots_configurable: false
-        proposed_configurable: false
-        btrfs_default_subvolume: "@"
-        btrfs_read_only: true
-        subvolumes:
-        - path: root
-        - path: home
-        - path: opt
-        - path: srv
-        - path: boot/writable
-        - path: usr/local
-        - path: boot/grub2/arm64-efi
-          archs: aarch64
-        - path: boot/grub2/i386-pc
-          archs: x86_64
-        - path: boot/grub2/powerpc-ieee1275
-          archs: ppc,!board_powernv
-        - path: boot/grub2/s390x-emu
-          archs: s390
-        - path: boot/grub2/x86_64-efi
-          archs: x86_64
-        - path: var
-          copy_on_write: false
-
-ALP-Micro:
-  software:
-    installation_repositories:
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/images/repo/ALP-Micro-0.1-x86_64-Media1/
-        archs: x86_64
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/images/repo/ALP-Micro-0.1-aarch64-Media1/
-        archs: aarch64
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/images/repo/ALP-Micro-0.1-s390x-Media1/
-        archs: s390
-      - url: https://download.opensuse.org/repositories/SUSE:/ALP:/Products:/Micro:/0.1/images/repo/ALP-Micro-0.1-ppc64le-Media1/
-        archs: ppc
-
-    mandatory_patterns:
-      - alp-micro-base
-      - alp-micro-cockpit
-      - alp-micro-container_runtime
-      - alp-micro-hardware
+      - alp_base_zypper
+      - alp_cockpit
+      - alp_hardware
     optional_patterns: null # no optional pattern shared
     mandatory_packages:
       - package: device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
       - package: fde-tools # Needed for FDE with TPM, hardcoded here temporarily
         archs: aarch64, x86_64
       - package: libtss2-tcti-device0 # Same than fde-tools
+      - package: ppc64-diag # Needed for hardware-based installations
+        archs: ppc64
     optional_packages: null
-    base_product: ALP-Micro
+    base_product: ALP-Dolomite
 
   security:
     tpm_luks_open: true
@@ -254,7 +173,7 @@ ALP-Micro:
       #     - apparmor
       selinux:
         patterns:
-          - alp-micro-selinux
+          - alp_selinux
         policy: enforcing
       none:
         patterns: null

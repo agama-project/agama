@@ -22,13 +22,15 @@
 import React, { useState } from 'react';
 import { isValidIpPrefix } from '~/client/network/utils';
 import { TextInput, ValidatedOptions } from '@patternfly/react-core';
+import { _ } from "~/i18n";
 
 const IpPrefixInput = ({ placeholder, onError = () => null, ...props }) => {
   const [validated, setValidated] = useState("default");
 
   return (
     <TextInput
-      placeholder={ placeholder || "IP prefix or netmask"}
+      // TRANSLATORS: input field name
+      placeholder={ placeholder || _("IP prefix or netmask")}
       validated={ValidatedOptions[validated]}
       onFocus={() => setValidated("default")}
       onBlur={e => {

@@ -9,6 +9,22 @@
     <property name="Answer" type="s" access="readwrite"/>
 
     <!--
+        Class:
+        String identifier of the same questions.
+        Useful to identify similar questions asked multiple times
+        or for matching in automatic answers.
+    -->
+    <property name="Class" access="read" type="s"></property>
+
+    <!--
+        Data:
+        Additional data that is specific to given question class.
+        Can be used for additional details about question that helps with UI
+        or with matching automatic answers.
+    -->
+    <property name="Data" access="read" type="a{ss}"></property>
+
+    <!--
         DefaultOption:
         Clients should offer this option as default option for answering the question.
     -->
