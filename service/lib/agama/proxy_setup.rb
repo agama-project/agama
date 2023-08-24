@@ -58,7 +58,7 @@ module Agama
     end
 
     def propose
-      on_target { add_packages } if Proxy.enabled
+      add_packages if Proxy.enabled
     end
 
     def install

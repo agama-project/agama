@@ -104,12 +104,11 @@ module Agama
 
       progress.step("Partitioning") do
         storage.install
+        proxy.propose
         # propose software after /mnt is already separated, so it uses proper
         # target
         software.propose
       end
-
-      ProxySetup.instance.propose
 
       progress.step("Installing Software") { software.install }
 
@@ -138,6 +137,13 @@ module Agama
           service_status_recorder.save(client.service.name, status)
         end
       end
+    end
+
+    # ProxySetup instance
+    #
+    # @return [ProxySetup]
+    def proxy
+      ProxySetup.instance
     end
 
     # Language manager
