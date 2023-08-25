@@ -66,7 +66,7 @@ impl<T: Adapter> NetworkSystem<T> {
         match action {
             Action::AddConnection(name, ty) => {
                 let mut conn = Connection::new(name, ty);
-                self.tree.add_connection(&mut conn).await?;
+                self.tree.add_connection(&mut conn, true).await?;
                 self.state.add_connection(conn)?;
             }
             Action::UpdateConnection(conn) => {

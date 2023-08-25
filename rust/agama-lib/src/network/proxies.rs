@@ -28,6 +28,10 @@ trait Connections {
 
     /// RemoveConnection method
     fn remove_connection(&self, uuid: &str) -> zbus::Result<()>;
+
+    /// ConnectionAdded signal
+    #[dbus_proxy(signal)]
+    fn connection_added(&self, id: &str, path: &str) -> zbus::Result<()>;
 }
 
 #[dbus_proxy(

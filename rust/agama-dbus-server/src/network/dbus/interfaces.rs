@@ -19,6 +19,7 @@ use std::net::{AddrParseError, Ipv4Addr};
 use zbus::{
     dbus_interface,
     zvariant::{ObjectPath, OwnedObjectPath},
+    SignalContext,
 };
 
 /// D-Bus interface for the network devices collection
@@ -126,7 +127,7 @@ impl Connections {
     pub async fn add_connection(&mut self, id: String, ty: u8) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock().await;
         actions
-            .send(Action::AddConnection(id, ty.try_into()?))
+            .send(Action::AddConnection(id.clone(), ty.try_into()?))
             .await
             .unwrap();
         Ok(())
@@ -163,6 +164,13 @@ impl Connections {
         actions.send(Action::Apply).await.unwrap();
         Ok(())
     }
+
+    #[dbus_interface(signal)]
+    pub async fn connection_added(
+        ctxt: &SignalContext<'_>,
+        id: &str,
+        path: &str,
+    ) -> zbus::Result<()>;
 }
 
 /// D-Bus interface for a network connection
