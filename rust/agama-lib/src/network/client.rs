@@ -123,6 +123,7 @@ impl<'a> NetworkClient<'a> {
         self.connections_proxy
             .add_connection(&conn.id, conn.device_type() as u8)
             .await?;
+        // FIXME: this method might not work because the object might time some time to appear.
         Ok(self.connections_proxy.get_connection(&conn.id).await?)
     }
 
