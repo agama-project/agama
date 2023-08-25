@@ -51,3 +51,10 @@ pub use adapter::Adapter;
 pub use dbus::NetworkService;
 pub use model::NetworkState;
 pub use system::NetworkSystem;
+
+pub async fn start_service(address: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let adapter = NetworkManagerAdapter::from_system()
+        .await
+        .expect("Could not connect to NetworkManager to read the configuration.");
+    NetworkService::start(address, adapter).await
+}
