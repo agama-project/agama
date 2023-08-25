@@ -123,8 +123,7 @@ impl<'a> NetworkClient<'a> {
         self.connections_proxy
             .add_connection(&conn.id, conn.device_type() as u8)
             .await?;
-        // FIXME: this method might not work because the object might time some time to appear.
-        Ok(self.connections_proxy.get_connection(&conn.id).await?)
+        self.wait_for_connection(&conn.id).await
     }
 
     /// Updates a network connection.
@@ -181,5 +180,20 @@ impl<'a> NetworkClient<'a> {
             .await?;
         proxy.set_password(&wireless.password).await?;
         Ok(())
+    }
+
+    async fn wait_for_connection(&self, id: &str) -> Result<OwnedObjectPath, ServiceError> {
+        loop {
+            let mut retries = 0;
+            match self.connections_proxy.get_connection(&id).await {
+                Ok(path) => return Ok(path),
+                Err(e) => {
+                    retries += 1;
+                    if retries > 3 {
+                        return Err(e.into());
+                    };
+                }
+            }
+        }
     }
 }
