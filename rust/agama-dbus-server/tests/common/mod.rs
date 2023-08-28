@@ -1,6 +1,7 @@
 use agama_lib::{connection_to, error::ServiceError};
 use async_std::stream::StreamExt;
 use std::process::{Child, Command};
+use std::time::Duration;
 use uuid::Uuid;
 use zbus::{MatchRule, MessageStream, MessageType};
 
@@ -80,8 +81,8 @@ impl DBusServer {
     /// Waits until the D-Bus daemon is ready.
     // TODO: implement proper waiting instead of just using a sleep
     fn wait(&self) {
-        let wait_time = std::time::Duration::from_millis(500);
-        std::thread::sleep(wait_time);
+        const WAIT_TIME: Duration = Duration::from_millis(500);
+        std::thread::sleep(WAIT_TIME);
     }
 
     /// Builds a message stream.
