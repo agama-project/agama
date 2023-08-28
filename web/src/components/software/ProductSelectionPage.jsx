@@ -23,6 +23,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInstallerClient } from "~/context/installer";
 import { useSoftware } from "~/context/software";
+import format from "format-util";
+import { _, n_ } from "~/i18n";
 
 import {
   Button,
@@ -64,7 +66,7 @@ function ProductSelectionPage() {
   };
 
   if (!products) return (
-    <Loading text="Loading available products, please wait..." />
+    <Loading text={_("Loading available products, please wait...")} />
   );
 
   const buildOptions = () => {
@@ -88,16 +90,27 @@ function ProductSelectionPage() {
 
   return (
     <>
-      <Title>Product selection</Title>
+      {/* TRANSLATORS: page header */}
+      <Title>{_("Product selection")}</Title>
       <PageIcon><Icon name="home_storage" /></PageIcon>
       <MainActions>
         <Button isLarge variant="primary" form="product-selector" type="submit">
-          Select
+          {/* TRANSLATORS: button label */}
+          {_("Select")}
         </Button>
       </MainActions>
 
       <Form id="product-selector" onSubmit={accept}>
-        <FormGroup isStack label={`Choose a product (${products.length} available)`} role="radiogroup">
+        <FormGroup
+          isStack
+          label={
+            format(
+              n_("Choose a product (%d available)", "Choose a product (%d available)", products.length),
+              products.length
+            )
+          }
+          role="radiogroup"
+        >
           {buildOptions()}
         </FormGroup>
       </Form>

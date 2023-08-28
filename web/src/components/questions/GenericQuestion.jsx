@@ -23,6 +23,7 @@ import React from "react";
 import { Text } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import { QuestionActions } from "~/components/questions";
+import { _ } from "~/i18n";
 
 export default function GenericQuestion({ question, answerCallback }) {
   const actionCallback = (option) => {
@@ -31,7 +32,7 @@ export default function GenericQuestion({ question, answerCallback }) {
   };
 
   return (
-    <Popup isOpen aria-label="Question">
+    <Popup isOpen aria-label={_("Question")}>
       <Text>
         { question.text }
       </Text>
