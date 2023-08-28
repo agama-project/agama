@@ -35,7 +35,7 @@ module Agama
     def initialize(locale_client, &block)
       @client = locale_client
       change_locale(@client.ui_locale)
-      on_ui_locale_change do |locale|
+      @client.on_ui_locale_change do |locale|
         change_locale(locale)
         block.call(locale) if block_given?
       end
