@@ -134,7 +134,7 @@ if ENV["YUPDATE_FORCE"] == "1" || File.exist?("/.packages.initrd") || live_iso?
         sh "cp share/dbus.conf /usr/share/dbus-1/agama.conf"
 
         # update the systemd service file
-        source_file = "share/systemd.service"
+        source_file = "share/agama.service"
         target_file = "/usr/lib/systemd/system/agama.service"
 
         unless FileUtils.identical?(source_file, target_file)
