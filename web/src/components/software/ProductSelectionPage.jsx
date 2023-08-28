@@ -23,8 +23,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInstallerClient } from "~/context/installer";
 import { useSoftware } from "~/context/software";
-import format from "format-util";
-import { _, n_ } from "~/i18n";
+import { _ } from "~/i18n";
 
 import {
   Button,
@@ -101,16 +100,7 @@ function ProductSelectionPage() {
       </MainActions>
 
       <Form id="product-selector" onSubmit={accept}>
-        <FormGroup
-          isStack
-          label={
-            format(
-              n_("Choose a product (%d available)", "Choose a product (%d available)", products.length),
-              products.length
-            )
-          }
-          role="radiogroup"
-        >
+        <FormGroup isStack label={_("Choose a product")} role="radiogroup">
           {buildOptions()}
         </FormGroup>
       </Form>
