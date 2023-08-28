@@ -101,7 +101,8 @@ module Agama
       # Note that this settings might differ from the {#original_settings}. For example, the sizes
       # of some volumes could be adjusted if auto size is set.
       #
-      # @return [ProposalSettings, nil]
+      # @return [ProposalSettings, nil] nil if no proposal has been calculated yet or the proposal
+      #   was invalidated.
       def settings
         return nil unless calculated?
 

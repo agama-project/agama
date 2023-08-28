@@ -65,6 +65,11 @@ module Agama
           target.ignore_fallback_sizes = !auto
           target.ignore_snapshots_sizes = !auto
 
+          # The range of sizes is defined by the volume outline in case of auto size (mix and max
+          # sizes cannot be configured if auto size is set).
+          # And note that the inal range of sizes used by the Y2Storage proposal is calculated by
+          # Y2Storage according the range configured here and other sizes like fallback sizes or
+          # the size for snapshots.
           target.min_size = auto ? volume.outline.base_min_size : volume.min_size
           target.max_size = auto ? volume.outline.base_max_size : volume.max_size
         end

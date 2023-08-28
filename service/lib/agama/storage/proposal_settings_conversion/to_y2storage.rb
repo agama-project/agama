@@ -136,13 +136,13 @@ module Agama
           end
         end
 
-        # @param mount_path [String]
+        # @param mount_path [String, nil] nil if not found
         def find_min_size_fallback(mount_path)
           volume = settings.volumes.find { |v| v.min_size_fallback_for.include?(mount_path) }
           volume&.mount_path
         end
 
-        # @param mount_path [String]
+        # @param mount_path [String, nil] nil if not found
         def find_max_size_fallback(mount_path)
           volume = settings.volumes.find { |v| v.max_size_fallback_for.include?(mount_path) }
           volume&.mount_path
@@ -167,7 +167,7 @@ module Agama
         # @return [String, Array<String>]
         def device_or_partitions(device)
           partitions = partitions(device)
-          partitions.any? ? partitions : device
+          partitions.empty? ? device : partitions
         end
 
         # @param device [String]

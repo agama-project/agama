@@ -36,7 +36,9 @@ module Agama
       # @return [Y2Storage::EncryptionMethod::Base]
       attr_accessor :method
 
-      # @return [Y2Storage::PbkdFunction, nil]
+      # PBKD function to use for LUKS2
+      #
+      # @return [Y2Storage::PbkdFunction, nil] Can be nil if using LUKS1.
       attr_accessor :pbkd_function
 
       def initialize

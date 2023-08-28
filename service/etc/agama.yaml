@@ -41,7 +41,7 @@ ALP-Dolomite:
       - package: device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
       - package: fde-tools # Needed for FDE with TPM, hardcoded here temporarily
         archs: aarch64, x86_64
-      - package: libtss2-tcti-device0 # Same than fde-tools
+      - package: libtss2-tcti-device0
       - package: ppc64-diag # Needed for hardware-based installations
         archs: ppc64
     optional_packages: null
@@ -255,7 +255,7 @@ Leap16:
       - package: device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
       - package: fde-tools # Needed for FDE with TPM, hardcoded here temporarily
         archs: aarch64, x86_64
-      - package: libtss2-tcti-device0 # Same than fde-tools
+      - package: libtss2-tcti-device0
     optional_packages: null
     base_product: Leap16
 

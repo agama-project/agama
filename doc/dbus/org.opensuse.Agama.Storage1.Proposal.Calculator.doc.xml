@@ -21,8 +21,8 @@
         TargetDevice            s
         TargetVG                s
         FsType                  s
-        MinSize                 t
-        MaxSize                 t (optinal, max size is considered as unlimited if omitted)
+        MinSize                 t (bytes)
+        MaxSize                 t (bytes. Optinal, max size is considered as unlimited if omitted)
         AutoSize                b
         Snapshots               b
         Outline                 a{sv}

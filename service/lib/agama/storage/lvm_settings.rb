@@ -27,6 +27,7 @@ module Agama
       #
       # @return [Boolean]
       attr_accessor :enabled
+      alias_method :enabled?, :enabled
 
       # Devices to use for the system LVM volume group
       #
@@ -36,11 +37,6 @@ module Agama
       def initialize
         @enabled = false
         @system_vg_devices = []
-      end
-
-      # @return [Boolean]
-      def enabled?
-        !!@enabled
       end
     end
   end

@@ -45,7 +45,7 @@ module Agama
       # Device name of the disk that will be used for booting the system and also to allocate all
       # the partitions, except those that have been explicitly assigned to other disk(s).
       #
-      # @return [String, nil]
+      # @return [String, nil] nil if no device has been selected yet.
       attr_accessor :boot_device
 
       # Set of volumes to create

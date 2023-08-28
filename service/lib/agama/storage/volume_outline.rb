@@ -41,13 +41,13 @@ module Agama
       attr_accessor :filesystems
 
       # Base value to calculate the min size for the volume (if #auto_size is set to true
-      # for that final volume) or to use as default value (if #auto_size is false)
+      # for that final volume)
       #
       # @return [Y2Storage::DiskSize]
       attr_accessor :base_min_size
 
       # Base value to calculate the max size for the volume (if #auto_size is set to true
-      # for that final volume) or to use as default value (if #auto_size is false)
+      # for that final volume)
       #
       # @return [Y2Storage::DiskSize]
       attr_accessor :base_max_size
@@ -56,10 +56,22 @@ module Agama
       attr_accessor :adjust_by_ram
       alias_method :adjust_by_ram?, :adjust_by_ram
 
-      # @return [Array<String>] mount paths of other volumes
+      # Lists the mount paths of the volumes for which this volume is a min size fallback.
+      #
+      # Being a min size fallback means that the min size of the volume would be increased by the
+      # min size of other volumes, if any of that other volumes is not used for the proposal.
+      #
+      # For example, let's say the root volume is a fallback for the min size of /home and /var
+      # (root.min_size_fallback_for => ["/home", "/var"]). And a proposal is calculated with only
+      # root and /home. In that case, the min size of /var is added to the min size of root. The
+      # same would happen for /home if the proposal does not include it.
+      #
+      # @return [Array<String>]
       attr_accessor :min_size_fallback_for
 
-      # @return [Array<String>] mount paths of other volumes
+      # The same as {#min_size_fallback_for}, but for the max size of the volume.
+      #
+      # @return [Array<String>]
       attr_accessor :max_size_fallback_for
 
       # Whether snapshots option can be configured
@@ -70,12 +82,12 @@ module Agama
 
       # Size required for snapshots
       #
-      # @return [Y2Storage::DiskSize, nil]
+      # @return [Y2Storage::DiskSize, nil] nil if no extra size for snapshots.
       attr_accessor :snapshots_size
 
       # Percentage of space required for snapshots
       #
-      # @return [Integer, nil]
+      # @return [Integer, nil] nil if no extra size for snapshots.
       attr_accessor :snapshots_percentage
 
       def initialize

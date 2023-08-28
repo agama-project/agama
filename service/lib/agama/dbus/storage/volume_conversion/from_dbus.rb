@@ -104,8 +104,10 @@ module Agama
           # @param target [Agama::Storage::Volume]
           # @param value [String]
           def fs_type_conversion(target, value)
+            downcase_value = value.downcase
+
             fs_type = target.outline.filesystems.find do |type|
-              type.to_human_string.downcase == value.downcase
+              type.to_human_string.downcase == downcase_value
             end
 
             return unless fs_type
@@ -114,13 +116,13 @@ module Agama
           end
 
           # @param target [Agama::Storage::Volume]
-          # @param value [Integer]
+          # @param value [Integer] Size in bytes.
           def min_size_conversion(target, value)
             target.min_size = Y2Storage::DiskSize.new(value)
           end
 
           # @param target [Agama::Storage::Volume]
-          # @param value [Integer]
+          # @param value [Integer] Size in bytes.
           def max_size_conversion(target, value)
             target.max_size = Y2Storage::DiskSize.new(value)
           end

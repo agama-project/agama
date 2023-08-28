@@ -65,7 +65,7 @@ module Agama
 
         # Device used as boot device by the storage proposal
         #
-        # @return [String]
+        # @return [String] Empty string if no device has been selected yet.
         def boot_device
           dbus_settings.fetch("BootDevice", "")
         end

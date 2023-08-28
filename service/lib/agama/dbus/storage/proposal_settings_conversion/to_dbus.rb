@@ -38,7 +38,7 @@ module Agama
           def convert # rubocop:disable Metrics/AbcSize
             {
               "BootDevice"             => settings.boot_device.to_s,
-              "LVM"                    => settings.lvm.enabled,
+              "LVM"                    => settings.lvm.enabled?,
               "SystemVGDevices"        => settings.lvm.system_vg_devices,
               "EncryptionPassword"     => settings.encryption.password.to_s,
               "EncryptionMethod"       => settings.encryption.method.id.to_s,
