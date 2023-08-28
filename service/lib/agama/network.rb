@@ -23,6 +23,7 @@ require "singleton"
 require "yast"
 require "yast2/systemd/service"
 require "y2network/proposal_settings"
+require "agama/proxy_setup"
 
 Yast.import "Installation"
 
@@ -41,6 +42,8 @@ module Agama
     def install
       copy_files
       enable_service
+
+      ProxySetup.instance.install
     end
 
   private

@@ -34,6 +34,9 @@ describe Agama::Manager do
   end
   let(:config) { Agama::Config.from_file(config_path) }
   let(:logger) { Logger.new($stdout, level: :warn) }
+  let(:proxy) do
+    instance_double(Agama::ProxySetup, propose: nil, install: nil)
+  end
 
   let(:software) do
     instance_double(
@@ -61,6 +64,7 @@ describe Agama::Manager do
 
   before do
     allow(Agama::Network).to receive(:new).and_return(network)
+    allow(Agama::ProxySetup).to receive(:instance).and_return(proxy)
     allow(Agama::DBus::Clients::Locale).to receive(:new).and_return(locale)
     allow(Agama::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
@@ -113,6 +117,12 @@ describe Agama::Manager do
     it "sets the installation phase to install" do
       subject.install_phase
       expect(subject.installation_phase.install?).to eq(true)
+    end
+
+    it "calls #propose on proxy and software modules" do
+      expect(proxy).to receive(:propose)
+      expect(software).to receive(:propose)
+      subject.install_phase
     end
 
     it "calls #install (or #write) method of each module" do

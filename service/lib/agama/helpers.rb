@@ -45,5 +45,24 @@ module Agama
         Yast::WFM.SCRClose(handle)
       end
     end
+
+    # Run a block in the local system
+    #
+    # @param block [Proc] Block to run on the local system
+    def on_local(&block)
+      Yast.import "WFM"
+      old_handle = Yast::WFM.SCRGetDefault
+      handle = Yast::WFM.SCROpen("chroot=/:scr", false)
+      Yast::WFM.SCRSetDefault(handle)
+
+      begin
+        block.call
+      rescue StandardError => e
+        logger.error "Error while running on target tasks: #{e.inspect}"
+      ensure
+        Yast::WFM.SCRSetDefault(old_handle)
+        Yast::WFM.SCRClose(handle)
+      end
+    end
   end
 end
