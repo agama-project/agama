@@ -45,15 +45,15 @@ module Agama
         end
 
         def ui_locale
-          dbus_object.ui_locale
+          dbus_object.UILocale
         end
 
         def ui_locale=(locale)
-          dbus_object.ui_locale = locale
+          dbus_object.UILocale = locale
         end
 
         def available_ui_locales
-          dbus_object.list_ui_locales
+          dbus_object.ListUILocales
         end
 
         # Finishes the language installation
