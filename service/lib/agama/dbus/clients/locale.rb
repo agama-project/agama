@@ -26,6 +26,8 @@ module Agama
     module Clients
       # D-Bus client for locale configuration
       class Locale < Base
+        INTERFACE_NAME = "org.opensuse.Agama.Locale1"
+
         def initialize
           super
 
@@ -45,11 +47,11 @@ module Agama
         end
 
         def ui_locale
-          dbus_object.UILocale
+          dbus_object[INTERFACE_NAME]["UILocale"]
         end
 
         def ui_locale=(locale)
-          dbus_object.UILocale = locale
+          dbus_object[INTERFACE_NAME]["UILocale"] = locale
         end
 
         def available_ui_locales
