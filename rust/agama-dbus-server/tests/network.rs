@@ -23,7 +23,7 @@ impl Adapter for NetworkTestAdapter {
 
 #[test]
 async fn test_read_connections() {
-    let server = DBusServer::start_server();
+    let mut server = DBusServer::start_server().await.unwrap();
 
     let device = model::Device {
         name: String::from("eth0"),
@@ -33,16 +33,10 @@ async fn test_read_connections() {
     let state = NetworkState::new(vec![device], vec![eth0]);
     let adapter = NetworkTestAdapter(state);
 
-    // TODO: Find a better way to detect when the server started
-    let ten_millis = std::time::Duration::from_millis(1000);
-    std::thread::sleep(ten_millis);
-
     let _service = NetworkService::start(&server.address, adapter)
         .await
         .unwrap();
-
-    let ten_millis = std::time::Duration::from_millis(1000);
-    std::thread::sleep(ten_millis);
+    server.wait_for_service("org.opensuse.Agama.Network1").await;
 
     let connection = connection_to(&server.address).await.unwrap();
     let client = NetworkClient::new(connection.clone()).await.unwrap();
@@ -55,21 +49,15 @@ async fn test_read_connections() {
 
 #[test]
 async fn test_add_connection() {
-    let server = DBusServer::start_server();
+    let mut server = DBusServer::start_server().await.unwrap();
 
     let state = NetworkState::default();
     let adapter = NetworkTestAdapter(state);
 
-    // TODO: Find a better way to detect when the server started
-    let ten_millis = std::time::Duration::from_millis(100);
-    std::thread::sleep(ten_millis);
-
     let _service = NetworkService::start(&server.address, adapter)
         .await
         .unwrap();
-
-    let ten_millis = std::time::Duration::from_millis(1000);
-    std::thread::sleep(ten_millis);
+    server.wait_for_service("org.opensuse.Agama.Network1").await;
 
     let connection = connection_to(&server.address).await.unwrap();
     let client = NetworkClient::new(connection.clone()).await.unwrap();
