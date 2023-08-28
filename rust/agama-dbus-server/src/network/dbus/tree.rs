@@ -125,7 +125,7 @@ impl Tree {
     pub async fn remove_connection(&mut self, id: &str) -> Result<(), ServiceError> {
         let mut objects = self.objects.lock().await;
         let Some(path) = objects.connection_path(id) else {
-            return Ok(())
+            return Ok(());
         };
         self.remove_connection_on(path.as_str()).await?;
         objects.deregister_connection(id).unwrap();
