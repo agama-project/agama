@@ -23,6 +23,7 @@ import React, { useEffect, useState } from "react";
 import { Skeleton } from "@patternfly/react-core";
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
+import { _ } from "~/i18n";
 import { RowActions } from '~/components/core';
 import { InitiatorForm } from "~/components/storage/iscsi";
 
@@ -45,7 +46,7 @@ export default function InitiatorPresenter({ initiator, client }) {
 
   const initiatorActions = () => {
     const actions = {
-      edit: { title: "Edit", onClick: openForm }
+      edit: { title: _("Edit"), onClick: openForm }
     };
 
     return [actions.edit];
@@ -64,9 +65,11 @@ export default function InitiatorPresenter({ initiator, client }) {
 
     return (
       <Tr>
-        <Td dataLabel="Name">{initiator.name}</Td>
-        <Td dataLabel="iBFT">{initiator.ibft ? "Yes" : "No"}</Td>
-        <Td dataLabel="Offload card">{initiator.offloadCard || "None"}</Td>
+        <Td dataLabel={_("Name")}>{initiator.name}</Td>
+        {/* TRANSLATORS: usually just keep the original text */}
+        {/* iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI */}
+        <Td dataLabel={_("iBFT")}>{initiator.ibft ? _("Yes") : _("No")}</Td>
+        <Td dataLabel={_("Offload card")}>{initiator.offloadCard || _("None")}</Td>
         <Td isActionCell>
           <RowActions actions={initiatorActions()} id="actions-for-initiator" />
         </Td>
@@ -79,9 +82,9 @@ export default function InitiatorPresenter({ initiator, client }) {
       <TableComposable variant="compact">
         <Thead>
           <Tr>
-            <Th width={50}>Name</Th>
-            <Th>iBFT</Th>
-            <Th>Offload card</Th>
+            <Th width={50}>{_("Name")}</Th>
+            <Th>{_("iBFT")}</Th>
+            <Th>{_("Offload card")}</Th>
             <Th />
           </Tr>
         </Thead>

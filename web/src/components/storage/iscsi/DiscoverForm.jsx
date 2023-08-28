@@ -30,6 +30,7 @@ import { Popup } from "~/components/core";
 import { AuthFields } from "~/components/storage/iscsi";
 import { useLocalStorage } from "~/utils";
 import { isValidIp } from "~/client/network/utils";
+import { _ } from "~/i18n";
 
 const defaultData = {
   address: "",
@@ -96,31 +97,33 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
   const isDisabled = isLoading || !isValidForm();
 
   return (
-    <Popup isOpen title="Discover iSCSI Targets">
+    // TRANSLATORS: popup title
+    <Popup isOpen title={_("Discover iSCSI Targets")}>
       <Form id={id} onSubmit={onSubmit}>
         { isFailed &&
           <div ref={alertRef}>
             <Alert
               variant="warning"
               isInline
-              title="Something went wrong"
+              title={_("Something went wrong")}
             >
-              <p>Make sure you provide the correct values</p>
+              <p>{_("Make sure you provide the correct values")}</p>
             </Alert>
           </div> }
         <FormGroup
           fieldId="address"
-          label="IP address"
+          label={_("IP address")}
           isRequired
-          helperTextInvalid="Incorrect IP address"
+          helperTextInvalid={_("Incorrect IP address")}
           validated={showAddressError() ? "error" : "default"}
         >
           <TextInput
             id="address"
             name="address"
-            aria-label="Address"
+            // TRANSLATORS: network address
+            aria-label={_("Address")}
             value={data.address || ""}
-            label="Address"
+            label={_("Address")}
             isRequired
             onChange={onAddressChange}
             validated={showAddressError() ? "error" : "default"}
@@ -128,17 +131,18 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
         </FormGroup>
         <FormGroup
           fieldId="port"
-          label="Port"
+          label={_("Port")}
           isRequired
-          helperTextInvalid="Incorrect port"
+          helperTextInvalid={_("Incorrect port")}
           validated={showPortError() ? "error" : "default"}
         >
           <TextInput
             id="port"
             name="port"
-            aria-label="Port"
+            // TRANSLATORS: network port number
+            aria-label={_("Port")}
             value={data.port || ""}
-            label="Port"
+            label={_("Port")}
             isRequired
             onChange={onPortChange}
             validated={showPortError() ? "error" : "default"}

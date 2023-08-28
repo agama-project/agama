@@ -24,7 +24,9 @@ import {
   Alert,
   Form, FormGroup, FormSelect, FormSelectOption
 } from "@patternfly/react-core";
+import format from "format-util";
 
+import { _ } from "~/i18n";
 import { Popup } from "~/components/core";
 import { AuthFields, NodeStartupOptions } from "~/components/storage/iscsi";
 
@@ -63,16 +65,18 @@ export default function LoginForm({ node, onSubmit: onSubmitProp, onCancel }) {
   const isDisabled = isLoading || !isValidAuth;
 
   return (
-    <Popup isOpen title={`Login ${node.target}`}>
+    // TRANSLATORS: %s is replaced by the iSCSI target name
+    <Popup isOpen title={format("Login %s", node.target)}>
       <Form id={id} onSubmit={onSubmit}>
         { isFailed &&
-          <Alert variant="warning" isInline title="Something went wrong">
-            <p>Make sure you provide the correct values</p>
+          <Alert variant="warning" isInline title={_("Something went wrong")}>
+            <p>{_("Make sure you provide the correct values")}</p>
           </Alert> }
-        <FormGroup fieldId="startup" label="Startup">
+        {/* TRANSLATORS: iSCSI start up mode (on boot/manual/automatic) */}
+        <FormGroup fieldId="startup" label={_("Startup")}>
           <FormSelect
             id="startup"
-            aria-label="startup"
+            aria-label={_("Startup")}
             value={data.startup}
             onChange={onStartupChange}
           >

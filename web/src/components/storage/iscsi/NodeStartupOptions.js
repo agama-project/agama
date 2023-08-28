@@ -19,10 +19,12 @@
  * find current contact information at www.suse.com.
  */
 
+import { _ } from "~/i18n";
+
 const NodeStartupOptions = Object.freeze({
-  MANUAL: { label: "Manual", value: "manual" },
-  ONBOOT: { label: "On boot", value: "onboot" },
-  AUTOMATIC: { label: "Automatic", value: "automatic" }
+  MANUAL: { label: _("Manual"), value: "manual" },
+  ONBOOT: { label: _("On boot"), value: "onboot" },
+  AUTOMATIC: { label: _("Automatic"), value: "automatic" }
 });
 
 export default NodeStartupOptions;
