@@ -193,20 +193,4 @@ impl<'a> NetworkClient<'a> {
         proxy.set_password(&wireless.password).await?;
         Ok(())
     }
-
-    // Replace with a better implemenation based on signals.
-    // async fn wait_for_connection(&self, id: &str) -> Result<OwnedObjectPath, ServiceError> {
-    //     loop {
-    //         let mut retries = 0;
-    //         match self.connections_proxy.get_connection(&id).await {
-    //             Ok(path) => return Ok(path),
-    //             Err(e) => {
-    //                 retries += 1;
-    //                 if retries > 3 {
-    //                     return Err(e.into());
-    //                 };
-    //             }
-    //         }
-    //     }
-    // }
 }
