@@ -1,4 +1,4 @@
-use agama_dbus_server::{locale, network::NetworkService, questions};
+use agama_dbus_server::{locale, network, questions};
 
 use log::LevelFilter;
 use std::future::pending;
@@ -28,7 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     log::info!("Started questions interface");
     let _conn = locale::start_service(ADDRESS).await?;
     log::info!("Started locale interface");
-    NetworkService::start(ADDRESS).await?;
+    network::start_service(ADDRESS).await?;
     log::info!("Started network interface");
 
     // Do other things or go to wait forever

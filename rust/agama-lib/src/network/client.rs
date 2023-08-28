@@ -3,6 +3,7 @@ use super::types::SSID;
 use crate::error::ServiceError;
 
 use super::proxies::{ConnectionProxy, ConnectionsProxy, IPv4Proxy, WirelessProxy};
+use async_std::stream::StreamExt;
 use zbus::zvariant::OwnedObjectPath;
 use zbus::Connection;
 
@@ -120,9 +121,20 @@ impl<'a> NetworkClient<'a> {
         &self,
         conn: &NetworkConnection,
     ) -> Result<OwnedObjectPath, ServiceError> {
+        let mut stream = self.connections_proxy.receive_connection_added().await?;
+
         self.connections_proxy
             .add_connection(&conn.id, conn.device_type() as u8)
             .await?;
+
+        loop {
+            let signal = stream.next().await.unwrap();
+            let (id, _path): (String, String) = signal.body().unwrap();
+            if id == conn.id {
+                break;
+            };
+        }
+
         Ok(self.connections_proxy.get_connection(&conn.id).await?)
     }
 

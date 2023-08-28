@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Mon Aug 28 07:59:26 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Copy the proxy configuration to the target system when needed
+  (bsc#1212677, gh#openSUSE/agama#711).
+
+-------------------------------------------------------------------
+Wed Aug 23 10:39:46 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Install the ppc64-diag package when running on ppc64le (related
+  to bsc#1206898).
+
+-------------------------------------------------------------------
 Mon Aug 21 11:15:50 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Set the manager service as busy during the startup phase
