@@ -22,7 +22,6 @@
 require "yast"
 
 Yast.import "WFM"
-Yast.import "Label"
 
 module Agama
   # Object responsible for managing changes of localization produced by dbus backend.
@@ -50,11 +49,9 @@ module Agama
       Yast::WFM.SetLanguage(locale, "UTF-8")
       # explicitelly set ENV to get localization also from libraries like libstorage
       ENV["LANG"] = locale + ".UTF-8"
-      log.info "set yast language to #{locale} WFM: #{Yast::WFM.GetLanguage}"
+      log.info "set yast language to #{locale}"
       # explicit call to textdomain to force fast gettext change of language ASAP
       textdomain "installation"
-      log.info "gettext locale #{FastGettext.locale}"
-      log.info "testing localized string #{Yast::Label.YesButton}"
     end
   end
 end
