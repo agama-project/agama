@@ -22,6 +22,7 @@
 import React, { useState } from "react";
 import { Form, FormGroup, TextInput } from "@patternfly/react-core";
 
+import { _ } from "~/i18n";
 import { Popup } from "~/components/core";
 
 export default function InitiatorForm({ initiator, onSubmit: onSubmitProp, onCancel }) {
@@ -38,15 +39,17 @@ export default function InitiatorForm({ initiator, onSubmit: onSubmitProp, onCan
   const isDisabled = data.name === "";
 
   return (
-    <Popup isOpen title="Edit iSCSI Initiator">
+    <Popup isOpen title={_("Edit iSCSI Initiator")}>
       <Form id={id} onSubmit={onSubmit}>
         <FormGroup fieldId="initiatorName" label="Name" isRequired>
           <TextInput
             id="initiatorName"
             name="name"
-            aria-label="Initiator name"
+            // TRANSLATORS: iSCSI initiator name
+            aria-label={_("Initiator name")}
             value={data.name || ""}
-            label="Name"
+            // TRANSLATORS: input field for the iSCSI initiator name
+            label={_("Name")}
             isRequired
             onChange={onNameChange}
           />

@@ -21,7 +21,9 @@
 
 import React, { useState } from "react";
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import format from "format-util";
 
+import { _ } from "~/i18n";
 import { RowActions } from '~/components/core';
 import { EditNodeForm, LoginForm, NodeStartupOptions } from "~/components/storage/iscsi";
 
@@ -57,29 +59,31 @@ export default function NodesPresenter ({ nodes, client }) {
   };
 
   const nodeStatus = (node) => {
-    if (!node.connected) return "Disconnected";
+    // TRANSLATORS: iSCSI connection status
+    if (!node.connected) return _("Disconnected");
 
     const startup = Object.values(NodeStartupOptions).find(o => o.value === node.startup);
-    return `Connected (${startup.label})`;
+    // TRANSLATORS: iSCSI connection status, %s is replaced by node label
+    return format(_("Connected (%s)"), startup.label);
   };
 
   const nodeActions = (node) => {
     const actions = {
       edit: {
-        title: "Edit",
+        title: _("Edit"),
         onClick: () => openEditForm(node)
       },
       delete: {
-        title: "Delete",
+        title: _("Delete"),
         onClick: () => client.iscsi.delete(node),
         className: "danger-action"
       },
       login: {
-        title: "Login",
+        title: _("Login"),
         onClick: () => openLoginForm(node)
       },
       logout: {
-        title: "Logout",
+        title: _("Logout"),
         onClick: () => client.iscsi.logout(node)
       }
     };
@@ -93,11 +97,11 @@ export default function NodesPresenter ({ nodes, client }) {
   const NodeRow = ({ node }) => {
     return (
       <Tr>
-        <Td dataLabel="Name">{node.target}</Td>
-        <Td dataLabel="Portal">{node.address + ":" + node.port}</Td>
-        <Td dataLabel="Interface">{node.interface}</Td>
-        <Td dataLabel="iBFT">{node.ibft ? "Yes" : "No"}</Td>
-        <Td dataLabel="Status">{nodeStatus(node)}</Td>
+        <Td dataLabel={_("Name")}>{node.target}</Td>
+        <Td dataLabel={_("Portal")}>{node.address + ":" + node.port}</Td>
+        <Td dataLabel={_("Interface")}>{node.interface}</Td>
+        <Td dataLabel={_("iBFT")}>{node.ibft ? _("Yes") : _("No")}</Td>
+        <Td dataLabel={_("Status")}>{nodeStatus(node)}</Td>
         <Td isActionCell>
           <RowActions actions={nodeActions(node)} id={`actions-for-node${node.id}`} />
         </Td>
@@ -114,11 +118,11 @@ export default function NodesPresenter ({ nodes, client }) {
       <TableComposable variant="compact">
         <Thead>
           <Tr>
-            <Th>Name</Th>
-            <Th>Portal</Th>
-            <Th>Interface</Th>
-            <Th>iBFT</Th>
-            <Th>Status</Th>
+            <Th>{_("Name")}</Th>
+            <Th>{_("Portal")}</Th>
+            <Th>{_("Interface")}</Th>
+            <Th>{_("iBFT")}</Th>
+            <Th>{_("Status")}</Th>
             <Th />
           </Tr>
         </Thead>

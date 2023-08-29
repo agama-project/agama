@@ -24,6 +24,7 @@ import { FormGroup, TextInput } from "@patternfly/react-core";
 
 import { Fieldset } from "~/components/core";
 import { Icon } from "~/components/layout";
+import { _ } from "~/i18n";
 
 export default function AuthFields({ data, onChange, onValidate }) {
   const onUsernameChange = v => onChange("username", v);
@@ -66,62 +67,62 @@ export default function AuthFields({ data, onChange, onValidate }) {
           size="16"
           style={{ verticalAlign: "text-bottom", marginRight: "0.3em" }}
         />
-        Only available if authentication by target is provided
+        {_("Only available if authentication by target is provided")}
       </p>
     );
   };
 
   return (
     <>
-      <Fieldset legend="Authentication by target">
+      <Fieldset legend={_("Authentication by target")}>
         <FormGroup
           fieldId="username"
-          label="Username"
-          helperTextInvalid="Incorrect username"
+          label={_("User name")}
+          helperTextInvalid={_("Incorrect user name")}
           validated={showUsernameError() ? "error" : "default"}
         >
           <TextInput
             id="username"
             name="username"
-            aria-label="Username"
+            aria-label={_("User name")}
             value={data.username || ""}
-            label="Username"
+            label={_("User name")}
             onChange={onUsernameChange}
             validated={showUsernameError() ? "error" : "default"}
           />
         </FormGroup>
         <FormGroup
           fieldId="password"
-          label="Password"
-          helperTextInvalid="Incorrect password"
+          label={_("Password")}
+          helperTextInvalid={_("Incorrect password")}
           validated={showPasswordError() ? "error" : "default"}
         >
           <TextInput
             id="password"
             name="password"
             type="password"
-            aria-label="Password"
+            aria-label={_("Password")}
             value={data.password || ""}
-            label="Password"
+            label={_("Password")}
             onChange={onPasswordChange}
             validated={showPasswordError() ? "error" : "default"}
           />
         </FormGroup>
       </Fieldset>
-      <Fieldset legend="Authentication by initiator">
+      <Fieldset legend={_("Authentication by initiator")}>
         <ByInitiatorAuthTip />
         <FormGroup
           fieldId="reverseUsername"
-          label="Username"
-          helperTextInvalid="Incorrect username"
+          label={_("User name")}
+          helperTextInvalid={_("Incorrect user name")}
           validated={showReverseUsernameError() ? "error" : "default"}
         >
           <TextInput
             id="reverseUsername"
             name="reverseUsername"
-            aria-label="Username"
+            aria-label={_("User name")}
             value={data.reverseUsername || ""}
-            label="Username"
+            label={_("User name")}
             isDisabled={!isValidAuth()}
             onChange={onReverseUsernameChange}
             validated={showReverseUsernameError() ? "error" : "default"}
@@ -130,16 +131,16 @@ export default function AuthFields({ data, onChange, onValidate }) {
         <FormGroup
           fieldId="reversePassword"
           label="Password"
-          helperTextInvalid="Incorrect password"
+          helperTextInvalid={_("Incorrect password")}
           validated={showReversePasswordError() ? "error" : "default"}
         >
           <TextInput
             id="reversePassword"
             name="reversePassword"
             type="password"
-            aria-label="Target Password"
+            aria-label={_("Target Password")}
             value={data.reversePassword || ""}
-            label="Password"
+            label={_("Password")}
             isDisabled={!isValidAuth()}
             onChange={onReversePasswordChange}
             validated={showReversePasswordError() ? "error" : "default"}
