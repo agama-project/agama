@@ -27,6 +27,7 @@ module Agama
   # Object responsible for managing changes of localization produced by dbus backend.
   class UILocale
     include Yast::I18n
+    include Yast::Logger
     # creates new UILocale object that will handle change of UI locale.
     #
     # @param [Agama::DBus::Clients::Locale] locale_client to communicate with dbus service
@@ -46,6 +47,7 @@ module Agama
     def change_locale(locale)
       # TODO: check if we can use UTF-8 everywhere including strange arch consoles
       Yast::WFM.SetLanguage(locale, "UTF-8")
+      log.info "set yast language to #{locale} WFM: #{Yast::WFM.GetLanguage}"
       # explicit call to textdomain to force fast gettext change of language ASAP
       textdomain "installation"
     end
