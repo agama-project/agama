@@ -22,6 +22,7 @@
 require "yast"
 
 Yast.import "WFM"
+Yast.import "Label"
 
 module Agama
   # Object responsible for managing changes of localization produced by dbus backend.
@@ -51,6 +52,7 @@ module Agama
       # explicit call to textdomain to force fast gettext change of language ASAP
       textdomain "installation"
       log.info "gettext locale #{FastGettext.locale}"
+      log.info "testing localized string #{Yast::Label.YesButton}"
     end
   end
 end
