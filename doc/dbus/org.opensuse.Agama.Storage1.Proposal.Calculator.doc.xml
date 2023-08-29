@@ -22,7 +22,7 @@
         TargetVG                s
         FsType                  s
         MinSize                 t (bytes)
-        MaxSize                 t (bytes. Optinal, max size is considered as unlimited if omitted)
+        MaxSize                 t (bytes. Optional, max size is considered as unlimited if omitted)
         AutoSize                b
         Snapshots               b
         Outline                 a{sv}
