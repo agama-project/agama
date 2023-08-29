@@ -23,6 +23,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useSoftware } from "~/context/software";
 import { Icon } from "~/components/layout";
+import { _ } from "~/i18n";
 
 export default function ChangeProductLink() {
   const { products } = useSoftware();
@@ -32,7 +33,7 @@ export default function ChangeProductLink() {
   return (
     <Link to="/products">
       <Icon name="edit_square" size="24" />
-      Change product
+      {_("Change product")}
     </Link>
   );
 }

@@ -2,7 +2,7 @@
 
 mod client;
 mod proxies;
-mod settings;
+pub mod settings;
 mod store;
 pub mod types;
 

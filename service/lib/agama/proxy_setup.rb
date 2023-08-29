@@ -21,6 +21,8 @@
 
 require "yast"
 require "uri"
+require "fileutils"
+require "agama/helpers"
 
 module Agama
   # This class is responsible of parsing the proxy url from the kernel cmdline or configured
@@ -30,21 +32,42 @@ module Agama
     include Singleton
     include Yast
     include Logger
+    include Helpers
 
     CMDLINE_PATH = "/proc/cmdline"
     CMDLINE_MENU_CONF = "/etc/cmdline-menu.conf"
+    PACKAGES = ["microos-tools"].freeze
+    CONFIG_PATH = "/etc/sysconfig/proxy"
+    PROPOSAL_ID = "network_proposal"
 
     # @return [URI::Generic]
     attr_accessor :proxy
 
+    alias_method :logger, :log
+
     # Constructor
     def initialize
       Yast.import "Proxy"
+      Yast.import "Installation"
+      Yast.import "PackagesProposal"
+
+      Proxy.Read
     end
 
     def run
       read
       write
+    end
+
+    def propose
+      add_packages if Proxy.enabled
+    end
+
+    def install
+      return unless Proxy.enabled
+
+      on_local { copy_files }
+      enable_services
     end
 
   private
@@ -104,6 +127,27 @@ module Agama
       log.debug "Writing proxy settings: #{settings}"
 
       Proxy.Write
+    end
+
+    def add_packages
+      log.info "Selecting these packages for installation: #{PACKAGES}"
+      Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :package, PACKAGES)
+    end
+
+    def copy_files
+      log.info "Copying proxy configuration to the target system"
+      ::FileUtils.cp(CONFIG_PATH, File.join(Yast::Installation.destdir, CONFIG_PATH))
+    end
+
+    def enable_services
+      service = Yast2::Systemd::Service.find("setup-systemd-proxy-env")
+      if service.nil?
+        log.error "setup-systemd-proxy-env service was not found"
+        return
+      end
+
+      Yast::Execute.on_target!("systemctl", "enable", "setup-systemd-proxy-env.service")
+      Yast::Execute.on_target!("systemctl", "enable", "setup-systemd-proxy-env.path")
     end
   end
 end

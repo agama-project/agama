@@ -65,7 +65,7 @@ jobs:
 
       - name: Validate the PO files
         working-directory: ./agama
-        run:  msgfmt --check-format -o /dev/null web/po/*.po
+        run:  ls web/po/*.po | xargs -n1 msgfmt --check-format -o /dev/null
 
       # any changes besides the timestamps in the PO files?
       - name: Check changes

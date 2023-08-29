@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,71 +22,76 @@
 require_relative "../../test_helper"
 require_relative "storage_helpers"
 require "agama/storage/proposal"
+require "agama/storage/proposal_settings"
+require "agama/storage/volume_templates_builder"
 require "agama/config"
+require "y2storage"
 
 describe Agama::Storage::Proposal do
   include Agama::RSpec::StorageHelpers
-  before do
-    mock_storage
-    allow(Y2Storage::StorageManager.instance).to receive(:proposal=)
-  end
+  before { mock_storage }
 
-  subject(:proposal) { described_class.new(logger, config) }
+  subject(:proposal) { described_class.new(config, logger: logger) }
 
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:config) { Agama::Config.new(config_data) }
 
   let(:config_data) do
-    { "storage" => { "volumes" => config_volumes } }
+    { "storage" => { "volumes" => cfg_volumes, "volume_templates" => cfg_templates } }
   end
+
+  let(:cfg_volumes) { ["/", "swap"] }
+
+  let(:cfg_templates) { [root_template, other_template] }
+  let(:root_template) do
+    {
+      "mount_path" => "/", "filesystem" => "btrfs", "size" => { "auto" => true },
+      "outline" => {
+        "snapshots_configurable" => true,
+        "auto_size"              => {
+          "base_min" => "10 GiB", "base_max" => "20 GiB",
+          "min_fallback_for" => ["/two"], "snapshots_increment" => "300%"
+        }
+      }
+    }
+  end
+  let(:other_template) do
+    {
+      "mount_path" => "/two", "filesystem" => "xfs",
+      "size" => { "auto" => false, "min" => "5 GiB" }
+    }
+  end
+
   let(:settings) do
     settings = Agama::Storage::ProposalSettings.new
     settings.volumes = volumes
     settings
   end
 
-  let(:config_volumes) do
-    [
-      {
-        "mount_point" => "/", "fs_type" => "btrfs", "fs_types" => ["btrfs", "ext4"],
-        "snapshots" => true, "snapshots_configurable" => true,
-        "min_size" => "10 GiB", "snapshots_percentage" => "300"
-      },
-      {
-        "mount_point" => "/two", "fs_type" => "xfs", "fs_types" => ["xfs", "ext4"],
-        "min_size" => "5 GiB", "proposed_configurable" => true, "fallback_for_min_size" => "/"
-      }
-    ]
-  end
-
   let(:y2storage_proposal) do
     instance_double(Y2Storage::MinGuidedProposal, propose: true, failed?: false)
   end
+
+  let(:vol_builder) { Agama::Storage::VolumeTemplatesBuilder.new_from_config(config) }
 
   # Constructs a Agama volume with the given set of attributes
   #
   # @param attrs [Hash] set of attributes and their values (sizes can be provided as strings)
   # @return [Agama::Storage::Volume]
-  def test_vol(attrs = {})
-    vol = Agama::Storage::Volume.new
+  def test_vol(path, attrs = {})
+    vol = vol_builder.for(path)
     attrs.each do |attr, value|
       if [:min_size, :max_size].include?(attr.to_sym)
         # DiskSize.new can take a DiskSize, a string or a number
         value = Y2Storage::DiskSize.new(value)
       end
-      vol.public_send(:"#{attr}=", value)
+      if attr.to_sym == :snapshots
+        vol.btrfs.snapshots = value
+      else
+        vol.public_send(:"#{attr}=", value)
+      end
     end
     vol
-  end
-
-  # Returns the correct Y2Storage::Filesystem type object for the given filesystem type
-  #
-  # @param type [String, Symbol, Y2Storage::Filesystems::Type]
-  # @return [Y2Storage::Filesystems::Type]
-  def fs_type(type)
-    return type if type.is_a?(Y2Storage::Filesystems::Type)
-
-    Y2Storage::Filesystems::Type.find(type.downcase.to_sym)
   end
 
   # Sets the expectation for a Y2Storage::MinGuidedProposal to be created with the
@@ -106,128 +111,14 @@ describe Agama::Storage::Proposal do
     end
   end
 
-  # Ideas for more tests:
-  #  - Passing a fs_type not included in fs_types (even trying to redefine fs_types)
-  #  - Trying to hack "optional" to disable a mandatory volume
-
-  context "when the settings customize volumes from the config" do
-    let(:volumes) do
-      [
-        test_vol(
-          mount_point: "/", fixed_size_limits: true, min_size: "7 GiB", max_size: "9 GiB",
-          # Attributes that cannot be (re)defined here
-          encrypted: true, device_type: :lvm_lv
-        ),
-        test_vol(
-          mount_point: "/two", max_size: "unlimited", fs_type: fs_type(:ext4),
-          # Attributes that cannot be (re)defined here
-          fixed_size_limits: false, snapshots: true
-        )
-      ]
-    end
+  context "when auto size is used and the size is affected by other volumes" do
+    let(:volumes) { [test_vol("/", snapshots: false, auto_size: true, min_size: "4 GiB")] }
 
     describe "#calculate" do
-      it "runs the Y2Storage proposal with the correct set of VolumeSpecification" do
-        expect_proposal_with_expects(
-          {
-            mount_point: "/", proposed: true, fs_type: fs_type(:btrfs), snapshots: true,
-            ignore_fallback_sizes: true, ignore_snapshots_sizes: true,
-            min_size: Y2Storage::DiskSize.GiB(7), max_size: Y2Storage::DiskSize.GiB(9)
-          },
-          {
-            mount_point: "/two", proposed: true, fs_type: fs_type(:ext4), snapshots: false,
-            min_size: Y2Storage::DiskSize.GiB(5), max_size: Y2Storage::DiskSize.unlimited
-          }
-        )
-
-        proposal.calculate(settings)
+      before do
+        allow(Y2Storage::StorageManager.instance).to receive(:proposal=)
       end
-    end
 
-    describe "#calculated_settings" do
-      it "returns settings with the correct set of volumes" do
-        proposal.calculate(settings)
-
-        expect(proposal.calculated_settings.volumes).to contain_exactly(
-          an_object_having_attributes(
-            mount_point: "/", optional: false, encrypted: false, device_type: :partition,
-            fs_type: fs_type(:btrfs), fs_types: [fs_type(:btrfs), fs_type(:ext4)],
-            snapshots: true, fixed_size_limits: true, size_relevant_volumes: ["/two"],
-            min_size: Y2Storage::DiskSize.GiB(7), max_size: Y2Storage::DiskSize.GiB(9)
-          ),
-          an_object_having_attributes(
-            mount_point: "/two", optional: true, encrypted: false, device_type: :partition,
-            fs_type: fs_type(:ext4), fs_types: [fs_type(:xfs), fs_type(:ext4)],
-            snapshots: false, fixed_size_limits: true, size_relevant_volumes: [],
-            min_size: Y2Storage::DiskSize.GiB(5), max_size: Y2Storage::DiskSize.unlimited
-          )
-        )
-      end
-    end
-  end
-
-  context "if the settings redefine mandatory volumes and omit the optional" do
-    let(:volumes) { [test_vol(mount_point: "/", snapshots: false)] }
-
-    describe "#calculate" do
-      it "runs the Y2Storage proposal with the correct set of VolumeSpecification" do
-        expect_proposal_with_expects(
-          { mount_point: "/", proposed: true, snapshots: false },
-          { mount_point: "/two", proposed: false }
-        )
-        proposal.calculate(settings)
-      end
-    end
-
-    describe "#calculated_settings" do
-      it "returns settings with the correct set of mandatory volumes" do
-        proposal.calculate(settings)
-
-        expect(proposal.calculated_settings.volumes).to contain_exactly(
-          an_object_having_attributes(
-            mount_point: "/", optional: false, snapshots: false,
-            fs_type: fs_type(:btrfs), fs_types: [fs_type(:btrfs), fs_type(:ext4)],
-            fixed_size_limits: false, size_relevant_volumes: ["/two"],
-            min_size: Y2Storage::DiskSize.GiB(15), max_size: Y2Storage::DiskSize.unlimited
-          )
-        )
-      end
-    end
-  end
-
-  context "if the settings omit the mandatory volumes and add some others" do
-    let(:volumes) { [test_vol(mount_point: "/var", min_size: "5 GiB")] }
-
-    describe "#calculate" do
-      it "runs the Y2Storage proposal with the correct set of VolumeSpecification" do
-        expect_proposal_with_expects(
-          { mount_point: "/", proposed: true, snapshots: true },
-          { mount_point: "/two", proposed: false },
-          { mount_point: "/var", proposed: true, max_size: Y2Storage::DiskSize.unlimited }
-        )
-        proposal.calculate(settings)
-      end
-    end
-
-    describe "#calculated_settings" do
-      it "returns settings with the correct set of volumes" do
-        proposal.calculate(settings)
-
-        expect(proposal.calculated_settings.volumes).to contain_exactly(
-          an_object_having_attributes(
-            mount_point: "/", optional: false, snapshots: true,
-            fs_type: fs_type(:btrfs), fs_types: [fs_type(:btrfs), fs_type(:ext4)]
-          ),
-          an_object_having_attributes(mount_point: "/var", optional: true)
-        )
-      end
-    end
-  end
-
-  context "when dynamic sizes are used and they are affected by other volumes" do
-    let(:volumes) { [test_vol(mount_point: "/", snapshots: false, min_size: "4 GiB")] }
-
-    describe "#calculate" do
       it "runs the Y2Storage proposal with the correct set of VolumeSpecification" do
         expect_proposal_with_expects(
           {
@@ -241,24 +132,30 @@ describe Agama::Storage::Proposal do
       end
     end
 
-    describe "#calculated_settings" do
-      it "returns settings with a set of volumes with fixed limits and adjusted sizes" do
+    describe "#settings" do
+      it "returns settings with a set of volumes with adjusted sizes" do
         proposal.calculate(settings)
 
-        expect(proposal.calculated_settings.volumes).to contain_exactly(
+        expect(proposal.settings.volumes).to contain_exactly(
           an_object_having_attributes(
-            mount_point: "/", snapshots: false, fixed_size_limits: false,
-            size_relevant_volumes: ["/two"], min_size: Y2Storage::DiskSize.GiB(15)
+            mount_path: "/",
+            auto_size:  true,
+            min_size:   Y2Storage::DiskSize.GiB(15),
+            btrfs:      an_object_having_attributes(snapshots?: false)
           )
         )
       end
     end
   end
 
-  context "when dynamic sizes are used and they are affected by snapshots" do
-    let(:volumes) { [test_vol(mount_point: "/"), test_vol(mount_point: "/two")] }
+  context "when auto size is used and it is affected by snapshots" do
+    let(:volumes) { [test_vol("/", snapshots: true), test_vol("/two")] }
 
     describe "#calculate" do
+      before do
+        allow(Y2Storage::StorageManager.instance).to receive(:proposal=)
+      end
+
       it "runs the Y2Storage proposal with the correct set of VolumeSpecification" do
         expect_proposal_with_expects(
           {
@@ -272,25 +169,31 @@ describe Agama::Storage::Proposal do
       end
     end
 
-    describe "#calculated_settings" do
-      it "returns settings with a set of volumes with fixed limits and adjusted sizes" do
+    describe "#settings" do
+      it "returns settings with a set of volumes with adjusted sizes" do
         proposal.calculate(settings)
 
-        expect(proposal.calculated_settings.volumes).to contain_exactly(
+        expect(proposal.settings.volumes).to contain_exactly(
           an_object_having_attributes(
-            mount_point: "/", snapshots: true, fixed_size_limits: false,
-            min_size: Y2Storage::DiskSize.GiB(40)
+            mount_path: "/",
+            auto_size:  true,
+            min_size:   Y2Storage::DiskSize.GiB(40),
+            btrfs:      an_object_having_attributes(snapshots?: true)
           ),
-          an_object_having_attributes(mount_point: "/two")
+          an_object_having_attributes(mount_path: "/two")
         )
       end
     end
   end
 
-  context "when dynamic sizes are used and they are affected by snapshots and other volumes" do
-    let(:volumes) { [test_vol(mount_point: "/", min_size: "6 GiB")] }
+  context "when auto size is used and it is affected by snapshots and other volumes" do
+    let(:volumes) { [test_vol("/", auto_size: true, snapshots: true, min_size: "6 GiB")] }
 
     describe "#calculate" do
+      before do
+        allow(Y2Storage::StorageManager.instance).to receive(:proposal=)
+      end
+
       it "runs the Y2Storage proposal with the correct set of VolumeSpecification" do
         expect_proposal_with_expects(
           {
@@ -304,14 +207,17 @@ describe Agama::Storage::Proposal do
       end
     end
 
-    describe "#calculated_settings" do
+    describe "#settings" do
       it "returns settings with a set of volumes with fixed limits and adjusted sizes" do
         proposal.calculate(settings)
 
-        expect(proposal.calculated_settings.volumes).to contain_exactly(
+        expect(proposal.settings.volumes).to contain_exactly(
           an_object_having_attributes(
-            mount_point: "/", snapshots: true, fixed_size_limits: false,
-            size_relevant_volumes: ["/two"], min_size: Y2Storage::DiskSize.GiB(60)
+            mount_path: "/",
+            btrfs:      an_object_having_attributes(snapshots?: true),
+            auto_size?: true,
+            min_size:   Y2Storage::DiskSize.GiB(60),
+            outline:    an_object_having_attributes(min_size_fallback_for: ["/two"])
           )
         )
       end
@@ -319,15 +225,17 @@ describe Agama::Storage::Proposal do
   end
 
   context "when fixed sizes are enforced" do
-    let(:volumes) do
-      [test_vol(mount_point: "/", fixed_size_limits: true, min_size: "6 GiB")]
-    end
+    let(:volumes) { [test_vol("/", auto_size: false, min_size: "6 GiB")] }
 
     describe "#calculate" do
+      before do
+        allow(Y2Storage::StorageManager.instance).to receive(:proposal=)
+      end
+
       it "runs the Y2Storage proposal with the correct set of VolumeSpecification" do
         expect_proposal_with_expects(
           {
-            mount_point: "/", proposed: true, snapshots: true,
+            mount_point: "/", proposed: true, snapshots: false,
             ignore_fallback_sizes: true, ignore_snapshots_sizes: true,
             min_size: Y2Storage::DiskSize.GiB(6)
           },
@@ -337,14 +245,17 @@ describe Agama::Storage::Proposal do
       end
     end
 
-    describe "#calculated_settings" do
+    describe "#settings" do
       it "returns settings with a set of volumes with fixed limits and adjusted sizes" do
         proposal.calculate(settings)
 
-        expect(proposal.calculated_settings.volumes).to contain_exactly(
+        expect(proposal.settings.volumes).to contain_exactly(
           an_object_having_attributes(
-            mount_point: "/", snapshots: true, fixed_size_limits: true,
-            size_relevant_volumes: ["/two"], min_size: Y2Storage::DiskSize.GiB(6)
+            mount_path: "/",
+            btrfs:      an_object_having_attributes(snapshots?: false),
+            auto_size?: false,
+            min_size:   Y2Storage::DiskSize.GiB(6),
+            outline:    an_object_having_attributes(min_size_fallback_for: ["/two"])
           )
         )
       end

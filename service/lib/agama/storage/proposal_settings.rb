@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,48 +19,45 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2storage/secret_attributes"
+require "agama/storage/lvm_settings"
+require "agama/storage/encryption_settings"
+require "agama/storage/space_settings"
 
 module Agama
   module Storage
-    # Settings used to calculate a Agama proposal
+    # Settings used to calculate an storage proposal.
     class ProposalSettings
-      include Y2Storage::SecretAttributes
-
-      # Whether to use LVM
+      # Configuration of LVM
       #
-      # @return [Boolean, nil] nil if undetermined
-      attr_accessor :lvm
+      # @return [LvmSettings]
+      attr_reader :lvm
 
-      # @!attribute encryption_password
-      #   Password to use when creating new encryption devices
-      #   @return [String, nil] nil if undetermined
-      secret_attr :encryption_password
-
-      # Device names of the disks that can be used for the installation. If nil, the proposal will
-      # try find suitable devices
+      # Encryption settings
       #
-      # @return [Array<String>]
-      attr_accessor :candidate_devices
+      # @return [EncryptionSettings]
+      attr_reader :encryption
+
+      # Settings to configure the behavior when making space to allocate the new partitions
+      #
+      # @return [SpaceSettings]
+      attr_reader :space
+
+      # Device name of the disk that will be used for booting the system and also to allocate all
+      # the partitions, except those that have been explicitly assigned to other disk(s).
+      #
+      # @return [String, nil] nil if no device has been selected yet.
+      attr_accessor :boot_device
 
       # Set of volumes to create
-      #
-      # Only these properties will be honored: mount_point, fs_type, fixed_size_limits, min_size,
-      # max_size, snapshots
       #
       # @return [Array<Volume>]
       attr_accessor :volumes
 
       def initialize
-        @candidate_devices = []
+        @lvm = LvmSettings.new
+        @encryption = EncryptionSettings.new
+        @space = SpaceSettings.new
         @volumes = []
-      end
-
-      # Whether the proposal must create encrypted devices
-      #
-      # @return [Boolean]
-      def encrypt?
-        !(encryption_password.nil? || encryption_password.empty?)
       end
     end
   end

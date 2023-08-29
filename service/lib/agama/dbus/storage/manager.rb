@@ -23,16 +23,17 @@ require "dbus"
 require "yast"
 require "y2storage/storage_manager"
 require "agama/dbus/base_object"
-require "agama/dbus/with_service_status"
 require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
-require "agama/dbus/storage/proposal"
-require "agama/dbus/storage/proposal_settings_converter"
-require "agama/dbus/storage/volume_converter"
-require "agama/dbus/storage/with_iscsi_auth"
-require "agama/dbus/storage/iscsi_nodes_tree"
 require "agama/dbus/storage/devices_tree"
+require "agama/dbus/storage/iscsi_nodes_tree"
+require "agama/dbus/storage/proposal_settings_conversion"
+require "agama/dbus/storage/proposal"
+require "agama/dbus/storage/volume_conversion"
+require "agama/dbus/storage/with_iscsi_auth"
+require "agama/dbus/with_service_status"
+require "agama/storage/volume_templates_builder"
 
 Yast.import "Arch"
 
@@ -117,12 +118,11 @@ module Agama
           proposal.available_devices.map { |d| system_devices_tree.path_for(d) }
         end
 
-        # Volumes used as template for creating a new proposal
+        # List of meaningful mount points for the the current product.
         #
-        # @return [Hash]
-        def volume_templates
-          converter = VolumeConverter.new
-          proposal.volume_templates.map { |v| converter.to_dbus(v) }
+        # @return [Array<String>]
+        def product_mount_points
+          volume_templates_builder.all.map(&:mount_path).reject(&:empty?)
         end
 
         # Path of the D-Bus object containing the calculated proposal
@@ -132,15 +132,27 @@ module Agama
           dbus_proposal&.path || ::DBus::ObjectPath.new("/")
         end
 
+        # Default volume used as template
+        #
+        # @return [Hash]
+        def default_volume(mount_path)
+          volume = volume_templates_builder.for(mount_path)
+          VolumeConversion.to_dbus(volume)
+        end
+
         # Calculates a new proposal
         #
         # @param dbus_settings [Hash]
         # @return [Integer] 0 success; 1 error
         def calculate_proposal(dbus_settings)
-          logger.info("Calculating storage proposal from D-Bus settings: #{dbus_settings}")
+          settings = ProposalSettingsConversion.from_dbus(dbus_settings, config: config)
+          logger.info(
+            "Calculating storage proposal from D-Bus.\n " \
+            "D-Bus settings: #{dbus_settings}\n" \
+            "Agama settings: #{settings}"
+          )
 
-          converter = ProposalSettingsConverter.new
-          success = proposal.calculate(converter.to_agama(dbus_settings))
+          success = proposal.calculate(settings)
 
           success ? 0 : 1
         end
@@ -148,9 +160,13 @@ module Agama
         dbus_interface PROPOSAL_CALCULATOR_INTERFACE do
           dbus_reader :available_devices, "ao"
 
-          dbus_reader :volume_templates, "aa{sv}"
+          dbus_reader :product_mount_points, "as"
 
           dbus_reader :result, "o"
+
+          dbus_method :DefaultVolume, "in mount_path:s , out volume:a{sv}" do |mount_path|
+            default_volume(mount_path)
+          end
 
           # result: 0 success; 1 error
           dbus_method :Calculate, "in settings:a{sv}, out result:u" do |settings|
@@ -284,7 +300,7 @@ module Agama
 
         def register_software_callbacks
           backend.software.on_product_selected do |_product|
-            backend.proposal.reset
+            backend.proposal.invalidate
           end
         end
 
@@ -331,6 +347,16 @@ module Agama
 
         def tree_path(tree_root)
           File.join(PATH, tree_root)
+        end
+
+        # @return [Agama::Config]
+        def config
+          backend.config
+        end
+
+        # @return [Agama::VolumeTemplatesBuilder]
+        def volume_templates_builder
+          Agama::Storage::VolumeTemplatesBuilder.new_from_config(config)
         end
       end
     end

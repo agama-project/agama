@@ -24,12 +24,14 @@ import { Alert, Form, FormGroup, Text, TextInput } from "@patternfly/react-core"
 import { Icon } from "~/components/layout";
 import { Popup } from "~/components/core";
 import { QuestionActions } from "~/components/questions";
+import { _ } from "~/i18n";
 
 const renderAlert = (attempt) => {
   if (!attempt || attempt === 1) return null;
 
   return (
-    <Alert variant="warning" isInline isPlain title="Given encryption password didn't work" />
+    // TRANSLATORS: error message, user entered a wrong password
+    <Alert variant="warning" isInline isPlain title={_("Given encryption password didn't work")} />
   );
 };
 
@@ -54,8 +56,8 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
   return (
     <Popup
       isOpen
-      title="Encrypted Device"
-      aria-label="Question"
+      title={_("Encrypted Device")}
+      aria-label={_("Question")}
       titleIconVariant={() => <Icon name="lock" size="24" />}
     >
       { renderAlert(parseInt(question.data.attempt)) }
@@ -63,7 +65,8 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
         { question.text }
       </Text>
       <Form onSubmit={triggerDefaultAction}>
-        <FormGroup label="Encryption Password" fieldId="luks-password">
+        {/* TRANSLATORS: field label */}
+        <FormGroup label={_("Encryption Password")} fieldId="luks-password">
           <TextInput
             autoFocus
             id="luks-password"
