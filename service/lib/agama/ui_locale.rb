@@ -50,6 +50,7 @@ module Agama
       log.info "set yast language to #{locale} WFM: #{Yast::WFM.GetLanguage}"
       # explicit call to textdomain to force fast gettext change of language ASAP
       textdomain "installation"
+      log.info "gettext locale #{FastGettext.locale}"
     end
   end
 end
