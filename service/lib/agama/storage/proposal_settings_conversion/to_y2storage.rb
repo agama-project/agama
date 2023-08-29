@@ -68,10 +68,14 @@ module Agama
         # @param target [Y2Storage::ProposalSettings]
         def candidate_devices_conversion(target)
           candidate_devices = []
-          candidate_devices = settings.lvm.system_vg_devices if settings.lvm.enabled?
-          candidate_devices = [settings.boot_device] if candidate_devices.none?
 
-          target.candidate_devices = candidate_devices.compact
+          if settings.lvm.enabled? && settings.lvm.system_vg_devices.any?
+            candidate_devices = settings.lvm.system_vg_devices
+          elsif settings.boot_device
+            candidate_devices = [settings.boot_device]
+          end
+
+          target.candidate_devices = candidate_devices
         end
 
         # @param target [Y2Storage::ProposalSettings]
