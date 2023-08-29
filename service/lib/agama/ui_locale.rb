@@ -48,6 +48,8 @@ module Agama
     def change_locale(locale)
       # TODO: check if we can use UTF-8 everywhere including strange arch consoles
       Yast::WFM.SetLanguage(locale, "UTF-8")
+      # explicitelly set ENV to get localization also from libraries like libstorage
+      ENV["LANG"] = locale + ".UTF-8"
       log.info "set yast language to #{locale} WFM: #{Yast::WFM.GetLanguage}"
       # explicit call to textdomain to force fast gettext change of language ASAP
       textdomain "installation"
