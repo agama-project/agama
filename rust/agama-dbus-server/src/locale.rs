@@ -118,7 +118,8 @@ impl Locale {
         let entries = read_dir(DIR).context("Reading YaST2 locale")?;
         for entry in entries {
             let entry = entry.context("Failed to read entry in YaST2 locale dir")?;
-            result.push(entry.file_name().to_str().context("Non UTF entry found in YaST2 locale dir")?.to_string());
+            let name = entry.file_name.to_str().context("Non valid UTF entry found in YaST2 locale dir")?;
+            result.push(name.to_string())
         }
 
         Ok(result)
