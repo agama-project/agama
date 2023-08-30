@@ -23,6 +23,7 @@ import React, { useState } from "react";
 import { Form } from "@patternfly/react-core";
 import { PasswordAndConfirmationInput, Popup } from '~/components/core';
 
+import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
 
 /**
@@ -38,7 +39,7 @@ import { useInstallerClient } from "~/context/installer";
  * @param {function} props.onClose - the function to be called when the dialog is closed
  */
 export default function RootPasswordPopup({
-  title = "Root password",
+  title = _("Root password"),
   isOpen,
   onClose
 }) {
