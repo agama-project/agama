@@ -1,7 +1,7 @@
 use crate::error::Error;
 use agama_lib::connection_to;
 use anyhow::Context;
-use std::{process::Command, fs::read_dir};
+use std::{fs::read_dir, process::Command};
 use zbus::{dbus_interface, Connection};
 
 pub struct Locale {
@@ -90,21 +90,20 @@ impl Locale {
         Ok(())
     }
 
-
-    #[dbus_interface(property, name="UILocale")]
+    #[dbus_interface(property, name = "UILocale")]
     fn ui_locale(&self) -> &str {
         &self.ui_locale
     }
 
-    #[dbus_interface(property, name="UILocale")]
+    #[dbus_interface(property, name = "UILocale")]
     fn set_ui_locale(&mut self, locale: &str) {
-         self.ui_locale = locale.to_string();
+        self.ui_locale = locale.to_string();
     }
 
     /// Gets list of locales available on system.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
     ///   use agama_dbus_server::locale::Locale;
     ///   let locale = Locale::new();
@@ -114,11 +113,14 @@ impl Locale {
     pub fn list_ui_locales(&self) -> Result<Vec<String>, Error> {
         // english is always available ui localization
         let mut result = vec!["en".to_string()];
-        const DIR : &str = "/usr/share/YaST2/locale/";
+        const DIR: &str = "/usr/share/YaST2/locale/";
         let entries = read_dir(DIR).context("Reading YaST2 locale")?;
         for entry in entries {
             let entry = entry.context("Failed to read entry in YaST2 locale dir")?;
-            let name = entry.file_name.to_str().context("Non valid UTF entry found in YaST2 locale dir")?;
+            let name = entry
+                .file_name
+                .to_str()
+                .context("Non valid UTF entry found in YaST2 locale dir")?;
             result.push(name.to_string())
         }
 
@@ -218,7 +220,7 @@ impl Locale {
             keymap: "us".to_string(),
             timezone_id: "America/Los_Angeles".to_string(),
             supported_locales: vec!["en_US.UTF-8".to_string()],
-            ui_locale: "en".to_string()
+            ui_locale: "en".to_string(),
         }
     }
 }
