@@ -25,6 +25,8 @@ import React, { useCallback, useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Skeleton, Toolbar, ToolbarContent, ToolbarItem } from "@patternfly/react-core";
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+
+import { _ } from "~/i18n";
 import { MainActions } from "~/components/layout";
 import { If, Page, Popup, RowActions, Section, SectionSkeleton } from "~/components/core";
 import { ZFCPDiskForm } from "~/components/storage";
@@ -298,9 +300,9 @@ const ControllersTable = ({ client, manager }) => {
   const { cancellablePromise } = useCancellablePromise();
 
   const columns = [
-    { id: "channel", label: "Channel ID" },
-    { id: "status", label: "Status" },
-    { id: "lunScan", label: "Auto LUNs Scan" }
+    { id: "channel", label: _("Channel ID") },
+    { id: "status", label: _("Status") },
+    { id: "lunScan", label: _("Auto LUNs Scan") }
   ];
 
   const columnValue = (controller, column) => {
@@ -311,11 +313,11 @@ const ControllersTable = ({ client, manager }) => {
         value = controller.channel;
         break;
       case "status":
-        value = controller.active ? "Activated" : "Deactivated";
+        value = controller.active ? _("Activated") : _("Deactivated");
         break;
       case "lunScan":
         if (controller.active)
-          value = controller.lunScan ? "Yes" : "No";
+          value = controller.lunScan ? _("Yes") : _("No");
         else
           value = "-";
         break;
@@ -329,7 +331,7 @@ const ControllersTable = ({ client, manager }) => {
 
     return [
       {
-        label: "Activate",
+        label: _("Activate"),
         run: async () => await cancellablePromise(client.activateController(controller))
       }
     ];
@@ -357,10 +359,10 @@ const DisksTable = ({ client, manager }) => {
   const { cancellablePromise } = useCancellablePromise();
 
   const columns = [
-    { id: "name", label: "Name" },
-    { id: "channel", label: "Channel ID" },
-    { id: "wwpn", label: "WWPN" },
-    { id: "lun", label: "LUN" }
+    { id: "name", label: _("Name") },
+    { id: "channel", label: _("Channel ID") },
+    { id: "wwpn", label: _("WWPN") },
+    { id: "lun", label: _("LUN") }
   ];
 
   const columnValue = (disk, column) => disk[column.id];
@@ -371,7 +373,7 @@ const DisksTable = ({ client, manager }) => {
 
     return [
       {
-        label: "Deactivate",
+        label: _("Deactivate"),
         run: async () => await cancellablePromise(
           client.deactivateDisk(controller, disk.wwpn, disk.lun)
         )
@@ -414,31 +416,30 @@ const ControllersSection = ({ client, manager, load = noop, isLoading = false })
   const EmptyState = () => {
     return (
       <div className="stack">
-        <div className="bold">No zFCP controllers found</div>
-        <div>Please, try to read the zFCP devices again.</div>
-        <Button variant="primary" onClick={load}>Read zFCP devices</Button>
+        <div className="bold">{_("No zFCP controllers found")}</div>
+        <div>{_("Please, try to read the zFCP devices again.")}</div>
+        {/* TRANSLATORS: button label */}
+        <Button variant="primary" onClick={load}>{_("Read zFCP devices")}</Button>
       </div>
     );
   };
 
   const Content = () => {
     const LUNScanInfo = () => {
+      const msg = allowLUNScan
+        // TRANSLATORS: the text in the square brackets [] will be displayed in bold
+        ? _("Automatic LUN scan is [enabled]. Activating a controller which is \
+running in NPIV mode will automatically configures all its LUNs.")
+        // TRANSLATORS: the text in the square brackets [] will be displayed in bold
+        : _("Automatic LUN scan is [disabled]. LUNs have to be manually \
+configured after activating a controller.");
+
+      const [msgStart, msgBold, msgEnd] = msg.split(/[[\]]/);
+
       return (
-        <If
-          condition={allowLUNScan}
-          then={
-            <p>
-              Automatic LUN scan is <b>enabled</b>. Activating a controller which is running in NPIV
-              mode will automatically configures all its LUNs.
-            </p>
-          }
-          else={
-            <p>
-              Automatic LUN scan is <b>disabled</b>. LUNs have to be manually configured after
-              activating a controller.
-            </p>
-          }
-        />
+        <p>
+          {msgStart}<b>{msgBold}</b>{msgEnd}
+        </p>
       );
     };
 
@@ -496,7 +497,7 @@ const DiskPopup = ({ client, manager, onClose = noop }) => {
   const formId = "ZFCPDiskForm";
 
   return (
-    <Popup isOpen title="Activate a zFCP disk">
+    <Popup isOpen title={_("Activate a zFCP disk")}>
       <ZFCPDiskForm
         id={formId}
         luns={manager.getInactiveLUNs()}
@@ -509,7 +510,7 @@ const DiskPopup = ({ client, manager, onClose = noop }) => {
           type="submit"
           isDisabled={isAcceptDisabled}
         >
-          Accept
+          {_("Accept")}
         </Popup.Confirm>
         <Popup.Cancel onClick={onClose} />
       </Popup.Actions>
@@ -535,22 +536,23 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
   const EmptyState = () => {
     const NoActiveControllers = () => {
       return (
-        <div>Please, try to activate a zFCP controller.</div>
+        <div>{_("Please, try to activate a zFCP controller.")}</div>
       );
     };
 
     const NoActiveDisks = () => {
       return (
         <>
-          <div>Please, try to activate a zFCP disk.</div>
-          <Button variant="primary" onClick={openActivate}>Activate zFCP disk</Button>
+          <div>{_("Please, try to activate a zFCP disk.")}</div>
+          {/* TRANSLATORS: button label */}
+          <Button variant="primary" onClick={openActivate}>{_("Activate zFCP disk")}</Button>
         </>
       );
     };
 
     return (
       <div className="stack">
-        <div className="bold">No zFCP disks found</div>
+        <div className="bold">{_("No zFCP disks found")}</div>
         <If
           condition={manager.getActiveControllers().length === 0}
           then={<NoActiveControllers />}
@@ -568,7 +570,8 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
         <Toolbar className="no-stack-gutter">
           <ToolbarContent alignment="alignRight">
             <ToolbarItem alignment={{ default: "alignRight" }}>
-              <Button onClick={openActivate} isDisabled={isDisabled}>Activate new disk</Button>
+              {/* TRANSLATORS: button label */}
+              <Button onClick={openActivate} isDisabled={isDisabled}>{_("Activate new disk")}</Button>
             </ToolbarItem>
           </ToolbarContent>
         </Toolbar>
@@ -579,7 +582,8 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
   };
 
   return (
-    <Section title="Disks">
+    // TRANSLATORS: section title
+    <Section title={_("Disks")}>
       <If
         condition={isLoading}
         then={<SectionSkeleton />}
@@ -726,9 +730,10 @@ export default function ZFCPPage() {
   }, [client.zfcp, cancellablePromise, getLUNs]);
 
   return (
-    <Page title="Storage zFCP" icon="hard_drive">
+    // TRANSLATORS: page title
+    <Page title={_("Storage zFCP")} icon="hard_drive">
       <MainActions>
-        <Button isLarge variant="secondary" onClick={() => navigate("/storage")}>Back</Button>
+        <Button isLarge variant="secondary" onClick={() => navigate("/storage")}>{_("Back")}</Button>
       </MainActions>
 
       <ControllersSection

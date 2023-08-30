@@ -27,7 +27,9 @@ import {
   Skeleton,
   Text
 } from "@patternfly/react-core";
+import format from "format-util";
 
+import { _, n_ } from "~/i18n";
 import { If, Section } from "~/components/core";
 import { partition } from "~/utils";
 
@@ -64,13 +66,16 @@ const ProposalActions = ({ actions = [] }) => {
   if (actions.length === 0) return null;
 
   const [generalActions, subvolActions] = partition(actions, a => !a.subvol);
-  const userAction = isExpanded ? "Hide" : "Show";
-  const toggleText = `${userAction} ${subvolActions.length} subvolumes actions`;
+  const toggleText = isExpanded
+    // TRANSLATORS: show/hide toggle action, this is a clickable link
+    ? format(n_("Hide %d subvolume action", "Hide %d subvolume actions", subvolActions.length), subvolActions.length)
+    // TRANSLATORS: show/hide toggle action, this is a clickable link
+    : format(n_("Show %d subvolume action", "Show %d subvolume actions", subvolActions.length), subvolActions.length);
 
   return (
     <>
       <Text>
-        Actions to create the file systems and to ensure the system boots.
+        {_("Actions to create the file systems and to ensure the system boots.")}
       </Text>
       <ActionsList actions={generalActions} />
       {subvolActions.length > 0 && (
@@ -116,7 +121,9 @@ export default function ProposalActionsSection({ actions = [], errors = [], isLo
   if (isLoading) errors = [];
 
   return (
-    <Section title="Planned Actions" errors={errors}>
+    // TRANSLATORS: section title, list of planned actions for the selected device,
+    // e.g. "delete partition A", "create partition B with filesystem C", ...
+    <Section title={_("Planned Actions")} errors={errors}>
       <If
         condition={isLoading}
         then={<ActionsSkeleton />}

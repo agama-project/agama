@@ -23,6 +23,8 @@
 
 import xbytes from "xbytes";
 
+import { N_ } from "~/i18n";
+
 /**
  * @typedef {Object} SizeObject
  *
@@ -39,11 +41,11 @@ const SIZE_METHODS = Object.freeze({
 });
 
 const SIZE_UNITS = Object.freeze({
-  K: "KiB",
-  M: "MiB",
-  G: "GiB",
-  T: "TiB",
-  P: "PiB",
+  K: N_("KiB"),
+  M: N_("MiB"),
+  G: N_("GiB"),
+  T: N_("TiB"),
+  P: N_("PiB"),
 });
 
 const DEFAULT_SIZE_UNIT = "GiB";

@@ -26,6 +26,7 @@ import {
   Tooltip
 } from "@patternfly/react-core";
 
+import { _ } from "~/i18n";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { DeviceSelector, ProposalVolumes } from "~/components/storage";
 import { Icon } from "~/components/layout";
@@ -108,7 +109,7 @@ const InstallationDeviceField = ({ current, devices, isLoading, onChange }) => {
   };
 
   const DeviceContent = ({ device }) => {
-    const text = device || "No device selected yet";
+    const text = device || _("No device selected yet");
 
     return <Button variant="link" isInline onClick={openForm}>{text}</Button>;
   };
@@ -117,23 +118,23 @@ const InstallationDeviceField = ({ current, devices, isLoading, onChange }) => {
     return <Skeleton width="25%" />;
   }
 
-  const description = "Select in which device to install the system. All the file systems will " +
-    "be created on the selected device.";
+  const description = _("Select the device for installing the system. All the \
+file systems will be created on the selected device.");
 
   return (
     <>
       <div className="split">
-        <span>Installation device</span>
+        <span>{_("Installation device")}</span>
         <DeviceContent device={device} />
       </div>
       <Popup
-        title="Installation device"
+        title={_("Installation device")}
         description={description}
         isOpen={isFormOpen}
       >
         <If
           condition={devices.length === 0}
-          then={<div className="bold">No devices found</div>}
+          then={<div className="bold">{_("No devices found")}</div>}
           else={
             <InstallationDeviceForm
               id="bootDeviceForm"
@@ -149,7 +150,7 @@ const InstallationDeviceField = ({ current, devices, isLoading, onChange }) => {
             type="submit"
             isDisabled={devices.length === 0}
           >
-            Accept
+            {_("Accept")}
           </Popup.Confirm>
           <Popup.Cancel onClick={closeForm} />
         </Popup.Actions>
@@ -183,7 +184,7 @@ const LVMField = ({ selected: selectedProp, isLoading, onChange }) => {
   return (
     <Switch
       id="lvm"
-      label="Use logical volume management (LVM)"
+      label={_("Use logical volume management (LVM)")}
       isReversed
       isChecked={selected}
       onChange={changeSelected}
@@ -283,12 +284,12 @@ const EncryptionPasswordField = ({ selected: selectedProp, password: passwordPro
   const ChangePasswordButton = () => {
     return (
       <Tooltip
-        content="Change encryption password"
+        content={_("Change encryption password")}
         entryDelay={400}
         exitDelay={50}
         position="right"
       >
-        <button aria-label="Encryption settings" className="plain-control" onClick={openForm}>
+        <button aria-label={_("Encryption settings")} className="plain-control" onClick={openForm}>
           <Icon name="tune" size={24} />
         </button>
       </Tooltip>
@@ -302,14 +303,14 @@ const EncryptionPasswordField = ({ selected: selectedProp, password: passwordPro
       <div className="split">
         <Switch
           id="encryption"
-          label="Use encryption"
+          label={_("Use encryption")}
           isReversed
           isChecked={selected}
           onChange={changeSelected}
         />
         { selected && <ChangePasswordButton /> }
       </div>
-      <Popup aria-label="Encryption settings" title="Encryption settings" isOpen={isFormOpen}>
+      <Popup aria-label={_("Encryption settings")} title={_("Encryption settings")} isOpen={isFormOpen}>
         <EncryptionPasswordForm
           id="encryptionPasswordForm"
           password={password}
@@ -317,7 +318,7 @@ const EncryptionPasswordField = ({ selected: selectedProp, password: passwordPro
           onValidate={validateForm}
         />
         <Popup.Actions>
-          <Popup.Confirm form="encryptionPasswordForm" type="submit" isDisabled={!isFormValid}>Accept</Popup.Confirm>
+          <Popup.Confirm form="encryptionPasswordForm" type="submit" isDisabled={!isFormValid}>{_("Accept")}</Popup.Confirm>
           <Popup.Cancel onClick={cancelForm} />
         </Popup.Actions>
       </Popup>
@@ -370,7 +371,7 @@ export default function ProposalSettingsSection({
   const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
 
   return (
-    <Section title="Settings" className="flex-stack">
+    <Section title={_("Settings")} className="flex-stack">
       <InstallationDeviceField
         current={bootDevice}
         devices={availableDevices}
