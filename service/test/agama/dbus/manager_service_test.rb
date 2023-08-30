@@ -29,7 +29,8 @@ describe Agama::DBus::ManagerService do
   let(:config) { Agama::Config.new }
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:manager) { Agama::Manager.new(config, logger) }
-  let(:bus) { instance_double(Agama::DBus::Bus, request_name: nil) }
+  let(:locale_service) { double(object: double(instrospect: nil)) }
+  let(:bus) { instance_double(Agama::DBus::Bus, request_name: nil, service: locale_service) }
   let(:bus_service) do
     instance_double(::DBus::ObjectServer, export: nil)
   end
