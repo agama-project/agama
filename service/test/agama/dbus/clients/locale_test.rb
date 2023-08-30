@@ -26,24 +26,24 @@ require "dbus"
 describe Agama::DBus::Clients::Locale do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.Agama.Locale1").and_return(service)
-    allow(service).to receive(:object).with("/org/opensuse/Agama/Locale1")
+    allow(bus).to receive(:service).with("org.opensuse.Agama1").and_return(service)
+    allow(service).to receive(:object).with("/org/opensuse/Agama1/Locale")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Locale1")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama1.Locale")
       .and_return(lang_iface)
   end
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
-  let(:service) { instance_double(::DBus::ProxyService) }
-  let(:dbus_object) { instance_double(::DBus::ProxyObject) }
-  let(:lang_iface) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:service) { instance_double(DBus::ProxyService) }
+  let(:dbus_object) { instance_double(DBus::ProxyObject) }
+  let(:lang_iface) { instance_double(DBus::ProxyObjectInterface) }
 
   subject { described_class.new }
 
   describe "#supported_locales=" do
     # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_object) { double(DBus::ProxyObject) }
 
     it "calls the D-Bus object" do
       expect(dbus_object).to receive(:supported_locales=).with(["no", "se"])
@@ -52,7 +52,7 @@ describe Agama::DBus::Clients::Locale do
   end
 
   describe "#finish" do
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_object) { double(DBus::ProxyObject) }
 
     it "calls the D-Bus finish method" do
       expect(dbus_object).to receive(:Commit)

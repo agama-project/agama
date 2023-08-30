@@ -23,19 +23,19 @@
 
 import DBusClient from "./dbus";
 
-const QUESTIONS_SERVICE = "org.opensuse.Agama.Questions1";
+const QUESTIONS_SERVICE = "org.opensuse.Agama1";
 
 const DBUS_CONFIG = {
   questions: {
-    path: "/org/opensuse/Agama/Questions1",
+    path: "/org/opensuse/Agama1/Questions",
     ifaces: {
       objectManager: "org.freedesktop.DBus.ObjectManager"
     }
   },
   question: {
     ifaces: {
-      generic: "org.opensuse.Agama.Questions1.Generic",
-      withPassword: "org.opensuse.Agama.Questions1.WithPassword"
+      generic: "org.opensuse.Agama1.Questions.Generic",
+      withPassword: "org.opensuse.Agama1.Questions.WithPassword"
     }
   }
 };

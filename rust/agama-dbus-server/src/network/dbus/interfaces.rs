@@ -38,7 +38,7 @@ impl Devices {
     }
 }
 
-#[dbus_interface(name = "org.opensuse.Agama.Network1.Devices")]
+#[dbus_interface(name = "org.opensuse.Agama1.Network.Devices")]
 impl Devices {
     /// Returns the D-Bus paths of the network devices.
     pub async fn get_devices(&self) -> Vec<ObjectPath> {
@@ -67,7 +67,7 @@ impl Device {
     }
 }
 
-#[dbus_interface(name = "org.opensuse.Agama.Network1.Device")]
+#[dbus_interface(name = "org.opensuse.Agama1.Network.Device")]
 impl Device {
     /// Device name.
     ///
@@ -108,7 +108,7 @@ impl Connections {
     }
 }
 
-#[dbus_interface(name = "org.opensuse.Agama.Network1.Connections")]
+#[dbus_interface(name = "org.opensuse.Agama1.Network.Connections")]
 impl Connections {
     /// Returns the D-Bus paths of the network connections.
     pub async fn get_connections(&self) -> Vec<ObjectPath> {
@@ -194,7 +194,7 @@ impl Connection {
     }
 }
 
-#[dbus_interface(name = "org.opensuse.Agama.Network1.Connection")]
+#[dbus_interface(name = "org.opensuse.Agama1.Network.Connection")]
 impl Connection {
     /// Connection ID.
     ///
@@ -246,7 +246,7 @@ impl Ipv4 {
     }
 }
 
-#[dbus_interface(name = "org.opensuse.Agama.Network1.Connection.IPv4")]
+#[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.IPv4")]
 impl Ipv4 {
     /// List of IP addresses.
     ///
@@ -393,7 +393,7 @@ impl Wireless {
     }
 }
 
-#[dbus_interface(name = "org.opensuse.Agama.Network1.Connection.Wireless")]
+#[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.Wireless")]
 impl Wireless {
     /// Network SSID.
     #[dbus_interface(property, name = "SSID")]

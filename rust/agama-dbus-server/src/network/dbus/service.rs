@@ -2,8 +2,8 @@
 //!
 //! This module defines a D-Bus service which exposes Agama's network configuration.
 use crate::network::{Adapter, NetworkSystem};
-use agama_lib::connection_to;
 use std::error::Error;
+use zbus::Connection;
 
 /// Represents the Agama networking D-Bus service.
 ///
@@ -13,12 +13,10 @@ pub struct NetworkService;
 impl NetworkService {
     /// Starts listening and dispatching events on the D-Bus connection.
     pub async fn start<T: Adapter + std::marker::Send + 'static>(
-        address: &str,
+        connection: &Connection,
         adapter: T,
     ) -> Result<(), Box<dyn Error>> {
-        const SERVICE_NAME: &str = "org.opensuse.Agama.Network1";
-
-        let connection = connection_to(address).await?;
+        let connection = connection.clone();
         let mut network = NetworkSystem::new(connection.clone(), adapter);
 
         async_std::task::spawn(async move {
@@ -26,10 +24,6 @@ impl NetworkService {
                 .setup()
                 .await
                 .expect("Could not set up the D-Bus tree");
-            connection
-                .request_name(SERVICE_NAME)
-                .await
-                .unwrap_or_else(|_| panic!("Could not request name {SERVICE_NAME}"));
 
             network.listen().await;
         });

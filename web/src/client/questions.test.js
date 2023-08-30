@@ -25,8 +25,8 @@ import { QuestionsClient } from "./questions";
 jest.mock("./dbus");
 
 // NOTE: should we export them?
-const GENERIC_IFACE = "org.opensuse.Agama.Questions1.Generic";
-const WITH_PASSWORD_IFACE = "org.opensuse.Agama.Questions1.WithPassword";
+const GENERIC_IFACE = "org.opensuse.Agama1.Questions.Generic";
+const WITH_PASSWORD_IFACE = "org.opensuse.Agama1.Questions.WithPassword";
 
 const questionProxy = {
   wait: jest.fn(),
@@ -38,10 +38,10 @@ const withPasswordProxy = {
   Password: ""
 };
 
-const questionPath = "/org/opensuse/Agama/Questions1/432";
+const questionPath = "/org/opensuse/Agama1/Questions/432";
 const ifacesAndProperties = {
   "org.freedesktop.DBus.Properties": {},
-  "org.opensuse.Agama.Questions1.Generic": {
+  "org.opensuse.Agama1.Questions.Generic": {
     Id: {
       t: "u",
       v: 432
@@ -74,7 +74,7 @@ const ifacesAndProperties = {
       v: ""
     }
   },
-  "org.opensuse.Agama.Questions1.WithPassword": {
+  "org.opensuse.Agama1.Questions.WithPassword": {
     Password: {
       t: "s",
       v: ""

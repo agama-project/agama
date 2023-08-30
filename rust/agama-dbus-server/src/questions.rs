@@ -1,11 +1,7 @@
 use std::collections::HashMap;
 
 use crate::error::Error;
-use agama_lib::{
-    connection_to,
-    questions::{self, GenericQuestion, WithPassword},
-};
-use anyhow::Context;
+use agama_lib::questions::{self, GenericQuestion, WithPassword};
 use log;
 use zbus::{dbus_interface, fdo::ObjectManager, zvariant::ObjectPath, Connection};
 
@@ -14,7 +10,7 @@ mod answers;
 #[derive(Clone, Debug)]
 struct GenericQuestionObject(questions::GenericQuestion);
 
-#[dbus_interface(name = "org.opensuse.Agama.Questions1.Generic")]
+#[dbus_interface(name = "org.opensuse.Agama1.Questions.Generic")]
 impl GenericQuestionObject {
     #[dbus_interface(property)]
     pub fn id(&self) -> u32 {
@@ -63,7 +59,7 @@ impl GenericQuestionObject {
 /// Mixin interface for questions that are base + contain question for password
 struct WithPasswordObject(questions::WithPassword);
 
-#[dbus_interface(name = "org.opensuse.Agama.Questions1.WithPassword")]
+#[dbus_interface(name = "org.opensuse.Agama1.Questions.WithPassword")]
 impl WithPasswordObject {
     #[dbus_interface(property)]
     pub fn password(&self) -> &str {
@@ -136,7 +132,7 @@ pub struct Questions {
     answer_strategies: Vec<Box<dyn AnswerStrategy + Sync + Send>>,
 }
 
-#[dbus_interface(name = "org.opensuse.Agama.Questions1")]
+#[dbus_interface(name = "org.opensuse.Agama1.Questions")]
 impl Questions {
     /// creates new generic question without answer
     #[dbus_interface(name = "New")]
@@ -332,28 +328,13 @@ impl Questions {
 }
 
 /// Starts questions dbus service together with Object manager
-pub async fn start_service(address: &str) -> Result<(), Box<dyn std::error::Error>> {
-    const SERVICE_NAME: &str = "org.opensuse.Agama.Questions1";
-    const SERVICE_PATH: &str = "/org/opensuse/Agama/Questions1";
-
-    // First connect to the Agama bus, then serve our API,
-    // for better error reporting.
-    let connection = connection_to(address).await?;
+pub async fn start_service(connection: &Connection) -> Result<(), Box<dyn std::error::Error>> {
+    const PATH: &str = "/org/opensuse/Agama1/Questions";
 
     // When serving, request the service name _after_ exposing the main object
     let questions = Questions::new(&connection);
-    connection
-        .object_server()
-        .at(SERVICE_PATH, questions)
-        .await?;
-    connection
-        .object_server()
-        .at(SERVICE_PATH, ObjectManager)
-        .await?;
-    connection
-        .request_name(SERVICE_NAME)
-        .await
-        .context(format!("Requesting name {SERVICE_NAME}"))?;
+    connection.object_server().at(PATH, questions).await?;
+    connection.object_server().at(PATH, ObjectManager).await?;
 
     Ok(())
 }

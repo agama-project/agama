@@ -4,9 +4,9 @@
 use zbus::dbus_proxy;
 
 #[dbus_proxy(
-    interface = "org.opensuse.Agama.Network1.Connections",
-    default_service = "org.opensuse.Agama.Network1",
-    default_path = "/org/opensuse/Agama/Network1/connections"
+    interface = "org.opensuse.Agama1.Network.Connections",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Network/connections"
 )]
 trait Connections {
     /// Add a new network connection.
@@ -35,9 +35,9 @@ trait Connections {
 }
 
 #[dbus_proxy(
-    interface = "org.opensuse.Agama.Network1.Connection.Wireless",
-    default_service = "org.opensuse.Agama.Network1",
-    default_path = "/org/opensuse/Agama/Network1"
+    interface = "org.opensuse.Agama1.Network.Connection.Wireless",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Network"
 )]
 trait Wireless {
     /// Returns the operating mode of the Wireless device
@@ -71,9 +71,9 @@ trait Wireless {
 }
 
 #[dbus_proxy(
-    interface = "org.opensuse.Agama.Network1.Connection",
-    default_service = "org.opensuse.Agama.Network1",
-    default_path = "/org/opensuse/Agama/Network1"
+    interface = "org.opensuse.Agama1.Network.Connection",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Network"
 )]
 trait Connection {
     /// Id property
@@ -82,9 +82,9 @@ trait Connection {
 }
 
 #[dbus_proxy(
-    interface = "org.opensuse.Agama.Network1.Connection.IPv4",
-    default_service = "org.opensuse.Agama.Network1",
-    default_path = "/org/opensuse/Agama/Network1"
+    interface = "org.opensuse.Agama1.Network.Connection.IPv4",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Network"
 )]
 trait IPv4 {
     /// Addresses property

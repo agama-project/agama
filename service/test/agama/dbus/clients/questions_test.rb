@@ -27,8 +27,8 @@ require "dbus"
 describe Agama::DBus::Clients::Questions do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.Agama.Questions1").and_return(service)
-    allow(service).to receive(:[]).with("/org/opensuse/Agama/Questions1")
+    allow(bus).to receive(:service).with("org.opensuse.Agama1").and_return(service)
+    allow(service).to receive(:[]).with("/org/opensuse/Agama1/Questions")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:default_iface=)
   end
@@ -38,9 +38,9 @@ describe Agama::DBus::Clients::Questions do
   let(:logger) { Logger.new($stdout, level: :warn) }
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
-  let(:service) { instance_double(::DBus::ProxyService) }
-  let(:dbus_object) { instance_double(::DBus::ProxyObject) }
-  let(:properties_iface) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:service) { instance_double(DBus::ProxyService) }
+  let(:dbus_object) { instance_double(DBus::ProxyObject) }
+  let(:properties_iface) { instance_double(DBus::ProxyObjectInterface) }
 
   let(:question1) do
     Agama::Question.new(text: "What?", qclass: "test2", options: [:this, :that],
@@ -51,7 +51,7 @@ describe Agama::DBus::Clients::Questions do
       default_option: :now)
   end
   let(:question1_proxy) do
-    instance_double(::DBus::ProxyObject, path: "/org/opensuse/Agama/Questions1/33")
+    instance_double(DBus::ProxyObject, path: "/org/opensuse/Agama/Questions1/33")
   end
   let(:question1_stub) do
     instance_double(Agama::DBus::Clients::Question, dbus_object: question1_proxy)
@@ -59,7 +59,7 @@ describe Agama::DBus::Clients::Questions do
 
   describe "#add" do
     # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_object) { double(DBus::ProxyObject) }
 
     it "asks the service to add a question and returns a stub object for it" do
       expect(dbus_object).to receive(:New).with("test2", "What?", ["this", "that"], "this", {})
@@ -70,7 +70,7 @@ describe Agama::DBus::Clients::Questions do
 
   describe "#delete" do
     # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_object) { double(DBus::ProxyObject) }
 
     it "asks the service to delete the question" do
       expect(dbus_object).to receive(:Delete).with(question1_proxy.path)
