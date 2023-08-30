@@ -26,6 +26,8 @@ module Agama
     module Clients
       # D-Bus client for locale configuration
       class Locale < Base
+        INTERFACE_NAME = "org.opensuse.Agama.Locale1"
+
         def initialize
           super
 
@@ -44,6 +46,18 @@ module Agama
           dbus_object.supported_locales = locales
         end
 
+        def ui_locale
+          dbus_object[INTERFACE_NAME]["UILocale"]
+        end
+
+        def ui_locale=(locale)
+          dbus_object[INTERFACE_NAME]["UILocale"] = locale
+        end
+
+        def available_ui_locales
+          dbus_object.ListUILocales
+        end
+
         # Finishes the language installation
         def finish
           dbus_object.Commit
@@ -58,7 +72,20 @@ module Agama
         def on_language_selected(&block)
           on_properties_change(dbus_object) do |_, changes, _|
             languages = changes["Locales"]
-            block.call(languages)
+            block.call(languages) if languages
+          end
+        end
+
+        # Registers a callback to run when the ui locale changes
+        #
+        # @note Signal subscription is done only once. Otherwise, the latest subscription overrides
+        #   the previous one.
+        #
+        # @param block [Proc] Callback to run when an ui locale changes
+        def on_ui_locale_change(&block)
+          on_properties_change(dbus_object) do |_, changes, _|
+            locale = changes["UILocale"]
+            block.call(locale) if locale
           end
         end
 
