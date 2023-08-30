@@ -24,7 +24,7 @@ require "yast"
 Yast.import "WFM"
 
 module Agama
-  # Object responsible for managing changes of localization produced by dbus backend.
+  # Object responsible for managing changes of localization produced by D-Bus backend.
   class UILocale
     include Yast::I18n
     include Yast::Logger
