@@ -21,6 +21,8 @@
 
 import React, { useState } from "react";
 import { Form, FormGroup, FileUpload } from "@patternfly/react-core";
+
+import { _ } from "~/i18n";
 import { Popup } from '~/components/core';
 import { useInstallerClient } from "~/context/installer";
 
@@ -38,7 +40,7 @@ import { useInstallerClient } from "~/context/installer";
  * @param {function} props.onClose - the function to be called when the dialog is closed
  */
 export default function RootSSHKeyPopup({
-  title = "Set root SSH public key",
+  title = _("Set root SSH public key"),
   currentKey = "",
   isOpen,
   onClose
@@ -66,13 +68,16 @@ export default function RootSSHKeyPopup({
   return (
     <Popup isOpen={isOpen} title={title}>
       <Form id="root-ssh-key" onSubmit={accept}>
-        <FormGroup fieldId="sshKey" label="Root SSH public key">
+        <FormGroup fieldId="sshKey" label={_("Root SSH public key")}>
           <FileUpload
             id="sshKey"
             type="text"
             value={sshKey}
-            filenamePlaceholder="Upload, paste, or drop a SSH public key"
-            browseButtonText="Upload"
+            filenamePlaceholder={_("Upload, paste, or drop an SSH public key")}
+            // TRANSLATORS: push button label
+            browseButtonText={_("Upload")}
+            // TRANSLATORS: push button label, clears the related input field
+            clearButtonText={_("Clear")}
             isLoading={isLoading}
             onDataChange={setSSHKey}
             onTextChange={setSSHKey}

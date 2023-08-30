@@ -20,8 +20,9 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { useCancellablePromise } from "~/utils";
 
+import { _ } from "~/i18n";
+import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import {
   Alert,
@@ -40,9 +41,10 @@ import { RowActions, PasswordAndConfirmationInput, Popup } from '~/components/co
 const UserNotDefined = ({ actionCb }) => {
   return (
     <div className="stack">
-      <div className="bold">No user defined yet</div>
-      <div>Please, be aware that a user must be defined before installing the system to be able to log into it.</div>
-      <Button variant="primary" onClick={actionCb}>Define a user now</Button>
+      <div className="bold">{_("No user defined yet")}</div>
+      <div>{_("Please, be aware that a user must be defined before installing the system to be able to log into it.")}</div>
+      {/* TRANSLATORS: push button label */}
+      <Button variant="primary" onClick={actionCb}>{_("Define a user now")}</Button>
     </div>
   );
 };
@@ -52,8 +54,8 @@ const UserData = ({ user, actions }) => {
     <TableComposable variant="compact">
       <Thead>
         <Tr>
-          <Th width={25}>Fullname</Th>
-          <Th>Username</Th>
+          <Th width={25}>{_("Full name")}</Th>
+          <Th>{_("Username")}</Th>
           <Th />
         </Tr>
       </Thead>
@@ -165,11 +167,11 @@ export default function FirstUser() {
 
   const actions = [
     {
-      title: "Edit",
+      title: _("Edit"),
       onClick: (e) => openForm(e, EDIT_MODE)
     },
     {
-      title: "Discard",
+      title: _("Discard"),
       onClick: remove,
       className: "danger-action"
     }
@@ -186,31 +188,31 @@ export default function FirstUser() {
       { isUserDefined ? <UserData user={user} actions={actions} /> : <UserNotDefined actionCb={openForm} /> }
       { /* TODO: Extract this form to a component, if possible */ }
       { isFormOpen &&
-        <Popup isOpen title={isEditing ? "Edit user account" : "Create user account"}>
+        <Popup isOpen title={isEditing ? _("Edit user account") : _("Create user account")}>
           <Form id="createUser" onSubmit={(e) => accept("createUser", e)}>
             { showErrors() &&
-              <Alert variant="warning" isInline title="Something went wrong">
+              <Alert variant="warning" isInline title={_("Something went wrong")}>
                 { errors.map((e, i) => <p key={`error_${i}`}>{e}</p>) }
               </Alert> }
 
-            <FormGroup fieldId="userFullName" label="Full name">
+            <FormGroup fieldId="userFullName" label={_("Full name")}>
               <TextInput
                 id="userFullName"
                 name="fullName"
-                aria-label="User fullname"
+                aria-label={_("User full name")}
                 value={formValues.fullName}
-                label="User full name"
+                label={_("User full name")}
                 onChange={handleInputChange}
               />
             </FormGroup>
 
-            <FormGroup fieldId="userName" label="Username" isRequired>
+            <FormGroup fieldId="userName" label={_("Username")} isRequired>
               <TextInput
                 id="userName"
                 name="userName"
-                aria-label="Username"
+                aria-label={_("Username")}
                 value={formValues.userName}
-                label="Username"
+                label={_("Username")}
                 isRequired
                 onChange={handleInputChange}
               />
@@ -218,10 +220,11 @@ export default function FirstUser() {
 
             { isEditing &&
               <Checkbox
-                aria-label="Edit password too"
+                aria-label={_("Edit password too")}
                 id="edit-password"
                 name="edit-password"
-                label="Edit password too"
+                // TRANSLATORS: check box label
+                label={_("Edit password too")}
                 isChecked={isSettingPassword}
                 onChange={toggleShowPasswordField}
               /> }
@@ -236,10 +239,11 @@ export default function FirstUser() {
               /> }
 
             <Checkbox
-              aria-label="user autologin"
+              aria-label={_("user autologin")}
               id="autologin"
               name="autologin"
-              label="Auto-login"
+              // TRANSLATORS: check box label
+              label={_("Auto-login")}
               isChecked={formValues.autologin}
               onChange={handleInputChange}
             />
