@@ -118,10 +118,11 @@ impl Locale {
         for entry in entries {
             let entry = entry.context("Failed to read entry in YaST2 locale dir")?;
             let name = entry
-                .file_name
+                .file_name()
                 .to_str()
-                .context("Non valid UTF entry found in YaST2 locale dir")?;
-            result.push(name.to_string())
+                .context("Non valid UTF entry found in YaST2 locale dir")?
+                .to_string();
+            result.push(name)
         }
 
         Ok(result)
@@ -222,6 +223,12 @@ impl Locale {
             supported_locales: vec!["en_US.UTF-8".to_string()],
             ui_locale: "en".to_string(),
         }
+    }
+}
+
+impl Default for Locale {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
