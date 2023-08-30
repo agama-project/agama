@@ -21,6 +21,8 @@
 
 import React, { useLayoutEffect } from "react";
 import { Button, Modal } from "@patternfly/react-core";
+
+import { _ } from "~/i18n";
 import { partition } from "~/utils";
 
 /**
@@ -85,7 +87,7 @@ const PrimaryAction = ({ children, ...props }) => (
  * @param {React.ReactNode} [props.children="confirm"] - content of the action
  * @param {object} [props] - {@link Action} props
  */
-const Confirm = ({ children = "Confirm", ...props }) => (
+const Confirm = ({ children = _("Confirm"), ...props }) => (
   <PrimaryAction key="confirm" { ...props }>{ children }</PrimaryAction>
 );
 
@@ -123,7 +125,7 @@ const SecondaryAction = ({ children, ...props }) => (
  * @param {React.ReactNode} [props.children="Cancel"] - content of the action
  * @param {object} [props] - {@link Action} props
  */
-const Cancel = ({ children = "Cancel", ...props }) => (
+const Cancel = ({ children = _("Cancel"), ...props }) => (
   <SecondaryAction key="cancel" { ...props }>{ children }</SecondaryAction>
 );
 

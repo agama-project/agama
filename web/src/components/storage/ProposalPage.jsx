@@ -22,6 +22,7 @@
 import React, { useCallback, useReducer, useEffect } from "react";
 import { Alert } from "@patternfly/react-core";
 
+import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
 import { toValidationError, useCancellablePromise } from "~/utils";
 import { Icon } from "~/components/layout";
@@ -146,7 +147,7 @@ export default function ProposalPage() {
         <Alert
           isInline
           customIcon={<Icon name="info" size="16" />}
-          title="Devices will not be modified until installation starts."
+          title={_("Devices will not be modified until installation starts.")}
         />
         <ProposalSettingsSection
           availableDevices={state.availableDevices}
@@ -165,7 +166,8 @@ export default function ProposalPage() {
   };
 
   return (
-    <Page title="Storage" icon="hard_drive" actionLabel="Back" actionVariant="secondary">
+    // TRANSLATORS: page title
+    <Page title={_("Storage")} icon="hard_drive" actionLabel={_("Back")} actionVariant="secondary">
       <PageContent />
       <ProposalPageOptions />
     </Page>

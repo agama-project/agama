@@ -26,6 +26,8 @@ import {
   Alert,
   Form, FormGroup, FormSelect, FormSelectOption
 } from "@patternfly/react-core";
+
+import { _ } from "~/i18n";
 import { If } from "~/components/core";
 import { noop } from "~/utils";
 
@@ -107,13 +109,13 @@ export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading
       <If
         condition={isFailed}
         then={
-          <Alert variant="warning" isInline title="Something went wrong">
-            <p>The zFCP disk was not activated.</p>
+          <Alert variant="warning" isInline title={_("Something went wrong")}>
+            <p>{_("The zFCP disk was not activated.")}</p>
           </Alert>
         }
       />
       <Form id={id} name="ZFCPDisk" onSubmit={submit}>
-        <FormGroup fieldId="channelId" label="Channel ID">
+        <FormGroup fieldId="channelId" label={_("Channel ID")}>
           <FormSelect
             id="channelId"
             value={formData.channel}
@@ -123,7 +125,8 @@ export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading
             {getChannels().map((channel, i) => <FormSelectOption key={i} value={channel} label={channel} />)}
           </FormSelect>
         </FormGroup>
-        <FormGroup fieldId="wwpn" label="WWPN">
+        {/* TRANSLATORS: abbrev. World Wide Port Name */}
+        <FormGroup fieldId="wwpn" label={_("WWPN")}>
           <FormSelect
             id="wwpn"
             value={formData.wwpn}
@@ -133,7 +136,8 @@ export default function ZFCPDiskForm({ id, luns = [], onSubmit = noop, onLoading
             {getWWPNs(formData.channel).map((wwpn, i) => <FormSelectOption key={i} value={wwpn} label={wwpn} />)}
           </FormSelect>
         </FormGroup>
-        <FormGroup fieldId="lun" label="LUN">
+        {/* TRANSLATORS: abbrev. Logical Unit Number */}
+        <FormGroup fieldId="lun" label={_("LUN")}>
           <FormSelect
             id="lun"
             value={formData.lun}
