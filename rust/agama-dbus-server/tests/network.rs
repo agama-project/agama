@@ -20,7 +20,7 @@ impl Adapter for NetworkTestAdapter {
 
 #[test]
 async fn test_read_connections() {
-    let server = DBusServer::new().start().await;
+    let mut server = DBusServer::new().start().await;
 
     let device = model::Device {
         name: String::from("eth0"),
@@ -33,7 +33,8 @@ async fn test_read_connections() {
     let _service = NetworkService::start(&server.connection(), adapter)
         .await
         .unwrap();
-    server.request_name().await;
+
+    server.request_name().await.unwrap();
 
     let client = NetworkClient::new(server.connection()).await.unwrap();
     let conns = client.connections().await.unwrap();
@@ -47,15 +48,14 @@ async fn test_read_connections() {
 
 #[test]
 async fn test_add_connection() {
-    let server = DBusServer::new().start().await;
+    let mut server = DBusServer::new().start().await;
 
-    let state = NetworkState::default();
-    let adapter = NetworkTestAdapter(state);
+    let adapter = NetworkTestAdapter(NetworkState::default());
 
     let _service = NetworkService::start(&server.connection(), adapter)
         .await
         .unwrap();
-    server.request_name().await;
+    server.request_name().await.unwrap();
 
     let client = NetworkClient::new(server.connection().clone())
         .await
