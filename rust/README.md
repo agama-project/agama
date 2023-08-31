@@ -108,6 +108,12 @@ For an alternative setup using a containerized backend, see
 *[How to set up a backend for testing this
 frontend](./agama-cli/doc/backend-for-testing.md)*.
 
+## Testing OBS Build
+
+To test if cargo packages build in OBS push your changes to remote branch. Then do osc checkout of Agama:Staging.
+Modify `_service` file and point it to your branch in `<param name="revision">`. Run `osc service manualrun obs_scm` and
+then try `osc build` to build it. If it failed push fixes to your branch and repeat service and build step.
+
 ## Caveats
 
 * If no product is selected, the `probe` command fails.

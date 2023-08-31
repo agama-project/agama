@@ -114,8 +114,13 @@ impl Locale {
         // english is always available ui localization
         let mut result = vec!["en".to_string()];
         const DIR: &str = "/usr/share/YaST2/locale/";
-        let entries = read_dir(DIR).context("Reading YaST2 locale")?;
-        for entry in entries {
+        let entries = read_dir(DIR);
+        if entries.is_err() {
+            // if dir is not there act like if it is empty
+            return Ok(result);
+        }
+
+        for entry in entries.unwrap() {
             let entry = entry.context("Failed to read entry in YaST2 locale dir")?;
             let name = entry
                 .file_name()
