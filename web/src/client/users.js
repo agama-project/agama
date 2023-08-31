@@ -24,7 +24,7 @@
 import DBusClient from "./dbus";
 import { WithValidation } from "./mixins";
 
-const USERS_SERVICE = "org.opensuse.Agama.Users1";
+const USERS_SERVICE = "org.opensuse.Agama.Manager1";
 const USERS_IFACE = "org.opensuse.Agama.Users1";
 const USERS_PATH = "/org/opensuse/Agama/Users1";
 

@@ -160,11 +160,7 @@ module Agama
     #
     # @return [DBus::Clients::Users]
     def users
-      @users ||= DBus::Clients::Users.new.tap do |client|
-        client.on_service_status_change do |status|
-          service_status_recorder.save(client.service.name, status)
-        end
-      end
+      @users ||= Users.new(logger)
     end
 
     # Network manager

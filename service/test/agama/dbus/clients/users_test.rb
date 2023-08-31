@@ -29,7 +29,7 @@ require "dbus"
 describe Agama::DBus::Clients::Users do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.Agama.Users1").and_return(service)
+    allow(bus).to receive(:service).with("org.opensuse.Agama.Manager1").and_return(service)
     allow(service).to receive(:[]).with("/org/opensuse/Agama/Users1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
@@ -40,10 +40,10 @@ describe Agama::DBus::Clients::Users do
   end
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
-  let(:service) { instance_double(::DBus::ProxyService) }
-  let(:dbus_object) { instance_double(::DBus::ProxyObject) }
-  let(:users_iface) { instance_double(::DBus::ProxyObjectInterface) }
-  let(:service_status_iface) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:service) { instance_double(DBus::ProxyService) }
+  let(:dbus_object) { instance_double(DBus::ProxyObject) }
+  let(:users_iface) { instance_double(DBus::ProxyObjectInterface) }
+  let(:service_status_iface) { instance_double(DBus::ProxyObjectInterface) }
 
   subject { described_class.new }
 
@@ -72,7 +72,7 @@ describe Agama::DBus::Clients::Users do
 
   describe "#create_first_user" do
     # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_object) { double(DBus::ProxyObject) }
 
     it "configures the first user" do
       expect(dbus_object).to receive(:SetFirstUser).with("Test user", "user", "n0ts3cr3t", true, {})
@@ -84,7 +84,7 @@ describe Agama::DBus::Clients::Users do
 
   describe "#remove_first_user" do
     # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_object) { double(DBus::ProxyObject) }
 
     it "removes the configuration of the first user" do
       expect(dbus_object).to receive(:RemoveFirstUser)
@@ -105,7 +105,7 @@ describe Agama::DBus::Clients::Users do
 
   describe "#root_ssh_key=" do
     # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_object) { double(DBus::ProxyObject) }
 
     it "sets the SSH key for root" do
       expect(dbus_object).to receive(:SetRootSSHKey).with("1234-abcd")
@@ -126,7 +126,7 @@ describe Agama::DBus::Clients::Users do
 
   describe "#root_password=" do
     # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_object) { double(DBus::ProxyObject) }
 
     it "sets the password for root" do
       expect(dbus_object).to receive(:SetRootPassword).with("n0ts3cr3t", false)
@@ -137,7 +137,7 @@ describe Agama::DBus::Clients::Users do
 
   describe "#remove_root_info" do
     # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_object) { double(DBus::ProxyObject) }
 
     it "removes the SSH key and password for root" do
       expect(dbus_object).to receive(:RemoveRootPassword)
@@ -149,7 +149,7 @@ describe Agama::DBus::Clients::Users do
 
   describe "#write" do
     # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_object) { double(DBus::ProxyObject) }
 
     it "applies changes into the system" do
       expect(dbus_object).to receive(:Write)
