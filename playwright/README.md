@@ -57,7 +57,7 @@ See the `playwright.config.ts` file for the list of configured projects.
 
 ### Running Tests Directly from the Live ISO
 
-You can download the `default-Playwright` image type from the [systemsmanagement:Agama:Staging](
+You can download the `openSUSE-Playwright` image type from the [systemsmanagement:Agama:Staging](
 https://download.opensuse.org/repositories/systemsmanagement:/Agama:/Staging/images/iso/) repository.
 
 This ISO additionally includes the Playwright tool, Chromium browser and the
