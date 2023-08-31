@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug 31 10:36:53 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt the locale and questions clients to use the same D-Bus
+  service (gh#openSUSE/agama#729).
+
+-------------------------------------------------------------------
 Wed Aug 30 12:39:18 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Respect UI locale in dbus services (gh#openSUSE/agama#725)
