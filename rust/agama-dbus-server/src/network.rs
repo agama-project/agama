@@ -54,7 +54,9 @@ pub use nm::NetworkManagerAdapter;
 pub use system::NetworkSystem;
 use zbus::Connection;
 
-pub async fn start_service(connection: &Connection) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn export_dbus_objects(
+    connection: &Connection,
+) -> Result<(), Box<dyn std::error::Error>> {
     let adapter = NetworkManagerAdapter::from_system()
         .await
         .expect("Could not connect to NetworkManager to read the configuration.");

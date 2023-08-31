@@ -32,11 +32,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .expect("Could not connect to the D-Bus daemon");
 
     // When adding more services here, the order might be important.
-    questions::start_service(&connection).await?;
+    questions::export_dbus_objects(&connection).await?;
     log::info!("Started questions interface");
-    locale::start_service(&connection).await?;
+    locale::export_dbus_objects(&connection).await?;
     log::info!("Started locale interface");
-    network::start_service(&connection).await?;
+    network::export_dbus_objects(&connection).await?;
     log::info!("Started network interface");
 
     connection

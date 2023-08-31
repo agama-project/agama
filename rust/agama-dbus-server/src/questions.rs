@@ -328,7 +328,9 @@ impl Questions {
 }
 
 /// Starts questions dbus service together with Object manager
-pub async fn start_service(connection: &Connection) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn export_dbus_objects(
+    connection: &Connection,
+) -> Result<(), Box<dyn std::error::Error>> {
     const PATH: &str = "/org/opensuse/Agama1/Questions";
 
     // When serving, request the service name _after_ exposing the main object

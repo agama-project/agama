@@ -236,7 +236,9 @@ impl Default for Locale {
     }
 }
 
-pub async fn start_service(connection: &Connection) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn export_dbus_objects(
+    connection: &Connection,
+) -> Result<(), Box<dyn std::error::Error>> {
     const PATH: &str = "/org/opensuse/Agama1/Locale";
 
     // When serving, request the service name _after_ exposing the main object
