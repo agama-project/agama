@@ -1,70 +1,112 @@
+---
 products:
-  ALP:
-    name: SUSE Adaptable Linux Platform Host OS
-    description: 'The Adaptable Linux Platform (ALP), the next generation of Linux,
-      allow users to focus on their workloads while abstracting from the hardware
-      and the application layer.'
-
+  Tumbleweed:
+    name: openSUSE Tumbleweed
+    description: The Tumbleweed distribution is a pure rolling release version of
+      openSUSE containing the latest "stable" versions of all software instead of
+      relying on rigid periodic release cycles. The project does this for users that
+      want the newest stable software.
 web:
-  ssl: null
-  ssl_cert: null
-  ssl_key: null
-
-ALP:
+  ssl:
+  ssl_cert:
+  ssl_key:
+Tumbleweed:
   software:
     installation_repositories:
-      - https://download.opensuse.org/repositories/SUSE:/ALP/standard/
+    - url: https://download.opensuse.org/tumbleweed/repo/oss/
+      archs: x86_64
+    - url: https://download.opensuse.org/ports/aarch64/tumbleweed/repo/oss/
+      archs: aarch64
+    - url: https://download.opensuse.org/ports/zsystems/tumbleweed/repo/oss/
+      archs: s390
+    - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/oss/
+      archs: ppc
+    - url: https://download.opensuse.org/tumbleweed/repo/non-oss/
+      archs: x86_64
+    - url: https://download.opensuse.org/ports/zsystems/tumbleweed/repo/non-oss/
+      archs: s390
+    - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/non-oss/
+      archs: ppc
+    - url: https://download.opensuse.org/update/tumbleweed/
+      archs: x86_64
+    - url: https://download.opensuse.org/ports/aarch64/update/tumbleweed/
+      archs: aarch64
+    - url: https://download.opensuse.org/ports/zsystems/update/tumbleweed/
+      archs: s390
+    - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/oss/
+      archs: ppc
     mandatory_patterns:
-      - alp_base
-      - alp_base_zypper
-      - alp_cockpit
-      - alp-container_runtime
-    optional_patterns: null # no optional pattern shared
-    mandatory_packages: null
-    optional_packages: null
-    base_product: ALP
-
+    - enhanced_base
+    optional_patterns:
+    mandatory_packages:
+    - NetworkManager
+    optional_packages:
+    base_product: openSUSE
   security:
-    lsm: selinux
+    lsm: apparmor
     available_lsms:
+      apparmor:
+        patterns:
+        - apparmor
       selinux:
         patterns:
-          - alp_selinux
+        - selinux
         policy: permissive
       none:
-        patterns: null
-
+        patterns:
   storage:
     volumes:
-      - mount_point: "/"
-        fs_type: btrfs
-        desired_size: 20 GiB
-        min_size: 5 GiB
-        max_size: 20 GiB
-        fs_types:
-          - btrfs
-        weight: 20
-        snapshots: true
-        snapshots_configurable: false
-        proposed_configurable: false
-        btrfs_default_subvolume: "@"
-        btrfs_read_only: true
-        subvolumes:
-        - path: root
-        - path: home
-        - path: opt
-        - path: srv
-        - path: boot/writable
-        - path: usr/local
-        - path: boot/grub2/arm64-efi
-          archs: aarch64
-        - path: boot/grub2/i386-pc
-          archs: x86_64
-        - path: boot/grub2/powerpc-ieee1275
-          archs: ppc,!board_powernv
-        - path: boot/grub2/s390x-emu
-          archs: s390
-        - path: boot/grub2/x86_64-efi
-          archs: x86_64
-        - path: var
-          copy_on_write: false
+    - mount_point: "/"
+      fs_type: btrfs
+      min_size: 5 GiB
+      max_size: 15 GiB
+      weight: 1
+      proposed_configurable: false
+      snapshots: true
+      snapshots_percentage: 250
+      snapshots_configurable: true
+      disable_order: 3
+      btrfs_default_subvolume: "@"
+      subvolumes:
+      - path: home
+      - path: opt
+      - path: root
+      - path: srv
+      - path: usr/local
+      - path: var
+        copy_on_write: false
+      - path: boot/grub2/arm64-efi
+        archs: aarch64
+      - path: boot/grub2/arm-efi
+        archs: arm
+      - path: boot/grub2/i386-pc
+        archs: x86_64
+      - path: boot/grub2/powerpc-ieee1275
+        archs: ppc,!board_powernv
+      - path: boot/grub2/s390x-emu
+        archs: s390
+      - path: boot/grub2/x86_64-efi
+        archs: x86_64
+      - path: boot/grub2/riscv64-efi
+        archs: riscv64
+    - mount_point: "/home"
+      fs_type: xfs
+      min_size: 10 GiB
+      max_size: unlimited
+      max_size_lvm: unlimited
+      weight: 1
+      proposed: false
+      proposed_configurable: true
+      disable_order: 1
+      fallback_for_max_size: "/"
+      fallback_for_max_size_lvm: "/"
+    - mount_point: swap
+      fs_type: swap
+      desired_size: 2 GiB
+      min_size: 1 GiB
+      max_size: 2 GiB
+      weight: 1
+      adjust_by_ram: false
+      adjust_by_ram_configurable: true
+      proposed_configurable: true
+      disable_order: 2
