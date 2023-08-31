@@ -34,7 +34,7 @@ module Agama
       include Interfaces::Progress
       include Interfaces::ServiceStatus
 
-      PATH = "/org/opensuse/Agama1/Manager"
+      PATH = "/org/opensuse/Agama/Manager1"
       private_constant :PATH
 
       # Constructor
@@ -49,7 +49,7 @@ module Agama
         register_service_status_callbacks
       end
 
-      MANAGER_INTERFACE = "org.opensuse.Agama1.Manager"
+      MANAGER_INTERFACE = "org.opensuse.Agama.Manager1"
       private_constant :MANAGER_INTERFACE
 
       STARTUP_PHASE = 0

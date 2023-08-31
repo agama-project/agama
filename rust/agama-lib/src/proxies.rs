@@ -8,8 +8,8 @@ use zbus::dbus_proxy;
 /// TODO: example
 #[dbus_proxy(
     interface = "org.opensuse.Agama1.Progress",
-    default_service = "org.opensuse.Agama1",
-    default_path = "/org/opensuse/Agama1/Manager"
+    default_service = "org.opensuse.Agama.Manager1",
+    default_path = "/org/opensuse/Agama/Manager1"
 )]
 trait Progress {
     /// CurrentStep property
@@ -27,8 +27,8 @@ trait Progress {
 
 #[dbus_proxy(
     interface = "org.opensuse.Agama1.ServiceStatus",
-    default_service = "org.opensuse.Agama1",
-    default_path = "/org/opensuse/Agama1/Manager"
+    default_service = "org.opensuse.Agama.Manager1",
+    default_path = "/org/opensuse/Agama/Manager1"
 )]
 trait ServiceStatus {
     /// All property
@@ -43,9 +43,9 @@ trait ServiceStatus {
 }
 
 #[dbus_proxy(
-    interface = "org.opensuse.Agama1.Manager",
-    default_service = "org.opensuse.Agama1",
-    default_path = "/org/opensuse/Agama1/Manager"
+    interface = "org.opensuse.Agama.Manager1",
+    default_service = "org.opensuse.Agama.Manager1",
+    default_path = "/org/opensuse/Agama/Manager1"
 )]
 trait Manager {
     /// CanInstall method

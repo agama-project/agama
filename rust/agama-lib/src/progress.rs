@@ -88,8 +88,8 @@ pub struct ProgressMonitor<'a> {
 impl<'a> ProgressMonitor<'a> {
     pub async fn new(connection: Connection) -> Result<ProgressMonitor<'a>, ServiceError> {
         let manager_proxy = ProgressProxy::builder(&connection)
-            .path("/org/opensuse/Agama1/Manager")?
-            .destination("org.opensuse.Agama1")?
+            .path("/org/opensuse/Agama/Manager1")?
+            .destination("org.opensuse.Agama.Manager1")?
             .build()
             .await?;
 
@@ -112,7 +112,7 @@ impl<'a> ProgressMonitor<'a> {
 
         while let Some(stream) = changes.next().await {
             match stream {
-                "/org/opensuse/Agama1/Manager" => {
+                "/org/opensuse/Agama/Manager1" => {
                     let progress = self.main_progress().await;
                     if progress.finished {
                         presenter.finish();
