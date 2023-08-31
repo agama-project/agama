@@ -1,7 +1,7 @@
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
  "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
-  <interface name="org.opensuse.Agama.Questions1.Generic">
+  <interface name="org.opensuse.Agama1.Questions.Generic">
     <!--
         Answer:
         Answer for the question. Clients set an option as answer.

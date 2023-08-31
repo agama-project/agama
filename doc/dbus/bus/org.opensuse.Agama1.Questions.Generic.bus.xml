@@ -36,7 +36,7 @@
       <arg name="invalidated_properties" type="as"/>
     </signal>
   </interface>
-  <interface name="org.opensuse.Agama.Questions1.Generic">
+  <interface name="org.opensuse.Agama1.Questions.Generic">
     <property name="Answer" type="s" access="readwrite"/>
     <property name="Class" type="s" access="read"/>
     <property name="Data" type="a{ss}" access="read"/>
