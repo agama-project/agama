@@ -141,6 +141,13 @@ module Agama
       ]
     end
 
+    # Determines whether the users configuration is valid
+    #
+    # @return [Boolean]
+    def valid?
+      validate.empty?
+    end
+
   private
 
     attr_reader :logger

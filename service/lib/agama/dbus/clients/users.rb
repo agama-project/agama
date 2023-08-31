@@ -40,7 +40,7 @@ module Agama
 
         # @return [String]
         def service_name
-          @service_name ||= "org.opensuse.Agama.Users1"
+          @service_name ||= "org.opensuse.Agama.Manager1"
         end
 
         # Configuration of the first user to create during the installation
