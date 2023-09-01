@@ -12,9 +12,7 @@ const DBUS_SERVICE: &str = "org.opensuse.Agama1";
 /// Takes care of starting and stopping a dbus-daemon to be used on integration tests. Each server
 /// uses a different socket, so they do not collide.
 ///
-/// FIXME: this struct implements the typestate pattern. As it is not possible to implement Drop
-/// for an specialized type, you need to manually call 'stop' at the end of the test. We will work
-/// on that in the future.
+/// NOTE: this struct implements the [typestate pattern](http://cliffle.com/blog/rust-typestate/).
 pub struct DBusServer<S: ServerState> {
     address: String,
     extra: S,
@@ -23,6 +21,12 @@ pub struct DBusServer<S: ServerState> {
 pub struct Started {
     connection: zbus::Connection,
     child: Child,
+}
+
+impl Drop for Started {
+    fn drop(&mut self) {
+        self.child.kill().unwrap();
+    }
 }
 
 pub struct Stopped;
@@ -72,14 +76,6 @@ impl<S: ServerState> DBusServer<S> {
 impl DBusServer<Started> {
     pub fn connection(&self) -> zbus::Connection {
         self.extra.connection.clone()
-    }
-
-    pub fn stop(mut self) -> DBusServer<Stopped> {
-        self.extra.child.kill().unwrap();
-        DBusServer {
-            address: self.address,
-            extra: Stopped {},
-        }
     }
 
     pub async fn request_name(&mut self) -> Result<(), Box<dyn Error>> {

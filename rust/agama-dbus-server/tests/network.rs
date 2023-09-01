@@ -42,8 +42,6 @@ async fn test_read_connections() {
     let dbus_eth0 = conns.first().unwrap();
     assert_eq!(dbus_eth0.id, "eth0");
     assert_eq!(dbus_eth0.device_type(), DeviceType::Ethernet);
-
-    server.stop();
 }
 
 #[test]
@@ -79,6 +77,4 @@ async fn test_add_connection() {
     let conn = conns.first().unwrap();
     assert_eq!(conn.id, "wlan0");
     assert_eq!(conn.device_type(), DeviceType::Wireless);
-
-    server.stop();
 }
