@@ -24,7 +24,7 @@ import {
   Alert,
   Form, FormGroup, FormSelect, FormSelectOption
 } from "@patternfly/react-core";
-import format from "format-util";
+import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
 import { Popup } from "~/components/core";
@@ -66,7 +66,7 @@ export default function LoginForm({ node, onSubmit: onSubmitProp, onCancel }) {
 
   return (
     // TRANSLATORS: %s is replaced by the iSCSI target name
-    <Popup isOpen title={format("Login %s", node.target)}>
+    <Popup isOpen title={sprintf(_("Login %s"), node.target)}>
       <Form id={id} onSubmit={onSubmit}>
         { isFailed &&
           <Alert variant="warning" isInline title={_("Something went wrong")}>

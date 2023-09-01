@@ -27,7 +27,7 @@ import {
   Skeleton,
   Text
 } from "@patternfly/react-core";
-import format from "format-util";
+import { sprintf } from "sprintf-js";
 
 import { _, n_ } from "~/i18n";
 import { If, Section } from "~/components/core";
@@ -68,9 +68,9 @@ const ProposalActions = ({ actions = [] }) => {
   const [generalActions, subvolActions] = partition(actions, a => !a.subvol);
   const toggleText = isExpanded
     // TRANSLATORS: show/hide toggle action, this is a clickable link
-    ? format(n_("Hide %d subvolume action", "Hide %d subvolume actions", subvolActions.length), subvolActions.length)
+    ? sprintf(n_("Hide %d subvolume action", "Hide %d subvolume actions", subvolActions.length), subvolActions.length)
     // TRANSLATORS: show/hide toggle action, this is a clickable link
-    : format(n_("Show %d subvolume action", "Show %d subvolume actions", subvolActions.length), subvolActions.length);
+    : sprintf(n_("Show %d subvolume action", "Show %d subvolume actions", subvolActions.length), subvolActions.length);
 
   return (
     <>

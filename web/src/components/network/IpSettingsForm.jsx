@@ -21,7 +21,7 @@
 
 import React, { useState } from "react";
 import { HelperText, HelperTextItem, Form, FormGroup, FormSelect, FormSelectOption, TextInput } from "@patternfly/react-core";
-import format from "format-util";
+import { sprintf } from "sprintf-js";
 
 import { useInstallerClient } from "~/context/installer";
 import { Popup } from "~/components/core";
@@ -128,7 +128,7 @@ export default function IpSettingsForm({ connection, onClose }) {
   // TRANSLATORS: manual network configuration mode with a static IP address
   // %s is replaced by the connection name
   return (
-    <Popup isOpen title={format(_("Edit %s connection"), connection.name)}>
+    <Popup isOpen title={sprintf(_("Edit %s connection"), connection.name)}>
       <Form id="edit-connection" onSubmit={onSubmit}>
         <FormGroup fieldId="method" label={_("Mode")} isRequired>
           <FormSelect

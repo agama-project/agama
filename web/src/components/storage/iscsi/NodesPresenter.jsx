@@ -21,7 +21,7 @@
 
 import React, { useState } from "react";
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
-import format from "format-util";
+import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
 import { RowActions } from '~/components/core';
@@ -64,7 +64,7 @@ export default function NodesPresenter ({ nodes, client }) {
 
     const startup = Object.values(NodeStartupOptions).find(o => o.value === node.startup);
     // TRANSLATORS: iSCSI connection status, %s is replaced by node label
-    return format(_("Connected (%s)"), startup.label);
+    return sprintf(_("Connected (%s)"), startup.label);
   };
 
   const nodeActions = (node) => {

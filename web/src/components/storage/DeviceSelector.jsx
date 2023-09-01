@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import format from "format-util";
+import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
 import { noop } from "~/utils";
@@ -101,19 +101,19 @@ const ItemContent = ({ device }) => {
         }
         case "dasd": {
           // TRANSLATORS: %s is replaced by the device bus ID
-          type = format(_("DASD %s"), device.busId);
+          type = sprintf(_("DASD %s"), device.busId);
           break;
         }
         case "md": {
           // TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-          type = format(_("Software %s"), device.level.toUpperCase());
+          type = sprintf(_("Software %s"), device.level.toUpperCase());
           break;
         }
         case "disk": {
           type = device.sdCard
             ? _("SD Card")
             // TRANSLATORS: %s is replaced by the device transport name, e.g. USB, SATA, SCSI...
-            : format(_("Transport %s"), device.transport);
+            : sprintf(_("Transport %s"), device.transport);
         }
       }
 
@@ -132,7 +132,7 @@ const ItemContent = ({ device }) => {
       const members = device.members.map(m => m.split("/").at(-1));
 
       // TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-      return <div>{format(_("Members: %s"), members.sort().join(", "))}</div>;
+      return <div>{sprintf(_("Members: %s"), members.sort().join(", "))}</div>;
     };
 
     const RAIDInfo = () => {
@@ -141,7 +141,7 @@ const ItemContent = ({ device }) => {
       const devices = device.devices.map(m => m.split("/").at(-1));
 
       // TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-      return <div>{format(_("Devices: %s"), devices.sort().join(", "))}</div>;
+      return <div>{sprintf(_("Devices: %s"), devices.sort().join(", "))}</div>;
     };
 
     const MultipathInfo = () => {
@@ -150,7 +150,7 @@ const ItemContent = ({ device }) => {
       const wires = device.wires.map(m => m.split("/").at(-1));
 
       // TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
-      return <div>{format(_("Wires: %s"), wires.sort().join(", "))}</div>;
+      return <div>{sprintf(_("Wires: %s"), wires.sort().join(", "))}</div>;
     };
 
     return (
@@ -174,7 +174,7 @@ const ItemContent = ({ device }) => {
 
       // TRANSLATORS: disk partition info, %s is replaced by partition table
       // type (MS-DOS or GPT), %d is the number of the partitions
-      const text = format(_("%s with %d partitions"), type, numPartitions);
+      const text = sprintf(_("%s with %d partitions"), type, numPartitions);
 
       return (
         <div>
