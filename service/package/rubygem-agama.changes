@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Sep  1 07:32:59 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Extend the Ruby-based services logs with information about
+  each step (gh#openSUSE/agama#732).
+- Raise the D-Bus service start timeout for troubleshoting purposes
+  (related to bsc#1214737).
+
+-------------------------------------------------------------------
 Thu Aug 31 10:36:53 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Adapt the locale and questions clients to use the same D-Bus
