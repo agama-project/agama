@@ -56,6 +56,7 @@
     "eslint-config-standard-jsx": "^11.0.0",
     "eslint-config-standard-react": "^13.0.0",
     "eslint-plugin-flowtype": "^8.0.3",
+    "eslint-plugin-i18next": "^6.0.3",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-n": "^15.5.1",
     "eslint-plugin-node": "^11.1.0",

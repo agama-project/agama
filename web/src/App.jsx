@@ -96,6 +96,8 @@ function App() {
       </Sidebar>
 
       <Layout>
+        {/* this is the name of the tool, do not translate it */}
+        {/* eslint-disable-next-line i18next/no-literal-string */}
         <Title>Agama</Title>
         <Content />
       </Layout>

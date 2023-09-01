@@ -35,6 +35,6 @@ describe("when given a known name", () => {
 describe("when given an unknown name", () => {
   it("renders an informative text", async () => {
     plainRender(<Icon name="apsens" />);
-    await screen.findByText("icon apsens not found!", { name: /options/i });
+    await screen.findByText("Icon apsens not found!", { name: /options/i });
   });
 });

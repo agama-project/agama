@@ -131,7 +131,8 @@ const ItemContent = ({ device }) => {
 
       const members = device.members.map(m => m.split("/").at(-1));
 
-      return <div>Members: {members.sort().join(", ")}</div>;
+      // TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+      return <div>{format(_("Members: %s"), members.sort().join(", "))}</div>;
     };
 
     const RAIDInfo = () => {
@@ -139,7 +140,8 @@ const ItemContent = ({ device }) => {
 
       const devices = device.devices.map(m => m.split("/").at(-1));
 
-      return <div>Devices: {devices.sort().join(", ")}</div>;
+      // TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+      return <div>{format(_("Devices: %s"), devices.sort().join(", "))}</div>;
     };
 
     const MultipathInfo = () => {
@@ -147,7 +149,8 @@ const ItemContent = ({ device }) => {
 
       const wires = device.wires.map(m => m.split("/").at(-1));
 
-      return <div>Wires: {wires.sort().join(", ")}</div>;
+      // TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
+      return <div>{format(_("Wires: %s"), wires.sort().join(", "))}</div>;
     };
 
     return (

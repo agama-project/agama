@@ -115,6 +115,8 @@ export default function Sidebar ({ children }) {
     }
 
     targetInfo = (
+      /* this is only displayed in the development mode, not in production, do not translate it */
+      /* eslint-disable-next-line i18next/no-literal-string */
       <Text>
         Target server: { " " }
         <Button isInline variant="link" component="a" href={ targetUrl } target="_blank">
