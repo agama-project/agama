@@ -43,7 +43,7 @@ def logger_for(name)
     formatter = Logger::Formatter.new # the default
   else
     # going via syslog which will provide time and progname already
-    formatter = ->(severity, _time, _progname, msg) { "#{severity}: #{msg}\n" }
+    formatter = ->(severity, _time, _progname, msg) { "[#{severity}]: #{name}: #{msg}\n" }
     $stdout.sync = true
   end
 
@@ -59,7 +59,9 @@ def start_service(name)
   module_y2dir = File.expand_path("../lib/agama/dbus/y2dir/#{name}", __dir__)
   ENV["Y2DIR"] = [ENV.fetch("Y2DIR", nil), module_y2dir, general_y2dir].compact.join(":")
 
-  service_runner = Agama::DBus::ServiceRunner.new(name, logger: logger_for(name))
+  logger = logger_for(name)
+  service_runner = Agama::DBus::ServiceRunner.new(name, logger: logger)
+  logger.info "Starting the service"
   service_runner.run
 end
 

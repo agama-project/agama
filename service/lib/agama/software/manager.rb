@@ -73,6 +73,7 @@ module Agama
           @config.pick_product(@product)
         end
         @repositories = RepositoriesManager.new
+        on_progress_change { logger.info progress.to_s }
       end
 
       def select_product(name)
