@@ -227,4 +227,22 @@ describe Agama::Progress do
       end
     end
   end
+
+  describe "#to_s" do
+    let(:steps) { 2 }
+
+    before { subject.step("Probing software") }
+
+    it "returns the step description an the current/total steps" do
+      expect(subject.to_s).to eq("Probing software (1/2)")
+    end
+
+    context "when the progress is finished" do
+      before { subject.step("Probing storage") }
+
+      it "returns 'Finished' when the progress is finished" do
+        expect(subject.to_s).to eq("Finished")
+      end
+    end
+  end
 end
