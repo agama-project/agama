@@ -57,7 +57,7 @@ const ZFCPLink = () => {
       href={href}
       description={_("Activate disks")}
     >
-      zFCP
+      {_("zFCP")}
     </PageOptions.Item>
   );
 };
@@ -75,7 +75,7 @@ const ISCSILink = () => {
       href={href}
       description={_("Connect to iSCSI targets")}
     >
-      iSCSI
+      {_("iSCSI")}
     </PageOptions.Item>
   );
 };

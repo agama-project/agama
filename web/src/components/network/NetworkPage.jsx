@@ -35,7 +35,7 @@ import { _ } from "~/i18n";
 const NoWiredConnections = () => {
   return (
     <div className="stack">
-      <div className="bold">No wired connections found</div>
+      <div className="bold">{_("No wired connections found")}</div>
     </div>
   );
 };
