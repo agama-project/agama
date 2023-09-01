@@ -30,7 +30,6 @@ module Agama
   # Backend class using YaST code.
   #
   # {Agama::DBus::Users} wraps it with a D-Bus interface and
-  # {Agama::DBus::Clients::Users} is a D-Bus client for that.
   class Users
     include Helpers
 

@@ -30,7 +30,6 @@ require "agama/dbus/service_status"
 require "agama/dbus/clients/locale"
 require "agama/dbus/clients/software"
 require "agama/dbus/clients/storage"
-require "agama/dbus/clients/users"
 require "agama/helpers"
 
 Yast.import "Stage"
