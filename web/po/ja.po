@@ -8,25 +8,24 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-01 17:28+0000\n"
-"PO-Revision-Date: 2023-08-06 21:15+0000\n"
-"Last-Translator: Milachew <milachew@mail.lv>\n"
-"Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-web/"
-"ru/>\n"
-"Language: ru\n"
+"PO-Revision-Date: 2023-08-31 11:15+0000\n"
+"Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
+"Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
+"ja/>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 4.9.1\n"
 
 #: src/App.jsx:90
 msgid "Diagnostic tools"
-msgstr ""
+msgstr "診断ツール"
 
 #: src/components/core/About.jsx:43 src/components/core/About.jsx:48
 msgid "About Agama"
-msgstr ""
+msgstr "Agama について"
 
 #. TRANSLATORS: content of the "About" popup (1/2)
 #: src/components/core/About.jsx:53
@@ -36,28 +35,31 @@ msgid ""
 "want to give it a try, we recommend to use a virtual machine to prevent any "
 "possible data loss."
 msgstr ""
+"Agama は (open)SUSE システム向けの実験中インストーラです。現在もなお開発途上"
+"にある仕組みですので、本番環境での使用はご遠慮ください。なお、お試しになりた"
+"い場合は、仮想マシン内で実行して不用意なデータ喪失を防ぐことをお勧めします。"
 
 #. TRANSLATORS: content of the "About" popup (2/2)
 #. %s is replaced by the project URL
 #: src/components/core/About.jsx:65
 #, javascript-format
 msgid "For more information, please visit the project's repository at %s."
-msgstr ""
+msgstr "詳しくは %s にあるプロジェクトのリポジトリをご覧ください。"
 
 #. TRANSLATORS: button label
 #: src/components/core/About.jsx:71 src/components/core/FileViewer.jsx:80
 #: src/components/core/Sidebar.jsx:177 src/components/core/Terminal.jsx:48
 #: src/components/network/WifiSelector.jsx:151
 msgid "Close"
-msgstr "Закрыть"
+msgstr "閉じる"
 
 #: src/components/core/FileViewer.jsx:65
 msgid "Reading file..."
-msgstr "Чтение файла..."
+msgstr "ファイルを読み込んでいます..."
 
 #: src/components/core/FileViewer.jsx:71
 msgid "Cannot read the file"
-msgstr "Невозможно прочитать файл"
+msgstr "ファイルを読み込めません"
 
 #. TRANSLATORS: the installer reports some errors,
 #. the text in square brackets [] is a clickable link
@@ -66,23 +68,26 @@ msgid ""
 "There are some reported issues. Please, check [the list of issues] before "
 "proceeding with the installation."
 msgstr ""
+"いくつかの問題が見つかっています。インストールを続行する前に、 [問題点の一"
+"覧] をご確認ください。"
 
 #: src/components/core/InstallButton.jsx:60
 msgid "Confirm Installation"
-msgstr ""
+msgstr "インストールの確認"
 
 #: src/components/core/InstallButton.jsx:70
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr ""
+"何か不安な点があれば、キャンセルして設定を確認しておくことをお勧めします。"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:76
 msgid "Continue"
-msgstr ""
+msgstr "続行"
 
 #: src/components/core/InstallButton.jsx:86
 msgid "Problems Found"
-msgstr ""
+msgstr "問題点が見つかりました"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:97
@@ -92,84 +97,87 @@ msgstr ""
 #: src/components/storage/ProposalVolumes.jsx:275
 #: src/components/storage/ZFCPPage.jsx:513
 msgid "Accept"
-msgstr ""
+msgstr "受け入れる"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:145
 msgid "Install"
-msgstr ""
+msgstr "インストール"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallationFinished.jsx:42
 msgid "Finish"
-msgstr ""
+msgstr "完了"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallationFinished.jsx:44
 msgid "Reboot"
-msgstr ""
+msgstr "再起動"
 
 #: src/components/core/InstallationFinished.jsx:57
 msgid "Installation Finished"
-msgstr ""
+msgstr "インストール完了"
 
 #: src/components/core/InstallationFinished.jsx:68
 msgid "Congratulations!"
-msgstr ""
+msgstr "おめでとうございます！"
 
 #: src/components/core/InstallationFinished.jsx:72
 msgid "The installation on your machine is complete."
-msgstr ""
+msgstr "お使いのマシンに対するインストールが完了しました。"
 
 #: src/components/core/InstallationFinished.jsx:76
 msgid "At this point you can power off the machine."
-msgstr ""
+msgstr "マシンの電源を切って問題ありません。"
 
 #: src/components/core/InstallationFinished.jsx:77
 msgid "At this point you can reboot the machine to log in to the new system."
-msgstr ""
+msgstr "マシンを再起動することで、新しいシステムにログインすることができます。"
 
 #: src/components/core/InstallationFinished.jsx:80
 msgid "Have a lot of fun! Your openSUSE Development Team."
-msgstr ""
+msgstr "お楽しみください！ openSUSE 開発チーム一同より。"
 
 #: src/components/core/InstallationProgress.jsx:32
 msgid "Installing"
-msgstr ""
+msgstr "インストールしています"
 
 #: src/components/core/IssuesLink.jsx:40
 msgid "Show issues"
-msgstr ""
+msgstr "問題点の表示"
 
 #: src/components/core/IssuesLink.jsx:43
 msgid "There are new issues"
-msgstr ""
+msgstr "新しい問題点があります"
 
 #: src/components/core/IssuesPage.jsx:115
 msgid "No issues found. Everything looks ok."
 msgstr ""
+"問題点は見つかりませんでした。インストールに支障はないものと思われます。"
 
 #: src/components/core/LogsButton.jsx:98
 msgid "Collecting logs..."
-msgstr ""
+msgstr "ログを収集しています..."
 
 #: src/components/core/LogsButton.jsx:98
 msgid "Download logs"
-msgstr ""
+msgstr "ログのダウンロード"
 
 #: src/components/core/LogsButton.jsx:106
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
 msgstr ""
+"ログの収集が完了すると、ブラウザ側でダウンロード処理が始まります。しばらくお"
+"待ちください。"
 
 #: src/components/core/LogsButton.jsx:114
 msgid "Something went wrong while collecting logs. Please, try again."
-msgstr ""
+msgstr "ログの収集時に何らかの問題が発生しました。再試行してみてください。"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:37
 msgid "Passwords do not match"
-msgstr ""
+msgstr "パスワードが合致しません"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:58
 #: src/components/network/WifiConnectionForm.jsx:124
@@ -180,169 +188,170 @@ msgstr ""
 #: src/components/storage/iscsi/AuthFields.jsx:143
 #: src/components/users/RootAuthMethods.jsx:159
 msgid "Password"
-msgstr ""
+msgstr "パスワード"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:63
 msgid "User password"
-msgstr ""
+msgstr "ユーザのパスワード"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:72
 msgid "Password confirmation"
-msgstr ""
+msgstr "パスワードの確認"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:80
 msgid "User password confirmation"
-msgstr ""
+msgstr "ユーザパスワードの確認"
 
 #: src/components/core/Popup.jsx:90
 msgid "Confirm"
-msgstr ""
+msgstr "確認"
 
 #. TRANSLATORS: button label
 #: src/components/core/Popup.jsx:128
 #: src/components/network/WifiConnectionForm.jsx:137
 msgid "Cancel"
-msgstr ""
+msgstr "キャンセル"
 
 #. TRANSLATORS: dropdown label
 #: src/components/core/RowActions.jsx:62
 #: src/components/storage/ProposalVolumes.jsx:133
 #: src/components/storage/ProposalVolumes.jsx:301
 msgid "Actions"
-msgstr ""
+msgstr "処理"
 
 #: src/components/core/SectionSkeleton.jsx:29
 #: src/components/core/SectionSkeleton.jsx:34
 msgid "Waiting"
-msgstr ""
+msgstr "お待ちください"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
 msgid "Show Logs"
-msgstr ""
+msgstr "ログの表示"
 
 #. TRANSLATORS: popup dialog title
 #: src/components/core/ShowLogButton.jsx:53
 msgid "YaST Logs"
-msgstr ""
+msgstr "YaST ログ"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowTerminalButton.jsx:48
 msgid "Open Terminal"
-msgstr ""
+msgstr "端末を開く"
 
 #: src/components/core/Sidebar.jsx:135
 msgid "Show global options"
-msgstr ""
+msgstr "グローバルオプションの表示"
 
 #: src/components/core/Sidebar.jsx:141
 msgid "New issues found"
-msgstr ""
+msgstr "新しい問題点が見つかりました"
 
 #: src/components/core/Sidebar.jsx:151
 msgid "Global options"
-msgstr ""
+msgstr "グローバルオプション"
 
 #. TRANSLATORS: sidebar header
 #: src/components/core/Sidebar.jsx:157
 msgid "Options"
-msgstr ""
+msgstr "オプション"
 
 #: src/components/core/Sidebar.jsx:164
 msgid "Hide navigation and other options"
-msgstr ""
+msgstr "ナビゲーションとその他のオプションを隠す"
 
 #: src/components/core/ValidationErrors.jsx:63
 msgid "Errors"
-msgstr ""
+msgstr "エラー"
 
 #. TRANSLATORS: %d is replaced with the number of errors found
 #: src/components/core/ValidationErrors.jsx:86
 #, javascript-format
 msgid "%d error found"
 msgid_plural "%d errors found"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%d 個のエラーが見つかりました"
 
 #: src/components/core/ValidationErrors.jsx:96
 msgid "Basic popover"
-msgstr ""
+msgstr "基本ポップオーバー"
 
 #: src/components/l10n/L10nPage.jsx:72
 msgid "language"
-msgstr ""
+msgstr "言語"
 
 #. TRANSLATORS: page header
 #. TRANSLATORS: page section
 #: src/components/l10n/L10nPage.jsx:84
 #: src/components/overview/L10nSection.jsx:82
 msgid "Localization"
-msgstr ""
+msgstr "ローカライゼーション"
 
 #. TRANSLATORS: button label
 #: src/components/layout/DBusError.jsx:38
 msgid "Reload"
-msgstr ""
+msgstr "再読み込み"
 
 #. TRANSLATORS: page title
 #: src/components/layout/DBusError.jsx:46
 msgid "D-Bus Error"
-msgstr ""
+msgstr "D-Bus エラー"
 
 #: src/components/layout/DBusError.jsx:53
 msgid "Cannot connect to D-Bus"
-msgstr ""
+msgstr "D-Bus に接続できません"
 
 #: src/components/layout/DBusError.jsx:56
 msgid ""
 "Could not connect to the D-Bus service. Please, check whether it is running."
 msgstr ""
+"D-Bus サービスに接続できませんでした。 D-Bus サービスが動作中かどうかをご確認"
+"ください。"
 
 #: src/components/layout/Icon.jsx:155
-#, javascript-format
+#, fuzzy, javascript-format
+#| msgid "No content found"
 msgid "Icon %s not found!"
-msgstr ""
+msgstr "内容が見つかりませんでした"
 
 #: src/components/layout/Loading.jsx:28
 msgid "Loading installation environment, please wait."
-msgstr ""
+msgstr "インストール環境を読み込んでいます。しばらくお待ちください。"
 
 #. TRANSLATORS: button label
 #: src/components/network/AddressesDataList.jsx:81
 #: src/components/network/DnsDataList.jsx:87
 msgid "Remove"
-msgstr ""
+msgstr "削除"
 
 #. TRANSLATORS: input field name
 #: src/components/network/AddressesDataList.jsx:93
 #: src/components/network/AddressesDataList.jsx:94
 #: src/components/network/IpAddressInput.jsx:33
 msgid "IP Address"
-msgstr ""
+msgstr "IP アドレス"
 
 #. TRANSLATORS: input field name
 #: src/components/network/AddressesDataList.jsx:102
 #: src/components/network/AddressesDataList.jsx:103
 msgid "Prefix length or netmask"
-msgstr ""
+msgstr "プレフィクス長またはサブネットマスク"
 
 #: src/components/network/AddressesDataList.jsx:119
 msgid "Add an address"
-msgstr ""
+msgstr "アドレスの追加"
 
 #. TRANSLATORS: button label
 #: src/components/network/AddressesDataList.jsx:119
 msgid "Add another address"
-msgstr ""
+msgstr "その他のアドレスの追加"
 
 #: src/components/network/AddressesDataList.jsx:124
 msgid "Addresses"
-msgstr ""
+msgstr "アドレス"
 
 #: src/components/network/AddressesDataList.jsx:129
 msgid "Addresses data list"
-msgstr ""
+msgstr "アドレスデータの一覧"
 
 #. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
@@ -355,13 +364,13 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:100
 #: src/components/storage/iscsi/NodesPresenter.jsx:121
 msgid "Name"
-msgstr ""
+msgstr "名前"
 
 #. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:59
 #: src/components/network/ConnectionsTable.jsx:87
 msgid "IP addresses"
-msgstr ""
+msgstr "IP アドレス"
 
 #: src/components/network/ConnectionsTable.jsx:67
 #: src/components/storage/ProposalVolumes.jsx:226
@@ -369,140 +378,146 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
 #: src/components/users/FirstUser.jsx:170
 msgid "Edit"
-msgstr ""
+msgstr "編集"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:70
 #, javascript-format
 msgid "Edit connection %s"
-msgstr ""
+msgstr "接続 %s の編集"
 
 #: src/components/network/ConnectionsTable.jsx:74
 msgid "Forget"
-msgstr ""
+msgstr "削除"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:77
 #, javascript-format
 msgid "Forget connection %s"
-msgstr ""
+msgstr "接続 %s の削除"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:92
 #, javascript-format
 msgid "Actions for connection %s"
-msgstr ""
+msgstr "接続 %s に対する処理"
 
 #. TRANSLATORS: input field name
 #: src/components/network/DnsDataList.jsx:78
 #: src/components/network/DnsDataList.jsx:79
 msgid "Server IP"
-msgstr ""
+msgstr "サーバ IP"
 
 #: src/components/network/DnsDataList.jsx:96
 msgid "Add DNS"
-msgstr ""
+msgstr "DNS の追加"
 
 #. TRANSLATORS: button label
 #: src/components/network/DnsDataList.jsx:96
 msgid "Add another DNS"
-msgstr ""
+msgstr "その他の DNS の追加"
 
 #: src/components/network/DnsDataList.jsx:101
 msgid "DNS"
-msgstr ""
+msgstr "DNS"
 
 #. TRANSLATORS: input field name
 #: src/components/network/IpPrefixInput.jsx:33
 msgid "IP prefix or netmask"
-msgstr ""
+msgstr "IP プレフィクスもしくはサブネットマスク"
 
 #. TRANSLATORS: error message
 #: src/components/network/IpSettingsForm.jsx:87
 msgid "At least one address must be provided for selected mode"
 msgstr ""
+"選択しているモードの場合、 1 つ以上のアドレスを設定しなければなりません"
 
 #: src/components/network/IpSettingsForm.jsx:131
 #, javascript-format
 msgid "Edit %s connection"
-msgstr ""
+msgstr "接続 %s の編集"
 
 #. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
 #: src/components/network/IpSettingsForm.jsx:133
 #: src/components/network/IpSettingsForm.jsx:138
 #: src/components/network/IpSettingsForm.jsx:140
 msgid "Mode"
-msgstr ""
+msgstr "モード"
 
 #: src/components/network/IpSettingsForm.jsx:144
 msgid "Automatic (DHCP)"
-msgstr ""
+msgstr "自動 (DHCP)"
 
 #. TRANSLATORS: manual network configuration mode with a static IP address
 #: src/components/network/IpSettingsForm.jsx:146
 #: src/components/storage/iscsi/NodeStartupOptions.js:25
 msgid "Manual"
-msgstr ""
+msgstr "手動"
 
 #. TRANSLATORS: network gateway configuration
 #: src/components/network/IpSettingsForm.jsx:161
 #: src/components/network/IpSettingsForm.jsx:164
 msgid "Gateway"
-msgstr ""
+msgstr "ゲートウエイ"
 
 #: src/components/network/NetworkPage.jsx:38
+#, fuzzy
+#| msgid "No WiFi connections found"
 msgid "No wired connections found"
-msgstr ""
+msgstr "WiFi 接続が見つかりませんでした"
 
 #: src/components/network/NetworkPage.jsx:53
 msgid ""
 "The system has not been configured for connecting to a WiFi network yet."
 msgstr ""
+"このシステムでは、まだ WiFi ネットワークへの接続設定を実施していません。"
 
 #: src/components/network/NetworkPage.jsx:54
 msgid ""
 "The system does not support WiFi connections, probably because of missing or "
 "disabled hardware."
 msgstr ""
+"このシステムは WiFi 接続には対応していません。無線ハードウエアが存在していな"
+"いか、無効化されているものと思われます。"
 
 #: src/components/network/NetworkPage.jsx:58
 msgid "No WiFi connections found"
-msgstr ""
+msgstr "WiFi 接続が見つかりませんでした"
 
 #. TRANSLATORS: button label
 #: src/components/network/NetworkPage.jsx:70
 #: src/components/network/NetworkPageOptions.jsx:45
 #: src/components/network/WifiSelector.jsx:134
 msgid "Connect to a Wi-Fi network"
-msgstr ""
+msgstr "Wi-Fi ネットワークへの接続"
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section title
 #: src/components/network/NetworkPage.jsx:170
 #: src/components/overview/NetworkSection.jsx:102
 msgid "Network"
-msgstr ""
+msgstr "ネットワーク"
 
 #. TRANSLATORS: page section
 #: src/components/network/NetworkPage.jsx:172
 msgid "Wired networks"
-msgstr ""
+msgstr "有線ネットワーク"
 
 #. TRANSLATORS: page section
 #: src/components/network/NetworkPage.jsx:177
 msgid "WiFi networks"
-msgstr ""
+msgstr "WiFi ネットワーク"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:42
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 msgid "None"
-msgstr ""
+msgstr "無し"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:44
 msgid "WPA & WPA2 Personal"
-msgstr ""
+msgstr "WPA および WPA2 Personal"
 
 #: src/components/network/WifiConnectionForm.jsx:90
 #: src/components/storage/ZFCPDiskForm.jsx:112
@@ -510,64 +525,64 @@ msgstr ""
 #: src/components/storage/iscsi/LoginForm.jsx:72
 #: src/components/users/FirstUser.jsx:194
 msgid "Something went wrong"
-msgstr ""
+msgstr "何らかの問題が発生しました"
 
 #: src/components/network/WifiConnectionForm.jsx:91
 msgid "Please, review provided settings and try again."
-msgstr ""
+msgstr "設定をご確認のうえやり直してください。"
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
 #: src/components/network/WifiConnectionForm.jsx:96
 #: src/components/network/WifiConnectionForm.jsx:100
 msgid "SSID"
-msgstr ""
+msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
 #: src/components/network/WifiConnectionForm.jsx:108
 #: src/components/network/WifiConnectionForm.jsx:111
 msgid "Security"
-msgstr ""
+msgstr "セキュリティ"
 
 #. TRANSLATORS: WiFi password
 #: src/components/network/WifiConnectionForm.jsx:120
 msgid "WPA Password"
-msgstr ""
+msgstr "WPA パスワード"
 
 #. TRANSLATORS: button label, connect to a WiFi network
 #: src/components/network/WifiConnectionForm.jsx:134
 msgid "Connect"
-msgstr ""
+msgstr "接続"
 
 #. TRANSLATORS: button label
 #: src/components/network/WifiHiddenNetworkForm.jsx:50
 msgid "Connect to hidden network"
-msgstr ""
+msgstr "ステルスネットワークへの接続"
 
 #. TRANSLATORS: %s is replaced by a WiFi network name
 #: src/components/network/WifiNetworkListItem.jsx:93
 #, javascript-format
 msgid "%s connection is waiting for an state change"
-msgstr ""
+msgstr "接続 %s は状態の変化を待っています"
 
 #: src/components/network/WifiNetworkListItem.jsx:95
 msgid "Connecting"
-msgstr ""
+msgstr "接続しています"
 
 #. TRANSLATORS: menu label, remove the selected WiFi network settings
 #: src/components/network/WifiNetworkMenu.jsx:45
 msgid "Forget network"
-msgstr ""
+msgstr "ネットワークの削除"
 
 #. TRANSLATORS: %s will be replaced by a language name and code,
 #. example: "English (en_US.UTF-8)"
 #: src/components/overview/L10nSection.jsx:70
 #, javascript-format
 msgid "The system will use %s as its default language."
-msgstr ""
+msgstr "システムは %s を既定の言語として使用します。"
 
 #: src/components/overview/NetworkSection.jsx:78
 msgid "No network connections detected"
-msgstr ""
+msgstr "ネットワーク接続が見つかりませんでした"
 
 #. TRANSLATORS: header for the list of active network connections,
 #. %d is replaced by the number of active connections
@@ -575,139 +590,137 @@ msgstr ""
 #, javascript-format
 msgid "%d connection set:"
 msgid_plural "%d connections set:"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%d 個の接続が設定されています:"
 
 #: src/components/overview/SoftwareSection.jsx:36
 msgid "Reading software repositories"
-msgstr ""
+msgstr "ソフトウエアリポジトリを読み込んでいます"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
 #: src/components/overview/SoftwareSection.jsx:120
 #, javascript-format
 msgid "Installation will take %s"
-msgstr ""
+msgstr "インストールを行うには %s が必要です"
 
 #. TRANSLATORS: clickable link label
 #: src/components/overview/SoftwareSection.jsx:145
 msgid "Refresh the repositories"
-msgstr ""
+msgstr "リポジトリの更新"
 
 #. TRANSLATORS: page section
 #: src/components/overview/SoftwareSection.jsx:155
 msgid "Software"
-msgstr ""
+msgstr "ソフトウエア"
 
 #: src/components/overview/StorageSection.jsx:35
 msgid "Device not selected yet"
-msgstr ""
+msgstr "まだデバイスを選択していません"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:44
 #, javascript-format
 msgid "Install using device %s and deleting all its content"
-msgstr ""
+msgstr "デバイス %s の内容を全て削除してインストールします"
 
 #: src/components/overview/StorageSection.jsx:56
 msgid "Probing storage devices"
-msgstr ""
+msgstr "ストレージデバイスを検出しています"
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:164
 #: src/components/storage/ProposalPage.jsx:170
 msgid "Storage"
-msgstr ""
+msgstr "ストレージ"
 
 #. TRANSLATORS: %s will be replaced by the user name
 #: src/components/overview/UsersSection.jsx:80
 #, javascript-format
 msgid "User %s will be created"
-msgstr ""
+msgstr "ユーザ %s を作成します"
 
 #: src/components/overview/UsersSection.jsx:87
 #: src/components/users/FirstUser.jsx:44
 msgid "No user defined yet"
-msgstr ""
+msgstr "ユーザを設定していません"
 
 #: src/components/overview/UsersSection.jsx:101
 msgid "Root authentication set for using both, password and public SSH Key"
-msgstr ""
+msgstr "パスワードと公開 SSH 鍵の両方による root 認証を設定済み"
 
 #: src/components/overview/UsersSection.jsx:102
 msgid "No root authentication method defined"
-msgstr ""
+msgstr "root 認証方式を設定していません"
 
 #: src/components/overview/UsersSection.jsx:103
 msgid "Root authentication set for using password"
-msgstr ""
+msgstr "パスワードによる root 認証を設定済み"
 
 #: src/components/overview/UsersSection.jsx:104
 msgid "Root authentication set for using public SSH Key"
-msgstr ""
+msgstr "公開 SSH 鍵による root 認証を設定済み"
 
 #. TRANSLATORS: page section title
 #: src/components/overview/UsersSection.jsx:120
 #: src/components/users/UsersPage.jsx:30
 msgid "Users"
-msgstr ""
+msgstr "ユーザ"
 
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
 msgid "Question"
-msgstr ""
+msgstr "質問"
 
 #. TRANSLATORS: error message, user entered a wrong password
 #: src/components/questions/LuksActivationQuestion.jsx:34
 msgid "Given encryption password didn't work"
-msgstr ""
+msgstr "指定された暗号化パスワードが正しくありません"
 
 #: src/components/questions/LuksActivationQuestion.jsx:59
 msgid "Encrypted Device"
-msgstr ""
+msgstr "暗号化されたデバイス"
 
 #. TRANSLATORS: field label
 #: src/components/questions/LuksActivationQuestion.jsx:69
 msgid "Encryption Password"
-msgstr ""
+msgstr "暗号化パスワード"
 
 #: src/components/software/ChangeProductLink.jsx:36
 msgid "Change product"
-msgstr ""
+msgstr "製品の変更"
 
 #: src/components/software/ProductSelectionPage.jsx:68
 msgid "Loading available products, please wait..."
-msgstr ""
+msgstr "利用可能な製品を読み込んでいます。しばらくお待ちください..."
 
 #. TRANSLATORS: page header
 #: src/components/software/ProductSelectionPage.jsx:93
 msgid "Product selection"
-msgstr ""
+msgstr "製品の選択"
 
 #. TRANSLATORS: button label
 #: src/components/software/ProductSelectionPage.jsx:98
 msgid "Select"
-msgstr ""
+msgstr "選択"
 
 #: src/components/software/ProductSelectionPage.jsx:103
 msgid "Choose a product"
-msgstr ""
+msgstr "製品を選択してください"
 
 #: src/components/storage/DASDFormatProgress.jsx:61
 msgid "Waiting for progress report"
-msgstr ""
+msgstr "経過レポートを待機しています"
 
 #: src/components/storage/DASDFormatProgress.jsx:69
 msgid "Formatting DASD devices"
-msgstr ""
+msgstr "DASD デバイスをフォーマットしています"
 
 #. TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
 #: src/components/storage/DASDPage.jsx:185
 msgid "Storage DASD"
-msgstr ""
+msgstr "DASD ストレージ"
 
 #: src/components/storage/DASDPage.jsx:187
 #: src/components/storage/ISCSIPage.jsx:39
@@ -715,28 +728,28 @@ msgstr ""
 #: src/components/storage/ZFCPPage.jsx:736
 #: src/components/users/UsersPage.jsx:30
 msgid "Back"
-msgstr ""
+msgstr "戻る"
 
 #: src/components/storage/DASDTable.jsx:55
 #: src/components/storage/ZFCPPage.jsx:320
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 msgid "No"
-msgstr ""
+msgstr "いいえ"
 
 #: src/components/storage/DASDTable.jsx:55
 #: src/components/storage/ZFCPPage.jsx:320
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 msgid "Yes"
-msgstr ""
+msgstr "はい"
 
 #: src/components/storage/DASDTable.jsx:62
 #: src/components/storage/ZFCPDiskForm.jsx:118
 #: src/components/storage/ZFCPPage.jsx:303
 #: src/components/storage/ZFCPPage.jsx:363
 msgid "Channel ID"
-msgstr ""
+msgstr "チャネル ID"
 
 #. TRANSLATORS: table header
 #: src/components/storage/DASDTable.jsx:63
@@ -745,104 +758,104 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:125
 #: src/components/users/RootAuthMethods.jsx:153
 msgid "Status"
-msgstr ""
+msgstr "状態"
 
 #: src/components/storage/DASDTable.jsx:64
 msgid "Device"
-msgstr ""
+msgstr "デバイス"
 
 #: src/components/storage/DASDTable.jsx:65
 msgid "Type"
-msgstr ""
+msgstr "種類"
 
 #: src/components/storage/DASDTable.jsx:66
 msgid "Diag"
-msgstr ""
+msgstr "診断"
 
 #: src/components/storage/DASDTable.jsx:67
 msgid "Formatted"
-msgstr ""
+msgstr "フォーマット済み"
 
 #: src/components/storage/DASDTable.jsx:68
 msgid "Partition Info"
-msgstr ""
+msgstr "パーティション情報"
 
 #. TRANSLATORS: drop down menu action, activate the device
 #: src/components/storage/DASDTable.jsx:102
 #: src/components/storage/ZFCPPage.jsx:334
 msgid "Activate"
-msgstr ""
+msgstr "有効化"
 
 #. TRANSLATORS: drop down menu action, deactivate the device
 #: src/components/storage/DASDTable.jsx:104
 #: src/components/storage/ZFCPPage.jsx:376
 msgid "Deactivate"
-msgstr ""
+msgstr "無効化"
 
 #. TRANSLATORS: drop down menu action, enable DIAG access method
 #: src/components/storage/DASDTable.jsx:107
 msgid "Set DIAG On"
-msgstr ""
+msgstr "診断を有効化"
 
 #. TRANSLATORS: drop down menu action, disable DIAG access method
 #: src/components/storage/DASDTable.jsx:109
 msgid "Set DIAG Off"
-msgstr ""
+msgstr "診断を無効化"
 
 #. TRANSLATORS: drop down menu action, format the disk
 #: src/components/storage/DASDTable.jsx:112
 msgid "Format"
-msgstr ""
+msgstr "フォーマット"
 
 #. TRANSLATORS: drop down menu label
 #: src/components/storage/DASDTable.jsx:117
 msgid "Perform an action"
-msgstr ""
+msgstr "処理を実行"
 
 #: src/components/storage/DASDTable.jsx:195
 #: src/components/storage/DASDTable.jsx:196
 msgid "Filter by min channel"
-msgstr ""
+msgstr "最小チャネルでフィルタ"
 
 #: src/components/storage/DASDTable.jsx:203
 msgid "Remove min channel filter"
-msgstr ""
+msgstr "最小チャネルのフィルタを削除"
 
 #: src/components/storage/DASDTable.jsx:216
 #: src/components/storage/DASDTable.jsx:217
 msgid "Filter by max channel"
-msgstr ""
+msgstr "最大チャネルでフィルタ"
 
 #: src/components/storage/DASDTable.jsx:224
 msgid "Remove max channel filter"
-msgstr ""
+msgstr "最大チャネルのフィルタを削除"
 
 #. TRANSLATORS: multipath device type
 #: src/components/storage/DeviceSelector.jsx:99
 msgid "Multipath"
-msgstr ""
+msgstr "マルチパス"
 
 #. TRANSLATORS: %s is replaced by the device bus ID
 #: src/components/storage/DeviceSelector.jsx:104
 #, javascript-format
 msgid "DASD %s"
-msgstr ""
+msgstr "DASD %s"
 
 #. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
 #: src/components/storage/DeviceSelector.jsx:109
 #, javascript-format
 msgid "Software %s"
-msgstr ""
+msgstr "ソフトウエア %s"
 
 #: src/components/storage/DeviceSelector.jsx:114
 msgid "SD Card"
-msgstr ""
+msgstr "SD カード"
 
 #. TRANSLATORS: %s is replaced by the device transport name, e.g. USB, SATA, SCSI...
 #: src/components/storage/DeviceSelector.jsx:116
 #, javascript-format
 msgid "Transport %s"
-msgstr ""
+msgstr "トランスポート %s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
 #: src/components/storage/DeviceSelector.jsx:135
@@ -852,9 +865,10 @@ msgstr ""
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
 #: src/components/storage/DeviceSelector.jsx:144
-#, javascript-format
+#, fuzzy, javascript-format
+#| msgid "Device"
 msgid "Devices: %s"
-msgstr ""
+msgstr "デバイス"
 
 #. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
 #: src/components/storage/DeviceSelector.jsx:153
@@ -867,62 +881,60 @@ msgstr ""
 #: src/components/storage/DeviceSelector.jsx:177
 #, javascript-format
 msgid "%s with %d partitions"
-msgstr ""
+msgstr "%s (%d 個のパーティション)"
 
 #. TRANSLATORS: status message, no existing content was found on the disk,
 #. i.e. the disk is completely empty
 #: src/components/storage/DeviceSelector.jsx:201
 msgid "No content found"
-msgstr ""
+msgstr "内容が見つかりませんでした"
 
 #: src/components/storage/DeviceSelector.jsx:249
 msgid "Available devices"
-msgstr ""
+msgstr "利用可能なデバイス"
 
 #. TRANSLATORS: page title for iSCSI configuration
 #: src/components/storage/ISCSIPage.jsx:36
 msgid "Storage iSCSI"
-msgstr ""
+msgstr "ストレージ iSCSI"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsSection.jsx:71
 #, javascript-format
 msgid "Hide %d subvolume action"
 msgid_plural "Hide %d subvolume actions"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%d 個のサブボリューム処理を隠す"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsSection.jsx:73
 #, javascript-format
 msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%d 個のサブボリューム処理を表示"
 
 #: src/components/storage/ProposalActionsSection.jsx:78
 msgid "Actions to create the file systems and to ensure the system boots."
 msgstr ""
+"ファイルシステムを作成するための処理とシステムが起動できるようにするための処"
+"理です。"
 
 #. TRANSLATORS: section title, list of planned actions for the selected device,
 #. e.g. "delete partition A", "create partition B with filesystem C", ...
 #: src/components/storage/ProposalActionsSection.jsx:126
 msgid "Planned Actions"
-msgstr ""
+msgstr "処理の計画"
 
 #: src/components/storage/ProposalPage.jsx:150
 msgid "Devices will not be modified until installation starts."
-msgstr ""
+msgstr "インストールを開始するまではデバイスへの書き込みは行われません。"
 
 #: src/components/storage/ProposalPageOptions.jsx:40
 msgid "Manage and format"
-msgstr ""
+msgstr "管理とフォーマット"
 
 #: src/components/storage/ProposalPageOptions.jsx:58
 msgid "Activate disks"
-msgstr ""
+msgstr "ディスクの有効化"
 
 #: src/components/storage/ProposalPageOptions.jsx:60
 msgid "zFCP"
@@ -930,7 +942,7 @@ msgstr ""
 
 #: src/components/storage/ProposalPageOptions.jsx:76
 msgid "Connect to iSCSI targets"
-msgstr ""
+msgstr "iSCSI ターゲットへの接続"
 
 #: src/components/storage/ProposalPageOptions.jsx:78
 msgid "iSCSI"
@@ -938,179 +950,181 @@ msgstr ""
 
 #: src/components/storage/ProposalSettingsSection.jsx:112
 msgid "No device selected yet"
-msgstr ""
+msgstr "まだ何もデバイスを選択していません"
 
 #: src/components/storage/ProposalSettingsSection.jsx:121
 msgid ""
 "Select the device for installing the system. All the file systems will be "
 "created on the selected device."
 msgstr ""
+"システムのインストール先となるデバイスを選択してください。選択したデバイス内"
+"に全てのファイルシステムを作成します。"
 
 #: src/components/storage/ProposalSettingsSection.jsx:127
 #: src/components/storage/ProposalSettingsSection.jsx:131
 msgid "Installation device"
-msgstr ""
+msgstr "インストール先のデバイス"
 
 #: src/components/storage/ProposalSettingsSection.jsx:137
 msgid "No devices found"
-msgstr ""
+msgstr "デバイスが見つかりませんでした"
 
 #: src/components/storage/ProposalSettingsSection.jsx:187
 msgid "Use logical volume management (LVM)"
-msgstr ""
+msgstr "論理ボリュームマネージャ (LVM) を使用する"
 
 #: src/components/storage/ProposalSettingsSection.jsx:287
 msgid "Change encryption password"
-msgstr ""
+msgstr "暗号化パスワードを変更する"
 
 #: src/components/storage/ProposalSettingsSection.jsx:292
 #: src/components/storage/ProposalSettingsSection.jsx:313
 msgid "Encryption settings"
-msgstr ""
+msgstr "暗号化の設定"
 
 #: src/components/storage/ProposalSettingsSection.jsx:306
 msgid "Use encryption"
-msgstr ""
+msgstr "暗号化を使用する"
 
 #: src/components/storage/ProposalSettingsSection.jsx:374
 msgid "Settings"
-msgstr ""
+msgstr "設定"
 
 #. TRANSLATORS: header for a list of items
 #: src/components/storage/ProposalVolumes.jsx:56
 msgid "These limits are affected by:"
-msgstr ""
+msgstr "これらの制限は下記による影響を受けます:"
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
 #: src/components/storage/ProposalVolumes.jsx:60
 msgid "The configuration of snapshots"
-msgstr ""
+msgstr "スナップショットの設定"
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
 #. %s is replaced by a list of the volumes (like "/home, /boot")
 #: src/components/storage/ProposalVolumes.jsx:64
 #, javascript-format
 msgid "Presence of other volumes (%s)"
-msgstr ""
+msgstr "その他のボリューム (%s) の存在"
 
 #. TRANSLATORS: dropdown menu label
 #: src/components/storage/ProposalVolumes.jsx:119
 msgid "Reset to defaults"
-msgstr ""
+msgstr "規定値に戻す"
 
 #. TRANSLATORS: dropdown menu label
 #: src/components/storage/ProposalVolumes.jsx:127
 #: src/components/storage/ProposalVolumes.jsx:137
 msgid "Add file system"
-msgstr ""
+msgstr "ファイルシステムの追加"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/ProposalVolumes.jsx:186
 #, javascript-format
 msgid "At least %s"
-msgstr ""
+msgstr "少なくとも %s"
 
 #. TRANSLATORS: device flag, the partition size is automatically computed
 #: src/components/storage/ProposalVolumes.jsx:192
 msgid "auto"
-msgstr ""
+msgstr "自動"
 
 #. TRANSLATORS: the filesystem uses a logical volume (LVM)
 #: src/components/storage/ProposalVolumes.jsx:202
 msgid "logical volume"
-msgstr ""
+msgstr "論理ボリューム"
 
 #: src/components/storage/ProposalVolumes.jsx:202
 msgid "partition"
-msgstr ""
+msgstr "パーティション"
 
 #. TRANSLATORS: filesystem flag, it uses an encryption
 #: src/components/storage/ProposalVolumes.jsx:210
 msgid "encrypted"
-msgstr ""
+msgstr "暗号化"
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
 #: src/components/storage/ProposalVolumes.jsx:212
 msgid "with snapshots"
-msgstr ""
+msgstr "スナップショット有り"
 
 #: src/components/storage/ProposalVolumes.jsx:221
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
-msgstr ""
+msgstr "削除"
 
 #: src/components/storage/ProposalVolumes.jsx:267
 msgid "Edit file system"
-msgstr ""
+msgstr "ファイルシステムの編集"
 
 #: src/components/storage/ProposalVolumes.jsx:298
 #: src/components/storage/VolumeForm.jsx:490
 msgid "Mount point"
-msgstr ""
+msgstr "マウントポイント"
 
 #: src/components/storage/ProposalVolumes.jsx:299
 msgid "Details"
-msgstr ""
+msgstr "詳細"
 
 #: src/components/storage/ProposalVolumes.jsx:300
 #: src/components/storage/VolumeForm.jsx:507
 msgid "Size"
-msgstr ""
+msgstr "サイズ"
 
 #: src/components/storage/ProposalVolumes.jsx:335
 msgid "Table with mount points"
-msgstr ""
+msgstr "マウントポイントの一覧"
 
 #: src/components/storage/ProposalVolumes.jsx:391
 msgid "File systems to create in your system"
-msgstr ""
+msgstr "お使いのシステム内で作成するファイルシステム"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #: src/components/storage/VolumeForm.jsx:96
 msgid "the configuration of snapshots"
-msgstr ""
+msgstr "スナップショットの設定"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
 #: src/components/storage/VolumeForm.jsx:101
 #, javascript-format
 msgid "the presence of the file system for %s"
-msgstr ""
+msgstr "%s に対するファイルシステムの存在"
 
 #. TRANSLATORS: conjunction for merging two list items
 #: src/components/storage/VolumeForm.jsx:103
 msgid ", "
-msgstr ""
+msgstr ", "
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
 #: src/components/storage/VolumeForm.jsx:106
 #, javascript-format
 msgid "The final size depends on %s."
-msgstr ""
+msgstr "最終的なサイズは %s に依存します。"
 
 #. TRANSLATORS: conjunction for merging two texts
 #: src/components/storage/VolumeForm.jsx:108
 msgid " and "
-msgstr ""
+msgstr " および "
 
 #. TRANSLATORS: the partition size is automatically computed
 #: src/components/storage/VolumeForm.jsx:113
 msgid "Automatically calculated size according to the selected product."
-msgstr ""
+msgstr "選択した製品から自動計算したサイズです。"
 
 #: src/components/storage/VolumeForm.jsx:133
 msgid "Exact size for the file system."
-msgstr ""
+msgstr "ファイルシステムに対する正確なサイズです。"
 
 #. TRANSLATORS: requested partition size
 #: src/components/storage/VolumeForm.jsx:146
 msgid "Exact size"
-msgstr ""
+msgstr "正確なサイズ"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
 #: src/components/storage/VolumeForm.jsx:159
 msgid "Size unit"
-msgstr ""
+msgstr "サイズの単位"
 
 #: src/components/storage/VolumeForm.jsx:185
 msgid ""
@@ -1118,106 +1132,109 @@ msgid ""
 "given minimum and maximum. If no maximum is given then the file system will "
 "be as big as possible."
 msgstr ""
+"ファイルシステムに対するサイズ制限です。最終的なサイズは最小値と最大値の間に"
+"なります。最大値を指定しない場合、ファイルシステムはできる限り大きくなるよう"
+"に設定されます。"
 
 #. TRANSLATORS: the minimal partition size
 #: src/components/storage/VolumeForm.jsx:192
 msgid "Minimum"
-msgstr ""
+msgstr "最小"
 
 #. TRANSLATORS: the minium partition size
 #: src/components/storage/VolumeForm.jsx:203
 msgid "Minimum desired size"
-msgstr ""
+msgstr "最小必須サイズ"
 
 #: src/components/storage/VolumeForm.jsx:210
 msgid "Unit for the minimum size"
-msgstr ""
+msgstr "最小サイズの単位"
 
 #. TRANSLATORS: the maximum partition size
 #: src/components/storage/VolumeForm.jsx:219
 msgid "Maximum"
-msgstr ""
+msgstr "最大"
 
 #. TRANSLATORS: the maximum partition size
 #: src/components/storage/VolumeForm.jsx:231
 msgid "Maximum desired size"
-msgstr ""
+msgstr "最大要求サイズ"
 
 #: src/components/storage/VolumeForm.jsx:238
 msgid "Unit for the maximum size"
-msgstr ""
+msgstr "最大サイズの単位"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
 #: src/components/storage/VolumeForm.jsx:253
 msgid "Auto"
-msgstr ""
+msgstr "自動"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
 #: src/components/storage/VolumeForm.jsx:255
 msgid "Fixed"
-msgstr ""
+msgstr "固定値"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
 #: src/components/storage/VolumeForm.jsx:257
 msgid "Range"
-msgstr ""
+msgstr "範囲"
 
 #: src/components/storage/VolumeForm.jsx:460
 msgid "A size value is required"
-msgstr ""
+msgstr "サイズを指定する必要があります"
 
 #: src/components/storage/VolumeForm.jsx:465
 msgid "Minimum size is required"
-msgstr ""
+msgstr "最小サイズを指定する必要があります"
 
 #: src/components/storage/VolumeForm.jsx:469
 msgid "Maximum must be greater than minimum"
-msgstr ""
+msgstr "最大サイズは最小サイズより大きくなければなりません"
 
 #: src/components/storage/VolumeForm.jsx:499
 msgid "File system type"
-msgstr ""
+msgstr "ファイルシステムの種類"
 
 #: src/components/storage/ZFCPDiskForm.jsx:113
 msgid "The zFCP disk was not activated."
-msgstr ""
+msgstr "zFCP ディスクは有効化されませんでした。"
 
 #. TRANSLATORS: abbrev. World Wide Port Name
 #: src/components/storage/ZFCPDiskForm.jsx:129
 #: src/components/storage/ZFCPPage.jsx:364
 msgid "WWPN"
-msgstr ""
+msgstr "WWPN"
 
 #. TRANSLATORS: abbrev. Logical Unit Number
 #: src/components/storage/ZFCPDiskForm.jsx:140
 #: src/components/storage/ZFCPPage.jsx:365
 msgid "LUN"
-msgstr ""
+msgstr "LUN"
 
 #: src/components/storage/ZFCPPage.jsx:305
 msgid "Auto LUNs Scan"
-msgstr ""
+msgstr "自動 LUN 検出"
 
 #: src/components/storage/ZFCPPage.jsx:316
 msgid "Activated"
-msgstr ""
+msgstr "有効"
 
 #: src/components/storage/ZFCPPage.jsx:316
 msgid "Deactivated"
-msgstr ""
+msgstr "無効"
 
 #: src/components/storage/ZFCPPage.jsx:419
 msgid "No zFCP controllers found"
-msgstr ""
+msgstr "zFCP コントローラが見つかりませんでした"
 
 #: src/components/storage/ZFCPPage.jsx:420
 msgid "Please, try to read the zFCP devices again."
-msgstr ""
+msgstr "zFCP デバイスの再読み込みを試してみてください。"
 
 #. TRANSLATORS: button label
 #: src/components/storage/ZFCPPage.jsx:422
 msgid "Read zFCP devices"
-msgstr ""
+msgstr "zFCP デバイスの読み込み"
 
 #. TRANSLATORS: the text in the square brackets [] will be displayed in bold
 #: src/components/storage/ZFCPPage.jsx:431
@@ -1225,6 +1242,8 @@ msgid ""
 "Automatic LUN scan is [enabled]. Activating a controller which is running in "
 "NPIV mode will automatically configures all its LUNs."
 msgstr ""
+"自動 LUN スキャンが [有効化] されています。 NPIV モードで動作しているコント"
+"ローラを有効化した場合、その LUN は全て自動的に設定されます。"
 
 #. TRANSLATORS: the text in the square brackets [] will be displayed in bold
 #: src/components/storage/ZFCPPage.jsx:434
@@ -1232,50 +1251,52 @@ msgid ""
 "Automatic LUN scan is [disabled]. LUNs have to be manually configured after "
 "activating a controller."
 msgstr ""
+"自動 LUN スキャンが [無効化] されています。 LUN はコントローラの有効化後、手"
+"作業で設定しなければなりません。"
 
 #: src/components/storage/ZFCPPage.jsx:500
 msgid "Activate a zFCP disk"
-msgstr ""
+msgstr "zFCP ディスクの有効化"
 
 #: src/components/storage/ZFCPPage.jsx:539
 msgid "Please, try to activate a zFCP controller."
-msgstr ""
+msgstr "zFCP コントローラの有効化をお試しください。"
 
 #: src/components/storage/ZFCPPage.jsx:546
 msgid "Please, try to activate a zFCP disk."
-msgstr ""
+msgstr "zFCP ディスクの有効化をお試しください。"
 
 #. TRANSLATORS: button label
 #: src/components/storage/ZFCPPage.jsx:548
 msgid "Activate zFCP disk"
-msgstr ""
+msgstr "zFCP ディスクの有効化"
 
 #: src/components/storage/ZFCPPage.jsx:555
 msgid "No zFCP disks found"
-msgstr ""
+msgstr "zFCP ディスクが見つかりませんでした"
 
 #. TRANSLATORS: button label
 #: src/components/storage/ZFCPPage.jsx:574
 msgid "Activate new disk"
-msgstr ""
+msgstr "新しいディスクの有効化"
 
 #. TRANSLATORS: section title
 #: src/components/storage/ZFCPPage.jsx:586
 msgid "Disks"
-msgstr ""
+msgstr "ディスク"
 
 #. TRANSLATORS: page title
 #: src/components/storage/ZFCPPage.jsx:734
 msgid "Storage zFCP"
-msgstr ""
+msgstr "ストレージ zFCP"
 
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
-msgstr ""
+msgstr "ターゲットによる認証を指定した場合にのみ利用できます"
 
 #: src/components/storage/iscsi/AuthFields.jsx:77
 msgid "Authentication by target"
-msgstr ""
+msgstr "ターゲットによる認証"
 
 #: src/components/storage/iscsi/AuthFields.jsx:80
 #: src/components/storage/iscsi/AuthFields.jsx:87
@@ -1284,75 +1305,75 @@ msgstr ""
 #: src/components/storage/iscsi/AuthFields.jsx:123
 #: src/components/storage/iscsi/AuthFields.jsx:125
 msgid "User name"
-msgstr ""
+msgstr "ユーザ名"
 
 #: src/components/storage/iscsi/AuthFields.jsx:81
 #: src/components/storage/iscsi/AuthFields.jsx:117
 msgid "Incorrect user name"
-msgstr ""
+msgstr "ユーザ名が正しくありません"
 
 #: src/components/storage/iscsi/AuthFields.jsx:97
 #: src/components/storage/iscsi/AuthFields.jsx:134
 msgid "Incorrect password"
-msgstr ""
+msgstr "パスワードが正しくありません"
 
 #: src/components/storage/iscsi/AuthFields.jsx:112
 msgid "Authentication by initiator"
-msgstr ""
+msgstr "イニシエータによる認証"
 
 #: src/components/storage/iscsi/AuthFields.jsx:141
 msgid "Target Password"
-msgstr ""
+msgstr "ターゲットのパスワード"
 
 #. TRANSLATORS: popup title
 #: src/components/storage/iscsi/DiscoverForm.jsx:101
 msgid "Discover iSCSI Targets"
-msgstr ""
+msgstr "iSCSI ターゲットの検出"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:110
 #: src/components/storage/iscsi/LoginForm.jsx:73
 msgid "Make sure you provide the correct values"
-msgstr ""
+msgstr "正しい値を設定しているかどうかご確認ください"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:115
 msgid "IP address"
-msgstr ""
+msgstr "IP アドレス"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:117
 msgid "Incorrect IP address"
-msgstr ""
+msgstr "IP アドレスが正しくありません"
 
 #. TRANSLATORS: network address
 #: src/components/storage/iscsi/DiscoverForm.jsx:124
 #: src/components/storage/iscsi/DiscoverForm.jsx:126
 msgid "Address"
-msgstr ""
+msgstr "アドレス"
 
 #. TRANSLATORS: network port number
 #: src/components/storage/iscsi/DiscoverForm.jsx:134
 #: src/components/storage/iscsi/DiscoverForm.jsx:143
 #: src/components/storage/iscsi/DiscoverForm.jsx:145
 msgid "Port"
-msgstr ""
+msgstr "ポート"
 
 #: src/components/storage/iscsi/DiscoverForm.jsx:136
 msgid "Incorrect port"
-msgstr ""
+msgstr "ポートが正しくありません"
 
 #. TRANSLATORS: %s is replaced by the iSCSI target node name
 #: src/components/storage/iscsi/EditNodeForm.jsx:50
 #, javascript-format
 msgid "Edit %s"
-msgstr ""
+msgstr "%s の編集"
 
 #: src/components/storage/iscsi/InitiatorForm.jsx:42
 msgid "Edit iSCSI Initiator"
-msgstr ""
+msgstr "iSCSI イニシエータの編集"
 
 #. TRANSLATORS: iSCSI initiator name
 #: src/components/storage/iscsi/InitiatorForm.jsx:49
 msgid "Initiator name"
-msgstr ""
+msgstr "イニシエータ名"
 
 #. TRANSLATORS: usually just keep the original text
 #. iBFT = iSCSI Boot Firmware Table, HW support for booting from iSCSI
@@ -1361,254 +1382,257 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 #: src/components/storage/iscsi/NodesPresenter.jsx:124
 msgid "iBFT"
-msgstr ""
+msgstr "iBFT"
 
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:87
 msgid "Offload card"
-msgstr ""
+msgstr "オフロードカード"
 
 #. TRANSLATORS: iSCSI initiator section name
 #: src/components/storage/iscsi/InitiatorSection.jsx:50
 msgid "Initiator"
-msgstr ""
+msgstr "イニシエータ"
 
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
 #: src/components/storage/iscsi/LoginForm.jsx:76
 #: src/components/storage/iscsi/LoginForm.jsx:79
 msgid "Startup"
-msgstr ""
+msgstr "起動"
 
 #: src/components/storage/iscsi/NodeStartupOptions.js:26
 msgid "On boot"
-msgstr ""
+msgstr "システム起動時"
 
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
-msgstr ""
+msgstr "自動"
 
 #. TRANSLATORS: iSCSI connection status
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
-msgstr ""
+msgstr "切断済み"
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
 #: src/components/storage/iscsi/NodesPresenter.jsx:67
 #, javascript-format
 msgid "Connected (%s)"
-msgstr ""
+msgstr "接続済み (%s)"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:82
 msgid "Login"
-msgstr ""
+msgstr "ログイン"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:86
 msgid "Logout"
-msgstr ""
+msgstr "ログアウト"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:101
 #: src/components/storage/iscsi/NodesPresenter.jsx:122
 msgid "Portal"
-msgstr ""
+msgstr "ポータル"
 
 #: src/components/storage/iscsi/NodesPresenter.jsx:102
 #: src/components/storage/iscsi/NodesPresenter.jsx:123
 msgid "Interface"
-msgstr ""
+msgstr "インターフェイス"
 
 #: src/components/storage/iscsi/TargetsSection.jsx:139
 msgid "No iSCSI targets found"
-msgstr ""
+msgstr "iSCSI ターゲットが見つかりませんでした"
 
 #: src/components/storage/iscsi/TargetsSection.jsx:140
 msgid ""
 "Please, perform an iSCSI discovery in order to find available iSCSI targets."
 msgstr ""
+"利用可能な iSCSI ターゲットを検出するため、 iSCSI 検索を実施してください。"
 
 #. TRANSLATORS: button label, starts iSCSI discovery
 #: src/components/storage/iscsi/TargetsSection.jsx:142
 msgid "Discover iSCSI targets"
-msgstr ""
+msgstr "iSCSI ターゲットの検索"
 
 #. TRANSLATORS: button label, starts iSCSI discovery
 #: src/components/storage/iscsi/TargetsSection.jsx:153
 msgid "Discover"
-msgstr ""
+msgstr "検索"
 
 #. TRANSLATORS: iSCSI targets section title
 #: src/components/storage/iscsi/TargetsSection.jsx:167
 msgid "Targets"
-msgstr ""
+msgstr "ターゲット"
 
 #: src/components/storage/utils.js:44
 msgid "KiB"
-msgstr ""
+msgstr "KiB"
 
 #: src/components/storage/utils.js:45
 msgid "MiB"
-msgstr ""
+msgstr "MiB"
 
 #: src/components/storage/utils.js:46
 msgid "GiB"
-msgstr ""
+msgstr "GiB"
 
 #: src/components/storage/utils.js:47
 msgid "TiB"
-msgstr ""
+msgstr "TiB"
 
 #: src/components/storage/utils.js:48
 msgid "PiB"
-msgstr ""
+msgstr "PiB"
 
 #: src/components/users/FirstUser.jsx:45
 msgid ""
 "Please, be aware that a user must be defined before installing the system to "
 "be able to log into it."
 msgstr ""
+"なお、システムにログインできるようにするには、インストールの前にユーザを設定"
+"しておかなければならないことに注意してください。"
 
 #. TRANSLATORS: push button label
 #: src/components/users/FirstUser.jsx:47
 msgid "Define a user now"
-msgstr ""
+msgstr "今すぐユーザを設定する"
 
 #: src/components/users/FirstUser.jsx:57 src/components/users/FirstUser.jsx:198
 msgid "Full name"
-msgstr ""
+msgstr "フルネーム"
 
 #: src/components/users/FirstUser.jsx:58 src/components/users/FirstUser.jsx:209
 #: src/components/users/FirstUser.jsx:213
 #: src/components/users/FirstUser.jsx:215
 msgid "Username"
-msgstr ""
+msgstr "ユーザ名"
 
 #: src/components/users/FirstUser.jsx:174
 #: src/components/users/RootAuthMethods.jsx:95
 #: src/components/users/RootAuthMethods.jsx:107
 msgid "Discard"
-msgstr ""
+msgstr "破棄"
 
 #: src/components/users/FirstUser.jsx:191
 msgid "Create user account"
-msgstr ""
+msgstr "ユーザアカウントの作成"
 
 #: src/components/users/FirstUser.jsx:191
 msgid "Edit user account"
-msgstr ""
+msgstr "ユーザアカウントの編集"
 
 #: src/components/users/FirstUser.jsx:202
 #: src/components/users/FirstUser.jsx:204
 msgid "User full name"
-msgstr ""
+msgstr "ユーザのフルネーム"
 
 #. TRANSLATORS: check box label
 #: src/components/users/FirstUser.jsx:223
 #: src/components/users/FirstUser.jsx:227
 msgid "Edit password too"
-msgstr ""
+msgstr "パスワードも編集する"
 
 #: src/components/users/FirstUser.jsx:242
 msgid "user autologin"
-msgstr ""
+msgstr "ユーザの自動ログイン"
 
 #. TRANSLATORS: check box label
 #: src/components/users/FirstUser.jsx:246
 msgid "Auto-login"
-msgstr ""
+msgstr "自動ログイン"
 
 #: src/components/users/RootAuthMethods.jsx:35
 msgid "No root authentication method defined yet"
-msgstr ""
+msgstr "まだ root 認証方式を設定していません"
 
 #: src/components/users/RootAuthMethods.jsx:36
 msgid ""
 "Please, define at least one authentication method for logging into the "
 "system as root."
-msgstr ""
+msgstr "少なくとも 1 つ以上の root ログイン時の認証方式を設定してください。"
 
 #. TRANSLATORS: push button label
 #: src/components/users/RootAuthMethods.jsx:39
 msgid "Set a password"
-msgstr ""
+msgstr "パスワードの設定"
 
 #. TRANSLATORS: push button label
 #: src/components/users/RootAuthMethods.jsx:41
 msgid "Upload a SSH Public Key"
-msgstr ""
+msgstr "SSH 公開鍵のアップロード"
 
 #: src/components/users/RootAuthMethods.jsx:90
 #: src/components/users/RootAuthMethods.jsx:103
 msgid "Change"
-msgstr ""
+msgstr "変更"
 
 #: src/components/users/RootAuthMethods.jsx:90
 #: src/components/users/RootAuthMethods.jsx:103
 msgid "Set"
-msgstr ""
+msgstr "設定"
 
 #: src/components/users/RootAuthMethods.jsx:125
 msgid "Already set"
-msgstr ""
+msgstr "設定済み"
 
 #: src/components/users/RootAuthMethods.jsx:126
 #: src/components/users/RootAuthMethods.jsx:130
 msgid "Not set"
-msgstr ""
+msgstr "未設定"
 
 #. TRANSLATORS: table header, user authentication method
 #: src/components/users/RootAuthMethods.jsx:151
 msgid "Method"
-msgstr ""
+msgstr "方式"
 
 #: src/components/users/RootAuthMethods.jsx:166
 msgid "SSH Key"
-msgstr ""
+msgstr "SSH 鍵"
 
 #: src/components/users/RootAuthMethods.jsx:183
 msgid "Change the root password"
-msgstr ""
+msgstr "root のパスワードを変更"
 
 #: src/components/users/RootAuthMethods.jsx:183
 msgid "Set a root password"
-msgstr ""
+msgstr "root のパスワードを設定"
 
 #: src/components/users/RootAuthMethods.jsx:190
 msgid "Add a SSH Public Key for root"
-msgstr ""
+msgstr "root に対する SSH 公開鍵の追加"
 
 #: src/components/users/RootAuthMethods.jsx:190
 msgid "Edit the SSH Public Key for root"
-msgstr ""
+msgstr "root に対する SSH 公開鍵の編集"
 
 #: src/components/users/RootPasswordPopup.jsx:42
 msgid "Root password"
-msgstr ""
+msgstr "root のパスワード"
 
 #: src/components/users/RootSSHKeyPopup.jsx:43
 msgid "Set root SSH public key"
-msgstr ""
+msgstr "root の SSH 公開鍵の設定"
 
 #: src/components/users/RootSSHKeyPopup.jsx:71
 msgid "Root SSH public key"
-msgstr ""
+msgstr "root の SSH 公開鍵"
 
 #: src/components/users/RootSSHKeyPopup.jsx:76
 msgid "Upload, paste, or drop an SSH public key"
-msgstr ""
+msgstr "SSH 公開鍵のアップロード／貼り付け／ドロップ"
 
 #. TRANSLATORS: push button label
 #: src/components/users/RootSSHKeyPopup.jsx:78
 msgid "Upload"
-msgstr ""
+msgstr "アップロード"
 
 #. TRANSLATORS: push button label, clears the related input field
 #: src/components/users/RootSSHKeyPopup.jsx:80
 msgid "Clear"
-msgstr ""
+msgstr "消去"
 
 #: src/components/users/UsersPage.jsx:31
 msgid "User"
-msgstr ""
+msgstr "ユーザ"
 
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
-msgstr ""
+msgstr "root の認証"
