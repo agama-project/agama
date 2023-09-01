@@ -34,13 +34,13 @@ module Agama
         def initialize(logger: nil)
           super
 
-          @dbus_object = service["/org/opensuse/Agama/Questions1"]
-          @dbus_object.default_iface = "org.opensuse.Agama.Questions1"
+          @dbus_object = service["/org/opensuse/Agama1/Questions"]
+          @dbus_object.default_iface = "org.opensuse.Agama1.Questions"
         end
 
         # @return [String]
         def service_name
-          @service_name ||= "org.opensuse.Agama.Questions1"
+          @service_name ||= "org.opensuse.Agama1"
         end
 
         # Adds a question

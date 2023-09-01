@@ -26,24 +26,24 @@ require "dbus"
 describe Agama::DBus::Clients::Question do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.Agama.Questions1").and_return(service)
-    allow(service).to receive(:[]).with("/org/opensuse/Agama/Questions1/23")
+    allow(bus).to receive(:service).with("org.opensuse.Agama1").and_return(service)
+    allow(service).to receive(:[]).with("/org/opensuse/Agama1/Questions/23")
       .and_return(dbus_object)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Questions1.Generic")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama1.Questions.Generic")
       .and_return(generic_iface)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Questions1.WithPassword")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama1.Questions.WithPassword")
       .and_return(with_password_iface)
     allow(dbus_object).to receive(:has_iface?).with(/WithPassword/).and_return(with_password?)
   end
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
-  let(:service) { instance_double(::DBus::ProxyService) }
-  let(:dbus_object) { instance_double(::DBus::ProxyObject) }
-  let(:generic_iface) { instance_double(::DBus::ProxyObjectInterface) }
-  let(:with_password_iface) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:service) { instance_double(DBus::ProxyService) }
+  let(:dbus_object) { instance_double(DBus::ProxyObject) }
+  let(:generic_iface) { instance_double(DBus::ProxyObjectInterface) }
+  let(:with_password_iface) { instance_double(DBus::ProxyObjectInterface) }
   let(:with_password?) { true }
 
-  subject { described_class.new("/org/opensuse/Agama/Questions1/23") }
+  subject { described_class.new("/org/opensuse/Agama1/Questions/23") }
 
   describe "#answered?" do
     it "returns false if there is no answer" do

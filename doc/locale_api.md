@@ -97,8 +97,8 @@ In the following dump, we see that the locale was set by the user and the
 system has adjusted the keyboard.
 
 ```
-node ...Agama/Locale1 {
-  interface ...Agama.Locale1 {
+node ...Agama1/Locale {
+  interface ...Agama1.Locale {
     properties:
       readwrite (yas)   Locale = (23, ['cs_CZ.UTF-8', 'de_DE.UTF-8']);
       readwrite (y(ss)) X11Keyboard = (42, ('cz','qwerty));
@@ -155,8 +155,8 @@ linking them to languages and territories.
 
 ```
 # this is gdbus syntax BTW
-node /org/opensuse/Agama/Locale1 {
-  interface org.opensuse.Agama.Locale1 {
+node /org/opensuse/Agama1/Locale {
+  interface org.opensuse.Agama1.Locale {
     methods:
       # In the same order as in SupportedLocales, pairs of
       # (english_labels, native_labels), where foo_labels

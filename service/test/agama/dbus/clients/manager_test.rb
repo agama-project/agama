@@ -30,27 +30,27 @@ require "agama/installation_phase"
 describe Agama::DBus::Clients::Manager do
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:service).with("org.opensuse.Agama1").and_return(service)
-    allow(service).to receive(:[]).with("/org/opensuse/Agama1/Manager")
+    allow(bus).to receive(:service).with("org.opensuse.Agama.Manager1").and_return(service)
+    allow(service).to receive(:[]).with("/org/opensuse/Agama/Manager1")
       .and_return(dbus_object)
     allow(dbus_object).to receive(:introspect)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama1.Manager")
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Manager1")
       .and_return(manager_iface)
     allow(dbus_object).to receive(:[]).with("org.freedesktop.DBus.Properties")
       .and_return(properties_iface)
   end
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
-  let(:service) { instance_double(::DBus::ProxyService) }
-  let(:dbus_object) { instance_double(::DBus::ProxyObject) }
-  let(:manager_iface) { instance_double(::DBus::ProxyObjectInterface) }
-  let(:properties_iface) { instance_double(::DBus::ProxyObjectInterface, on_signal: nil) }
+  let(:service) { instance_double(DBus::ProxyService) }
+  let(:dbus_object) { instance_double(DBus::ProxyObject) }
+  let(:manager_iface) { instance_double(DBus::ProxyObjectInterface) }
+  let(:properties_iface) { instance_double(DBus::ProxyObjectInterface, on_signal: nil) }
 
   subject { described_class.new }
 
   describe "#Probe" do
     # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_object) { double(DBus::ProxyObject) }
 
     it "starts the config phase" do
       expect(dbus_object).to receive(:Probe)
@@ -61,7 +61,7 @@ describe Agama::DBus::Clients::Manager do
 
   describe "#commit" do
     # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_object) { double(DBus::ProxyObject) }
 
     it "starts the install phase" do
       expect(dbus_object).to receive(:Commit)

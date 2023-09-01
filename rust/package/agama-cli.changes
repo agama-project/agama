@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug 31 10:30:28 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a single D-Bus service to expose locale, network and
+  questions settings (gh#openSUSE/agama#729).
+
+-------------------------------------------------------------------
 Wed Aug 30 12:57:59 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Locale service: add value for UI locale (gh#openSUSE/agama#725)

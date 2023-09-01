@@ -3,7 +3,7 @@
  "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
   <!--
-      org.opensuse.Agama.Locale1:
+      org.opensuse.Agama1.Locale:
 
       Implementation note about language identifiers:
 
@@ -11,7 +11,7 @@
       See <ulink url="https://lists.opensuse.org/archives/list/yast-devel&commat;lists.opensuse.org/message/D52PSZ7TRID2RVM6CE6K2C2RUNNGOS6Z/">its announcement on yast-devel</ulink>.
       See also <ulink url="https://tools.ietf.org/html/rfc4647">RFC 4647 Matching of Language Tags</ulink>.
   -->
-  <interface name="org.opensuse.Agama.Locale1">
+  <interface name="org.opensuse.Agama1.Locale">
     <!--
      Get labels for locales. The first pair is english language and territory
      and second one is localized one to target language from locale.

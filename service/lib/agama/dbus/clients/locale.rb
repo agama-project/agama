@@ -26,17 +26,17 @@ module Agama
     module Clients
       # D-Bus client for locale configuration
       class Locale < Base
-        INTERFACE_NAME = "org.opensuse.Agama.Locale1"
+        INTERFACE_NAME = "org.opensuse.Agama1.Locale"
 
         def initialize
           super
 
-          @dbus_object = service.object("/org/opensuse/Agama/Locale1")
+          @dbus_object = service.object("/org/opensuse/Agama1/Locale")
           @dbus_object.introspect
         end
 
         def service_name
-          @service_name ||= "org.opensuse.Agama.Locale1"
+          @service_name ||= "org.opensuse.Agama1"
         end
 
         # Sets the supported locales. It can differs per product.

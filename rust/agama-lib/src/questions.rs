@@ -59,10 +59,10 @@ impl GenericQuestion {
     ///     "No".to_string(),
     ///     HashMap::new()
     ///   );
-    ///   assert_eq!(question.object_path(), "/org/opensuse/Agama/Questions1/2".to_string());
+    ///   assert_eq!(question.object_path(), "/org/opensuse/Agama1/Questions/2".to_string());
     /// ```
     pub fn object_path(&self) -> String {
-        format!("/org/opensuse/Agama/Questions1/{}", self.id)
+        format!("/org/opensuse/Agama1/Questions/{}", self.id)
     }
 }
 

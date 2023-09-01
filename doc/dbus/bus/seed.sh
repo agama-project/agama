@@ -20,9 +20,9 @@ cleanup() {
 DD=org.opensuse.Agama
 SS=/${DD//./\/}
 
-abusctl introspect --xml-interface ${DD}1 ${SS}1/Manager \
+abusctl introspect --xml-interface ${DD}1 ${SS}1/Locale \
         | cleanup \
-        > ${DD}1.Manager.bus.xml
+        > ${DD}1.Locale.bus.xml
 
 look() {
     abusctl tree --list $DD.${1%.*}
@@ -31,37 +31,36 @@ look() {
             > $DD.$1.bus.xml
 }
 
-look Locale1
-look Questions1
+look Manager1
 look Software1
 look Software1.Proposal
 look Storage1
 look Users1
 
 abusctl introspect --xml-interface \
-  ${DD}.Questions1 \
-  ${SS}/Questions1 \
+  ${DD}1 \
+  ${SS}1/Questions \
   | cleanup \
-  > ${DD}.Questions1.bus.xml
+  > ${DD}1.Questions.bus.xml
 
 abusctl call \
-  ${DD}.Questions1 \
-  ${SS}/Questions1 \
-  ${DD}.Questions1 \
+  ${DD}1 \
+  ${SS}1/Questions \
+  ${DD}1.Questions \
   New "ssassa{ss}" "org.bands.Clash" "should I stay or should I go" 2 yes no yes 0
 abusctl introspect --xml-interface \
-  ${DD}.Questions1 \
-  ${SS}/Questions1/0 \
+  ${DD}1 \
+  ${SS}1/Questions/0 \
   | cleanup \
-  > ${DD}.Questions1.Generic.bus.xml
+  > ${DD}1.Questions.Generic.bus.xml
 
 abusctl call \
-   ${DD}.Questions1 \
-   ${SS}/Questions1 \
-   ${DD}.Questions1 \
+   ${DD}1 \
+   ${SS}1/Questions \
+   ${DD}1.Questions \
    NewWithPassword "ssassa{ss}" "world.MiddleEarth.Moria.gate1" "Speak friend and enter" 2 enter giveup giveup 0
 abusctl introspect --xml-interface \
-  ${DD}.Questions1 \
-  ${SS}/Questions1/1 \
+  ${DD}1 \
+  ${SS}1/Questions/1 \
   | cleanup \
-  > ${DD}.Questions1.WithPassword.bus.xml
+  > ${DD}1.Questions.WithPassword.bus.xml

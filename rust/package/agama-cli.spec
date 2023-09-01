@@ -33,6 +33,8 @@ BuildRequires:  pkgconfig(openssl)
 # used in tests for dbus service
 BuildRequires:  python-langtable-data
 BuildRequires:  dbus-1-common
+# required by agama-dbus-server integration tests
+BuildRequires:  dbus-1-daemon
 Requires:       jsonnet
 Requires:       lshw
 

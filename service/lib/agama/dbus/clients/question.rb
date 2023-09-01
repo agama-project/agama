@@ -26,7 +26,7 @@ module Agama
     module Clients
       # D-Bus client for asking a question.
       class Question < Base
-        WITH_PASSWORD_IFACE = "org.opensuse.Agama.Questions1.WithPassword"
+        WITH_PASSWORD_IFACE = "org.opensuse.Agama1.Questions.WithPassword"
         private_constant :WITH_PASSWORD_IFACE
 
         # @return [::DBus::ProxyObject]
@@ -37,7 +37,7 @@ module Agama
           super()
 
           @dbus_object = service[object_path]
-          @dbus_iface = @dbus_object["org.opensuse.Agama.Questions1.Generic"]
+          @dbus_iface = @dbus_object["org.opensuse.Agama1.Questions.Generic"]
           # one D-Bus client for all kinds of questions
           return unless @dbus_object.has_iface?(WITH_PASSWORD_IFACE)
 
@@ -46,7 +46,7 @@ module Agama
 
         # @return [String]
         def service_name
-          @service_name ||= "org.opensuse.Agama.Questions1"
+          @service_name ||= "org.opensuse.Agama1"
         end
 
         # @return [String] Question text

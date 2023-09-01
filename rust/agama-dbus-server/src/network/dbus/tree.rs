@@ -7,8 +7,8 @@ use async_std::{channel::Sender, sync::Arc};
 use log;
 use std::collections::HashMap;
 
-const CONNECTIONS_PATH: &str = "/org/opensuse/Agama/Network1/connections";
-const DEVICES_PATH: &str = "/org/opensuse/Agama/Network1/devices";
+const CONNECTIONS_PATH: &str = "/org/opensuse/Agama1/Network/connections";
+const DEVICES_PATH: &str = "/org/opensuse/Agama1/Network/devices";
 
 /// Handle the objects in the D-Bus tree for the network state
 pub struct Tree {
