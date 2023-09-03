@@ -37,13 +37,17 @@ import { _ } from "~/i18n";
 const networkState = (state) => {
   switch (state) {
     case ConnectionState.ACTIVATING:
-      return 'Connecting';
+      // TRANSLATORS: Wifi network status
+      return _("Connecting");
     case ConnectionState.ACTIVATED:
-      return 'Connected';
+      // TRANSLATORS: Wifi network status
+      return _("Connected");
     case ConnectionState.DEACTIVATING:
-      return 'Disconnecting';
+      // TRANSLATORS: Wifi network status
+      return _("Disconnecting");
     case ConnectionState.DEACTIVATED:
-      return 'Disconnected';
+      // TRANSLATORS: Wifi network status
+      return _("Disconnected");
     default:
       return "";
   }
