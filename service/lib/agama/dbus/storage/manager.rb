@@ -64,7 +64,6 @@ module Agama
           register_progress_callbacks
           register_service_status_callbacks
           register_iscsi_callbacks
-          register_software_callbacks
 
           add_s390_interfaces if Yast::Arch.s390
         end
@@ -149,7 +148,7 @@ module Agama
           logger.info(
             "Calculating storage proposal from D-Bus.\n " \
             "D-Bus settings: #{dbus_settings}\n" \
-            "Agama settings: #{settings}"
+            "Agama settings: #{settings.inspect}"
           )
 
           success = proposal.calculate(settings)
@@ -295,12 +294,6 @@ module Agama
 
           backend.iscsi.on_sessions_change do
             deprecate_system
-          end
-        end
-
-        def register_software_callbacks
-          backend.software.on_product_selected do |_product|
-            backend.proposal.invalidate
           end
         end
 
