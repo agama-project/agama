@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-01 17:28+0000\n"
-"PO-Revision-Date: 2023-08-31 11:15+0000\n"
+"PO-Revision-Date: 2023-09-02 01:15+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -308,10 +308,9 @@ msgstr ""
 "ください。"
 
 #: src/components/layout/Icon.jsx:155
-#, fuzzy, javascript-format
-#| msgid "No content found"
+#, javascript-format
 msgid "Icon %s not found!"
-msgstr "内容が見つかりませんでした"
+msgstr "アイコン %s が見つかりませんでした！"
 
 #: src/components/layout/Loading.jsx:28
 msgid "Loading installation environment, please wait."
@@ -461,10 +460,8 @@ msgid "Gateway"
 msgstr "ゲートウエイ"
 
 #: src/components/network/NetworkPage.jsx:38
-#, fuzzy
-#| msgid "No WiFi connections found"
 msgid "No wired connections found"
-msgstr "WiFi 接続が見つかりませんでした"
+msgstr "有線接続が見つかりませんでした"
 
 #: src/components/network/NetworkPage.jsx:53
 msgid ""
@@ -861,20 +858,19 @@ msgstr "トランスポート %s"
 #: src/components/storage/DeviceSelector.jsx:135
 #, javascript-format
 msgid "Members: %s"
-msgstr ""
+msgstr "メンバー: %s"
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
 #: src/components/storage/DeviceSelector.jsx:144
-#, fuzzy, javascript-format
-#| msgid "Device"
+#, javascript-format
 msgid "Devices: %s"
-msgstr "デバイス"
+msgstr "デバイス: %s"
 
 #. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
 #: src/components/storage/DeviceSelector.jsx:153
 #, javascript-format
 msgid "Wires: %s"
-msgstr ""
+msgstr "接続: %s"
 
 #. TRANSLATORS: disk partition info, %s is replaced by partition table
 #. type (MS-DOS or GPT), %d is the number of the partitions
@@ -938,7 +934,7 @@ msgstr "ディスクの有効化"
 
 #: src/components/storage/ProposalPageOptions.jsx:60
 msgid "zFCP"
-msgstr ""
+msgstr "zFCP"
 
 #: src/components/storage/ProposalPageOptions.jsx:76
 msgid "Connect to iSCSI targets"
@@ -946,7 +942,7 @@ msgstr "iSCSI ターゲットへの接続"
 
 #: src/components/storage/ProposalPageOptions.jsx:78
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #: src/components/storage/ProposalSettingsSection.jsx:112
 msgid "No device selected yet"
