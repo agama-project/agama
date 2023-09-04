@@ -84,6 +84,8 @@ module Agama
 
           target.lvm = lvm
           target.separate_vgs = lvm
+          # Prevent VG reuse
+          target.lvm_vg_reuse = false
         end
 
         # @param target [Y2Storage::ProposalSettings]
@@ -135,8 +137,12 @@ module Agama
         # @param target [Y2Storage::ProposalSettings]
         def fallbacks_conversion(target)
           target.volumes.each do |spec|
-            spec.fallback_for_min_size = find_min_size_fallback(spec.mount_point)
-            spec.fallback_for_max_size = find_max_size_fallback(spec.mount_point)
+            min_size_fallback = find_min_size_fallback(spec.mount_point)
+            max_size_fallback = find_max_size_fallback(spec.mount_point)
+
+            spec.fallback_for_min_size = min_size_fallback
+            spec.fallback_for_max_size = max_size_fallback
+            spec.fallback_for_max_size_lvm = max_size_fallback
           end
         end
 

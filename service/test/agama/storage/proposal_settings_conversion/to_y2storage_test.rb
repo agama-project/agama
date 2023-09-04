@@ -58,6 +58,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
         root_device:         "/dev/sda",
         lvm:                 true,
         separate_vgs:        true,
+        lvm_vg_reuse:        false,
         encryption_password: "notsecret",
         encryption_method:   Y2Storage::EncryptionMethod::LUKS2,
         encryption_pbkdf:    Y2Storage::PbkdFunction::ARGON2ID,
@@ -269,24 +270,28 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
 
         expect(y2storage_settings.volumes).to contain_exactly(
           an_object_having_attributes(
-            mount_point:           "/",
-            fallback_for_min_size: nil,
-            fallback_for_max_size: nil
+            mount_point:               "/",
+            fallback_for_min_size:     nil,
+            fallback_for_max_size:     nil,
+            fallback_for_max_size_lvm: nil
           ),
           an_object_having_attributes(
-            mount_point:           "/home",
-            fallback_for_min_size: "/test",
-            fallback_for_max_size: nil
+            mount_point:               "/home",
+            fallback_for_min_size:     "/test",
+            fallback_for_max_size:     nil,
+            fallback_for_max_size_lvm: nil
           ),
           an_object_having_attributes(
-            mount_point:           "swap",
-            fallback_for_min_size: "/test",
-            fallback_for_max_size: "/test"
+            mount_point:               "swap",
+            fallback_for_min_size:     "/test",
+            fallback_for_max_size:     "/test",
+            fallback_for_max_size_lvm: "/test"
           ),
           an_object_having_attributes(
-            mount_point:           "/test",
-            fallback_for_min_size: nil,
-            fallback_for_max_size: nil
+            mount_point:               "/test",
+            fallback_for_min_size:     nil,
+            fallback_for_max_size:     nil,
+            fallback_for_max_size_lvm: nil
           )
         )
       end
