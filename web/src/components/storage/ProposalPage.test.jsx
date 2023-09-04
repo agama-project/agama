@@ -38,61 +38,44 @@ jest.mock("@patternfly/react-core", () => {
   };
 });
 
-const defaultProposalData = {
-  availableDevices: [],
-  volumeTemplates: [],
-  result: {
-    candidateDevices: ["/dev/vda"],
-    lvm: false,
-    encryptionPassword: "",
-    volumes: []
-  }
+const storageMock = {
+  probe: jest.fn().mockResolvedValue(0),
+  proposal: {
+    getAvailableDevices: jest.fn().mockResolvedValue([]),
+    getProductMountPoints: jest.fn().mockResolvedValue([]),
+    getResult: jest.fn().mockResolvedValue(undefined),
+    defaultVolume: jest.fn(mountPath => Promise.resolve({ mountPath })),
+    calculate: jest.fn().mockResolvedValue(0)
+  },
+  getErrors: jest.fn().mockResolvedValue([]),
+  isDeprecated: jest.fn().mockResolvedValue(false),
+  onDeprecate: jest.fn(),
+  onStatusChange: jest.fn()
 };
 
-let proposalData;
-
-const probeFn = jest.fn().mockResolvedValue(0);
-
-const isDeprecatedFn = jest.fn();
-
-let onDeprecateFn = jest.fn();
-
-let onStatusChangeFn = jest.fn();
+let storage;
 
 beforeEach(() => {
-  isDeprecatedFn.mockResolvedValue(false);
-
-  proposalData = { ...defaultProposalData };
-
-  createClient.mockImplementation(() => {
-    return {
-      storage: {
-        probe: probeFn,
-        proposal: {
-          getData: jest.fn().mockResolvedValue(proposalData),
-          calculate: jest.fn().mockResolvedValue(0)
-        },
-        getErrors: jest.fn().mockResolvedValue([]),
-        isDeprecated: isDeprecatedFn,
-        onDeprecate: onDeprecateFn,
-        onStatusChange: onStatusChangeFn
-      }
-    };
-  });
+  storage = { ...storageMock, proposal: { ...storageMock.proposal } };
+  createClient.mockImplementation(() => ({ storage }));
 });
 
 it("probes storage if the storage devices are deprecated", async () => {
-  isDeprecatedFn.mockResolvedValue(true);
+  storage.isDeprecated = jest.fn().mockResolvedValue(true);
   installerRender(<ProposalPage />);
-  await waitFor(() => expect(probeFn).toHaveBeenCalled());
+  await waitFor(() => expect(storage.probe).toHaveBeenCalled());
 });
 
 it("does not probe storage if the storage devices are not deprecated", async () => {
   installerRender(<ProposalPage />);
-  await waitFor(() => expect(probeFn).not.toHaveBeenCalled());
+  await waitFor(() => expect(storage.probe).not.toHaveBeenCalled());
 });
 
 it("loads the proposal data", async () => {
+  storage.proposal.getResult = jest.fn().mockResolvedValue(
+    { settings: { bootDevice: "/dev/vda" } }
+  );
+
   installerRender(<ProposalPage />);
 
   screen.getAllByText(/PFSkeleton/);
@@ -117,24 +100,29 @@ it("renders the settings and actions sections", async () => {
 describe("when the storage devices become deprecated", () => {
   it("probes storage", async () => {
     const [mockFunction, callbacks] = createCallbackMock();
-    onDeprecateFn = mockFunction;
+    storage.onDeprecate = mockFunction;
+
     installerRender(<ProposalPage />);
 
-    isDeprecatedFn.mockResolvedValue(true);
+    storage.isDeprecated = jest.fn().mockResolvedValue(true);
     const [onDeprecateCb] = callbacks;
     await act(() => onDeprecateCb());
 
-    await waitFor(() => expect(probeFn).toHaveBeenCalled());
+    await waitFor(() => expect(storage.probe).toHaveBeenCalled());
   });
 
   it("loads the proposal data", async () => {
+    const result = { settings: { bootDevice: "/dev/vda" } };
+    storage.proposal.getResult = jest.fn().mockResolvedValue(result);
+
     const [mockFunction, callbacks] = createCallbackMock();
-    onDeprecateFn = mockFunction;
+    storage.onDeprecate = mockFunction;
+
     installerRender(<ProposalPage />);
 
     await screen.findByText("/dev/vda");
 
-    proposalData.result = { ...defaultProposalData.result, candidateDevices: ["/dev/vdb"] };
+    result.settings.bootDevice = "/dev/vdb";
 
     const [onDeprecateCb] = callbacks;
     await act(() => onDeprecateCb());
@@ -145,7 +133,7 @@ describe("when the storage devices become deprecated", () => {
 
 describe("when there is no proposal yet", () => {
   beforeEach(() => {
-    proposalData.result = undefined;
+    storage.proposal.getResult = jest.fn().mockResolvedValue(undefined);
   });
 
   it("shows the page as loading", async () => {
@@ -157,12 +145,15 @@ describe("when there is no proposal yet", () => {
 
   it("loads the proposal when the service finishes to calculate", async () => {
     const [mockFunction, callbacks] = createCallbackMock();
-    onStatusChangeFn = mockFunction;
+    storage.onStatusChange = mockFunction;
+
     installerRender(<ProposalPage />);
 
     screen.getAllByText(/PFSkeleton/);
 
-    proposalData.result = { ...defaultProposalData.result };
+    storage.proposal.getResult = jest.fn().mockResolvedValue(
+      { settings: { bootDevice: "/dev/vda" } }
+    );
 
     const [onStatusChangeCb] = callbacks;
     await act(() => onStatusChangeCb(IDLE));
@@ -171,9 +162,16 @@ describe("when there is no proposal yet", () => {
 });
 
 describe("when there is a proposal", () => {
+  beforeEach(() => {
+    storage.proposal.getResult = jest.fn().mockResolvedValue(
+      { settings: { bootDevice: "/dev/vda" } }
+    );
+  });
+
   it("does not load the proposal when the service finishes to calculate", async () => {
     const [mockFunction, callbacks] = createCallbackMock();
-    onStatusChangeFn = mockFunction;
+    storage.proposal.onStatusChange = mockFunction;
+
     installerRender(<ProposalPage />);
 
     await screen.findByText("/dev/vda");

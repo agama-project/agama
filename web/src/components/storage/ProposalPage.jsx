@@ -49,23 +49,29 @@ const reducer = (state, action) => {
       return { ...state, loading: false };
     }
 
-    case "UPDATE_PROPOSAL": {
-      const { proposal, errors } = action.payload;
-      const { availableDevices, volumeTemplates, result = {} } = proposal;
-      const { candidateDevices, lvm, encryptionPassword, volumes, actions } = result;
-      return {
-        ...state,
-        availableDevices,
-        volumeTemplates,
-        settings: { candidateDevices, lvm, encryptionPassword, volumes },
-        actions,
-        errors
-      };
+    case "UPDATE_AVAILABLE_DEVICES": {
+      const { availableDevices } = action.payload;
+      return { ...state, availableDevices };
+    }
+
+    case "UPDATE_VOLUME_TEMPLATES": {
+      const { volumeTemplates } = action.payload;
+      return { ...state, volumeTemplates };
+    }
+
+    case "UPDATE_RESULT": {
+      const { settings, actions } = action.payload.result;
+      return { ...state, settings, actions };
     }
 
     case "UPDATE_SETTINGS": {
       const { settings } = action.payload;
       return { ...state, settings };
+    }
+
+    case "UPDATE_ERRORS": {
+      const { errors } = action.payload;
+      return { ...state, errors };
     }
 
     default: {
@@ -79,11 +85,29 @@ export default function ProposalPage() {
   const { cancellablePromise } = useCancellablePromise();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const loadProposal = useCallback(async () => {
-    const proposal = await cancellablePromise(client.proposal.getData());
+  const loadAvailableDevices = useCallback(async () => {
+    return await cancellablePromise(client.proposal.getAvailableDevices());
+  }, [client, cancellablePromise]);
+
+  const loadVolumeTemplates = useCallback(async () => {
+    const mountPoints = await cancellablePromise(client.proposal.getProductMountPoints());
+    const volumeTemplates = [];
+
+    for (const mountPoint of mountPoints) {
+      volumeTemplates.push(await cancellablePromise(client.proposal.defaultVolume(mountPoint)));
+    }
+
+    volumeTemplates.push(await cancellablePromise(client.proposal.defaultVolume("")));
+    return volumeTemplates;
+  }, [client, cancellablePromise]);
+
+  const loadProposalResult = useCallback(async () => {
+    return await cancellablePromise(client.proposal.getResult());
+  }, [client, cancellablePromise]);
+
+  const loadErrors = useCallback(async () => {
     const issues = await cancellablePromise(client.getErrors());
-    const errors = issues.map(toValidationError);
-    return { proposal, errors };
+    return issues.map(toValidationError);
   }, [client, cancellablePromise]);
 
   const load = useCallback(async () => {
@@ -92,20 +116,34 @@ export default function ProposalPage() {
     const isDeprecated = await cancellablePromise(client.isDeprecated());
     if (isDeprecated) await client.probe();
 
-    const { proposal, errors } = await loadProposal();
-    dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
-    if (proposal.result !== undefined) dispatch({ type: "STOP_LOADING" });
-  }, [cancellablePromise, client, loadProposal]);
+    const availableDevices = await loadAvailableDevices();
+    dispatch({ type: "UPDATE_AVAILABLE_DEVICES", payload: { availableDevices } });
+
+    const volumeTemplates = await loadVolumeTemplates();
+    dispatch({ type: "UPDATE_VOLUME_TEMPLATES", payload: { volumeTemplates } });
+
+    const result = await loadProposalResult();
+    if (result !== undefined) dispatch({ type: "UPDATE_RESULT", payload: { result } });
+
+    const errors = await loadErrors();
+    dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
+
+    if (result !== undefined) dispatch({ type: "STOP_LOADING" });
+  }, [cancellablePromise, client, loadAvailableDevices, loadErrors, loadProposalResult, loadVolumeTemplates]);
 
   const calculate = useCallback(async (settings) => {
     dispatch({ type: "START_LOADING" });
 
     await cancellablePromise(client.proposal.calculate(settings));
 
-    const { proposal, errors } = await loadProposal();
-    dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
+    const result = await loadProposalResult();
+    dispatch({ type: "UPDATE_RESULT", payload: { result } });
+
+    const errors = await loadErrors();
+    dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
+
     dispatch({ type: "STOP_LOADING" });
-  }, [cancellablePromise, client, loadProposal]);
+  }, [cancellablePromise, client, loadErrors, loadProposalResult]);
 
   useEffect(() => {
     load().catch(console.error);
@@ -114,7 +152,7 @@ export default function ProposalPage() {
   }, [client, load]);
 
   useEffect(() => {
-    const proposalLoaded = () => state.settings.candidateDevices !== undefined;
+    const proposalLoaded = () => state.settings.bootDevice !== undefined;
 
     const statusHandler = (serviceStatus) => {
       // Load the proposal if no proposal has been loaded yet. This can happen if the proposal
@@ -138,8 +176,10 @@ export default function ProposalPage() {
     // Templates for already existing mount points are filtered out
     const usefulTemplates = () => {
       const volumes = state.settings.volumes || [];
-      const mountPoints = volumes.map(v => v.mountPoint);
-      return state.volumeTemplates.filter(t => !mountPoints.includes(t.mountPoint));
+      const mountPaths = volumes.map(v => v.mountPath);
+      return state.volumeTemplates.filter(t => (
+        t.mountPath.length > 0 && !mountPaths.includes(t.mountPath)
+      ));
     };
 
     return (

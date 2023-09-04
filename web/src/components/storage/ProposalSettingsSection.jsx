@@ -29,6 +29,7 @@ import {
 import { _ } from "~/i18n";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { DeviceSelector, ProposalVolumes } from "~/components/storage";
+import { deviceLabel } from '~/components/storage/utils';
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
 
@@ -109,9 +110,14 @@ const InstallationDeviceField = ({ current, devices, isLoading, onChange }) => {
   };
 
   const DeviceContent = ({ device }) => {
-    const text = device || _("No device selected yet");
+    const text = (deviceName) => {
+      if (deviceName === undefined) return _("No device selected yet");
 
-    return <Button variant="link" isInline onClick={openForm}>{text}</Button>;
+      const device = devices.find(d => d.name === deviceName);
+      return device ? deviceLabel(device) : deviceName;
+    };
+
+    return <Button variant="link" isInline onClick={openForm}>{text(device)}</Button>;
   };
 
   if (isLoading) {
@@ -349,7 +355,7 @@ export default function ProposalSettingsSection({
 }) {
   const changeBootDevice = (device) => {
     if (onChange === noop) return;
-    onChange({ candidateDevices: [device] });
+    onChange({ bootDevice: device });
   };
 
   const changeLVM = (lvm) => {
@@ -367,7 +373,7 @@ export default function ProposalSettingsSection({
     onChange({ volumes });
   };
 
-  const bootDevice = (settings.candidateDevices || [])[0];
+  const { bootDevice } = settings;
   const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
 
   return (
@@ -392,6 +398,7 @@ export default function ProposalSettingsSection({
       <ProposalVolumes
         volumes={settings.volumes || []}
         templates={volumeTemplates}
+        options={{ lvm: settings.lvm, encryption }}
         isLoading={isLoading}
         onChange={changeVolumes}
       />

@@ -34,10 +34,10 @@ const ProposalSummary = ({ proposal }) => {
 
   if (result === undefined) return <Text>{_("Device not selected yet")}</Text>;
 
-  const [candidateDevice] = result.candidateDevices;
-  const device = proposal.availableDevices.find(d => d.name === candidateDevice);
+  const bootDevice = result.settings.bootDevice;
+  const device = proposal.availableDevices.find(d => d.name === bootDevice);
 
-  const label = device ? deviceLabel(device) : candidateDevice;
+  const label = device ? deviceLabel(device) : bootDevice;
 
   // TRANSLATORS: %s will be replaced by the device name and its size,
   // example: "/dev/sda, 20 GiB"
@@ -108,7 +108,10 @@ export default function StorageSection({ showErrors = false }) {
       const isDeprecated = await cancellablePromise(client.isDeprecated());
       if (isDeprecated) await cancellablePromise(client.probe());
 
-      const proposal = await cancellablePromise(client.proposal.getData());
+      const proposal = {
+        availableDevices: await cancellablePromise(client.proposal.getAvailableDevices()),
+        result: await cancellablePromise(client.proposal.getResult())
+      };
       const issues = await cancellablePromise(client.getErrors());
       const errors = issues.map(toValidationError);
 

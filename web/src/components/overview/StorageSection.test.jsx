@@ -31,24 +31,32 @@ jest.mock("~/client");
 jest.mock("~/components/core/SectionSkeleton", () => mockComponent("Loading storage"));
 
 let status = IDLE;
-let proposal = {
-  availableDevices: [
-    { name: "/dev/sda", size: 536870912000 },
-    { name: "/dev/sdb", size: 697932185600 }
-  ],
-  result: {
-    candidateDevices: ["/dev/sda"],
+
+const availableDevices = [
+  { name: "/dev/sda", size: 536870912000 },
+  { name: "/dev/sdb", size: 697932185600 }
+];
+
+let proposalResult = {
+  settings: {
+    bootDevice: "/dev/sda",
     lvm: false
-  }
+  },
+  actions: []
 };
+
 let errors = [];
+
 let onStatusChangeFn = jest.fn();
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
       storage: {
-        proposal: { getData: jest.fn().mockResolvedValue(proposal) },
+        proposal: {
+          getAvailableDevices: jest.fn().mockResolvedValue(availableDevices),
+          getResult: jest.fn().mockResolvedValue(proposalResult),
+        },
         getStatus: jest.fn().mockResolvedValue(status),
         getProgress: jest.fn().mockResolvedValue({
           message: "Activating storage devices", current: 1, total: 4
@@ -114,7 +122,7 @@ describe("when there is a proposal", () => {
 
 describe("when there is no proposal yet", () => {
   beforeEach(() => {
-    proposal = { result: undefined };
+    proposalResult = undefined;
     errors = [{ description: "Fake error" }];
   });
 
