@@ -21,8 +21,10 @@
 
 require "dbus"
 require "agama/dbus/bus"
+require "agama/dbus/clients/locale"
 require "agama/dbus/storage"
 require "agama/storage"
+require "agama/ui_locale"
 
 module Agama
   module DBus
@@ -46,6 +48,14 @@ module Agama
       # @return [::DBus::Connection]
       def bus
         Bus.current
+      end
+
+      # Starts storage service. It does more then just #export method.
+      def start
+        locale_client = Clients::Locale.new
+        # TODO: test if we need to pass block with additional actions
+        @ui_locale = UILocale.new(locale_client)
+        export
       end
 
       # Exports the storage proposal object through the D-Bus service

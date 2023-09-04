@@ -58,7 +58,7 @@
       <arg name="invalidated_properties" type="as"/>
     </signal>
   </interface>
-  <interface name="org.opensuse.Agama.Questions1">
+  <interface name="org.opensuse.Agama1.Questions">
     <!--
      creates new generic question without answer
      -->

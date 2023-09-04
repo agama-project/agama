@@ -56,6 +56,7 @@ module Agama
         @config = config
         @logger = logger
         register_proposal_callbacks
+        on_progress_change { logger.info progress.to_s }
       end
 
       # Whether the system is in a deprecated status

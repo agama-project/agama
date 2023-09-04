@@ -64,6 +64,7 @@ module Agama
       @installation_phase = InstallationPhase.new
       @service_status_recorder = ServiceStatusRecorder.new
       @service_status = DBus::ServiceStatus.new.busy
+      on_progress_change { logger.info progress.to_s }
     end
 
     # Runs the startup phase

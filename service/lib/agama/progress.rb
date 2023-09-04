@@ -145,5 +145,14 @@ module Agama
     def on_finish(&block)
       @on_finish_callbacks << block
     end
+
+    # Returns a string-based representation of the progress
+    #
+    # @return [String]
+    def to_s
+      return "Finished" if finished?
+
+      "#{current_step.description} (#{@counter}/#{total_steps})"
+    end
   end
 end

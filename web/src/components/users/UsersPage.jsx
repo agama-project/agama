@@ -20,16 +20,18 @@
  */
 
 import React from "react";
+
+import { _ } from "~/i18n";
 import { Page, Section } from "~/components/core";
 import { FirstUser, RootAuthMethods } from "~/components/users";
 
 export default function UsersPage() {
   return (
-    <Page title="Users" icon="manage_accounts" actionLabel="Back" actionVariant="secondary">
-      <Section title="User" icon="person">
+    <Page title={_("Users")} icon="manage_accounts" actionLabel={_("Back")} actionVariant="secondary">
+      <Section title={_("User")} icon="person">
         <FirstUser />
       </Section>
-      <Section title="Root authentication" icon="badge">
+      <Section title={_("Root authentication")} icon="badge">
         <RootAuthMethods />
       </Section>
     </Page>

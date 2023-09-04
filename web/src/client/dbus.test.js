@@ -41,12 +41,12 @@ describe("DBusClient", () => {
 
   describe("#proxy", () => {
     it("returns a proxy for the given iface and path", async () => {
-      const client = new DBusClient("org.opensuse.Agama1");
+      const client = new DBusClient("org.opensuse.Agama.Manager1");
       const proxy = await client.proxy(
-        "org.opensuse.Agama1.Manager", "/org/opensuse/Agama1/Manager"
+        "org.opensuse.Agama.Manager1", "/org/opensuse/Agama/Manager1"
       );
       expect(cockpitDBusClient.proxy).toHaveBeenCalledWith(
-        "org.opensuse.Agama1.Manager", "/org/opensuse/Agama1/Manager",
+        "org.opensuse.Agama.Manager1", "/org/opensuse/Agama/Manager1",
         { watch: true }
       );
       expect(proxy).toBe(proxyObject);
@@ -57,7 +57,7 @@ describe("DBusClient", () => {
     it("returns a DBusProxies for the given iface and namespace", async () => {
       const iface = "org.freedesktop.NetworkManager.Device";
       const path = "/org/freedesktop/NetworkManager/Device";
-      const client = new DBusClient("org.opensuse.Agama1");
+      const client = new DBusClient("org.opensuse.Agama.Manager1");
       const proxies = await client.proxies(iface, path);
       expect(cockpitDBusClient.proxies).toHaveBeenCalledWith(iface, path, { watch: true });
       expect(proxies).toBe(proxyObject);

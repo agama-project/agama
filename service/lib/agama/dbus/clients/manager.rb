@@ -36,12 +36,12 @@ module Agama
         def initialize
           super
 
-          @dbus_object = service["/org/opensuse/Agama1/Manager"]
+          @dbus_object = service["/org/opensuse/Agama/Manager1"]
           @dbus_object.introspect
         end
 
         def service_name
-          @service_name ||= "org.opensuse.Agama1"
+          @service_name ||= "org.opensuse.Agama.Manager1"
         end
 
         def probe
@@ -54,7 +54,7 @@ module Agama
         end
 
         def current_installation_phase
-          dbus_phase = dbus_object["org.opensuse.Agama1.Manager"]["CurrentInstallationPhase"]
+          dbus_phase = dbus_object["org.opensuse.Agama.Manager1"]["CurrentInstallationPhase"]
 
           case dbus_phase
           when DBus::Manager::STARTUP_PHASE

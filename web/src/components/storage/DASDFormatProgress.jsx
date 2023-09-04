@@ -21,6 +21,8 @@
 
 import React, { useEffect, useState } from "react";
 import { Progress, Skeleton } from '@patternfly/react-core';
+
+import { _ } from "~/i18n";
 import { If, Popup } from "~/components/core";
 import { useInstallerClient } from "~/context/installer";
 
@@ -56,7 +58,7 @@ export default function DASDFormatProgress({ job, devices, isOpen = true }) {
 
   const WaitingProgress = () => (
     <div className="stack">
-      <div>Waiting for progress report</div>
+      <div>{_("Waiting for progress report")}</div>
       <Skeleton height="10px" />
       <Skeleton height="10px" />
     </div>
@@ -64,7 +66,7 @@ export default function DASDFormatProgress({ job, devices, isOpen = true }) {
 
   return (
     <Popup
-      title="Formatting DASD devices"
+      title={_("Formatting DASD devices")}
       isOpen={isOpen}
       disableFocusTrap
     >

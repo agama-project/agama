@@ -29,7 +29,11 @@ describe Agama::DBus::ManagerService do
   let(:config) { Agama::Config.new }
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:manager) { Agama::Manager.new(config, logger) }
-  let(:bus) { instance_double(Agama::DBus::Bus, request_name: nil) }
+  let(:locale_interface) { double("[]" => "en", on_signal: nil) }
+  let(:locale_service) do
+    double(object: double(introspect: nil, path: "test", "[]": locale_interface))
+  end
+  let(:bus) { instance_double(Agama::DBus::Bus, request_name: nil, service: locale_service) }
   let(:bus_service) do
     instance_double(::DBus::ObjectServer, export: nil)
   end

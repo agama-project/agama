@@ -41,10 +41,10 @@ const InstallConfirmationPopup = ({ hasIssues, onAccept, onClose }) => {
     };
 
     // TRANSLATORS: the installer reports some errors,
-    // the part in curly brackets {} is a clickable link
+    // the text in square brackets [] is a clickable link
     const [msgStart, msgLink, msgEnd] = _("There are some reported issues. \
-Please, check {the list of issues} \
-before proceeding with the installation.").split(/[{}]/);
+Please, check [the list of issues] \
+before proceeding with the installation.").split(/[[\]]/);
 
     return (
       <p className="bold">

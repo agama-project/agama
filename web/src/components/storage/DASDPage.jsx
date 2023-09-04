@@ -22,6 +22,8 @@
 import React, { useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@patternfly/react-core";
+
+import { _ } from "~/i18n";
 import { MainActions } from "~/components/layout";
 import { If, Page } from "~/components/core";
 import { DASDFormatProgress, DASDTable } from "~/components/storage";
@@ -179,9 +181,10 @@ export default function DASDPage() {
   }, [client.dasd]);
 
   return (
-    <Page title="Storage DASD" icon="hard_drive">
+    // TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
+    <Page title={_("Storage DASD")} icon="hard_drive">
       <MainActions>
-        <Button isLarge variant="secondary" onClick={() => navigate("/storage")}>Back</Button>
+        <Button isLarge variant="secondary" onClick={() => navigate("/storage")}>{_("Back")}</Button>
       </MainActions>
 
       <DASDTable state={state} dispatch={dispatch} />

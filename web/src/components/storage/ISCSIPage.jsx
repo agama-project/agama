@@ -23,6 +23,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@patternfly/react-core";
 
+import { _ } from "~/i18n";
 import { Title as PageTitle, MainActions } from "~/components/layout";
 import { InitiatorSection, TargetsSection } from "~/components/storage/iscsi";
 
@@ -31,10 +32,11 @@ export default function ISCSIPage() {
 
   return (
     <>
-      <PageTitle>Storage iSCSI</PageTitle>
+      {/* TRANSLATORS: page title for iSCSI configuration */}
+      <PageTitle>{_("Storage iSCSI")}</PageTitle>
       <MainActions>
         <Button isLarge variant="secondary" form="storage-config" onClick={() => navigate("/storage")}>
-          Back
+          {_("Back")}
         </Button>
       </MainActions>
 

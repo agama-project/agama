@@ -21,6 +21,7 @@
 
 import React, { useEffect, useState } from "react";
 
+import { _ } from "~/i18n";
 import { Section } from "~/components/core";
 import { InitiatorPresenter } from "~/components/storage/iscsi";
 import { useInstallerClient } from "~/context/installer";
@@ -45,7 +46,8 @@ export default function InitiatorSection() {
   }, [cancellablePromise, client.iscsi]);
 
   return (
-    <Section title="Initiator">
+    // TRANSLATORS: iSCSI initiator section name
+    <Section title={_("Initiator")}>
       <InitiatorPresenter
         initiator={initiator}
         client={client}

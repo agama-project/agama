@@ -22,6 +22,7 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
+import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
 import { STARTUP, INSTALL } from "~/client/phase";
 import { BUSY } from "~/client/status";
@@ -86,7 +87,7 @@ function App() {
       <Sidebar>
         <ChangeProductLink />
         <IssuesLink />
-        <Disclosure label="Diagnostic tools" data-keep-sidebar-open>
+        <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
           <ShowLogButton />
           <LogsButton data-keep-sidebar-open="true" />
           <ShowTerminalButton />
@@ -95,6 +96,8 @@ function App() {
       </Sidebar>
 
       <Layout>
+        {/* this is the name of the tool, do not translate it */}
+        {/* eslint-disable-next-line i18next/no-literal-string */}
         <Title>Agama</Title>
         <Content />
       </Layout>

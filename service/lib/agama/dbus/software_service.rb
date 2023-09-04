@@ -21,8 +21,10 @@
 
 require "dbus"
 require "agama/dbus/bus"
+require "agama/dbus/clients/locale"
 require "agama/dbus/software"
 require "agama/software"
+require "agama/ui_locale"
 
 module Agama
   module DBus
@@ -46,6 +48,14 @@ module Agama
         @bus = Bus.current
         @backend = Agama::Software::Manager.new(config, logger)
         @backend.on_progress_change { dispatch }
+      end
+
+      # Starts software service. It does more then just #export method.
+      def start
+        locale_client = Clients::Locale.new
+        # TODO: test if we need to pass block with additional actions
+        @ui_locale = UILocale.new(locale_client)
+        export
       end
 
       # Exports the software object through the D-Bus service

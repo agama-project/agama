@@ -20,8 +20,9 @@
         },
         "sourceType": "module"
     },
-    "plugins": ["flowtype", "react", "react-hooks", "@typescript-eslint"],
+    "plugins": ["flowtype", "i18next", "react", "react-hooks", "@typescript-eslint"],
     "rules": {
+        "i18next/no-literal-string": "error",
         "indent": ["error", 2,
             {
                 "ObjectExpression": "first",
@@ -58,6 +59,15 @@
         "space-before-function-paren": "off",
         "n/no-callback-literal": "off"
     },
+    "overrides": [
+      {
+        // do not check translations in the testing or development files
+        "files": ["*.test.*", "test-utils.js", "DevServerWrapper.jsx"],
+        "rules": {
+          "i18next/no-literal-string": "off"
+        }
+      }
+    ],
     "globals": {
         "require": false,
         "module": false,

@@ -1,9 +1,12 @@
 use agama_dbus_server::{locale, network, questions};
 
+use agama_lib::connection_to;
+use anyhow::Context;
 use log::LevelFilter;
 use std::future::pending;
 
 const ADDRESS: &str = "unix:path=/run/agama/bus";
+const SERVICE_NAME: &str = "org.opensuse.Agama1";
 
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -23,13 +26,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .unwrap(); // unwrap here as we are sure no other logger active
     }
+
+    let connection = connection_to(ADDRESS)
+        .await
+        .expect("Could not connect to the D-Bus daemon");
+
     // When adding more services here, the order might be important.
-    questions::start_service(ADDRESS).await?;
+    questions::export_dbus_objects(&connection).await?;
     log::info!("Started questions interface");
-    let _conn = locale::start_service(ADDRESS).await?;
+    locale::export_dbus_objects(&connection).await?;
     log::info!("Started locale interface");
-    network::start_service(ADDRESS).await?;
+    network::export_dbus_objects(&connection).await?;
     log::info!("Started network interface");
+
+    connection
+        .request_name(SERVICE_NAME)
+        .await
+        .context(format!("Requesting name {SERVICE_NAME}"))?;
 
     // Do other things or go to wait forever
     pending::<()>().await;

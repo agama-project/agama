@@ -1,7 +1,7 @@
 use zbus_macros::DBusError;
 
 #[derive(DBusError, Debug)]
-#[dbus_error(prefix = "org.opensuse.Agama.Locale1")]
+#[dbus_error(prefix = "org.opensuse.Agama1.Locale")]
 pub enum Error {
     #[dbus_error(zbus_error)]
     ZBus(zbus::Error),

@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Aug 31 10:30:28 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a single D-Bus service to expose locale, network and
+  questions settings (gh#openSUSE/agama#729).
+
+-------------------------------------------------------------------
+Wed Aug 30 12:57:59 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Locale service: add value for UI locale (gh#openSUSE/agama#725)
+
+-------------------------------------------------------------------
 Thu Aug  3 08:34:14 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Move the settings functionality to a separate package,
@@ -8,7 +19,7 @@ Thu Aug  3 08:34:14 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   InstallSettings and NetworkSettings.
 - Improve error reporting when working with the "config"
   subcommand.
-  
+
 -------------------------------------------------------------------
 Wed Aug  2 10:03:18 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 

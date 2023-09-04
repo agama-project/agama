@@ -8,8 +8,8 @@ use zbus::dbus_proxy;
 /// TODO: example
 #[dbus_proxy(
     interface = "org.opensuse.Agama1.Progress",
-    default_service = "org.opensuse.Agama1",
-    default_path = "/org/opensuse/Agama1/Manager"
+    default_service = "org.opensuse.Agama.Manager1",
+    default_path = "/org/opensuse/Agama/Manager1"
 )]
 trait Progress {
     /// CurrentStep property
@@ -27,8 +27,8 @@ trait Progress {
 
 #[dbus_proxy(
     interface = "org.opensuse.Agama1.ServiceStatus",
-    default_service = "org.opensuse.Agama1",
-    default_path = "/org/opensuse/Agama1/Manager"
+    default_service = "org.opensuse.Agama.Manager1",
+    default_path = "/org/opensuse/Agama/Manager1"
 )]
 trait ServiceStatus {
     /// All property
@@ -43,9 +43,9 @@ trait ServiceStatus {
 }
 
 #[dbus_proxy(
-    interface = "org.opensuse.Agama1.Manager",
-    default_service = "org.opensuse.Agama1",
-    default_path = "/org/opensuse/Agama1/Manager"
+    interface = "org.opensuse.Agama.Manager1",
+    default_service = "org.opensuse.Agama.Manager1",
+    default_path = "/org/opensuse/Agama/Manager1"
 )]
 trait Manager {
     /// CanInstall method
@@ -75,8 +75,8 @@ trait Manager {
     ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>>;
 }
 
-#[dbus_proxy(interface = "org.opensuse.Agama.Locale1", assume_defaults = true)]
-trait Locale1 {
+#[dbus_proxy(interface = "org.opensuse.Agama1.Locale", assume_defaults = true)]
+trait Locale {
     /// Commit method
     fn commit(&self) -> zbus::Result<()>;
 
@@ -112,9 +112,9 @@ trait Locale1 {
 }
 
 #[dbus_proxy(
-    interface = "org.opensuse.Agama.Questions1",
-    default_service = "org.opensuse.Agama.Questions1",
-    default_path = "/org/opensuse/Agama/Questions1"
+    interface = "org.opensuse.Agama1.Questions",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Questions"
 )]
 trait Questions1 {
     /// AddAnswerFile method

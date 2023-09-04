@@ -69,7 +69,7 @@ describe Agama::DBus::Manager do
   describe ".new" do
     it "configures callbacks for changes in the installation phase" do
       expect(subject).to receive(:dbus_properties_changed) do |iface, properties, _|
-        expect(iface).to match(/Agama1\.Manager/)
+        expect(iface).to match(/Agama\.Manager1/)
         expect(properties["CurrentInstallationPhase"]).to eq(0)
       end
 

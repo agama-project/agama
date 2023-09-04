@@ -27,7 +27,9 @@ import {
   Toolbar, ToolbarContent, ToolbarItem
 } from "@patternfly/react-core";
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import format from "format-util";
 
+import { _ } from "~/i18n";
 import { Em, If, Popup, RowActions, Tip } from '~/components/core';
 import { Icon } from '~/components/layout';
 import { VolumeForm } from '~/components/storage';
@@ -50,12 +52,16 @@ const AutoCalculatedHint = (volume) => {
 
   return (
     <>
-      These limits are affected by:
+      {/* TRANSLATORS: header for a list of items */}
+      {_("These limits are affected by:")}
       <List>
         {volume.snapshotsAffectSizes &&
-          <ListItem>The configuration of snapshots</ListItem>}
+        // TRANSLATORS: list item, this affects the computed partition size limits
+        <ListItem>{_("The configuration of snapshots")}</ListItem>}
         {volume.sizeRelevantVolumes && volume.sizeRelevantVolumes.length > 0 &&
-          <ListItem>Presence of other volumes ({volume.sizeRelevantVolumes.join(", ")})</ListItem>}
+        // TRANSLATORS: list item, this affects the computed partition size limits
+        // %s is replaced by a list of the volumes (like "/home, /boot")
+          <ListItem>{format(_("Presence of other volumes (%s)"), volume.sizeRelevantVolumes.join(", "))}</ListItem>}
       </List>
     </>
   );
@@ -109,30 +115,33 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
             key="reset"
             onClick={onReset}
           >
-            Reset to defaults
+            {/* TRANSLATORS: dropdown menu label */}
+            {_("Reset to defaults")}
           </Action>,
           <Action
             key="add"
             isDisabled={templates.length === 0}
             onClick={openForm}
           >
-            Add file system
+            {/* TRANSLATORS: dropdown menu label */}
+            {_("Add file system")}
           </Action>
         ]}
         toggle={
           <DropdownToggle toggleVariant="primary" onToggle={toggleActions}>
-            Actions
+            {/* TRANSLATORS: dropdown label */}
+            {_("Actions")}
           </DropdownToggle>
         }
       />
-      <Popup aria-label="Add file system" title="Add file system" isOpen={isFormOpen}>
+      <Popup aria-label={_("Add file system")} title={_("Add file system")} isOpen={isFormOpen}>
         <VolumeForm
           id="addVolumeForm"
           templates={templates}
           onSubmit={acceptForm}
         />
         <Popup.Actions>
-          <Popup.Confirm form="addVolumeForm" type="submit">Accept</Popup.Confirm>
+          <Popup.Confirm form="addVolumeForm" type="submit">{_("Accept")}</Popup.Confirm>
           <Popup.Cancel onClick={closeForm} />
         </Popup.Actions>
       </Popup>
@@ -173,12 +182,14 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
 
     let size = minSize;
     if (minSize && maxSize && minSize !== maxSize) size = `${minSize} - ${maxSize}`;
-    if (maxSize === undefined) size = `At least ${minSize}`;
+    // TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
+    if (maxSize === undefined) size = format(_("At least %s"), minSize);
 
     return (
       <div className="split">
         <span>{size}</span>
-        <If condition={isAuto} then={<Tip description={AutoCalculatedHint(volume)}>auto</Tip>} />
+        {/* TRANSLATORS: device flag, the partition size is automatically computed */}
+        <If condition={isAuto} then={<Tip description={AutoCalculatedHint(volume)}>{_("auto")}</Tip>} />
       </div>
     );
   };
@@ -187,15 +198,18 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
     const isLv = volume.deviceType === "lvm_lv";
     const hasSnapshots = volume.fsType === "Btrfs" && volume.snapshots;
 
-    const text = `${volume.fsType} ${isLv ? "logical volume" : "partition"}`;
+    // TRANSLATORS: the filesystem uses a logical volume (LVM)
+    const text = `${volume.fsType} ${isLv ? _("logical volume") : _("partition")}`;
     const lockIcon = <Icon name="lock" size={12} />;
     const snapshotsIcon = <Icon name="add_a_photo" size={12} />;
 
     return (
       <div className="split">
         <span>{text}</span>
-        <If condition={volume.encrypted} then={<Em icon={lockIcon}>encrypted</Em>} />
-        <If condition={hasSnapshots} then={<Em icon={snapshotsIcon}>with snapshots</Em>} />
+        {/* TRANSLATORS: filesystem flag, it uses an encryption */}
+        <If condition={volume.encrypted} then={<Em icon={lockIcon}>{_("encrypted")}</Em>} />
+        {/* TRANSLATORS: filesystem flag, it allows creating snapshots */}
+        <If condition={hasSnapshots} then={<Em icon={snapshotsIcon}>{_("with snapshots")}</Em>} />
       </div>
     );
   };
@@ -204,12 +218,12 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
     const actions = () => {
       const actions = {
         delete: {
-          title: "Delete",
+          title: _("Delete"),
           onClick: () => onDelete(volume),
           className: "danger-action"
         },
         edit: {
-          title: "Edit",
+          title: _("Edit"),
           onClick: () => onEdit(volume)
         }
       };
@@ -250,7 +264,7 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
         </Td>
       </Tr>
 
-      <Popup title="Edit file system" isOpen={isFormOpen}>
+      <Popup title={_("Edit file system")} isOpen={isFormOpen}>
         <VolumeForm
           id="editVolumeForm"
           volume={volume}
@@ -258,7 +272,7 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
           onSubmit={acceptForm}
         />
         <Popup.Actions>
-          <Popup.Confirm form="editVolumeForm" type="submit">Accept</Popup.Confirm>
+          <Popup.Confirm form="editVolumeForm" type="submit">{_("Accept")}</Popup.Confirm>
           <Popup.Cancel onClick={closeForm} />
         </Popup.Actions>
       </Popup>
@@ -281,10 +295,10 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
  */
 const VolumesTable = ({ volumes, isLoading, onVolumesChange }) => {
   const columns = {
-    mountPoint: "At",
-    details: "Details",
-    size: "Size",
-    actions: "Actions"
+    mountPoint: _("Mount point"),
+    details: _("Details"),
+    size: _("Size"),
+    actions: _("Actions")
   };
 
   const VolumesContent = ({ volumes, isLoading, onVolumesChange }) => {
@@ -318,7 +332,7 @@ const VolumesTable = ({ volumes, isLoading, onVolumesChange }) => {
   };
 
   return (
-    <TableComposable aria-label="Simple table" variant="compact" borders>
+    <TableComposable aria-label={_("Table with mount points")} variant="compact" borders>
       <Thead>
         <Tr>
           <Th>{columns.mountPoint}</Th>
@@ -374,7 +388,7 @@ export default function ProposalVolumes({
       <Toolbar>
         <ToolbarContent>
           <ToolbarItem>
-            File systems to create in your system
+            {_("File systems to create in your system")}
           </ToolbarItem>
           <ToolbarItem alignment={{ default: "alignRight" }}>
             <GeneralActions

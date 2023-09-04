@@ -73,7 +73,7 @@ impl Answers {
     }
 
     fn find_answer(&self, question: &GenericQuestion) -> Option<&Answer> {
-        self.answers.iter().find(|a| a.responds(&question))
+        self.answers.iter().find(|a| a.responds(question))
     }
 }
 

@@ -21,6 +21,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useHref } from "react-router-dom";
+
+import { _ } from "~/i18n";
 import { useInstallerClient } from "~/context/installer";
 import { If, PageOptions } from "~/components/core";
 
@@ -35,7 +37,7 @@ const DASDLink = () => {
     <PageOptions.Item
       key="dasd-link"
       href={href}
-      description="Manage and format"
+      description={_("Manage and format")}
     >
       DASD
     </PageOptions.Item>
@@ -53,9 +55,9 @@ const ZFCPLink = () => {
     <PageOptions.Item
       key="zfcp-link"
       href={href}
-      description="Activate disks"
+      description={_("Activate disks")}
     >
-      zFCP
+      {_("zFCP")}
     </PageOptions.Item>
   );
 };
@@ -71,9 +73,9 @@ const ISCSILink = () => {
     <PageOptions.Item
       key="iscsi-link"
       href={href}
-      description="Connect to iSCSI targets"
+      description={_("Connect to iSCSI targets")}
     >
-      iSCSI
+      {_("iSCSI")}
     </PageOptions.Item>
   );
 };

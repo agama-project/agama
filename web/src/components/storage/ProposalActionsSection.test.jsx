@@ -114,14 +114,14 @@ describe("when there are actions", () => {
         <ProposalActionsSection actions={[...actions, ...subvolumeActions]} />
       );
 
-      const link = screen.getByText(/Show.*subvolumes actions/);
+      const link = screen.getByText(/Show.*subvolume actions/);
 
       expect(screen.getAllByRole("list").length).toEqual(1);
 
       await user.click(link);
 
       waitForElementToBeRemoved(link);
-      screen.getByText(/Hide.*subvolumes actions/);
+      screen.getByText(/Hide.*subvolume actions/);
 
       // For now, we know that there are two lists and the subvolume list is the second one.
       // The test could be simplified once we have aria-descriptions for the lists.

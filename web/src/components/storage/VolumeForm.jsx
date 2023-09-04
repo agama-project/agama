@@ -27,7 +27,9 @@ import {
   Radio,
   TextInput
 } from "@patternfly/react-core";
+import format from "format-util";
 
+import { _, N_ } from "~/i18n";
 import { If, NumericTextInput } from '~/components/core';
 import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseToBytes, splitSize } from '~/components/storage/utils';
 
@@ -53,7 +55,8 @@ import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseToBytes, splitSize } 
 const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
   return (
     <FormSelect { ...formSelectProps }>
-      { units.map(unit => <FormSelectOption key={unit} value={unit} label={unit} />) }
+      {/* the unit values are marked for translation in the utils.js file */}
+      { units.map(unit => <FormSelectOption key={unit} value={unit} label={_(unit)} />) }
     </FormSelect>
   );
 };
@@ -89,16 +92,25 @@ const SizeAuto = ({ volume }) => {
   const conditions = [];
 
   if (volume.snapshotsAffectSizes)
-    conditions.push("the configuration of snapshots");
+    // TRANSLATORS: item which affects the final computed partition size
+    conditions.push(_("the configuration of snapshots"));
 
   if (volume.sizeRelevantVolumes && volume.sizeRelevantVolumes.length > 0)
-    conditions.push(`the presence of the file system for ${volume.sizeRelevantVolumes.join(", ")}.`);
+    // TRANSLATORS: item which affects the final computed partition size
+    // %s is replaced by a list of mount points like "/home, /boot"
+    conditions.push(format(_("the presence of the file system for %s"),
+                           // TRANSLATORS: conjunction for merging two list items
+                           volume.sizeRelevantVolumes.join(_(", "))));
 
-  const conditionsText = `The final size depends on ${conditions.join(" and ")}`;
+  // TRANSLATORS: the %s is replaced by the items which affect the computed size
+  const conditionsText = format(_("The final size depends on %s."),
+                                // TRANSLATORS: conjunction for merging two texts
+                                conditions.join(_(" and ")));
 
   return (
     <>
-      <p>Automatically calculated size according to the selected product. {conditionsText}</p>
+      {/* TRANSLATORS: the partition size is automatically computed */}
+      <p>{_("Automatically calculated size according to the selected product.")}{" "}{conditionsText}</p>
     </>
   );
 };
@@ -118,7 +130,7 @@ const SizeManual = ({ errors, formData, onChange }) => {
   return (
     <div className="stack">
       <p>
-        Exact size for the file system.
+        {_("Exact size for the file system.")}
       </p>
       <FormGroup
         fieldId="size"
@@ -130,14 +142,21 @@ const SizeManual = ({ errors, formData, onChange }) => {
           <NumericTextInput
             id="size"
             name="size"
-            aria-label="Exact size"
+            // TRANSLATORS: requested partition size
+            aria-label={_("Exact size")}
+            // TODO: support also localization for numbers, e.g. decimal comma,
+            // either use toLocaleString()
+            //   (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toLocaleString)
+            // or use the "globalize" JS library which can also parse the localized string back
+            //   (https://github.com/globalizejs/globalize#number-module)
             value={formData.size}
             onChange={(size) => onChange({ size })}
             validated={errors.size && 'error'}
           />
           <SizeUnitFormSelect
             id="sizeUnit"
-            aria-label="Size unit"
+            // TRANSLATORS: units selector (like KiB, MiB, GiB...)
+            aria-label={_("Size unit")}
             units={Object.values(SIZE_UNITS)}
             value={formData.sizeUnit }
             onChange={(sizeUnit) => onChange({ sizeUnit })}
@@ -163,13 +182,14 @@ const SizeRange = ({ errors, formData, onChange }) => {
   return (
     <div className="stack">
       <p>
-        Limits for the file system size. The final size will be a value between the given minimum
-        and maximum sizes. If no maximum is given, then the file system will be as big as possible.
+        {_("Limits for the file system size. The final size will be a value between the given minimum \
+and maximum. If no maximum is given then the file system will be as big as possible.")}
       </p>
       <div className="split" data-items-alignment="start">
         <FormGroup
           isRequired
-          label="Minimum"
+          // TRANSLATORS: the minimal partition size
+          label={_("Minimum")}
           fieldId="minSize"
           className="size-input-group"
           validated={errors.minSize && 'error'}
@@ -179,14 +199,15 @@ const SizeRange = ({ errors, formData, onChange }) => {
             <NumericTextInput
               id="minSize"
               name="minSize"
-              aria-label="Minimum desired size"
+              // TRANSLATORS: the minium partition size
+              aria-label={_("Minimum desired size")}
               value={formData.minSize}
               onChange={(minSize) => onChange({ minSize })}
               validated={errors.minSize && 'error'}
             />
             <SizeUnitFormSelect
               id="minSizeUnit"
-              aria-label="Min size unit"
+              aria-label={_("Unit for the minimum size")}
               units={Object.values(SIZE_UNITS)}
               value={formData.minSizeUnit }
               onChange={(minSizeUnit) => onChange({ minSizeUnit })}
@@ -194,7 +215,8 @@ const SizeRange = ({ errors, formData, onChange }) => {
           </InputGroup>
         </FormGroup>
         <FormGroup
-          label="Maximum"
+          // TRANSLATORS: the maximum partition size
+          label={_("Maximum")}
           fieldId="maxSize"
           className="size-input-group"
           validated={errors.maxSize && 'error'}
@@ -205,14 +227,15 @@ const SizeRange = ({ errors, formData, onChange }) => {
               id="maxSize"
               name="maxSize"
               validated={errors.maxSize && 'error'}
-              aria-label="Maximum desired size"
+              // TRANSLATORS: the maximum partition size
+              aria-label={_("Maximum desired size")}
               value={formData.maxSize}
               onChange={(maxSize) => onChange({ maxSize })}
 
             />
             <SizeUnitFormSelect
               id="maxSizeUnit"
-              aria-label="Max size unit"
+              aria-label={_("Unit for the maximum size")}
               units={Object.values(SIZE_UNITS)}
               value={formData.maxSizeUnit || formData.minSizeUnit }
               onChange={(maxSizeUnit) => onChange({ maxSizeUnit })}
@@ -223,6 +246,16 @@ const SizeRange = ({ errors, formData, onChange }) => {
     </div>
   );
 };
+
+// constants need to be marked for translation with N_() and translated with _() later
+const SIZE_OPTION_LABELS = Object.freeze({
+  // TRANSLATORS: radio button label, fully automatically computed partition size, no user input
+  auto: N_("Auto"),
+  // TRANSLATORS: radio button label, exact partition size requested by user
+  fixed: N_("Fixed"),
+  // TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
+  range: N_("Range")
+});
 
 /**
  * Widget for rendering the volume size options
@@ -254,7 +287,7 @@ const SizeOptions = ({ errors, formData, volume, onChange }) => {
             <Radio
               id={value}
               key={`size-${value}`}
-              label={`${value[0].toUpperCase()}${value.slice(1)}`}
+              label={_(SIZE_OPTION_LABELS[value] || value)}
               value={value}
               name="size-option"
               className={isSelected && "selected"}
@@ -424,16 +457,16 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
         break;
       case SIZE_METHODS.MANUAL:
         if (!minSize) {
-          errors.size = "A size value is required";
+          errors.size = _("A size value is required");
         }
         break;
       case SIZE_METHODS.RANGE:
         if (!minSize) {
-          errors.minSize = "Minimum size is required";
+          errors.minSize = _("Minimum size is required");
         }
 
         if (maxSize !== -1 && maxSize <= minSize) {
-          errors.maxSize = "Maximum must be greater than minimum";
+          errors.maxSize = _("Maximum must be greater than minimum");
         }
         break;
     }
@@ -454,7 +487,7 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
 
   return (
     <Form id={id} onSubmit={submitForm}>
-      <FormGroup isRequired label="Mount point" fieldId="mountPoint">
+      <FormGroup isRequired label={_("Mount point")} fieldId="mountPoint">
         <MountPointFormSelect
           id="mountPoint"
           value={state.formData.mountPoint}
@@ -463,7 +496,7 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
           isDisabled={currentVolume !== undefined}
         />
       </FormGroup>
-      <FormGroup isRequired label="File system type" fieldId="fsType">
+      <FormGroup isRequired label={_("File system type")} fieldId="fsType">
         <TextInput
           id="fsType"
           name="fsType"
@@ -471,7 +504,7 @@ export default function VolumeForm({ id, volume: currentVolume, templates = [], 
           isDisabled
         />
       </FormGroup>
-      <FormGroup fieldId="size" label="Size" isRequired>
+      <FormGroup fieldId="size" label={_("Size")} isRequired>
         <SizeOptions { ...state } onChange={updateData} />
       </FormGroup>
     </Form>

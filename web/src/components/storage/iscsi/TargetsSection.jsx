@@ -25,6 +25,7 @@ import {
   Toolbar, ToolbarItem, ToolbarContent,
 } from "@patternfly/react-core";
 
+import { _ } from "~/i18n";
 import { Section, SectionSkeleton } from "~/components/core";
 import { NodesPresenter, DiscoverForm } from "~/components/storage/iscsi";
 import { useInstallerClient } from "~/context/installer";
@@ -135,9 +136,10 @@ export default function TargetsSection() {
     if (state.nodes.length === 0) {
       return (
         <div className="stack">
-          <div className="bold">No iSCSI targets found</div>
-          <div>Please, perform an iSCSI discovery in order to find available iSCSI targets.</div>
-          <Button variant="primary" onClick={openDiscoverForm}>Discover iSCSI targets</Button>
+          <div className="bold">{_("No iSCSI targets found")}</div>
+          <div>{_("Please, perform an iSCSI discovery in order to find available iSCSI targets.")}</div>
+          {/* TRANSLATORS: button label, starts iSCSI discovery */}
+          <Button variant="primary" onClick={openDiscoverForm}>{_("Discover iSCSI targets")}</Button>
         </div>
       );
     }
@@ -147,7 +149,8 @@ export default function TargetsSection() {
         <Toolbar className="no-stack-gutter">
           <ToolbarContent alignment="alignRight">
             <ToolbarItem alignment={{ default: "alignRight" }}>
-              <Button onClick={openDiscoverForm}>Discover</Button>
+              {/* TRANSLATORS: button label, starts iSCSI discovery */}
+              <Button onClick={openDiscoverForm}>{_("Discover")}</Button>
             </ToolbarItem>
           </ToolbarContent>
         </Toolbar>
@@ -160,7 +163,8 @@ export default function TargetsSection() {
   };
 
   return (
-    <Section title="Targets">
+    // TRANSLATORS: iSCSI targets section title
+    <Section title={_("Targets")}>
       <SectionContent />
       { state.isDiscoverFormOpen &&
         <DiscoverForm

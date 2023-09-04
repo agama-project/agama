@@ -29,6 +29,7 @@ import {
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sort } from 'fast-sort';
 
+import { _ } from "~/i18n";
 import { Icon } from "~/components/layout";
 import { If, SectionSkeleton } from "~/components/core";
 import { hex } from "~/utils";
@@ -51,20 +52,20 @@ const columnData = (device, column) => {
   }
 
   if (typeof data === "boolean") {
-    return data ? "Yes" : "No";
+    return data ? _("Yes") : _("No");
   }
 
   return data;
 };
 
 const columns = [
-  { id: "channelId", sortId: "hexId", label: "Channel ID" },
-  { id: "status", label: "Status" },
-  { id: "name", label: "Device" },
-  { id: "type", label: "Type" },
-  { id: "diag", label: "Diag" },
-  { id: "formatted", label: "Formatted" },
-  { id: "partitionInfo", label: "Partition Info" }
+  { id: "channelId", sortId: "hexId", label: _("Channel ID") },
+  { id: "status", label: _("Status") },
+  { id: "name", label: _("Device") },
+  { id: "type", label: _("Type") },
+  { id: "diag", label: _("Diag") },
+  { id: "formatted", label: _("Formatted") },
+  { id: "partitionInfo", label: _("Partition Info") }
 ];
 
 const Actions = ({ devices, isDisabled }) => {
@@ -97,17 +98,23 @@ const Actions = ({ devices, isDisabled }) => {
       isOpen={isOpen}
       onSelect={onSelect}
       dropdownItems={[
-        <Action key="activate" onClick={activate}>Activate</Action>,
-        <Action key="deactivate" onClick={deactivate}>Deactivate</Action>,
+        // TRANSLATORS: drop down menu action, activate the device
+        <Action key="activate" onClick={activate}>{_("Activate")}</Action>,
+        // TRANSLATORS: drop down menu action, deactivate the device
+        <Action key="deactivate" onClick={deactivate}>{_("Deactivate")}</Action>,
         <DropdownSeparator key="first-separator" />,
-        <Action key="set_diag_on" onClick={setDiagOn}>Set DIAG On</Action>,
-        <Action key="set_diag_off" onClick={setDiagOff}>Set DIAG Off</Action>,
+        // TRANSLATORS: drop down menu action, enable DIAG access method
+        <Action key="set_diag_on" onClick={setDiagOn}>{_("Set DIAG On")}</Action>,
+        // TRANSLATORS: drop down menu action, disable DIAG access method
+        <Action key="set_diag_off" onClick={setDiagOff}>{_("Set DIAG Off")}</Action>,
         <DropdownSeparator key="second-separator" />,
-        <Action key="format" onClick={format}>Format</Action>
+        // TRANSLATORS: drop down menu action, format the disk
+        <Action key="format" onClick={format}>{_("Format")}</Action>
       ]}
       toggle={
         <DropdownToggle toggleVariant="primary" isDisabled={isDisabled} onToggle={onToggle}>
-          Perform an action
+          {/* TRANSLATORS: drop down menu label */}
+          {_("Perform an action")}
         </DropdownToggle>
       }
     />
@@ -185,15 +192,15 @@ export default function DASDTable({ state, dispatch }) {
                 <TextInputGroupMain
                   value={state.minChannel}
                   type="text"
-                  aria-label="Filter by min channel"
-                  placeholder="Filter by min channel"
+                  aria-label={_("Filter by min channel")}
+                  placeholder={_("Filter by min channel")}
                   onChange={onMinChannelFilterChange}
                 />
                 { state.minChannel !== "" &&
                   <TextInputGroupUtilities>
                     <Button
                       variant="plain"
-                      aria-label="Remove min channel filter"
+                      aria-label={_("Remove min channel filter")}
                       onClick={removeMinChannelFilter}
                     >
                       <Icon name="backspace" size="24" />
@@ -206,15 +213,15 @@ export default function DASDTable({ state, dispatch }) {
                 <TextInputGroupMain
                   value={state.maxChannel}
                   type="text"
-                  aria-label="Filter by max channel"
-                  placeholder="Filter by max channel"
+                  aria-label={_("Filter by max channel")}
+                  placeholder={_("Filter by max channel")}
                   onChange={onMaxChannelFilterChange}
                 />
                 { state.maxChannel !== "" &&
                   <TextInputGroupUtilities>
                     <Button
                       variant="plain"
-                      aria-label="Remove max channel filter"
+                      aria-label={_("Remove max channel filter")}
                       onClick={removeMaxChannelFilter}
                     >
                       <Icon name="backspace" size="24" />

@@ -20,6 +20,9 @@
  */
 
 import React from 'react';
+import format from "format-util";
+
+import { _ } from "~/i18n";
 
 // NOTE: "@icons" is an alias to use a shorter path to real @material-symbols
 // icons location. Check the tsconfig.json file to see its value.
@@ -149,5 +152,5 @@ export default function Icon({ name, className = "", size = 32, ...otherProps })
 
   return (IconComponent)
     ? <IconComponent className={cssClassName} aria-hidden="true" {...otherProps} />
-    : <em>icon {name} not found!</em>;
+    : <em>{format(_("Icon %s not found!"), name)}</em>;
 }

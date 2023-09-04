@@ -20,6 +20,9 @@
  */
 
 import React, { useState } from "react";
+import format from "format-util";
+
+import { _ } from "~/i18n";
 import { noop } from "~/utils";
 import { Icon } from "~/components/layout";
 import { If } from "~/components/core";
@@ -92,19 +95,25 @@ const ItemContent = ({ device }) => {
 
       switch (device.type) {
         case "multipath": {
-          type = "Multipath";
+          // TRANSLATORS: multipath device type
+          type = _("Multipath");
           break;
         }
         case "dasd": {
-          type = `DASD ${device.busId}`;
+          // TRANSLATORS: %s is replaced by the device bus ID
+          type = format(_("DASD %s"), device.busId);
           break;
         }
         case "md": {
-          type = `Software ${device.level.toUpperCase()}`;
+          // TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
+          type = format(_("Software %s"), device.level.toUpperCase());
           break;
         }
         case "disk": {
-          type = device.sdCard ? "SD Card" : `Transport ${device.transport}`;
+          type = device.sdCard
+            ? _("SD Card")
+            // TRANSLATORS: %s is replaced by the device transport name, e.g. USB, SATA, SCSI...
+            : format(_("Transport %s"), device.transport);
         }
       }
 
@@ -122,7 +131,8 @@ const ItemContent = ({ device }) => {
 
       const members = device.members.map(m => m.split("/").at(-1));
 
-      return <div>Members: {members.sort().join(", ")}</div>;
+      // TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+      return <div>{format(_("Members: %s"), members.sort().join(", "))}</div>;
     };
 
     const RAIDInfo = () => {
@@ -130,7 +140,8 @@ const ItemContent = ({ device }) => {
 
       const devices = device.devices.map(m => m.split("/").at(-1));
 
-      return <div>Devices: {devices.sort().join(", ")}</div>;
+      // TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+      return <div>{format(_("Devices: %s"), devices.sort().join(", "))}</div>;
     };
 
     const MultipathInfo = () => {
@@ -138,7 +149,8 @@ const ItemContent = ({ device }) => {
 
       const wires = device.wires.map(m => m.split("/").at(-1));
 
-      return <div>Wires: {wires.sort().join(", ")}</div>;
+      // TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
+      return <div>{format(_("Wires: %s"), wires.sort().join(", "))}</div>;
     };
 
     return (
@@ -160,7 +172,9 @@ const ItemContent = ({ device }) => {
       const type = device.partitionTable.type.toUpperCase();
       const numPartitions = device.partitionTable.partitions.length;
 
-      const text = `${type} with ${numPartitions} partitions`;
+      // TRANSLATORS: disk partition info, %s is replaced by partition table
+      // type (MS-DOS or GPT), %d is the number of the partitions
+      const text = format(_("%s with %d partitions"), type, numPartitions);
 
       return (
         <div>
@@ -182,7 +196,9 @@ const ItemContent = ({ device }) => {
     };
 
     const NotFound = () => {
-      return <div><Icon name="folder_off" size="14" /> No content found</div>;
+      // TRANSLATORS: status message, no existing content was found on the disk,
+      // i.e. the disk is completely empty
+      return <div><Icon name="folder_off" size="14" /> {_("No content found")}</div>;
     };
 
     const hasContent = device.partitionTable || device.systems.length > 0;
@@ -230,7 +246,7 @@ export default function DeviceSelector ({ selected, devices = [], onSelect = noo
   };
 
   return (
-    <ListBox aria-label="Available devices" className="stack device-selector">
+    <ListBox aria-label={_("Available devices")} className="stack device-selector">
       { devices.map(device => (
         <ListBoxItem
           key={device.sid}

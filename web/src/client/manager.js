@@ -25,9 +25,9 @@ import DBusClient from "./dbus";
 import { WithStatus, WithProgress } from "./mixins";
 import cockpit from "../lib/cockpit";
 
-const MANAGER_SERVICE = "org.opensuse.Agama1";
-const MANAGER_IFACE = "org.opensuse.Agama1.Manager";
-const MANAGER_PATH = "/org/opensuse/Agama1/Manager";
+const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
+const MANAGER_IFACE = "org.opensuse.Agama.Manager1";
+const MANAGER_PATH = "/org/opensuse/Agama/Manager1";
 
 /**
  * Manager base client

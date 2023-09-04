@@ -44,12 +44,12 @@ We use these resources to get more familiar with D-Bus API designing.
 
 ## Language
 
-Iface: o.o.Agama.Locale1
+Iface: o.o.Agama1.Locale
 
 See the new-style [reference][lang-ref] ([source][lang-src]).
 
-[lang-ref]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama.Locale1.html
-[lang-src]: dbus/org.opensuse.Agama.Locale1.doc.xml
+[lang-ref]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama1.Locale.html
+[lang-src]: dbus/org.opensuse.Agama1.Locale.doc.xml
 
 ## Base Product
 

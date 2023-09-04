@@ -107,14 +107,14 @@ it("renders controls for setting the desired size", () => {
 it("uses the default size unit when min size unit is missing", () => {
   plainRender(<VolumeForm volume={{ ...volumes.home, minSize: "" }} />);
 
-  const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Max size unit" });
+  const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Unit for the maximum size" });
   expect(maxSizeUnitSelector).toHaveValue(DEFAULT_SIZE_UNIT);
 });
 
 it("uses the min size unit as max size unit when it is missing", () => {
   plainRender(<VolumeForm volume={{ ...volumes.home, minSize: "1 TiB" }} />);
 
-  const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Max size unit" });
+  const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Unit for the maximum size" });
   expect(maxSizeUnitSelector).toHaveValue("TiB");
 });
 
@@ -144,10 +144,10 @@ it("calls the onSubmit callback with resulting volume when the form is submitted
   await user.click(rangeSize);
 
   const minSizeInput = screen.getByRole("textbox", { name: "Minimum desired size" });
-  const minSizeUnitSelector = screen.getByRole("combobox", { name: "Min size unit" });
+  const minSizeUnitSelector = screen.getByRole("combobox", { name: "Unit for the minimum size" });
   const minSizeGiBUnit = within(minSizeUnitSelector).getByRole("option", { name: "GiB" });
   const maxSizeInput = screen.getByRole("textbox", { name: "Maximum desired size" });
-  const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Max size unit" });
+  const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Unit for the maximum size" });
   const maxSizeGiBUnit = within(maxSizeUnitSelector).getByRole("option", { name: "GiB" });
 
   await user.clear(minSizeInput);
@@ -216,10 +216,10 @@ describe("size validations", () => {
       await user.click(rangeSize);
 
       const minSizeInput = screen.getByRole("textbox", { name: "Minimum desired size" });
-      const minSizeUnitSelector = screen.getByRole("combobox", { name: "Min size unit" });
+      const minSizeUnitSelector = screen.getByRole("combobox", { name: "Unit for the minimum size" });
       const minSizeMiBUnit = within(minSizeUnitSelector).getByRole("option", { name: "MiB" });
       const maxSizeInput = screen.getByRole("textbox", { name: "Maximum desired size" });
-      const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Max size unit" });
+      const maxSizeUnitSelector = screen.getByRole("combobox", { name: "Unit for the maximum size" });
       const maxSizeGiBUnit = within(maxSizeUnitSelector).getByRole("option", { name: "GiB" });
       const maxSizeMiBUnit = within(maxSizeUnitSelector).getByRole("option", { name: "MiB" });
 

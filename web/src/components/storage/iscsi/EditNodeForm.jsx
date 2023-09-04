@@ -23,7 +23,9 @@ import React, { useState } from "react";
 import {
   Form, FormGroup, FormSelect, FormSelectOption
 } from "@patternfly/react-core";
+import format from "format-util";
 
+import { _ } from "~/i18n";
 import { Popup } from "~/components/core";
 import { NodeStartupOptions } from "~/components/storage/iscsi";
 
@@ -44,7 +46,8 @@ export default function EditNodeForm({ node, onSubmit: onSubmitProp, onCancel })
   const id = "iscsiEditNode";
 
   return (
-    <Popup isOpen title={`Edit ${node.target}`}>
+    // TRANSLATORS: %s is replaced by the iSCSI target node name
+    <Popup isOpen title={format(_("Edit %s"), node.target)}>
       <Form id={id} onSubmit={onSubmit}>
         <FormGroup fieldId="startup" label="Startup">
           <FormSelect
