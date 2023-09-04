@@ -33,28 +33,6 @@ const cockpitCallbacks = {};
 
 let managedObjects = {};
 
-const volumes = [
-  {
-    MountPoint: { t: "s", v: "/test1" },
-    DeviceType: { t: "s", v: "partition" },
-    Optional: { t: "b", v: true },
-    Encrypted: { t: "b", v: false },
-    FixedSizeLimits: { t: "b", v: false },
-    AdaptiveSizes: { t: "b", v: false },
-    MinSize: { t: "x", v: 1024 },
-    MaxSize: { t: "x", v: 2048 },
-    FsTypes: { t: "as", v: [{ t: "s", v: "Btrfs" }, { t: "s", v: "Ext3" }] },
-    FsType: { t: "s", v: "Btrfs" },
-    Snapshots: { t: "b", v: true },
-    SnapshotsConfigurable: { t: "b", v: true },
-    SnapshotsAffectSizes: { t: "b", v: false },
-    SizeRelevantVolumes: { t: "as", v: [] }
-  },
-  {
-    MountPoint: { t: "s", v: "/test2" }
-  }
-];
-
 const systemDevices = {
   sda: {
     sid: "59",
@@ -173,9 +151,49 @@ const contexts = {
   },
   withProposal: () => {
     cockpitProxies.proposal = {
-      CandidateDevices:["/dev/sda"],
+      BootDevice: "/dev/sda",
       LVM: true,
-      Volumes: volumes,
+      EncryptionPassword: "00000",
+      Volumes: [
+        {
+          MountPath: { t: "s", v: "/" },
+          FsType: { t: "s", v: "Btrfs" },
+          MinSize: { t: "x", v: 1024 },
+          MaxSize: { t: "x", v: 2048 },
+          AutoSize: { t: "b", v: true },
+          Snapshots: { t: "b", v: true },
+          Outline: {
+            t: "a{sv}",
+            v: {
+              Required: { t: "b", v: true },
+              FsTypes: { t: "as", v: [{ t: "s", v: "Btrfs" }, { t: "s", v: "Ext3" }] },
+              SupportAutoSize: { t: "b", v: true },
+              SnapshotsConfigurable: { t: "b", v: true },
+              SnapshotsAffectSizes: { t: "b", v: true },
+              SizeRelevantVolumes: { t: "as", v: [{ t: "s", v: "/home" }] }
+            }
+          }
+        },
+        {
+          MountPath: { t: "s", v: "/home" },
+          FsType: { t: "s", v: "XFS" },
+          MinSize: { t: "x", v: 2048 },
+          MaxSize: { t: "x", v: 4096 },
+          AutoSize: { t: "b", v: false },
+          Snapshots: { t: "b", v: false },
+          Outline: {
+            t: "a{sv}",
+            v: {
+              Required: { t: "b", v: false },
+              FsTypes: { t: "as", v: [{ t: "s", v: "Ext4" }, { t: "s", v: "XFS" }] },
+              SupportAutoSize: { t: "b", v: false },
+              SnapshotsConfigurable: { t: "b", v: false },
+              SnapshotsAffectSizes: { t: "b", v: false },
+              SizeRelevantVolumes: { t: "as", v: [] }
+            }
+          }
+        }
+      ],
       Actions: [
         {
           Text: { t: "s", v: "Mount /dev/sdb1 as root" },
@@ -190,9 +208,6 @@ const contexts = {
       "/org/opensuse/Agama/Storage1/system/59",
       "/org/opensuse/Agama/Storage1/system/60"
     ];
-  },
-  withVolumeTemplates: () => {
-    cockpitProxies.proposalCalculator.VolumeTemplates = volumes;
   },
   withoutIssues: () => {
     cockpitProxies.issues = {
@@ -660,57 +675,6 @@ describe("#system", () => {
 });
 
 describe("#proposal", () => {
-  const checkAvailableDevices = (availableDevices) => {
-    expect(availableDevices).toEqual([systemDevices.sda, systemDevices.sdb]);
-  };
-
-  const checkVolumes = (volumes) => {
-    expect(volumes.length).toEqual(2);
-    expect(volumes[0]).toEqual({
-      mountPoint: "/test1",
-      deviceType: "partition",
-      optional: true,
-      encrypted: false,
-      fixedSizeLimits: false,
-      adaptiveSizes: false,
-      minSize: 1024,
-      maxSize:2048,
-      fsTypes: ["Btrfs", "Ext3"],
-      fsType: "Btrfs",
-      snapshots: true,
-      snapshotsConfigurable: true,
-      snapshotsAffectSizes: false,
-      sizeRelevantVolumes: []
-    });
-    expect(volumes[1].mountPoint).toEqual("/test2");
-  };
-
-  const checkProposalResult = (result) => {
-    expect(result.candidateDevices).toEqual(["/dev/sda"]);
-    expect(result.lvm).toBeTruthy();
-    expect(result.actions).toEqual([
-      { text: "Mount /dev/sdb1 as root", subvol: false, delete: false }
-    ]);
-    checkVolumes(result.volumes);
-  };
-
-  describe("#getData", () => {
-    beforeEach(() => {
-      contexts.withSystemDevices();
-      contexts.withAvailableDevices();
-      contexts.withVolumeTemplates();
-      contexts.withProposal();
-      client = new StorageClient();
-    });
-
-    it("returns the available devices, templates and the proposal result", async () => {
-      const { availableDevices, volumeTemplates, result } = await client.proposal.getData();
-      checkAvailableDevices(availableDevices);
-      checkVolumes(volumeTemplates);
-      checkProposalResult(result);
-    });
-  });
-
   describe("#getAvailableDevices", () => {
     beforeEach(() => {
       contexts.withSystemDevices();
@@ -720,19 +684,108 @@ describe("#proposal", () => {
 
     it("returns the list of available devices", async () => {
       const availableDevices = await client.proposal.getAvailableDevices();
-      checkAvailableDevices(availableDevices);
+      expect(availableDevices).toEqual([systemDevices.sda, systemDevices.sdb]);
     });
   });
 
-  describe("#getVolumeTemplates", () => {
+  describe("#getProductMountPoints", () => {
     beforeEach(() => {
-      contexts.withVolumeTemplates();
+      cockpitProxies.proposalCalculator.ProductMountPoints = ["/", "swap", "/home"];
       client = new StorageClient();
     });
 
-    it("returns the list of available volume templates", async () => {
-      const volumeTemplates = await client.proposal.getVolumeTemplates();
-      checkVolumes(volumeTemplates);
+    it.only("returns the list of product mount points", async () => {
+      const mount_points = await client.proposal.getProductMountPoints();
+      expect(mount_points).toEqual(["/", "swap", "/home"]);
+    });
+  });
+
+  describe("#defaultVolume", () => {
+    beforeEach(() => {
+      cockpitProxies.proposalCalculator.DefaultVolume = jest.fn(mountPath => {
+        switch (mountPath) {
+          case "/home": return {
+            MountPath: { t: "s", v: "/home" },
+            FsType: { t: "s", v: "XFS" },
+            MinSize: { t: "x", v: 2048 },
+            MaxSize: { t: "x", v: 4096 },
+            AutoSize: { t: "b", v: false },
+            Snapshots: { t: "b", v: false },
+            Outline: {
+              t: "a{sv}",
+              v: {
+                Required: { t: "b", v: false },
+                FsTypes: { t: "as", v: [{ t: "s", v: "Ext4" }, { t: "s", v: "XFS" }] },
+                SupportAutoSize: { t: "b", v: false },
+                SnapshotsConfigurable: { t: "b", v: false },
+                SnapshotsAffectSizes: { t: "b", v: false },
+                SizeRelevantVolumes: { t: "as", v: [] }
+              }
+            }
+          };
+          case "": return {
+            MountPath: { t: "s", v: "" },
+            FsType: { t: "s", v: "Ext4" },
+            MinSize: { t: "x", v: 1024 },
+            MaxSize: { t: "x", v: 2048 },
+            AutoSize: { t: "b", v: false },
+            Snapshots: { t: "b", v: false },
+            Outline: {
+              t: "a{sv}",
+              v: {
+                Required: { t: "b", v: false },
+                FsTypes: { t: "as", v: [{ t: "s", v: "Ext4" }, { t: "s", v: "XFS" }] },
+                SupportAutoSize: { t: "b", v: false },
+                SnapshotsConfigurable: { t: "b", v: false },
+                SnapshotsAffectSizes: { t: "b", v: false },
+                SizeRelevantVolumes: { t: "as", v: [] }
+              }
+            }
+          };
+        }
+      });
+
+      client = new StorageClient();
+    });
+
+    it("returns the default volume for the given path", async () => {
+      const home = await client.proposal.defaultVolume("/home");
+
+      expect(home).toStrictEqual({
+        mountPath: "/home",
+        fsType: "XFS",
+        minSize: 2048,
+        maxSize: 4096,
+        autoSize: false,
+        snapshots: false,
+        outline: {
+          required: false,
+          fsTypes: ["Ext4", "XFS"],
+          supportAutoSize: false,
+          snapshotsConfigurable: false,
+          snapshotsAffectSizes: false,
+          sizeRelevantVolumes: []
+        }
+      });
+
+      const generic = await client.proposal.defaultVolume("");
+
+      expect(generic).toStrictEqual({
+        mountPath: "",
+        fsType: "Ext4",
+        minSize: 1024,
+        maxSize: 2048,
+        autoSize: false,
+        snapshots: false,
+        outline: {
+          required: false,
+          fsTypes: ["Ext4", "XFS"],
+          supportAutoSize: false,
+          snapshotsConfigurable: false,
+          snapshotsAffectSizes: false,
+          sizeRelevantVolumes: []
+        }
+      });
     });
   });
 
@@ -756,8 +809,51 @@ describe("#proposal", () => {
       });
 
       it("returns the proposal settings and actions", async () => {
-        const result = await client.proposal.getResult();
-        checkProposalResult(result);
+        const { settings, actions } = await client.proposal.getResult();
+
+        expect(settings).toStrictEqual({
+          bootDevice: "/dev/sda",
+          lvm: true,
+          encryptionPassword: "00000",
+          volumes: [
+            {
+              mountPath: "/",
+              fsType: "Btrfs",
+              minSize: 1024,
+              maxSize: 2048,
+              autoSize: true,
+              snapshots: true,
+              outline: {
+                required: true,
+                fsTypes: ["Btrfs", "Ext3"],
+                supportAutoSize: true,
+                snapshotsConfigurable: true,
+                snapshotsAffectSizes: true,
+                sizeRelevantVolumes: ["/home"]
+              }
+            },
+            {
+              mountPath: "/home",
+              fsType: "XFS",
+              minSize: 2048,
+              maxSize: 4096,
+              autoSize: false,
+              snapshots: false,
+              outline: {
+                required: false,
+                fsTypes: ["Ext4", "XFS"],
+                supportAutoSize: false,
+                snapshotsConfigurable: false,
+                snapshotsAffectSizes: false,
+                sizeRelevantVolumes: []
+              }
+            }
+          ]
+        });
+
+        expect(actions).toStrictEqual([
+          { text: "Mount /dev/sdb1 as root", subvol: false, delete: false }
+        ]);
       });
     });
   });
@@ -778,45 +874,43 @@ describe("#proposal", () => {
 
     it("calculates a proposal with the given settings", async () => {
       await client.proposal.calculate({
-        candidateDevices: ["/dev/vda"],
+        bootDevice: "/dev/vdb",
         encryptionPassword: "12345",
         lvm: true,
         volumes: [
           {
-            mountPoint: "/test1",
-            encrypted: false,
+            mountPath: "/test1",
             fsType: "Btrfs",
             minSize: 1024,
-            maxSize:2048,
-            fixedSizeLimits: false,
+            maxSize: 2048,
+            autoSize: false,
             snapshots: true
           },
           {
-            mountPoint: "/test2",
+            mountPath: "/test2",
             minSize: 1024
           }
         ]
       });
 
       expect(cockpitProxies.proposalCalculator.Calculate).toHaveBeenCalledWith({
-        CandidateDevices: { t: "as", v: ["/dev/vda"] },
+        BootDevice: { t: "s", v: "/dev/vdb" },
         EncryptionPassword: { t: "s", v: "12345" },
         LVM: { t: "b", v: true },
         Volumes: {
           t: "aa{sv}",
           v: [
             {
-              MountPoint: { t: "s", v: "/test1" },
-              Encrypted: { t: "b", v: false },
+              MountPath: { t: "s", v: "/test1" },
               FsType: { t: "s", v: "Btrfs" },
-              MinSize: { t: "x", v: 1024 },
-              MaxSize: { t: "x", v: 2048 },
-              FixedSizeLimits: { t: "b", v: false },
+              MinSize: { t: "t", v: 1024 },
+              MaxSize: { t: "t", v: 2048 },
+              AutoSize: { t: "b", v: false },
               Snapshots: { t: "b", v: true }
             },
             {
-              MountPoint: { t: "s", v: "/test2" },
-              MinSize: { t: "x", v: 1024 }
+              MountPath: { t: "s", v: "/test2" },
+              MinSize: { t: "t", v: 1024 }
             }
           ]
         }
