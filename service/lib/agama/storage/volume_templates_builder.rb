@@ -141,7 +141,10 @@ module Agama
       def subvolume(data)
         return Y2Storage::SubvolSpecification.new(data) if data.is_a?(String)
 
-        attrs = { copy_on_write: fetch(data, :copy_on_write), archs: fetch(data, :archs) }.compact
+        archs = fetch(data, :archs, "").gsub(/\s+/, "").split(",")
+        archs = nil if archs.none?
+
+        attrs = { copy_on_write: fetch(data, :copy_on_write), archs: archs }.compact
         Y2Storage::SubvolSpecification.new(fetch(data, :path), **attrs)
       end
 
