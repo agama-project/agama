@@ -35,3 +35,20 @@ async fn test_labels_for_locales() -> Result<(), Box<dyn Error>> {
     assert_eq!(l10n_territory, "United States");
     Ok(())
 }
+
+#[test]
+async fn test_set_ui_locale() -> Result<(), Box<dyn Error>> {
+    let mut server = DBusServer::new().start().await;
+    let connection = server.connection();
+    locale::export_dbus_objects(&connection).await?;
+    server.request_name().await?;
+
+    let proxy = LocaleProxy::new(&connection).await?;
+    assert_eq!(proxy.uilocale().await?, "en");
+    proxy.set_uilocale("cs_CZ").await?;
+
+    let proxy = LocaleProxy::new(&connection).await?;
+    assert_eq!(proxy.uilocale().await?, "cs_CZ");
+
+    Ok(())
+}

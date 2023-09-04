@@ -64,6 +64,7 @@ trait Locale {
     /// UILocale property
     #[dbus_proxy(property, name = "UILocale")]
     fn uilocale(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property, name = "UILocale")]
     fn set_uilocale(&self, value: &str) -> zbus::Result<()>;
 
     /// VConsoleKeyboard property
