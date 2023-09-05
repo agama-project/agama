@@ -72,6 +72,7 @@ describe Agama::Storage::VolumeConversion::ToY2Storage do
         ignore_snapshots_sizes:  true,
         min_size:                Y2Storage::DiskSize.GiB(5),
         max_size:                Y2Storage::DiskSize.GiB(20),
+        max_size_lvm:            Y2Storage::DiskSize.GiB(20),
         snapshots:               true,
         snapshots_configurable?: true,
         snapshots_size:          Y2Storage::DiskSize.GiB(10),
@@ -96,7 +97,8 @@ describe Agama::Storage::VolumeConversion::ToY2Storage do
           ignore_fallback_sizes:  false,
           ignore_snapshots_sizes: false,
           min_size:               Y2Storage::DiskSize.GiB(10),
-          max_size:               Y2Storage::DiskSize.GiB(50)
+          max_size:               Y2Storage::DiskSize.GiB(50),
+          max_size_lvm:           Y2Storage::DiskSize.GiB(50)
         )
       end
     end

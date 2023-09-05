@@ -70,16 +70,6 @@ describe Agama::Storage::Proposal do
         it "returns true" do
           expect(subject.success?).to eq(true)
         end
-
-        context "but the proposal was invalidated" do
-          before do
-            subject.invalidate
-          end
-
-          it "returns false" do
-            expect(subject.success?).to eq(false)
-          end
-        end
       end
 
       context "and the proposal failed" do
@@ -89,18 +79,6 @@ describe Agama::Storage::Proposal do
           expect(subject.success?).to eq(false)
         end
       end
-    end
-  end
-
-  describe "#invalidated?" do
-    it "returns false if the proposal has not been invalidated yet" do
-      expect(subject.invalidated?).to eq(false)
-    end
-
-    it "returns true if the proposal was invalidated" do
-      subject.invalidate
-
-      expect(subject.invalidated?).to eq(true)
     end
   end
 
@@ -150,21 +128,6 @@ describe Agama::Storage::Proposal do
         )
       end
     end
-
-    context "if the previous proposal was invalidated" do
-      before do
-        subject.calculate(achievable_settings)
-        subject.invalidate
-      end
-
-      it "sets the new proposal as not invalidated" do
-        expect(subject.invalidated?).to eq(true)
-
-        subject.calculate(achievable_settings)
-
-        expect(subject.invalidated?).to eq(false)
-      end
-    end
   end
 
   describe "#settings" do
@@ -200,16 +163,6 @@ describe Agama::Storage::Proposal do
             actions: { "/dev/sda" => :force_delete }
           )
         )
-      end
-
-      context "and the proposal was invalidated" do
-        before do
-          subject.invalidate
-        end
-
-        it "returns nil" do
-          expect(proposal.settings).to be_nil
-        end
       end
     end
   end
@@ -277,6 +230,10 @@ describe Agama::Storage::Proposal do
 
           expect(subject.issues).to include(
             an_object_having_attributes(description: /No device selected/)
+          )
+
+          expect(subject.issues).to_not include(
+            an_object_having_attributes(description: /device is not found/)
           )
         end
       end

@@ -70,8 +70,12 @@ module Agama
           # And note that the final range of sizes used by the Y2Storage proposal is calculated by
           # Y2Storage according the range configured here and other sizes like fallback sizes or
           # the size for snapshots.
-          target.min_size = auto ? volume.outline.base_min_size : volume.min_size
-          target.max_size = auto ? volume.outline.base_max_size : volume.max_size
+          min_size = auto ? volume.outline.base_min_size : volume.min_size
+          max_size = auto ? volume.outline.base_max_size : volume.max_size
+
+          target.min_size = min_size
+          target.max_size = max_size
+          target.max_size_lvm = max_size
         end
 
         # @param target [Y2Storage::VolumeSpecification]

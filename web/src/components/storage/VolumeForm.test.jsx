@@ -27,40 +27,51 @@ import { VolumeForm } from "~/components/storage";
 
 const volumes = {
   root: {
-    mountPoint: "/",
-    optional: false,
-    deviceType: "partition",
-    encrypted: false,
+    mountPath: "/",
+    fsType: "Btrfs",
     minSize: 1024,
     maxSize: 2048,
-    adaptiveSizes: true,
-    fixedSizeLimits: true,
-    fsType: "Btrfs",
-    snapshots: true
+    autoSize: false,
+    snapshots: true,
+    outline: {
+      required: true,
+      fsTypes: ["Btrfs", "Ext4"],
+      supportAutoSize: true,
+      snapshotsConfigurable: true,
+      snapshotsAffectSizes: true,
+      sizeRelevantVolumes: []
+    }
   },
   swap: {
-    mountPoint: "swap",
-    optional: true,
-    deviceType: "partition",
-    encrypted: false,
+    mountPath: "swap",
+    fsType: "Swap",
     minSize: 1024,
     maxSize: 1024,
-    adaptiveSizes: false,
-    fixedSizeLimits: true,
-    fsType: "Swap",
-    snapshots: false
+    autoSize: false,
+    snapshots: false,
+    outline: {
+      required: false,
+      fsTypes: ["Swap"],
+      supportAutoSize: false,
+      snapshotsConfigurable: false,
+      snapshotsAffectSizes: false,
+      sizeRelevantVolumes: []
+    }
   },
   home: {
-    mountPoint: "/home",
-    optional: true,
-    deviceType: "partition",
-    encrypted: false,
-    minSize: 1024,
-    maxSize: -1,
-    adaptiveSizes: false,
-    fixedSizeLimits: true,
+    mountPath: "/home",
     fsType: "XFS",
-    snapshots: false
+    minSize: 1024,
+    autoSize: false,
+    snapshots: false,
+    outline: {
+      required: false,
+      fsTypes: ["Ext4", "XFS"],
+      supportAutoSize: false,
+      snapshotsConfigurable: false,
+      snapshotsAffectSizes: false,
+      sizeRelevantVolumes: []
+    }
   }
 };
 

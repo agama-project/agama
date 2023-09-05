@@ -62,9 +62,9 @@ const DEFAULT_SIZE_UNIT = "GiB";
  * @returns {SizeObject}
  */
 const splitSize = (size) => {
-  // From D-Bus, maxSize comes as -1 when set as "unlimited", but for Agama UI
+  // From D-Bus, maxSize comes as undefined when set as "unlimited", but for Agama UI
   // it means "leave it empty"
-  const sanitizedSize = size !== -1 ? size : "";
+  const sanitizedSize = size === undefined ? "" : size;
   const parsedSize = typeof sanitizedSize === "string" ? sanitizedSize : xbytes(sanitizedSize, { iec: true });
   const [qty, unit] = parsedSize.split(" ");
   // `Number` will remove trailing zeroes;
@@ -85,15 +85,10 @@ const splitSize = (size) => {
  * deviceSize(1024)
  * // returns "1 KiB"
  *
- * deviceSize(-1)
- * // returns undefined
- *
- * @param {number} size - Number of bytes. The value -1 represents an unlimited size.
- * @returns {string|undefined}
+ * @param {number} size - Number of bytes
+ * @returns {string}
  */
 const deviceSize = (size) => {
-  if (size === -1) return undefined;
-
   // Sadly, we cannot returns directly the xbytes(size, { iec: true }) because
   // it does not have an option for dropping/ignoring trailing zeroes and we do
   // not want to render them.

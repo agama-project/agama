@@ -75,7 +75,7 @@ const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
 const MountPointFormSelect = ({ volumes, ...formSelectProps }) => {
   return (
     <FormSelect { ...formSelectProps }>
-      { volumes.map(v => <FormSelectOption key={v.mountPoint} value={v.mountPoint} label={v.mountPoint} />) }
+      { volumes.map(v => <FormSelectOption key={v.mountPath} value={v.mountPath} label={v.mountPath} />) }
     </FormSelect>
   );
 };
@@ -91,16 +91,16 @@ const MountPointFormSelect = ({ volumes, ...formSelectProps }) => {
 const SizeAuto = ({ volume }) => {
   const conditions = [];
 
-  if (volume.snapshotsAffectSizes)
+  if (volume.outline.snapshotsAffectSizes)
     // TRANSLATORS: item which affects the final computed partition size
     conditions.push(_("the configuration of snapshots"));
 
-  if (volume.sizeRelevantVolumes && volume.sizeRelevantVolumes.length > 0)
+  if (volume.outline.sizeRelevantVolumes && volume.outline.sizeRelevantVolumes.length > 0)
     // TRANSLATORS: item which affects the final computed partition size
     // %s is replaced by a list of mount points like "/home, /boot"
     conditions.push(format(_("the presence of the file system for %s"),
                            // TRANSLATORS: conjunction for merging two list items
-                           volume.sizeRelevantVolumes.join(_(", "))));
+                           volume.outline.sizeRelevantVolumes.join(_(", "))));
 
   // TRANSLATORS: the %s is replaced by the items which affect the computed size
   const conditionsText = format(_("The final size depends on %s."),
@@ -275,7 +275,7 @@ const SizeOptions = ({ errors, formData, volume, onChange }) => {
 
   const sizeOptions = [SIZE_METHODS.MANUAL, SIZE_METHODS.RANGE];
 
-  if (volume.adaptiveSizes) sizeOptions.push(SIZE_METHODS.AUTO);
+  if (volume.outline.supportAutoSize) sizeOptions.push(SIZE_METHODS.AUTO);
 
   return (
     <div>
@@ -322,13 +322,13 @@ const createUpdatedVolume = (volume, formData) => {
 
   switch (formData.sizeMethod) {
     case SIZE_METHODS.AUTO:
-      updatedAttrs = { minSize: undefined, maxSize: undefined, fixedSizeLimits: false };
+      updatedAttrs = { minSize: undefined, maxSize: undefined, autoSize: true };
       break;
     case SIZE_METHODS.MANUAL:
-      updatedAttrs = { minSize: size, maxSize: size, fixedSizeLimits: true };
+      updatedAttrs = { minSize: size, maxSize: size, autoSize: false };
       break;
     case SIZE_METHODS.RANGE:
-      updatedAttrs = { minSize, maxSize: formData.maxSize ? maxSize : -1, fixedSizeLimits: true };
+      updatedAttrs = { minSize, maxSize: formData.maxSize ? maxSize : undefined, autoSize: false };
       break;
   }
 
@@ -342,9 +342,9 @@ const createUpdatedVolume = (volume, formData) => {
  * @return {string} corresponding size method
  */
 const sizeMethodFor = (volume) => {
-  const { adaptiveSizes, fixedSizeLimits, minSize, maxSize } = volume;
+  const { autoSize, minSize, maxSize } = volume;
 
-  if (adaptiveSizes && !fixedSizeLimits) {
+  if (autoSize) {
     return SIZE_METHODS.AUTO;
   } else if (minSize !== maxSize) {
     return SIZE_METHODS.RANGE;
@@ -371,7 +371,7 @@ const prepareFormData = (volume) => {
     maxSize,
     maxSizeUnit,
     sizeMethod: sizeMethodFor(volume),
-    mountPoint: volume.mountPoint
+    mountPoint: volume.mountPath
   };
 };
 
@@ -441,8 +441,8 @@ const reducer = (state, action) => {
 export default function VolumeForm({ id, volume: currentVolume, templates = [], onSubmit }) {
   const [state, dispatch] = useReducer(reducer, currentVolume || templates[0], createInitialState);
 
-  const changeVolume = (mountPoint) => {
-    const volume = templates.find(t => t.mountPoint === mountPoint);
+  const changeVolume = (mountPath) => {
+    const volume = templates.find(t => t.mountPath === mountPath);
     dispatch({ type: "CHANGE_VOLUME", payload: { volume } });
   };
 

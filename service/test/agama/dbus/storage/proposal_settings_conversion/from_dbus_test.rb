@@ -107,6 +107,16 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::FromDBus do
       end
     end
 
+    context "when an empty boot device is provided from D-Bus" do
+      let(:dbus_settings) { { "BootDevice" => "" } }
+
+      it "sets the boot device to nil" do
+        settings = subject.convert
+
+        expect(settings.boot_device).to be_nil
+      end
+    end
+
     context "when volumes are not provided from D-Bus" do
       let(:dbus_settings) { { "Volumes" => [] } }
 

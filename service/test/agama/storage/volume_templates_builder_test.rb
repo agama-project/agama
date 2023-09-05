@@ -256,8 +256,9 @@ describe Agama::Storage::VolumeTemplatesBuilder do
       context "when the list of subvolumes mixes strings and hashes" do
         let(:subvolumes) do
           [
-            "root", "home",
-            { "path" => "boot", "archs" => "x86_64" },
+            "root",
+            "home",
+            { "path" => "boot", "archs" => "x86_64, !ppc" },
             { "path" => "var", "copy_on_write" => false },
             "srv"
           ]
@@ -265,11 +266,36 @@ describe Agama::Storage::VolumeTemplatesBuilder do
 
         it "creates the correct list of subvolumes" do
           subvols = builder.for("/").btrfs.subvolumes
-          expect(subvols.size).to eq 5
+
           expect(subvols).to all be_a(Y2Storage::SubvolSpecification)
-          expect(subvols.map(&:path)).to contain_exactly("home", "root", "srv", "boot", "var")
-          expect(subvols.map(&:archs)).to contain_exactly(nil, nil, nil, nil, "x86_64")
-          expect(subvols.map(&:copy_on_write)).to contain_exactly(true, true, true, true, false)
+
+          expect(subvols).to contain_exactly(
+            an_object_having_attributes(
+              path:          "root",
+              archs:         nil,
+              copy_on_write: true
+            ),
+            an_object_having_attributes(
+              path:          "home",
+              archs:         nil,
+              copy_on_write: true
+            ),
+            an_object_having_attributes(
+              path:          "boot",
+              archs:         ["x86_64", "!ppc"],
+              copy_on_write: true
+            ),
+            an_object_having_attributes(
+              path:          "var",
+              archs:         nil,
+              copy_on_write: false
+            ),
+            an_object_having_attributes(
+              path:          "srv",
+              archs:         nil,
+              copy_on_write: true
+            )
+          )
         end
       end
     end

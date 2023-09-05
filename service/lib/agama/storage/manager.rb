@@ -188,20 +188,10 @@ module Agama
         self.deprecated_system = false
       end
 
-      # Calculates the proposal
-      #
-      # It reuses the settings from the previous proposal, if any.
+      # Calculates the proposal using the settings from the config file.
       def calculate_proposal
-        settings = proposal.settings || read_proposal_settings
-
+        settings = ProposalSettingsReader.new(config).read
         proposal.calculate(settings)
-      end
-
-      # Reads the default proposal settings from the config file.
-      #
-      # @return [ProposalSettings]
-      def read_proposal_settings
-        ProposalSettingsReader.new(config).read
       end
 
       # Adds the required packages to the list of resolvables to install

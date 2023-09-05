@@ -62,6 +62,7 @@ ALP-Dolomite:
         patterns: null
 
   storage:
+    space_policy: delete
     encryption:
       method: luks2
       pbkd_function: pbkdf2
@@ -150,6 +151,7 @@ Tumbleweed:
         patterns: null
 
   storage:
+    space_policy: delete
     volumes:
       - "/"
       - "swap"
@@ -274,6 +276,7 @@ Leap16:
         patterns: null
 
   storage:
+    space_policy: delete
     encryption:
       method: luks2
       pbkd_function: pbkdf2

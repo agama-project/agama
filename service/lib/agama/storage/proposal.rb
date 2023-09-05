@@ -38,32 +38,9 @@ module Agama
 
       # Whether the proposal was successfully calculated.
       #
-      # @note: The proposal must not be invalidated.
-      #
       # @return [Boolean]
       def success?
         calculated? && !proposal.failed?
-      end
-
-      # Whether the proposal was already calculated.
-      #
-      # @note: The proposal must not be invalidated.
-      #
-      # @return [Boolean]
-      def calculated?
-        !invalidated? && !proposal.nil?
-      end
-
-      # Whether the proposal was invalidated.
-      #
-      # @return [Boolean]
-      def invalidated?
-        !!@invalidated
-      end
-
-      # Invalidates the current proposal.
-      def invalidate
-        @invalidated = true
       end
 
       # Stores callbacks to be call after calculating a proposal.
@@ -91,7 +68,6 @@ module Agama
         calculate_proposal(settings)
 
         @on_calculate_callbacks.each(&:call)
-        @invalidated = false
 
         success?
       end
@@ -101,8 +77,7 @@ module Agama
       # Note that this settings might differ from the {#original_settings}. For example, the sizes
       # of some volumes could be adjusted if auto size is set.
       #
-      # @return [ProposalSettings, nil] nil if no proposal has been calculated yet or the proposal
-      #   was invalidated.
+      # @return [ProposalSettings, nil] nil if no proposal has been calculated yet.
       def settings
         return nil unless calculated?
 
@@ -154,9 +129,14 @@ module Agama
 
       # @return [Y2Storage::MinGuidedProposal, nil]
       def proposal
-        return nil if invalidated?
-
         storage_manager.proposal
+      end
+
+      # Whether the proposal was already calculated.
+      #
+      # @return [Boolean]
+      def calculated?
+        !proposal.nil?
       end
 
       # Instantiates and executes a Y2Storage proposal with the given settings
@@ -205,6 +185,7 @@ module Agama
       # @return [Issue, nil]
       def missing_devices_issue
         # At this moment, only the boot device is checked.
+        return unless settings.boot_device
         return if available_devices.map(&:name).include?(settings.boot_device)
 
         Issue.new("Selected device is not found in the system",

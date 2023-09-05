@@ -81,7 +81,7 @@ module Agama
           # @param target [Agama::Storage::ProposalSettings]
           # @param value [String]
           def boot_device_conversion(target, value)
-            target.boot_device = value
+            target.boot_device = value.empty? ? nil : value
           end
 
           # @param target [Agama::Storage::ProposalSettings]
