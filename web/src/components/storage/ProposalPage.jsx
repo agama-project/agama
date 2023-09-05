@@ -110,11 +110,19 @@ export default function ProposalPage() {
     return issues.map(toValidationError);
   }, [client, cancellablePromise]);
 
+  const calculateProposal = useCallback(async (settings) => {
+    return await cancellablePromise(client.proposal.calculate(settings));
+  }, [client, cancellablePromise]);
+
   const load = useCallback(async () => {
     dispatch({ type: "START_LOADING" });
 
     const isDeprecated = await cancellablePromise(client.isDeprecated());
-    if (isDeprecated) await client.probe();
+    if (isDeprecated) {
+      const result = await loadProposalResult();
+      await cancellablePromise(client.probe());
+      if (result?.settings) await calculateProposal(result.settings);
+    }
 
     const availableDevices = await loadAvailableDevices();
     dispatch({ type: "UPDATE_AVAILABLE_DEVICES", payload: { availableDevices } });
@@ -129,12 +137,12 @@ export default function ProposalPage() {
     dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
 
     if (result !== undefined) dispatch({ type: "STOP_LOADING" });
-  }, [cancellablePromise, client, loadAvailableDevices, loadErrors, loadProposalResult, loadVolumeTemplates]);
+  }, [calculateProposal, cancellablePromise, client, loadAvailableDevices, loadErrors, loadProposalResult, loadVolumeTemplates]);
 
   const calculate = useCallback(async (settings) => {
     dispatch({ type: "START_LOADING" });
 
-    await cancellablePromise(client.proposal.calculate(settings));
+    await calculateProposal(settings);
 
     const result = await loadProposalResult();
     dispatch({ type: "UPDATE_RESULT", payload: { result } });
@@ -143,7 +151,7 @@ export default function ProposalPage() {
     dispatch({ type: "UPDATE_ERRORS", payload: { errors } });
 
     dispatch({ type: "STOP_LOADING" });
-  }, [cancellablePromise, client, loadErrors, loadProposalResult]);
+  }, [calculateProposal, loadErrors, loadProposalResult]);
 
   useEffect(() => {
     load().catch(console.error);

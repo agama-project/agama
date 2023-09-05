@@ -51,6 +51,7 @@ const ProposalSummary = ({ proposal }) => {
 
 const initialState = {
   busy: true,
+  deprecated: false,
   proposal: undefined,
   errors: [],
   progress: { message: _("Probing storage devices"), current: 0, total: 0 }
@@ -65,6 +66,10 @@ const reducer = (state, action) => {
 
     case "UPDATE_STATUS": {
       return { ...initialState, busy: action.payload.status === BUSY };
+    }
+
+    case "UPDATE_DEPRECATED": {
+      return { ...state, deprecated: action.payload.deprecated };
     }
 
     case "UPDATE_PROPOSAL": {
@@ -104,10 +109,24 @@ export default function StorageSection({ showErrors = false }) {
   }, [client, cancellablePromise]);
 
   useEffect(() => {
-    const updateProposal = async () => {
-      const isDeprecated = await cancellablePromise(client.isDeprecated());
-      if (isDeprecated) await cancellablePromise(client.probe());
+    const updateDeprecated = async (deprecated) => {
+      dispatch({ type: "UPDATE_DEPRECATED", payload: { deprecated } });
 
+      if (deprecated) {
+        const result = await cancellablePromise(client.proposal.getResult());
+        await cancellablePromise(client.probe());
+        if (result.settings) await cancellablePromise(client.proposal.calculate(result.settings));
+        dispatch({ type: "UPDATE_DEPRECATED", payload: { deprecated: false } });
+      }
+    };
+
+    cancellablePromise(client.isDeprecated()).then(updateDeprecated);
+
+    return client.onDeprecate(() => updateDeprecated(true));
+  }, [client, cancellablePromise]);
+
+  useEffect(() => {
+    const updateProposal = async () => {
       const proposal = {
         availableDevices: await cancellablePromise(client.proposal.getAvailableDevices()),
         result: await cancellablePromise(client.proposal.getResult())
@@ -118,8 +137,8 @@ export default function StorageSection({ showErrors = false }) {
       dispatch({ type: "UPDATE_PROPOSAL", payload: { proposal, errors } });
     };
 
-    if (!state.busy) updateProposal();
-  }, [client, cancellablePromise, state.busy]);
+    if (!state.busy && !state.deprecated) updateProposal();
+  }, [client, cancellablePromise, state.busy, state.deprecated]);
 
   useEffect(() => {
     cancellablePromise(client.getProgress()).then(({ message, current, total }) => {
@@ -138,10 +157,6 @@ export default function StorageSection({ showErrors = false }) {
       });
     });
   }, [client, cancellablePromise]);
-
-  useEffect(() => {
-    return client.onDeprecate(() => client.probe());
-  }, [client]);
 
   const errors = showErrors ? state.errors : [];
 

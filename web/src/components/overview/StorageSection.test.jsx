@@ -30,14 +30,12 @@ import { StorageSection } from "~/components/overview";
 jest.mock("~/client");
 jest.mock("~/components/core/SectionSkeleton", () => mockComponent("Loading storage"));
 
-let status = IDLE;
-
 const availableDevices = [
   { name: "/dev/sda", size: 536870912000 },
   { name: "/dev/sdb", size: 697932185600 }
 ];
 
-let proposalResult = {
+const proposalResult = {
   settings: {
     bootDevice: "/dev/sda",
     lvm: false
@@ -45,30 +43,41 @@ let proposalResult = {
   actions: []
 };
 
-let errors = [];
+const storageMock = {
+  probe: jest.fn().mockResolvedValue(0),
+  proposal: {
+    getAvailableDevices: jest.fn().mockResolvedValue(availableDevices),
+    getResult: jest.fn().mockResolvedValue(proposalResult),
+    calculate: jest.fn().mockResolvedValue(0)
+  },
+  getStatus: jest.fn().mockResolvedValue(IDLE),
+  getProgress: jest.fn().mockResolvedValue({
+    message: "Activating storage devices", current: 1, total: 4
+  }),
+  onProgressChange: noop,
+  getErrors: jest.fn().mockResolvedValue([]),
+  onStatusChange: jest.fn(),
+  isDeprecated: jest.fn().mockResolvedValue(false),
+  onDeprecate: noop
+};
 
-let onStatusChangeFn = jest.fn();
+let storage;
 
 beforeEach(() => {
-  createClient.mockImplementation(() => {
-    return {
-      storage: {
-        proposal: {
-          getAvailableDevices: jest.fn().mockResolvedValue(availableDevices),
-          getResult: jest.fn().mockResolvedValue(proposalResult),
-        },
-        getStatus: jest.fn().mockResolvedValue(status),
-        getProgress: jest.fn().mockResolvedValue({
-          message: "Activating storage devices", current: 1, total: 4
-        }),
-        onProgressChange: noop,
-        getErrors: jest.fn().mockResolvedValue(errors),
-        onStatusChange: onStatusChangeFn,
-        isDeprecated: jest.fn().mockResolvedValue(false),
-        onDeprecate: noop
-      },
-    };
-  });
+  storage = { ...storageMock, proposal: { ...storageMock.proposal } };
+
+  createClient.mockImplementation(() => ({ storage }));
+});
+
+it("probes storage if the storage devices are deprecated", async () => {
+  storage.isDeprecated = jest.fn().mockResolvedValue(true);
+  installerRender(<StorageSection />);
+  await waitFor(() => expect(storage.probe).toHaveBeenCalled());
+});
+
+it("does not probe storage if the storage devices are not deprecated", async () => {
+  installerRender(<StorageSection />);
+  await waitFor(() => expect(storage.probe).not.toHaveBeenCalled());
 });
 
 describe("when there is a proposal", () => {
@@ -102,10 +111,10 @@ describe("when there is a proposal", () => {
     });
   });
 
-  describe("but service status changes to busy", () => {
+  describe("and service status changes to busy", () => {
     it("renders the progress", async () => {
       const [mockFunction, callbacks] = createCallbackMock();
-      onStatusChangeFn = mockFunction;
+      storage.onStatusChange = mockFunction;
 
       installerRender(<StorageSection showErrors />);
 
@@ -122,8 +131,9 @@ describe("when there is a proposal", () => {
 
 describe("when there is no proposal yet", () => {
   beforeEach(() => {
-    proposalResult = undefined;
-    errors = [{ description: "Fake error" }];
+    storage.proposal.getResult = jest.fn().mockResolvedValue(undefined);
+    const errors = [{ description: "Fake error" }];
+    storage.getErrors = jest.fn().mockResolvedValue(errors);
   });
 
   it("renders the progress", async () => {
@@ -139,10 +149,11 @@ describe("when there is no proposal yet", () => {
   });
 });
 
-describe("but storage service is busy", () => {
+describe("when storage service is busy", () => {
   beforeEach(() => {
-    status = BUSY;
-    errors = [{ description: "Fake error" }];
+    storage.getStatus = jest.fn().mockResolvedValue(BUSY);
+    const errors = [{ description: "Fake error" }];
+    storage.getErrors = jest.fn().mockResolvedValue(errors);
   });
 
   it("renders the progress", async () => {
@@ -155,5 +166,19 @@ describe("but storage service is busy", () => {
     installerRender(<StorageSection showErrors />);
 
     await waitFor(() => expect(screen.queryByText("Fake error")).not.toBeInTheDocument());
+  });
+});
+
+describe("when the storage devices become deprecated", () => {
+  it("probes storage", async () => {
+    const [mockFunction, callbacks] = createCallbackMock();
+    storage.onDeprecate = mockFunction;
+
+    installerRender(<StorageSection />);
+
+    const [onDeprecateCb] = callbacks;
+    await act(() => onDeprecateCb());
+
+    await waitFor(() => expect(storage.probe).toHaveBeenCalled());
   });
 });
