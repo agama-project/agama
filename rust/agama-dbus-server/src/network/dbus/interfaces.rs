@@ -7,8 +7,7 @@ use crate::network::{
     action::Action,
     error::NetworkStateError,
     model::{
-        Connection as NetworkConnection, Device as NetworkDevice, IpAddress, MatchConfig,
-        WirelessConnection,
+        Connection as NetworkConnection, Device as NetworkDevice, IpAddress, WirelessConnection,
     },
 };
 use log;
@@ -208,8 +207,8 @@ impl Connection {
     }
 
     #[dbus_interface(property)]
-    pub fn interface(&self) -> String {
-        self.get_connection().interface().to_string()
+    pub async fn interface(&self) -> String {
+        self.get_connection().await.interface().to_string()
     }
 }
 
@@ -232,65 +231,66 @@ impl Match {
     }
 
     /// Returns the underlying connection.
-    fn get_connection(&self) -> MutexGuard<NetworkConnection> {
-        self.connection.lock()
+    async fn get_connection(&self) -> MutexGuard<NetworkConnection> {
+        self.connection.lock().await
     }
 
     /// Updates the connection data in the NetworkSystem.
     ///
     /// * `connection`: Updated connection.
-    fn update_connection(
+    async fn update_connection<'a>(
         &self,
-        connection: MutexGuard<NetworkConnection>,
+        connection: MutexGuard<'a, NetworkConnection>,
     ) -> zbus::fdo::Result<()> {
-        let actions = self.actions.lock();
+        let actions = self.actions.lock().await;
         actions
             .send(Action::UpdateConnection(connection.clone()))
+            .await
             .unwrap();
         Ok(())
     }
 }
 
-#[dbus_interface(name = "org.opensuse.Agama.Network1.Connection.Match")]
+#[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.Match")]
 impl Match {
     /// List of driver
     #[dbus_interface(property)]
-    pub fn driver(&self) -> Vec<String> {
-        let connection = self.get_connection();
+    pub async fn driver(&self) -> Vec<String> {
+        let connection = self.get_connection().await;
         connection.match_config().driver.clone()
     }
 
-    pub fn set_driver(&mut self, driver: Vec<String>) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_connection();
+    pub async fn set_driver(&mut self, driver: Vec<String>) -> zbus::fdo::Result<()> {
+        let mut connection = self.get_connection().await;
         let config = connection.match_config_mut();
         config.driver = driver;
-        self.update_connection(connection)
+        self.update_connection(connection).await
     }
 
     /// List of paths
     #[dbus_interface(property)]
-    pub fn path(&self) -> Vec<String> {
-        let connection = self.get_connection();
+    pub async fn path(&self) -> Vec<String> {
+        let connection = self.get_connection().await;
         connection.match_config().path.clone()
     }
 
-    pub fn set_path(&mut self, path: Vec<String>) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_connection();
+    pub async fn set_path(&mut self, path: Vec<String>) -> zbus::fdo::Result<()> {
+        let mut connection = self.get_connection().await;
         let config = connection.match_config_mut();
         config.path = path;
-        self.update_connection(connection)
+        self.update_connection(connection).await
     }
     /// List of driver
     #[dbus_interface(property)]
-    pub fn interface(&self) -> Vec<String> {
-        let connection = self.get_connection();
+    pub async fn interface(&self) -> Vec<String> {
+        let connection = self.get_connection().await;
         connection.match_config().interface.clone()
     }
 
     /// List of kernel options
     #[dbus_interface(property)]
-    pub fn kernel(&self) -> Vec<String> {
-        let connection = self.get_connection();
+    pub async fn kernel(&self) -> Vec<String> {
+        let connection = self.get_connection().await;
         connection.match_config().kernel.clone()
     }
 }

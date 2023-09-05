@@ -240,7 +240,7 @@ impl<'a> NetworkClient<'a> {
             .build()
             .await?;
 
-        let paths: Vec<_> = match_settings.path.iter().map(String::as_ref).collect();
+        let paths: Vec<_> = match_settings.paths.iter().map(String::as_ref).collect();
         proxy.set_path(paths.as_slice()).await?;
 
         Ok(())
