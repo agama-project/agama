@@ -29,7 +29,7 @@ import {
   ListItem,
   Popover
 } from "@patternfly/react-core";
-import format from "format-util";
+import { sprintf } from "sprintf-js";
 
 import { Icon } from '~/components/layout';
 import { _, n_ } from "~/i18n";
@@ -81,7 +81,7 @@ const ValidationErrors = ({ title = _("Errors"), errors }) => {
             onClick={() => setPopoverVisible(true)}
           >
             { warningIcon } {
-              format(
+              sprintf(
                 // TRANSLATORS: %d is replaced with the number of errors found
                 n_("%d error found", "%d errors found", errors.length),
                 errors.length

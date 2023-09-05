@@ -27,7 +27,7 @@ import {
   Radio,
   TextInput
 } from "@patternfly/react-core";
-import format from "format-util";
+import { sprintf } from "sprintf-js";
 
 import { _, N_ } from "~/i18n";
 import { If, NumericTextInput } from '~/components/core';
@@ -98,14 +98,14 @@ const SizeAuto = ({ volume }) => {
   if (volume.sizeRelevantVolumes && volume.sizeRelevantVolumes.length > 0)
     // TRANSLATORS: item which affects the final computed partition size
     // %s is replaced by a list of mount points like "/home, /boot"
-    conditions.push(format(_("the presence of the file system for %s"),
-                           // TRANSLATORS: conjunction for merging two list items
-                           volume.sizeRelevantVolumes.join(_(", "))));
+    conditions.push(sprintf(_("the presence of the file system for %s"),
+      // TRANSLATORS: conjunction for merging two list items
+                            volume.sizeRelevantVolumes.join(_(", "))));
 
   // TRANSLATORS: the %s is replaced by the items which affect the computed size
-  const conditionsText = format(_("The final size depends on %s."),
-                                // TRANSLATORS: conjunction for merging two texts
-                                conditions.join(_(" and ")));
+  const conditionsText = sprintf(_("The final size depends on %s."),
+    // TRANSLATORS: conjunction for merging two texts
+                                 conditions.join(_(" and ")));
 
   return (
     <>

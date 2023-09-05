@@ -20,7 +20,7 @@
  */
 
 import React from 'react';
-import format from "format-util";
+import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
 
@@ -152,5 +152,5 @@ export default function Icon({ name, className = "", size = 32, ...otherProps })
 
   return (IconComponent)
     ? <IconComponent className={cssClassName} aria-hidden="true" {...otherProps} />
-    : <em>{format(_("Icon %s not found!"), name)}</em>;
+    : <em>{sprintf(_("Icon %s not found!"), name)}</em>;
 }

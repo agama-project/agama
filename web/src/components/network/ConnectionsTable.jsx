@@ -21,7 +21,7 @@
 
 import React from "react";
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
-import format from "format-util";
+import { sprintf } from "sprintf-js";
 
 import { RowActions } from "~/components/core";
 import { Icon } from "~/components/layout";
@@ -67,14 +67,14 @@ export default function ConnectionsTable ({
               title: _("Edit"),
               "aria-label":
                 // TRANSLATORS: %s is replaced by a network connection name
-                format(_("Edit connection %s"), connection.name),
+                sprintf(_("Edit connection %s"), connection.name),
               onClick: () => onEdit(connection)
             },
             typeof onForget === 'function' && {
               title: _("Forget"),
               "aria-label":
                 // TRANSLATORS: %s is replaced by a network connection name
-                format(_("Forget connection %s"), connection.name),
+                sprintf(_("Forget connection %s"), connection.name),
               className: "danger-action",
               icon: <Icon name="delete" size="24" />,
               onClick: () => onForget(connection)
@@ -89,7 +89,7 @@ export default function ConnectionsTable ({
                 <RowActions
                   id={`actions-for-connection-${connection.id}`}
                   // TRANSLATORS: %s is replaced by a network connection name
-                  aria-label={format(_("Actions for connection %s"), connection.name)}
+                  aria-label={sprintf(_("Actions for connection %s"), connection.name)}
                   actions={actions}
                   connection={connection}
                 />

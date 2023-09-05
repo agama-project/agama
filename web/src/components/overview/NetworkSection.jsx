@@ -20,7 +20,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import format from "format-util";
+import { sprintf } from "sprintf-js";
 
 import { Em, Section, SectionSkeleton } from "~/components/core";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
@@ -81,7 +81,7 @@ export default function NetworkSection() {
       <Em key={connection.id}>{connection.name} - {connection.addresses.map(formatIp)}</Em>
     ));
 
-    const msg = format(
+    const msg = sprintf(
       // TRANSLATORS: header for the list of active network connections,
       // %d is replaced by the number of active connections
       n_("%d connection set:", "%d connections set:", activeConnections.length),
