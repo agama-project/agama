@@ -231,6 +231,10 @@ describe Agama::Storage::Proposal do
           expect(subject.issues).to include(
             an_object_having_attributes(description: /No device selected/)
           )
+
+          expect(subject.issues).to_not include(
+            an_object_having_attributes(description: /device is not found/)
+          )
         end
       end
 

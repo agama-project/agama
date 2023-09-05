@@ -185,6 +185,7 @@ module Agama
       # @return [Issue, nil]
       def missing_devices_issue
         # At this moment, only the boot device is checked.
+        return unless settings.boot_device
         return if available_devices.map(&:name).include?(settings.boot_device)
 
         Issue.new("Selected device is not found in the system",
