@@ -66,13 +66,14 @@ describe("Installation device field", () => {
 
     describe("and there is no selected device yet", () => {
       beforeEach(() => {
-        props.settings = { bootDevice: undefined };
+        props.settings = { bootDevice: "" };
       });
 
-      it("does not render content", () => {
+      it("renders a message indicating that the device is not selected", () => {
         plainRender(<ProposalSettingsSection {...props} />);
 
-        expect(screen.queryByText(/Installation device/)).toBeNull();
+        screen.getByText(/Installation device/);
+        screen.getByText(/No device selected/);
       });
     });
 
@@ -92,7 +93,7 @@ describe("Installation device field", () => {
 
   describe("if there is no selected device yet", () => {
     beforeEach(() => {
-      props.settings = { candidateDevices: [] };
+      props.settings = { bootDevice: "" };
     });
 
     it("renders a message indicating that the device is not selected", () => {

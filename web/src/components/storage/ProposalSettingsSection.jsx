@@ -34,6 +34,7 @@ import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
 
 /**
+ * @typedef {import ("~/clients/storage").ProposalSettings} ProposalSettings
  * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
  * @typedef {import ("~/clients/storage").Volume} Volume
  */
@@ -111,7 +112,7 @@ const InstallationDeviceField = ({ current, devices, isLoading, onChange }) => {
 
   const DeviceContent = ({ device }) => {
     const text = (deviceName) => {
-      if (deviceName === undefined) return _("No device selected yet");
+      if (!deviceName || deviceName.length === 0) return _("No device selected yet");
 
       const device = devices.find(d => d.name === deviceName);
       return device ? deviceLabel(device) : deviceName;
@@ -339,7 +340,7 @@ const EncryptionPasswordField = ({ selected: selectedProp, password: passwordPro
  * @param {object} props
  * @param {StorageDevice[]} [props.availableDevices=[]]
  * @param {Volume[]} [props.volumeTemplates=[]]
- * @param {object} [props.settings={}]
+ * @param {ProposalSettings} [props.settings={}]
  * @param {boolean} [isLoading=false]
  * @param {onChangeFn} [props.onChange=noop]
  *

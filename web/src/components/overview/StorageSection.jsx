@@ -30,12 +30,12 @@ import { Em, ProgressText, Section } from "~/components/core";
 import { _ } from "~/i18n";
 
 const ProposalSummary = ({ proposal }) => {
-  const { result } = proposal;
+  const { availableDevices = [], result = {} } = proposal;
 
-  if (result === undefined) return <Text>{_("Device not selected yet")}</Text>;
+  const bootDevice = result.settings?.bootDevice;
+  if (!bootDevice) return <Text>{_("No device selected yet")}</Text>;
 
-  const bootDevice = result.settings.bootDevice;
-  const device = proposal.availableDevices.find(d => d.name === bootDevice);
+  const device = availableDevices.find(d => d.name === bootDevice);
 
   const label = device ? deviceLabel(device) : bootDevice;
 
@@ -171,7 +171,7 @@ export default function StorageSection({ showErrors = false }) {
     }
 
     return (
-      <ProposalSummary proposal={state.proposal} />
+      <ProposalSummary proposal={state.proposal || {}} />
     );
   };
 

@@ -89,9 +89,23 @@ describe("when there is a proposal", () => {
     await screen.findByText(/and deleting all its content/);
   });
 
+  describe("and there is no boot device", () => {
+    beforeEach(() => {
+      const result = { settings: { bootDevice: "" } };
+      storage.proposal.getResult = jest.fn().mockResolvedValue(result);
+    });
+
+    it("indicates that a device is not selected", async () => {
+      installerRender(<StorageSection />);
+
+      await screen.findByText(/No device selected/);
+    });
+  });
+
   describe("with errors", () => {
     beforeEach(() => {
-      errors = [{ description: "Cannot make a proposal" }];
+      const errors = [{ description: "Cannot make a proposal" }];
+      storage.getErrors = jest.fn().mockResolvedValue(errors);
     });
 
     describe("and component has received the showErrors prop", () => {
@@ -106,7 +120,9 @@ describe("when there is a proposal", () => {
       it("does not render errors", async () => {
         installerRender(<StorageSection />);
 
-        await waitFor(() => expect(screen.queryByText("Fake error")).not.toBeInTheDocument());
+        await waitFor(() => {
+          expect(screen.queryByText("Cannot make a proposal")).not.toBeInTheDocument();
+        });
       });
     });
   });

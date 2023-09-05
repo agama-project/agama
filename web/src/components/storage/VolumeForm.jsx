@@ -100,7 +100,7 @@ const SizeAuto = ({ volume }) => {
     // %s is replaced by a list of mount points like "/home, /boot"
     conditions.push(format(_("the presence of the file system for %s"),
                            // TRANSLATORS: conjunction for merging two list items
-                           volume.sizeRelevantVolumes.join(_(", "))));
+                           volume.outline.sizeRelevantVolumes.join(_(", "))));
 
   // TRANSLATORS: the %s is replaced by the items which affect the computed size
   const conditionsText = format(_("The final size depends on %s."),
