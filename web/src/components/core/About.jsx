@@ -21,7 +21,7 @@
 
 import React, { useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
-import format from "format-util";
+import { sprintf } from "sprintf-js";
 
 import { Icon } from "~/components/layout";
 import { Popup } from "~/components/core";
@@ -59,7 +59,7 @@ data loss.")
         </Text>
         <Text>
           {
-            format(
+            sprintf(
               // TRANSLATORS: content of the "About" popup (2/2)
               // %s is replaced by the project URL
               _("For more information, please visit the project's repository at %s."),

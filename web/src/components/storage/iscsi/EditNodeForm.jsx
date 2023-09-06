@@ -23,7 +23,7 @@ import React, { useState } from "react";
 import {
   Form, FormGroup, FormSelect, FormSelectOption
 } from "@patternfly/react-core";
-import format from "format-util";
+import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
 import { Popup } from "~/components/core";
@@ -47,7 +47,7 @@ export default function EditNodeForm({ node, onSubmit: onSubmitProp, onCancel })
 
   return (
     // TRANSLATORS: %s is replaced by the iSCSI target node name
-    <Popup isOpen title={format(_("Edit %s"), node.target)}>
+    <Popup isOpen title={sprintf(_("Edit %s"), node.target)}>
       <Form id={id} onSubmit={onSubmit}>
         <FormGroup fieldId="startup" label="Startup">
           <FormSelect

@@ -51,6 +51,7 @@
         "rfkill",
         "sata",
         "screenreader",
+        "sprintf",
         "ssid",
         "ssids",
         "startup",

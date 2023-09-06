@@ -27,7 +27,7 @@ import {
   Toolbar, ToolbarContent, ToolbarItem
 } from "@patternfly/react-core";
 import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
-import format from "format-util";
+import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
 import { Em, If, Popup, RowActions, Tip } from '~/components/core';
@@ -63,7 +63,7 @@ const AutoCalculatedHint = (volume) => {
         {sizeRelevantVolumes.length > 0 &&
           // TRANSLATORS: list item, this affects the computed partition size limits
           // %s is replaced by a list of the volumes (like "/home, /boot")
-          <ListItem>{format(_("Presence of other volumes (%s)"), sizeRelevantVolumes.join(", "))}</ListItem>}
+          <ListItem>{sprintf(_("Presence of other volumes (%s)"), sizeRelevantVolumes.join(", "))}</ListItem>}
       </List>
     </>
   );
@@ -186,7 +186,7 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
     let size = minSize;
     if (minSize && maxSize && minSize !== maxSize) size = `${minSize} - ${maxSize}`;
     // TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
-    if (maxSize === undefined) size = format(_("At least %s"), minSize);
+    if (maxSize === undefined) size = sprintf(_("At least %s"), minSize);
 
     return (
       <div className="split">
