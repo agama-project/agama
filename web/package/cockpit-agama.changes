@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Sep  6 08:04:13 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Adapt storage to new proposal settings (gh#openSUSE/agama#738).
+
+-------------------------------------------------------------------
 Thu Aug 31 10:37:50 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Adapt the locale and questions clients to use the same D-Bus
