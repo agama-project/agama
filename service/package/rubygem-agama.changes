@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Sep  6 08:02:35 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- New storage proposal settings (gh#openSUSE/agama#738).
+
+-------------------------------------------------------------------
 Fri Sep  1 07:32:59 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Extend the Ruby-based services logs with information about

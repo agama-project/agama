@@ -224,52 +224,29 @@ class ProposalManager {
   }
 
   /**
-   * @typedef {object} Volume
-   * @property {string|undefined} [mountPoint]
-   * @property {string|undefined} [deviceType]
-   * @property {boolean|undefined} [optional]
-   * @property {boolean|undefined} [encrypted]
-   * @property {boolean|undefined} [fixedSizeLimits]
-   * @property {boolean|undefined} [adaptiveSizes]
-   * @property {number|undefined} [minSize]
-   * @property {number|undefined} [maxSize]
-   * @property {string[]} [fsTypes]
-   * @property {string|undefined} [fsType]
-   * @property {boolean|undefined} [snapshots]
-   * @property {boolean|undefined} [snapshotsConfigurable]
-   * @property {boolean|undefined} [snapshotsAffectSizes]
-   * @property {string[]} [sizeRelevantVolumes]
-   *
-   * @typedef {object} Action
-   * @property {string} text
-   * @property {boolean} subvol
-   * @property {boolean} delete
-   *
-   * @typedef {object} Result
-   * @property {string[]} candidateDevices
+   * @typedef {object} ProposalSettings
+   * @property {string} bootDevice
    * @property {boolean} lvm
    * @property {string} encryptionPassword
    * @property {Volume[]} volumes
-   * @property {Action[]} actions
-   */
-
-  /**
-   * Gets data associated to the proposal
    *
-   * @returns {Promise<ProposalData>}
+   * @typedef {object} Volume
+   * @property {string} mountPath
+   * @property {string} fsType
+   * @property {number} minSize
+   * @property {number} [maxSize]
+   * @property {boolean} autoSize
+   * @property {boolean} snapshots
+   * @property {VolumeOutline} outline
    *
-   * @typedef {object} ProposalData
-   * @property {StorageDevice[]} availableDevices
-   * @property {Volume[]} volumeTemplates
-   * @property {Result|undefined} result
+   * @typedef {object} VolumeOutline
+   * @property {boolean} required
+   * @property {string[]} fsTypes
+   * @property {boolean} supportAutoSize
+   * @property {boolean} snapshotsConfigurable
+   * @property {boolean} snapshotsAffectSizes
+   * @property {string[]} sizeRelevantVolumes
    */
-  async getData() {
-    const availableDevices = await this.getAvailableDevices();
-    const volumeTemplates = await this.getVolumeTemplates();
-    const result = await this.getResult();
-
-    return { availableDevices, volumeTemplates, result };
-  }
 
   /**
    * Gets the list of available devices
@@ -293,19 +270,39 @@ class ProposalManager {
   }
 
   /**
-   * Gets the list of volume templates for the selected product
+   * Gets the list of meaningful mount points for the selected product
    *
-   * @returns {Promise<Volume[]>}
+   * @returns {Promise<string[]>}
    */
-  async getVolumeTemplates() {
+  async getProductMountPoints() {
     const proxy = await this.proxies.proposalCalculator;
-    return proxy.VolumeTemplates.map(this.buildVolume);
+    return proxy.ProductMountPoints;
+  }
+
+  /**
+   * Obtains the default volume for the given mount path
+   *
+   * @param {string} mountPath
+   * @returns {Promise<Volume>}
+   */
+  async defaultVolume(mountPath) {
+    const proxy = await this.proxies.proposalCalculator;
+    return this.buildVolume(await proxy.DefaultVolume(mountPath));
   }
 
   /**
    * Gets the values of the current proposal
    *
-   * @return {Promise<Result|undefined>}
+   * @return {Promise<ProposalResult|undefined>}
+   *
+   * @typedef {object} ProposalResult
+   * @property {ProposalSettings} settings
+   * @property {Action[]} actions
+   *
+   * @typedef {object} Action
+   * @property {string} text
+   * @property {boolean} subvol
+   * @property {boolean} delete
   */
   async getResult() {
     const proxy = await this.proposalProxy();
@@ -322,10 +319,12 @@ class ProposalManager {
       };
 
       return {
-        candidateDevices: proxy.CandidateDevices,
-        lvm: proxy.LVM,
-        encryptionPassword: proxy.EncryptionPassword,
-        volumes: proxy.Volumes.map(this.buildVolume),
+        settings: {
+          bootDevice: proxy.BootDevice,
+          lvm: proxy.LVM,
+          encryptionPassword: proxy.EncryptionPassword,
+          volumes: proxy.Volumes.map(this.buildVolume),
+        },
         actions: proxy.Actions.map(buildAction)
       };
     };
@@ -336,31 +335,23 @@ class ProposalManager {
   /**
    * Calculates a new proposal
    *
-   * @param {Settings} settings
-   *
-   * @typedef {object} Settings
-   * @property {string[]} [candidateDevices] - Devices to use for the proposal
-   * @property {string} [encryptionPassword] - Password for encrypting devices
-   * @property {boolean} [lvm] - Whether to calculate the proposal with LVM volumes
-   * @property {Volume[]} [volumes] - Volumes to create
-   *
+   * @param {ProposalSettings} settings
    * @returns {Promise<number>} 0 on success, 1 on failure
    */
-  async calculate({ candidateDevices, encryptionPassword, lvm, volumes }) {
+  async calculate({ bootDevice, encryptionPassword, lvm, volumes }) {
     const dbusVolume = (volume) => {
       return removeUndefinedCockpitProperties({
-        MountPoint: { t: "s", v: volume.mountPoint },
-        Encrypted: { t: "b", v: volume.encrypted },
+        MountPath: { t: "s", v: volume.mountPath },
         FsType: { t: "s", v: volume.fsType },
-        MinSize: { t: "x", v: volume.minSize },
-        MaxSize: { t: "x", v: volume.maxSize },
-        FixedSizeLimits: { t: "b", v: volume.fixedSizeLimits },
+        MinSize: { t: "t", v: volume.minSize },
+        MaxSize: { t: "t", v: volume.maxSize },
+        AutoSize: { t: "b", v: volume.autoSize },
         Snapshots: { t: "b", v: volume.snapshots }
       });
     };
 
     const settings = removeUndefinedCockpitProperties({
-      CandidateDevices: { t: "as", v: candidateDevices },
+      BootDevice: { t: "s", v: bootDevice },
       EncryptionPassword: { t: "s", v: encryptionPassword },
       LVM: { t: "b", v: lvm },
       Volumes: { t: "aa{sv}", v: volumes?.map(dbusVolume) }
@@ -377,20 +368,21 @@ class ProposalManager {
    * @param {DBusVolume} dbusVolume
    *
    * @typedef {Object} DBusVolume
-   * @property {CockpitString} [MountPoint]
-   * @property {CockpitString} [DeviceType]
-   * @property {CockpitBoolean} [Optional]
-   * @property {CockpitBoolean} [Encrypted]
-   * @property {CockpitBoolean} [FixedSizeLimits]
-   * @property {CockpitBoolean} [AdaptiveSizes]
-   * @property {CockpitNumber} [MinSize]
+   * @property {CockpitString} MountPath
+   * @property {CockpitString} FsType
+   * @property {CockpitNumber} MinSize
    * @property {CockpitNumber} [MaxSize]
-   * @property {CockpitAString} [FsTypes]
-   * @property {CockpitString} [FsType]
-   * @property {CockpitBoolean} [Snapshots]
-   * @property {CockpitBoolean} [SnapshotsConfigurable]
-   * @property {CockpitBoolean} [SnapshotsAffectSizes]
-   * @property {CockpitAString} [SizeRelevantVolumes]
+   * @property {CockpitBoolean} AutoSize
+   * @property {CockpitBoolean} Snapshots
+   * @property {CockpitVolumeOutline} Outline
+   *
+   * @typedef {Object} DBusVolumeOutline
+   * @property {CockpitBoolean} Required
+   * @property {CockpitAString} FsTypes
+   * @property {CockpitBoolean} SupportAutoSize
+   * @property {CockpitBoolean} SnapshotsConfigurable
+   * @property {CockpitBoolean} SnapshotsAffectSizes
+   * @property {CockpitAString} SizeRelevantVolumes
    *
    * @typedef {Object} CockpitString
    * @property {string} t - variant type
@@ -408,30 +400,34 @@ class ProposalManager {
    * @property {string} t - variant type
    * @property {string[]} v - value
    *
+   * @typedef {Object} CockpitVolumeOutline
+   * @property {string} t - variant type
+   * @property {DBusVolumeOutline} v - value
+   *
    * @returns {Volume}
    */
   buildVolume(dbusVolume) {
-    const buildList = (value) => {
-      if (value === undefined) return [];
+    const buildOutline = (dbusOutline) => {
+      if (dbusOutline === undefined) return null;
 
-      return value.map(val => val.v);
+      return {
+        required: dbusOutline.Required.v,
+        fsTypes: dbusOutline.FsTypes.v.map(val => val.v),
+        supportAutoSize: dbusOutline.SupportAutoSize.v,
+        snapshotsConfigurable: dbusOutline.SnapshotsConfigurable.v,
+        snapshotsAffectSizes: dbusOutline.SnapshotsAffectSizes.v,
+        sizeRelevantVolumes: dbusOutline.SizeRelevantVolumes.v.map(val => val.v)
+      };
     };
 
     return {
-      mountPoint: dbusVolume.MountPoint?.v,
-      deviceType: dbusVolume.DeviceType?.v,
-      optional: dbusVolume.Optional?.v,
-      encrypted: dbusVolume.Encrypted?.v,
-      fixedSizeLimits: dbusVolume.FixedSizeLimits?.v,
-      adaptiveSizes: dbusVolume.AdaptiveSizes?.v,
-      minSize: dbusVolume.MinSize?.v,
+      mountPath: dbusVolume.MountPath.v,
+      fsType: dbusVolume.FsType.v,
+      minSize: dbusVolume.MinSize.v,
       maxSize: dbusVolume.MaxSize?.v,
-      fsTypes: buildList(dbusVolume.FsTypes?.v),
-      fsType: dbusVolume.FsType?.v,
-      snapshots: dbusVolume.Snapshots?.v,
-      snapshotsConfigurable: dbusVolume.SnapshotsConfigurable?.v,
-      snapshotsAffectSizes: dbusVolume.SnapshotsAffectSizes?.v,
-      sizeRelevantVolumes: buildList(dbusVolume.SizeRelevantVolumes?.v)
+      autoSize: dbusVolume.AutoSize.v,
+      snapshots: dbusVolume.Snapshots.v,
+      outline: buildOutline(dbusVolume.Outline.v)
     };
   }
 

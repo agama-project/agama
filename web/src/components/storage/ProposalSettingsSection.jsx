@@ -29,10 +29,12 @@ import {
 import { _ } from "~/i18n";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { DeviceSelector, ProposalVolumes } from "~/components/storage";
+import { deviceLabel } from '~/components/storage/utils';
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
 
 /**
+ * @typedef {import ("~/clients/storage").ProposalSettings} ProposalSettings
  * @typedef {import ("~/clients/storage").StorageDevice} StorageDevice
  * @typedef {import ("~/clients/storage").Volume} Volume
  */
@@ -109,9 +111,14 @@ const InstallationDeviceField = ({ current, devices, isLoading, onChange }) => {
   };
 
   const DeviceContent = ({ device }) => {
-    const text = device || _("No device selected yet");
+    const text = (deviceName) => {
+      if (!deviceName || deviceName.length === 0) return _("No device selected yet");
 
-    return <Button variant="link" isInline onClick={openForm}>{text}</Button>;
+      const device = devices.find(d => d.name === deviceName);
+      return device ? deviceLabel(device) : deviceName;
+    };
+
+    return <Button variant="link" isInline onClick={openForm}>{text(device)}</Button>;
   };
 
   if (isLoading) {
@@ -333,7 +340,7 @@ const EncryptionPasswordField = ({ selected: selectedProp, password: passwordPro
  * @param {object} props
  * @param {StorageDevice[]} [props.availableDevices=[]]
  * @param {Volume[]} [props.volumeTemplates=[]]
- * @param {object} [props.settings={}]
+ * @param {ProposalSettings} [props.settings={}]
  * @param {boolean} [isLoading=false]
  * @param {onChangeFn} [props.onChange=noop]
  *
@@ -349,7 +356,7 @@ export default function ProposalSettingsSection({
 }) {
   const changeBootDevice = (device) => {
     if (onChange === noop) return;
-    onChange({ candidateDevices: [device] });
+    onChange({ bootDevice: device });
   };
 
   const changeLVM = (lvm) => {
@@ -367,7 +374,7 @@ export default function ProposalSettingsSection({
     onChange({ volumes });
   };
 
-  const bootDevice = (settings.candidateDevices || [])[0];
+  const { bootDevice } = settings;
   const encryption = settings.encryptionPassword !== undefined && settings.encryptionPassword.length > 0;
 
   return (
@@ -392,6 +399,7 @@ export default function ProposalSettingsSection({
       <ProposalVolumes
         volumes={settings.volumes || []}
         templates={volumeTemplates}
+        options={{ lvm: settings.lvm, encryption }}
         isLoading={isLoading}
         onChange={changeVolumes}
       />

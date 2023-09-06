@@ -66,19 +66,20 @@ describe("Installation device field", () => {
 
     describe("and there is no selected device yet", () => {
       beforeEach(() => {
-        props.settings = { candidateDevices: [] };
+        props.settings = { bootDevice: "" };
       });
 
-      it("does not render content", () => {
+      it("renders a message indicating that the device is not selected", () => {
         plainRender(<ProposalSettingsSection {...props} />);
 
-        expect(screen.queryByText(/Installation device/)).toBeNull();
+        screen.getByText(/Installation device/);
+        screen.getByText(/No device selected/);
       });
     });
 
     describe("and there is a selected device", () => {
       beforeEach(() => {
-        props.settings = { candidateDevices: ["/dev/vda"] };
+        props.settings = { bootDevice: "/dev/vda" };
       });
 
       it("renders the selected device", () => {
@@ -92,7 +93,7 @@ describe("Installation device field", () => {
 
   describe("if there is no selected device yet", () => {
     beforeEach(() => {
-      props.settings = { candidateDevices: [] };
+      props.settings = { bootDevice: "" };
     });
 
     it("renders a message indicating that the device is not selected", () => {
@@ -105,7 +106,7 @@ describe("Installation device field", () => {
 
   describe("if there is a selected device", () => {
     beforeEach(() => {
-      props.settings = { candidateDevices: ["/dev/vda"] };
+      props.settings = { bootDevice: "/dev/vda" };
     });
 
     it("renders the selected device", () => {
@@ -119,13 +120,13 @@ describe("Installation device field", () => {
   it("allows selecting a device when clicking on the device name", async () => {
     props = {
       availableDevices: [vda],
-      settings: { candidateDevices: ["/dev/vda"] },
+      settings: { bootDevice: "/dev/vda" },
       onChange: jest.fn()
     };
 
     const { user } = plainRender(<ProposalSettingsSection {...props} />);
 
-    const button = screen.getByRole("button", { name: "/dev/vda" });
+    const button = screen.getByRole("button", { name: "/dev/vda, 1 KiB" });
     await user.click(button);
 
     const popup = await screen.findByRole("dialog");
@@ -141,13 +142,13 @@ describe("Installation device field", () => {
   it("allows canceling the selection of the device", async () => {
     props = {
       availableDevices: [vda],
-      settings: { candidateDevices: ["/dev/vda"] },
+      settings: { bootDevice: "/dev/vda" },
       onChange: jest.fn()
     };
 
     const { user } = plainRender(<ProposalSettingsSection {...props} />);
 
-    const button = screen.getByRole("button", { name: "/dev/vda" });
+    const button = screen.getByRole("button", { name: "/dev/vda, 1 KiB" });
     await user.click(button);
 
     const popup = await screen.findByRole("dialog");

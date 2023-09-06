@@ -28,6 +28,7 @@ require "agama/storage/proposal_settings"
 require "agama/storage/callbacks"
 require "agama/storage/iscsi/manager"
 require "agama/storage/finisher"
+require "agama/storage/proposal_settings_reader"
 require "agama/issue"
 require "agama/with_issues"
 require "agama/with_progress"
@@ -43,6 +44,9 @@ module Agama
     class Manager
       include WithIssues
       include WithProgress
+
+      # @return [Config]
+      attr_reader :config
 
       # Constructor
       #
@@ -135,7 +139,7 @@ module Agama
       #
       # @return [Storage::Proposal]
       def proposal
-        @proposal ||= Proposal.new(logger, config)
+        @proposal ||= Proposal.new(config, logger: logger)
       end
 
       # iSCSI manager
@@ -159,9 +163,6 @@ module Agama
 
       # @return [Logger]
       attr_reader :logger
-
-      # @return [Config]
-      attr_reader :config
 
       # Issues are updated when the proposal is calculated
       def register_proposal_callbacks
@@ -187,19 +188,9 @@ module Agama
         self.deprecated_system = false
       end
 
-      # Calculates the proposal
-      #
-      # It reuses the settings from the previous proposal, if any.
+      # Calculates the proposal using the settings from the config file.
       def calculate_proposal
-        settings = proposal.settings
-
-        if !settings
-          settings = ProposalSettings.new
-          # FIXME: by now, the UI only allows to select one disk
-          device = proposal.available_devices.first&.name
-          settings.candidate_devices << device if device
-        end
-
+        settings = ProposalSettingsReader.new(config).read
         proposal.calculate(settings)
       end
 

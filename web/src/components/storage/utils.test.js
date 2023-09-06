@@ -22,11 +22,6 @@
 import { deviceSize, deviceLabel, parseToBytes, splitSize } from "./utils";
 
 describe("deviceSize", () => {
-  it("returns undefined is size is -1", () => {
-    const result = deviceSize(-1);
-    expect(result).toBeUndefined();
-  });
-
   it("returns the size with units", () => {
     const result = deviceSize(1024);
     expect(result).toEqual("1 KiB");
@@ -73,16 +68,14 @@ describe("splitSize", () => {
     expect(splitSize(1000)).toEqual({ size: 1000, unit: "B" });
     expect(splitSize(1024)).toEqual({ size: 1, unit: "KiB" });
     expect(splitSize(1048576)).toEqual({ size: 1, unit: "MiB" });
-    expect(splitSize(undefined)).toEqual({ size: 0, unit: "B" });
-    expect(splitSize(null)).toEqual({ size: 0, unit: "B" });
   });
 
   it("returns a size object with unknown unit when a string without unit is given", () => {
     expect(splitSize("30")).toEqual({ size: 30, unit: undefined });
   });
 
-  it("returns an 'empty' size object when -1 is given", () => {
-    expect(splitSize(-1)).toEqual({ size: undefined, unit: undefined });
+  it("returns an 'empty' size object when undefined is given", () => {
+    expect(splitSize(undefined)).toEqual({ size: undefined, unit: undefined });
   });
 
   it("returns an 'empty' size object when an unexpected string is given", () => {

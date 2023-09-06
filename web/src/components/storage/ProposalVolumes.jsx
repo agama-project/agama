@@ -46,7 +46,9 @@ import { noop } from "~/utils";
  */
 const AutoCalculatedHint = (volume) => {
   // no hint, the size is not affected by snapshots or other volumes
-  if (!volume.snapshotsAffectSizes && volume.sizeRelevantVolumes && volume.sizeRelevantVolumes.length === 0) {
+  const { snapshotsAffectSizes = false, sizeRelevantVolumes = [] } = volume.outline;
+
+  if (!snapshotsAffectSizes && sizeRelevantVolumes.length === 0) {
     return null;
   }
 
@@ -55,13 +57,13 @@ const AutoCalculatedHint = (volume) => {
       {/* TRANSLATORS: header for a list of items */}
       {_("These limits are affected by:")}
       <List>
-        {volume.snapshotsAffectSizes &&
-        // TRANSLATORS: list item, this affects the computed partition size limits
-        <ListItem>{_("The configuration of snapshots")}</ListItem>}
-        {volume.sizeRelevantVolumes && volume.sizeRelevantVolumes.length > 0 &&
-        // TRANSLATORS: list item, this affects the computed partition size limits
-        // %s is replaced by a list of the volumes (like "/home, /boot")
-          <ListItem>{sprintf(_("Presence of other volumes (%s)"), volume.sizeRelevantVolumes.join(", "))}</ListItem>}
+        {snapshotsAffectSizes &&
+          // TRANSLATORS: list item, this affects the computed partition size limits
+          <ListItem>{_("The configuration of snapshots")}</ListItem>}
+        {sizeRelevantVolumes.length > 0 &&
+          // TRANSLATORS: list item, this affects the computed partition size limits
+          // %s is replaced by a list of the volumes (like "/home, /boot")
+          <ListItem>{sprintf(_("Presence of other volumes (%s)"), sizeRelevantVolumes.join(", "))}</ListItem>}
       </List>
     </>
   );
@@ -156,6 +158,7 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
  * @param {object} props
  * @param {object[]} props.columns - Column specs
  * @param {object} props.volume - Volume to show
+ * @param {ProposalOptions} props.options - General proposal options
  * @param {boolean} props.isLoading - Whether to show the row as loading
  * @param {onDeleteFn} props.onDelete - Function to use for deleting the volume
  *
@@ -163,7 +166,7 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
  * @param {object} volume
  * @return {void}
  */
-const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
+const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const openForm = () => setIsFormOpen(true);
@@ -177,8 +180,8 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
 
   const SizeLimits = ({ volume }) => {
     const minSize = deviceSize(volume.minSize);
-    const maxSize = deviceSize(volume.maxSize);
-    const isAuto = volume.adaptiveSizes && !volume.fixedSizeLimits;
+    const maxSize = volume.maxSize ? deviceSize(volume.maxSize) : undefined;
+    const isAuto = volume.autoSize;
 
     let size = minSize;
     if (minSize && maxSize && minSize !== maxSize) size = `${minSize} - ${maxSize}`;
@@ -194,12 +197,11 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
     );
   };
 
-  const Details = ({ volume }) => {
-    const isLv = volume.deviceType === "lvm_lv";
+  const Details = ({ volume, options }) => {
     const hasSnapshots = volume.fsType === "Btrfs" && volume.snapshots;
 
     // TRANSLATORS: the filesystem uses a logical volume (LVM)
-    const text = `${volume.fsType} ${isLv ? _("logical volume") : _("partition")}`;
+    const text = `${volume.fsType} ${options.lvm ? _("logical volume") : _("partition")}`;
     const lockIcon = <Icon name="lock" size={12} />;
     const snapshotsIcon = <Icon name="add_a_photo" size={12} />;
 
@@ -207,7 +209,7 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
       <div className="split">
         <span>{text}</span>
         {/* TRANSLATORS: filesystem flag, it uses an encryption */}
-        <If condition={volume.encrypted} then={<Em icon={lockIcon}>{_("encrypted")}</Em>} />
+        <If condition={options.encryption} then={<Em icon={lockIcon}>{_("encrypted")}</Em>} />
         {/* TRANSLATORS: filesystem flag, it allows creating snapshots */}
         <If condition={hasSnapshots} then={<Em icon={snapshotsIcon}>{_("with snapshots")}</Em>} />
       </div>
@@ -228,10 +230,10 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
         }
       };
 
-      if (volume.optional)
-        return [actions.edit, actions.delete];
-      else
+      if (volume.outline.required)
         return [actions.edit];
+      else
+        return [actions.edit, actions.delete];
     };
 
     const currentActions = actions();
@@ -252,8 +254,8 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
   return (
     <>
       <Tr>
-        <Td dataLabel={columns.mountPoint}>{volume.mountPoint}</Td>
-        <Td dataLabel={columns.details}><Details volume={volume} /></Td>
+        <Td dataLabel={columns.mountPath}>{volume.mountPath}</Td>
+        <Td dataLabel={columns.details}><Details volume={volume} options={options} /></Td>
         <Td dataLabel={columns.size}><SizeLimits volume={volume} /></Td>
         <Td isActionCell>
           <VolumeActions
@@ -286,6 +288,7 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
  *
  * @param {object} props
  * @param {object[]} props.volumes - Volumes to show
+ * @param {ProposalOptions} props.options - General proposal options
  * @param {boolean} props.isLoading - Whether to show the table as loading
  * @param {onVolumesChangeFn} props.onVolumesChange - Function to submit changes in volumes
  *
@@ -293,24 +296,24 @@ const VolumeRow = ({ columns, volume, isLoading, onEdit, onDelete }) => {
  * @param {object[]} volumes
  * @return {void}
  */
-const VolumesTable = ({ volumes, isLoading, onVolumesChange }) => {
+const VolumesTable = ({ volumes, options, isLoading, onVolumesChange }) => {
   const columns = {
-    mountPoint: _("Mount point"),
+    mountPath: _("Mount point"),
     details: _("Details"),
     size: _("Size"),
     actions: _("Actions")
   };
 
-  const VolumesContent = ({ volumes, isLoading, onVolumesChange }) => {
+  const VolumesContent = ({ volumes, options, isLoading, onVolumesChange }) => {
     const editVolume = (volume) => {
-      const index = volumes.findIndex(v => v.mountPoint === volume.mountPoint);
+      const index = volumes.findIndex(v => v.mountPath === volume.mountPath);
       const newVolumes = [...volumes];
       newVolumes[index] = volume;
       onVolumesChange(newVolumes);
     };
 
     const deleteVolume = (volume) => {
-      const newVolumes = volumes.filter(v => v.mountPoint !== volume.mountPoint);
+      const newVolumes = volumes.filter(v => v.mountPath !== volume.mountPath);
       onVolumesChange(newVolumes);
     };
 
@@ -323,6 +326,7 @@ const VolumesTable = ({ volumes, isLoading, onVolumesChange }) => {
           id={index}
           columns={columns}
           volume={volume}
+          options={options}
           isLoading={isLoading}
           onEdit={editVolume}
           onDelete={deleteVolume}
@@ -335,7 +339,7 @@ const VolumesTable = ({ volumes, isLoading, onVolumesChange }) => {
     <TableComposable aria-label={_("Table with mount points")} variant="compact" borders>
       <Thead>
         <Tr>
-          <Th>{columns.mountPoint}</Th>
+          <Th>{columns.mountPath}</Th>
           <Th>{columns.details}</Th>
           <Th>{columns.size}</Th>
           <Th />
@@ -344,6 +348,7 @@ const VolumesTable = ({ volumes, isLoading, onVolumesChange }) => {
       <Tbody>
         <VolumesContent
           volumes={volumes}
+          options={options}
           isLoading={isLoading}
           onVolumesChange={onVolumesChange}
         />
@@ -359,8 +364,13 @@ const VolumesTable = ({ volumes, isLoading, onVolumesChange }) => {
  * @param {object} props
  * @param {object[]} [props.volumes=[]] - Volumes to show
  * @param {object[]} [props.templates=[]] - Templates to use for new volumes
+ * @param {ProposalOptions} [props.options={}] - General proposal options
  * @param {boolean} [props.isLoading=false] - Whether to show the content as loading
  * @param {onChangeFn} [props.onChange=noop] - Function to use for changing the volumes
+ *
+ * @typedef {object} ProposalOptions
+ * @property {boolean} [lvm]
+ * @property {boolean} [encryption]
  *
  * @callback onChangeFn
  * @param {object[]} volumes
@@ -369,6 +379,7 @@ const VolumesTable = ({ volumes, isLoading, onVolumesChange }) => {
 export default function ProposalVolumes({
   volumes = [],
   templates = [],
+  options = {},
   isLoading = false,
   onChange = noop
 }) {
@@ -401,6 +412,7 @@ export default function ProposalVolumes({
       </Toolbar>
       <VolumesTable
         volumes={volumes}
+        options={options}
         onVolumesChange={onChange}
         isLoading={isLoading}
       />

@@ -72,7 +72,7 @@ describe Agama::Storage::Manager do
 
     let(:raw_devicegraph) { instance_double(Y2Storage::Devicegraph, probing_issues: []) }
 
-    let(:proposal) { Agama::Storage::Proposal.new(logger, config) }
+    let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
 
     let(:callback) { proc {} }
 
@@ -157,18 +157,23 @@ describe Agama::Storage::Manager do
       allow(y2storage_manager).to receive(:activate)
       allow(iscsi).to receive(:probe)
       allow(y2storage_manager).to receive(:probe)
+
+      allow_any_instance_of(Agama::Storage::ProposalSettingsReader).to receive(:read)
+        .and_return(config_settings)
     end
 
     let(:raw_devicegraph) do
       instance_double(Y2Storage::Devicegraph, probing_issues: probing_issues)
     end
 
-    let(:proposal) { Agama::Storage::Proposal.new(logger, config) }
+    let(:proposal) { Agama::Storage::Proposal.new(config, logger: logger) }
 
     let(:iscsi) { Agama::Storage::ISCSI::Manager.new }
 
     let(:devices) { [disk1, disk2] }
-    let(:settings) { nil }
+
+    let(:settings) { Agama::Storage::ProposalSettings.new }
+    let(:config_settings) { Agama::Storage::ProposalSettings.new }
 
     let(:disk1) { instance_double(Y2Storage::Disk, name: "/dev/vda") }
     let(:disk2) { instance_double(Y2Storage::Disk, name: "/dev/vdb") }
@@ -179,7 +184,7 @@ describe Agama::Storage::Manager do
 
     let(:callback) { proc {} }
 
-    it "probes the storage devices and calculates a proposal" do
+    it "probes the storage devices and calculates a proposal with the default settings" do
       expect(config).to receive(:pick_product).with("ALP")
       expect(iscsi).to receive(:activate)
       expect(y2storage_manager).to receive(:activate) do |callbacks|
@@ -187,7 +192,7 @@ describe Agama::Storage::Manager do
       end
       expect(iscsi).to receive(:probe)
       expect(y2storage_manager).to receive(:probe)
-      expect(proposal).to receive(:calculate)
+      expect(proposal).to receive(:calculate).with(config_settings)
       storage.probe
     end
 
@@ -243,30 +248,6 @@ describe Agama::Storage::Manager do
         expect(storage.issues).to include(
           an_object_having_attributes(description: /no suitable device/)
         )
-      end
-    end
-
-    context "when there are settings from a previous proposal" do
-      let(:settings) { Agama::Storage::ProposalSettings.new }
-
-      it "calculates a proposal using the previous settings" do
-        expect(proposal).to receive(:calculate).with(settings)
-        storage.probe
-      end
-    end
-
-    context "when there are no settings from a previous proposal" do
-      let(:settings) { nil }
-
-      let(:new_settings) { Agama::Storage::ProposalSettings.new }
-
-      before do
-        allow(Agama::Storage::ProposalSettings).to receive(:new).and_return(new_settings)
-      end
-
-      it "calculates a proposal using new settings" do
-        expect(proposal).to receive(:calculate).with(new_settings)
-        storage.probe
       end
     end
   end
