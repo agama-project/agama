@@ -81,6 +81,27 @@ class LanguageClient {
   }
 
   /**
+   * Returns the current backend locale
+   *
+   * @return {Promise<String>} the locale string
+   */
+  async getUILanguage() {
+    const proxy = await this.client.proxy(LANGUAGE_IFACE);
+    return proxy.UILocale;
+  }
+
+  /**
+   * Set the backend language
+   *
+   * @param {String} lang the locale string
+   * @return {Promise<void>}
+   */
+  async setUILanguage(lang) {
+    const proxy = await this.client.proxy(LANGUAGE_IFACE);
+    proxy.UILocale = lang;
+  }
+
+  /**
    * Register a callback to run when properties in the Language object change
    *
    * @param {(language: string) => void} handler - function to call when the language change
