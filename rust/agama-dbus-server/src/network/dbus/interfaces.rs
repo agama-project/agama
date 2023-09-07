@@ -177,20 +177,40 @@ impl Connections {
 ///
 /// It offers an API to query a connection.
 pub struct Connection {
+    actions: Arc<Mutex<Sender<Action>>>,
     connection: Arc<Mutex<NetworkConnection>>,
 }
 
 impl Connection {
     /// Creates a Connection interface object.
     ///
+    /// * `actions`: sending-half of a channel to send actions.
     /// * `connection`: connection to expose over D-Bus.
-    pub fn new(connection: Arc<Mutex<NetworkConnection>>) -> Self {
-        Self { connection }
+    pub fn new(actions: Sender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
+        Self {
+            actions: Arc::new(Mutex::new(actions)),
+            connection,
+        }
     }
 
     /// Returns the underlying connection.
     async fn get_connection(&self) -> MutexGuard<NetworkConnection> {
         self.connection.lock().await
+    }
+
+    /// Updates the connection data in the NetworkSystem.
+    ///
+    /// * `connection`: Updated connection.
+    async fn update_connection<'a>(
+        &self,
+        connection: MutexGuard<'a, NetworkConnection>,
+    ) -> zbus::fdo::Result<()> {
+        let actions = self.actions.lock().await;
+        actions
+            .send(Action::UpdateConnection(connection.clone()))
+            .await
+            .unwrap();
+        Ok(())
     }
 }
 
@@ -209,6 +229,13 @@ impl Connection {
     #[dbus_interface(property)]
     pub async fn interface(&self) -> String {
         self.get_connection().await.interface().to_string()
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_interface(&mut self, name: &str) -> zbus::fdo::Result<()> {
+        let mut connection = self.get_connection().await;
+        connection.set_interface(name);
+        self.update_connection(connection).await
     }
 }
 

@@ -21,6 +21,11 @@ impl<'a> NetworkClient<'a> {
         })
     }
 
+    pub async fn get_connection(&self, id: &str) -> Result<NetworkConnection, ServiceError> {
+        let path = self.connections_proxy.get_connection(id).await?;
+        Ok(self.connection_from(path.as_str()).await?)
+    }
+
     /// Returns an array of network connections
     pub async fn connections(&self) -> Result<Vec<NetworkConnection>, ServiceError> {
         let connection_paths = self.connections_proxy.get_connections().await?;
@@ -174,6 +179,36 @@ impl<'a> NetworkClient<'a> {
         path: &OwnedObjectPath,
         conn: &NetworkConnection,
     ) -> Result<(), ServiceError> {
+        let proxy = ConnectionProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+
+        let interface = conn.interface.as_deref().unwrap_or("");
+        proxy.set_interface(interface).await?;
+
+        self.update_ipv4_settings(path, conn).await?;
+
+        if let Some(ref wireless) = conn.wireless {
+            self.update_wireless_settings(path, wireless).await?;
+        }
+
+        if let Some(ref match_settings) = conn.match_settings {
+            self.update_match_settings(path, match_settings).await?;
+        }
+
+        Ok(())
+    }
+
+    /// Updates the IPv4 setttings for the network connection.
+    ///
+    /// * `path`: connection D-Bus path.
+    /// * `conn`: network connection.
+    async fn update_ipv4_settings(
+        &self,
+        path: &OwnedObjectPath,
+        conn: &NetworkConnection,
+    ) -> Result<(), ServiceError> {
         let proxy = IPv4Proxy::builder(&self.connection)
             .path(path)?
             .build()
@@ -191,14 +226,6 @@ impl<'a> NetworkClient<'a> {
 
         let gateway = conn.gateway.as_deref().unwrap_or("");
         proxy.set_gateway(gateway).await?;
-
-        if let Some(ref wireless) = conn.wireless {
-            self.update_wireless_settings(path, wireless).await?;
-        }
-
-        if let Some(ref match_settings) = conn.match_settings {
-            self.update_match_settings(path, match_settings).await?;
-        }
 
         Ok(())
     }
