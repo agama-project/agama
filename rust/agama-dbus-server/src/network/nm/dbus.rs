@@ -22,8 +22,11 @@ const LOOPBACK_KEY: &str = "loopback";
 /// * `conn`: Connection to convert.
 pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
     let mut result = NestedHash::new();
-    let mut connection_dbus =
-        HashMap::from([("id", conn.id().into()), ("type", ETHERNET_KEY.into())]);
+    let mut connection_dbus = HashMap::from([
+        ("id", conn.id().into()),
+        ("type", ETHERNET_KEY.into()),
+        ("interface-name", conn.interface().into()),
+    ]);
     result.insert("ipv4", ipv4_to_dbus(conn.ipv4()));
     result.insert("match", match_config_to_dbus(conn.match_config()));
 
@@ -91,6 +94,14 @@ pub fn merge_dbus_connections<'a>(
     merged
 }
 
+fn is_empty_value(value: &zvariant::Value) -> bool {
+    let value: Result<String, _> = value.try_into();
+    if let Ok(v) = value {
+        return v.is_empty();
+    }
+    false
+}
+
 /// Cleans up the NestedHash that represents a connection.
 ///
 /// By now it just removes the "addresses" key from the "ipv4" and "ipv6" objects, which is
@@ -98,6 +109,15 @@ pub fn merge_dbus_connections<'a>(
 ///
 /// * `conn`: connection represented as a NestedHash.
 fn cleanup_dbus_connection(conn: &mut NestedHash) {
+    if let Some(connection) = conn.get_mut("connection") {
+        if connection
+            .get("interface-name")
+            .is_some_and(|v| is_empty_value(&v))
+        {
+            connection.remove("interface-name");
+        }
+    }
+
     if let Some(ipv4) = conn.get_mut("ipv4") {
         ipv4.remove("addresses");
         ipv4.remove("dns");
