@@ -260,6 +260,7 @@ impl Match {
         connection.match_config().driver.clone()
     }
 
+    #[dbus_interface(property)]
     pub async fn set_driver(&mut self, driver: Vec<String>) -> zbus::fdo::Result<()> {
         let mut connection = self.get_connection().await;
         let config = connection.match_config_mut();
@@ -274,6 +275,7 @@ impl Match {
         connection.match_config().path.clone()
     }
 
+    #[dbus_interface(property)]
     pub async fn set_path(&mut self, path: Vec<String>) -> zbus::fdo::Result<()> {
         let mut connection = self.get_connection().await;
         let config = connection.match_config_mut();
@@ -287,11 +289,27 @@ impl Match {
         connection.match_config().interface.clone()
     }
 
+    #[dbus_interface(property)]
+    pub async fn set_interface(&mut self, interface: Vec<String>) -> zbus::fdo::Result<()> {
+        let mut connection = self.get_connection().await;
+        let config = connection.match_config_mut();
+        config.interface = interface;
+        self.update_connection(connection).await
+    }
+
     /// List of kernel options
     #[dbus_interface(property)]
     pub async fn kernel(&self) -> Vec<String> {
         let connection = self.get_connection().await;
         connection.match_config().kernel.clone()
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_kernel(&mut self, kernel: Vec<String>) -> zbus::fdo::Result<()> {
+        let mut connection = self.get_connection().await;
+        let config = connection.match_config_mut();
+        config.kernel = kernel;
+        self.update_connection(connection).await
     }
 }
 

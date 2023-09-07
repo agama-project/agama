@@ -335,7 +335,7 @@ pub struct Ipv4Config {
     pub gateway: Option<Ipv4Addr>,
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct MatchConfig {
     pub driver: Vec<String>,
     pub interface: Vec<String>,

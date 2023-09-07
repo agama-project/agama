@@ -19,12 +19,13 @@ const LOOPBACK_KEY: &str = "loopback";
 
 /// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///
-/// * `conn`: Connection to cnvert.
+/// * `conn`: Connection to convert.
 pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
     let mut result = NestedHash::new();
     let mut connection_dbus =
         HashMap::from([("id", conn.id().into()), ("type", ETHERNET_KEY.into())]);
     result.insert("ipv4", ipv4_to_dbus(conn.ipv4()));
+    result.insert("match", match_config_to_dbus(conn.match_config()));
 
     if let Connection::Wireless(wireless) = conn {
         connection_dbus.insert("type", "802-11-wireless".into());
@@ -33,6 +34,7 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
             result.insert(k, v);
         }
     }
+
     result.insert("connection", connection_dbus);
     result
 }
@@ -159,6 +161,48 @@ fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
     ])
 }
 
+/// Converts a MatchConfig struct into a HashMap that can be sent over D-Bus.
+///
+/// * `match_config`: MatchConfig to convert.
+fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::Value> {
+    let mut match_config_dbus = HashMap::new();
+
+    let drivers: Value = match_config
+        .driver
+        .iter()
+        .map(|dr| dr.to_string())
+        .collect::<Vec<String>>()
+        .into();
+    match_config_dbus.insert("driver", drivers);
+
+    let kernels: Value = match_config
+        .kernel
+        .iter()
+        .map(|dr| dr.to_string())
+        .collect::<Vec<String>>()
+        .into();
+    match_config_dbus.insert("kernel-command-line", kernels);
+
+    let paths: Value = match_config
+        .path
+        .iter()
+        .map(|dr| dr.to_string())
+        .collect::<Vec<String>>()
+        .into();
+    match_config_dbus.insert("path", paths);
+
+    let interfaces: Value = match_config
+        .interface
+        .iter()
+        .map(|dr| dr.to_string())
+        .collect::<Vec<String>>()
+        .into();
+
+    match_config_dbus.insert("interface-name", interfaces);
+
+    match_config_dbus
+}
+
 fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
     let Some(connection) = conn.get("connection") else {
         return None;
@@ -177,6 +221,7 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
         let interface: &str = interface.downcast_ref()?;
         base_connection.interface = interface.parse().unwrap();
     }
+
     if let Some(match_config) = conn.get("match") {
         base_connection.match_config = match_config_from_dbus(match_config)?;
     }
@@ -294,8 +339,8 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
 #[cfg(test)]
 mod test {
     use super::{
-        connection_from_dbus, connection_to_dbus, match_config_from_dbus, merge_dbus_connections,
-        NestedHash, OwnedNestedHash,
+        connection_from_dbus, connection_to_dbus, merge_dbus_connections, NestedHash,
+        OwnedNestedHash,
     };
     use crate::network::{model::*, nm::dbus::ETHERNET_KEY};
     use agama_lib::network::types::SSID;
@@ -345,7 +390,7 @@ mod test {
 
         assert_eq!(connection.id(), "eth0");
         let ipv4 = connection.ipv4();
-        let match_config = connection.match_config().as_ref().unwrap();
+        let match_config = connection.match_config().clone();
         assert_eq!(match_config.kernel, vec!["pci-0000:00:19.0"]);
         assert_eq!(ipv4.addresses, vec!["192.168.0.10/24".parse().unwrap()]);
         assert_eq!(ipv4.nameservers, vec![Ipv4Addr::new(192, 168, 0, 2)]);

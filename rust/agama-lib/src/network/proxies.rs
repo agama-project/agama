@@ -122,7 +122,7 @@ trait IPv4 {
 
 #[dbus_proxy(
     interface = "org.opensuse.Agama1.Network.Connection.Match",
-    default_service = "org.opensuse.Agama1.Network",
+    default_service = "org.opensuse.Agama1",
     default_path = "/org/opensuse/Agama1/Network"
 )]
 trait Match {
