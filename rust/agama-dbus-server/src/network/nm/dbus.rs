@@ -94,14 +94,6 @@ pub fn merge_dbus_connections<'a>(
     merged
 }
 
-fn is_empty_value(value: &zvariant::Value) -> bool {
-    let value: Result<String, _> = value.try_into();
-    if let Ok(v) = value {
-        return v.is_empty();
-    }
-    false
-}
-
 /// Cleans up the NestedHash that represents a connection.
 ///
 /// By now it just removes the "addresses" key from the "ipv4" and "ipv6" objects, which is
@@ -356,6 +348,19 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
     Some(wireless_config)
 }
 
+/// Determines whether a value is empty.
+///
+/// TODO: Generalize for other kind of values, like dicts or arrays.
+///
+/// * `value`: value to analyze
+fn is_empty_value(value: &zvariant::Value) -> bool {
+    if let Some(value) = value.downcast_ref::<zvariant::Str>() {
+        return value.is_empty();
+    }
+
+    false
+}
+
 #[cfg(test)]
 mod test {
     use super::{
@@ -410,7 +415,7 @@ mod test {
 
         assert_eq!(connection.id(), "eth0");
         let ipv4 = connection.ipv4();
-        let match_config = connection.match_config().clone();
+        let match_config = connection.match_config();
         assert_eq!(match_config.kernel, vec!["pci-0000:00:19.0"]);
         assert_eq!(ipv4.addresses, vec!["192.168.0.10/24".parse().unwrap()]);
         assert_eq!(ipv4.nameservers, vec![Ipv4Addr::new(192, 168, 0, 2)]);
@@ -527,6 +532,7 @@ mod test {
 
         let base = BaseConnection {
             id: "agama".to_string(),
+            interface: "eth0".to_string(),
             ..Default::default()
         };
         let ethernet = EthernetConnection {
@@ -543,6 +549,11 @@ mod test {
             Value::new("agama".to_string())
         );
 
+        assert_eq!(
+            *connection.get("interface-name").unwrap(),
+            Value::new("eth0".to_string())
+        );
+
         let ipv4 = merged.get("ipv4").unwrap();
         assert_eq!(
             *ipv4.get("method").unwrap(),
@@ -553,6 +564,31 @@ mod test {
             Value::new("192.168.1.1".to_string())
         );
         assert!(ipv4.get("addresses").is_none());
+    }
+
+    #[test]
+    fn test_merged_connections_are_clean() {
+        let mut original = OwnedNestedHash::new();
+        let connection = HashMap::from([
+            ("id".to_string(), Value::new("conn0".to_string()).to_owned()),
+            (
+                "type".to_string(),
+                Value::new(ETHERNET_KEY.to_string()).to_owned(),
+            ),
+            (
+                "interface-name".to_string(),
+                Value::new("eth0".to_string()).to_owned(),
+            ),
+        ]);
+        original.insert("connection".to_string(), connection);
+
+        let mut updated = Connection::Ethernet(EthernetConnection::default());
+        updated.set_interface("");
+        let updated = connection_to_dbus(&updated);
+
+        let merged = merge_dbus_connections(&original, &updated);
+        let connection = merged.get("connection").unwrap();
+        assert_eq!(connection.get("interface-name"), None);
     }
 
     fn build_ethernet_section_from_dbus() -> HashMap<String, OwnedValue> {
