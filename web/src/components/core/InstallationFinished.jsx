@@ -57,7 +57,7 @@ function InstallationFinished() {
       <SectionTitle>{_("Installation Finished")}</SectionTitle>
       <PageIcon><Icon name="task_alt" /></PageIcon>
       <MainActions>
-        <Button isLarge variant="primary" onClick={closingAction}>
+        <Button size="lg" variant="primary" onClick={closingAction}>
           {buttonCaption}
         </Button>
       </MainActions>

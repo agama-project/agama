@@ -90,7 +90,7 @@ export default function Page({
       { icon && <PageIcon><Icon name={icon} /></PageIcon> }
       <MainActions>
         { action ||
-          <Button isLarge variant={actionVariant} onClick={pageAction}>
+          <Button size="lg" variant={actionVariant} onClick={pageAction}>
             {actionLabel}
           </Button> }
       </MainActions>

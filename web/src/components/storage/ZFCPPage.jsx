@@ -733,7 +733,7 @@ export default function ZFCPPage() {
     // TRANSLATORS: page title
     <Page title={_("Storage zFCP")} icon="hard_drive">
       <MainActions>
-        <Button isLarge variant="secondary" onClick={() => navigate("/storage")}>{_("Back")}</Button>
+        <Button size="lg" variant="secondary" onClick={() => navigate("/storage")}>{_("Back")}</Button>
       </MainActions>
 
       <ControllersSection

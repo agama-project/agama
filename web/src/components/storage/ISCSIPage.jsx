@@ -35,7 +35,7 @@ export default function ISCSIPage() {
       {/* TRANSLATORS: page title for iSCSI configuration */}
       <PageTitle>{_("Storage iSCSI")}</PageTitle>
       <MainActions>
-        <Button isLarge variant="secondary" form="storage-config" onClick={() => navigate("/storage")}>
+        <Button size="lg" variant="secondary" form="storage-config" onClick={() => navigate("/storage")}>
           {_("Back")}
         </Button>
       </MainActions>

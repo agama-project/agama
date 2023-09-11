@@ -140,7 +140,7 @@ const InstallButton = ({ onClick }) => {
 
   return (
     <>
-      <Button isLarge variant="primary" onClick={open}>
+      <Button size="lg" variant="primary" onClick={open}>
         {/* TRANSLATORS: button label */}
         {_("Install")}
       </Button>
