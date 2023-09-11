@@ -79,9 +79,7 @@ module Agama
       attr_reader :logger
 
       def manager
-        @manager ||= Agama::Storage::Manager.new(config, logger).tap do |manager|
-          manager.on_progress_change { dispatch }
-        end
+        @manager ||= Agama::Storage::Manager.new(config, logger)
       end
 
       # @return [::DBus::ObjectServer]

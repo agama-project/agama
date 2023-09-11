@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 11 11:28:05 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- The software and the storage services do not dispatch actions
+  during progress reporting anymore (related to bsc#1215197).
+
+-------------------------------------------------------------------
 Wed Sep  6 08:02:35 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - New storage proposal settings (gh#openSUSE/agama#738).

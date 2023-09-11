@@ -47,7 +47,6 @@ module Agama
         @logger = logger || Logger.new($stdout)
         @bus = Bus.current
         @backend = Agama::Software::Manager.new(config, logger)
-        @backend.on_progress_change { dispatch }
       end
 
       # Starts software service. It does more then just #export method.
