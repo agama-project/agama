@@ -222,7 +222,7 @@ const EncryptionPasswordForm = ({ id, password: passwordProp, onSubmit, onValida
     if (password.length === 0) onValidate(false);
   }, [password, onValidate]);
 
-  const changePassword = (v) => setPassword(v);
+  const changePassword = (_, v) => setPassword(v);
 
   const submitForm = (e) => {
     e.preventDefault();

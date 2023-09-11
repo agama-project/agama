@@ -59,6 +59,8 @@ export default function RootPasswordPopup({
     close();
   };
 
+  const onPasswordChange = (_, value) => setPassword(value);
+
   const onPasswordValidation = (isValid) => setIsValidPassword(isValid);
 
   return (
@@ -66,7 +68,7 @@ export default function RootPasswordPopup({
       <Form id="root-password" onSubmit={accept}>
         <PasswordAndConfirmationInput
           value={password}
-          onChange={setPassword}
+          onChange={onPasswordChange}
           onValidation={onPasswordValidation}
         />
       </Form>

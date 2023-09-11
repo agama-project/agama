@@ -45,7 +45,7 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
 
   const onValueChange = (event, value) => {
     validate(value, confirmation);
-    if (typeof onChange === "function") onChange(value, event);
+    if (typeof onChange === "function") onChange(event, value);
   };
 
   const onConfirmationChange = (_, confirmationValue) => {

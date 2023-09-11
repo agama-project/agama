@@ -157,7 +157,7 @@ export default function FirstUser() {
     }
   };
 
-  const handleInputChange = (value, { target }) => {
+  const handleInputChange = ({ target }, value) => {
     const { name } = target;
     setFormValues({ ...formValues, [name]: value });
   };
@@ -232,9 +232,7 @@ export default function FirstUser() {
             { isSettingPassword &&
               <PasswordAndConfirmationInput
                 value={formValues.password}
-                onChange={(value, event) => {
-                  handleInputChange(value, event);
-                }}
+                onChange={handleInputChange}
                 onValidation={isValid => setIsValidPassword(isValid)}
               /> }
 
