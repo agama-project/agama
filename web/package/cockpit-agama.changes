@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Sep 11 11:56:56 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- Fix the download logs action in the web UI (gh#openSUSE#agama#697)
+
+-------------------------------------------------------------------
 Wed Sep  6 08:04:13 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Adapt storage to new proposal settings (gh#openSUSE/agama#738).
