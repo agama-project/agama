@@ -20,7 +20,7 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Title, Text, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
+import { Button, Text, EmptyState, EmptyStateIcon, EmptyStateBody, EmptyStateHeader } from "@patternfly/react-core";
 import { Center, Icon, Loading } from "~/components/layout";
 
 // path to any internal Cockpit component to force displaying the login dialog
@@ -73,11 +73,12 @@ export default function DevServerWrapper({ children }) {
   if (isError) {
     return (
       <Center>
-        <EmptyState>
-          <EmptyStateIcon icon={ ({ ...props }) => <Icon name="error" { ...props } /> } />
-          <Title headingLevel="h2" size="4xl">
-            Cannot connect to the Cockpit server
-          </Title>
+        <EmptyState variant="xl">
+          <EmptyStateHeader
+            titleText="Cannot connect to the Cockpit server"
+            headingLevel="h2"
+            icon={<EmptyStateIcon icon={ ({ ...props }) => <Icon name="error" { ...props } /> } />}
+          />
           <EmptyStateBody>
             <Text>
               The server at { " " }

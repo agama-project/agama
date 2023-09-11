@@ -22,11 +22,11 @@
 import React, { useState, useEffect } from "react";
 import {
   Button,
-  Title,
   Text,
   EmptyState,
   EmptyStateIcon,
-  EmptyStateBody
+  EmptyStateBody,
+  EmptyStateHeader
 } from "@patternfly/react-core";
 
 import { Center, Icon, Title as SectionTitle, PageIcon, MainActions } from "~/components/layout";
@@ -62,11 +62,12 @@ function InstallationFinished() {
         </Button>
       </MainActions>
 
-      <EmptyState>
-        <EmptyStateIcon icon={({ ...props }) => <Icon name="check_circle" { ...props } />} className="color-success" />
-        <Title headingLevel="h2" size="4xl">
-          {_("Congratulations!")}
-        </Title>
+      <EmptyState variant="xl">
+        <EmptyStateHeader
+          titleText={_("Congratulations!")}
+          headingLevel="h2"
+          icon={<EmptyStateIcon icon={({ ...props }) => <Icon name="check_circle" { ...props } />} className="color-success" />}
+        />
         <EmptyStateBody className="pf-c-content">
           <div>
             <Text>{_("The installation on your machine is complete.")}</Text>
