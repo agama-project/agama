@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-01 17:28+0000\n"
+"POT-Creation-Date: 2023-09-07 02:05+0000\n"
 "PO-Revision-Date: 2023-07-26 15:03+0000\n"
 "Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-web/cs/"
@@ -86,10 +86,10 @@ msgstr ""
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:97
-#: src/components/storage/ProposalSettingsSection.jsx:153
-#: src/components/storage/ProposalSettingsSection.jsx:321
-#: src/components/storage/ProposalVolumes.jsx:144
-#: src/components/storage/ProposalVolumes.jsx:275
+#: src/components/storage/ProposalSettingsSection.jsx:160
+#: src/components/storage/ProposalSettingsSection.jsx:328
+#: src/components/storage/ProposalVolumes.jsx:146
+#: src/components/storage/ProposalVolumes.jsx:277
 #: src/components/storage/ZFCPPage.jsx:513
 msgid "Accept"
 msgstr ""
@@ -206,8 +206,8 @@ msgstr ""
 
 #. TRANSLATORS: dropdown label
 #: src/components/core/RowActions.jsx:62
-#: src/components/storage/ProposalVolumes.jsx:133
-#: src/components/storage/ProposalVolumes.jsx:301
+#: src/components/storage/ProposalVolumes.jsx:135
+#: src/components/storage/ProposalVolumes.jsx:304
 msgid "Actions"
 msgstr ""
 
@@ -364,7 +364,7 @@ msgid "IP addresses"
 msgstr ""
 
 #: src/components/network/ConnectionsTable.jsx:67
-#: src/components/storage/ProposalVolumes.jsx:226
+#: src/components/storage/ProposalVolumes.jsx:228
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
 #: src/components/users/FirstUser.jsx:170
@@ -543,14 +543,33 @@ msgstr ""
 msgid "Connect to hidden network"
 msgstr ""
 
-#. TRANSLATORS: %s is replaced by a WiFi network name
-#: src/components/network/WifiNetworkListItem.jsx:93
-#, javascript-format
-msgid "%s connection is waiting for an state change"
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworkListItem.jsx:41
+#: src/components/network/WifiNetworkListItem.jsx:99
+msgid "Connecting"
 msgstr ""
 
-#: src/components/network/WifiNetworkListItem.jsx:95
-msgid "Connecting"
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworkListItem.jsx:44
+msgid "Connected"
+msgstr ""
+
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworkListItem.jsx:47
+msgid "Disconnecting"
+msgstr ""
+
+#. TRANSLATORS: iSCSI connection status
+#. TRANSLATORS: Wifi network status
+#: src/components/network/WifiNetworkListItem.jsx:50
+#: src/components/storage/iscsi/NodesPresenter.jsx:63
+msgid "Disconnected"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a WiFi network name
+#: src/components/network/WifiNetworkListItem.jsx:97
+#, javascript-format
+msgid "%s connection is waiting for an state change"
 msgstr ""
 
 #. TRANSLATORS: menu label, remove the selected WiFi network settings
@@ -600,8 +619,9 @@ msgstr ""
 msgid "Software"
 msgstr ""
 
-#: src/components/overview/StorageSection.jsx:35
-msgid "Device not selected yet"
+#: src/components/overview/StorageSection.jsx:36
+#: src/components/storage/ProposalSettingsSection.jsx:115
+msgid "No device selected yet"
 msgstr ""
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
@@ -611,14 +631,14 @@ msgstr ""
 msgid "Install using device %s and deleting all its content"
 msgstr ""
 
-#: src/components/overview/StorageSection.jsx:56
+#: src/components/overview/StorageSection.jsx:57
 msgid "Probing storage devices"
 msgstr ""
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section title
-#: src/components/overview/StorageSection.jsx:164
-#: src/components/storage/ProposalPage.jsx:170
+#: src/components/overview/StorageSection.jsx:182
+#: src/components/storage/ProposalPage.jsx:218
 msgid "Storage"
 msgstr ""
 
@@ -711,7 +731,7 @@ msgstr ""
 
 #: src/components/storage/DASDPage.jsx:187
 #: src/components/storage/ISCSIPage.jsx:39
-#: src/components/storage/ProposalPage.jsx:170
+#: src/components/storage/ProposalPage.jsx:218
 #: src/components/storage/ZFCPPage.jsx:736
 #: src/components/users/UsersPage.jsx:30
 msgid "Back"
@@ -912,7 +932,7 @@ msgstr ""
 msgid "Planned Actions"
 msgstr ""
 
-#: src/components/storage/ProposalPage.jsx:150
+#: src/components/storage/ProposalPage.jsx:198
 msgid "Devices will not be modified until installation starts."
 msgstr ""
 
@@ -936,132 +956,128 @@ msgstr ""
 msgid "iSCSI"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:112
-msgid "No device selected yet"
-msgstr ""
-
-#: src/components/storage/ProposalSettingsSection.jsx:121
+#: src/components/storage/ProposalSettingsSection.jsx:128
 msgid ""
 "Select the device for installing the system. All the file systems will be "
 "created on the selected device."
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:127
-#: src/components/storage/ProposalSettingsSection.jsx:131
+#: src/components/storage/ProposalSettingsSection.jsx:134
+#: src/components/storage/ProposalSettingsSection.jsx:138
 msgid "Installation device"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:137
+#: src/components/storage/ProposalSettingsSection.jsx:144
 msgid "No devices found"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:187
+#: src/components/storage/ProposalSettingsSection.jsx:194
 msgid "Use logical volume management (LVM)"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:287
+#: src/components/storage/ProposalSettingsSection.jsx:294
 msgid "Change encryption password"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:292
-#: src/components/storage/ProposalSettingsSection.jsx:313
+#: src/components/storage/ProposalSettingsSection.jsx:299
+#: src/components/storage/ProposalSettingsSection.jsx:320
 msgid "Encryption settings"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:306
+#: src/components/storage/ProposalSettingsSection.jsx:313
 msgid "Use encryption"
 msgstr ""
 
-#: src/components/storage/ProposalSettingsSection.jsx:374
+#: src/components/storage/ProposalSettingsSection.jsx:381
 msgid "Settings"
 msgstr ""
 
 #. TRANSLATORS: header for a list of items
-#: src/components/storage/ProposalVolumes.jsx:56
+#: src/components/storage/ProposalVolumes.jsx:58
 msgid "These limits are affected by:"
 msgstr ""
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
-#: src/components/storage/ProposalVolumes.jsx:60
+#: src/components/storage/ProposalVolumes.jsx:62
 msgid "The configuration of snapshots"
 msgstr ""
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
 #. %s is replaced by a list of the volumes (like "/home, /boot")
-#: src/components/storage/ProposalVolumes.jsx:64
+#: src/components/storage/ProposalVolumes.jsx:66
 #, javascript-format
 msgid "Presence of other volumes (%s)"
 msgstr ""
 
 #. TRANSLATORS: dropdown menu label
-#: src/components/storage/ProposalVolumes.jsx:119
+#: src/components/storage/ProposalVolumes.jsx:121
 msgid "Reset to defaults"
 msgstr ""
 
 #. TRANSLATORS: dropdown menu label
-#: src/components/storage/ProposalVolumes.jsx:127
-#: src/components/storage/ProposalVolumes.jsx:137
+#: src/components/storage/ProposalVolumes.jsx:129
+#: src/components/storage/ProposalVolumes.jsx:139
 msgid "Add file system"
 msgstr ""
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
-#: src/components/storage/ProposalVolumes.jsx:186
+#: src/components/storage/ProposalVolumes.jsx:189
 #, javascript-format
 msgid "At least %s"
 msgstr ""
 
 #. TRANSLATORS: device flag, the partition size is automatically computed
-#: src/components/storage/ProposalVolumes.jsx:192
+#: src/components/storage/ProposalVolumes.jsx:195
 msgid "auto"
 msgstr ""
 
 #. TRANSLATORS: the filesystem uses a logical volume (LVM)
-#: src/components/storage/ProposalVolumes.jsx:202
+#: src/components/storage/ProposalVolumes.jsx:204
 msgid "logical volume"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:202
+#: src/components/storage/ProposalVolumes.jsx:204
 msgid "partition"
 msgstr ""
 
 #. TRANSLATORS: filesystem flag, it uses an encryption
-#: src/components/storage/ProposalVolumes.jsx:210
+#: src/components/storage/ProposalVolumes.jsx:212
 msgid "encrypted"
 msgstr ""
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
-#: src/components/storage/ProposalVolumes.jsx:212
+#: src/components/storage/ProposalVolumes.jsx:214
 msgid "with snapshots"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:221
+#: src/components/storage/ProposalVolumes.jsx:223
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:267
+#: src/components/storage/ProposalVolumes.jsx:269
 msgid "Edit file system"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:298
+#: src/components/storage/ProposalVolumes.jsx:301
 #: src/components/storage/VolumeForm.jsx:490
 msgid "Mount point"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:299
+#: src/components/storage/ProposalVolumes.jsx:302
 msgid "Details"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:300
+#: src/components/storage/ProposalVolumes.jsx:303
 #: src/components/storage/VolumeForm.jsx:507
 msgid "Size"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:335
+#: src/components/storage/ProposalVolumes.jsx:339
 msgid "Table with mount points"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:391
+#: src/components/storage/ProposalVolumes.jsx:402
 msgid "File systems to create in your system"
 msgstr ""
 
@@ -1373,6 +1389,12 @@ msgstr ""
 msgid "Initiator"
 msgstr ""
 
+#. TRANSLATORS: %s is replaced by the iSCSI target name
+#: src/components/storage/iscsi/LoginForm.jsx:69
+#, javascript-format
+msgid "Login %s"
+msgstr ""
+
 #. TRANSLATORS: iSCSI start up mode (on boot/manual/automatic)
 #: src/components/storage/iscsi/LoginForm.jsx:76
 #: src/components/storage/iscsi/LoginForm.jsx:79
@@ -1385,11 +1407,6 @@ msgstr ""
 
 #: src/components/storage/iscsi/NodeStartupOptions.js:27
 msgid "Automatic"
-msgstr ""
-
-#. TRANSLATORS: iSCSI connection status
-#: src/components/storage/iscsi/NodesPresenter.jsx:63
-msgid "Disconnected"
 msgstr ""
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
