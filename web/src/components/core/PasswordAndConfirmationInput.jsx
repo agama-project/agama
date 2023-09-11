@@ -43,12 +43,12 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
     }
   };
 
-  const onChangeValue = (value, event) => {
+  const onValueChange = (event, value) => {
     validate(value, confirmation);
     if (typeof onChange === "function") onChange(value, event);
   };
 
-  const onChangeConfirmation = (confirmationValue) => {
+  const onConfirmationChange = (_, confirmationValue) => {
     setConfirmation(confirmationValue);
     validate(value, confirmationValue);
   };
@@ -63,7 +63,7 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
           aria-label={_("User password")}
           value={value}
           isDisabled={isDisabled}
-          onChange={onChangeValue}
+          onChange={onValueChange}
           onBlur={() => validate(value, confirmation)}
         />
       </FormGroup>
@@ -80,7 +80,7 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
           aria-label={_("User password confirmation")}
           value={confirmation}
           isDisabled={isDisabled}
-          onChange={onChangeConfirmation}
+          onChange={onConfirmationChange}
           onBlur={() => validate(value, confirmation)}
           validated={error === "" ? "default" : "error"}
         />

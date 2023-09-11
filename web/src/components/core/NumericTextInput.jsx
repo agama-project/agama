@@ -50,7 +50,7 @@ export default function NumericTextInput({ value = "", onChange = noop, ...textI
   // NOTE: Using \d* instead of \d+ at the beginning to allow empty
   const pattern = /^\d*\.?\d*$/;
 
-  const handleOnChange = (value) => {
+  const handleOnChange = (_, value) => {
     if (pattern.test(value)) {
       onChange(value);
     }

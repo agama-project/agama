@@ -100,7 +100,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
             label={_("SSID")}
             aria-label="ssid"
             value={ssid}
-            onChange={setSsid}
+            onChange={(_, value) => setSsid(value)}
           />
         </FormGroup> }
 
@@ -110,7 +110,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
           id="security"
           aria-label={_("Security")}
           value={security}
-          onChange={setSecurity}
+          onChange={(_, value) => setSecurity(value)}
         >
           {selectorOptions}
         </FormSelect>
@@ -125,7 +125,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
             value={password}
             label={_("Password")}
             type="password"
-            onChange={setPassword}
+            onChange={(_, value) => setPassword(value)}
           />
         </FormGroup> }
       <ActionGroup>

@@ -72,7 +72,7 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
             id="luks-password"
             value={password}
             type="password"
-            onChange={setPassword}
+            onChange={(_, value) => setPassword(value)}
           />
         </FormGroup>
       </Form>

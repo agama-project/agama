@@ -63,8 +63,8 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
   });
 
   const updateData = (key, value) => setData({ ...data, [key]: value });
-  const onAddressChange = v => updateData("address", v);
-  const onPortChange = v => updateData("port", v);
+  const onAddressChange = (_, v) => updateData("address", v);
+  const onPortChange = (_, v) => updateData("port", v);
 
   const onSubmit = async (event) => {
     event.preventDefault();

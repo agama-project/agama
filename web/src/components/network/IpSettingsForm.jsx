@@ -64,7 +64,7 @@ export default function IpSettingsForm({ connection, onClose }) {
     }
   };
 
-  const changeMethod = (value) => {
+  const onMethodChange = (_, value) => {
     let nextAddresses = cleanAddresses(addresses);
 
     if (!usingDHCP(value) && nextAddresses.length === 0) {
@@ -138,7 +138,7 @@ export default function IpSettingsForm({ connection, onClose }) {
             aria-label={_("Mode")}
             value={method}
             label={_("Mode")}
-            onChange={changeMethod}
+            onChange={onMethodChange}
             validated={validatedAttrValue("method")}
           >
             <FormSelectOption key="auto" value={METHODS.AUTO} label={_("Automatic (DHCP)")} />
@@ -163,7 +163,7 @@ export default function IpSettingsForm({ connection, onClose }) {
             // TRANSLATORS: network gateway configuration
             label={_("Gateway")}
             isDisabled={addresses.length === 0}
-            onChange={setGateway}
+            onChange={(_, value) => setGateway(value)}
           />
         </FormGroup>
 

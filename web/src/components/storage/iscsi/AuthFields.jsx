@@ -27,10 +27,10 @@ import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
 export default function AuthFields({ data, onChange, onValidate }) {
-  const onUsernameChange = v => onChange("username", v);
-  const onPasswordChange = v => onChange("password", v);
-  const onReverseUsernameChange = v => onChange("reverseUsername", v);
-  const onReversePasswordChange = v => onChange("reversePassword", v);
+  const onUsernameChange = (_, v) => onChange("username", v);
+  const onPasswordChange = (_, v) => onChange("password", v);
+  const onReverseUsernameChange = (_, v) => onChange("reverseUsername", v);
+  const onReversePasswordChange = (_, v) => onChange("reversePassword", v);
 
   const isValidText = v => v.length > 0;
   const isValidUsername = () => isValidText(data.username);

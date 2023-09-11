@@ -28,7 +28,7 @@ import { Popup } from "~/components/core";
 export default function InitiatorForm({ initiator, onSubmit: onSubmitProp, onCancel }) {
   const [data, setData] = useState({ ...initiator });
 
-  const onNameChange = name => setData({ ...data, name });
+  const onNameChange = (_, name) => setData({ ...data, name });
 
   const onSubmit = async (event) => {
     event.preventDefault();

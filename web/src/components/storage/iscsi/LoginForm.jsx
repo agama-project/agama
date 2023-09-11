@@ -43,7 +43,7 @@ export default function LoginForm({ node, onSubmit: onSubmitProp, onCancel }) {
   const [isValidAuth, setIsValidAuth] = useState(true);
 
   const updateData = (key, value) => setData({ ...data, [key]: value });
-  const onStartupChange = v => updateData("startup", v);
+  const onStartupChange = (_, v) => updateData("startup", v);
 
   const onSubmit = async (event) => {
     setIsLoading(true);
