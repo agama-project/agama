@@ -120,7 +120,7 @@ impl<'a> NetworkClient<'a> {
             .build()
             .await?;
         let match_settings = MatchSettings {
-            paths: match_proxy.path().await?,
+            path: match_proxy.path().await?,
             kernel: match_proxy.kernel().await?,
             interface: match_proxy.interface().await?,
             driver: match_proxy.driver().await?,
@@ -267,7 +267,7 @@ impl<'a> NetworkClient<'a> {
             .build()
             .await?;
 
-        let paths: Vec<_> = match_settings.paths.iter().map(String::as_ref).collect();
+        let paths: Vec<_> = match_settings.path.iter().map(String::as_ref).collect();
         proxy.set_path(paths.as_slice()).await?;
 
         Ok(())

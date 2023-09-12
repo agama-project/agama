@@ -21,7 +21,7 @@ pub struct MatchSettings {
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub driver: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub paths: Vec<String>,
+    pub path: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub kernel: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
@@ -30,7 +30,7 @@ pub struct MatchSettings {
 
 impl MatchSettings {
     pub fn is_empty(&self) -> bool {
-        self.paths.is_empty()
+        self.path.is_empty()
             && self.driver.is_empty()
             && self.kernel.is_empty()
             && self.interface.is_empty()
