@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { DropdownToggle } from "@patternfly/react-core";
+import { DropdownToggle } from '@patternfly/react-core/deprecated';
 import { ActionsColumn } from '@patternfly/react-table';
 
 import { Icon } from '~/components/layout';

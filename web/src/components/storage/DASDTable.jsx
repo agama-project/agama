@@ -22,10 +22,10 @@
 import React, { useState } from "react";
 import {
   Button,
-  Dropdown, DropdownToggle, DropdownItem, DropdownSeparator,
   TextInputGroup, TextInputGroupMain, TextInputGroupUtilities,
   Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
 } from '@patternfly/react-core';
+import { Dropdown, DropdownToggle, DropdownItem, DropdownSeparator } from '@patternfly/react-core/deprecated';
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sort } from 'fast-sort';
 
@@ -112,7 +112,7 @@ const Actions = ({ devices, isDisabled }) => {
         <Action key="format" onClick={format}>{_("Format")}</Action>
       ]}
       toggle={
-        <DropdownToggle toggleVariant="primary" isDisabled={isDisabled} onToggle={onToggle}>
+        <DropdownToggle toggleVariant="primary" isDisabled={isDisabled} onToggle={(_event, status) => onToggle(status)}>
           {/* TRANSLATORS: drop down menu label */}
           {_("Perform an action")}
         </DropdownToggle>

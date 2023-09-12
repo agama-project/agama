@@ -20,7 +20,8 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Dropdown, DropdownItem, DropdownGroup } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, DropdownGroup } from '@patternfly/react-core/deprecated';
 import { Icon, PageOptions as PageOptionsSlot } from "~/components/layout";
 
 /**

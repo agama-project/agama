@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { DropdownItem } from "@patternfly/react-core";
+import { DropdownItem } from '@patternfly/react-core/deprecated';
 import { Icon } from "~/components/layout";
 import { KebabMenu } from "~/components/core";
 import { useInstallerClient } from "~/context/installer";

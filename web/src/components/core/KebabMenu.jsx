@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { Dropdown, DropdownToggle } from "@patternfly/react-core";
+import { Dropdown, DropdownToggle } from '@patternfly/react-core/deprecated';
 import { Icon } from "~/components/layout";
 
 export default function KebabMenu({ items, position = "right", id = Date.now(), ...props }) {

@@ -21,11 +21,11 @@
 
 import React, { useState } from "react";
 import {
-  Dropdown, DropdownToggle, DropdownItem,
   List, ListItem,
   Skeleton,
   Toolbar, ToolbarContent, ToolbarItem
-} from "@patternfly/react-core";
+} from '@patternfly/react-core';
+import { Dropdown, DropdownToggle, DropdownItem } from '@patternfly/react-core/deprecated';
 import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sprintf } from "sprintf-js";
 
@@ -130,7 +130,7 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
           </Action>
         ]}
         toggle={
-          <DropdownToggle toggleVariant="primary" onToggle={toggleActions}>
+          <DropdownToggle toggleVariant="primary" onToggle={(_event, status) => toggleActions(status)}>
             {/* TRANSLATORS: dropdown label */}
             {_("Actions")}
           </DropdownToggle>
