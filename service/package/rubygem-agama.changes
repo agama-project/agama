@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Sep 12 12:27:33 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not crash when it is not possible to handle a product change
+  in the manager service (related to bsc#1215197).
+- When selecting the product, do not perform any change if the
+  product is still the same.
+
+-------------------------------------------------------------------
 Mon Sep 11 11:28:05 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - The software and the storage services do not dispatch actions

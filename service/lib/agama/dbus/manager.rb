@@ -172,9 +172,12 @@ module Agama
         end
 
         backend.software.on_product_selected do |_product|
-          safe_run do
-            busy_while { backend.config_phase }
+          if service_status.busy?
+            logger.warn "Could not process the product change because the service is busy"
+            next
           end
+
+          busy_while { backend.config_phase }
         end
       end
     end

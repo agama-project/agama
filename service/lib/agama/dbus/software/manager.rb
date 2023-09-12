@@ -62,8 +62,14 @@ module Agama
           dbus_reader :selected_base_product, "s"
 
           dbus_method :SelectProduct, "in ProductID:s" do |product_id|
-            logger.info "SelectProduct #{product_id}"
+            old_product_id = backend.product
 
+            if old_product_id == product_id
+              logger.info "Do not changing the product as it is still the same (#{product_id})"
+              return
+            end
+
+            logger.info "Selecting product #{product_id}"
             select_product(product_id)
             dbus_properties_changed(SOFTWARE_INTERFACE, { "SelectedBaseProduct" => product_id }, [])
             update_validation # as different product means different software selection
