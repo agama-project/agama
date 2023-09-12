@@ -79,8 +79,8 @@ export default function RootSSHKeyPopup({
             // TRANSLATORS: push button label, clears the related input field
             clearButtonText={_("Clear")}
             isLoading={isLoading}
-            onDataChange={setSSHKey}
-            onTextChange={setSSHKey}
+            onDataChange={(_, value) => setSSHKey(value)}
+            onTextChange={(_, value) => setSSHKey(value)}
             onReadStarted={startUploading}
             onReadFinished={stopUploading}
             onClearClick={clearKey}
