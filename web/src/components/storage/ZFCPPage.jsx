@@ -568,8 +568,8 @@ const DisksSection = ({ client, manager, isLoading = false }) => {
     return (
       <>
         <Toolbar className="no-stack-gutter">
-          <ToolbarContent alignment="alignRight">
-            <ToolbarItem alignment={{ default: "alignRight" }}>
+          <ToolbarContent>
+            <ToolbarItem align={{ default: "alignRight" }}>
               {/* TRANSLATORS: button label */}
               <Button onClick={openActivate} isDisabled={isDisabled}>{_("Activate new disk")}</Button>
             </ToolbarItem>
