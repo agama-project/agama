@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sprintf } from "sprintf-js";
 
 import { RowActions } from "~/components/core";
@@ -50,7 +50,7 @@ export default function ConnectionsTable ({
   if (connections.length === 0) return null;
 
   return (
-    <TableComposable variant="compact">
+    <Table variant="compact">
       <Thead>
         <Tr>
           {/* TRANSLATORS: table header */}
@@ -98,6 +98,6 @@ export default function ConnectionsTable ({
           );
         })}
       </Tbody>
-    </TableComposable>
+    </Table>
   );
 }

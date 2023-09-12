@@ -26,7 +26,7 @@ import {
   Skeleton,
   Toolbar, ToolbarContent, ToolbarItem
 } from "@patternfly/react-core";
-import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
@@ -336,7 +336,7 @@ const VolumesTable = ({ volumes, options, isLoading, onVolumesChange }) => {
   };
 
   return (
-    <TableComposable aria-label={_("Table with mount points")} variant="compact" borders>
+    <Table aria-label={_("Table with mount points")} variant="compact" borders>
       <Thead>
         <Tr>
           <Th>{columns.mountPath}</Th>
@@ -353,7 +353,7 @@ const VolumesTable = ({ volumes, options, isLoading, onVolumesChange }) => {
           onVolumesChange={onVolumesChange}
         />
       </Tbody>
-    </TableComposable>
+    </Table>
   );
 };
 

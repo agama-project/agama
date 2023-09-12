@@ -24,7 +24,7 @@
 import React, { useCallback, useEffect, useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Skeleton, Toolbar, ToolbarContent, ToolbarItem } from "@patternfly/react-core";
-import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
 import { _ } from "~/i18n";
 import { MainActions } from "~/components/layout";
@@ -260,7 +260,7 @@ const DevicesTable = ({ devices = [], columns = [], columnValue = noop, actions 
   };
 
   return (
-    <TableComposable variant="compact">
+    <Table variant="compact">
       <Thead>
         <Tr>
           { columns.map((column) => <Th key={column.id}>{column.label}</Th>) }
@@ -284,7 +284,7 @@ const DevicesTable = ({ devices = [], columns = [], columnValue = noop, actions 
           </Tr>
         ))}
       </Tbody>
-    </TableComposable>
+    </Table>
   );
 };
 

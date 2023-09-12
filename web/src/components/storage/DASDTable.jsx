@@ -26,7 +26,7 @@ import {
   TextInputGroup, TextInputGroupMain, TextInputGroupUtilities,
   Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
 } from '@patternfly/react-core';
-import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sort } from 'fast-sort';
 
 import { _ } from "~/i18n";
@@ -243,7 +243,7 @@ export default function DASDTable({ state, dispatch }) {
         condition={state.isLoading}
         then={<SectionSkeleton />}
         else={
-          <TableComposable variant="compact">
+          <Table variant="compact">
             <Thead>
               <Tr>
                 <Th select={{ onSelect: (_event, isSelecting) => selectAll(isSelecting), isSelected: filteredDevices.length === state.selectedDevices.length }} />
@@ -258,7 +258,7 @@ export default function DASDTable({ state, dispatch }) {
                 </Tr>
               ))}
             </Tbody>
-          </TableComposable>
+          </Table>
         }
       />
     </>

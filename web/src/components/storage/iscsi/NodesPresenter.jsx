@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
@@ -115,7 +115,7 @@ export default function NodesPresenter ({ nodes, client }) {
 
   return (
     <>
-      <TableComposable variant="compact">
+      <Table variant="compact">
         <Thead>
           <Tr>
             <Th>{_("Name")}</Th>
@@ -129,7 +129,7 @@ export default function NodesPresenter ({ nodes, client }) {
         <Tbody>
           <Content />
         </Tbody>
-      </TableComposable>
+      </Table>
       { isLoginFormOpen &&
         <LoginForm
           node={currentNode}
