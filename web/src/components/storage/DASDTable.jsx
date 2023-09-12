@@ -253,7 +253,7 @@ export default function DASDTable({ state, dispatch }) {
             <Tbody>
               { sortedDevices.map((device, rowIndex) => (
                 <Tr key={device.id}>
-                  <Td select={{ rowIndex, onSelect: (_event, isSelecting) => selectDevice(device, isSelecting), isSelected: selectedDevicesIds.includes(device.id), disable: false }} />
+                  <Td select={{ rowIndex, onSelect: (_event, isSelecting) => selectDevice(device, isSelecting), isSelected: selectedDevicesIds.includes(device.id), isDisabled: false }} />
                   { columns.map(column => <Td key={column.id} dataLabel={column.label}>{columnData(device, column)}</Td>) }
                 </Tr>
               ))}
