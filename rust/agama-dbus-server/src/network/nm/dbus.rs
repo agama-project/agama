@@ -248,9 +248,7 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
 fn match_config_from_dbus(
     match_config: &HashMap<String, zvariant::OwnedValue>,
 ) -> Option<MatchConfig> {
-    let mut match_conf = MatchConfig {
-        ..Default::default()
-    };
+    let mut match_conf = MatchConfig::default();
 
     if let Some(drivers) = match_config.get("driver") {
         let drivers = drivers.downcast_ref::<zbus::zvariant::Array>()?;
