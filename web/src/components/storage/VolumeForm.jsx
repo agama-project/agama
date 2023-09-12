@@ -22,10 +22,10 @@
 import React, { useReducer } from "react";
 
 import {
-  InputGroup,
+  InputGroup, InputGroupItem,
   Form, FormGroup, FormSelect, FormSelectOption,
   Radio,
-  TextInput
+  TextInput,
 } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
@@ -139,28 +139,32 @@ const SizeManual = ({ errors, formData, onChange }) => {
         validated={errors.size && 'error'}
       >
         <InputGroup className="size-input-group">
-          <NumericTextInput
-            id="size"
-            name="size"
-            // TRANSLATORS: requested partition size
-            aria-label={_("Exact size")}
-            // TODO: support also localization for numbers, e.g. decimal comma,
-            // either use toLocaleString()
-            //   (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toLocaleString)
-            // or use the "globalize" JS library which can also parse the localized string back
-            //   (https://github.com/globalizejs/globalize#number-module)
-            value={formData.size}
-            onChange={(size) => onChange({ size })}
-            validated={errors.size && 'error'}
-          />
-          <SizeUnitFormSelect
-            id="sizeUnit"
-            // TRANSLATORS: units selector (like KiB, MiB, GiB...)
-            aria-label={_("Size unit")}
-            units={Object.values(SIZE_UNITS)}
-            value={formData.sizeUnit }
-            onChange={(sizeUnit) => onChange({ sizeUnit })}
-          />
+          <InputGroupItem>
+            <NumericTextInput
+              id="size"
+              name="size"
+              // TRANSLATORS: requested partition size
+              aria-label={_("Exact size")}
+              // TODO: support also localization for numbers, e.g. decimal comma,
+              // either use toLocaleString()
+              //   (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toLocaleString)
+              // or use the "globalize" JS library which can also parse the localized string back
+              //   (https://github.com/globalizejs/globalize#number-module)
+              value={formData.size}
+              onChange={(size) => onChange({ size })}
+              validated={errors.size && 'error'}
+            />
+          </InputGroupItem>
+          <InputGroupItem>
+            <SizeUnitFormSelect
+              id="sizeUnit"
+              // TRANSLATORS: units selector (like KiB, MiB, GiB...)
+              aria-label={_("Size unit")}
+              units={Object.values(SIZE_UNITS)}
+              value={formData.sizeUnit }
+              onChange={(sizeUnit) => onChange({ sizeUnit })}
+            />
+          </InputGroupItem>
         </InputGroup>
       </FormGroup>
     </div>
@@ -196,22 +200,26 @@ and maximum. If no maximum is given then the file system will be as big as possi
           helperTextInvalid={errors.minSize}
         >
           <InputGroup>
-            <NumericTextInput
-              id="minSize"
-              name="minSize"
-              // TRANSLATORS: the minium partition size
-              aria-label={_("Minimum desired size")}
-              value={formData.minSize}
-              onChange={(minSize) => onChange({ minSize })}
-              validated={errors.minSize && 'error'}
-            />
-            <SizeUnitFormSelect
-              id="minSizeUnit"
-              aria-label={_("Unit for the minimum size")}
-              units={Object.values(SIZE_UNITS)}
-              value={formData.minSizeUnit }
-              onChange={(minSizeUnit) => onChange({ minSizeUnit })}
-            />
+            <InputGroupItem>
+              <NumericTextInput
+                id="minSize"
+                name="minSize"
+                // TRANSLATORS: the minium partition size
+                aria-label={_("Minimum desired size")}
+                value={formData.minSize}
+                onChange={(minSize) => onChange({ minSize })}
+                validated={errors.minSize && 'error'}
+              />
+            </InputGroupItem>
+            <InputGroupItem>
+              <SizeUnitFormSelect
+                id="minSizeUnit"
+                aria-label={_("Unit for the minimum size")}
+                units={Object.values(SIZE_UNITS)}
+                value={formData.minSizeUnit }
+                onChange={(minSizeUnit) => onChange({ minSizeUnit })}
+              />
+            </InputGroupItem>
           </InputGroup>
         </FormGroup>
         <FormGroup
@@ -223,23 +231,27 @@ and maximum. If no maximum is given then the file system will be as big as possi
           helperTextInvalid={errors.maxSize}
         >
           <InputGroup>
-            <NumericTextInput
-              id="maxSize"
-              name="maxSize"
-              validated={errors.maxSize && 'error'}
-              // TRANSLATORS: the maximum partition size
-              aria-label={_("Maximum desired size")}
-              value={formData.maxSize}
-              onChange={(maxSize) => onChange({ maxSize })}
+            <InputGroupItem>
+              <NumericTextInput
+                id="maxSize"
+                name="maxSize"
+                validated={errors.maxSize && 'error'}
+                // TRANSLATORS: the maximum partition size
+                aria-label={_("Maximum desired size")}
+                value={formData.maxSize}
+                onChange={(maxSize) => onChange({ maxSize })}
 
-            />
-            <SizeUnitFormSelect
-              id="maxSizeUnit"
-              aria-label={_("Unit for the maximum size")}
-              units={Object.values(SIZE_UNITS)}
-              value={formData.maxSizeUnit || formData.minSizeUnit }
-              onChange={(maxSizeUnit) => onChange({ maxSizeUnit })}
-            />
+              />
+            </InputGroupItem>
+            <InputGroupItem>
+              <SizeUnitFormSelect
+                id="maxSizeUnit"
+                aria-label={_("Unit for the maximum size")}
+                units={Object.values(SIZE_UNITS)}
+                value={formData.maxSizeUnit || formData.minSizeUnit }
+                onChange={(maxSizeUnit) => onChange({ maxSizeUnit })}
+              />
+            </InputGroupItem>
           </InputGroup>
         </FormGroup>
       </div>
