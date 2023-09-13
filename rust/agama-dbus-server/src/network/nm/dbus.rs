@@ -177,42 +177,35 @@ fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
 ///
 /// * `match_config`: MatchConfig to convert.
 fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::Value> {
-    let mut match_config_dbus = HashMap::new();
-
     let drivers: Value = match_config
         .driver
         .iter()
-        .map(|dr| dr.to_string())
-        .collect::<Vec<String>>()
+        .cloned()
+        .collect::<Vec<_>>()
         .into();
-    match_config_dbus.insert("driver", drivers);
 
     let kernels: Value = match_config
         .kernel
         .iter()
-        .map(|dr| dr.to_string())
-        .collect::<Vec<String>>()
+        .cloned()
+        .collect::<Vec<_>>()
         .into();
-    match_config_dbus.insert("kernel-command-line", kernels);
 
-    let paths: Value = match_config
-        .path
-        .iter()
-        .map(|dr| dr.to_string())
-        .collect::<Vec<String>>()
-        .into();
-    match_config_dbus.insert("path", paths);
+    let paths: Value = match_config.path.iter().cloned().collect::<Vec<_>>().into();
 
     let interfaces: Value = match_config
         .interface
         .iter()
-        .map(|dr| dr.to_string())
-        .collect::<Vec<String>>()
+        .cloned()
+        .collect::<Vec<_>>()
         .into();
 
-    match_config_dbus.insert("interface-name", interfaces);
-
-    match_config_dbus
+    HashMap::from([
+        ("driver", drivers),
+        ("kernel-command-line", kernels),
+        ("path", paths),
+        ("interface-name", interfaces),
+    ])
 }
 
 fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
@@ -231,7 +224,7 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
 
     if let Some(interface) = connection.get("interface-name") {
         let interface: &str = interface.downcast_ref()?;
-        base_connection.interface = interface.parse().unwrap();
+        base_connection.interface = interface.to_string();
     }
 
     if let Some(match_config) = conn.get("match") {
@@ -254,7 +247,7 @@ fn match_config_from_dbus(
         let drivers = drivers.downcast_ref::<zbus::zvariant::Array>()?;
         for driver in drivers.get() {
             let driver: &str = driver.downcast_ref()?;
-            match_conf.driver.push(driver.parse().unwrap());
+            match_conf.driver.push(driver.to_string());
         }
     }
 
@@ -262,7 +255,7 @@ fn match_config_from_dbus(
         let interface_names = interface_names.downcast_ref::<zbus::zvariant::Array>()?;
         for name in interface_names.get() {
             let name: &str = name.downcast_ref()?;
-            match_conf.interface.push(name.parse().unwrap());
+            match_conf.interface.push(name.to_string());
         }
     }
 
@@ -270,7 +263,7 @@ fn match_config_from_dbus(
         let paths = paths.downcast_ref::<zbus::zvariant::Array>()?;
         for path in paths.get() {
             let path: &str = path.downcast_ref()?;
-            match_conf.path.push(path.parse().unwrap());
+            match_conf.path.push(path.to_string());
         }
     }
 
@@ -278,7 +271,7 @@ fn match_config_from_dbus(
         let options = kernel_options.downcast_ref::<zbus::zvariant::Array>()?;
         for option in options.get() {
             let option: &str = option.downcast_ref()?;
-            match_conf.kernel.push(option.parse().unwrap());
+            match_conf.kernel.push(option.to_string());
         }
     }
 
