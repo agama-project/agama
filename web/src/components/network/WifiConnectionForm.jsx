@@ -65,6 +65,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
   const [password, setPassword] = useState(network?.password || "");
   const [security, setSecurity] = useState(securityFrom(network?.security || []));
   const hidden = network?.hidden || false;
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     setTimeout(() => { formRef.current?.scrollIntoView({ behavior: "smooth" }) }, 200);
@@ -118,15 +119,27 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
       { security === "wpa-psk" &&
         // TRANSLATORS: WiFi password
         <FormGroup fieldId="password" label={_("WPA Password")}>
-          <TextInput
-            id="password"
-            name="password"
-            aria-label={_("Password")}
-            value={password}
-            label={_("Password")}
-            type="password"
-            onChange={setPassword}
-          />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <TextInput
+              id="password"
+              name="password"
+              aria-label={_("Password")}
+              value={password}
+              label={_("Password")}
+              type={showPassword ? 'text' : 'password'}
+              onChange={setPassword}
+              style={{ flex: '1', marginRight: '8px' }}
+            />
+            <Button
+              variant={showPassword ? "secondary" : "primary"}
+              size="sm"
+              onMouseDown={() => setShowPassword(true)}
+              onMouseUp={() => setShowPassword(false)}
+              onMouseLeave={() => setShowPassword(false)}
+            >
+              {_("Show")}
+            </Button>
+          </div>
         </FormGroup> }
       <ActionGroup>
         <Button type="submit" variant="primary" isLoading={isConnecting} isDisabled={isConnecting}>
