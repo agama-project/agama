@@ -135,7 +135,6 @@ const SizeManual = ({ errors, formData, onChange }) => {
       <FormGroup
         fieldId="size"
         isRequired
-        validated={errors.size && 'error'}
       >
         <InputGroup className="size-input-group">
           <InputGroupItem>
@@ -196,7 +195,6 @@ and maximum. If no maximum is given then the file system will be as big as possi
           label={_("Minimum")}
           fieldId="minSize"
           className="size-input-group"
-          validated={errors.minSize && 'error'}
         >
           <InputGroup>
             <InputGroupItem>
@@ -227,7 +225,6 @@ and maximum. If no maximum is given then the file system will be as big as possi
           label={_("Maximum")}
           fieldId="maxSize"
           className="size-input-group"
-          validated={errors.maxSize && 'error'}
         >
           <InputGroup>
             <InputGroupItem>

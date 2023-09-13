@@ -114,7 +114,6 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
           fieldId="address"
           label={_("IP address")}
           isRequired
-          validated={showAddressError() ? "error" : "default"}
         >
           <TextInput
             id="address"
@@ -133,7 +132,6 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
           fieldId="port"
           label={_("Port")}
           isRequired
-          validated={showPortError() ? "error" : "default"}
         >
           <TextInput
             id="port"

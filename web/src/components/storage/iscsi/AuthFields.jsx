@@ -78,7 +78,6 @@ export default function AuthFields({ data, onChange, onValidate }) {
         <FormGroup
           fieldId="username"
           label={_("User name")}
-          validated={showUsernameError() ? "error" : "default"}
         >
           <TextInput
             id="username"
@@ -94,7 +93,6 @@ export default function AuthFields({ data, onChange, onValidate }) {
         <FormGroup
           fieldId="password"
           label={_("Password")}
-          validated={showPasswordError() ? "error" : "default"}
         >
           <TextInput
             id="password"
@@ -114,7 +112,6 @@ export default function AuthFields({ data, onChange, onValidate }) {
         <FormGroup
           fieldId="reverseUsername"
           label={_("User name")}
-          validated={showReverseUsernameError() ? "error" : "default"}
         >
           <TextInput
             id="reverseUsername"
@@ -131,7 +128,6 @@ export default function AuthFields({ data, onChange, onValidate }) {
         <FormGroup
           fieldId="reversePassword"
           label="Password"
-          validated={showReversePasswordError() ? "error" : "default"}
         >
           <TextInput
             id="reversePassword"

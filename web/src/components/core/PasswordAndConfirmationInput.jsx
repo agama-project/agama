@@ -68,7 +68,6 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
       <FormGroup
         fieldId="passwordConfirmation"
         label={_("Password confirmation")}
-        validated={error === "" ? "default" : "error"}
       >
         <TextInput
           id="passwordConfirmation"
