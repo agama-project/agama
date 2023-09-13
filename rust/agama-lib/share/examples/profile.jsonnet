@@ -63,7 +63,10 @@ local findBiggestDisk(disks) =
         ],
         nameservers: [
           '1.2.3.4'
-        ]
+        ],
+        match: {
+            path: ["pci-0000:00:19.0"]
+          }
       }
     ]
   }

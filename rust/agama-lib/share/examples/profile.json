@@ -27,6 +27,7 @@
       {
         "id": "Ethernet network device 1",
         "method": "manual",
+        "interface": "eth0",
         "addresses": [
           "192.168.122.100/24"
         ],

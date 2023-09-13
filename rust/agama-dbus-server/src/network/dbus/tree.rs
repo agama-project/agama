@@ -95,8 +95,11 @@ impl Tree {
         log::info!("Publishing network connection '{}'", id);
 
         let cloned = Arc::new(Mutex::new(conn.clone()));
-        self.add_interface(&path, interfaces::Connection::new(Arc::clone(&cloned)))
-            .await?;
+        self.add_interface(
+            &path,
+            interfaces::Connection::new(self.actions.clone(), Arc::clone(&cloned)),
+        )
+        .await?;
 
         self.add_interface(
             &path,
@@ -104,6 +107,11 @@ impl Tree {
         )
         .await?;
 
+        self.add_interface(
+            &path,
+            interfaces::Match::new(self.actions.clone(), Arc::clone(&cloned)),
+        )
+        .await?;
         if let Connection::Wireless(_) = conn {
             self.add_interface(
                 &path,

@@ -78,3 +78,29 @@ async fn test_add_connection() {
     assert_eq!(conn.id, "wlan0");
     assert_eq!(conn.device_type(), DeviceType::Wireless);
 }
+
+#[test]
+async fn test_update_connection() {
+    let mut server = DBusServer::new().start().await;
+
+    let device = model::Device {
+        name: String::from("eth0"),
+        type_: DeviceType::Ethernet,
+    };
+    let eth0 = model::Connection::new("eth0".to_string(), DeviceType::Ethernet);
+    let state = NetworkState::new(vec![device], vec![eth0]);
+    let adapter = NetworkTestAdapter(state);
+
+    let _service = NetworkService::start(&server.connection(), adapter)
+        .await
+        .unwrap();
+
+    server.request_name().await.unwrap();
+
+    let client = NetworkClient::new(server.connection()).await.unwrap();
+    let mut dbus_eth0 = client.get_connection("eth0").await.unwrap();
+    dbus_eth0.interface = Some("eth0".to_string());
+    client.add_or_update_connection(&dbus_eth0).await.unwrap();
+    let dbus_eth0 = client.get_connection("eth0").await.unwrap();
+    assert_eq!(dbus_eth0.interface, Some("eth0".to_string()));
+}

@@ -1,8 +1,8 @@
-use super::settings::{NetworkConnection, WirelessSettings};
+use super::settings::{MatchSettings, NetworkConnection, WirelessSettings};
 use super::types::SSID;
 use crate::error::ServiceError;
 
-use super::proxies::{ConnectionProxy, ConnectionsProxy, IPv4Proxy, WirelessProxy};
+use super::proxies::{ConnectionProxy, ConnectionsProxy, IPv4Proxy, MatchProxy, WirelessProxy};
 use async_std::stream::StreamExt;
 use zbus::zvariant::OwnedObjectPath;
 use zbus::Connection;
@@ -21,6 +21,11 @@ impl<'a> NetworkClient<'a> {
         })
     }
 
+    pub async fn get_connection(&self, id: &str) -> Result<NetworkConnection, ServiceError> {
+        let path = self.connections_proxy.get_connection(id).await?;
+        Ok(self.connection_from(path.as_str()).await?)
+    }
+
     /// Returns an array of network connections
     pub async fn connections(&self) -> Result<Vec<NetworkConnection>, ServiceError> {
         let connection_paths = self.connections_proxy.get_connections().await?;
@@ -31,6 +36,11 @@ impl<'a> NetworkClient<'a> {
 
             if let Ok(wireless) = self.wireless_from(path.as_str()).await {
                 connection.wireless = Some(wireless);
+            }
+
+            let match_settings = self.match_settings_from(path.as_str()).await?;
+            if !match_settings.is_empty() {
+                connection.match_settings = Some(match_settings);
             }
 
             connections.push(connection);
@@ -54,6 +64,10 @@ impl<'a> NetworkClient<'a> {
             .build()
             .await?;
         let id = connection_proxy.id().await?;
+        let interface = match connection_proxy.interface().await?.as_str() {
+            "" => None,
+            value => Some(value.to_string()),
+        };
 
         let ipv4_proxy = IPv4Proxy::builder(&self.connection)
             .path(path)?
@@ -74,6 +88,7 @@ impl<'a> NetworkClient<'a> {
             gateway,
             addresses,
             nameservers,
+            interface,
             ..Default::default()
         })
     }
@@ -94,6 +109,23 @@ impl<'a> NetworkClient<'a> {
         };
 
         Ok(wireless)
+    }
+
+    /// Returns the [match settings][MatchSettings] for the given connection
+    ///
+    ///  * `path`: the connections path to get the match settings from
+    async fn match_settings_from(&self, path: &str) -> Result<MatchSettings, ServiceError> {
+        let match_proxy = MatchProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+        let match_settings = MatchSettings {
+            path: match_proxy.path().await?,
+            kernel: match_proxy.kernel().await?,
+            interface: match_proxy.interface().await?,
+            driver: match_proxy.driver().await?,
+        };
+        Ok(match_settings)
     }
 
     /// Adds or updates a network connection.
@@ -147,6 +179,36 @@ impl<'a> NetworkClient<'a> {
         path: &OwnedObjectPath,
         conn: &NetworkConnection,
     ) -> Result<(), ServiceError> {
+        let proxy = ConnectionProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+
+        let interface = conn.interface.as_deref().unwrap_or("");
+        proxy.set_interface(interface).await?;
+
+        self.update_ipv4_settings(path, conn).await?;
+
+        if let Some(ref wireless) = conn.wireless {
+            self.update_wireless_settings(path, wireless).await?;
+        }
+
+        if let Some(ref match_settings) = conn.match_settings {
+            self.update_match_settings(path, match_settings).await?;
+        }
+
+        Ok(())
+    }
+
+    /// Updates the IPv4 setttings for the network connection.
+    ///
+    /// * `path`: connection D-Bus path.
+    /// * `conn`: network connection.
+    async fn update_ipv4_settings(
+        &self,
+        path: &OwnedObjectPath,
+        conn: &NetworkConnection,
+    ) -> Result<(), ServiceError> {
         let proxy = IPv4Proxy::builder(&self.connection)
             .path(path)?
             .build()
@@ -165,9 +227,6 @@ impl<'a> NetworkClient<'a> {
         let gateway = conn.gateway.as_deref().unwrap_or("");
         proxy.set_gateway(gateway).await?;
 
-        if let Some(ref wireless) = conn.wireless {
-            self.update_wireless_settings(path, wireless).await?;
-        }
         Ok(())
     }
 
@@ -191,6 +250,26 @@ impl<'a> NetworkClient<'a> {
             .set_security(wireless.security.to_string().as_str())
             .await?;
         proxy.set_password(&wireless.password).await?;
+        Ok(())
+    }
+
+    /// Updates the match settings for network connection.
+    ///
+    /// * `path`: connection D-Bus path.
+    /// * `match_settings`: match settings of the network connection.
+    async fn update_match_settings(
+        &self,
+        path: &OwnedObjectPath,
+        match_settings: &MatchSettings,
+    ) -> Result<(), ServiceError> {
+        let proxy = MatchProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+
+        let paths: Vec<_> = match_settings.path.iter().map(String::as_ref).collect();
+        proxy.set_path(paths.as_slice()).await?;
+
         Ok(())
     }
 }

@@ -19,12 +19,16 @@ const LOOPBACK_KEY: &str = "loopback";
 
 /// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///
-/// * `conn`: Connection to cnvert.
+/// * `conn`: Connection to convert.
 pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
     let mut result = NestedHash::new();
-    let mut connection_dbus =
-        HashMap::from([("id", conn.id().into()), ("type", ETHERNET_KEY.into())]);
+    let mut connection_dbus = HashMap::from([
+        ("id", conn.id().into()),
+        ("type", ETHERNET_KEY.into()),
+        ("interface-name", conn.interface().into()),
+    ]);
     result.insert("ipv4", ipv4_to_dbus(conn.ipv4()));
+    result.insert("match", match_config_to_dbus(conn.match_config()));
 
     if let Connection::Wireless(wireless) = conn {
         connection_dbus.insert("type", "802-11-wireless".into());
@@ -33,6 +37,7 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
             result.insert(k, v);
         }
     }
+
     result.insert("connection", connection_dbus);
     result
 }
@@ -96,6 +101,15 @@ pub fn merge_dbus_connections<'a>(
 ///
 /// * `conn`: connection represented as a NestedHash.
 fn cleanup_dbus_connection(conn: &mut NestedHash) {
+    if let Some(connection) = conn.get_mut("connection") {
+        if connection
+            .get("interface-name")
+            .is_some_and(|v| is_empty_value(&v))
+        {
+            connection.remove("interface-name");
+        }
+    }
+
     if let Some(ipv4) = conn.get_mut("ipv4") {
         ipv4.remove("addresses");
         ipv4.remove("dns");
@@ -159,6 +173,41 @@ fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
     ])
 }
 
+/// Converts a MatchConfig struct into a HashMap that can be sent over D-Bus.
+///
+/// * `match_config`: MatchConfig to convert.
+fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::Value> {
+    let drivers: Value = match_config
+        .driver
+        .iter()
+        .cloned()
+        .collect::<Vec<_>>()
+        .into();
+
+    let kernels: Value = match_config
+        .kernel
+        .iter()
+        .cloned()
+        .collect::<Vec<_>>()
+        .into();
+
+    let paths: Value = match_config.path.iter().cloned().collect::<Vec<_>>().into();
+
+    let interfaces: Value = match_config
+        .interface
+        .iter()
+        .cloned()
+        .collect::<Vec<_>>()
+        .into();
+
+    HashMap::from([
+        ("driver", drivers),
+        ("kernel-command-line", kernels),
+        ("path", paths),
+        ("interface-name", interfaces),
+    ])
+}
+
 fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
     let Some(connection) = conn.get("connection") else {
         return None;
@@ -173,11 +222,60 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
         ..Default::default()
     };
 
+    if let Some(interface) = connection.get("interface-name") {
+        let interface: &str = interface.downcast_ref()?;
+        base_connection.interface = interface.to_string();
+    }
+
+    if let Some(match_config) = conn.get("match") {
+        base_connection.match_config = match_config_from_dbus(match_config)?;
+    }
+
     if let Some(ipv4) = conn.get("ipv4") {
         base_connection.ipv4 = ipv4_config_from_dbus(ipv4)?;
     }
 
     Some(base_connection)
+}
+
+fn match_config_from_dbus(
+    match_config: &HashMap<String, zvariant::OwnedValue>,
+) -> Option<MatchConfig> {
+    let mut match_conf = MatchConfig::default();
+
+    if let Some(drivers) = match_config.get("driver") {
+        let drivers = drivers.downcast_ref::<zbus::zvariant::Array>()?;
+        for driver in drivers.get() {
+            let driver: &str = driver.downcast_ref()?;
+            match_conf.driver.push(driver.to_string());
+        }
+    }
+
+    if let Some(interface_names) = match_config.get("interface-name") {
+        let interface_names = interface_names.downcast_ref::<zbus::zvariant::Array>()?;
+        for name in interface_names.get() {
+            let name: &str = name.downcast_ref()?;
+            match_conf.interface.push(name.to_string());
+        }
+    }
+
+    if let Some(paths) = match_config.get("path") {
+        let paths = paths.downcast_ref::<zbus::zvariant::Array>()?;
+        for path in paths.get() {
+            let path: &str = path.downcast_ref()?;
+            match_conf.path.push(path.to_string());
+        }
+    }
+
+    if let Some(kernel_options) = match_config.get("kernel-command-line") {
+        let options = kernel_options.downcast_ref::<zbus::zvariant::Array>()?;
+        for option in options.get() {
+            let option: &str = option.downcast_ref()?;
+            match_conf.kernel.push(option.to_string());
+        }
+    }
+
+    Some(match_conf)
 }
 
 fn ipv4_config_from_dbus(ipv4: &HashMap<String, zvariant::OwnedValue>) -> Option<Ipv4Config> {
@@ -241,6 +339,19 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
     Some(wireless_config)
 }
 
+/// Determines whether a value is empty.
+///
+/// TODO: Generalize for other kind of values, like dicts or arrays.
+///
+/// * `value`: value to analyze
+fn is_empty_value(value: &zvariant::Value) -> bool {
+    if let Some(value) = value.downcast_ref::<zvariant::Str>() {
+        return value.is_empty();
+    }
+
+    false
+}
+
 #[cfg(test)]
 mod test {
     use super::{
@@ -279,9 +390,15 @@ mod test {
             ),
         ]);
 
+        let match_section = HashMap::from([(
+            "kernel-command-line".to_string(),
+            Value::new(vec!["pci-0000:00:19.0"]).to_owned(),
+        )]);
+
         let dbus_conn = HashMap::from([
             ("connection".to_string(), connection_section),
             ("ipv4".to_string(), ipv4_section),
+            ("match".to_string(), match_section),
             (ETHERNET_KEY.to_string(), build_ethernet_section_from_dbus()),
         ]);
 
@@ -289,6 +406,8 @@ mod test {
 
         assert_eq!(connection.id(), "eth0");
         let ipv4 = connection.ipv4();
+        let match_config = connection.match_config();
+        assert_eq!(match_config.kernel, vec!["pci-0000:00:19.0"]);
         assert_eq!(ipv4.addresses, vec!["192.168.0.10/24".parse().unwrap()]);
         assert_eq!(ipv4.nameservers, vec![Ipv4Addr::new(192, 168, 0, 2)]);
         assert_eq!(ipv4.method, IpMethod::Auto);
@@ -404,6 +523,7 @@ mod test {
 
         let base = BaseConnection {
             id: "agama".to_string(),
+            interface: "eth0".to_string(),
             ..Default::default()
         };
         let ethernet = EthernetConnection {
@@ -420,6 +540,11 @@ mod test {
             Value::new("agama".to_string())
         );
 
+        assert_eq!(
+            *connection.get("interface-name").unwrap(),
+            Value::new("eth0".to_string())
+        );
+
         let ipv4 = merged.get("ipv4").unwrap();
         assert_eq!(
             *ipv4.get("method").unwrap(),
@@ -430,6 +555,31 @@ mod test {
             Value::new("192.168.1.1".to_string())
         );
         assert!(ipv4.get("addresses").is_none());
+    }
+
+    #[test]
+    fn test_merged_connections_are_clean() {
+        let mut original = OwnedNestedHash::new();
+        let connection = HashMap::from([
+            ("id".to_string(), Value::new("conn0".to_string()).to_owned()),
+            (
+                "type".to_string(),
+                Value::new(ETHERNET_KEY.to_string()).to_owned(),
+            ),
+            (
+                "interface-name".to_string(),
+                Value::new("eth0".to_string()).to_owned(),
+            ),
+        ]);
+        original.insert("connection".to_string(), connection);
+
+        let mut updated = Connection::Ethernet(EthernetConnection::default());
+        updated.set_interface("");
+        let updated = connection_to_dbus(&updated);
+
+        let merged = merge_dbus_connections(&original, &updated);
+        let connection = merged.get("connection").unwrap();
+        assert_eq!(connection.get("interface-name"), None);
     }
 
     fn build_ethernet_section_from_dbus() -> HashMap<String, OwnedValue> {

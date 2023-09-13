@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 13 09:27:22 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to bind a connection to an specific interface through its
+  name or through a set of match settings (gh#opensSUSE/agama#723).
+
+-------------------------------------------------------------------
 Thu Aug 31 10:30:28 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use a single D-Bus service to expose locale, network and

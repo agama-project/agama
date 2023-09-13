@@ -32,6 +32,10 @@
                 "description": "Connection ID",
                 "type": "string"
               },
+              "interface": {
+                "description": "The name of the network interface bound to this connection",
+                "type": "string"
+              },
               "method": {
                 "description": "IPv4 configuration method (e.g., 'auto')",
                 "type": "string",
@@ -84,6 +88,45 @@
                       "mesh",
                       "ap"
                     ]
+                  }
+                }
+              },
+              "match": {
+                "type": "object",
+                "description": "Match settings",
+                "additionalProperties": false,
+                "properties": {
+                  "kernel": {
+                    "type": "array",
+                    "items": {
+                      "description": "A list of kernel command line arguments to match",
+                      "type": "string",
+                      "additionalProperties": false
+                    }
+                  },
+                  "interface": {
+                    "type": "array",
+                    "items": {
+                      "description": "A list of interface names to match",
+                      "type": "string",
+                      "additionalProperties": false
+                    }
+                  },
+                  "driver": {
+                    "type": "array",
+                    "items": {
+                      "description": "A list of driver names to match",
+                      "type": "string",
+                      "additionalProperties": false
+                    }
+                  },
+                  "path": {
+                    "type": "array",
+                    "items": {
+                      "description": "A list of paths to match against the ID_PATH udev property of devices",
+                      "type": "string",
+                      "additionalProperties": false
+                    }
                   }
                 }
               }

@@ -79,6 +79,10 @@ trait Connection {
     /// Id property
     #[dbus_proxy(property)]
     fn id(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn interface(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_interface(&self, interface: &str) -> zbus::Result<()>;
 }
 
 #[dbus_proxy(
@@ -114,4 +118,29 @@ trait IPv4 {
     fn nameservers(&self) -> zbus::Result<Vec<String>>;
     #[dbus_proxy(property)]
     fn set_nameservers(&self, value: &[&str]) -> zbus::Result<()>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama1.Network.Connection.Match",
+    default_service = "org.opensuse.Agama1",
+    default_path = "/org/opensuse/Agama1/Network"
+)]
+trait Match {
+    /// Driver property
+    #[dbus_proxy(property)]
+    fn driver(&self) -> zbus::Result<Vec<String>>;
+
+    /// Interface property
+    #[dbus_proxy(property)]
+    fn interface(&self) -> zbus::Result<Vec<String>>;
+
+    /// Path property
+    #[dbus_proxy(property)]
+    fn path(&self) -> zbus::Result<Vec<String>>;
+    #[dbus_proxy(property)]
+    fn set_path(&self, value: &[&str]) -> zbus::Result<()>;
+
+    /// Path property
+    #[dbus_proxy(property)]
+    fn kernel(&self) -> zbus::Result<Vec<String>>;
 }
