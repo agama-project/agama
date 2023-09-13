@@ -30,7 +30,7 @@ import {
 import { sprintf } from "sprintf-js";
 
 import { _, N_ } from "~/i18n";
-import { If, NumericTextInput } from '~/components/core';
+import { FormValidationError, If, NumericTextInput } from '~/components/core';
 import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseToBytes, splitSize } from '~/components/storage/utils';
 
 /**
@@ -135,7 +135,6 @@ const SizeManual = ({ errors, formData, onChange }) => {
       <FormGroup
         fieldId="size"
         isRequired
-        helperTextInvalid={errors.size}
         validated={errors.size && 'error'}
       >
         <InputGroup className="size-input-group">
@@ -154,6 +153,7 @@ const SizeManual = ({ errors, formData, onChange }) => {
               onChange={(size) => onChange({ size })}
               validated={errors.size && 'error'}
             />
+            <FormValidationError message={errors.size} />
           </InputGroupItem>
           <InputGroupItem>
             <SizeUnitFormSelect
@@ -197,7 +197,6 @@ and maximum. If no maximum is given then the file system will be as big as possi
           fieldId="minSize"
           className="size-input-group"
           validated={errors.minSize && 'error'}
-          helperTextInvalid={errors.minSize}
         >
           <InputGroup>
             <InputGroupItem>
@@ -210,6 +209,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 onChange={(minSize) => onChange({ minSize })}
                 validated={errors.minSize && 'error'}
               />
+              <FormValidationError message={errors.minSize} />
             </InputGroupItem>
             <InputGroupItem>
               <SizeUnitFormSelect
@@ -228,7 +228,6 @@ and maximum. If no maximum is given then the file system will be as big as possi
           fieldId="maxSize"
           className="size-input-group"
           validated={errors.maxSize && 'error'}
-          helperTextInvalid={errors.maxSize}
         >
           <InputGroup>
             <InputGroupItem>
@@ -242,6 +241,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 onChange={(maxSize) => onChange({ maxSize })}
 
               />
+              <FormValidationError message={errors.maxSize} />
             </InputGroupItem>
             <InputGroupItem>
               <SizeUnitFormSelect

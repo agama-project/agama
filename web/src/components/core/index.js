@@ -26,6 +26,7 @@ export { default as Disclosure } from "./Disclosure";
 export { default as Sidebar } from "./Sidebar";
 export { default as Section } from "./Section";
 export { default as FormLabel } from "./FormLabel";
+export { default as FormValidationError } from "./FormValidationError";
 export { default as Fieldset } from "./Fieldset";
 export { default as Em } from "./Em";
 export { default as If } from "./If";

@@ -26,7 +26,7 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 
-import { Popup } from "~/components/core";
+import { FormValidationError, Popup } from "~/components/core";
 import { AuthFields } from "~/components/storage/iscsi";
 import { useLocalStorage } from "~/utils";
 import { isValidIp } from "~/client/network/utils";
@@ -114,7 +114,6 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
           fieldId="address"
           label={_("IP address")}
           isRequired
-          helperTextInvalid={_("Incorrect IP address")}
           validated={showAddressError() ? "error" : "default"}
         >
           <TextInput
@@ -128,12 +127,12 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
             onChange={onAddressChange}
             validated={showAddressError() ? "error" : "default"}
           />
+          <FormValidationError message={showAddressError() ? _("Incorrect IP address") : "" } />
         </FormGroup>
         <FormGroup
           fieldId="port"
           label={_("Port")}
           isRequired
-          helperTextInvalid={_("Incorrect port")}
           validated={showPortError() ? "error" : "default"}
         >
           <TextInput
@@ -147,6 +146,7 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
             onChange={onPortChange}
             validated={showPortError() ? "error" : "default"}
           />
+          <FormValidationError message={showPortError() ? _("Incorrect port") : "" } />
         </FormGroup>
         <AuthFields
           data={data}

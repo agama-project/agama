@@ -20,10 +20,8 @@
  */
 
 import React, { useState } from "react";
-import {
-  FormGroup,
-  TextInput
-} from "@patternfly/react-core";
+import { FormGroup, TextInput } from "@patternfly/react-core";
+import { FormValidationError } from "~/components/core";
 import { _ } from "~/i18n";
 
 const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisabled, split = false }) => {
@@ -70,7 +68,6 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
       <FormGroup
         fieldId="passwordConfirmation"
         label={_("Password confirmation")}
-        helperTextInvalid={error}
         validated={error === "" ? "default" : "error"}
       >
         <TextInput
@@ -84,6 +81,7 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
           onBlur={() => validate(value, confirmation)}
           validated={error === "" ? "default" : "error"}
         />
+        <FormValidationError message={error} />
       </FormGroup>
     </div>
   );
