@@ -2,13 +2,14 @@
 //!
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //! agnostic from the real network service (e.g., NetworkManager).
+use duplicate::duplicate_item;
 use uuid::Uuid;
 
 use crate::network::error::NetworkStateError;
 use agama_lib::network::types::{DeviceType, SSID};
 use std::{
     fmt,
-    net::{AddrParseError, Ipv4Addr},
+    net::{AddrParseError, Ipv4Addr, Ipv6Addr},
     str::{self, FromStr},
 };
 use thiserror::Error;
@@ -282,6 +283,14 @@ impl Connection {
         &mut self.base_mut().ipv4
     }
 
+    pub fn ipv6(&self) -> &Ipv6Config {
+        &self.base().ipv6
+    }
+
+    pub fn ipv6_mut(&mut self) -> &mut Ipv6Config {
+        &mut self.base_mut().ipv6
+    }
+
     pub fn match_config(&self) -> &MatchConfig {
         &self.base().match_config
     }
@@ -309,6 +318,7 @@ pub struct BaseConnection {
     pub id: String,
     pub uuid: Uuid,
     pub ipv4: Ipv4Config,
+    pub ipv6: Ipv6Config,
     pub status: Status,
     pub interface: String,
     pub match_config: MatchConfig,
@@ -333,6 +343,14 @@ pub struct Ipv4Config {
     pub addresses: Vec<IpAddress>,
     pub nameservers: Vec<Ipv4Addr>,
     pub gateway: Option<Ipv4Addr>,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct Ipv6Config {
+    pub method: IpMethod,
+    pub addresses: Vec<Ipv6Address>,
+    pub nameservers: Vec<Ipv6Addr>,
+    pub gateway: Option<Ipv6Addr>,
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
@@ -499,6 +517,10 @@ impl TryFrom<&str> for SecurityProtocol {
 #[derive(Debug, Clone, PartialEq)]
 pub struct IpAddress(Ipv4Addr, u32);
 
+/// Represents an IPv6 address with a prefix.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Ipv6Address(Ipv6Addr, u32);
+
 #[derive(Error, Debug)]
 pub enum ParseIpAddressError {
     #[error("Missing prefix")]
@@ -509,17 +531,22 @@ pub enum ParseIpAddressError {
     InvalidAddr(AddrParseError),
 }
 
-impl IpAddress {
+#[duplicate_item(
+    TYPE          IP_TYPE;
+    [IpAddress]   [Ipv4Addr];
+    [Ipv6Address] [Ipv6Addr];
+)]
+impl TYPE {
     /// Returns an new IpAddress object
     ///
-    /// * `addr`: IPv4 address.
-    /// * `prefix`: IPv4 address prefix.
-    pub fn new(addr: Ipv4Addr, prefix: u32) -> Self {
-        IpAddress(addr, prefix)
+    /// * `addr`: IP address.
+    /// * `prefix`: IP address prefix.
+    pub fn new(addr: IP_TYPE, prefix: u32) -> Self {
+        TYPE(addr, prefix)
     }
 
     /// Returns the IPv4 address.
-    pub fn addr(&self) -> &Ipv4Addr {
+    pub fn addr(&self) -> &IP_TYPE {
         &self.0
     }
 
@@ -529,13 +556,23 @@ impl IpAddress {
     }
 }
 
-impl From<IpAddress> for (String, u32) {
-    fn from(value: IpAddress) -> Self {
+#[duplicate_item(
+    TYPE;
+    [IpAddress];
+    [Ipv6Address];
+)]
+impl From<TYPE> for (String, u32) {
+    fn from(value: TYPE) -> Self {
         (value.0.to_string(), value.1)
     }
 }
 
-impl FromStr for IpAddress {
+#[duplicate_item(
+    TYPE          IP_TYPE;
+    [IpAddress]   [Ipv4Addr];
+    [Ipv6Address] [Ipv6Addr];
+)]
+impl FromStr for TYPE {
     type Err = ParseIpAddressError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -543,17 +580,22 @@ impl FromStr for IpAddress {
             return Err(ParseIpAddressError::MissingPrefix);
         };
 
-        let address: Ipv4Addr = address.parse().map_err(ParseIpAddressError::InvalidAddr)?;
+        let address: IP_TYPE = address.parse().map_err(ParseIpAddressError::InvalidAddr)?;
 
         let prefix: u32 = prefix
             .parse()
             .map_err(|_| ParseIpAddressError::InvalidPrefix(prefix.to_string()))?;
 
-        Ok(IpAddress(address, prefix))
+        Ok(TYPE(address, prefix))
     }
 }
 
-impl fmt::Display for IpAddress {
+#[duplicate_item(
+    TYPE;
+    [IpAddress];
+    [Ipv6Address];
+)]
+impl fmt::Display for TYPE {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}/{}", self.0, self.1)
     }
