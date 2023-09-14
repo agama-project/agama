@@ -188,7 +188,7 @@ export default function NetworkPage() {
       { /* TODO: improve the connections edition */ }
       <If
         condition={selectedConnection}
-        then=<IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} />
+        then={<IpSettingsForm connection={selectedConnection} onClose={() => setSelectedConnection(null)} />}
       />
     </Page>
   );
