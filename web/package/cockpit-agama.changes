@@ -1,9 +1,4 @@
 -------------------------------------------------------------------
-Thu Sep 14 22:24:31 UTC 2023 - Balsa Asanovic <balsaasanovic95@gmail.com>
-
-- Added Show button to the Wi-Fi password input (gh#openSUSE/agama#242).
-
--------------------------------------------------------------------
 Thu Sep 14 10:09:07 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use a single D-Bus service to connect to the manager and the
