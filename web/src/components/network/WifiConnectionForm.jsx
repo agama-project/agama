@@ -28,8 +28,10 @@ import {
   FormGroup,
   FormSelect,
   FormSelectOption,
+  InputGroup,
   TextInput
 } from "@patternfly/react-core";
+import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 
@@ -119,7 +121,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
       { security === "wpa-psk" &&
         // TRANSLATORS: WiFi password
         <FormGroup fieldId="password" label={_("WPA Password")}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <InputGroup>
             <TextInput
               id="password"
               name="password"
@@ -128,18 +130,19 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
               label={_("Password")}
               type={showPassword ? 'text' : 'password'}
               onChange={setPassword}
-              style={{ flex: '1', marginRight: '8px' }}
             />
             <Button
-              variant={showPassword ? "secondary" : "primary"}
-              size="sm"
-              onMouseDown={() => setShowPassword(true)}
-              onMouseUp={() => setShowPassword(false)}
-              onMouseLeave={() => setShowPassword(false)}
-            >
-              {_("Show")}
-            </Button>
-          </div>
+              id="password_visibility"
+              name="password_visibility"
+              aria-label={_("Password visibility button")}
+              label={_("Password visibility button")}
+              variant="control"
+              onClick={() => setShowPassword((prev) => !prev)}
+              icon={showPassword
+                ? <Icon name="visibility_off" size="15" />
+                : <Icon name="visibility" size="15" />}
+            />
+          </InputGroup>
         </FormGroup> }
       <ActionGroup>
         <Button type="submit" variant="primary" isLoading={isConnecting} isDisabled={isConnecting}>
