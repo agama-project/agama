@@ -5,6 +5,7 @@ members = [
   "agama-derive",
   "agama-lib",
   "agama-locale-data",
+  "agama-logs",
   "agama-settings"
 ]
 
