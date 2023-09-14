@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep 14 19:44:57 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Improve questions CLI help text (gh#openSUSE/agama#754) 
+
+-------------------------------------------------------------------
 Wed Sep 13 09:27:22 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow to bind a connection to an specific interface through its
