@@ -5,9 +5,19 @@ use clap::{Args, Subcommand, ValueEnum};
 
 #[derive(Subcommand, Debug)]
 pub enum QuestionsCommands {
-    /// Set mode for answering questions.
+    /// Sets the mode for answering questions.
+    /// 
+    /// It allows to decide if questions will be interactive or
+    /// if it should not block installation.
     Mode(ModesArgs),
+    /// Loads predefined answers to questions.
+    /// 
+    /// It allows to predefine answers for certain questions to skip
+    /// them in interactive mode or change answer in automatic mode.
+    /// 
+    /// For more details and examples see official Agama documentation.
     Answers {
+        /// Local path to file with answers in YAML format
         path: String,
     },
 }
