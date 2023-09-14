@@ -215,11 +215,11 @@ describe Agama::DBus::Manager do
 
   describe "#busy_services" do
     before do
-      allow(backend).to receive(:busy_services).and_return(["org.opensuse.Agama.Users1"])
+      allow(backend).to receive(:busy_services).and_return(["org.opensuse.Agama.Software1"])
     end
 
     it "returns the names of the busy services" do
-      expect(subject.busy_services).to contain_exactly("org.opensuse.Agama.Users1")
+      expect(subject.busy_services).to contain_exactly("org.opensuse.Agama.Software1")
     end
   end
 

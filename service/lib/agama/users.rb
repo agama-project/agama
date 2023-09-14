@@ -30,7 +30,6 @@ module Agama
   # Backend class using YaST code.
   #
   # {Agama::DBus::Users} wraps it with a D-Bus interface and
-  # {Agama::DBus::Clients::Users} is a D-Bus client for that.
   class Users
     include Helpers
 
@@ -139,6 +138,13 @@ module Agama
           "Defining a user, setting the root password or a SSH public key is required"
         )
       ]
+    end
+
+    # Determines whether the users configuration is valid
+    #
+    # @return [Boolean]
+    def valid?
+      validate.empty?
     end
 
   private
