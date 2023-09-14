@@ -4,6 +4,13 @@ Thu Sep 14 22:24:31 UTC 2023 - Balsa Asanovic <balsaasanovic95@gmail.com>
 - Added Show button to the Wi-Fi password input (gh#openSUSE/agama#242).
 
 -------------------------------------------------------------------
+Thu Sep 14 10:09:07 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a single D-Bus service to connect to the manager and the
+  users API (gh#openSUSE/agama#753, follow-up of
+  gh#openSUSE/agama#729).
+
+-------------------------------------------------------------------
 Mon Sep 11 11:56:56 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Fix the download logs action in the web UI (gh#openSUSE/agama#697)
