@@ -29,25 +29,28 @@ describe Agama::DBus::ManagerService do
   let(:config) { Agama::Config.new }
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:manager) { Agama::Manager.new(config, logger) }
-  let(:locale_interface) { double("[]" => "en", on_signal: nil) }
-  let(:locale_service) do
-    double(object: double(introspect: nil, path: "test", "[]": locale_interface))
-  end
-  let(:bus) { instance_double(Agama::DBus::Bus, request_name: nil, service: locale_service) }
-  let(:bus_service) do
-    instance_double(::DBus::ObjectServer, export: nil)
-  end
+
+  let(:object_server) { instance_double(DBus::ObjectServer, export: nil) }
+  let(:bus) { instance_double(Agama::DBus::Bus, request_name: nil) }
+
   let(:cockpit) { instance_double(Agama::CockpitManager, setup: nil) }
-  let(:software_client) do
-    instance_double(Agama::DBus::Clients::Software, on_product_selected: nil)
+
+  let(:manager_obj) { instance_double(Agama::DBus::Manager, path: "/org/opensuse/Agama/Users1") }
+  let(:users_obj) { instance_double(Agama::DBus::Users, path: "/org/opensuse/Agama/Users1") }
+
+  let(:locale_client) do
+    instance_double(Agama::DBus::Clients::Locale, ui_locale: "en_US", on_ui_locale_change: nil)
   end
 
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
-    allow(bus).to receive(:object_server).and_return(bus_service)
+    allow(bus).to receive(:request_service).with("org.opensuse.Agama.Manager1")
+      .and_return(object_server)
     allow(Agama::Manager).to receive(:new).with(config, logger).and_return(manager)
     allow(Agama::CockpitManager).to receive(:new).and_return(cockpit)
-    allow(manager).to receive(:software).and_return(software_client)
+    allow(Agama::DBus::Clients::Locale).to receive(:new).and_return(locale_client)
+    allow(Agama::DBus::Manager).to receive(:new).with(manager, logger).and_return(manager_obj)
+    allow(Agama::DBus::Users).to receive(:new).and_return(users_obj)
   end
 
   describe "#start" do
@@ -58,12 +61,9 @@ describe Agama::DBus::ManagerService do
   end
 
   describe "#export" do
-    it "exports the manager object" do
-      manager_obj = instance_double(Agama::DBus::Manager, path: nil)
-      allow(Agama::DBus::Manager).to receive(:new)
-        .with(manager, logger).and_return(manager_obj)
-
-      expect(bus_service).to receive(:export).with(manager_obj)
+    it "exports the manager and the user objects" do
+      expect(object_server).to receive(:export).with(manager_obj)
+      expect(object_server).to receive(:export).with(users_obj)
       service.export
     end
   end

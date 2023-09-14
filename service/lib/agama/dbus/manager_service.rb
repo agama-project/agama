@@ -37,16 +37,9 @@ module Agama
     # It connects to the system D-Bus and answers requests on objects below
     # `/org/opensuse/Agama1`.
     class ManagerService
-      # List of D-Bus services exposed by this class
-      #
-      # This basically allows to define "aliases" - all exposed services holds the same objects
-      # but under different names
-      #
-      # @return [Array<String>]
-      MANAGER_SERVICE = "org.opensuse.Agama.Manager1"
-      USERS_SERVICE = "org.opensuse.Agama.Users1"
-      private_constant :MANAGER_SERVICE
-      private_constant :USERS_SERVICE
+      # D-Bus service (org.opensuse.Agama.Manager1)
+      SERVICE_NAME = "org.opensuse.Agama.Manager1"
+      private_constant :SERVICE_NAME
 
       # Agama D-Bus
       #
@@ -94,9 +87,6 @@ module Agama
 
         paths = dbus_objects.map(&:path).join(", ")
         logger.info "Exported #{paths} objects"
-
-        # Request our service names only when we're ready to serve the objects
-        service_aliases.each { |s| bus.request_name(s) }
       end
 
       # Call this from some main loop to dispatch the D-Bus messages
@@ -117,16 +107,9 @@ module Agama
         cockpit.setup(config.data["web"])
       end
 
-      def service_aliases
-        @service_aliases ||= [
-          MANAGER_SERVICE,
-          USERS_SERVICE
-        ]
-      end
-
       # @return [::DBus::ObjectServer]
       def service
-        @service ||= bus.object_server
+        @service ||= bus.request_service(SERVICE_NAME)
       end
 
       # @return [Array<::DBus::Object>]

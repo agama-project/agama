@@ -10,8 +10,7 @@ OUTPUT="${1:-agama.pot}"
 
 find . ! -name cockpit.js ! -name '*.test.js' -name '*.js' -o ! -name '*.test.jsx' -name '*.jsx' |
 grep -vE "node_modules/|dist/|coverage/" | \
-xgettext --default-domain=agama --output=- --language=C --files-from=- \
+xgettext --default-domain=agama --output="$OUTPUT" --language=C --files-from=- \
   --keyword= --keyword=_:1 --keyword=N_:1 --keyword=n_:1,2,3t --keyword=Nn_:1,2,3t \
   --foreign-user --copyright-holder="SuSE Linux Products GmbH, Nuernberg" \
-  --from-code=UTF-8 --add-comments=TRANSLATORS --sort-by-file | \
-  sed '/^#/ s/, c-format/, javascript-format/' > "$OUTPUT"
+  --from-code=UTF-8 --add-comments=TRANSLATORS --sort-by-file
