@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep 14 09:04:29 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a single D-Bus service to expose the manager and the users
+  settings (gh#openSUSE/agama#753, follow-up of
+  gh#openSUSE/agama#729).
+
+-------------------------------------------------------------------
 Tue Sep 12 12:27:33 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash when it is not possible to handle a product change
