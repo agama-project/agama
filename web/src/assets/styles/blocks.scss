@@ -193,6 +193,11 @@ section > .content {
   }
 }
 
+// temporary fix during migration
+.page-options > li {
+  min-inline-size: 150px;
+}
+
 .page-options > button {
   --pf-c-button--PaddingRight: 0
 }

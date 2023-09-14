@@ -41,9 +41,11 @@ export default function NetworkPageOptions ({
 
   return (
     <PageOptions>
-      <PageOptions.Item key="open-wifi-selector" onClick={openWifiSelector}>
-        <>{_("Connect to a Wi-Fi network")}</>
-      </PageOptions.Item>
+      <PageOptions.Options>
+        <PageOptions.Option key="open-wifi-selector" onClick={openWifiSelector}>
+          <>{_("Connect to a Wi-Fi network")}</>
+        </PageOptions.Option>
+      </PageOptions.Options>
     </PageOptions>
   );
 }

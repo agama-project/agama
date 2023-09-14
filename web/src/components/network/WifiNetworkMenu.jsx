@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { DropdownItem } from '@patternfly/react-core/deprecated';
+import { DropdownItem } from '@patternfly/react-core';
 import { Icon } from "~/components/layout";
 import { KebabMenu } from "~/components/core";
 import { useInstallerClient } from "~/context/installer";
@@ -31,7 +31,6 @@ export default function WifiNetworkMenu({ settings, position = "right" }) {
 
   return (
     <KebabMenu
-      id={`network-${settings.ssid}-menu`}
       position={position}
       className="wifi-network-menu"
       items={[

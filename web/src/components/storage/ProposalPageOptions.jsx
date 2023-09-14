@@ -34,13 +34,13 @@ const DASDLink = () => {
   const href = useHref("/storage/dasd");
 
   return (
-    <PageOptions.Item
+    <PageOptions.Option
       key="dasd-link"
       href={href}
       description={_("Manage and format")}
     >
       DASD
-    </PageOptions.Item>
+    </PageOptions.Option>
   );
 };
 
@@ -52,13 +52,13 @@ const ZFCPLink = () => {
   const href = useHref("/storage/zfcp");
 
   return (
-    <PageOptions.Item
+    <PageOptions.Option
       key="zfcp-link"
       href={href}
       description={_("Activate disks")}
     >
       {_("zFCP")}
-    </PageOptions.Item>
+    </PageOptions.Option>
   );
 };
 
@@ -70,13 +70,13 @@ const ISCSILink = () => {
   const href = useHref("/storage/iscsi");
 
   return (
-    <PageOptions.Item
+    <PageOptions.Option
       key="iscsi-link"
-      href={href}
+      to={href}
       description={_("Connect to iSCSI targets")}
     >
       {_("iSCSI")}
-    </PageOptions.Item>
+    </PageOptions.Option>
   );
 };
 
@@ -96,11 +96,11 @@ export default function ProposalPageOptions () {
 
   return (
     <PageOptions>
-      <PageOptions.Group key="devices-options">
+      <PageOptions.Options>
         <If condition={showDasdLink} then={<DASDLink />} />
         <ISCSILink />
         <If condition={showZFCPLink} then={<ZFCPLink />} />
-      </PageOptions.Group>
+      </PageOptions.Options>
     </PageOptions>
   );
 }

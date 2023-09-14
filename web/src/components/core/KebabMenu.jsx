@@ -20,10 +20,10 @@
  */
 
 import React, { useState } from "react";
-import { Dropdown, DropdownToggle } from '@patternfly/react-core/deprecated';
+import { Dropdown, DropdownList, MenuToggle } from '@patternfly/react-core';
 import { Icon } from "~/components/layout";
 
-export default function KebabMenu({ items, position = "right", id = Date.now(), ...props }) {
+export default function KebabMenu({ items, position = "right", ...props }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggle = () => setIsOpen(!isOpen);
@@ -31,16 +31,18 @@ export default function KebabMenu({ items, position = "right", id = Date.now(), 
   return (
     <Dropdown
       onSelect={toggle}
-      toggle={
-        <DropdownToggle id={`${id}-toggler`} className="toggler" toggleIndicator={null} onToggle={toggle}>
+      toggle={(toggleRef) => (
+        <MenuToggle ref={toggleRef} variant="plain" onClick={toggle} className="toggler">
           <Icon name="more_vert" size="24" />
-        </DropdownToggle>
-      }
-      isPlain
+        </MenuToggle>
+      )}
       isOpen={isOpen}
-      position={position}
+      popperProps={{ position }}
       {...props}
-      dropdownItems={items}
-    />
+    >
+      <DropdownList>
+        { items }
+      </DropdownList>
+    </Dropdown>
   );
 }

@@ -20,8 +20,10 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Button } from '@patternfly/react-core';
-import { Dropdown, DropdownItem, DropdownGroup } from '@patternfly/react-core/deprecated';
+import {
+  Dropdown, DropdownGroup, DropdownItem, DropdownList,
+  MenuToggle
+} from '@patternfly/react-core';
 import { Icon, PageOptions as PageOptionsSlot } from "~/components/layout";
 
 /**
@@ -31,11 +33,11 @@ import { Icon, PageOptions as PageOptionsSlot } from "~/components/layout";
  * @param {object} props
  * @param {function} props.onClick
  */
-const Toggler = ({ onClick }) => {
+const Toggler = ({ toggleRef, onClick }) => {
   return (
-    <Button onClick={onClick} variant="plain">
+    <MenuToggle ref={toggleRef} onClick={onClick} variant="plain">
       <Icon name="expand_more" />
-    </Button>
+    </MenuToggle>
   );
 };
 
@@ -58,7 +60,7 @@ const Group = ({ children, ...props }) => {
 };
 
 /**
- * An action belonging to a {PageOptions} component
+ * An option belonging to a {PageOptions} component
  * @component
  *
  * Built on top of {@link https://www.patternfly.org/v4/components/dropdown/#dropdownitem PF DropdownItem}
@@ -67,11 +69,29 @@ const Group = ({ children, ...props }) => {
  *
  * @param {object} props - PF DropdownItem props, See {@link https://www.patternfly.org/v4/components/dropdownitem}
  */
-const Item = ({ children, ...props }) => {
+const Option = ({ children, ...props }) => {
   return (
     <DropdownItem {...props}>
       {children}
     </DropdownItem>
+  );
+};
+
+/**
+ * A colleciton of {Option}s belonging to a {PageOptions} component
+ * @component
+ *
+ * Built on top of {@link https://www.patternfly.org/components/menus/dropdown#dropdownlist PatternFly DropdownList}
+ *
+ * @see {PageOptions} examples.
+ *
+ * @param {object} props - PF DropdownItem props, See {@link https://www.patternfly.org/v4/components/dropdowngroup}
+ */
+const Options = ({ children, ...props }) => {
+  return (
+    <DropdownList {...props}>
+      {children}
+    </DropdownList>
   );
 };
 
@@ -85,28 +105,32 @@ const Item = ({ children, ...props }) => {
  *
  * @example <caption>Usage example</caption>
  *   <PageOptions>
- *     <PageOptions.Item
- *       key="reprobe-link"
- *       description="Run a storage device detection"
- *     >
- *
- *       Reprobe
- *     </PageOptions.Item>
- *     <PageOptions.Group key="configuration-links" label="Configure">
- *       <PageOptions.Item
- *         key="dasd-link"
- *         href={href}
- *         description="Manage and format"
+ *     <PageOptions.Options>
+ *       <PageOptions.Option
+ *         key="reprobe-link"
+ *         description="Run a storage device detection"
  *       >
- *         DASD
- *       </PageOptions.Item>
- *       <PageOptions.Item
- *         key="iscsi-link"
- *         href={href}
- *         description="Connect to iSCSI targets"
- *        >
- *         iSCSI
- *       </PageOptions.Item>
+ *
+ *         Reprobe
+ *       </PageOptions.Option>
+ *     </PageOptions.Options>
+ *     <PageOptions.Group key="configuration-links" label="Configure">
+ *       <PageOptions.Options>
+ *         <PageOptions.Option
+ *           key="dasd-link"
+ *           href={href}
+ *           description="Manage and format"
+ *         >
+ *           DASD
+ *         </PageOptions.Option>
+ *         <PageOptions.Option
+ *           key="iscsi-link"
+ *           href={href}
+ *           description="Connect to iSCSI targets"
+ *          >
+ *           iSCSI
+ *         </PageOptions.Option>
+ *       <PageOptions.Options>
  *     </PageOptions.Group>
  *   </PageOptions>
  *
@@ -141,19 +165,22 @@ const PageOptions = ({ children }) => {
       <div ref={dropdownRef}>
         <Dropdown
           isOpen={isOpen}
-          toggle={<Toggler onClick={onToggle} />}
+          toggle={(toggleRef) => <Toggler toggleRef={toggleRef} onClick={onToggle} />}
           onSelect={onSelect}
-          dropdownItems={Array(children)}
-          position="right"
+          popperProps={{ minWidth: "150px", position: "right" }}
           className="page-options"
-          isGrouped
-        />
+        >
+          <DropdownList>
+            {Array(children)}
+          </DropdownList>
+        </Dropdown>
       </div>
     </PageOptionsSlot>
   );
 };
 
 PageOptions.Group = Group;
-PageOptions.Item = Item;
+PageOptions.Options = Options;
+PageOptions.Option = Option;
 
 export default PageOptions;
