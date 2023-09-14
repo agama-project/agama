@@ -1,3 +1,8 @@
+extern crate tempdir;
+
+use tempdir::TempDir;
+use std::io;
+
 const DEFAULT_COMMANDS: [(&str, &str); 2] = [
     // (executable, {options})
 	("journalctl", "-u agama"),
@@ -23,7 +28,7 @@ const DEFAULT_PATHS: [&str; 14] = [
 	"/linuxrc.config"
 ];
 
-const DEFAULT_RESULT: &str = "/tmp/agama_logs";
+const DEFAULT_RESULT: &str = "~/agama_logs";
 const DEFAULT_NOISY: bool = true;
 
 // A wrapper around println which shows (or not) output depending on noisy boolean variable
@@ -32,7 +37,7 @@ macro_rules! show
 	($n:expr, $($arg:tt)*) => { if($n) { println!($($arg)*) } }
 }
 
-fn main() {
+fn main() -> Result<(), io::Error>{
 	// 0. preparation, e.g. later features some logs commands can be added / excluded per users request or
 	let commands = DEFAULT_COMMANDS;
 	let paths = DEFAULT_PATHS;
@@ -43,6 +48,7 @@ fn main() {
 
 	// 1. create temporary directory where to collect all files (similar to what old save_y2logs
 	// does)
+	let tmp_dir = TempDir::new(result)?;
 
 	// 2. collect existing / requested paths
 
@@ -60,5 +66,7 @@ fn main() {
 		show!(noisy, "\t\t- packing output of: \"{} {}\"", cmd.0, cmd.1);
 	}
 
-	show!(true, "Storing result in: \"{}\"", result)
+	show!(true, "Storing result in: \"{}\"", result);
+
+	Ok(())
 }
