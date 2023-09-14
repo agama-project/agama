@@ -2,6 +2,8 @@ extern crate tempdir;
 
 use tempdir::TempDir;
 use std::io;
+use std::fs;
+use std::path::Path;
 
 const DEFAULT_COMMANDS: [(&str, &str); 2] = [
     // (executable, {options})
@@ -12,7 +14,7 @@ const DEFAULT_COMMANDS: [(&str, &str); 2] = [
 const DEFAULT_PATHS: [&str; 14] = [
     // logs
 	"/var/log/YaST2",
-	"/var/log/zypper.log",
+	"/tmp/var/log/zypper.log",
 	"/var/log/zypper/history*",
 	"/var/log/zypper/pk_backend_zypp",
 	"/var/log/pbl.log",
@@ -32,9 +34,15 @@ const DEFAULT_RESULT: &str = "~/agama_logs";
 const DEFAULT_NOISY: bool = true;
 
 // A wrapper around println which shows (or not) output depending on noisy boolean variable
-macro_rules! show
+macro_rules! showln
 {
 	($n:expr, $($arg:tt)*) => { if($n) { println!($($arg)*) } }
+}
+//
+// A wrapper around println which shows (or not) output depending on noisy boolean variable
+macro_rules! show
+{
+	($n:expr, $($arg:tt)*) => { if($n) { print!($($arg)*) } }
 }
 
 fn main() -> Result<(), io::Error>{
@@ -44,29 +52,35 @@ fn main() -> Result<(), io::Error>{
 	let result = DEFAULT_RESULT;
 	let noisy = DEFAULT_NOISY;
 
-    show!(noisy, "Collecting Agama logs:");
+    showln!(noisy, "Collecting Agama logs:");
 
 	// 1. create temporary directory where to collect all files (similar to what old save_y2logs
 	// does)
-	let tmp_dir = TempDir::new(result)?;
+	let tmp_dir = TempDir::new("agama-logs")?;
 
 	// 2. collect existing / requested paths
 
-	show!(noisy, "\t- proceeding well known paths:");
+	showln!(noisy, "\t- proceeding well known paths:");
 	for path in paths
 	{
-		show!(noisy, "\t\t- packing: \"{}\"", path);
+		show!(noisy, "\t\t- storing: \"{}\" ... ", path);
+		// assumption: path is full path
+		if Path::new(path).try_exists().is_ok()
+		{
+			let res = if fs::copy(path, tmp_dir.path().join(path)).is_ok() { "[Ok]" } else { "[Failed]" };
+			showln!(noisy, "{}", res);
+		}
 	}
 
 	// 3. some info can be collected via particular commands only
 
-	show!(noisy, "\t- proceeding output of commands:");
+	showln!(noisy, "\t- proceeding output of commands:");
 	for cmd in commands
 	{
-		show!(noisy, "\t\t- packing output of: \"{} {}\"", cmd.0, cmd.1);
+		showln!(noisy, "\t\t- packing output of: \"{} {}\"", cmd.0, cmd.1);
 	}
 
-	show!(true, "Storing result in: \"{}\"", result);
+	showln!(true, "Storing result in: \"{}\"", result);
 
 	Ok(())
 }
