@@ -68,6 +68,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
   const [security, setSecurity] = useState(securityFrom(network?.security || []));
   const hidden = network?.hidden || false;
   const [showPassword, setShowPassword] = useState(false);
+  const visibilityIconName = showPassword ? "visibility_off" : "visibility";
 
   useEffect(() => {
     setTimeout(() => { formRef.current?.scrollIntoView({ behavior: "smooth" }) }, 200);
@@ -136,9 +137,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
               aria-label={_("Password visibility button")}
               variant="control"
               onClick={() => setShowPassword((prev) => !prev)}
-              icon={showPassword
-                ? <Icon name="visibility_off" size="15" />
-                : <Icon name="visibility" size="15" />}
+              icon={<Icon name={visibilityIconName} size="15" />}
             />
           </InputGroup>
         </FormGroup> }
