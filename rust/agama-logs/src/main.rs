@@ -15,7 +15,7 @@ const DEFAULT_COMMANDS: [(&str, &str); 2] = [
 const DEFAULT_PATHS: [&str; 14] = [
     // logs
 	"/var/log/YaST2",
-	"/tmp/var/log/zypper.log",
+	"/var/log/zypper.log",
 	"/var/log/zypper/history*",
 	"/var/log/zypper/pk_backend_zypp",
 	"/var/log/pbl.log",
@@ -52,8 +52,15 @@ macro_rules! show
 struct LogPath
 {
 	// log source
-	src_path: &'static str,
+	src_path: PathBuf,
 	// place where to collect logs, typically a temporary directory
+	dst_path: PathBuf,
+}
+
+// Struct for log created on demmand by a command
+struct LogCmd
+{
+	cmd: &'static str,
 	dst_path: PathBuf,
 }
 
@@ -61,25 +68,38 @@ trait LogItem
 {
 	// definition of source as path to a file
 	// It means, doesn't matter where the log came from, now it is a file
-	fn from(&self) -> &'static str;
+	fn from(&self) -> PathBuf;
 	// definition of destination as path to a file
 	fn to(&self) -> PathBuf;
 }
 
 impl LogItem for LogPath
 {
-	fn from(&self) -> &'static str
+	fn from(&self) -> PathBuf
 	{
-		return self.src_path;
+		return self.src_path.clone();
 	}
 
 	fn to(&self) -> PathBuf
 	{
 		// remove leading '/' if any from the path (reason see later)
-		let r_path = Path::new(self.src_path).strip_prefix("/").unwrap();
+		let r_path = self.src_path.as_path().strip_prefix("/").unwrap();
 
 		// here is the reason, join overwrites the content if the joined path is absolute
 		return self.dst_path.join(r_path)
+	}
+}
+
+impl LogItem for LogCmd
+{
+	fn from(&self) -> PathBuf
+	{
+		return self.dst_path.clone();
+	}
+
+	fn to(&self) -> PathBuf
+	{
+		return self.dst_path.clone();
 	}
 }
 
@@ -106,7 +126,7 @@ fn main() -> Result<(), io::Error>{
 		// assumption: path is full path
 		if Path::new(path).try_exists().is_ok()
 		{
-			log_sources.push( Box::new( LogPath { src_path: path, dst_path: tmp_dir.path().to_path_buf() }));
+			log_sources.push( Box::new( LogPath { src_path: PathBuf::from(path), dst_path: tmp_dir.path().to_path_buf() }));
 
 		}
 	}
@@ -125,11 +145,11 @@ fn main() -> Result<(), io::Error>{
 	{
 		let mut res = "[Failed]";
 
-		show!(noisy, "\t\t- storing: \"{}\" ... ", src.from());
+		show!(noisy, "\t\t- storing: \"{}\" ... ", src.from().display());
 
 		// for now keep directory structure close to the original
 		// e.g. what was in /etc will be in /<tmp dir>/etc/
-		if( fs::create_dir_all(src.to().parent().unwrap()).is_ok())
+		if fs::create_dir_all(src.to().parent().unwrap()).is_ok()
 		{
 			res = if fs::copy(src.from(), src.to()).is_ok() { "[Ok]" } else { "[Failed]" };
 		}
