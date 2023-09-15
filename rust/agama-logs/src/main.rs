@@ -3,7 +3,7 @@ extern crate tempdir;
 use tempdir::TempDir;
 use std::io;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 const DEFAULT_COMMANDS: [(&str, &str); 2] = [
@@ -48,6 +48,41 @@ macro_rules! show
 	($n:expr, $($arg:tt)*) => { if($n) { print!($($arg)*) } }
 }
 
+// Struct for log represented by a file
+struct LogPath
+{
+	// log source
+	src_path: &'static str,
+	// place where to collect logs, typically a temporary directory
+	dst_path: PathBuf,
+}
+
+trait LogItem
+{
+	// definition of source as path to a file
+	// It means, doesn't matter where the log came from, now it is a file
+	fn from(&self) -> &'static str;
+	// definition of destination as path to a file
+	fn to(&self) -> PathBuf;
+}
+
+impl LogItem for LogPath
+{
+	fn from(&self) -> &'static str
+	{
+		return self.src_path;
+	}
+
+	fn to(&self) -> PathBuf
+	{
+		// remove leading '/' if any from the path (reason see later)
+		let r_path = Path::new(self.src_path).strip_prefix("/").unwrap();
+
+		// here is the reason, join overwrites the content if the joined path is absolute
+		return self.dst_path.join(r_path)
+	}
+}
+
 fn main() -> Result<(), io::Error>{
 	// 0. preparation, e.g. later features some logs commands can be added / excluded per users request or
 	let commands = DEFAULT_COMMANDS;
@@ -55,6 +90,7 @@ fn main() -> Result<(), io::Error>{
 	let result = format!("{}.{}", DEFAULT_RESULT, DEFAULT_COMPRESSION.1);
 	let noisy = DEFAULT_NOISY;
 	let compression = DEFAULT_COMPRESSION.0;
+	let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
     showln!(noisy, "Collecting Agama logs:");
 
@@ -63,27 +99,19 @@ fn main() -> Result<(), io::Error>{
 	let tmp_dir = TempDir::new(DEFAULT_TMP_DIR)?;
 	let compress_cmd = format!("tar -c -f {} --warning=no-file-changed --{} --dereference -C {} .", result, compression, tmp_dir.path().display());
 
-	// 2. collect existing / requested paths
-
+	// 2. collect existing / requested paths which should already exist
 	showln!(noisy, "\t- proceeding well known paths:");
 	for path in paths
 	{
-		show!(noisy, "\t\t- storing: \"{}\" ... ", path);
 		// assumption: path is full path
 		if Path::new(path).try_exists().is_ok()
 		{
-			let r_path = Path::new(path).strip_prefix("/").unwrap();
-			let dir_path = Path::new(r_path).parent().unwrap();
+			log_sources.push( Box::new( LogPath { src_path: path, dst_path: tmp_dir.path().to_path_buf() }));
 
-			fs::create_dir_all(tmp_dir.path().join(dir_path));
-			let res = if fs::copy(path, tmp_dir.path().join(r_path)).is_ok() { "[Ok]" } else { "[Failed]" };
-
-			showln!(noisy, "{}", res);
 		}
 	}
 
 	// 3. some info can be collected via particular commands only
-
 	showln!(noisy, "\t- proceeding output of commands:");
 	for cmd in commands
 	{
@@ -93,15 +121,23 @@ fn main() -> Result<(), io::Error>{
 	// 4. store it
 	showln!(true, "Storing result in: \"{}\"", result);
 
-	let cmd_parts = compress_cmd.split_whitespace().collect::<Vec<&str>>();
-
-	print!("{} ", cmd_parts[0]);
-	for arg in cmd_parts[1..].iter()
+	for src in log_sources.iter()
 	{
-		print!("{} ", arg);
-	}
-	println!("");
+		let mut res = "[Failed]";
 
+		show!(noisy, "\t\t- storing: \"{}\" ... ", src.from());
+
+		// for now keep directory structure close to the original
+		// e.g. what was in /etc will be in /<tmp dir>/etc/
+		if( fs::create_dir_all(src.to().parent().unwrap()).is_ok())
+		{
+			res = if fs::copy(src.from(), src.to()).is_ok() { "[Ok]" } else { "[Failed]" };
+		}
+
+		showln!(noisy, "{}", res);
+	}
+
+	let cmd_parts = compress_cmd.split_whitespace().collect::<Vec<&str>>();
 	Command::new(cmd_parts[0])
 		.args(cmd_parts[1..].iter())
 		.status()
