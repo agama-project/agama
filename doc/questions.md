@@ -1,7 +1,12 @@
 ## Questions
 
 [Questions][] are a mechanism that allows the installer to ask for additional data which is needed without knowing it in advance.
-Examples are Luks password when Luks encrypted partition occur or when software repository is signed with unknown GPG key.
+Examples are Luks password when Luks encrypted partition occur, whenever activate multipath if installer is not sure
+or when software repository is signed with unknown GPG key.
+
+Questions can have answering mode allowing to have unattended installation without stopping by questions. Question can be
+also answered from predefined answers. Predefined answers with interactive mode means that question is not asked to user
+and instead answer will be used immediatelly. In unattended mode it will prefer predefined answer over default ones.
 
 [Questions]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama.Questions1.html
 
