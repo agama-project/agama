@@ -23,9 +23,9 @@ pub enum Commands {
     Profile(ProfileCommands),
     /// Configuration for questions that come from installer
     ///
-    /// Questions are raised when unexpected situation happen in Installer
-    /// like if encrypted partition is detected and cannot be inspected,
-    /// if repository is sign by unknown GPG key or if installer is not sure
+    /// Questions are raised when an unexpected situation happens in the installer:
+    /// like if an encrypted partition is detected and cannot be inspected,
+    /// if a repository is signed by an unknown GPG key, or if the installer is not sure
     /// if multipath should be activated.
     ///
     /// For more details see official agama documentation for Questions.

@@ -8,7 +8,7 @@ pub enum QuestionsCommands {
     /// Sets the mode for answering questions.
     ///
     /// It allows to decide if questions will be interactive or
-    /// if it should not block installation.
+    /// if they should not block installation.
     Mode(ModesArgs),
     /// Loads predefined answers to questions.
     ///
