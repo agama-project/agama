@@ -134,7 +134,6 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
               id="password_visibility"
               name="password_visibility"
               aria-label={_("Password visibility button")}
-              label={_("Password visibility button")}
               variant="control"
               onClick={() => setShowPassword((prev) => !prev)}
               icon={showPassword
