@@ -119,9 +119,9 @@ const icons = {
   terminal: Terminal,
   translate: Translate,
   tune: Tune,
-  warning: Warning,
   visibility: Visibility,
   visibility_off: VisibilityOff,
+  warning: Warning,
   wifi: Wifi,
   wifi_find: WifiFind,
   // brand icons
