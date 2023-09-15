@@ -7,3 +7,7 @@ edition = "2021"
 
 [dependencies]
 tempdir = "0.3"
+
+[[bin]]
+name = "agama-logs"
+path = "src/main.rs"
