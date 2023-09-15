@@ -4,6 +4,7 @@ use tempdir::TempDir;
 use std::io;
 use std::fs;
 use std::path::Path;
+use std::process::Command;
 
 const DEFAULT_COMMANDS: [(&str, &str); 2] = [
     // (executable, {options})
@@ -30,8 +31,10 @@ const DEFAULT_PATHS: [&str; 14] = [
 	"/linuxrc.config"
 ];
 
-const DEFAULT_RESULT: &str = "~/agama_logs";
+const DEFAULT_RESULT: &str = "/tmp/agama_logs";
 const DEFAULT_NOISY: bool = true;
+const DEFAULT_COMPRESSION: (&str, &str) = ("bzip2", "tar.bz2");
+const DEFAULT_TMP_DIR: &str = "agama-logs";
 
 // A wrapper around println which shows (or not) output depending on noisy boolean variable
 macro_rules! showln
@@ -49,14 +52,16 @@ fn main() -> Result<(), io::Error>{
 	// 0. preparation, e.g. later features some logs commands can be added / excluded per users request or
 	let commands = DEFAULT_COMMANDS;
 	let paths = DEFAULT_PATHS;
-	let result = DEFAULT_RESULT;
+	let result = format!("{}.{}", DEFAULT_RESULT, DEFAULT_COMPRESSION.1);
 	let noisy = DEFAULT_NOISY;
+	let compression = DEFAULT_COMPRESSION.0;
 
     showln!(noisy, "Collecting Agama logs:");
 
 	// 1. create temporary directory where to collect all files (similar to what old save_y2logs
 	// does)
-	let tmp_dir = TempDir::new("agama-logs")?;
+	let tmp_dir = TempDir::new(DEFAULT_TMP_DIR)?;
+	let compress_cmd = format!("tar -c -f {} --warning=no-file-changed --{} --dereference -C {} .", result, compression, tmp_dir.path().display());
 
 	// 2. collect existing / requested paths
 
@@ -67,7 +72,12 @@ fn main() -> Result<(), io::Error>{
 		// assumption: path is full path
 		if Path::new(path).try_exists().is_ok()
 		{
-			let res = if fs::copy(path, tmp_dir.path().join(path)).is_ok() { "[Ok]" } else { "[Failed]" };
+			let r_path = Path::new(path).strip_prefix("/").unwrap();
+			let dir_path = Path::new(r_path).parent().unwrap();
+
+			fs::create_dir_all(tmp_dir.path().join(dir_path));
+			let res = if fs::copy(path, tmp_dir.path().join(r_path)).is_ok() { "[Ok]" } else { "[Failed]" };
+
 			showln!(noisy, "{}", res);
 		}
 	}
@@ -80,7 +90,22 @@ fn main() -> Result<(), io::Error>{
 		showln!(noisy, "\t\t- packing output of: \"{} {}\"", cmd.0, cmd.1);
 	}
 
+	// 4. store it
 	showln!(true, "Storing result in: \"{}\"", result);
+
+	let cmd_parts = compress_cmd.split_whitespace().collect::<Vec<&str>>();
+
+	print!("{} ", cmd_parts[0]);
+	for arg in cmd_parts[1..].iter()
+	{
+		print!("{} ", arg);
+	}
+	println!("");
+
+	Command::new(cmd_parts[0])
+		.args(cmd_parts[1..].iter())
+		.status()
+		.expect("failed crating the archive");
 
 	Ok(())
 }
