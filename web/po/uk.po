@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-07 02:05+0000\n"
+"POT-Creation-Date: 2023-09-14 13:35+0000\n"
 "PO-Revision-Date: 2023-08-06 21:15+0000\n"
 "Last-Translator: Milachew <milachew@mail.lv>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -40,7 +40,7 @@ msgstr ""
 #. TRANSLATORS: content of the "About" popup (2/2)
 #. %s is replaced by the project URL
 #: src/components/core/About.jsx:65
-#, javascript-format
+#, c-format
 msgid "For more information, please visit the project's repository at %s."
 msgstr ""
 
@@ -258,7 +258,7 @@ msgstr ""
 
 #. TRANSLATORS: %d is replaced with the number of errors found
 #: src/components/core/ValidationErrors.jsx:86
-#, javascript-format
+#, c-format
 msgid "%d error found"
 msgid_plural "%d errors found"
 msgstr[0] ""
@@ -300,7 +300,7 @@ msgid ""
 msgstr ""
 
 #: src/components/layout/Icon.jsx:155
-#, javascript-format
+#, c-format
 msgid "Icon %s not found!"
 msgstr ""
 
@@ -344,8 +344,8 @@ msgstr ""
 msgid "Addresses data list"
 msgstr ""
 
-#. TRANSLATORS: input field for the iSCSI initiator name
 #. TRANSLATORS: table header
+#. TRANSLATORS: input field for the iSCSI initiator name
 #: src/components/network/ConnectionsTable.jsx:57
 #: src/components/network/ConnectionsTable.jsx:86
 #: src/components/storage/ZFCPPage.jsx:362
@@ -373,7 +373,7 @@ msgstr ""
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:70
-#, javascript-format
+#, c-format
 msgid "Edit connection %s"
 msgstr ""
 
@@ -383,13 +383,13 @@ msgstr ""
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:77
-#, javascript-format
+#, c-format
 msgid "Forget connection %s"
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:92
-#, javascript-format
+#, c-format
 msgid "Actions for connection %s"
 msgstr ""
 
@@ -423,7 +423,7 @@ msgid "At least one address must be provided for selected mode"
 msgstr ""
 
 #: src/components/network/IpSettingsForm.jsx:131
-#, javascript-format
+#, c-format
 msgid "Edit %s connection"
 msgstr ""
 
@@ -559,8 +559,8 @@ msgstr ""
 msgid "Disconnecting"
 msgstr ""
 
-#. TRANSLATORS: iSCSI connection status
 #. TRANSLATORS: Wifi network status
+#. TRANSLATORS: iSCSI connection status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -568,7 +568,7 @@ msgstr ""
 
 #. TRANSLATORS: %s is replaced by a WiFi network name
 #: src/components/network/WifiNetworkListItem.jsx:97
-#, javascript-format
+#, c-format
 msgid "%s connection is waiting for an state change"
 msgstr ""
 
@@ -580,7 +580,7 @@ msgstr ""
 #. TRANSLATORS: %s will be replaced by a language name and code,
 #. example: "English (en_US.UTF-8)"
 #: src/components/overview/L10nSection.jsx:70
-#, javascript-format
+#, c-format
 msgid "The system will use %s as its default language."
 msgstr ""
 
@@ -591,7 +591,7 @@ msgstr ""
 #. TRANSLATORS: header for the list of active network connections,
 #. %d is replaced by the number of active connections
 #: src/components/overview/NetworkSection.jsx:87
-#, javascript-format
+#, c-format
 msgid "%d connection set:"
 msgid_plural "%d connections set:"
 msgstr[0] ""
@@ -605,7 +605,7 @@ msgstr ""
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
 #: src/components/overview/SoftwareSection.jsx:120
-#, javascript-format
+#, c-format
 msgid "Installation will take %s"
 msgstr ""
 
@@ -627,7 +627,7 @@ msgstr ""
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:44
-#, javascript-format
+#, c-format
 msgid "Install using device %s and deleting all its content"
 msgstr ""
 
@@ -635,8 +635,8 @@ msgstr ""
 msgid "Probing storage devices"
 msgstr ""
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/overview/StorageSection.jsx:182
 #: src/components/storage/ProposalPage.jsx:218
 msgid "Storage"
@@ -644,7 +644,7 @@ msgstr ""
 
 #. TRANSLATORS: %s will be replaced by the user name
 #: src/components/overview/UsersSection.jsx:80
-#, javascript-format
+#, c-format
 msgid "User %s will be created"
 msgstr ""
 
@@ -844,13 +844,13 @@ msgstr ""
 
 #. TRANSLATORS: %s is replaced by the device bus ID
 #: src/components/storage/DeviceSelector.jsx:104
-#, javascript-format
+#, c-format
 msgid "DASD %s"
 msgstr ""
 
 #. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
 #: src/components/storage/DeviceSelector.jsx:109
-#, javascript-format
+#, c-format
 msgid "Software %s"
 msgstr ""
 
@@ -860,32 +860,32 @@ msgstr ""
 
 #. TRANSLATORS: %s is replaced by the device transport name, e.g. USB, SATA, SCSI...
 #: src/components/storage/DeviceSelector.jsx:116
-#, javascript-format
+#, c-format
 msgid "Transport %s"
 msgstr ""
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
 #: src/components/storage/DeviceSelector.jsx:135
-#, javascript-format
+#, c-format
 msgid "Members: %s"
 msgstr ""
 
 #. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
 #: src/components/storage/DeviceSelector.jsx:144
-#, javascript-format
+#, c-format
 msgid "Devices: %s"
 msgstr ""
 
 #. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
 #: src/components/storage/DeviceSelector.jsx:153
-#, javascript-format
+#, c-format
 msgid "Wires: %s"
 msgstr ""
 
 #. TRANSLATORS: disk partition info, %s is replaced by partition table
 #. type (MS-DOS or GPT), %d is the number of the partitions
 #: src/components/storage/DeviceSelector.jsx:177
-#, javascript-format
+#, c-format
 msgid "%s with %d partitions"
 msgstr ""
 
@@ -906,7 +906,7 @@ msgstr ""
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsSection.jsx:71
-#, javascript-format
+#, c-format
 msgid "Hide %d subvolume action"
 msgid_plural "Hide %d subvolume actions"
 msgstr[0] ""
@@ -915,7 +915,7 @@ msgstr[2] ""
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsSection.jsx:73
-#, javascript-format
+#, c-format
 msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
 msgstr[0] ""
@@ -1005,7 +1005,7 @@ msgstr ""
 #. TRANSLATORS: list item, this affects the computed partition size limits
 #. %s is replaced by a list of the volumes (like "/home, /boot")
 #: src/components/storage/ProposalVolumes.jsx:66
-#, javascript-format
+#, c-format
 msgid "Presence of other volumes (%s)"
 msgstr ""
 
@@ -1022,7 +1022,7 @@ msgstr ""
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/ProposalVolumes.jsx:189
-#, javascript-format
+#, c-format
 msgid "At least %s"
 msgstr ""
 
@@ -1089,7 +1089,7 @@ msgstr ""
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
 #: src/components/storage/VolumeForm.jsx:101
-#, javascript-format
+#, c-format
 msgid "the presence of the file system for %s"
 msgstr ""
 
@@ -1100,7 +1100,7 @@ msgstr ""
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
 #: src/components/storage/VolumeForm.jsx:106
-#, javascript-format
+#, c-format
 msgid "The final size depends on %s."
 msgstr ""
 
@@ -1357,7 +1357,7 @@ msgstr ""
 
 #. TRANSLATORS: %s is replaced by the iSCSI target node name
 #: src/components/storage/iscsi/EditNodeForm.jsx:50
-#, javascript-format
+#, c-format
 msgid "Edit %s"
 msgstr ""
 
@@ -1391,7 +1391,7 @@ msgstr ""
 
 #. TRANSLATORS: %s is replaced by the iSCSI target name
 #: src/components/storage/iscsi/LoginForm.jsx:69
-#, javascript-format
+#, c-format
 msgid "Login %s"
 msgstr ""
 
@@ -1411,7 +1411,7 @@ msgstr ""
 
 #. TRANSLATORS: iSCSI connection status, %s is replaced by node label
 #: src/components/storage/iscsi/NodesPresenter.jsx:67
-#, javascript-format
+#, c-format
 msgid "Connected (%s)"
 msgstr ""
 
