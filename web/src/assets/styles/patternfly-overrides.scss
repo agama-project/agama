@@ -166,3 +166,11 @@ table td > .pf-v5-c-empty-state {
   outline: none;
   box-shadow: 0 0 0 1px var(--focus-color);
 }
+
+// Avoid form select toggle icon overlap input Text
+.pf-v5-c-form-control__toggle-icon {
+  padding-inline-end: 0;
+  margin-inline-start: calc(
+    var(--pf-v5-c-form-control__toggle-icon--PaddingRight) * 2
+  );
+}
