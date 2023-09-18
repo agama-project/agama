@@ -78,7 +78,7 @@ const Option = ({ children, ...props }) => {
 };
 
 /**
- * A colleciton of {Option}s belonging to a {PageOptions} component
+ * A collection of {Option}s belonging to a {PageOptions} component
  * @component
  *
  * Built on top of {@link https://www.patternfly.org/components/menus/dropdown#dropdownlist PatternFly DropdownList}

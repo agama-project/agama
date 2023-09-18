@@ -72,7 +72,7 @@
   --pf-v5-c-button--m-secondary--Color: var(--color-link-hover);
 }
 
-// Force a separation between PF/EmtpyStateBody paragraph without needing
+// Force a separation between PF/EmptyStateBody paragraph without needing
 // either: add the .pf-v5-c-content class nor wrapping PF/Text into
 // PF/TextContent
 .pf-v5-c-empty-state__body p:not(:last-child) {

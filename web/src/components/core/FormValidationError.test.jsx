@@ -24,23 +24,23 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { FormValidationError } from "~/components/core";
 
-it("renders nothing when message is null",  () => {
+it("renders nothing when message is null", () => {
   const { container } = plainRender(<FormValidationError message={null} />);
   expect(container).toBeEmptyDOMElement();
 });
 
-it("renders nothing when message is empty",  () => {
+it("renders nothing when message is empty", () => {
   const { container } = plainRender(<FormValidationError message="" />);
   expect(container).toBeEmptyDOMElement();
 });
 
-it("renders nothing when message is not defined",  () => {
+it("renders nothing when message is not defined", () => {
   const { container } = plainRender(<FormValidationError />);
   expect(container).toBeEmptyDOMElement();
 });
 
 it("renders a PatternFly error with given message", () => {
-  const { container } = plainRender(<FormValidationError message="Invalid input" />);
+  plainRender(<FormValidationError message="Invalid input" />);
   const node = screen.getByText("Invalid input");
   expect(node.parentNode.classList.contains("pf-m-error")).toBe(true);
 });
