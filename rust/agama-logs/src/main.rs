@@ -129,10 +129,10 @@ impl LogItem for LogCmd
 		let mut file_stdout = File::create(format!("{}.out.log", file_path.display())).unwrap();
 		let mut file_stderr = File::create(format!("{}.err.log", file_path.display())).unwrap();
 
-		file_stdout.write_all(&output.stdout);
-		file_stderr.write_all(&output.stderr);
+		let mut write_res = file_stdout.write_all(&output.stdout).is_ok();
+		write_res = file_stderr.write_all(&output.stderr).is_ok() && write_res;
 
-		return output.status.success();
+		return output.status.success() && write_res;
 	}
 }
 
