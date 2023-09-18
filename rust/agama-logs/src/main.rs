@@ -4,6 +4,7 @@ extern crate fs_extra;
 use tempdir::TempDir;
 use fs_extra::copy_items;
 use fs_extra::dir::CopyOptions;
+use nix::unistd::Uid;
 use std::io;
 use std::fs;
 use std::fs::File;
@@ -141,6 +142,11 @@ impl LogItem for LogCmd {
 }
 
 fn main() -> Result<(), io::Error> {
+    if !Uid::effective().is_root()
+    {
+        panic!("No Root, no logs. Sorry.");
+    }
+
     // 0. preparation, e.g. in later features some log commands can be added / excluded per users request or
     let commands = DEFAULT_COMMANDS;
     let paths = DEFAULT_PATHS;
