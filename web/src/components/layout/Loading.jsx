@@ -25,14 +25,16 @@ import { EmptyState, EmptyStateIcon, EmptyStateHeader } from "@patternfly/react-
 import { Center, Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
+const LoadingIcon = () => <Icon name="loading" className="icon-big" />;
+
 function Loading({ text = _("Loading installation environment, please wait.") }) {
   return (
     <Center>
-      <EmptyState variant="lg">
+      <EmptyState variant="xl">
         <EmptyStateHeader
           titleText={text}
           headingLevel="h2"
-          icon={<EmptyStateIcon icon={({ ...props }) => <Icon name="loading" {...props} />} />}
+          icon={<EmptyStateIcon icon={LoadingIcon} />}
         />
       </EmptyState>
     </Center>

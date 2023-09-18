@@ -31,6 +31,8 @@ import {
   Title as PageTitle,
 } from "~/components/layout";
 
+const ErrorIcon = () => <Icon name="error" className="icon-big" />;
+
 // TODO: an example
 const ReloadAction = () => (
   <Button size="lg" variant="primary" onClick={() => location.reload()}>
@@ -51,7 +53,7 @@ function DBusError() {
         <EmptyStateHeader
           titleText={_("Cannot connect to D-Bus")}
           headingLevel="h2"
-          icon={<EmptyStateIcon icon={({ ...props }) => <Icon name="error" { ...props } />} />}
+          icon={<EmptyStateIcon icon={ErrorIcon} />}
         />
         <EmptyStateBody>
           {_("Could not connect to the D-Bus service. Please, check whether it is running.")}

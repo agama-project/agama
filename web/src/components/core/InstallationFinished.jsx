@@ -24,14 +24,16 @@ import {
   Button,
   Text,
   EmptyState,
-  EmptyStateIcon,
   EmptyStateBody,
-  EmptyStateHeader
+  EmptyStateHeader,
+  EmptyStateIcon,
 } from "@patternfly/react-core";
 
 import { Center, Icon, Title as SectionTitle, PageIcon, MainActions } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
+
+const SuccessIcon = () => <Icon name="check_circle" className="icon-big color-success" />;
 
 function InstallationFinished() {
   const client = useInstallerClient();
@@ -66,20 +68,18 @@ function InstallationFinished() {
         <EmptyStateHeader
           titleText={_("Congratulations!")}
           headingLevel="h2"
-          icon={<EmptyStateIcon icon={({ ...props }) => <Icon name="check_circle" { ...props } />} className="color-success" />}
+          icon={<EmptyStateIcon icon={SuccessIcon} />}
         />
-        <EmptyStateBody className="pf-v5-c-content">
-          <div>
-            <Text>{_("The installation on your machine is complete.")}</Text>
-            <Text>
-              {
-                iguana
-                  ? _("At this point you can power off the machine.")
-                  : _("At this point you can reboot the machine to log in to the new system.")
-              }
-            </Text>
-            <Text>{_("Have a lot of fun! Your openSUSE Development Team.")}</Text>
-          </div>
+        <EmptyStateBody>
+          <Text>{_("The installation on your machine is complete.")}</Text>
+          <Text>
+            {
+              iguana
+                ? _("At this point you can power off the machine.")
+                : _("At this point you can reboot the machine to log in to the new system.")
+            }
+          </Text>
+          <Text>{_("Have a lot of fun! Your openSUSE Development Team.")}</Text>
         </EmptyStateBody>
       </EmptyState>
     </Center>

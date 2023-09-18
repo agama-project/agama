@@ -72,10 +72,11 @@
   --pf-v5-c-button--m-secondary--Color: var(--color-link-hover);
 }
 
-// SVG icons does not obey font-size
-.pf-v5-c-empty-state__icon {
-  inline-size: 10rem;
-  block-size: 10rem;
+// Force a separation between PF/EmtpyStateBody paragraph without needing
+// either: add the .pf-v5-c-content class nor wrapping PF/Text into
+// PF/TextContent
+.pf-v5-c-empty-state__body p:not(:last-child) {
+  margin-block-end: var(--pf-v5-global--spacer--md);
 }
 
 // Do not add block padding to empty state inside a table/column
