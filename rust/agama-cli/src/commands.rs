@@ -21,7 +21,14 @@ pub enum Commands {
     /// Autoinstallation profile handling
     #[command(subcommand)]
     Profile(ProfileCommands),
-    /// Questions handling
+    /// Configuration for questions that come from installer
+    ///
+    /// Questions are raised when an unexpected (by the user) situation happens in the installer:
+    /// like if an encrypted partition is detected and cannot be inspected,
+    /// if a repository is signed by an unknown GPG key, or if the installer is not sure
+    /// if multipath should be activated.
+    ///
+    /// For more details see official agama documentation for Questions.
     #[command(subcommand)]
     Questions(QuestionsCommands),
 }
