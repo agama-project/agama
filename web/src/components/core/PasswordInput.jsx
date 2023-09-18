@@ -28,7 +28,7 @@ import {
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
-export default function PasswordInput({ id, name, ariaLabel, value, onChange }) {
+export default function PasswordInput({ id, name, ariaLabel, value, onChange, validated = "default", isDisabled = false }) {
   const [showPassword, setShowPassword] = useState(false);
   const visibilityIconName = showPassword ? "visibility_off" : "visibility";
 
@@ -40,6 +40,8 @@ export default function PasswordInput({ id, name, ariaLabel, value, onChange }) 
         aria-label={ariaLabel}
         value={value}
         onChange={onChange}
+        validated={validated}
+        isDisabled={isDisabled}
         type={showPassword ? 'text' : 'password'}
       />
       <Button
@@ -49,6 +51,7 @@ export default function PasswordInput({ id, name, ariaLabel, value, onChange }) 
         variant="control"
         onClick={() => setShowPassword((prev) => !prev)}
         icon={<Icon name={visibilityIconName} size="15" />}
+        isDisabled={isDisabled}
       />
     </InputGroup>
   );
