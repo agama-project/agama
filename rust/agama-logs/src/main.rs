@@ -3,6 +3,8 @@ extern crate tempdir;
 use tempdir::TempDir;
 use std::io;
 use std::fs;
+use std::fs::File;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -27,7 +29,7 @@ const DEFAULT_PATHS: [&str; 14] = [
 	"/var/log/udev.log",
 	// config
 	"/etc/install.inf",
-	"/etc/os_release",
+	"/etc/os-release",
 	"/linuxrc.config"
 ];
 
@@ -113,22 +115,24 @@ impl LogItem for LogCmd
 
 	fn to(&self) -> PathBuf
 	{
-		return self.dst_path.as_path().join(format!("{}.log", self.cmd));
+		return self.dst_path.as_path().join(format!("{}", self.cmd));
 	}
 
 	fn store(&self) -> bool
 	{
 		let cmd_parts = self.cmd.split_whitespace().collect::<Vec<&str>>();
-		let file_path = Path::new(self.cmd);
-
-		let res = Command::new(cmd_parts[0])
+		let file_path = self.to();
+		let output = Command::new(cmd_parts[0])
 			.args(cmd_parts[1..].iter())
-			.arg(">")
-			.arg(file_path)
-			.status()
+			.output()
 			.expect("failed run the command");
+		let mut file_stdout = File::create(format!("{}.out.log", file_path.display())).unwrap();
+		let mut file_stderr = File::create(format!("{}.err.log", file_path.display())).unwrap();
 
-		return res.success();
+		file_stdout.write_all(&output.stdout);
+		file_stderr.write_all(&output.stderr);
+
+		return output.status.success();
 	}
 }
 
