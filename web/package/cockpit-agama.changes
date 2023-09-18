@@ -1,7 +1,9 @@
 -------------------------------------------------------------------
-Thu Sep 14 22:24:31 UTC 2023 - Balsa Asanovic <balsaasanovic95@gmail.com>
+Thu Sep 18 22:24:31 UTC 2023 - Balsa Asanovic <balsaasanovic95@gmail.com>
 
-- Added Show button to the Wi-Fi password input (gh#openSUSE/agama#242).
+- Created PasswordInput component which includes eye icon button
+  used to show/hide password. Updated all components with 
+  input type password to use this comp instead (gh#openSUSE/agama#750).
 
 -------------------------------------------------------------------
 Thu Sep 14 10:09:07 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
