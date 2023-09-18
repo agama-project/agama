@@ -28,7 +28,7 @@ import {
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
-export default function PasswordInput({ id, name, ariaLabel, value, onChange, autoFocus, validated = "default", isDisabled = false }) {
+export default function PasswordInput({ id, name, ariaLabel, value, onChange, autoFocus, onBlur, validated = "default", isDisabled = false }) {
   const [showPassword, setShowPassword] = useState(false);
   const visibilityIconName = showPassword ? "visibility_off" : "visibility";
   const inputRef = useRef(null);
@@ -50,6 +50,7 @@ export default function PasswordInput({ id, name, ariaLabel, value, onChange, au
         onChange={onChange}
         validated={validated}
         isDisabled={isDisabled}
+        onBlur={onBlur}
         ref={inputRef}
         type={showPassword ? 'text' : 'password'}
       />
