@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Button,
   InputGroup,
@@ -28,9 +28,17 @@ import {
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
-export default function PasswordInput({ id, name, ariaLabel, value, onChange, validated = "default", isDisabled = false }) {
+export default function PasswordInput({ id, name, ariaLabel, value, onChange, autoFocus, validated = "default", isDisabled = false }) {
   const [showPassword, setShowPassword] = useState(false);
   const visibilityIconName = showPassword ? "visibility_off" : "visibility";
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    // Focus the input element when autoFocus is true
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [autoFocus]);
 
   return (
     <InputGroup>
@@ -42,6 +50,7 @@ export default function PasswordInput({ id, name, ariaLabel, value, onChange, va
         onChange={onChange}
         validated={validated}
         isDisabled={isDisabled}
+        ref={inputRef}
         type={showPassword ? 'text' : 'password'}
       />
       <Button
