@@ -6,8 +6,9 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-const DEFAULT_COMMANDS: [&str; 2] = [
+const DEFAULT_COMMANDS: [&str; 3] = [
 	"journalctl -u agama",
+	"journalctl -u agama-auto",
 	"journalctl --dmesg"
 ];
 
