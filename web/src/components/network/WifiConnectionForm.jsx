@@ -28,12 +28,11 @@ import {
   FormGroup,
   FormSelect,
   FormSelectOption,
-  InputGroup,
   TextInput
 } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
+import { PasswordInput } from "~/components/core";
 
 /*
 * FIXME: it should be moved to the SecurityProtocols enum that already exists or to a class based
@@ -67,8 +66,6 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
   const [password, setPassword] = useState(network?.password || "");
   const [security, setSecurity] = useState(securityFrom(network?.security || []));
   const hidden = network?.hidden || false;
-  const [showPassword, setShowPassword] = useState(false);
-  const visibilityIconName = showPassword ? "visibility_off" : "visibility";
 
   useEffect(() => {
     setTimeout(() => { formRef.current?.scrollIntoView({ behavior: "smooth" }) }, 200);
@@ -122,24 +119,13 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
       { security === "wpa-psk" &&
         // TRANSLATORS: WiFi password
         <FormGroup fieldId="password" label={_("WPA Password")}>
-          <InputGroup>
-            <TextInput
-              id="password"
-              name="password"
-              aria-label={_("Password")}
-              value={password}
-              type={showPassword ? 'text' : 'password'}
-              onChange={setPassword}
-            />
-            <Button
-              id="password_visibility"
-              name="password_visibility"
-              aria-label={_("Password visibility button")}
-              variant="control"
-              onClick={() => setShowPassword((prev) => !prev)}
-              icon={<Icon name={visibilityIconName} size="15" />}
-            />
-          </InputGroup>
+          <PasswordInput
+            id="password"
+            name="password"
+            aria-label={_("Password")}
+            value={password}
+            onChange={setPassword}
+          />
         </FormGroup> }
       <ActionGroup>
         <Button type="submit" variant="primary" isLoading={isConnecting} isDisabled={isConnecting}>
