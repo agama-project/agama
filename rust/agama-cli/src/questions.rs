@@ -16,6 +16,7 @@ pub enum QuestionsCommands {
     /// them in interactive mode or change answer in automatic mode.
     ///
     /// For more details and examples see official Agama documentation.
+    /// https://github.com/openSUSE/agama/blob/master/doc/questions.md 
     Answers {
         /// Local path to file with answers in YAML format
         path: String,
