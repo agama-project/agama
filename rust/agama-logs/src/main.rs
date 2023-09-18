@@ -46,7 +46,7 @@ macro_rules! showln
 {
     ($n:expr, $($arg:tt)*) => { if($n) { println!($($arg)*) } }
 }
-//
+
 // A wrapper around println which shows (or not) output depending on noisy boolean variable
 macro_rules! show
 {
@@ -57,21 +57,28 @@ macro_rules! show
 struct LogPath {
     // log source
     src_path: &'static str,
-    // place where to collect logs, typically a temporary directory
+
+    // directory where to collect logs
     dst_path: PathBuf,
 }
 
 // Struct for log created on demmand by a command
 struct LogCmd {
+    // command which stdout / stderr is logged
     cmd: &'static str,
+
+    // place where to collect logs
     dst_path: PathBuf,
 }
 
 trait LogItem {
     // definition of log source
     fn from(&self) -> &'static str;
+
     // definition of destination as path to a file
     fn to(&self) -> PathBuf;
+
+    // performs whatever is needed to store logs from "from" at "to" path
     fn store(&self) -> bool;
 }
 
@@ -134,7 +141,7 @@ impl LogItem for LogCmd {
 }
 
 fn main() -> Result<(), io::Error> {
-    // 0. preparation, e.g. later features some logs commands can be added / excluded per users request or
+    // 0. preparation, e.g. in later features some log commands can be added / excluded per users request or
     let commands = DEFAULT_COMMANDS;
     let paths = DEFAULT_PATHS;
     let result = format!("{}.{}", DEFAULT_RESULT, DEFAULT_COMPRESSION.1);
@@ -199,7 +206,7 @@ fn main() -> Result<(), io::Error> {
     Command::new(cmd_parts[0])
         .args(cmd_parts[1..].iter())
         .status()
-        .expect("failed crating the archive");
+        .expect("failed creating the archive");
 
     Ok(())
 }
