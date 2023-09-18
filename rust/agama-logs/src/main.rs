@@ -66,8 +66,7 @@ struct LogCmd
 
 trait LogItem
 {
-	// definition of source as path to a file
-	// It means, doesn't matter where the log came from, now it is a file
+	// definition of log source
 	fn from(&self) -> &'static str;
 	// definition of destination as path to a file
 	fn to(&self) -> PathBuf;
@@ -120,8 +119,6 @@ impl LogItem for LogCmd
 	fn store(&self) -> bool
 	{
 		let cmd_parts = self.cmd.split_whitespace().collect::<Vec<&str>>();
-		//let temp_file = tempfile().unwrap().path().expect("No path");
-		//let file_path = temp_file.as_path().as_os_str();
 		let file_path = Path::new(self.cmd);
 
 		let res = Command::new(cmd_parts[0])
@@ -149,7 +146,6 @@ fn main() -> Result<(), io::Error>{
 	// 1. create temporary directory where to collect all files (similar to what old save_y2logs
 	// does)
 	let tmp_dir = TempDir::new(DEFAULT_TMP_DIR)?;
-	let compress_cmd = format!("tar -c -f {} --warning=no-file-changed --{} --dereference -C {} .", result, compression, tmp_dir.path().display());
 
 	// 2. collect existing / requested paths which should already exist
 	showln!(noisy, "\t- proceeding well known paths");
@@ -189,7 +185,9 @@ fn main() -> Result<(), io::Error>{
 		showln!(noisy, "{}", res);
 	}
 
+	let compress_cmd = format!("tar -c -f {} --warning=no-file-changed --{} --dereference -C {} .", result, compression, tmp_dir.path().display());
 	let cmd_parts = compress_cmd.split_whitespace().collect::<Vec<&str>>();
+
 	Command::new(cmd_parts[0])
 		.args(cmd_parts[1..].iter())
 		.status()
