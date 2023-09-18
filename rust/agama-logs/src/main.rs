@@ -1,16 +1,16 @@
-extern crate tempdir;
 extern crate fs_extra;
+extern crate tempdir;
 
-use tempdir::TempDir;
 use fs_extra::copy_items;
 use fs_extra::dir::CopyOptions;
 use nix::unistd::Uid;
-use std::io;
 use std::fs;
 use std::fs::File;
+use std::io;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use tempdir::TempDir;
 
 const DEFAULT_COMMANDS: [&str; 3] = [
     "journalctl -u agama",
@@ -142,8 +142,7 @@ impl LogItem for LogCmd {
 }
 
 fn main() -> Result<(), io::Error> {
-    if !Uid::effective().is_root()
-    {
+    if !Uid::effective().is_root() {
         panic!("No Root, no logs. Sorry.");
     }
 
@@ -166,20 +165,19 @@ fn main() -> Result<(), io::Error> {
     for path in paths {
         // assumption: path is full path
         if Path::new(path).try_exists().is_ok() {
-            log_sources.push(Box::new( LogPath {
+            log_sources.push(Box::new(LogPath {
                 src_path: path,
-                dst_path: tmp_dir.path().to_path_buf()
+                dst_path: tmp_dir.path().to_path_buf(),
             }));
-
         }
     }
 
     // 3. some info can be collected via particular commands only
     showln!(noisy, "\t- proceeding output of commands");
     for cmd in commands {
-        log_sources.push( Box::new( LogCmd {
+        log_sources.push(Box::new(LogCmd {
             cmd: cmd,
-            dst_path: tmp_dir.path().to_path_buf()
+            dst_path: tmp_dir.path().to_path_buf(),
         }));
     }
 
@@ -193,8 +191,7 @@ fn main() -> Result<(), io::Error> {
 
         // for now keep directory structure close to the original
         // e.g. what was in /etc will be in /<tmp dir>/etc/
-        if fs::create_dir_all(src.to().parent().unwrap()).is_ok()
-        {
+        if fs::create_dir_all(src.to().parent().unwrap()).is_ok() {
             res = if src.store() { "[Ok]" } else { "[Failed]" };
         }
 
