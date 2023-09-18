@@ -152,7 +152,6 @@ const SizeManual = ({ errors, formData, onChange }) => {
               onChange={(size) => onChange({ size })}
               validated={errors.size && 'error'}
             />
-            <FormValidationError message={errors.size} />
           </InputGroupItem>
           <InputGroupItem>
             <SizeUnitFormSelect
@@ -165,6 +164,7 @@ const SizeManual = ({ errors, formData, onChange }) => {
             />
           </InputGroupItem>
         </InputGroup>
+        <FormValidationError message={errors.size} />
       </FormGroup>
     </div>
   );
@@ -207,7 +207,6 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 onChange={(minSize) => onChange({ minSize })}
                 validated={errors.minSize && 'error'}
               />
-              <FormValidationError message={errors.minSize} />
             </InputGroupItem>
             <InputGroupItem>
               <SizeUnitFormSelect
@@ -219,6 +218,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
               />
             </InputGroupItem>
           </InputGroup>
+          <FormValidationError message={errors.minSize} />
         </FormGroup>
         <FormGroup
           // TRANSLATORS: the maximum partition size
@@ -236,9 +236,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 aria-label={_("Maximum desired size")}
                 value={formData.maxSize}
                 onChange={(maxSize) => onChange({ maxSize })}
-
               />
-              <FormValidationError message={errors.maxSize} />
             </InputGroupItem>
             <InputGroupItem>
               <SizeUnitFormSelect
@@ -250,6 +248,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
               />
             </InputGroupItem>
           </InputGroup>
+          <FormValidationError message={errors.maxSize} />
         </FormGroup>
       </div>
     </div>
