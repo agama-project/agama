@@ -14,7 +14,7 @@ use std::process::Command;
 const DEFAULT_COMMANDS: [&str; 3] = [
     "journalctl -u agama",
     "journalctl -u agama-auto",
-    "journalctl --dmesg"
+    "journalctl --dmesg",
 ];
 
 const DEFAULT_PATHS: [&str; 14] = [
@@ -33,7 +33,7 @@ const DEFAULT_PATHS: [&str; 14] = [
     // config
     "/etc/install.inf",
     "/etc/os-release",
-    "/linuxrc.config"
+    "/linuxrc.config",
 ];
 
 const DEFAULT_RESULT: &str = "/tmp/agama_logs";
@@ -54,8 +54,7 @@ macro_rules! show
 }
 
 // Struct for log represented by a file
-struct LogPath
-{
+struct LogPath {
     // log source
     src_path: &'static str,
     // place where to collect logs, typically a temporary directory
@@ -63,14 +62,12 @@ struct LogPath
 }
 
 // Struct for log created on demmand by a command
-struct LogCmd
-{
+struct LogCmd {
     cmd: &'static str,
     dst_path: PathBuf,
 }
 
-trait LogItem
-{
+trait LogItem {
     // definition of log source
     fn from(&self) -> &'static str;
     // definition of destination as path to a file
@@ -78,52 +75,48 @@ trait LogItem
     fn store(&self) -> bool;
 }
 
-impl LogItem for LogPath
-{
-    fn from(&self) -> &'static str
-    {
+impl LogItem for LogPath {
+    fn from(&self) -> &'static str {
         return self.src_path.clone();
     }
 
-    fn to(&self) -> PathBuf
-    {
+    fn to(&self) -> PathBuf {
         // remove leading '/' if any from the path (reason see later)
         let r_path = Path::new(self.src_path).strip_prefix("/").unwrap();
 
         // here is the reason, join overwrites the content if the joined path is absolute
-        return self.dst_path.join(r_path)
+        return self.dst_path.join(r_path);
     }
 
-    fn store(&self) -> bool
-    {
+    fn store(&self) -> bool {
         let mut res = false;
 
         // for now keep directory structure close to the original
         // e.g. what was in /etc will be in /<tmp dir>/etc/
-        if fs::create_dir_all(self.to().parent().unwrap()).is_ok()
-        {
+        if fs::create_dir_all(self.to().parent().unwrap()).is_ok() {
             let options = CopyOptions::new();
-            res = copy_items(&[self.src_path], self.to().parent().unwrap().as_os_str().to_str().unwrap(), &options).is_ok();
+            res = copy_items(
+                &[self.src_path],
+                self.to().parent().unwrap().as_os_str().to_str().unwrap(),
+                &options,
+            )
+            .is_ok();
         }
 
         return res;
     }
 }
 
-impl LogItem for LogCmd
-{
-    fn from(&self) -> &'static str
-    {
+impl LogItem for LogCmd {
+    fn from(&self) -> &'static str {
         return self.cmd;
     }
 
-    fn to(&self) -> PathBuf
-    {
+    fn to(&self) -> PathBuf {
         return self.dst_path.as_path().join(format!("{}", self.cmd));
     }
 
-    fn store(&self) -> bool
-    {
+    fn store(&self) -> bool {
         let cmd_parts = self.cmd.split_whitespace().collect::<Vec<&str>>();
         let file_path = self.to();
         let output = Command::new(cmd_parts[0])
@@ -140,7 +133,7 @@ impl LogItem for LogCmd
     }
 }
 
-fn main() -> Result<(), io::Error>{
+fn main() -> Result<(), io::Error> {
     // 0. preparation, e.g. later features some logs commands can be added / excluded per users request or
     let commands = DEFAULT_COMMANDS;
     let paths = DEFAULT_PATHS;
@@ -157,28 +150,30 @@ fn main() -> Result<(), io::Error>{
 
     // 2. collect existing / requested paths which should already exist
     showln!(noisy, "\t- proceeding well known paths");
-    for path in paths
-    {
+    for path in paths {
         // assumption: path is full path
-        if Path::new(path).try_exists().is_ok()
-        {
-            log_sources.push( Box::new( LogPath { src_path: path, dst_path: tmp_dir.path().to_path_buf() }));
+        if Path::new(path).try_exists().is_ok() {
+            log_sources.push(Box::new( LogPath {
+                src_path: path,
+                dst_path: tmp_dir.path().to_path_buf()
+            }));
 
         }
     }
 
     // 3. some info can be collected via particular commands only
     showln!(noisy, "\t- proceeding output of commands");
-    for cmd in commands
-    {
-        log_sources.push( Box::new( LogCmd { cmd: cmd, dst_path: tmp_dir.path().to_path_buf() }));
+    for cmd in commands {
+        log_sources.push( Box::new( LogCmd {
+            cmd: cmd,
+            dst_path: tmp_dir.path().to_path_buf()
+        }));
     }
 
     // 4. store it
     showln!(true, "Storing result in: \"{}\"", result);
 
-    for src in log_sources.iter()
-    {
+    for src in log_sources.iter() {
         let mut res = "[Failed]";
 
         show!(noisy, "\t- storing: \"{}\" ... ", src.from());
@@ -193,7 +188,12 @@ fn main() -> Result<(), io::Error>{
         showln!(noisy, "{}", res);
     }
 
-    let compress_cmd = format!("tar -c -f {} --warning=no-file-changed --{} --dereference -C {} .", result, compression, tmp_dir.path().display());
+    let compress_cmd = format!(
+        "tar -c -f {} --warning=no-file-changed --{} --dereference -C {} .",
+        result,
+        compression,
+        tmp_dir.path().display()
+    );
     let cmd_parts = compress_cmd.split_whitespace().collect::<Vec<&str>>();
 
     Command::new(cmd_parts[0])
