@@ -12,28 +12,28 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 const DEFAULT_COMMANDS: [&str; 3] = [
-	"journalctl -u agama",
-	"journalctl -u agama-auto",
-	"journalctl --dmesg"
+    "journalctl -u agama",
+    "journalctl -u agama-auto",
+    "journalctl --dmesg"
 ];
 
 const DEFAULT_PATHS: [&str; 14] = [
-	// logs
-	"/var/log/YaST2",
-	"/var/log/zypper.log",
-	"/var/log/zypper/history*",
-	"/var/log/zypper/pk_backend_zypp",
-	"/var/log/pbl.log",
-	"/var/log/linuxrc.log",
-	"/var/log/wickedd.log",
-	"/var/log/NetworkManager",
-	"/var/log/messages",
-	"/var/log/boot.msg",
-	"/var/log/udev.log",
-	// config
-	"/etc/install.inf",
-	"/etc/os-release",
-	"/linuxrc.config"
+    // logs
+    "/var/log/YaST2",
+    "/var/log/zypper.log",
+    "/var/log/zypper/history*",
+    "/var/log/zypper/pk_backend_zypp",
+    "/var/log/pbl.log",
+    "/var/log/linuxrc.log",
+    "/var/log/wickedd.log",
+    "/var/log/NetworkManager",
+    "/var/log/messages",
+    "/var/log/boot.msg",
+    "/var/log/udev.log",
+    // config
+    "/etc/install.inf",
+    "/etc/os-release",
+    "/linuxrc.config"
 ];
 
 const DEFAULT_RESULT: &str = "/tmp/agama_logs";
@@ -44,162 +44,162 @@ const DEFAULT_TMP_DIR: &str = "agama-logs";
 // A wrapper around println which shows (or not) output depending on noisy boolean variable
 macro_rules! showln
 {
-	($n:expr, $($arg:tt)*) => { if($n) { println!($($arg)*) } }
+    ($n:expr, $($arg:tt)*) => { if($n) { println!($($arg)*) } }
 }
 //
 // A wrapper around println which shows (or not) output depending on noisy boolean variable
 macro_rules! show
 {
-	($n:expr, $($arg:tt)*) => { if($n) { print!($($arg)*) } }
+    ($n:expr, $($arg:tt)*) => { if($n) { print!($($arg)*) } }
 }
 
 // Struct for log represented by a file
 struct LogPath
 {
-	// log source
-	src_path: &'static str,
-	// place where to collect logs, typically a temporary directory
-	dst_path: PathBuf,
+    // log source
+    src_path: &'static str,
+    // place where to collect logs, typically a temporary directory
+    dst_path: PathBuf,
 }
 
 // Struct for log created on demmand by a command
 struct LogCmd
 {
-	cmd: &'static str,
-	dst_path: PathBuf,
+    cmd: &'static str,
+    dst_path: PathBuf,
 }
 
 trait LogItem
 {
-	// definition of log source
-	fn from(&self) -> &'static str;
-	// definition of destination as path to a file
-	fn to(&self) -> PathBuf;
-	fn store(&self) -> bool;
+    // definition of log source
+    fn from(&self) -> &'static str;
+    // definition of destination as path to a file
+    fn to(&self) -> PathBuf;
+    fn store(&self) -> bool;
 }
 
 impl LogItem for LogPath
 {
-	fn from(&self) -> &'static str
-	{
-		return self.src_path.clone();
-	}
+    fn from(&self) -> &'static str
+    {
+        return self.src_path.clone();
+    }
 
-	fn to(&self) -> PathBuf
-	{
-		// remove leading '/' if any from the path (reason see later)
-		let r_path = Path::new(self.src_path).strip_prefix("/").unwrap();
+    fn to(&self) -> PathBuf
+    {
+        // remove leading '/' if any from the path (reason see later)
+        let r_path = Path::new(self.src_path).strip_prefix("/").unwrap();
 
-		// here is the reason, join overwrites the content if the joined path is absolute
-		return self.dst_path.join(r_path)
-	}
+        // here is the reason, join overwrites the content if the joined path is absolute
+        return self.dst_path.join(r_path)
+    }
 
-	fn store(&self) -> bool
-	{
-		let mut res = false;
+    fn store(&self) -> bool
+    {
+        let mut res = false;
 
-		// for now keep directory structure close to the original
-		// e.g. what was in /etc will be in /<tmp dir>/etc/
-		if fs::create_dir_all(self.to().parent().unwrap()).is_ok()
-		{
-			let options = CopyOptions::new();
-			res = copy_items(&[self.src_path], self.to().parent().unwrap().as_os_str().to_str().unwrap(), &options).is_ok();
-		}
+        // for now keep directory structure close to the original
+        // e.g. what was in /etc will be in /<tmp dir>/etc/
+        if fs::create_dir_all(self.to().parent().unwrap()).is_ok()
+        {
+            let options = CopyOptions::new();
+            res = copy_items(&[self.src_path], self.to().parent().unwrap().as_os_str().to_str().unwrap(), &options).is_ok();
+        }
 
-		return res;
-	}
+        return res;
+    }
 }
 
 impl LogItem for LogCmd
 {
-	fn from(&self) -> &'static str
-	{
-		return self.cmd;
-	}
+    fn from(&self) -> &'static str
+    {
+        return self.cmd;
+    }
 
-	fn to(&self) -> PathBuf
-	{
-		return self.dst_path.as_path().join(format!("{}", self.cmd));
-	}
+    fn to(&self) -> PathBuf
+    {
+        return self.dst_path.as_path().join(format!("{}", self.cmd));
+    }
 
-	fn store(&self) -> bool
-	{
-		let cmd_parts = self.cmd.split_whitespace().collect::<Vec<&str>>();
-		let file_path = self.to();
-		let output = Command::new(cmd_parts[0])
-			.args(cmd_parts[1..].iter())
-			.output()
-			.expect("failed run the command");
-		let mut file_stdout = File::create(format!("{}.out.log", file_path.display())).unwrap();
-		let mut file_stderr = File::create(format!("{}.err.log", file_path.display())).unwrap();
+    fn store(&self) -> bool
+    {
+        let cmd_parts = self.cmd.split_whitespace().collect::<Vec<&str>>();
+        let file_path = self.to();
+        let output = Command::new(cmd_parts[0])
+            .args(cmd_parts[1..].iter())
+            .output()
+            .expect("failed run the command");
+        let mut file_stdout = File::create(format!("{}.out.log", file_path.display())).unwrap();
+        let mut file_stderr = File::create(format!("{}.err.log", file_path.display())).unwrap();
 
-		let mut write_res = file_stdout.write_all(&output.stdout).is_ok();
-		write_res = file_stderr.write_all(&output.stderr).is_ok() && write_res;
+        let mut write_res = file_stdout.write_all(&output.stdout).is_ok();
+        write_res = file_stderr.write_all(&output.stderr).is_ok() && write_res;
 
-		return output.status.success() && write_res;
-	}
+        return output.status.success() && write_res;
+    }
 }
 
 fn main() -> Result<(), io::Error>{
-	// 0. preparation, e.g. later features some logs commands can be added / excluded per users request or
-	let commands = DEFAULT_COMMANDS;
-	let paths = DEFAULT_PATHS;
-	let result = format!("{}.{}", DEFAULT_RESULT, DEFAULT_COMPRESSION.1);
-	let noisy = DEFAULT_NOISY;
-	let compression = DEFAULT_COMPRESSION.0;
-	let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
+    // 0. preparation, e.g. later features some logs commands can be added / excluded per users request or
+    let commands = DEFAULT_COMMANDS;
+    let paths = DEFAULT_PATHS;
+    let result = format!("{}.{}", DEFAULT_RESULT, DEFAULT_COMPRESSION.1);
+    let noisy = DEFAULT_NOISY;
+    let compression = DEFAULT_COMPRESSION.0;
+    let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
     showln!(noisy, "Collecting Agama logs:");
 
-	// 1. create temporary directory where to collect all files (similar to what old save_y2logs
-	// does)
-	let tmp_dir = TempDir::new(DEFAULT_TMP_DIR)?;
+    // 1. create temporary directory where to collect all files (similar to what old save_y2logs
+    // does)
+    let tmp_dir = TempDir::new(DEFAULT_TMP_DIR)?;
 
-	// 2. collect existing / requested paths which should already exist
-	showln!(noisy, "\t- proceeding well known paths");
-	for path in paths
-	{
-		// assumption: path is full path
-		if Path::new(path).try_exists().is_ok()
-		{
-			log_sources.push( Box::new( LogPath { src_path: path, dst_path: tmp_dir.path().to_path_buf() }));
+    // 2. collect existing / requested paths which should already exist
+    showln!(noisy, "\t- proceeding well known paths");
+    for path in paths
+    {
+        // assumption: path is full path
+        if Path::new(path).try_exists().is_ok()
+        {
+            log_sources.push( Box::new( LogPath { src_path: path, dst_path: tmp_dir.path().to_path_buf() }));
 
-		}
-	}
+        }
+    }
 
-	// 3. some info can be collected via particular commands only
-	showln!(noisy, "\t- proceeding output of commands");
-	for cmd in commands
-	{
-		log_sources.push( Box::new( LogCmd { cmd: cmd, dst_path: tmp_dir.path().to_path_buf() }));
-	}
+    // 3. some info can be collected via particular commands only
+    showln!(noisy, "\t- proceeding output of commands");
+    for cmd in commands
+    {
+        log_sources.push( Box::new( LogCmd { cmd: cmd, dst_path: tmp_dir.path().to_path_buf() }));
+    }
 
-	// 4. store it
-	showln!(true, "Storing result in: \"{}\"", result);
+    // 4. store it
+    showln!(true, "Storing result in: \"{}\"", result);
 
-	for src in log_sources.iter()
-	{
-		let mut res = "[Failed]";
+    for src in log_sources.iter()
+    {
+        let mut res = "[Failed]";
 
-		show!(noisy, "\t- storing: \"{}\" ... ", src.from());
+        show!(noisy, "\t- storing: \"{}\" ... ", src.from());
 
-		// for now keep directory structure close to the original
-		// e.g. what was in /etc will be in /<tmp dir>/etc/
-		if fs::create_dir_all(src.to().parent().unwrap()).is_ok()
-		{
-			res = if src.store() { "[Ok]" } else { "[Failed]" };
-		}
+        // for now keep directory structure close to the original
+        // e.g. what was in /etc will be in /<tmp dir>/etc/
+        if fs::create_dir_all(src.to().parent().unwrap()).is_ok()
+        {
+            res = if src.store() { "[Ok]" } else { "[Failed]" };
+        }
 
-		showln!(noisy, "{}", res);
-	}
+        showln!(noisy, "{}", res);
+    }
 
-	let compress_cmd = format!("tar -c -f {} --warning=no-file-changed --{} --dereference -C {} .", result, compression, tmp_dir.path().display());
-	let cmd_parts = compress_cmd.split_whitespace().collect::<Vec<&str>>();
+    let compress_cmd = format!("tar -c -f {} --warning=no-file-changed --{} --dereference -C {} .", result, compression, tmp_dir.path().display());
+    let cmd_parts = compress_cmd.split_whitespace().collect::<Vec<&str>>();
 
-	Command::new(cmd_parts[0])
-		.args(cmd_parts[1..].iter())
-		.status()
-		.expect("failed crating the archive");
+    Command::new(cmd_parts[0])
+        .args(cmd_parts[1..].iter())
+        .status()
+        .expect("failed crating the archive");
 
-	Ok(())
+    Ok(())
 }
