@@ -3,107 +3,107 @@
   // from brand.suse.com
 
   // Font families
-  --pf-global--FontFamily--sans-serif: var(--ff);
-  --pf-global--FontFamily--heading--sans-serif: var(--ff-headings);
-  --pf-global--FontFamily--monospace: var(--ff-code);
-  --pf-global--FontFamily--redhat-updated--sans-serif: var(--ff);
-  --pf-global--FontFamily--redhat-updated--heading--sans-serif: var(--ff-headings);
-  --pf-global--FontFamily--redhat--monospace: var(--ff-code);
-  --pf-global--FontFamily--redhatVF--sans-serif: var(--ff);
-  --pf-global--FontFamily--redhatVF--heading--sans-serif: var(--ff-headings);
-  --pf-global--FontFamily--redhatVF--monospace: var(--ff-code);
-  --pf-global--FontFamily--overpass--sans-serif: var(--ff);
-  --pf-global--FontFamily--overpass--monospace: var(--ff-code);
+  --pf-v5-global--FontFamily--sans-serif: var(--ff);
+  --pf-v5-global--FontFamily--heading--sans-serif: var(--ff-headings);
+  --pf-v5-global--FontFamily--monospace: var(--ff-code);
+  --pf-v5-global--FontFamily--redhat-updated--sans-serif: var(--ff);
+  --pf-v5-global--FontFamily--redhat-updated--heading--sans-serif: var(--ff-headings);
+  --pf-v5-global--FontFamily--redhat--monospace: var(--ff-code);
+  --pf-v5-global--FontFamily--redhatVF--sans-serif: var(--ff);
+  --pf-v5-global--FontFamily--redhatVF--heading--sans-serif: var(--ff-headings);
+  --pf-v5-global--FontFamily--redhatVF--monospace: var(--ff-code);
+  --pf-v5-global--FontFamily--overpass--sans-serif: var(--ff);
+  --pf-v5-global--FontFamily--overpass--monospace: var(--ff-code);
 
   // Font sizes
-  --pf-global--FontSize--4xl: 2em;
-  --pf-global--FontSize--3xl: 1.75em;
-  --pf-global--FontSize--2xl: 1.5em;
-  --pf-global--FontSize--xl: 1.3em;
-  --pf-global--FontSize--lg: 1.15em;
-  --pf-global--FontSize--md: var(--fs-base);
+  --pf-v5-global--FontSize--4xl: 2em;
+  --pf-v5-global--FontSize--3xl: 1.75em;
+  --pf-v5-global--FontSize--2xl: 1.5em;
+  --pf-v5-global--FontSize--xl: 1.3em;
+  --pf-v5-global--FontSize--lg: 1.15em;
+  --pf-v5-global--FontSize--md: var(--fs-base);
 
   // Font weight
-  --pf-global--FontWeight--light: var(--fw-light);
-  --pf-global--FontWeight--normal: var(--fw-normal);
-  --pf-global--FontWeight--semi-bold: var(--fw-medium);
-  --pf-global--FontWeight--overpass--semi-bold: var(--fw-medium);
-  --pf-global--FontWeight--bold: var(--fw-bold);
-  --pf-global--FontWeight--overpass--bold: var(--fw-bold);
+  --pf-v5-global--FontWeight--light: var(--fw-light);
+  --pf-v5-global--FontWeight--normal: var(--fw-normal);
+  --pf-v5-global--FontWeight--semi-bold: var(--fw-medium);
+  --pf-v5-global--FontWeight--overpass--semi-bold: var(--fw-medium);
+  --pf-v5-global--FontWeight--bold: var(--fw-bold);
+  --pf-v5-global--FontWeight--overpass--bold: var(--fw-bold);
 
   // Colors
-  --pf-global--primary-color--100: var(--color-primary);
-  --pf-global--primary-color--200: var(--color-primary);
-  --pf-global--link--Color: var(--color-link);
-  --pf-global--link--Color--hover: var(--color-link-hover);
-  --pf-global--BackgroundColor--dark-100: var(--color-primary);
+  --pf-v5-global--primary-color--100: var(--color-primary);
+  --pf-v5-global--primary-color--200: var(--color-primary);
+  --pf-v5-global--link--Color: var(--color-link);
+  --pf-v5-global--link--Color--hover: var(--color-link-hover);
+  --pf-v5-global--BackgroundColor--dark-100: var(--color-primary);
 }
 
-.pf-c-button.pf-m-primary {
-  --pf-c-button--m-primary--BackgroundColor: var(--color-button-primary);
-  --pf-c-button--m-primary--hover--BackgroundColor: var(--color-button-primary-hover);
+.pf-v5-c-button.pf-m-primary {
+  --pf-v5-c-button--m-primary--BackgroundColor: var(--color-button-primary);
+  --pf-v5-c-button--m-primary--hover--BackgroundColor: var(--color-button-primary-hover);
 }
 
 // Make :hover style visible when the button is in a :focus state too
-.pf-c-button.pf-m-primary:focus:hover {
-  --pf-c-button--m-primary--BackgroundColor: var(--color-button-primary-hover);
+.pf-v5-c-button.pf-m-primary:focus:hover {
+  --pf-v5-c-button--m-primary--BackgroundColor: var(--color-button-primary-hover);
 }
 
-.pf-c-button.pf-m-link {
+.pf-v5-c-button.pf-m-link {
   // Colors for buttons modifiers
-  --pf-c-button--m-link--Color: var(--color-link);
-  --pf-c-button--m-link--Color--hover: var(--color-link-hover);
-  --pf-c-button--m-link--m-inline--hover--Color: var(--link-color-hover);
+  --pf-v5-c-button--m-link--Color: var(--color-link);
+  --pf-v5-c-button--m-link--Color--hover: var(--color-link-hover);
+  --pf-v5-c-button--m-link--m-inline--hover--Color: var(--link-color-hover);
 }
 
-.pf-c-button.pf-m-plain {
-  --pf-c-button--m-plain--Color: var(--color-button-plain-link);
-  --pf-c-button--m-plain--hover--Color: var(--color-button-plain-link-hover);
+.pf-v5-c-button.pf-m-plain {
+  --pf-v5-c-button--m-plain--Color: var(--color-button-plain-link);
+  --pf-v5-c-button--m-plain--hover--Color: var(--color-button-plain-link-hover);
 }
 
-.pf-c-button.pf-m-secondary {
-  --pf-c-button--m-secondary--hover--after--BorderColor: var(--color-link-hover);
-  --pf-c-button--m-secondary--hover--Color: var(--color-link-hover);
+.pf-v5-c-button.pf-m-secondary {
+  --pf-v5-c-button--m-secondary--hover--after--BorderColor: var(--color-link-hover);
+  --pf-v5-c-button--m-secondary--hover--Color: var(--color-link-hover);
 }
 
 // Make :hover style visible when the button is in a :focus state too
-.pf-c-button.pf-m-secondary:focus:hover {
-  --pf-c-button--after--BorderColor: var(--color-link-hover);
-  --pf-c-button--m-secondary--Color: var(--color-link-hover);
+.pf-v5-c-button.pf-m-secondary:focus:hover {
+  --pf-v5-c-button--after--BorderColor: var(--color-link-hover);
+  --pf-v5-c-button--m-secondary--Color: var(--color-link-hover);
 }
 
 // SVG icons does not obey font-size
-.pf-c-empty-state__icon {
+.pf-v5-c-empty-state__icon {
   inline-size: 10rem;
   block-size: 10rem;
 }
 
 // Do not add block padding to empty state inside a table/column
-table td > .pf-c-empty-state {
-  --pf-c-empty-state--PaddingTop: 0;
-  --pf-c-empty-state--PaddingBottom: 0;
+table td > .pf-v5-c-empty-state {
+  --pf-v5-c-empty-state--PaddingTop: 0;
+  --pf-v5-c-empty-state--PaddingBottom: 0;
 }
 
 // Fix single-line sub-progress miss-alignment
-.pf-c-progress.pf-m-singleline .pf-c-progress__bar {
+.pf-v5-c-progress.pf-m-singleline .pf-v5-c-progress__bar {
   grid-row: 1/3;
   grid-column: 1/3;
 }
 
-.pf-c-modal-box__body {
-  padding-block: var(--pf-c-modal-box__body--PaddingTop);
+.pf-v5-c-modal-box__body {
+  padding-block: var(--pf-v5-c-modal-box__body--PaddingTop);
 }
 
-.pf-c-form__actions,
-.pf-c-modal-box__footer {
+.pf-v5-c-form__actions,
+.pf-v5-c-modal-box__footer {
   // We prefer buttons placed at the right
   flex-direction: row-reverse;
 
   // Overrides buttons margins. In row-reverse mode, we need margin
   // for the :last-child too.
   // See https://github.com/patternfly/patternfly/blob/9c8cb7c8609613ab53eef3fe05addda16bc63233/src/patternfly/components/ModalBox/modal-box.scss#L211
-  > .pf-c-button {
-    margin-inline-end: var(--pf-c-modal-box__footer--c-button--MarginRight);
+  > .pf-v5-c-button {
+    margin-inline-end: var(--pf-v5-c-modal-box__footer--c-button--MarginRight);
   }
 }
 
@@ -112,56 +112,56 @@ table td > .pf-c-empty-state {
 // See:
 //  * https://github.com/openSUSE/Agama/issues/115#issuecomment-1090205696
 //  * https://github.com/patternfly/patternfly/issues/4777#issuecomment-1092090484
-.pf-c-form__label {
-  --pf-c-form__label--hover--Cursor: default;
-  --pf-c-form__label--m-disabled--hover--Cursor: default;
+.pf-v5-c-form__label {
+  --pf-v5-c-form__label--hover--Cursor: default;
+  --pf-v5-c-form__label--m-disabled--hover--Cursor: default;
 }
 
 // Do not show top border for empty data lists
-.pf-c-data-list:empty {
-  --pf-c-data-list--BorderTopWidth: 0;
+.pf-v5-c-data-list:empty {
+  --pf-v5-c-data-list--BorderTopWidth: 0;
 }
 
 // Do not use thick border-top for data lists
-.pf-c-data-list {
-  --pf-c-data-list--BorderTopWidth: 2px;
+.pf-v5-c-data-list {
+  --pf-v5-c-data-list--BorderTopWidth: 2px;
 }
 
-.pf-c-toolbar {
+.pf-v5-c-toolbar {
   --stack-gutter: 0;
-  --pf-c-toolbar--PaddingTop: 0;
-  --pf-c-toolbar--PaddingBottom: 0;
+  --pf-v5-c-toolbar--PaddingTop: 0;
+  --pf-v5-c-toolbar--PaddingBottom: 0;
   border-block-end: 1px solid var(--color-gray-light);
 }
 
-.pf-c-toolbar__content {
-  --pf-c-toolbar__content--PaddingRight: 0;
-  --pf-c-toolbar__content--PaddingLeft: 0;
+.pf-v5-c-toolbar__content {
+  --pf-v5-c-toolbar__content--PaddingRight: 0;
+  --pf-v5-c-toolbar__content--PaddingLeft: 0;
 }
 
-.pf-c-text-input-group__utilities .pf-c-button {
+.pf-v5-c-text-input-group__utilities .pf-v5-c-button {
   padding: 0;
 }
 
 .pf-m-grid-md {
-  &.pf-c-table {
+  &.pf-v5-c-table {
     tbody:first-of-type {
-      --pf-c-table--tbody--responsive--border-width--base: 4px;
+      --pf-v5-c-table--tbody--responsive--border-width--base: 4px;
     }
 
-    tr:not(.pf-c-table__expandable-row) {
-      --pf-c-table-tr--responsive--border-width--base: 4px;
+    tr:not(.pf-v5-c-table__expandable-row) {
+      --pf-v5-c-table-tr--responsive--border-width--base: 4px;
     }
   }
 }
 
-.pf-c-switch {
+.pf-v5-c-switch {
   // We prefer having same label color for checked and not checked switches
-  --pf-c-switch__input--not-checked__label--Color: var(--pf-c-switch__input--checked__label--Color);
+  --pf-v5-c-switch__input--not-checked__label--Color: var(--pf-v5-c-switch__input--checked__label--Color);
 }
 
 // Make the switch focus looks like the rest
-.pf-c-switch__input:focus ~ .pf-c-switch__toggle {
+.pf-v5-c-switch__input:focus ~ .pf-v5-c-switch__toggle {
   outline: none;
   box-shadow: 0 0 0 1px var(--focus-color);
 }

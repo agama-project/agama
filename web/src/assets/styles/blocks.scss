@@ -119,22 +119,22 @@ section > .content {
 }
 
 .sidebar a {
-  margin-inline-start: var(--pf-global--spacer--md);
+  margin-inline-start: var(--pf-v5-global--spacer--md);
 
   // Keep links and buttons labels aligned by adding the same margin than
-  // .pf-c-button__icon.pf-m-start
+  // .pf-v5-c-button__icon.pf-m-start
   svg {
-    margin-inline-end: var(--pf-global--spacer--xs);
+    margin-inline-end: var(--pf-v5-global--spacer--xs);
   }
 }
 
 // Remove not wanted PatternFly padding left on a loading link
 .sidebar button.pf-m-progress {
-  --pf-c-button--m-progress--PaddingLeft: var(--pf-global--spacer--md);
+  --pf-v5-c-button--m-progress--PaddingLeft: var(--pf-v5-global--spacer--md);
 }
 
 .sidebar button.pf-m-progress + div {
-  padding-inline-start: calc(var(--pf-global--spacer--md));
+  padding-inline-start: calc(var(--pf-v5-global--spacer--md));
 }
 
 .sidebar[data-state="hidden"] {
@@ -148,13 +148,13 @@ section > .content {
 }
 
 .disclosure > button {
-  margin-inline-start: var(--pf-global--spacer--md);
+  margin-inline-start: var(--pf-v5-global--spacer--md);
   display: inline-flex;
   align-items: center;
   // Keep links and buttons labels aligned by adding the same margin than
-  // .pf-c-button__icon.pf-m-start
+  // .pf-v5-c-button__icon.pf-m-start
   svg {
-    margin-inline-end: var(--pf-global--spacer--xs);
+    margin-inline-end: var(--pf-v5-global--spacer--xs);
     transition: transform 0.2s ease-in-out;
   }
 
@@ -172,7 +172,7 @@ section > .content {
 
 .disclosure > div {
   margin-inline-start: calc(
-    var(--pf-global--spacer--md) + 12px // half of the icon size;
+    var(--pf-v5-global--spacer--md) + 12px // half of the icon size;
   );
   border-inline-start: 1px solid var(--color-primary-lighter);
   padding-block: var(--spacer-small);
@@ -188,8 +188,8 @@ section > .content {
 
 // Make progress more compact
 .dasd-format-progress {
-  .pf-c-progress {
-    --pf-c-progress--GridGap: var(--spacer-small);
+  .pf-v5-c-progress {
+    --pf-v5-c-progress--GridGap: var(--spacer-small);
   }
 }
 
@@ -199,7 +199,7 @@ section > .content {
 }
 
 .page-options > button {
-  --pf-c-button--PaddingRight: 0
+  --pf-v5-c-button--PaddingRight: 0
 }
 
 .page-options a {
@@ -260,7 +260,7 @@ span.notification-mark[data-variant="sidebar"] {
   }
 
   div:nth-child(2) {
-    padding-left: calc(var(--icon-size) + var(--pf-c-helper-text__item-icon--MarginRight));
+    padding-left: calc(var(--icon-size) + var(--pf-v5-c-helper-text__item-icon--MarginRight));
   }
 }
 
@@ -302,12 +302,12 @@ span.notification-mark[data-variant="sidebar"] {
 }
 
 // compact lists in popover
-.pf-c-popover li + li {
+.pf-v5-c-popover li + li {
   margin: 0;
 }
 
 .radio-group {
-  .pf-c-radio {
+  .pf-v5-c-radio {
     position: relative;
     padding-block-end: var(--spacer-small);
     padding-inline-end: var(--spacer-small);

@@ -74,7 +74,7 @@ describe("Popup", () => {
       installerRender(<TestingPopup />);
 
       const dialog = await screen.findByRole("dialog");
-      expect(dialog.classList.contains("pf-c-modal-box")).toBe(true);
+      expect(dialog.classList.contains("pf-v5-c-modal-box")).toBe(true);
 
       within(dialog).getByText("The Popup Content");
     });

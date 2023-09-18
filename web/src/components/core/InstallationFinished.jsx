@@ -68,7 +68,7 @@ function InstallationFinished() {
           headingLevel="h2"
           icon={<EmptyStateIcon icon={({ ...props }) => <Icon name="check_circle" { ...props } />} className="color-success" />}
         />
-        <EmptyStateBody className="pf-c-content">
+        <EmptyStateBody className="pf-v5-c-content">
           <div>
             <Text>{_("The installation on your machine is complete.")}</Text>
             <Text>

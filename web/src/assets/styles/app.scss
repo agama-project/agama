@@ -22,8 +22,8 @@
 // Align the expandable-actions with the actions list
 // See https://www.patternfly.org/v4/components/list#css-variables
 .expandable-actions {
-  // --pf-c-list--PaddingLeft - --pf-c-list--nested--MarginLeft - --pf-c-list--m-icon-lg__item-icon-MinWidth
-  margin-inline-start: calc(var(--pf-global--spacer--lg) - var(--pf-global--spacer--sm) - var(--pf-global--icon--FontSize--sm));
+  // --pf-v5-c-list--PaddingLeft - --pf-v5-c-list--nested--MarginLeft - --pf-v5-c-list--m-icon-lg__item-icon-MinWidth
+  margin-inline-start: calc(var(--pf-v5-global--spacer--lg) - var(--pf-v5-global--spacer--sm) - var(--pf-v5-global--icon--FontSize--sm));
 }
 
 .expandable-actions > div {
@@ -31,26 +31,26 @@
 }
 
 // Using a "selected-product" CSS class because sadly we cannot use
-// ".pf-c-card:has(> input[type="radio"]:checked)" yet
+// ".pf-v5-c-card:has(> input[type="radio"]:checked)" yet
 //
 // See:
 //   - https://drafts.csswg.org/selectors/#relational
 //   - https://caniuse.com/css-has
-.pf-c-card.selected-product {
-  --pf-c-card--BoxShadow: var(--pf-global--BoxShadow--md);
+.pf-v5-c-card.selected-product {
+  --pf-v5-c-card--BoxShadow: var(--pf-v5-global--BoxShadow--md);
 
-  .pf-c-radio {
+  .pf-v5-c-radio {
     // https://drafts.csswg.org/css-ui/#widget-accent
     // https://caniuse.com/mdn-css_properties_accent-color
     accent-color: var(--color-primary-darkest);
   }
 
-  .pf-c-radio__label {
+  .pf-v5-c-radio__label {
     color: var(--color-primary);
     font-weight: bold;
   }
 
-  .pf-c-radio__description {
+  .pf-v5-c-radio__description {
     color: var(--color-primary-darkest);
   }
 }
@@ -70,16 +70,16 @@
 }
 
 // *DataLists custom styles
-li.pf-c-data-list__item {
+li.pf-v5-c-data-list__item {
   border-block-end-width: thin;
 }
 
-div.pf-c-data-list__item-row:has(button.remove-link:hover) {
+div.pf-v5-c-data-list__item-row:has(button.remove-link:hover) {
   background-color: #fafafa;
 }
 
 button.remove-link:hover {
-  color: var(--pf-c-button--m-danger--BackgroundColor);
+  color: var(--pf-v5-c-button--m-danger--BackgroundColor);
 }
 
 
@@ -89,16 +89,16 @@ button.hidden-popover-button {
 }
 
 .danger-action {
-  --pf-c-dropdown__menu-item--Color: var(--pf-global--danger-color--200);
+  --pf-v5-c-dropdown__menu-item--Color: var(--pf-v5-global--danger-color--200);
 
-  color: var(--pf-global--danger-color--200);
+  color: var(--pf-v5-global--danger-color--200);
 
   svg {
-    fill: var(--pf-global--danger-color--200);
+    fill: var(--pf-v5-global--danger-color--200);
   }
 }
 
-.wifi-network-menu button.pf-c-dropdown__toggle {
+.wifi-network-menu button.pf-v5-c-dropdown__toggle {
   padding-right: 0;
 }
 
@@ -117,7 +117,7 @@ button.hidden-popover-button {
 }
 
 .volumes-list {
-  .pf-c-label {
+  .pf-v5-c-label {
     margin-inline-end: 5px;
   }
 }
