@@ -160,7 +160,7 @@ const SizeManual = ({ errors, formData, onChange }) => {
               aria-label={_("Size unit")}
               units={Object.values(SIZE_UNITS)}
               value={formData.sizeUnit }
-              onChange={(sizeUnit) => onChange({ sizeUnit })}
+              onChange={(_, sizeUnit) => onChange({ sizeUnit })}
             />
           </InputGroupItem>
         </InputGroup>
@@ -214,7 +214,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 aria-label={_("Unit for the minimum size")}
                 units={Object.values(SIZE_UNITS)}
                 value={formData.minSizeUnit }
-                onChange={(minSizeUnit) => onChange({ minSizeUnit })}
+                onChange={(_, minSizeUnit) => onChange({ minSizeUnit })}
               />
             </InputGroupItem>
           </InputGroup>
@@ -244,7 +244,7 @@ and maximum. If no maximum is given then the file system will be as big as possi
                 aria-label={_("Unit for the maximum size")}
                 units={Object.values(SIZE_UNITS)}
                 value={formData.maxSizeUnit || formData.minSizeUnit }
-                onChange={(maxSizeUnit) => onChange({ maxSizeUnit })}
+                onChange={(_, maxSizeUnit) => onChange({ maxSizeUnit })}
               />
             </InputGroupItem>
           </InputGroup>
@@ -449,7 +449,7 @@ const reducer = (state, action) => {
 export default function VolumeForm({ id, volume: currentVolume, templates = [], onSubmit }) {
   const [state, dispatch] = useReducer(reducer, currentVolume || templates[0], createInitialState);
 
-  const changeVolume = (mountPath) => {
+  const changeVolume = (_, mountPath) => {
     const volume = templates.find(t => t.mountPath === mountPath);
     dispatch({ type: "CHANGE_VOLUME", payload: { volume } });
   };
