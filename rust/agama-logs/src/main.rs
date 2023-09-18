@@ -1,6 +1,9 @@
 extern crate tempdir;
+extern crate fs_extra;
 
 use tempdir::TempDir;
+use fs_extra::copy_items;
+use fs_extra::dir::CopyOptions;
 use std::io;
 use std::fs;
 use std::fs::File;
@@ -15,7 +18,7 @@ const DEFAULT_COMMANDS: [&str; 3] = [
 ];
 
 const DEFAULT_PATHS: [&str; 14] = [
-    // logs
+	// logs
 	"/var/log/YaST2",
 	"/var/log/zypper.log",
 	"/var/log/zypper/history*",
@@ -99,7 +102,8 @@ impl LogItem for LogPath
 		// e.g. what was in /etc will be in /<tmp dir>/etc/
 		if fs::create_dir_all(self.to().parent().unwrap()).is_ok()
 		{
-			res = fs::copy(self.src_path, self.to()).is_ok();
+			let options = CopyOptions::new();
+			res = copy_items(&[self.src_path], self.to().parent().unwrap().as_os_str().to_str().unwrap(), &options).is_ok();
 		}
 
 		return res;
