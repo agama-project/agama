@@ -416,7 +416,10 @@ mod test {
                 "address-data".to_string(),
                 Value::new(v6_address_data).to_owned(),
             ),
-            ("gateway".to_string(), Value::new("2001:db8:1::1").to_owned()),
+            (
+                "gateway".to_string(),
+                Value::new("2001:db8:1::1").to_owned(),
+            ),
             (
                 "dns-data".to_string(),
                 Value::new(vec!["2001:db8:1::2"]).to_owned(),
@@ -447,7 +450,10 @@ mod test {
         assert_eq!(ipv4.nameservers, vec![Ipv4Addr::new(192, 168, 0, 2)]);
         assert_eq!(ipv4.method, IpMethod::Auto);
         assert_eq!(ipv6.addresses, vec!["2001:db8:1::10/64".parse().unwrap()]);
-        assert_eq!(ipv6.nameservers, vec![Ipv6Addr::new(0x2001, 0xdb8, 0x1, 0, 0, 0, 0, 2)]);
+        assert_eq!(
+            ipv6.nameservers,
+            vec![Ipv6Addr::new(0x2001, 0xdb8, 0x1, 0, 0, 0, 0, 2)]
+        );
         assert_eq!(ipv6.method, IpMethod::Manual);
     }
 
