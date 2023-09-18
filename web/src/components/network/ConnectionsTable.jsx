@@ -91,7 +91,6 @@ export default function ConnectionsTable ({
                   // TRANSLATORS: %s is replaced by a network connection name
                   aria-label={sprintf(_("Actions for connection %s"), connection.name)}
                   actions={actions}
-                  connection={connection}
                 />
               </Td>
             </Tr>

@@ -67,11 +67,14 @@ describe("ConnectionsTable", () => {
     });
 
     describe("and the user clicks on the actions toggler", () => {
-      it("renders a list of available actions is shown", async () => {
+      it("renders a list of available actions", async () => {
         const { user } = plainRender(<ConnectionsTable connections={conns} />);
         const connectionActions = screen.getByRole("button", { name: "Actions for connection WiFi 1" });
+        const actionsColumn = connectionActions.parentNode;
+        const menu = await within(actionsColumn).queryByRole("menu");
+        expect(menu).toBeNull();
         await user.click(connectionActions);
-        await screen.findByRole("menu", { name: "Actions for connection WiFi 1" });
+        await screen.findByRole("menu");
       });
 
       describe("and then in the Edit action", () => {
@@ -79,8 +82,9 @@ describe("ConnectionsTable", () => {
           const onEditFn = jest.fn();
           const { user } = plainRender(<ConnectionsTable connections={conns} onEdit={onEditFn} />);
           const connectionActions = screen.getByRole("button", { name: "Actions for connection WiFi 1" });
+          const actionsColumn = connectionActions.parentNode;
           await user.click(connectionActions);
-          const menu = await screen.findByRole("menu", { name: "Actions for connection WiFi 1" });
+          const menu = await within(actionsColumn).findByRole("menu");
           const editAction = within(menu).getByRole("menuitem", { name: "Edit connection WiFi 1" });
           await user.click(editAction);
 
