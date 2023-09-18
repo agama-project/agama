@@ -6,10 +6,9 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-const DEFAULT_COMMANDS: [(&str, &str); 2] = [
-    // (executable, {options})
-	("journalctl", "-u agama"),
-	("journalctl", "--dmesg")
+const DEFAULT_COMMANDS: [&str; 2] = [
+	"journalctl -u agama",
+	"journalctl --dmesg"
 ];
 
 const DEFAULT_PATHS: [&str; 14] = [
@@ -52,7 +51,7 @@ macro_rules! show
 struct LogPath
 {
 	// log source
-	src_path: PathBuf,
+	src_path: &'static str,
 	// place where to collect logs, typically a temporary directory
 	dst_path: PathBuf,
 }
@@ -68,14 +67,15 @@ trait LogItem
 {
 	// definition of source as path to a file
 	// It means, doesn't matter where the log came from, now it is a file
-	fn from(&self) -> PathBuf;
+	fn from(&self) -> &'static str;
 	// definition of destination as path to a file
 	fn to(&self) -> PathBuf;
+	fn store(&self) -> bool;
 }
 
 impl LogItem for LogPath
 {
-	fn from(&self) -> PathBuf
+	fn from(&self) -> &'static str
 	{
 		return self.src_path.clone();
 	}
@@ -83,23 +83,54 @@ impl LogItem for LogPath
 	fn to(&self) -> PathBuf
 	{
 		// remove leading '/' if any from the path (reason see later)
-		let r_path = self.src_path.as_path().strip_prefix("/").unwrap();
+		let r_path = Path::new(self.src_path).strip_prefix("/").unwrap();
 
 		// here is the reason, join overwrites the content if the joined path is absolute
 		return self.dst_path.join(r_path)
+	}
+
+	fn store(&self) -> bool
+	{
+		let mut res = false;
+
+		// for now keep directory structure close to the original
+		// e.g. what was in /etc will be in /<tmp dir>/etc/
+		if fs::create_dir_all(self.to().parent().unwrap()).is_ok()
+		{
+			res = fs::copy(self.src_path, self.to()).is_ok();
+		}
+
+		return res;
 	}
 }
 
 impl LogItem for LogCmd
 {
-	fn from(&self) -> PathBuf
+	fn from(&self) -> &'static str
 	{
-		return self.dst_path.clone();
+		return self.cmd;
 	}
 
 	fn to(&self) -> PathBuf
 	{
-		return self.dst_path.clone();
+		return self.dst_path.as_path().join(format!("{}.log", self.cmd));
+	}
+
+	fn store(&self) -> bool
+	{
+		let cmd_parts = self.cmd.split_whitespace().collect::<Vec<&str>>();
+		//let temp_file = tempfile().unwrap().path().expect("No path");
+		//let file_path = temp_file.as_path().as_os_str();
+		let file_path = Path::new(self.cmd);
+
+		let res = Command::new(cmd_parts[0])
+			.args(cmd_parts[1..].iter())
+			.arg(">")
+			.arg(file_path)
+			.status()
+			.expect("failed run the command");
+
+		return res.success();
 	}
 }
 
@@ -120,22 +151,22 @@ fn main() -> Result<(), io::Error>{
 	let compress_cmd = format!("tar -c -f {} --warning=no-file-changed --{} --dereference -C {} .", result, compression, tmp_dir.path().display());
 
 	// 2. collect existing / requested paths which should already exist
-	showln!(noisy, "\t- proceeding well known paths:");
+	showln!(noisy, "\t- proceeding well known paths");
 	for path in paths
 	{
 		// assumption: path is full path
 		if Path::new(path).try_exists().is_ok()
 		{
-			log_sources.push( Box::new( LogPath { src_path: PathBuf::from(path), dst_path: tmp_dir.path().to_path_buf() }));
+			log_sources.push( Box::new( LogPath { src_path: path, dst_path: tmp_dir.path().to_path_buf() }));
 
 		}
 	}
 
 	// 3. some info can be collected via particular commands only
-	showln!(noisy, "\t- proceeding output of commands:");
+	showln!(noisy, "\t- proceeding output of commands");
 	for cmd in commands
 	{
-		showln!(noisy, "\t\t- packing output of: \"{} {}\"", cmd.0, cmd.1);
+		log_sources.push( Box::new( LogCmd { cmd: cmd, dst_path: tmp_dir.path().to_path_buf() }));
 	}
 
 	// 4. store it
@@ -145,13 +176,13 @@ fn main() -> Result<(), io::Error>{
 	{
 		let mut res = "[Failed]";
 
-		show!(noisy, "\t\t- storing: \"{}\" ... ", src.from().display());
+		show!(noisy, "\t- storing: \"{}\" ... ", src.from());
 
 		// for now keep directory structure close to the original
 		// e.g. what was in /etc will be in /<tmp dir>/etc/
 		if fs::create_dir_all(src.to().parent().unwrap()).is_ok()
 		{
-			res = if fs::copy(src.from(), src.to()).is_ok() { "[Ok]" } else { "[Failed]" };
+			res = if src.store() { "[Ok]" } else { "[Failed]" };
 		}
 
 		showln!(noisy, "{}", res);
