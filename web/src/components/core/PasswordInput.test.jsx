@@ -54,7 +54,7 @@ describe("PasswordInput Component", () => {
 
     expect(passwordInput).toHaveAttribute("type", "password");
     await userEvent.click(button);
-    expect(passwordInput).toHaveAttribute("type", "text")
+    expect(passwordInput).toHaveAttribute("type", "text");
   });
 
   it("applies autoFocus behavior correctly", () => {
