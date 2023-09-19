@@ -51,6 +51,10 @@ jest.mock("~/context/software", () => ({
 
 jest.mock("~/components/layout/Layout", () => mockLayout());
 
+const managerMock = {
+  startProbing: jest.fn()
+};
+
 const softwareMock = {
   getProducts: () => Promise.resolve(products),
   getSelectedProduct: jest.fn(() => Promise.resolve(products[0])),
@@ -60,7 +64,10 @@ const softwareMock = {
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
-    return { software: softwareMock };
+    return {
+      manager: managerMock,
+      software: softwareMock
+    };
   });
 });
 
@@ -72,6 +79,7 @@ describe("when the user chooses a product", () => {
     const button = await screen.findByRole("button", { name: "Select" });
     await user.click(button);
     expect(softwareMock.selectProduct).toHaveBeenCalledWith("MicroOS");
+    expect(managerMock.startProbing).toHaveBeenCalled();
     expect(mockNavigateFn).toHaveBeenCalledWith("/");
   });
 });
@@ -83,6 +91,7 @@ describe("when the user chooses does not change the product", () => {
     const button = await screen.findByRole("button", { name: "Select" });
     await user.click(button);
     expect(softwareMock.selectProduct).not.toHaveBeenCalled();
+    expect(managerMock.startProbing).not.toHaveBeenCalled();
     expect(mockNavigateFn).toHaveBeenCalledWith("/");
   });
 });
