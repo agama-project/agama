@@ -193,19 +193,17 @@
       "description": "Storage settings",
       "type": "object",
       "properties": {
-        "devices": {
-          "description": "Storage devices to install the system to",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "name": {
-                "description": "Storage device name (e.g., '/dev/sda')",
-                "type": "string"
-              }
-            }
-          }
+        "bootDevice": {
+          "description": "Device used for booting (e.g., '/dev/sda'). By default, all file systems are created in the boot device.",
+          "type": "string"
+        },
+        "lvm": {
+          "description": "Whether LVM is used.",
+          "type": "boolean"
+        },
+        "encryptionPassword": {
+          "description": "If set, the devices are encypted using the given password.",
+          "type": "string"
         }
       }
     }
