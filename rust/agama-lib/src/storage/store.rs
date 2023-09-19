@@ -18,22 +18,20 @@ impl<'a> StorageStore<'a> {
     }
 
     pub async fn load(&self) -> Result<StorageSettings, ServiceError> {
-        let names = self.storage_client.candidate_devices().await?;
-        let devices = names.into_iter().map(|n| n.into()).collect();
+        let boot_device = self.storage_client.boot_device().await?;
+        let lvm = self.storage_client.lvm().await?;
+        let encryption_password = self.storage_client.encryption_password().await?;
+
         Ok(StorageSettings {
-            devices,
+            boot_device,
+            lvm,
+            encryption_password,
             ..Default::default()
         })
     }
 
     pub async fn store(&self, settings: &StorageSettings) -> Result<(), ServiceError> {
-        self.storage_client
-            .calculate(
-                settings.devices.iter().map(|d| d.name.clone()).collect(),
-                settings.encryption_password.clone().unwrap_or_default(),
-                settings.lvm.unwrap_or_default(),
-            )
-            .await?;
+        self.storage_client.calculate(settings).await?;
         Ok(())
     }
 }

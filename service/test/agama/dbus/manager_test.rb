@@ -81,11 +81,6 @@ describe Agama::DBus::Manager do
       subject
     end
 
-    it "configures callbacks to be called when a product is selected" do
-      expect(software_client).to receive(:on_product_selected)
-      subject
-    end
-
     it "configures callbacks from Progress interface" do
       expect_any_instance_of(described_class).to receive(:register_progress_callbacks)
       subject

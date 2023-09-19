@@ -7,11 +7,7 @@
     "product": "ALP"
   },
   "storage": {
-    "devices": [
-      {
-        "name": "/dev/dm-1"
-      }
-    ]
+    "bootDevice": "/dev/dm-1"
   },
   "user": {
     "fullName": "Jane Doe",
