@@ -118,15 +118,15 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
       </FormGroup>
       { security === "wpa-psk" &&
         // TRANSLATORS: WiFi password
-        <PasswordInput
-          id="password"
-          name="password"
-          fieldId="password"
-          label={_("WPA Password")}
-          aria-label={_("Password")}
-          value={password}
-          onChange={setPassword}
-        /> }
+        <FormGroup fieldId="password" label={_("WPA Password")}>
+          <PasswordInput
+            id="password"
+            name="password"
+            aria-label={_("Password")}
+            value={password}
+            onChange={setPassword}
+          />
+        </FormGroup> }
       <ActionGroup>
         <Button type="submit" variant="primary" isLoading={isConnecting} isDisabled={isConnecting}>
           {/* TRANSLATORS: button label, connect to a WiFi network */}

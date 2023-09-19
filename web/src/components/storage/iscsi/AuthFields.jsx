@@ -91,17 +91,21 @@ export default function AuthFields({ data, onChange, onValidate }) {
             validated={showUsernameError() ? "error" : "default"}
           />
         </FormGroup>
-        <PasswordInput
-          id="password"
-          name="password"
+        <FormGroup
           fieldId="password"
           label={_("Password")}
           helperTextInvalid={_("Incorrect password")}
-          aria-label={_("Password")}
-          value={data.password || ""}
-          onChange={onPasswordChange}
           validated={showPasswordError() ? "error" : "default"}
-        />
+        >
+          <PasswordInput
+            id="password"
+            name="password"
+            aria-label={_("Password")}
+            value={data.password || ""}
+            onChange={onPasswordChange}
+            validated={showPasswordError() ? "error" : "default"}
+          />
+        </FormGroup>
       </Fieldset>
       <Fieldset legend={_("Authentication by initiator")}>
         <ByInitiatorAuthTip />
@@ -122,18 +126,22 @@ export default function AuthFields({ data, onChange, onValidate }) {
             validated={showReverseUsernameError() ? "error" : "default"}
           />
         </FormGroup>
-        <PasswordInput
-          id="reversePassword"
-          name="reversePassword"
+        <FormGroup
           fieldId="reversePassword"
           label="Password"
           helperTextInvalid={_("Incorrect password")}
-          ariaLabel={_("Target Password")}
-          value={data.reversePassword || ""}
-          isDisabled={!isValidAuth()}
-          onChange={onReversePasswordChange}
           validated={showReversePasswordError() ? "error" : "default"}
-        />
+        >
+          <PasswordInput
+            id="reversePassword"
+            name="reversePassword"
+            aria-label={_("Target Password")}
+            value={data.reversePassword || ""}
+            isDisabled={!isValidAuth()}
+            onChange={onReversePasswordChange}
+            validated={showReversePasswordError() ? "error" : "default"}
+          />
+        </FormGroup>
       </Fieldset>
     </>
   );

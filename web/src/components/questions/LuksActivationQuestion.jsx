@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { Alert, Form, Text } from "@patternfly/react-core";
+import { Alert, Form, FormGroup, Text } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { PasswordInput, Popup } from "~/components/core";
 import { QuestionActions } from "~/components/questions";
@@ -60,20 +60,20 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       aria-label={_("Question")}
       titleIconVariant={() => <Icon name="lock" size="24" />}
     >
-      {renderAlert(parseInt(question.data.attempt))}
+      { renderAlert(parseInt(question.data.attempt)) }
       <Text>
-        {question.text}
+        { question.text }
       </Text>
       <Form onSubmit={triggerDefaultAction}>
-        {/* TRANSLATORS: field label */}
-        <PasswordInput
-          autoFocus
-          id="luks-password"
-          label={_("Encryption Password")}
-          fieldId="luks-password"
-          value={password}
-          onChange={setPassword}
-        />
+        { /* TRANSLATORS: field label */ }
+        <FormGroup label={_("Encryption Password")} fieldId="luks-password">
+          <PasswordInput
+            autoFocus
+            id="luks-password"
+            value={password}
+            onChange={setPassword}
+          />
+        </FormGroup>
       </Form>
 
       <Popup.Actions>
