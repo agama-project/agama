@@ -202,7 +202,7 @@
           "type": "boolean"
         },
         "encryptionPassword": {
-          "description": "If set, the devices are encypted using the given password.",
+          "description": "If set, the devices are encrypted using the given password.",
           "type": "string"
         }
       }

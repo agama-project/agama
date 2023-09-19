@@ -60,7 +60,7 @@ and `root`.
 - **`storage`** *(object)*: Storage settings.
   - **`bootDevice`** *(string)*: Storage device used for booting (e.g., "/dev/sda"). By default, all file system are created in the boot device.
   - **`lvm`** *(boolean)*: Whether LVM is used.
-  - **`encyptionPassword`** *(string)*: If set, the devices are encypted using the given password.
+  - **`encryptionPassword`** *(string)*: If set, the devices are encrypted using the given password.
 - **`user`** *(object)*: First user settings.
   - **`fullName`** *(string)*: Full name (e.g., "Jane Doe").
   - **`userName`** *(string)*: User login name (e.g., "jane.doe").
