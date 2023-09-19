@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,58 +19,33 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Button,
-  FormGroup,
   InputGroup,
   TextInput
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
-export default function PasswordInput({ id, name, ariaLabel, value, onChange, autoFocus, onBlur, fieldId, label, helperTextInvalid, validated = "default", isDisabled = false }) {
+export default function PasswordInput(props) {
   const [showPassword, setShowPassword] = useState(false);
   const visibilityIconName = showPassword ? "visibility_off" : "visibility";
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    // Focus the input element when autoFocus is true
-    if (autoFocus && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [autoFocus]);
 
   return (
-    <FormGroup
-      fieldId={fieldId}
-      label={label}
-      helperTextInvalid={helperTextInvalid}
-      validated={validated}
-    >
-      <InputGroup>
-        <TextInput
-          id={id}
-          name={name}
-          aria-label={ariaLabel}
-          value={value}
-          onChange={onChange}
-          validated={validated}
-          isDisabled={isDisabled}
-          onBlur={onBlur}
-          ref={inputRef}
-          type={showPassword ? 'text' : 'password'}
-        />
-        <Button
-          id="password_visibility"
-          name="password_visibility"
-          aria-label={_("Password visibility button")}
-          variant="control"
-          onClick={() => setShowPassword((prev) => !prev)}
-          icon={<Icon name={visibilityIconName} size="15" />}
-          isDisabled={isDisabled}
-        />
-      </InputGroup>
-    </FormGroup>
+    <InputGroup>
+      <TextInput
+        {...props}
+        type={showPassword ? 'text' : 'password'}
+      />
+      <Button
+        id={`toggle-${props.id}-visibility`}
+        aria-label={_("Password visibility button")}
+        variant="control"
+        onClick={() => setShowPassword((prev) => !prev)}
+        icon={<Icon name={visibilityIconName} size="15" />}
+        isDisabled={props.isDisabled}
+      />
+    </InputGroup>
   );
 }
