@@ -40,6 +40,7 @@ export default function PasswordInput(props) {
       />
       <Button
         id={`toggle-${props.id}-visibility`}
+        className="password-toggler"
         aria-label={_("Password visibility button")}
         variant="control"
         onClick={() => setShowPassword((prev) => !prev)}
