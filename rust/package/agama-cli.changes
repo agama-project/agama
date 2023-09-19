@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 19 11:16:16 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Adapt to new storage D-Bus API and explicitly call to probe after
+  selecting a new product (gh#openSUSE/agama#748).
+
+-------------------------------------------------------------------
 Thu Sep 14 19:44:57 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Improve questions CLI help text (gh#openSUSE/agama#754) 
