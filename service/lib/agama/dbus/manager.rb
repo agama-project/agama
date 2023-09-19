@@ -170,15 +170,6 @@ module Agama
         backend.on_services_status_change do
           dbus_properties_changed(MANAGER_INTERFACE, { "BusyServices" => busy_services }, [])
         end
-
-        backend.software.on_product_selected do |_product|
-          if service_status.busy?
-            logger.warn "Could not process the product change because the service is busy"
-            next
-          end
-
-          busy_while { backend.config_phase }
-        end
       end
     end
   end
