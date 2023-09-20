@@ -104,9 +104,16 @@ impl LogItem for LogPath {
 
         let options = CopyOptions::new();
         // fs_extra's own Error doesn't implement From trait so ? operator is unusable
-        match copy_items(&[self.src_path.as_str()], self.to().parent().unwrap(), &options) {
+        match copy_items(
+            &[self.src_path.as_str()],
+            self.to().parent().unwrap(),
+            &options,
+        ) {
             Ok(_p) => Ok(()),
-            Err(_e) => Err(io::Error::new(io::ErrorKind::Other, "Copying of a file failed"))
+            Err(_e) => Err(io::Error::new(
+                io::ErrorKind::Other,
+                "Copying of a file failed",
+            )),
         }
     }
 }
@@ -190,7 +197,7 @@ fn main() -> Result<(), io::Error> {
         if fs::create_dir_all(src.to().parent().unwrap()).is_ok() {
             res = match src.store() {
                 Ok(_p) => "[Ok]",
-                Err(_e) => "[Failed]"
+                Err(_e) => "[Failed]",
             }
         }
 
