@@ -7,6 +7,7 @@ use nix::unistd::Uid;
 use std::fs;
 use std::fs::File;
 use std::io;
+use std::io::Error;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -80,7 +81,7 @@ trait LogItem {
     fn to(&self) -> PathBuf;
 
     // performs whatever is needed to store logs from "from" at "to" path
-    fn store(&self) -> bool;
+    fn store(&self) -> Result<(), Error>;
 }
 
 impl LogItem for LogPath {
@@ -96,17 +97,17 @@ impl LogItem for LogPath {
         self.dst_path.join(r_path)
     }
 
-    fn store(&self) -> bool {
-        let mut res = false;
-
+    fn store(&self) -> Result<(), Error> {
         // for now keep directory structure close to the original
         // e.g. what was in /etc will be in /<tmp dir>/etc/
-        if fs::create_dir_all(self.to().parent().unwrap()).is_ok() {
-            let options = CopyOptions::new();
-            res = copy_items(&[self.src_path], self.to().parent().unwrap(), &options).is_ok();
-        }
+        fs::create_dir_all(self.to().parent().unwrap())?;
 
-        res
+        let options = CopyOptions::new();
+        // fs_extra's own Error doesn't implement From trait so ? operator is unusable
+        match copy_items(&[self.src_path], self.to().parent().unwrap(), &options) {
+            Ok(_p) => Ok(()),
+            Err(_e) => Err(io::Error::new(io::ErrorKind::Other, "Copying of a file failed"))
+        }
     }
 }
 
@@ -119,20 +120,20 @@ impl LogItem for LogCmd {
         self.dst_path.as_path().join(format!("{}", self.cmd))
     }
 
-    fn store(&self) -> bool {
+    fn store(&self) -> Result<(), Error> {
         let cmd_parts = self.cmd.split_whitespace().collect::<Vec<&str>>();
         let file_path = self.to();
         let output = Command::new(cmd_parts[0])
             .args(cmd_parts[1..].iter())
             .output()
-            .expect("failed run the command");
-        let mut file_stdout = File::create(format!("{}.out.log", file_path.display())).unwrap();
-        let mut file_stderr = File::create(format!("{}.err.log", file_path.display())).unwrap();
+            .expect("Failed to run the command");
+        let mut file_stdout = File::create(format!("{}.out.log", file_path.display()))?;
+        let mut file_stderr = File::create(format!("{}.err.log", file_path.display()))?;
 
-        let mut write_res = file_stdout.write_all(&output.stdout).is_ok();
-        write_res = file_stderr.write_all(&output.stderr).is_ok() && write_res;
+        file_stdout.write_all(&output.stdout)?;
+        file_stderr.write_all(&output.stderr)?;
 
-        output.status.success() && write_res
+        Ok(())
     }
 }
 
@@ -187,7 +188,10 @@ fn main() -> Result<(), io::Error> {
         // for now keep directory structure close to the original
         // e.g. what was in /etc will be in /<tmp dir>/etc/
         if fs::create_dir_all(src.to().parent().unwrap()).is_ok() {
-            res = if src.store() { "[Ok]" } else { "[Failed]" };
+            res = match src.store() {
+                Ok(_p) => "[Ok]",
+                Err(_e) => "[Failed]"
+            }
         }
 
         showln!(noisy, "{}", res);
