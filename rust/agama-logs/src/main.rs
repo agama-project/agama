@@ -58,7 +58,7 @@ macro_rules! show
 // Struct for log represented by a file
 struct LogPath {
     // log source
-    src_path: &'static str,
+    src_path: String,
 
     // directory where to collect logs
     dst_path: PathBuf,
@@ -67,7 +67,7 @@ struct LogPath {
 // Struct for log created on demmand by a command
 struct LogCmd {
     // command which stdout / stderr is logged
-    cmd: &'static str,
+    cmd: String,
 
     // place where to collect logs
     dst_path: PathBuf,
@@ -75,7 +75,7 @@ struct LogCmd {
 
 trait LogItem {
     // definition of log source
-    fn from(&self) -> &'static str;
+    fn from(&self) -> &String;
 
     // definition of destination as path to a file
     fn to(&self) -> PathBuf;
@@ -85,13 +85,13 @@ trait LogItem {
 }
 
 impl LogItem for LogPath {
-    fn from(&self) -> &'static str {
-        self.src_path.clone()
+    fn from(&self) -> &String {
+        &self.src_path
     }
 
     fn to(&self) -> PathBuf {
         // remove leading '/' if any from the path (reason see later)
-        let r_path = Path::new(self.src_path).strip_prefix("/").unwrap();
+        let r_path = Path::new(self.src_path.as_str()).strip_prefix("/").unwrap();
 
         // here is the reason, join overwrites the content if the joined path is absolute
         self.dst_path.join(r_path)
@@ -104,7 +104,7 @@ impl LogItem for LogPath {
 
         let options = CopyOptions::new();
         // fs_extra's own Error doesn't implement From trait so ? operator is unusable
-        match copy_items(&[self.src_path], self.to().parent().unwrap(), &options) {
+        match copy_items(&[self.src_path.as_str()], self.to().parent().unwrap(), &options) {
             Ok(_p) => Ok(()),
             Err(_e) => Err(io::Error::new(io::ErrorKind::Other, "Copying of a file failed"))
         }
@@ -112,8 +112,8 @@ impl LogItem for LogPath {
 }
 
 impl LogItem for LogCmd {
-    fn from(&self) -> &'static str {
-        self.cmd
+    fn from(&self) -> &String {
+        &self.cmd
     }
 
     fn to(&self) -> PathBuf {
@@ -162,7 +162,7 @@ fn main() -> Result<(), io::Error> {
         // assumption: path is full path
         if Path::new(path).try_exists().is_ok() {
             log_sources.push(Box::new(LogPath {
-                src_path: path,
+                src_path: path.to_string(),
                 dst_path: tmp_dir.path().to_path_buf(),
             }));
         }
@@ -172,7 +172,7 @@ fn main() -> Result<(), io::Error> {
     showln!(noisy, "\t- proceeding output of commands");
     for cmd in commands {
         log_sources.push(Box::new(LogCmd {
-            cmd: cmd,
+            cmd: cmd.to_string(),
             dst_path: tmp_dir.path().to_path_buf(),
         }));
     }
