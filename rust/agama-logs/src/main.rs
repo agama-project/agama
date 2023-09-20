@@ -85,7 +85,7 @@ trait LogItem {
 
 impl LogItem for LogPath {
     fn from(&self) -> &'static str {
-        return self.src_path.clone();
+        self.src_path.clone()
     }
 
     fn to(&self) -> PathBuf {
@@ -93,7 +93,7 @@ impl LogItem for LogPath {
         let r_path = Path::new(self.src_path).strip_prefix("/").unwrap();
 
         // here is the reason, join overwrites the content if the joined path is absolute
-        return self.dst_path.join(r_path);
+        self.dst_path.join(r_path)
     }
 
     fn store(&self) -> bool {
@@ -105,23 +105,23 @@ impl LogItem for LogPath {
             let options = CopyOptions::new();
             res = copy_items(
                 &[self.src_path],
-                self.to().parent().unwrap().as_os_str().to_str().unwrap(),
+                self.to().parent().unwrap(),
                 &options,
             )
             .is_ok();
         }
 
-        return res;
+        res
     }
 }
 
 impl LogItem for LogCmd {
     fn from(&self) -> &'static str {
-        return self.cmd;
+        self.cmd
     }
 
     fn to(&self) -> PathBuf {
-        return self.dst_path.as_path().join(format!("{}", self.cmd));
+        self.dst_path.as_path().join(format!("{}", self.cmd))
     }
 
     fn store(&self) -> bool {
@@ -137,7 +137,7 @@ impl LogItem for LogCmd {
         let mut write_res = file_stdout.write_all(&output.stdout).is_ok();
         write_res = file_stderr.write_all(&output.stderr).is_ok() && write_res;
 
-        return output.status.success() && write_res;
+        output.status.success() && write_res
     }
 }
 
