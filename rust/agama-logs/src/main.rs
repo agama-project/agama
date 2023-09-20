@@ -103,12 +103,7 @@ impl LogItem for LogPath {
         // e.g. what was in /etc will be in /<tmp dir>/etc/
         if fs::create_dir_all(self.to().parent().unwrap()).is_ok() {
             let options = CopyOptions::new();
-            res = copy_items(
-                &[self.src_path],
-                self.to().parent().unwrap(),
-                &options,
-            )
-            .is_ok();
+            res = copy_items(&[self.src_path], self.to().parent().unwrap(), &options).is_ok();
         }
 
         res
