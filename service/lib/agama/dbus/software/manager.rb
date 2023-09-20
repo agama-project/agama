@@ -75,11 +75,6 @@ module Agama
             update_validation # as different product means different software selection
           end
 
-          # TODO: just for performance comparison (see `perf.rb`)
-          dbus_method :ProvisionSelected, "in Provision:s, out Result:b" do |provision|
-            backend.provision_selected?(provision)
-          end
-
           dbus_method :ProvisionsSelected, "in Provisions:as, out Result:ab" do |provisions|
             [provisions.map { |p| backend.provision_selected?(p) }]
           end

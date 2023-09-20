@@ -31,10 +31,6 @@
     <method name="SelectProduct">
       <arg name="ProductID" direction="in" type="s"/>
     </method>
-    <method name="ProvisionSelected">
-      <arg name="Provision" direction="in" type="s"/>
-      <arg name="Result" direction="out" type="b"/>
-    </method>
     <method name="ProvisionsSelected">
       <arg name="Provisions" direction="in" type="as"/>
       <arg name="Result" direction="out" type="ab"/>
