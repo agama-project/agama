@@ -7,8 +7,9 @@ use uuid::Uuid;
 use crate::network::error::NetworkStateError;
 use agama_lib::network::types::{DeviceType, SSID};
 use std::{
+    default::Default,
     fmt,
-    net::{AddrParseError, Ipv4Addr},
+    net::{AddrParseError, Ipv4Addr, Ipv6Addr},
     str::{self, FromStr},
 };
 use thiserror::Error;
@@ -327,13 +328,27 @@ pub enum Status {
     Removed,
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
-pub struct Ipv4Config {
+#[derive(Debug, PartialEq, Clone)]
+pub struct IpConfig<T> {
     pub method: IpMethod,
-    pub addresses: Vec<IpAddress>,
-    pub nameservers: Vec<Ipv4Addr>,
-    pub gateway: Option<Ipv4Addr>,
+    pub addresses: Vec<IpAddress<T>>,
+    pub nameservers: Vec<T>,
+    pub gateway: Option<T>,
 }
+
+impl<T> Default for IpConfig<T> {
+    fn default() -> Self {
+        Self {
+            method: IpMethod::default(),
+            addresses: vec![],
+            nameservers: vec![],
+            gateway: None,
+        }
+    }
+}
+
+pub type Ipv4Config = IpConfig<Ipv4Addr>;
+pub type Ipv6Config = IpConfig<Ipv6Addr>;
 
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct MatchConfig {
@@ -497,7 +512,7 @@ impl TryFrom<&str> for SecurityProtocol {
 
 /// Represents an IPv4 address with a prefix.
 #[derive(Debug, Clone, PartialEq)]
-pub struct IpAddress(Ipv4Addr, u32);
+pub struct IpAddress<T>(T, u32);
 
 #[derive(Error, Debug)]
 pub enum ParseIpAddressError {
@@ -506,20 +521,20 @@ pub enum ParseIpAddressError {
     #[error("Invalid prefix part '{0}'")]
     InvalidPrefix(String),
     #[error("Invalid address part: {0}")]
-    InvalidAddr(AddrParseError),
+    InvalidAddr(Box<dyn std::error::Error>),
 }
 
-impl IpAddress {
+impl<T> IpAddress<T> {
     /// Returns an new IpAddress object
     ///
     /// * `addr`: IPv4 address.
     /// * `prefix`: IPv4 address prefix.
-    pub fn new(addr: Ipv4Addr, prefix: u32) -> Self {
+    pub fn new(addr: T, prefix: u32) -> Self {
         IpAddress(addr, prefix)
     }
 
     /// Returns the IPv4 address.
-    pub fn addr(&self) -> &Ipv4Addr {
+    pub fn addr(&self) -> &T {
         &self.0
     }
 
@@ -529,13 +544,20 @@ impl IpAddress {
     }
 }
 
-impl From<IpAddress> for (String, u32) {
-    fn from(value: IpAddress) -> Self {
+impl<T> From<IpAddress<T>> for (String, u32)
+where
+    T: fmt::Display,
+{
+    fn from(value: IpAddress<T>) -> Self {
         (value.0.to_string(), value.1)
     }
 }
 
-impl FromStr for IpAddress {
+impl<T> FromStr for IpAddress<T>
+where
+    T: FromStr,
+    <T as FromStr>::Err: fmt::Debug,
+{
     type Err = ParseIpAddressError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -543,7 +565,9 @@ impl FromStr for IpAddress {
             return Err(ParseIpAddressError::MissingPrefix);
         };
 
-        let address: Ipv4Addr = address.parse().map_err(ParseIpAddressError::InvalidAddr)?;
+        // let address: T = address.parse().map_err(ParseIpAddressError::InvalidAddr)?;
+        // FIXME: replace unwrap().
+        let address: T = address.parse().unwrap();
 
         let prefix: u32 = prefix
             .parse()
@@ -553,7 +577,10 @@ impl FromStr for IpAddress {
     }
 }
 
-impl fmt::Display for IpAddress {
+impl<T> fmt::Display for IpAddress<T>
+where
+    T: fmt::Display,
+{
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}/{}", self.0, self.1)
     }

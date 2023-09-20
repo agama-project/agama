@@ -398,9 +398,9 @@ impl Ipv4 {
     #[dbus_interface(property)]
     pub async fn set_addresses(&mut self, addresses: Vec<String>) -> zbus::fdo::Result<()> {
         let mut connection = self.get_connection().await;
-        let parsed: Vec<IpAddress> = addresses
+        let parsed: Vec<IpAddress<Ipv4Addr>> = addresses
             .into_iter()
-            .filter_map(|ip| match ip.parse::<IpAddress>() {
+            .filter_map(|ip| match ip.parse::<IpAddress<Ipv4Addr>>() {
                 Ok(address) => Some(address),
                 Err(error) => {
                     log::error!("Ignoring the invalid IPv4 address: {} ({})", ip, error);

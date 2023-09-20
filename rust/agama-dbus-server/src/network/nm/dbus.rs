@@ -8,7 +8,7 @@ use agama_lib::{
     dbus::{NestedHash, OwnedNestedHash},
     network::types::SSID,
 };
-use std::collections::HashMap;
+use std::{collections::HashMap, net::Ipv4Addr};
 use uuid::Uuid;
 use zbus::zvariant::{self, Value};
 
@@ -282,7 +282,7 @@ fn ipv4_config_from_dbus(ipv4: &HashMap<String, zvariant::OwnedValue>) -> Option
     let method: &str = ipv4.get("method")?.downcast_ref()?;
     let address_data = ipv4.get("address-data")?;
     let address_data = address_data.downcast_ref::<zbus::zvariant::Array>()?;
-    let mut addresses: Vec<IpAddress> = vec![];
+    let mut addresses: Vec<IpAddress<Ipv4Addr>> = vec![];
     for addr in address_data.get() {
         let dict = addr.downcast_ref::<zvariant::Dict>()?;
         let map = <HashMap<String, zvariant::Value<'_>>>::try_from(dict.clone()).unwrap();
