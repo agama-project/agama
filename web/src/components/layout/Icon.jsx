@@ -66,6 +66,8 @@ import Terminal from "@icons/terminal.svg?component";
 import Translate from "@icons/translate.svg?component";
 import Tune from "@icons/tune.svg?component";
 import Warning from "@icons/warning.svg?component";
+import Visibility from "@icons/visibility.svg?component";
+import VisibilityOff from "@icons/visibility_off.svg?component";
 import Wifi from "@icons/wifi.svg?component";
 import WifiFind from "@icons/wifi_find.svg?component";
 
@@ -117,6 +119,8 @@ const icons = {
   terminal: Terminal,
   translate: Translate,
   tune: Tune,
+  visibility: Visibility,
+  visibility_off: VisibilityOff,
   warning: Warning,
   wifi: Wifi,
   wifi_find: WifiFind,

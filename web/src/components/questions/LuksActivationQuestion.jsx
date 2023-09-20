@@ -20,9 +20,9 @@
  */
 
 import React, { useState } from "react";
-import { Alert, Form, FormGroup, Text, TextInput } from "@patternfly/react-core";
+import { Alert, Form, FormGroup, Text } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
-import { Popup } from "~/components/core";
+import { PasswordInput, Popup } from "~/components/core";
 import { QuestionActions } from "~/components/questions";
 import { _ } from "~/i18n";
 
@@ -65,13 +65,12 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
         { question.text }
       </Text>
       <Form onSubmit={triggerDefaultAction}>
-        {/* TRANSLATORS: field label */}
+        { /* TRANSLATORS: field label */ }
         <FormGroup label={_("Encryption Password")} fieldId="luks-password">
-          <TextInput
+          <PasswordInput
             autoFocus
             id="luks-password"
             value={password}
-            type="password"
             onChange={(_, value) => setPassword(value)}
           />
         </FormGroup>

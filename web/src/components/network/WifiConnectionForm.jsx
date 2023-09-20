@@ -30,6 +30,7 @@ import {
   FormSelectOption,
   TextInput
 } from "@patternfly/react-core";
+import { PasswordInput } from "~/components/core";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 
@@ -118,14 +119,12 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
       { security === "wpa-psk" &&
         // TRANSLATORS: WiFi password
         <FormGroup fieldId="password" label={_("WPA Password")}>
-          <TextInput
+          <PasswordInput
             id="password"
             name="password"
             aria-label={_("Password")}
             value={password}
-            label={_("Password")}
-            type="password"
-            onChange={(_, value) => setPassword(value)}
+            onChange={setPassword}
           />
         </FormGroup> }
       <ActionGroup>

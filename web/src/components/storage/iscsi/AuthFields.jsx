@@ -22,7 +22,7 @@
 import React, { useEffect } from "react";
 import { FormGroup, TextInput } from "@patternfly/react-core";
 
-import { Fieldset, FormValidationError } from "~/components/core";
+import { Fieldset, FormValidationError, PasswordInput } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
@@ -94,13 +94,11 @@ export default function AuthFields({ data, onChange, onValidate }) {
           fieldId="password"
           label={_("Password")}
         >
-          <TextInput
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
             aria-label={_("Password")}
             value={data.password || ""}
-            label={_("Password")}
             onChange={onPasswordChange}
             validated={showPasswordError() ? "error" : "default"}
           />
@@ -129,13 +127,11 @@ export default function AuthFields({ data, onChange, onValidate }) {
           fieldId="reversePassword"
           label="Password"
         >
-          <TextInput
+          <PasswordInput
             id="reversePassword"
             name="reversePassword"
-            type="password"
             aria-label={_("Target Password")}
             value={data.reversePassword || ""}
-            label={_("Password")}
             isDisabled={!isValidAuth()}
             onChange={onReversePasswordChange}
             validated={showReversePasswordError() ? "error" : "default"}

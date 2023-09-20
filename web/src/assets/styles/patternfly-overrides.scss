@@ -174,3 +174,8 @@ table td > .pf-v5-c-empty-state {
     var(--pf-v5-c-form-control__toggle-icon--PaddingRight) * 2
   );
 }
+
+// Center icon in the visibility button of password input form fields
+.password-toggler span.pf-c-button__icon {
+  display: flex;
+}

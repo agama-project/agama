@@ -1,4 +1,22 @@
 -------------------------------------------------------------------
+Tue Sep 19 11:16:16 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Adapt to new storage D-Bus API and explicitly call to probe after
+  selecting a new product (gh#openSUSE/agama#748).
+
+-------------------------------------------------------------------
+Thu Sep 14 19:44:57 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Improve questions CLI help text (gh#openSUSE/agama#754) 
+
+-------------------------------------------------------------------
+Thu Sep 14 10:10:37 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use a single D-Bus service to connect to the manager and the
+  users API (gh#openSUSE/agama#753, follow-up of
+  gh#openSUSE/agama#729).
+
+-------------------------------------------------------------------
 Wed Sep 13 09:27:22 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Allow to bind a connection to an specific interface through its

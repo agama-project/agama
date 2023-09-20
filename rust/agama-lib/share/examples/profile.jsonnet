@@ -38,11 +38,7 @@ local findBiggestDisk(disks) =
     keyboard: 'en_US',
   },
   storage: {
-    devices: [
-      {
-        name: findBiggestDisk(agama.disks),
-      },
-    ],
+    bootDevice: findBiggestDisk(agama.disks),
   },
   network: {
     connections: [

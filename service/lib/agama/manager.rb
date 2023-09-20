@@ -30,7 +30,6 @@ require "agama/dbus/service_status"
 require "agama/dbus/clients/locale"
 require "agama/dbus/clients/software"
 require "agama/dbus/clients/storage"
-require "agama/dbus/clients/users"
 require "agama/helpers"
 
 Yast.import "Stage"
@@ -160,11 +159,7 @@ module Agama
     #
     # @return [DBus::Clients::Users]
     def users
-      @users ||= DBus::Clients::Users.new.tap do |client|
-        client.on_service_status_change do |status|
-          service_status_recorder.save(client.service.name, status)
-        end
-      end
+      @users ||= Users.new(logger)
     end
 
     # Network manager

@@ -47,8 +47,7 @@ describe Agama::Manager do
   end
   let(:users) do
     instance_double(
-      Agama::DBus::Clients::Users,
-      write: nil, on_service_status_change: nil, valid?: true
+      Agama::Users, write: nil, valid?: true
     )
   end
   let(:locale) { instance_double(Agama::DBus::Clients::Locale, finish: nil) }
@@ -68,7 +67,7 @@ describe Agama::Manager do
     allow(Agama::DBus::Clients::Locale).to receive(:new).and_return(locale)
     allow(Agama::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
-    allow(Agama::DBus::Clients::Users).to receive(:new).and_return(users)
+    allow(Agama::Users).to receive(:new).and_return(users)
   end
 
   describe "#startup_phase" do

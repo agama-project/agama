@@ -52,7 +52,7 @@ function ProductSelectionPage() {
 
   const isSelected = p => p.id === selected;
 
-  const accept = (e) => {
+  const accept = async (e) => {
     e.preventDefault();
     if (selected === previous) {
       navigate("/");
@@ -60,8 +60,9 @@ function ProductSelectionPage() {
     }
 
     // TODO: handle errors
-    client.software.selectProduct(selected)
-      .then(() => navigate("/"));
+    await client.software.selectProduct(selected);
+    client.manager.startProbing();
+    navigate("/");
   };
 
   if (!products) return (

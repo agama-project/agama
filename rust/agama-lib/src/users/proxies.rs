@@ -5,7 +5,7 @@ use zbus::dbus_proxy;
 
 #[dbus_proxy(
     interface = "org.opensuse.Agama.Users1",
-    default_service = "org.opensuse.Agama.Users1",
+    default_service = "org.opensuse.Agama.Manager1",
     default_path = "/org/opensuse/Agama/Users1"
 )]
 trait Users1 {
