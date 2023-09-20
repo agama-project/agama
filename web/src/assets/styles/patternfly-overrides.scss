@@ -165,3 +165,8 @@ table td > .pf-c-empty-state {
   outline: none;
   box-shadow: 0 0 0 1px var(--focus-color);
 }
+
+// Center icon in the visibility button of password input form fields
+.password-toggler span.pf-c-button__icon {
+  display: flex;
+}

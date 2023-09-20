@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 19 19:11:12 UTC 2023 - Balsa Asanovic <balsaasanovic95@gmail.com>
+
+- Allow users to show password values (gh#openSUSE/agama#750).
+
+-------------------------------------------------------------------
 Tue Sep 19 11:18:05 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Explicitly call to probe after selecting a new product

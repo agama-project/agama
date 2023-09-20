@@ -32,6 +32,7 @@ import {
 } from "@patternfly/react-core";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
+import { PasswordInput } from "~/components/core";
 
 /*
 * FIXME: it should be moved to the SecurityProtocols enum that already exists or to a class based
@@ -118,13 +119,11 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
       { security === "wpa-psk" &&
         // TRANSLATORS: WiFi password
         <FormGroup fieldId="password" label={_("WPA Password")}>
-          <TextInput
+          <PasswordInput
             id="password"
             name="password"
             aria-label={_("Password")}
             value={password}
-            label={_("Password")}
-            type="password"
             onChange={setPassword}
           />
         </FormGroup> }

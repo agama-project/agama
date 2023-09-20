@@ -20,13 +20,11 @@
  */
 
 import React, { useState } from "react";
-import {
-  FormGroup,
-  TextInput
-} from "@patternfly/react-core";
+import { FormGroup } from "@patternfly/react-core";
+import { PasswordInput } from "~/components/core";
 import { _ } from "~/i18n";
 
-const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisabled, split = false }) => {
+const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisabled }) => {
   const [confirmation, setConfirmation] = useState(value || "");
   const [error, setError] = useState("");
 
@@ -54,12 +52,11 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
   };
 
   return (
-    <div className={split ? "split" : "stack"}>
+    <>
       <FormGroup fieldId="password" label={_("Password")}>
-        <TextInput
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           aria-label={_("User password")}
           value={value}
           isDisabled={isDisabled}
@@ -73,10 +70,9 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
         helperTextInvalid={error}
         validated={error === "" ? "default" : "error"}
       >
-        <TextInput
+        <PasswordInput
           id="passwordConfirmation"
           name="passwordConfirmation"
-          type="password"
           aria-label={_("User password confirmation")}
           value={confirmation}
           isDisabled={isDisabled}
@@ -85,7 +81,7 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
           validated={error === "" ? "default" : "error"}
         />
       </FormGroup>
-    </div>
+    </>
   );
 };
 
