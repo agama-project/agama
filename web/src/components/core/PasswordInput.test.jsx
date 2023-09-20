@@ -74,25 +74,24 @@ describe("PasswordInput Component", () => {
   // Using a controlled component for testing the rendered result instead of testing if
   // the given onChange callback is called. The former is more aligned with the
   // React Testing Library principles, https://testing-library.com/docs/guiding-principles/
-  PasswordInputTest = ( props ) => {
+  const PasswordInputTest = (props) => {
     const [password, setPassword] = useState(null);
-  
+
     return (
       <>
         <PasswordInput {...props} onChange={setPassword} />
         {password && <p>Password value updated!</p>}
       </>
     );
-  }
-  
+  };
+
   it("triggers onChange callback", async () => {
     const { user } = plainRender(<PasswordInputTest id="test-password" aria-label="Test password" />);
     const passwordInput = screen.getByLabelText("Test password");
-  
+
     expect(screen.queryByText("Password value updated!")).toBeNull();
     await user.type(passwordInput, "secret");
-    
-    screen.getByText("Password value updated!");
-});
 
+    screen.getByText("Password value updated!");
+  });
 });
