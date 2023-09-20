@@ -283,6 +283,14 @@ impl Connection {
         &mut self.base_mut().ipv4
     }
 
+    pub fn ipv6(&self) -> &Ipv6Config {
+        &self.base().ipv6
+    }
+
+    pub fn ipv6_mut(&mut self) -> &mut Ipv6Config {
+        &mut self.base_mut().ipv6
+    }
+
     pub fn match_config(&self) -> &MatchConfig {
         &self.base().match_config
     }
@@ -310,6 +318,7 @@ pub struct BaseConnection {
     pub id: String,
     pub uuid: Uuid,
     pub ipv4: Ipv4Config,
+    pub ipv6: Ipv6Config,
     pub status: Status,
     pub interface: String,
     pub match_config: MatchConfig,

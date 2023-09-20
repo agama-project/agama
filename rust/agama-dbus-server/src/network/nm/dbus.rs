@@ -8,7 +8,12 @@ use agama_lib::{
     dbus::{NestedHash, OwnedNestedHash},
     network::types::SSID,
 };
-use std::{collections::HashMap, net::Ipv4Addr};
+use std::{
+    collections::HashMap,
+    fmt::Debug,
+    net::{Ipv4Addr, Ipv6Addr},
+    str::FromStr,
+};
 use uuid::Uuid;
 use zbus::zvariant::{self, Value};
 
@@ -232,7 +237,11 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
     }
 
     if let Some(ipv4) = conn.get("ipv4") {
-        base_connection.ipv4 = ipv4_config_from_dbus(ipv4)?;
+        base_connection.ipv4 = ip_config_from_dbus::<Ipv4Addr>(ipv4)?;
+    }
+
+    if let Some(ipv6) = conn.get("ipv6") {
+        base_connection.ipv6 = ip_config_from_dbus::<Ipv6Addr>(ipv6)?;
     }
 
     Some(base_connection)
@@ -278,11 +287,15 @@ fn match_config_from_dbus(
     Some(match_conf)
 }
 
-fn ipv4_config_from_dbus(ipv4: &HashMap<String, zvariant::OwnedValue>) -> Option<Ipv4Config> {
-    let method: &str = ipv4.get("method")?.downcast_ref()?;
-    let address_data = ipv4.get("address-data")?;
+fn ip_config_from_dbus<T>(ip: &HashMap<String, zvariant::OwnedValue>) -> Option<IpConfig<T>>
+where
+    T: FromStr,
+    <T as FromStr>::Err: Debug,
+{
+    let method: &str = ip.get("method")?.downcast_ref()?;
+    let address_data = ip.get("address-data")?;
     let address_data = address_data.downcast_ref::<zbus::zvariant::Array>()?;
-    let mut addresses: Vec<IpAddress<Ipv4Addr>> = vec![];
+    let mut addresses: Vec<IpAddress<T>> = vec![];
     for addr in address_data.get() {
         let dict = addr.downcast_ref::<zvariant::Dict>()?;
         let map = <HashMap<String, zvariant::Value<'_>>>::try_from(dict.clone()).unwrap();
@@ -290,26 +303,26 @@ fn ipv4_config_from_dbus(ipv4: &HashMap<String, zvariant::OwnedValue>) -> Option
         let prefix: &u32 = map.get("prefix")?.downcast_ref()?;
         addresses.push(IpAddress::new(addr_str.parse().unwrap(), *prefix))
     }
-    let mut ipv4_config = Ipv4Config {
+    let mut ip_config: IpConfig<T> = IpConfig {
         method: NmMethod(method.to_string()).try_into().ok()?,
         addresses,
         ..Default::default()
     };
 
-    if let Some(dns_data) = ipv4.get("dns-data") {
+    if let Some(dns_data) = ip.get("dns-data") {
         let dns_data = dns_data.downcast_ref::<zbus::zvariant::Array>()?;
         for server in dns_data.get() {
             let server: &str = server.downcast_ref()?;
-            ipv4_config.nameservers.push(server.parse().unwrap());
+            ip_config.nameservers.push(server.parse().unwrap());
         }
     }
 
-    if let Some(gateway) = ipv4.get("gateway") {
+    if let Some(gateway) = ip.get("gateway") {
         let gateway: &str = gateway.downcast_ref()?;
-        ipv4_config.gateway = Some(gateway.parse().unwrap());
+        ip_config.gateway = Some(gateway.parse().unwrap());
     }
 
-    Some(ipv4_config)
+    Some(ip_config)
 }
 
 fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
@@ -372,7 +385,7 @@ mod test {
             ("uuid".to_string(), Value::new(uuid).to_owned()),
         ]);
 
-        let address_data = vec![HashMap::from([
+        let address_v4_data = vec![HashMap::from([
             ("address".to_string(), Value::new("192.168.0.10")),
             ("prefix".to_string(), Value::new(24_u32)),
         ])];
@@ -381,12 +394,33 @@ mod test {
             ("method".to_string(), Value::new("auto").to_owned()),
             (
                 "address-data".to_string(),
-                Value::new(address_data).to_owned(),
+                Value::new(address_v4_data).to_owned(),
             ),
             ("gateway".to_string(), Value::new("192.168.0.1").to_owned()),
             (
                 "dns-data".to_string(),
                 Value::new(vec!["192.168.0.2"]).to_owned(),
+            ),
+        ]);
+
+        let address_v6_data = vec![HashMap::from([
+            ("address".to_string(), Value::new("::ffff:c0a8:10a")),
+            ("prefix".to_string(), Value::new(24_u32)),
+        ])];
+
+        let ipv6_section = HashMap::from([
+            ("method".to_string(), Value::new("auto").to_owned()),
+            (
+                "address-data".to_string(),
+                Value::new(address_v6_data).to_owned(),
+            ),
+            (
+                "gateway".to_string(),
+                Value::new("::ffff:c0a8:101").to_owned(),
+            ),
+            (
+                "dns-data".to_string(),
+                Value::new(vec!["::ffff:c0a8:102"]).to_owned(),
             ),
         ]);
 
@@ -398,6 +432,7 @@ mod test {
         let dbus_conn = HashMap::from([
             ("connection".to_string(), connection_section),
             ("ipv4".to_string(), ipv4_section),
+            ("ipv6".to_string(), ipv6_section),
             ("match".to_string(), match_section),
             (ETHERNET_KEY.to_string(), build_ethernet_section_from_dbus()),
         ]);
@@ -406,11 +441,17 @@ mod test {
 
         assert_eq!(connection.id(), "eth0");
         let ipv4 = connection.ipv4();
+        let ipv6 = connection.ipv6();
         let match_config = connection.match_config();
         assert_eq!(match_config.kernel, vec!["pci-0000:00:19.0"]);
+
         assert_eq!(ipv4.addresses, vec!["192.168.0.10/24".parse().unwrap()]);
         assert_eq!(ipv4.nameservers, vec![Ipv4Addr::new(192, 168, 0, 2)]);
         assert_eq!(ipv4.method, IpMethod::Auto);
+
+        assert_eq!(ipv6.addresses, vec!["::ffff:c0a8:10a/24".parse().unwrap()]);
+        // FIXME: assert_eq!(ipv4.nameservers, vec![Ipv4Addr::new(192, 168, 0, 2)]);
+        assert_eq!(ipv6.method, IpMethod::Auto);
     }
 
     #[test]
@@ -518,8 +559,25 @@ mod test {
                 Value::new(vec!["192.168.1.1"]).to_owned(),
             ),
         ]);
+
+        let ipv6 = HashMap::from([
+            (
+                "method".to_string(),
+                Value::new("manual".to_string()).to_owned(),
+            ),
+            (
+                "gateway".to_string(),
+                Value::new("::ffff:c0a8:101".to_string()).to_owned(),
+            ),
+            (
+                "addresses".to_string(),
+                Value::new(vec!["::ffff:c0a8:102"]).to_owned(),
+            ),
+        ]);
+
         original.insert("connection".to_string(), connection);
         original.insert("ipv4".to_string(), ipv4);
+        original.insert("ipv6".to_string(), ipv6);
 
         let base = BaseConnection {
             id: "agama".to_string(),
@@ -555,6 +613,16 @@ mod test {
             Value::new("192.168.1.1".to_string())
         );
         assert!(ipv4.get("addresses").is_none());
+
+        let ipv6 = merged.get("ipv6").unwrap();
+        assert_eq!(
+            *ipv6.get("method").unwrap(),
+            Value::new("manual".to_string())
+        );
+        assert_eq!(
+            *ipv6.get("gateway").unwrap(),
+            Value::new("::ffff:c0a8:101".to_string())
+        );
     }
 
     #[test]
