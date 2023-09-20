@@ -19,6 +19,15 @@
  * find current contact information at www.suse.com.
  */
 
+/**
+ * Renders a password input field and a toggle button that can be used to reveal
+ * and hide the password
+ * @component
+ *
+ * @param {string} id - the identifier for the field.
+ * @param {Object} props - props matching the {@link https://www.patternfly.org/components/forms/text-input PF/TextInput},
+ *                         except `type` that will be ignored.
+ */
 import React, { useState } from "react";
 import {
   Button,
@@ -28,18 +37,24 @@ import {
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
-export default function PasswordInput(props) {
+export default function PasswordInput({ id, ...props }) {
   const [showPassword, setShowPassword] = useState(false);
   const visibilityIconName = showPassword ? "visibility_off" : "visibility";
+
+  if (!id) {
+    const field = props.label || props["aria-label"] || props.name;
+    console.error(`The PasswordInput component must have an 'id' but it was not given for '${field}'`);
+  }
 
   return (
     <InputGroup>
       <TextInput
         {...props}
+        id={id}
         type={showPassword ? 'text' : 'password'}
       />
       <Button
-        id={`toggle-${props.id}-visibility`}
+        id={`toggle-${id}-visibility`}
         className="password-toggler"
         aria-label={_("Password visibility button")}
         variant="control"
