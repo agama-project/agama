@@ -180,13 +180,14 @@ module Agama
 
       # Enlist available patterns
       #
-      # @param filtered [Boolean] If list of patterns should be filtered. Filtering criteria can change.
+      # @param filtered [Boolean] If list of patterns should be filtered.
+      #                           Filtering criteria can change.
       # @return [Array<Y2Packager::Resolvable>]
       def patterns(filtered)
         patterns = Y2Packager::Resolvable.find(kind: :pattern)
         patterns = patterns.select(&:user_visible) if filtered
 
-        return patterns
+        patterns
       end
 
       # Determines whether a package is installed
