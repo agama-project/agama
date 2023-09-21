@@ -9,7 +9,7 @@ use agama_lib::network::types::{DeviceType, SSID};
 use std::{
     default::Default,
     fmt,
-    net::{AddrParseError, Ipv4Addr, Ipv6Addr},
+    net::{Ipv4Addr, Ipv6Addr},
     str::{self, FromStr},
 };
 use thiserror::Error;
