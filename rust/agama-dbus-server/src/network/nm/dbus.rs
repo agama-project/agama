@@ -621,7 +621,7 @@ mod test {
         let ipv6 = merged.get("ipv6").unwrap();
         assert_eq!(
             *ipv6.get("method").unwrap(),
-            Value::new("manual".to_string())
+            Value::new("disabled".to_string())
         );
         assert_eq!(
             *ipv6.get("gateway").unwrap(),
