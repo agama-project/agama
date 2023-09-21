@@ -42,14 +42,18 @@ const DEFAULT_TMP_DIR: &str = "agama-logs";
 
 // A wrapper around println which shows (or not) the text depending on the boolean variable
 fn showln(show: bool, text: &str) {
-    if !show { return; }
+    if !show {
+        return;
+    }
 
     println!("{}", text);
 }
 
 // A wrapper around println which shows (or not) the text depending on the boolean variable
 fn show(show: bool, text: &str) {
-    if !show { return; }
+    if !show {
+        return;
+    }
 
     print!("{}", text);
 }
@@ -65,7 +69,10 @@ struct LogPath {
 
 impl LogPath {
     fn new(src: &str, dst: &Path) -> Self {
-        Self { src_path: src.to_string(), dst_path: dst.to_owned() }
+        Self {
+            src_path: src.to_string(),
+            dst_path: dst.to_owned(),
+        }
     }
 }
 
@@ -80,10 +87,12 @@ struct LogCmd {
 
 impl LogCmd {
     fn new(cmd: &str, dst: &Path) -> Self {
-        Self { cmd: cmd.to_string(), dst_path: dst.to_owned() }
+        Self {
+            cmd: cmd.to_string(),
+            dst_path: dst.to_owned(),
+        }
     }
 }
-
 
 trait LogItem {
     // definition of log source
@@ -194,7 +203,10 @@ fn main() -> Result<(), io::Error> {
     showln(true, format!("Storing result in: \"{}\"", result).as_str());
 
     for log in log_sources.iter() {
-        show(noisy, format!("\t- storing: \"{}\" ... ", log.from()).as_str());
+        show(
+            noisy,
+            format!("\t- storing: \"{}\" ... ", log.from()).as_str(),
+        );
 
         // for now keep directory structure close to the original
         // e.g. what was in /etc will be in /<tmp dir>/etc/
@@ -202,7 +214,7 @@ fn main() -> Result<(), io::Error> {
             Ok(_p) => match log.store() {
                 Ok(_p) => "[Ok]",
                 Err(_e) => "[Failed]",
-            }
+            },
             Err(_e) => "[Failed]",
         };
 
