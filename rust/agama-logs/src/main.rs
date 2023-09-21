@@ -1,6 +1,3 @@
-extern crate fs_extra;
-extern crate tempdir;
-
 use fs_extra::copy_items;
 use fs_extra::dir::CopyOptions;
 use nix::unistd::Uid;
@@ -43,16 +40,18 @@ const DEFAULT_NOISY: bool = true;
 const DEFAULT_COMPRESSION: (&str, &str) = ("bzip2", "tar.bz2");
 const DEFAULT_TMP_DIR: &str = "agama-logs";
 
-// A wrapper around println which shows (or not) output depending on noisy boolean variable
-macro_rules! showln
-{
-    ($n:expr, $($arg:tt)*) => { if($n) { println!($($arg)*) } }
+// A wrapper around println which shows (or not) the text depending on the boolean variable
+fn showln(show: bool, text: &str) {
+    if !show { return; }
+
+    println!("{}", text);
 }
 
-// A wrapper around println which shows (or not) output depending on noisy boolean variable
-macro_rules! show
-{
-    ($n:expr, $($arg:tt)*) => { if($n) { print!($($arg)*) } }
+// A wrapper around println which shows (or not) the text depending on the boolean variable
+fn show(show: bool, text: &str) {
+    if !show { return; }
+
+    print!("{}", text);
 }
 
 // Struct for log represented by a file
@@ -157,14 +156,14 @@ fn main() -> Result<(), io::Error> {
     let compression = DEFAULT_COMPRESSION.0;
     let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
-    showln!(noisy, "Collecting Agama logs:");
+    showln(noisy, "Collecting Agama logs:");
 
     // 1. create temporary directory where to collect all files (similar to what old save_y2logs
     // does)
     let tmp_dir = TempDir::new(DEFAULT_TMP_DIR)?;
 
     // 2. collect existing / requested paths which should already exist
-    showln!(noisy, "\t- proceeding well known paths");
+    showln(noisy, "\t- proceeding well known paths");
     for path in paths {
         // assumption: path is full path
         if Path::new(path).try_exists().is_ok() {
@@ -176,7 +175,7 @@ fn main() -> Result<(), io::Error> {
     }
 
     // 3. some info can be collected via particular commands only
-    showln!(noisy, "\t- proceeding output of commands");
+    showln(noisy, "\t- proceeding output of commands");
     for cmd in commands {
         log_sources.push(Box::new(LogCmd {
             cmd: cmd.to_string(),
@@ -185,23 +184,22 @@ fn main() -> Result<(), io::Error> {
     }
 
     // 4. store it
-    showln!(true, "Storing result in: \"{}\"", result);
+    showln(true, format!("Storing result in: \"{}\"", result).as_str());
 
-    for src in log_sources.iter() {
-        let mut res = "[Failed]";
-
-        show!(noisy, "\t- storing: \"{}\" ... ", src.from());
+    for log in log_sources.iter() {
+        show(noisy, format!("\t- storing: \"{}\" ... ", log.from()).as_str());
 
         // for now keep directory structure close to the original
         // e.g. what was in /etc will be in /<tmp dir>/etc/
-        if fs::create_dir_all(src.to().parent().unwrap()).is_ok() {
-            res = match src.store() {
+        let res = match fs::create_dir_all(log.to().parent().unwrap()) {
+            Ok(_p) => match log.store() {
                 Ok(_p) => "[Ok]",
                 Err(_e) => "[Failed]",
             }
-        }
+            Err(_e) => "[Failed]",
+        };
 
-        showln!(noisy, "{}", res);
+        showln(noisy, format!("{}", res).as_str());
     }
 
     let compress_cmd = format!(
