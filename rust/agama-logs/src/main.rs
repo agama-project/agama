@@ -63,6 +63,12 @@ struct LogPath {
     dst_path: PathBuf,
 }
 
+impl LogPath {
+    fn new(src: &str, dst: &Path) -> Self {
+        Self { src_path: src.to_string(), dst_path: dst.to_owned() }
+    }
+}
+
 // Struct for log created on demmand by a command
 struct LogCmd {
     // command which stdout / stderr is logged
@@ -71,6 +77,13 @@ struct LogCmd {
     // place where to collect logs
     dst_path: PathBuf,
 }
+
+impl LogCmd {
+    fn new(cmd: &str, dst: &Path) -> Self {
+        Self { cmd: cmd.to_string(), dst_path: dst.to_owned() }
+    }
+}
+
 
 trait LogItem {
     // definition of log source
@@ -167,20 +180,14 @@ fn main() -> Result<(), io::Error> {
     for path in paths {
         // assumption: path is full path
         if Path::new(path).try_exists().is_ok() {
-            log_sources.push(Box::new(LogPath {
-                src_path: path.to_string(),
-                dst_path: tmp_dir.path().to_path_buf(),
-            }));
+            log_sources.push(Box::new(LogPath::new(path, tmp_dir.path())));
         }
     }
 
     // 3. some info can be collected via particular commands only
     showln(noisy, "\t- proceeding output of commands");
     for cmd in commands {
-        log_sources.push(Box::new(LogCmd {
-            cmd: cmd.to_string(),
-            dst_path: tmp_dir.path().to_path_buf(),
-        }));
+        log_sources.push(Box::new(LogCmd::new(cmd, tmp_dir.path())));
     }
 
     // 4. store it
