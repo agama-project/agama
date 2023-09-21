@@ -75,9 +75,20 @@ module Agama
             update_validation # as different product means different software selection
           end
 
-          # TODO: just for performance comparison (see `perf.rb`)
-          dbus_method :ProvisionSelected, "in Provision:s, out Result:b" do |provision|
-            backend.provision_selected?(provision)
+          # value of result hash is category, description, icon, summary and order
+          dbus_method :ListPatterns, "in Filtered:b, out Result:a{s(ssssi)}" do |filtered|
+            [
+              backend.patterns(filtered).each_with_object({}) do |pattern, result|
+                value = [
+                  pattern.category,
+                  pattern.description,
+                  pattern.icon,
+                  pattern.summary,
+                  pattern.order.to_i
+                ]
+                result[pattern.name] = value
+              end
+            ]
           end
 
           dbus_method :ProvisionsSelected, "in Provisions:as, out Result:ab" do |provisions|

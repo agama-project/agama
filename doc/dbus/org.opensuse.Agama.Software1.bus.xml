@@ -28,9 +28,24 @@
     </signal>
   </interface>
   <interface name="org.opensuse.Agama.Software1">
+    <!--
+      SelectProduct:
+      @ProductID: product identifier
+
+      Select product for Installation.
+    -->
     <method name="SelectProduct">
       <arg name="ProductID" direction="in" type="s"/>
     </method>
+    <!--
+      ListPatterns:
+      @Filtered: Flag if result should contain only filtered patterns for user.
+                 Decision about criteria is on backend.
+      @Result:   map with pattern id as key and as value is struct with
+                 category, description, icon, summary and order for pattern
+
+      List available patterns.
+    -->
     <method name="ListPatterns">
       <arg name="Filtered" direction="in" type="b"/>
       <arg name="Result" direction="out" type="a{s(ssssi)}"/>
@@ -54,7 +69,15 @@
     </method>
     <method name="Finish">
     </method>
+    <!--
+     property that defines list of available base products.
+     It is id of product, human readable name and dict for future extensions
+     It is ordered by display priority
+     -->
     <property type="a(ssa{sv})" name="AvailableBaseProducts" access="read"/>
+    <!--
+     property that shows which base product was selected
+     -->
     <property type="s" name="SelectedBaseProduct" access="read"/>
   </interface>
   <interface name="org.opensuse.Agama1.Progress">

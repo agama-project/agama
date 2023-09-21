@@ -26,6 +26,7 @@ require "agama/helpers"
 require "agama/with_progress"
 require "agama/validation_error"
 require "y2packager/product"
+require "y2packager/resolvable"
 require "yast2/arch_filter"
 require "agama/software/callbacks"
 require "agama/software/proposal"
@@ -175,6 +176,18 @@ module Agama
       # @return [Boolean] true if it is provided; false otherwise
       def provision_selected?(tag)
         Yast::Pkg.IsSelected(tag) || Yast::Pkg.IsProvided(tag)
+      end
+
+      # Enlist available patterns
+      #
+      # @param filtered [Boolean] If list of patterns should be filtered.
+      #                           Filtering criteria can change.
+      # @return [Array<Y2Packager::Resolvable>]
+      def patterns(filtered)
+        patterns = Y2Packager::Resolvable.find(kind: :pattern)
+        patterns = patterns.select(&:user_visible) if filtered
+
+        patterns
       end
 
       # Determines whether a package is installed
