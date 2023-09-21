@@ -10,7 +10,7 @@ use agama_lib::{
 };
 use std::{
     collections::HashMap,
-    fmt::Debug,
+    fmt::{Debug, Display},
     net::{Ipv4Addr, Ipv6Addr},
     str::FromStr,
 };
@@ -32,7 +32,8 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
         ("type", ETHERNET_KEY.into()),
         ("interface-name", conn.interface().into()),
     ]);
-    result.insert("ipv4", ipv4_to_dbus(conn.ipv4()));
+    result.insert("ipv4", ip_config_to_dbus::<Ipv4Addr>(conn.ipv4()));
+    result.insert("ipv6", ip_config_to_dbus::<Ipv6Addr>(conn.ipv6()));
     result.insert("match", match_config_to_dbus(conn.match_config()));
 
     if let Connection::Wireless(wireless) = conn {
@@ -126,8 +127,11 @@ fn cleanup_dbus_connection(conn: &mut NestedHash) {
     }
 }
 
-fn ipv4_to_dbus(ipv4: &Ipv4Config) -> HashMap<&str, zvariant::Value> {
-    let addresses: Vec<HashMap<&str, Value>> = ipv4
+fn ip_config_to_dbus<T>(ip_config: &IpConfig<T>) -> HashMap<&str, zvariant::Value>
+where
+    T: Display,
+{
+    let addresses: Vec<HashMap<&str, Value>> = ip_config
         .addresses
         .iter()
         .map(|ip| {
@@ -139,23 +143,23 @@ fn ipv4_to_dbus(ipv4: &Ipv4Config) -> HashMap<&str, zvariant::Value> {
         .collect();
     let address_data: Value = addresses.into();
 
-    let dns_data: Value = ipv4
+    let dns_data: Value = ip_config
         .nameservers
         .iter()
         .map(|ns| ns.to_string())
         .collect::<Vec<String>>()
         .into();
 
-    let mut ipv4_dbus = HashMap::from([
+    let mut ip_config_dbus = HashMap::from([
         ("address-data", address_data),
         ("dns-data", dns_data),
-        ("method", ipv4.method.to_string().into()),
+        ("method", ip_config.method.to_string().into()),
     ]);
 
-    if let Some(gateway) = ipv4.gateway {
-        ipv4_dbus.insert("gateway", gateway.to_string().into());
+    if let Some(gateway) = &ip_config.gateway {
+        ip_config_dbus.insert("gateway", gateway.to_string().into());
     }
-    ipv4_dbus
+    ip_config_dbus
 }
 
 fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
