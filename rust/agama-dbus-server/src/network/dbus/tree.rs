@@ -109,6 +109,12 @@ impl Tree {
 
         self.add_interface(
             &path,
+            interfaces::Ipv6::new(self.actions.clone(), Arc::clone(&cloned)),
+        )
+        .await?;
+
+        self.add_interface(
+            &path,
             interfaces::Match::new(self.actions.clone(), Arc::clone(&cloned)),
         )
         .await?;
