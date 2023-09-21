@@ -37,6 +37,10 @@
     <property name="Locales" type="as" access="readwrite"/>
     <property name="SupportedLocales" type="as" access="readwrite"/>
     <property name="Timezone" type="s" access="readwrite"/>
+    <!--
+     Property that controls in which localization human string from backend will come.
+     -->
+    <property name="UILocale" type="s" access="readwrite"/>
     <property name="VConsoleKeyboard" type="s" access="readwrite"/>
   </interface>
 </node>
