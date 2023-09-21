@@ -19,6 +19,12 @@
     <method name="LabelsForLocales">
       <arg type="a((ss)(ss))" direction="out"/>
     </method>
+    <!--
+     Gets list of locales available on system.
+     -->
+    <method name="ListUILocales">
+      <arg type="as" direction="out"/>
+    </method>
     <method name="ListVConsoleKeyboards">
       <arg type="as" direction="out"/>
     </method>
