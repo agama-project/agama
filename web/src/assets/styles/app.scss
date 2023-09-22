@@ -88,16 +88,6 @@ button.hidden-popover-button {
   display: inline;
 }
 
-.danger-action {
-  --pf-v5-c-dropdown__menu-item--Color: var(--pf-v5-global--danger-color--200);
-
-  color: var(--pf-v5-global--danger-color--200);
-
-  svg {
-    fill: var(--pf-v5-global--danger-color--200);
-  }
-}
-
 .wifi-network-menu button.pf-v5-c-dropdown__toggle {
   padding-right: 0;
 }

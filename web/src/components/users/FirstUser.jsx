@@ -173,7 +173,7 @@ export default function FirstUser() {
     {
       title: _("Discard"),
       onClick: remove,
-      className: "danger-action"
+      isDanger: true
     }
   ];
 

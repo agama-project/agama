@@ -175,6 +175,17 @@ table td > .pf-v5-c-empty-state {
   );
 }
 
+// Adjust icons for a menu item
+.pf-v5-c-menu__item {
+  svg {
+    // let SVGs inherit the same color than text
+    // useful for a `isDanger` item, for example.
+    fill: var(--pf-v5-c-menu__item--Color);
+    // and keep them centered
+    vertical-align: middle;
+  }
+}
+
 // Center icon in the visibility button of password input form fields
 .password-toggler span.pf-c-button__icon {
   display: flex;

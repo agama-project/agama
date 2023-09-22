@@ -94,7 +94,7 @@ export default function RootAuthMethods() {
     isPasswordDefined && {
       title: _("Discard"),
       onClick: () => client.removeRootPassword(),
-      className: "danger-action"
+      isDanger: true
     }
   ].filter(Boolean);
 
@@ -106,7 +106,7 @@ export default function RootAuthMethods() {
     sshKey && {
       title: _("Discard"),
       onClick: () => client.setRootSSHKey(""),
-      className: "danger-action"
+      isDanger: true
     }
 
   ].filter(Boolean);

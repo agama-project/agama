@@ -76,7 +76,7 @@ export default function NodesPresenter ({ nodes, client }) {
       delete: {
         title: _("Delete"),
         onClick: () => client.iscsi.delete(node),
-        className: "danger-action"
+        isDanger: true
       },
       login: {
         title: _("Login"),

@@ -224,7 +224,7 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
         delete: {
           title: _("Delete"),
           onClick: () => onDelete(volume),
-          className: "danger-action"
+          isDanger: true
         },
         edit: {
           title: _("Edit"),
