@@ -19,11 +19,14 @@ dependencies = [
  "clap",
  "console",
  "convert_case",
+ "fs_extra",
  "indicatif",
  "log",
+ "nix 0.27.1",
  "serde",
  "serde_json",
  "serde_yaml",
+ "tempdir",
  "thiserror",
 ]
 

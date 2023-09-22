@@ -1,3 +1,4 @@
+use clap::Subcommand;
 use fs_extra::copy_items;
 use fs_extra::dir::CopyOptions;
 use nix::unistd::Uid;
@@ -9,6 +10,29 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use tempdir::TempDir;
+
+#[derive(Subcommand, Debug)]
+pub enum LogsCommands {
+    /// Collects and stores logs in a tar archive
+    Store {
+        #[clap(long, short = 'v')]
+        /// Verbose output
+        verbose: bool,
+    },
+    /// List logs which will be collected
+    List
+}
+
+pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
+    match subcommand {
+        LogsCommands::Store { verbose } => {
+            Ok(store(verbose)?)
+        }
+        LogsCommands::List => {
+            Err(anyhow::anyhow!("Not implemented"))
+        }
+    }
+}
 
 const DEFAULT_COMMANDS: [&str; 3] = [
     "journalctl -u agama",
@@ -36,7 +60,6 @@ const DEFAULT_PATHS: [&str; 14] = [
 ];
 
 const DEFAULT_RESULT: &str = "/tmp/agama_logs";
-const DEFAULT_NOISY: bool = true;
 const DEFAULT_COMPRESSION: (&str, &str) = ("bzip2", "tar.bz2");
 const DEFAULT_TMP_DIR: &str = "agama-logs";
 
@@ -165,7 +188,7 @@ impl LogItem for LogCmd {
     }
 }
 
-fn main() -> Result<(), io::Error> {
+fn store(verbose: bool) -> Result<(), io::Error> {
     if !Uid::effective().is_root() {
         panic!("No Root, no logs. Sorry.");
     }
@@ -174,7 +197,7 @@ fn main() -> Result<(), io::Error> {
     let commands = DEFAULT_COMMANDS;
     let paths = DEFAULT_PATHS;
     let result = format!("{}.{}", DEFAULT_RESULT, DEFAULT_COMPRESSION.1);
-    let noisy = DEFAULT_NOISY;
+    let noisy = verbose;
     let compression = DEFAULT_COMPRESSION.0;
     let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
