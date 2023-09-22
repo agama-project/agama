@@ -3,6 +3,7 @@
 use super::types::DeviceType;
 use agama_settings::error::ConversionError;
 use agama_settings::{SettingObject, SettingValue, Settings};
+use cidr::{Cidr, IpCidr};
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::default::Default;
@@ -55,7 +56,7 @@ pub struct NetworkConnection {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gateway: Option<IpAddr>,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub addresses: Vec<String>,
+    pub addresses: Vec<IpCidr>,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub nameservers: Vec<IpAddr>,
     #[serde(skip_serializing_if = "Option::is_none")]
