@@ -1,8 +1,7 @@
+use super::proxies::{ConnectionProxy, ConnectionsProxy, IPv4Proxy, MatchProxy, WirelessProxy};
 use super::settings::{MatchSettings, NetworkConnection, WirelessSettings};
 use super::types::SSID;
 use crate::error::ServiceError;
-
-use super::proxies::{ConnectionProxy, ConnectionsProxy, IPv4Proxy, MatchProxy, WirelessProxy};
 use async_std::stream::StreamExt;
 use zbus::zvariant::OwnedObjectPath;
 use zbus::Connection;
@@ -75,12 +74,11 @@ impl<'a> NetworkClient<'a> {
             .await?;
 
         let method = ipv4_proxy.method().await?;
-        let gateway = match ipv4_proxy.gateway().await?.as_str() {
-            "" => None,
-            value => Some(value.to_string()),
-        };
+        let gateway = ipv4_proxy.gateway().await?.parse().ok();
         let nameservers = ipv4_proxy.nameservers().await?;
+        let nameservers = nameservers.iter().filter_map(|a| a.parse().ok()).collect();
         let addresses = ipv4_proxy.addresses().await?;
+        let addresses = addresses.iter().filter_map(|a| a.parse().ok()).collect();
 
         Ok(NetworkConnection {
             id,
@@ -221,11 +219,12 @@ impl<'a> NetworkClient<'a> {
         let addresses: Vec<_> = conn.addresses.iter().map(String::as_ref).collect();
         proxy.set_addresses(addresses.as_slice()).await?;
 
-        let nameservers: Vec<_> = conn.nameservers.iter().map(String::as_ref).collect();
-        proxy.set_nameservers(nameservers.as_slice()).await?;
+        let nameservers: Vec<_> = conn.nameservers.iter().map(|a| a.to_string()).collect();
+        let nameservers: Vec<_> = nameservers.iter().map(|a| a.as_str()).collect();
+        proxy.set_nameservers(&nameservers).await?;
 
-        let gateway = conn.gateway.as_deref().unwrap_or("");
-        proxy.set_gateway(gateway).await?;
+        let gateway = conn.gateway.map_or(String::from(""), |g| g.to_string());
+        proxy.set_gateway(&gateway).await?;
 
         Ok(())
     }

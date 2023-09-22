@@ -6,6 +6,7 @@ use agama_settings::{SettingObject, SettingValue, Settings};
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::default::Default;
+use std::net::IpAddr;
 
 /// Network settings for installation
 #[derive(Debug, Default, Settings, Serialize, Deserialize)]
@@ -52,11 +53,11 @@ pub struct NetworkConnection {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub method: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub gateway: Option<String>,
+    pub gateway: Option<IpAddr>,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub addresses: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub nameservers: Vec<String>,
+    pub nameservers: Vec<IpAddr>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wireless: Option<WirelessSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
