@@ -20,17 +20,13 @@ pub enum LogsCommands {
         verbose: bool,
     },
     /// List logs which will be collected
-    List
+    List,
 }
 
 pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
     match subcommand {
-        LogsCommands::Store { verbose } => {
-            Ok(store(verbose)?)
-        }
-        LogsCommands::List => {
-            Err(anyhow::anyhow!("Not implemented"))
-        }
+        LogsCommands::Store { verbose } => Ok(store(verbose)?),
+        LogsCommands::List => Err(anyhow::anyhow!("Not implemented")),
     }
 }
 

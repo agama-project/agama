@@ -34,5 +34,5 @@ pub enum Commands {
     Questions(QuestionsCommands),
     /// Collects logs
     #[command(subcommand)]
-    Logs(LogsCommands)
+    Logs(LogsCommands),
 }

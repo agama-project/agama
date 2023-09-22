@@ -16,11 +16,11 @@ use agama_lib::progress::ProgressMonitor;
 use async_std::task::{self, block_on};
 use commands::Commands;
 use config::run as run_config_cmd;
+use logs::run as run_logs_cmd;
 use printers::Format;
 use profile::run as run_profile_cmd;
 use progress::InstallerProgress;
 use questions::run as run_questions_cmd;
-use logs::run as run_logs_cmd;
 use std::{
     process::{ExitCode, Termination},
     thread::sleep,
