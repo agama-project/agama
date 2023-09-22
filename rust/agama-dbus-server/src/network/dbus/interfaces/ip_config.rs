@@ -1,6 +1,9 @@
 //! Network D-Bus interfaces for IP configuration.
 //!
 //! This module contains the D-Bus interfaces to deal with IPv4 and IPv6 configuration.
+//! The `dbus_interface` macro should be applied to structs, that's the reason there are
+//! two different structs for IPv4 and IPv6 settings. The common code have been moved
+//! to the `Ip<T>` struct.
 use crate::network::{
     action::Action,
     model::{
