@@ -91,15 +91,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "agama-logs"
-version = "0.1.0"
-dependencies = [
- "fs_extra",
- "nix 0.27.1",
- "tempdir",
-]
-
-[[package]]
 name = "agama-settings"
 version = "1.0.0"
 dependencies = [

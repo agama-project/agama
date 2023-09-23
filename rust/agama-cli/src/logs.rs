@@ -5,7 +5,6 @@ use nix::unistd::Uid;
 use std::fs;
 use std::fs::File;
 use std::io;
-use std::io::Error;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -121,7 +120,7 @@ trait LogItem {
     fn to(&self) -> PathBuf;
 
     // performs whatever is needed to store logs from "from" at "to" path
-    fn store(&self) -> Result<(), Error>;
+    fn store(&self) -> Result<(), io::Error>;
 }
 
 impl LogItem for LogPath {
@@ -137,16 +136,19 @@ impl LogItem for LogPath {
         self.dst_path.join(r_path)
     }
 
-    fn store(&self) -> Result<(), Error> {
+    fn store(&self) -> Result<(), io::Error> {
+        let dst_file = self.to();
+        let dst_path = dst_file.parent().unwrap();
+
         // for now keep directory structure close to the original
         // e.g. what was in /etc will be in /<tmp dir>/etc/
-        fs::create_dir_all(self.to().parent().unwrap())?;
+        fs::create_dir_all(dst_path)?;
 
         let options = CopyOptions::new();
         // fs_extra's own Error doesn't implement From trait so ? operator is unusable
         match copy_items(
             &[self.src_path.as_str()],
-            self.to().parent().unwrap(),
+            dst_path,
             &options,
         ) {
             Ok(_p) => Ok(()),
@@ -167,7 +169,7 @@ impl LogItem for LogCmd {
         self.dst_path.as_path().join(format!("{}", self.cmd))
     }
 
-    fn store(&self) -> Result<(), Error> {
+    fn store(&self) -> Result<(), io::Error> {
         let cmd_parts = self.cmd.split_whitespace().collect::<Vec<&str>>();
         let file_path = self.to();
         let output = Command::new(cmd_parts[0])
@@ -193,18 +195,17 @@ fn store(verbose: bool) -> Result<(), io::Error> {
     let commands = DEFAULT_COMMANDS;
     let paths = DEFAULT_PATHS;
     let result = format!("{}.{}", DEFAULT_RESULT, DEFAULT_COMPRESSION.1);
-    let noisy = verbose;
     let compression = DEFAULT_COMPRESSION.0;
     let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
-    showln(noisy, "Collecting Agama logs:");
+    showln(verbose, "Collecting Agama logs:");
 
     // 1. create temporary directory where to collect all files (similar to what old save_y2logs
     // does)
     let tmp_dir = TempDir::new(DEFAULT_TMP_DIR)?;
 
     // 2. collect existing / requested paths which should already exist
-    showln(noisy, "\t- proceeding well known paths");
+    showln(verbose, "\t- proceeding well known paths");
     for path in paths {
         // assumption: path is full path
         if Path::new(path).try_exists().is_ok() {
@@ -213,7 +214,7 @@ fn store(verbose: bool) -> Result<(), io::Error> {
     }
 
     // 3. some info can be collected via particular commands only
-    showln(noisy, "\t- proceeding output of commands");
+    showln(verbose, "\t- proceeding output of commands");
     for cmd in commands {
         log_sources.push(Box::new(LogCmd::new(cmd, tmp_dir.path())));
     }
@@ -223,7 +224,7 @@ fn store(verbose: bool) -> Result<(), io::Error> {
 
     for log in log_sources.iter() {
         show(
-            noisy,
+            verbose,
             format!("\t- storing: \"{}\" ... ", log.from()).as_str(),
         );
 
@@ -237,7 +238,7 @@ fn store(verbose: bool) -> Result<(), io::Error> {
             Err(_e) => "[Failed]",
         };
 
-        showln(noisy, format!("{}", res).as_str());
+        showln(verbose, format!("{}", res).as_str());
     }
 
     let compress_cmd = format!(
