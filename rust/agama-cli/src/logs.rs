@@ -95,7 +95,7 @@ impl LogPath {
     }
 }
 
-// Struct for log created on demmand by a command
+// Struct for log created on demand by a command
 struct LogCmd {
     // command which stdout / stderr is logged
     cmd: String,
