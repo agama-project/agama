@@ -103,13 +103,7 @@ impl Tree {
 
         self.add_interface(
             &path,
-            interfaces::Ipv4::new(self.actions.clone(), Arc::clone(&cloned)),
-        )
-        .await?;
-
-        self.add_interface(
-            &path,
-            interfaces::Ipv6::new(self.actions.clone(), Arc::clone(&cloned)),
+            interfaces::Ip::new(self.actions.clone(), Arc::clone(&cloned)),
         )
         .await?;
 
@@ -192,7 +186,7 @@ impl Tree {
     async fn remove_connection_on(&self, path: &str) -> Result<(), ServiceError> {
         let object_server = self.connection.object_server();
         _ = object_server.remove::<interfaces::Wireless, _>(path).await;
-        object_server.remove::<interfaces::Ipv4, _>(path).await?;
+        object_server.remove::<interfaces::Ip, _>(path).await?;
         object_server
             .remove::<interfaces::Connection, _>(path)
             .await?;

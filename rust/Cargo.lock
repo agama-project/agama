@@ -38,6 +38,7 @@ dependencies = [
  "agama-locale-data",
  "anyhow",
  "async-std",
+ "cidr",
  "futures",
  "log",
  "serde",

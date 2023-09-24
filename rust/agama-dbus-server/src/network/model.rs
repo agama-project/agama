@@ -2,17 +2,17 @@
 //!
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //! agnostic from the real network service (e.g., NetworkManager).
-use uuid::Uuid;
-
 use crate::network::error::NetworkStateError;
 use agama_lib::network::types::{DeviceType, SSID};
+use cidr::IpInet;
 use std::{
     default::Default,
     fmt,
-    net::{Ipv4Addr, Ipv6Addr},
+    net::IpAddr,
     str::{self, FromStr},
 };
 use thiserror::Error;
+use uuid::Uuid;
 
 #[derive(Default, Clone)]
 pub struct NetworkState {
@@ -275,20 +275,13 @@ impl Connection {
         self.base().uuid
     }
 
-    pub fn ipv4(&self) -> &Ipv4Config {
-        &self.base().ipv4
+    /// FIXME: rename to ip_config
+    pub fn ip_config(&self) -> &IpConfig {
+        &self.base().ip_config
     }
 
-    pub fn ipv4_mut(&mut self) -> &mut Ipv4Config {
-        &mut self.base_mut().ipv4
-    }
-
-    pub fn ipv6(&self) -> &Ipv6Config {
-        &self.base().ipv6
-    }
-
-    pub fn ipv6_mut(&mut self) -> &mut Ipv6Config {
-        &mut self.base_mut().ipv6
+    pub fn ip_config_mut(&mut self) -> &mut IpConfig {
+        &mut self.base_mut().ip_config
     }
 
     pub fn match_config(&self) -> &MatchConfig {
@@ -317,8 +310,7 @@ impl Connection {
 pub struct BaseConnection {
     pub id: String,
     pub uuid: Uuid,
-    pub ipv4: Ipv4Config,
-    pub ipv6: Ipv6Config,
+    pub ip_config: IpConfig,
     pub status: Status,
     pub interface: String,
     pub match_config: MatchConfig,
@@ -326,7 +318,7 @@ pub struct BaseConnection {
 
 impl PartialEq for BaseConnection {
     fn eq(&self, other: &Self) -> bool {
-        self.id == other.id && self.uuid == other.uuid && self.ipv4 == other.ipv4
+        self.id == other.id && self.uuid == other.uuid && self.ip_config == other.ip_config
     }
 }
 
@@ -337,27 +329,15 @@ pub enum Status {
     Removed,
 }
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct IpConfig<T> {
-    pub method: IpMethod,
-    pub addresses: Vec<IpAddress<T>>,
-    pub nameservers: Vec<T>,
-    pub gateway: Option<T>,
+#[derive(Default, Debug, PartialEq, Clone)]
+pub struct IpConfig {
+    pub method4: IpMethod,
+    pub method6: IpMethod,
+    pub addresses: Vec<IpInet>,
+    pub nameservers: Vec<IpAddr>,
+    pub gateway4: Option<IpAddr>,
+    pub gateway6: Option<IpAddr>,
 }
-
-impl<T> Default for IpConfig<T> {
-    fn default() -> Self {
-        Self {
-            method: IpMethod::default(),
-            addresses: vec![],
-            nameservers: vec![],
-            gateway: None,
-        }
-    }
-}
-
-pub type Ipv4Config = IpConfig<Ipv4Addr>;
-pub type Ipv6Config = IpConfig<Ipv6Addr>;
 
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct MatchConfig {

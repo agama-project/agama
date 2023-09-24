@@ -61,7 +61,8 @@ async fn test_add_connection() {
 
     let wlan0 = settings::NetworkConnection {
         id: "wlan0".to_string(),
-        method: Some("auto".to_string()),
+        method4: Some("auto".to_string()),
+        method6: Some("disabled".to_string()),
         wireless: Some(settings::WirelessSettings {
             password: "123456".to_string(),
             security: "wpa-psk".to_string(),

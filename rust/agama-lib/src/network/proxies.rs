@@ -86,34 +86,42 @@ trait Connection {
 }
 
 #[dbus_proxy(
-    interface = "org.opensuse.Agama1.Network.Connection.IPv4",
+    interface = "org.opensuse.Agama1.Network.Connection.IP",
     default_service = "org.opensuse.Agama1",
-    default_path = "/org/opensuse/Agama1/Network"
+    default_path = "/org/opensuse/Agama1/Network/connections/0"
 )]
-trait IPv4 {
+trait IP {
     /// Addresses property
-    ///
-    /// By now just an array of IPv4 addresses in string format
     #[dbus_proxy(property)]
     fn addresses(&self) -> zbus::Result<Vec<String>>;
     #[dbus_proxy(property)]
     fn set_addresses(&self, value: &[&str]) -> zbus::Result<()>;
 
-    /// Gateway property
+    /// Gateway4 property
     #[dbus_proxy(property)]
-    fn gateway(&self) -> zbus::Result<String>;
+    fn gateway4(&self) -> zbus::Result<String>;
     #[dbus_proxy(property)]
-    fn set_gateway(&self, value: &str) -> zbus::Result<()>;
+    fn set_gateway4(&self, value: &str) -> zbus::Result<()>;
 
-    /// Method property
+    /// Gateway6 property
     #[dbus_proxy(property)]
-    fn method(&self) -> zbus::Result<String>;
+    fn gateway6(&self) -> zbus::Result<String>;
     #[dbus_proxy(property)]
-    fn set_method(&self, value: &str) -> zbus::Result<()>;
+    fn set_gateway6(&self, value: &str) -> zbus::Result<()>;
+
+    /// Method4 property
+    #[dbus_proxy(property)]
+    fn method4(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_method4(&self, value: &str) -> zbus::Result<()>;
+
+    /// Method6 property
+    #[dbus_proxy(property)]
+    fn method6(&self) -> zbus::Result<String>;
+    #[dbus_proxy(property)]
+    fn set_method6(&self, value: &str) -> zbus::Result<()>;
 
     /// Nameservers property
-    ///
-    /// By now just an array of IPv4 addresses in string format
     #[dbus_proxy(property)]
     fn nameservers(&self) -> zbus::Result<Vec<String>>;
     #[dbus_proxy(property)]

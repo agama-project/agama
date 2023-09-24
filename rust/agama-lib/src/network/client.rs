@@ -1,4 +1,4 @@
-use super::proxies::{ConnectionProxy, ConnectionsProxy, IPv4Proxy, MatchProxy, WirelessProxy};
+use super::proxies::{ConnectionProxy, ConnectionsProxy, IPProxy, MatchProxy, WirelessProxy};
 use super::settings::{MatchSettings, NetworkConnection, WirelessSettings};
 use super::types::SSID;
 use crate::error::ServiceError;
@@ -68,22 +68,26 @@ impl<'a> NetworkClient<'a> {
             value => Some(value.to_string()),
         };
 
-        let ipv4_proxy = IPv4Proxy::builder(&self.connection)
+        let ip_proxy = IPProxy::builder(&self.connection)
             .path(path)?
             .build()
             .await?;
 
-        let method = ipv4_proxy.method().await?;
-        let gateway = ipv4_proxy.gateway().await?.parse().ok();
-        let nameservers = ipv4_proxy.nameservers().await?;
+        let method4 = ip_proxy.method4().await?;
+        let gateway4 = ip_proxy.gateway4().await?.parse().ok();
+        let method6 = ip_proxy.method6().await?;
+        let gateway6 = ip_proxy.gateway6().await?.parse().ok();
+        let nameservers = ip_proxy.nameservers().await?;
         let nameservers = nameservers.iter().filter_map(|a| a.parse().ok()).collect();
-        let addresses = ipv4_proxy.addresses().await?;
+        let addresses = ip_proxy.addresses().await?;
         let addresses = addresses.iter().filter_map(|a| a.parse().ok()).collect();
 
         Ok(NetworkConnection {
             id,
-            method: Some(method.to_string()),
-            gateway,
+            method4: Some(method4.to_string()),
+            gateway4,
+            method6: Some(method6.to_string()),
+            gateway6,
             addresses,
             nameservers,
             interface,
@@ -207,24 +211,32 @@ impl<'a> NetworkClient<'a> {
         path: &OwnedObjectPath,
         conn: &NetworkConnection,
     ) -> Result<(), ServiceError> {
-        let proxy = IPv4Proxy::builder(&self.connection)
+        let proxy = IPProxy::builder(&self.connection)
             .path(path)?
             .build()
             .await?;
 
-        if let Some(ref method) = conn.method {
-            proxy.set_method(method.as_str()).await?;
+        if let Some(ref method) = conn.method4 {
+            proxy.set_method4(method.as_str()).await?;
         }
 
-        let addresses: Vec<_> = conn.addresses.iter().map(String::as_ref).collect();
-        proxy.set_addresses(addresses.as_slice()).await?;
+        if let Some(ref method) = conn.method6 {
+            proxy.set_method6(method.as_str()).await?;
+        }
+
+        let addresses: Vec<_> = conn.addresses.iter().map(|a| a.to_string()).collect();
+        let addresses: Vec<&str> = addresses.iter().map(|a| a.as_str()).collect();
+        proxy.set_addresses(&addresses).await?;
 
         let nameservers: Vec<_> = conn.nameservers.iter().map(|a| a.to_string()).collect();
         let nameservers: Vec<_> = nameservers.iter().map(|a| a.as_str()).collect();
         proxy.set_nameservers(&nameservers).await?;
 
-        let gateway = conn.gateway.map_or(String::from(""), |g| g.to_string());
-        proxy.set_gateway(&gateway).await?;
+        let gateway = conn.gateway4.map_or(String::from(""), |g| g.to_string());
+        proxy.set_gateway4(&gateway).await?;
+
+        let gateway = conn.gateway6.map_or(String::from(""), |g| g.to_string());
+        proxy.set_gateway6(&gateway).await?;
 
         Ok(())
     }

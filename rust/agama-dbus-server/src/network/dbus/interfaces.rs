@@ -19,7 +19,7 @@ use zbus::{
 };
 
 mod ip_config;
-pub use ip_config::{Ipv4, Ipv6};
+pub use ip_config::Ip;
 
 /// D-Bus interface for the network devices collection
 ///
