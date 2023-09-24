@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-14 13:35+0000\n"
+"POT-Creation-Date: 2023-09-21 02:05+0000\n"
 "PO-Revision-Date: 2023-09-11 13:15+0000\n"
 "Last-Translator: Alex Minton <alex239@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -180,32 +180,33 @@ msgid "Something went wrong while collecting logs. Please, try again."
 msgstr ""
 "Что-то пошло не так при сборе журналов. Пожалуйста, попробуйте ещё раз."
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:37
+#: src/components/core/PasswordAndConfirmationInput.jsx:35
 msgid "Passwords do not match"
 msgstr "Пароли не совпадают"
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:58
-#: src/components/network/WifiConnectionForm.jsx:124
-#: src/components/network/WifiConnectionForm.jsx:126
+#: src/components/core/PasswordAndConfirmationInput.jsx:56
+#: src/components/network/WifiConnectionForm.jsx:125
 #: src/components/storage/iscsi/AuthFields.jsx:96
-#: src/components/storage/iscsi/AuthFields.jsx:104
-#: src/components/storage/iscsi/AuthFields.jsx:106
-#: src/components/storage/iscsi/AuthFields.jsx:143
+#: src/components/storage/iscsi/AuthFields.jsx:103
 #: src/components/users/RootAuthMethods.jsx:159
 msgid "Password"
 msgstr "Пароль"
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:63
+#: src/components/core/PasswordAndConfirmationInput.jsx:60
 msgid "User password"
 msgstr "Пароль пользователя"
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:72
+#: src/components/core/PasswordAndConfirmationInput.jsx:69
 msgid "Password confirmation"
 msgstr "Подтверждение пароля"
 
-#: src/components/core/PasswordAndConfirmationInput.jsx:80
+#: src/components/core/PasswordAndConfirmationInput.jsx:76
 msgid "User password confirmation"
 msgstr "Подтверждение пароля пользователя"
+
+#: src/components/core/PasswordInput.jsx:59
+msgid "Password visibility button"
+msgstr ""
 
 #: src/components/core/Popup.jsx:90
 msgid "Confirm"
@@ -213,7 +214,7 @@ msgstr "Подтвердить"
 
 #. TRANSLATORS: button label
 #: src/components/core/Popup.jsx:128
-#: src/components/network/WifiConnectionForm.jsx:137
+#: src/components/network/WifiConnectionForm.jsx:136
 msgid "Cancel"
 msgstr "Отмена"
 
@@ -314,7 +315,7 @@ msgstr ""
 "Не удалось подключиться к службе D-Bus. Пожалуйста, проверьте, запущена ли "
 "она."
 
-#: src/components/layout/Icon.jsx:155
+#: src/components/layout/Icon.jsx:159
 #, c-format
 msgid "Icon %s not found!"
 msgstr "Значок %s не найден!"
@@ -511,17 +512,17 @@ msgid "WiFi networks"
 msgstr "Сети WiFi"
 
 #. TRANSLATORS: WiFi authentication mode
-#: src/components/network/WifiConnectionForm.jsx:42
+#: src/components/network/WifiConnectionForm.jsx:43
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 msgid "None"
 msgstr "отсутствует"
 
 #. TRANSLATORS: WiFi authentication mode
-#: src/components/network/WifiConnectionForm.jsx:44
+#: src/components/network/WifiConnectionForm.jsx:45
 msgid "WPA & WPA2 Personal"
 msgstr "WPA и WPA2 Personal"
 
-#: src/components/network/WifiConnectionForm.jsx:90
+#: src/components/network/WifiConnectionForm.jsx:91
 #: src/components/storage/ZFCPDiskForm.jsx:112
 #: src/components/storage/iscsi/DiscoverForm.jsx:108
 #: src/components/storage/iscsi/LoginForm.jsx:72
@@ -529,29 +530,29 @@ msgstr "WPA и WPA2 Personal"
 msgid "Something went wrong"
 msgstr "Что-то пошло не так"
 
-#: src/components/network/WifiConnectionForm.jsx:91
+#: src/components/network/WifiConnectionForm.jsx:92
 msgid "Please, review provided settings and try again."
 msgstr "Пожалуйста, проверьте предоставленные настройки и попробуйте ещё раз."
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
-#: src/components/network/WifiConnectionForm.jsx:96
-#: src/components/network/WifiConnectionForm.jsx:100
+#: src/components/network/WifiConnectionForm.jsx:97
+#: src/components/network/WifiConnectionForm.jsx:101
 msgid "SSID"
 msgstr "Имя сети"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
-#: src/components/network/WifiConnectionForm.jsx:108
-#: src/components/network/WifiConnectionForm.jsx:111
+#: src/components/network/WifiConnectionForm.jsx:109
+#: src/components/network/WifiConnectionForm.jsx:112
 msgid "Security"
 msgstr "Защита"
 
 #. TRANSLATORS: WiFi password
-#: src/components/network/WifiConnectionForm.jsx:120
+#: src/components/network/WifiConnectionForm.jsx:121
 msgid "WPA Password"
 msgstr "Пароль WPA"
 
 #. TRANSLATORS: button label, connect to a WiFi network
-#: src/components/network/WifiConnectionForm.jsx:134
+#: src/components/network/WifiConnectionForm.jsx:133
 msgid "Connect"
 msgstr "Подключиться"
 
@@ -715,21 +716,21 @@ msgstr ""
 msgid "Change product"
 msgstr ""
 
-#: src/components/software/ProductSelectionPage.jsx:68
+#: src/components/software/ProductSelectionPage.jsx:69
 msgid "Loading available products, please wait..."
 msgstr ""
 
 #. TRANSLATORS: page header
-#: src/components/software/ProductSelectionPage.jsx:93
+#: src/components/software/ProductSelectionPage.jsx:94
 msgid "Product selection"
 msgstr ""
 
 #. TRANSLATORS: button label
-#: src/components/software/ProductSelectionPage.jsx:98
+#: src/components/software/ProductSelectionPage.jsx:99
 msgid "Select"
 msgstr ""
 
-#: src/components/software/ProductSelectionPage.jsx:103
+#: src/components/software/ProductSelectionPage.jsx:104
 msgid "Choose a product"
 msgstr ""
 
@@ -1313,27 +1314,27 @@ msgstr ""
 #: src/components/storage/iscsi/AuthFields.jsx:80
 #: src/components/storage/iscsi/AuthFields.jsx:87
 #: src/components/storage/iscsi/AuthFields.jsx:89
-#: src/components/storage/iscsi/AuthFields.jsx:116
+#: src/components/storage/iscsi/AuthFields.jsx:114
+#: src/components/storage/iscsi/AuthFields.jsx:121
 #: src/components/storage/iscsi/AuthFields.jsx:123
-#: src/components/storage/iscsi/AuthFields.jsx:125
 msgid "User name"
 msgstr ""
 
 #: src/components/storage/iscsi/AuthFields.jsx:81
-#: src/components/storage/iscsi/AuthFields.jsx:117
+#: src/components/storage/iscsi/AuthFields.jsx:115
 msgid "Incorrect user name"
 msgstr ""
 
 #: src/components/storage/iscsi/AuthFields.jsx:97
-#: src/components/storage/iscsi/AuthFields.jsx:134
+#: src/components/storage/iscsi/AuthFields.jsx:132
 msgid "Incorrect password"
 msgstr ""
 
-#: src/components/storage/iscsi/AuthFields.jsx:112
+#: src/components/storage/iscsi/AuthFields.jsx:110
 msgid "Authentication by initiator"
 msgstr ""
 
-#: src/components/storage/iscsi/AuthFields.jsx:141
+#: src/components/storage/iscsi/AuthFields.jsx:138
 msgid "Target Password"
 msgstr ""
 
