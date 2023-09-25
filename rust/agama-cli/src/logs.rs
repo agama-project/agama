@@ -186,26 +186,11 @@ impl LogItem for LogCmd {
     }
 }
 
-fn store(verbose: bool) -> Result<(), io::Error> {
-    if !Uid::effective().is_root() {
-        panic!("No Root, no logs. Sorry.");
-    }
-
-    // 0. preparation, e.g. in later features some log commands can be added / excluded per users request or
-    let commands = DEFAULT_COMMANDS;
-    let paths = DEFAULT_PATHS;
-    let result = format!("{}.{}", DEFAULT_RESULT, DEFAULT_COMPRESSION.1);
-    let compression = DEFAULT_COMPRESSION.0;
+// collect existing / requested paths which should already exist turns them into list of log
+// sources
+fn paths_to_log_sources(paths: &[&str], tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
     let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
-    showln(verbose, "Collecting Agama logs:");
-
-    // 1. create temporary directory where to collect all files (similar to what old save_y2logs
-    // does)
-    let tmp_dir = TempDir::new(DEFAULT_TMP_DIR)?;
-
-    // 2. collect existing / requested paths which should already exist
-    showln(verbose, "\t- proceeding well known paths");
     for path in paths {
         // assumption: path is full path
         if Path::new(path).try_exists().is_ok() {
@@ -213,13 +198,67 @@ fn store(verbose: bool) -> Result<(), io::Error> {
         }
     }
 
-    // 3. some info can be collected via particular commands only
-    showln(verbose, "\t- proceeding output of commands");
+    log_sources
+}
+
+// some info can be collected via particular commands only, turn it into log sources
+fn cmds_to_log_sources(commands: &[&str], tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
+    let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
+
     for cmd in commands {
         log_sources.push(Box::new(LogCmd::new(cmd, tmp_dir.path())));
     }
 
-    // 4. store it
+    log_sources
+}
+
+// compress given directory into a tar archive
+fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
+    let compression = DEFAULT_COMPRESSION.0;
+    let compress_cmd = format!(
+        "tar -c -f {} --warning=no-file-changed --{} --dereference -C {} .",
+        result,
+        compression,
+        tmp_dir.path().display()
+    );
+    let cmd_parts = compress_cmd.split_whitespace().collect::<Vec<&str>>();
+
+    match Command::new(cmd_parts[0])
+        .args(cmd_parts[1..].iter())
+        .status() {
+        Ok(_o) => Ok(()),
+        Err(_e) => Err(io::Error::new(
+            io::ErrorKind::Other,
+            "Cannot create tar archive"
+        )),
+    }
+}
+
+// handler for the "agama logs store" subcommand
+fn store(verbose: bool) -> Result<(), io::Error> {
+    if !Uid::effective().is_root() {
+        panic!("No Root, no logs. Sorry.");
+    }
+
+    // preparation, e.g. in later features some log commands can be added / excluded per users request or
+    let commands = DEFAULT_COMMANDS;
+    let paths = DEFAULT_PATHS;
+    let result = format!("{}.{}", DEFAULT_RESULT, DEFAULT_COMPRESSION.1);
+
+    showln(verbose, "Collecting Agama logs:");
+
+    // create temporary directory where to collect all files (similar to what old save_y2logs
+    // does)
+    let tmp_dir = TempDir::new(DEFAULT_TMP_DIR)?;
+    let mut log_sources = paths_to_log_sources(&paths, &tmp_dir);
+
+    showln(verbose, "\t- proceeding well known paths");
+    log_sources.append(&mut cmds_to_log_sources(&commands, &tmp_dir));
+
+    // some info can be collected via particular commands only
+    showln(verbose, "\t- proceeding output of commands");
+
+    // store it
     showln(true, format!("Storing result in: \"{}\"", result).as_str());
 
     for log in log_sources.iter() {
@@ -241,18 +280,5 @@ fn store(verbose: bool) -> Result<(), io::Error> {
         showln(verbose, format!("{}", res).as_str());
     }
 
-    let compress_cmd = format!(
-        "tar -c -f {} --warning=no-file-changed --{} --dereference -C {} .",
-        result,
-        compression,
-        tmp_dir.path().display()
-    );
-    let cmd_parts = compress_cmd.split_whitespace().collect::<Vec<&str>>();
-
-    Command::new(cmd_parts[0])
-        .args(cmd_parts[1..].iter())
-        .status()
-        .expect("failed creating the archive");
-
-    Ok(())
+    compress_logs(&tmp_dir, &result)
 }
