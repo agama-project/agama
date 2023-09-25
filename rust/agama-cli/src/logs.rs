@@ -168,7 +168,9 @@ impl LogItem for LogCmd {
     fn store(&self) -> Result<(), io::Error> {
         let cmd_parts = self.cmd.split_whitespace().collect::<Vec<&str>>();
         let file_path = self.to();
-        let output = Command::new(cmd_parts[0]).args(cmd_parts[1..].iter()).output()?;
+        let output = Command::new(cmd_parts[0])
+            .args(cmd_parts[1..].iter())
+            .output()?;
         let mut file_stdout = File::create(format!("{}.out.log", file_path.display()))?;
         let mut file_stderr = File::create(format!("{}.err.log", file_path.display()))?;
 
