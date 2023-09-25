@@ -14,7 +14,7 @@ use futures::lock::{MappedMutexGuard, Mutex, MutexGuard};
 use std::net::IpAddr;
 use zbus::dbus_interface;
 
-/// D-Bus interface for IPv4 settings
+/// D-Bus interface for IPv4 and IPv6 settings
 pub struct Ip {
     actions: Arc<Mutex<Sender<Action>>>,
     connection: Arc<Mutex<NetworkConnection>>,
@@ -54,12 +54,12 @@ impl Ip {
 }
 
 impl Ip {
-    /// Returns the IpConfig struct for IPv4.
+    /// Returns the IpConfig struct.
     async fn get_ip_config(&self) -> MappedMutexGuard<NetworkConnection, IpConfig> {
         MutexGuard::map(self.get_connection().await, |c| c.ip_config_mut())
     }
 
-    /// Updates the IpConfig struct for IPv4.
+    /// Updates the IpConfig struct.
     ///
     /// * `func`: function to update the configuration.
     async fn update_config<F>(&self, func: F) -> zbus::fdo::Result<()>
