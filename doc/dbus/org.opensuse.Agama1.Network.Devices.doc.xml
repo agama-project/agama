@@ -1,24 +1,16 @@
-
-<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
- "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
 <node>
-  <interface name="org.opensuse.Agama.Network1.Devices">
-    <!--
-     Returns the D-Bus paths of the network devices.
-     -->
-    <method name="GetDevices">
-      <arg type="ao" direction="out"/>
+  <node name="0"/>
+  <node name="1"/>
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
+      <arg type="s" direction="out"/>
     </method>
   </interface>
   <interface name="org.freedesktop.DBus.Peer">
     <method name="Ping">
     </method>
     <method name="GetMachineId">
-      <arg type="s" direction="out"/>
-    </method>
-  </interface>
-  <interface name="org.freedesktop.DBus.Introspectable">
-    <method name="Introspect">
       <arg type="s" direction="out"/>
     </method>
   </interface>
@@ -46,5 +38,12 @@
       <arg name="invalidated_properties" type="as"/>
     </signal>
   </interface>
+  <interface name="org.opensuse.Agama1.Network.Devices">
+    <!--
+     Returns the D-Bus paths of the network devices.
+     -->
+    <method name="GetDevices">
+      <arg type="ao" direction="out"/>
+    </method>
+  </interface>
 </node>
-
