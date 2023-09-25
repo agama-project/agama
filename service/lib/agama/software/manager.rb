@@ -201,6 +201,7 @@ module Agama
 
         res = Yast::Pkg.PkgSolve(unused = true)
         logger.info "Solver run #{res.inspect}"
+        selected_patterns_changed
       end
 
       def remove_pattern(id)
@@ -211,6 +212,7 @@ module Agama
 
         res = Yast::Pkg.PkgSolve(unused = true)
         logger.info "Solver run #{res.inspect}"
+        selected_patterns_changed
       end
 
       # @return [Array<Array<String>,Array<String>] returns pair of arrays where the first one
@@ -325,6 +327,10 @@ module Agama
         optional_packages = arch_collection_for("optional_packages", "package")
         proposal.set_resolvables("agama", :package, optional_packages,
           optional: true)
+      end
+
+      def selected_patterns_changed
+        @selected_patterns_change_callbacks.each(&:call)
       end
     end
   end
