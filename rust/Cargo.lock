@@ -38,6 +38,7 @@ dependencies = [
  "agama-locale-data",
  "anyhow",
  "async-std",
+ "cidr",
  "futures",
  "log",
  "serde",
@@ -66,6 +67,7 @@ dependencies = [
  "agama-settings",
  "anyhow",
  "async-std",
+ "cidr",
  "curl",
  "futures",
  "futures-util",
@@ -478,6 +480,15 @@ dependencies = [
  "parse-zoneinfo",
  "phf",
  "phf_codegen",
+]
+
+[[package]]
+name = "cidr"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8d18b093eba54c9aaa1e3784d4361eb2ba944cf7d0a932a830132238f483e8d8"
+dependencies = [
+ "serde",
 ]
 
 [[package]]

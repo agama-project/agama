@@ -9,6 +9,7 @@ edition = "2021"
 agama-settings = { path="../agama-settings" }
 anyhow = "1.0"
 async-std = "1.12.0"
+cidr = { version = "0.2.2", features = ["serde"] }
 curl = { version = "0.4.44", features = ["protocol-ftp"] }
 futures = "0.3.27"
 futures-util = "0.3.27"
