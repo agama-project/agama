@@ -75,6 +75,9 @@ module Agama
         end
         @repositories = RepositoriesManager.new
         on_progress_change { logger.info progress.to_s }
+        # patterns selected by user
+        @user_patterns = []
+        @selected_patterns_change_callbacks = []
       end
 
       def select_product(name)
@@ -188,6 +191,39 @@ module Agama
         patterns = patterns.select(&:user_visible) if filtered
 
         patterns
+      end
+
+      def add_pattern(id)
+        # TODO: error handling
+        res = Yast::Pkg.ResolvableInstall(id, :pattern)
+        logger.info "Adding pattern #{res.inspect}"
+        @user_patterns << id
+
+        res = Yast::Pkg.PkgSolve(unused = true)
+        logger.info "Solver run #{res.inspect}"
+      end
+
+      def remove_pattern(id)
+        # TODO: error handling
+        Yast::Pkg.ResolvableRemove(id, :pattern)
+        logger.info "Removing pattern #{res.inspect}"
+        @user_patterns << id
+
+        res = Yast::Pkg.PkgSolve(unused = true)
+        logger.info "Solver run #{res.inspect}"
+      end
+
+      # @return [Array<Array<String>,Array<String>] returns pair of arrays where the first one
+      #   is user selected pattern ids and in other is auto selected ones
+      def selected_patterns
+        patterns = Y2Packager::Resolvable.find(kind: :pattern, status: :selected)
+        patterns.map!(&:name)
+
+        patterns.partition { |p| @user_patterns.include?(p) }
+      end
+
+      def on_selected_patterns_change(&block)
+        @selected_patterns_change_callbacks << block
       end
 
       # Determines whether a package is installed
