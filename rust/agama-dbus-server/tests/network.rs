@@ -1,9 +1,14 @@
 mod common;
 
 use self::common::DBusServer;
-use agama_dbus_server::network::{self, model, Adapter, NetworkService, NetworkState};
+use agama_dbus_server::network::{
+    self,
+    model::{self, IpMethod},
+    Adapter, NetworkService, NetworkState,
+};
 use agama_lib::network::{settings, types::DeviceType, NetworkClient};
 use async_std::test;
+use cidr::IpInet;
 
 #[derive(Default)]
 pub struct NetworkTestAdapter(network::NetworkState);
@@ -59,10 +64,15 @@ async fn test_add_connection() {
         .await
         .unwrap();
 
+    let addresses: Vec<IpInet> = vec![
+        "192.168.0.2/24".parse().unwrap(),
+        "::ffff:c0a8:7ac7/64".parse().unwrap(),
+    ];
     let wlan0 = settings::NetworkConnection {
         id: "wlan0".to_string(),
         method4: Some("auto".to_string()),
         method6: Some("disabled".to_string()),
+        addresses: addresses.clone(),
         wireless: Some(settings::WirelessSettings {
             password: "123456".to_string(),
             security: "wpa-psk".to_string(),
@@ -75,9 +85,15 @@ async fn test_add_connection() {
 
     let conns = client.connections().await.unwrap();
     assert_eq!(conns.len(), 1);
+
     let conn = conns.first().unwrap();
     assert_eq!(conn.id, "wlan0");
     assert_eq!(conn.device_type(), DeviceType::Wireless);
+    assert_eq!(&conn.addresses, &addresses);
+    let method4 = conn.method4.as_ref().unwrap();
+    assert_eq!(method4, &IpMethod::Auto.to_string());
+    let method6 = conn.method6.as_ref().unwrap();
+    assert_eq!(method6, &IpMethod::Disabled.to_string());
 }
 
 #[test]
