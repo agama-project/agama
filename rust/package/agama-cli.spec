@@ -37,6 +37,9 @@ BuildRequires:  dbus-1-common
 BuildRequires:  dbus-1-daemon
 Requires:       jsonnet
 Requires:       lshw
+# required by "agama logs store"
+Requires:       bzip2
+Requires:       tar
 
 %description
 Command line program to interact with the agama service.

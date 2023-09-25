@@ -2,16 +2,17 @@
 //!
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //! agnostic from the real network service (e.g., NetworkManager).
-use uuid::Uuid;
-
 use crate::network::error::NetworkStateError;
 use agama_lib::network::types::{DeviceType, SSID};
+use cidr::IpInet;
 use std::{
+    default::Default,
     fmt,
-    net::{AddrParseError, Ipv4Addr},
+    net::IpAddr,
     str::{self, FromStr},
 };
 use thiserror::Error;
+use uuid::Uuid;
 
 #[derive(Default, Clone)]
 pub struct NetworkState {
@@ -274,12 +275,13 @@ impl Connection {
         self.base().uuid
     }
 
-    pub fn ipv4(&self) -> &Ipv4Config {
-        &self.base().ipv4
+    /// FIXME: rename to ip_config
+    pub fn ip_config(&self) -> &IpConfig {
+        &self.base().ip_config
     }
 
-    pub fn ipv4_mut(&mut self) -> &mut Ipv4Config {
-        &mut self.base_mut().ipv4
+    pub fn ip_config_mut(&mut self) -> &mut IpConfig {
+        &mut self.base_mut().ip_config
     }
 
     pub fn match_config(&self) -> &MatchConfig {
@@ -308,7 +310,7 @@ impl Connection {
 pub struct BaseConnection {
     pub id: String,
     pub uuid: Uuid,
-    pub ipv4: Ipv4Config,
+    pub ip_config: IpConfig,
     pub status: Status,
     pub interface: String,
     pub match_config: MatchConfig,
@@ -316,7 +318,7 @@ pub struct BaseConnection {
 
 impl PartialEq for BaseConnection {
     fn eq(&self, other: &Self) -> bool {
-        self.id == other.id && self.uuid == other.uuid && self.ipv4 == other.ipv4
+        self.id == other.id && self.uuid == other.uuid && self.ip_config == other.ip_config
     }
 }
 
@@ -327,12 +329,14 @@ pub enum Status {
     Removed,
 }
 
-#[derive(Debug, Default, PartialEq, Clone)]
-pub struct Ipv4Config {
-    pub method: IpMethod,
-    pub addresses: Vec<IpAddress>,
-    pub nameservers: Vec<Ipv4Addr>,
-    pub gateway: Option<Ipv4Addr>,
+#[derive(Default, Debug, PartialEq, Clone)]
+pub struct IpConfig {
+    pub method4: IpMethod,
+    pub method6: IpMethod,
+    pub addresses: Vec<IpInet>,
+    pub nameservers: Vec<IpAddr>,
+    pub gateway4: Option<IpAddr>,
+    pub gateway6: Option<IpAddr>,
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
@@ -492,69 +496,5 @@ impl TryFrom<&str> for SecurityProtocol {
                 value.to_string(),
             )),
         }
-    }
-}
-
-/// Represents an IPv4 address with a prefix.
-#[derive(Debug, Clone, PartialEq)]
-pub struct IpAddress(Ipv4Addr, u32);
-
-#[derive(Error, Debug)]
-pub enum ParseIpAddressError {
-    #[error("Missing prefix")]
-    MissingPrefix,
-    #[error("Invalid prefix part '{0}'")]
-    InvalidPrefix(String),
-    #[error("Invalid address part: {0}")]
-    InvalidAddr(AddrParseError),
-}
-
-impl IpAddress {
-    /// Returns an new IpAddress object
-    ///
-    /// * `addr`: IPv4 address.
-    /// * `prefix`: IPv4 address prefix.
-    pub fn new(addr: Ipv4Addr, prefix: u32) -> Self {
-        IpAddress(addr, prefix)
-    }
-
-    /// Returns the IPv4 address.
-    pub fn addr(&self) -> &Ipv4Addr {
-        &self.0
-    }
-
-    /// Returns the prefix.
-    pub fn prefix(&self) -> u32 {
-        self.1
-    }
-}
-
-impl From<IpAddress> for (String, u32) {
-    fn from(value: IpAddress) -> Self {
-        (value.0.to_string(), value.1)
-    }
-}
-
-impl FromStr for IpAddress {
-    type Err = ParseIpAddressError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let Some((address, prefix)) = s.split_once('/') else {
-            return Err(ParseIpAddressError::MissingPrefix);
-        };
-
-        let address: Ipv4Addr = address.parse().map_err(ParseIpAddressError::InvalidAddr)?;
-
-        let prefix: u32 = prefix
-            .parse()
-            .map_err(|_| ParseIpAddressError::InvalidPrefix(prefix.to_string()))?;
-
-        Ok(IpAddress(address, prefix))
-    }
-}
-
-impl fmt::Display for IpAddress {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}/{}", self.0, self.1)
     }
 }
