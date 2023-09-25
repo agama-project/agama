@@ -500,26 +500,26 @@ mod test {
         let connection = connection_from_dbus(dbus_conn).unwrap();
 
         assert_eq!(connection.id(), "eth0");
-        let ipv4 = connection.ip_config();
+        let ip_config = connection.ip_config();
         let match_config = connection.match_config();
         assert_eq!(match_config.kernel, vec!["pci-0000:00:19.0"]);
 
         assert_eq!(
-            ipv4.addresses,
+            ip_config.addresses,
             vec![
                 "192.168.0.10/24".parse().unwrap(),
                 "::ffff:c0a8:10a/24".parse().unwrap()
             ]
         );
         assert_eq!(
-            ipv4.nameservers,
+            ip_config.nameservers,
             vec![
                 "192.168.0.2".parse::<IpAddr>().unwrap(),
                 "::ffff:c0a8:102".parse::<IpAddr>().unwrap()
             ]
         );
-        assert_eq!(ipv4.method4, IpMethod::Auto);
-        assert_eq!(ipv4.method6, IpMethod::Auto);
+        assert_eq!(ip_config.method4, IpMethod::Auto);
+        assert_eq!(ip_config.method6, IpMethod::Auto);
     }
 
     #[test]

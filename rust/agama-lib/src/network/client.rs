@@ -189,7 +189,7 @@ impl<'a> NetworkClient<'a> {
         let interface = conn.interface.as_deref().unwrap_or("");
         proxy.set_interface(interface).await?;
 
-        self.update_ipv4_settings(path, conn).await?;
+        self.update_ip_settings(path, conn).await?;
 
         if let Some(ref wireless) = conn.wireless {
             self.update_wireless_settings(path, wireless).await?;
@@ -206,7 +206,7 @@ impl<'a> NetworkClient<'a> {
     ///
     /// * `path`: connection D-Bus path.
     /// * `conn`: network connection.
-    async fn update_ipv4_settings(
+    async fn update_ip_settings(
         &self,
         path: &OwnedObjectPath,
         conn: &NetworkConnection,
