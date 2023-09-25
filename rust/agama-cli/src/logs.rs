@@ -146,11 +146,7 @@ impl LogItem for LogPath {
 
         let options = CopyOptions::new();
         // fs_extra's own Error doesn't implement From trait so ? operator is unusable
-        match copy_items(
-            &[self.src_path.as_str()],
-            dst_path,
-            &options,
-        ) {
+        match copy_items(&[self.src_path.as_str()], dst_path, &options) {
             Ok(_p) => Ok(()),
             Err(_e) => Err(io::Error::new(
                 io::ErrorKind::Other,
@@ -225,11 +221,12 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
 
     match Command::new(cmd_parts[0])
         .args(cmd_parts[1..].iter())
-        .status() {
+        .status()
+    {
         Ok(_o) => Ok(()),
         Err(_e) => Err(io::Error::new(
             io::ErrorKind::Other,
-            "Cannot create tar archive"
+            "Cannot create tar archive",
         )),
     }
 }
