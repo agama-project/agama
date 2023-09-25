@@ -99,6 +99,10 @@ module Agama
             ]
           end
 
+          dbus_method :AddPattern, "in id:s" { |p| backend.add_pattern(p) }
+          dbus_method :RemovePattern, "in id:s" { |p| backend.remove_pattern(p) }
+          dbus_method :SetUserPatterns, "in ids:as" { |ids| backend.user_patterns = ids }
+
           dbus_method :ProvisionsSelected, "in Provisions:as, out Result:ab" do |provisions|
             [provisions.map { |p| backend.provision_selected?(p) }]
           end

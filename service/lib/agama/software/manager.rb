@@ -215,6 +215,17 @@ module Agama
         selected_patterns_changed
       end
 
+      def user_patterns=(ids)
+        @user_patterns.each { |p| Yast::Pkg.ResolvableRemove(p, :pattern) }
+        @user_patterns = ids
+        @user_patterns.each { |p| Yast::Pkg.ResolvableInstall(p, :pattern) }
+        logger.info "Setting patterns to #{res.inspect}"
+
+        res = Yast::Pkg.PkgSolve(unused = true)
+        logger.info "Solver run #{res.inspect}"
+        selected_patterns_changed
+      end
+
       # @return [Array<Array<String>,Array<String>] returns pair of arrays where the first one
       #   is user selected pattern ids and in other is auto selected ones
       def selected_patterns
