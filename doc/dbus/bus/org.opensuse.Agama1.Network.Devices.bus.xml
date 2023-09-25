@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <node>
-  <node name="0"/>
-  <node name="1"/>
   <interface name="org.freedesktop.DBus.Introspectable">
     <method name="Introspect">
       <arg type="s" direction="out"/>
