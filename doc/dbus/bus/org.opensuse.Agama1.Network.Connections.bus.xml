@@ -77,9 +77,12 @@
      -->
     <method name="Apply">
     </method>
+    <!--
+     Notifies than a new interface has been added.
+     -->
     <signal name="ConnectionAdded">
       <arg name="id" type="s"/>
-      <arg name="path" type="s"/>
+      <arg name="path" type="o"/>
     </signal>
   </interface>
 </node>

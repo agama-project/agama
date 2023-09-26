@@ -164,11 +164,12 @@ impl Connections {
         Ok(())
     }
 
+    /// Notifies than a new interface has been added.
     #[dbus_interface(signal)]
     pub async fn connection_added(
         ctxt: &SignalContext<'_>,
         id: &str,
-        path: &str,
+        path: &ObjectPath<'_>,
     ) -> zbus::Result<()>;
 }
 

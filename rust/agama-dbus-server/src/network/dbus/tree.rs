@@ -202,7 +202,11 @@ impl Tree {
     }
 
     /// Notify that a new connection has been added
-    async fn notify_connection_added(&self, id: &str, path: &str) -> Result<(), ServiceError> {
+    async fn notify_connection_added(
+        &self,
+        id: &str,
+        path: &ObjectPath<'_>,
+    ) -> Result<(), ServiceError> {
         let object_server = self.connection.object_server();
         let iface_ref = object_server
             .interface::<_, interfaces::Connections>(CONNECTIONS_PATH)

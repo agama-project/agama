@@ -43,7 +43,7 @@
     </method>
     <signal name="ConnectionAdded">
       <arg name="id" type="s"/>
-      <arg name="path" type="s"/>
+      <arg name="path" type="o"/>
     </signal>
   </interface>
 </node>
