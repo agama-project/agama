@@ -280,7 +280,7 @@ impl Match {
 
 #[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.Match")]
 impl Match {
-    /// List of driver
+    /// List of driver names to match.
     #[dbus_interface(property)]
     pub async fn driver(&self) -> Vec<String> {
         let connection = self.get_connection().await;
@@ -295,7 +295,7 @@ impl Match {
         self.update_connection(connection).await
     }
 
-    /// List of paths
+    /// List of paths to match agains the ID_PATH udev property of devices.
     #[dbus_interface(property)]
     pub async fn path(&self) -> Vec<String> {
         let connection = self.get_connection().await;
@@ -309,7 +309,7 @@ impl Match {
         config.path = path;
         self.update_connection(connection).await
     }
-    /// List of driver
+    /// List of interface names to match.
     #[dbus_interface(property)]
     pub async fn interface(&self) -> Vec<String> {
         let connection = self.get_connection().await;
@@ -324,7 +324,7 @@ impl Match {
         self.update_connection(connection).await
     }
 
-    /// List of kernel options
+    /// List of kernel options to match.
     #[dbus_interface(property)]
     pub async fn kernel(&self) -> Vec<String> {
         let connection = self.get_connection().await;

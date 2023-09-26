@@ -89,19 +89,19 @@
   </interface>
   <interface name="org.opensuse.Agama1.Network.Connection.Match">
     <!--
-     List of driver
+     List of driver names to match.
      -->
     <property name="Driver" type="as" access="readwrite"/>
     <!--
-     List of driver
+     List of interface names to match.
      -->
     <property name="Interface" type="as" access="readwrite"/>
     <!--
-     List of kernel options
+     List of kernel options to match.
      -->
     <property name="Kernel" type="as" access="readwrite"/>
     <!--
-     List of paths
+     List of paths to match agains the ID_PATH udev property of devices.
      -->
     <property name="Path" type="as" access="readwrite"/>
   </interface>
