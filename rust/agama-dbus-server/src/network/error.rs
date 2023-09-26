@@ -16,6 +16,8 @@ pub enum NetworkStateError {
     #[error("Invalid wireless mode: '{0}'")]
     InvalidWirelessMode(String),
     #[error("Connection '{0}' already exists")]
+    UnknownParentKind(String),
+    #[error("Connection '{0}' already exists")]
     ConnectionExists(Uuid),
     #[error("Invalid security wireless protocol: '{0}'")]
     InvalidSecurityProtocol(String),
