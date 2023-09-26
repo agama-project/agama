@@ -19,20 +19,41 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Page, Section } from "~/components/core";
-import { PatternSelector } from "~/components/software";
-import { _ } from "~/i18n";
+import React, { useEffect, useState } from "react";
+import { Badge, ExpandableSection } from "@patternfly/react-core";
 
-function SoftwareSelectionPage() {
+export default function PatternGroup({
+  name,
+  children,
+  selected,
+  count,
+  expanded
+}) {
+  const [isExpanded, setIsExpanded] = useState(expanded);
+
+  const onToggle = (isExpanded) => {
+    setIsExpanded(isExpanded);
+  };
+
+  useEffect(() => {
+    setIsExpanded(expanded);
+  }, [expanded]);
+
   return (
-    // TRANSLATORS: page title
-    <Page title={_("Software")} icon="apps" actionLabel={_("Back")} actionVariant="secondary">
-      <Section title={_("Available Software")} icon="apps">
-        <PatternSelector />
-      </Section>
-    </Page>
+    <ExpandableSection
+      isIndented
+      toggleContent={
+        <div>
+          <span>{name}</span>{" "}
+          <Badge isRead>
+            {selected} / {count}
+          </Badge>
+        </div>
+      }
+      onToggle={onToggle}
+      isExpanded={isExpanded}
+    >
+      {children}
+    </ExpandableSection>
   );
 }
-
-export default SoftwareSelectionPage;
