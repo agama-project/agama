@@ -163,7 +163,7 @@ impl<'a> NetworkClient<'a> {
 
         loop {
             let signal = stream.next().await.unwrap();
-            let (id, _path): (String, String) = signal.body().unwrap();
+            let (id, _path): (String, OwnedObjectPath) = signal.body().unwrap();
             if id == conn.id {
                 break;
             };
