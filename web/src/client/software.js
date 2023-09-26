@@ -82,6 +82,17 @@ class SoftwareBaseClient {
   }
 
   /**
+   * Returns available patterns
+   *
+   * @param {boolean} filter - `true` = filter the patterns, `false` = all patterns
+   * @return {Promise<>}
+   */
+  async patterns(filter) {
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    return proxy.ListPatterns(filter);
+  }
+
+  /**
    * Returns the selected product
    *
    * @return {Promise<Product|null>}

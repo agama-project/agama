@@ -154,6 +154,7 @@ export default function SoftwareSection({ showErrors }) {
       // TRANSLATORS: page section
       title={_("Software")}
       icon="apps"
+      path="/software"
       loading={state.busy}
       errors={errors}
     >
