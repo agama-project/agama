@@ -51,6 +51,7 @@ module Agama
           register_callbacks
           register_progress_callbacks
           register_service_status_callbacks
+          @selected_patterns = {}
         end
 
         SOFTWARE_INTERFACE = "org.opensuse.Agama.Software1"
@@ -60,6 +61,13 @@ module Agama
           dbus_reader :available_base_products, "a(ssa{sv})"
 
           dbus_reader :selected_base_product, "s"
+
+          # documented way to be able to write to patterns and trigger signal
+          attr_writer :selected_patterns
+
+          # selected patterns is hash with pattern name as id and 0 for user selected and
+          # 1 for auto selected. Can be extended in future e.g. for mandatory patterns
+          dbus_attr_reader :selected_patterns, "a{sy}"
 
           dbus_method :SelectProduct, "in ProductID:s" do |product_id|
             old_product_id = backend.product
@@ -92,6 +100,10 @@ module Agama
               end
             ]
           end
+
+          dbus_method(:AddPattern, "in id:s") { |p| backend.add_pattern(p) }
+          dbus_method(:RemovePattern, "in id:s") { |p| backend.remove_pattern(p) }
+          dbus_method(:SetUserPatterns, "in ids:as") { |ids| backend.user_patterns = ids }
 
           dbus_method :ProvisionsSelected, "in Provisions:as, out Result:ab" do |provisions|
             [provisions.map { |p| backend.provision_selected?(p) }]
@@ -163,6 +175,21 @@ module Agama
           nm_client.on_connection_changed do |connected|
             probe if connected
           end
+
+          backend.on_selected_patterns_change do
+            self.selected_patterns = compute_patterns
+          end
+        end
+
+        USER_SELECTED_PATTERN = 0
+        AUTO_SELECTED_PATTERN = 1
+        def compute_patterns
+          patterns = {}
+          user_selected, auto_selected = backend.selected_patterns
+          user_selected.each { |p| patterns[p] = USER_SELECTED_PATTERN }
+          auto_selected.each { |p| patterns[p] = AUTO_SELECTED_PATTERN }
+
+          patterns
         end
       end
     end

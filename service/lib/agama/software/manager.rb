@@ -75,6 +75,9 @@ module Agama
         end
         @repositories = RepositoriesManager.new
         on_progress_change { logger.info progress.to_s }
+        # patterns selected by user
+        @user_patterns = []
+        @selected_patterns_change_callbacks = []
       end
 
       def select_product(name)
@@ -193,6 +196,52 @@ module Agama
         patterns
       end
 
+      def add_pattern(id)
+        # TODO: error handling
+        res = Yast::Pkg.ResolvableInstall(id, :pattern)
+        logger.info "Adding pattern #{res.inspect}"
+        @user_patterns << id
+
+        res = Yast::Pkg.PkgSolve(unused = true)
+        logger.info "Solver run #{res.inspect}"
+        selected_patterns_changed
+      end
+
+      def remove_pattern(id)
+        # TODO: error handling
+        res = Yast::Pkg.ResolvableNeutral(id, :pattern, force = false)
+        logger.info "Removing pattern #{res.inspect}"
+        @user_patterns.delete(id)
+
+        res = Yast::Pkg.PkgSolve(unused = true)
+        logger.info "Solver run #{res.inspect}"
+        selected_patterns_changed
+      end
+
+      def user_patterns=(ids)
+        @user_patterns.each { |p| Yast::Pkg.ResolvableNeutral(p, :pattern, force = false) }
+        @user_patterns = ids
+        @user_patterns.each { |p| Yast::Pkg.ResolvableInstall(p, :pattern) }
+        logger.info "Setting patterns to #{res.inspect}"
+
+        res = Yast::Pkg.PkgSolve(unused = true)
+        logger.info "Solver run #{res.inspect}"
+        selected_patterns_changed
+      end
+
+      # @return [Array<Array<String>,Array<String>] returns pair of arrays where the first one
+      #   is user selected pattern ids and in other is auto selected ones
+      def selected_patterns
+        patterns = Y2Packager::Resolvable.find(kind: :pattern, status: :selected)
+        patterns.map!(&:name)
+
+        patterns.partition { |p| @user_patterns.include?(p) }
+      end
+
+      def on_selected_patterns_change(&block)
+        @selected_patterns_change_callbacks << block
+      end
+
       # Determines whether a package is installed
       #
       # @param name [String] Package name
@@ -292,6 +341,10 @@ module Agama
         optional_packages = arch_collection_for("optional_packages", "package")
         proposal.set_resolvables("agama", :package, optional_packages,
           optional: true)
+      end
+
+      def selected_patterns_changed
+        @selected_patterns_change_callbacks.each(&:call)
       end
     end
   end
