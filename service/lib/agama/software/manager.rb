@@ -206,7 +206,7 @@ module Agama
 
       def remove_pattern(id)
         # TODO: error handling
-        Yast::Pkg.ResolvableRemove(id, :pattern)
+        res = Yast::Pkg.ResolvableRemove(id, :pattern)
         logger.info "Removing pattern #{res.inspect}"
         @user_patterns << id
 
