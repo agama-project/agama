@@ -33,7 +33,7 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
     result.insert("match", match_config_to_dbus(conn.match_config()));
 
     if let Connection::Wireless(wireless) = conn {
-        connection_dbus.insert("type", "802-11-wireless".into());
+        connection_dbus.insert("type", WIRELESS_KEY.into());
         let wireless_dbus = wireless_config_to_dbus(wireless);
         for (k, v) in wireless_dbus {
             result.insert(k, v);
