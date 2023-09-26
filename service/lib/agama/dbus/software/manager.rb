@@ -79,6 +79,8 @@ module Agama
           dbus_method :ListPatterns, "in Filtered:b, out Result:a{s(ssssi)}" do |filtered|
             [
               backend.patterns(filtered).each_with_object({}) do |pattern, result|
+                # make sure all attributes are already preloaded, adjust the "patterns" method
+                # in service/lib/agama/software/manager.rb when changing this list
                 value = [
                   pattern.category,
                   pattern.description,

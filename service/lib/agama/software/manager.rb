@@ -184,7 +184,10 @@ module Agama
       #                           Filtering criteria can change.
       # @return [Array<Y2Packager::Resolvable>]
       def patterns(filtered)
-        patterns = Y2Packager::Resolvable.find(kind: :pattern)
+        # huge speed up, preload the used attributes to avoid querying libzypp again,
+        # see "ListPatterns" method in service/lib/agama/dbus/software/manager.rb
+        preload = [:category, :description, :icon, :summary, :order, :user_visible]
+        patterns = Y2Packager::Resolvable.find({ kind: :pattern }, preload)
         patterns = patterns.select(&:user_visible) if filtered
 
         patterns
