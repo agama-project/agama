@@ -14,6 +14,7 @@ use uuid::Uuid;
 use zbus::zvariant::{self, OwnedValue, Value};
 
 const ETHERNET_KEY: &str = "802-3-ethernet";
+const BOND_KEY: &str = "bond";
 const WIRELESS_KEY: &str = "802-11-wireless";
 const WIRELESS_SECURITY_KEY: &str = "802-11-wireless-security";
 const LOOPBACK_KEY: &str = "loopback";
@@ -28,6 +29,10 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
         ("type", ETHERNET_KEY.into()),
         ("interface-name", conn.interface().into()),
     ]);
+    if let Some(parent) = &conn.base().parent {
+        connection_dbus.insert("master", parent.interface.clone().into());
+        connection_dbus.insert("slave-type", parent.kind.to_string().into());
+    }
     result.insert("ipv4", ip_config_to_ipv4_dbus(conn.ip_config()));
     result.insert("ipv6", ip_config_to_ipv6_dbus(conn.ip_config()));
     result.insert("match", match_config_to_dbus(conn.match_config()));
@@ -36,6 +41,14 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
         connection_dbus.insert("type", WIRELESS_KEY.into());
         let wireless_dbus = wireless_config_to_dbus(wireless);
         for (k, v) in wireless_dbus {
+            result.insert(k, v);
+        }
+    }
+
+    if let Connection::Bond(bond) = conn {
+        connection_dbus.insert("type", BOND_KEY.into());
+        let bond_dbus = bond_config_to_dbus(bond);
+        for (k, v) in bond_dbus {
             result.insert(k, v);
         }
     }
@@ -54,6 +67,13 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
         return Some(Connection::Wireless(WirelessConnection {
             base,
             wireless: wireless_config,
+        }));
+    }
+
+    if let Some(bond_config) = bond_config_from_dbus(&conn) {
+        return Some(Connection::Bond(BondConnection {
+            base,
+            bond: bond_config,
         }));
     }
 
@@ -230,6 +250,17 @@ fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
     NestedHash::from([
         ("802-11-wireless", wireless),
         ("802-11-wireless-security", security),
+    ])
+}
+
+fn bond_config_to_dbus(conn: &BondConnection) -> NestedHash {
+    let config = &conn.bond;
+    let bond: HashMap<&str, zvariant::Value> = HashMap::from([
+          ("options", Value::new(config.options.clone()))
+    ]);
+
+    NestedHash::from([
+        ("bond", bond ),
     ])
 }
 
@@ -468,6 +499,15 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
     }
 
     Some(wireless_config)
+}
+
+fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Option<BondConfig> {
+    let Some(_bond) = conn.get(BOND_KEY) else {
+        return None;
+    };
+
+    // TODO
+    None
 }
 
 /// Determines whether a value is empty.

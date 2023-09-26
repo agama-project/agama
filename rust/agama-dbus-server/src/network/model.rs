@@ -55,7 +55,6 @@ impl NetworkState {
         self.connections.iter_mut().find(|c| c.id() == id)
     }
 
-
     /// Adds a new connection.
     ///
     /// It uses the `id` to decide whether the connection already exists.
