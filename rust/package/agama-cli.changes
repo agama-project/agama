@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 26 15:57:14 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 4
+
+-------------------------------------------------------------------
 Tue Sep 26 12:05:52 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Wait until the manager is ready before probing
