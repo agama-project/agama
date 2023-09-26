@@ -28,6 +28,7 @@ impl<'a> ManagerClient<'a> {
     }
 
     pub async fn probe(&self) -> Result<(), ServiceError> {
+        self.wait().await?;
         Ok(self.manager_proxy.probe().await?)
     }
 
@@ -55,12 +56,12 @@ impl<'a> ManagerClient<'a> {
 
     /// Waits until the manager is idle.
     pub async fn wait(&self) -> Result<(), ServiceError> {
+        let mut stream = self.status_proxy.receive_current_changed().await;
         if !self.is_busy().await {
             return Ok(());
         }
 
-        let mut s = self.status_proxy.receive_current_changed().await;
-        while let Some(change) = s.next().await {
+        while let Some(change) = stream.next().await {
             if change.get().await? == 0 {
                 return Ok(());
             }
