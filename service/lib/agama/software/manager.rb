@@ -206,7 +206,7 @@ module Agama
 
       def remove_pattern(id)
         # TODO: error handling
-        res = Yast::Pkg.ResolvableNeutral(id, :pattern)
+        res = Yast::Pkg.ResolvableNeutral(id, :pattern, force = false)
         logger.info "Removing pattern #{res.inspect}"
         @user_patterns.delete(id)
 
@@ -216,7 +216,7 @@ module Agama
       end
 
       def user_patterns=(ids)
-        @user_patterns.each { |p| Yast::Pkg.ResolvableNeutral(p, :pattern) }
+        @user_patterns.each { |p| Yast::Pkg.ResolvableNeutral(p, :pattern, force = false) }
         @user_patterns = ids
         @user_patterns.each { |p| Yast::Pkg.ResolvableInstall(p, :pattern) }
         logger.info "Setting patterns to #{res.inspect}"
