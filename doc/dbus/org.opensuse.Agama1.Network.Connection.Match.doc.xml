@@ -14,7 +14,7 @@
      -->
     <property name="Kernel" type="as" access="readwrite"/>
     <!--
-     List of paths to match agains the ID_PATH udev property of devices.
+     List of paths to match against the ID_PATH udev property of devices.
      -->
     <property name="Path" type="as" access="readwrite"/>
   </interface>
