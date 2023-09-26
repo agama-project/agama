@@ -208,7 +208,7 @@ module Agama
         # TODO: error handling
         res = Yast::Pkg.ResolvableRemove(id, :pattern)
         logger.info "Removing pattern #{res.inspect}"
-        @user_patterns << id
+        @user_patterns.delete(id)
 
         res = Yast::Pkg.PkgSolve(unused = true)
         logger.info "Solver run #{res.inspect}"
