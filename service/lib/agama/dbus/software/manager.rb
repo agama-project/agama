@@ -180,7 +180,7 @@ module Agama
         end
 
         USER_SELECTED_PATTERN = 0
-        AUTO_SELECTED_PATTERN = 0
+        AUTO_SELECTED_PATTERN = 1
         def compute_patterns
           patterns = {}
           user_selected, auto_selected = backend.selected_patterns
