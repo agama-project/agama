@@ -29,23 +29,18 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
         LogsCommands::Store { verbose } => {
             // feed internal options structure by what was received from user
             // for now we always use / add defaults if any
-            let options = LogOptions {
-                paths: DEFAULT_PATHS.iter().map(|p| p.to_string()).collect(),
-                commands: DEFAULT_COMMANDS.iter().map(|p| p.to_string()).collect(),
-                verbose: verbose,
-            };
+            let mut options = LogOptions::new();
+
+            options.verbose = verbose;
 
             Ok(store(options)?)
         },
         LogsCommands::List => {
-            let options = LogOptions {
-                paths: Vec::new(),
-                commands: Vec::new(),
-                verbose: false,
-            };
+            let options = LogOptions::new();
 
             list(options);
-            Err(anyhow::anyhow!("Not implemented"))
+
+            Ok(())
         },
     }
 }
@@ -103,6 +98,16 @@ struct LogOptions {
     paths: Vec<String>,
     commands: Vec<String>,
     verbose: bool,
+}
+
+impl LogOptions {
+    fn new() -> Self {
+        Self {
+            paths: DEFAULT_PATHS.iter().map(|p| p.to_string()).collect(),
+            commands: DEFAULT_COMMANDS.iter().map(|p| p.to_string()).collect(),
+            verbose: false,
+        }
+    }
 }
 
 // Struct for log represented by a file
@@ -310,6 +315,13 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
 }
 
 // Handler for the "agama logs list" subcommand
-fn list(_options: LogOptions)
+fn list(options: LogOptions)
 {
+    for list in [options.paths, options.commands] {
+        for item in list.iter() {
+            println!("{}", item);
+        }
+
+        println!();
+    }
 }
