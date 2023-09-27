@@ -218,7 +218,6 @@ describe("LVM field", () => {
   describe("if LVM is set to true", () => {
     beforeEach(() => {
       props.availableDevices = [vda, md0, md1];
-      // TODO: what happens if systemDevices is not set or an empty array?
       props.settings = { bootDevice: "/dev/vda", lvm: true, systemVGDevices: [] };
       props.onChange = jest.fn();
     });
