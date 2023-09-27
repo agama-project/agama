@@ -1,28 +1,23 @@
-
-<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
- "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
 <node>
-  <interface name="org.opensuse.Agama.Network1.Connections">
+  <interface name="org.opensuse.Agama1.Network.Connections">
     <!--
-     GetConnections:
      Returns the D-Bus paths of the network connections.
      -->
     <method name="GetConnections">
       <arg type="ao" direction="out"/>
     </method>
     <!--
-     AddConnection:
      Adds a new network connection.
 
      * `id`: connection name.
-     * `ty`: connection type (see [crate::model::DeviceType]).
+     * `ty`: connection type (see [agama_lib::network::types::DeviceType]).
      -->
     <method name="AddConnection">
       <arg name="id" type="s" direction="in"/>
       <arg name="ty" type="y" direction="in"/>
     </method>
     <!--
-     GetConnection:
      Returns the D-Bus path of the network connection.
 
      * `id`: connection ID.
@@ -32,7 +27,6 @@
       <arg type="o" direction="out"/>
     </method>
     <!--
-     RemoveConnection:
      Removes a network connection.
 
      * `uuid`: connection UUID..
@@ -41,13 +35,15 @@
       <arg name="id" type="s" direction="in"/>
     </method>
     <!--
-     Apply:
      Applies the network configuration.
 
      It includes adding, updating and removing connections as needed.
      -->
     <method name="Apply">
     </method>
+    <signal name="ConnectionAdded">
+      <arg name="id" type="s"/>
+      <arg name="path" type="o"/>
+    </signal>
   </interface>
 </node>
-

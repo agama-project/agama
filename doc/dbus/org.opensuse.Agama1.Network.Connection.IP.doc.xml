@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node>
+  <interface name="org.opensuse.Agama1.Network.Connection.IP">
+    <!--
+     List of IP addresses.
+
+     When the method is 'auto', these addresses are used as additional addresses.
+     -->
+    <property name="Addresses" type="as" access="readwrite"/>
+    <!--
+     Network gateway for IPv4.
+
+     An empty string removes the current value.
+     -->
+    <property name="Gateway4" type="s" access="readwrite"/>
+    <!--
+     Network gateway for IPv6.
+
+     An empty string removes the current value.
+     -->
+    <property name="Gateway6" type="s" access="readwrite"/>
+    <!--
+     IPv4 configuration method.
+
+     Possible values: "disabled", "auto", "manual" or "link-local".
+
+     See [crate::network::model::IpMethod].
+     -->
+    <property name="Method4" type="s" access="readwrite"/>
+    <!--
+     IPv6 configuration method.
+
+     Possible values: "disabled", "auto", "manual" or "link-local".
+
+     See [crate::network::model::IpMethod].
+     -->
+    <property name="Method6" type="s" access="readwrite"/>
+    <!--
+     Name server addresses.
+     -->
+    <property name="Nameservers" type="as" access="readwrite"/>
+  </interface>
+</node>

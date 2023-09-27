@@ -35,7 +35,6 @@ look Manager1
 look Software1
 look Software1.Proposal
 look Storage1
-look Users1
 
 abusctl introspect --xml-interface \
   ${DD}1 \
@@ -64,3 +63,56 @@ abusctl introspect --xml-interface \
   ${SS}1/Questions/1 \
   | cleanup \
   > ${DD}1.Questions.WithPassword.bus.xml
+
+# Network interfaces
+abusctl call \
+  ${DD}1 \
+  ${SS}1/Network/connections \
+  ${DD}1.Network.Connections \
+  AddConnection "sy" "wireless0" 2
+
+OBJ=$(abusctl call \
+  ${DD}1 \
+  ${SS}1/Network/connections \
+  ${DD}1.Network.Connections \
+  GetConnection "s" "wireless0" | cut -f2 -d\")
+
+abusctl introspect --xml-interface \
+  ${DD}1 \
+  ${OBJ} \
+  ${DD}1.Network.Connection \
+  | cleanup \
+  >${DD}1.Network.Connection.bus.xml
+
+abusctl call \
+  ${DD}1 \
+  ${SS}1/Network/connections \
+  ${DD}1.Network.Connections \
+  RemoveConnection "s" "wireless0"
+
+abusctl introspect --xml-interface \
+  ${DD}1 \
+  ${SS}1/Network/connections \
+  ${DD}1.Network.Connections \
+  | cleanup \
+  >${DD}1.Network.Connections.bus.xml
+
+abusctl introspect --xml-interface \
+  ${DD}1 \
+  ${SS}1/Network/devices \
+  ${DD}1.Network.Devices \
+  | cleanup \
+  >${DD}1.Network.Devices.bus.xml
+
+abusctl introspect --xml-interface \
+  ${DD}1 \
+  ${SS}1/Network/devices/0 \
+  ${DD}1.Network.Device \
+  | cleanup \
+  >${DD}1.Network.Device.bus.xml
+
+abusctl introspect --xml-interface \
+  ${DD}.Manager1 \
+  ${SS}/Users1 \
+  | cleanup \
+  >${DD}.Users1.bus.xml

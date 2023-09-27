@@ -1,14 +1,12 @@
-
-<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
- "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
 <node>
-  <interface name="org.opensuse.Agama.Network1.Connection.Wireless">
+  <interface name="org.opensuse.Agama1.Network.Connection.Wireless">
     <!--
      Wireless connection mode.
 
      Possible values: "unknown", "adhoc", "infrastructure", "ap" or "mesh".
 
-     See [crate::model::WirelessMode].
+     See [crate::network::model::WirelessMode].
      -->
     <property name="Mode" type="s" access="readwrite"/>
     <!--
@@ -25,9 +23,8 @@
      Possible values: "none", "owe", "ieee8021x", "wpa-psk", "sae", "wpa-eap",
      "wpa-eap-suite-b192".
 
-     See [crate::model::WirelessMode].
+     See [crate::network::model::SecurityProtocol].
      -->
     <property name="Security" type="s" access="readwrite"/>
   </interface>
 </node>
-
