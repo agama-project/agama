@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { Page, Section } from "~/components/core";
+import { Page } from "~/components/core";
 import { PatternSelector } from "~/components/software";
 import { _ } from "~/i18n";
 
@@ -28,9 +28,8 @@ function SoftwareSelectionPage() {
   return (
     // TRANSLATORS: page title
     <Page title={_("Software")} icon="apps" actionLabel={_("Back")} actionVariant="secondary">
-      <Section title={_("Available Software")} icon="apps">
-        <PatternSelector />
-      </Section>
+      <h2>{_("Available Software")}</h2>
+      <PatternSelector />
     </Page>
   );
 }

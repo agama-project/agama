@@ -22,25 +22,41 @@
 import React, { useEffect, useState } from "react";
 import { useInstallerClient } from "~/context/installer";
 import PatternGroup from "./PatternGroup";
+import PatternItem from "./PatternItem";
+
+function convert(pattern_data) {
+  const patterns = [];
+
+  Object.keys(pattern_data).forEach((name) => {
+    const pattern = pattern_data[name];
+    patterns.push({
+      name,
+      group: pattern[0],
+      description: pattern[1],
+      icon: pattern[2],
+      summary: pattern[3],
+      order: pattern[4]
+    });
+  });
+
+  return patterns;
+}
 
 function groupPatterns(patterns) {
   // group patterns
   const pattern_groups = {};
 
-  Object.keys(patterns).forEach((pattern) => {
-    const pattern_data = patterns[pattern];
-    pattern_data.push(pattern);
-
-    if (pattern_groups[pattern_data[0]]) {
-      pattern_groups[pattern_data[0]].push(pattern_data);
+  patterns.forEach((pattern) => {
+    if (pattern_groups[pattern.group]) {
+      pattern_groups[pattern.group].push(pattern);
     } else {
-      pattern_groups[pattern_data[0]] = [pattern_data];
+      pattern_groups[pattern.group] = [pattern];
     }
   });
 
   // sort patterns by the "order" value
   Object.keys(pattern_groups).forEach((group) => {
-    pattern_groups[group].sort((p1, p2) => (p1[4] < p2[4] ? -1 : 1));
+    pattern_groups[group].sort((p1, p2) => (p1.order < p2.order ? -1 : 1));
   });
 
   console.log(pattern_groups);
@@ -49,7 +65,7 @@ function groupPatterns(patterns) {
 }
 
 function patternList(patterns) {
-  const groups = groupPatterns(patterns);
+  const groups = groupPatterns(convert(patterns));
 
   const selector = Object.keys(groups).map((group) => {
     return (
@@ -59,7 +75,7 @@ function patternList(patterns) {
         selected={0}
         count={groups[group].length}
       >
-        { (groups[group]).map(pattern => <p key={pattern[5]}><b>{pattern[3]}</b> - {pattern[1]}</p>) }
+        { (groups[group]).map(p => <PatternItem key={p.name} name={p.name} summary={p.summary} description={p.description} icon={p.icon} />) }
       </PatternGroup>
     );
   });

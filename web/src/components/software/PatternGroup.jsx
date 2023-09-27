@@ -43,12 +43,12 @@ export default function PatternGroup({
     <ExpandableSection
       isIndented
       toggleContent={
-        <div>
-          <span>{name}</span>{" "}
+        <span>
+          <span className="pattern-group-name">{name}</span>{" "}
           <Badge isRead>
             {selected} / {count}
           </Badge>
-        </div>
+        </span>
       }
       onToggle={onToggle}
       isExpanded={isExpanded}
