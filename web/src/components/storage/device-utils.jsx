@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
@@ -34,8 +34,7 @@ import { deviceSize } from "~/components/storage/utils";
 
 const ListBox = ({ children, ...props }) => <ul role="listbox" {...props}>{children}</ul>;
 
-const ListBoxItem = ({ isSelected, children, onClick }) => {
-  const props = {};
+const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
   if (isSelected) props['aria-selected'] = true;
 
   return (
@@ -56,7 +55,7 @@ const ListBoxItem = ({ isSelected, children, onClick }) => {
  * @param {Object} props
  * @param {StorageDevice} props.device
  */
-const ItemContent = ({ device }) => {
+const DeviceItem = ({ device }) => {
   const BasicInfo = () => {
     const DeviceIcon = () => {
       const names = {
@@ -224,38 +223,64 @@ const ItemContent = ({ device }) => {
 };
 
 /**
- * Component for selecting a storage device
+ * Component for listing storage devices.
  * @component
  *
  * @param {Object} props
- * @param {StorageDevice} [props.selected] - Default selected device, in any
- * @param {StorageDevice[]=[]} [props.devices] - Devices to show in the selector
- * @param {onSelectFn} [props.onSelect] - Function to be called when a device is selected
- *
- * @callback onSelectFn
- * @param {StorageDevice} device - Selected device
+ * @param {StorageDevice[]} props.devices - Devices to show.
  */
-export default function DeviceSelector ({ selected, devices = [], onSelect = noop }) {
-  const [selectedDevice, setSelectedDevice] = useState(selected);
-
-  const onOptionClick = (device) => {
-    if (device === selectedDevice) return;
-
-    setSelectedDevice(device);
-    onSelect(device);
-  };
-
+const DeviceList = ({ devices }) => {
   return (
-    <ListBox aria-label={_("Available devices")} className="stack device-selector">
+    <ListBox className="stack device-list">
       { devices.map(device => (
-        <ListBoxItem
-          key={device.sid}
-          onClick={() => onOptionClick(device)}
-          isSelected={device === selectedDevice}
-        >
-          <ItemContent device={device} />
+        <ListBoxItem key={device.sid} isSelected>
+          <DeviceItem device={device} />
         </ListBoxItem>
       ))}
     </ListBox>
   );
-}
+};
+
+/**
+ * Component for selecting storage devices.
+ * @component
+ *
+ * @param {Object} props
+ * @param {StorageDevice[]} props.devices - Devices to show in the selector.
+ * @param {StorageDevice|StorageDevice[]} [props.selected] - Currently selected device. In case of
+ *  multi selection, an array of devices can be used.
+ * @param {boolean} [props.isMultiple=false] - Activate multi selection.
+ * @param {onChangeFn} [props.onChange] - Callback to be called when the selected devices changes.
+ *
+ * @callback onChangeFn
+ * @param {StorageDevice|StorageDevice[]} selected - Selected device, or array of selected devices
+ *  in case of multi selection.
+ */
+const DeviceSelector = ({ devices, selected, isMultiple = false, onChange = noop }) => {
+  const selectedDevices = () => [selected].flat().filter(Boolean);
+
+  const isSelected = (device) => selectedDevices().includes(device);
+
+  const onOptionClick = (device) => {
+    if (!isMultiple && !isSelected(device)) onChange(device);
+    if (isMultiple && !isSelected(device)) onChange([...selectedDevices(), device]);
+    if (isMultiple && isSelected(device)) onChange(selectedDevices().filter(d => d !== device));
+  };
+
+  return (
+    <ListBox aria-label={_("Available devices")} className="stack device-list">
+      { devices.map(device => (
+        <ListBoxItem
+          key={device.sid}
+          onClick={() => onOptionClick(device.name)}
+          isSelected={isSelected(device.name)}
+          className="cursor-pointer"
+        >
+          <DeviceItem device={device} />
+        </ListBoxItem>
+      ))}
+    </ListBox>
+  );
+};
+
+export { DeviceList, DeviceSelector };
