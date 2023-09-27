@@ -153,6 +153,7 @@ const contexts = {
     cockpitProxies.proposal = {
       BootDevice: "/dev/sda",
       LVM: true,
+      SystemVGDevices: ["/dev/sda", "/dev/sdb"],
       EncryptionPassword: "00000",
       Volumes: [
         {
@@ -694,7 +695,7 @@ describe("#proposal", () => {
       client = new StorageClient();
     });
 
-    it.only("returns the list of product mount points", async () => {
+    it("returns the list of product mount points", async () => {
       const mount_points = await client.proposal.getProductMountPoints();
       expect(mount_points).toEqual(["/", "swap", "/home"]);
     });
@@ -814,6 +815,7 @@ describe("#proposal", () => {
         expect(settings).toStrictEqual({
           bootDevice: "/dev/sda",
           lvm: true,
+          systemVGDevices: ["/dev/sda", "/dev/sdb"],
           encryptionPassword: "00000",
           volumes: [
             {
@@ -877,6 +879,7 @@ describe("#proposal", () => {
         bootDevice: "/dev/vdb",
         encryptionPassword: "12345",
         lvm: true,
+        systemVGDevices: ["/dev/sdc"],
         volumes: [
           {
             mountPath: "/test1",
@@ -897,6 +900,7 @@ describe("#proposal", () => {
         BootDevice: { t: "s", v: "/dev/vdb" },
         EncryptionPassword: { t: "s", v: "12345" },
         LVM: { t: "b", v: true },
+        SystemVGDevices: { t: "as", v: ["/dev/sdc"] },
         Volumes: {
           t: "aa{sv}",
           v: [
