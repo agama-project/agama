@@ -85,10 +85,13 @@ module Agama
           proposal.settings,
           config: config
         ).tap do |settings|
-          # FIXME: Currently, the conversion from Y2Storage cannot infer the space policy. Copying
-          #   space settings from the original settings.
+          # FIXME: The conversion from Y2Storage cannot infer the space policy. Copying space
+          #   settings from the original settings.
           settings.space.policy = original_settings.space.policy
           settings.space.actions = original_settings.space.actions
+          # FIXME: The conversion from Y2Storage cannot reliably infer the system VG devices in all
+          #   cases. Copying system VG devices from the original settings.
+          settings.lvm.system_vg_devices = original_settings.lvm.system_vg_devices
         end
       end
 
