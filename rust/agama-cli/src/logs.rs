@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use tempdir::TempDir;
 
+// definition of "agama logs" subcommands, see clap crate for details
 #[derive(Subcommand, Debug)]
 pub enum LogsCommands {
     /// Collects and stores logs in a tar archive
@@ -22,10 +23,30 @@ pub enum LogsCommands {
     List,
 }
 
+// main entry point called from agama CLI main loop
 pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
     match subcommand {
-        LogsCommands::Store { verbose } => Ok(store(verbose)?),
-        LogsCommands::List => Err(anyhow::anyhow!("Not implemented")),
+        LogsCommands::Store { verbose } => {
+            // feed internal options structure by what was received from user
+            // for now we always use / add defaults if any
+            let options = LogOptions {
+                paths: DEFAULT_PATHS.iter().map(|p| p.to_string()).collect(),
+                commands: DEFAULT_COMMANDS.iter().map(|p| p.to_string()).collect(),
+                verbose: verbose,
+            };
+
+            Ok(store(options)?)
+        },
+        LogsCommands::List => {
+            let options = LogOptions {
+                paths: Vec::new(),
+                commands: Vec::new(),
+                verbose: false,
+            };
+
+            list(options);
+            Err(anyhow::anyhow!("Not implemented"))
+        },
     }
 }
 
@@ -74,6 +95,14 @@ fn show(show: bool, text: &str) {
     }
 
     print!("{}", text);
+}
+
+// Configurable parameters of the "agama logs" which can be
+// set by user when calling a (sub)command
+struct LogOptions {
+    paths: Vec<String>,
+    commands: Vec<String>,
+    verbose: bool,
 }
 
 // Struct for log represented by a file
@@ -181,33 +210,33 @@ impl LogItem for LogCmd {
     }
 }
 
-// collect existing / requested paths which should already exist turns them into list of log
-// sources
-fn paths_to_log_sources(paths: &[&str], tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
+// Collect existing / requested paths which should already exist in the system.
+// Turns them into list of log sources
+fn paths_to_log_sources(paths: &Vec<String>, tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
     let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
-    for path in paths {
+    for path in paths.iter() {
         // assumption: path is full path
         if Path::new(path).try_exists().is_ok() {
-            log_sources.push(Box::new(LogPath::new(path, tmp_dir.path())));
+            log_sources.push(Box::new(LogPath::new(path.as_str(), tmp_dir.path())));
         }
     }
 
     log_sources
 }
 
-// some info can be collected via particular commands only, turn it into log sources
-fn cmds_to_log_sources(commands: &[&str], tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
+// Some info can be collected via particular commands only, turn it into log sources
+fn cmds_to_log_sources(commands: &Vec<String>, tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
     let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
-    for cmd in commands {
-        log_sources.push(Box::new(LogCmd::new(cmd, tmp_dir.path())));
+    for cmd in commands.iter() {
+        log_sources.push(Box::new(LogCmd::new(cmd.as_str(), tmp_dir.path())));
     }
 
     log_sources
 }
 
-// compress given directory into a tar archive
+// Compress given directory into a tar archive
 fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
     let compression = DEFAULT_COMPRESSION.0;
     let compress_cmd = format!(
@@ -230,15 +259,16 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
     }
 }
 
-// handler for the "agama logs store" subcommand
-fn store(verbose: bool) -> Result<(), io::Error> {
+// Handler for the "agama logs store" subcommand
+fn store(options: LogOptions) -> Result<(), io::Error> {
     if !Uid::effective().is_root() {
         panic!("No Root, no logs. Sorry.");
     }
 
     // preparation, e.g. in later features some log commands can be added / excluded per users request or
-    let commands = DEFAULT_COMMANDS;
-    let paths = DEFAULT_PATHS;
+    let commands = options.commands;
+    let paths = options.paths;
+    let verbose = options.verbose;
     let result = format!("{}.{}", DEFAULT_RESULT, DEFAULT_COMPRESSION.1);
 
     showln(verbose, "Collecting Agama logs:");
@@ -277,4 +307,9 @@ fn store(verbose: bool) -> Result<(), io::Error> {
     }
 
     compress_logs(&tmp_dir, &result)
+}
+
+// Handler for the "agama logs list" subcommand
+fn list(_options: LogOptions)
+{
 }
