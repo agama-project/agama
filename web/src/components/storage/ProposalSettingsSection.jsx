@@ -23,12 +23,13 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   Form, Skeleton, Switch,
+  ToggleGroup, ToggleGroupItem,
   Tooltip
 } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
-import { DeviceSelector, ProposalVolumes } from "~/components/storage";
+import { DeviceList, DeviceSelector, ProposalVolumes } from "~/components/storage";
 import { deviceLabel } from '~/components/storage/utils';
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
@@ -40,19 +41,24 @@ import { noop } from "~/utils";
  */
 
 /**
- * Form for selecting the installation device
+ * Form for selecting the installation device.
  * @component
  *
  * @param {object} props
- * @param {string} props.id - Form ID
- * @param {string|undefined} props.current - Device name, if any
- * @param {StorageDevice[]} props.devices - Available devices for the selection
- * @param {onSubmitFn} props.onSubmit - On submit callback
+ * @param {string} props.id - Form ID.
+ * @param {string|undefined} [props.current] - Device name, if any.
+ * @param {StorageDevice[]} [props.devices=[]] - Available devices for the selection.
+ * @param {onSubmitFn} [props.onSubmit=noop] - On submit callback.
  *
  * @callback onSubmitFn
- * @param {string} device
+ * @param {string} device - Name of the selected device.
  */
-const InstallationDeviceForm = ({ id, current, devices, onSubmit }) => {
+const InstallationDeviceForm = ({
+  id,
+  current,
+  devices = [],
+  onSubmit = noop
+}) => {
   const [device, setDevice] = useState(current);
 
   useEffect(() => {
@@ -68,35 +74,36 @@ const InstallationDeviceForm = ({ id, current, devices, onSubmit }) => {
     if (device !== undefined) onSubmit(device);
   };
 
-  const selectDevice = (d) => setDevice(d.name);
-
-  const selected = devices.find(d => d.name === device);
-
   return (
     <Form id={id} onSubmit={submitForm}>
       <DeviceSelector
-        selected={selected}
+        selected={device}
         devices={devices}
-        onSelect={selectDevice}
+        onChange={setDevice}
       />
     </Form>
   );
 };
 
 /**
- * Allows to select the installation device
+ * Allows to select the installation device.
  * @component
  *
  * @param {object} props
- * @param {string|undefined} props.current - Device name, if any
- * @param {StorageDevice[]} props.devices - Available devices for the selection
- * @param {boolean} props.isLoading - Whether to show the selector as loading
- * @param {onChangeFn} props.onChange - On change callback
+ * @param {string} [props.current] - Device name, if any.
+ * @param {StorageDevice[]} [props.devices=[]] - Available devices for the selection.
+ * @param {boolean} [props.isLoading=false] - Whether to show the selector as loading.
+ * @param {onChangeFn} [props.onChange=noop] - On change callback.
  *
  * @callback onChangeFn
- * @param {string} device
+ * @param {string} device - Name of the selected device.
  */
-const InstallationDeviceField = ({ current, devices, isLoading, onChange }) => {
+const InstallationDeviceField = ({
+  current,
+  devices = [],
+  isLoading = false,
+  onChange = noop
+}) => {
   const [device, setDevice] = useState(current);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
@@ -125,8 +132,7 @@ const InstallationDeviceField = ({ current, devices, isLoading, onChange }) => {
     return <Skeleton width="25%" />;
   }
 
-  const description = _("Select the device for installing the system. All the \
-file systems will be created on the selected device.");
+  const description = _("Select the device for installing the system.");
 
   return (
     <>
@@ -167,47 +173,207 @@ file systems will be created on the selected device.");
 };
 
 /**
- * Allows to select LVM
+ * Form for configuring the system volume group.
  * @component
  *
  * @param {object} props
- * @param {boolean} props.selected - Whether LVM is selected
- * @param {boolean} props.isLoading - Whether to show the selector as loading
- * @param {onChangeFn} props.onChange - On change callback
+ * @param {string} props.id - Form ID.
+ * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
+ * @param {StorageDevice[]} [props.devices=[]] - Available storage devices.
+ * @param {onSubmitFn} [props.onSubmit=noop] - On submit callback.
+ * @param {onValidateFn} [props.onValidate=noop] - On validate callback.
+ *
+ * @callback onSubmitFn
+ * @param {string[]} devices - Name of the selected devices.
+ *
+ * @callback onValidateFn
+ * @param {boolean} valid
+ */
+const LVMSettingsForm = ({
+  id,
+  settings,
+  devices = [],
+  onSubmit: onSubmitProp = noop,
+  onValidate = noop
+}) => {
+  const [vgDevices, setVgDevices] = useState(settings.systemVGDevices);
+  const [isBootDeviceSelected, setIsBootDeviceSelected] = useState(settings.systemVGDevices.length === 0);
+  const [editedDevices, setEditedDevices] = useState(false);
+
+  const selectBootDevice = () => {
+    setIsBootDeviceSelected(true);
+    onValidate(true);
+  };
+
+  const selectCustomDevices = () => {
+    setIsBootDeviceSelected(false);
+    const { bootDevice } = settings;
+    const customDevices = (vgDevices.length === 0 && !editedDevices) ? [bootDevice] : vgDevices;
+    setVgDevices(customDevices);
+    onValidate(customDevices.length > 0);
+  };
+
+  const onChangeDevices = (devices) => {
+    setVgDevices(devices);
+    setEditedDevices(true);
+    onValidate(devices.length > 0);
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const customDevices = isBootDeviceSelected ? [] : vgDevices;
+    onSubmitProp(customDevices);
+  };
+
+  const BootDevice = () => {
+    const bootDevice = devices.find(d => d.name === settings.bootDevice);
+
+    return <DeviceList devices={[bootDevice]} />;
+  };
+
+  return (
+    <Form id={id} onSubmit={onSubmit}>
+      <div className="split">
+        <span>{_("Devices for creating the volume group")}</span>
+        <ToggleGroup aria-label="Volume group devices" isCompact>
+          <ToggleGroupItem
+            text={_("Installation device")}
+            buttonId="bootDevice"
+            isSelected={isBootDeviceSelected}
+            onClick={selectBootDevice}
+          />
+          <ToggleGroupItem
+            text={_("Custom devices")}
+            buttonId="customDevices"
+            isSelected={!isBootDeviceSelected}
+            onClick={selectCustomDevices}
+          />
+        </ToggleGroup>
+      </div>
+      <If
+        condition={isBootDeviceSelected}
+        then={<BootDevice />}
+        else={
+          <DeviceSelector
+            isMultiple
+            selected={vgDevices}
+            devices={devices}
+            onChange={onChangeDevices}
+          />
+        }
+      />
+    </Form>
+  );
+};
+
+/**
+ * Allows to select LVM and configure the system volume group.
+ * @component
+ *
+ * @param {object} props
+ * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
+ * @param {StorageDevice[]} [props.devices=[]] - Available storage devices.
+ * @param {boolean} [props.isChecked=false] - Whether LVM is selected.
+ * @param {boolean} [props.isLoading=false] - Whether to show the selector as loading.
+ * @param {onChangeFn} [props.onChange=noop] - On change callback.
  *
  * @callback onChangeFn
  * @param {boolean} lvm
  */
-const LVMField = ({ selected: selectedProp, isLoading, onChange }) => {
-  const [selected, setSelected] = useState(selectedProp);
+const LVMField = ({
+  settings,
+  devices = [],
+  isChecked: isCheckedProp = false,
+  isLoading = false,
+  onChange: onChangeProp = noop
+}) => {
+  const [isChecked, setIsChecked] = useState(isCheckedProp);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(true);
 
-  const changeSelected = (value) => {
-    setSelected(value);
-    onChange(value);
+  const onChange = (value) => {
+    setIsChecked(value);
+    onChangeProp({ lvm: value, vgDevices: [] });
+  };
+
+  const openForm = () => setIsFormOpen(true);
+
+  const closeForm = () => setIsFormOpen(false);
+
+  const onValidateForm = (valid) => setIsFormValid(valid);
+
+  const onSubmitForm = (vgDevices) => {
+    closeForm();
+    onChangeProp({ vgDevices });
+  };
+
+  const description = _("Configuration of the system volume group. All the file systems will be \
+created in a logical volume of the system volume group.");
+
+  const LVMSettingsButton = () => {
+    return (
+      <Tooltip
+        content={_("Configure the LVM settings")}
+        entryDelay={400}
+        exitDelay={50}
+        position="right"
+      >
+        <button aria-label={_("LVM settings")} className="plain-control" onClick={openForm}>
+          <Icon name="tune" size={24} />
+        </button>
+      </Tooltip>
+    );
   };
 
   if (isLoading) return <Skeleton width="25%" />;
 
   return (
-    <Switch
-      id="lvm"
-      label={_("Use logical volume management (LVM)")}
-      isReversed
-      isChecked={selected}
-      onChange={changeSelected}
-    />
+    <div className="split">
+      <Switch
+        id="lvm"
+        label={_("Use logical volume management (LVM)")}
+        isReversed
+        isChecked={isChecked}
+        onChange={onChange}
+      />
+      <If condition={isChecked} then={<LVMSettingsButton />} />
+      <Popup
+        aria-label={_("LVM settings")}
+        title={_("System Volume Group")}
+        description={description}
+        isOpen={isFormOpen}
+      >
+        <LVMSettingsForm
+          id="lvmSettingsForm"
+          devices={devices}
+          settings={settings}
+          onSubmit={onSubmitForm}
+          onValidate={onValidateForm}
+        />
+        <Popup.Actions>
+          <Popup.Confirm
+            form="lvmSettingsForm"
+            type="submit"
+            isDisabled={!isFormValid}
+          >
+            {_("Accept")}
+          </Popup.Confirm>
+          <Popup.Cancel onClick={closeForm} />
+        </Popup.Actions>
+      </Popup>
+    </div>
   );
 };
 
 /**
- * Form for configuring the encryption password
+ * Form for configuring the encryption password.
  * @component
  *
  * @param {object} props
- * @param {string} props.id - Form ID
- * @param {string} props.password - Password for encryption
- * @param {onSubmitFn} props.onSubmit - On submit callback
- * @param {onValidateFn} props.onValidate - On validate callback
+ * @param {string} props.id - Form ID.
+ * @param {string} props.password - Password for encryption.
+ * @param {onSubmitFn} [props.onSubmit=noop] - On submit callback.
+ * @param {onValidateFn} [props.onValidate=noop] - On validate callback.
  *
  * @callback onSubmitFn
  * @param {string} password
@@ -215,7 +381,12 @@ const LVMField = ({ selected: selectedProp, isLoading, onChange }) => {
  * @callback onValidateFn
  * @param {boolean} valid
  */
-const EncryptionPasswordForm = ({ id, password: passwordProp, onSubmit, onValidate }) => {
+const EncryptionPasswordForm = ({
+  id,
+  password: passwordProp,
+  onSubmit = noop,
+  onValidate = noop
+}) => {
   const [password, setPassword] = useState(passwordProp || "");
 
   useEffect(() => {
@@ -246,16 +417,21 @@ const EncryptionPasswordForm = ({ id, password: passwordProp, onSubmit, onValida
  * @component
  *
  * @param {object} props
- * @param {boolean} props.selected - Whether encryption is selected
- * @param {string} props.password - Password for encryption
- * @param {boolean} props.isLoading - Whether to show the selector as loading
- * @param {onChangeFn} props.onChange - On change callback
+ * @param {string} [props.password=""] - Password for encryption
+ * @param {boolean} [props.isChecked=false] - Whether encryption is selected
+ * @param {boolean} [props.isLoading=false] - Whether to show the selector as loading
+ * @param {onChangeFn} [props.onChange=noop] - On change callback
  *
  * @callback onChangeFn
  * @param {object} settings
  */
-const EncryptionPasswordField = ({ selected: selectedProp, password: passwordProp, isLoading, onChange }) => {
-  const [selected, setSelected] = useState(selectedProp);
+const EncryptionPasswordField = ({
+  password: passwordProp = "",
+  isChecked: isCheckedProp = false,
+  isLoading = false,
+  onChange = noop
+}) => {
+  const [isChecked, setIsChecked] = useState(isCheckedProp);
   const [password, setPassword] = useState(passwordProp);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isFormValid, setIsFormValid] = useState(true);
@@ -267,24 +443,24 @@ const EncryptionPasswordField = ({ selected: selectedProp, password: passwordPro
   const acceptForm = (newPassword) => {
     closeForm();
     setPassword(newPassword);
-    onChange({ selected, password: newPassword });
+    onChange({ isChecked, password: newPassword });
   };
 
   const cancelForm = () => {
     closeForm();
-    if (password.length === 0) setSelected(false);
+    if (password.length === 0) setIsChecked(false);
   };
 
   const validateForm = (valid) => setIsFormValid(valid);
 
   const changeSelected = (value) => {
-    setSelected(value);
+    setIsChecked(value);
 
     if (value && password.length === 0) openForm();
 
     if (!value) {
       setPassword("");
-      onChange({ selected: false, password: "" });
+      onChange({ isChecked: false, password: "" });
     }
   };
 
@@ -312,10 +488,10 @@ const EncryptionPasswordField = ({ selected: selectedProp, password: passwordPro
           id="encryption"
           label={_("Use encryption")}
           isReversed
-          isChecked={selected}
+          isChecked={isChecked}
           onChange={changeSelected}
         />
-        { selected && <ChangePasswordButton /> }
+        { isChecked && <ChangePasswordButton /> }
       </div>
       <Popup aria-label={_("Encryption settings")} title={_("Encryption settings")} isOpen={isFormOpen}>
         <EncryptionPasswordForm
@@ -338,9 +514,9 @@ const EncryptionPasswordField = ({ selected: selectedProp, password: passwordPro
  * @component
  *
  * @param {object} props
+ * @param {ProposalSettings} props.settings
  * @param {StorageDevice[]} [props.availableDevices=[]]
  * @param {Volume[]} [props.volumeTemplates=[]]
- * @param {ProposalSettings} [props.settings={}]
  * @param {boolean} [isLoading=false]
  * @param {onChangeFn} [props.onChange=noop]
  *
@@ -348,29 +524,29 @@ const EncryptionPasswordField = ({ selected: selectedProp, password: passwordPro
  * @param {object} settings
  */
 export default function ProposalSettingsSection({
+  settings,
   availableDevices = [],
   volumeTemplates = [],
-  settings = {},
   isLoading = false,
   onChange = noop
 }) {
   const changeBootDevice = (device) => {
-    if (onChange === noop) return;
     onChange({ bootDevice: device });
   };
 
-  const changeLVM = (lvm) => {
-    if (onChange === noop) return;
-    onChange({ lvm });
+  const changeLVM = ({ lvm, vgDevices }) => {
+    const settings = {};
+    if (lvm !== undefined) settings.lvm = lvm;
+    if (vgDevices !== undefined) settings.systemVGDevices = vgDevices;
+
+    onChange(settings);
   };
 
   const changeEncryption = ({ password }) => {
-    if (onChange === noop) return;
     onChange({ encryptionPassword: password });
   };
 
   const changeVolumes = (volumes) => {
-    if (onChange === noop) return;
     onChange({ volumes });
   };
 
@@ -386,15 +562,17 @@ export default function ProposalSettingsSection({
         onChange={changeBootDevice}
       />
       <LVMField
-        selected={settings.lvm === true}
+        settings={settings}
+        devices={availableDevices}
+        isChecked={settings.lvm === true}
         isLoading={settings.lvm === undefined}
         onChange={changeLVM}
       />
       <EncryptionPasswordField
-        selected={encryption}
         password={settings.encryptionPassword || ""}
-        onChange={changeEncryption}
+        isChecked={encryption}
         isLoading={settings.encryptionPassword === undefined}
+        onChange={changeEncryption}
       />
       <ProposalVolumes
         volumes={settings.volumes || []}
