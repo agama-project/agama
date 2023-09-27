@@ -64,8 +64,11 @@ module Agama
         def lvm_conversion(target)
           target.lvm.enabled = settings.lvm
 
-          # Only assign system VG devices if candidate devices contains any device different to the
-          # root device.
+          # FIXME: The candidate devices list represents the system VG devices if it contains any
+          #   device different to the root device. If the candidate devices only contains the root
+          #   device, then there is no way to know whether the root device was explicitly assigned
+          #   as system VG device. Note that candidate devices will also contain the root device
+          #   when the system VG devices list was empty.
           candidate_devices = settings.candidate_devices || []
           return unless candidate_devices.reject { |d| d == settings.root_device }.any?
 

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 27 12:12:59 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Fix D-Bus type for SystemVGDevices and restore system VG devices
+  from previous settings (gh#openSUSE/agama#763).
+
+-------------------------------------------------------------------
 Tue Sep 26 15:57:08 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 4
