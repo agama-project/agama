@@ -235,7 +235,7 @@ const LVMSettingsForm = ({
     <Form id={id} onSubmit={onSubmit}>
       <div className="split">
         <span>{_("Devices for creating the volume group")}</span>
-        <ToggleGroup aria-label="Volume group devices" isCompact>
+        <ToggleGroup isCompact>
           <ToggleGroupItem
             text={_("Installation device")}
             buttonId="bootDevice"
