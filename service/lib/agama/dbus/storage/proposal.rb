@@ -48,7 +48,7 @@ module Agama
 
           dbus_reader :lvm, "b", dbus_name: "LVM"
 
-          dbus_reader :system_vg_devices, "aas", dbus_name: "SystemVGDevices"
+          dbus_reader :system_vg_devices, "as", dbus_name: "SystemVGDevices"
 
           dbus_reader :encryption_password, "s"
 
