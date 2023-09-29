@@ -244,15 +244,22 @@ fn cmds_to_log_sources(commands: &Vec<String>, tmp_dir: &TempDir) -> Vec<Box<dyn
 // Compress given directory into a tar archive
 fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
     let compression = DEFAULT_COMPRESSION.0;
-    let tmp_path = tmp_dir.path();
-    let path = tmp_path.parent().unwrap().as_os_str().to_str().ok_or(io::Error::new(io::ErrorKind::InvalidInput, "Wrong path"))?;
-    let dir = tmp_path.file_name().unwrap().to_str().ok_or(io::Error::new(io::ErrorKind::InvalidInput, "Wrong path"))?;
+    let tmp_path = tmp_dir
+        .path()
+        .parent()
+        .unwrap()
+        .as_os_str()
+        .to_str()
+        .ok_or(io::Error::new(io::ErrorKind::InvalidInput, "Wrong path"))?;
+    let dir = tmp_dir
+        .path()
+        .file_name()
+        .unwrap()
+        .to_str()
+        .ok_or(io::Error::new(io::ErrorKind::InvalidInput, "Wrong path"))?;
     let compress_cmd = format!(
         "tar -c -f {} --warning=no-file-changed --{} --dereference -C {} {}",
-        result,
-        compression,
-        path,
-        dir,
+        result, compression, tmp_path, dir,
     );
     let cmd_parts = compress_cmd.split_whitespace().collect::<Vec<&str>>();
     let res = Command::new(cmd_parts[0])
@@ -261,8 +268,7 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
 
     if res.success() {
         Ok(())
-    }
-    else {
+    } else {
         Err(io::Error::new(
             io::ErrorKind::Other,
             "Cannot create tar archive",
