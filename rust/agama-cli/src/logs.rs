@@ -196,7 +196,10 @@ impl LogItem for LogCmd {
     }
 
     fn to(&self) -> PathBuf {
-        self.dst_path.as_path().join(format!("{}", self.cmd))
+        let mut file_name = self.cmd.clone();
+
+        file_name.retain(|c| c != ' ');
+        self.dst_path.as_path().join(format!("{}", file_name))
     }
 
     fn store(&self) -> Result<(), io::Error> {
