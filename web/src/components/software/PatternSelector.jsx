@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useInstallerClient } from "~/context/installer";
 import PatternGroup from "./PatternGroup";
 import PatternItem from "./PatternItem";
@@ -67,25 +67,6 @@ function groupPatterns(patterns) {
   return pattern_groups;
 }
 
-function patternList(patterns, selected) {
-  const groups = groupPatterns(convert(patterns, selected));
-
-  const selector = Object.keys(groups).map((group) => {
-    return (
-      <PatternGroup
-        key={group}
-        name={group}
-        selected={0}
-        count={groups[group].length}
-      >
-        { (groups[group]).map(p => <PatternItem key={p.name} pattern={p} />) }
-      </PatternGroup>
-    );
-  });
-
-  return selector;
-}
-
 function PatternSelector() {
   const [patterns, setPatterns] = useState();
   const [selected, setSelected] = useState();
@@ -105,15 +86,26 @@ function PatternSelector() {
       });
   }, [patterns, client.software]);
 
-  const content = (patterns && selected)
-    ? patternList(patterns, selected)
-    : <></>;
+  const refresh = useCallback(() => client.software.selectedPatterns().then((sel) => setSelected(sel)), [client.software]);
 
-  return (
-    <>
-      { content }
-    </>
-  );
+  if (!patterns || !selected) {
+    return <></>;
+  }
+
+  const groups = groupPatterns(convert(patterns, selected));
+
+  return Object.keys(groups).map((group) => {
+    return (
+      <PatternGroup
+        key={group}
+        name={group}
+        selected={groups[group].filter(p => p.selected !== undefined).length}
+        count={groups[group].length}
+      >
+        { (groups[group]).map(p => <PatternItem key={p.name} pattern={p} onChange={refresh} />) }
+      </PatternGroup>
+    );
+  });
 }
 
 export default PatternSelector;

@@ -19,26 +19,45 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useInstallerClient } from "~/context/installer";
+import { sprintf } from "sprintf-js";
 
-function PatternItem({ pattern }) {
-  const [selected, setSelected] = useState(pattern.selected !== undefined);
+import cockpit from "../../lib/cockpit";
+
+import { Icon } from "../layout";
+
+const ICON_PATH = "/usr/share/icons/hicolor/scalable/apps/%s.svg";
+
+function PatternItem({ pattern, onChange }) {
   const client = useInstallerClient();
+  const [icon, setIcon] = useState();
 
   const onCheckboxChange = (event) => {
     const target = event.currentTarget;
 
     if (target.checked) {
       console.log("Selecting pattern ", pattern.name);
-      client.software.addPattern(pattern.name);
+      client.software.addPattern(pattern.name).then(() => onChange());
     } else {
       console.log("Removing pattern ", pattern.name);
-      client.software.removePattern(pattern.name);
+      client.software.removePattern(pattern.name).then(() => onChange());
     }
-
-    setSelected(target.checked);
   };
+
+  // download the pattern icon from the system
+  useEffect(() => {
+    if (icon) return;
+    cockpit.file(sprintf(ICON_PATH, pattern.icon)).read()
+      .then((data) => {
+        setIcon(data);
+      });
+  }, [pattern.icon, icon]);
+
+  const patternIcon = (icon)
+    // use Base64 encoded inline image
+    ? <img alt="icon" src={"data:image/svg+xml;base64," + btoa(icon)} />
+    : <Icon name="apps" />;
 
   return (
     <label htmlFor={"checkbox-pattern-" + pattern.name}>
@@ -50,17 +69,13 @@ function PatternItem({ pattern }) {
             data-pattern-name={pattern.name}
             key={pattern.name}
             onChange={onCheckboxChange}
-            checked={selected}
+            checked={pattern.selected !== undefined}
+            // disabled={pattern.selected !== undefined && pattern.selected !== 0}
           />
         </div>
         <div className="pattern-label">
           <div className="pattern-label-icon">
-            {/* <img
-              alt="icon"
-              src={"/icons/" + icon + ".svg"}
-              width="32"
-              height="32"
-            /> */}
+            { patternIcon }
           </div>
           <div className="pattern-label-text">{pattern.summary}</div>
         </div>
