@@ -82,6 +82,9 @@ ALP-Dolomite:
             - path: srv
             - path: boot/writable
             - path: usr/local
+            - path: var
+              copy_on_write: false
+            # Architecture specific subvolume
             - path: boot/grub2/arm64-efi
               archs: aarch64
             - path: boot/grub2/i386-pc
@@ -92,16 +95,30 @@ ALP-Dolomite:
               archs: s390
             - path: boot/grub2/x86_64-efi
               archs: x86_64
-            - path: var
-              copy_on_write: false
         size:
-          auto: false
-          min: 5 GiB
+          auto: true
         outline:
           required: true
           filesystems:
             - btrfs
           snapshots_configurable: false
+          auto_size:
+            base_min: 5 GiB
+            base_max: 25 GiB
+            max_fallback_for:
+              - "/var"
+      - mount_path: "/var"
+        filesystem: btrfs
+        mount_options:
+          - "x-initrd.mount"
+          - "nodatacow"
+        size:
+          auto: false
+          min: 5 GiB
+        outline:
+          required: false
+          filesystems:
+            - btrfs
 
 Tumbleweed:
   software:
