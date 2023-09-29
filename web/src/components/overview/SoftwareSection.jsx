@@ -21,8 +21,9 @@
 
 import React, { useReducer, useEffect } from "react";
 import { Button } from "@patternfly/react-core";
-import { Em, ProgressText, Section } from "~/components/core";
+import { ProgressText, Section } from "~/components/core";
 import { Icon } from "~/components/layout";
+import { UsedSize } from "~/components/software";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
@@ -112,17 +113,6 @@ export default function SoftwareSection({ showErrors }) {
 
   const errors = showErrors ? state.errors : [];
 
-  const UsedSize = () => {
-    if (state.size === "" || state.size === "0 B") return null;
-
-    // TRANSLATORS: %s will be replaced by the estimated installation size,
-    // example: "728.8 MiB"
-    const [msg1, msg2] = _("Installation will take %s").split("%s");
-    return (
-      <>{msg1}<Em>{state.size}</Em>{msg2}</>
-    );
-  };
-
   const SectionContent = () => {
     if (state.busy) {
       const { message, current, total } = state.progress;
@@ -133,7 +123,7 @@ export default function SoftwareSection({ showErrors }) {
 
     return (
       <>
-        <UsedSize />
+        <UsedSize size={state.size} />
         {errors.length > 0 &&
           <Button
             isInline

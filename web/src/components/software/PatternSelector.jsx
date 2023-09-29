@@ -20,9 +20,12 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
+
 import { useInstallerClient } from "~/context/installer";
 import PatternGroup from "./PatternGroup";
 import PatternItem from "./PatternItem";
+import UsedSize from "./UsedSize";
+import { _ } from "~/i18n";
 
 function convert(pattern_data, selected) {
   console.log("selected: ", selected);
@@ -70,23 +73,26 @@ function groupPatterns(patterns) {
 function PatternSelector() {
   const [patterns, setPatterns] = useState();
   const [selected, setSelected] = useState();
+  const [used, setUsed] = useState();
   const client = useInstallerClient();
+
+  const refreshCb = useCallback(() => {
+    client.software.selectedPatterns().then((sel) => setSelected(sel));
+    client.software.getUsedSpace().then((sp) => setUsed(sp));
+  }, [client.software]);
 
   useEffect(() => {
     // patterns already loaded
     if (patterns) return;
 
-    client.software.patterns(true)
-      .then((pats) => {
-        setPatterns(pats);
-        return client.software.selectedPatterns();
-      })
-      .then((sel) => {
-        setSelected(sel);
-      });
-  }, [patterns, client.software]);
+    const refresh = async () => {
+      setPatterns(await client.software.patterns(true));
+      setSelected(await client.software.selectedPatterns());
+      setUsed(await client.software.getUsedSpace());
+    };
 
-  const refresh = useCallback(() => client.software.selectedPatterns().then((sel) => setSelected(sel)), [client.software]);
+    refresh();
+  }, [patterns, client.software]);
 
   if (!patterns || !selected) {
     return <></>;
@@ -94,7 +100,7 @@ function PatternSelector() {
 
   const groups = groupPatterns(convert(patterns, selected));
 
-  return Object.keys(groups).map((group) => {
+  const selector = Object.keys(groups).map((group) => {
     return (
       <PatternGroup
         key={group}
@@ -102,10 +108,19 @@ function PatternSelector() {
         selected={groups[group].filter(p => p.selected !== undefined).length}
         count={groups[group].length}
       >
-        { (groups[group]).map(p => <PatternItem key={p.name} pattern={p} onChange={refresh} />) }
+        { (groups[group]).map(p => <PatternItem key={p.name} pattern={p} onChange={refreshCb} />) }
       </PatternGroup>
     );
   });
+
+  return (
+    <>
+      <h2>{_("Summary")}</h2>
+      <UsedSize size={used} />
+      <h2>{_("Available Software")}</h2>
+      { selector }
+    </>
+  );
 }
 
 export default PatternSelector;

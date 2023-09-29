@@ -28,7 +28,6 @@ function SoftwareSelectionPage() {
   return (
     // TRANSLATORS: page title
     <Page title={_("Software")} icon="apps" actionLabel={_("Back")} actionVariant="secondary">
-      <h2>{_("Available Software")}</h2>
       <PatternSelector />
     </Page>
   );
