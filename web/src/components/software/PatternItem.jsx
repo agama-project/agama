@@ -24,24 +24,61 @@ import { useInstallerClient } from "~/context/installer";
 import { sprintf } from "sprintf-js";
 
 import cockpit from "../../lib/cockpit";
+import { Icon } from "~/components/layout";
+import { _ } from "~/i18n";
 
-import { Icon } from "../layout";
+import iconAvailable from "./icons/package-available.svg";
+import iconInstall from "./icons/package-install.svg";
+import iconAutoInstall from "./icons/package-install-auto.svg";
 
 const ICON_PATH = "/usr/share/icons/hicolor/scalable/apps/%s.svg";
+
+function stateIcon(selected) {
+  switch (selected) {
+    case 0:
+      return iconInstall;
+    case 1:
+      return iconAutoInstall;
+    default:
+      return iconAvailable;
+  }
+}
+
+function stateAriaLabel(selected) {
+  switch (selected) {
+    case 0:
+      // TRANSLATORS: pattern status, selected to install (by user)
+      return _("selected");
+    case 1:
+      // TRANSLATORS: pattern status, selected to install (by dependencies)
+      return _("automatically selected");
+    default:
+      // TRANSLATORS: pattern status, not selected to install
+      return _("not selected");
+  }
+}
 
 function PatternItem({ pattern, onChange }) {
   const client = useInstallerClient();
   const [icon, setIcon] = useState();
 
-  const onCheckboxChange = (event) => {
-    const target = event.currentTarget;
-
-    if (target.checked) {
-      console.log("Selecting pattern ", pattern.name);
-      client.software.addPattern(pattern.name).then(() => onChange());
-    } else {
-      console.log("Removing pattern ", pattern.name);
-      client.software.removePattern(pattern.name).then(() => onChange());
+  const onClick = () => {
+    switch (pattern.selected) {
+      // available pattern (not selected)
+      case undefined:
+        console.log("Selecting pattern ", pattern.name);
+        client.software.addPattern(pattern.name).then(() => onChange());
+        break;
+      // user selected
+      case 0:
+        console.log("Removing pattern ", pattern.name);
+        client.software.removePattern(pattern.name).then(() => onChange());
+        break;
+      // auto selected
+      case 1:
+        break;
+      default:
+        console.error("Unknown patterns status: ", pattern.selected);
     }
   };
 
@@ -55,33 +92,24 @@ function PatternItem({ pattern, onChange }) {
   }, [pattern.icon, icon]);
 
   const patternIcon = (icon)
-    // use Base64 encoded inline image
-    ? <img alt="icon" src={"data:image/svg+xml;base64," + btoa(icon)} />
-    : <Icon name="apps" />;
+    // use a Base64 encoded inline pattern image
+    ? <img src={"data:image/svg+xml;base64," + btoa(icon)} aria-hidden="true" />
+    // fallback icon
+    : <Icon name="apps" aria-hidden="true" />;
 
   return (
-    <label htmlFor={"checkbox-pattern-" + pattern.name}>
-      <div className="pattern-container">
-        <div className="pattern-checkbox">
-          <input
-            type="checkbox"
-            id={"checkbox-pattern-" + pattern.name}
-            data-pattern-name={pattern.name}
-            key={pattern.name}
-            onChange={onCheckboxChange}
-            checked={pattern.selected !== undefined}
-            // disabled={pattern.selected !== undefined && pattern.selected !== 0}
-          />
-        </div>
-        <div className="pattern-label">
-          <div className="pattern-label-icon">
-            { patternIcon }
-          </div>
-          <div className="pattern-label-text">{pattern.summary}</div>
-        </div>
-        <div className="pattern-summary">{pattern.description}</div>
+    <div className="pattern-container" onClick={onClick}>
+      <div className="pattern-checkbox">
+        <img src={stateIcon(pattern.selected)} aria-label={stateAriaLabel(pattern.selected)} />
       </div>
-    </label>
+      <div className="pattern-label">
+        <div className="pattern-label-icon">
+          { patternIcon }
+        </div>
+        <div className="pattern-label-text">{pattern.summary}</div>
+      </div>
+      <div className="pattern-summary">{pattern.description}</div>
+    </div>
   );
 }
 
