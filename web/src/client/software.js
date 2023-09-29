@@ -93,6 +93,38 @@ class SoftwareBaseClient {
   }
 
   /**
+   * Returns selected patterns
+   *
+   * @return {Promise<>}
+   */
+  async selectedPatterns() {
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    return proxy.SelectedPatterns;
+  }
+
+  /**
+   * Select a pattern to install
+   *
+   * @param {string} name - name of the pattern
+   * @return {Promise<>}
+   */
+  async addPattern(name) {
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    return proxy.AddPattern(name);
+  }
+
+  /**
+   * Deselect a pattern to install
+   *
+   * @param {string} name - name of the pattern
+   * @return {Promise<>}
+   */
+  async removePattern(name) {
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    return proxy.RemovePattern(name);
+  }
+
+  /**
    * Returns the selected product
    *
    * @return {Promise<Product|null>}

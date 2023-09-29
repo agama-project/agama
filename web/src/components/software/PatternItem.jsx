@@ -19,31 +19,38 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-// import React, { useEffect, useState } from "react";
-// import { useInstallerClient } from "~/context/installer";
+import React, { useState } from "react";
+import { useInstallerClient } from "~/context/installer";
 
-function PatternItem({ name, description, summary, /* icon, */ isSelected }) {
-  // const [selected, setSelected] = useState(isSelected);
-  // const client = useInstallerClient();
+function PatternItem({ pattern }) {
+  const [selected, setSelected] = useState(pattern.selected !== undefined);
+  const client = useInstallerClient();
+
   const onCheckboxChange = (event) => {
-    console.log("onCheckboxChange", event.currentTarget.checked);
+    const target = event.currentTarget;
 
-    // if (event.currentTarget.checked) {
-    // } else {
-    // }
+    if (target.checked) {
+      console.log("Selecting pattern ", pattern.name);
+      client.software.addPattern(pattern.name);
+    } else {
+      console.log("Removing pattern ", pattern.name);
+      client.software.removePattern(pattern.name);
+    }
+
+    setSelected(target.checked);
   };
 
   return (
-    <label htmlFor={"checkbox-pattern-" + name}>
+    <label htmlFor={"checkbox-pattern-" + pattern.name}>
       <div className="pattern-container">
         <div className="pattern-checkbox">
           <input
             type="checkbox"
-            id={"checkbox-pattern-" + name}
-            key={name}
+            id={"checkbox-pattern-" + pattern.name}
+            data-pattern-name={pattern.name}
+            key={pattern.name}
             onChange={onCheckboxChange}
-            checked={isSelected}
+            checked={selected}
           />
         </div>
         <div className="pattern-label">
@@ -55,9 +62,9 @@ function PatternItem({ name, description, summary, /* icon, */ isSelected }) {
               height="32"
             /> */}
           </div>
-          <div className="pattern-label-text">{summary}</div>
+          <div className="pattern-label-text">{pattern.summary}</div>
         </div>
-        <div className="pattern-summary">{description}</div>
+        <div className="pattern-summary">{pattern.description}</div>
       </div>
     </label>
   );

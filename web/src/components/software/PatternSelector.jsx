@@ -24,7 +24,9 @@ import { useInstallerClient } from "~/context/installer";
 import PatternGroup from "./PatternGroup";
 import PatternItem from "./PatternItem";
 
-function convert(pattern_data) {
+function convert(pattern_data, selected) {
+  console.log("selected: ", selected);
+
   const patterns = [];
 
   Object.keys(pattern_data).forEach((name) => {
@@ -35,7 +37,8 @@ function convert(pattern_data) {
       description: pattern[1],
       icon: pattern[2],
       summary: pattern[3],
-      order: pattern[4]
+      order: pattern[4],
+      selected: selected[name]
     });
   });
 
@@ -64,8 +67,8 @@ function groupPatterns(patterns) {
   return pattern_groups;
 }
 
-function patternList(patterns) {
-  const groups = groupPatterns(convert(patterns));
+function patternList(patterns, selected) {
+  const groups = groupPatterns(convert(patterns, selected));
 
   const selector = Object.keys(groups).map((group) => {
     return (
@@ -75,7 +78,7 @@ function patternList(patterns) {
         selected={0}
         count={groups[group].length}
       >
-        { (groups[group]).map(p => <PatternItem key={p.name} name={p.name} summary={p.summary} description={p.description} icon={p.icon} />) }
+        { (groups[group]).map(p => <PatternItem key={p.name} pattern={p} />) }
       </PatternGroup>
     );
   });
@@ -85,6 +88,7 @@ function patternList(patterns) {
 
 function PatternSelector() {
   const [patterns, setPatterns] = useState();
+  const [selected, setSelected] = useState();
   const client = useInstallerClient();
 
   useEffect(() => {
@@ -94,13 +98,15 @@ function PatternSelector() {
     client.software.patterns(true)
       .then((pats) => {
         setPatterns(pats);
+        return client.software.selectedPatterns();
+      })
+      .then((sel) => {
+        setSelected(sel);
       });
   }, [patterns, client.software]);
 
-  console.log(patterns);
-
-  const content = (patterns)
-    ? patternList(patterns)
+  const content = (patterns && selected)
+    ? patternList(patterns, selected)
     : <></>;
 
   return (
