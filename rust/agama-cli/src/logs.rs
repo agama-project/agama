@@ -34,14 +34,14 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
             options.verbose = verbose;
 
             Ok(store(options)?)
-        },
+        }
         LogsCommands::List => {
             let options = LogOptions::new();
 
             list(options);
 
             Ok(())
-        },
+        }
     }
 }
 
@@ -315,8 +315,7 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
 }
 
 // Handler for the "agama logs list" subcommand
-fn list(options: LogOptions)
-{
+fn list(options: LogOptions) {
     for list in [options.paths, options.commands] {
         for item in list.iter() {
             println!("{}", item);
