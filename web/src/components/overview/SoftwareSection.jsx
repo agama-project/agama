@@ -148,15 +148,17 @@ export default function SoftwareSection({ showErrors }) {
     );
   };
 
+  const path = (!state.busy && state.errors.length === 0) ? { path: "/software" } : {};
+
   return (
     <Section
       key="software-section"
       // TRANSLATORS: page section
       title={_("Software")}
       icon="apps"
-      path="/software"
       loading={state.busy}
       errors={errors}
+      {...path}
     >
       <SectionContent />
     </Section>
