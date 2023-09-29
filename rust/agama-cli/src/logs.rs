@@ -255,17 +255,19 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
         dir,
     );
     let cmd_parts = compress_cmd.split_whitespace().collect::<Vec<&str>>();
-
-    Command::new(cmd_parts[0])
+    let res = Command::new(cmd_parts[0])
         .args(cmd_parts[1..].iter())
-        .status()
-        .ok_or(
-            Ok(_o) => Ok(()),
-            Err(_e) => Err(io::Error::new(
-                io::ErrorKind::Other,
-                "Cannot create tar archive",
-            )
+        .status()?;
+
+    if res.success() {
+        Ok(())
+    }
+    else {
+        Err(io::Error::new(
+            io::ErrorKind::Other,
+            "Cannot create tar archive",
         ))
+    }
 }
 
 // Handler for the "agama logs store" subcommand
