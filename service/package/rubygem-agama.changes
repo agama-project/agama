@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Sep 29 14:37:25 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adapted storage settings for ALP Dolomite (gh#openSUSE/agama#782)
+
+-------------------------------------------------------------------
 Wed Sep 27 12:12:59 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Fix D-Bus type for SystemVGDevices and restore system VG devices
