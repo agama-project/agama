@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-21 02:05+0000\n"
-"PO-Revision-Date: 2023-09-21 05:15+0000\n"
+"POT-Creation-Date: 2023-10-01 02:16+0000\n"
+"PO-Revision-Date: 2023-09-28 05:15+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -91,8 +91,9 @@ msgstr "問題点が見つかりました"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:97
-#: src/components/storage/ProposalSettingsSection.jsx:160
-#: src/components/storage/ProposalSettingsSection.jsx:328
+#: src/components/storage/ProposalSettingsSection.jsx:166
+#: src/components/storage/ProposalSettingsSection.jsx:359
+#: src/components/storage/ProposalSettingsSection.jsx:504
 #: src/components/storage/ProposalVolumes.jsx:146
 #: src/components/storage/ProposalVolumes.jsx:277
 #: src/components/storage/ZFCPPage.jsx:513
@@ -631,7 +632,7 @@ msgid "Software"
 msgstr "ソフトウエア"
 
 #: src/components/overview/StorageSection.jsx:36
-#: src/components/storage/ProposalSettingsSection.jsx:115
+#: src/components/storage/ProposalSettingsSection.jsx:122
 msgid "No device selected yet"
 msgstr "まだ何もデバイスを選択していません"
 
@@ -646,8 +647,8 @@ msgstr "デバイス %s の内容を全て削除してインストールしま�
 msgid "Probing storage devices"
 msgstr "ストレージデバイスを検出しています"
 
-#. TRANSLATORS: page section title
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:182
 #: src/components/storage/ProposalPage.jsx:218
 msgid "Storage"
@@ -848,68 +849,6 @@ msgstr "最大チャネルでフィルタ"
 msgid "Remove max channel filter"
 msgstr "最大チャネルのフィルタを削除"
 
-#. TRANSLATORS: multipath device type
-#: src/components/storage/DeviceSelector.jsx:99
-msgid "Multipath"
-msgstr "マルチパス"
-
-#. TRANSLATORS: %s is replaced by the device bus ID
-#: src/components/storage/DeviceSelector.jsx:104
-#, c-format
-msgid "DASD %s"
-msgstr "DASD %s"
-
-#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
-#: src/components/storage/DeviceSelector.jsx:109
-#, c-format
-msgid "Software %s"
-msgstr "ソフトウエア %s"
-
-#: src/components/storage/DeviceSelector.jsx:114
-msgid "SD Card"
-msgstr "SD カード"
-
-#. TRANSLATORS: %s is replaced by the device transport name, e.g. USB, SATA, SCSI...
-#: src/components/storage/DeviceSelector.jsx:116
-#, c-format
-msgid "Transport %s"
-msgstr "トランスポート %s"
-
-#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/DeviceSelector.jsx:135
-#, c-format
-msgid "Members: %s"
-msgstr "メンバー: %s"
-
-#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
-#: src/components/storage/DeviceSelector.jsx:144
-#, c-format
-msgid "Devices: %s"
-msgstr "デバイス: %s"
-
-#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
-#: src/components/storage/DeviceSelector.jsx:153
-#, c-format
-msgid "Wires: %s"
-msgstr "接続: %s"
-
-#. TRANSLATORS: disk partition info, %s is replaced by partition table
-#. type (MS-DOS or GPT), %d is the number of the partitions
-#: src/components/storage/DeviceSelector.jsx:177
-#, c-format
-msgid "%s with %d partitions"
-msgstr "%s (%d 個のパーティション)"
-
-#. TRANSLATORS: status message, no existing content was found on the disk,
-#. i.e. the disk is completely empty
-#: src/components/storage/DeviceSelector.jsx:201
-msgid "No content found"
-msgstr "内容が見つかりませんでした"
-
-#: src/components/storage/DeviceSelector.jsx:249
-msgid "Available devices"
-msgstr "利用可能なデバイス"
-
 #. TRANSLATORS: page title for iSCSI configuration
 #: src/components/storage/ISCSIPage.jsx:36
 msgid "Storage iSCSI"
@@ -965,41 +904,67 @@ msgstr "iSCSI ターゲットへの接続"
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/components/storage/ProposalSettingsSection.jsx:128
-msgid ""
-"Select the device for installing the system. All the file systems will be "
-"created on the selected device."
-msgstr ""
-"システムのインストール先となるデバイスを選択してください。選択したデバイス内"
-"に全てのファイルシステムを作成します。"
+#: src/components/storage/ProposalSettingsSection.jsx:135
+msgid "Select the device for installing the system."
+msgstr "システムのインストール先デバイスを選択してください。"
 
-#: src/components/storage/ProposalSettingsSection.jsx:134
-#: src/components/storage/ProposalSettingsSection.jsx:138
+#: src/components/storage/ProposalSettingsSection.jsx:140
+#: src/components/storage/ProposalSettingsSection.jsx:144
+#: src/components/storage/ProposalSettingsSection.jsx:240
 msgid "Installation device"
 msgstr "インストール先のデバイス"
 
-#: src/components/storage/ProposalSettingsSection.jsx:144
+#: src/components/storage/ProposalSettingsSection.jsx:150
 msgid "No devices found"
 msgstr "デバイスが見つかりませんでした"
 
-#: src/components/storage/ProposalSettingsSection.jsx:194
+#: src/components/storage/ProposalSettingsSection.jsx:237
+msgid "Devices for creating the volume group"
+msgstr "ボリュームグループを作成するデバイス"
+
+#: src/components/storage/ProposalSettingsSection.jsx:246
+msgid "Custom devices"
+msgstr "独自のデバイス"
+
+#: src/components/storage/ProposalSettingsSection.jsx:310
+msgid ""
+"Configuration of the system volume group. All the file systems will be "
+"created in a logical volume of the system volume group."
+msgstr ""
+"システムのボリュームグループ向けの設定です。全てのファイルシステムは、システ"
+"ムのボリュームグループにある論理ボリューム内に作成されます。"
+
+#: src/components/storage/ProposalSettingsSection.jsx:316
+msgid "Configure the LVM settings"
+msgstr "LVM 設定"
+
+#: src/components/storage/ProposalSettingsSection.jsx:321
+#: src/components/storage/ProposalSettingsSection.jsx:341
+msgid "LVM settings"
+msgstr "LVM 設定"
+
+#: src/components/storage/ProposalSettingsSection.jsx:334
 msgid "Use logical volume management (LVM)"
 msgstr "論理ボリュームマネージャ (LVM) を使用する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:294
+#: src/components/storage/ProposalSettingsSection.jsx:342
+msgid "System Volume Group"
+msgstr "システムのボリュームグループ"
+
+#: src/components/storage/ProposalSettingsSection.jsx:470
 msgid "Change encryption password"
 msgstr "暗号化パスワードを変更する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:299
-#: src/components/storage/ProposalSettingsSection.jsx:320
+#: src/components/storage/ProposalSettingsSection.jsx:475
+#: src/components/storage/ProposalSettingsSection.jsx:496
 msgid "Encryption settings"
 msgstr "暗号化の設定"
 
-#: src/components/storage/ProposalSettingsSection.jsx:313
+#: src/components/storage/ProposalSettingsSection.jsx:489
 msgid "Use encryption"
 msgstr "暗号化を使用する"
 
-#: src/components/storage/ProposalSettingsSection.jsx:381
+#: src/components/storage/ProposalSettingsSection.jsx:557
 msgid "Settings"
 msgstr "設定"
 
@@ -1302,6 +1267,68 @@ msgstr "ディスク"
 #: src/components/storage/ZFCPPage.jsx:734
 msgid "Storage zFCP"
 msgstr "ストレージ zFCP"
+
+#. TRANSLATORS: multipath device type
+#: src/components/storage/device-utils.jsx:98
+msgid "Multipath"
+msgstr "マルチパス"
+
+#. TRANSLATORS: %s is replaced by the device bus ID
+#: src/components/storage/device-utils.jsx:103
+#, c-format
+msgid "DASD %s"
+msgstr "DASD %s"
+
+#. TRANSLATORS: software RAID device, %s is replaced by the RAID level, e.g. RAID-1
+#: src/components/storage/device-utils.jsx:108
+#, c-format
+msgid "Software %s"
+msgstr "ソフトウエア %s"
+
+#: src/components/storage/device-utils.jsx:113
+msgid "SD Card"
+msgstr "SD カード"
+
+#. TRANSLATORS: %s is replaced by the device transport name, e.g. USB, SATA, SCSI...
+#: src/components/storage/device-utils.jsx:115
+#, c-format
+msgid "Transport %s"
+msgstr "トランスポート %s"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/device-utils.jsx:134
+#, c-format
+msgid "Members: %s"
+msgstr "メンバー: %s"
+
+#. TRANSLATORS: RAID details, %s is replaced by list of devices used by the array
+#: src/components/storage/device-utils.jsx:143
+#, c-format
+msgid "Devices: %s"
+msgstr "デバイス: %s"
+
+#. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
+#: src/components/storage/device-utils.jsx:152
+#, c-format
+msgid "Wires: %s"
+msgstr "接続: %s"
+
+#. TRANSLATORS: disk partition info, %s is replaced by partition table
+#. type (MS-DOS or GPT), %d is the number of the partitions
+#: src/components/storage/device-utils.jsx:176
+#, c-format
+msgid "%s with %d partitions"
+msgstr "%s (%d 個のパーティション)"
+
+#. TRANSLATORS: status message, no existing content was found on the disk,
+#. i.e. the disk is completely empty
+#: src/components/storage/device-utils.jsx:200
+msgid "No content found"
+msgstr "内容が見つかりませんでした"
+
+#: src/components/storage/device-utils.jsx:271
+msgid "Available devices"
+msgstr "利用可能なデバイス"
 
 #: src/components/storage/iscsi/AuthFields.jsx:70
 msgid "Only available if authentication by target is provided"
@@ -1650,6 +1677,13 @@ msgstr "ユーザ"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "root の認証"
+
+#~ msgid ""
+#~ "Select the device for installing the system. All the file systems will be "
+#~ "created on the selected device."
+#~ msgstr ""
+#~ "システムのインストール先となるデバイスを選択してください。選択したデバイス"
+#~ "内に全てのファイルシステムを作成します。"
 
 #~ msgid "Device not selected yet"
 #~ msgstr "まだデバイスを選択していません"

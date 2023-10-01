@@ -1,7 +1,6 @@
-# Czech translations
-#
+# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
-# This file is distributed under the same license as the Agama package.
+# This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
@@ -9,24 +8,24 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-01 02:16+0000\n"
-"PO-Revision-Date: 2023-07-26 15:03+0000\n"
-"Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
-"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-web/cs/"
-">\n"
-"Language: cs\n"
+"PO-Revision-Date: 2023-09-28 13:15+0000\n"
+"Last-Translator: Victor hck <correohck@gmail.com>\n"
+"Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-web/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.9.1\n"
 
 #: src/App.jsx:90
 msgid "Diagnostic tools"
-msgstr ""
+msgstr "Herramientas de diagnóstico"
 
 #: src/components/core/About.jsx:43 src/components/core/About.jsx:48
 msgid "About Agama"
-msgstr ""
+msgstr "Acerca de Agama"
 
 #. TRANSLATORS: content of the "About" popup (1/2)
 #: src/components/core/About.jsx:53
@@ -36,6 +35,10 @@ msgid ""
 "want to give it a try, we recommend to use a virtual machine to prevent any "
 "possible data loss."
 msgstr ""
+"Agama es un instalador experimental para sistemas (open)SUSE. Aún está en "
+"desarrollo, por lo que no lo utilice en entornos de producción. Si quiere "
+"probarlo, le recomendamos utilizar una máquina virtual para evitar cualquier "
+"posible pérdida de datos."
 
 #. TRANSLATORS: content of the "About" popup (2/2)
 #. %s is replaced by the project URL
@@ -43,21 +46,22 @@ msgstr ""
 #, c-format
 msgid "For more information, please visit the project's repository at %s."
 msgstr ""
+"Para obtener más información, visite el repositorio del proyecto en %s."
 
 #. TRANSLATORS: button label
 #: src/components/core/About.jsx:71 src/components/core/FileViewer.jsx:80
 #: src/components/core/Sidebar.jsx:177 src/components/core/Terminal.jsx:48
 #: src/components/network/WifiSelector.jsx:151
 msgid "Close"
-msgstr "Zavřít"
+msgstr "Cerrar"
 
 #: src/components/core/FileViewer.jsx:65
 msgid "Reading file..."
-msgstr "Soubor se načítá…"
+msgstr "Leyendo el archivo..."
 
 #: src/components/core/FileViewer.jsx:71
 msgid "Cannot read the file"
-msgstr "Soubor nelze přečíst"
+msgstr "No se puede leer el archivo"
 
 #. TRANSLATORS: the installer reports some errors,
 #. the text in square brackets [] is a clickable link
@@ -66,23 +70,25 @@ msgid ""
 "There are some reported issues. Please, check [the list of issues] before "
 "proceeding with the installation."
 msgstr ""
+"Hay algunos problemas reportados. Por favor, consulte [la lista de "
+"problemas] antes de continuar con la instalación."
 
 #: src/components/core/InstallButton.jsx:60
 msgid "Confirm Installation"
-msgstr ""
+msgstr "Confirmar instalación"
 
 #: src/components/core/InstallButton.jsx:70
 msgid "Please, cancel and check the settings if you are unsure."
-msgstr ""
+msgstr "Por favor, cancele y verifique la configuración si no está seguro."
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:76
 msgid "Continue"
-msgstr ""
+msgstr "Continuar"
 
 #: src/components/core/InstallButton.jsx:86
 msgid "Problems Found"
-msgstr ""
+msgstr "Problemas encontrados"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:97
@@ -93,84 +99,88 @@ msgstr ""
 #: src/components/storage/ProposalVolumes.jsx:277
 #: src/components/storage/ZFCPPage.jsx:513
 msgid "Accept"
-msgstr ""
+msgstr "Aceptar"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:145
 msgid "Install"
-msgstr ""
+msgstr "Instalar"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallationFinished.jsx:42
 msgid "Finish"
-msgstr ""
+msgstr "Finalizar"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallationFinished.jsx:44
 msgid "Reboot"
-msgstr ""
+msgstr "Reiniciar"
 
 #: src/components/core/InstallationFinished.jsx:57
 msgid "Installation Finished"
-msgstr ""
+msgstr "Instalación finalizada"
 
 #: src/components/core/InstallationFinished.jsx:68
 msgid "Congratulations!"
-msgstr ""
+msgstr "¡Felicidades!"
 
 #: src/components/core/InstallationFinished.jsx:72
 msgid "The installation on your machine is complete."
-msgstr ""
+msgstr "La instalación en su equipo está completa."
 
 #: src/components/core/InstallationFinished.jsx:76
 msgid "At this point you can power off the machine."
-msgstr ""
+msgstr "En este punto puede apagar el equipo."
 
 #: src/components/core/InstallationFinished.jsx:77
 msgid "At this point you can reboot the machine to log in to the new system."
 msgstr ""
+"En este punto, puede reiniciar el equipo para iniciar sesión en el nuevo "
+"sistema."
 
 #: src/components/core/InstallationFinished.jsx:80
 msgid "Have a lot of fun! Your openSUSE Development Team."
-msgstr ""
+msgstr "Have a lot of fun! El equipo de desarrollo de openSUSE."
 
 #: src/components/core/InstallationProgress.jsx:32
 msgid "Installing"
-msgstr ""
+msgstr "Instalando"
 
 #: src/components/core/IssuesLink.jsx:40
 msgid "Show issues"
-msgstr ""
+msgstr "Mostrar los problemas"
 
 #: src/components/core/IssuesLink.jsx:43
 msgid "There are new issues"
-msgstr ""
+msgstr "Hay nuevos problemas"
 
 #: src/components/core/IssuesPage.jsx:115
 msgid "No issues found. Everything looks ok."
-msgstr ""
+msgstr "No se encontraron problemas. Todo parece estar bien."
 
 #: src/components/core/LogsButton.jsx:98
 msgid "Collecting logs..."
-msgstr ""
+msgstr "Recolectando registros..."
 
 #: src/components/core/LogsButton.jsx:98
 msgid "Download logs"
-msgstr ""
+msgstr "Descargar los registros"
 
 #: src/components/core/LogsButton.jsx:106
 msgid ""
 "The browser will run the logs download as soon as they are ready. Please, be "
 "patient."
 msgstr ""
+"El navegador ejecutará la descarga de registros tan pronto como estén "
+"listos. Por favor tenga paciencia."
 
 #: src/components/core/LogsButton.jsx:114
 msgid "Something went wrong while collecting logs. Please, try again."
-msgstr ""
+msgstr "Algo salió mal al recolectar los registros. Inténtelo de nuevo."
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:35
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Las contraseñas no coinciden"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:56
 #: src/components/network/WifiConnectionForm.jsx:125
@@ -178,173 +188,174 @@ msgstr ""
 #: src/components/storage/iscsi/AuthFields.jsx:103
 #: src/components/users/RootAuthMethods.jsx:159
 msgid "Password"
-msgstr ""
+msgstr "Contraseña"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:60
 msgid "User password"
-msgstr ""
+msgstr "Contraseña de usuario"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:69
 msgid "Password confirmation"
-msgstr ""
+msgstr "Confirmación de contraseña"
 
 #: src/components/core/PasswordAndConfirmationInput.jsx:76
 msgid "User password confirmation"
-msgstr ""
+msgstr "Confirmación de contraseña de usuario"
 
 #: src/components/core/PasswordInput.jsx:59
 msgid "Password visibility button"
-msgstr ""
+msgstr "Botón de visibilidad de contraseña"
 
 #: src/components/core/Popup.jsx:90
 msgid "Confirm"
-msgstr ""
+msgstr "Confirmar"
 
 #. TRANSLATORS: button label
 #: src/components/core/Popup.jsx:128
 #: src/components/network/WifiConnectionForm.jsx:136
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #. TRANSLATORS: dropdown label
 #: src/components/core/RowActions.jsx:62
 #: src/components/storage/ProposalVolumes.jsx:135
 #: src/components/storage/ProposalVolumes.jsx:304
 msgid "Actions"
-msgstr ""
+msgstr "Acciones"
 
 #: src/components/core/SectionSkeleton.jsx:29
 #: src/components/core/SectionSkeleton.jsx:34
 msgid "Waiting"
-msgstr ""
+msgstr "Esperar"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowLogButton.jsx:47
 msgid "Show Logs"
-msgstr ""
+msgstr "Mostrar registros"
 
 #. TRANSLATORS: popup dialog title
 #: src/components/core/ShowLogButton.jsx:53
 msgid "YaST Logs"
-msgstr ""
+msgstr "Registros de YaST"
 
 #. TRANSLATORS: button label
 #: src/components/core/ShowTerminalButton.jsx:48
 msgid "Open Terminal"
-msgstr ""
+msgstr "Abrir una terminal"
 
 #: src/components/core/Sidebar.jsx:135
 msgid "Show global options"
-msgstr ""
+msgstr "Mostrar opciones globales"
 
 #: src/components/core/Sidebar.jsx:141
 msgid "New issues found"
-msgstr ""
+msgstr "Encontrados nuevos problemas"
 
 #: src/components/core/Sidebar.jsx:151
 msgid "Global options"
-msgstr ""
+msgstr "Opciones globales"
 
 #. TRANSLATORS: sidebar header
 #: src/components/core/Sidebar.jsx:157
 msgid "Options"
-msgstr ""
+msgstr "Opciones"
 
 #: src/components/core/Sidebar.jsx:164
 msgid "Hide navigation and other options"
-msgstr ""
+msgstr "Ocultar navegación y otras opciones"
 
 #: src/components/core/ValidationErrors.jsx:63
 msgid "Errors"
-msgstr ""
+msgstr "Errores"
 
 #. TRANSLATORS: %d is replaced with the number of errors found
 #: src/components/core/ValidationErrors.jsx:86
 #, c-format
 msgid "%d error found"
 msgid_plural "%d errors found"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%d error encontrado"
+msgstr[1] "%d errores encontrados"
 
 #: src/components/core/ValidationErrors.jsx:96
 msgid "Basic popover"
-msgstr ""
+msgstr "Popover básico"
 
 #: src/components/l10n/L10nPage.jsx:72
 msgid "language"
-msgstr ""
+msgstr "Idioma"
 
 #. TRANSLATORS: page header
 #. TRANSLATORS: page section
 #: src/components/l10n/L10nPage.jsx:84
 #: src/components/overview/L10nSection.jsx:82
 msgid "Localization"
-msgstr ""
+msgstr "Localización"
 
 #. TRANSLATORS: button label
 #: src/components/layout/DBusError.jsx:38
 msgid "Reload"
-msgstr ""
+msgstr "Recargar"
 
 #. TRANSLATORS: page title
 #: src/components/layout/DBusError.jsx:46
 msgid "D-Bus Error"
-msgstr ""
+msgstr "Error en D-Bus"
 
 #: src/components/layout/DBusError.jsx:53
 msgid "Cannot connect to D-Bus"
-msgstr ""
+msgstr "No se puede conectar a D-Bus"
 
 #: src/components/layout/DBusError.jsx:56
 msgid ""
 "Could not connect to the D-Bus service. Please, check whether it is running."
 msgstr ""
+"No se pudo conectar al servicio D-Bus. Por favor, compruebe si está "
+"funcionando."
 
 #: src/components/layout/Icon.jsx:159
 #, c-format
 msgid "Icon %s not found!"
-msgstr ""
+msgstr "¡Icono %s no encontrado!"
 
 #: src/components/layout/Loading.jsx:28
 msgid "Loading installation environment, please wait."
-msgstr ""
+msgstr "Cargando el entorno de instalación, espere por favor."
 
 #. TRANSLATORS: button label
 #: src/components/network/AddressesDataList.jsx:81
 #: src/components/network/DnsDataList.jsx:87
 msgid "Remove"
-msgstr ""
+msgstr "Eliminar"
 
 #. TRANSLATORS: input field name
 #: src/components/network/AddressesDataList.jsx:93
 #: src/components/network/AddressesDataList.jsx:94
 #: src/components/network/IpAddressInput.jsx:33
 msgid "IP Address"
-msgstr ""
+msgstr "Dirección IP"
 
 #. TRANSLATORS: input field name
 #: src/components/network/AddressesDataList.jsx:102
 #: src/components/network/AddressesDataList.jsx:103
 msgid "Prefix length or netmask"
-msgstr ""
+msgstr "Longitud del prefijo o máscara de red"
 
 #: src/components/network/AddressesDataList.jsx:119
 msgid "Add an address"
-msgstr ""
+msgstr "Añadir una dirección"
 
 #. TRANSLATORS: button label
 #: src/components/network/AddressesDataList.jsx:119
 msgid "Add another address"
-msgstr ""
+msgstr "Añadir otras direcciones"
 
 #: src/components/network/AddressesDataList.jsx:124
 msgid "Addresses"
-msgstr ""
+msgstr "Direcciones"
 
 #: src/components/network/AddressesDataList.jsx:129
 msgid "Addresses data list"
-msgstr ""
+msgstr "Lista de datos de direcciones"
 
 #. TRANSLATORS: table header
 #. TRANSLATORS: input field for the iSCSI initiator name
@@ -357,13 +368,13 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:100
 #: src/components/storage/iscsi/NodesPresenter.jsx:121
 msgid "Name"
-msgstr ""
+msgstr "Nombre"
 
 #. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:59
 #: src/components/network/ConnectionsTable.jsx:87
 msgid "IP addresses"
-msgstr ""
+msgstr "Direcciones IP"
 
 #: src/components/network/ConnectionsTable.jsx:67
 #: src/components/storage/ProposalVolumes.jsx:228
@@ -371,140 +382,142 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
 #: src/components/users/FirstUser.jsx:170
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:70
 #, c-format
 msgid "Edit connection %s"
-msgstr ""
+msgstr "Editar conexión %s"
 
 #: src/components/network/ConnectionsTable.jsx:74
 msgid "Forget"
-msgstr ""
+msgstr "Olvidar"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:77
 #, c-format
 msgid "Forget connection %s"
-msgstr ""
+msgstr "Olvidar conexión %s"
 
 #. TRANSLATORS: %s is replaced by a network connection name
 #: src/components/network/ConnectionsTable.jsx:92
 #, c-format
 msgid "Actions for connection %s"
-msgstr ""
+msgstr "Acciones para la conexión %s"
 
 #. TRANSLATORS: input field name
 #: src/components/network/DnsDataList.jsx:78
 #: src/components/network/DnsDataList.jsx:79
 msgid "Server IP"
-msgstr ""
+msgstr "Servidor IP"
 
 #: src/components/network/DnsDataList.jsx:96
 msgid "Add DNS"
-msgstr ""
+msgstr "Añadir DNS"
 
 #. TRANSLATORS: button label
 #: src/components/network/DnsDataList.jsx:96
 msgid "Add another DNS"
-msgstr ""
+msgstr "Añadir otro DNS"
 
 #: src/components/network/DnsDataList.jsx:101
 msgid "DNS"
-msgstr ""
+msgstr "DNS"
 
 #. TRANSLATORS: input field name
 #: src/components/network/IpPrefixInput.jsx:33
 msgid "IP prefix or netmask"
-msgstr ""
+msgstr "Prefijo IP o máscara de red"
 
 #. TRANSLATORS: error message
 #: src/components/network/IpSettingsForm.jsx:87
 msgid "At least one address must be provided for selected mode"
-msgstr ""
+msgstr "Se debe proporcionar al menos una dirección para el modo seleccionado"
 
 #: src/components/network/IpSettingsForm.jsx:131
 #, c-format
 msgid "Edit %s connection"
-msgstr ""
+msgstr "Editar %s conexión"
 
 #. TRANSLATORS: network connection mode (automatic via DHCP or manual with static IP)
 #: src/components/network/IpSettingsForm.jsx:133
 #: src/components/network/IpSettingsForm.jsx:138
 #: src/components/network/IpSettingsForm.jsx:140
 msgid "Mode"
-msgstr ""
+msgstr "Modo"
 
 #: src/components/network/IpSettingsForm.jsx:144
 msgid "Automatic (DHCP)"
-msgstr ""
+msgstr "Automático (DHCP)"
 
 #. TRANSLATORS: manual network configuration mode with a static IP address
 #: src/components/network/IpSettingsForm.jsx:146
 #: src/components/storage/iscsi/NodeStartupOptions.js:25
 msgid "Manual"
-msgstr ""
+msgstr "Manual"
 
 #. TRANSLATORS: network gateway configuration
 #: src/components/network/IpSettingsForm.jsx:161
 #: src/components/network/IpSettingsForm.jsx:164
 msgid "Gateway"
-msgstr ""
+msgstr "Puerta de enlace"
 
 #: src/components/network/NetworkPage.jsx:38
 msgid "No wired connections found"
-msgstr ""
+msgstr "No se encontraron conexiones por cable"
 
 #: src/components/network/NetworkPage.jsx:53
 msgid ""
 "The system has not been configured for connecting to a WiFi network yet."
-msgstr ""
+msgstr "El sistema aún no se ha configurado para conectarse a una red WiFi."
 
 #: src/components/network/NetworkPage.jsx:54
 msgid ""
 "The system does not support WiFi connections, probably because of missing or "
 "disabled hardware."
 msgstr ""
+"El sistema no admite conexiones WiFi, probablemente debido a que falta "
+"hardware o está deshabilitado."
 
 #: src/components/network/NetworkPage.jsx:58
 msgid "No WiFi connections found"
-msgstr ""
+msgstr "No se encontraron conexiones WiFi"
 
 #. TRANSLATORS: button label
 #: src/components/network/NetworkPage.jsx:70
 #: src/components/network/NetworkPageOptions.jsx:45
 #: src/components/network/WifiSelector.jsx:134
 msgid "Connect to a Wi-Fi network"
-msgstr ""
+msgstr "Conectado a una red WIFI"
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section title
 #: src/components/network/NetworkPage.jsx:170
 #: src/components/overview/NetworkSection.jsx:102
 msgid "Network"
-msgstr ""
+msgstr "Red"
 
 #. TRANSLATORS: page section
 #: src/components/network/NetworkPage.jsx:172
 msgid "Wired networks"
-msgstr ""
+msgstr "Redes cableadas"
 
 #. TRANSLATORS: page section
 #: src/components/network/NetworkPage.jsx:177
 msgid "WiFi networks"
-msgstr ""
+msgstr "Redes WIFI"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:43
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:72
 msgid "None"
-msgstr ""
+msgstr "Ninguno"
 
 #. TRANSLATORS: WiFi authentication mode
 #: src/components/network/WifiConnectionForm.jsx:45
 msgid "WPA & WPA2 Personal"
-msgstr ""
+msgstr "WPA y WPA2 personales"
 
 #: src/components/network/WifiConnectionForm.jsx:91
 #: src/components/storage/ZFCPDiskForm.jsx:112
@@ -512,83 +525,84 @@ msgstr ""
 #: src/components/storage/iscsi/LoginForm.jsx:72
 #: src/components/users/FirstUser.jsx:194
 msgid "Something went wrong"
-msgstr ""
+msgstr "Algo salió mal"
 
 #: src/components/network/WifiConnectionForm.jsx:92
 msgid "Please, review provided settings and try again."
 msgstr ""
+"Por favor, revise la configuración proporcionada y vuelva a intentarlo."
 
 #. TRANSLATORS: SSID (Wifi network name) configuration
 #: src/components/network/WifiConnectionForm.jsx:97
 #: src/components/network/WifiConnectionForm.jsx:101
 msgid "SSID"
-msgstr ""
+msgstr "SSID"
 
 #. TRANSLATORS: Wifi security configuration (password protected or not)
 #: src/components/network/WifiConnectionForm.jsx:109
 #: src/components/network/WifiConnectionForm.jsx:112
 msgid "Security"
-msgstr ""
+msgstr "Seguridad"
 
 #. TRANSLATORS: WiFi password
 #: src/components/network/WifiConnectionForm.jsx:121
 msgid "WPA Password"
-msgstr ""
+msgstr "Contraseña WPA"
 
 #. TRANSLATORS: button label, connect to a WiFi network
 #: src/components/network/WifiConnectionForm.jsx:133
 msgid "Connect"
-msgstr ""
+msgstr "Conectar"
 
 #. TRANSLATORS: button label
 #: src/components/network/WifiHiddenNetworkForm.jsx:50
 msgid "Connect to hidden network"
-msgstr ""
+msgstr "Conectar a una red oculta"
 
 #. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:41
 #: src/components/network/WifiNetworkListItem.jsx:99
 msgid "Connecting"
-msgstr ""
+msgstr "Conectando"
 
 #. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:44
 msgid "Connected"
-msgstr ""
+msgstr "Conectado"
 
 #. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:47
 msgid "Disconnecting"
-msgstr ""
+msgstr "Desconectando"
 
 #. TRANSLATORS: Wifi network status
 #. TRANSLATORS: iSCSI connection status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
-msgstr ""
+msgstr "Desconectado"
 
 #. TRANSLATORS: %s is replaced by a WiFi network name
 #: src/components/network/WifiNetworkListItem.jsx:97
 #, c-format
 msgid "%s connection is waiting for an state change"
-msgstr ""
+msgstr "%s conexión está esperando un cambio de estado"
 
 #. TRANSLATORS: menu label, remove the selected WiFi network settings
 #: src/components/network/WifiNetworkMenu.jsx:45
 msgid "Forget network"
-msgstr ""
+msgstr "Olvidar red"
 
 #. TRANSLATORS: %s will be replaced by a language name and code,
 #. example: "English (en_US.UTF-8)"
 #: src/components/overview/L10nSection.jsx:70
 #, c-format
 msgid "The system will use %s as its default language."
-msgstr ""
+msgstr "El sistema utilizará %s como su idioma predeterminado."
 
 #: src/components/overview/NetworkSection.jsx:78
 msgid "No network connections detected"
-msgstr ""
+msgstr "No se detectaron conexiones de red"
 
 #. TRANSLATORS: header for the list of active network connections,
 #. %d is replaced by the number of active connections
@@ -596,140 +610,140 @@ msgstr ""
 #, c-format
 msgid "%d connection set:"
 msgid_plural "%d connections set:"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%d conexión establecida:"
+msgstr[1] "%d conexiones establecidas:"
 
 #: src/components/overview/SoftwareSection.jsx:36
 msgid "Reading software repositories"
-msgstr ""
+msgstr "Leer repositorios de software"
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
 #. example: "728.8 MiB"
 #: src/components/overview/SoftwareSection.jsx:120
 #, c-format
 msgid "Installation will take %s"
-msgstr ""
+msgstr "La instalación durará %s"
 
 #. TRANSLATORS: clickable link label
 #: src/components/overview/SoftwareSection.jsx:145
 msgid "Refresh the repositories"
-msgstr ""
+msgstr "Refrescar los repositorios"
 
 #. TRANSLATORS: page section
 #: src/components/overview/SoftwareSection.jsx:155
 msgid "Software"
-msgstr ""
+msgstr "Software"
 
 #: src/components/overview/StorageSection.jsx:36
 #: src/components/storage/ProposalSettingsSection.jsx:122
 msgid "No device selected yet"
-msgstr ""
+msgstr "Ningún dispositivo seleccionado todavía"
 
 #. TRANSLATORS: %s will be replaced by the device name and its size,
 #. example: "/dev/sda, 20 GiB"
 #: src/components/overview/StorageSection.jsx:44
 #, c-format
 msgid "Install using device %s and deleting all its content"
-msgstr ""
+msgstr "Instalar utilizando el dispositivo %s y eliminar todo su contenido"
 
 #: src/components/overview/StorageSection.jsx:57
 msgid "Probing storage devices"
-msgstr ""
+msgstr "Explorando dispositivos de almacenamiento"
 
 #. TRANSLATORS: page title
 #. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:182
 #: src/components/storage/ProposalPage.jsx:218
 msgid "Storage"
-msgstr ""
+msgstr "Almacenamiento"
 
 #. TRANSLATORS: %s will be replaced by the user name
 #: src/components/overview/UsersSection.jsx:80
 #, c-format
 msgid "User %s will be created"
-msgstr ""
+msgstr "Se creará el usuario %s"
 
 #: src/components/overview/UsersSection.jsx:87
 #: src/components/users/FirstUser.jsx:44
 msgid "No user defined yet"
-msgstr ""
+msgstr "Ningún usuario definido todavía"
 
 #: src/components/overview/UsersSection.jsx:101
 msgid "Root authentication set for using both, password and public SSH Key"
 msgstr ""
+"Autenticación de Root configurada para usar contraseña y clave SSH pública"
 
 #: src/components/overview/UsersSection.jsx:102
 msgid "No root authentication method defined"
-msgstr ""
+msgstr "No se ha definido ningún método de autenticación de Root"
 
 #: src/components/overview/UsersSection.jsx:103
 msgid "Root authentication set for using password"
-msgstr ""
+msgstr "Autenticación de Root configurada para usar contraseña"
 
 #: src/components/overview/UsersSection.jsx:104
 msgid "Root authentication set for using public SSH Key"
-msgstr ""
+msgstr "Autenticación de Root configurada para usar una clave SSH pública"
 
 #. TRANSLATORS: page section title
 #: src/components/overview/UsersSection.jsx:120
 #: src/components/users/UsersPage.jsx:30
 msgid "Users"
-msgstr ""
+msgstr "Usuarios"
 
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
 msgid "Question"
-msgstr ""
+msgstr "Pregunta"
 
 #. TRANSLATORS: error message, user entered a wrong password
 #: src/components/questions/LuksActivationQuestion.jsx:34
 msgid "Given encryption password didn't work"
-msgstr ""
+msgstr "La contraseña de cifrado dada no funcionó"
 
 #: src/components/questions/LuksActivationQuestion.jsx:59
 msgid "Encrypted Device"
-msgstr ""
+msgstr "Dispositivo cifrado"
 
 #. TRANSLATORS: field label
 #: src/components/questions/LuksActivationQuestion.jsx:69
 msgid "Encryption Password"
-msgstr ""
+msgstr "Contraseña de cifrado"
 
 #: src/components/software/ChangeProductLink.jsx:36
 msgid "Change product"
-msgstr ""
+msgstr "Cambiar de producto"
 
 #: src/components/software/ProductSelectionPage.jsx:69
 msgid "Loading available products, please wait..."
-msgstr ""
+msgstr "Cargando productos disponibles, por favor espere..."
 
 #. TRANSLATORS: page header
 #: src/components/software/ProductSelectionPage.jsx:94
 msgid "Product selection"
-msgstr ""
+msgstr "Selección de producto"
 
 #. TRANSLATORS: button label
 #: src/components/software/ProductSelectionPage.jsx:99
 msgid "Select"
-msgstr ""
+msgstr "Seleccionar"
 
 #: src/components/software/ProductSelectionPage.jsx:104
 msgid "Choose a product"
-msgstr ""
+msgstr "Escoger un producto"
 
 #: src/components/storage/DASDFormatProgress.jsx:61
 msgid "Waiting for progress report"
-msgstr ""
+msgstr "Esperando el informe de progreso"
 
 #: src/components/storage/DASDFormatProgress.jsx:69
 msgid "Formatting DASD devices"
-msgstr ""
+msgstr "Formatear dispositivos DASD"
 
 #. TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
 #: src/components/storage/DASDPage.jsx:185
 msgid "Storage DASD"
-msgstr ""
+msgstr "Almacenamiento DASD"
 
 #: src/components/storage/DASDPage.jsx:187
 #: src/components/storage/ISCSIPage.jsx:39
@@ -737,28 +751,28 @@ msgstr ""
 #: src/components/storage/ZFCPPage.jsx:736
 #: src/components/users/UsersPage.jsx:30
 msgid "Back"
-msgstr ""
+msgstr "Retroceder"
 
 #: src/components/storage/DASDTable.jsx:55
 #: src/components/storage/ZFCPPage.jsx:320
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 msgid "No"
-msgstr ""
+msgstr "No"
 
 #: src/components/storage/DASDTable.jsx:55
 #: src/components/storage/ZFCPPage.jsx:320
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:71
 #: src/components/storage/iscsi/NodesPresenter.jsx:103
 msgid "Yes"
-msgstr ""
+msgstr "Sí"
 
 #: src/components/storage/DASDTable.jsx:62
 #: src/components/storage/ZFCPDiskForm.jsx:118
 #: src/components/storage/ZFCPPage.jsx:303
 #: src/components/storage/ZFCPPage.jsx:363
 msgid "Channel ID"
-msgstr ""
+msgstr "Canal ID"
 
 #. TRANSLATORS: table header
 #: src/components/storage/DASDTable.jsx:63
@@ -767,290 +781,293 @@ msgstr ""
 #: src/components/storage/iscsi/NodesPresenter.jsx:125
 #: src/components/users/RootAuthMethods.jsx:153
 msgid "Status"
-msgstr ""
+msgstr "Estado"
 
 #: src/components/storage/DASDTable.jsx:64
 msgid "Device"
-msgstr ""
+msgstr "Dispositivo"
 
 #: src/components/storage/DASDTable.jsx:65
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: src/components/storage/DASDTable.jsx:66
 msgid "Diag"
-msgstr ""
+msgstr "Diagnóstico"
 
 #: src/components/storage/DASDTable.jsx:67
 msgid "Formatted"
-msgstr ""
+msgstr "Formateado"
 
 #: src/components/storage/DASDTable.jsx:68
 msgid "Partition Info"
-msgstr ""
+msgstr "Información de la partición"
 
 #. TRANSLATORS: drop down menu action, activate the device
 #: src/components/storage/DASDTable.jsx:102
 #: src/components/storage/ZFCPPage.jsx:334
 msgid "Activate"
-msgstr ""
+msgstr "Activar"
 
 #. TRANSLATORS: drop down menu action, deactivate the device
 #: src/components/storage/DASDTable.jsx:104
 #: src/components/storage/ZFCPPage.jsx:376
 msgid "Deactivate"
-msgstr ""
+msgstr "Desactivar"
 
 #. TRANSLATORS: drop down menu action, enable DIAG access method
 #: src/components/storage/DASDTable.jsx:107
 msgid "Set DIAG On"
-msgstr ""
+msgstr "Activar DIAG"
 
 #. TRANSLATORS: drop down menu action, disable DIAG access method
 #: src/components/storage/DASDTable.jsx:109
 msgid "Set DIAG Off"
-msgstr ""
+msgstr "Desactivar DIAG"
 
 #. TRANSLATORS: drop down menu action, format the disk
 #: src/components/storage/DASDTable.jsx:112
 msgid "Format"
-msgstr ""
+msgstr "Formatear"
 
 #. TRANSLATORS: drop down menu label
 #: src/components/storage/DASDTable.jsx:117
 msgid "Perform an action"
-msgstr ""
+msgstr "Realizar una acción"
 
 #: src/components/storage/DASDTable.jsx:195
 #: src/components/storage/DASDTable.jsx:196
 msgid "Filter by min channel"
-msgstr ""
+msgstr "Filtrar por canal mínimo"
 
 #: src/components/storage/DASDTable.jsx:203
 msgid "Remove min channel filter"
-msgstr ""
+msgstr "Eliminar filtro de canal mínimo"
 
 #: src/components/storage/DASDTable.jsx:216
 #: src/components/storage/DASDTable.jsx:217
 msgid "Filter by max channel"
-msgstr ""
+msgstr "Filtrar por canal máximo"
 
 #: src/components/storage/DASDTable.jsx:224
 msgid "Remove max channel filter"
-msgstr ""
+msgstr "Eliminar filtro de canal máximo"
 
 #. TRANSLATORS: page title for iSCSI configuration
 #: src/components/storage/ISCSIPage.jsx:36
 msgid "Storage iSCSI"
-msgstr ""
+msgstr "Almacenamiento iSCSI"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsSection.jsx:71
 #, c-format
 msgid "Hide %d subvolume action"
 msgid_plural "Hide %d subvolume actions"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Ocultar %d acción de subvolumen"
+msgstr[1] "Ocultar %d acciones de subvolumen"
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsSection.jsx:73
 #, c-format
 msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Mostrar %d acción de subvolumen"
+msgstr[1] "Mostrar %d acciones de subvolumen"
 
 #: src/components/storage/ProposalActionsSection.jsx:78
 msgid "Actions to create the file systems and to ensure the system boots."
 msgstr ""
+"Acciones para crear los sistemas de archivos y garantizar que el sistema "
+"arranque."
 
 #. TRANSLATORS: section title, list of planned actions for the selected device,
 #. e.g. "delete partition A", "create partition B with filesystem C", ...
 #: src/components/storage/ProposalActionsSection.jsx:126
 msgid "Planned Actions"
-msgstr ""
+msgstr "Acciones planeadas"
 
 #: src/components/storage/ProposalPage.jsx:198
 msgid "Devices will not be modified until installation starts."
-msgstr ""
+msgstr "Los dispositivos no se modificarán hasta que comience la instalación."
 
 #: src/components/storage/ProposalPageOptions.jsx:40
 msgid "Manage and format"
-msgstr ""
+msgstr "Administrar y formatear"
 
 #: src/components/storage/ProposalPageOptions.jsx:58
 msgid "Activate disks"
-msgstr ""
+msgstr "Activar discos"
 
 #: src/components/storage/ProposalPageOptions.jsx:60
 msgid "zFCP"
-msgstr ""
+msgstr "zFCP"
 
 #: src/components/storage/ProposalPageOptions.jsx:76
 msgid "Connect to iSCSI targets"
-msgstr ""
+msgstr "Conectar a objetivos iSCSI"
 
 #: src/components/storage/ProposalPageOptions.jsx:78
+#, fuzzy
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #: src/components/storage/ProposalSettingsSection.jsx:135
 msgid "Select the device for installing the system."
-msgstr ""
+msgstr "Seleccione el dispositivo para instalar el sistema."
 
 #: src/components/storage/ProposalSettingsSection.jsx:140
 #: src/components/storage/ProposalSettingsSection.jsx:144
 #: src/components/storage/ProposalSettingsSection.jsx:240
 msgid "Installation device"
-msgstr ""
+msgstr "Dispositivo de instalación"
 
 #: src/components/storage/ProposalSettingsSection.jsx:150
 msgid "No devices found"
-msgstr ""
+msgstr "No se encontraron dispositivos"
 
 #: src/components/storage/ProposalSettingsSection.jsx:237
 msgid "Devices for creating the volume group"
-msgstr ""
+msgstr "Dispositivos para crear el grupo de volúmenes"
 
 #: src/components/storage/ProposalSettingsSection.jsx:246
 msgid "Custom devices"
-msgstr ""
+msgstr "Dispositivos personalizados"
 
 #: src/components/storage/ProposalSettingsSection.jsx:310
 msgid ""
 "Configuration of the system volume group. All the file systems will be "
 "created in a logical volume of the system volume group."
 msgstr ""
+"Configuración del grupo de volúmenes del sistema. Todos los sistemas de "
+"archivos se crearán en un volumen lógico del grupo de volúmenes del sistema."
 
 #: src/components/storage/ProposalSettingsSection.jsx:316
 msgid "Configure the LVM settings"
-msgstr ""
+msgstr "Configurar los ajustes de LVM"
 
 #: src/components/storage/ProposalSettingsSection.jsx:321
 #: src/components/storage/ProposalSettingsSection.jsx:341
 msgid "LVM settings"
-msgstr ""
+msgstr "Ajustes LVM"
 
 #: src/components/storage/ProposalSettingsSection.jsx:334
 msgid "Use logical volume management (LVM)"
-msgstr ""
+msgstr "Utilice la gestión de volúmenes lógicos (LVM)"
 
 #: src/components/storage/ProposalSettingsSection.jsx:342
 msgid "System Volume Group"
-msgstr ""
+msgstr "Grupo de volúmenes del sistema"
 
 #: src/components/storage/ProposalSettingsSection.jsx:470
 msgid "Change encryption password"
-msgstr ""
+msgstr "Cambiar contraseña de cifrado"
 
 #: src/components/storage/ProposalSettingsSection.jsx:475
 #: src/components/storage/ProposalSettingsSection.jsx:496
 msgid "Encryption settings"
-msgstr ""
+msgstr "Configuraciones del cifrado"
 
 #: src/components/storage/ProposalSettingsSection.jsx:489
 msgid "Use encryption"
-msgstr ""
+msgstr "Usar cifrado"
 
 #: src/components/storage/ProposalSettingsSection.jsx:557
 msgid "Settings"
-msgstr ""
+msgstr "Ajustes"
 
 #. TRANSLATORS: header for a list of items
 #: src/components/storage/ProposalVolumes.jsx:58
 msgid "These limits are affected by:"
-msgstr ""
+msgstr "Estos límites se ven afectados por:"
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
 #: src/components/storage/ProposalVolumes.jsx:62
 msgid "The configuration of snapshots"
-msgstr ""
+msgstr "La configuración de instantáneas"
 
 #. TRANSLATORS: list item, this affects the computed partition size limits
 #. %s is replaced by a list of the volumes (like "/home, /boot")
 #: src/components/storage/ProposalVolumes.jsx:66
 #, c-format
 msgid "Presence of other volumes (%s)"
-msgstr ""
+msgstr "Presencia de otros volúmenes (%s)"
 
 #. TRANSLATORS: dropdown menu label
 #: src/components/storage/ProposalVolumes.jsx:121
 msgid "Reset to defaults"
-msgstr ""
+msgstr "Restablecer los valores predeterminados"
 
 #. TRANSLATORS: dropdown menu label
 #: src/components/storage/ProposalVolumes.jsx:129
 #: src/components/storage/ProposalVolumes.jsx:139
 msgid "Add file system"
-msgstr ""
+msgstr "Agregar sistema de archivos"
 
 #. TRANSLATORS: minimum device size, %s is replaced by size string, e.g. "17.5 GiB"
 #: src/components/storage/ProposalVolumes.jsx:189
 #, c-format
 msgid "At least %s"
-msgstr ""
+msgstr "Al menos %s"
 
 #. TRANSLATORS: device flag, the partition size is automatically computed
 #: src/components/storage/ProposalVolumes.jsx:195
 msgid "auto"
-msgstr ""
+msgstr "automático"
 
 #. TRANSLATORS: the filesystem uses a logical volume (LVM)
 #: src/components/storage/ProposalVolumes.jsx:204
 msgid "logical volume"
-msgstr ""
+msgstr "volúmen lógico"
 
 #: src/components/storage/ProposalVolumes.jsx:204
 msgid "partition"
-msgstr ""
+msgstr "partición"
 
 #. TRANSLATORS: filesystem flag, it uses an encryption
 #: src/components/storage/ProposalVolumes.jsx:212
 msgid "encrypted"
-msgstr ""
+msgstr "cifrado"
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
 #: src/components/storage/ProposalVolumes.jsx:214
 msgid "with snapshots"
-msgstr ""
+msgstr "con instantáneas"
 
 #: src/components/storage/ProposalVolumes.jsx:223
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
-msgstr ""
+msgstr "Eliminar"
 
 #: src/components/storage/ProposalVolumes.jsx:269
 msgid "Edit file system"
-msgstr ""
+msgstr "Editar sistema de archivos"
 
 #: src/components/storage/ProposalVolumes.jsx:301
 #: src/components/storage/VolumeForm.jsx:490
 msgid "Mount point"
-msgstr ""
+msgstr "Punto de montaje"
 
 #: src/components/storage/ProposalVolumes.jsx:302
 msgid "Details"
-msgstr ""
+msgstr "Detalles"
 
 #: src/components/storage/ProposalVolumes.jsx:303
 #: src/components/storage/VolumeForm.jsx:507
 msgid "Size"
-msgstr ""
+msgstr "Tamaño"
 
 #: src/components/storage/ProposalVolumes.jsx:339
 msgid "Table with mount points"
-msgstr ""
+msgstr "Tabla con puntos de montaje"
 
 #: src/components/storage/ProposalVolumes.jsx:402
 msgid "File systems to create in your system"
-msgstr ""
+msgstr "Sistemas de archivos para crear en su sistema"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #: src/components/storage/VolumeForm.jsx:96
 msgid "the configuration of snapshots"
-msgstr ""
+msgstr "la configuración de las instantáneas"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
