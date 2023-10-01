@@ -54,6 +54,34 @@ const vda = {
   partitionTable: { type: "gpt", partitions: [] }
 };
 
+const md0 = {
+  sid: "62",
+  type: "md",
+  level: "raid0",
+  uuid: "12345:abcde",
+  members: ["/dev/vdb"],
+  active: true,
+  name: "/dev/md0",
+  size: 2048,
+  systems : [],
+  udevIds: [],
+  udevPaths: []
+};
+
+const md1 = {
+  sid: "63",
+  type: "md",
+  level: "raid0",
+  uuid: "12345:abcde",
+  members: ["/dev/vdc"],
+  active: true,
+  name: "/dev/md1",
+  size: 4096,
+  systems : [],
+  udevIds: [],
+  udevPaths: []
+};
+
 beforeEach(() => {
   props = {};
 });
@@ -189,7 +217,8 @@ describe("LVM field", () => {
 
   describe("if LVM is set to true", () => {
     beforeEach(() => {
-      props.settings = { lvm: true };
+      props.availableDevices = [vda, md0, md1];
+      props.settings = { bootDevice: "/dev/vda", lvm: true, systemVGDevices: [] };
       props.onChange = jest.fn();
     });
 
@@ -200,6 +229,12 @@ describe("LVM field", () => {
       expect(checkbox).toBeChecked();
     });
 
+    it("renders a button for changing the LVM settings", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
+
+      screen.getByRole("button", { name: /LVM settings/ });
+    });
+
     it("changes the selection on click", async () => {
       const { user } = plainRender(<ProposalSettingsSection {...props} />);
 
@@ -208,6 +243,84 @@ describe("LVM field", () => {
 
       expect(checkbox).not.toBeChecked();
       expect(props.onChange).toHaveBeenCalled();
+    });
+
+    describe("and user clicks on LVM settings", () => {
+      it("opens the LVM settings dialog", async () => {
+        const { user } = plainRender(<ProposalSettingsSection {...props} />);
+        const settingsButton = screen.getByRole("button", { name: /LVM settings/ });
+
+        await user.click(settingsButton);
+
+        const popup = await screen.findByRole("dialog");
+        within(popup).getByText("System Volume Group");
+      });
+
+      it("allows selecting either installation device or custom devices", async() => {
+        const { user } = plainRender(<ProposalSettingsSection {...props} />);
+        const settingsButton = screen.getByRole("button", { name: /LVM settings/ });
+
+        await user.click(settingsButton);
+
+        const popup = await screen.findByRole("dialog");
+        screen.getByText("System Volume Group");
+
+        within(popup).getByRole("button", { name: "Installation device" });
+        within(popup).getByRole("button", { name: "Custom devices" });
+      });
+
+      it("allows to set the installation device as system volume group", async () => {
+        const { user } = plainRender(<ProposalSettingsSection {...props} />);
+        const settingsButton = screen.getByRole("button", { name: /LVM settings/ });
+
+        await user.click(settingsButton);
+
+        const popup = await screen.findByRole("dialog");
+        screen.getByText("System Volume Group");
+
+        const bootDeviceButton = within(popup).getByRole("button", { name: "Installation device" });
+        const customDevicesButton = within(popup).getByRole("button", { name: "Custom devices" });
+        const acceptButton = within(popup).getByRole("button", { name: "Accept" });
+
+        await user.click(customDevicesButton);
+        await user.click(bootDeviceButton);
+        await user.click(acceptButton);
+
+        expect(props.onChange).toHaveBeenCalledWith(
+          expect.objectContaining({ systemVGDevices: [] })
+        );
+      });
+
+      it("allows customize the system volume group", async () => {
+        const { user } = plainRender(<ProposalSettingsSection {...props} />);
+        const settingsButton = screen.getByRole("button", { name: /LVM settings/ });
+
+        await user.click(settingsButton);
+
+        const popup = await screen.findByRole("dialog");
+        screen.getByText("System Volume Group");
+
+        const customDevicesButton = within(popup).getByRole("button", { name: "Custom devices" });
+        const acceptButton = within(popup).getByRole("button", { name: "Accept" });
+
+        await user.click(customDevicesButton);
+
+        const vdaOption = within(popup).getByRole("option", { name: /vda/ });
+        const md0Option = within(popup).getByRole("option", { name: /md0/ });
+        const md1Option = within(popup).getByRole("option", { name: /md1/ });
+
+        // unselect the boot devices
+        await user.click(vdaOption);
+
+        await user.click(md0Option);
+        await user.click(md1Option);
+
+        await user.click(acceptButton);
+
+        expect(props.onChange).toHaveBeenCalledWith(
+          expect.objectContaining({ systemVGDevices: ["/dev/md0", "/dev/md1"] })
+        );
+      });
     });
   });
 
@@ -222,6 +335,13 @@ describe("LVM field", () => {
 
       const checkbox = screen.getByRole("checkbox", { name: /Use logical volume/ });
       expect(checkbox).not.toBeChecked();
+    });
+
+    it("does not render a button for changing the LVM settings", () => {
+      plainRender(<ProposalSettingsSection {...props} />);
+
+      const button = screen.queryByRole("button", { name: /LVM settings/ });
+      expect(button).toBeNull();
     });
 
     it("changes the selection on click", async () => {

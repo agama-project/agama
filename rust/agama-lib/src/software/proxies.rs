@@ -24,9 +24,6 @@ trait Software1 {
     /// Propose method
     fn propose(&self) -> zbus::Result<()>;
 
-    /// ProvisionSelected method
-    fn provision_selected(&self, provision: &str) -> zbus::Result<bool>;
-
     /// ProvisionsSelected method
     fn provisions_selected(&self, provisions: &[&str]) -> zbus::Result<Vec<bool>>;
 

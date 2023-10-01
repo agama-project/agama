@@ -1,4 +1,5 @@
 use crate::config::ConfigCommands;
+use crate::logs::LogsCommands;
 use crate::profile::ProfileCommands;
 use crate::questions::QuestionsCommands;
 use clap::Subcommand;
@@ -31,4 +32,7 @@ pub enum Commands {
     /// For more details see official agama documentation for Questions.
     #[command(subcommand)]
     Questions(QuestionsCommands),
+    /// Collects logs
+    #[command(subcommand)]
+    Logs(LogsCommands),
 }

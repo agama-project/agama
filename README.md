@@ -162,7 +162,8 @@ See more details [in the documentation](doc/testing_using_container.md).
 
 ## How to Contribute
 
-If you want to contribute to Agama, then please open a pull request or report an issue. You can also have a look to our [road-map](https://github.com/orgs/yast/projects/1/views/1).
+If you want to contribute to Agama, then please open a pull request or report an issue. You can also
+get involved in [our discussions](https://github.com/openSUSE/agama/discussions).
 
 For more details, please read the [contributing](CONTRIBUTING.md) guidelines.
 

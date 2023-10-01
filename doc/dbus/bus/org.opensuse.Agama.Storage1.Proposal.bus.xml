@@ -29,7 +29,7 @@
   <interface name="org.opensuse.Agama.Storage1.Proposal">
     <property type="s" name="BootDevice" access="read"/>
     <property type="b" name="LVM" access="read"/>
-    <property type="aas" name="SystemVGDevices" access="read"/>
+    <property type="as" name="SystemVGDevices" access="read"/>
     <property type="s" name="EncryptionPassword" access="read"/>
     <property type="s" name="EncryptionMethod" access="read"/>
     <property type="s" name="EncryptionPBKDFunction" access="read"/>

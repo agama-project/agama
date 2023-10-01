@@ -1,7 +1,10 @@
-
-<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
- "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
 <node>
+  <interface name="org.freedesktop.DBus.Introspectable">
+    <method name="Introspect">
+      <arg type="s" direction="out"/>
+    </method>
+  </interface>
   <interface name="org.freedesktop.DBus.Peer">
     <method name="Ping">
     </method>
@@ -33,7 +36,7 @@
       <arg name="invalidated_properties" type="as"/>
     </signal>
   </interface>
-  <interface name="org.opensuse.Agama.Network1.Connections">
+  <interface name="org.opensuse.Agama1.Network.Connections">
     <!--
      Returns the D-Bus paths of the network connections.
      -->
@@ -43,8 +46,8 @@
     <!--
      Adds a new network connection.
 
-     * `name`: connection name.
-     * `ty`: connection type (see [crate::model::DeviceType]).
+     * `id`: connection name.
+     * `ty`: connection type (see [agama_lib::network::types::DeviceType]).
      -->
     <method name="AddConnection">
       <arg name="id" type="s" direction="in"/>
@@ -74,11 +77,12 @@
      -->
     <method name="Apply">
     </method>
-  </interface>
-  <interface name="org.freedesktop.DBus.Introspectable">
-    <method name="Introspect">
-      <arg type="s" direction="out"/>
-    </method>
+    <!--
+     Notifies than a new interface has been added.
+     -->
+    <signal name="ConnectionAdded">
+      <arg name="id" type="s"/>
+      <arg name="path" type="o"/>
+    </signal>
   </interface>
 </node>
-

@@ -3,9 +3,11 @@
 use super::types::DeviceType;
 use agama_settings::error::ConversionError;
 use agama_settings::{SettingObject, SettingValue, Settings};
+use cidr::IpInet;
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::default::Default;
+use std::net::IpAddr;
 
 /// Network settings for installation
 #[derive(Debug, Default, Settings, Serialize, Deserialize)]
@@ -50,13 +52,17 @@ pub struct WirelessSettings {
 pub struct NetworkConnection {
     pub id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub method: Option<String>,
+    pub method4: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub gateway: Option<String>,
+    pub gateway4: Option<IpAddr>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub method6: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub gateway6: Option<IpAddr>,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub addresses: Vec<String>,
+    pub addresses: Vec<IpInet>,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub nameservers: Vec<String>,
+    pub nameservers: Vec<IpAddr>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wireless: Option<WirelessSettings>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -88,11 +94,13 @@ impl TryFrom<SettingObject> for NetworkConnection {
         };
 
         let default_method = SettingValue("disabled".to_string());
-        let method = value.get("method").unwrap_or(&default_method);
+        let method4 = value.get("method4").unwrap_or(&default_method);
+        let method6 = value.get("method6").unwrap_or(&default_method);
 
         let conn = NetworkConnection {
             id: id.clone().try_into()?,
-            method: method.clone().try_into()?,
+            method4: method4.clone().try_into()?,
+            method6: method6.clone().try_into()?,
             ..Default::default()
         };
 
@@ -133,11 +141,17 @@ mod tests {
     #[test]
     fn test_setting_object_to_network_connection() {
         let name = SettingValue("Ethernet 1".to_string());
-        let method = SettingValue("auto".to_string());
-        let settings = HashMap::from([("id".to_string(), name), ("method".to_string(), method)]);
+        let method_auto = SettingValue("auto".to_string());
+        let method_disabled = SettingValue("disabled".to_string());
+        let settings = HashMap::from([
+            ("id".to_string(), name),
+            ("method4".to_string(), method_auto),
+            ("method6".to_string(), method_disabled),
+        ]);
         let settings = SettingObject(settings);
         let conn: NetworkConnection = settings.try_into().unwrap();
         assert_eq!(conn.id, "Ethernet 1");
-        assert_eq!(conn.method, Some("auto".to_string()));
+        assert_eq!(conn.method4, Some("auto".to_string()));
+        assert_eq!(conn.method6, Some("disabled".to_string()));
     }
 }

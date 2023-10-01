@@ -6,21 +6,20 @@ use super::ObjectsRegistry;
 use crate::network::{
     action::Action,
     error::NetworkStateError,
-    model::{
-        Connection as NetworkConnection, Device as NetworkDevice, IpAddress, WirelessConnection,
-    },
+    model::{Connection as NetworkConnection, Device as NetworkDevice, WirelessConnection},
 };
-use log;
 
 use agama_lib::network::types::SSID;
 use async_std::{channel::Sender, sync::Arc};
 use futures::lock::{MappedMutexGuard, Mutex, MutexGuard};
-use std::net::{AddrParseError, Ipv4Addr};
 use zbus::{
     dbus_interface,
     zvariant::{ObjectPath, OwnedObjectPath},
     SignalContext,
 };
+
+mod ip_config;
+pub use ip_config::Ip;
 
 /// D-Bus interface for the network devices collection
 ///
@@ -165,11 +164,12 @@ impl Connections {
         Ok(())
     }
 
+    /// Notifies than a new interface has been added.
     #[dbus_interface(signal)]
     pub async fn connection_added(
         ctxt: &SignalContext<'_>,
         id: &str,
-        path: &str,
+        path: &ObjectPath<'_>,
     ) -> zbus::Result<()>;
 }
 
@@ -280,7 +280,7 @@ impl Match {
 
 #[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.Match")]
 impl Match {
-    /// List of driver
+    /// List of driver names to match.
     #[dbus_interface(property)]
     pub async fn driver(&self) -> Vec<String> {
         let connection = self.get_connection().await;
@@ -295,7 +295,7 @@ impl Match {
         self.update_connection(connection).await
     }
 
-    /// List of paths
+    /// List of paths to match agains the ID_PATH udev property of devices.
     #[dbus_interface(property)]
     pub async fn path(&self) -> Vec<String> {
         let connection = self.get_connection().await;
@@ -309,7 +309,7 @@ impl Match {
         config.path = path;
         self.update_connection(connection).await
     }
-    /// List of driver
+    /// List of interface names to match.
     #[dbus_interface(property)]
     pub async fn interface(&self) -> Vec<String> {
         let connection = self.get_connection().await;
@@ -324,7 +324,7 @@ impl Match {
         self.update_connection(connection).await
     }
 
-    /// List of kernel options
+    /// List of kernel options to match.
     #[dbus_interface(property)]
     pub async fn kernel(&self) -> Vec<String> {
         let connection = self.get_connection().await;
@@ -340,147 +340,6 @@ impl Match {
     }
 }
 
-/// D-Bus interface for IPv4 settings
-pub struct Ipv4 {
-    actions: Arc<Mutex<Sender<Action>>>,
-    connection: Arc<Mutex<NetworkConnection>>,
-}
-
-impl Ipv4 {
-    /// Creates an IPv4 interface object.
-    ///
-    /// * `actions`: sending-half of a channel to send actions.
-    /// * `connection`: connection to expose over D-Bus.
-    pub fn new(actions: Sender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
-        Self {
-            actions: Arc::new(Mutex::new(actions)),
-            connection,
-        }
-    }
-
-    /// Returns the underlying connection.
-    async fn get_connection(&self) -> MutexGuard<NetworkConnection> {
-        self.connection.lock().await
-    }
-
-    /// Updates the connection data in the NetworkSystem.
-    ///
-    /// * `connection`: Updated connection.
-    async fn update_connection<'a>(
-        &self,
-        connection: MutexGuard<'a, NetworkConnection>,
-    ) -> zbus::fdo::Result<()> {
-        let actions = self.actions.lock().await;
-        actions
-            .send(Action::UpdateConnection(connection.clone()))
-            .await
-            .unwrap();
-        Ok(())
-    }
-}
-
-#[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.IPv4")]
-impl Ipv4 {
-    /// List of IP addresses.
-    ///
-    /// When the method is 'auto', these addresses are used as additional addresses.
-    #[dbus_interface(property)]
-    pub async fn addresses(&self) -> Vec<String> {
-        let connection = self.get_connection().await;
-        connection
-            .ipv4()
-            .addresses
-            .iter()
-            .map(|ip| ip.to_string())
-            .collect()
-    }
-
-    #[dbus_interface(property)]
-    pub async fn set_addresses(&mut self, addresses: Vec<String>) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_connection().await;
-        let parsed: Vec<IpAddress> = addresses
-            .into_iter()
-            .filter_map(|ip| match ip.parse::<IpAddress>() {
-                Ok(address) => Some(address),
-                Err(error) => {
-                    log::error!("Ignoring the invalid IPv4 address: {} ({})", ip, error);
-                    None
-                }
-            })
-            .collect();
-        connection.ipv4_mut().addresses = parsed;
-        self.update_connection(connection).await
-    }
-
-    /// IP configuration method.
-    ///
-    /// Possible values: "disabled", "auto", "manual" or "link-local".
-    ///
-    /// See [crate::network::model::IpMethod].
-    #[dbus_interface(property)]
-    pub async fn method(&self) -> String {
-        let connection = self.get_connection().await;
-        connection.ipv4().method.to_string()
-    }
-
-    #[dbus_interface(property)]
-    pub async fn set_method(&mut self, method: &str) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_connection().await;
-        connection.ipv4_mut().method = method.parse()?;
-        self.update_connection(connection).await
-    }
-
-    /// Name server addresses.
-    #[dbus_interface(property)]
-    pub async fn nameservers(&self) -> Vec<String> {
-        let connection = self.get_connection().await;
-        connection
-            .ipv4()
-            .nameservers
-            .iter()
-            .map(|a| a.to_string())
-            .collect()
-    }
-
-    #[dbus_interface(property)]
-    pub async fn set_nameservers(&mut self, addresses: Vec<String>) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_connection().await;
-        let ipv4 = connection.ipv4_mut();
-        addresses
-            .iter()
-            .map(|addr| addr.parse::<Ipv4Addr>())
-            .collect::<Result<Vec<Ipv4Addr>, AddrParseError>>()
-            .map(|parsed| ipv4.nameservers = parsed)
-            .map_err(NetworkStateError::from)?;
-        self.update_connection(connection).await
-    }
-
-    /// Network gateway.
-    ///
-    /// An empty string removes the current value. It is not possible to set a gateway if the
-    /// Addresses property is empty.
-    #[dbus_interface(property)]
-    pub async fn gateway(&self) -> String {
-        let connection = self.get_connection().await;
-        match connection.ipv4().gateway {
-            Some(addr) => addr.to_string(),
-            None => "".to_string(),
-        }
-    }
-
-    #[dbus_interface(property)]
-    pub async fn set_gateway(&mut self, gateway: String) -> zbus::fdo::Result<()> {
-        let mut connection = self.get_connection().await;
-        let ipv4 = connection.ipv4_mut();
-        if gateway.is_empty() {
-            ipv4.gateway = None;
-        } else {
-            let parsed: Ipv4Addr = gateway.parse().map_err(NetworkStateError::from)?;
-            ipv4.gateway = Some(parsed);
-        }
-        self.update_connection(connection).await
-    }
-}
 /// D-Bus interface for wireless settings
 pub struct Wireless {
     actions: Arc<Mutex<Sender<Action>>>,

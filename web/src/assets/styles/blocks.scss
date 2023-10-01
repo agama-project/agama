@@ -264,9 +264,8 @@ span.notification-mark[data-variant="sidebar"] {
   }
 }
 
-.device-selector {
+.device-list {
   [role="option"] {
-    cursor: pointer;
     padding: var(--spacer-normal);
     border: 2px solid var(--color-gray-dark);
     background: var(--color-gray-light);

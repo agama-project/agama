@@ -190,3 +190,8 @@ table td > .pf-v5-c-empty-state {
 .password-toggler span.pf-c-button__icon {
   display: flex;
 }
+
+.pf-c-toggle-group__button.pf-m-selected {
+  --pf-c-toggle-group__button--m-selected--BackgroundColor: var(--color-primary);
+  --pf-c-toggle-group__button--Color: var(--color-gray-light);
+}

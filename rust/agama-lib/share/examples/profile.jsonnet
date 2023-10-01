@@ -52,8 +52,8 @@ local findBiggestDisk(disks) =
       },
       {
         id: 'Etherned device 1',
-        method: 'manual',
-        gateway: '192.168.122.1',
+        method4: 'manual',
+        gateway4: '192.168.122.1',
         addresses: [
           '192.168.122.100/24,'
         ],

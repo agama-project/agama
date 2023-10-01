@@ -55,34 +55,10 @@ See the new-style [reference][lang-ref] ([source][lang-src]).
 
 Iface: o.o.Agama.Software1
 
-#### methods:
+See the new-style [reference][lang-ref] ([source][lang-src]).
 
--   SelectProduct(string ProductId) -> void
-    Select product for installation.
-    TODO: do we need version or arch or any other parameter? should we add generic dict(sv) to it?
-    Example:
-
-      InstallProduct("SLES") -> () # only name from available BaseProducts is supported
-
-#### Properties (all read only):
-
--  AvailableBaseProducts -> array(struct(string ProductId, string ProductLabel, dict(string, variant) details))
-    List of all available base product to install on target system.
-    Note: List is sorted according to defined display order
-    Example:
-
-      AvailableBaseProducts -> [["SLES", "SUSE Linux Enterprise Server", {}]] # it is product name, human readable name and dict for future extensions to provide more data
-
--  SelectedBaseProduct -> string ProductId
-    Base product selected for installation. It is always defined.
-    Example:
-
-      SelectedBaseProduct -> "SLES" # only name from available BaseProducts is supported
-
-#### Signals:
-
--  PropertiesChanged ( only standard one from org.freedesktop.DBus.Properties interface )
-
+[lang-ref]: https://opensuse.github.io/agama/dbus/ref-org.opensuse.Agama.Software1.html
+[lang-src]: dbus/org.opensuse.Agama.Software1.doc.xml
 
 ## `org.opensuse.Agama.Storage1` Service
 

@@ -1,4 +1,26 @@
 -------------------------------------------------------------------
+Tue Sep 26 15:57:14 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 4
+
+-------------------------------------------------------------------
+Tue Sep 26 12:05:52 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Wait until the manager is ready before probing
+  (gh#openSUSE/agama#771).
+
+-------------------------------------------------------------------
+Mon Sep 25 11:32:53 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for IPv6 network settings (gh#openSUSE/agama#761).
+
+-------------------------------------------------------------------
+Mon Sep 25 10:46:53 UTC 2023 - Michal Filka <mfilka@suse.com>
+
+- CLI: added (sub)commands for handling logs. "store" subcommand is
+  similar to what old save_y2logs did. (gh#openSUSE/agama#757)
+
+-------------------------------------------------------------------
 Tue Sep 19 11:16:16 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Adapt to new storage D-Bus API and explicitly call to probe after

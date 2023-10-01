@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node>
+  <interface name="org.opensuse.Agama1.Network.Connection.Match">
+    <!--
+     List of driver names to match.
+     -->
+    <property name="Driver" type="as" access="readwrite"/>
+    <!--
+     List of interface names to match.
+     -->
+    <property name="Interface" type="as" access="readwrite"/>
+    <!--
+     List of kernel options to match.
+     -->
+    <property name="Kernel" type="as" access="readwrite"/>
+    <!--
+     List of paths to match against the ID_PATH udev property of devices.
+     -->
+    <property name="Path" type="as" access="readwrite"/>
+  </interface>
+</node>

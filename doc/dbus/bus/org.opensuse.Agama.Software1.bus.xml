@@ -31,9 +31,9 @@
     <method name="SelectProduct">
       <arg name="ProductID" direction="in" type="s"/>
     </method>
-    <method name="ProvisionSelected">
-      <arg name="Provision" direction="in" type="s"/>
-      <arg name="Result" direction="out" type="b"/>
+    <method name="ListPatterns">
+      <arg name="Filtered" direction="in" type="b"/>
+      <arg name="Result" direction="out" type="a{s(ssssi)}"/>
     </method>
     <method name="ProvisionsSelected">
       <arg name="Provisions" direction="in" type="as"/>

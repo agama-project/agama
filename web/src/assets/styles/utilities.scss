@@ -156,3 +156,7 @@
   inline-size: 95dvw;
   max-inline-size: calc(var(--ui-max-inline-size) + var(--spacer-large))
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}

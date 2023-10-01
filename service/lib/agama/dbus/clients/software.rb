@@ -102,15 +102,6 @@ module Agama
           dbus_object.Finish
         end
 
-        # Determine whether the given tag are provided by the selected packages
-        #
-        # @param tag [String] Tag to search for (package names, requires/provides, or file
-        #   names)
-        # @return [Boolean] true if it is provided; false otherwise
-        def provision_selected?(tag)
-          dbus_object.ProvisionSelected(tag)
-        end
-
         # Determine whether the given tags are provided by the selected packages
         #
         # @param tags [Array<String>] Tags to search for (package names, requires/provides, or file

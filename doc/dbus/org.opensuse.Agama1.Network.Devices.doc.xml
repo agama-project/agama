@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node>
+  <interface name="org.opensuse.Agama1.Network.Devices">
+    <!--
+     Returns the D-Bus paths of the network devices.
+     -->
+    <method name="GetDevices">
+      <arg type="ao" direction="out"/>
+    </method>
+  </interface>
+</node>

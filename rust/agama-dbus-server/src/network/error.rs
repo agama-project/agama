@@ -1,5 +1,4 @@
 //! Error types.
-use std::net::AddrParseError;
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -10,8 +9,8 @@ pub enum NetworkStateError {
     UnknownConnection(String),
     #[error("Invalid connection UUID: '{0}'")]
     InvalidUuid(String),
-    #[error("Invalid IP address")]
-    InvalidIpv4Addr(#[from] AddrParseError),
+    #[error("Invalid IP address: '{0}'")]
+    InvalidIpAddr(String),
     #[error("Invalid IP method: '{0}'")]
     InvalidIpMethod(u8),
     #[error("Invalid wireless mode: '{0}'")]
