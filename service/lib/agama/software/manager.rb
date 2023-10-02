@@ -136,6 +136,10 @@ module Agama
         errors = repositories.disabled.map do |repo|
           ValidationError.new("Could not read the repository #{repo.name}")
         end
+        # no errors and also no repos
+        if errors.empty? && repositories.enabled.empty?
+          errors << ValidationError.new("System has to be registered to get access to repositories.")
+        end
         return errors if repositories.enabled.empty?
 
         errors + proposal.errors
