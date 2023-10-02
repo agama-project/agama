@@ -1,8 +1,13 @@
 -------------------------------------------------------------------
+Mon Oct  2 08:02:23 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: migrate to PatternFly 5 (gh#openSUSE/agama#759)
+
+-------------------------------------------------------------------
 Fri Sep 29 08:04:01 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - Do not drop source maps from production build
-  (gh/openSUSE/agama#779)
+  (gh#openSUSE/agama#779)
 
 -------------------------------------------------------------------
 Wed Sep 27 12:15:13 UTC 2023 - José Iván López González <jlopez@suse.com>
