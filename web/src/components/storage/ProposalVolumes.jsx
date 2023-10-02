@@ -114,7 +114,7 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
         onSelect={closeActions}
         popperProps={{ position: "right" }}
         toggle={(toggleRef) => (
-          <MenuToggle ref={toggleRef} onClick={toggleActions}>
+          <MenuToggle ref={toggleRef} onClick={toggleActions} variant="primary">
             {/* TRANSLATORS: dropdown label */}
             {_("Actions")}
           </MenuToggle>
