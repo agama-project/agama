@@ -124,7 +124,7 @@ export default function WifiConnectionForm({ network, onCancel, onSubmitCallback
             name="password"
             aria-label={_("Password")}
             value={password}
-            onChange={setPassword}
+            onChange={(_, value) => setPassword(value)}
           />
         </FormGroup> }
       <ActionGroup>
