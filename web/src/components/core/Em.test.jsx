@@ -25,7 +25,7 @@ import { plainRender } from "~/test-utils";
 import { Em } from "~/components/core";
 
 describe("Em", () => {
-  it("wraps given children inside a compact PF4/Label", () => {
+  it("wraps given children inside a compact PF/Label", () => {
     plainRender(<Em>Whatever</Em>);
     const children = screen.getByText("Whatever");
     const parent = children.closest("span.pf-v5-c-label");

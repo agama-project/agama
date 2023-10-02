@@ -20,7 +20,7 @@
 }
 
 // Align the expandable-actions with the actions list
-// See https://www.patternfly.org/v4/components/list#css-variables
+// See https://www.patternfly.org/components/list#css-variables
 .expandable-actions {
   // --pf-v5-c-list--PaddingLeft - --pf-v5-c-list--nested--MarginLeft - --pf-v5-c-list--m-icon-lg__item-icon-MinWidth
   margin-inline-start: calc(var(--pf-v5-global--spacer--lg) - var(--pf-v5-global--spacer--sm) - var(--pf-v5-global--icon--FontSize--sm));

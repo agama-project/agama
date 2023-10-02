@@ -70,7 +70,7 @@ describe("Popup", () => {
       isOpen = true;
     });
 
-    it("renders the popup content inside a PF4/Modal", async () => {
+    it("renders the popup content inside a PF/Modal", async () => {
       installerRender(<TestingPopup />);
 
       const dialog = await screen.findByRole("dialog");
@@ -79,11 +79,11 @@ describe("Popup", () => {
       within(dialog).getByText("The Popup Content");
     });
 
-    it("renders the popup actions inside a PF4/Modal footer", async () => {
+    it("renders the popup actions inside a PF/Modal footer", async () => {
       installerRender(<TestingPopup />);
 
       const dialog = await screen.findByRole("dialog");
-      // NOTE: Sadly, PF4 Modal/ModalFooter does not have a footer or navigation role.
+      // NOTE: Sadly, PF Modal/ModalFooter does not have a footer or navigation role.
       // So, using https://developer.mozilla.org/es/docs/Web/API/Document/querySelector
       // for getting the footer. See https://github.com/testing-library/react-testing-library/issues/417 too.
       const footer = dialog.querySelector("footer");
@@ -99,7 +99,7 @@ describe("Popup", () => {
           <TestingPopup />
         </>,
         // Force React Testing Library to render the component directly in the
-        // body for emulating the default behavior of the PF4/Modal when no
+        // body for emulating the default behavior of the PF/Modal when no
         // appendTo prop is given.
         // https://testing-library.com/docs/react-testing-library/api/#container
         { container: document.body }

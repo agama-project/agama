@@ -45,11 +45,11 @@ const Toggler = ({ toggleRef, onClick }) => {
  * A group of actions belonging to a {PageOptions} component
  * @component
  *
- * Built on top of {@link https://www.patternfly.org/v4/components/dropdown/#dropdowngroup PF DropdownGroup}
+ * Built on top of {@link https://www.patternfly.org/components/menus/dropdown#dropdowngroup PF/DropdownGroup}
  *
  * @see {PageOptions } examples.
  *
- * @param {object} props - PF DropdownItem props, See {@link https://www.patternfly.org/v4/components/dropdowngroup}
+ * @param {object} props - PF/DropdownGroup props, See {@link https://www.patternfly.org/components/menus/dropdown#dropdowngroup}
  */
 const Group = ({ children, ...props }) => {
   return (
@@ -63,11 +63,11 @@ const Group = ({ children, ...props }) => {
  * An option belonging to a {PageOptions} component
  * @component
  *
- * Built on top of {@link https://www.patternfly.org/v4/components/dropdown/#dropdownitem PF DropdownItem}
+ * Built on top of {@link https://www.patternfly.org/components/menus/dropdown#dropdownitem PF/DropdownItem}
  *
  * @see {PageOptions } examples.
  *
- * @param {object} props - PF DropdownItem props, See {@link https://www.patternfly.org/v4/components/dropdownitem}
+ * @param {object} props - PF/DropdownItem props, See {@link https://www.patternfly.org/components/menus/dropdown#dropdownitem}
  */
 const Option = ({ children, ...props }) => {
   return (
@@ -81,11 +81,11 @@ const Option = ({ children, ...props }) => {
  * A collection of {Option}s belonging to a {PageOptions} component
  * @component
  *
- * Built on top of {@link https://www.patternfly.org/components/menus/dropdown#dropdownlist PatternFly DropdownList}
+ * Built on top of {@link https://www.patternfly.org/components/menus/dropdown#dropdownlist PF/DropdownList}
  *
  * @see {PageOptions} examples.
  *
- * @param {object} props - PF DropdownItem props, See {@link https://www.patternfly.org/v4/components/dropdowngroup}
+ * @param {object} props - PF/DropdownList props, See {@link https://www.patternfly.org/components/menus/dropdown#dropdownlist}
  */
 const Options = ({ children, ...props }) => {
   return (
@@ -99,9 +99,8 @@ const Options = ({ children, ...props }) => {
  * Component for rendering actions related to the current page
  * @component
  *
- * It consist in a {@link https://www.patternfly.org/v4/components/dropdown
- * PatternFly Dropdown} "teleported" to the header, close to the
- * action for opening the Sidebar
+ * It consist in a {@link https://www.patternfly.org/components/menus/dropdown PF/Dropdown}
+ * "teleported" to the header, close to the action for opening the Sidebar
  *
  * @example <caption>Usage example</caption>
  *   <PageOptions>

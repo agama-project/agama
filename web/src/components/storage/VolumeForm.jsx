@@ -45,11 +45,11 @@ import { DEFAULT_SIZE_UNIT, SIZE_METHODS, SIZE_UNITS, parseToBytes, splitSize } 
  * Form control for selecting a size unit
  * @component
  *
- * Based on {@link PF/FormSelect https://www.patternfly.org/v4/components/form-select}
+ * Based on {@link PF/FormSelect https://www.patternfly.org/components/forms/form-select}
  *
  * @param {object} props
  * @param {Array<String>} props.units - a collection of size units
- * @param {object} props.formSelectProps - @see {@link https://www.patternfly.org/v4/components/form-select#props}
+ * @param {object} props.formSelectProps - @see {@link https://www.patternfly.org/components/forms/form-select#props}
  * @returns {ReactComponent}
  */
 const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
@@ -65,11 +65,11 @@ const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
  * Form control for selecting a mount point
  * @component
  *
- * Based on {@link PF/FormSelect https://www.patternfly.org/v4/components/form-select}
+ * Based on {@link PF/FormSelect https://www.patternfly.org/components/forms/form-select}
  *
  * @param {object} props
  * @param {Array<import(~/clients/storage).Volume>} props.volumes - a collection of storage volumes
- * @param {object} props.formSelectProps - @see {@link https://www.patternfly.org/v4/components/form-select#props}
+ * @param {object} props.formSelectProps - @see {@link https://www.patternfly.org/components/forms/form-select#props}
  * @returns {ReactComponent}
  */
 const MountPointFormSelect = ({ volumes, ...formSelectProps }) => {
