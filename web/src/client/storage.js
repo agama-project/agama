@@ -238,6 +238,7 @@ class ProposalManager {
    * @property {number} [maxSize]
    * @property {boolean} autoSize
    * @property {boolean} snapshots
+   * @property {boolean} readOnly
    * @property {VolumeOutline} outline
    *
    * @typedef {object} VolumeOutline
@@ -348,7 +349,8 @@ class ProposalManager {
         MinSize: { t: "t", v: volume.minSize },
         MaxSize: { t: "t", v: volume.maxSize },
         AutoSize: { t: "b", v: volume.autoSize },
-        Snapshots: { t: "b", v: volume.snapshots }
+        Snapshots: { t: "b", v: volume.snapshots },
+        ReadOnly: { t: "b", v: volume.readOnly },
       });
     };
 
@@ -377,6 +379,7 @@ class ProposalManager {
    * @property {CockpitNumber} [MaxSize]
    * @property {CockpitBoolean} AutoSize
    * @property {CockpitBoolean} Snapshots
+   * @property {CockpitBoolean} ReadOnly
    * @property {CockpitVolumeOutline} Outline
    *
    * @typedef {Object} DBusVolumeOutline
@@ -430,6 +433,7 @@ class ProposalManager {
       maxSize: dbusVolume.MaxSize?.v,
       autoSize: dbusVolume.AutoSize.v,
       snapshots: dbusVolume.Snapshots.v,
+      readOnly: dbusVolume.ReadOnly.v,
       outline: buildOutline(dbusVolume.Outline.v)
     };
   }
