@@ -76,6 +76,7 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
             "MinSize"      => 0,
             "AutoSize"     => false,
             "Snapshots"    => false,
+            "ReadOnly"     => false,
             "Outline"      => {
               "Required"              => false,
               "FsTypes"               => [],

@@ -44,6 +44,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
       volume.outline = volume_outline
       volume.fs_type = Y2Storage::Filesystems::Type::EXT4
       volume.btrfs.snapshots = true
+      volume.btrfs.read_only = true
       volume.mount_options = ["rw", "default"]
       volume.device = "/dev/sda"
       volume.separate_vg_name = "/dev/system"
@@ -64,6 +65,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
         "MinSize"      => 0,
         "AutoSize"     => false,
         "Snapshots"    => false,
+        "ReadOnly"     => false,
         "Outline"      => {
           "Required"              => false,
           "FsTypes"               => [],
@@ -84,6 +86,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
         "MaxSize"      => 2048,
         "AutoSize"     => true,
         "Snapshots"    => true,
+        "ReadOnly"     => true,
         "Outline"      => {
           "Required"              => true,
           "FsTypes"               => ["Ext3", "Ext4"],
