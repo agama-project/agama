@@ -35,7 +35,7 @@
     "@cspell/dict-html": "^4.0.3",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
     "@svgr/plugin-jsx": "^8.1.0",
-    "@svgr/webpack": "^7.0.0",
+    "@svgr/webpack": "^8.1.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.1.1",
