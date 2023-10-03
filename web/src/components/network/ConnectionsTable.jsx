@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sprintf } from "sprintf-js";
 
 import { RowActions } from "~/components/core";
@@ -50,7 +50,7 @@ export default function ConnectionsTable ({
   if (connections.length === 0) return null;
 
   return (
-    <TableComposable variant="compact">
+    <Table variant="compact">
       <Thead>
         <Tr>
           {/* TRANSLATORS: table header */}
@@ -75,9 +75,9 @@ export default function ConnectionsTable ({
               "aria-label":
                 // TRANSLATORS: %s is replaced by a network connection name
                 sprintf(_("Forget connection %s"), connection.name),
-              className: "danger-action",
               icon: <Icon name="delete" size="24" />,
-              onClick: () => onForget(connection)
+              onClick: () => onForget(connection),
+              isDanger: true
             },
           ].filter(Boolean);
 
@@ -91,13 +91,12 @@ export default function ConnectionsTable ({
                   // TRANSLATORS: %s is replaced by a network connection name
                   aria-label={sprintf(_("Actions for connection %s"), connection.name)}
                   actions={actions}
-                  connection={connection}
                 />
               </Td>
             </Tr>
           );
         })}
       </Tbody>
-    </TableComposable>
+    </Table>
   );
 }

@@ -19,32 +19,42 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { DropdownItem } from "@patternfly/react-core";
+import React, { useState } from "react";
+import { Dropdown, DropdownList, DropdownItem, MenuToggle } from '@patternfly/react-core';
 import { Icon } from "~/components/layout";
-import { KebabMenu } from "~/components/core";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 
+const KebabToggle = ({ toggleRef, onClick }) => (
+  <MenuToggle ref={toggleRef} variant="plain" onClick={onClick} className="kebab-toggler">
+    <Icon name="more_vert" size="24" />
+  </MenuToggle>
+);
+
 export default function WifiNetworkMenu({ settings, position = "right" }) {
   const client = useInstallerClient();
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = () => setIsOpen(!isOpen);
 
   return (
-    <KebabMenu
-      id={`network-${settings.ssid}-menu`}
+    <Dropdown
+      isOpen={isOpen}
+      onSelect={toggle}
+      toggle={(toggleRef) => <KebabToggle toggleRef={toggleRef} onClick={toggle} />}
+      popperProps={{ position }}
       position={position}
-      className="wifi-network-menu"
-      items={[
+    >
+      <DropdownList>
         <DropdownItem
+          isDanger
           key="forget-network"
           onClick={() => client.network.deleteConnection(settings)}
           icon={<Icon name="delete" size="24" />}
-          className="danger-action"
         >
           {/* TRANSLATORS: menu label, remove the selected WiFi network settings */}
           {_("Forget network")}
         </DropdownItem>
-      ]}
-    />
+      </DropdownList>
+    </Dropdown>
   );
 }

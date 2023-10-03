@@ -26,7 +26,7 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 
-import { Popup } from "~/components/core";
+import { FormValidationError, Popup } from "~/components/core";
 import { AuthFields } from "~/components/storage/iscsi";
 import { useLocalStorage } from "~/utils";
 import { isValidIp } from "~/client/network/utils";
@@ -63,8 +63,8 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
   });
 
   const updateData = (key, value) => setData({ ...data, [key]: value });
-  const onAddressChange = v => updateData("address", v);
-  const onPortChange = v => updateData("port", v);
+  const onAddressChange = (_, v) => updateData("address", v);
+  const onPortChange = (_, v) => updateData("port", v);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -114,8 +114,6 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
           fieldId="address"
           label={_("IP address")}
           isRequired
-          helperTextInvalid={_("Incorrect IP address")}
-          validated={showAddressError() ? "error" : "default"}
         >
           <TextInput
             id="address"
@@ -128,13 +126,12 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
             onChange={onAddressChange}
             validated={showAddressError() ? "error" : "default"}
           />
+          <FormValidationError message={showAddressError() ? _("Incorrect IP address") : "" } />
         </FormGroup>
         <FormGroup
           fieldId="port"
           label={_("Port")}
           isRequired
-          helperTextInvalid={_("Incorrect port")}
-          validated={showPortError() ? "error" : "default"}
         >
           <TextInput
             id="port"
@@ -147,6 +144,7 @@ export default function DiscoverForm({ onSubmit: onSubmitProp, onCancel }) {
             onChange={onPortChange}
             validated={showPortError() ? "error" : "default"}
           />
+          <FormValidationError message={showPortError() ? _("Incorrect port") : "" } />
         </FormGroup>
         <AuthFields
           data={data}

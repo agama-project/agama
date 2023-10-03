@@ -31,7 +31,7 @@ import { NotificationProvider } from "~/context/notification";
 import { createClient } from "~/client";
 
 /**
- * Import PF4 base styles before any JSX since components coming from PF4 may
+ * Import PF base styles before any JSX since components coming from PF may
  * import styles dependent on variables and rules previously defined there.
  */
 import "@patternfly/patternfly/patternfly-base.scss";
@@ -51,7 +51,7 @@ import { IssuesPage } from "~/components/core";
 
 /**
  * As JSX components might import CSS stylesheets, our styles must be imported
- * after them to preserve our overrides (e.g., PF4 overrides).
+ * after them to preserve our overrides (e.g., PF overrides).
  *
  * Because mini-css-extract-plugin maintains the order of the imported CSS,
  * adding the overrides here ensures the overrides will be placed appropriately

@@ -34,7 +34,7 @@ import {
   Skeleton,
 } from "@patternfly/react-core";
 
-import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
 import { RowActions, PasswordAndConfirmationInput, Popup } from '~/components/core';
 
@@ -51,7 +51,7 @@ const UserNotDefined = ({ actionCb }) => {
 
 const UserData = ({ user, actions }) => {
   return (
-    <TableComposable variant="compact">
+    <Table variant="compact">
       <Thead>
         <Tr>
           <Th width={25}>{_("Full name")}</Th>
@@ -68,7 +68,7 @@ const UserData = ({ user, actions }) => {
           </Td>
         </Tr>
       </Tbody>
-    </TableComposable>
+    </Table>
   );
 };
 
@@ -157,7 +157,7 @@ export default function FirstUser() {
     }
   };
 
-  const handleInputChange = (value, { target }) => {
+  const handleInputChange = ({ target }, value) => {
     const { name } = target;
     setFormValues({ ...formValues, [name]: value });
   };
@@ -173,7 +173,7 @@ export default function FirstUser() {
     {
       title: _("Discard"),
       onClick: remove,
-      className: "danger-action"
+      isDanger: true
     }
   ];
 
@@ -232,9 +232,7 @@ export default function FirstUser() {
             { isSettingPassword &&
               <PasswordAndConfirmationInput
                 value={formValues.password}
-                onChange={(value, event) => {
-                  handleInputChange(value, event);
-                }}
+                onChange={handleInputChange}
                 onValidation={isValid => setIsValidPassword(isValid)}
               /> }
 

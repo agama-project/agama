@@ -76,7 +76,7 @@ export default function AddressesDataList({
 
       return (
         <DataListAction>
-          <Button isSmall variant="link" className="remove-link" onClick={() => deleteAddress(id)}>
+          <Button size="sm" variant="link" className="remove-link" onClick={() => deleteAddress(id)}>
             {/* TRANSLATORS: button label */}
             {_("Remove")}
           </Button>
@@ -122,7 +122,7 @@ export default function AddressesDataList({
     <>
       <div className="split justify-between">
         <FormLabel isRequired={!allowEmpty}>{_("Addresses")}</FormLabel>
-        <Button isSmall variant="secondary" onClick={addAddress}>
+        <Button size="sm" variant="secondary" onClick={addAddress}>
           {newAddressButtonText}
         </Button>
       </div>

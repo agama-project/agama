@@ -82,7 +82,7 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
           ]}
           />
           <DataListAction>
-            <Button isSmall variant="link" className="remove-link" onClick={() => deleteServer(id)}>
+            <Button size="sm" variant="link" className="remove-link" onClick={() => deleteServer(id)}>
               {/* TRANSLATORS: button label */}
               {_("Remove")}
             </Button>
@@ -99,7 +99,7 @@ export default function DnsDataList({ servers: originalServers, updateDnsServers
     <>
       <div className="split justify-between">
         <FormLabel>{_("DNS")}</FormLabel>
-        <Button isSmall variant="secondary" onClick={addServer}>
+        <Button size="sm" variant="secondary" onClick={addServer}>
           {newDnsButtonText}
         </Button>
       </div>

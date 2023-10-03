@@ -21,7 +21,7 @@
 
 import React, { useState } from "react";
 import { FormGroup } from "@patternfly/react-core";
-import { PasswordInput } from "~/components/core";
+import { FormValidationError, PasswordInput } from "~/components/core";
 import { _ } from "~/i18n";
 
 const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisabled }) => {
@@ -41,12 +41,12 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
     }
   };
 
-  const onChangeValue = (value, event) => {
+  const onValueChange = (event, value) => {
     validate(value, confirmation);
-    if (typeof onChange === "function") onChange(value, event);
+    if (typeof onChange === "function") onChange(event, value);
   };
 
-  const onChangeConfirmation = (confirmationValue) => {
+  const onConfirmationChange = (_, confirmationValue) => {
     setConfirmation(confirmationValue);
     validate(value, confirmationValue);
   };
@@ -60,15 +60,13 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
           aria-label={_("User password")}
           value={value}
           isDisabled={isDisabled}
-          onChange={onChangeValue}
+          onChange={onValueChange}
           onBlur={() => validate(value, confirmation)}
         />
       </FormGroup>
       <FormGroup
         fieldId="passwordConfirmation"
         label={_("Password confirmation")}
-        helperTextInvalid={error}
-        validated={error === "" ? "default" : "error"}
       >
         <PasswordInput
           id="passwordConfirmation"
@@ -76,10 +74,11 @@ const PasswordAndConfirmationInput = ({ value, onChange, onValidation, isDisable
           aria-label={_("User password confirmation")}
           value={confirmation}
           isDisabled={isDisabled}
-          onChange={onChangeConfirmation}
+          onChange={onConfirmationChange}
           onBlur={() => validate(value, confirmation)}
           validated={error === "" ? "default" : "error"}
         />
+        <FormValidationError message={error} />
       </FormGroup>
     </>
   );

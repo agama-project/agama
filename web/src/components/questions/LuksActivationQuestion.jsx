@@ -71,7 +71,7 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
             autoFocus
             id="luks-password"
             value={password}
-            onChange={setPassword}
+            onChange={(_, value) => setPassword(value)}
           />
         </FormGroup>
       </Form>

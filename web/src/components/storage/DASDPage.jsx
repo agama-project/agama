@@ -184,7 +184,7 @@ export default function DASDPage() {
     // TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
     <Page title={_("Storage DASD")} icon="hard_drive">
       <MainActions>
-        <Button isLarge variant="secondary" onClick={() => navigate("/storage")}>{_("Back")}</Button>
+        <Button size="lg" variant="secondary" onClick={() => navigate("/storage")}>{_("Back")}</Button>
       </MainActions>
 
       <DASDTable state={state} dispatch={dispatch} />

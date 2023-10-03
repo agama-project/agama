@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { Button, Title, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
+import { Button, EmptyState, EmptyStateIcon, EmptyStateBody, EmptyStateHeader } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
 import {
@@ -31,9 +31,11 @@ import {
   Title as PageTitle,
 } from "~/components/layout";
 
+const ErrorIcon = () => <Icon name="error" className="icon-big" />;
+
 // TODO: an example
 const ReloadAction = () => (
-  <Button isLarge variant="primary" onClick={() => location.reload()}>
+  <Button size="lg" variant="primary" onClick={() => location.reload()}>
     {/* TRANSLATORS: button label */}
     {_("Reload")}
   </Button>
@@ -47,11 +49,12 @@ function DBusError() {
       <PageIcon><Icon name="problem" /></PageIcon>
       <MainActions><ReloadAction /></MainActions>
 
-      <EmptyState>
-        <EmptyStateIcon icon={({ ...props }) => <Icon name="error" { ...props } />} />
-        <Title headingLevel="h2" size="4xl">
-          {_("Cannot connect to D-Bus")}
-        </Title>
+      <EmptyState variant="xl">
+        <EmptyStateHeader
+          titleText={_("Cannot connect to D-Bus")}
+          headingLevel="h2"
+          icon={<EmptyStateIcon icon={ErrorIcon} />}
+        />
         <EmptyStateBody>
           {_("Could not connect to the D-Bus service. Please, check whether it is running.")}
         </EmptyStateBody>

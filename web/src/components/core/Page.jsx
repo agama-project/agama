@@ -63,7 +63,7 @@ import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
  * @param {string} [props.navigateTo="/"] - The path where the page will go after when user clicks on accept
  * @param {JSX.Element} [props.action] - an element used as primary action. If present, actionLabel and actionCallback does not make effect
  * @param {string} [props.actionLabel="Accept"] - The label for the primary page action
- * @param {string} [props.actionVariant="primary"] - The PF4/Button variant for the page action
+ * @param {string} [props.actionVariant="primary"] - The PF/Button variant for the page action
  * @param {function} [props.actionCallback=noop] - A callback to be execute when triggering the primary action
  * @param {JSX.Element} [props.children] - the section content
  */
@@ -90,7 +90,7 @@ export default function Page({
       { icon && <PageIcon><Icon name={icon} /></PageIcon> }
       <MainActions>
         { action ||
-          <Button isLarge variant={actionVariant} onClick={pageAction}>
+          <Button size="lg" variant={actionVariant} onClick={pageAction}>
             {actionLabel}
           </Button> }
       </MainActions>

@@ -22,16 +22,18 @@
 import React, { useState, useEffect } from "react";
 import {
   Button,
-  Title,
   Text,
   EmptyState,
+  EmptyStateBody,
+  EmptyStateHeader,
   EmptyStateIcon,
-  EmptyStateBody
 } from "@patternfly/react-core";
 
 import { Center, Icon, Title as SectionTitle, PageIcon, MainActions } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
+
+const SuccessIcon = () => <Icon name="check_circle" className="icon-big color-success" />;
 
 function InstallationFinished() {
   const client = useInstallerClient();
@@ -57,28 +59,27 @@ function InstallationFinished() {
       <SectionTitle>{_("Installation Finished")}</SectionTitle>
       <PageIcon><Icon name="task_alt" /></PageIcon>
       <MainActions>
-        <Button isLarge variant="primary" onClick={closingAction}>
+        <Button size="lg" variant="primary" onClick={closingAction}>
           {buttonCaption}
         </Button>
       </MainActions>
 
-      <EmptyState>
-        <EmptyStateIcon icon={({ ...props }) => <Icon name="check_circle" { ...props } />} className="color-success" />
-        <Title headingLevel="h2" size="4xl">
-          {_("Congratulations!")}
-        </Title>
-        <EmptyStateBody className="pf-c-content">
-          <div>
-            <Text>{_("The installation on your machine is complete.")}</Text>
-            <Text>
-              {
-                iguana
-                  ? _("At this point you can power off the machine.")
-                  : _("At this point you can reboot the machine to log in to the new system.")
-              }
-            </Text>
-            <Text>{_("Have a lot of fun! Your openSUSE Development Team.")}</Text>
-          </div>
+      <EmptyState variant="xl">
+        <EmptyStateHeader
+          titleText={_("Congratulations!")}
+          headingLevel="h2"
+          icon={<EmptyStateIcon icon={SuccessIcon} />}
+        />
+        <EmptyStateBody>
+          <Text>{_("The installation on your machine is complete.")}</Text>
+          <Text>
+            {
+              iguana
+                ? _("At this point you can power off the machine.")
+                : _("At this point you can reboot the machine to log in to the new system.")
+            }
+          </Text>
+          <Text>{_("Have a lot of fun! Your openSUSE Development Team.")}</Text>
         </EmptyStateBody>
       </EmptyState>
     </Center>

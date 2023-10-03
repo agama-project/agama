@@ -35,14 +35,14 @@ import { noop } from "~/utils";
  * Helper component for having an input text limited to not signed numbers
  * @component
  *
- * Based on {@link PF/TextInput https://www.patternfly.org/v4/components/text-input}
+ * Based on {@link PF/TextInput https://www.patternfly.org/components/forms/text-input}
  *
  * @note It allows empty value too.
  *
  * @param {object} props
  * @param {string|number} props.value - the input value
  * @param {onChangeFn} props.onChange - the callback to be called when the entered value match the input pattern
- * @param {object} props.textInputProps - @see {@link https://www.patternfly.org/v4/components/text-input/#textinput}
+ * @param {object} props.textInputProps - @see {@link https://www.patternfly.org/components/forms/text-input#props}
  *
  * @returns {ReactComponent}
  */
@@ -50,7 +50,7 @@ export default function NumericTextInput({ value = "", onChange = noop, ...textI
   // NOTE: Using \d* instead of \d+ at the beginning to allow empty
   const pattern = /^\d*\.?\d*$/;
 
-  const handleOnChange = (value) => {
+  const handleOnChange = (_, value) => {
     if (pattern.test(value)) {
       onChange(value);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,28 +19,25 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
-import { Dropdown, DropdownToggle } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
+import React from "react";
+import { FormHelperText, HelperText, HelperTextItem } from "@patternfly/react-core";
 
-export default function KebabMenu({ items, position = "right", id = Date.now(), ...props }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggle = () => setIsOpen(!isOpen);
+/**
+ * Helper component for displaying error messages in a PF/FormGroup
+ *
+ * @param {object} props - component props
+ * @param {string} [props.message] - text to be shown as error
+ */
+export default function FormValidationError({ message }) {
+  if (!message) return;
 
   return (
-    <Dropdown
-      onSelect={toggle}
-      toggle={
-        <DropdownToggle id={`${id}-toggler`} className="toggler" toggleIndicator={null} onToggle={toggle}>
-          <Icon name="more_vert" size="24" />
-        </DropdownToggle>
-      }
-      isPlain
-      isOpen={isOpen}
-      position={position}
-      {...props}
-      dropdownItems={items}
-    />
+    <FormHelperText>
+      <HelperText>
+        <HelperTextItem variant="error">
+          { message }
+        </HelperTextItem>
+      </HelperText>
+    </FormHelperText>
   );
 }

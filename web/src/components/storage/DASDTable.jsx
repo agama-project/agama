@@ -22,11 +22,13 @@
 import React, { useState } from "react";
 import {
   Button,
-  Dropdown, DropdownToggle, DropdownItem, DropdownSeparator,
+  Divider,
+  Dropdown, DropdownItem, DropdownList,
+  MenuToggle,
   TextInputGroup, TextInputGroupMain, TextInputGroupUtilities,
   Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
 } from '@patternfly/react-core';
-import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sort } from 'fast-sort';
 
 import { _ } from "~/i18n";
@@ -72,7 +74,7 @@ const Actions = ({ devices, isDisabled }) => {
   const { storage: client } = useInstallerClient();
   const [isOpen, setIsOpen] = useState(false);
 
-  const onToggle = (status) => setIsOpen(status);
+  const onToggle = () => setIsOpen(!isOpen);
   const onSelect = () => setIsOpen(false);
 
   const activate = () => client.dasd.enableDevices(devices);
@@ -97,27 +99,28 @@ const Actions = ({ devices, isDisabled }) => {
     <Dropdown
       isOpen={isOpen}
       onSelect={onSelect}
-      dropdownItems={[
-        // TRANSLATORS: drop down menu action, activate the device
-        <Action key="activate" onClick={activate}>{_("Activate")}</Action>,
-        // TRANSLATORS: drop down menu action, deactivate the device
-        <Action key="deactivate" onClick={deactivate}>{_("Deactivate")}</Action>,
-        <DropdownSeparator key="first-separator" />,
-        // TRANSLATORS: drop down menu action, enable DIAG access method
-        <Action key="set_diag_on" onClick={setDiagOn}>{_("Set DIAG On")}</Action>,
-        // TRANSLATORS: drop down menu action, disable DIAG access method
-        <Action key="set_diag_off" onClick={setDiagOff}>{_("Set DIAG Off")}</Action>,
-        <DropdownSeparator key="second-separator" />,
-        // TRANSLATORS: drop down menu action, format the disk
-        <Action key="format" onClick={format}>{_("Format")}</Action>
-      ]}
-      toggle={
-        <DropdownToggle toggleVariant="primary" isDisabled={isDisabled} onToggle={onToggle}>
+      toggle={(toggleRef) => (
+        <MenuToggle ref={toggleRef} variant="primary" isDisabled={isDisabled} onClick={onToggle}>
           {/* TRANSLATORS: drop down menu label */}
           {_("Perform an action")}
-        </DropdownToggle>
-      }
-    />
+        </MenuToggle>
+      )}
+    >
+      <DropdownList>
+        { /** TRANSLATORS: drop down menu action, activate the device */ }
+        <Action key="activate" onClick={activate}>{_("Activate")}</Action>
+        { /** TRANSLATORS: drop down menu action, deactivate the device */ }
+        <Action key="deactivate" onClick={deactivate}>{_("Deactivate")}</Action>
+        <Divider key="first-separator" />
+        { /** TRANSLATORS: drop down menu action, enable DIAG access method */ }
+        <Action key="set_diag_on" onClick={setDiagOn}>{_("Set DIAG On")}</Action>
+        { /** TRANSLATORS: drop down menu action, disable DIAG access method */ }
+        <Action key="set_diag_off" onClick={setDiagOff}>{_("Set DIAG Off")}</Action>
+        <Divider key="second-separator" />
+        { /** TRANSLATORS: drop down menu action, format the disk */ }
+        <Action key="format" onClick={format}>{_("Format")}</Action>
+      </DropdownList>
+    </Dropdown>
   );
 };
 
@@ -186,7 +189,7 @@ export default function DASDTable({ state, dispatch }) {
     <>
       <Toolbar>
         <ToolbarContent>
-          <ToolbarGroup alignment={{ default: "alignRight" }}>
+          <ToolbarGroup align={{ default: "alignRight" }}>
             <ToolbarItem>
               <TextInputGroup>
                 <TextInputGroupMain
@@ -243,7 +246,7 @@ export default function DASDTable({ state, dispatch }) {
         condition={state.isLoading}
         then={<SectionSkeleton />}
         else={
-          <TableComposable variant="compact">
+          <Table variant="compact">
             <Thead>
               <Tr>
                 <Th select={{ onSelect: (_event, isSelecting) => selectAll(isSelecting), isSelected: filteredDevices.length === state.selectedDevices.length }} />
@@ -253,12 +256,12 @@ export default function DASDTable({ state, dispatch }) {
             <Tbody>
               { sortedDevices.map((device, rowIndex) => (
                 <Tr key={device.id}>
-                  <Td select={{ rowIndex, onSelect: (_event, isSelecting) => selectDevice(device, isSelecting), isSelected: selectedDevicesIds.includes(device.id), disable: false }} />
+                  <Td select={{ rowIndex, onSelect: (_event, isSelecting) => selectDevice(device, isSelecting), isSelected: selectedDevicesIds.includes(device.id), isDisabled: false }} />
                   { columns.map(column => <Td key={column.id} dataLabel={column.label}>{columnData(device, column)}</Td>) }
                 </Tr>
               ))}
             </Tbody>
-          </TableComposable>
+          </Table>
         }
       />
     </>

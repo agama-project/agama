@@ -32,7 +32,7 @@ import { NodeStartupOptions } from "~/components/storage/iscsi";
 export default function EditNodeForm({ node, onSubmit: onSubmitProp, onCancel }) {
   const [data, setData] = useState({ startup: node.startup });
 
-  const onStartupChange = v => setData({ ...data, startup: v });
+  const onStartupChange = (_, v) => setData({ ...data, startup: v });
 
   const onSubmit = async (event) => {
     event.preventDefault();

@@ -147,8 +147,8 @@ export default function TargetsSection() {
     return (
       <>
         <Toolbar className="no-stack-gutter">
-          <ToolbarContent alignment="alignRight">
-            <ToolbarItem alignment={{ default: "alignRight" }}>
+          <ToolbarContent>
+            <ToolbarItem align={{ default: "alignRight" }}>
               {/* TRANSLATORS: button label, starts iSCSI discovery */}
               <Button onClick={openDiscoverForm}>{_("Discover")}</Button>
             </ToolbarItem>

@@ -76,8 +76,8 @@ function Layout({ children }) {
         </h1>
 
         <div className="split">
-          <PageActions.Target as="span" />
-          <HeaderActions.Target as="span" />
+          <PageActions.Target as="div" />
+          <HeaderActions.Target as="div" />
         </div>
 
       </header>

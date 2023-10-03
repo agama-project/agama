@@ -21,12 +21,13 @@
 
 import React, { useState } from "react";
 import {
-  Dropdown, DropdownToggle, DropdownItem,
+  Dropdown, DropdownItem, DropdownList,
   List, ListItem,
+  MenuToggle,
   Skeleton,
   Toolbar, ToolbarContent, ToolbarItem
-} from "@patternfly/react-core";
-import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+} from '@patternfly/react-core';
+import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { sprintf } from "sprintf-js";
 
 import { _ } from "~/i18n";
@@ -98,7 +99,7 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
     onAdd(volume);
   };
 
-  const toggleActions = (status) => setIsOpen(status);
+  const toggleActions = () => setIsOpen(!isOpen);
 
   const closeActions = () => setIsOpen(false);
 
@@ -109,17 +110,24 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
   return (
     <>
       <Dropdown
-        position="right"
         isOpen={isOpen}
         onSelect={closeActions}
-        dropdownItems={[
+        popperProps={{ position: "right" }}
+        toggle={(toggleRef) => (
+          <MenuToggle ref={toggleRef} onClick={toggleActions} variant="primary">
+            {/* TRANSLATORS: dropdown label */}
+            {_("Actions")}
+          </MenuToggle>
+        )}
+      >
+        <DropdownList>
           <Action
             key="reset"
             onClick={onReset}
           >
             {/* TRANSLATORS: dropdown menu label */}
             {_("Reset to defaults")}
-          </Action>,
+          </Action>
           <Action
             key="add"
             isDisabled={templates.length === 0}
@@ -128,14 +136,8 @@ const GeneralActions = ({ templates, onAdd, onReset }) => {
             {/* TRANSLATORS: dropdown menu label */}
             {_("Add file system")}
           </Action>
-        ]}
-        toggle={
-          <DropdownToggle toggleVariant="primary" onToggle={toggleActions}>
-            {/* TRANSLATORS: dropdown label */}
-            {_("Actions")}
-          </DropdownToggle>
-        }
-      />
+        </DropdownList>
+      </Dropdown>
       <Popup aria-label={_("Add file system")} title={_("Add file system")} isOpen={isFormOpen}>
         <VolumeForm
           id="addVolumeForm"
@@ -222,7 +224,7 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
         delete: {
           title: _("Delete"),
           onClick: () => onDelete(volume),
-          className: "danger-action"
+          isDanger: true
         },
         edit: {
           title: _("Edit"),
@@ -336,7 +338,7 @@ const VolumesTable = ({ volumes, options, isLoading, onVolumesChange }) => {
   };
 
   return (
-    <TableComposable aria-label={_("Table with mount points")} variant="compact" borders>
+    <Table aria-label={_("Table with mount points")} variant="compact" borders>
       <Thead>
         <Tr>
           <Th>{columns.mountPath}</Th>
@@ -353,7 +355,7 @@ const VolumesTable = ({ volumes, options, isLoading, onVolumesChange }) => {
           onVolumesChange={onVolumesChange}
         />
       </Tbody>
-    </TableComposable>
+    </Table>
   );
 };
 
@@ -401,7 +403,7 @@ export default function ProposalVolumes({
           <ToolbarItem>
             {_("File systems to create in your system")}
           </ToolbarItem>
-          <ToolbarItem alignment={{ default: "alignRight" }}>
+          <ToolbarItem align={{ default: "alignRight" }}>
             <GeneralActions
               templates={templates}
               onAdd={addVolume}

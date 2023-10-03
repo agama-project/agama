@@ -21,7 +21,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Skeleton } from "@patternfly/react-core";
-import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 
 import { _ } from "~/i18n";
 import { RowActions } from '~/components/core';
@@ -79,7 +79,7 @@ export default function InitiatorPresenter({ initiator, client }) {
 
   return (
     <>
-      <TableComposable variant="compact">
+      <Table variant="compact">
         <Thead>
           <Tr>
             <Th width={50}>{_("Name")}</Th>
@@ -91,7 +91,7 @@ export default function InitiatorPresenter({ initiator, client }) {
         <Tbody>
           <Content />
         </Tbody>
-      </TableComposable>
+      </Table>
       { isFormOpen &&
         <InitiatorForm
           initiator={initiator}

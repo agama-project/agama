@@ -22,15 +22,15 @@
 import React, { useEffect } from "react";
 import { FormGroup, TextInput } from "@patternfly/react-core";
 
-import { Fieldset, PasswordInput } from "~/components/core";
+import { Fieldset, FormValidationError, PasswordInput } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
 export default function AuthFields({ data, onChange, onValidate }) {
-  const onUsernameChange = v => onChange("username", v);
-  const onPasswordChange = v => onChange("password", v);
-  const onReverseUsernameChange = v => onChange("reverseUsername", v);
-  const onReversePasswordChange = v => onChange("reversePassword", v);
+  const onUsernameChange = (_, v) => onChange("username", v);
+  const onPasswordChange = (_, v) => onChange("password", v);
+  const onReverseUsernameChange = (_, v) => onChange("reverseUsername", v);
+  const onReversePasswordChange = (_, v) => onChange("reversePassword", v);
 
   const isValidText = v => v.length > 0;
   const isValidUsername = () => isValidText(data.username);
@@ -78,8 +78,6 @@ export default function AuthFields({ data, onChange, onValidate }) {
         <FormGroup
           fieldId="username"
           label={_("User name")}
-          helperTextInvalid={_("Incorrect user name")}
-          validated={showUsernameError() ? "error" : "default"}
         >
           <TextInput
             id="username"
@@ -90,12 +88,11 @@ export default function AuthFields({ data, onChange, onValidate }) {
             onChange={onUsernameChange}
             validated={showUsernameError() ? "error" : "default"}
           />
+          <FormValidationError message={showUsernameError() ? _("Incorrect user name") : ""} />
         </FormGroup>
         <FormGroup
           fieldId="password"
           label={_("Password")}
-          helperTextInvalid={_("Incorrect password")}
-          validated={showPasswordError() ? "error" : "default"}
         >
           <PasswordInput
             id="password"
@@ -105,6 +102,7 @@ export default function AuthFields({ data, onChange, onValidate }) {
             onChange={onPasswordChange}
             validated={showPasswordError() ? "error" : "default"}
           />
+          <FormValidationError message={showPasswordError() ? _("Incorrect password") : ""} />
         </FormGroup>
       </Fieldset>
       <Fieldset legend={_("Authentication by initiator")}>
@@ -112,8 +110,6 @@ export default function AuthFields({ data, onChange, onValidate }) {
         <FormGroup
           fieldId="reverseUsername"
           label={_("User name")}
-          helperTextInvalid={_("Incorrect user name")}
-          validated={showReverseUsernameError() ? "error" : "default"}
         >
           <TextInput
             id="reverseUsername"
@@ -125,12 +121,11 @@ export default function AuthFields({ data, onChange, onValidate }) {
             onChange={onReverseUsernameChange}
             validated={showReverseUsernameError() ? "error" : "default"}
           />
+          <FormValidationError message={showReverseUsernameError() ? _("Incorrect user name") : ""} />
         </FormGroup>
         <FormGroup
           fieldId="reversePassword"
           label="Password"
-          helperTextInvalid={_("Incorrect password")}
-          validated={showReversePasswordError() ? "error" : "default"}
         >
           <PasswordInput
             id="reversePassword"
@@ -141,6 +136,7 @@ export default function AuthFields({ data, onChange, onValidate }) {
             onChange={onReversePasswordChange}
             validated={showReversePasswordError() ? "error" : "default"}
           />
+          <FormValidationError message={showReverseUsernameError() ? _("Incorrect password") : ""} />
         </FormGroup>
       </Fieldset>
     </>

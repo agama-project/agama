@@ -291,7 +291,7 @@ const LVMField = ({
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isFormValid, setIsFormValid] = useState(true);
 
-  const onChange = (value) => {
+  const onChange = (_, value) => {
     setIsChecked(value);
     onChangeProp({ lvm: value, vgDevices: [] });
   };
@@ -393,7 +393,7 @@ const EncryptionPasswordForm = ({
     if (password.length === 0) onValidate(false);
   }, [password, onValidate]);
 
-  const changePassword = (v) => setPassword(v);
+  const changePassword = (_, v) => setPassword(v);
 
   const submitForm = (e) => {
     e.preventDefault();
@@ -453,7 +453,7 @@ const EncryptionPasswordField = ({
 
   const validateForm = (valid) => setIsFormValid(valid);
 
-  const changeSelected = (value) => {
+  const changeSelected = (_, value) => {
     setIsChecked(value);
 
     if (value && password.length === 0) openForm();

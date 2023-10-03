@@ -101,5 +101,5 @@ you want a JavaScript file to be type-checked, please add a `// @ts-check` comme
 
 - [Cockpit developer documentation](https://cockpit-project.org/guide/latest/development)
 - [Webpack documentation](https://webpack.js.org/configuration/)
-- [PatternFly documentation](https://www.patternfly.org/v4/)
+- [PatternFly documentation](https://www.patternfly.org)
 - [Material Symbols (aka icons)](https://fonts.google.com/icons)

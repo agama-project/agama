@@ -28,8 +28,8 @@ import { partition } from "~/utils";
 /**
  * Wrapper component for holding Popup actions
  *
- * Useful and required for placing the components to be used as PF4/Modal actions, usually a
- * Popup.Action or PF4/Button
+ * Useful and required for placing the components to be used as PF/Modal actions, usually a
+ * Popup.Action or PF/Button
  *
  * @see Popup examples.
  *
@@ -40,12 +40,12 @@ const Actions = ({ children }) => <>{children}</>;
 /**
  * A convenient component representing a Popup action
  *
- * Built on top of {@link https://www.patternfly.org/v4/components/button PF4/Button}
+ * Built on top of {@link https://www.patternfly.org/components/button PF/Button}
  *
  * @see Popup examples.
  *
  * @param {React.ReactNode} props.children - content of the action
- * @param {object} [props] - PF4/Button props, see {@link https://www.patternfly.org/v4/components/button#props}
+ * @param {object} [props] - PF/Button props, see {@link https://www.patternfly.org/components/button#props}
  */
 const Action = ({ children, ...props }) => (
   <Button { ...props }>
@@ -56,7 +56,7 @@ const Action = ({ children, ...props }) => (
 /**
  * A Popup primary action
  *
- * It always set `variant` {@link https://www.patternfly.org/v4/components/button PF4/Button}
+ * It always set `variant` {@link https://www.patternfly.org/components/button PF/Button}
  * prop to "primary", no matter what given in `props`.
  *
  * @example <caption>Simple usage</caption>
@@ -94,7 +94,7 @@ const Confirm = ({ children = _("Confirm"), ...props }) => (
 /**
  * A Popup secondary action
  *
- * It always set `variant` {@link https://www.patternfly.org/v4/components/button PF4/Button}
+ * It always set `variant` {@link https://www.patternfly.org/components/button PF/Button}
  * prop to "secondary", no matter what given in `props`.
  *
  * @example <caption>Simple usage</caption>
@@ -132,7 +132,7 @@ const Cancel = ({ children = _("Cancel"), ...props }) => (
 /**
  * A Popup additional action, rendered as a link
  *
- * It always set `variant` {@link https://www.patternfly.org/v4/components/button PF4/Button} prop
+ * It always set `variant` {@link https://www.patternfly.org/components/button PF/Button} prop
  * to "link", no matter what is given in `props`
  *
  * @example <caption>Simple usage</caption>
@@ -154,7 +154,7 @@ const AncillaryAction = ({ children, ...props }) => (
 /**
  * Agama component for displaying a popup
  *
- * Built on top of {@link https://www.patternfly.org/v4/components/modal PF4/Modal}, it
+ * Built on top of {@link https://www.patternfly.org/components/modal PF/Modal}, it
  * manipulates the children object for extracting {Actions}.
  *
  * @example <caption>Usage example</caption>
@@ -190,9 +190,9 @@ const AncillaryAction = ({ children, ...props }) => (
  * @param {object} props - component props
  * @param {boolean} [props.isOpen=false] - whether the popup is displayed or not
  * @param {boolean} [props.showClose=false] - whether the popup should include a "X" action for closing it
- * @param {string} [props.variant="small"] - the popup size, based on Pf4/Modal `variant` prop
+ * @param {string} [props.variant="small"] - the popup size, based on PF/Modal `variant` prop
  * @param {React.ReactNode} props.children - the popup content and actions
- * @param {object} [pf4ModalProps] - PF4/Modal props, See {@link https://www.patternfly.org/v4/components/modal#props}
+ * @param {object} [pfModalProps] - PF/Modal props, See {@link https://www.patternfly.org/components/modal#props}
  *
  */
 const Popup = ({
@@ -200,13 +200,13 @@ const Popup = ({
   showClose = false,
   variant = "small",
   children,
-  ...pf4ModalProps
+  ...pfModalProps
 }) => {
   const [actions, content] = partition(React.Children.toArray(children), child => child.type === Actions);
 
   useLayoutEffect(() => {
     /**
-     * A workaround for ensuring aria-hidden attributes added by a PF4/Modal to
+     * A workaround for ensuring aria-hidden attributes added by a PF/Modal to
      * its siblings are removed when the dialog is directly unmounted.
      *
      * To know more, read the following links
@@ -214,13 +214,13 @@ const Popup = ({
      *   - https://github.com/openSUSE/agama/pull/576
      *   - https://github.com/openSUSE/agama/pull/572
      *
-     * Using body children because agama is not using the `appendTo` PF4/Modal
+     * Using body children because agama is not using the `appendTo` PF/Modal
      * prop in its code base. Therefore, for this workaround it can be assumed
      * that the default document.body is the parent of any modal always.
      *
      * See https://github.com/patternfly/patternfly-react/blob/a0f857c4de39dd415792a8701e7c6ac7fd853024/packages/react-core/src/components/Modal/Modal.tsx#L115
      *
-     * Why not using a `ref` instead? Because PF4/Modal is not forwarding its
+     * Why not using a `ref` instead? Because PF/Modal is not forwarding its
      * ref and which blocks us to do something similar to what we already did
      * in core/Sidebar.
      *
@@ -234,7 +234,7 @@ const Popup = ({
 
   return (
     <Modal
-      { ...pf4ModalProps }
+      { ...pfModalProps }
       isOpen={isOpen}
       showClose={showClose}
       variant={variant}

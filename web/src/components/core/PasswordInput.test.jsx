@@ -79,7 +79,7 @@ describe("PasswordInput Component", () => {
 
     return (
       <>
-        <PasswordInput {...props} onChange={setPassword} />
+        <PasswordInput {...props} onChange={(_, v) => setPassword(v)} />
         {password && <p>Password value updated!</p>}
       </>
     );

@@ -71,7 +71,7 @@ export default function LanguageSelector() {
           id="language"
           aria-label={_("language")}
           value={selected}
-          onChange={v => updateState({ language: v })}
+          onChange={(_, v) => updateState({ language: v })}
         >
           {selectorOptions}
         </FormSelect>

@@ -22,13 +22,25 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { Em } from "~/components/core";
+import { FormValidationError } from "~/components/core";
 
-describe("Em", () => {
-  it("wraps given children inside a compact PF/Label", () => {
-    plainRender(<Em>Whatever</Em>);
-    const children = screen.getByText("Whatever");
-    const parent = children.closest("span.pf-v5-c-label");
-    expect(parent.classList.contains("pf-m-compact")).toBe(true);
-  });
+it("renders nothing when message is null", () => {
+  const { container } = plainRender(<FormValidationError message={null} />);
+  expect(container).toBeEmptyDOMElement();
+});
+
+it("renders nothing when message is empty", () => {
+  const { container } = plainRender(<FormValidationError message="" />);
+  expect(container).toBeEmptyDOMElement();
+});
+
+it("renders nothing when message is not defined", () => {
+  const { container } = plainRender(<FormValidationError />);
+  expect(container).toBeEmptyDOMElement();
+});
+
+it("renders a PatternFly error with given message", () => {
+  plainRender(<FormValidationError message="Invalid input" />);
+  const node = screen.getByText("Invalid input");
+  expect(node.parentNode.classList.contains("pf-m-error")).toBe(true);
 });

@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { DropdownToggle } from "@patternfly/react-core";
+import { MenuToggle } from '@patternfly/react-core';
 import { ActionsColumn } from '@patternfly/react-table';
 
 import { Icon } from '~/components/layout';
@@ -57,21 +57,23 @@ import { _ } from "~/i18n";
  */
 export default function RowActions({ id, actions, "aria-label": toggleAriaLabel, ...rest }) {
   const actionsToggle = (props) => (
-    <DropdownToggle
+    <MenuToggle
       id={id}
-      aria-label={toggleAriaLabel || _("Actions")}
-      toggleIndicator={null}
+      variant="plain"
+      ref={props.toggleRef}
       isDisabled={props.isDisabled}
-      onToggle={props.onToggle}
+      onClick={props.onToggle}
+      aria-label={toggleAriaLabel || _("Actions")}
     >
       <Icon name="more_vert" size="24" />
-    </DropdownToggle>
+    </MenuToggle>
   );
 
   return (
     <ActionsColumn
       items={actions}
       actionsToggle={actionsToggle}
+      popperProps={{ position: "right" }}
       {...rest}
     />
   );

@@ -152,9 +152,9 @@ const icons = {
  */
 export default function Icon({ name, className = "", size = 32, ...otherProps }) {
   const IconComponent = icons[name];
-  const cssClassName = `${className} icon-size-${size}`.trim();
+  className = `${className} icon-size-${size}`.trim();
 
   return (IconComponent)
-    ? <IconComponent className={cssClassName} aria-hidden="true" {...otherProps} />
+    ? <IconComponent className={className} aria-hidden="true" {...otherProps} />
     : <em>{sprintf(_("Icon %s not found!"), name)}</em>;
 }

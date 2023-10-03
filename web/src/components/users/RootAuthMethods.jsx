@@ -21,7 +21,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button, Skeleton, Truncate } from "@patternfly/react-core";
-import { TableComposable, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
+import { Table, Thead, Tr, Th, Tbody, Td } from '@patternfly/react-table';
 import { Em, RowActions } from '~/components/core';
 import { RootPasswordPopup, RootSSHKeyPopup } from '~/components/users';
 
@@ -94,7 +94,7 @@ export default function RootAuthMethods() {
     isPasswordDefined && {
       title: _("Discard"),
       onClick: () => client.removeRootPassword(),
-      className: "danger-action"
+      isDanger: true
     }
   ].filter(Boolean);
 
@@ -106,7 +106,7 @@ export default function RootAuthMethods() {
     sshKey && {
       title: _("Discard"),
       onClick: () => client.setRootSSHKey(""),
-      className: "danger-action"
+      isDanger: true
     }
 
   ].filter(Boolean);
@@ -144,7 +144,7 @@ export default function RootAuthMethods() {
     }
 
     return (
-      <TableComposable variant="compact" gridBreakPoint="grid-md">
+      <Table variant="compact" gridBreakPoint="grid-md">
         <Thead>
           <Tr>
             {/* TRANSLATORS: table header, user authentication method */}
@@ -170,7 +170,7 @@ export default function RootAuthMethods() {
             </Td>
           </Tr>
         </Tbody>
-      </TableComposable>
+      </Table>
     );
   };
 

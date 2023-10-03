@@ -29,7 +29,7 @@ jest.mock("~/components/layout/Layout", () => mockLayout());
 it("renders the component initially closed", async () => {
   plainRender(
     <PageOptions>
-      <PageOptions.Item>A dummy action</PageOptions.Item>
+      <PageOptions.Option>A dummy action</PageOptions.Option>
     </PageOptions>
   );
 
@@ -39,7 +39,7 @@ it("renders the component initially closed", async () => {
 it("show and hide the component content on user request", async () => {
   const { user } = plainRender(
     <PageOptions>
-      <PageOptions.Item><>A dummy action</></PageOptions.Item>
+      <PageOptions.Option><>A dummy action</></PageOptions.Option>
     </PageOptions>
   );
 
@@ -60,10 +60,10 @@ it("hide the component content when the user clicks on one of its actions", asyn
   const { user } = plainRender(
     <PageOptions>
       <PageOptions.Group label="Refresh">
-        <PageOptions.Item><>Section</></PageOptions.Item>
-        <PageOptions.Item><>Page</></PageOptions.Item>
+        <PageOptions.Option><>Section</></PageOptions.Option>
+        <PageOptions.Option><>Page</></PageOptions.Option>
       </PageOptions.Group>
-      <PageOptions.Item><>Exit</></PageOptions.Item>
+      <PageOptions.Option><>Exit</></PageOptions.Option>
     </PageOptions>
   );
 
@@ -78,8 +78,8 @@ it("hide the component content when the user clicks on one of its actions", asyn
 it('should close the dropdown on click outside', async () => {
   const { user } = plainRender(
     <PageOptions>
-      <PageOptions.Item><>Item 1</></PageOptions.Item>
-      <PageOptions.Item><>Item 2</></PageOptions.Item>
+      <PageOptions.Option><>Option 1</></PageOptions.Option>
+      <PageOptions.Option><>Option 2</></PageOptions.Option>
     </PageOptions>
   );
 
@@ -88,11 +88,11 @@ it('should close the dropdown on click outside', async () => {
   await user.click(toggler);
 
   // Ensure the dropdown is open
-  screen.getByRole("menuitem", { name: "Item 2" });
+  screen.getByRole("menuitem", { name: "Option 2" });
 
   // Click outside the dropdown
   fireEvent.click(document);
 
   // Ensure the dropdown is closed
-  expect(screen.queryByRole("menuitem", { name: "Item 2" })).toBeNull();
+  expect(screen.queryByRole("menuitem", { name: "Option 2" })).toBeNull();
 });

@@ -94,7 +94,7 @@ function WifiNetworkListItem ({ network, isSelected, isActive, onSelect, onCance
         />
         <div className="split">
           {/* TRANSLATORS: %s is replaced by a WiFi network name */}
-          {showSpinner && <Spinner isSVG size="md" aria-label={sprintf(_("%s connection is waiting for an state change"), network.ssid)} /> }
+          {showSpinner && <Spinner size="md" aria-label={sprintf(_("%s connection is waiting for an state change"), network.ssid)} /> }
           <Text component="small" className="keep-words">
             { showSpinner && !network.connection && _("Connecting") }
             { networkState(network.connection?.state)}

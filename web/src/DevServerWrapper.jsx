@@ -20,13 +20,19 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Title, Text, EmptyState, EmptyStateIcon, EmptyStateBody } from "@patternfly/react-core";
+import {
+  Button,
+  Text,
+  EmptyState, EmptyStateBody, EmptyStateFooter, EmptyStateHeader, EmptyStateIcon
+} from "@patternfly/react-core";
 import { Center, Icon, Loading } from "~/components/layout";
 
 // path to any internal Cockpit component to force displaying the login dialog
 const loginPath = "/cockpit/@localhost/system/terminal.html";
 // id of the password field in the login dialog
 const loginId = "login-password-input";
+
+const ErrorIcon = () => <Icon name="error" className="icon-big" />;
 
 /**
  * This is a helper wrapper used in the development server only. It displays
@@ -73,11 +79,12 @@ export default function DevServerWrapper({ children }) {
   if (isError) {
     return (
       <Center>
-        <EmptyState>
-          <EmptyStateIcon icon={ ({ ...props }) => <Icon name="error" { ...props } /> } />
-          <Title headingLevel="h2" size="4xl">
-            Cannot connect to the Cockpit server
-          </Title>
+        <EmptyState variant="xl">
+          <EmptyStateHeader
+            titleText="Cannot connect to the Cockpit server"
+            headingLevel="h2"
+            icon={<EmptyStateIcon icon={ErrorIcon} />}
+          />
           <EmptyStateBody>
             <Text>
               The server at { " " }
@@ -86,11 +93,12 @@ export default function DevServerWrapper({ children }) {
               </Button>
               { " " } is not reachable.
             </Text>
-            <br />
+          </EmptyStateBody>
+          <EmptyStateFooter>
             <Button variant="primary" onClick={() => { setIsLoading(true); setIsError(false) }}>
               Try Again
             </Button>
-          </EmptyStateBody>
+          </EmptyStateFooter>
         </EmptyState>
       </Center>
     );

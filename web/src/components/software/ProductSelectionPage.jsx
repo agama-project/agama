@@ -94,7 +94,7 @@ function ProductSelectionPage() {
       <Title>{_("Product selection")}</Title>
       <PageIcon><Icon name="home_storage" /></PageIcon>
       <MainActions>
-        <Button isLarge variant="primary" form="product-selector" type="submit">
+        <Button size="lg" variant="primary" form="product-selector" type="submit">
           {/* TRANSLATORS: button label */}
           {_("Select")}
         </Button>
