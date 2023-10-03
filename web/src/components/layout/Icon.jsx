@@ -27,7 +27,6 @@ import { _ } from "~/i18n";
 // NOTE: "@icons" is an alias to use a shorter path to real @material-symbols
 // icons location. Check the tsconfig.json file to see its value.
 import AddAPhoto from "@icons/add_a_photo.svg?component";
-import AutoMode from "@icons/auto_mode.svg?component";
 import Apps from "@icons/apps.svg?component";
 import Badge from "@icons/badge.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
@@ -80,7 +79,6 @@ import Loading from "./three-dots-loader-icon.svg?component";
 
 const icons = {
   add_a_photo: AddAPhoto,
-  auto_mode: AutoMode,
   apps: Apps,
   badge: Badge,
   check_circle: CheckCircle,
