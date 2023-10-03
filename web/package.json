@@ -48,7 +48,7 @@
     "chrome-remote-interface": "^0.32.1",
     "compression-webpack-plugin": "^10.0.0",
     "copy-webpack-plugin": "^11.0.0",
-    "cspell": "^6.29.3",
+    "cspell": "^7.3.7",
     "css-loader": "^6.5.0",
     "css-minimizer-webpack-plugin": "^5.0.0",
     "eslint": "^8.28.0",
