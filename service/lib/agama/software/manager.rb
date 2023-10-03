@@ -138,7 +138,9 @@ module Agama
         end
         # no errors and also no repos
         if errors.empty? && repositories.enabled.empty?
-          errors << ValidationError.new("System has to be registered to get access to repositories.")
+          errors << ValidationError.new(
+            "System has to be registered to get access to repositories."
+          )
         end
         return errors if repositories.enabled.empty?
 
