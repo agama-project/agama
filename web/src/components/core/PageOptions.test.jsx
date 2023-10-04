@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen, fireEvent } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { plainRender, mockLayout } from "~/test-utils";
 import { PageOptions } from "~/components/core";
 
@@ -36,7 +36,7 @@ it("renders the component initially closed", async () => {
   expect(screen.queryByRole("menuitem", { name: "A dummy action" })).toBeNull();
 });
 
-it("show and hide the component content on user request", async () => {
+it("shows and hides the component content on user request", async () => {
   const { user } = plainRender(
     <PageOptions>
       <PageOptions.Option><>A dummy action</></PageOptions.Option>
@@ -56,7 +56,7 @@ it("show and hide the component content on user request", async () => {
   expect(screen.queryByRole("menuitem", { name: "A dummy action" })).toBeNull();
 });
 
-it("hide the component content when the user clicks on one of its actions", async () => {
+it("hides the component content when user clicks on one of its actions", async () => {
   const { user } = plainRender(
     <PageOptions>
       <PageOptions.Group label="Refresh">
@@ -75,23 +75,28 @@ it("hide the component content when the user clicks on one of its actions", asyn
   expect(screen.queryByRole("menuitem", { name: "A dummy action" })).toBeNull();
 });
 
-it('should close the dropdown on click outside', async () => {
+it('closes the component  when user clicks outside', async () => {
   const { user } = plainRender(
-    <PageOptions>
-      <PageOptions.Option><>Option 1</></PageOptions.Option>
-      <PageOptions.Option><>Option 2</></PageOptions.Option>
-    </PageOptions>
+    <>
+      <div>Sibling</div>
+      <PageOptions>
+        <PageOptions.Option><>Option 1</></PageOptions.Option>
+        <PageOptions.Option><>Option 2</></PageOptions.Option>
+      </PageOptions>
+    </>
   );
 
-  // Open the dropdown
   const toggler = screen.getByRole("button");
+  const sibling = screen.getByText("Sibling");
+
+  // Open the dropdown
   await user.click(toggler);
 
   // Ensure the dropdown is open
   screen.getByRole("menuitem", { name: "Option 2" });
 
   // Click outside the dropdown
-  fireEvent.click(document);
+  await user.click(sibling);
 
   // Ensure the dropdown is closed
   expect(screen.queryByRole("menuitem", { name: "Option 2" })).toBeNull();
