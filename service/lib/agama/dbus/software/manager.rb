@@ -58,16 +58,9 @@ module Agama
         private_constant :SOFTWARE_INTERFACE
 
         dbus_interface SOFTWARE_INTERFACE do
-          dbus_reader :available_base_products, "a(ssa{sv})"
+          dbus_reader :available_products, "a(ssa{sv})"
 
-          dbus_reader :selected_base_product, "s"
-
-          # documented way to be able to write to patterns and trigger signal
-          attr_writer :selected_patterns
-
-          # selected patterns is hash with pattern name as id and 0 for user selected and
-          # 1 for auto selected. Can be extended in future e.g. for mandatory patterns
-          dbus_attr_reader :selected_patterns, "a{sy}"
+          dbus_reader :selected_product, "s"
 
           dbus_method :SelectProduct, "in ProductID:s" do |product_id|
             old_product_id = backend.product
@@ -100,6 +93,13 @@ module Agama
               end
             ]
           end
+
+          # documented way to be able to write to patterns and trigger signal
+          attr_writer :selected_patterns
+
+          # selected patterns is hash with pattern name as id and 0 for user selected and
+          # 1 for auto selected. Can be extended in future e.g. for mandatory patterns
+          dbus_attr_reader :selected_patterns, "a{sy}"
 
           dbus_method(:AddPattern, "in id:s") { |p| backend.add_pattern(p) }
           dbus_method(:RemovePattern, "in id:s") { |p| backend.remove_pattern(p) }
