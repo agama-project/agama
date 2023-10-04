@@ -31,8 +31,6 @@ import UsedSize from "./UsedSize";
 import { _ } from "~/i18n";
 
 function convert(pattern_data, selected) {
-  console.log("selected: ", selected);
-
   const patterns = [];
 
   Object.keys(pattern_data).forEach((name) => {
@@ -98,22 +96,27 @@ function PatternSelector() {
     setSearchValue(value);
   };
 
+  // refresh the page content after changing a pattern status
   const refreshCb = useCallback(() => {
-    client.software.selectedPatterns().then((sel) => setSelected(sel));
-    client.software.getUsedSpace().then((sp) => setUsed(sp));
+    const refresh = async () => {
+      setSelected(await client.software.selectedPatterns());
+      setUsed(await client.software.getUsedSpace());
+    };
+
+    refresh();
   }, [client.software]);
 
   useEffect(() => {
     // patterns already loaded
     if (patterns) return;
 
-    const refresh = async () => {
+    const loadData = async () => {
       setPatterns(await client.software.patterns(true));
       setSelected(await client.software.selectedPatterns());
       setUsed(await client.software.getUsedSpace());
     };
 
-    refresh();
+    loadData();
   }, [patterns, client.software]);
 
   if (!patterns || !selected) {
@@ -121,8 +124,11 @@ function PatternSelector() {
   }
 
   let patternsData = convert(patterns, selected);
+
+  // count the number of selected patterns
   const numSelected = patternsData.reduce((acc, pat) => acc + (pat.selected === undefined ? 0 : 1), 0);
 
+  // filtering - search the required text in the name and pattern description
   if (searchValue !== "") {
     const searchData = searchValue.toUpperCase();
     patternsData = patternsData.filter((p) =>
@@ -132,10 +138,10 @@ function PatternSelector() {
   }
 
   const groups = groupPatterns(patternsData);
-  console.log("patterns: ", groups);
+  if (process.env.NODE_ENV !== "production") console.log("patterns: ", groups);
 
   const sortedGroups = sortGroups(groups);
-  console.log("sorted groups: ", sortedGroups);
+  if (process.env.NODE_ENV !== "production") console.log("sorted groups: ", sortedGroups);
 
   const selector = sortGroups(groups).map((group) => {
     return (
@@ -159,6 +165,7 @@ function PatternSelector() {
           value={searchValue}
           onChange={(_event, value) => onSearchChange(value)}
           onClear={() => onSearchChange("")}
+          // do not display the counter when search filter is empty
           resultsCount={searchValue === "" ? 0 : patternsData.length}
         />
 

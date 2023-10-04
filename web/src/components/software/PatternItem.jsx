@@ -20,10 +20,11 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { useInstallerClient } from "~/context/installer";
 import { sprintf } from "sprintf-js";
 
 import cockpit from "../../lib/cockpit";
+
+import { useInstallerClient } from "~/context/installer";
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
@@ -31,10 +32,16 @@ import iconAvailable from "./icons/package-available.svg";
 import iconInstall from "./icons/package-install.svg";
 import iconAutoInstall from "./icons/package-install-auto.svg";
 
+// path to pattern icons
 const ICON_PATH = "/usr/share/icons/hicolor/scalable/apps/%s.svg";
 
-function stateIcon(selected) {
-  switch (selected) {
+/**
+ * Get checkbox status icon for the required pattern installation status
+ * @param {number} state pattern selection status
+ * @returns {string} Raw SVG icon data
+ */
+function stateIcon(state) {
+  switch (state) {
     case 0:
       return iconInstall;
     case 1:
@@ -44,6 +51,11 @@ function stateIcon(selected) {
   }
 }
 
+/**
+ * Get ARIA label for the required pattern installation status
+ * @param {number} state pattern selection status
+ * @returns {string} Label
+ */
 function stateAriaLabel(selected) {
   switch (selected) {
     case 0:
@@ -66,12 +78,12 @@ function PatternItem({ pattern, onChange }) {
     switch (pattern.selected) {
       // available pattern (not selected)
       case undefined:
-        console.log("Selecting pattern ", pattern.name);
+        if (process.env.NODE_ENV !== "production") console.log("Selecting pattern ", pattern.name);
         client.software.addPattern(pattern.name).then(() => onChange());
         break;
       // user selected
       case 0:
-        console.log("Removing pattern ", pattern.name);
+        if (process.env.NODE_ENV !== "production") console.log("Removing pattern ", pattern.name);
         client.software.removePattern(pattern.name).then(() => onChange());
         break;
       // auto selected
