@@ -123,6 +123,7 @@ module Agama
         select_resolvables
         result = proposal.calculate
         logger.info "Proposal result: #{result.inspect}"
+        selected_patterns_changed
         result
       end
 
