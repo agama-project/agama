@@ -763,7 +763,7 @@ describe("#proposal", () => {
         maxSize: 4096,
         autoSize: false,
         snapshots: false,
-        readOnly: false,
+        transactional: false,
         outline: {
           required: false,
           fsTypes: ["Ext4", "XFS"],
@@ -783,7 +783,7 @@ describe("#proposal", () => {
         maxSize: 2048,
         autoSize: false,
         snapshots: false,
-        readOnly: false,
+        transactional: false,
         outline: {
           required: false,
           fsTypes: ["Ext4", "XFS"],
@@ -831,7 +831,7 @@ describe("#proposal", () => {
               maxSize: 2048,
               autoSize: true,
               snapshots: true,
-              readOnly: true,
+              transactional: true,
               outline: {
                 required: true,
                 fsTypes: ["Btrfs", "Ext3"],
@@ -848,7 +848,7 @@ describe("#proposal", () => {
               maxSize: 4096,
               autoSize: false,
               snapshots: false,
-              readOnly: false,
+              transactional: false,
               outline: {
                 required: false,
                 fsTypes: ["Ext4", "XFS"],

@@ -41,7 +41,7 @@ const volumes = {
     maxSize: 2048,
     autoSize: false,
     snapshots: false,
-    readOnly: false,
+    transactional: false,
     outline: {
       required: true,
       fsTypes: ["Btrfs", "Ext4"],
@@ -218,17 +218,17 @@ describe("if there are volumes", () => {
     expect(mountPointSelector).toHaveAttribute("disabled");
   });
 
-  describe("and there is read-only Btrfs volume", () => {
+  describe("and there is transactional Btrfs volume", () => {
     beforeEach(() => {
-      props.volumes = [{ ...volumes.root, readOnly: true }];
+      props.volumes = [{ ...volumes.root, transactional: true }];
     });
 
-    it("renders 'read-only' legend as part of its information", async () => {
+    it("renders 'transactional' legend as part of its information", async () => {
       plainRender(<ProposalVolumes {...props} />);
 
       const [, volumes] = await screen.findAllByRole("rowgroup");
 
-      within(volumes).getByRole("row", { name: "/ Btrfs partition read-only 1 KiB - 2 KiB" });
+      within(volumes).getByRole("row", { name: "/ Btrfs partition transactional 1 KiB - 2 KiB" });
     });
   });
 
@@ -246,17 +246,17 @@ describe("if there are volumes", () => {
     });
   });
 
-  describe("and there is a read-only Btrfs volume using snapshots", () => {
+  describe("and there is a transactional Btrfs volume using snapshots", () => {
     beforeEach(() => {
-      props.volumes = [{ ...volumes.root, readOnly: true, snapshots: true }];
+      props.volumes = [{ ...volumes.root, transactional: true, snapshots: true }];
     });
 
-    it("renders 'with snapshots' and 'read-only' legends as part of its information", async () => {
+    it("renders 'with snapshots' and 'transactional' legends as part of its information", async () => {
       plainRender(<ProposalVolumes {...props} />);
 
       const [, volumes] = await screen.findAllByRole("rowgroup");
 
-      within(volumes).getByRole("row", { name: "/ Btrfs partition with snapshots read-only 1 KiB - 2 KiB" });
+      within(volumes).getByRole("row", { name: "/ Btrfs partition with snapshots transactional 1 KiB - 2 KiB" });
     });
   });
 });

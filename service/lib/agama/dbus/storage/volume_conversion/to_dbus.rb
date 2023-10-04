@@ -43,7 +43,7 @@ module Agama
               "MinSize"      => volume.min_size&.to_i,
               "AutoSize"     => volume.auto_size?,
               "Snapshots"    => volume.btrfs.snapshots?,
-              "ReadOnly"     => volume.btrfs.read_only?
+              "Transactional"     => volume.btrfs.read_only?
             }.tap do |target|
               max_size_conversion(target)
               outline_conversion(target)
