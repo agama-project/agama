@@ -159,6 +159,45 @@ module Agama
           busy_while { backend.finish }
         end
 
+        REGISTRATION_INTERFACE = "org.opensuse.Agama1.Registration"
+        private_constant :REGISTRATION_INTERFACE
+
+        dbus_interface REGISTRATION_INTERFACE do
+          dbus_reader :reg_code, "s"
+
+          dbus_reader :email, "s"
+
+          dbus_reader :state, "u"
+
+          dbus_method :Register, "in reg_code:s, in options:a{sv}, out result:u" do
+            |reg_code, options|
+            backend.registration.register(reg_code, email: options["Email"])
+            # map errors to exit codes?
+            0
+          end
+
+          dbus_method :Deregister, "out result:u" do
+            backend.registration.deregister
+            # map errors to exit codes?
+            0
+          end
+        end
+
+        def reg_code
+          backend.registration.reg_code || ""
+        end
+
+        def email
+          backend.registration.email || ""
+        end
+
+        # Replace #State by #IsDisabled and #isOptional ?
+        def state
+          return 0 if backend.registration.disabled?
+          return 1 if backend.registration.optional?
+          return 2 unless backend.registration.optional?
+        end
+
       private
 
         # @return [Agama::Software]
