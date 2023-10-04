@@ -29,7 +29,6 @@ import { BUSY } from "~/client/status";
 
 import {
   About,
-  DBusError,
   Disclosure,
   Installation,
   IssuesLink,
@@ -46,7 +45,6 @@ function App() {
   const client = useInstallerClient();
   const [status, setStatus] = useState(undefined);
   const [phase, setPhase] = useState(undefined);
-  const [error, setError] = useState(undefined);
 
   useEffect(() => {
     const loadPhase = async () => {
@@ -56,22 +54,14 @@ function App() {
       setStatus(status);
     };
 
-    loadPhase().catch(setError);
-  }, [client.manager, setPhase, setStatus, setError]);
+    loadPhase().catch(console.error);
+  }, [client.manager, setPhase, setStatus]);
 
   useEffect(() => {
     return client.manager.onPhaseChange(setPhase);
   }, [client.manager, setPhase]);
 
-  useEffect(() => {
-    return client.monitor.onConnectionChange(connected => {
-      connected ? location.reload() : setError(true);
-    });
-  }, [client.monitor, setError]);
-
   const Content = () => {
-    if (error) return <DBusError />;
-
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
       return <LoadingEnvironment onStatusChange={setStatus} />;
     }
