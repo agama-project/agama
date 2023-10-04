@@ -327,9 +327,11 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
 
 // Handler for the "agama logs list" subcommand
 fn list(options: LogOptions) {
-    for list in [options.paths, options.commands] {
-        for item in list.iter() {
-            println!("{}", item);
+    for list in [ ("Log paths: ", options.paths), ("Log commands: ", options.commands)] {
+        println!("{}", list.0);
+
+        for item in list.1.iter() {
+            println!("\t{}", item);
         }
 
         println!();
