@@ -29,7 +29,10 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
         LogsCommands::Store { verbose } => {
             // feed internal options structure by what was received from user
             // for now we always use / add defaults if any
-            let options = LogOptions { verbose: verbose, ..Default::default() };
+            let options = LogOptions {
+                verbose: verbose,
+                ..Default::default()
+            };
 
             Ok(store(options)?)
         }
@@ -246,16 +249,28 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
     let tmp_path = tmp_dir
         .path()
         .parent()
-        .unwrap()
+        .ok_or(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "Malformed path to temporary directory",
+        ))?
         .as_os_str()
         .to_str()
-        .ok_or(io::Error::new(io::ErrorKind::InvalidInput, "Wrong path"))?;
+        .ok_or(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "Malformed path to temporary directory",
+        ))?;
     let dir = tmp_dir
         .path()
         .file_name()
-        .unwrap()
+        .ok_or(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "Malformed path to temporary directory",
+        ))?
         .to_str()
-        .ok_or(io::Error::new(io::ErrorKind::InvalidInput, "Wrong path"))?;
+        .ok_or(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "Malformed path to temporary director",
+        ))?;
     let compress_cmd = format!(
         "tar -c -f {} --warning=no-file-changed --{} --dereference -C {} {}",
         result, compression, tmp_path, dir,
@@ -327,7 +342,10 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
 
 // Handler for the "agama logs list" subcommand
 fn list(options: LogOptions) {
-    for list in [ ("Log paths: ", options.paths), ("Log commands: ", options.commands)] {
+    for list in [
+        ("Log paths: ", options.paths),
+        ("Log commands: ", options.commands),
+    ] {
         println!("{}", list.0);
 
         for item in list.1.iter() {
