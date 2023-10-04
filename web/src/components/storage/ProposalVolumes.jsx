@@ -202,9 +202,6 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
   const Details = ({ volume, options }) => {
     const hasSnapshots = volume.fsType === "Btrfs" && volume.snapshots;
     const readOnly = volume.fsType === "Btrfs" && volume.readOnly;
-    console.log("details:");
-    console.log(volume);
-    console.log(options);
 
     // TRANSLATORS: the filesystem uses a logical volume (LVM)
     const text = `${volume.fsType} ${options.lvm ? _("logical volume") : _("partition")}`;
@@ -218,7 +215,7 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
         <If condition={options.encryption} then={<Em icon={lockIcon}>{_("encrypted")}</Em>} />
         {/* TRANSLATORS: filesystem flag, it allows creating snapshots */}
         <If condition={hasSnapshots} then={<Em icon={snapshotsIcon}>{_("with snapshots")}</Em>} />
-        {/* TRANSLATORS: filesystem flag, system is read only */}
+        {/* TRANSLATORS: filesystem flag, filesystem is read only */}
         <If condition={readOnly} then={<Em>{_("read-only")}</Em>} />
       </div>
     );
