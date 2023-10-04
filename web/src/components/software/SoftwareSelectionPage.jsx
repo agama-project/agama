@@ -20,6 +20,7 @@
  */
 
 import React from "react";
+
 import { Page } from "~/components/core";
 import { PatternSelector } from "~/components/software";
 import { _ } from "~/i18n";

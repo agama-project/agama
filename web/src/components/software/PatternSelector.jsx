@@ -20,8 +20,11 @@
  */
 
 import React, { useCallback, useEffect, useState } from "react";
+import { SearchInput } from "@patternfly/react-core";
+import { sprintf } from "sprintf-js";
 
 import { useInstallerClient } from "~/context/installer";
+import { Section } from "~/components/core";
 import PatternGroup from "./PatternGroup";
 import PatternItem from "./PatternItem";
 import UsedSize from "./UsedSize";
@@ -34,15 +37,18 @@ function convert(pattern_data, selected) {
 
   Object.keys(pattern_data).forEach((name) => {
     const pattern = pattern_data[name];
-    patterns.push({
-      name,
-      group: pattern[0],
-      description: pattern[1],
-      icon: pattern[2],
-      summary: pattern[3],
-      order: pattern[4],
-      selected: selected[name]
-    });
+
+    if (pattern[4] > 0) {
+      patterns.push({
+        name,
+        group: pattern[0],
+        description: pattern[1],
+        icon: pattern[2],
+        summary: pattern[3],
+        order: pattern[4],
+        selected: selected[name]
+      });
+    }
   });
 
   return patterns;
@@ -62,19 +68,35 @@ function groupPatterns(patterns) {
 
   // sort patterns by the "order" value
   Object.keys(pattern_groups).forEach((group) => {
-    pattern_groups[group].sort((p1, p2) => (p1.order < p2.order ? -1 : 1));
+    pattern_groups[group].sort((p1, p2) => p1.order === p2.order ? (p1.name < p2.name) : (p1.order < p2.order ? -1 : 1));
   });
 
-  console.log(pattern_groups);
-
   return pattern_groups;
+}
+
+function sortGroups(groups) {
+  return Object.keys(groups).sort((g1, g2) => {
+    const order1 = groups[g1][0].order;
+    const order2 = groups[g2][0].order;
+
+    if (order1 === order2) {
+      return g1 === g2 ? 0 : (g1 < g2 ? -1 : 1);
+    }
+
+    return order1 < order2 ? -1 : 1;
+  });
 }
 
 function PatternSelector() {
   const [patterns, setPatterns] = useState();
   const [selected, setSelected] = useState();
   const [used, setUsed] = useState();
+  const [searchValue, setSearchValue] = useState("");
   const client = useInstallerClient();
+
+  const onSearchChange = (value) => {
+    setSearchValue(value);
+  };
 
   const refreshCb = useCallback(() => {
     client.software.selectedPatterns().then((sel) => setSelected(sel));
@@ -98,15 +120,28 @@ function PatternSelector() {
     return <></>;
   }
 
-  const groups = groupPatterns(convert(patterns, selected));
+  let patternsData = convert(patterns, selected);
+  const numSelected = patternsData.reduce((acc, pat) => acc + (pat.selected === undefined ? 0 : 1), 0);
 
-  const selector = Object.keys(groups).map((group) => {
+  if (searchValue !== "") {
+    const searchData = searchValue.toUpperCase();
+    patternsData = patternsData.filter((p) =>
+      p.name.toUpperCase().indexOf(searchData) !== -1 ||
+      p.description.toUpperCase().indexOf(searchData) !== -1
+    );
+  }
+
+  const groups = groupPatterns(patternsData);
+  console.log("patterns: ", groups);
+
+  const sortedGroups = sortGroups(groups);
+  console.log("sorted groups: ", sortedGroups);
+
+  const selector = sortGroups(groups).map((group) => {
     return (
       <PatternGroup
         key={group}
         name={group}
-        selected={groups[group].filter(p => p.selected !== undefined).length}
-        count={groups[group].length}
       >
         { (groups[group]).map(p => <PatternItem key={p.name} pattern={p} onChange={refreshCb} />) }
       </PatternGroup>
@@ -115,10 +150,20 @@ function PatternSelector() {
 
   return (
     <>
-      <h2>{_("Summary")}</h2>
-      <UsedSize size={used} />
-      <h2>{_("Available Software")}</h2>
-      { selector }
+      <Section title={_("Selected Software")} icon="apps">
+        <UsedSize size={used} />
+        <div> { sprintf(_("Selected %d patterns"), numSelected) } </div>
+        <h2>{_("Filter")}</h2>
+        <SearchInput
+          placeholder={_("Search")}
+          value={searchValue}
+          onChange={(_event, value) => onSearchChange(value)}
+          onClear={() => onSearchChange("")}
+          resultsCount={searchValue === "" ? 0 : patternsData.length}
+        />
+
+        { selector }
+      </Section>
     </>
   );
 }

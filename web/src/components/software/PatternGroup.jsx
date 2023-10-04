@@ -19,41 +19,16 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
-import { Badge, ExpandableSection } from "@patternfly/react-core";
+import React from "react";
 
 export default function PatternGroup({
   name,
-  children,
-  selected,
-  count,
-  expanded
+  children
 }) {
-  const [isExpanded, setIsExpanded] = useState(expanded);
-
-  const onToggle = (isExpanded) => {
-    setIsExpanded(isExpanded);
-  };
-
-  useEffect(() => {
-    setIsExpanded(expanded);
-  }, [expanded]);
-
   return (
-    <ExpandableSection
-      isIndented
-      toggleContent={
-        <span>
-          <span className="pattern-group-name">{name}</span>{" "}
-          <Badge isRead>
-            {selected} / {count}
-          </Badge>
-        </span>
-      }
-      onToggle={onToggle}
-      isExpanded={isExpanded}
-    >
+    <>
+      <h2>{name}</h2>
       {children}
-    </ExpandableSection>
+    </>
   );
 }

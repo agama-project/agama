@@ -84,7 +84,7 @@ module Agama
           end
 
           # value of result hash is category, description, icon, summary and order
-          dbus_method :ListPatterns, "in Filtered:b, out Result:a{s(ssssi)}" do |filtered|
+          dbus_method :ListPatterns, "in Filtered:b, out Result:a{s(sssss)}" do |filtered|
             [
               backend.patterns(filtered).each_with_object({}) do |pattern, result|
                 # make sure all attributes are already preloaded, adjust the "patterns" method
@@ -94,7 +94,7 @@ module Agama
                   pattern.description,
                   pattern.icon,
                   pattern.summary,
-                  pattern.order.to_i
+                  pattern.order
                 ]
                 result[pattern.name] = value
               end
