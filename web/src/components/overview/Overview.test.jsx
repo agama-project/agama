@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockComponent, mockLayout } from "~/test-utils";
+import { installerRender, mockComponent } from "~/test-utils";
 import Overview from "./Overview";
 import { createClient } from "~/client";
 
@@ -44,7 +44,6 @@ jest.mock("~/context/software", () => ({
   }
 }));
 
-jest.mock("~/components/layout/Layout", () => mockLayout());
 jest.mock("~/components/overview/L10nSection", () => mockComponent("Localization Section"));
 jest.mock("~/components/overview/StorageSection", () => mockComponent("Storage Section"));
 jest.mock("~/components/overview/NetworkSection", () => mockComponent("Network Section"));

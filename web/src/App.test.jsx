@@ -21,18 +21,17 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender, mockComponent, mockLayout } from "~/test-utils";
+import { installerRender, mockComponent } from "~/test-utils";
 import App from "./App";
 import { createClient } from "~/client";
 import { STARTUP, CONFIG, INSTALL } from "~/client/phase";
 import { IDLE, BUSY } from "~/client/status";
 
 jest.mock("~/client");
-jest.mock("~/components/layout/Layout", () => mockLayout());
 
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
-jest.mock("~/components/layout/DBusError", () => mockComponent("D-BusError Mock"));
+jest.mock("~/components/core/DBusError", () => mockComponent("D-BusError Mock"));
 jest.mock("~/components/core/LoadingEnvironment", () => mockComponent("LoadingEnvironment Mock"));
 jest.mock("~/components/questions/Questions", () => mockComponent("Questions Mock"));
 jest.mock("~/components/core/Installation", () => mockComponent("Installation Mock"));

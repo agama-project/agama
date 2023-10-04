@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockComponent, withNotificationProvider } from "~/test-utils";
+import { installerRender, withNotificationProvider } from "~/test-utils";
 import { createClient } from "~/client";
 import { IssuesPage } from "~/components/core";
 
@@ -32,7 +32,7 @@ jest.mock("@patternfly/react-core", () => {
 
   return {
     ...original,
-    Skeleton: mockComponent("PFSkeleton")
+    Skeleton: () => <div>PFSkeleton</div>
   };
 });
 

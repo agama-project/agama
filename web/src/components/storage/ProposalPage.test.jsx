@@ -34,7 +34,8 @@ jest.mock("@patternfly/react-core", () => {
 
   return {
     ...original,
-    Skeleton: mockComponent("PFSkeleton")
+    Skeleton: () => <div>PFSkeleton</div>
+
   };
 });
 

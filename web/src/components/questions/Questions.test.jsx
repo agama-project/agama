@@ -63,15 +63,19 @@ describe("Questions", () => {
     });
 
     it("renders nothing", async () => {
-      const { container } = installerRender(<Questions />);
-      await waitFor(() => expect(container).toBeEmptyDOMElement());
+      installerRender(<Questions />);
+
+      const main = await screen.findByRole("main");
+      await waitFor(() => expect(main).toBeEmptyDOMElement());
     });
   });
 
   describe("when a new question is added", () => {
     it("push it into the pending queue", async () => {
-      const { container } = installerRender(<Questions />);
-      expect(container).toBeEmptyDOMElement();
+      installerRender(<Questions />);
+
+      const main = await screen.findByRole("main");
+      await waitFor(() => expect(main).toBeEmptyDOMElement());
 
       // Manually triggers the handler given for the onQuestionAdded signal
       act(() => handlers.onAdd(genericQuestion));

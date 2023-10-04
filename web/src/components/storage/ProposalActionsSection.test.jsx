@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, within, waitForElementToBeRemoved } from "@testing-library/react";
-import { mockComponent, plainRender } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import { ProposalActionsSection } from "~/components/storage";
 
 jest.mock("@patternfly/react-core", () => {
@@ -29,7 +29,7 @@ jest.mock("@patternfly/react-core", () => {
 
   return {
     ...original,
-    Skeleton: mockComponent("PFSkeleton")
+    Skeleton: () => <div>PFSkeleton</div>
   };
 });
 

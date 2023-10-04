@@ -33,6 +33,7 @@ import { render } from "@testing-library/react";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { NotificationProvider } from "~/context/notification";
+import { Layout } from "~/components/layout";
 import cockpit from "./lib/cockpit";
 
 /**
@@ -90,11 +91,16 @@ const installerRender = (ui, options = {}) => {
   );
 };
 
+// Add an option to include or not the layout.
 const plainRender = (ui, options = {}) => {
+  const { layout, ...opts } = options;
+  if (layout) {
+    opts.wrapper = Layout;
+  }
   return (
     {
       user: userEvent.setup(),
-      ...render(ui, options)
+      ...render(ui, opts)
     }
   );
 };
@@ -134,25 +140,6 @@ const mockComponent = (content, { wrapper } = { wrapper: "div" }) => {
 };
 
 /**
- * Returns fake component for mocking the Layout and its slots
- *
- * Useful to be used when testing a component that uses either, the Layout itself or any of its
- * slots (a.k.a. portals)
- *
- * @return a function component to mock the Layout
- */
-const mockLayout = () => ({
-  __esModule: true,
-  default: ({ children }) => children,
-  Title: ({ children }) => children,
-  PageIcon: ({ children }) => children,
-  AppActions: ({ children }) => children,
-  PageOptions: ({ children }) => children,
-  MainActions: ({ children }) => children,
-  AdditionalInfo: ({ children }) => children,
-});
-
-/**
  * Wraps the content with a notification provider
  *
  * @param {React.ReactNode} content
@@ -185,7 +172,6 @@ export {
   createCallbackMock,
   mockComponent,
   mockGettext,
-  mockLayout,
   mockNavigateFn,
   mockRoutes,
   withNotificationProvider

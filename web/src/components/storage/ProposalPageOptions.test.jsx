@@ -21,12 +21,11 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockLayout } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { createClient } from "~/client";
 import { ProposalPageOptions } from "~/components/storage";
 
 jest.mock("~/client");
-jest.mock("~/components/layout/Layout", () => mockLayout());
 
 const isDASDSupportedFn = jest.fn();
 
