@@ -34,6 +34,7 @@ import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { NotificationProvider } from "~/context/notification";
 import { Layout } from "~/components/layout";
+import { noop } from "./utils";
 import cockpit from "./lib/cockpit";
 
 /**
@@ -72,6 +73,12 @@ jest.mock('react-router-dom', () => ({
 
 const Providers = ({ children }) => {
   const client = createClient();
+
+  // FIXME: workaround to fix the tests. We should inject
+  // the client instead of mocking `createClient`.
+  if (!client.onDisconnect) {
+    client.onDisconnect = noop;
+  }
 
   return (
     <InstallerClientProvider client={client}>
