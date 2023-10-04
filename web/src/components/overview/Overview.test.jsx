@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import Overview from "./Overview";
 import { createClient } from "~/client";
 
@@ -44,12 +44,12 @@ jest.mock("~/context/software", () => ({
   }
 }));
 
-jest.mock("~/components/overview/L10nSection", () => mockComponent("Localization Section"));
-jest.mock("~/components/overview/StorageSection", () => mockComponent("Storage Section"));
-jest.mock("~/components/overview/NetworkSection", () => mockComponent("Network Section"));
-jest.mock("~/components/overview/UsersSection", () => mockComponent("Users Section"));
-jest.mock("~/components/overview/SoftwareSection", () => mockComponent("Software Section"));
-jest.mock("~/components/core/InstallButton", () => mockComponent("Install Button"));
+jest.mock("~/components/overview/L10nSection", () => () => <div>Localization Section</div>);
+jest.mock("~/components/overview/StorageSection", () => () => <div>Storage Section</div>);
+jest.mock("~/components/overview/NetworkSection", () => () => <div>Network Section</div>);
+jest.mock("~/components/overview/UsersSection", () => () => <div>Users Section</div>);
+jest.mock("~/components/overview/SoftwareSection", () => () => <div>Software Section</div>);
+jest.mock("~/components/core/InstallButton", () => () => <div>Install Button</div>);
 
 beforeEach(() => {
   mockProduct = { id: "openSUSE", name: "openSUSE Tumbleweed" };

@@ -21,7 +21,7 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import App from "./App";
 import { createClient } from "~/client";
 import { STARTUP, CONFIG, INSTALL } from "~/client/phase";
@@ -31,11 +31,11 @@ jest.mock("~/client");
 
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
-jest.mock("~/components/core/DBusError", () => mockComponent("D-BusError Mock"));
-jest.mock("~/components/core/LoadingEnvironment", () => mockComponent("LoadingEnvironment Mock"));
-jest.mock("~/components/questions/Questions", () => mockComponent("Questions Mock"));
-jest.mock("~/components/core/Installation", () => mockComponent("Installation Mock"));
-jest.mock("~/components/core/Sidebar", () => mockComponent("Sidebar Mock"));
+jest.mock("~/components/core/DBusError", () => <div>D-BusError Mock</div>);
+jest.mock("~/components/core/LoadingEnvironment", () => () => <div>LoadingEnvironment Mock</div>);
+jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
+jest.mock("~/components/core/Installation", () => () => <div>Installation Mock</div>);
+jest.mock("~/components/core/Sidebar", () => () => <div>Sidebar Mock</div>);
 
 // this object holds the mocked callbacks
 const callbacks = {};
@@ -44,9 +44,7 @@ const getPhaseFn = jest.fn();
 
 // capture the latest subscription to the manager#onPhaseChange for triggering it manually
 const onPhaseChangeFn = cb => { callbacks.onPhaseChange = cb };
-const onConnectionChangeFn = cb => { callbacks.onConnectionChange = cb };
 const changePhaseTo = phase => act(() => callbacks.onPhaseChange(phase));
-const changeConnectionTo = connected => act(() => callbacks.onConnectionChange(connected));
 
 describe("App", () => {
   beforeEach(() => {
@@ -57,56 +55,8 @@ describe("App", () => {
           getPhase: getPhaseFn,
           onPhaseChange: onPhaseChangeFn,
         },
-        monitor: {
-          onConnectionChange: onConnectionChangeFn
-        }
+        isConnected: async () => true,
       };
-    });
-  });
-
-  describe("when there are problems connecting with D-Bus service", () => {
-    beforeEach(() => {
-      getStatusFn.mockRejectedValue(new Error("Couldn't connect to D-Bus service"));
-    });
-
-    it("renders the DBusError component", async () => {
-      installerRender(<App />);
-      await screen.findByText("D-BusError Mock");
-    });
-  });
-
-  describe("when the D-Bus service is disconnected", () => {
-    beforeEach(() => {
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: { reload: jest.fn() },
-      });
-    });
-
-    it("renders the DBusError component", async () => {
-      installerRender(<App />);
-      changeConnectionTo(false);
-      installerRender(<App />);
-      await screen.findByText("D-BusError Mock");
-    });
-  });
-
-  describe("when the D-Bus service is re-connected", () => {
-    beforeEach(() => {
-      getStatusFn.mockRejectedValue(new Error("Couldn't connect to D-Bus service"));
-
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: { reload: jest.fn() },
-      });
-    });
-
-    it("reloads the page", async () => {
-      installerRender(<App />);
-      await screen.findByText("D-BusError Mock");
-
-      changeConnectionTo(true);
-      expect(window.location.reload).toHaveBeenCalled();
     });
   });
 

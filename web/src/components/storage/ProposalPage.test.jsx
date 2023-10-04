@@ -21,13 +21,13 @@
 
 import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
-import { createCallbackMock, installerRender, mockComponent } from "~/test-utils";
+import { createCallbackMock, installerRender } from "~/test-utils";
 import { createClient } from "~/client";
 import { IDLE } from "~/client/status";
 import { ProposalPage } from "~/components/storage";
 
 jest.mock("~/client");
-jest.mock("~/components/storage/ProposalPageOptions", () => mockComponent("ProposalPage Options"));
+jest.mock("~/components/storage/ProposalPageOptions", () => () => <div>ProposalPage Options</div>);
 
 jest.mock("@patternfly/react-core", () => {
   const original = jest.requireActual("@patternfly/react-core");

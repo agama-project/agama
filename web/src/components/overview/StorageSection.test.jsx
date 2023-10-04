@@ -21,14 +21,14 @@
 
 import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
-import { installerRender, createCallbackMock, mockComponent } from "~/test-utils";
+import { installerRender, createCallbackMock } from "~/test-utils";
 import { noop } from "~/utils";
 import { createClient } from "~/client";
 import { BUSY, IDLE } from "~/client/status";
 import { StorageSection } from "~/components/overview";
 
 jest.mock("~/client");
-jest.mock("~/components/core/SectionSkeleton", () => mockComponent("Loading storage"));
+jest.mock("~/components/core/SectionSkeleton", () => () => <div>Loading storage</div>);
 
 const availableDevices = [
   { name: "/dev/sda", size: 536870912000 },
