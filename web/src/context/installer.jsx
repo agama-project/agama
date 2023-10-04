@@ -24,6 +24,7 @@
 import React, { useState, useEffect } from "react";
 import cockpit from "../lib/cockpit";
 import { createClient } from "~/client";
+import { Layout, Title } from "~/components/layout";
 
 const InstallerClientContext = React.createContext(undefined);
 
@@ -67,7 +68,14 @@ function InstallerClientProvider({ client, children }) {
   }
 
   return (
-    <InstallerClientContext.Provider value={value}>{children}</InstallerClientContext.Provider>
+    <InstallerClientContext.Provider value={value}>
+      <Layout>
+        {/* this is the name of the tool, do not translate it */}
+        {/* eslint-disable-next-line i18next/no-literal-string */}
+        <Title>Agama</Title>
+        {children}
+      </Layout>
+    </InstallerClientContext.Provider>
   );
 }
 

@@ -29,6 +29,7 @@ import { BUSY } from "~/client/status";
 
 import {
   About,
+  DBusError,
   Disclosure,
   Installation,
   IssuesLink,
@@ -39,7 +40,7 @@ import {
   Sidebar
 } from "~/components/core";
 import { ChangeProductLink } from "~/components/software";
-import { Layout, Title, DBusError } from "~/components/layout";
+import { SidebarArea } from "~/components/layout";
 
 function App() {
   const client = useInstallerClient();
@@ -84,23 +85,20 @@ function App() {
 
   return (
     <>
-      <Sidebar>
-        <ChangeProductLink />
-        <IssuesLink />
-        <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
-          <ShowLogButton />
-          <LogsButton data-keep-sidebar-open="true" />
-          <ShowTerminalButton />
-        </Disclosure>
-        <About />
-      </Sidebar>
+      <SidebarArea>
+        <Sidebar>
+          <ChangeProductLink />
+          <IssuesLink />
+          <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
+            <ShowLogButton />
+            <LogsButton data-keep-sidebar-open="true" />
+            <ShowTerminalButton />
+          </Disclosure>
+          <About />
+        </Sidebar>
+      </SidebarArea>
 
-      <Layout>
-        {/* this is the name of the tool, do not translate it */}
-        {/* eslint-disable-next-line i18next/no-literal-string */}
-        <Title>Agama</Title>
-        <Content />
-      </Layout>
+      <Content />
     </>
   );
 }
