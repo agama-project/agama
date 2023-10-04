@@ -50,7 +50,7 @@ const INTERVAL = 2000;
   * @param {import("~/client").InstallerClient|undefined} [props.client] client to connect to
   *   Agama service; if it is undefined, it instantiates a new one using the address
   *   registered in /run/agama/bus.address.
-  * @param {number} [props.interval] - Interval in miliseconds between connection attempts
+  * @param {number} [props.interval] - Interval in milliseconds between connection attempts
   *   (2000 by default).
   * @param {number} [props.max_attempts] - Connection attempts before displaying an
   *   error (3 by default). The component will keep trying to connect.
