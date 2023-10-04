@@ -29,16 +29,12 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
         LogsCommands::Store { verbose } => {
             // feed internal options structure by what was received from user
             // for now we always use / add defaults if any
-            let mut options = LogOptions::new();
-
-            options.verbose = verbose;
+            let options = LogOptions { verbose: verbose, ..Default::default() };
 
             Ok(store(options)?)
         }
         LogsCommands::List => {
-            let options = LogOptions::new();
-
-            list(options);
+            list(LogOptions::default());
 
             Ok(())
         }
@@ -100,8 +96,8 @@ struct LogOptions {
     verbose: bool,
 }
 
-impl LogOptions {
-    fn new() -> Self {
+impl Default for LogOptions {
+    fn default() -> Self {
         Self {
             paths: DEFAULT_PATHS.iter().map(|p| p.to_string()).collect(),
             commands: DEFAULT_COMMANDS.iter().map(|p| p.to_string()).collect(),
