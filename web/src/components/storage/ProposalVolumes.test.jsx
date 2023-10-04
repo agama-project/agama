@@ -40,7 +40,8 @@ const volumes = {
     minSize: 1024,
     maxSize: 2048,
     autoSize: false,
-    snapshots: true,
+    snapshots: false,
+    readOnly: false,
     outline: {
       required: true,
       fsTypes: ["Btrfs", "Ext4"],
@@ -179,7 +180,7 @@ describe("if there are volumes", () => {
     const [, body] = await screen.findAllByRole("rowgroup");
 
     expect(within(body).queryAllByRole("row").length).toEqual(3);
-    within(body).getByRole("row", { name: "/ Btrfs partition with snapshots 1 KiB - 2 KiB" });
+    within(body).getByRole("row", { name: "/ Btrfs partition 1 KiB - 2 KiB" });
     within(body).getByRole("row", { name: "/home XFS partition At least 1 KiB" });
     within(body).getByRole("row", { name: "swap Swap partition 1 KiB" });
   });
@@ -215,6 +216,48 @@ describe("if there are volumes", () => {
     within(popup).getByText("Edit file system");
     const mountPointSelector = within(popup).getByRole("combobox", { name: "Mount point" });
     expect(mountPointSelector).toHaveAttribute("disabled");
+  });
+
+  describe("and there is read-only Btrfs volume", () => {
+    beforeEach(() => {
+      props.volumes = [{ ...volumes.root, readOnly: true }];
+    });
+
+    it("renders 'read-only' legend as part of its information", async () => {
+      plainRender(<ProposalVolumes {...props} />);
+
+      const [, volumes] = await screen.findAllByRole("rowgroup");
+
+      within(volumes).getByRole("row", { name: "/ Btrfs partition read-only 1 KiB - 2 KiB" });
+    });
+  });
+
+  describe("and there Btrfs volume using snapshots", () => {
+    beforeEach(() => {
+      props.volumes = [{ ...volumes.root, snapshots: true }];
+    });
+
+    it("renders 'with snapshots' legend as part of its information", async () => {
+      plainRender(<ProposalVolumes {...props} />);
+
+      const [, volumes] = await screen.findAllByRole("rowgroup");
+
+      within(volumes).getByRole("row", { name: "/ Btrfs partition with snapshots 1 KiB - 2 KiB" });
+    });
+  });
+
+  describe("and there is a read-only Btrfs volume using snapshots", () => {
+    beforeEach(() => {
+      props.volumes = [{ ...volumes.root, readOnly: true, snapshots: true }];
+    });
+
+    it("renders 'with snapshots' and 'read-only' legends as part of its information", async () => {
+      plainRender(<ProposalVolumes {...props} />);
+
+      const [, volumes] = await screen.findAllByRole("rowgroup");
+
+      within(volumes).getByRole("row", { name: "/ Btrfs partition with snapshots read-only 1 KiB - 2 KiB" });
+    });
   });
 });
 
