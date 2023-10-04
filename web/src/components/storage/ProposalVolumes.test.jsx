@@ -232,7 +232,7 @@ describe("if there are volumes", () => {
     });
   });
 
-  describe("and there Btrfs volume using snapshots", () => {
+  describe("and there is Btrfs volume using snapshots", () => {
     beforeEach(() => {
       props.volumes = [{ ...volumes.root, snapshots: true }];
     });
