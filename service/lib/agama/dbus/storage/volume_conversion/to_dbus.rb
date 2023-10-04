@@ -35,15 +35,15 @@ module Agama
           # @return [Hash]
           def convert
             {
-              "MountPath"    => volume.mount_path.to_s,
-              "MountOptions" => volume.mount_options,
-              "TargetDevice" => volume.device.to_s,
-              "TargetVG"     => volume.separate_vg_name.to_s,
-              "FsType"       => volume.fs_type&.to_human_string || "",
-              "MinSize"      => volume.min_size&.to_i,
-              "AutoSize"     => volume.auto_size?,
-              "Snapshots"    => volume.btrfs.snapshots?,
-              "Transactional"     => volume.btrfs.read_only?
+              "MountPath"     => volume.mount_path.to_s,
+              "MountOptions"  => volume.mount_options,
+              "TargetDevice"  => volume.device.to_s,
+              "TargetVG"      => volume.separate_vg_name.to_s,
+              "FsType"        => volume.fs_type&.to_human_string || "",
+              "MinSize"       => volume.min_size&.to_i,
+              "AutoSize"      => volume.auto_size?,
+              "Snapshots"     => volume.btrfs.snapshots?,
+              "Transactional" => volume.btrfs.read_only?
             }.tap do |target|
               max_size_conversion(target)
               outline_conversion(target)

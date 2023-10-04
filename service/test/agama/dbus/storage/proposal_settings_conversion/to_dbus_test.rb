@@ -68,16 +68,16 @@ describe Agama::DBus::Storage::ProposalSettingsConversion::ToDBus do
         "SpaceActions"           => { "/dev/sda" => :force_delete },
         "Volumes"                => [
           {
-            "MountPath"    => "/test",
-            "MountOptions" => [],
-            "TargetDevice" => "",
-            "TargetVG"     => "",
-            "FsType"       => "",
-            "MinSize"      => 0,
-            "AutoSize"     => false,
-            "Snapshots"    => false,
-            "ReadOnly"     => false,
-            "Outline"      => {
+            "MountPath"     => "/test",
+            "MountOptions"  => [],
+            "TargetDevice"  => "",
+            "TargetVG"      => "",
+            "FsType"        => "",
+            "MinSize"       => 0,
+            "AutoSize"      => false,
+            "Snapshots"     => false,
+            "Transactional" => false,
+            "Outline"       => {
               "Required"              => false,
               "FsTypes"               => [],
               "SupportAutoSize"       => false,

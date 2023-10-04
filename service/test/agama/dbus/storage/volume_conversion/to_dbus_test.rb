@@ -77,17 +77,17 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
       )
 
       expect(described_class.new(custom_volume).convert).to eq(
-        "MountPath"    => "/test",
-        "MountOptions" => ["rw", "default"],
-        "TargetDevice" => "/dev/sda",
-        "TargetVG"     => "/dev/system",
-        "FsType"       => "Ext4",
-        "MinSize"      => 1024,
-        "MaxSize"      => 2048,
-        "AutoSize"     => true,
-        "Snapshots"    => true,
-        "ReadOnly"     => true,
-        "Outline"      => {
+        "MountPath"     => "/test",
+        "MountOptions"  => ["rw", "default"],
+        "TargetDevice"  => "/dev/sda",
+        "TargetVG"      => "/dev/system",
+        "FsType"        => "Ext4",
+        "MinSize"       => 1024,
+        "MaxSize"       => 2048,
+        "AutoSize"      => true,
+        "Snapshots"     => true,
+        "Transactional" => true,
+        "Outline"       => {
           "Required"              => true,
           "FsTypes"               => ["Ext3", "Ext4"],
           "SupportAutoSize"       => true,
