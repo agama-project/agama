@@ -27,6 +27,7 @@ import cockpit from "~/lib/cockpit";
 import { createClient } from "~/client";
 import { InstallerClientProvider } from "~/context/installer";
 import L10nBackendWrapper from "~/L10nBackendWrapper";
+import { noop } from "./utils";
 
 jest.mock("~/client");
 
@@ -40,7 +41,8 @@ beforeEach(() => {
       language: {
         getUILanguage: () => Promise.resolve(backendLang),
         setUILanguage: (lang) => new Promise((resolve) => resolve(setLanguageFn(lang)))
-      }
+      },
+      onDisconnect: () => noop
     };
   });
 });

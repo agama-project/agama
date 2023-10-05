@@ -21,10 +21,10 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender, mockComponent } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import { ShowTerminalButton } from "~/components/core";
 
-jest.mock("~/components/core/Terminal", () => mockComponent("Terminal Mock"));
+jest.mock("~/components/core/Terminal", () => () => <div>Terminal Mock</div>);
 
 describe("ShowTerminalButton", () => {
   it("renders a button that displays <Terminal> after clicking", async () => {

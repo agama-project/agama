@@ -22,11 +22,9 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { plainRender, mockLayout } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 
-import { DBusError } from "~/components/layout";
-
-jest.mock("~/components/layout/Layout", () => mockLayout());
+import { DBusError } from "~/components/core";
 
 describe("DBusError", () => {
   it("includes a generic D-Bus connection problem message", () => {
@@ -37,7 +35,7 @@ describe("DBusError", () => {
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
-    const { user } = plainRender(<DBusError />);
+    const { user } = plainRender(<DBusError />, { layout: true });
 
     const reloadButton = await screen.findByRole("button", { name: /Reload/i });
 

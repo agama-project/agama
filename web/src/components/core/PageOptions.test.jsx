@@ -21,10 +21,8 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender, mockLayout } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import { PageOptions } from "~/components/core";
-
-jest.mock("~/components/layout/Layout", () => mockLayout());
 
 it("renders the component initially closed", async () => {
   plainRender(
@@ -40,7 +38,7 @@ it("shows and hides the component content on user request", async () => {
   const { user } = plainRender(
     <PageOptions>
       <PageOptions.Option><>A dummy action</></PageOptions.Option>
-    </PageOptions>
+    </PageOptions>, { layout: true }
   );
 
   const toggler = screen.getByRole("button");
@@ -64,7 +62,7 @@ it("hides the component content when user clicks on one of its actions", async (
         <PageOptions.Option><>Page</></PageOptions.Option>
       </PageOptions.Group>
       <PageOptions.Option><>Exit</></PageOptions.Option>
-    </PageOptions>
+    </PageOptions>, { layout: true }
   );
 
   const toggler = screen.getByRole("button");
@@ -83,7 +81,7 @@ it('closes the component  when user clicks outside', async () => {
         <PageOptions.Option><>Option 1</></PageOptions.Option>
         <PageOptions.Option><>Option 2</></PageOptions.Option>
       </PageOptions>
-    </>
+    </>, { layout: true }
   );
 
   const toggler = screen.getByRole("button");

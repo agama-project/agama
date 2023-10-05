@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { mockComponent, plainRender } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import { ProposalSettingsSection } from "~/components/storage";
 
 jest.mock("@patternfly/react-core", () => {
@@ -29,7 +29,7 @@ jest.mock("@patternfly/react-core", () => {
 
   return {
     ...original,
-    Skeleton: mockComponent("PFSkeleton")
+    Skeleton: () => <div>PFSkeleton</div>
   };
 });
 
@@ -48,7 +48,7 @@ const vda = {
   active: true,
   name: "/dev/vda",
   size: 1024,
-  systems : ["Windows", "openSUSE Leap 15.2"],
+  systems: ["Windows", "openSUSE Leap 15.2"],
   udevIds: ["ata-Micron_1100_SATA_512GB_12563", "scsi-0ATA_Micron_1100_SATA_512GB"],
   udevPaths: ["pci-0000:00-12", "pci-0000:00-12-ata"],
   partitionTable: { type: "gpt", partitions: [] }
@@ -63,7 +63,7 @@ const md0 = {
   active: true,
   name: "/dev/md0",
   size: 2048,
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: []
 };
@@ -77,7 +77,7 @@ const md1 = {
   active: true,
   name: "/dev/md1",
   size: 4096,
-  systems : [],
+  systems: [],
   udevIds: [],
   udevPaths: []
 };
@@ -193,7 +193,7 @@ describe("Installation device field", () => {
 describe("LVM field", () => {
   describe("if LVM setting is not set yet", () => {
     beforeEach(() => {
-      props.settings = { };
+      props.settings = {};
     });
 
     it("does not render the LVM switch", () => {
@@ -256,7 +256,7 @@ describe("LVM field", () => {
         within(popup).getByText("System Volume Group");
       });
 
-      it("allows selecting either installation device or custom devices", async() => {
+      it("allows selecting either installation device or custom devices", async () => {
         const { user } = plainRender(<ProposalSettingsSection {...props} />);
         const settingsButton = screen.getByRole("button", { name: /LVM settings/ });
 
@@ -359,7 +359,7 @@ describe("LVM field", () => {
 describe("Encryption field", () => {
   describe("if encryption password setting is not set yet", () => {
     beforeEach(() => {
-      props.settings = { };
+      props.settings = {};
     });
 
     it("does not render the encryption switch", () => {

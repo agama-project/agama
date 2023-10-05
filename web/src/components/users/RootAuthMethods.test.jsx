@@ -22,7 +22,7 @@
 import React from "react";
 
 import { act, screen, within } from "@testing-library/react";
-import { installerRender, createCallbackMock, mockComponent } from "~/test-utils";
+import { installerRender, createCallbackMock } from "~/test-utils";
 import { noop } from "~/utils";
 import { createClient } from "~/client";
 
@@ -34,7 +34,7 @@ jest.mock("@patternfly/react-core", () => {
 
   return {
     ...original,
-    Skeleton: mockComponent("PFSkeleton")
+    Skeleton: () => <div>PFSkeleton</div>
   };
 });
 
@@ -140,7 +140,7 @@ describe("when ready", () => {
       expect(setAction).toBeNull();
     });
 
-    it("allows the user to change the already set password", async() => {
+    it("allows the user to change the already set password", async () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
@@ -154,7 +154,7 @@ describe("when ready", () => {
       screen.getByRole("dialog", { name: "Change the root password" });
     });
 
-    it("allows the user to discard the chosen password", async() => {
+    it("allows the user to discard the chosen password", async () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
@@ -237,7 +237,7 @@ describe("when ready", () => {
       expect(setAction).toBeNull();
     });
 
-    it("allows the user to change it", async() => {
+    it("allows the user to change it", async () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");
@@ -251,7 +251,7 @@ describe("when ready", () => {
       screen.getByRole("dialog", { name: "Edit the SSH Public Key for root" });
     });
 
-    it("allows the user to discard it", async() => {
+    it("allows the user to discard it", async () => {
       const { user } = installerRender(<RootAuthMethods />);
 
       const table = await screen.findByRole("grid");

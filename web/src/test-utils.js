@@ -33,6 +33,8 @@ import { render } from "@testing-library/react";
 import { createClient } from "~/client/index";
 import { InstallerClientProvider } from "~/context/installer";
 import { NotificationProvider } from "~/context/notification";
+import { Layout } from "~/components/layout";
+import { noop } from "./utils";
 import cockpit from "./lib/cockpit";
 
 /**
@@ -72,6 +74,12 @@ jest.mock('react-router-dom', () => ({
 const Providers = ({ children }) => {
   const client = createClient();
 
+  // FIXME: workaround to fix the tests. We should inject
+  // the client instead of mocking `createClient`.
+  if (!client.onDisconnect) {
+    client.onDisconnect = noop;
+  }
+
   return (
     <InstallerClientProvider client={client}>
       <MemoryRouter initialEntries={initialRoutes()}>
@@ -90,11 +98,16 @@ const installerRender = (ui, options = {}) => {
   );
 };
 
+// Add an option to include or not the layout.
 const plainRender = (ui, options = {}) => {
+  const { layout, ...opts } = options;
+  if (layout) {
+    opts.wrapper = Layout;
+  }
   return (
     {
       user: userEvent.setup(),
-      ...render(ui, options)
+      ...render(ui, opts)
     }
   );
 };
@@ -118,39 +131,6 @@ const createCallbackMock = () => {
   };
   return [on, callbacks];
 };
-
-/**
- * Returns fake component with given content
- *
- * @param {React.ReactNode} content - content for the fake component
- * @param {object} [options] - Options for building the fake component
- * @param {string} [options.wrapper="div"] - the HTML element to be used for wrapping given content
- *
- * @return a function component
- */
-const mockComponent = (content, { wrapper } = { wrapper: "div" }) => {
-  const Wrapper = wrapper;
-  return () => <Wrapper>{content}</Wrapper>;
-};
-
-/**
- * Returns fake component for mocking the Layout and its slots
- *
- * Useful to be used when testing a component that uses either, the Layout itself or any of its
- * slots (a.k.a. portals)
- *
- * @return a function component to mock the Layout
- */
-const mockLayout = () => ({
-  __esModule: true,
-  default: ({ children }) => children,
-  Title: ({ children }) => children,
-  PageIcon: ({ children }) => children,
-  AppActions: ({ children }) => children,
-  PageOptions: ({ children }) => children,
-  MainActions: ({ children }) => children,
-  AdditionalInfo: ({ children }) => children,
-});
 
 /**
  * Wraps the content with a notification provider
@@ -183,9 +163,7 @@ export {
   plainRender,
   installerRender,
   createCallbackMock,
-  mockComponent,
   mockGettext,
-  mockLayout,
   mockNavigateFn,
   mockRoutes,
   withNotificationProvider

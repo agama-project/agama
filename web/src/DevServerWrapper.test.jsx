@@ -23,10 +23,7 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 
-import { mockComponent } from "~/test-utils";
 import DevServerWrapper from "~/DevServerWrapper";
-
-jest.mock("~/components/layout/Loading", () => mockComponent("Loading Component Mock"));
 
 // mock XMLHttpRequest object
 const xhrMock = {
@@ -39,7 +36,7 @@ describe("DevServerWrapper", () => {
     jest.spyOn(window, 'XMLHttpRequest').mockImplementation(() => xhrMock);
 
     render(<DevServerWrapper />);
-    screen.getByText(/Loading Component Mock/);
+    screen.getByText(/Loading installation environment/);
 
     expect(xhrMock.open).toBeCalledWith("GET", "/cockpit/login");
     expect(xhrMock.send).toHaveBeenCalled();

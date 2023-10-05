@@ -22,12 +22,11 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { installerRender, mockComponent, mockLayout } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 
 import InstallationProgress from "./InstallationProgress";
 
-jest.mock("~/components/layout/Layout", () => mockLayout());
-jest.mock("~/components/core/ProgressReport", () => mockComponent("ProgressReport Mock"));
+jest.mock("~/components/core/ProgressReport", () => () => <div>ProgressReport Mock</div>);
 
 describe("InstallationProgress", () => {
   it("uses 'Installing' as title", async () => {
