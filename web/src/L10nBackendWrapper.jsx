@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
 import React, { useEffect, useState } from "react";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
@@ -33,6 +35,7 @@ import cockpit from "./lib/cockpit";
  * It behaves like a wrapper, it just wraps the children components, it does
  * not render any real content.
  *
+ * @param {object} props
  * @param {React.ReactNode} [props.children] - content to display within the
  * wrapper
  */
@@ -52,7 +55,7 @@ export default function L10nBackendWrapper({ children }) {
       if (currentLang !== cockpitLocale) {
         await cancellablePromise(client.setUILanguage(cockpitLocale));
         // reload the whole page to force retranslation of all texts
-        window.location.reload(true);
+        window.location.reload();
       }
     };
 

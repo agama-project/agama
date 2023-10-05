@@ -19,6 +19,8 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+//
 import cockpit from "./lib/cockpit";
 
 /**
@@ -36,7 +38,7 @@ function setLang(lang) {
  * Helper function for reloading the page.
  */
 function reload() {
-  window.location.reload(true);
+  window.location.reload();
 }
 
 /**
@@ -47,8 +49,8 @@ function reload() {
  * It behaves like a wrapper, it just wraps the children components, it does
  * not render any real content.
  *
- * @param {React.ReactNode} [props.children] - content to display within the
- * wrapper
+ * @param {object} props
+ * @param {React.ReactNode} [props.children] - content to display within the wrapper
  */
 export default function L10nWrapper({ children }) {
   // language from cookie, empty string if not set (regexp taken from Cockpit)
