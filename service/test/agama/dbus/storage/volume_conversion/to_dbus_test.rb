@@ -57,16 +57,16 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
   describe "#convert" do
     it "converts the volume to a D-Bus hash" do
       expect(described_class.new(default_volume).convert).to eq(
-        "MountPath"    => "/test",
-        "MountOptions" => [],
-        "TargetDevice" => "",
-        "TargetVG"     => "",
-        "FsType"       => "",
-        "MinSize"      => 0,
-        "AutoSize"     => false,
-        "Snapshots"    => false,
-        "ReadOnly"     => false,
-        "Outline"      => {
+        "MountPath"     => "/test",
+        "MountOptions"  => [],
+        "TargetDevice"  => "",
+        "TargetVG"      => "",
+        "FsType"        => "",
+        "MinSize"       => 0,
+        "AutoSize"      => false,
+        "Snapshots"     => false,
+        "Transactional" => false,
+        "Outline"       => {
           "Required"              => false,
           "FsTypes"               => [],
           "SupportAutoSize"       => false,
