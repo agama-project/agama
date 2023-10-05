@@ -163,7 +163,7 @@ const contexts = {
           MaxSize: { t: "x", v: 2048 },
           AutoSize: { t: "b", v: true },
           Snapshots: { t: "b", v: true },
-          ReadOnly: { t: "b", v: true },
+          Transactional: { t: "b", v: true },
           Outline: {
             t: "a{sv}",
             v: {
@@ -183,7 +183,7 @@ const contexts = {
           MaxSize: { t: "x", v: 4096 },
           AutoSize: { t: "b", v: false },
           Snapshots: { t: "b", v: false },
-          ReadOnly: { t: "b", v: false },
+          Transactional: { t: "b", v: false },
           Outline: {
             t: "a{sv}",
             v: {
@@ -714,7 +714,7 @@ describe("#proposal", () => {
             MaxSize: { t: "x", v: 4096 },
             AutoSize: { t: "b", v: false },
             Snapshots: { t: "b", v: false },
-            ReadOnly: { t: "b", v: false },
+            Transactional: { t: "b", v: false },
             Outline: {
               t: "a{sv}",
               v: {
