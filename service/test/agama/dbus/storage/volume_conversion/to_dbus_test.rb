@@ -44,6 +44,7 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
       volume.outline = volume_outline
       volume.fs_type = Y2Storage::Filesystems::Type::EXT4
       volume.btrfs.snapshots = true
+      volume.btrfs.read_only = true
       volume.mount_options = ["rw", "default"]
       volume.device = "/dev/sda"
       volume.separate_vg_name = "/dev/system"
@@ -56,15 +57,16 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
   describe "#convert" do
     it "converts the volume to a D-Bus hash" do
       expect(described_class.new(default_volume).convert).to eq(
-        "MountPath"    => "/test",
-        "MountOptions" => [],
-        "TargetDevice" => "",
-        "TargetVG"     => "",
-        "FsType"       => "",
-        "MinSize"      => 0,
-        "AutoSize"     => false,
-        "Snapshots"    => false,
-        "Outline"      => {
+        "MountPath"     => "/test",
+        "MountOptions"  => [],
+        "TargetDevice"  => "",
+        "TargetVG"      => "",
+        "FsType"        => "",
+        "MinSize"       => 0,
+        "AutoSize"      => false,
+        "Snapshots"     => false,
+        "Transactional" => false,
+        "Outline"       => {
           "Required"              => false,
           "FsTypes"               => [],
           "SupportAutoSize"       => false,
@@ -75,16 +77,17 @@ describe Agama::DBus::Storage::VolumeConversion::ToDBus do
       )
 
       expect(described_class.new(custom_volume).convert).to eq(
-        "MountPath"    => "/test",
-        "MountOptions" => ["rw", "default"],
-        "TargetDevice" => "/dev/sda",
-        "TargetVG"     => "/dev/system",
-        "FsType"       => "Ext4",
-        "MinSize"      => 1024,
-        "MaxSize"      => 2048,
-        "AutoSize"     => true,
-        "Snapshots"    => true,
-        "Outline"      => {
+        "MountPath"     => "/test",
+        "MountOptions"  => ["rw", "default"],
+        "TargetDevice"  => "/dev/sda",
+        "TargetVG"      => "/dev/system",
+        "FsType"        => "Ext4",
+        "MinSize"       => 1024,
+        "MaxSize"       => 2048,
+        "AutoSize"      => true,
+        "Snapshots"     => true,
+        "Transactional" => true,
+        "Outline"       => {
           "Required"              => true,
           "FsTypes"               => ["Ext3", "Ext4"],
           "SupportAutoSize"       => true,

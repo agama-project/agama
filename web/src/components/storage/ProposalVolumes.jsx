@@ -201,6 +201,7 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
 
   const Details = ({ volume, options }) => {
     const hasSnapshots = volume.fsType === "Btrfs" && volume.snapshots;
+    const transactional = volume.fsType === "Btrfs" && volume.transactional;
 
     // TRANSLATORS: the filesystem uses a logical volume (LVM)
     const text = `${volume.fsType} ${options.lvm ? _("logical volume") : _("partition")}`;
@@ -214,6 +215,8 @@ const VolumeRow = ({ columns, volume, options, isLoading, onEdit, onDelete }) =>
         <If condition={options.encryption} then={<Em icon={lockIcon}>{_("encrypted")}</Em>} />
         {/* TRANSLATORS: filesystem flag, it allows creating snapshots */}
         <If condition={hasSnapshots} then={<Em icon={snapshotsIcon}>{_("with snapshots")}</Em>} />
+        {/* TRANSLATORS: flag for transactional file system  */}
+        <If condition={transactional} then={<Em>{_("transactional")}</Em>} />
       </div>
     );
   };
