@@ -22,14 +22,12 @@
 import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
 import { createDefaultClient } from "~/client";
-import { plainRender } from "~/test-utils";
+import { plainRender, createCallbackMock } from "~/test-utils";
 import { InstallerClientProvider } from "./installer";
 
 jest.mock("~/client");
 
-let callbacks = {};
-const onDisconnectFn = cb => { callbacks.onDisconnect = cb };
-const disconnect = () => act(() => callbacks.onDisconnect());
+let onDisconnectFn = jest.fn();
 const isConnectedFn = jest.fn();
 
 describe("installer context", () => {
@@ -74,7 +72,14 @@ describe("installer context", () => {
   });
 
   describe("when the D-Bus service is disconnected", () => {
+    beforeEach(() => {
+      isConnectedFn.mockResolvedValue(true);
+    });
+
     it("reconnects to the D-Bus service", async () => {
+      const [onDisconnect, callbacks] = createCallbackMock();
+      onDisconnectFn = onDisconnect;
+
       plainRender(
         <InstallerClientProvider>
           <div>Hello world!</div>
@@ -82,7 +87,8 @@ describe("installer context", () => {
       );
       await screen.findByText(/Loading installation environment/);
       await screen.findByText(/Hello world!/);
-      disconnect();
+      const [disconnect] = callbacks;
+      act(disconnect);
       await screen.findByText(/Loading installation environment/);
       await screen.findByText(/Hello world!/);
     });
