@@ -20,14 +20,16 @@
  */
 
 import React from "react";
-import { screen, waitFor } from "@testing-library/react";
-import { createDefaultClient } from "~/client";
+import { act, screen, waitFor } from "@testing-library/react";
+import { createDefaultClient, createCallbackMock } from "~/client";
 import { plainRender } from "~/test-utils";
 import { InstallerClientProvider } from "./installer";
 
 jest.mock("~/client");
 
-const onDisconnectFn = jest.fn();
+let callbacks = {};
+const onDisconnectFn = cb => { callbacks.onDisconnect = cb };
+const disconnect = () => act(() => callbacks.onDisconnect());
 const isConnectedFn = jest.fn();
 
 describe("installer context", () => {
@@ -68,6 +70,21 @@ describe("installer context", () => {
       await waitFor(() => {
         expect(screen.queryByText("Hello world!")).toBeInTheDocument();
       });
+    });
+  });
+
+  describe("when the D-Bus service is disconnected", () => {
+    it("reconnects to the D-Bus service", async () => {
+      plainRender(
+        <InstallerClientProvider>
+          <div>Hello world!</div>
+        </InstallerClientProvider>
+      );
+      await screen.findByText(/Loading installation environment/);
+      await screen.findByText(/Hello world!/);
+      disconnect();
+      await screen.findByText(/Loading installation environment/);
+      await screen.findByText(/Hello world!/);
     });
   });
 });
