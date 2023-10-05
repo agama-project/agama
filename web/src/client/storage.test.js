@@ -734,7 +734,7 @@ describe("#proposal", () => {
             MaxSize: { t: "x", v: 2048 },
             AutoSize: { t: "b", v: false },
             Snapshots: { t: "b", v: false },
-            ReadOnly: { t: "b", v: false },
+            Transactional: { t: "b", v: false },
             Outline: {
               t: "a{sv}",
               v: {
