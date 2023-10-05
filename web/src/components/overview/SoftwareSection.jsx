@@ -138,8 +138,6 @@ export default function SoftwareSection({ showErrors }) {
     );
   };
 
-  const path = (!state.busy && state.errors.length === 0) ? { path: "/software" } : {};
-
   return (
     <Section
       key="software-section"
@@ -148,7 +146,7 @@ export default function SoftwareSection({ showErrors }) {
       icon="apps"
       loading={state.busy}
       errors={errors}
-      {...path}
+      path="/software"
     >
       <SectionContent />
     </Section>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,10 +21,9 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { SearchInput } from "@patternfly/react-core";
-import { sprintf } from "sprintf-js";
 
 import { useInstallerClient } from "~/context/installer";
-import { Section } from "~/components/core";
+import { ValidationErrors } from "~/components/core";
 import PatternGroup from "./PatternGroup";
 import PatternItem from "./PatternItem";
 import UsedSize from "./UsedSize";
@@ -88,6 +87,7 @@ function sortGroups(groups) {
 function PatternSelector() {
   const [patterns, setPatterns] = useState();
   const [selected, setSelected] = useState();
+  const [errors, setErrors] = useState([]);
   const [used, setUsed] = useState();
   const [searchValue, setSearchValue] = useState("");
   const client = useInstallerClient();
@@ -101,6 +101,7 @@ function PatternSelector() {
     const refresh = async () => {
       setSelected(await client.software.selectedPatterns());
       setUsed(await client.software.getUsedSpace());
+      setErrors(await client.software.getValidationErrors());
     };
 
     refresh();
@@ -111,22 +112,19 @@ function PatternSelector() {
     if (patterns) return;
 
     const loadData = async () => {
-      setPatterns(await client.software.patterns(true));
       setSelected(await client.software.selectedPatterns());
       setUsed(await client.software.getUsedSpace());
+      setErrors(await client.software.getValidationErrors());
+      setPatterns(await client.software.patterns(true));
     };
 
     loadData();
   }, [patterns, client.software]);
 
-  if (!patterns || !selected) {
-    return <></>;
-  }
+  // initial empty screen, the patterns are loaded very quickly, no need for any progress
+  if (!patterns) return <></>;
 
   let patternsData = convert(patterns, selected);
-
-  // count the number of selected patterns
-  const numSelected = patternsData.reduce((acc, pat) => acc + (pat.selected === undefined ? 0 : 1), 0);
 
   // filtering - search the required text in the name and pattern description
   if (searchValue !== "") {
@@ -156,21 +154,18 @@ function PatternSelector() {
 
   return (
     <>
-      <Section title={_("Selected Software")} icon="apps">
-        <UsedSize size={used} />
-        <div> { sprintf(_("Selected %d patterns"), numSelected) } </div>
-        <h2>{_("Filter")}</h2>
-        <SearchInput
-          placeholder={_("Search")}
-          value={searchValue}
-          onChange={(_event, value) => onSearchChange(value)}
-          onClear={() => onSearchChange("")}
-          // do not display the counter when search filter is empty
-          resultsCount={searchValue === "" ? 0 : patternsData.length}
-        />
+      <UsedSize size={used} />
+      <ValidationErrors errors={errors} title={`${errors.length} errors`} />
+      <SearchInput
+        placeholder={_("Search")}
+        value={searchValue}
+        onChange={(_event, value) => onSearchChange(value)}
+        onClear={() => onSearchChange("")}
+        // do not display the counter when search filter is empty
+        resultsCount={searchValue === "" ? 0 : patternsData.length}
+      />
 
-        { selector }
-      </Section>
+      { selector }
     </>
   );
 }

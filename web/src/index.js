@@ -42,7 +42,7 @@ import DevServerWrapper from "~/DevServerWrapper";
 import L10nWrapper from "~/L10nWrapper";
 import L10nBackendWrapper from "~/L10nBackendWrapper";
 import { Overview } from "~/components/overview";
-import { ProductSelectionPage, SoftwareSelectionPage } from "~/components/software";
+import { ProductSelectionPage, SoftwarePage } from "~/components/software";
 import { ProposalPage as StoragePage, ISCSIPage, DASDPage, ZFCPPage } from "~/components/storage";
 import { UsersPage } from "~/components/users";
 import { L10nPage } from "~/components/l10n";
@@ -86,7 +86,7 @@ root.render(
                       <Route index element={<Overview />} />
                       <Route path="/overview" element={<Overview />} />
                       <Route path="/l10n" element={<L10nPage />} />
-                      <Route path="/software" element={<SoftwareSelectionPage />} />
+                      <Route path="/software" element={<SoftwarePage />} />
                       <Route path="/storage" element={<StoragePage />} />
                       <Route path="/storage/iscsi" element={<ISCSIPage />} />
                       <Route path="/storage/dasd" element={<DASDPage />} />

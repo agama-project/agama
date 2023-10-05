@@ -20,15 +20,10 @@
  */
 
 import React from "react";
+import { Section } from "~/components/core";
 
-export default function PatternGroup({
-  name,
-  children
-}) {
+export default function PatternGroup({ name, children }) {
   return (
-    <>
-      <h2>{name}</h2>
-      {children}
-    </>
+    <Section title={name}>{children}</Section>
   );
 }
