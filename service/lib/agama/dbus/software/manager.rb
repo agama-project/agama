@@ -127,7 +127,7 @@ module Agama
           dbus_method(:Finish) { finish }
         end
 
-        def available_base_products
+        def available_products
           backend.products.map do |id, data|
             [id, data["name"], { "description" => data["description"] }].freeze
           end
@@ -136,7 +136,7 @@ module Agama
         # Returns the selected base product
         #
         # @return [String] Product ID or an empty string if no product is selected
-        def selected_base_product
+        def selected_product
           backend.product || ""
         end
 

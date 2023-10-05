@@ -55,7 +55,7 @@ module Agama
         #
         # @return [Array<Array<String, String>>] name and display name of each product
         def available_products
-          dbus_object["org.opensuse.Agama.Software1"]["AvailableBaseProducts"].map do |l|
+          dbus_object["org.opensuse.Agama.Software1"]["AvailableProducts"].map do |l|
             l[0..1]
           end
         end
@@ -64,7 +64,7 @@ module Agama
         #
         # @return [String, nil] name of the product
         def selected_product
-          product = dbus_object["org.opensuse.Agama.Software1"]["SelectedBaseProduct"]
+          product = dbus_object["org.opensuse.Agama.Software1"]["SelectedProduct"]
           return nil if product.empty?
 
           product
@@ -170,8 +170,8 @@ module Agama
         # @param block [Proc] Callback to run when a product is selected
         def on_product_selected(&block)
           on_properties_change(dbus_object) do |_, changes, _|
-            base_product = changes["SelectedBaseProduct"]
-            block.call(base_product) unless base_product.nil?
+            product = changes["SelectedProduct"]
+            block.call(product) unless product.nil?
           end
         end
 
