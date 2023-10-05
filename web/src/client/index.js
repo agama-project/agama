@@ -31,8 +31,10 @@ import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
 import { IssuesClient } from "./issues";
+import cockpit from "../lib/cockpit";
 
-const SERVICE_NAME = "org.opensuse.Agama";
+const BUS_ADDRESS_FILE = "/run/agama/bus.address";
+const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
 
 /**
  * @typedef {object} InstallerClient
@@ -45,6 +47,10 @@ const SERVICE_NAME = "org.opensuse.Agama";
  * @property {UsersClient} users - users client
  * @property {QuestionsClient} questions - questions client
  * @property {IssuesClient} issues - issues client
+ * @property {() => Promise<boolean>} isConnected - determines whether the client is connected
+ * @property {(handler: () => void) => (() => void)} onDisconnect - registers a handler to run
+ *   when the connection is lost. It returns a function to deregister the
+ *   handler.
  */
 
 /**
@@ -55,13 +61,22 @@ const SERVICE_NAME = "org.opensuse.Agama";
 const createClient = (address = "unix:path=/run/agama/bus") => {
   const language = new LanguageClient(address);
   const manager = new ManagerClient(address);
-  const monitor = new Monitor(address, SERVICE_NAME);
+  const monitor = new Monitor(address, MANAGER_SERVICE);
   const network = new NetworkClient();
   const software = new SoftwareClient(address);
   const storage = new StorageClient(address);
   const users = new UsersClient(address);
   const questions = new QuestionsClient(address);
   const issues = new IssuesClient({ storage });
+
+  const isConnected = async () => {
+    try {
+      await manager.getStatus();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
 
   return {
     language,
@@ -72,8 +87,16 @@ const createClient = (address = "unix:path=/run/agama/bus") => {
     storage,
     users,
     questions,
-    issues
+    issues,
+    isConnected,
+    onDisconnect: (handler) => monitor.onDisconnect(handler)
   };
 };
 
-export { createClient, phase };
+const createDefaultClient = async () => {
+  const file = cockpit.file(BUS_ADDRESS_FILE);
+  const address = await file.read();
+  return (address) ? createClient(address) : createClient();
+};
+
+export { createClient, createDefaultClient, phase };

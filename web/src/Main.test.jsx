@@ -21,11 +21,11 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender, mockComponent } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 
 import Main from "~/Main";
 
-jest.mock("~/components/questions/Questions", () => mockComponent("Questions Mock"));
+jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 
 it("renders the Questions component and the content", async () => {
   plainRender(<Main />);

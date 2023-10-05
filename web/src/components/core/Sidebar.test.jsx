@@ -21,15 +21,13 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockLayout, mockComponent, withNotificationProvider } from "~/test-utils";
+import { installerRender, withNotificationProvider } from "~/test-utils";
 import { If, Sidebar } from "~/components/core";
 import { createClient } from "~/client";
 
-// Mock layout
-jest.mock("~/components/layout/Layout", () => mockLayout());
 // Mock some components using contexts and not relevant for below tests
-jest.mock("~/components/core/LogsButton", () => mockComponent("LogsButton Mock"));
-jest.mock("~/components/software/ChangeProductLink", () => mockComponent("ChangeProductLink Mock"));
+jest.mock("~/components/core/LogsButton", () => () => <div>LogsButton Mock</div>);
+jest.mock("~/components/software/ChangeProductLink", () => () => <div>ChangeProductLink Mock</div>);
 
 let hasIssues = false;
 

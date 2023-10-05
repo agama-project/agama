@@ -22,7 +22,7 @@
 import React, { useState } from "react";
 
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, plainRender } from "~/test-utils";
 
 import { Popup } from "~/components/core";
 
@@ -39,7 +39,7 @@ const TestingPopup = (props) => {
     <Popup
       title="Testing Popup component"
       isOpen={isOpen}
-      { ...props }
+      {...props}
     >
       <p>The Popup Content</p>
       <button onClick={() => setIsMounted(false)}>Unmount Popup</button>
@@ -93,7 +93,7 @@ describe("Popup", () => {
     });
 
     it("removes aria-hidden attributes from body children (workaround for patternfly/patternfly-react#9096)", async () => {
-      const { user } = installerRender(
+      const { user } = plainRender(
         <>
           <article>Popup Sibling</article>
           <TestingPopup />
@@ -107,7 +107,7 @@ describe("Popup", () => {
 
       await screen.findByRole("dialog");
       const sibling = screen.getByText("Popup Sibling");
-      const unmountButton = await screen.getByRole("button", { name: "Unmount Popup" });
+      const unmountButton = screen.getByRole("button", { name: "Unmount Popup" });
       expect(sibling).toHaveAttribute("aria-hidden");
       await user.click(unmountButton);
       expect(sibling).not.toHaveAttribute("aria-hidden");

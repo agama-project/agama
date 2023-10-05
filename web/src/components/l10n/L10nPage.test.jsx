@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockLayout, mockNavigateFn } from "~/test-utils";
+import { installerRender, mockNavigateFn } from "~/test-utils";
 import { L10nPage } from "~/components/l10n";
 import { createClient } from "~/client";
 
@@ -32,7 +32,6 @@ const languages = [
 ];
 
 jest.mock("~/client");
-jest.mock("~/components/layout/Layout", () => mockLayout());
 
 beforeEach(() => {
   // if defined outside, the mock is cleared automatically
