@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,12 +21,12 @@
 
 require "dbus"
 require "agama/dbus/base_object"
-require "agama/dbus/with_service_status"
 require "agama/dbus/clients/locale"
 require "agama/dbus/clients/network"
+require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
-require "agama/dbus/interfaces/validation"
+require "agama/dbus/with_service_status"
 
 module Agama
   module DBus
@@ -36,7 +36,7 @@ module Agama
         include WithServiceStatus
         include Interfaces::Progress
         include Interfaces::ServiceStatus
-        include Interfaces::Validation
+        include Interfaces::Issues
 
         PATH = "/org/opensuse/Agama/Software1"
         private_constant :PATH
@@ -52,6 +52,13 @@ module Agama
           register_progress_callbacks
           register_service_status_callbacks
           @selected_patterns = {}
+        end
+
+        # List of issues, see {DBus::Interfaces::Issues}
+        #
+        # @return [Array<Agama::Issue>]
+        def issues
+          backend.issues
         end
 
         SOFTWARE_INTERFACE = "org.opensuse.Agama.Software1"
@@ -73,7 +80,6 @@ module Agama
             logger.info "Selecting product #{product_id}"
             select_product(product_id)
             dbus_properties_changed(SOFTWARE_INTERFACE, { "SelectedBaseProduct" => product_id }, [])
-            update_validation # as different product means different software selection
           end
 
           # value of result hash is category, description, icon, summary and order
@@ -140,13 +146,10 @@ module Agama
 
         def probe
           busy_while { backend.probe }
-
-          update_validation # probe do force proposal
         end
 
         def propose
           busy_while { backend.propose }
-          update_validation
 
           nil # explicit nil as return value
         end
@@ -218,6 +221,8 @@ module Agama
           backend.on_selected_patterns_change do
             self.selected_patterns = compute_patterns
           end
+
+          backend.on_issues_change { issues_properties_changed }
         end
 
         USER_SELECTED_PATTERN = 0

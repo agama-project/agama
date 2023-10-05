@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021] SUSE LLC
+# Copyright (c) [2021-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,18 +19,19 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
 require "fileutils"
-require "agama/config"
-require "agama/helpers"
-require "agama/with_progress"
-require "agama/validation_error"
+require "yast"
+require "yast2/arch_filter"
 require "y2packager/product"
 require "y2packager/resolvable"
-require "yast2/arch_filter"
+require "agama/config"
+require "agama/helpers"
+require "agama/issue"
 require "agama/software/callbacks"
 require "agama/software/proposal"
 require "agama/software/repositories_manager"
+require "agama/with_progress"
+require "agama/with_issues"
 
 Yast.import "Package"
 Yast.import "Packages"
@@ -43,6 +44,7 @@ module Agama
     # This class is responsible for software handling
     class Manager
       include Helpers
+      include WithIssues
       include WithProgress
 
       GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
@@ -78,6 +80,7 @@ module Agama
         # patterns selected by user
         @user_patterns = []
         @selected_patterns_change_callbacks = []
+        update_issues
       end
 
       def select_product(name)
@@ -87,6 +90,7 @@ module Agama
         @config.pick_product(name)
         @product = name
         repositories.delete_all
+        update_issues
       end
 
       def probe
@@ -109,6 +113,7 @@ module Agama
         progress.step("Calculating the software proposal") { propose }
 
         Yast::Stage.Set("initial")
+        update_issues
       end
 
       def initialize_target_repos
@@ -122,23 +127,9 @@ module Agama
         proposal.languages = languages
         select_resolvables
         result = proposal.calculate
+        update_issues
         logger.info "Proposal result: #{result.inspect}"
         result
-      end
-
-      # Returns the errors related to the software proposal
-      #
-      # * Repositories that could not be probed are reported as errors.
-      # * If none of the repositories could be probed, do not report missing
-      #   patterns and/or packages. Those issues does not make any sense if there
-      #   are no repositories to install from.
-      def validate
-        errors = repositories.disabled.map do |repo|
-          ValidationError.new("Could not read the repository #{repo.name}")
-        end
-        return errors if repositories.enabled.empty?
-
-        errors + proposal.errors
       end
 
       # Installs the packages to the target system
@@ -345,6 +336,52 @@ module Agama
 
       def selected_patterns_changed
         @selected_patterns_change_callbacks.each(&:call)
+      end
+
+      # Updates the list of issues.
+      def update_issues
+        self.issues = current_issues
+      end
+
+      # List of current issues.
+      #
+      # @return [Array<Agama::Issue>]
+      def current_issues
+        return [missing_product_issue] unless product
+
+        issues = repos_issues
+
+        # If none of the repositories could be probed, then do not report missing patterns and/or
+        # packages. Those issues does not make any sense if there are no repositories to install
+        # from.
+        issues += proposal.issues if repositories.enabled.any?
+
+        # TODO
+        # issues += registration.issues
+
+        issues
+      end
+
+      # Issue when a product is missing
+      #
+      # @return [Agama::Issue]
+      def missing_product_issue
+        Issue.new("Product not selected yet",
+          source:   Issue::Source::CONFIG,
+          severity: Issue::Severity::ERROR)
+      end
+
+      # Issues related to the software proposal.
+      #
+      # Repositories that could not be probed are reported as errors.
+      #
+      # @return [Array<Agama::Issue>]
+      def repos_issues
+        issues = repositories.disabled.map do |repo|
+          Issue.new("Could not read the repository #{repo.name}",
+            source:   Issue::Source::SYSTEM,
+            severity: Issue::Severity::WARN)
+        end
       end
     end
   end

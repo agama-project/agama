@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,18 +20,18 @@
 # find current contact information at www.suse.com.
 
 require "agama/dbus/clients/base"
-require "agama/dbus/clients/with_service_status"
+require "agama/dbus/clients/with_issues"
 require "agama/dbus/clients/with_progress"
-require "agama/dbus/clients/with_validation"
+require "agama/dbus/clients/with_service_status"
 
 module Agama
   module DBus
     module Clients
       # D-Bus client for software configuration
       class Software < Base
-        include WithServiceStatus
+        include WithIssues
         include WithProgress
-        include WithValidation
+        include WithServiceStatus
 
         TYPES = [:package, :pattern].freeze
         private_constant :TYPES
