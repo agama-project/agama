@@ -21,7 +21,7 @@
 
 import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
-import { createDefaultClient, createCallbackMock } from "~/client";
+import { createDefaultClient } from "~/client";
 import { plainRender } from "~/test-utils";
 import { InstallerClientProvider } from "./installer";
 
