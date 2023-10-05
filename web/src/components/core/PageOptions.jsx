@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   Dropdown, DropdownGroup, DropdownItem, DropdownList,
   MenuToggle
@@ -138,42 +138,24 @@ const Options = ({ children, ...props }) => {
  */
 const PageOptions = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
 
-  const onToggle = () => setIsOpen(!isOpen);
-  const onSelect = () => setIsOpen(false);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('click', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, [isOpen]);
+  const toggle = () => setIsOpen(!isOpen);
+  const close = () => setIsOpen(false);
 
   return (
     <PageOptionsSlot>
-      <div ref={dropdownRef}>
-        <Dropdown
-          isOpen={isOpen}
-          toggle={(toggleRef) => <Toggler toggleRef={toggleRef} onClick={onToggle} />}
-          onSelect={onSelect}
-          popperProps={{ minWidth: "150px", position: "right" }}
-          className="page-options"
-        >
-          <DropdownList>
-            {Array(children)}
-          </DropdownList>
-        </Dropdown>
-      </div>
+      <Dropdown
+        isOpen={isOpen}
+        toggle={(toggleRef) => <Toggler toggleRef={toggleRef} onClick={toggle} />}
+        onSelect={close}
+        onOpenChange={close}
+        popperProps={{ minWidth: "150px", position: "right" }}
+        className="page-options"
+      >
+        <DropdownList>
+          {Array(children)}
+        </DropdownList>
+      </Dropdown>
     </PageOptionsSlot>
   );
 };

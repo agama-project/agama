@@ -3,17 +3,12 @@
   // from brand.suse.com
 
   // Font families
-  --pf-v5-global--FontFamily--sans-serif: var(--ff);
-  --pf-v5-global--FontFamily--heading--sans-serif: var(--ff-headings);
+  --pf-v5-global--FontFamily--text: var(--ff);
+  --pf-v5-global--FontFamily--text--vf: var(--ff);
+  --pf-v5-global--FontFamily--heading: var(--ff-headings);
+  --pf-v5-global--FontFamily--heading--vf: var(--ff-headings);
   --pf-v5-global--FontFamily--monospace: var(--ff-code);
-  --pf-v5-global--FontFamily--redhat-updated--sans-serif: var(--ff);
-  --pf-v5-global--FontFamily--redhat-updated--heading--sans-serif: var(--ff-headings);
-  --pf-v5-global--FontFamily--redhat--monospace: var(--ff-code);
-  --pf-v5-global--FontFamily--redhatVF--sans-serif: var(--ff);
-  --pf-v5-global--FontFamily--redhatVF--heading--sans-serif: var(--ff-headings);
-  --pf-v5-global--FontFamily--redhatVF--monospace: var(--ff-code);
-  --pf-v5-global--FontFamily--overpass--sans-serif: var(--ff);
-  --pf-v5-global--FontFamily--overpass--monospace: var(--ff-code);
+  --pf-v5-global--FontFamily--monospace--vf: var(--ff-code);
 
   // Font sizes
   --pf-v5-global--FontSize--4xl: 2em;
