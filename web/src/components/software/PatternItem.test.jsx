@@ -20,12 +20,11 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 
-import cockpit from "../../lib/cockpit";
-
 import { createClient } from "~/client";
+import cockpit from "../../lib/cockpit";
 
 import PatternItem from "./PatternItem";
 
@@ -64,11 +63,53 @@ const pattern = {
 
 describe("PatternItem", () => {
   it("displays the pattern summary and description", async () => {
-    installerRender(<PatternItem pattern={pattern} />);
+    await act(async () => installerRender(<PatternItem pattern={pattern} />));
 
     // the summary is displayed
     screen.getByText(pattern.summary);
     // the description is displayed
     screen.getByText(pattern.description);
+  });
+
+  it("displays the pattern icon if it as available", async () => {
+    readFn.mockResolvedValue("<?xml version=\"1.0\" ?>");
+    const { container } = await act(async () => installerRender(<PatternItem pattern={pattern} />));
+
+    expect(container.querySelector(".pattern-label-icon img")).not.toBeNull();
+  });
+
+  it("displays the generic fallback icon if the pattern icon is not available", async () => {
+    readFn.mockResolvedValue("");
+    const { container } = await act(async () => installerRender(<PatternItem pattern={pattern} />));
+
+    expect(container.querySelector(".pattern-label-icon svg")).not.toBeNull();
+  });
+
+  it("selects unselected pattern after clicking it", async () => {
+    pattern.selected = undefined;
+    const { container, user } = await act(async () => installerRender(<PatternItem pattern={pattern} />));
+
+    // console.log(prettyDOM(container));
+    await user.click(container.querySelector(".pattern-container"));
+
+    expect(addPatternFn).toHaveBeenCalledWith(pattern.name);
+  });
+
+  it("deselects selected pattern after clicking it", async () => {
+    pattern.selected = 0;
+    const { container, user } = await act(async () => installerRender(<PatternItem pattern={pattern} />));
+
+    await user.click(container.querySelector(".pattern-container"));
+
+    expect(removePatternFn).toHaveBeenCalledWith(pattern.name);
+  });
+
+  it("deselects automatically selected pattern after clicking it", async () => {
+    pattern.selected = 1;
+    const { container, user } = await act(async () => installerRender(<PatternItem pattern={pattern} />));
+
+    await user.click(container.querySelector(".pattern-container"));
+
+    expect(removePatternFn).toHaveBeenCalledWith(pattern.name);
   });
 });
