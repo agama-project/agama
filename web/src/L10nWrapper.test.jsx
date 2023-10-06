@@ -24,7 +24,7 @@ import { render, waitFor, screen } from "@testing-library/react";
 
 import L10nWrapper from "~/L10nWrapper";
 
-const getUILanguageFn = jest.fn();
+const getUILanguageFn = jest.fn().mockResolvedValue();
 const setUILanguageFn = jest.fn().mockResolvedValue();
 
 const client = {
@@ -40,6 +40,7 @@ const TranslatedContent = () => {
   const text = {
     "cs-cz": "ahoj",
     "en-us": "hello",
+    "es-es": "hola",
   };
 
   const regexp = /CockpitLang=([^;]+)/;
@@ -54,17 +55,21 @@ const TranslatedContent = () => {
 describe("L10nWrapper", () => {
   // remember the original object, we need to temporarily replace it with a mock
   const origLocation = window.location;
+  const origNavigator = window.navigator;
 
   // mock window.location.reload
   beforeAll(() => {
     delete window.location;
-    window.location = {
-      reload: jest.fn()
-    };
+    window.location = { reload: jest.fn() };
+
+    delete window.navigator;
+    // FIXME: use "en-US" instead, as it is the format used by browsers.
+    window.navigator = { language: "es_ES" };
   });
 
   afterAll(() => {
     window.location = origLocation;
+    window.navigator = origNavigator;
   });
 
   // remove the Cockpit language cookie after each test
@@ -81,6 +86,7 @@ describe("L10nWrapper", () => {
     describe("when the Cockpit language is already set", () => {
       beforeEach(() => {
         document.cookie = "CockpitLang=en-us; path=/;";
+        getUILanguageFn.mockResolvedValueOnce("en_US")
       });
 
       it("displays the children content and does not reload", async () => {
@@ -94,14 +100,21 @@ describe("L10nWrapper", () => {
     });
 
     describe("when the Cockpit language is not set", () => {
+      beforeEach(() => {
+        // Ensure both, UI and backend mock languages, are in sync since
+        // client.setUILanguage is mocked too.
+        // See navigator.language in the beforeAll at the top of the file.
+        getUILanguageFn.mockResolvedValue("es_ES");
+      });
+
       // so far this is only done in "test" and "development" environments,
       // not in "production"!!
       it("sets the preferred language from browser and reloads", async () => {
-        render(<L10nWrapper client={client}>Testing content</L10nWrapper>);
-
-        // jsdom uses "en-US" as the user preferred language
-        expect(document.cookie).toEqual("CockpitLang=en-us");
+        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
         await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+
+        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
+        await waitFor(() => screen.getByText("hola"));
       });
     });
   });
@@ -114,13 +127,15 @@ describe("L10nWrapper", () => {
     describe("when the Cockpit language is already set to 'cs-cz'", () => {
       beforeEach(() => {
         document.cookie = "CockpitLang=cs-cz; path=/;";
+        getUILanguageFn.mockResolvedValueOnce("cs_CZ");
       });
 
       it("displays the children content and does not reload", async () => {
-        render(<L10nWrapper client={client}>Testing content</L10nWrapper>);
+        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
 
         // children are displayed
-        await screen.findByText("Testing content");
+        await screen.findByText("ahoj");
+        expect(setUILanguageFn).not.toHaveBeenCalled();
 
         expect(document.cookie).toEqual("CockpitLang=cs-cz");
         expect(window.location.reload).not.toHaveBeenCalled();
@@ -130,13 +145,20 @@ describe("L10nWrapper", () => {
     describe("when the Cockpit language is set to 'en-us'", () => {
       beforeEach(() => {
         document.cookie = "CockpitLang=en-us; path=/;";
+        getUILanguageFn.mockResolvedValueOnce("en_US");
+        getUILanguageFn.mockResolvedValueOnce("cs_CZ");
+        setUILanguageFn.mockResolvedValue();
       });
 
       it("sets the 'cs-cz' language and reloads", async () => {
-        render(<L10nWrapper client={client}>Testing content</L10nWrapper>);
-
-        expect(document.cookie).toEqual("CockpitLang=cs-cz");
+        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
         await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+
+        // reload the component
+        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
+        await waitFor(() => screen.getByText("ahoj"));
+
+        expect(setUILanguageFn).toHaveBeenCalledWith("cs_CZ");
       });
     });
 
@@ -149,9 +171,9 @@ describe("L10nWrapper", () => {
 
       it("sets the 'cs_CZ' language and reloads", async () => {
         render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
-
         await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
 
+        // reload the component
         render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
         await waitFor(() => screen.getByText("ahoj"));
 
