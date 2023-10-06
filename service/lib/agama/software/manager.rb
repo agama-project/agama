@@ -252,6 +252,10 @@ module Agama
         Yast::String.FormatSizeWithPrecision(proposal.packages_size, 1, true)
       end
 
+      def registration
+        @registration ||= Registration.new(self)
+      end
+
     private
 
       def proposal

@@ -17,6 +17,12 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
+require "openstruct"
+
+require "registration/registration"
+require "y2packager/new_repository_setup"
+
 module Agama
   # Handles everything related to registration of system to SCC, RMT or similar
   class Registration
@@ -26,9 +32,26 @@ module Agama
     # initializes registration with instance of software manager for query about products
     def initialize(software_manager)
       @software = software_manager
+      @on_state_change_callbacks = []
     end
 
-    def register(code, email: nil)
+    def register(code, email: "")
+      target_distro = "ALP-Dolomite-1-x86_64" # TODO read it
+      registration = Registration::Registration.new # intentional no url yet
+      registration.register(email, code, target_distro)
+      # TODO: fill it properly for scc
+      target_product = OpenStruct.new(
+        arch: "x86_64",
+        identifier: "ALP-Dolomite",
+        version: "1.0",
+        release_type: "ALPHA"
+      )
+      activate_params = {}
+      service = SUSE::Connect::YaST.activate_product(target_product, activate_params, email)
+      Y2Packager::NewRepositorySetup.instance.add_service(service.name)
+
+      @reg_code = code
+      @email = email
     end
 
     def deregister
@@ -38,6 +61,11 @@ module Agama
     end
 
     def optional?
+    end
+
+    # callback when state changed like when different product is selected
+    def on_state_change(&block)
+      @on_state_change_callbacks << block
     end
   end
 end
