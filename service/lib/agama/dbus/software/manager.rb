@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "dbus"
+require "suse/connect"
 require "agama/dbus/base_object"
 require "agama/dbus/clients/locale"
 require "agama/dbus/clients/network"
@@ -166,24 +167,17 @@ module Agama
         private_constant :REGISTRATION_INTERFACE
 
         dbus_interface REGISTRATION_INTERFACE do
-          dbus_reader :reg_code, "s"
+          dbus_reader(:reg_code, "s")
 
-          dbus_reader :email, "s"
+          dbus_reader(:email, "s")
 
-          dbus_reader :state, "u"
+          dbus_reader(:state, "u")
 
-          dbus_method :Register, "in reg_code:s, in options:a{sv}, out result:u" do
-            |reg_code, options|
-            backend.registration.register(reg_code, email: options["Email"])
-            # map errors to exit codes?
-            0
+          dbus_method(:Register, "in reg_code:s, in options:a{sv}, out result:(us)") do |*args|
+            [register(*args)]
           end
 
-          dbus_method :Deregister, "out result:u" do
-            backend.registration.deregister
-            # map errors to exit codes?
-            0
-          end
+          dbus_method(:Deregister, "out result:(us)") { [deregister] }
         end
 
         def reg_code
@@ -194,11 +188,21 @@ module Agama
           backend.registration.email || ""
         end
 
-        # Replace #State by #IsDisabled and #isOptional ?
         def state
-          return 0 if backend.registration.disabled?
-          return 1 if backend.registration.optional?
-          return 2 unless backend.registration.optional?
+          # TODO
+          0
+        end
+
+        def register(reg_code, options)
+          connect_result do
+            backend.registration.register(reg_code, email: options["Email"])
+          end
+        end
+
+        def deregister
+          connect_result do
+            backend.registration.deregister
+          end
         end
 
       private
@@ -234,6 +238,30 @@ module Agama
           auto_selected.each { |p| patterns[p] = AUTO_SELECTED_PATTERN }
 
           patterns
+        end
+
+        # @return [Array<Integer, String>]
+        def connect_result(&block)
+          block.call
+          [0, ""]
+        rescue SocketError => e
+          logger.error("Network error: #{e}")
+          [1, "Connection to registration server failed (network error)"]
+        rescue Timeout::Error => e
+          logger.error("Timeout error: #{e}")
+          [2, "Connection to registration server failed (timeout)"]
+        rescue SUSE::Connect::ApiError => e
+          [3, "Connection to registration server failed"]
+        rescue SUSE::Connect::MissingSccCredentialsFile => e
+          [4, "Connection to registration server failed (missing credentials)"]
+        rescue SUSE::Connect::MalformedSccCredentialsFile => e
+          [5, "Connection to registration server failed (incorrect credentials)"]
+        rescue OpenSSL::SSL::SSLError => e
+          [6, "Connection to registration server failed (invalid certificate)"]
+        rescue JSON::ParserError => e
+          [7, "Connection to registration server failed"]
+        rescue StandardError => e
+          [8, "Connection to registration server failed"]
         end
       end
     end
