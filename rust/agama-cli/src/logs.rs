@@ -44,10 +44,10 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
     }
 }
 
-const DEFAULT_COMMANDS: [&str; 3] = [
-    "journalctl -u agama",
-    "journalctl -u agama-auto",
-    "journalctl --dmesg",
+const DEFAULT_COMMANDS: [(&str,&str); 3] = [
+    ("journalctl -u agama", "agama"),
+    ("journalctl -u agama-auto", "agama-auto"),
+    ("journalctl --dmesg", "dmesg"),
 ];
 
 const DEFAULT_PATHS: [&str; 14] = [
@@ -95,7 +95,7 @@ fn show(show: bool, text: &str) {
 // set by user when calling a (sub)command
 struct LogOptions {
     paths: Vec<String>,
-    commands: Vec<String>,
+    commands: Vec<(String, String)>,
     verbose: bool,
 }
 
@@ -103,7 +103,7 @@ impl Default for LogOptions {
     fn default() -> Self {
         Self {
             paths: DEFAULT_PATHS.iter().map(|p| p.to_string()).collect(),
-            commands: DEFAULT_COMMANDS.iter().map(|p| p.to_string()).collect(),
+            commands: DEFAULT_COMMANDS.iter().map(|p| (p.0.to_string(), p.1.to_string())).collect(),
             verbose: false,
         }
     }
@@ -132,14 +132,18 @@ struct LogCmd {
     // command which stdout / stderr is logged
     cmd: String,
 
+    // user defined log file name (if any)
+    file_name: String,
+
     // place where to collect logs
     dst_path: PathBuf,
 }
 
 impl LogCmd {
-    fn new(cmd: &str, dst: &Path) -> Self {
+    fn new(cmd: &str, file_name: &str, dst: &Path) -> Self {
         Self {
             cmd: cmd.to_string(),
+            file_name: file_name.to_string(),
             dst_path: dst.to_owned(),
         }
     }
@@ -195,7 +199,13 @@ impl LogItem for LogCmd {
     }
 
     fn to(&self) -> PathBuf {
-        let mut file_name = self.cmd.clone();
+        let mut file_name;
+
+        if self.file_name.is_empty() {
+            file_name = self.cmd.clone();
+        } else {
+            file_name = self.file_name.clone();
+        };
 
         file_name.retain(|c| c != ' ');
         self.dst_path.as_path().join(format!("{}", file_name))
@@ -233,11 +243,11 @@ fn paths_to_log_sources(paths: &Vec<String>, tmp_dir: &TempDir) -> Vec<Box<dyn L
 }
 
 // Some info can be collected via particular commands only, turn it into log sources
-fn cmds_to_log_sources(commands: &Vec<String>, tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
+fn cmds_to_log_sources(commands: &Vec<(String, String)>, tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
     let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
     for cmd in commands.iter() {
-        log_sources.push(Box::new(LogCmd::new(cmd.as_str(), tmp_dir.path())));
+        log_sources.push(Box::new(LogCmd::new(cmd.0.as_str(), cmd.1.as_str(), tmp_dir.path())));
     }
 
     log_sources
@@ -344,7 +354,7 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
 fn list(options: LogOptions) {
     for list in [
         ("Log paths: ", options.paths),
-        ("Log commands: ", options.commands),
+        ("Log commands: ", options.commands.iter().map(|c| c.0.clone()).collect()),
     ] {
         println!("{}", list.0);
 
