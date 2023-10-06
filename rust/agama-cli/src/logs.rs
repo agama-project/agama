@@ -30,7 +30,7 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
             // feed internal options structure by what was received from user
             // for now we always use / add defaults if any
             let options = LogOptions {
-                verbose: verbose,
+                verbose,
                 ..Default::default()
             };
 
@@ -45,6 +45,7 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
 }
 
 const DEFAULT_COMMANDS: [(&str, &str); 3] = [
+    // (<command to be executed>, <file name used for storing result of the command>)
     ("journalctl -u agama", "agama"),
     ("journalctl -u agama-auto", "agama-auto"),
     ("journalctl --dmesg", "dmesg"),
@@ -70,6 +71,8 @@ const DEFAULT_PATHS: [&str; 14] = [
 ];
 
 const DEFAULT_RESULT: &str = "/tmp/agama_logs";
+// what compression is used by default:
+// (<compression as distinguished by tar>, <an extension for resulting archive>)
 const DEFAULT_COMPRESSION: (&str, &str) = ("bzip2", "tar.bz2");
 const DEFAULT_TMP_DIR: &str = "agama-logs";
 
@@ -105,7 +108,7 @@ impl Default for LogOptions {
             paths: DEFAULT_PATHS.iter().map(|p| p.to_string()).collect(),
             commands: DEFAULT_COMMANDS
                 .iter()
-                .map(|p| (p.0.to_string(), p.1.to_string()))
+                .map(|(cmd, name)| (cmd.to_string(), name.to_string()))
                 .collect(),
             verbose: false,
         }
