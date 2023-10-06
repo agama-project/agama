@@ -24,7 +24,7 @@ import { render, waitFor, screen } from "@testing-library/react";
 
 import L10nWrapper from "~/L10nWrapper";
 
-const getUILanguageFn = jest.fn().mockResolvedValue("en_US");
+const getUILanguageFn = jest.fn();
 const setUILanguageFn = jest.fn().mockResolvedValue();
 
 const client = {
@@ -33,6 +33,23 @@ const client = {
     setUILanguage: setUILanguageFn
   }
 }
+
+// Helper component that displays a translated message depending on the
+// CockpitLang value.
+const TranslatedContent = () => {
+  const text = {
+    "cs-cz": "ahoj",
+    "en-us": "hello",
+  };
+
+  const regexp = /CockpitLang=([^;]+)/;
+  const found = document.cookie.match(regexp);
+  if (!found) return <>{text["en-us"]}</>;
+
+  const [_, lang] = found;
+  return <>{text[lang]}</>;
+}
+
 
 describe("L10nWrapper", () => {
   // remember the original object, we need to temporarily replace it with a mock
@@ -124,12 +141,21 @@ describe("L10nWrapper", () => {
     });
 
     describe("when the Cockpit language is not set", () => {
-      it("sets the 'cs-cz' language and reloads", async () => {
-        render(<L10nWrapper client={client}>Testing content</L10nWrapper>);
+      beforeEach(() => {
+        getUILanguageFn.mockResolvedValueOnce("en_US");
+        getUILanguageFn.mockResolvedValueOnce("cs_CZ");
+        setUILanguageFn.mockResolvedValue();
+      });
 
-        // jsdom uses "en-US" as the user preferred language
-        expect(document.cookie).toEqual("CockpitLang=cs-cz");
+      it("sets the 'cs_CZ' language and reloads", async () => {
+        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
+
         await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+
+        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
+        await waitFor(() => screen.getByText("ahoj"));
+
+        expect(setUILanguageFn).toHaveBeenCalledWith("cs_CZ");
       });
     });
   });
