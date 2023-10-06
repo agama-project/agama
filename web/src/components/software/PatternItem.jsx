@@ -85,14 +85,18 @@ function PatternItem({ pattern, onChange }) {
     switch (pattern.selected) {
       // available pattern (not selected)
       case undefined:
-        client.software.addPattern(pattern.name).then(() => onChange());
+        client.software.addPattern(pattern.name).then(onChange);
         break;
       // user selected
       case 0:
-        client.software.removePattern(pattern.name).then(() => onChange());
+        client.software.removePattern(pattern.name).then(onChange);
         break;
       // auto selected
       case 1:
+        // try to deselect an automatically selected pattern,
+        // that can work only for soft dependencies (Recommends, Suggests,...),
+        // the hard dependencies (Requires) cannot be changed
+        client.software.removePattern(pattern.name).then(onChange);
         break;
       default:
         console.error("Unknown patterns status: ", pattern.selected);
