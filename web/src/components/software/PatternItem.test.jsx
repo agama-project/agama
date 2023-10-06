@@ -54,11 +54,11 @@ cockpit.file.mockImplementation(fileFn);
 
 const pattern = {
   category: "Documentation",
-  description: "Help and Support Documentation",
+  description: "Help and Documentation, various books.",
   icon: "./pattern-documentation",
-  name: "documentation",
-  order: "1005",
-  summary: "Help and Support Documentation"
+  name: "books",
+  order: "5200",
+  summary: "Documentation"
 };
 
 describe("PatternItem", () => {
