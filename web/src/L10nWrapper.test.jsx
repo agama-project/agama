@@ -20,9 +20,19 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, waitFor, screen } from "@testing-library/react";
 
 import L10nWrapper from "~/L10nWrapper";
+
+const getUILanguageFn = jest.fn().mockResolvedValue("en_US");
+const setUILanguageFn = jest.fn().mockResolvedValue();
+
+const client = {
+  language: {
+    getUILanguage: getUILanguageFn,
+    setUILanguage: setUILanguageFn
+  }
+}
 
 describe("L10nWrapper", () => {
   // remember the original object, we need to temporarily replace it with a mock
@@ -32,7 +42,7 @@ describe("L10nWrapper", () => {
   beforeAll(() => {
     delete window.location;
     window.location = {
-      reload: jest.fn(),
+      reload: jest.fn()
     };
   });
 
@@ -57,7 +67,7 @@ describe("L10nWrapper", () => {
       });
 
       it("displays the children content and does not reload", async () => {
-        render(<L10nWrapper>Testing content</L10nWrapper>);
+        render(<L10nWrapper client={client}>Testing content</L10nWrapper>);
 
         // children are displayed
         await screen.findByText("Testing content");
@@ -69,12 +79,12 @@ describe("L10nWrapper", () => {
     describe("when the Cockpit language is not set", () => {
       // so far this is only done in "test" and "development" environments,
       // not in "production"!!
-      it("sets the preferred language from browser and reloads", () => {
-        render(<L10nWrapper>Testing content</L10nWrapper>);
+      it("sets the preferred language from browser and reloads", async () => {
+        render(<L10nWrapper client={client}>Testing content</L10nWrapper>);
 
         // jsdom uses "en-US" as the user preferred language
         expect(document.cookie).toEqual("CockpitLang=en-us");
-        expect(window.location.reload).toHaveBeenCalled();
+        await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
       });
     });
   });
@@ -90,7 +100,7 @@ describe("L10nWrapper", () => {
       });
 
       it("displays the children content and does not reload", async () => {
-        render(<L10nWrapper>Testing content</L10nWrapper>);
+        render(<L10nWrapper client={client}>Testing content</L10nWrapper>);
 
         // children are displayed
         await screen.findByText("Testing content");
@@ -105,21 +115,21 @@ describe("L10nWrapper", () => {
         document.cookie = "CockpitLang=en-us; path=/;";
       });
 
-      it("sets the 'cs-cz' language and reloads", () => {
-        render(<L10nWrapper>Testing content</L10nWrapper>);
+      it("sets the 'cs-cz' language and reloads", async () => {
+        render(<L10nWrapper client={client}>Testing content</L10nWrapper>);
 
         expect(document.cookie).toEqual("CockpitLang=cs-cz");
-        expect(window.location.reload).toHaveBeenCalled();
+        await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
       });
     });
 
     describe("when the Cockpit language is not set", () => {
-      it("sets the 'cs-cz' language and reloads", () => {
-        render(<L10nWrapper>Testing content</L10nWrapper>);
+      it("sets the 'cs-cz' language and reloads", async () => {
+        render(<L10nWrapper client={client}>Testing content</L10nWrapper>);
 
         // jsdom uses "en-US" as the user preferred language
         expect(document.cookie).toEqual("CockpitLang=cs-cz");
-        expect(window.location.reload).toHaveBeenCalled();
+        await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
       });
     });
   });
