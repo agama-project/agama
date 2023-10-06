@@ -30,6 +30,12 @@ import { useCancellablePromise } from "~/utils";
 import { BUSY } from "~/client/status";
 import { _ } from "~/i18n";
 
+/**
+ * Software page content depending on the current service state
+ * @component
+ * @param {number} status current backend service status
+ * @returns {JSX.Element}
+ */
 function Content({ status }) {
   switch (status) {
     case undefined:
@@ -50,6 +56,11 @@ function Content({ status }) {
   }
 }
 
+/**
+ * Software page component
+ * @component
+ * @returns {JSX.Element}
+ */
 function SoftwarePage() {
   const [status, setStatus] = useState();
   const client = useInstallerClient();

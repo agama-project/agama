@@ -22,6 +22,13 @@
 import React from "react";
 import { Section } from "~/components/core";
 
+/**
+ * Pattern group component
+ * @component
+ * @param {string} name name of the group
+ * @param {JSX.Element} children the wrapped content with the patterns belonging to this group
+ * @returns {JSX.Element}
+ */
 export default function PatternGroup({ name, children }) {
   return (
     <Section title={name}>{children}</Section>

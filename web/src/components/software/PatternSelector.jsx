@@ -21,6 +21,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { SearchInput } from "@patternfly/react-core";
+import { sprintf } from "sprintf-js";
 
 import { useInstallerClient } from "~/context/installer";
 import { ValidationErrors } from "~/components/core";
@@ -29,6 +30,24 @@ import PatternItem from "./PatternItem";
 import UsedSize from "./UsedSize";
 import { _ } from "~/i18n";
 
+/**
+ * @typedef {Object} Pattern
+ * @property {string} name pattern name (internal ID)
+ * @property {string} group pattern group
+ * @property {string} summary pattern name (user visible)
+ * @property {string} description long description of the pattern
+ * @property {string} order display order (string!)
+ * @property {string} icon icon name (not path or file name!)
+ * @property {number|undefined} selected who selected the pattern, undefined
+ *   means it is not selected to install
+ */
+
+/**
+ * Convert DBus pattern data to JS objects
+ * @param {Object.<string, Array<string>>} pattern_data input pattern data
+ * @param {PatternSelection} selected selected patterns
+ * @returns {Array<Pattern>} converted patterns
+ */
 function convert(pattern_data, selected) {
   const patterns = [];
 
@@ -51,6 +70,16 @@ function convert(pattern_data, selected) {
   return patterns;
 }
 
+/**
+ * @typedef {Object.<string, Array<Pattern>} PatternGroups mapping "group name" =>
+ * list of patterns
+ */
+
+/**
+ * Group the patterns with the same group name
+ * @param {Array<Pattern>} patterns input
+ * @returns {PatternGroups}
+ */
 function groupPatterns(patterns) {
   // group patterns
   const pattern_groups = {};
@@ -71,6 +100,11 @@ function groupPatterns(patterns) {
   return pattern_groups;
 }
 
+/**
+ * Sort pattern group names
+ * @param {PatternGroups} groups input
+ * @returns {Array<string>} sorted pattern group names
+ */
 function sortGroups(groups) {
   return Object.keys(groups).sort((g1, g2) => {
     const order1 = groups[g1][0].order;
@@ -84,6 +118,11 @@ function sortGroups(groups) {
   });
 }
 
+/**
+ * Pattern selector component
+ * @component
+ * @returns {JSX.Element}
+ */
 function PatternSelector() {
   const [patterns, setPatterns] = useState();
   const [selected, setSelected] = useState();
@@ -128,6 +167,7 @@ function PatternSelector() {
 
   // filtering - search the required text in the name and pattern description
   if (searchValue !== "") {
+    // case insensitive search
     const searchData = searchValue.toUpperCase();
     patternsData = patternsData.filter((p) =>
       p.name.toUpperCase().indexOf(searchData) !== -1 ||
@@ -136,10 +176,6 @@ function PatternSelector() {
   }
 
   const groups = groupPatterns(patternsData);
-  if (process.env.NODE_ENV !== "production") console.log("patterns: ", groups);
-
-  const sortedGroups = sortGroups(groups);
-  if (process.env.NODE_ENV !== "production") console.log("sorted groups: ", sortedGroups);
 
   const selector = sortGroups(groups).map((group) => {
     return (
@@ -152,11 +188,16 @@ function PatternSelector() {
     );
   });
 
+  // TRANSLATORS: error summary, always plural, %d is replaced by number of errors (2 or more)
+  // if there is just a single error then the error is displayed directly instead of this summary
+  const errorLabel = sprintf(_("%d errors"), errors.length);
+
   return (
     <>
       <UsedSize size={used} />
-      <ValidationErrors errors={errors} title={`${errors.length} errors`} />
+      <ValidationErrors errors={errors} title={errorLabel} />
       <SearchInput
+        // TRANSLATORS: search field placeholder text
         placeholder={_("Search")}
         value={searchValue}
         onChange={(_event, value) => onSearchChange(value)}

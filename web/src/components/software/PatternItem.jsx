@@ -32,7 +32,7 @@ import iconAvailable from "./icons/package-available.svg";
 import iconInstall from "./icons/package-install.svg";
 import iconAutoInstall from "./icons/package-install-auto.svg";
 
-// path to pattern icons
+// path to pattern icons, %s is replaced by the icon name
 const ICON_PATH = "/usr/share/icons/hicolor/scalable/apps/%s.svg";
 
 /**
@@ -70,6 +70,13 @@ function stateAriaLabel(selected) {
   }
 }
 
+/**
+ * Pattern component
+ * @component
+ * @param {Pattern} pattern pattern to display
+ * @param {function} onChange callback called when the pattern status is changed
+ * @returns {JSX.Element}
+ */
 function PatternItem({ pattern, onChange }) {
   const client = useInstallerClient();
   const [icon, setIcon] = useState();
@@ -78,12 +85,10 @@ function PatternItem({ pattern, onChange }) {
     switch (pattern.selected) {
       // available pattern (not selected)
       case undefined:
-        if (process.env.NODE_ENV !== "production") console.log("Selecting pattern ", pattern.name);
         client.software.addPattern(pattern.name).then(() => onChange());
         break;
       // user selected
       case 0:
-        if (process.env.NODE_ENV !== "production") console.log("Removing pattern ", pattern.name);
         client.software.removePattern(pattern.name).then(() => onChange());
         break;
       // auto selected
@@ -98,9 +103,7 @@ function PatternItem({ pattern, onChange }) {
   useEffect(() => {
     if (icon) return;
     cockpit.file(sprintf(ICON_PATH, pattern.icon)).read()
-      .then((data) => {
-        setIcon(data);
-      });
+      .then((data) => { setIcon(data) });
   }, [pattern.icon, icon]);
 
   const patternIcon = (icon)
