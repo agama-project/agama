@@ -53,12 +53,12 @@ fileFn.mockImplementation(() => {
 cockpit.file.mockImplementation(fileFn);
 
 const pattern = {
-  name: "yast2_basis",
-  description: "YaST tools for basic system administration.",
-  category: "Base Technologies",
-  icon: "./yast",
-  order: "1220",
-  summary: "YaST Base Utilities"
+  category: "Documentation",
+  description: "Help and Support Documentation",
+  icon: "./pattern-documentation",
+  name: "documentation",
+  order: "1005",
+  summary: "Help and Support Documentation"
 };
 
 describe("PatternItem", () => {
