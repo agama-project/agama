@@ -26,7 +26,6 @@ import { createDefaultClient } from "~/client";
 import { Layout, Loading, Title } from "~/components/layout";
 import { DBusError } from "~/components/core";
 import L10nWrapper from "~/L10nWrapper";
-import L10nBackendWrapper from "~/L10nBackendWrapper";
 
 const InstallerClientContext = React.createContext(undefined);
 
@@ -101,9 +100,7 @@ function InstallerClientProvider({
         {/* eslint-disable-next-line i18next/no-literal-string */}
         <Title>Agama</Title>
         <L10nWrapper>
-          <L10nBackendWrapper>
-            <Content />
-          </L10nBackendWrapper>
+          <Content />
         </L10nWrapper>
       </Layout>
     </InstallerClientContext.Provider>
