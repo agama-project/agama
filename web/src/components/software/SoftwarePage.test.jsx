@@ -20,16 +20,26 @@
  */
 
 import React from "react";
-import { act, screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "~/test-utils";
-import { BUSY, IDLE } from "~/client/status";
 
+import { act, screen } from "@testing-library/react";
+import { installerRender } from "~/test-utils";
+import { BUSY, IDLE } from "~/client/status";
 import { createClient } from "~/client";
 
 import SoftwarePage from "./SoftwarePage";
 
-const PatternSelectorMock = "<PatternSelector/> Mock";
-jest.mock("~/components/software/PatternSelector", () => mockComponent(PatternSelectorMock));
+const SkeletonMock = "Skeleton mock";
+jest.mock("@patternfly/react-core", () => {
+  const original = jest.requireActual("@patternfly/react-core");
+
+  return {
+    ...original,
+    Skeleton: () => { return <span>{SkeletonMock}</span> }
+  };
+});
+
+const PatternSelectorMock = "PatternSelector mock";
+jest.mock("~/components/software/PatternSelector", () => () => { return PatternSelectorMock });
 jest.mock("~/client");
 const getStatusFn = jest.fn();
 const onStatusChangeFn = jest.fn();
@@ -42,16 +52,6 @@ beforeEach(() => {
       },
     };
   });
-});
-
-const SkeletonMock = "<Skeleton/> mock";
-jest.mock("@patternfly/react-core", () => {
-  const original = jest.requireActual("@patternfly/react-core");
-
-  return {
-    ...original,
-    Skeleton: mockComponent(SkeletonMock)
-  };
 });
 
 describe("SoftwarePage", () => {
