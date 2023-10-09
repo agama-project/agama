@@ -54,17 +54,15 @@ function convert(pattern_data, selected) {
   Object.keys(pattern_data).forEach((name) => {
     const pattern = pattern_data[name];
 
-    if (pattern[4] > 0) {
-      patterns.push({
-        name,
-        group: pattern[0],
-        description: pattern[1],
-        icon: pattern[2],
-        summary: pattern[3],
-        order: pattern[4],
-        selected: selected[name]
-      });
-    }
+    patterns.push({
+      name,
+      group: pattern[0],
+      description: pattern[1],
+      icon: pattern[2],
+      summary: pattern[3],
+      order: pattern[4],
+      selected: selected[name]
+    });
   });
 
   return patterns;
@@ -94,7 +92,18 @@ function groupPatterns(patterns) {
 
   // sort patterns by the "order" value
   Object.keys(pattern_groups).forEach((group) => {
-    pattern_groups[group].sort((p1, p2) => p1.order === p2.order ? (p1.name < p2.name) : (p1.order < p2.order ? -1 : 1));
+    pattern_groups[group].sort((p1, p2) => {
+      if (p1.order === p2.order) {
+        // there should be no patterns with the same name
+        return p1.name < p2.name ? -1 : 1;
+      } else {
+        // patterns with undefined (empty) order are always at the end
+        if (p1.order === "") return 1;
+        if (p2.order === "") return -1;
+
+        return p1.order < p2.order ? -1 : 1;
+      }
+    });
   });
 
   return pattern_groups;
@@ -113,6 +122,10 @@ function sortGroups(groups) {
     if (order1 === order2) {
       return g1 === g2 ? 0 : (g1 < g2 ? -1 : 1);
     }
+
+    // patterns with undefined (empty) order are always at the end
+    if (order1 === "") return 1;
+    if (order2 === "") return -1;
 
     return order1 < order2 ? -1 : 1;
   });

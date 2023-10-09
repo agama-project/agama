@@ -1,0 +1,58 @@
+{
+  "32bit": [
+    "Base Technologies",
+    "This will install the 32-bit variant of all selected patterns. This allows to execute 32-bit software.",
+    "./pattern-cli",
+    "32-Bit Runtime Environment",
+    "1180"
+  ],
+  "base": [
+    "Base Technologies",
+    "This is the base runtime system.  It contains only a basic multiuser booting system. For running on real hardware, you need to add additional packages and pattern to make this pattern useful on its own.",
+    "./pattern-basis",
+    "Base System",
+    "1030"
+  ],
+  "documentation": [
+    "Documentation",
+    "Help and Support Documentation",
+    "./pattern-documentation",
+    "Help and Support Documentation",
+    "1005"
+  ],
+  "books": [
+    "Documentation",
+    "Help and Documentation, various books.",
+    "./pattern-documentation",
+    "Documentation",
+    "5200"
+  ],
+  "devel_C_C++": [
+    "Development",
+    "Tools and libraries for software development using C/C++ and other derivative\nof the C programming language.",
+    "./pattern-c-devel",
+    "C/C++ Development",
+    "3240"
+  ],
+  "devel_basis": [
+    "Development",
+    "Minimal set of tools for compiling and linking applications.",
+    "./pattern-basis-devel",
+    "Base Development",
+    "3140"
+  ],
+  "devel_rpm_build": [
+    "Development",
+    "Minimal set of tools and libraries for building packages using the RPM package manager.",
+    "./pattern-rpm-devel",
+    "RPM Build Environment",
+    "3280"
+  ],
+  "wsl_base": [
+    "Development",
+    "This package contains the wsl_base pattern: recommended configs,tools,libraries for using WSL.",
+    "./pattern-generic",
+    "Base WSL packages",
+    ""
+  ]
+}
