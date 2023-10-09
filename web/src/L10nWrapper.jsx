@@ -26,6 +26,22 @@ import { useCancellablePromise } from "~/utils";
 import cockpit from "./lib/cockpit";
 
 /**
+ * Returns the current locale according to Cockpit
+ *
+ * It takes the locale from the CockpitLang cookie.
+ *
+ * @return {string|undefined} language tag in xx_XX format or undefined if
+ *   it was not set.
+ */
+function cockpitLanguage() {
+  // language from cookie, empty string if not set (regexp taken from Cockpit)
+  const languageString = decodeURIComponent(document.cookie.replace(/(?:(?:^|.*;\s*)CockpitLang\s*=\s*([^;]*).*$)|^.*$/, "$1"));
+  if (languageString) {
+    return languageString.toLowerCase();
+  }
+}
+
+/**
  * Helper function for storing the Cockpit language.
  *
  * This function automatically converts the language tag from xx_XX to xx-xx,
@@ -47,22 +63,6 @@ function storeUILanguage(lang) {
 }
 
 /**
- * Returns the current locale according to Cockpit
- *
- * It takes the locale from the CockpitLang cookie.
- *
- * @return {string|undefined} language tag in xx_XX format or undefined if
- *   it was not set.
- */
-function cockpitLanguage() {
-  // language from cookie, empty string if not set (regexp taken from Cockpit)
-  const languageString = decodeURIComponent(document.cookie.replace(/(?:(?:^|.*;\s*)CockpitLang\s*=\s*([^;]*).*$)|^.*$/, "$1"));
-  if (languageString) {
-    return languageString.toLowerCase();
-  }
-}
-
-/**
  * Returns the language from the query string.
  *
  * @return {string|undefined} language tag in 'xx-xx' format (or just 'xx') or undefined if it was
@@ -72,7 +72,7 @@ function wantedLanguage() {
   const lang = (new URLSearchParams(window.location.search)).get("lang");
   if (!lang) return undefined;
 
-  const [language, country] = lang.toLowerCase().split(/[-_]/)
+  const [language, country] = lang.toLowerCase().split(/[-_]/);
   return (country) ? `${language}-${country}` : language;
 }
 
@@ -152,7 +152,7 @@ export default function L10nWrapper({ client, children }) {
     const current = cockpitLanguage();
     const newLanguage = wanted || current || navigator.language.toLowerCase();
 
-    let mustReload = storeUILanguage(newLanguage)
+    let mustReload = storeUILanguage(newLanguage);
     mustReload = await storeBackendLanguage(newLanguage) || mustReload;
     if (mustReload) {
       window.location.reload();
@@ -163,7 +163,7 @@ export default function L10nWrapper({ client, children }) {
 
   useEffect(() => {
     if (!language) selectLanguage();
-  }, [selectLanguage]);
+  }, [selectLanguage, language]);
 
   if (!language) {
     return null;

@@ -32,7 +32,7 @@ const client = {
     getUILanguage: getUILanguageFn,
     setUILanguage: setUILanguageFn
   }
-}
+};
 
 // Helper component that displays a translated message depending on the
 // CockpitLang value.
@@ -47,10 +47,9 @@ const TranslatedContent = () => {
   const found = document.cookie.match(regexp);
   if (!found) return <>{text["en-us"]}</>;
 
-  const [_, lang] = found;
+  const [, lang] = found;
   return <>{text[lang]}</>;
-}
-
+};
 
 describe("L10nWrapper", () => {
   // remember the original object, we need to temporarily replace it with a mock
@@ -85,7 +84,7 @@ describe("L10nWrapper", () => {
     describe("when the Cockpit language is already set", () => {
       beforeEach(() => {
         document.cookie = "CockpitLang=en-us; path=/;";
-        getUILanguageFn.mockResolvedValueOnce("en_US")
+        getUILanguageFn.mockResolvedValueOnce("en_US");
       });
 
       it("displays the children content and does not reload", async () => {
