@@ -5,6 +5,11 @@ Mon Oct  9 11:30:27 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   parameter in the query string (gh#openSUSE/agama#794).
 
 -------------------------------------------------------------------
+Thu Oct  5 19:52:17 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Add flag if volume is transactional btrfs (gh#openSUSE/agama#789)
+
+-------------------------------------------------------------------
 Thu Oct  5 05:50:57 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Implement a mechanism to reconnect to the D-Bus service

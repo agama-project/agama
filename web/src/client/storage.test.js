@@ -163,6 +163,7 @@ const contexts = {
           MaxSize: { t: "x", v: 2048 },
           AutoSize: { t: "b", v: true },
           Snapshots: { t: "b", v: true },
+          Transactional: { t: "b", v: true },
           Outline: {
             t: "a{sv}",
             v: {
@@ -182,6 +183,7 @@ const contexts = {
           MaxSize: { t: "x", v: 4096 },
           AutoSize: { t: "b", v: false },
           Snapshots: { t: "b", v: false },
+          Transactional: { t: "b", v: false },
           Outline: {
             t: "a{sv}",
             v: {
@@ -712,6 +714,7 @@ describe("#proposal", () => {
             MaxSize: { t: "x", v: 4096 },
             AutoSize: { t: "b", v: false },
             Snapshots: { t: "b", v: false },
+            Transactional: { t: "b", v: false },
             Outline: {
               t: "a{sv}",
               v: {
@@ -731,6 +734,7 @@ describe("#proposal", () => {
             MaxSize: { t: "x", v: 2048 },
             AutoSize: { t: "b", v: false },
             Snapshots: { t: "b", v: false },
+            Transactional: { t: "b", v: false },
             Outline: {
               t: "a{sv}",
               v: {
@@ -759,6 +763,7 @@ describe("#proposal", () => {
         maxSize: 4096,
         autoSize: false,
         snapshots: false,
+        transactional: false,
         outline: {
           required: false,
           fsTypes: ["Ext4", "XFS"],
@@ -778,6 +783,7 @@ describe("#proposal", () => {
         maxSize: 2048,
         autoSize: false,
         snapshots: false,
+        transactional: false,
         outline: {
           required: false,
           fsTypes: ["Ext4", "XFS"],
@@ -825,6 +831,7 @@ describe("#proposal", () => {
               maxSize: 2048,
               autoSize: true,
               snapshots: true,
+              transactional: true,
               outline: {
                 required: true,
                 fsTypes: ["Btrfs", "Ext3"],
@@ -841,6 +848,7 @@ describe("#proposal", () => {
               maxSize: 4096,
               autoSize: false,
               snapshots: false,
+              transactional: false,
               outline: {
                 required: false,
                 fsTypes: ["Ext4", "XFS"],
