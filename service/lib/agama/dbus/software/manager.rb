@@ -240,26 +240,55 @@ module Agama
           patterns
         end
 
-        # @return [Array<Integer, String>]
+        # Result from calling to SUSE connect.
+        #
+        # @raise [Exception] if an unexpected error is found.
+        #
+        # @return [Array<Integer, String>] List including a result code and a description
+        #   (e.g., [1, "Connection to registration server failed (network error)"]).
+        #
+        #   Possible result codes:
+        #   0: success
+        #   1: network error
+        #   2: timeout error
+        #   3: api error
+        #   4: missing credentials
+        #   5: incorrect credentials
+        #   6: invalid certificate
+        #   7: internal error (e.g., parsing json data)
         def connect_result(&block)
           block.call
           [0, ""]
         rescue SocketError => e
-          logger.error("Network error: #{e}")
-          [1, "Connection to registration server failed (network error)"]
+          connect_result_from_error(e, 1, "network error")
         rescue Timeout::Error => e
-          logger.error("Timeout error: #{e}")
-          [2, "Connection to registration server failed (timeout)"]
+          connect_result_from_error(e, 2, "timeout")
         rescue SUSE::Connect::ApiError => e
-          [3, "Connection to registration server failed"]
+          connect_result_from_error(e, 3)
         rescue SUSE::Connect::MissingSccCredentialsFile => e
-          [4, "Connection to registration server failed (missing credentials)"]
+          connect_result_from_error(e, 4, "missing credentials")
         rescue SUSE::Connect::MalformedSccCredentialsFile => e
-          [5, "Connection to registration server failed (incorrect credentials)"]
+          connect_result_from_error(e, 5, "incorrect credentials")
         rescue OpenSSL::SSL::SSLError => e
-          [6, "Connection to registration server failed (invalid certificate)"]
+          connect_result_from_error(e, 6, "invalid certificate")
         rescue JSON::ParserError => e
-          [7, "Connection to registration server failed"]
+          connect_result_from_error(e, 7)
+        end
+
+        # Generates a result the from the given error.
+        #
+        # @param error [Exception]
+        # @param code [Integer]
+        # @param details [String, nil]
+        #
+        # @return [Array<Integer, String>] List including a result code and a description.
+        def connect_result_from_error(error, code, details = nil)
+          logger.error("Error connecting to registration server: #{error}")
+
+          description = "Connection to registration server failed"
+          description += " (#{details})" if details
+
+          [code, description]
         end
       end
     end
