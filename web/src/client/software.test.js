@@ -30,11 +30,11 @@ const SOFTWARE_IFACE = "org.opensuse.Agama.Software1";
 
 const softProxy = {
   wait: jest.fn(),
-  AvailableBaseProducts: [
+  AvailableProducts: [
     ["MicroOS", "openSUSE MicroOS", {}],
     ["Tumbleweed", "openSUSE Tumbleweed", {}]
   ],
-  SelectedBaseProduct: "MicroOS"
+  SelectedProduct: "MicroOS"
 };
 
 beforeEach(() => {

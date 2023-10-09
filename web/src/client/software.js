@@ -22,7 +22,7 @@
 // @ts-check
 
 import DBusClient from "./dbus";
-import { WithStatus, WithProgress, WithValidation } from "./mixins";
+import { WithIssues, WithStatus, WithProgress } from "./mixins";
 
 const SOFTWARE_SERVICE = "org.opensuse.Agama.Software1";
 const SOFTWARE_IFACE = "org.opensuse.Agama.Software1";
@@ -65,7 +65,7 @@ class SoftwareBaseClient {
    */
   async getProducts() {
     const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.AvailableBaseProducts.map(product => {
+    return proxy.AvailableProducts.map(product => {
       const [id, name, meta] = product;
       return { id, name, description: meta.description?.v };
     });
@@ -89,10 +89,10 @@ class SoftwareBaseClient {
   async getSelectedProduct() {
     const products = await this.getProducts();
     const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    if (proxy.SelectedBaseProduct === "") {
+    if (proxy.SelectedProduct === "") {
       return null;
     }
-    return products.find(product => product.id === proxy.SelectedBaseProduct);
+    return products.find(product => product.id === proxy.SelectedProduct);
   }
 
   /**
@@ -112,8 +112,8 @@ class SoftwareBaseClient {
    */
   onProductChange(handler) {
     return this.client.onObjectChanged(SOFTWARE_PATH, SOFTWARE_IFACE, changes => {
-      if ("SelectedBaseProduct" in changes) {
-        const selected = changes.SelectedBaseProduct.v.toString();
+      if ("SelectedProduct" in changes) {
+        const selected = changes.SelectedProduct.v.toString();
         handler(selected);
       }
     });
@@ -123,7 +123,7 @@ class SoftwareBaseClient {
 /**
  * Allows getting the list the available products and selecting one for installation.
  */
-class SoftwareClient extends WithValidation(
+class SoftwareClient extends WithIssues(
   WithProgress(
     WithStatus(SoftwareBaseClient, SOFTWARE_PATH), SOFTWARE_PATH
   ), SOFTWARE_PATH
