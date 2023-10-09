@@ -35,6 +35,7 @@ import cockpit from "./lib/cockpit";
  */
 function cockpitLanguage() {
   // language from cookie, empty string if not set (regexp taken from Cockpit)
+  // https://github.com/cockpit-project/cockpit/blob/98a2e093c42ea8cd2431cf15c7ca0e44bb4ce3f1/pkg/shell/shell-modals.jsx#L91
   const languageString = decodeURIComponent(document.cookie.replace(/(?:(?:^|.*;\s*)CockpitLang\s*=\s*([^;]*).*$)|^.*$/, "$1"));
   if (languageString) {
     return languageString.toLowerCase();
