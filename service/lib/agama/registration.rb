@@ -44,7 +44,7 @@ module Agama
         email: email
       }
 
-      login, password = SUSE::Connect::YaST.announce_system(connect_params, distro_target)
+      login, password = SUSE::Connect::YaST.announce_system(connect_params, target_distro)
       # write the global credentials
       # TODO: check if we can do it in memory for libzypp
       SUSE::Connect::YaST.create_credentials_file(login, password)
