@@ -18,9 +18,9 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "openstruct"
+require "ostruct"
+require "suse/connect"
 
-require "registration/registration"
 require "y2packager/new_repository_setup"
 
 module Agama
@@ -37,7 +37,16 @@ module Agama
 
     def register(code, email: "")
       target_distro = "ALP-Dolomite-1-x86_64" # TODO read it
-      registration = Registration::Registration.new # intentional no url yet
+      connect_params = {
+        token: code,
+        email: email
+      }
+
+      login, password = SUSE::Connect::YaST.announce_system(connect_params, distro_target)
+      # write the global credentials
+      # TODO: check if we can do it in memory for libzypp
+      SUSE::Connect::YaST.create_credentials_file(login, password)
+
       registration.register(email, code, target_distro)
       # TODO: fill it properly for scc
       target_product = OpenStruct.new(
