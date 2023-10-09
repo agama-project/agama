@@ -80,7 +80,6 @@ module Agama
         # patterns selected by user
         @user_patterns = []
         @selected_patterns_change_callbacks = []
-        update_issues
       end
 
       def select_product(name)

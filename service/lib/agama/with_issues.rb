@@ -29,12 +29,11 @@ module Agama
       @issues || []
     end
 
-    def errors
-      issues.select(&:error?)
-    end
-
+    # Whether there are errors
+    #
+    # @return [Boolean]
     def errors?
-      errors.any?
+      issues.any?(&:error?)
     end
 
     # Sets the list of current issues
