@@ -49,7 +49,6 @@ module Agama
       # TODO: check if we can do it in memory for libzypp
       SUSE::Connect::YaST.create_credentials_file(login, password)
 
-      registration.register(email, code, target_distro)
       # TODO: fill it properly for scc
       target_product = OpenStruct.new(
         arch:         "x86_64",
