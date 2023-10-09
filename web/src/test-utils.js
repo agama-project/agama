@@ -81,7 +81,7 @@ const Providers = ({ children }) => {
   }
 
   return (
-    <InstallerClientProvider client={client}>
+    <InstallerClientProvider client={client} disableL10n={true}>
       <MemoryRouter initialEntries={initialRoutes()}>
         {children}
       </MemoryRouter>

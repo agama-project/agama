@@ -26,6 +26,7 @@ import { plainRender, createCallbackMock } from "~/test-utils";
 import { InstallerClientProvider } from "./installer";
 
 jest.mock("~/client");
+jest.mock("~/L10nWrapper", () => ({ children }) => children);
 
 let onDisconnectFn = jest.fn();
 const isConnectedFn = jest.fn();

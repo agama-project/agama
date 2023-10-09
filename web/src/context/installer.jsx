@@ -55,10 +55,12 @@ const INTERVAL = 2000;
   *   (2000 by default).
   * @param {number} [props.max_attempts=3] - Connection attempts before displaying an
   *   error (3 by default). The component will keep trying to connect.
+  * @param {boolean} [props.disableL10n] - Disable l10n handling (to be used
+  *   during tests).
   * @param {React.ReactNode} [props.children] - content to display within the provider
   */
 function InstallerClientProvider({
-  children, client = undefined, interval = INTERVAL, max_attempts = ATTEMPTS
+  children, disableL10n = false, client = undefined, interval = INTERVAL, max_attempts = ATTEMPTS
 }) {
   const [value, setValue] = useState(client);
   const [attempts, setAttempts] = useState(0);
@@ -90,7 +92,11 @@ function InstallerClientProvider({
       return (attempts > max_attempts) ? <DBusError /> : <Loading />;
     }
 
-    return children;
+    if (disableL10n) {
+      return children;
+    }
+
+    return <L10nWrapper>{children}</L10nWrapper>;
   };
 
   return (
@@ -99,9 +105,7 @@ function InstallerClientProvider({
         {/* this is the name of the tool, do not translate it */}
         {/* eslint-disable-next-line i18next/no-literal-string */}
         <Title>Agama</Title>
-        <L10nWrapper client={value}>
-          <Content />
-        </L10nWrapper>
+        <Content />
       </Layout>
     </InstallerClientContext.Provider>
   );
