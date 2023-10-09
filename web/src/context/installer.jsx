@@ -96,7 +96,7 @@ function InstallerClientProvider({
       return children;
     }
 
-    return <L10nWrapper>{children}</L10nWrapper>;
+    return <L10nWrapper client={value}>{children}</L10nWrapper>;
   };
 
   return (
