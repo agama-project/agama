@@ -384,7 +384,7 @@ module Agama
         issues = repositories.disabled.map do |repo|
           Issue.new("Could not read the repository #{repo.name}",
             source:   Issue::Source::SYSTEM,
-            severity: Issue::Severity::WARN)
+            severity: Issue::Severity::ERROR)
         end
       end
     end

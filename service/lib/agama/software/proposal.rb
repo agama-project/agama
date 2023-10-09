@@ -21,6 +21,7 @@
 
 require "yast"
 require "agama/issue"
+require "agama/with_issues"
 
 Yast.import "Stage"
 Yast.import "Installation"
@@ -49,23 +50,20 @@ module Agama
     #   proposal.calculate #=> true
     #   proposal.issues #=> []
     class Proposal
+      include WithIssues
+
       # @return [String,nil] Base product
       attr_accessor :base_product
 
       # @return [Array<String>] List of languages to install
       attr_accessor :languages
 
-      # @return [Array<Agama::Issue>] List of issues from the calculated proposal
-      attr_reader :issues
-
       # Constructor
       #
       # @param logger [Logger]
       def initialize(logger: nil)
         @logger = logger || Logger.new($stdout)
-        @issues = []
         @base_product = nil
-        @calculated = false
       end
 
       # Adds the given list of resolvables to the proposal
@@ -84,14 +82,12 @@ module Agama
       #
       # @return [Boolean]
       def calculate
-        @issues.clear
         initialize_target
         select_base_product
-        proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
+        @proposal = Yast::Packages.Proposal(force_reset = true, reinit = false, _simple = true)
         solve_dependencies
 
-        @calculated = true
-        @issues = find_issues(proposal)
+        update_issues
         valid?
       end
 
@@ -115,13 +111,18 @@ module Agama
       #
       # @return [Boolean]
       def valid?
-        @calculated && @issues.empty?
+        proposal && !errors?
       end
 
     private
 
       # @return [Logger]
       attr_reader :logger
+
+      # Proposal result
+      #
+      # @return [Hash, nil] nil if not calculated yet.
+      attr_reader :proposal
 
       # Initializes the target, closing the previous one
       def initialize_target
@@ -148,25 +149,28 @@ module Agama
         end
       end
 
-      # Returns the issues from the attempt to create a proposal.
+      # Updates the issues from the attempt to create a proposal.
       #
       # It collects issues from:
       #
       # * The proposal result.
       # * The last solver execution.
       #
-      # @param proposal_result [Hash] Proposal result; it might contain a "warning" key with warning
-      #   messages.
-      # @return [Array<Agama::Issue>] List of issues.
-      def find_issues(proposal_result)
+      # @return [Array<Agama::Issue>]
+      def update_issues
+        self.issues = []
+        return unless proposal
+
         msgs = []
-        msgs.concat(warning_messages(proposal_result))
+        msgs.concat(warning_messages(proposal))
         msgs.concat(solver_messages)
-        msgs.map do |msg|
+        issues = msgs.map do |msg|
           Issue.new(msg,
             source:   Issue::Source::CONFIG,
-            severity: Issue::Severity::WARN)
+            severity: Issue::Severity::ERROR)
         end
+
+        self.issues = issues
       end
 
       # Runs the solver to satisfy the solve_dependencies

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -82,16 +82,9 @@ module Agama
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          dbus_software_manager,
-          Agama::DBus::Software::Proposal.new(logger).tap do |proposal|
-            proposal.on_change { dbus_software_manager.update_validation }
-          end
+          Agama::DBus::Software::Manager.new(@backend, logger),
+          Agama::DBus::Software::Proposal.new(logger)
         ]
-      end
-
-      # @return [Agama::DBus::Software::Manager]
-      def dbus_software_manager
-        @dbus_software_manager ||= Agama::DBus::Software::Manager.new(@backend, logger)
       end
     end
   end

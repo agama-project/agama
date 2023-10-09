@@ -80,7 +80,7 @@ module Agama
 
             logger.info "Selecting product #{product_id}"
             select_product(product_id)
-            dbus_properties_changed(SOFTWARE_INTERFACE, { "SelectedBaseProduct" => product_id }, [])
+            dbus_properties_changed(SOFTWARE_INTERFACE, { "SelectedProduct" => product_id }, [])
           end
 
           # value of result hash is category, description, icon, summary and order
@@ -260,8 +260,6 @@ module Agama
           [6, "Connection to registration server failed (invalid certificate)"]
         rescue JSON::ParserError => e
           [7, "Connection to registration server failed"]
-        rescue StandardError => e
-          [8, "Connection to registration server failed"]
         end
       end
     end

@@ -29,6 +29,14 @@ module Agama
       @issues || []
     end
 
+    def errors
+      issues.select(&:error?)
+    end
+
+    def errors?
+      errors.any?
+    end
+
     # Sets the list of current issues
     #
     # @param issues [Array<Issue>]
