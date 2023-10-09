@@ -19,68 +19,155 @@
  * find current contact information at www.suse.com.
  */
 
+// @ts-check
+
+import { useCallback, useEffect, useState } from "react";
+import { useCancellablePromise } from "~/utils";
 import cockpit from "./lib/cockpit";
 
 /**
- * Helper function for storing the Cockpit language.
- * @param {String} lang the new language tag (like "cs", "cs-cz",...)
+ * Returns the current locale according to Cockpit
+ *
+ * It takes the locale from the CockpitLang cookie.
+ *
+ * @return {string|undefined} language tag in xx_XX format or undefined if
+ *   it was not set.
  */
-function setLang(lang) {
+function cockpitLanguage() {
+  // language from cookie, empty string if not set (regexp taken from Cockpit)
+  // https://github.com/cockpit-project/cockpit/blob/98a2e093c42ea8cd2431cf15c7ca0e44bb4ce3f1/pkg/shell/shell-modals.jsx#L91
+  const languageString = decodeURIComponent(document.cookie.replace(/(?:(?:^|.*;\s*)CockpitLang\s*=\s*([^;]*).*$)|^.*$/, "$1"));
+  if (languageString) {
+    return languageString.toLowerCase();
+  }
+}
+
+/**
+ * Helper function for storing the Cockpit language.
+ *
+ * This function automatically converts the language tag from xx_XX to xx-xx,
+ * as it is the one used by Cockpit.
+ *
+ * @param {string} lang the new language tag (like "cs", "cs_CZ",...)
+ * @return {boolean} returns true if the locale changed; false otherwise
+ */
+function storeUILanguage(lang) {
+  const current = cockpitLanguage();
+  if (current === lang) {
+    return false;
+  }
   // code taken from Cockpit
   const cookie = "CockpitLang=" + encodeURIComponent(lang) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
   document.cookie = cookie;
   window.localStorage.setItem("cockpit.lang", lang);
+  return true;
 }
 
 /**
- * Helper function for reloading the page.
+ * Returns the language from the query string.
+ *
+ * @return {string|undefined} language tag in 'xx-xx' format (or just 'xx') or undefined if it was
+ *   not set. It supports 'xx-xx', 'xx_xx', 'xx-XX' and 'xx_XX'.
  */
-function reload() {
-  window.location.reload(true);
+function wantedLanguage() {
+  const lang = (new URLSearchParams(window.location.search)).get("lang");
+  if (!lang) return undefined;
+
+  const [language, country] = lang.toLowerCase().split(/[-_]/);
+  return (country) ? `${language}-${country}` : language;
 }
 
 /**
- * This is a helper component to set the language used in the UI. It uses the
- * URL "lang" query parameter or the preferred language from the browser.
+ * Converts a language tag from the backend to a one compatible with RFC 5646 or
+ * BCP 78
+ *
+ * @param {string} tag - language tag from the backend
+ * @return {string} Language tag compatible with RFC 5646 or BCP 78
+ *
+ * @private
+ * @see https://datatracker.ietf.org/doc/html/rfc5646
+ * @see https://www.rfc-editor.org/info/bcp78
+ */
+function languageFromBackend(tag) {
+  return tag.replace("_", "-").toLowerCase();
+}
+
+/**
+ * Converts a language tag compatible with RFC 5646 to the format used by the backend
+ *
+ * @param {string} tag - language tag from the backend
+ * @return {string} Language tag compatible with the backend
+ *
+ * @private
+ * @see https://datatracker.ietf.org/doc/html/rfc5646
+ * @see https://www.rfc-editor.org/info/bcp78
+ */
+function languageToBackend(tag) {
+  const [language, country] = tag.split("-");
+  return (country) ? `${language}_${country.toUpperCase()}` : language;
+}
+
+/**
+ * This is a helper component to set the language. It uses the
+ * URL "lang" query parameter or the preferred language from the browser and
+ * synchronizes the UI and the backend languages
  * To activate a new language it reloads the whole page.
  *
  * It behaves like a wrapper, it just wraps the children components, it does
  * not render any real content.
  *
- * @param {React.ReactNode} [props.children] - content to display within the
- * wrapper
+ * The format of the language tag follows the
+ * [RFC 5646](https://datatracker.ietf.org/doc/html/rfc5646) specification.
+ *
+ * @param {object} props
+ * @param {React.ReactNode} [props.children] - content to display within the wrapper
+ * @param {import("~/client").InstallerClient} [props.client] - client
  */
-export default function L10nWrapper({ children }) {
-  // language from cookie, empty string if not set (regexp taken from Cockpit)
-  const langCookie = decodeURIComponent(document.cookie.replace(/(?:(?:^|.*;\s*)CockpitLang\s*=\s*([^;]*).*$)|^.*$/, "$1"));
-  // "lang" query parameter from the URL, null if not set
-  let langQuery = (new URLSearchParams(window.location.search)).get("lang");
+export default function L10nWrapper({ client, children }) {
+  const [language, setLanguage] = useState(undefined);
+  const { cancellablePromise } = useCancellablePromise();
 
-  // set the language from the URL query
-  if (langQuery) {
-    // convert "pt_BR" to Cockpit compatible "pt-br"
-    langQuery = langQuery.toLowerCase().replace("_", "-");
+  const storeBackendLanguage = useCallback(async languageString => {
+    const currentLang = await cancellablePromise(client.language.getUILanguage());
+    const normalizedLang = languageFromBackend(currentLang);
 
-    // special handling for the testing "xx" language
-    if (langQuery === "xx" || langQuery === "xx-xx") {
-      // just activate the language, there are no real translations to load
-      cockpit.language = "xx";
-    } else if (langCookie !== langQuery) {
-      setLang(langQuery);
-      reload();
+    if (normalizedLang !== languageString) {
+      // FIXME: fallback to en-US if the language is not supported.
+      await cancellablePromise(
+        client.language.setUILanguage(languageToBackend(languageString))
+      );
+      return true;
     }
-  } else {
-    // if the language has not been configured yet use the preferred language
-    // from the browser, so far do it only in the development mode because there
-    // are not enough translations available
-    //
-    // TODO: use the navigator.languages list to find a supported language, the
-    // first preferred language might not be supported by Agama
-    if (process.env.NODE_ENV !== "production" && langCookie === "" && navigator.language) {
-      // convert browser language "pt-BR" to Cockpit compatible "pt-br"
-      setLang(navigator.language.toLowerCase());
-      reload();
+    return false;
+  }, [client, cancellablePromise]);
+
+  const selectLanguage = useCallback(async () => {
+    const wanted = wantedLanguage();
+
+    if (wanted === "xx" || wanted === "xx-xx") {
+      cockpit.language = wanted;
+      setLanguage(wanted);
+      return;
     }
+
+    const current = cockpitLanguage();
+    const newLanguage = wanted || current || navigator.language.toLowerCase();
+
+    let mustReload = storeUILanguage(newLanguage);
+    mustReload = await storeBackendLanguage(newLanguage) || mustReload;
+    if (mustReload) {
+      window.location.reload();
+    } else {
+      setLanguage(newLanguage);
+    }
+  }, [storeBackendLanguage, setLanguage]);
+
+  useEffect(() => {
+    if (!language) selectLanguage();
+  }, [selectLanguage, language]);
+
+  if (!language) {
+    return null;
   }
 
   return children;

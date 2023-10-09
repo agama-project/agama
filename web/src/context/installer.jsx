@@ -25,6 +25,7 @@ import React, { useState, useEffect } from "react";
 import { createDefaultClient } from "~/client";
 import { Layout, Loading, Title } from "~/components/layout";
 import { DBusError } from "~/components/core";
+import L10nWrapper from "~/L10nWrapper";
 
 const InstallerClientContext = React.createContext(undefined);
 
@@ -54,10 +55,12 @@ const INTERVAL = 2000;
   *   (2000 by default).
   * @param {number} [props.max_attempts=3] - Connection attempts before displaying an
   *   error (3 by default). The component will keep trying to connect.
+  * @param {boolean} [props.disableL10n] - Disable l10n handling (to be used
+  *   during tests).
   * @param {React.ReactNode} [props.children] - content to display within the provider
   */
 function InstallerClientProvider({
-  children, client = undefined, interval = INTERVAL, max_attempts = ATTEMPTS
+  children, disableL10n = false, client = undefined, interval = INTERVAL, max_attempts = ATTEMPTS
 }) {
   const [value, setValue] = useState(client);
   const [attempts, setAttempts] = useState(0);
@@ -89,7 +92,11 @@ function InstallerClientProvider({
       return (attempts > max_attempts) ? <DBusError /> : <Loading />;
     }
 
-    return children;
+    if (disableL10n) {
+      return children;
+    }
+
+    return <L10nWrapper client={value}>{children}</L10nWrapper>;
   };
 
   return (
