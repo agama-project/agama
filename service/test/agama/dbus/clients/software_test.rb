@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
+require_relative "with_issues_examples"
 require_relative "with_service_status_examples"
 require_relative "with_progress_examples"
 require "agama/dbus/clients/software"
@@ -53,7 +54,7 @@ describe Agama::DBus::Clients::Software do
 
   describe "#available_products" do
     before do
-      allow(software_iface).to receive(:[]).with("AvailableBaseProducts").and_return(
+      allow(software_iface).to receive(:[]).with("AvailableProducts").and_return(
         [
           ["Tumbleweed", "openSUSE Tumbleweed", {}],
           ["Leap15.3", "openSUSE Leap 15.3", {}]
@@ -71,7 +72,7 @@ describe Agama::DBus::Clients::Software do
 
   describe "#selected_product" do
     before do
-      allow(software_iface).to receive(:[]).with("SelectedBaseProduct").and_return(product)
+      allow(software_iface).to receive(:[]).with("SelectedProduct").and_return(product)
     end
 
     context "when there is no selected product" do
@@ -180,6 +181,7 @@ describe Agama::DBus::Clients::Software do
     end
   end
 
+  include_examples "issues"
   include_examples "service status"
   include_examples "progress"
 end

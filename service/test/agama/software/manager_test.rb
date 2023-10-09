@@ -20,12 +20,15 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
+require_relative "../with_issues_examples"
 require_relative "../with_progress_examples"
 require_relative File.join(
   SRC_PATH, "agama", "dbus", "y2dir", "software", "modules", "PackageCallbacks.rb"
 )
 require "agama/config"
+require "agama/issue"
 require "agama/software/manager"
+require "agama/software/proposal"
 require "agama/dbus/clients/questions"
 
 describe Agama::Software::Manager do
@@ -35,15 +38,19 @@ describe Agama::Software::Manager do
   let(:base_url) { "" }
   let(:destdir) { "/mnt" }
   let(:gpg_keys) { [] }
+
   let(:repositories) do
     instance_double(
       Agama::Software::RepositoriesManager,
       add:        nil,
       load:       nil,
       delete_all: nil,
-      empty?:     true
+      empty?:     true,
+      enabled:    enabled_repos,
+      disabled:   disabled_repos
     )
   end
+
   let(:proposal) do
     instance_double(
       Agama::Software::Proposal,
@@ -51,9 +58,14 @@ describe Agama::Software::Manager do
       calculate:        nil,
       :languages= =>    nil,
       set_resolvables:  nil,
-      packages_count:   "500 MB"
+      packages_count:   "500 MB",
+      issues:           proposal_issues
     )
   end
+
+  let(:enabled_repos) { [] }
+  let(:disabled_repos) { [] }
+  let(:proposal_issues) { [] }
 
   let(:config_path) do
     File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
@@ -79,6 +91,74 @@ describe Agama::Software::Manager do
     allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(Agama::Software::RepositoriesManager).to receive(:new).and_return(repositories)
     allow(Agama::Software::Proposal).to receive(:new).and_return(proposal)
+  end
+
+  shared_examples "software issues" do |tested_method|
+    before do
+      allow(subject).to receive(:product).and_return("Tumbleweed")
+    end
+
+    let(:proposal_issues) { [Agama::Issue.new("Proposal issue")] }
+
+    context "if there is no product selected yet" do
+      before do
+        allow(subject).to receive(:product).and_return(nil)
+      end
+
+      it "sets an issue" do
+        subject.public_send(tested_method)
+
+        expect(subject.issues).to contain_exactly(an_object_having_attributes(
+          description: /product not selected/i
+        ))
+      end
+    end
+
+    context "if there are disabled repositories" do
+      let(:disabled_repos) do
+        [
+          instance_double(Agama::Software::Repository, name: "Repo #1"),
+          instance_double(Agama::Software::Repository, name: "Repo #2")
+        ]
+      end
+
+      it "adds an issue for each disabled repository" do
+        subject.public_send(tested_method)
+
+        expect(subject.issues).to include(
+          an_object_having_attributes(
+            description: /could not read the repository Repo #1/i
+          ),
+          an_object_having_attributes(
+            description: /could not read the repository Repo #2/i
+          )
+        )
+      end
+    end
+
+    context "if there is any enabled repository" do
+      let(:enabled_repos) { [instance_double(Agama::Software::Repository, name: "Repo #1")] }
+
+      it "adds the proposal issues" do
+        subject.public_send(tested_method)
+
+        expect(subject.issues).to include(an_object_having_attributes(
+          description: /proposal issue/i
+        ))
+      end
+    end
+
+    context "if there is no enabled repository" do
+      let(:enabled_repos) { [] }
+
+      it "does not add the proposal issues" do
+        subject.public_send(tested_method)
+
+        expect(subject.issues).to_not include(an_object_having_attributes(
+          description: /proposal issue/i
+        ))
+      end
+    end
   end
 
   describe "#probe" do
@@ -120,6 +200,8 @@ describe Agama::Software::Manager do
       expect(repositories).to receive(:load)
       subject.probe
     end
+
+    include_examples "software issues", "probe"
   end
 
   describe "#products" do
@@ -164,6 +246,8 @@ describe Agama::Software::Manager do
         .with("agama", :package, ["mandatory_pkg", "mandatory_pkg_s390"])
       subject.propose
     end
+
+    include_examples "software issues", "propose"
   end
 
   describe "#install" do
@@ -189,43 +273,6 @@ describe Agama::Software::Manager do
 
       it "raises an exception" do
         expect { subject.install }.to raise_error(RuntimeError)
-      end
-    end
-  end
-
-  describe "#validate" do
-    before do
-      allow(repositories).to receive(:enabled).and_return(enabled_repos)
-      allow(repositories).to receive(:disabled).and_return(disabled_repos)
-      allow(proposal).to receive(:errors).and_return([proposal_error])
-    end
-
-    let(:enabled_repos) { [] }
-    let(:disabled_repos) { [] }
-    let(:proposal_error) { Agama::ValidationError.new("proposal error") }
-
-    context "when there are not enabled repositories" do
-      it "does not return the proposal errors" do
-        expect(subject.validate).to_not include(proposal_error)
-      end
-    end
-
-    context "when there are disabled repositories" do
-      let(:disabled_repos) do
-        [instance_double(Agama::Software::Repository, name: "Repo #1")]
-      end
-
-      it "returns an error for each disabled repository" do
-        expect(subject.validate.size).to eq(1)
-        error = subject.validate.first
-        expect(error.message).to match(/Could not read the repository/)
-      end
-    end
-
-    context "when there are enabled repositories" do
-      let(:enabled_repos) { [instance_double(Agama::Software::Repository)] }
-      it "returns the proposal errors" do
-        expect(subject.validate).to include(proposal_error)
       end
     end
   end
@@ -284,5 +331,6 @@ describe Agama::Software::Manager do
     end
   end
 
+  include_examples "issues"
   include_examples "progress"
 end

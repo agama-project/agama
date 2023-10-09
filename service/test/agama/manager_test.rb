@@ -25,6 +25,7 @@ require "agama/manager"
 require "agama/config"
 require "agama/question"
 require "agama/dbus/service_status"
+require "agama/users"
 
 describe Agama::Manager do
   subject { described_class.new(config, logger) }
@@ -42,7 +43,7 @@ describe Agama::Manager do
     instance_double(
       Agama::DBus::Clients::Software,
       probe: nil, install: nil, propose: nil, finish: nil, on_product_selected: nil,
-      on_service_status_change: nil, selected_product: product, valid?: true
+      on_service_status_change: nil, selected_product: product, errors?: false
     )
   end
   let(:users) do
@@ -202,7 +203,7 @@ describe Agama::Manager do
 
     context "when the software configuration is not valid" do
       before do
-        allow(software).to receive(:valid?).and_return(false)
+        allow(software).to receive(:errors?).and_return(true)
       end
 
       it "returns false" do
