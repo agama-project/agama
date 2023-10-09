@@ -63,8 +63,7 @@ describe("L10nWrapper", () => {
     window.location = { reload: jest.fn() };
 
     delete window.navigator;
-    // FIXME: use "en-US" instead, as it is the format used by browsers.
-    window.navigator = { language: "es_ES" };
+    window.navigator = { language: "es-ES" };
   });
 
   afterAll(() => {
@@ -119,9 +118,9 @@ describe("L10nWrapper", () => {
     });
   });
 
-  describe("when the URL query parameter is set to '?lang=cs_CZ'", () => {
+  describe("when the URL query parameter is set to '?lang=cs-CZ'", () => {
     beforeEach(() => {
-      window.location.search = "?lang=cs_CZ";
+      window.location.search = "?lang=cs-CZ";
     });
 
     describe("when the Cockpit language is already set to 'cs-cz'", () => {

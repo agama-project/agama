@@ -40,10 +40,9 @@ function storeUILanguage(lang) {
     return false;
   }
   // code taken from Cockpit
-  const cockpitLang = languageToCockpit(lang);
-  const cookie = "CockpitLang=" + encodeURIComponent(cockpitLang) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
+  const cookie = "CockpitLang=" + encodeURIComponent(lang) + "; path=/; expires=Sun, 16 Jul 3567 06:23:41 GMT";
   document.cookie = cookie;
-  window.localStorage.setItem("cockpit.lang", cockpitLang);
+  window.localStorage.setItem("cockpit.lang", lang);
   return true;
 }
 
@@ -59,44 +58,52 @@ function cockpitLanguage() {
   // language from cookie, empty string if not set (regexp taken from Cockpit)
   const languageString = decodeURIComponent(document.cookie.replace(/(?:(?:^|.*;\s*)CockpitLang\s*=\s*([^;]*).*$)|^.*$/, "$1"));
   if (languageString) {
-    return languageFromCockpit(languageString);
+    return languageString.toLowerCase();
   }
 }
 
 /**
  * Returns the language from the query string.
  *
- * @return {string|undefined} language tag in xx_XX format or undefined if
- *   it was not set.
+ * @return {string|undefined} language tag in 'xx-xx' format (or just 'xx') or undefined if it was
+ *   not set. It supports 'xx-xx', 'xx_xx', 'xx-XX' and 'xx_XX'.
  */
 function wantedLanguage() {
   const lang = (new URLSearchParams(window.location.search)).get("lang");
   if (!lang) return undefined;
 
-  const [language, country] = lang.split(/[-_]/)
-  return [language.toLowerCase(), country?.toUpperCase()].filter(e => e !== undefined).join("_");
+  const [language, country] = lang.toLowerCase().split(/[-_]/)
+  return (country) ? `${language}-${country}` : language;
 }
 
 /**
- * Converts the language tag from the format used by Cockpit
+ * Converts a language tag from the backend to a one compatible with RFC 5646 or
+ * BCP 78
  *
- * @param {string} languageString - Locale string in xx-XX format.
- * @return {string} Locale string in xx_XX format.
+ * @param {string} tag - language tag from the backend
+ * @return {string} Language tag compatible with RFC 5646 or BCP 78
+ *
+ * @private
+ * @see https://datatracker.ietf.org/doc/html/rfc5646
+ * @see https://www.rfc-editor.org/info/bcp78
  */
-function languageFromCockpit(languageString) {
-  let [language, country] = languageString.split("-");
-  return [language, country?.toUpperCase()].filter(e => e !== undefined).join("_");
+function languageFromBackend(tag) {
+  return tag.replace("_", "-").toLowerCase();
 }
 
 /**
- * Converts the language tag to the format used by Cockpit
+ * Converts a language tag compatible with RFC 5646 to the format used by the backend
  *
- * @param {string} languageString - Locale string in xx_XX format.
- * @return {string} Locale string in xx-xx format.
+ * @param {string} tag - language tag from the backend
+ * @return {string} Language tag compatible with the backend
+ *
+ * @private
+ * @see https://datatracker.ietf.org/doc/html/rfc5646
+ * @see https://www.rfc-editor.org/info/bcp78
  */
-function languageToCockpit(languageString) {
-  const [language, country] = languageString.toLowerCase().split("_");
-  return [language, country].filter(e => e !== undefined).join("-");
+function languageToBackend(tag) {
+  const [language, country] = tag.split("-");
+  return (country) ? `${language}_${country.toUpperCase()}` : language;
 }
 
 /**
@@ -108,6 +115,9 @@ function languageToCockpit(languageString) {
  * It behaves like a wrapper, it just wraps the children components, it does
  * not render any real content.
  *
+ * The format of the language tag follows the
+ * [RFC 5646](https://datatracker.ietf.org/doc/html/rfc5646) specification.
+ *
  * @param {object} props
  * @param {React.ReactNode} [props.children] - content to display within the wrapper
  * @param {import("~/client").InstallerClient} [props.client] - client
@@ -118,9 +128,13 @@ export default function L10nWrapper({ client, children }) {
 
   const storeBackendLanguage = useCallback(async languageString => {
     const currentLang = await cancellablePromise(client.language.getUILanguage());
+    const normalizedLang = languageFromBackend(currentLang);
 
-    if (currentLang !== languageString) {
-      await cancellablePromise(client.language.setUILanguage(languageString));
+    if (normalizedLang !== languageString) {
+      // FIXME: fallback to en-US if the language is not supported.
+      await cancellablePromise(
+        client.language.setUILanguage(languageToBackend(languageString))
+      );
       return true;
     }
     return false;
@@ -129,14 +143,14 @@ export default function L10nWrapper({ client, children }) {
   const selectLanguage = useCallback(async () => {
     const wanted = wantedLanguage();
 
-    if (wanted === "xx" || wanted === "xx_XX") {
+    if (wanted === "xx" || wanted === "xx-xx") {
       cockpit.language = wanted;
       setLanguage(wanted);
       return;
     }
 
     const current = cockpitLanguage();
-    const newLanguage = wanted || current || navigator.language;
+    const newLanguage = wanted || current || navigator.language.toLowerCase();
 
     let mustReload = storeUILanguage(newLanguage)
     mustReload = await storeBackendLanguage(newLanguage) || mustReload;
