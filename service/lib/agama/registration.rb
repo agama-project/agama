@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Copyright (c) [2024] SUSE LLC
 #
 # All Rights Reserved.
@@ -36,7 +38,7 @@ module Agama
     end
 
     def register(code, email: "")
-      target_distro = "ALP-Dolomite-1-x86_64" # TODO read it
+      target_distro = "ALP-Dolomite-1-x86_64" # TODO: read it
       connect_params = {
         token: code,
         email: email
@@ -50,9 +52,9 @@ module Agama
       registration.register(email, code, target_distro)
       # TODO: fill it properly for scc
       target_product = OpenStruct.new(
-        arch: "x86_64",
-        identifier: "ALP-Dolomite",
-        version: "1.0",
+        arch:         "x86_64",
+        identifier:   "ALP-Dolomite",
+        version:      "1.0",
         release_type: "ALPHA"
       )
       activate_params = {}
@@ -63,14 +65,11 @@ module Agama
       @email = email
     end
 
-    def deregister
-    end
+    def deregister; end
 
-    def disabled?
-    end
+    def disabled?; end
 
-    def optional?
-    end
+    def optional?; end
 
     # callback when state changed like when different product is selected
     def on_state_change(&block)
