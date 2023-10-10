@@ -81,6 +81,9 @@ module Agama
       SUSE::Connect::YaST.deactivate_system(connect_params)
       FileUtils.rm(SUSE::Connect::YaST::GLOBAL_CREDENTIALS_FILE) # connect does not remove it itself
 
+      # reset varibles here
+      @reg_code = nil
+      @email = nil
       run_on_change_callbacks
     end
 
