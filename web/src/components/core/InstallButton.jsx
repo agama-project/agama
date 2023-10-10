@@ -63,8 +63,8 @@ before proceeding with the installation.").split(/[[\]]/);
       <div className="stack">
         <If condition={hasIssues} then={<IssuesWarning />} />
         <p>
-          { _(`If you continue, partitions on your hard disk will be modified
-according to the provided installation settings.`) }
+          { _("If you continue, partitions on your hard disk will be modified \
+according to the provided installation settings.") }
         </p>
         <p>
           {_("Please, cancel and check the settings if you are unsure.")}
@@ -87,8 +87,8 @@ const CannotInstallPopup = ({ onClose }) => (
     isOpen
   >
     <p>
-      {_(`Some problems were found when trying to start the installation.
-Please, have a look to the reported errors and try again.`)}
+      {_("Some problems were found when trying to start the installation. \
+Please, have a look to the reported errors and try again.")}
     </p>
 
     <Popup.Actions>
