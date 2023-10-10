@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use tempdir::TempDir;
 
+// definition of "agama logs" subcommands, see clap crate for details
 #[derive(Subcommand, Debug)]
 pub enum LogsCommands {
     /// Collects and stores logs in a tar archive
@@ -22,17 +23,32 @@ pub enum LogsCommands {
     List,
 }
 
+// main entry point called from agama CLI main loop
 pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
     match subcommand {
-        LogsCommands::Store { verbose } => Ok(store(verbose)?),
-        LogsCommands::List => Err(anyhow::anyhow!("Not implemented")),
+        LogsCommands::Store { verbose } => {
+            // feed internal options structure by what was received from user
+            // for now we always use / add defaults if any
+            let options = LogOptions {
+                verbose,
+                ..Default::default()
+            };
+
+            Ok(store(options)?)
+        }
+        LogsCommands::List => {
+            list(LogOptions::default());
+
+            Ok(())
+        }
     }
 }
 
-const DEFAULT_COMMANDS: [&str; 3] = [
-    "journalctl -u agama",
-    "journalctl -u agama-auto",
-    "journalctl --dmesg",
+const DEFAULT_COMMANDS: [(&str, &str); 3] = [
+    // (<command to be executed>, <file name used for storing result of the command>)
+    ("journalctl -u agama", "agama"),
+    ("journalctl -u agama-auto", "agama-auto"),
+    ("journalctl --dmesg", "dmesg"),
 ];
 
 const DEFAULT_PATHS: [&str; 14] = [
@@ -55,6 +71,8 @@ const DEFAULT_PATHS: [&str; 14] = [
 ];
 
 const DEFAULT_RESULT: &str = "/tmp/agama_logs";
+// what compression is used by default:
+// (<compression as distinguished by tar>, <an extension for resulting archive>)
 const DEFAULT_COMPRESSION: (&str, &str) = ("bzip2", "tar.bz2");
 const DEFAULT_TMP_DIR: &str = "agama-logs";
 
@@ -74,6 +92,27 @@ fn show(show: bool, text: &str) {
     }
 
     print!("{}", text);
+}
+
+// Configurable parameters of the "agama logs" which can be
+// set by user when calling a (sub)command
+struct LogOptions {
+    paths: Vec<String>,
+    commands: Vec<(String, String)>,
+    verbose: bool,
+}
+
+impl Default for LogOptions {
+    fn default() -> Self {
+        Self {
+            paths: DEFAULT_PATHS.iter().map(|p| p.to_string()).collect(),
+            commands: DEFAULT_COMMANDS
+                .iter()
+                .map(|(cmd, name)| (cmd.to_string(), name.to_string()))
+                .collect(),
+            verbose: false,
+        }
+    }
 }
 
 // Struct for log represented by a file
@@ -99,14 +138,18 @@ struct LogCmd {
     // command which stdout / stderr is logged
     cmd: String,
 
+    // user defined log file name (if any)
+    file_name: String,
+
     // place where to collect logs
     dst_path: PathBuf,
 }
 
 impl LogCmd {
-    fn new(cmd: &str, dst: &Path) -> Self {
+    fn new(cmd: &str, file_name: &str, dst: &Path) -> Self {
         Self {
             cmd: cmd.to_string(),
+            file_name: file_name.to_string(),
             dst_path: dst.to_owned(),
         }
     }
@@ -162,7 +205,16 @@ impl LogItem for LogCmd {
     }
 
     fn to(&self) -> PathBuf {
-        self.dst_path.as_path().join(format!("{}", self.cmd))
+        let mut file_name;
+
+        if self.file_name.is_empty() {
+            file_name = self.cmd.clone();
+        } else {
+            file_name = self.file_name.clone();
+        };
+
+        file_name.retain(|c| c != ' ');
+        self.dst_path.as_path().join(format!("{}", file_name))
     }
 
     fn store(&self) -> Result<(), io::Error> {
@@ -181,64 +233,87 @@ impl LogItem for LogCmd {
     }
 }
 
-// collect existing / requested paths which should already exist turns them into list of log
-// sources
-fn paths_to_log_sources(paths: &[&str], tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
+// Collect existing / requested paths which should already exist in the system.
+// Turns them into list of log sources
+fn paths_to_log_sources(paths: &Vec<String>, tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
     let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
-    for path in paths {
+    for path in paths.iter() {
         // assumption: path is full path
         if Path::new(path).try_exists().is_ok() {
-            log_sources.push(Box::new(LogPath::new(path, tmp_dir.path())));
+            log_sources.push(Box::new(LogPath::new(path.as_str(), tmp_dir.path())));
         }
     }
 
     log_sources
 }
 
-// some info can be collected via particular commands only, turn it into log sources
-fn cmds_to_log_sources(commands: &[&str], tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
+// Some info can be collected via particular commands only, turn it into log sources
+fn cmds_to_log_sources(
+    commands: &Vec<(String, String)>,
+    tmp_dir: &TempDir,
+) -> Vec<Box<dyn LogItem>> {
     let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
-    for cmd in commands {
-        log_sources.push(Box::new(LogCmd::new(cmd, tmp_dir.path())));
+    for cmd in commands.iter() {
+        log_sources.push(Box::new(LogCmd::new(
+            cmd.0.as_str(),
+            cmd.1.as_str(),
+            tmp_dir.path(),
+        )));
     }
 
     log_sources
 }
 
-// compress given directory into a tar archive
+// Compress given directory into a tar archive
 fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
     let compression = DEFAULT_COMPRESSION.0;
+    let tmp_path = tmp_dir
+        .path()
+        .parent()
+        .and_then(|p| p.as_os_str().to_str())
+        .ok_or(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "Malformed path to temporary directory",
+        ))?;
+    let dir = tmp_dir
+        .path()
+        .file_name()
+        .and_then(|f| f.to_str())
+        .ok_or(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "Malformed path to temporary director",
+        ))?;
     let compress_cmd = format!(
-        "tar -c -f {} --warning=no-file-changed --{} --dereference -C {} .",
-        result,
-        compression,
-        tmp_dir.path().display()
+        "tar -c -f {} --warning=no-file-changed --{} --dereference -C {} {}",
+        result, compression, tmp_path, dir,
     );
     let cmd_parts = compress_cmd.split_whitespace().collect::<Vec<&str>>();
-
-    match Command::new(cmd_parts[0])
+    let res = Command::new(cmd_parts[0])
         .args(cmd_parts[1..].iter())
-        .status()
-    {
-        Ok(_o) => Ok(()),
-        Err(_e) => Err(io::Error::new(
+        .status()?;
+
+    if res.success() {
+        Ok(())
+    } else {
+        Err(io::Error::new(
             io::ErrorKind::Other,
             "Cannot create tar archive",
-        )),
+        ))
     }
 }
 
-// handler for the "agama logs store" subcommand
-fn store(verbose: bool) -> Result<(), io::Error> {
+// Handler for the "agama logs store" subcommand
+fn store(options: LogOptions) -> Result<(), io::Error> {
     if !Uid::effective().is_root() {
         panic!("No Root, no logs. Sorry.");
     }
 
     // preparation, e.g. in later features some log commands can be added / excluded per users request or
-    let commands = DEFAULT_COMMANDS;
-    let paths = DEFAULT_PATHS;
+    let commands = options.commands;
+    let paths = options.paths;
+    let verbose = options.verbose;
     let result = format!("{}.{}", DEFAULT_RESULT, DEFAULT_COMPRESSION.1);
 
     showln(verbose, "Collecting Agama logs:");
@@ -277,4 +352,23 @@ fn store(verbose: bool) -> Result<(), io::Error> {
     }
 
     compress_logs(&tmp_dir, &result)
+}
+
+// Handler for the "agama logs list" subcommand
+fn list(options: LogOptions) {
+    for list in [
+        ("Log paths: ", options.paths),
+        (
+            "Log commands: ",
+            options.commands.iter().map(|c| c.0.clone()).collect(),
+        ),
+    ] {
+        println!("{}", list.0);
+
+        for item in list.1.iter() {
+            println!("\t{}", item);
+        }
+
+        println!();
+    }
 }
