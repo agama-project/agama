@@ -1,0 +1,63 @@
+/*
+ * Copyright (c) [2023] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of version 2 of the GNU General Public License as published
+ * by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
+import React, { useCallback, useState } from "react";
+import { Icon } from "../layout";
+import { FormSelect, FormSelectOption } from "@patternfly/react-core";
+import { _ } from "~/i18n";
+import { useL10n } from "~/context/l10n";
+
+export default function LanguageSwitcher() {
+  const { language, changeLanguage } = useL10n();
+  const [selected, setSelected] = useState(null);
+
+  const languages = [
+    { id: "cs-cz", name: "Czech" },
+    { id: "en-us", name: "English (US)" },
+    { id: "es-es", name: "Spanish" }
+  ];
+
+  const onChange = useCallback((_event, value) => {
+    setSelected(value);
+    changeLanguage(value);
+  }, [setSelected]);
+
+  const options = languages.map(({ id, name }) => {
+    const [lang,] = id.replace("_", "-").toLowerCase().split(".");
+    return <FormSelectOption key={lang} value={lang} label={name} />
+  });
+
+  return (
+    <>
+      <h3>
+        <Icon name="translate" size="24" />{_("UI Language")}
+      </h3>
+      <FormSelect
+        id="language"
+        aria-label={_("language")}
+        value={selected || language}
+        onChange={onChange}
+      >
+        {options}
+      </FormSelect>
+    </>
+  );
+}

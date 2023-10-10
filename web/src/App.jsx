@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -40,6 +40,7 @@ import {
 } from "~/components/core";
 import { ChangeProductLink } from "~/components/software";
 import { SidebarArea } from "~/components/layout";
+import { LanguageSwitcher } from "./components/l10n";
 
 function App() {
   const client = useInstallerClient();
@@ -77,14 +78,21 @@ function App() {
     <>
       <SidebarArea>
         <Sidebar>
-          <ChangeProductLink />
-          <IssuesLink />
-          <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
-            <ShowLogButton />
-            <LogsButton data-keep-sidebar-open="true" />
-            <ShowTerminalButton />
-          </Disclosure>
-          <About />
+          <div className="flex-stack">
+            <ChangeProductLink />
+            <IssuesLink />
+            <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
+              <ShowLogButton />
+              <LogsButton data-keep-sidebar-open="true" />
+              <ShowTerminalButton />
+            </Disclosure>
+            <About />
+          </div>
+          <div className="full-width highlighted">
+            <div className="flex-stack">
+              <LanguageSwitcher />
+            </div>
+          </div>
         </Sidebar>
       </SidebarArea>
 

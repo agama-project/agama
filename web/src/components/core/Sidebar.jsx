@@ -167,8 +167,8 @@ export default function Sidebar ({ children }) {
           </button>
         </header>
 
-        <div className="flex-stack" onClick={onClick}>
-          { children }
+        <div className="flex-stack justify-between" onClick={onClick}>
+          {children}
         </div>
 
         <footer className="split justify-between" data-state="reversed">
