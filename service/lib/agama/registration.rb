@@ -62,8 +62,8 @@ module Agama
         version:    "1.0"
       )
       activate_params = {}
-      service = SUSE::Connect::YaST.activate_product(target_product, activate_params, email)
-      Y2Packager::NewRepositorySetup.instance.add_service(service.name)
+      @service = SUSE::Connect::YaST.activate_product(target_product, activate_params, email)
+      Y2Packager::NewRepositorySetup.instance.add_service(@service.name)
 
       @reg_code = code
       @email = email
@@ -71,15 +71,7 @@ module Agama
     end
 
     def deregister
-      # TODO: fill it properly for scc
-      target_product = OpenStruct.new(
-        arch:       "x86_64",
-        identifier: "ALP-Dolomite",
-        version:    "1.0"
-      )
-      deactivate_params = {}
-      service = SUSE::Connect::YaST.deactivate_product(target_product, deactivate_params)
-      Y2Packager::NewRepositorySetup.instance.services.delete(service.name)
+      Y2Packager::NewRepositorySetup.instance.services.delete(@service.name)
 
       connect_params = {
         token: @system_code,
