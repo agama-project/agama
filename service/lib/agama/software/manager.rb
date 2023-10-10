@@ -359,10 +359,7 @@ module Agama
         # packages. Those issues does not make any sense if there are no repositories to install
         # from.
         issues += proposal.issues if repositories.enabled.any?
-
-        # TODO
-        # issues += registration.issues
-
+        issues << missing_registration_issue if missing_registration?
         issues
       end
 
@@ -386,6 +383,23 @@ module Agama
             source:   Issue::Source::SYSTEM,
             severity: Issue::Severity::ERROR)
         end
+      end
+
+      # Issue when a product requires registration but it is not registered yet.
+      #
+      # @return [Agama::Issue]
+      def missing_registration_issue
+        Issue.new("Product must be registered",
+          source:   Issue::Source::SYSTEM,
+          severity: Issue::Severity::ERROR)
+      end
+
+      # Whether the registration is missing.
+      #
+      # @return [Boolean]
+      def missing_registration?
+        registration.reg_code.nil? &&
+          registration.requirement == Agama::Registration::Requirement::MANDATORY
       end
     end
   end

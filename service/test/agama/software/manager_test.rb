@@ -27,6 +27,7 @@ require_relative File.join(
 )
 require "agama/config"
 require "agama/issue"
+require "agama/registration"
 require "agama/software/manager"
 require "agama/software/proposal"
 require "agama/dbus/clients/questions"
@@ -95,15 +96,16 @@ describe Agama::Software::Manager do
 
   shared_examples "software issues" do |tested_method|
     before do
-      allow(subject).to receive(:product).and_return("Tumbleweed")
+      allow(subject).to receive(:product).and_return(product)
+      allow(subject.registration).to receive(:reg_code).and_return(reg_code)
     end
 
+    let(:product) { "ALP-Dolomite" }
+    let(:reg_code) { "123XX432" }
     let(:proposal_issues) { [Agama::Issue.new("Proposal issue")] }
 
     context "if there is no product selected yet" do
-      before do
-        allow(subject).to receive(:product).and_return(nil)
-      end
+      let(:product) { nil }
 
       it "sets an issue" do
         subject.public_send(tested_method)
@@ -157,6 +159,38 @@ describe Agama::Software::Manager do
         expect(subject.issues).to_not include(an_object_having_attributes(
           description: /proposal issue/i
         ))
+      end
+    end
+
+    context "if the product is not registered" do
+      let(:reg_code) { nil }
+
+      before do
+        allow(subject.registration).to receive(:requirement).and_return(reg_requirement)
+      end
+
+      context "and registration is mandatory" do
+        let(:reg_requirement) { Agama::Registration::Requirement::MANDATORY }
+
+        it "adds registration issue" do
+          subject.public_send(tested_method)
+
+          expect(subject.issues).to include(an_object_having_attributes(
+            description: /product must be registered/i
+          ))
+        end
+      end
+
+      context "and registration is not mandatory" do
+        let(:reg_requirement) { Agama::Registration::Requirement::OPTIONAL }
+
+        it "does not add registration issue" do
+          subject.public_send(tested_method)
+
+          expect(subject.issues).to_not include(an_object_having_attributes(
+            description: /product must be registered/i
+          ))
+        end
       end
     end
   end
