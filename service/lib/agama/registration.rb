@@ -19,6 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "fileutils"
 require "yast"
 require "ostruct"
 require "suse/connect"
@@ -78,6 +79,7 @@ module Agama
         email: email
       }
       SUSE::Connect::YaST.deactivate_system(connect_params)
+      FileUtils.rm(SUSE::Connect::YaST::GLOBAL_CREDENTIALS_FILE) # connect does not remove it itself
 
       run_on_change_callbacks
     end
