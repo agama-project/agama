@@ -111,7 +111,7 @@ module Agama
       #
       # @return [Boolean]
       def valid?
-        proposal && !errors?
+        !(proposal.nil? || errors?)
       end
 
     private

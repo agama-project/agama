@@ -244,7 +244,7 @@ module Agama
         #
         # @raise [Exception] if an unexpected error is found.
         #
-        # @return [Array<Integer, String>] List including a result code and a description
+        # @return [Array(Integer, String)] List including a result code and a description
         #   (e.g., [1, "Connection to registration server failed (network error)"]).
         #
         #   Possible result codes:
@@ -275,20 +275,20 @@ module Agama
           connect_result_from_error(e, 7)
         end
 
-        # Generates a result the from the given error.
+        # Generates a result from a given error.
         #
         # @param error [Exception]
-        # @param code [Integer]
+        # @param result_code [Integer]
         # @param details [String, nil]
         #
-        # @return [Array<Integer, String>] List including a result code and a description.
-        def connect_result_from_error(error, code, details = nil)
+        # @return [Array(Integer, String)] List including a result code and a description.
+        def connect_result_from_error(error, result_code, details = nil)
           logger.error("Error connecting to registration server: #{error}")
 
           description = "Connection to registration server failed"
           description += " (#{details})" if details
 
-          [code, description]
+          [result_code, description]
         end
       end
     end
