@@ -31,10 +31,15 @@ module Agama
     attr_reader :reg_code
     attr_reader :email
 
+    module Requirement
+      NOT_REQUIRED = :not_required
+      OPTIONAL = :optional
+      MANDATORY = :mandatory
+    end
+
     # initializes registration with instance of software manager for query about products
     def initialize(software_manager)
       @software = software_manager
-      @on_state_change_callbacks = []
     end
 
     def register(code, email: "")
@@ -51,9 +56,9 @@ module Agama
 
       # TODO: fill it properly for scc
       target_product = OpenStruct.new(
-        arch:         "x86_64",
-        identifier:   "ALP-Dolomite",
-        version:      "1.0"
+        arch:       "x86_64",
+        identifier: "ALP-Dolomite",
+        version:    "1.0"
       )
       activate_params = {}
       service = SUSE::Connect::YaST.activate_product(target_product, activate_params, email)
@@ -61,17 +66,29 @@ module Agama
 
       @reg_code = code
       @email = email
+      run_on_change_callbacks
     end
 
-    def deregister; end
+    # TODO
+    def deregister
+      # run_on_change_callbacks
+    end
 
-    def disabled?; end
-
-    def optional?; end
+    # TODO: check whether the selected product requires registration
+    def requirement
+      Requirement::NOT_REQUIRED
+    end
 
     # callback when state changed like when different product is selected
-    def on_state_change(&block)
-      @on_state_change_callbacks << block
+    def on_change(&block)
+      @on_change_callbacks ||= []
+      @on_change_callbacks << block
+    end
+
+  private
+
+    def run_on_change_callbacks
+      @on_change_callbacks&.map(&:call)
     end
   end
 end

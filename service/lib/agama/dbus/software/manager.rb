@@ -28,6 +28,7 @@ require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
 require "agama/dbus/with_service_status"
+require "agama/registration"
 
 module Agama
   module DBus
@@ -171,10 +172,10 @@ module Agama
 
           dbus_reader(:email, "s")
 
-          dbus_reader(:state, "u")
+          dbus_reader(:requirement, "u")
 
           dbus_method(:Register, "in reg_code:s, in options:a{sv}, out result:(us)") do |*args|
-            [register(*args)]
+            [register(args[0], email: args[1]["Email"])]
           end
 
           dbus_method(:Deregister, "out result:(us)") { [deregister] }
@@ -188,20 +189,75 @@ module Agama
           backend.registration.email || ""
         end
 
-        def state
-          # TODO
-          0
-        end
-
-        def register(reg_code, options)
-          connect_result do
-            backend.registration.register(reg_code, email: options["Email"])
+        # Registration requirement.
+        #
+        # @return [Integer] Possible values:
+        #   0: not required
+        #   1: optional
+        #   2: mandatory
+        def requirement
+          case backend.registration.requirement
+          when Agama::Registration::Requirement::MANDATORY
+            2
+          when Agama::Registration::Requirement::OPTIONAL
+            1
+          else
+            0
           end
         end
 
+        # Tries to register with the given registration code.
+        #
+        # @param reg_code [String]
+        # @param email [String, nil]
+        #
+        # @return [Array(Integer, String)] Result code and a description.
+        #   Possible result codes:
+        #   0: success
+        #   1: missing product
+        #   2: already registered
+        #   3: network error
+        #   4: timeout error
+        #   5: api error
+        #   6: missing credentials
+        #   7: incorrect credentials
+        #   8: invalid certificate
+        #   9: internal error (e.g., parsing json data)
+        def register(reg_code, email: nil)
+          if !backend.product
+            [1, "Product not selected yet"]
+          elsif backend.registration.reg_code
+            [2, "Product already registered"]
+          else
+            connect_result(first_error_code: 3) do
+              backend.registration.register(reg_code, email: email)
+            end
+          end
+        end
+
+        # Tries to deregister.
+        #
+        # @return [Array(Integer, String)] Result code and a description.
+        #   Possible result codes:
+        #   0: success
+        #   1: missing product
+        #   2: not registered yet
+        #   3: network error
+        #   4: timeout error
+        #   5: api error
+        #   6: missing credentials
+        #   7: incorrect credentials
+        #   8: invalid certificate
+        #   9: internal error (e.g., parsing json data)
         def deregister
-          connect_result do
-            backend.registration.deregister
+          if !backend.product
+            [1, "Product not selected yet"]
+          elsif !backend.registration.reg_code
+            [2, "Product not registered yet"]
+          else
+            connect_result(first_error_code: 3) do
+              backend.registration.deregister
+            end
           end
         end
 
@@ -226,6 +282,8 @@ module Agama
             self.selected_patterns = compute_patterns
           end
 
+          backend.registration.on_change { registration_properties_changed }
+
           backend.on_issues_change { issues_properties_changed }
         end
 
@@ -240,55 +298,50 @@ module Agama
           patterns
         end
 
+        def registration_properties_changed
+          dbus_properties_changed(REGISTRATION_INTERFACE,
+            interfaces_and_properties[REGISTRATION_INTERFACE], [])
+        end
+
         # Result from calling to SUSE connect.
         #
         # @raise [Exception] if an unexpected error is found.
         #
         # @return [Array(Integer, String)] List including a result code and a description
         #   (e.g., [1, "Connection to registration server failed (network error)"]).
-        #
-        #   Possible result codes:
-        #   0: success
-        #   1: network error
-        #   2: timeout error
-        #   3: api error
-        #   4: missing credentials
-        #   5: incorrect credentials
-        #   6: invalid certificate
-        #   7: internal error (e.g., parsing json data)
-        def connect_result(&block)
+        def connect_result(first_error_code: 1, &block)
           block.call
           [0, ""]
         rescue SocketError => e
-          connect_result_from_error(e, 1, "network error")
+          connect_result_from_error(e, first_error_code, "network error")
         rescue Timeout::Error => e
-          connect_result_from_error(e, 2, "timeout")
+          connect_result_from_error(e, first_error_code + 1, "timeout")
         rescue SUSE::Connect::ApiError => e
-          connect_result_from_error(e, 3)
+          connect_result_from_error(e, first_error_code + 2)
         rescue SUSE::Connect::MissingSccCredentialsFile => e
-          connect_result_from_error(e, 4, "missing credentials")
+          connect_result_from_error(e, first_error_code + 3, "missing credentials")
         rescue SUSE::Connect::MalformedSccCredentialsFile => e
-          connect_result_from_error(e, 5, "incorrect credentials")
+          connect_result_from_error(e, first_error_code + 4, "incorrect credentials")
         rescue OpenSSL::SSL::SSLError => e
-          connect_result_from_error(e, 6, "invalid certificate")
+          connect_result_from_error(e, first_error_code + 5, "invalid certificate")
         rescue JSON::ParserError => e
-          connect_result_from_error(e, 7)
+          connect_result_from_error(e, first_error_code + 6)
         end
 
         # Generates a result from a given error.
         #
         # @param error [Exception]
-        # @param result_code [Integer]
+        # @param error_code [Integer]
         # @param details [String, nil]
         #
-        # @return [Array(Integer, String)] List including a result code and a description.
-        def connect_result_from_error(error, result_code, details = nil)
+        # @return [Array(Integer, String)] List including an error code and a description.
+        def connect_result_from_error(error, error_code, details = nil)
           logger.error("Error connecting to registration server: #{error}")
 
           description = "Connection to registration server failed"
           description += " (#{details})" if details
 
-          [result_code, description]
+          [error_code, description]
         end
       end
     end
