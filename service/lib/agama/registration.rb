@@ -50,6 +50,7 @@ module Agama
       }
 
       login, password = SUSE::Connect::YaST.announce_system(connect_params, target_distro)
+      @system_code = code # remember code to be able to deregister
       # write the global credentials
       # TODO: check if we can do it in memory for libzypp
       SUSE::Connect::YaST.create_credentials_file(login, password)
@@ -71,6 +72,7 @@ module Agama
 
     def deregister
       connect_params = {
+        token: @system_code,
         email: email
       }
       SUSE::Connect::YaST.deactivate_system(connect_params)
