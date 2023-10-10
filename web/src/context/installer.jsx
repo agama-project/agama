@@ -26,6 +26,7 @@ import { createDefaultClient } from "~/client";
 import { Layout, Loading, Title } from "~/components/layout";
 import { DBusError } from "~/components/core";
 import L10nWrapper from "~/L10nWrapper";
+import { L10nProvider } from "~/context/l10n";
 
 const InstallerClientContext = React.createContext(undefined);
 
@@ -96,7 +97,9 @@ function InstallerClientProvider({
       return children;
     }
 
-    return <L10nWrapper client={value}>{children}</L10nWrapper>;
+    return (<L10nProvider client={value}>
+      <L10nWrapper client={value}>{children}</L10nWrapper>
+    </L10nProvider>);
   };
 
   return (
@@ -107,7 +110,7 @@ function InstallerClientProvider({
         <Title>Agama</Title>
         <Content />
       </Layout>
-    </InstallerClientContext.Provider>
+    </InstallerClientContext.Provider >
   );
 }
 

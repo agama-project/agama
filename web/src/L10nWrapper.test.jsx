@@ -26,6 +26,7 @@ import React from "react";
 import { render, waitFor, screen } from "@testing-library/react";
 
 import L10nWrapper from "~/L10nWrapper";
+import { L10nProvider } from "~/context/l10n";
 
 const getUILanguageFn = jest.fn().mockResolvedValue();
 const setUILanguageFn = jest.fn().mockResolvedValue();
@@ -91,7 +92,7 @@ describe("L10nWrapper", () => {
       });
 
       it("displays the children content and does not reload", async () => {
-        render(<L10nWrapper client={client}>Testing content</L10nWrapper>);
+        render(<L10nProvider client={client}><L10nWrapper>Testing content</L10nWrapper></L10nProvider>);
 
         // children are displayed
         await screen.findByText("Testing content");
@@ -111,10 +112,18 @@ describe("L10nWrapper", () => {
       // so far this is only done in "test" and "development" environments,
       // not in "production"!!
       it("sets the preferred language from browser and reloads", async () => {
-        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
+        render(
+          <L10nProvider client={client}><L10nWrapper>
+            <TranslatedContent />
+          </L10nWrapper></L10nProvider>
+        );
         await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
 
-        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
+        render(
+          <L10nProvider client={client}><L10nWrapper>
+            <TranslatedContent />
+          </L10nWrapper></L10nProvider>
+        );
         await waitFor(() => screen.getByText("hola"));
       });
     });
@@ -132,7 +141,11 @@ describe("L10nWrapper", () => {
       });
 
       it("displays the children content and does not reload", async () => {
-        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
+        render(
+          <L10nProvider client={client}><L10nWrapper>
+            <TranslatedContent />
+          </L10nWrapper></L10nProvider>
+        );
 
         // children are displayed
         await screen.findByText("ahoj");
@@ -152,11 +165,19 @@ describe("L10nWrapper", () => {
       });
 
       it("sets the 'cs-cz' language and reloads", async () => {
-        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
+        render(
+          <L10nProvider client={client}><L10nWrapper>
+            <TranslatedContent />
+          </L10nWrapper></L10nProvider>
+        );
         await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
 
         // reload the component
-        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
+        render(
+          <L10nProvider client={client}><L10nWrapper>
+            <TranslatedContent />
+          </L10nWrapper></L10nProvider>
+        );
         await waitFor(() => screen.getByText("ahoj"));
 
         expect(setUILanguageFn).toHaveBeenCalledWith("cs_CZ");
@@ -171,11 +192,19 @@ describe("L10nWrapper", () => {
       });
 
       it("sets the 'cs_CZ' language and reloads", async () => {
-        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
+        render(
+          <L10nProvider client={client}><L10nWrapper>
+            <TranslatedContent />
+          </L10nWrapper></L10nProvider>
+        );
         await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
 
         // reload the component
-        render(<L10nWrapper client={client}><TranslatedContent /></L10nWrapper>);
+        render(
+          <L10nProvider client={client}><L10nWrapper>
+            <TranslatedContent />
+          </L10nWrapper></L10nProvider>
+        );
         await waitFor(() => screen.getByText("ahoj"));
 
         expect(setUILanguageFn).toHaveBeenCalledWith("cs_CZ");

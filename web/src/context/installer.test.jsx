@@ -47,7 +47,7 @@ describe("installer context", () => {
     });
 
     it("displays an error", async () => {
-      plainRender(<InstallerClientProvider interval={0.1} max_attempts={1} />);
+      plainRender(<InstallerClientProvider interval={0.1} max_attempts={1} disableL10n />);
       await waitFor(() => {
         expect(screen.queryByText(/Could not connect/)).toBeInTheDocument();
       });
@@ -61,7 +61,7 @@ describe("installer context", () => {
 
     it("displays the children elements", async () => {
       plainRender(
-        <InstallerClientProvider>
+        <InstallerClientProvider disableL10n>
           <div>Hello world!</div>
         </InstallerClientProvider>
       );
@@ -82,7 +82,7 @@ describe("installer context", () => {
       onDisconnectFn = onDisconnect;
 
       plainRender(
-        <InstallerClientProvider>
+        <InstallerClientProvider disableL10n>
           <div>Hello world!</div>
         </InstallerClientProvider>
       );
