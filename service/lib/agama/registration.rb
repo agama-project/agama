@@ -69,9 +69,22 @@ module Agama
       run_on_change_callbacks
     end
 
-    # TODO
     def deregister
-      # run_on_change_callbacks
+      connect_params = {
+        email: email
+      }
+      SUSE::Connect::YaST.deactivate_system(connect_params)
+
+      # TODO: fill it properly for scc
+      target_product = OpenStruct.new(
+        arch:       "x86_64",
+        identifier: "ALP-Dolomite",
+        version:    "1.0"
+      )
+      deactivate_params = {}
+      service = SUSE::Connect::YaST.activate_product(target_product, deactivate_params)
+      Y2Packager::NewRepositorySetup.instance.services.delete(service.name)
+      run_on_change_callbacks
     end
 
     # TODO: check whether the selected product requires registration
