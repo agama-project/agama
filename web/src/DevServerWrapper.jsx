@@ -26,6 +26,7 @@ import {
   EmptyState, EmptyStateBody, EmptyStateFooter, EmptyStateHeader, EmptyStateIcon
 } from "@patternfly/react-core";
 import { Center, Icon, Loading } from "~/components/layout";
+import { _ } from "~/i18n";
 
 // path to any internal Cockpit component to force displaying the login dialog
 const loginPath = "/cockpit/@localhost/system/terminal.html";
@@ -77,26 +78,30 @@ export default function DevServerWrapper({ children }) {
   if (isLoading) return <Loading />;
 
   if (isError) {
+    // TRANSLATORS: error message, %s is replaced by the server URL
+    const [msg1, msg2] = _("The server at %s is not reachable.").split("%s");
     return (
       <Center>
         <EmptyState variant="xl">
           <EmptyStateHeader
-            titleText="Cannot connect to the Cockpit server"
+            // TRANSLATORS: error message
+            titleText={_("Cannot connect to the Cockpit server")}
             headingLevel="h2"
             icon={<EmptyStateIcon icon={ErrorIcon} />}
           />
           <EmptyStateBody>
             <Text>
-              The server at { " " }
-              <Button isInline variant="link" component="a" href={ COCKPIT_TARGET_URL } target="_blank">
-                { COCKPIT_TARGET_URL }
+              {msg1} {" "}
+              <Button isInline variant="link" component="a" href={COCKPIT_TARGET_URL} target="_blank">
+                {COCKPIT_TARGET_URL}
               </Button>
-              { " " } is not reachable.
+              {" "} {msg2}
             </Text>
           </EmptyStateBody>
           <EmptyStateFooter>
             <Button variant="primary" onClick={() => { setIsLoading(true); setIsError(false) }}>
-              Try Again
+              {/* TRANSLATORS: button label */}
+              {_("Try Again")}
             </Button>
           </EmptyStateFooter>
         </EmptyState>
