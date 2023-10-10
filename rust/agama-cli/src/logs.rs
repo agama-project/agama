@@ -272,12 +272,7 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
     let tmp_path = tmp_dir
         .path()
         .parent()
-        .ok_or(io::Error::new(
-            io::ErrorKind::InvalidInput,
-            "Malformed path to temporary directory",
-        ))?
-        .as_os_str()
-        .to_str()
+        .and_then(|p| p.as_os_str().to_str())
         .ok_or(io::Error::new(
             io::ErrorKind::InvalidInput,
             "Malformed path to temporary directory",
@@ -285,11 +280,7 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
     let dir = tmp_dir
         .path()
         .file_name()
-        .ok_or(io::Error::new(
-            io::ErrorKind::InvalidInput,
-            "Malformed path to temporary directory",
-        ))?
-        .to_str()
+        .and_then(|f| f.to_str())
         .ok_or(io::Error::new(
             io::ErrorKind::InvalidInput,
             "Malformed path to temporary director",
