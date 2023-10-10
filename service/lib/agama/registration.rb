@@ -53,8 +53,7 @@ module Agama
       target_product = OpenStruct.new(
         arch:         "x86_64",
         identifier:   "ALP-Dolomite",
-        version:      "1.0",
-        release_type: "ALPHA"
+        version:      "1.0"
       )
       activate_params = {}
       service = SUSE::Connect::YaST.activate_product(target_product, activate_params, email)
