@@ -23,12 +23,13 @@ import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import { _ } from "~/i18n";
-import { useInstallerClient } from "~/context/installer";
+import { useInstallerClient, useInstallerClientStatus } from "~/context/installer";
 import { STARTUP, INSTALL } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
 import {
   About,
+  DBusError,
   Disclosure,
   Installation,
   IssuesLink,
@@ -39,11 +40,24 @@ import {
   Sidebar
 } from "~/components/core";
 import { ChangeProductLink } from "~/components/software";
-import { SidebarArea } from "~/components/layout";
 import { LanguageSwitcher } from "./components/l10n";
+import { Layout, Loading, Title } from "./components/layout";
+import { useL10n } from "./context/l10n";
 
+// D-Bus connection attempts before displaying an error.
+const ATTEMPTS = 3;
+
+/**
+ * Main application component.
+ *
+ * @param {object} props
+ * @param {number} [props.max_attempts=3] - Connection attempts before displaying an
+ *   error (3 by default). The component will keep trying to connect.
+ */
 function App() {
   const client = useInstallerClient();
+  const { attempt } = useInstallerClientStatus();
+  const { language } = useL10n();
   const [status, setStatus] = useState(undefined);
   const [phase, setPhase] = useState(undefined);
 
@@ -55,14 +69,20 @@ function App() {
       setStatus(status);
     };
 
-    loadPhase().catch(console.error);
-  }, [client.manager, setPhase, setStatus]);
+    if (client) loadPhase().catch(console.error);
+  }, [client, setPhase, setStatus]);
 
   useEffect(() => {
-    return client.manager.onPhaseChange(setPhase);
-  }, [client.manager, setPhase]);
+    if (client) {
+      return client.manager.onPhaseChange(setPhase);
+    }
+  }, [client, setPhase]);
 
   const Content = () => {
+    if (!client) {
+      return (attempt > ATTEMPTS) ? <DBusError /> : <Loading />;
+    }
+
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
       return <LoadingEnvironment onStatusChange={setStatus} />;
     }
@@ -76,27 +96,30 @@ function App() {
 
   return (
     <>
-      <SidebarArea>
-        <Sidebar>
+      <Sidebar>
+        <div className="flex-stack">
+          <ChangeProductLink />
+          <IssuesLink />
+          <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
+            <ShowLogButton />
+            <LogsButton data-keep-sidebar-open="true" />
+            <ShowTerminalButton />
+          </Disclosure>
+          <About />
+        </div>
+        <div className="full-width highlighted">
           <div className="flex-stack">
-            <ChangeProductLink />
-            <IssuesLink />
-            <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
-              <ShowLogButton />
-              <LogsButton data-keep-sidebar-open="true" />
-              <ShowTerminalButton />
-            </Disclosure>
-            <About />
+            <LanguageSwitcher />
           </div>
-          <div className="full-width highlighted">
-            <div className="flex-stack">
-              <LanguageSwitcher />
-            </div>
-          </div>
-        </Sidebar>
-      </SidebarArea>
+        </div>
+      </Sidebar>
 
-      <Content />
+      <Layout>
+        {/* this is the name of the tool, do not translate it */}
+        {/* eslint-disable-next-line i18next/no-literal-string */}
+        <Title>Agama</Title>
+        {language && <Content />}
+      </Layout>
     </>
   );
 }

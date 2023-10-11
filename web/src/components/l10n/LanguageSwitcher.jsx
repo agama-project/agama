@@ -38,11 +38,12 @@ export default function LanguageSwitcher() {
   const onChange = useCallback((_event, value) => {
     setSelected(value);
     changeLanguage(value);
-  }, [setSelected]);
+  }, [setSelected, changeLanguage]);
 
   const options = languages.map(({ id, name }) => {
-    const [lang,] = id.replace("_", "-").toLowerCase().split(".");
-    return <FormSelectOption key={lang} value={lang} label={name} />
+    const [lang,] = id.replace("_", "-").toLowerCase()
+      .split(".");
+    return <FormSelectOption key={lang} value={lang} label={name} />;
   });
 
   return (

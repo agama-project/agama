@@ -24,9 +24,17 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useCancellablePromise } from "~/utils";
 import cockpit from "../lib/cockpit";
+import { useInstallerClient } from "./installer";
 
 const L10nContext = React.createContext(null);
 
+/**
+ * @typedef {object} L10nContext
+ * @property {string|undefined} language - current language
+ * @property {(lang: string) => void} changeLanguage - function to change the current language
+ *
+ * @return {L10nContext} L10n context
+ */
 function useL10n() {
   const context = React.useContext(L10nContext);
 
@@ -120,13 +128,12 @@ function languageToBackend(tag) {
 }
 
 /**
- * This is a helper component to set the language. It uses the
+ * This provider sets the application language. By default, it uses the
  * URL "lang" query parameter or the preferred language from the browser and
- * synchronizes the UI and the backend languages
- * To activate a new language it reloads the whole page.
+ * synchronizes the UI and the backend languages. To activate a new language it
+ * reloads the whole page.
  *
- * It behaves like a wrapper, it just wraps the children components, it does
- * not render any real content.
+ * Additionally, it offers a function to change the current language.
  *
  * The format of the language tag follows the
  * [RFC 5646](https://datatracker.ietf.org/doc/html/rfc5646) specification.
@@ -134,12 +141,17 @@ function languageToBackend(tag) {
  * @param {object} props
  * @param {React.ReactNode} [props.children] - content to display within the wrapper
  * @param {import("~/client").InstallerClient} [props.client] - client
+ *
+ * @see useL10n
  */
-function L10nProvider({ client, children }) {
+function L10nProvider({ children }) {
+  const client = useInstallerClient();
   const [language, setLanguage] = useState(undefined);
   const { cancellablePromise } = useCancellablePromise();
 
   const storeBackendLanguage = useCallback(async languageString => {
+    if (!client) return false;
+
     const currentLang = await cancellablePromise(client.language.getUILanguage());
     const normalizedLang = languageFromBackend(currentLang);
 

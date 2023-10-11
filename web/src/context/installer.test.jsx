@@ -20,16 +20,27 @@
  */
 
 import React from "react";
-import { act, screen, waitFor } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { createDefaultClient } from "~/client";
 import { plainRender, createCallbackMock } from "~/test-utils";
-import { InstallerClientProvider } from "./installer";
+import { InstallerClientProvider, useInstallerClientStatus } from "./installer";
 
 jest.mock("~/client");
-jest.mock("~/L10nWrapper", () => ({ children }) => children);
 
 let onDisconnectFn = jest.fn();
 const isConnectedFn = jest.fn();
+
+// Helper component to check the client status.
+const ClientStatus = () => {
+  const { attempt, connected } = useInstallerClientStatus();
+
+  return (
+    <ul>
+      <li>{`attempt: ${attempt}`}</li>
+      <li>{`connected: ${connected}`}</li>
+    </ul>
+  );
+};
 
 describe("installer context", () => {
   beforeEach(() => {
@@ -43,14 +54,16 @@ describe("installer context", () => {
 
   describe("when there are problems connecting to the D-Bus service", () => {
     beforeEach(() => {
-      isConnectedFn.mockResolvedValue(false);
+      isConnectedFn.mockResolvedValueOnce(false);
+      isConnectedFn.mockResolvedValueOnce(true);
     });
 
-    it("displays an error", async () => {
-      plainRender(<InstallerClientProvider interval={0.1} max_attempts={1} disableL10n />);
-      await waitFor(() => {
-        expect(screen.queryByText(/Could not connect/)).toBeInTheDocument();
-      });
+    it("reports each attempt through the useInstallerClientStatus hook", async () => {
+      plainRender(
+        <InstallerClientProvider interval={0.1}>
+          <ClientStatus />
+        </InstallerClientProvider>);
+      await screen.findByText("attempt: 2");
     });
   });
 
@@ -59,16 +72,12 @@ describe("installer context", () => {
       isConnectedFn.mockResolvedValue(true);
     });
 
-    it("displays the children elements", async () => {
+    it("reports the status through the useInstallerClientStatus hook", async () => {
       plainRender(
-        <InstallerClientProvider disableL10n>
-          <div>Hello world!</div>
-        </InstallerClientProvider>
-      );
-      await screen.findByText(/Loading installation environment/);
-      await waitFor(() => {
-        expect(screen.queryByText("Hello world!")).toBeInTheDocument();
-      });
+        <InstallerClientProvider interval={0.1}>
+          <ClientStatus />
+        </InstallerClientProvider>);
+      await screen.findByText("connected: true");
     });
   });
 
@@ -82,16 +91,14 @@ describe("installer context", () => {
       onDisconnectFn = onDisconnect;
 
       plainRender(
-        <InstallerClientProvider disableL10n>
-          <div>Hello world!</div>
+        <InstallerClientProvider interval={0.1}>
+          <ClientStatus />
         </InstallerClientProvider>
       );
-      await screen.findByText(/Loading installation environment/);
-      await screen.findByText(/Hello world!/);
+      await screen.findByText("connected: true");
       const [disconnect] = callbacks;
       act(disconnect);
-      await screen.findByText(/Loading installation environment/);
-      await screen.findByText(/Hello world!/);
+      await screen.findByText("connected: false");
     });
   });
 });
