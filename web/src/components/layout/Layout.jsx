@@ -30,6 +30,7 @@ const HeaderActions = createTeleporter();
 const HeaderIcon = createTeleporter();
 const FooterActions = createTeleporter();
 const FooterInfoArea = createTeleporter();
+const Sidebar = createTeleporter();
 
 /**
  *
@@ -42,10 +43,6 @@ const FooterInfoArea = createTeleporter();
  * {@link https://github.com/gregberge/react-teleporter react-teleporter}. In other words,
  * it is mounted only once and gets influenced by other components by using the created
  * slots (Title, PageIcon, MainActions, etc).
- *
- * So, please ensure that {@link test-utils!mockLayout } gets updated when adding or deleting
- * slots here. It's needed in order to allow testing the output of components that interact
- * with the layout using that mechanism.
  *
  * @example
  *   <Layout>
@@ -68,32 +65,35 @@ const FooterInfoArea = createTeleporter();
  */
 function Layout({ children }) {
   return (
-    <div className="wrapper shadow">
-      <header className="split justify-between bottom-shadow">
-        <h1 className="split">
-          <HeaderIcon.Target as="span" />
-          <PageTitle.Target as="span" />
-        </h1>
+    <>
+      <Sidebar.Target as="div" />
+      <div className="wrapper shadow">
+        <header className="split justify-between bottom-shadow">
+          <h1 className="split">
+            <HeaderIcon.Target as="span" />
+            <PageTitle.Target as="span" />
+          </h1>
 
-        <div className="split">
-          <PageActions.Target as="div" />
-          <HeaderActions.Target as="div" />
-        </div>
+          <div className="split">
+            <PageActions.Target as="div" />
+            <HeaderActions.Target as="div" />
+          </div>
 
-      </header>
+        </header>
 
-      <main className="stack">
-        {children}
-      </main>
+        <main className="stack">
+          {children}
+        </main>
 
-      <footer className="split justify-between top-shadow" data-state="reversed">
-        <FooterActions.Target
-          role="navigation"
-          aria-label="Installer Actions"
-        />
-        <img src={logoUrl} alt="Logo of SUSE" />
-      </footer>
-    </div>
+        <footer className="split justify-between top-shadow" data-state="reversed">
+          <FooterActions.Target
+            role="navigation"
+            aria-label="Installer Actions"
+          />
+          <img src={logoUrl} alt="Logo of SUSE" />
+        </footer>
+      </div>
+    </>
   );
 }
 
@@ -171,6 +171,8 @@ const MainActions = FooterActions.Source;
  */
 const AdditionalInfo = FooterInfoArea.Source;
 
+const SidebarArea = Sidebar.Source;
+
 export {
   Layout as default,
   Title,
@@ -179,4 +181,5 @@ export {
   PageOptions,
   MainActions,
   AdditionalInfo,
+  SidebarArea
 };

@@ -39,10 +39,8 @@ import "@patternfly/patternfly/patternfly-base.scss";
 import App from "~/App";
 import Main from "~/Main";
 import DevServerWrapper from "~/DevServerWrapper";
-import L10nWrapper from "~/L10nWrapper";
-import L10nBackendWrapper from "~/L10nBackendWrapper";
 import { Overview } from "~/components/overview";
-import { ProductSelectionPage } from "~/components/software";
+import { ProductSelectionPage, SoftwarePage } from "~/components/software";
 import { ProposalPage as StoragePage, ISCSIPage, DASDPage, ZFCPPage } from "~/components/storage";
 import { UsersPage } from "~/components/users";
 import { L10nPage } from "~/components/l10n";
@@ -73,35 +71,32 @@ const container = document.getElementById("root");
 const root = createRoot(container);
 
 root.render(
-  <L10nWrapper>
-    <LoginWrapper>
-      <InstallerClientProvider client={createClient}>
-        <L10nBackendWrapper>
-          <SoftwareProvider>
-            <NotificationProvider>
-              <HashRouter>
-                <Routes>
-                  <Route path="/" element={<App />}>
-                    <Route path="/" element={<Main />}>
-                      <Route index element={<Overview />} />
-                      <Route path="/overview" element={<Overview />} />
-                      <Route path="/l10n" element={<L10nPage />} />
-                      <Route path="/storage" element={<StoragePage />} />
-                      <Route path="/storage/iscsi" element={<ISCSIPage />} />
-                      <Route path="/storage/dasd" element={<DASDPage />} />
-                      <Route path="/storage/zfcp" element={<ZFCPPage />} />
-                      <Route path="/network" element={<NetworkPage />} />
-                      <Route path="/users" element={<UsersPage />} />
-                      <Route path="/issues" element={<IssuesPage />} />
-                    </Route>
-                    <Route path="products" element={<ProductSelectionPage />} />
-                  </Route>
-                </Routes>
-              </HashRouter>
-            </NotificationProvider>
-          </SoftwareProvider>
-        </L10nBackendWrapper>
-      </InstallerClientProvider>
-    </LoginWrapper>
-  </L10nWrapper>
+  <LoginWrapper>
+    <InstallerClientProvider client={createClient}>
+      <SoftwareProvider>
+        <NotificationProvider>
+          <HashRouter>
+            <Routes>
+              <Route path="/" element={<App />}>
+                <Route path="/" element={<Main />}>
+                  <Route index element={<Overview />} />
+                  <Route path="/overview" element={<Overview />} />
+                  <Route path="/l10n" element={<L10nPage />} />
+                  <Route path="/software" element={<SoftwarePage />} />
+                  <Route path="/storage" element={<StoragePage />} />
+                  <Route path="/storage/iscsi" element={<ISCSIPage />} />
+                  <Route path="/storage/dasd" element={<DASDPage />} />
+                  <Route path="/storage/zfcp" element={<ZFCPPage />} />
+                  <Route path="/network" element={<NetworkPage />} />
+                  <Route path="/users" element={<UsersPage />} />
+                  <Route path="/issues" element={<IssuesPage />} />
+                </Route>
+                <Route path="products" element={<ProductSelectionPage />} />
+              </Route>
+            </Routes>
+          </HashRouter>
+        </NotificationProvider>
+      </SoftwareProvider>
+    </InstallerClientProvider>
+  </LoginWrapper>
 );

@@ -21,14 +21,14 @@
 
 import React from "react";
 import { act, screen } from "@testing-library/react";
-import { installerRender, createCallbackMock, mockComponent } from "~/test-utils";
+import { installerRender, createCallbackMock } from "~/test-utils";
 import { NetworkSection } from "~/components/overview";
 import { ConnectionTypes, NetworkEventTypes } from "~/client/network";
 import { createClient } from "~/client";
 
 jest.mock("~/client");
 
-jest.mock('~/components/core/SectionSkeleton', () => mockComponent("Section Skeleton"));
+jest.mock('~/components/core/SectionSkeleton', () => () => <div>Section Skeleton</div>);
 
 const wiredConnection = {
   id: "wired-1",

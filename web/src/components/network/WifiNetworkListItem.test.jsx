@@ -22,12 +22,12 @@
 import React from "react";
 
 import { screen } from "@testing-library/react";
-import { installerRender, mockComponent } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 
 import { WifiNetworkListItem } from "~/components/network";
 
-jest.mock("~/components/network/WifiConnectionForm", () => mockComponent("WifiConnectionForm mock"));
-jest.mock("~/components/network/WifiNetworkMenu", () => mockComponent("WifiNetworkMenu mock"));
+jest.mock("~/components/network/WifiConnectionForm", () => () => <div>WifiConnectionForm mock</div>);
+jest.mock("~/components/network/WifiNetworkMenu", () => () => <div>WifiNetworkMenu mock</div>);
 
 const onSelectCallback = jest.fn();
 const fakeNetwork = {
@@ -37,7 +37,7 @@ const fakeNetwork = {
 };
 
 const fakeSettings = {
-  wireless:  {
+  wireless: {
     password: "notSecret"
   }
 };

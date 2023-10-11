@@ -138,6 +138,7 @@ module Agama
         result = proposal.calculate
         update_issues
         logger.info "Proposal result: #{result.inspect}"
+        selected_patterns_changed
         result
       end
 

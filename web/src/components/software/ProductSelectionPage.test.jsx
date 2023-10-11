@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockLayout, mockNavigateFn } from "~/test-utils";
+import { installerRender, mockNavigateFn } from "~/test-utils";
 import { ProductSelectionPage } from "~/components/software";
 import { createClient } from "~/client";
 
@@ -48,8 +48,6 @@ jest.mock("~/context/software", () => ({
     };
   }
 }));
-
-jest.mock("~/components/layout/Layout", () => mockLayout());
 
 const managerMock = {
   startProbing: jest.fn()

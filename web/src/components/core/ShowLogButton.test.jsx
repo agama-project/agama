@@ -21,10 +21,10 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender, mockComponent } from "~/test-utils";
+import { plainRender } from "~/test-utils";
 import { ShowLogButton } from "~/components/core";
 
-jest.mock("~/components/core/FileViewer", () => mockComponent("FileViewer Mock"));
+jest.mock("~/components/core/FileViewer", () => () => <div>FileViewer Mock</div>);
 
 describe("ShowLogButton", () => {
   it("renders a button for displaying logs", () => {

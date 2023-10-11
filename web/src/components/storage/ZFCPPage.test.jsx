@@ -21,7 +21,7 @@
 
 import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender, mockComponent } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { createClient } from "~/client";
 import { ZFCPPage } from "~/components/storage";
 
@@ -32,7 +32,8 @@ jest.mock("@patternfly/react-core", () => {
 
   return {
     ...original,
-    Skeleton: mockComponent("PFSkeleton")
+    Skeleton: () => <div>PFSkeleton</div>
+
   };
 });
 

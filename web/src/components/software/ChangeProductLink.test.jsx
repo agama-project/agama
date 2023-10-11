@@ -56,8 +56,10 @@ describe("ChangeProductLink", () => {
     });
 
     it("renders nothing", async () => {
-      const { container } = installerRender(<ChangeProductLink />);
-      await waitFor(() => expect(container).toBeEmptyDOMElement());
+      installerRender(<ChangeProductLink />);
+
+      const main = await screen.findByRole("main");
+      await waitFor(() => expect(main).toBeEmptyDOMElement());
     });
   });
 

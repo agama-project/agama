@@ -62,7 +62,7 @@
     "overrides": [
       {
         // do not check translations in the testing or development files
-        "files": ["*.test.*", "test-utils.js", "DevServerWrapper.jsx"],
+        "files": ["*.test.*", "test-utils.js"],
         "rules": {
           "i18next/no-literal-string": "off"
         }

@@ -23,8 +23,9 @@
 
 import DBusClient from "./dbus";
 
-const DBUS_SERVICE = "org.freedesktop.DBus";
-const MATCHER = { interface: DBUS_SERVICE, member: "NameOwnerChanged" };
+const NAME_OWNER_CHANGED = {
+  interface: "org.freedesktop.DBus", member: "NameOwnerChanged"
+};
 
 /**
  * Monitor a D-Bus service
@@ -42,15 +43,15 @@ class Monitor {
   /**
    * Registers a callback to be executed when the D-Bus service connection changes
    *
-   * @param {(connected: boolean) => void} handler - function to execute. It receives true if the
-   *   service was connected and false if the service was disconnected.
+   * @param {() => void} handler - function to execute when the client gets
+   *   disconnected.
+   * @return {() => void} function to deregister the callbacks.
    */
-  onConnectionChange(handler) {
-    return this.client.onSignal(MATCHER, (_path, _interface, _signal, args) => {
+  onDisconnect(handler) {
+    return this.client.onSignal(NAME_OWNER_CHANGED, (_path, _interface, _signal, args) => {
       const [service, , newOwner] = args;
-      if (service === this.serviceName) {
-        const connected = newOwner.length !== 0;
-        handler(connected);
+      if (service === this.serviceName && newOwner === "") {
+        handler();
       }
     });
   }

@@ -22,7 +22,8 @@
         MinSize                 t (bytes)
         MaxSize                 t (bytes. Optional, max size is considered as unlimited if omitted)
         AutoSize                b
-        Snapshots               b
+        Snapshots               b ( makes sense only for btrfs )
+        Transactional           b ( makes sense only for btrfs )
         Outline                 a{sv}
           Required              b
           FsTypes               as

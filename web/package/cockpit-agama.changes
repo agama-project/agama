@@ -1,4 +1,27 @@
 -------------------------------------------------------------------
+Tue Oct 10 08:50:53 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
+
+- Added pattern selector to allow changing the installed software
+  (gh#openSUSE/agama#792)
+
+-------------------------------------------------------------------
+Mon Oct  9 11:30:27 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Reload only once when changing the language using the lang=
+  parameter in the query string (gh#openSUSE/agama#794).
+
+-------------------------------------------------------------------
+Thu Oct  5 19:52:17 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Add flag if volume is transactional btrfs (gh#openSUSE/agama#789)
+
+-------------------------------------------------------------------
+Thu Oct  5 05:50:57 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement a mechanism to reconnect to the D-Bus service
+  (gh#openSUSE/agama#781).
+
+-------------------------------------------------------------------
 Mon Oct  2 08:02:23 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: migrate to PatternFly 5 (gh#openSUSE/agama#759)
