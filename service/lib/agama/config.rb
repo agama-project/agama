@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -92,10 +92,7 @@ module Agama
 
       # cannot use `data` here to avoid endless loop as in data we use
       # pick_product that select product from products
-      @products = @pure_data["products"].select do |_key, value|
-        value["archs"].nil? ||
-          Yast2::ArchFilter.from_string(value["archs"]).match?
-      end
+      @products = @pure_data["products"].select { |_k, v| arch_match?(v["archs"]) }
     end
 
     # Whether there are more than one product
@@ -120,6 +117,20 @@ module Agama
       Config.new(simple_merge(data, config.data))
     end
 
+    def arch_elements_from(*keys, property: nil)
+      keys.map!(&:to_s)
+      elements = pure_data.dig(*keys)
+      return [] unless elements
+
+      elements.map do |element|
+        if !element.is_a?(Hash)
+          element
+        elsif arch_match?(element["archs"])
+          property ? element[property.to_s] : element
+        end
+      end.compact
+    end
+
   private
 
     # Simple deep merge
@@ -137,6 +148,12 @@ module Agama
           all.merge(k => another_hash[k])
         end
       end
+    end
+
+    def arch_match?(archs)
+      return true if archs.nil?
+
+      Yast2::ArchFilter.from_string(archs).match?
     end
   end
 end
