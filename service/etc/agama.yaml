@@ -46,6 +46,7 @@ ALP-Dolomite:
         archs: ppc64
     optional_packages: null
     base_product: ALP-Dolomite
+    version: "1.0"
 
   security:
     tpm_luks_open: true
