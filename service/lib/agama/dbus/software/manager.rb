@@ -72,7 +72,7 @@ module Agama
           dbus_reader :selected_product, "s"
 
           dbus_method :SelectProduct, "in ProductID:s" do |product_id|
-            old_product_id = backend.product
+            old_product_id = backend.product&.id
 
             if old_product_id == product_id
               logger.info "Do not changing the product as it is still the same (#{product_id})"
@@ -130,8 +130,8 @@ module Agama
         end
 
         def available_products
-          backend.products.map do |id, data|
-            [id, data["name"], { "description" => data["description"] }].freeze
+          backend.products.map do |product|
+            [product.id, product.display_name, { "description" => product.description }]
           end
         end
 
@@ -139,7 +139,7 @@ module Agama
         #
         # @return [String] Product ID or an empty string if no product is selected
         def selected_product
-          backend.product || ""
+          backend.product&.id || ""
         end
 
         def select_product(product_id)

@@ -21,7 +21,6 @@
 
 require "fileutils"
 require "yast"
-require "yast2/arch_filter"
 require "y2packager/product"
 require "y2packager/resolvable"
 require "agama/config"
@@ -29,6 +28,8 @@ require "agama/helpers"
 require "agama/issue"
 require "agama/registration"
 require "agama/software/callbacks"
+require "agama/software/product"
+require "agama/software/product_builder"
 require "agama/software/proposal"
 require "agama/software/repositories_manager"
 require "agama/with_progress"
@@ -51,6 +52,9 @@ module Agama
       GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
       private_constant :GPG_KEYS_GLOB
 
+      # Selected product
+      #
+      # @return [Agama::Product, nil]
       attr_reader :product
 
       DEFAULT_LANGUAGES = ["en_US"].freeze
@@ -58,42 +62,44 @@ module Agama
 
       attr_accessor :languages
 
-      # FIXME: what about defining a Product class?
-      # @return [Array<Array<String,Hash>>] An array containing the product ID and
-      #   additional information in a hash
+      # Available products for installation.
+      #
+      # @return [Array<Agama::Product>]
       attr_reader :products
 
+      # @return [Agama::RepositoriesManager]
       attr_reader :repositories
 
       def initialize(config, logger)
         @config = config
         @logger = logger
         @languages = DEFAULT_LANGUAGES
-        @products = @config.products
-        if @config.multi_product?
-          @product = nil
-        else
-          @product = @products.keys.first # use the available product as default
-          @config.pick_product(@product)
-        end
+        @products = build_products
+        @product = @products.first if @products.size == 1
         @repositories = RepositoriesManager.new
-        on_progress_change { logger.info progress.to_s }
         # patterns selected by user
         @user_patterns = []
         @selected_patterns_change_callbacks = []
+
+        on_progress_change { logger.info(progress.to_s) }
       end
 
-      def select_product(name)
-        return if name == @product
-        raise ArgumentError unless @products[name]
+      def select_product(id)
+        return if id == product&.id
 
-        @config.pick_product(name)
-        @product = name
+        new_product = @products.find { |p| p.id == id }
+
+        raise ArgumentError unless new_product
+
+        @product = new_product
         repositories.delete_all
         update_issues
       end
 
       def probe
+        # Should an error be raised?
+        return unless product
+
         logger.info "Probing software"
 
         # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
@@ -123,7 +129,10 @@ module Agama
 
       # Updates the software proposal
       def propose
-        proposal.base_product = selected_base_product
+        # Should an error be raised?
+        return unless product
+
+        proposal.base_product = product.name
         proposal.languages = languages
         select_resolvables
         result = proposal.calculate
@@ -258,12 +267,19 @@ module Agama
 
     private
 
-      def proposal
-        @proposal ||= Proposal.new
-      end
+      # @return [Agama::Config]
+      attr_reader :config
 
       # @return [Logger]
       attr_reader :logger
+
+      def build_products
+        ProductBuilder.new(config).build
+      end
+
+      def proposal
+        @proposal ||= Proposal.new
+      end
 
       def import_gpg_keys
         gpg_keys = Dir.glob(GPG_KEYS_GLOB).map(&:to_s)
@@ -273,27 +289,8 @@ module Agama
         end
       end
 
-      def arch_select(section)
-        collection = @config.data["software"][section] || []
-        collection.select { |c| !c.is_a?(Hash) || arch_match?(c["archs"]) }
-      end
-
-      def arch_collection_for(section, key)
-        arch_select(section).map { |r| r.is_a?(Hash) ? r[key] : r }
-      end
-
-      def selected_base_product
-        @config.data["software"]["base_product"]
-      end
-
-      def arch_match?(archs)
-        return true if archs.nil?
-
-        Yast2::ArchFilter.from_string(archs).match?
-      end
-
       def add_base_repos
-        arch_collection_for("installation_repositories", "url").map { |url| repositories.add(url) }
+        product.repositories.each { |url| repositories.add(url) }
       end
 
       REPOS_BACKUP = "/etc/zypp/repos.d.agama.backup"
@@ -321,21 +318,12 @@ module Agama
         FileUtils.mv(REPOS_BACKUP, REPOS_DIR)
       end
 
-      # adds resolvables from yaml config for given product
+      # Adds resolvables for selected product
       def select_resolvables
-        mandatory_patterns = arch_collection_for("mandatory_patterns", "pattern")
-        proposal.set_resolvables("agama", :pattern, mandatory_patterns)
-
-        optional_patterns = arch_collection_for("optional_patterns", "pattern")
-        proposal.set_resolvables("agama", :pattern, optional_patterns,
-          optional: true)
-
-        mandatory_packages = arch_collection_for("mandatory_packages", "package")
-        proposal.set_resolvables("agama", :package, mandatory_packages)
-
-        optional_packages = arch_collection_for("optional_packages", "package")
-        proposal.set_resolvables("agama", :package, optional_packages,
-          optional: true)
+        proposal.set_resolvables("agama", :pattern, product.mandatory_patterns)
+        proposal.set_resolvables("agama", :pattern, product.optional_patterns, optional: true)
+        proposal.set_resolvables("agama", :package, product.mandatory_packages)
+        proposal.set_resolvables("agama", :package, product.optional_packages, optional: true)
       end
 
       def selected_patterns_changed
@@ -378,7 +366,7 @@ module Agama
       #
       # @return [Array<Agama::Issue>]
       def repos_issues
-        issues = repositories.disabled.map do |repo|
+        repositories.disabled.map do |repo|
           Issue.new("Could not read the repository #{repo.name}",
             source:   Issue::Source::SYSTEM,
             severity: Issue::Severity::ERROR)
