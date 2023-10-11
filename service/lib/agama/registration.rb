@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -23,13 +23,15 @@ require "fileutils"
 require "yast"
 require "ostruct"
 require "suse/connect"
-
 require "y2packager/new_repository_setup"
+
+Yast.import "Arch"
 
 module Agama
   # Handles everything related to registration of system to SCC, RMT or similar
   class Registration
     attr_reader :reg_code
+
     attr_reader :email
 
     module Requirement
@@ -44,23 +46,23 @@ module Agama
     end
 
     def register(code, email: "")
-      target_distro = "ALP-Dolomite-1-x86_64" # TODO: read it
+      return unless product
+
       connect_params = {
         token: code,
         email: email
       }
 
       login, password = SUSE::Connect::YaST.announce_system(connect_params, target_distro)
-      @system_code = code # remember code to be able to deregister
       # write the global credentials
       # TODO: check if we can do it in memory for libzypp
       SUSE::Connect::YaST.create_credentials_file(login, password)
 
       # TODO: fill it properly for scc
       target_product = OpenStruct.new(
-        arch:       "x86_64",
-        identifier: "ALP-Dolomite",
-        version:    "1.0"
+        arch:       Yast::Arch.rpm_arch,
+        identifier: product.id,
+        version:    product.version
       )
       activate_params = {}
       @service = SUSE::Connect::YaST.activate_product(target_product, activate_params, email)
@@ -75,7 +77,7 @@ module Agama
       Y2Packager::NewRepositorySetup.instance.services.delete(@service.name)
 
       connect_params = {
-        token: @system_code,
+        token: reg_code,
         email: email
       }
       SUSE::Connect::YaST.deactivate_system(connect_params)
@@ -87,8 +89,10 @@ module Agama
       run_on_change_callbacks
     end
 
-    # TODO: check whether the selected product requires registration
     def requirement
+      return Requirement::NOT_REQUIRED unless product
+      return Requirement::MANDATORY if product.repositories.none?
+
       Requirement::NOT_REQUIRED
     end
 
@@ -99,6 +103,18 @@ module Agama
     end
 
   private
+
+    attr_reader :software
+
+    def product
+      software.product
+    end
+
+    # E.g., "ALP-Dolomite-1-x86_64"
+    def target_distro
+      v = version.to_s.split(".").first || "1"
+      "#{product.id}-#{v}-#{Yast::Arch.rpm_arch}"
+    end
 
     def run_on_change_callbacks
       @on_change_callbacks&.map(&:call)
