@@ -74,11 +74,59 @@ class SoftwareBaseClient {
   /**
    * Returns how much space installation takes on disk
    *
-   * @return {Promise<Array<Product>>}
+   * @return {Promise<string>}
    */
   async getUsedSpace() {
     const proxy = await this.client.proxy(SOFTWARE_IFACE);
     return proxy.UsedDiskSpace();
+  }
+
+  /**
+   * Returns available patterns
+   *
+   * @param {boolean} filter - `true` = filter the patterns, `false` = all patterns
+   * @return {Promise<Array<string>>}
+   */
+  async patterns(filter) {
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    return proxy.ListPatterns(filter);
+  }
+
+  /**
+   * @typedef {Object.<string, number>} PatternSelection mapping "name" =>
+   * "who selected the pattern"
+   */
+
+  /**
+   * Returns selected patterns
+   *
+   * @return {Promise<PatternSelection>}
+   */
+  async selectedPatterns() {
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    return proxy.SelectedPatterns;
+  }
+
+  /**
+   * Select a pattern to install
+   *
+   * @param {string} name - name of the pattern
+   * @return {Promise<void>}
+   */
+  async addPattern(name) {
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    return proxy.AddPattern(name);
+  }
+
+  /**
+   * Deselect a pattern to install
+   *
+   * @param {string} name - name of the pattern
+   * @return {Promise<void>}
+   */
+  async removePattern(name) {
+    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    return proxy.RemovePattern(name);
   }
 
   /**

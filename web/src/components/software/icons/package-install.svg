@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+<!--
+
+Copyright (C) 2018 Stasiek Michalski <hellcp@opensuse.org>
+
+This image is freely licensed under the terms of Creative
+Commons Attribution-ShareAlike 4.0 International license.
+You can read terms of the license on:
+https://creativecommons.org/licenses/by-sa/4.0/legalcode
+
+-->
+  <rect y="2" x="2" height="12" width="12" fill="#ffffff" opacity="1" />
+  <path d="M 2 0 C 0.892 0 0 0.892 0 2 L 0 14 C 0 15.108 0.892 16 2 16 L 14 16 C 15.108 16 16 15.108 16 14 L 16 5.1210938 L 16 3 L 16 2 C 16 0.892 15.108 0 14 0 L 2 0 z M 2 2 L 14 2 L 14 2.8789062 L 8 8.8789062 L 5.0605469 5.9394531 L 2.9394531 8.0605469 L 8 13.121094 L 14 7.1210938 L 14 14 L 2 14 L 2 2 z " fill="#241f31" />
+  <path d="M 14 2.8789062 L 8 8.8789062 L 5.0605469 5.9394531 L 2.9394531 8.0605469 L 8 13.121094 L 14 7.1210938 L 14 2.8789062 z " fill="#33d17a" class="success" />
+</svg>

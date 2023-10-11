@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,8 +19,23 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ProductSelectionPage } from "./ProductSelectionPage";
-export { default as ChangeProductLink } from "./ChangeProductLink";
-export { default as PatternSelector } from "./PatternSelector";
-export { default as UsedSize } from "./UsedSize";
-export { default as SoftwarePage } from "./SoftwarePage";
+import React from "react";
+
+import { screen } from "@testing-library/react";
+import { plainRender } from "~/test-utils";
+
+import PatternGroup from "./PatternGroup";
+
+describe("PatternGroup", () => {
+  const name = "Pattern name";
+  const content = "Just a children content";
+
+  it("displays the pattern name and the content", async () => {
+    plainRender(<PatternGroup name={name}>{content}</PatternGroup>);
+
+    // the name is displayed
+    screen.getByText(name);
+    // the content is displayed
+    screen.getByText(content);
+  });
+});
