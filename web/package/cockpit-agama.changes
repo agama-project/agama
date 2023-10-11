@@ -2,6 +2,7 @@
 Tue Oct 10 08:50:53 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
 
 - Added pattern selector to allow changing the installed software
+  (gh#openSUSE/agama#792)
 
 -------------------------------------------------------------------
 Mon Oct  9 11:30:27 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

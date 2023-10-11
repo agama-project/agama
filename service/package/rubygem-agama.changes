@@ -2,6 +2,7 @@
 Tue Oct 10 08:51:45 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
 
 - Extended Software service to allow configuring selected patterns
+  (gh#openSUSE/agama#792)
 
 -------------------------------------------------------------------
 Wed Oct  4 19:51:32 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
