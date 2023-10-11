@@ -174,7 +174,7 @@ function PatternSelector() {
   }, [patterns, client.software]);
 
   // initial empty screen, the patterns are loaded very quickly, no need for any progress
-  if (!patterns) return <></>;
+  if (!patterns) return null;
 
   let patternsData = convert(patterns, selected);
 

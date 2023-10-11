@@ -39,7 +39,7 @@ import { _ } from "~/i18n";
 function Content({ status }) {
   switch (status) {
     case undefined:
-      return <></>;
+      return null;
     case BUSY:
       return (
         <Center>
