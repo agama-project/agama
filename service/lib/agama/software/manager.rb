@@ -263,7 +263,7 @@ module Agama
       end
 
       def registration
-        @registration ||= Registration.new(self)
+        @registration ||= Registration.new(self, @logger)
       end
 
     private
