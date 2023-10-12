@@ -146,15 +146,15 @@ module Agama
       end
 
       # refresh works only for saved services
-      if !Yast::Pkg.ServiceSave(service_name)
+      if !Yast::Pkg.ServiceSave(service.name)
         # error message
-        raise format("Saving service '%s' failed.", service_name)
+        raise format("Saving service '%s' failed.", service.name)
       end
 
       # Force refreshing due timing issues (bnc#967828)
-      if !Yast::Pkg.ServiceForceRefresh(service_name)
+      if !Yast::Pkg.ServiceForceRefresh(service.name)
         # error message
-        raise format("Refreshing service '%s' failed.", service_name)
+        raise format("Refreshing service '%s' failed.", service.name)
       end
     ensure
       Yast::Pkg.SourceSaveAll
