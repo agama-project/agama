@@ -115,7 +115,7 @@ module Agama
 
     # E.g., "ALP-Dolomite-1-x86_64"
     def target_distro
-      v = version.to_s.split(".").first || "1"
+      v = product.version.to_s.split(".").first || "1"
       "#{product.id}-#{v}-#{Yast::Arch.rpm_arch}"
     end
 
