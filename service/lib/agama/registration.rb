@@ -157,7 +157,7 @@ module Agama
         raise format("Refreshing service '%s' failed.", service_name)
       end
     ensure
-      Pkg.SourceSaveAll
+      Yast::Pkg.SourceSaveAll
     end
     # rubocop:enable Metrics/AbcSize
 
