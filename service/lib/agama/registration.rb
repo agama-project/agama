@@ -67,6 +67,11 @@ module Agama
       )
       activate_params = {}
       @service = SUSE::Connect::YaST.activate_product(target_product, activate_params, email)
+      # if service require specific credentials file, store it
+      @credentials_file = credentials_from_url(@service.url)
+      if @credentials_file
+        SUSE::Connect::YaST.create_credentials_file(login, password, @credentials_file)
+      end
       Y2Packager::NewRepositorySetup.instance.add_service(@service.name)
       add_service(@service)
 
@@ -85,8 +90,13 @@ module Agama
       }
       SUSE::Connect::YaST.deactivate_system(connect_params)
       FileUtils.rm(SUSE::Connect::YaST::GLOBAL_CREDENTIALS_FILE) # connect does not remove it itself
+      if @credentials_file
+        path = File.join(SUSE::Connect::YaST::DEFAULT_CREDENTIALS_DIR, @credentials_file)
+        FileUtils.rm(path)
+        @credentials_file = nil
+      end
 
-      # reset varibles here
+      # reset variables here
       @reg_code = nil
       @email = nil
       run_on_change_callbacks
@@ -168,6 +178,17 @@ module Agama
       end
 
       true
+    end
+
+    # taken from https://github.com/yast/yast-registration/blob/master/src/lib/registration/url_helpers.rb#L109
+    def credentials_from_url(url)
+      parsed_url = URI(url)
+      params = Hash[URI.decode_www_form(parsed_url.query)]
+
+      params["credentials"]
+    rescue
+      # if something goes wrong try to continue like if there is no credentials param
+      nil
     end
   end
 end
