@@ -25,10 +25,14 @@ module Agama
   module Software
     # Builds products from the information of a config file.
     class ProductBuilder
+      # @param config [Agama::Config]
       def initialize(config)
         @config = config
       end
 
+      # Builds the products.
+      #
+      # @return [Array<Agama::Product>]
       def build
         config.products.map do |id, attrs|
           data = product_data_from_config(id)
@@ -52,6 +56,10 @@ module Agama
       # @return [Agama::Config]
       attr_reader :config
 
+      # Data from config, filtering by arch.
+      #
+      # @param id [String]
+      # @return [Hash]
       def product_data_from_config(id)
         {
           name:               config.pure_data.dig(id, "software", "base_product"),

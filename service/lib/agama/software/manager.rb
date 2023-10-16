@@ -52,7 +52,7 @@ module Agama
       GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
       private_constant :GPG_KEYS_GLOB
 
-      # Selected product
+      # Selected product.
       #
       # @return [Agama::Product, nil]
       attr_reader :product
@@ -70,6 +70,8 @@ module Agama
       # @return [Agama::RepositoriesManager]
       attr_reader :repositories
 
+      # @param config [Agama::Config]
+      # @param logger [Logger]
       def initialize(config, logger)
         @config = config
         @logger = logger
@@ -84,6 +86,11 @@ module Agama
         on_progress_change { logger.info(progress.to_s) }
       end
 
+      # Selects a product with the given id.
+      #
+      # @raise {ArgumentError} If id is unknown.
+      #
+      # @param id [String]
       def select_product(id)
         return if id == product&.id
 
@@ -274,6 +281,9 @@ module Agama
       # @return [Logger]
       attr_reader :logger
 
+      # Generates a list of products according to the information of the config file.
+      #
+      # @return [Array<Agama::Software::Product>]
       def build_products
         ProductBuilder.new(config).build
       end

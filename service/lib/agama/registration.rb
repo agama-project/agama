@@ -28,10 +28,16 @@ require "y2packager/new_repository_setup"
 Yast.import "Arch"
 
 module Agama
-  # Handles everything related to registration of system to SCC, RMT or similar
+  # Handles everything related to registration of system to SCC, RMT or similar.
   class Registration
+    # Code used for registering the product.
+    #
+    # @return [String, nil] nil if the product is not registered yet.
     attr_reader :reg_code
 
+    # Email used for registering the product.
+    #
+    # @return [String, nil]
     attr_reader :email
 
     module Requirement
@@ -40,7 +46,8 @@ module Agama
       MANDATORY = :mandatory
     end
 
-    # initializes registration with instance of software manager for query about products
+    # @param software_manager [Agama::Software::Manager]
+    # @param logger [Logger]
     def initialize(software_manager, logger)
       @software = software_manager
       @logger = logger
@@ -102,6 +109,9 @@ module Agama
       run_on_change_callbacks
     end
 
+    # Indicates whether the registration is optional, mandatory or not required.
+    #
+    # @return [Symbol] See {Requirement}.
     def requirement
       return Requirement::NOT_REQUIRED unless product
       return Requirement::MANDATORY if product.repositories.none?
@@ -109,7 +119,7 @@ module Agama
       Requirement::NOT_REQUIRED
     end
 
-    # callback when state changed like when different product is selected
+    # Callbacks to be called when registration changes (e.g., a different product is selected).
     def on_change(&block)
       @on_change_callbacks ||= []
       @on_change_callbacks << block
@@ -117,13 +127,19 @@ module Agama
 
   private
 
+    # @return [Agama::Software::Manager]
     attr_reader :software
 
+    # Currently selected product.
+    #
+    # @return [Agama::Software::Product, nil]
     def product
       software.product
     end
 
-    # E.g., "ALP-Dolomite-1-x86_64"
+    # Product name expected by SCC.
+    #
+    # @return [String] E.g., "ALP-Dolomite-1-x86_64".
     def target_distro
       v = product.version.to_s.split(".").first || "1"
       "#{product.id}-#{v}-#{Yast::Arch.rpm_arch}"
