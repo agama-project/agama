@@ -199,10 +199,10 @@ module Agama
     # taken from https://github.com/yast/yast-registration/blob/master/src/lib/registration/url_helpers.rb#L109
     def credentials_from_url(url)
       parsed_url = URI(url)
-      params = Hash[URI.decode_www_form(parsed_url.query)]
+      params = URI.decode_www_form(parsed_url.query).to_h
 
       params["credentials"]
-    rescue
+    rescue StandardError
       # if something goes wrong try to continue like if there is no credentials param
       nil
     end
