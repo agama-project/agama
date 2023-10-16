@@ -24,26 +24,20 @@ import { Icon } from "../layout";
 import { FormSelect, FormSelectOption } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 import { useL10n } from "~/context/l10n";
+import cockpit from "~/lib/cockpit";
 
 export default function LanguageSwitcher() {
   const { language, changeLanguage } = useL10n();
   const [selected, setSelected] = useState(null);
-
-  const languages = [
-    { id: "cs-cz", name: "Czech" },
-    { id: "en-us", name: "English (US)" },
-    { id: "es-es", name: "Spanish" }
-  ];
+  const languages = cockpit.manifests.agama?.locales || [];
 
   const onChange = useCallback((_event, value) => {
     setSelected(value);
     changeLanguage(value);
   }, [setSelected, changeLanguage]);
 
-  const options = languages.map(({ id, name }) => {
-    const [lang,] = id.replace("_", "-").toLowerCase()
-      .split(".");
-    return <FormSelectOption key={lang} value={lang} label={name} />;
+  const options = Object.entries(languages).map(([id, name]) => {
+    return <FormSelectOption key={id} value={id} label={name} />;
   });
 
   return (

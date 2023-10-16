@@ -3,10 +3,15 @@
     "requires": {
         "cockpit": "137"
     },
-
     "tools": {
         "index": {
             "label": "Agama"
         }
+    },
+    "locales": {
+	"cs-cz": "čeština",
+        "de-de": "Deutsch",
+        "es-es": "Español",
+        "en-us": "English (US)"
     }
 }
