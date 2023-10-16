@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-08 02:09+0000\n"
+"POT-Creation-Date: 2023-10-12 02:05+0000\n"
 "PO-Revision-Date: 2023-09-11 13:15+0000\n"
 "Last-Translator: Alex Minton <alex239@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -23,6 +23,24 @@ msgstr ""
 #: src/App.jsx:82
 msgid "Diagnostic tools"
 msgstr "Утилиты диагностики"
+
+#. TRANSLATORS: error message, %s is replaced by the server URL
+#: src/DevServerWrapper.jsx:82
+#, c-format
+msgid "The server at %s is not reachable."
+msgstr ""
+
+#. TRANSLATORS: error message
+#: src/DevServerWrapper.jsx:88
+#, fuzzy
+#| msgid "Cannot connect to D-Bus"
+msgid "Cannot connect to the Cockpit server"
+msgstr "Не удалось подключиться к службе D-Bus"
+
+#. TRANSLATORS: button label
+#: src/DevServerWrapper.jsx:104
+msgid "Try Again"
+msgstr ""
 
 #: src/components/core/About.jsx:43 src/components/core/About.jsx:48
 msgid "About Agama"
@@ -100,6 +118,12 @@ msgstr ""
 msgid "Confirm Installation"
 msgstr "Подтвердить установку"
 
+#: src/components/core/InstallButton.jsx:66
+msgid ""
+"If you continue, partitions on your hard disk will be modified according to "
+"the provided installation settings."
+msgstr ""
+
 #: src/components/core/InstallButton.jsx:70
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr "Пожалуйста, отмените и проверьте настройки, если вы не уверены."
@@ -112,6 +136,12 @@ msgstr "Продолжить"
 #: src/components/core/InstallButton.jsx:86
 msgid "Problems Found"
 msgstr "Обнаружены проблемы"
+
+#: src/components/core/InstallButton.jsx:90
+msgid ""
+"Some problems were found when trying to start the installation. Please, have "
+"a look to the reported errors and try again."
+msgstr ""
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:97
@@ -617,24 +647,19 @@ msgstr[0] "Активно %d соединение:"
 msgstr[1] "Активно %d соединения:"
 msgstr[2] "Активно %d соединений:"
 
-#: src/components/overview/SoftwareSection.jsx:36
+#: src/components/overview/SoftwareSection.jsx:37
 msgid "Reading software repositories"
 msgstr "Чтение репозиториев"
 
-#. TRANSLATORS: %s will be replaced by the estimated installation size,
-#. example: "728.8 MiB"
-#: src/components/overview/SoftwareSection.jsx:120
-#, c-format
-msgid "Installation will take %s"
-msgstr "Установка займёт %s"
-
 #. TRANSLATORS: clickable link label
-#: src/components/overview/SoftwareSection.jsx:145
+#: src/components/overview/SoftwareSection.jsx:135
 msgid "Refresh the repositories"
 msgstr "Обновить репозитории"
 
+#. TRANSLATORS: page title
 #. TRANSLATORS: page section
-#: src/components/overview/SoftwareSection.jsx:155
+#: src/components/overview/SoftwareSection.jsx:145
+#: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
 msgstr "Программы"
 
@@ -717,6 +742,37 @@ msgstr ""
 msgid "Change product"
 msgstr ""
 
+#. TRANSLATORS: pattern status, selected to install (by user)
+#: src/components/software/PatternItem.jsx:63
+#, fuzzy
+#| msgid "Disconnected"
+msgid "selected"
+msgstr "Отключено"
+
+#. TRANSLATORS: pattern status, selected to install (by dependencies)
+#: src/components/software/PatternItem.jsx:66
+msgid "automatically selected"
+msgstr ""
+
+#. TRANSLATORS: pattern status, not selected to install
+#: src/components/software/PatternItem.jsx:69
+msgid "not selected"
+msgstr ""
+
+#. TRANSLATORS: error summary, always plural, %d is replaced by number of errors (2 or more)
+#. if there is just a single error then the error is displayed directly instead of this summary
+#: src/components/software/PatternSelector.jsx:206
+#, fuzzy, c-format
+#| msgid "%d error found"
+#| msgid_plural "%d errors found"
+msgid "%d errors"
+msgstr "Найдена %d ошибка"
+
+#. TRANSLATORS: search field placeholder text
+#: src/components/software/PatternSelector.jsx:214
+msgid "Search"
+msgstr ""
+
 #: src/components/software/ProductSelectionPage.jsx:69
 msgid "Loading available products, please wait..."
 msgstr ""
@@ -735,6 +791,22 @@ msgstr ""
 msgid "Choose a product"
 msgstr ""
 
+#: src/components/software/SoftwarePage.jsx:81
+#: src/components/storage/DASDPage.jsx:187
+#: src/components/storage/ISCSIPage.jsx:39
+#: src/components/storage/ProposalPage.jsx:218
+#: src/components/storage/ZFCPPage.jsx:736
+#: src/components/users/UsersPage.jsx:30
+msgid "Back"
+msgstr ""
+
+#. TRANSLATORS: %s will be replaced by the estimated installation size,
+#. example: "728.8 MiB"
+#: src/components/software/UsedSize.jsx:32
+#, c-format
+msgid "Installation will take %s"
+msgstr "Установка займёт %s"
+
 #: src/components/storage/DASDFormatProgress.jsx:61
 msgid "Waiting for progress report"
 msgstr ""
@@ -746,14 +818,6 @@ msgstr ""
 #. TRANSLATORS: DASD = Direct Access Storage Device, IBM mainframe storage technology
 #: src/components/storage/DASDPage.jsx:185
 msgid "Storage DASD"
-msgstr ""
-
-#: src/components/storage/DASDPage.jsx:187
-#: src/components/storage/ISCSIPage.jsx:39
-#: src/components/storage/ProposalPage.jsx:218
-#: src/components/storage/ZFCPPage.jsx:736
-#: src/components/users/UsersPage.jsx:30
-msgid "Back"
 msgstr ""
 
 #: src/components/storage/DASDTable.jsx:57

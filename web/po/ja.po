@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-08 02:09+0000\n"
-"PO-Revision-Date: 2023-09-28 05:15+0000\n"
+"POT-Creation-Date: 2023-10-12 02:05+0000\n"
+"PO-Revision-Date: 2023-10-12 05:15+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -22,6 +22,22 @@ msgstr ""
 #: src/App.jsx:82
 msgid "Diagnostic tools"
 msgstr "診断ツール"
+
+#. TRANSLATORS: error message, %s is replaced by the server URL
+#: src/DevServerWrapper.jsx:82
+#, c-format
+msgid "The server at %s is not reachable."
+msgstr "%s のサーバに到達できません。"
+
+#. TRANSLATORS: error message
+#: src/DevServerWrapper.jsx:88
+msgid "Cannot connect to the Cockpit server"
+msgstr "Cockpit サーバに接続できません"
+
+#. TRANSLATORS: button label
+#: src/DevServerWrapper.jsx:104
+msgid "Try Again"
+msgstr "再試行"
 
 #: src/components/core/About.jsx:43 src/components/core/About.jsx:48
 msgid "About Agama"
@@ -96,6 +112,14 @@ msgstr ""
 msgid "Confirm Installation"
 msgstr "インストールの確認"
 
+#: src/components/core/InstallButton.jsx:66
+msgid ""
+"If you continue, partitions on your hard disk will be modified according to "
+"the provided installation settings."
+msgstr ""
+"続行すると、お使いのコンピュータのハードディスクにあるパーティションは、ここ"
+"までのダイアログで設定したとおりに変更されます。"
+
 #: src/components/core/InstallButton.jsx:70
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr ""
@@ -109,6 +133,14 @@ msgstr "続行"
 #: src/components/core/InstallButton.jsx:86
 msgid "Problems Found"
 msgstr "問題点が見つかりました"
+
+#: src/components/core/InstallButton.jsx:90
+msgid ""
+"Some problems were found when trying to start the installation. Please, have "
+"a look to the reported errors and try again."
+msgstr ""
+"インストールを開始しようとした際に問題が検出されました。報告されたエラー内容"
+"をご確認のうえ、やり直してください。"
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:97
@@ -610,24 +642,19 @@ msgid "%d connection set:"
 msgid_plural "%d connections set:"
 msgstr[0] "%d 個の接続が設定されています:"
 
-#: src/components/overview/SoftwareSection.jsx:36
+#: src/components/overview/SoftwareSection.jsx:37
 msgid "Reading software repositories"
 msgstr "ソフトウエアリポジトリを読み込んでいます"
 
-#. TRANSLATORS: %s will be replaced by the estimated installation size,
-#. example: "728.8 MiB"
-#: src/components/overview/SoftwareSection.jsx:120
-#, c-format
-msgid "Installation will take %s"
-msgstr "インストールを行うには %s が必要です"
-
 #. TRANSLATORS: clickable link label
-#: src/components/overview/SoftwareSection.jsx:145
+#: src/components/overview/SoftwareSection.jsx:135
 msgid "Refresh the repositories"
 msgstr "リポジトリの更新"
 
+#. TRANSLATORS: page title
 #. TRANSLATORS: page section
-#: src/components/overview/SoftwareSection.jsx:155
+#: src/components/overview/SoftwareSection.jsx:145
+#: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
 msgstr "ソフトウエア"
 
@@ -710,6 +737,33 @@ msgstr "暗号化パスワード"
 msgid "Change product"
 msgstr "製品の変更"
 
+#. TRANSLATORS: pattern status, selected to install (by user)
+#: src/components/software/PatternItem.jsx:63
+msgid "selected"
+msgstr "選択済み"
+
+#. TRANSLATORS: pattern status, selected to install (by dependencies)
+#: src/components/software/PatternItem.jsx:66
+msgid "automatically selected"
+msgstr "自動選択済み"
+
+#. TRANSLATORS: pattern status, not selected to install
+#: src/components/software/PatternItem.jsx:69
+msgid "not selected"
+msgstr "未選択"
+
+#. TRANSLATORS: error summary, always plural, %d is replaced by number of errors (2 or more)
+#. if there is just a single error then the error is displayed directly instead of this summary
+#: src/components/software/PatternSelector.jsx:206
+#, c-format
+msgid "%d errors"
+msgstr "%d 個のエラー"
+
+#. TRANSLATORS: search field placeholder text
+#: src/components/software/PatternSelector.jsx:214
+msgid "Search"
+msgstr "検索"
+
 #: src/components/software/ProductSelectionPage.jsx:69
 msgid "Loading available products, please wait..."
 msgstr "利用可能な製品を読み込んでいます。しばらくお待ちください..."
@@ -728,6 +782,22 @@ msgstr "選択"
 msgid "Choose a product"
 msgstr "製品を選択してください"
 
+#: src/components/software/SoftwarePage.jsx:81
+#: src/components/storage/DASDPage.jsx:187
+#: src/components/storage/ISCSIPage.jsx:39
+#: src/components/storage/ProposalPage.jsx:218
+#: src/components/storage/ZFCPPage.jsx:736
+#: src/components/users/UsersPage.jsx:30
+msgid "Back"
+msgstr "戻る"
+
+#. TRANSLATORS: %s will be replaced by the estimated installation size,
+#. example: "728.8 MiB"
+#: src/components/software/UsedSize.jsx:32
+#, c-format
+msgid "Installation will take %s"
+msgstr "インストールを行うには %s が必要です"
+
 #: src/components/storage/DASDFormatProgress.jsx:61
 msgid "Waiting for progress report"
 msgstr "経過レポートを待機しています"
@@ -740,14 +810,6 @@ msgstr "DASD デバイスをフォーマットしています"
 #: src/components/storage/DASDPage.jsx:185
 msgid "Storage DASD"
 msgstr "DASD ストレージ"
-
-#: src/components/storage/DASDPage.jsx:187
-#: src/components/storage/ISCSIPage.jsx:39
-#: src/components/storage/ProposalPage.jsx:218
-#: src/components/storage/ZFCPPage.jsx:736
-#: src/components/users/UsersPage.jsx:30
-msgid "Back"
-msgstr "戻る"
 
 #: src/components/storage/DASDTable.jsx:57
 #: src/components/storage/ZFCPPage.jsx:320
@@ -1028,10 +1090,8 @@ msgstr "スナップショット有り"
 
 #. TRANSLATORS: flag for transactional file system
 #: src/components/storage/ProposalVolumes.jsx:219
-#, fuzzy
-#| msgid "Perform an action"
 msgid "transactional"
-msgstr "処理を実行"
+msgstr "トランザクション型"
 
 #: src/components/storage/ProposalVolumes.jsx:228
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
@@ -1691,6 +1751,3 @@ msgstr "root の認証"
 #~ msgstr ""
 #~ "システムのインストール先となるデバイスを選択してください。選択したデバイス"
 #~ "内に全てのファイルシステムを作成します。"
-
-#~ msgid "Device not selected yet"
-#~ msgstr "まだデバイスを選択していません"
