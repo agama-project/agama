@@ -39,6 +39,19 @@ const client = {
   onDisconnect: jest.fn()
 };
 
+jest.mock("~/lib/cockpit", () => ({
+  gettext: term => term,
+  manifests: {
+    agama: {
+      locales: {
+        "cs-cz": "čeština",
+        "en-us": "English (US)",
+        "es-es": "Español"
+      }
+    }
+  }
+}));
+
 // Helper component that displays a translated message depending on the
 // CockpitLang value.
 const TranslatedContent = () => {
@@ -67,7 +80,7 @@ describe("L10nProvider", () => {
     window.location = { reload: jest.fn() };
 
     delete window.navigator;
-    window.navigator = { language: "es-ES" };
+    window.navigator = { languages: ["es-es", "cs-cz"] };
   });
 
   afterAll(() => {
@@ -103,6 +116,34 @@ describe("L10nProvider", () => {
         await screen.findByText("Testing content");
 
         expect(window.location.reload).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("when the Cockpit language is set to an unsupported language", () => {
+      beforeEach(() => {
+        document.cookie = "CockpitLang=de-de; path=/;";
+        getUILanguageFn.mockResolvedValueOnce("de_DE");
+        getUILanguageFn.mockResolvedValueOnce("es_ES");
+      });
+
+      it("uses the first supported language from the browser", async () => {
+        render(
+          <InstallerClientProvider client={client}>
+            <L10nProvider><TranslatedContent /></L10nProvider>
+          </InstallerClientProvider>
+        );
+
+        await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+
+        // reload the component
+        render(
+          <InstallerClientProvider client={client}>
+            <L10nProvider><TranslatedContent /></L10nProvider>
+          </InstallerClientProvider>
+        );
+        await waitFor(() => screen.getByText("hola"));
+
+        expect(setUILanguageFn).toHaveBeenCalledWith("es_ES");
       });
     });
 

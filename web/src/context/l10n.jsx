@@ -128,6 +128,28 @@ function languageToBackend(tag) {
 }
 
 /**
+ * Returns the list of languages from the navigator in RFC 5646 (or BCP 78)
+ * format
+ *
+ * @return {Array<string>} List of languages from the navigator
+ */
+function navigatorLanguages() {
+  return navigator.languages.map(l => l.toLowerCase());
+}
+
+/**
+ * Returns the first supported language from the given list.
+ *
+ * @param {Array<string>} languages - Candidate languages
+ * @return {string|undefined} First supported language or undefined if none
+ *   of the given languages is supported.
+ */
+function findSupportedLanguage(languages) {
+  const supported = Object.keys(cockpit.manifests.agama?.locales || {});
+  return languages.find(lang => supported.includes(lang));
+}
+
+/**
  * This provider sets the application language. By default, it uses the
  * URL "lang" query parameter or the preferred language from the browser and
  * synchronizes the UI and the backend languages. To activate a new language it
@@ -175,7 +197,8 @@ function L10nProvider({ children }) {
     }
 
     const current = cockpitLanguage();
-    const newLanguage = wanted || current || navigator.language.toLowerCase();
+    const candidateLanguages = [wanted, current].concat(navigatorLanguages());
+    const newLanguage = findSupportedLanguage(candidateLanguages) || "en-us";
 
     let mustReload = storeUILanguage(newLanguage);
     mustReload = await storeBackendLanguage(newLanguage) || mustReload;
