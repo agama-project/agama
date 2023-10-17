@@ -29,11 +29,21 @@
   </interface>
   <interface name="org.opensuse.Agama.Software1">
     <method name="SelectProduct">
-      <arg name="ProductID" direction="in" type="s"/>
+      <arg name="id" direction="in" type="s"/>
+      <arg name="result" direction="out" type="(us)"/>
     </method>
     <method name="ListPatterns">
       <arg name="Filtered" direction="in" type="b"/>
-      <arg name="Result" direction="out" type="a{s(ssssi)}"/>
+      <arg name="Result" direction="out" type="a{s(sssss)}"/>
+    </method>
+    <method name="AddPattern">
+      <arg name="id" direction="in" type="s"/>
+    </method>
+    <method name="RemovePattern">
+      <arg name="id" direction="in" type="s"/>
+    </method>
+    <method name="SetUserPatterns">
+      <arg name="ids" direction="in" type="as"/>
     </method>
     <method name="ProvisionsSelected">
       <arg name="Provisions" direction="in" type="as"/>
@@ -54,20 +64,33 @@
     </method>
     <method name="Finish">
     </method>
-    <property type="a(ssa{sv})" name="AvailableBaseProducts" access="read"/>
-    <property type="s" name="SelectedBaseProduct" access="read"/>
+    <property type="a(ssa{sv})" name="AvailableProducts" access="read"/>
+    <property type="s" name="SelectedProduct" access="read"/>
+    <property type="a{sy}" name="SelectedPatterns" access="read"/>
+  </interface>
+  <interface name="org.opensuse.Agama1.Issues">
+    <property type="a(ssuu)" name="All" access="read"/>
   </interface>
   <interface name="org.opensuse.Agama1.Progress">
     <property type="u" name="TotalSteps" access="read"/>
     <property type="(us)" name="CurrentStep" access="read"/>
     <property type="b" name="Finished" access="read"/>
   </interface>
+  <interface name="org.opensuse.Agama1.Registration">
+    <method name="Register">
+      <arg name="reg_code" direction="in" type="s"/>
+      <arg name="options" direction="in" type="a{sv}"/>
+      <arg name="result" direction="out" type="(us)"/>
+    </method>
+    <method name="Deregister">
+      <arg name="result" direction="out" type="(us)"/>
+    </method>
+    <property type="s" name="RegCode" access="read"/>
+    <property type="s" name="Email" access="read"/>
+    <property type="u" name="Requirement" access="read"/>
+  </interface>
   <interface name="org.opensuse.Agama1.ServiceStatus">
     <property type="aa{sv}" name="All" access="read"/>
     <property type="u" name="Current" access="read"/>
-  </interface>
-  <interface name="org.opensuse.Agama1.Validation">
-    <property type="as" name="Errors" access="read"/>
-    <property type="b" name="Valid" access="read"/>
   </interface>
 </node>
