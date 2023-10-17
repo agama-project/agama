@@ -9,9 +9,11 @@
         }
     },
     "locales": {
-	"cs-cz": "čeština",
-        "de-de": "Deutsch",
+        "en-us": "English (US)",
         "es-es": "Español",
-        "en-us": "English (US)"
-    }
+        "ja-jp": "日本語",
+        "nl-nl": "Nederlands",
+        "ru-ru": "Русский",
+        "sv-se": "Svenska"
+  }
 }
