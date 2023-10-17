@@ -83,6 +83,8 @@ module Agama
         @user_patterns = []
         @selected_patterns_change_callbacks = []
 
+        update_issues
+
         on_progress_change { logger.info(progress.to_s) }
       end
 

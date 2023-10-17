@@ -27,8 +27,6 @@ shared_examples "issues" do
     let(:issues) { [Agama::Issue.new("Issue 1"), Agama::Issue.new("Issue 2")] }
 
     it "sets the given list of issues" do
-      expect(subject.issues).to be_empty
-
       subject.issues = issues
 
       expect(subject.issues).to contain_exactly(

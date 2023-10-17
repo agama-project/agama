@@ -121,15 +121,19 @@ module Agama
     #
     # @example
     #   config.pure_data = {
-    #     ALP-Dolomite: {
-    #       software: {
-    #         installation_repositories: {
-    #           - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/x86_64/product/
-    #             archs: x86_64
-    #           - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/aarch64/product/
-    #             archs: aarch64
-    #           - https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/noarch/
-    #         }
+    #     "ALP-Dolomite" => {
+    #       "software" => {
+    #         "installation_repositories" => [
+    #           {
+    #             "url" => "https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/x86_64/product/",
+    #             "archs" => "x86_64"
+    #           },
+    #           {
+    #             "url" => https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/aarch64/product/",
+    #             "archs" => "aarch64"
+    #           },
+    #           "https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/noarch/"
+    #         ]
     #       }
     #     }
     #   }
@@ -146,7 +150,7 @@ module Agama
     def arch_elements_from(*keys, property: nil)
       keys.map!(&:to_s)
       elements = pure_data.dig(*keys)
-      return [] unless elements
+      return [] unless elements.is_a?(Array)
 
       elements.map do |element|
         if !element.is_a?(Hash)
@@ -178,7 +182,7 @@ module Agama
 
     # Whether the current arch matches any of the given archs.
     #
-    # @param archs [Array<String>]
+    # @param archs [String] E.g., "x86_64,aarch64"
     # @return [Boolean]
     def arch_match?(archs)
       return true if archs.nil?

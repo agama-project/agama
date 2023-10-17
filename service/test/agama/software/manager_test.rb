@@ -29,6 +29,7 @@ require "agama/config"
 require "agama/issue"
 require "agama/registration"
 require "agama/software/manager"
+require "agama/software/product"
 require "agama/software/proposal"
 require "agama/dbus/clients/questions"
 
@@ -94,27 +95,77 @@ describe Agama::Software::Manager do
     allow(Agama::Software::Proposal).to receive(:new).and_return(proposal)
   end
 
-  shared_examples "software issues" do |tested_method|
+  describe "#new" do
     before do
-      allow(subject).to receive(:product).and_return(product)
-      allow(subject.registration).to receive(:reg_code).and_return(reg_code)
+      allow_any_instance_of(Agama::Software::ProductBuilder)
+        .to receive(:build).and_return(products)
     end
 
-    let(:product) { "ALP-Dolomite" }
-    let(:reg_code) { "123XX432" }
-    let(:proposal_issues) { [Agama::Issue.new("Proposal issue")] }
+    context "if there are several products" do
+      let(:products) do
+        [Agama::Software::Product.new("test1"), Agama::Software::Product.new("test2")]
+      end
 
-    context "if there is no product selected yet" do
-      let(:product) { nil }
+      it "does not select a product by default" do
+        manager = described_class.new(config, logger)
 
-      it "sets an issue" do
-        subject.public_send(tested_method)
+        expect(manager.product).to be_nil
+      end
 
-        expect(subject.issues).to contain_exactly(an_object_having_attributes(
+      it "adds a not selected product issue" do
+        manager = described_class.new(config, logger)
+
+        expect(manager.issues).to contain_exactly(an_object_having_attributes(
           description: /product not selected/i
         ))
       end
     end
+
+    context "if there is only a product" do
+      let(:products) { [product] }
+
+      let(:product) do
+        Agama::Software::Product.new("test1").tap { |p| p.repositories = product_repositories }
+      end
+
+      let(:product_repositories) { [] }
+
+      it "selects the product" do
+        manager = described_class.new(config, logger)
+
+        expect(manager.product.id).to eq("test1")
+      end
+
+      context "if the product requires registration" do
+        let(:product_repositories) { [] }
+
+        it "adds a registration issue" do
+          manager = described_class.new(config, logger)
+
+          expect(manager.issues).to include(an_object_having_attributes(
+            description: /product must be registered/i
+          ))
+        end
+
+        context "if the product does not require registration" do
+          let(:product_repositories) { ["https://test"] }
+
+          it "does not add issues" do
+            expect(subject.issues).to be_empty
+          end
+        end
+      end
+    end
+  end
+
+  shared_examples "software issues" do |tested_method|
+    before do
+      subject.select_product("Tumbleweed")
+      allow(subject.registration).to receive(:reg_code).and_return(reg_code)
+    end
+
+    let(:reg_code) { "123XX432" }
+    let(:proposal_issues) { [Agama::Issue.new("Proposal issue")] }
 
     context "if there are disabled repositories" do
       let(:disabled_repos) do
@@ -204,6 +255,7 @@ describe Agama::Software::Manager do
       stub_const("Agama::Software::Manager::REPOS_DIR", repos_dir)
       stub_const("Agama::Software::Manager::REPOS_BACKUP", backup_repos_dir)
       FileUtils.mkdir_p(repos_dir)
+      subject.select_product("Tumbleweed")
     end
 
     after do
@@ -242,11 +294,11 @@ describe Agama::Software::Manager do
     it "returns the list of known products" do
       products = subject.products
       expect(products.size).to eq(3)
-      id, data = products.first
-      expect(id).to eq("Tumbleweed")
-      expect(data).to include(
-        "name"        => "openSUSE Tumbleweed",
-        "description" => String
+      expect(products).to all(be_a(Agama::Software::Product))
+      expect(products).to contain_exactly(
+        an_object_having_attributes(id: "Tumbleweed"),
+        an_object_having_attributes(id: "Leap Micro"),
+        an_object_having_attributes(id: "Leap")
       )
     end
   end
@@ -254,30 +306,12 @@ describe Agama::Software::Manager do
   describe "#propose" do
     before do
       subject.select_product("Tumbleweed")
-      allow(Yast::Arch).to receive(:s390).and_return(false)
     end
 
     it "creates a new proposal for the selected product" do
       expect(proposal).to receive(:languages=).with(["en_US"])
       expect(proposal).to receive(:base_product=).with("openSUSE")
       expect(proposal).to receive(:calculate)
-      subject.propose
-    end
-
-    it "adds the patterns and packages to install depending on the system architecture" do
-      expect(proposal).to receive(:set_resolvables)
-        .with("agama", :pattern, ["enhanced_base"])
-      expect(proposal).to receive(:set_resolvables)
-        .with("agama", :pattern, ["optional_base"], optional: true)
-      expect(proposal).to receive(:set_resolvables)
-        .with("agama", :package, ["mandatory_pkg"])
-      expect(proposal).to receive(:set_resolvables)
-        .with("agama", :package, ["optional_pkg"], optional: true)
-      subject.propose
-
-      expect(Yast::Arch).to receive(:s390).and_return(true)
-      expect(proposal).to receive(:set_resolvables)
-        .with("agama", :package, ["mandatory_pkg", "mandatory_pkg_s390"])
       subject.propose
     end
 

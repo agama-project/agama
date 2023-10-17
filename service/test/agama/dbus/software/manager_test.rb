@@ -213,218 +213,220 @@ describe Agama::DBus::Software::Manager do
 
   describe "#register" do
     before do
-      allow(backend).to receive(:product).and_return("Tumbleweed")
       allow(backend.registration).to receive(:reg_code).and_return(nil)
     end
 
     context "if there is no product selected yet" do
-      before do
-        allow(backend).to receive(:product).and_return(nil)
-      end
-
       it "returns result code 1 and description" do
         expect(subject.register("123XX432")).to contain_exactly(1, /product not selected/i)
       end
     end
 
-    context "if the product is already registered" do
+    context "if there is a selected product" do
       before do
-        allow(backend.registration).to receive(:reg_code).and_return("123XX432")
+        backend.select_product("Tumbleweed")
       end
 
-      it "returns result code 2 and description" do
-        expect(subject.register("123XX432")).to contain_exactly(2, /product already registered/i)
-      end
-    end
+      context "if the product is already registered" do
+        before do
+          allow(backend.registration).to receive(:reg_code).and_return("123XX432")
+        end
 
-    context "if the registration is correctly done" do
-      before do
-        allow(backend.registration).to receive(:register)
-      end
-
-      it "returns result code 0 without description" do
-        expect(subject.register("123XX432")).to contain_exactly(0, "")
-      end
-    end
-
-    context "if there is a network error" do
-      before do
-        allow(backend.registration).to receive(:register).and_raise(SocketError)
+        it "returns result code 2 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(2, /product already registered/i)
+        end
       end
 
-      it "returns result code 3 and description" do
-        expect(subject.register("123XX432")).to contain_exactly(3, /network error/)
-      end
-    end
+      context "if there is a network error" do
+        before do
+          allow(backend.registration).to receive(:register).and_raise(SocketError)
+        end
 
-    context "if there is a timeout" do
-      before do
-        allow(backend.registration).to receive(:register).and_raise(Timeout::Error)
-      end
-
-      it "returns result code 4 and description" do
-        expect(subject.register("123XX432")).to contain_exactly(4, /timeout/)
-      end
-    end
-
-    context "if there is an API error" do
-      before do
-        allow(backend.registration).to receive(:register).and_raise(SUSE::Connect::ApiError, "")
+        it "returns result code 3 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(3, /network error/)
+        end
       end
 
-      it "returns result code 5 and description" do
-        expect(subject.register("123XX432")).to contain_exactly(5, /registration server failed/)
-      end
-    end
+      context "if there is a timeout" do
+        before do
+          allow(backend.registration).to receive(:register).and_raise(Timeout::Error)
+        end
 
-    context "if there is a missing credials error" do
-      before do
-        allow(backend.registration)
-          .to receive(:register).and_raise(SUSE::Connect::MissingSccCredentialsFile)
-      end
-
-      it "returns result code 6 and description" do
-        expect(subject.register("123XX432")).to contain_exactly(6, /missing credentials/)
-      end
-    end
-
-    context "if there is an incorrect credials error" do
-      before do
-        allow(backend.registration)
-          .to receive(:register).and_raise(SUSE::Connect::MalformedSccCredentialsFile)
+        it "returns result code 4 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(4, /timeout/)
+        end
       end
 
-      it "returns result code 7 and description" do
-        expect(subject.register("123XX432")).to contain_exactly(7, /incorrect credentials/)
-      end
-    end
+      context "if there is an API error" do
+        before do
+          allow(backend.registration).to receive(:register).and_raise(SUSE::Connect::ApiError, "")
+        end
 
-    context "if there is an invalid certificate error" do
-      before do
-        allow(backend.registration).to receive(:register).and_raise(OpenSSL::SSL::SSLError)
-      end
-
-      it "returns result code 8 and description" do
-        expect(subject.register("123XX432")).to contain_exactly(8, /invalid certificate/)
-      end
-    end
-
-    context "if there is an internal error" do
-      before do
-        allow(backend.registration).to receive(:register).and_raise(JSON::ParserError)
+        it "returns result code 5 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(5, /registration server failed/)
+        end
       end
 
-      it "returns result code 9 and description" do
-        expect(subject.register("123XX432")).to contain_exactly(9, /registration server failed/)
+      context "if there is a missing credials error" do
+        before do
+          allow(backend.registration)
+            .to receive(:register).and_raise(SUSE::Connect::MissingSccCredentialsFile)
+        end
+
+        it "returns result code 6 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(6, /missing credentials/)
+        end
+      end
+
+      context "if there is an incorrect credials error" do
+        before do
+          allow(backend.registration)
+            .to receive(:register).and_raise(SUSE::Connect::MalformedSccCredentialsFile)
+        end
+
+        it "returns result code 7 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(7, /incorrect credentials/)
+        end
+      end
+
+      context "if there is an invalid certificate error" do
+        before do
+          allow(backend.registration).to receive(:register).and_raise(OpenSSL::SSL::SSLError)
+        end
+
+        it "returns result code 8 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(8, /invalid certificate/)
+        end
+      end
+
+      context "if there is an internal error" do
+        before do
+          allow(backend.registration).to receive(:register).and_raise(JSON::ParserError)
+        end
+
+        it "returns result code 9 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(9, /registration server failed/)
+        end
+      end
+
+      context "if the registration is correctly done" do
+        before do
+          allow(backend.registration).to receive(:register)
+        end
+
+        it "returns result code 0 without description" do
+          expect(subject.register("123XX432")).to contain_exactly(0, "")
+        end
       end
     end
   end
 
   describe "#deregister" do
     before do
-      allow(backend).to receive(:product).and_return("Tumbleweed")
       allow(backend.registration).to receive(:reg_code).and_return("123XX432")
     end
 
     context "if there is no product selected yet" do
-      before do
-        allow(backend).to receive(:product).and_return(nil)
-      end
-
       it "returns result code 1 and description" do
         expect(subject.deregister).to contain_exactly(1, /product not selected/i)
       end
     end
 
-    context "if the product is not registered yet" do
+    context "if there is a selected product" do
       before do
-        allow(backend.registration).to receive(:reg_code).and_return(nil)
+        backend.select_product("Tumbleweed")
       end
 
-      it "returns result code 2 and description" do
-        expect(subject.deregister).to contain_exactly(2, /product not registered/i)
-      end
-    end
+      context "if the product is not registered yet" do
+        before do
+          allow(backend.registration).to receive(:reg_code).and_return(nil)
+        end
 
-    context "if the deregistration is correctly done" do
-      before do
-        allow(backend.registration).to receive(:deregister)
-      end
-
-      it "returns result code 0 without description" do
-        expect(subject.deregister).to contain_exactly(0, "")
-      end
-    end
-
-    context "if there is a network error" do
-      before do
-        allow(backend.registration).to receive(:deregister).and_raise(SocketError)
+        it "returns result code 2 and description" do
+          expect(subject.deregister).to contain_exactly(2, /product not registered/i)
+        end
       end
 
-      it "returns result code 3 and description" do
-        expect(subject.deregister).to contain_exactly(3, /network error/)
-      end
-    end
+      context "if there is a network error" do
+        before do
+          allow(backend.registration).to receive(:deregister).and_raise(SocketError)
+        end
 
-    context "if there is a timeout" do
-      before do
-        allow(backend.registration).to receive(:deregister).and_raise(Timeout::Error)
-      end
-
-      it "returns result code 4 and description" do
-        expect(subject.deregister).to contain_exactly(4, /timeout/)
-      end
-    end
-
-    context "if there is an API error" do
-      before do
-        allow(backend.registration).to receive(:deregister).and_raise(SUSE::Connect::ApiError, "")
+        it "returns result code 3 and description" do
+          expect(subject.deregister).to contain_exactly(3, /network error/)
+        end
       end
 
-      it "returns result code 5 and description" do
-        expect(subject.deregister).to contain_exactly(5, /registration server failed/)
-      end
-    end
+      context "if there is a timeout" do
+        before do
+          allow(backend.registration).to receive(:deregister).and_raise(Timeout::Error)
+        end
 
-    context "if there is a missing credials error" do
-      before do
-        allow(backend.registration)
-          .to receive(:deregister).and_raise(SUSE::Connect::MissingSccCredentialsFile)
-      end
-
-      it "returns result code 6 and description" do
-        expect(subject.deregister).to contain_exactly(6, /missing credentials/)
-      end
-    end
-
-    context "if there is an incorrect credials error" do
-      before do
-        allow(backend.registration)
-          .to receive(:deregister).and_raise(SUSE::Connect::MalformedSccCredentialsFile)
+        it "returns result code 4 and description" do
+          expect(subject.deregister).to contain_exactly(4, /timeout/)
+        end
       end
 
-      it "returns result code 7 and description" do
-        expect(subject.deregister).to contain_exactly(7, /incorrect credentials/)
-      end
-    end
+      context "if there is an API error" do
+        before do
+          allow(backend.registration).to receive(:deregister).and_raise(SUSE::Connect::ApiError, "")
+        end
 
-    context "if there is an invalid certificate error" do
-      before do
-        allow(backend.registration).to receive(:deregister).and_raise(OpenSSL::SSL::SSLError)
-      end
-
-      it "returns result code 8 and description" do
-        expect(subject.deregister).to contain_exactly(8, /invalid certificate/)
-      end
-    end
-
-    context "if there is an internal error" do
-      before do
-        allow(backend.registration).to receive(:deregister).and_raise(JSON::ParserError)
+        it "returns result code 5 and description" do
+          expect(subject.deregister).to contain_exactly(5, /registration server failed/)
+        end
       end
 
-      it "returns result code 9 and description" do
-        expect(subject.deregister).to contain_exactly(9, /registration server failed/)
+      context "if there is a missing credials error" do
+        before do
+          allow(backend.registration)
+            .to receive(:deregister).and_raise(SUSE::Connect::MissingSccCredentialsFile)
+        end
+
+        it "returns result code 6 and description" do
+          expect(subject.deregister).to contain_exactly(6, /missing credentials/)
+        end
+      end
+
+      context "if there is an incorrect credials error" do
+        before do
+          allow(backend.registration)
+            .to receive(:deregister).and_raise(SUSE::Connect::MalformedSccCredentialsFile)
+        end
+
+        it "returns result code 7 and description" do
+          expect(subject.deregister).to contain_exactly(7, /incorrect credentials/)
+        end
+      end
+
+      context "if there is an invalid certificate error" do
+        before do
+          allow(backend.registration).to receive(:deregister).and_raise(OpenSSL::SSL::SSLError)
+        end
+
+        it "returns result code 8 and description" do
+          expect(subject.deregister).to contain_exactly(8, /invalid certificate/)
+        end
+      end
+
+      context "if there is an internal error" do
+        before do
+          allow(backend.registration).to receive(:deregister).and_raise(JSON::ParserError)
+        end
+
+        it "returns result code 9 and description" do
+          expect(subject.deregister).to contain_exactly(9, /registration server failed/)
+        end
+      end
+
+      context "if the deregistration is correctly done" do
+        before do
+          allow(backend.registration).to receive(:deregister)
+        end
+
+        it "returns result code 0 without description" do
+          expect(subject.deregister).to contain_exactly(0, "")
+        end
       end
     end
   end
