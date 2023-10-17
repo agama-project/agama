@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <node name="/org/opensuse/Agama/Software1">
+  <node name="Proposal"/>
+
   <interface name="org.opensuse.Agama.Software1">
     <!--
       Selects a product.
