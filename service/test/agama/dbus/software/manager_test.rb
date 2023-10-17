@@ -87,6 +87,41 @@ describe Agama::DBus::Software::Manager do
     backend.issues = []
   end
 
+  describe "select_product" do
+    context "if the product is correctly selected" do
+      it "returns result code 0 with empty description" do
+        expect(subject.select_product("Tumbleweed")).to contain_exactly(0, "")
+      end
+    end
+
+    context "if the given product is already selected" do
+      before do
+        subject.select_product("Tumbleweed")
+      end
+
+      it "returns result code 1 and description" do
+        expect(subject.select_product("Tumbleweed")).to contain_exactly(1, /already selected/)
+      end
+    end
+
+    context "if the current product is registered" do
+      before do
+        subject.select_product("Leap")
+        allow(backend.registration).to receive(:reg_code).and_return("123XX432")
+      end
+
+      it "returns result code 2 and description" do
+        expect(subject.select_product("Tumbleweed")).to contain_exactly(2, /must be deregistered/)
+      end
+    end
+
+    context "if the product is unknown" do
+      it "returns result code 3 and description" do
+        expect(subject.select_product("Unknown")).to contain_exactly(3, /unknown product/i)
+      end
+    end
+  end
+
   describe "#probe" do
     it "runs the probing, setting the service as busy meanwhile" do
       expect(subject.service_status).to receive(:busy)
@@ -314,7 +349,7 @@ describe Agama::DBus::Software::Manager do
           allow(backend.registration).to receive(:register)
         end
 
-        it "returns result code 0 without description" do
+        it "returns result code 0 with empty description" do
           expect(subject.register("123XX432")).to contain_exactly(0, "")
         end
       end
@@ -424,7 +459,7 @@ describe Agama::DBus::Software::Manager do
           allow(backend.registration).to receive(:deregister)
         end
 
-        it "returns result code 0 without description" do
+        it "returns result code 0 with empty description" do
           expect(subject.deregister).to contain_exactly(0, "")
         end
       end

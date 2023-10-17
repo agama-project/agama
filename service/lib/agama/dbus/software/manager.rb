@@ -71,17 +71,17 @@ module Agama
 
           dbus_reader :selected_product, "s"
 
-          dbus_method :SelectProduct, "in ProductID:s" do |product_id|
-            old_product_id = backend.product&.id
+          dbus_method :SelectProduct, "in id:s, out result:(us)" do |id|
+            logger.info "Selecting product #{id}"
 
-            if old_product_id == product_id
-              logger.info "Do not changing the product as it is still the same (#{product_id})"
-              return
+            code, description = select_product(id)
+
+            if code == 0
+              dbus_properties_changed(SOFTWARE_INTERFACE, { "SelectedProduct" => id }, [])
+              dbus_properties_changed(REGISTRATION_INTERFACE, { "Requirement" => requirement }, [])
             end
 
-            logger.info "Selecting product #{product_id}"
-            select_product(product_id)
-            dbus_properties_changed(SOFTWARE_INTERFACE, { "SelectedProduct" => product_id }, [])
+            [[code, description]]
           end
 
           # value of result hash is category, description, icon, summary and order
@@ -142,8 +142,26 @@ module Agama
           backend.product&.id || ""
         end
 
-        def select_product(product_id)
-          backend.select_product(product_id)
+        # Selects a product.
+        #
+        # @param id [String] Product id.
+        # @return [Array(Integer, String)] Result code and a description.
+        #   Possible result codes:
+        #   0: success
+        #   1: already selected
+        #   2: deregister first
+        #   3: unknown product
+        def select_product(id)
+          if backend.product&.id == id
+            [1, "Product is already selected"]
+          elsif backend.registration.reg_code
+            [2, "Current product must be deregistered first"]
+          else
+            backend.select_product(id)
+            [0, ""]
+          end
+        rescue ArgumentError
+          [3, "Unknown product"]
         end
 
         def probe
