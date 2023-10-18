@@ -191,7 +191,7 @@ describe("L10nProvider", () => {
           );
           await waitFor(() => screen.getByText("hola"));
         });
-      })
+      });
     });
   });
 
