@@ -56,7 +56,7 @@ it("LanguageSwitcher", async () => {
   const { user } = plainRender(<LanguageSwitcher />);
   expect(screen.getByRole("option", { name: "Español" }).selected).toBe(true);
   await user.selectOptions(
-    screen.getByRole("combobox", { label: "UI Language" }),
+    screen.getByRole("combobox", { label: "Display Language" }),
     screen.getByRole("option", { name: "English (US)" })
   );
   expect(mockChangeLanguageFn).toHaveBeenCalledWith("en-us");

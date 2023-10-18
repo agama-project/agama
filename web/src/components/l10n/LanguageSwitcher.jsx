@@ -43,7 +43,7 @@ export default function LanguageSwitcher() {
   return (
     <>
       <h3>
-        <Icon name="translate" size="24" />{_("UI Language")}
+        <Icon name="translate" size="24" />{_("Display Language")}
       </h3>
       <FormSelect
         id="language"
