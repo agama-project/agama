@@ -315,7 +315,7 @@ module Agama
       # rubocop:enable Metrics/AbcSize
 
       def remove_service(service)
-        if Yast::Pkg.ServiceDelete(service.name) && !Pkg.SourceSaveAll
+        if Yast::Pkg.ServiceDelete(service.name) && !Yast::Pkg.SourceSaveAll
           raise format("Removing service '%s' failed.", service_name)
         end
 
