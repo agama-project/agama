@@ -146,7 +146,11 @@ function navigatorLanguages() {
  */
 function findSupportedLanguage(languages) {
   const supported = Object.keys(cockpit.manifests.agama?.locales || {});
-  return languages.find(lang => supported.includes(lang));
+
+  for (const candidate of languages) {
+    let match = supported.find(s => s.startsWith(candidate));
+    if (match) return match;
+  }
 }
 
 /**
@@ -197,7 +201,8 @@ function L10nProvider({ children }) {
     }
 
     const current = cockpitLanguage();
-    const candidateLanguages = [wanted, current].concat(navigatorLanguages());
+    const candidateLanguages = [wanted, current].concat(navigatorLanguages())
+      .filter(l => l);
     const newLanguage = findSupportedLanguage(candidateLanguages) || "en-us";
 
     let mustReload = storeUILanguage(newLanguage);

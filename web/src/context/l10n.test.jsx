@@ -170,6 +170,28 @@ describe("L10nProvider", () => {
         );
         await waitFor(() => screen.getByText("hola"));
       });
+
+      describe("when the browser language does not contain the full locale", () => {
+        beforeEach(() => {
+          window.navigator = { languages: ["es", "cs-cz"] };
+        });
+
+        it("sets the first language the matches", async () => {
+          render(
+            <InstallerClientProvider client={client}>
+              <L10nProvider><TranslatedContent /></L10nProvider>
+            </InstallerClientProvider>
+          );
+          await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+
+          render(
+            <InstallerClientProvider client={client}>
+              <L10nProvider><TranslatedContent /></L10nProvider>
+            </InstallerClientProvider>
+          );
+          await waitFor(() => screen.getByText("hola"));
+        });
+      })
     });
   });
 
