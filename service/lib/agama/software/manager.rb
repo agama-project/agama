@@ -275,6 +275,54 @@ module Agama
         @registration ||= Registration.new(self, @logger)
       end
 
+      # code is based on https://github.com/yast/yast-registration/blob/master/src/lib/registration/sw_mgmt.rb#L365
+      # rubocop:disable Metrics/AbcSize
+      def add_service(service)
+        # init repos, so we are sure we operate on "/" and have GPG imported
+        initialize_target_repos
+        # save repositories before refreshing added services (otherwise
+        # pkg-bindings will treat them as removed by the service refresh and
+        # unload them)
+        if !Yast::Pkg.SourceSaveAll
+          # error message
+          @logger.error("Saving repository configuration failed.")
+        end
+
+        @logger.info "Adding service #{service.name.inspect} (#{service.url})"
+        if !Yast::Pkg.ServiceAdd(service.name, service.url.to_s)
+          raise format("Adding service '%s' failed.", service.name)
+        end
+
+        if !Yast::Pkg.ServiceSet(service.name, "autorefresh" => true)
+          # error message
+          raise format("Updating service '%s' failed.", service.name)
+        end
+
+        # refresh works only for saved services
+        if !Yast::Pkg.ServiceSave(service.name)
+          # error message
+          raise format("Saving service '%s' failed.", service.name)
+        end
+
+        # Force refreshing due timing issues (bnc#967828)
+        if !Yast::Pkg.ServiceForceRefresh(service.name)
+          # error message
+          raise format("Refreshing service '%s' failed.", service.name)
+        end
+      ensure
+        Yast::Pkg.SourceSaveAll
+      end
+      # rubocop:enable Metrics/AbcSize
+
+      def remove_service(service)
+        if Yast::Pkg.ServiceDelete(service.name) && !Pkg.SourceSaveAll
+          raise format("Removing service '%s' failed.", service_name)
+        end
+
+        true
+      end
+
+
     private
 
       # @return [Agama::Config]
