@@ -63,9 +63,9 @@ impl<'a> SoftwareClient<'a> {
                 let products = self.products().await?;
                 let ids: Vec<String> = products.into_iter().map(|p| p.id).collect();
                 let error = format!("{0}. Available products: '{1:?}'", description, ids);
-                Err(ServiceError::Result(3, error))
+                Err(ServiceError::UnsuccessfulAction(error))
             }
-            (code, description) => Err(ServiceError::Result(code, description)),
+            (_, description) => Err(ServiceError::UnsuccessfulAction(description)),
         }
     }
 }
