@@ -18,6 +18,8 @@ pub enum ServiceError {
     Anyhow(#[from] anyhow::Error),
     #[error("Wrong user parameters: '{0:?}'")]
     WrongUser(Vec<String>),
+    #[error("Result error ({0}): {1}")]
+    Result(u32, String),
 }
 
 #[derive(Error, Debug)]

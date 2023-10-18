@@ -30,7 +30,7 @@ impl<'a> SoftwareClient<'a> {
     pub async fn products(&self) -> Result<Vec<Product>, ServiceError> {
         let products: Vec<Product> = self
             .software_proxy
-            .available_base_products()
+            .available_products()
             .await?
             .into_iter()
             .map(|(id, name, data)| {
@@ -50,11 +50,22 @@ impl<'a> SoftwareClient<'a> {
 
     /// Returns the selected product to install
     pub async fn product(&self) -> Result<String, ServiceError> {
-        Ok(self.software_proxy.selected_base_product().await?)
+        Ok(self.software_proxy.selected_product().await?)
     }
 
     /// Selects the product to install
     pub async fn select_product(&self, product_id: &str) -> Result<(), ServiceError> {
-        Ok(self.software_proxy.select_product(product_id).await?)
+        let result = self.software_proxy.select_product(product_id).await?;
+
+        match result {
+            (0, _) => Ok(()),
+            (3, description) => {
+                let products = self.products().await?;
+                let ids: Vec<String> = products.into_iter().map(|p| p.id).collect();
+                let error = format!("{0}. Available products: '{1:?}'", description, ids);
+                Err(ServiceError::Result(3, error))
+            }
+            (code, description) => Err(ServiceError::Result(code, description)),
+        }
     }
 }
