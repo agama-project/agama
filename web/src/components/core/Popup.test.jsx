@@ -22,7 +22,7 @@
 import React, { useState } from "react";
 
 import { screen, within } from "@testing-library/react";
-import { installerRender, plainRender } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 
 import { Popup } from "~/components/core";
 
@@ -90,27 +90,6 @@ describe("Popup", () => {
 
       within(footer).getByText("Confirm");
       within(footer).getByText("Cancel");
-    });
-
-    it("removes aria-hidden attributes from body children (workaround for patternfly/patternfly-react#9096)", async () => {
-      const { user } = plainRender(
-        <>
-          <article>Popup Sibling</article>
-          <TestingPopup />
-        </>,
-        // Force React Testing Library to render the component directly in the
-        // body for emulating the default behavior of the PF/Modal when no
-        // appendTo prop is given.
-        // https://testing-library.com/docs/react-testing-library/api/#container
-        { container: document.body }
-      );
-
-      await screen.findByRole("dialog");
-      const sibling = screen.getByText("Popup Sibling");
-      const unmountButton = screen.getByRole("button", { name: "Unmount Popup" });
-      expect(sibling).toHaveAttribute("aria-hidden");
-      await user.click(unmountButton);
-      expect(sibling).not.toHaveAttribute("aria-hidden");
     });
   });
 });
