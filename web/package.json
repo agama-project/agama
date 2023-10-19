@@ -97,9 +97,9 @@
   "dependencies": {
     "@icons-pack/react-simple-icons": "^9.0.1",
     "@material-symbols/svg-400": "^0.13.0",
-    "@patternfly/patternfly": "^5.0.0",
-    "@patternfly/react-core": "^5.0.0",
-    "@patternfly/react-table": "^5.0.0",
+    "@patternfly/patternfly": "^5.1.0",
+    "@patternfly/react-core": "^5.1.0",
+    "@patternfly/react-table": "^5.1.0",
     "core-js": "^3.21.1",
     "fast-sort": "^3.2.1",
     "ipaddr.js": "^2.0.1",
