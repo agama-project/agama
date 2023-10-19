@@ -148,7 +148,16 @@ function findSupportedLanguage(languages) {
   const supported = Object.keys(cockpit.manifests.agama?.locales || {});
 
   for (const candidate of languages) {
-    const match = supported.find(s => s.startsWith(candidate));
+    const [language, country] = candidate.split("-");
+
+    const match = supported.find(s => {
+      const [supportedLanguage, supportedCountry] = s.split("-");
+      if (language === supportedLanguage) {
+        return country === undefined || country === supportedCountry;
+      } else {
+        return false;
+      }
+    });
     if (match) return match;
   }
 }

@@ -44,6 +44,7 @@ jest.mock("~/lib/cockpit", () => ({
   manifests: {
     agama: {
       locales: {
+        "es-ar": "Español (Argentina)",
         "cs-cz": "čeština",
         "en-us": "English (US)",
         "es-es": "Español"
@@ -59,6 +60,7 @@ const TranslatedContent = () => {
     "cs-cz": "ahoj",
     "en-us": "hello",
     "es-es": "hola",
+    "es-ar": "hola!",
   };
 
   const regexp = /CockpitLang=([^;]+)/;
@@ -176,7 +178,7 @@ describe("L10nProvider", () => {
           window.navigator = { languages: ["es", "cs-cz"] };
         });
 
-        it("sets the first language the matches", async () => {
+        it("sets the first which language matches", async () => {
           render(
             <InstallerClientProvider client={client}>
               <L10nProvider><TranslatedContent /></L10nProvider>
@@ -189,7 +191,7 @@ describe("L10nProvider", () => {
               <L10nProvider><TranslatedContent /></L10nProvider>
             </InstallerClientProvider>
           );
-          await waitFor(() => screen.getByText("hola"));
+          await waitFor(() => screen.getByText("hola!"));
         });
       });
     });
