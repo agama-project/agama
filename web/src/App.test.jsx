@@ -48,6 +48,8 @@ const changePhaseTo = phase => act(() => callbacks.onPhaseChange(phase));
 
 describe("App", () => {
   beforeEach(() => {
+    // setting the language through a cookie
+    document.cookie = "CockpitLang=en-us; path=/;";
     createClient.mockImplementation(() => {
       return {
         manager: {
@@ -55,9 +57,17 @@ describe("App", () => {
           getPhase: getPhaseFn,
           onPhaseChange: onPhaseChangeFn,
         },
-        isConnected: async () => true,
+        language: {
+          getUILanguage: jest.fn().mockResolvedValue("en-us"),
+          setUILanguage: jest.fn().mockResolvedValue("en-us"),
+        }
       };
     });
+  });
+
+  afterEach(() => {
+    // setting a cookie with already expired date removes it
+    document.cookie = "CockpitLang=; path=/; expires=" + new Date(0).toUTCString();
   });
 
   describe("on the startup phase", () => {
@@ -67,7 +77,7 @@ describe("App", () => {
     });
 
     it("renders the LoadingEnvironment theme", async () => {
-      installerRender(<App />);
+      installerRender(<App />, { withL10n: true });
       await screen.findByText("LoadingEnvironment Mock");
     });
   });
@@ -79,7 +89,7 @@ describe("App", () => {
     });
 
     it("renders the LoadingEnvironment component", async () => {
-      installerRender(<App />);
+      installerRender(<App />, { withL10n: true });
 
       await screen.findByText("LoadingEnvironment Mock");
     });
@@ -91,7 +101,7 @@ describe("App", () => {
     });
 
     it("renders the application content", async () => {
-      installerRender(<App />);
+      installerRender(<App />, { withL10n: true });
       await screen.findByText(/Outlet Content/);
     });
   });
@@ -102,7 +112,7 @@ describe("App", () => {
     });
 
     it("renders the application content", async () => {
-      installerRender(<App />);
+      installerRender(<App />, { withL10n: true });
       await screen.findByText("Installation Mock");
     });
   });
@@ -113,7 +123,7 @@ describe("App", () => {
     });
 
     it("renders the Installation component on the INSTALL phase", async () => {
-      installerRender(<App />);
+      installerRender(<App />, { withL10n: true });
       await screen.findByText(/Outlet Content/);
       changePhaseTo(INSTALL);
       await screen.findByText("Installation Mock");
@@ -127,7 +137,7 @@ describe("App", () => {
     });
 
     it("renders the application's content", async () => {
-      installerRender(<App />);
+      installerRender(<App />, { withL10n: true });
       await screen.findByText(/Outlet Content/);
     });
   });

@@ -25,10 +25,7 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 
 import { HashRouter, Routes, Route } from "react-router-dom";
-import { InstallerClientProvider } from "~/context/installer";
-import { SoftwareProvider } from "~/context/software";
-import { NotificationProvider } from "~/context/notification";
-import { createClient } from "~/client";
+import { AgamaProviders } from "~/context/agama";
 
 /**
  * Import PF base styles before any JSX since components coming from PF may
@@ -72,31 +69,27 @@ const root = createRoot(container);
 
 root.render(
   <LoginWrapper>
-    <InstallerClientProvider client={createClient}>
-      <SoftwareProvider>
-        <NotificationProvider>
-          <HashRouter>
-            <Routes>
-              <Route path="/" element={<App />}>
-                <Route path="/" element={<Main />}>
-                  <Route index element={<Overview />} />
-                  <Route path="/overview" element={<Overview />} />
-                  <Route path="/l10n" element={<L10nPage />} />
-                  <Route path="/software" element={<SoftwarePage />} />
-                  <Route path="/storage" element={<StoragePage />} />
-                  <Route path="/storage/iscsi" element={<ISCSIPage />} />
-                  <Route path="/storage/dasd" element={<DASDPage />} />
-                  <Route path="/storage/zfcp" element={<ZFCPPage />} />
-                  <Route path="/network" element={<NetworkPage />} />
-                  <Route path="/users" element={<UsersPage />} />
-                  <Route path="/issues" element={<IssuesPage />} />
-                </Route>
-                <Route path="products" element={<ProductSelectionPage />} />
-              </Route>
-            </Routes>
-          </HashRouter>
-        </NotificationProvider>
-      </SoftwareProvider>
-    </InstallerClientProvider>
+    <AgamaProviders>
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route path="/" element={<Main />}>
+              <Route index element={<Overview />} />
+              <Route path="/overview" element={<Overview />} />
+              <Route path="/l10n" element={<L10nPage />} />
+              <Route path="/software" element={<SoftwarePage />} />
+              <Route path="/storage" element={<StoragePage />} />
+              <Route path="/storage/iscsi" element={<ISCSIPage />} />
+              <Route path="/storage/dasd" element={<DASDPage />} />
+              <Route path="/storage/zfcp" element={<ZFCPPage />} />
+              <Route path="/network" element={<NetworkPage />} />
+              <Route path="/users" element={<UsersPage />} />
+              <Route path="/issues" element={<IssuesPage />} />
+            </Route>
+            <Route path="products" element={<ProductSelectionPage />} />
+          </Route>
+        </Routes>
+      </HashRouter>
+    </AgamaProviders>
   </LoginWrapper>
 );

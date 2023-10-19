@@ -21,9 +21,29 @@
 
 // @ts-check
 
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useCancellablePromise } from "~/utils";
-import cockpit from "./lib/cockpit";
+import cockpit from "../lib/cockpit";
+import { useInstallerClient } from "./installer";
+
+const L10nContext = React.createContext(null);
+
+/**
+ * @typedef {object} L10nContext
+ * @property {string|undefined} language - current language
+ * @property {(lang: string) => void} changeLanguage - function to change the current language
+ *
+ * @return {L10nContext} L10n context
+ */
+function useL10n() {
+  const context = React.useContext(L10nContext);
+
+  if (!context) {
+    throw new Error("useL10n must be used within a L10nContext");
+  }
+
+  return context;
+}
 
 /**
  * Returns the current locale according to Cockpit
@@ -69,7 +89,7 @@ function storeUILanguage(lang) {
  * @return {string|undefined} language tag in 'xx-xx' format (or just 'xx') or undefined if it was
  *   not set. It supports 'xx-xx', 'xx_xx', 'xx-XX' and 'xx_XX'.
  */
-function wantedLanguage() {
+function languageFromQuery() {
   const lang = (new URLSearchParams(window.location.search)).get("lang");
   if (!lang) return undefined;
 
@@ -108,13 +128,63 @@ function languageToBackend(tag) {
 }
 
 /**
- * This is a helper component to set the language. It uses the
- * URL "lang" query parameter or the preferred language from the browser and
- * synchronizes the UI and the backend languages
- * To activate a new language it reloads the whole page.
+ * Returns the list of languages from the navigator in RFC 5646 (or BCP 78)
+ * format
  *
- * It behaves like a wrapper, it just wraps the children components, it does
- * not render any real content.
+ * @return {Array<string>} List of languages from the navigator
+ */
+function navigatorLanguages() {
+  return navigator.languages.map(l => l.toLowerCase());
+}
+
+/**
+ * Returns the first supported language from the given list.
+ *
+ * @param {Array<string>} languages - Candidate languages
+ * @return {string|undefined} First supported language or undefined if none
+ *   of the given languages is supported.
+ */
+function findSupportedLanguage(languages) {
+  const supported = Object.keys(cockpit.manifests.agama?.locales || {});
+
+  for (const candidate of languages) {
+    const [language, country] = candidate.split("-");
+
+    const match = supported.find(s => {
+      const [supportedLanguage, supportedCountry] = s.split("-");
+      if (language === supportedLanguage) {
+        return country === undefined || country === supportedCountry;
+      } else {
+        return false;
+      }
+    });
+    if (match) return match;
+  }
+}
+
+/**
+ * Reloads the page
+ *
+ * It uses the window.location.replace instead of the reload function dropping
+ * the "lang" argument from the URL.
+ */
+function reload() {
+  const query = new URLSearchParams(window.location.search);
+  query.delete("lang");
+  let url = window.location.pathname;
+  if (query.size > 0) {
+    url = `${url}?${query.toString()}`;
+  }
+  window.location.replace(url);
+}
+
+/**
+ * This provider sets the application language. By default, it uses the
+ * URL "lang" query parameter or the preferred language from the browser and
+ * synchronizes the UI and the backend languages. To activate a new language it
+ * reloads the whole page.
+ *
+ * Additionally, it offers a function to change the current language.
  *
  * The format of the language tag follows the
  * [RFC 5646](https://datatracker.ietf.org/doc/html/rfc5646) specification.
@@ -122,12 +192,17 @@ function languageToBackend(tag) {
  * @param {object} props
  * @param {React.ReactNode} [props.children] - content to display within the wrapper
  * @param {import("~/client").InstallerClient} [props.client] - client
+ *
+ * @see useL10n
  */
-export default function L10nWrapper({ client, children }) {
+function L10nProvider({ children }) {
+  const client = useInstallerClient();
   const [language, setLanguage] = useState(undefined);
   const { cancellablePromise } = useCancellablePromise();
 
   const storeBackendLanguage = useCallback(async languageString => {
+    if (!client) return false;
+
     const currentLang = await cancellablePromise(client.language.getUILanguage());
     const normalizedLang = languageFromBackend(currentLang);
 
@@ -141,8 +216,8 @@ export default function L10nWrapper({ client, children }) {
     return false;
   }, [client, cancellablePromise]);
 
-  const selectLanguage = useCallback(async () => {
-    const wanted = wantedLanguage();
+  const changeLanguage = useCallback(async lang => {
+    const wanted = lang || languageFromQuery();
 
     if (wanted === "xx" || wanted === "xx-xx") {
       cockpit.language = wanted;
@@ -151,24 +226,29 @@ export default function L10nWrapper({ client, children }) {
     }
 
     const current = cockpitLanguage();
-    const newLanguage = wanted || current || navigator.language.toLowerCase();
+    const candidateLanguages = [wanted, current].concat(navigatorLanguages())
+      .filter(l => l);
+    const newLanguage = findSupportedLanguage(candidateLanguages) || "en-us";
 
     let mustReload = storeUILanguage(newLanguage);
     mustReload = await storeBackendLanguage(newLanguage) || mustReload;
     if (mustReload) {
-      window.location.reload();
+      reload();
     } else {
       setLanguage(newLanguage);
     }
   }, [storeBackendLanguage, setLanguage]);
 
   useEffect(() => {
-    if (!language) selectLanguage();
-  }, [selectLanguage, language]);
+    if (!language) changeLanguage();
+  }, [changeLanguage, language]);
 
-  if (!language) {
-    return null;
-  }
-
-  return children;
+  return (
+    <L10nContext.Provider value={{ language, changeLanguage }}>{children}</L10nContext.Provider>
+  );
 }
+
+export {
+  L10nProvider,
+  useL10n
+};

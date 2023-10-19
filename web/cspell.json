@@ -4,7 +4,8 @@
   "allowCompoundWords": false,
   "ignorePaths": [
     "src/lib/cockpit.js",
-    "src/lib/cockpit-po-plugin.js"
+    "src/lib/cockpit-po-plugin.js",
+    "src/manifest.json"
   ],
   "import": [
     "@cspell/dict-css/cspell-ext.json",
@@ -23,11 +24,13 @@
         "autologin",
         "btrfs",
         "ccmp",
+        "čeština",
         "chzdev",
         "dasd",
         "dasds",
         "devel",
         "dbus",
+        "Deutsch",
         "España",
         "filecontent",
         "filename",

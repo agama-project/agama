@@ -23,7 +23,7 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "./installer";
 
-const NotificationContext = React.createContext();
+const NotificationContext = React.createContext([{ issues: false }]);
 
 function NotificationProvider({ children }) {
   const client = useInstallerClient();
@@ -35,11 +35,15 @@ function NotificationProvider({ children }) {
   }, [setState]);
 
   const load = useCallback(async () => {
+    if (!client) return;
+
     const hasIssues = await cancellablePromise(client.issues.any());
     update({ issues: hasIssues });
   }, [client, cancellablePromise, update]);
 
   useEffect(() => {
+    if (!client) return;
+
     load();
     return client.issues.onIssuesChange(load);
   }, [client, load]);
