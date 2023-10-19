@@ -29,6 +29,8 @@
 }
 
 body > div[inert],
-body > div[aria-hidden="true"] {
+body > div[aria-hidden="true"],
+div#root > div.wrapper[inert],
+div#root > div.wrapper[aria-hidden="true"] {
   filter: grayscale(1) blur(2px);
 }
