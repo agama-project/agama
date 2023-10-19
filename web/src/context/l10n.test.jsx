@@ -74,10 +74,10 @@ describe("L10nProvider", () => {
   const origLocation = window.location;
   const origNavigator = window.navigator;
 
-  // mock window.location.reload
+  // mock window.location.replace
   beforeAll(() => {
     delete window.location;
-    window.location = { reload: jest.fn() };
+    window.location = { replace: jest.fn(), pathname: "/" };
 
     delete window.navigator;
     window.navigator = { languages: ["es-es", "cs-cz"] };
@@ -115,7 +115,7 @@ describe("L10nProvider", () => {
         // children are displayed
         await screen.findByText("Testing content");
 
-        expect(window.location.reload).not.toHaveBeenCalled();
+        expect(window.location.replace).not.toHaveBeenCalled();
       });
     });
 
@@ -133,7 +133,7 @@ describe("L10nProvider", () => {
           </InstallerClientProvider>
         );
 
-        await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+        await waitFor(() => expect(window.location.replace).toHaveBeenCalledWith("/"));
 
         // reload the component
         render(
@@ -161,7 +161,7 @@ describe("L10nProvider", () => {
             <L10nProvider><TranslatedContent /></L10nProvider>
           </InstallerClientProvider>
         );
-        await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+        await waitFor(() => expect(window.location.replace).toHaveBeenCalledWith("/"));
 
         render(
           <InstallerClientProvider client={client}>
@@ -182,7 +182,7 @@ describe("L10nProvider", () => {
               <L10nProvider><TranslatedContent /></L10nProvider>
             </InstallerClientProvider>
           );
-          await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+          await waitFor(() => expect(window.location.replace).toHaveBeenCalledWith("/"));
 
           render(
             <InstallerClientProvider client={client}>
@@ -218,7 +218,7 @@ describe("L10nProvider", () => {
         expect(setUILanguageFn).not.toHaveBeenCalled();
 
         expect(document.cookie).toEqual("CockpitLang=cs-cz");
-        expect(window.location.reload).not.toHaveBeenCalled();
+        expect(window.location.replace).not.toHaveBeenCalled();
       });
     });
 
@@ -236,7 +236,7 @@ describe("L10nProvider", () => {
             <L10nProvider><TranslatedContent /></L10nProvider>
           </InstallerClientProvider>
         );
-        await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+        await waitFor(() => expect(window.location.replace).toHaveBeenCalledWith("/"));
 
         // reload the component
         render(
@@ -257,13 +257,13 @@ describe("L10nProvider", () => {
         setUILanguageFn.mockResolvedValue();
       });
 
-      it("sets the 'cs_CZ' language and reloads", async () => {
+      it("sets the 'cs-cz' language and reloads", async () => {
         render(
           <InstallerClientProvider client={client}>
             <L10nProvider><TranslatedContent /></L10nProvider>
           </InstallerClientProvider>
         );
-        await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+        await waitFor(() => expect(window.location.replace).toHaveBeenCalledWith("/"));
 
         // reload the component
         render(

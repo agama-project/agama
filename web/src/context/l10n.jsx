@@ -154,6 +154,22 @@ function findSupportedLanguage(languages) {
 }
 
 /**
+ * Reloads the page
+ *
+ * It uses the window.location.replace instead of the reload function dropping
+ * the "lang" argument from the URL.
+ */
+function reload() {
+  const query = new URLSearchParams(window.location.search);
+  query.delete("lang");
+  let url = window.location.pathname;
+  if (query.size > 0) {
+    url = `${url}?${query.toString()}`;
+  }
+  window.location.replace(url);
+}
+
+/**
  * This provider sets the application language. By default, it uses the
  * URL "lang" query parameter or the preferred language from the browser and
  * synchronizes the UI and the backend languages. To activate a new language it
@@ -208,7 +224,7 @@ function L10nProvider({ children }) {
     let mustReload = storeUILanguage(newLanguage);
     mustReload = await storeBackendLanguage(newLanguage) || mustReload;
     if (mustReload) {
-      window.location.reload();
+      reload();
     } else {
       setLanguage(newLanguage);
     }
