@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 19 22:07:11 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: fix CSS rule for applying grayscale and blur CSS filters to
+  main wrapper when the sidebar is open (gh#openSUSE/agama#802).
+
+-------------------------------------------------------------------
 Tue Oct 17 10:59:37 UTC 2023 - Imobach González Sosa <igonzalezsosa@suse.com>
 
 - Allow changing the language of the user interface
