@@ -42,6 +42,9 @@ module Agama
           @dbus_object = service["/org/opensuse/Agama/Software1"]
           @dbus_object.introspect
 
+          @dbus_product = service["/org/opensuse/Agama/Software1/Product"]
+          @dbus_product.introspect
+
           @dbus_proposal = service["/org/opensuse/Agama/Software1/Proposal"]
           @dbus_proposal.introspect
         end
@@ -55,7 +58,7 @@ module Agama
         #
         # @return [Array<Array<String, String>>] name and display name of each product
         def available_products
-          dbus_object["org.opensuse.Agama.Software1"]["AvailableProducts"].map do |l|
+          dbus_product["org.opensuse.Agama.Software1.Product"]["AvailableProducts"].map do |l|
             l[0..1]
           end
         end
@@ -64,7 +67,7 @@ module Agama
         #
         # @return [String, nil] name of the product
         def selected_product
-          product = dbus_object["org.opensuse.Agama.Software1"]["SelectedProduct"]
+          product = dbus_product["org.opensuse.Agama.Software1.Product"]["SelectedProduct"]
           return nil if product.empty?
 
           product
@@ -74,7 +77,7 @@ module Agama
         #
         # @param name [String]
         def select_product(name)
-          dbus_object.SelectProduct(name)
+          dbus_product.SelectProduct(name)
         end
 
         # Starts the probing process
@@ -179,6 +182,9 @@ module Agama
 
         # @return [::DBus::Object]
         attr_reader :dbus_object
+
+        # @return [::DBus::Object]
+        attr_reader :dbus_product
 
         # @return [::DBus::Object]
         attr_reader :dbus_proposal

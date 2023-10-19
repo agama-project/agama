@@ -83,6 +83,7 @@ module Agama
       def dbus_objects
         @dbus_objects ||= [
           Agama::DBus::Software::Manager.new(@backend, logger),
+          Agama::DBus::Software::Product.new(@backend, logger),
           Agama::DBus::Software::Proposal.new(logger)
         ]
       end

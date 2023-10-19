@@ -43,7 +43,15 @@ Yast.import "Stage"
 
 module Agama
   module Software
-    # This class is responsible for software handling
+    # This class is responsible for software handling.
+    #
+    # FIXME: This class has too many responsibilities:
+    #   * Address the software service workflow (probe, propose, install).
+    #   * Manages repositories, packages, patterns, services.
+    #   * Manages product selection.
+    #   * Manages software and product related issues.
+    #
+    #   It shoud be splitted in separate and smaller classes.
     class Manager
       include Helpers
       include WithIssues
@@ -322,6 +330,17 @@ module Agama
         true
       end
 
+      # Issues associated to the product.
+      #
+      # These issues are not considered as software issues, see {#update_issues}.
+      #
+      # @return [Array<Agama::Issue>]
+      def product_issues
+        issues = []
+        issues << missing_product_issue unless product
+        issues << missing_registration_issue if missing_registration?
+        issues
+      end
 
     private
 
@@ -391,16 +410,16 @@ module Agama
         @selected_patterns_change_callbacks.each(&:call)
       end
 
-      # Updates the list of issues.
+      # Updates the list of software issues.
       def update_issues
         self.issues = current_issues
       end
 
-      # List of current issues.
+      # List of current software issues.
       #
       # @return [Array<Agama::Issue>]
       def current_issues
-        return [missing_product_issue] unless product
+        return [] unless product
 
         issues = repos_issues
 
@@ -408,17 +427,7 @@ module Agama
         # packages. Those issues does not make any sense if there are no repositories to install
         # from.
         issues += proposal.issues if repositories.enabled.any?
-        issues << missing_registration_issue if missing_registration?
         issues
-      end
-
-      # Issue when a product is missing
-      #
-      # @return [Agama::Issue]
-      def missing_product_issue
-        Issue.new("Product not selected yet",
-          source:   Issue::Source::CONFIG,
-          severity: Issue::Severity::ERROR)
       end
 
       # Issues related to the software proposal.
@@ -432,6 +441,15 @@ module Agama
             source:   Issue::Source::SYSTEM,
             severity: Issue::Severity::ERROR)
         end
+      end
+
+      # Issue when a product is missing
+      #
+      # @return [Agama::Issue]
+      def missing_product_issue
+        Issue.new("Product not selected yet",
+          source:   Issue::Source::CONFIG,
+          severity: Issue::Severity::ERROR)
       end
 
       # Issue when a product requires registration but it is not registered yet.
