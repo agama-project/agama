@@ -115,6 +115,8 @@ module Agama
 
         # @param target [Y2Storage::ProposalSettings]
         def volumes_conversion(target)
+          target.swap_reuse = :none
+
           volumes = settings.volumes.map { |v| VolumeConversion.to_y2storage(v) }
           disabled_volumes = missing_volumes.map do |volume|
             VolumeConversion.to_y2storage(volume).tap { |v| v.proposed = false }
