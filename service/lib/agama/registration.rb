@@ -106,7 +106,7 @@ module Agama
     #   OpenSSL::SSL::SSLError|JSON::ParserError
     # ]
     def deregister
-      return unless product && reg_code
+      return unless reg_code
 
       Y2Packager::NewRepositorySetup.instance.services.delete(@service.name)
       @software.remove_service(@service)
@@ -128,13 +128,14 @@ module Agama
       run_on_change_callbacks
     end
 
+    # Copies credentials files to the target system.
     def finish
       return unless reg_code
 
       files = [@credentials_file, SUSE::Connect::YaST::GLOBAL_CREDENTIALS_FILE]
       files.each do |file|
         dest = File.join(Yast::Installation.destdir, file)
-        FileUtils::cp(file, dest)
+        FileUtils.cp(file, dest)
       end
     end
 

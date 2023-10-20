@@ -179,7 +179,11 @@ describe Agama::DBus::Software::Product do
     context "if there is a selected product" do
       before do
         backend.select_product("Tumbleweed")
+
+        allow(backend.product).to receive(:repositories).and_return(repositories)
       end
+
+      let(:repositories) { [] }
 
       context "if the product is already registered" do
         before do
@@ -191,13 +195,21 @@ describe Agama::DBus::Software::Product do
         end
       end
 
+      context "if the product does not require registration" do
+        let(:repositories) { ["https://repo"] }
+
+        it "returns result code 3 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(3, /not require registration/i)
+        end
+      end
+
       context "if there is a network error" do
         before do
           allow(backend.registration).to receive(:register).and_raise(SocketError)
         end
 
-        it "returns result code 3 and description" do
-          expect(subject.register("123XX432")).to contain_exactly(3, /network error/)
+        it "returns result code 4 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(4, /network error/)
         end
       end
 
@@ -206,8 +218,8 @@ describe Agama::DBus::Software::Product do
           allow(backend.registration).to receive(:register).and_raise(Timeout::Error)
         end
 
-        it "returns result code 4 and description" do
-          expect(subject.register("123XX432")).to contain_exactly(4, /timeout/)
+        it "returns result code 5 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(5, /timeout/)
         end
       end
 
@@ -216,8 +228,8 @@ describe Agama::DBus::Software::Product do
           allow(backend.registration).to receive(:register).and_raise(SUSE::Connect::ApiError, "")
         end
 
-        it "returns result code 5 and description" do
-          expect(subject.register("123XX432")).to contain_exactly(5, /registration server failed/)
+        it "returns result code 6 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(6, /registration server failed/)
         end
       end
 
@@ -227,8 +239,8 @@ describe Agama::DBus::Software::Product do
             .to receive(:register).and_raise(SUSE::Connect::MissingSccCredentialsFile)
         end
 
-        it "returns result code 6 and description" do
-          expect(subject.register("123XX432")).to contain_exactly(6, /missing credentials/)
+        it "returns result code 7 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(7, /missing credentials/)
         end
       end
 
@@ -238,8 +250,8 @@ describe Agama::DBus::Software::Product do
             .to receive(:register).and_raise(SUSE::Connect::MalformedSccCredentialsFile)
         end
 
-        it "returns result code 7 and description" do
-          expect(subject.register("123XX432")).to contain_exactly(7, /incorrect credentials/)
+        it "returns result code 8 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(8, /incorrect credentials/)
         end
       end
 
@@ -248,8 +260,8 @@ describe Agama::DBus::Software::Product do
           allow(backend.registration).to receive(:register).and_raise(OpenSSL::SSL::SSLError)
         end
 
-        it "returns result code 8 and description" do
-          expect(subject.register("123XX432")).to contain_exactly(8, /invalid certificate/)
+        it "returns result code 9 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(9, /invalid certificate/)
         end
       end
 
@@ -258,8 +270,8 @@ describe Agama::DBus::Software::Product do
           allow(backend.registration).to receive(:register).and_raise(JSON::ParserError)
         end
 
-        it "returns result code 9 and description" do
-          expect(subject.register("123XX432")).to contain_exactly(9, /registration server failed/)
+        it "returns result code 10 and description" do
+          expect(subject.register("123XX432")).to contain_exactly(10, /registration server failed/)
         end
       end
 

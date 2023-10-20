@@ -150,20 +150,23 @@ module Agama
         #   0: success
         #   1: missing product
         #   2: already registered
-        #   3: network error
-        #   4: timeout error
-        #   5: api error
-        #   6: missing credentials
-        #   7: incorrect credentials
-        #   8: invalid certificate
-        #   9: internal error (e.g., parsing json data)
+        #   3: registration not required
+        #   4: network error
+        #   5: timeout error
+        #   6: api error
+        #   7: missing credentials
+        #   8: incorrect credentials
+        #   9: invalid certificate
+        #   10: internal error (e.g., parsing json data)
         def register(reg_code, email: nil)
           if !backend.product
             [1, "Product not selected yet"]
           elsif backend.registration.reg_code
             [2, "Product already registered"]
+          elsif backend.registration.requirement == Agama::Registration::Requirement::NOT_REQUIRED
+            [3, "Product does not require registration"]
           else
-            connect_result(first_error_code: 3) do
+            connect_result(first_error_code: 4) do
               backend.registration.register(reg_code, email: email)
             end
           end
