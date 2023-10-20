@@ -33,12 +33,11 @@ describe Agama::DBus::Software::Product do
 
   let(:backend) { Agama::Software::Manager.new(config, logger) }
 
-  let(:config) do
-    Agama::Config.new(YAML.safe_load(File.read(config_path)))
-  end
+  let(:config) { Agama::Config.new(config_data) }
 
-  let(:config_path) do
-    File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
+  let(:config_data) do
+    path = File.join(FIXTURES_PATH, "root_dir/etc/agama.yaml")
+    YAML.safe_load(File.read(path))
   end
 
   before do

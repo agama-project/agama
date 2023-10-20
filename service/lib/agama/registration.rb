@@ -64,7 +64,7 @@ module Agama
     # @param code [String] Registration code.
     # @param email [String] Email for registering the product.
     def register(code, email: "")
-      return unless product
+      return if product.nil? || reg_code
 
       connect_params = {
         token: code,
@@ -79,7 +79,7 @@ module Agama
       target_product = OpenStruct.new(
         arch:       Yast::Arch.rpm_arch,
         identifier: product.id,
-        version:    product.version
+        version:    product.version || "1.0"
       )
       activate_params = {}
       @service = SUSE::Connect::YaST.activate_product(target_product, activate_params, email)
@@ -106,6 +106,8 @@ module Agama
     #   OpenSSL::SSL::SSLError|JSON::ParserError
     # ]
     def deregister
+      return unless product && reg_code
+
       Y2Packager::NewRepositorySetup.instance.services.delete(@service.name)
       @software.remove_service(@service)
 
