@@ -111,49 +111,17 @@ describe Agama::Software::Manager do
 
         expect(manager.product).to be_nil
       end
-
-      it "adds a not selected product issue" do
-        manager = described_class.new(config, logger)
-
-        expect(manager.issues).to contain_exactly(an_object_having_attributes(
-          description: /product not selected/i
-        ))
-      end
     end
 
     context "if there is only a product" do
       let(:products) { [product] }
 
-      let(:product) do
-        Agama::Software::Product.new("test1").tap { |p| p.repositories = product_repositories }
-      end
-
-      let(:product_repositories) { [] }
+      let(:product) { Agama::Software::Product.new("test1") }
 
       it "selects the product" do
         manager = described_class.new(config, logger)
 
         expect(manager.product.id).to eq("test1")
-      end
-
-      context "if the product requires registration" do
-        let(:product_repositories) { [] }
-
-        it "adds a registration issue" do
-          manager = described_class.new(config, logger)
-
-          expect(manager.issues).to include(an_object_having_attributes(
-            description: /product must be registered/i
-          ))
-        end
-
-        context "if the product does not require registration" do
-          let(:product_repositories) { ["https://test"] }
-
-          it "does not add issues" do
-            expect(subject.issues).to be_empty
-          end
-        end
       end
     end
   end
@@ -210,38 +178,6 @@ describe Agama::Software::Manager do
         expect(subject.issues).to_not include(an_object_having_attributes(
           description: /proposal issue/i
         ))
-      end
-    end
-
-    context "if the product is not registered" do
-      let(:reg_code) { nil }
-
-      before do
-        allow(subject.registration).to receive(:requirement).and_return(reg_requirement)
-      end
-
-      context "and registration is mandatory" do
-        let(:reg_requirement) { Agama::Registration::Requirement::MANDATORY }
-
-        it "adds registration issue" do
-          subject.public_send(tested_method)
-
-          expect(subject.issues).to include(an_object_having_attributes(
-            description: /product must be registered/i
-          ))
-        end
-      end
-
-      context "and registration is not mandatory" do
-        let(:reg_requirement) { Agama::Registration::Requirement::OPTIONAL }
-
-        it "does not add registration issue" do
-          subject.public_send(tested_method)
-
-          expect(subject.issues).to_not include(an_object_having_attributes(
-            description: /product must be registered/i
-          ))
-        end
       end
     end
   end
@@ -395,6 +331,83 @@ describe Agama::Software::Manager do
 
       it "returns false" do
         expect(subject.package_installed?(package)).to eq(false)
+      end
+    end
+  end
+
+  describe "#product_issues" do
+    before do
+      allow_any_instance_of(Agama::Software::ProductBuilder)
+        .to receive(:build).and_return([product1, product2])
+    end
+
+    let(:product1) do
+      Agama::Software::Product.new("test1").tap { |p| p.repositories = [] }
+    end
+
+    let(:product2) do
+      Agama::Software::Product.new("test2").tap { |p| p.repositories = ["http://test"] }
+    end
+
+    context "if no product is selected yet" do
+      it "contains a missing product issue" do
+        expect(subject.product_issues).to contain_exactly(
+          an_object_having_attributes(
+            description: /product not selected/i
+          )
+        )
+      end
+    end
+
+    context "if a product is already selected" do
+      before do
+        subject.select_product(product_id)
+      end
+
+      let(:product_id) { "test1" }
+
+      it "does not include a missing product issue" do
+        expect(subject.product_issues).to_not include(
+          an_object_having_attributes(
+            description: /product not selected/i
+          )
+        )
+      end
+
+      context "and the product does not require registration" do
+        let(:product_id) { "test2" }
+
+        it "does not contain issues" do
+          expect(subject.product_issues).to be_empty
+        end
+      end
+
+      context "and the product requires registration" do
+        let(:product_id) { "test1" }
+
+        before do
+          allow(subject.registration).to receive(:reg_code).and_return(reg_code)
+        end
+
+        context "and the product is not registered" do
+          let(:reg_code) { nil }
+
+          it "contains a missing registration issue" do
+            expect(subject.product_issues).to contain_exactly(
+              an_object_having_attributes(
+                description: /product must be registered/i
+              )
+            )
+          end
+        end
+
+        context "and the product is registered" do
+          let(:reg_code) { "1234XX5678" }
+
+          it "does not contain issues" do
+            expect(subject.product_issues).to be_empty
+          end
+        end
       end
     end
   end

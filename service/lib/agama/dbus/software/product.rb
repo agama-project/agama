@@ -28,15 +28,13 @@ require "agama/registration"
 module Agama
   module DBus
     module Software
-      # D-Bus object to manage product configuration
+      # D-Bus object to manage product configuration.
       class Product < BaseObject
         include Interfaces::Issues
 
         PATH = "/org/opensuse/Agama/Software1/Product"
         private_constant :PATH
 
-        # Constructor
-        #
         # @param backend [Agama::Software]
         # @param logger [Logger]
         def initialize(backend, logger)
@@ -46,7 +44,7 @@ module Agama
           register_callbacks
         end
 
-        # List of issues, see {DBus::Interfaces::Issues}
+        # List of issues, see {DBus::Interfaces::Issues}.
         #
         # @return [Array<Agama::Issue>]
         def issues
@@ -59,7 +57,7 @@ module Agama
           end
         end
 
-        # Returns the selected base product
+        # Returns the selected base product.
         #
         # @return [String] Product ID or an empty string if no product is selected
         def selected_product

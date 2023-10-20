@@ -172,7 +172,7 @@ module Agama
         #
         # @param block [Proc] Callback to run when a product is selected
         def on_product_selected(&block)
-          on_properties_change(dbus_object) do |_, changes, _|
+          on_properties_change(dbus_product) do |_, changes, _|
             product = changes["SelectedProduct"]
             block.call(product) unless product.nil?
           end

@@ -34,27 +34,32 @@ describe Agama::DBus::Clients::Software do
     allow(bus).to receive(:service).with("org.opensuse.Agama.Software1").and_return(service)
     allow(service).to receive(:[]).with("/org/opensuse/Agama/Software1")
       .and_return(dbus_object)
-    allow(dbus_object).to receive(:introspect)
-    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Software1")
-      .and_return(software_iface)
-    allow(dbus_object).to receive(:[]).with("org.freedesktop.DBus.Properties")
-      .and_return(properties_iface)
+    allow(service).to receive(:[]).with("/org/opensuse/Agama/Software1/Product")
+      .and_return(dbus_product)
     allow(service).to receive(:[]).with("/org/opensuse/Agama/Software1/Proposal")
       .and_return(dbus_proposal)
+    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama.Software1")
+      .and_return(software_iface)
+    allow(dbus_product).to receive(:[]).with("org.opensuse.Agama.Software1.Product")
+      .and_return(product_iface)
+    allow(dbus_product).to receive(:[]).with("org.freedesktop.DBus.Properties")
+      .and_return(properties_iface)
   end
 
   let(:bus) { instance_double(Agama::DBus::Bus) }
   let(:service) { instance_double(::DBus::ProxyService) }
-  let(:dbus_object) { instance_double(::DBus::ProxyObject) }
+  let(:dbus_object) { instance_double(::DBus::ProxyObject, introspect: nil) }
+  let(:dbus_product) { instance_double(::DBus::ProxyObject, introspect: nil) }
   let(:dbus_proposal) { instance_double(::DBus::ProxyObject, introspect: nil) }
   let(:software_iface) { instance_double(::DBus::ProxyObjectInterface) }
   let(:properties_iface) { instance_double(::DBus::ProxyObjectInterface) }
+  let(:product_iface) { instance_double(::DBus::ProxyObjectInterface) }
 
   subject { described_class.new }
 
   describe "#available_products" do
     before do
-      allow(software_iface).to receive(:[]).with("AvailableProducts").and_return(
+      allow(product_iface).to receive(:[]).with("AvailableProducts").and_return(
         [
           ["Tumbleweed", "openSUSE Tumbleweed", {}],
           ["Leap15.3", "openSUSE Leap 15.3", {}]
@@ -72,7 +77,7 @@ describe Agama::DBus::Clients::Software do
 
   describe "#selected_product" do
     before do
-      allow(software_iface).to receive(:[]).with("SelectedProduct").and_return(product)
+      allow(product_iface).to receive(:[]).with("SelectedProduct").and_return(product)
     end
 
     context "when there is no selected product" do
@@ -94,17 +99,17 @@ describe Agama::DBus::Clients::Software do
 
   describe "#select_product" do
     # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_product) { double(::DBus::ProxyObject, introspect: nil) }
 
     it "selects the given product" do
-      expect(dbus_object).to receive(:SelectProduct).with("Tumbleweed")
+      expect(dbus_product).to receive(:SelectProduct).with("Tumbleweed")
 
       subject.select_product("Tumbleweed")
     end
   end
 
   describe "#probe" do
-    let(:dbus_object) { double(::DBus::ProxyObject, Probe: nil) }
+    let(:dbus_object) { double(::DBus::ProxyObject, introspect: nil, Probe: nil) }
 
     it "calls the D-Bus Probe method" do
       expect(dbus_object).to receive(:Probe)
@@ -125,7 +130,7 @@ describe Agama::DBus::Clients::Software do
   end
 
   describe "#provisions_selected" do
-    let(:dbus_object) { double(::DBus::ProxyObject) }
+    let(:dbus_object) { double(::DBus::ProxyObject, introspect: nil) }
 
     it "returns true/false for every tag given" do
       expect(dbus_object).to receive(:ProvisionsSelected)
@@ -136,7 +141,10 @@ describe Agama::DBus::Clients::Software do
   end
 
   describe "#package_installed?" do
-    let(:dbus_object) { double(::DBus::ProxyObject, IsPackageInstalled: installed?) }
+    let(:dbus_object) do
+      double(::DBus::ProxyObject, introspect: nil, IsPackageInstalled: installed?)
+    end
+
     let(:package) { "NetworkManager" }
 
     context "when the package is installed" do
@@ -158,7 +166,7 @@ describe Agama::DBus::Clients::Software do
 
   describe "#on_product_selected" do
     before do
-      allow(dbus_object).to receive(:path).and_return("/org/opensuse/Agama/Test")
+      allow(dbus_product).to receive(:path).and_return("/org/opensuse/Agama/Test")
       allow(properties_iface).to receive(:on_signal)
     end
 

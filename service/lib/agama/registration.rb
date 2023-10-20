@@ -53,6 +53,16 @@ module Agama
       @logger = logger
     end
 
+    # Registers the selected product.
+    #
+    # @raise [
+    #   SocketError|Timeout::Error|SUSE::Connect::ApiError|
+    #   SUSE::Connect::MissingSccCredentialsFile|SUSE::Connect::MissingSccCredentialsFile|
+    #   OpenSSL::SSL::SSLError|JSON::ParserError
+    # ]
+    #
+    # @param code [String] Registration code.
+    # @param email [String] Email for registering the product.
     def register(code, email: "")
       return unless product
 
@@ -66,7 +76,6 @@ module Agama
       # TODO: check if we can do it in memory for libzypp
       SUSE::Connect::YaST.create_credentials_file(login, password)
 
-      # TODO: fill it properly for scc
       target_product = OpenStruct.new(
         arch:       Yast::Arch.rpm_arch,
         identifier: product.id,
@@ -87,6 +96,15 @@ module Agama
       run_on_change_callbacks
     end
 
+    # Deregisters the selected product.
+    #
+    # It uses the registration code and email passed to {#register}.
+    #
+    # @raise [
+    #   SocketError|Timeout::Error|SUSE::Connect::ApiError|
+    #   SUSE::Connect::MissingSccCredentialsFile|SUSE::Connect::MissingSccCredentialsFile|
+    #   OpenSSL::SSL::SSLError|JSON::ParserError
+    # ]
     def deregister
       Y2Packager::NewRepositorySetup.instance.services.delete(@service.name)
       @software.remove_service(@service)
@@ -103,7 +121,6 @@ module Agama
         @credentials_file = nil
       end
 
-      # reset variables here
       @reg_code = nil
       @email = nil
       run_on_change_callbacks
