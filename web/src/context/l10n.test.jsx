@@ -76,10 +76,10 @@ describe("L10nProvider", () => {
   const origLocation = window.location;
   const origNavigator = window.navigator;
 
-  // mock window.location.replace
+  // mock window.location.reload and search
   beforeAll(() => {
     delete window.location;
-    window.location = { replace: jest.fn(), pathname: "/" };
+    window.location = { reload: jest.fn(), search: "" };
 
     delete window.navigator;
     window.navigator = { languages: ["es-es", "cs-cz"] };
@@ -110,14 +110,15 @@ describe("L10nProvider", () => {
       it("displays the children content and does not reload", async () => {
         render(
           <InstallerClientProvider client={client}>
-            <L10nProvider>Testing content</L10nProvider>
+            <L10nProvider><TranslatedContent /></L10nProvider>
           </InstallerClientProvider>
         );
 
         // children are displayed
-        await screen.findByText("Testing content");
+        await screen.findByText("hello");
 
-        expect(window.location.replace).not.toHaveBeenCalled();
+        expect(window.location.search).toEqual("");
+        expect(window.location.reload).not.toHaveBeenCalled();
       });
     });
 
@@ -135,7 +136,7 @@ describe("L10nProvider", () => {
           </InstallerClientProvider>
         );
 
-        await waitFor(() => expect(window.location.replace).toHaveBeenCalledWith("/"));
+        await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
 
         // reload the component
         render(
@@ -163,7 +164,7 @@ describe("L10nProvider", () => {
             <L10nProvider><TranslatedContent /></L10nProvider>
           </InstallerClientProvider>
         );
-        await waitFor(() => expect(window.location.replace).toHaveBeenCalledWith("/"));
+        await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
 
         render(
           <InstallerClientProvider client={client}>
@@ -184,7 +185,7 @@ describe("L10nProvider", () => {
               <L10nProvider><TranslatedContent /></L10nProvider>
             </InstallerClientProvider>
           );
-          await waitFor(() => expect(window.location.replace).toHaveBeenCalledWith("/"));
+          await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
 
           render(
             <InstallerClientProvider client={client}>
@@ -220,7 +221,8 @@ describe("L10nProvider", () => {
         expect(setUILanguageFn).not.toHaveBeenCalled();
 
         expect(document.cookie).toEqual("CockpitLang=cs-cz");
-        expect(window.location.replace).not.toHaveBeenCalled();
+        expect(window.location.reload).not.toHaveBeenCalled();
+        expect(window.location.search).toEqual("?lang=cs-CZ");
       });
     });
 
@@ -238,7 +240,7 @@ describe("L10nProvider", () => {
             <L10nProvider><TranslatedContent /></L10nProvider>
           </InstallerClientProvider>
         );
-        await waitFor(() => expect(window.location.replace).toHaveBeenCalledWith("/"));
+        await waitFor(() => expect(window.location.search).toEqual("lang=cs-cz"));
 
         // reload the component
         render(
@@ -265,7 +267,7 @@ describe("L10nProvider", () => {
             <L10nProvider><TranslatedContent /></L10nProvider>
           </InstallerClientProvider>
         );
-        await waitFor(() => expect(window.location.replace).toHaveBeenCalledWith("/"));
+        await waitFor(() => expect(window.location.search).toEqual("lang=cs-cz"));
 
         // reload the component
         render(

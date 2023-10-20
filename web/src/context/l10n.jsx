@@ -165,17 +165,21 @@ function findSupportedLanguage(languages) {
 /**
  * Reloads the page
  *
- * It uses the window.location.replace instead of the reload function dropping
- * the "lang" argument from the URL.
+ * It uses the window.location.replace instead of the reload function
+ * synchronizing the "lang" argument from the URL if present.
+ *
+ * @param {string} newLanguage
  */
-function reload() {
+function reload(newLanguage) {
   const query = new URLSearchParams(window.location.search);
-  query.delete("lang");
-  let url = window.location.pathname;
-  if (query.size > 0) {
-    url = `${url}?${query.toString()}`;
+  if (query.has("lang") && query.get("lang") !== newLanguage) {
+    query.set("lang", newLanguage);
+    // Calling search() with a different value makes the browser to navigate
+    // to the new URL.
+    window.location.search = query.toString();
+  } else {
+    window.location.reload();
   }
-  window.location.replace(url);
 }
 
 /**
@@ -233,7 +237,7 @@ function L10nProvider({ children }) {
     let mustReload = storeUILanguage(newLanguage);
     mustReload = await storeBackendLanguage(newLanguage) || mustReload;
     if (mustReload) {
-      reload();
+      reload(newLanguage);
     } else {
       setLanguage(newLanguage);
     }
