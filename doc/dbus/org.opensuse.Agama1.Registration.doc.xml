@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<node name="/org/opensuse/Agama/Software1">
-  <node name="Proposal"/>
-
+<node name="/org/opensuse/Agama/Software1/Product">
   <!--
     Interface for registering a product.
   -->
@@ -25,13 +23,14 @@
         0: success
         1: missing product
         2: already registered
-        3: network error
-        4: timeout error
-        5: api error
-        6: missing credentials
-        7: incorrect credentials
+        3: registration not required
+        4: network error
+        5: timeout error
+        6: api error
+        7: missing credentials
+        8: incorrect credentials
         8: invalid certificate
-        9: internal error (e.g., parsing json data)
+        10: internal error (e.g., parsing json data)
       -->
       <arg name="result" direction="out" type="(us)"/>
     </method>

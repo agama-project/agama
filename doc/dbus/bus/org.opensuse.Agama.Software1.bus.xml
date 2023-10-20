@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <node name="/org/opensuse/Agama/Software1">
+  <node name="Product"/>
   <node name="Proposal"/>
   <interface name="org.freedesktop.DBus.Introspectable">
     <method name="Introspect">
@@ -28,10 +29,6 @@
     </signal>
   </interface>
   <interface name="org.opensuse.Agama.Software1">
-    <method name="SelectProduct">
-      <arg name="id" direction="in" type="s"/>
-      <arg name="result" direction="out" type="(us)"/>
-    </method>
     <method name="ListPatterns">
       <arg name="Filtered" direction="in" type="b"/>
       <arg name="Result" direction="out" type="a{s(sssss)}"/>
@@ -64,8 +61,6 @@
     </method>
     <method name="Finish">
     </method>
-    <property type="a(ssa{sv})" name="AvailableProducts" access="read"/>
-    <property type="s" name="SelectedProduct" access="read"/>
     <property type="a{sy}" name="SelectedPatterns" access="read"/>
   </interface>
   <interface name="org.opensuse.Agama1.Issues">
@@ -75,19 +70,6 @@
     <property type="u" name="TotalSteps" access="read"/>
     <property type="(us)" name="CurrentStep" access="read"/>
     <property type="b" name="Finished" access="read"/>
-  </interface>
-  <interface name="org.opensuse.Agama1.Registration">
-    <method name="Register">
-      <arg name="reg_code" direction="in" type="s"/>
-      <arg name="options" direction="in" type="a{sv}"/>
-      <arg name="result" direction="out" type="(us)"/>
-    </method>
-    <method name="Deregister">
-      <arg name="result" direction="out" type="(us)"/>
-    </method>
-    <property type="s" name="RegCode" access="read"/>
-    <property type="s" name="Email" access="read"/>
-    <property type="u" name="Requirement" access="read"/>
   </interface>
   <interface name="org.opensuse.Agama1.ServiceStatus">
     <property type="aa{sv}" name="All" access="read"/>
