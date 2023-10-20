@@ -126,6 +126,16 @@ module Agama
       run_on_change_callbacks
     end
 
+    def finish
+      return unless reg_code
+
+      files = [@credentials_file, SUSE::Connect::YaST::GLOBAL_CREDENTIALS_FILE]
+      files.each do |file|
+        dest = File.join(Yast::Installation.destdir, file)
+        FileUtils::cp(file, dest)
+      end
+    end
+
     # Indicates whether the registration is optional, mandatory or not required.
     #
     # @return [Symbol] See {Requirement}.

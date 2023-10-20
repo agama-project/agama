@@ -183,6 +183,7 @@ module Agama
           Yast::Pkg.SourceSaveAll
           Yast::Pkg.TargetFinish
           Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
+          registration.finish
         end
         progress.step("Restoring original repositories") { restore_original_repos }
       end
