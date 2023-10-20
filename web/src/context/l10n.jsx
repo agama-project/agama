@@ -202,10 +202,14 @@ function reload(newLanguage) {
 function L10nProvider({ children }) {
   const client = useInstallerClient();
   const [language, setLanguage] = useState(undefined);
+  const [backendPending, setBackendPending] = useState(false);
   const { cancellablePromise } = useCancellablePromise();
 
   const storeBackendLanguage = useCallback(async languageString => {
-    if (!client) return false;
+    if (!client) {
+      setBackendPending(true);
+      return false;
+    }
 
     const currentLang = await cancellablePromise(client.language.getUILanguage());
     const normalizedLang = languageFromBackend(currentLang);
@@ -246,6 +250,13 @@ function L10nProvider({ children }) {
   useEffect(() => {
     if (!language) changeLanguage();
   }, [changeLanguage, language]);
+
+  useEffect(() => {
+    if (!client || !backendPending) return;
+
+    storeBackendLanguage(language);
+    setBackendPending(false);
+  }, [client, language, backendPending, storeBackendLanguage]);
 
   return (
     <L10nContext.Provider value={{ language, changeLanguage }}>{children}</L10nContext.Provider>
