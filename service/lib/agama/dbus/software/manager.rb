@@ -83,12 +83,9 @@ module Agama
             ]
           end
 
-          # documented way to be able to write to patterns and trigger signal
-          attr_writer :selected_patterns
-
           # selected patterns is hash with pattern name as id and 0 for user selected and
           # 1 for auto selected. Can be extended in future e.g. for mandatory patterns
-          dbus_attr_reader :selected_patterns, "a{sy}"
+          dbus_reader_attr_accessor :selected_patterns, "a{sy}"
 
           dbus_method(:AddPattern, "in id:s") { |p| backend.add_pattern(p) }
           dbus_method(:RemovePattern, "in id:s") { |p| backend.remove_pattern(p) }
