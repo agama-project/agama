@@ -67,7 +67,7 @@ function Layout({ children }) {
   return (
     <>
       <Sidebar.Target as="div" />
-      <div className="wrapper shadow">
+      <div id="agama-main-wrapper" className="wrapper shadow">
         <header className="split justify-between bottom-shadow">
           <h1 className="split">
             <HeaderIcon.Target as="span" />
