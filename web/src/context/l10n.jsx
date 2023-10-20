@@ -165,17 +165,21 @@ function findSupportedLanguage(languages) {
 /**
  * Reloads the page
  *
- * It uses the window.location.replace instead of the reload function dropping
- * the "lang" argument from the URL.
+ * It uses the window.location.replace instead of the reload function
+ * synchronizing the "lang" argument from the URL if present.
+ *
+ * @param {string} newLanguage
  */
-function reload() {
+function reload(newLanguage) {
   const query = new URLSearchParams(window.location.search);
-  query.delete("lang");
-  let url = window.location.pathname;
-  if (query.size > 0) {
-    url = `${url}?${query.toString()}`;
+  if (query.has("lang") && query.get("lang") !== newLanguage) {
+    query.set("lang", newLanguage);
+    // Calling search() with a different value makes the browser to navigate
+    // to the new URL.
+    window.location.search = query.toString();
+  } else {
+    window.location.reload();
   }
-  window.location.replace(url);
 }
 
 /**
@@ -198,10 +202,14 @@ function reload() {
 function L10nProvider({ children }) {
   const client = useInstallerClient();
   const [language, setLanguage] = useState(undefined);
+  const [backendPending, setBackendPending] = useState(false);
   const { cancellablePromise } = useCancellablePromise();
 
   const storeBackendLanguage = useCallback(async languageString => {
-    if (!client) return false;
+    if (!client) {
+      setBackendPending(true);
+      return false;
+    }
 
     const currentLang = await cancellablePromise(client.language.getUILanguage());
     const normalizedLang = languageFromBackend(currentLang);
@@ -233,7 +241,7 @@ function L10nProvider({ children }) {
     let mustReload = storeUILanguage(newLanguage);
     mustReload = await storeBackendLanguage(newLanguage) || mustReload;
     if (mustReload) {
-      reload();
+      reload(newLanguage);
     } else {
       setLanguage(newLanguage);
     }
@@ -242,6 +250,13 @@ function L10nProvider({ children }) {
   useEffect(() => {
     if (!language) changeLanguage();
   }, [changeLanguage, language]);
+
+  useEffect(() => {
+    if (!client || !backendPending) return;
+
+    storeBackendLanguage(language);
+    setBackendPending(false);
+  }, [client, language, backendPending, storeBackendLanguage]);
 
   return (
     <L10nContext.Provider value={{ language, changeLanguage }}>{children}</L10nContext.Provider>
