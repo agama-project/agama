@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,9 +26,9 @@ import { SoftwareClient } from "./software";
 
 jest.mock("./dbus");
 
-const SOFTWARE_IFACE = "org.opensuse.Agama.Software1";
+const PRODUCT_IFACE = "org.opensuse.Agama.Software1.Product";
 
-const softProxy = {
+const productProxy = {
   wait: jest.fn(),
   AvailableProducts: [
     ["MicroOS", "openSUSE MicroOS", {}],
@@ -42,7 +42,7 @@ beforeEach(() => {
   DBusClient.mockImplementation(() => {
     return {
       proxy: (iface) => {
-        if (iface === SOFTWARE_IFACE) return softProxy;
+        if (iface === PRODUCT_IFACE) return productProxy;
       }
     };
   });
