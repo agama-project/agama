@@ -286,6 +286,8 @@ module Agama
           probe
           proposal
         end
+
+        @registration
       end
 
       # code is based on https://github.com/yast/yast-registration/blob/master/src/lib/registration/sw_mgmt.rb#L365
