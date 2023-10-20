@@ -278,7 +278,14 @@ module Agama
       end
 
       def registration
-        @registration ||= Registration.new(self, @logger)
+        return @registration if @registration
+
+        @registration = Registration.new(self, @logger)
+        @registration.on_change do
+          # reprobe and repropose when system is register or deregistered
+          probe
+          proposal
+        end
       end
 
       # code is based on https://github.com/yast/yast-registration/blob/master/src/lib/registration/sw_mgmt.rb#L365
