@@ -8,41 +8,40 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-22 02:10+0000\n"
-"PO-Revision-Date: 2023-08-06 21:15+0000\n"
-"Last-Translator: Milachew <milachew@mail.lv>\n"
-"Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-web/"
-"uk/>\n"
-"Language: uk\n"
+"PO-Revision-Date: 2023-10-21 23:15+0000\n"
+"Last-Translator: Kristijan Fremen Velkovski <me@krisfremen.com>\n"
+"Language-Team: Macedonian <https://l10n.opensuse.org/projects/agama/agama-"
+"web/mk/>\n"
+"Language: mk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=2; plural=n==1 || n%10==1 ? 0 : 1;\n"
 "X-Generator: Weblate 4.9.1\n"
 
 #: src/App.jsx:103
 msgid "Diagnostic tools"
-msgstr ""
+msgstr "Дијагностички алатки"
 
 #. TRANSLATORS: error message, %s is replaced by the server URL
 #: src/DevServerWrapper.jsx:82
 #, c-format
 msgid "The server at %s is not reachable."
-msgstr ""
+msgstr "Серверот на %s не е достапен."
 
 #. TRANSLATORS: error message
 #: src/DevServerWrapper.jsx:88
 msgid "Cannot connect to the Cockpit server"
-msgstr ""
+msgstr "Неможе да се конектира до Cockpit серверот"
 
 #. TRANSLATORS: button label
 #: src/DevServerWrapper.jsx:104
 msgid "Try Again"
-msgstr ""
+msgstr "Пробај повторно"
 
 #: src/components/core/About.jsx:43 src/components/core/About.jsx:48
 msgid "About Agama"
-msgstr ""
+msgstr "За Agama"
 
 #. TRANSLATORS: content of the "About" popup (1/2)
 #: src/components/core/About.jsx:53
@@ -52,6 +51,10 @@ msgid ""
 "want to give it a try, we recommend to use a virtual machine to prevent any "
 "possible data loss."
 msgstr ""
+"Agama е експериментален инсталер за (open)SUSE системи. Сè уште е во развој, "
+"затоа, ве молиме, не го користете во производствени средини. Ако сакате да "
+"го испробате, препорачуваме да користите виртуелна машина за да се спречи "
+"можноста на губење на податоци."
 
 #. TRANSLATORS: content of the "About" popup (2/2)
 #. %s is replaced by the project URL
@@ -59,13 +62,14 @@ msgstr ""
 #, c-format
 msgid "For more information, please visit the project's repository at %s."
 msgstr ""
+"За повеќе информации, ве молиме посетете го складиштето за проектот на %s."
 
 #. TRANSLATORS: button label
 #: src/components/core/About.jsx:71 src/components/core/FileViewer.jsx:80
 #: src/components/core/Sidebar.jsx:177 src/components/core/Terminal.jsx:48
 #: src/components/network/WifiSelector.jsx:151
 msgid "Close"
-msgstr "Закрити"
+msgstr "Затвори"
 
 #. TRANSLATORS: button label
 #: src/components/core/DBusError.jsx:40
@@ -88,11 +92,11 @@ msgstr ""
 
 #: src/components/core/FileViewer.jsx:65
 msgid "Reading file..."
-msgstr "Читання файлу..."
+msgstr ""
 
 #: src/components/core/FileViewer.jsx:71
 msgid "Cannot read the file"
-msgstr "Неможливо прочитати файл"
+msgstr ""
 
 #. TRANSLATORS: the installer reports some errors,
 #. the text in square brackets [] is a clickable link
@@ -312,7 +316,6 @@ msgid "%d error found"
 msgid_plural "%d errors found"
 msgstr[0] ""
 msgstr[1] ""
-msgstr[2] ""
 
 #: src/components/core/ValidationErrors.jsx:95
 msgid "Basic popover"
@@ -631,7 +634,6 @@ msgid "%d connection set:"
 msgid_plural "%d connections set:"
 msgstr[0] ""
 msgstr[1] ""
-msgstr[2] ""
 
 #: src/components/overview/SoftwareSection.jsx:37
 msgid "Reading software repositories"
@@ -914,7 +916,6 @@ msgid "Hide %d subvolume action"
 msgid_plural "Hide %d subvolume actions"
 msgstr[0] ""
 msgstr[1] ""
-msgstr[2] ""
 
 #. TRANSLATORS: show/hide toggle action, this is a clickable link
 #: src/components/storage/ProposalActionsSection.jsx:73
@@ -923,7 +924,6 @@ msgid "Show %d subvolume action"
 msgid_plural "Show %d subvolume actions"
 msgstr[0] ""
 msgstr[1] ""
-msgstr[2] ""
 
 #: src/components/storage/ProposalActionsSection.jsx:78
 msgid "Actions to create the file systems and to ensure the system boots."

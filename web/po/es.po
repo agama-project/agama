@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-12 02:05+0000\n"
+"POT-Creation-Date: 2023-10-22 02:10+0000\n"
 "PO-Revision-Date: 2023-10-06 18:15+0000\n"
 "Last-Translator: Victor hck <victorhck@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.9.1\n"
 
-#: src/App.jsx:82
+#: src/App.jsx:103
 msgid "Diagnostic tools"
 msgstr "Herramientas de diagnóstico"
 
@@ -332,6 +332,7 @@ msgid "Basic popover"
 msgstr "Popover básico"
 
 #: src/components/l10n/L10nPage.jsx:72
+#: src/components/l10n/LanguageSwitcher.jsx:50
 msgid "language"
 msgstr "Idioma"
 
@@ -341,6 +342,12 @@ msgstr "Idioma"
 #: src/components/overview/L10nSection.jsx:82
 msgid "Localization"
 msgstr "Localización"
+
+#: src/components/l10n/LanguageSwitcher.jsx:46
+#, fuzzy
+#| msgid "language"
+msgid "Display Language"
+msgstr "Idioma"
 
 #: src/components/layout/Icon.jsx:157
 #, c-format
@@ -675,8 +682,8 @@ msgstr "Instalar utilizando el dispositivo %s y eliminar todo su contenido"
 msgid "Probing storage devices"
 msgstr "Explorando dispositivos de almacenamiento"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/overview/StorageSection.jsx:182
 #: src/components/storage/ProposalPage.jsx:218
 msgid "Storage"
