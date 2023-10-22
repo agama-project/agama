@@ -49,7 +49,6 @@ class Locale:
 class PoFile:
     path: str
     locale: Locale
-    stats_re = re.compile(r"(\d+) .+, (\d+) .+, (\d+) .+")
 
     def __init__(self, path: Path):
         self.path = path
@@ -63,12 +62,14 @@ class PoFile:
 
         cmd = subprocess.run(["msgfmt", "--statistics", self.path],
                              capture_output=True)
-        m = PoFile.stats_re.match(cmd.stderr.decode('UTF-8'))
-        if m is None:
-            return 0
+        parts = cmd.stderr.decode("UTF-8").split(",")
+        numbers = []
+        for part in parts:
+            number, _rest = part.strip().split(" ", 1)
+            numbers.append(int(number))
 
-        total = int(m[1]) + int(m[2]) + int(m[3])
-        self.__coverage = round(int(m[1]) / total * 100)
+        total = sum(numbers)
+        self.__coverage = round(int(numbers[0]) / total * 100)
         return self.__coverage
 
     def language(self):
