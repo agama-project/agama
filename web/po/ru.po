@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-12 02:05+0000\n"
+"POT-Creation-Date: 2023-10-22 02:10+0000\n"
 "PO-Revision-Date: 2023-09-11 13:15+0000\n"
 "Last-Translator: Alex Minton <alex239@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -20,7 +20,7 @@ msgstr ""
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 4.9.1\n"
 
-#: src/App.jsx:82
+#: src/App.jsx:103
 msgid "Diagnostic tools"
 msgstr "Утилиты диагностики"
 
@@ -336,6 +336,7 @@ msgid "Basic popover"
 msgstr "Базовое всплывающее окно"
 
 #: src/components/l10n/L10nPage.jsx:72
+#: src/components/l10n/LanguageSwitcher.jsx:50
 msgid "language"
 msgstr "Язык"
 
@@ -345,6 +346,12 @@ msgstr "Язык"
 #: src/components/overview/L10nSection.jsx:82
 msgid "Localization"
 msgstr "Локализация"
+
+#: src/components/l10n/LanguageSwitcher.jsx:46
+#, fuzzy
+#| msgid "language"
+msgid "Display Language"
+msgstr "Язык"
 
 #: src/components/layout/Icon.jsx:157
 #, c-format
@@ -679,8 +686,8 @@ msgstr ""
 msgid "Probing storage devices"
 msgstr ""
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/overview/StorageSection.jsx:182
 #: src/components/storage/ProposalPage.jsx:218
 msgid "Storage"
