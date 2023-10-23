@@ -56,6 +56,7 @@ describe Agama::Storage::ProposalSettingsConversion::ToY2Storage do
       expect(y2storage_settings).to have_attributes(
         candidate_devices:   contain_exactly("/dev/sda", "/dev/sdb"),
         root_device:         "/dev/sda",
+        swap_reuse:          :none,
         lvm:                 true,
         separate_vgs:        true,
         lvm_vg_reuse:        false,

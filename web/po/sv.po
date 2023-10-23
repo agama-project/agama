@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-08 02:09+0000\n"
-"PO-Revision-Date: 2023-09-14 07:15+0000\n"
+"POT-Creation-Date: 2023-10-22 02:10+0000\n"
+"PO-Revision-Date: 2023-10-18 18:15+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "sv/>\n"
@@ -19,9 +19,25 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.9.1\n"
 
-#: src/App.jsx:82
+#: src/App.jsx:103
 msgid "Diagnostic tools"
 msgstr "Diagnostik verktyg"
+
+#. TRANSLATORS: error message, %s is replaced by the server URL
+#: src/DevServerWrapper.jsx:82
+#, c-format
+msgid "The server at %s is not reachable."
+msgstr "Servern på %s är inte tillgänglig."
+
+#. TRANSLATORS: error message
+#: src/DevServerWrapper.jsx:88
+msgid "Cannot connect to the Cockpit server"
+msgstr "Kan inte ansluta till Cockpit server"
+
+#. TRANSLATORS: button label
+#: src/DevServerWrapper.jsx:104
+msgid "Try Again"
+msgstr "Försök igen"
 
 #: src/components/core/About.jsx:43 src/components/core/About.jsx:48
 msgid "About Agama"
@@ -96,6 +112,14 @@ msgstr ""
 msgid "Confirm Installation"
 msgstr "Bekräfta Installation"
 
+#: src/components/core/InstallButton.jsx:66
+msgid ""
+"If you continue, partitions on your hard disk will be modified according to "
+"the provided installation settings."
+msgstr ""
+"Om du fortsätter kommer partitionerna på din hårddisk att modifieras enligt "
+"de medföljande installationsinställningarna."
+
 #: src/components/core/InstallButton.jsx:70
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr "Vänligen, avbryt och kontrollera inställningarna om du är osäker."
@@ -108,6 +132,14 @@ msgstr "Fortsätt"
 #: src/components/core/InstallButton.jsx:86
 msgid "Problems Found"
 msgstr "Problem hittades"
+
+#: src/components/core/InstallButton.jsx:90
+msgid ""
+"Some problems were found when trying to start the installation. Please, have "
+"a look to the reported errors and try again."
+msgstr ""
+"Vissa problem hittades när du försökte starta installationen. Ta en titt på "
+"de rapporterade felen och försök igen."
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:97
@@ -223,7 +255,7 @@ msgstr "Användarlösenord bekräftelse"
 
 #: src/components/core/PasswordInput.jsx:59
 msgid "Password visibility button"
-msgstr ""
+msgstr "Knapp för lösenordssynlighet"
 
 #: src/components/core/Popup.jsx:90
 msgid "Confirm"
@@ -300,6 +332,7 @@ msgid "Basic popover"
 msgstr "Enkel popover"
 
 #: src/components/l10n/L10nPage.jsx:72
+#: src/components/l10n/LanguageSwitcher.jsx:50
 msgid "language"
 msgstr "språk"
 
@@ -309,6 +342,12 @@ msgstr "språk"
 #: src/components/overview/L10nSection.jsx:82
 msgid "Localization"
 msgstr "Lokalisering"
+
+#: src/components/l10n/LanguageSwitcher.jsx:46
+#, fuzzy
+#| msgid "language"
+msgid "Display Language"
+msgstr "språk"
 
 #: src/components/layout/Icon.jsx:157
 #, c-format
@@ -611,24 +650,19 @@ msgid_plural "%d connections set:"
 msgstr[0] "%d anslutning inställd:"
 msgstr[1] "%d anslutningar inställda:"
 
-#: src/components/overview/SoftwareSection.jsx:36
+#: src/components/overview/SoftwareSection.jsx:37
 msgid "Reading software repositories"
 msgstr "Läser programvaruförråd"
 
-#. TRANSLATORS: %s will be replaced by the estimated installation size,
-#. example: "728.8 MiB"
-#: src/components/overview/SoftwareSection.jsx:120
-#, c-format
-msgid "Installation will take %s"
-msgstr "Installationen kommer att ta upp %s"
-
 #. TRANSLATORS: clickable link label
-#: src/components/overview/SoftwareSection.jsx:145
+#: src/components/overview/SoftwareSection.jsx:135
 msgid "Refresh the repositories"
 msgstr "Uppdatera förråden"
 
+#. TRANSLATORS: page title
 #. TRANSLATORS: page section
-#: src/components/overview/SoftwareSection.jsx:155
+#: src/components/overview/SoftwareSection.jsx:145
+#: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
 msgstr "Programvara"
 
@@ -648,8 +682,8 @@ msgstr "Installerar på enhet %s och raderar allt innehåll"
 msgid "Probing storage devices"
 msgstr "Undersöker lagringsenheter"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/overview/StorageSection.jsx:182
 #: src/components/storage/ProposalPage.jsx:218
 msgid "Storage"
@@ -713,6 +747,33 @@ msgstr "Krypteringslösenord"
 msgid "Change product"
 msgstr "Ändra produkt"
 
+#. TRANSLATORS: pattern status, selected to install (by user)
+#: src/components/software/PatternItem.jsx:63
+msgid "selected"
+msgstr "vald"
+
+#. TRANSLATORS: pattern status, selected to install (by dependencies)
+#: src/components/software/PatternItem.jsx:66
+msgid "automatically selected"
+msgstr "automatisk vald"
+
+#. TRANSLATORS: pattern status, not selected to install
+#: src/components/software/PatternItem.jsx:69
+msgid "not selected"
+msgstr "inte vald"
+
+#. TRANSLATORS: error summary, always plural, %d is replaced by number of errors (2 or more)
+#. if there is just a single error then the error is displayed directly instead of this summary
+#: src/components/software/PatternSelector.jsx:206
+#, c-format
+msgid "%d errors"
+msgstr "%d fel"
+
+#. TRANSLATORS: search field placeholder text
+#: src/components/software/PatternSelector.jsx:214
+msgid "Search"
+msgstr "Sök"
+
 #: src/components/software/ProductSelectionPage.jsx:69
 msgid "Loading available products, please wait..."
 msgstr "Laddar tillgängliga produkter, vänligen vänta..."
@@ -731,6 +792,22 @@ msgstr "Välj"
 msgid "Choose a product"
 msgstr "Välj en produkt"
 
+#: src/components/software/SoftwarePage.jsx:81
+#: src/components/storage/DASDPage.jsx:187
+#: src/components/storage/ISCSIPage.jsx:39
+#: src/components/storage/ProposalPage.jsx:218
+#: src/components/storage/ZFCPPage.jsx:736
+#: src/components/users/UsersPage.jsx:30
+msgid "Back"
+msgstr "Bakåt"
+
+#. TRANSLATORS: %s will be replaced by the estimated installation size,
+#. example: "728.8 MiB"
+#: src/components/software/UsedSize.jsx:32
+#, c-format
+msgid "Installation will take %s"
+msgstr "Installationen kommer att ta upp %s"
+
 #: src/components/storage/DASDFormatProgress.jsx:61
 msgid "Waiting for progress report"
 msgstr "Väntar på lägesrapport"
@@ -743,14 +820,6 @@ msgstr "Formaterar DASD-enheter"
 #: src/components/storage/DASDPage.jsx:185
 msgid "Storage DASD"
 msgstr "Lagring DASD"
-
-#: src/components/storage/DASDPage.jsx:187
-#: src/components/storage/ISCSIPage.jsx:39
-#: src/components/storage/ProposalPage.jsx:218
-#: src/components/storage/ZFCPPage.jsx:736
-#: src/components/users/UsersPage.jsx:30
-msgid "Back"
-msgstr "Bakåt"
 
 #: src/components/storage/DASDTable.jsx:57
 #: src/components/storage/ZFCPPage.jsx:320
@@ -911,7 +980,7 @@ msgstr "iSCSI"
 
 #: src/components/storage/ProposalSettingsSection.jsx:135
 msgid "Select the device for installing the system."
-msgstr ""
+msgstr "Välj enhet för installation av systemet."
 
 #: src/components/storage/ProposalSettingsSection.jsx:140
 #: src/components/storage/ProposalSettingsSection.jsx:144
@@ -925,30 +994,28 @@ msgstr "Inga enheter hittades"
 
 #: src/components/storage/ProposalSettingsSection.jsx:237
 msgid "Devices for creating the volume group"
-msgstr ""
+msgstr "Enheter för att skapa volymgrupp"
 
 #: src/components/storage/ProposalSettingsSection.jsx:246
-#, fuzzy
-#| msgid "Installation device"
 msgid "Custom devices"
-msgstr "Installationsenhet"
+msgstr "Anpassade enheter"
 
 #: src/components/storage/ProposalSettingsSection.jsx:310
 msgid ""
 "Configuration of the system volume group. All the file systems will be "
 "created in a logical volume of the system volume group."
 msgstr ""
+"Konfiguration av systemvolymgruppen. Alla filsystem kommer att skapas i en "
+"logisk volym av systemvolymgruppen."
 
 #: src/components/storage/ProposalSettingsSection.jsx:316
 msgid "Configure the LVM settings"
-msgstr ""
+msgstr "Konfigurera LVM-inställningar"
 
 #: src/components/storage/ProposalSettingsSection.jsx:321
 #: src/components/storage/ProposalSettingsSection.jsx:341
-#, fuzzy
-#| msgid "Settings"
 msgid "LVM settings"
-msgstr "Inställningar"
+msgstr "LVM-inställningar"
 
 #: src/components/storage/ProposalSettingsSection.jsx:334
 msgid "Use logical volume management (LVM)"
@@ -956,7 +1023,7 @@ msgstr "Använd logisk volymhantering (LVM)"
 
 #: src/components/storage/ProposalSettingsSection.jsx:342
 msgid "System Volume Group"
-msgstr ""
+msgstr "System volymgrupp"
 
 #: src/components/storage/ProposalSettingsSection.jsx:470
 msgid "Change encryption password"
@@ -1035,10 +1102,8 @@ msgstr "med ögonblicksavbilder"
 
 #. TRANSLATORS: flag for transactional file system
 #: src/components/storage/ProposalVolumes.jsx:219
-#, fuzzy
-#| msgid "Perform an action"
 msgid "transactional"
-msgstr "Utför en åtgärd"
+msgstr "transaktionell"
 
 #: src/components/storage/ProposalVolumes.jsx:228
 #: src/components/storage/iscsi/NodesPresenter.jsx:77

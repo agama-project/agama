@@ -23,7 +23,7 @@ import React, { useEffect } from "react";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "./installer";
 
-const SoftwareContext = React.createContext();
+const SoftwareContext = React.createContext([]);
 
 function SoftwareProvider({ children }) {
   const client = useInstallerClient();
@@ -39,12 +39,16 @@ function SoftwareProvider({ children }) {
       setSelectedId(selected?.id || null);
     };
 
-    loadProducts().catch(console.error);
-  }, [client.software, setProducts, setSelectedId, cancellablePromise]);
+    if (client) {
+      loadProducts().catch(console.error);
+    }
+  }, [client, setProducts, setSelectedId, cancellablePromise]);
 
   useEffect(() => {
+    if (!client) return;
+
     return client.software.onProductChange(setSelectedId);
-  }, [client.software, setSelectedId]);
+  }, [client, setSelectedId]);
 
   const value = [products, selectedId];
   return <SoftwareContext.Provider value={value}>{children}</SoftwareContext.Provider>;

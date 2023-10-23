@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-08 02:09+0000\n"
+"POT-Creation-Date: 2023-10-22 02:10+0000\n"
 "PO-Revision-Date: 2023-09-15 15:15+0000\n"
 "Last-Translator: Natasha Ament <stacheldrahtje@gmail.com>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-web/nl/"
@@ -19,9 +19,27 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.9.1\n"
 
-#: src/App.jsx:82
+#: src/App.jsx:103
 msgid "Diagnostic tools"
 msgstr "Diagnostische hulpmiddelen"
+
+#. TRANSLATORS: error message, %s is replaced by the server URL
+#: src/DevServerWrapper.jsx:82
+#, c-format
+msgid "The server at %s is not reachable."
+msgstr ""
+
+#. TRANSLATORS: error message
+#: src/DevServerWrapper.jsx:88
+#, fuzzy
+#| msgid "Cannot connect to D-Bus"
+msgid "Cannot connect to the Cockpit server"
+msgstr "Kan niet verbinden met D-Bus"
+
+#. TRANSLATORS: button label
+#: src/DevServerWrapper.jsx:104
+msgid "Try Again"
+msgstr ""
 
 #: src/components/core/About.jsx:43 src/components/core/About.jsx:48
 msgid "About Agama"
@@ -97,6 +115,12 @@ msgstr ""
 msgid "Confirm Installation"
 msgstr "Bevestig installatie"
 
+#: src/components/core/InstallButton.jsx:66
+msgid ""
+"If you continue, partitions on your hard disk will be modified according to "
+"the provided installation settings."
+msgstr ""
+
 #: src/components/core/InstallButton.jsx:70
 msgid "Please, cancel and check the settings if you are unsure."
 msgstr ""
@@ -110,6 +134,12 @@ msgstr "Doorgaan"
 #: src/components/core/InstallButton.jsx:86
 msgid "Problems Found"
 msgstr "Problemen gevonden"
+
+#: src/components/core/InstallButton.jsx:90
+msgid ""
+"Some problems were found when trying to start the installation. Please, have "
+"a look to the reported errors and try again."
+msgstr ""
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:97
@@ -301,6 +331,7 @@ msgid "Basic popover"
 msgstr "Algemene popover"
 
 #: src/components/l10n/L10nPage.jsx:72
+#: src/components/l10n/LanguageSwitcher.jsx:50
 msgid "language"
 msgstr "taal"
 
@@ -310,6 +341,12 @@ msgstr "taal"
 #: src/components/overview/L10nSection.jsx:82
 msgid "Localization"
 msgstr "Lokalisatie"
+
+#: src/components/l10n/LanguageSwitcher.jsx:46
+#, fuzzy
+#| msgid "language"
+msgid "Display Language"
+msgstr "taal"
 
 #: src/components/layout/Icon.jsx:157
 #, c-format
@@ -613,24 +650,19 @@ msgid_plural "%d connections set:"
 msgstr[0] "%d verbinding ingesteld:"
 msgstr[1] "%d verbindingen ingesteld:"
 
-#: src/components/overview/SoftwareSection.jsx:36
+#: src/components/overview/SoftwareSection.jsx:37
 msgid "Reading software repositories"
 msgstr "Lezen van software opslagruimtes"
 
-#. TRANSLATORS: %s will be replaced by the estimated installation size,
-#. example: "728.8 MiB"
-#: src/components/overview/SoftwareSection.jsx:120
-#, c-format
-msgid "Installation will take %s"
-msgstr "De installatie zal %s in beslag nemen"
-
 #. TRANSLATORS: clickable link label
-#: src/components/overview/SoftwareSection.jsx:145
+#: src/components/overview/SoftwareSection.jsx:135
 msgid "Refresh the repositories"
 msgstr "Ververs de opslagruimtes"
 
+#. TRANSLATORS: page title
 #. TRANSLATORS: page section
-#: src/components/overview/SoftwareSection.jsx:155
+#: src/components/overview/SoftwareSection.jsx:145
+#: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
 msgstr "Software"
 
@@ -650,8 +682,8 @@ msgstr "Installeer op apparaat %s en verwijder alle daarop opgeslagen inhoud"
 msgid "Probing storage devices"
 msgstr "Onderzoeken van opslagapparaten"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/overview/StorageSection.jsx:182
 #: src/components/storage/ProposalPage.jsx:218
 msgid "Storage"
@@ -714,6 +746,39 @@ msgstr "Encryptie wachtwoord"
 msgid "Change product"
 msgstr "Wijzig product"
 
+#. TRANSLATORS: pattern status, selected to install (by user)
+#: src/components/software/PatternItem.jsx:63
+#, fuzzy
+#| msgid "Select"
+msgid "selected"
+msgstr "Selecteer"
+
+#. TRANSLATORS: pattern status, selected to install (by dependencies)
+#: src/components/software/PatternItem.jsx:66
+msgid "automatically selected"
+msgstr ""
+
+#. TRANSLATORS: pattern status, not selected to install
+#: src/components/software/PatternItem.jsx:69
+#, fuzzy
+#| msgid "Not set"
+msgid "not selected"
+msgstr "Niet ingesteld"
+
+#. TRANSLATORS: error summary, always plural, %d is replaced by number of errors (2 or more)
+#. if there is just a single error then the error is displayed directly instead of this summary
+#: src/components/software/PatternSelector.jsx:206
+#, fuzzy, c-format
+#| msgid "%d error found"
+#| msgid_plural "%d errors found"
+msgid "%d errors"
+msgstr "%d fout gevonden"
+
+#. TRANSLATORS: search field placeholder text
+#: src/components/software/PatternSelector.jsx:214
+msgid "Search"
+msgstr ""
+
 #: src/components/software/ProductSelectionPage.jsx:69
 msgid "Loading available products, please wait..."
 msgstr "Laad verschillende producten, wacht alstublieft..."
@@ -732,6 +797,22 @@ msgstr "Selecteer"
 msgid "Choose a product"
 msgstr "Kies een product"
 
+#: src/components/software/SoftwarePage.jsx:81
+#: src/components/storage/DASDPage.jsx:187
+#: src/components/storage/ISCSIPage.jsx:39
+#: src/components/storage/ProposalPage.jsx:218
+#: src/components/storage/ZFCPPage.jsx:736
+#: src/components/users/UsersPage.jsx:30
+msgid "Back"
+msgstr "Terug"
+
+#. TRANSLATORS: %s will be replaced by the estimated installation size,
+#. example: "728.8 MiB"
+#: src/components/software/UsedSize.jsx:32
+#, c-format
+msgid "Installation will take %s"
+msgstr "De installatie zal %s in beslag nemen"
+
 #: src/components/storage/DASDFormatProgress.jsx:61
 msgid "Waiting for progress report"
 msgstr "Wacht op voortgangs rapport"
@@ -744,14 +825,6 @@ msgstr "Formatteren DASD apparaten"
 #: src/components/storage/DASDPage.jsx:185
 msgid "Storage DASD"
 msgstr "DASD opslag"
-
-#: src/components/storage/DASDPage.jsx:187
-#: src/components/storage/ISCSIPage.jsx:39
-#: src/components/storage/ProposalPage.jsx:218
-#: src/components/storage/ZFCPPage.jsx:736
-#: src/components/users/UsersPage.jsx:30
-msgid "Back"
-msgstr "Terug"
 
 #: src/components/storage/DASDTable.jsx:57
 #: src/components/storage/ZFCPPage.jsx:320

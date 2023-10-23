@@ -36,6 +36,7 @@ import { NotificationProvider } from "~/context/notification";
 import { Layout } from "~/components/layout";
 import { noop } from "./utils";
 import cockpit from "./lib/cockpit";
+import { L10nProvider } from "./context/l10n";
 
 /**
  * Internal mock for manipulating routes, using ["/"] by default
@@ -71,7 +72,7 @@ jest.mock('react-router-dom', () => ({
   Outlet: () => <>Outlet Content</>
 }));
 
-const Providers = ({ children }) => {
+const Providers = ({ children, withL10n }) => {
   const client = createClient();
 
   // FIXME: workaround to fix the tests. We should inject
@@ -80,20 +81,36 @@ const Providers = ({ children }) => {
     client.onDisconnect = noop;
   }
 
+  if (withL10n) {
+    return (
+      <InstallerClientProvider client={client}>
+        <L10nProvider>
+          {children}
+        </L10nProvider>
+      </InstallerClientProvider>
+    );
+  }
+
   return (
-    <InstallerClientProvider client={client} disableL10n>
-      <MemoryRouter initialEntries={initialRoutes()}>
-        {children}
-      </MemoryRouter>
+    <InstallerClientProvider client={client}>
+      {children}
     </InstallerClientProvider>
   );
 };
 
 const installerRender = (ui, options = {}) => {
+  const Wrapper = ({ children }) => (
+    <Providers withL10n={options.withL10n}>
+      <MemoryRouter initialEntries={initialRoutes()}>
+        <Layout>{children}</Layout>
+      </MemoryRouter>
+    </Providers>
+  );
+
   return (
     {
       user: userEvent.setup(),
-      ...render(ui, { wrapper: Providers, ...options })
+      ...render(ui, { wrapper: Wrapper, ...options })
     }
   );
 };

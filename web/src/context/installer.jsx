@@ -23,11 +23,11 @@
 
 import React, { useState, useEffect } from "react";
 import { createDefaultClient } from "~/client";
-import { Layout, Loading, Title } from "~/components/layout";
-import { DBusError } from "~/components/core";
-import L10nWrapper from "~/L10nWrapper";
 
-const InstallerClientContext = React.createContext(undefined);
+const InstallerClientContext = React.createContext(null);
+// TODO: we use a separate context to avoid changing all the codes to
+// `useInstallerClient`. We should merge them in the future.
+const InstallerClientStatusContext = React.createContext({ connected: false, attempt: 0 });
 
 /**
  * Returns the D-Bus installer client
@@ -36,14 +36,31 @@ const InstallerClientContext = React.createContext(undefined);
  */
 function useInstallerClient() {
   const context = React.useContext(InstallerClientContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useInstallerClient must be used within a InstallerClientProvider");
   }
 
   return context;
 }
 
-const ATTEMPTS = 3;
+/**
+ * Returns the client status.
+ *
+ * @typedef {object} ClientStatus
+ * @property {boolean} connected - whether the client is connected
+ * @property {number} attempt - number of attempt to connect
+ *
+ * @return {ClientStatus} installer client status
+ */
+function useInstallerClientStatus() {
+  const context = React.useContext(InstallerClientStatusContext);
+  if (!context) {
+    throw new Error("useInstallerClientStatus must be used within a InstallerClientProvider");
+  }
+
+  return context;
+}
+
 const INTERVAL = 2000;
 
 /**
@@ -51,64 +68,49 @@ const INTERVAL = 2000;
   * @param {import("~/client").InstallerClient|undefined} [props.client] client to connect to
   *   Agama service; if it is undefined, it instantiates a new one using the address
   *   registered in /run/agama/bus.address.
-  * @param {number} [props.interval=2000] - Interval in milliseconds between connection attempts
+  * @param {number} [props.interval=2000] - Interval in milliseconds between connection attempt
   *   (2000 by default).
-  * @param {number} [props.max_attempts=3] - Connection attempts before displaying an
-  *   error (3 by default). The component will keep trying to connect.
-  * @param {boolean} [props.disableL10n] - Disable l10n handling (to be used
-  *   during tests).
   * @param {React.ReactNode} [props.children] - content to display within the provider
   */
 function InstallerClientProvider({
-  children, disableL10n = false, client = undefined, interval = INTERVAL, max_attempts = ATTEMPTS
+  children, client = null, interval = INTERVAL
 }) {
   const [value, setValue] = useState(client);
-  const [attempts, setAttempts] = useState(0);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     const connectClient = async () => {
       const client = await createDefaultClient();
       if (await client.isConnected()) {
         setValue(client);
-        setAttempts(0);
+        setAttempt(0);
       }
 
-      console.warn(`Failed to connect to D-Bus (attempt ${attempts + 1})`);
+      console.warn(`Failed to connect to D-Bus (attempt ${attempt + 1})`);
       await new Promise(resolve => setTimeout(resolve, interval));
-      setAttempts(attempts + 1);
+      setAttempt(attempt + 1);
     };
 
-    if (value === undefined) connectClient();
-  }, [setValue, value, setAttempts, attempts, interval]);
+    if (!value) connectClient();
+  }, [setValue, value, setAttempt, attempt, interval]);
 
   useEffect(() => {
-    if (value === undefined) return;
+    if (!value) return;
 
-    return value.onDisconnect(() => setValue(undefined));
+    return value.onDisconnect(() => setValue(null));
   }, [value]);
-
-  const Content = () => {
-    if (value === undefined) {
-      return (attempts > max_attempts) ? <DBusError /> : <Loading />;
-    }
-
-    if (disableL10n) {
-      return children;
-    }
-
-    return <L10nWrapper client={value}>{children}</L10nWrapper>;
-  };
 
   return (
     <InstallerClientContext.Provider value={value}>
-      <Layout>
-        {/* this is the name of the tool, do not translate it */}
-        {/* eslint-disable-next-line i18next/no-literal-string */}
-        <Title>Agama</Title>
-        <Content />
-      </Layout>
+      <InstallerClientStatusContext.Provider value={{ attempt, connected: !!value }}>
+        {children}
+      </InstallerClientStatusContext.Provider>
     </InstallerClientContext.Provider>
   );
 }
 
-export { InstallerClientProvider, useInstallerClient };
+export {
+  InstallerClientProvider,
+  useInstallerClient,
+  useInstallerClientStatus
+};

@@ -36,7 +36,7 @@ differences:
     "language": "en_US"
   },
   "software": {
-    "product": "ALP-Bedrock"
+    "product": "ALP-Dolomite"
   },
   "storage": {
     "bootDevice": "/dev/sda"
@@ -87,7 +87,7 @@ local findBiggestDisk(disks) =
 
 {
   software: {
-    product: 'ALP-Bedrock',
+    product: 'ALP-Dolomite',
   },
   root: {
     password: 'nots3cr3t',
@@ -141,12 +141,12 @@ this scenario, it is expected to use the CLI to interact with Agama. In addition
 any other tool available in the installation media. What's more, when using the Live ISO, you could
 install your own tools.
 
-Below there is a minimal working example to install ALP Bedrock:
+Below there is a minimal working example to install ALP Dolomite:
 
 ```sh
 set -ex
 
-/usr/bin/agama config set software.product=ALP-Bedrock
+/usr/bin/agama config set software.product=ALP-Dolomite
 /usr/bin/agama config set user.userName=joe user.password=doe
 /usr/bin/agama install
 ```
