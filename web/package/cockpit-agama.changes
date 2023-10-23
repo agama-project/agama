@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Oct 23 11:33:53 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 5
+
+-------------------------------------------------------------------
 Thu Oct 19 22:07:11 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: fix CSS rule for applying grayscale and blur CSS filters to

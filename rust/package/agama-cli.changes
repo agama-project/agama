@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Mon Oct 23 11:33:40 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 5
+
+-------------------------------------------------------------------
+Mon Oct 10 07:37:00 UTC 2023 - Michal Filka <mfilka@suse.com>
+
+- Improve file and directory names in "agama logs store".
+- Add an "agama logs list" subcommand.
+
+-------------------------------------------------------------------
 Tue Sep 26 15:57:14 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 4
