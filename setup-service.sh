@@ -39,7 +39,7 @@ test -f /etc/zypp/repos.d/d_l_python.repo || \
   $SUDO zypper --non-interactive \
     addrepo https://download.opensuse.org/repositories/devel:/languages:/python/openSUSE_Tumbleweed/ d_l_python
 $SUDO zypper --non-interactive --gpg-auto-import-keys install gcc gcc-c++ make openssl-devel ruby-devel \
-  python-langtable-data git augeas-devel jemalloc-devel awk || exit 1
+  python-langtable-data git augeas-devel jemalloc-devel awk suseconnect-ruby-bindings || exit 1
 
 # only install cargo if it is not available (avoid conflicts with rustup)
 which cargo || $SUDO zypper --non-interactive install cargo
