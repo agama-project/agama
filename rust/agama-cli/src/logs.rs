@@ -305,6 +305,8 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
     }
 }
 
+// Sets the archive owner to root:root. Also sets the file permissions to read/write for the
+// owner only.
 fn set_archive_permissions(archive: &String) -> io::Result<()> {
     let attr = fs::metadata(archive)?;
     let mut permissions = attr.permissions();
