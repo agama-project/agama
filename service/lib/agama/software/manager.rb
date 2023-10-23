@@ -52,7 +52,7 @@ module Agama
     #   * Manages software and product related issues.
     #
     #   It shoud be splitted in separate and smaller classes.
-    class Manager
+    class Manager # rubocop:disable Metrics/ClassLength
       include Helpers
       include WithIssues
       include WithProgress
