@@ -6,7 +6,7 @@
 //! to the `Ip<T>` struct.
 use crate::network::{
     action::Action,
-    model::{Connection as NetworkConnection, IpConfig, IpMethod},
+    model::{Connection as NetworkConnection, IpConfig, Ipv4Method, Ipv6Method},
 };
 use async_std::{channel::Sender, sync::Arc};
 use cidr::IpInet;
@@ -95,7 +95,7 @@ impl Ip {
     ///
     /// Possible values: "disabled", "auto", "manual" or "link-local".
     ///
-    /// See [crate::network::model::IpMethod].
+    /// See [crate::network::model::Ipv4Method].
     #[dbus_interface(property)]
     pub async fn method4(&self) -> String {
         let ip_config = self.get_ip_config().await;
@@ -104,15 +104,15 @@ impl Ip {
 
     #[dbus_interface(property)]
     pub async fn set_method4(&mut self, method: &str) -> zbus::fdo::Result<()> {
-        let method: IpMethod = method.parse()?;
+        let method: Ipv4Method = method.parse()?;
         self.update_config(|ip| ip.method4 = method).await
     }
 
     /// IPv6 configuration method.
     ///
-    /// Possible values: "disabled", "auto", "manual" or "link-local".
+    /// Possible values: "disabled", "auto", "manual", "link-local", "ignore" or "dhcp".
     ///
-    /// See [crate::network::model::IpMethod].
+    /// See [crate::network::model::Ipv6Method].
     #[dbus_interface(property)]
     pub async fn method6(&self) -> String {
         let ip_config = self.get_ip_config().await;
@@ -121,7 +121,7 @@ impl Ip {
 
     #[dbus_interface(property)]
     pub async fn set_method6(&mut self, method: &str) -> zbus::fdo::Result<()> {
-        let method: IpMethod = method.parse()?;
+        let method: Ipv6Method = method.parse()?;
         self.update_config(|ip| ip.method6 = method).await
     }
 

@@ -3,7 +3,7 @@ mod common;
 use self::common::DBusServer;
 use agama_dbus_server::network::{
     self,
-    model::{self, IpMethod},
+    model::{self, Ipv4Method, Ipv6Method},
     Adapter, NetworkService, NetworkState,
 };
 use agama_lib::network::{settings, types::DeviceType, NetworkClient};
@@ -91,9 +91,9 @@ async fn test_add_connection() {
     assert_eq!(conn.device_type(), DeviceType::Wireless);
     assert_eq!(&conn.addresses, &addresses);
     let method4 = conn.method4.as_ref().unwrap();
-    assert_eq!(method4, &IpMethod::Auto.to_string());
+    assert_eq!(method4, &Ipv4Method::Auto.to_string());
     let method6 = conn.method6.as_ref().unwrap();
-    assert_eq!(method6, &IpMethod::Disabled.to_string());
+    assert_eq!(method6, &Ipv6Method::Disabled.to_string());
 }
 
 #[test]

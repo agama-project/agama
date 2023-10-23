@@ -518,8 +518,8 @@ mod test {
                 "::ffff:c0a8:102".parse::<IpAddr>().unwrap()
             ]
         );
-        assert_eq!(ip_config.method4, IpMethod::Auto);
-        assert_eq!(ip_config.method6, IpMethod::Auto);
+        assert_eq!(ip_config.method4, Ipv4Method::Auto);
+        assert_eq!(ip_config.method6, Ipv6Method::Auto);
     }
 
     #[test]
