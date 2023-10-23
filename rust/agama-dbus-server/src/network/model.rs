@@ -205,6 +205,27 @@ mod tests {
         let conn = Connection::Loopback(LoopbackConnection { base });
         assert!(conn.is_loopback());
     }
+
+    #[test]
+    fn test_mac_addr() {
+        assert_eq!(
+            MacAddr::try_from("11:22:33:44:55:66"),
+            Ok(MacAddr {
+                data: [0x11, 0x22, 0x33, 0x44, 0x55, 0x66]
+            })
+        );
+        assert_eq!(
+            MacAddr::try_from("11-22-33-44-55-66"),
+            Ok(MacAddr {
+                data: [0x11, 0x22, 0x33, 0x44, 0x55, 0x66]
+            })
+        );
+        assert_eq!(
+            MacAddr::try_from("a-b-c-d-e-f").unwrap().to_string(),
+            String::from("0a:0b:0c:0d:0e:0f")
+        );
+        assert!(MacAddr::try_from("invalid-mac-addr").is_err());
+    }
 }
 
 /// Network device
@@ -454,8 +475,46 @@ pub struct BondConnection {
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
+pub struct MacAddr {
+    pub data: [u8; 6],
+}
+
+impl TryFrom<&str> for MacAddr {
+    type Error = &'static str;
+
+    fn try_from(str: &str) -> Result<Self, Self::Error> {
+        let mut ret: [u8; 6] = [0; 6];
+
+        let split = str.split([':', '-']);
+
+        for (i, s) in split.into_iter().enumerate() {
+            if i >= ret.len() {
+                return Err("The given string doesn't match xx:xx:xx:xx:xx:xx");
+            }
+            match u8::from_str_radix(s, 16) {
+                Ok(v) => ret[i] = v,
+                _ => return Err("Unable to parse hex number"),
+            };
+        }
+
+        Ok(MacAddr { data: ret })
+    }
+}
+
+impl fmt::Display for MacAddr {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{:02x}:{:02x}:{:02x}:{:02x}:{:02x}:{:02x}",
+            self.data[0], self.data[1], self.data[2], self.data[3], self.data[4], self.data[5]
+        )
+    }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
 pub struct BondConfig {
     pub options: HashMap<String, String>,
+    pub hwaddr: Option<MacAddr>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq)]
