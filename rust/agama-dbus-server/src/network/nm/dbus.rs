@@ -51,6 +51,10 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
         for (k, v) in bond_dbus {
             result.insert(k, v);
         }
+        if let Some(mac) = &bond.bond.hwaddr {
+            let h = result.entry("802-3-ethernet").or_insert(HashMap::new());
+            h.insert("assigned-mac-address", mac.to_string().into());
+        }
     }
 
     result.insert("connection", connection_dbus);
@@ -440,12 +444,34 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
     Some(wireless_config)
 }
 
-fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Option<BondConfig> {
-    let Some(_bond) = conn.get(BOND_KEY) else {
+fn bond_hwaddr_from_dbus(conn: &OwnedNestedHash) -> Option<MacAddr> {
+    let Some(eth) = conn.get(ETHERNET_KEY) else {
         return None;
     };
 
-    // TODO
+    let Some(mac) = eth.get("assigned-mac-address") else {
+        return None;
+    };
+
+    let mac: &str = mac.downcast_ref()?;
+    MacAddr::try_from(mac).ok()
+}
+
+fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Option<BondConfig> {
+    let Some(bond) = conn.get(BOND_KEY) else {
+        return None;
+    };
+
+    if let Some(dict) = bond.get("options") {
+        let dict: zvariant::Dict = dict.downcast_ref::<Value>()?.try_into().unwrap();
+        if dict.full_signature() == "a{aa}" {
+            let options: HashMap<String, String> = dict.try_into().unwrap();
+            return Some(BondConfig {
+                options,
+                hwaddr: bond_hwaddr_from_dbus(conn),
+            });
+        }
+    }
     None
 }
 
