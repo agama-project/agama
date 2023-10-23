@@ -118,8 +118,7 @@ module Agama
       SUSE::Connect::YaST.deactivate_system(connect_params)
       FileUtils.rm(SUSE::Connect::YaST::GLOBAL_CREDENTIALS_FILE) # connect does not remove it itself
       if @credentials_file
-        path = File.join(SUSE::Connect::YaST::DEFAULT_CREDENTIALS_DIR, @credentials_file)
-        FileUtils.rm(path)
+        FileUtils.rm(credentials_path(@credentials_file))
         @credentials_file = nil
       end
 
@@ -132,7 +131,7 @@ module Agama
     def finish
       return unless reg_code
 
-      files = [@credentials_file, SUSE::Connect::YaST::GLOBAL_CREDENTIALS_FILE]
+      files = [credentials_path(@credentials_file), SUSE::Connect::YaST::GLOBAL_CREDENTIALS_FILE]
       files.each do |file|
         dest = File.join(Yast::Installation.destdir, file)
         FileUtils.cp(file, dest)
@@ -188,6 +187,10 @@ module Agama
     rescue StandardError
       # if something goes wrong try to continue like if there is no credentials param
       nil
+    end
+
+    def credentials_path(file)
+      File.join(SUSE::Connect::YaST::DEFAULT_CREDENTIALS_DIR, file)
     end
   end
 end
