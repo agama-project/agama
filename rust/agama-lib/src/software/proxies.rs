@@ -39,14 +39,25 @@ trait Software1 {
     /// RemovePattern method
     fn remove_pattern(&self, id: &str) -> zbus::Result<()>;
 
-    /// SelectProduct method
-    fn select_product(&self, id: &str) -> zbus::Result<(u32, String)>;
-
     /// SetUserPatterns method
     fn set_user_patterns(&self, ids: &[&str]) -> zbus::Result<()>;
 
     /// UsedDiskSpace method
     fn used_disk_space(&self) -> zbus::Result<String>;
+
+    /// SelectedPatterns property
+    #[dbus_proxy(property)]
+    fn selected_patterns(&self) -> zbus::Result<std::collections::HashMap<String, u8>>;
+}
+
+#[dbus_proxy(
+    interface = "org.opensuse.Agama.Software1.Product",
+    default_service = "org.opensuse.Agama.Software1",
+    default_path = "/org/opensuse/Agama/Software1/Product"
+)]
+trait SoftwareProduct {
+    /// SelectProduct method
+    fn select_product(&self, id: &str) -> zbus::Result<(u32, String)>;
 
     /// AvailableProducts property
     #[dbus_proxy(property)]
@@ -59,10 +70,6 @@ trait Software1 {
             std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
         )>,
     >;
-
-    /// SelectedPatterns property
-    #[dbus_proxy(property)]
-    fn selected_patterns(&self) -> zbus::Result<std::collections::HashMap<String, u8>>;
 
     /// SelectedProduct property
     #[dbus_proxy(property)]
