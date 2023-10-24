@@ -7,11 +7,12 @@
 /// Using the newtype pattern around an String is enough. For proper support, we might replace this
 /// struct with an enum.
 use crate::network::{
-    model::{IpMethod, SecurityProtocol, WirelessMode},
+    model::{Ipv4Method, Ipv6Method, SecurityProtocol, WirelessMode},
     nm::error::NmError,
 };
 use agama_lib::network::types::DeviceType;
 use std::fmt;
+use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
 pub struct NmWirelessMode(pub String);
@@ -150,15 +151,23 @@ impl NmMethod {
     }
 }
 
-impl TryFrom<NmMethod> for IpMethod {
+impl TryFrom<NmMethod> for Ipv4Method {
     type Error = NmError;
 
     fn try_from(value: NmMethod) -> Result<Self, Self::Error> {
-        match value.as_str() {
-            "auto" => Ok(IpMethod::Auto),
-            "manual" => Ok(IpMethod::Manual),
-            "disabled" => Ok(IpMethod::Disabled),
-            "link-local" => Ok(IpMethod::LinkLocal),
+        match Ipv4Method::from_str(value.as_str()) {
+            Ok(method) => Ok(method),
+            _ => Err(NmError::UnsupportedIpMethod(value.to_string())),
+        }
+    }
+}
+
+impl TryFrom<NmMethod> for Ipv6Method {
+    type Error = NmError;
+
+    fn try_from(value: NmMethod) -> Result<Self, Self::Error> {
+        match Ipv6Method::from_str(value.as_str()) {
+            Ok(method) => Ok(method),
             _ => Err(NmError::UnsupportedIpMethod(value.to_string())),
         }
     }

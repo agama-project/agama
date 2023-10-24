@@ -331,8 +331,8 @@ pub enum Status {
 
 #[derive(Default, Debug, PartialEq, Clone)]
 pub struct IpConfig {
-    pub method4: IpMethod,
-    pub method6: IpMethod,
+    pub method4: Ipv4Method,
+    pub method6: Ipv6Method,
     pub addresses: Vec<IpInet>,
     pub nameservers: Vec<IpAddr>,
     pub gateway4: Option<IpAddr>,
@@ -352,34 +352,76 @@ pub struct MatchConfig {
 pub struct UnknownIpMethod(String);
 
 #[derive(Debug, Default, Copy, Clone, PartialEq)]
-pub enum IpMethod {
+pub enum Ipv4Method {
     #[default]
     Disabled = 0,
     Auto = 1,
     Manual = 2,
     LinkLocal = 3,
 }
-impl fmt::Display for IpMethod {
+
+impl fmt::Display for Ipv4Method {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name = match &self {
-            IpMethod::Disabled => "disabled",
-            IpMethod::Auto => "auto",
-            IpMethod::Manual => "manual",
-            IpMethod::LinkLocal => "link-local",
+            Ipv4Method::Disabled => "disabled",
+            Ipv4Method::Auto => "auto",
+            Ipv4Method::Manual => "manual",
+            Ipv4Method::LinkLocal => "link-local",
         };
         write!(f, "{}", name)
     }
 }
 
-impl FromStr for IpMethod {
+impl FromStr for Ipv4Method {
     type Err = UnknownIpMethod;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "disabled" => Ok(IpMethod::Disabled),
-            "auto" => Ok(IpMethod::Auto),
-            "manual" => Ok(IpMethod::Manual),
-            "link-local" => Ok(IpMethod::LinkLocal),
+            "disabled" => Ok(Ipv4Method::Disabled),
+            "auto" => Ok(Ipv4Method::Auto),
+            "manual" => Ok(Ipv4Method::Manual),
+            "link-local" => Ok(Ipv4Method::LinkLocal),
+            _ => Err(UnknownIpMethod(s.to_string())),
+        }
+    }
+}
+
+#[derive(Debug, Default, Copy, Clone, PartialEq)]
+pub enum Ipv6Method {
+    #[default]
+    Disabled = 0,
+    Auto = 1,
+    Manual = 2,
+    LinkLocal = 3,
+    Ignore = 4,
+    Dhcp = 5,
+}
+
+impl fmt::Display for Ipv6Method {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match &self {
+            Ipv6Method::Disabled => "disabled",
+            Ipv6Method::Auto => "auto",
+            Ipv6Method::Manual => "manual",
+            Ipv6Method::LinkLocal => "link-local",
+            Ipv6Method::Ignore => "ignore",
+            Ipv6Method::Dhcp => "dhcp",
+        };
+        write!(f, "{}", name)
+    }
+}
+
+impl FromStr for Ipv6Method {
+    type Err = UnknownIpMethod;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "disabled" => Ok(Ipv6Method::Disabled),
+            "auto" => Ok(Ipv6Method::Auto),
+            "manual" => Ok(Ipv6Method::Manual),
+            "link-local" => Ok(Ipv6Method::LinkLocal),
+            "ignore" => Ok(Ipv6Method::Ignore),
+            "dhcp" => Ok(Ipv6Method::Dhcp),
             _ => Err(UnknownIpMethod(s.to_string())),
         }
     }

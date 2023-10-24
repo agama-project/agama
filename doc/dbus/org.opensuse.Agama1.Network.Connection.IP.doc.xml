@@ -24,15 +24,15 @@
 
      Possible values: "disabled", "auto", "manual" or "link-local".
 
-     See [crate::network::model::IpMethod].
+     See [crate::network::model::Ipv4Method].
      -->
     <property name="Method4" type="s" access="readwrite"/>
     <!--
      IPv6 configuration method.
 
-     Possible values: "disabled", "auto", "manual" or "link-local".
+     Possible values: "disabled", "auto", "manual", "link-local", "ignore" or "dhcp".
 
-     See [crate::network::model::IpMethod].
+     See [crate::network::model::Ipv6Method].
      -->
     <property name="Method6" type="s" access="readwrite"/>
     <!--
