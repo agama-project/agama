@@ -29,12 +29,27 @@ const SOFTWARE_IFACE = "org.opensuse.Agama.Software1";
 const SOFTWARE_PATH = "/org/opensuse/Agama/Software1";
 const PRODUCT_IFACE = "org.opensuse.Agama.Software1.Product";
 const PRODUCT_PATH = "/org/opensuse/Agama/Software1/Product";
+const REGISTRATION_IFACE = "org.opensuse.Agama1.Registration";
 
 /**
  * @typedef {object} Product
  * @property {string} id - Product ID (e.g., "Leap")
  * @property {string} name - Product name (e.g., "openSUSE Leap 15.4")
  * @property {string} description - Product description
+ */
+
+/**
+ * @typedef {object} Registration
+ * @property {string} code - Registration code.
+ * @property {string} email - Registration email.
+ * @property {string} requirement - Registration requirement (i.e., "not-required, "optional",
+ *  "mandatory").
+ */
+
+/**
+ * @typedef {object} ActionResult
+ * @property {boolean} success - Whether the action was successfuly done.
+ * @property {string} message - Result message.
  */
 
 /**
@@ -98,6 +113,88 @@ class BaseProductManager {
         handler(selected);
       }
     });
+  }
+
+  /**
+   * Returns the registration of the selected product.
+   *
+   * @return {Promise<Registration|null>}
+   */
+  async getRegistration() {
+    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
+    const code = proxy.RegCode;
+    const email = proxy.Email;
+    const requirement = this.registrationRequirement(proxy.Requirement);
+
+    return (code.length === 0 ? null : { code, email, requirement });
+  }
+
+  /**
+   * Tries to register the selected product.
+   *
+   * @param {string} code
+   * @param {string} [email]
+   * @returns {Promise<ActionResult>}
+   */
+  async register(code, email = "") {
+    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
+    const result = await proxy.Register(code, { email });
+
+    return {
+      success: result[0] === 0,
+      message: result[1]
+    };
+  }
+
+  /**
+   * Tries to deregister the selected product.
+   *
+   * @returns {Promise<ActionResult>}
+   */
+  async deregister() {
+    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
+    const result = await proxy.Deregister();
+
+    return {
+      success: result[0] === 0,
+      message: result[1]
+    };
+  }
+
+  /**
+   * Registers a callback to run when the registration changes.
+   *
+   * @param {(registration: Registration) => void} handler - Callback function.
+   */
+  onRegistrationChange(handler) {
+    return this.client.onObjectChanged(PRODUCT_PATH, REGISTRATION_IFACE, () => {
+      this.getRegistration().then(handler);
+    });
+  }
+
+  /**
+   * Helper method to generate the requirement representation.
+   * @private
+   *
+   * @param {number} value - D-Bus registration value.
+   * @returns {string}
+   */
+  registrationRequirement(value) {
+    let requirement;
+
+    switch (value) {
+      case 0:
+        requirement = "not-required";
+        break;
+      case 1:
+        requirement = "optional";
+        break;
+      case 2:
+        requirement = "mandatory";
+        break;
+    }
+
+    return requirement;
   }
 }
 
