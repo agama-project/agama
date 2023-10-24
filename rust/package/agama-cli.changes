@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct 23 14:43:59 UTC 2023 - Michal Filka <mfilka@suse.com>
+
+- Improved "agama logs store" (gh#openSUSE/agama#812)
+  - the archive file owner is root:root
+  - the permissions is set to r/w for the owner 
+
+-------------------------------------------------------------------
 Mon Oct 23 11:33:40 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 5

@@ -6,6 +6,7 @@ use std::fs;
 use std::fs::File;
 use std::io;
 use std::io::Write;
+use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use tempdir::TempDir;
@@ -295,13 +296,32 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
         .status()?;
 
     if res.success() {
-        Ok(())
+        set_archive_permissions(result)
     } else {
         Err(io::Error::new(
             io::ErrorKind::Other,
             "Cannot create tar archive",
         ))
     }
+}
+
+// Sets the archive owner to root:root. Also sets the file permissions to read/write for the
+// owner only.
+fn set_archive_permissions(archive: &String) -> io::Result<()> {
+    let attr = fs::metadata(archive)?;
+    let mut permissions = attr.permissions();
+
+    // set the archive file permissions to -rw-------
+    permissions.set_mode(0o600);
+    fs::set_permissions(archive, permissions)?;
+
+    // set the archive owner to root:root
+    // note: std::os::unix::fs::chown is unstable for now
+    Command::new("chown")
+        .args(["root:root", archive.as_str()])
+        .status()?;
+
+    Ok(())
 }
 
 // Handler for the "agama logs store" subcommand
