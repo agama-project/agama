@@ -25,10 +25,59 @@ import { plainRender, installerRender } from "~/test-utils";
 import { Section } from "~/components/core";
 
 describe("Section", () => {
-  it("renders given title", () => {
-    plainRender(<Section title="settings" />);
+  describe("when title is given", () => {
+    it("renders the section header", () => {
+      plainRender(<Section title="Settings" />);
+      screen.getByRole("heading", { name: "Settings" });
+    });
 
-    screen.getByRole("heading", { name: "settings" });
+    it("renders an icon if valid icon name is given", () => {
+      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
+      const { container } = plainRender(<Section title="Settings" icon="settings" />);
+      container.querySelector("svg");
+    });
+
+    it("renders an icon if loading", () => {
+      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
+      const { container } = plainRender(<Section title="Settings" loading />);
+      container.querySelector("svg");
+    });
+
+    it("does not render an icon when not loading and icon name not given", () => {
+      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
+      const { container } = plainRender(<Section title="Settings" />);
+      const icon = container.querySelector("svg");
+      expect(icon).toBeNull();
+    });
+
+    it("does not render an icon when not valid icon name is given", () => {
+      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
+      const { container } = plainRender(<Section title="Settings" icon="not-valid-icon-name" />);
+      const icon = container.querySelector("svg");
+      expect(icon).toBeNull();
+    });
+  });
+
+  describe("when title is not given", () => {
+    it("does not render the section header", async () => {
+      plainRender(<Section />);
+      const header = await screen.queryByRole("heading");
+      expect(header).not.toBeInTheDocument();
+    });
+
+    it("does not render the section icon", () => {
+      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
+      const { container } = plainRender(<Section icon="settings" />);
+      const icon = container.querySelector("svg");
+      expect(icon).toBeNull();
+    });
+
+    it("does not render the loading icon", () => {
+      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
+      const { container } = plainRender(<Section loading />);
+      const icon = container.querySelector("svg");
+      expect(icon).toBeNull();
+    });
   });
 
   it("renders given errors", () => {
@@ -47,25 +96,6 @@ describe("Section", () => {
     );
 
     screen.getByText("A settings summary");
-  });
-
-  it("renders an icon when set as loading", () => {
-    // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
-    const { container } = plainRender(<Section title="Settings" loading />);
-    container.querySelector("svg");
-  });
-
-  it("renders an icon when a valid icon name is given", () => {
-    // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
-    const { container } = plainRender(<Section title="Settings" icon="settings" />);
-    container.querySelector("svg");
-  });
-
-  it("does not render an icon when either, not loading or not icon name was given", () => {
-    // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
-    const { container } = plainRender(<Section title="Settings" />);
-    const icon = container.querySelector("svg");
-    expect(icon).toBeNull();
   });
 
   describe("when path is given", () => {

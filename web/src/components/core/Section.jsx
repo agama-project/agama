@@ -98,6 +98,11 @@ const SectionContent = ({ children }) => {
  *     <UsersSummary />
  *   </Section>
  *
+ * @example <caption>A section without title</caption>
+ *   <Section>
+ *     <UsersSummary />
+ *   </Section>
+ *
  * @example <caption>A section that allows navigating to a page</caption>
  *   <Section title="Users" icon="manage_accounts" path="/users">
  *     <UsersSummary />
@@ -132,10 +137,22 @@ export default function Section({
   errors,
   children,
 }) {
+  const hasHeader = title && title !== "";
+
+  const SectionHeader = () => {
+    if (!hasHeader) return;
+
+    return (
+      <>
+        <SectionIcon name={loading ? "loading" : icon} />
+        <SectionTitle text={title} path={path} openDialog={openDialog} />
+      </>
+    );
+  };
+
   return (
     <section>
-      <SectionIcon name={loading ? "loading" : icon} />
-      <SectionTitle text={title} path={path} openDialog={openDialog} />
+      <SectionHeader />
       <SectionContent>
         {errors?.length > 0 &&
           <ValidationErrors errors={errors} title={`${title} errors`} />}
