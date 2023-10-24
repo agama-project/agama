@@ -20,12 +20,15 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
+require_relative "../with_issues_examples"
 require_relative "../with_progress_examples"
-require_relative File.join(
-  SRC_PATH, "agama", "dbus", "y2dir", "software", "modules", "PackageCallbacks.rb"
-)
+require_relative File.join(SRC_PATH, "agama/dbus/y2dir/software/modules/PackageCallbacks.rb")
 require "agama/config"
+require "agama/issue"
+require "agama/registration"
 require "agama/software/manager"
+require "agama/software/product"
+require "agama/software/proposal"
 require "agama/dbus/clients/questions"
 
 describe Agama::Software::Manager do
@@ -35,15 +38,19 @@ describe Agama::Software::Manager do
   let(:base_url) { "" }
   let(:destdir) { "/mnt" }
   let(:gpg_keys) { [] }
+
   let(:repositories) do
     instance_double(
       Agama::Software::RepositoriesManager,
       add:        nil,
       load:       nil,
       delete_all: nil,
-      empty?:     true
+      empty?:     true,
+      enabled:    enabled_repos,
+      disabled:   disabled_repos
     )
   end
+
   let(:proposal) do
     instance_double(
       Agama::Software::Proposal,
@@ -51,9 +58,14 @@ describe Agama::Software::Manager do
       calculate:        nil,
       :languages= =>    nil,
       set_resolvables:  nil,
-      packages_count:   "500 MB"
+      packages_count:   "500 MB",
+      issues:           proposal_issues
     )
   end
+
+  let(:enabled_repos) { [] }
+  let(:disabled_repos) { [] }
+  let(:proposal_issues) { [] }
 
   let(:config_path) do
     File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
@@ -81,6 +93,93 @@ describe Agama::Software::Manager do
     allow(Agama::Software::Proposal).to receive(:new).and_return(proposal)
   end
 
+  describe "#new" do
+    before do
+      allow_any_instance_of(Agama::Software::ProductBuilder)
+        .to receive(:build).and_return(products)
+    end
+
+    context "if there are several products" do
+      let(:products) do
+        [Agama::Software::Product.new("test1"), Agama::Software::Product.new("test2")]
+      end
+
+      it "does not select a product by default" do
+        manager = described_class.new(config, logger)
+
+        expect(manager.product).to be_nil
+      end
+    end
+
+    context "if there is only a product" do
+      let(:products) { [product] }
+
+      let(:product) { Agama::Software::Product.new("test1") }
+
+      it "selects the product" do
+        manager = described_class.new(config, logger)
+
+        expect(manager.product.id).to eq("test1")
+      end
+    end
+  end
+
+  shared_examples "software issues" do |tested_method|
+    before do
+      subject.select_product("Tumbleweed")
+      allow(subject.registration).to receive(:reg_code).and_return(reg_code)
+    end
+
+    let(:reg_code) { "123XX432" }
+    let(:proposal_issues) { [Agama::Issue.new("Proposal issue")] }
+
+    context "if there are disabled repositories" do
+      let(:disabled_repos) do
+        [
+          instance_double(Agama::Software::Repository, name: "Repo #1"),
+          instance_double(Agama::Software::Repository, name: "Repo #2")
+        ]
+      end
+
+      it "adds an issue for each disabled repository" do
+        subject.public_send(tested_method)
+
+        expect(subject.issues).to include(
+          an_object_having_attributes(
+            description: /could not read the repository Repo #1/i
+          ),
+          an_object_having_attributes(
+            description: /could not read the repository Repo #2/i
+          )
+        )
+      end
+    end
+
+    context "if there is any enabled repository" do
+      let(:enabled_repos) { [instance_double(Agama::Software::Repository, name: "Repo #1")] }
+
+      it "adds the proposal issues" do
+        subject.public_send(tested_method)
+
+        expect(subject.issues).to include(an_object_having_attributes(
+          description: /proposal issue/i
+        ))
+      end
+    end
+
+    context "if there is no enabled repository" do
+      let(:enabled_repos) { [] }
+
+      it "does not add the proposal issues" do
+        subject.public_send(tested_method)
+
+        expect(subject.issues).to_not include(an_object_having_attributes(
+          description: /proposal issue/i
+        ))
+      end
+    end
+  end
+
   describe "#probe" do
     let(:rootdir) { Dir.mktmpdir }
     let(:repos_dir) { File.join(rootdir, "etc", "zypp", "repos.d") }
@@ -90,6 +189,7 @@ describe Agama::Software::Manager do
       stub_const("Agama::Software::Manager::REPOS_DIR", repos_dir)
       stub_const("Agama::Software::Manager::REPOS_BACKUP", backup_repos_dir)
       FileUtils.mkdir_p(repos_dir)
+      subject.select_product("Tumbleweed")
     end
 
     after do
@@ -120,17 +220,19 @@ describe Agama::Software::Manager do
       expect(repositories).to receive(:load)
       subject.probe
     end
+
+    include_examples "software issues", "probe"
   end
 
   describe "#products" do
     it "returns the list of known products" do
       products = subject.products
       expect(products.size).to eq(3)
-      id, data = products.first
-      expect(id).to eq("Tumbleweed")
-      expect(data).to include(
-        "name"        => "openSUSE Tumbleweed",
-        "description" => String
+      expect(products).to all(be_a(Agama::Software::Product))
+      expect(products).to contain_exactly(
+        an_object_having_attributes(id: "Tumbleweed"),
+        an_object_having_attributes(id: "Leap Micro"),
+        an_object_having_attributes(id: "Leap")
       )
     end
   end
@@ -138,7 +240,6 @@ describe Agama::Software::Manager do
   describe "#propose" do
     before do
       subject.select_product("Tumbleweed")
-      allow(Yast::Arch).to receive(:s390).and_return(false)
     end
 
     it "creates a new proposal for the selected product" do
@@ -148,22 +249,7 @@ describe Agama::Software::Manager do
       subject.propose
     end
 
-    it "adds the patterns and packages to install depending on the system architecture" do
-      expect(proposal).to receive(:set_resolvables)
-        .with("agama", :pattern, ["enhanced_base"])
-      expect(proposal).to receive(:set_resolvables)
-        .with("agama", :pattern, ["optional_base"], optional: true)
-      expect(proposal).to receive(:set_resolvables)
-        .with("agama", :package, ["mandatory_pkg"])
-      expect(proposal).to receive(:set_resolvables)
-        .with("agama", :package, ["optional_pkg"], optional: true)
-      subject.propose
-
-      expect(Yast::Arch).to receive(:s390).and_return(true)
-      expect(proposal).to receive(:set_resolvables)
-        .with("agama", :package, ["mandatory_pkg", "mandatory_pkg_s390"])
-      subject.propose
-    end
+    include_examples "software issues", "propose"
   end
 
   describe "#install" do
@@ -189,43 +275,6 @@ describe Agama::Software::Manager do
 
       it "raises an exception" do
         expect { subject.install }.to raise_error(RuntimeError)
-      end
-    end
-  end
-
-  describe "#validate" do
-    before do
-      allow(repositories).to receive(:enabled).and_return(enabled_repos)
-      allow(repositories).to receive(:disabled).and_return(disabled_repos)
-      allow(proposal).to receive(:errors).and_return([proposal_error])
-    end
-
-    let(:enabled_repos) { [] }
-    let(:disabled_repos) { [] }
-    let(:proposal_error) { Agama::ValidationError.new("proposal error") }
-
-    context "when there are not enabled repositories" do
-      it "does not return the proposal errors" do
-        expect(subject.validate).to_not include(proposal_error)
-      end
-    end
-
-    context "when there are disabled repositories" do
-      let(:disabled_repos) do
-        [instance_double(Agama::Software::Repository, name: "Repo #1")]
-      end
-
-      it "returns an error for each disabled repository" do
-        expect(subject.validate.size).to eq(1)
-        error = subject.validate.first
-        expect(error.message).to match(/Could not read the repository/)
-      end
-    end
-
-    context "when there are enabled repositories" do
-      let(:enabled_repos) { [instance_double(Agama::Software::Repository)] }
-      it "returns the proposal errors" do
-        expect(subject.validate).to include(proposal_error)
       end
     end
   end
@@ -284,5 +333,83 @@ describe Agama::Software::Manager do
     end
   end
 
+  describe "#product_issues" do
+    before do
+      allow_any_instance_of(Agama::Software::ProductBuilder)
+        .to receive(:build).and_return([product1, product2])
+    end
+
+    let(:product1) do
+      Agama::Software::Product.new("test1").tap { |p| p.repositories = [] }
+    end
+
+    let(:product2) do
+      Agama::Software::Product.new("test2").tap { |p| p.repositories = ["http://test"] }
+    end
+
+    context "if no product is selected yet" do
+      it "contains a missing product issue" do
+        expect(subject.product_issues).to contain_exactly(
+          an_object_having_attributes(
+            description: /product not selected/i
+          )
+        )
+      end
+    end
+
+    context "if a product is already selected" do
+      before do
+        subject.select_product(product_id)
+      end
+
+      let(:product_id) { "test1" }
+
+      it "does not include a missing product issue" do
+        expect(subject.product_issues).to_not include(
+          an_object_having_attributes(
+            description: /product not selected/i
+          )
+        )
+      end
+
+      context "and the product does not require registration" do
+        let(:product_id) { "test2" }
+
+        it "does not contain issues" do
+          expect(subject.product_issues).to be_empty
+        end
+      end
+
+      context "and the product requires registration" do
+        let(:product_id) { "test1" }
+
+        before do
+          allow(subject.registration).to receive(:reg_code).and_return(reg_code)
+        end
+
+        context "and the product is not registered" do
+          let(:reg_code) { nil }
+
+          it "contains a missing registration issue" do
+            expect(subject.product_issues).to contain_exactly(
+              an_object_having_attributes(
+                description: /product must be registered/i
+              )
+            )
+          end
+        end
+
+        context "and the product is registered" do
+          let(:reg_code) { "1234XX5678" }
+
+          it "does not contain issues" do
+            expect(subject.product_issues).to be_empty
+          end
+        end
+      end
+    end
+  end
+
+  include_examples "issues"
   include_examples "progress"
 end

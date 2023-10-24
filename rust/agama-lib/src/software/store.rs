@@ -29,15 +29,10 @@ impl<'a> SoftwareStore<'a> {
 
     pub async fn store(&self, settings: &SoftwareSettings) -> Result<(), ServiceError> {
         if let Some(product) = &settings.product {
-            let products = self.software_client.products().await?;
-            let ids: Vec<String> = products.into_iter().map(|p| p.id).collect();
-            if ids.contains(product) {
-                self.software_client.select_product(product).await?;
-                self.manager_client.probe().await?;
-            } else {
-                return Err(ServiceError::UnknownProduct(product.clone(), ids));
-            }
+            self.software_client.select_product(product).await?;
+            self.manager_client.probe().await?;
         }
+
         Ok(())
     }
 }

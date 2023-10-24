@@ -84,7 +84,7 @@ export default function SoftwareSection({ showErrors }) {
 
   useEffect(() => {
     const updateProposal = async () => {
-      const errors = await cancellablePromise(client.getValidationErrors());
+      const errors = await cancellablePromise(client.getIssues());
       const size = await cancellablePromise(client.getUsedSpace());
 
       dispatch({ type: "UPDATE_PROPOSAL", payload: { errors, size } });
@@ -145,7 +145,7 @@ export default function SoftwareSection({ showErrors }) {
       title={_("Software")}
       icon="apps"
       loading={state.busy}
-      errors={errors}
+      errors={errors.map(e => ({ message: e.description }))}
       path="/software"
     >
       <SectionContent />

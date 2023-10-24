@@ -31,7 +31,7 @@ import PatternSelector from "./PatternSelector";
 jest.mock("~/client");
 const selectedPatternsFn = jest.fn().mockResolvedValue([]);
 const getUsedSpaceFn = jest.fn().mockResolvedValue();
-const getValidationErrorsFn = jest.fn().mockResolvedValue([]);
+const getIssuesFn = jest.fn().mockResolvedValue([]);
 const patternsFn = jest.fn().mockResolvedValue(test_patterns);
 
 beforeEach(() => {
@@ -40,7 +40,7 @@ beforeEach(() => {
       software: {
         selectedPatterns: selectedPatternsFn,
         getUsedSpace: getUsedSpaceFn,
-        getValidationErrors: getValidationErrorsFn,
+        getIssues: getIssuesFn,
         patterns: patternsFn
       },
     };

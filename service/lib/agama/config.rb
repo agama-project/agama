@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -92,10 +92,7 @@ module Agama
 
       # cannot use `data` here to avoid endless loop as in data we use
       # pick_product that select product from products
-      @products = @pure_data["products"].select do |_key, value|
-        value["archs"].nil? ||
-          Yast2::ArchFilter.from_string(value["archs"]).match?
-      end
+      @products = @pure_data["products"].select { |_k, v| arch_match?(v["archs"]) }
     end
 
     # Whether there are more than one product
@@ -120,6 +117,50 @@ module Agama
       Config.new(simple_merge(data, config.data))
     end
 
+    # Elements that match the current arch.
+    #
+    # @example
+    #   config.pure_data = {
+    #     "ALP-Dolomite" => {
+    #       "software" => {
+    #         "installation_repositories" => [
+    #           {
+    #             "url" => "https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/x86_64/product/",
+    #             "archs" => "x86_64"
+    #           },
+    #           {
+    #             "url" => https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/aarch64/product/",
+    #             "archs" => "aarch64"
+    #           },
+    #           "https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/noarch/"
+    #         ]
+    #       }
+    #     }
+    #   }
+    #
+    #   Yast::Arch.rpm_arch #=> "x86_64"
+    #   config.arch_elements_from("ALP-Dolomite", "software", "installation_repositories",
+    #     property: :url) #=> ["https://.../SUSE/Products/ALP-Dolomite/1.0/x86_64/product/",
+    #                     #=>  "https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/noarch/"]
+    #
+    # @param keys [Array<Symbol|String>] Config data keys of the collection.
+    # @param property [Symbol|String|nil] Property to retrieve of the elements.
+    #
+    # @return [Array]
+    def arch_elements_from(*keys, property: nil)
+      keys.map!(&:to_s)
+      elements = pure_data.dig(*keys)
+      return [] unless elements.is_a?(Array)
+
+      elements.map do |element|
+        if !element.is_a?(Hash)
+          element
+        elsif arch_match?(element["archs"])
+          property ? element[property.to_s] : element
+        end
+      end.compact
+    end
+
   private
 
     # Simple deep merge
@@ -137,6 +178,16 @@ module Agama
           all.merge(k => another_hash[k])
         end
       end
+    end
+
+    # Whether the current arch matches any of the given archs.
+    #
+    # @param archs [String] E.g., "x86_64,aarch64"
+    # @return [Boolean]
+    def arch_match?(archs)
+      return true if archs.nil?
+
+      Yast2::ArchFilter.from_string(archs).match?
     end
   end
 end

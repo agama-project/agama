@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,11 +22,13 @@
 // @ts-check
 
 import DBusClient from "./dbus";
-import { WithStatus, WithProgress, WithValidation } from "./mixins";
+import { WithIssues, WithStatus, WithProgress } from "./mixins";
 
 const SOFTWARE_SERVICE = "org.opensuse.Agama.Software1";
 const SOFTWARE_IFACE = "org.opensuse.Agama.Software1";
 const SOFTWARE_PATH = "/org/opensuse/Agama/Software1";
+const PRODUCT_IFACE = "org.opensuse.Agama.Software1.Product";
+const PRODUCT_PATH = "/org/opensuse/Agama/Software1/Product";
 
 /**
  * @typedef {object} Product
@@ -64,8 +66,8 @@ class SoftwareBaseClient {
    * @return {Promise<Array<Product>>}
    */
   async getProducts() {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.AvailableBaseProducts.map(product => {
+    const proxy = await this.client.proxy(PRODUCT_IFACE);
+    return proxy.AvailableProducts.map(product => {
       const [id, name, meta] = product;
       return { id, name, description: meta.description?.v };
     });
@@ -136,11 +138,11 @@ class SoftwareBaseClient {
    */
   async getSelectedProduct() {
     const products = await this.getProducts();
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    if (proxy.SelectedBaseProduct === "") {
+    const proxy = await this.client.proxy(PRODUCT_IFACE);
+    if (proxy.SelectedProduct === "") {
       return null;
     }
-    return products.find(product => product.id === proxy.SelectedBaseProduct);
+    return products.find(product => product.id === proxy.SelectedProduct);
   }
 
   /**
@@ -149,7 +151,7 @@ class SoftwareBaseClient {
    * @param {string} id - product ID
    */
   async selectProduct(id) {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
+    const proxy = await this.client.proxy(PRODUCT_IFACE);
     return proxy.SelectProduct(id);
   }
 
@@ -159,9 +161,9 @@ class SoftwareBaseClient {
    * @param {(id: string) => void} handler - callback function
    */
   onProductChange(handler) {
-    return this.client.onObjectChanged(SOFTWARE_PATH, SOFTWARE_IFACE, changes => {
-      if ("SelectedBaseProduct" in changes) {
-        const selected = changes.SelectedBaseProduct.v.toString();
+    return this.client.onObjectChanged(PRODUCT_PATH, PRODUCT_IFACE, changes => {
+      if ("SelectedProduct" in changes) {
+        const selected = changes.SelectedProduct.v.toString();
         handler(selected);
       }
     });
@@ -171,7 +173,7 @@ class SoftwareBaseClient {
 /**
  * Allows getting the list the available products and selecting one for installation.
  */
-class SoftwareClient extends WithValidation(
+class SoftwareClient extends WithIssues(
   WithProgress(
     WithStatus(SoftwareBaseClient, SOFTWARE_PATH), SOFTWARE_PATH
   ), SOFTWARE_PATH

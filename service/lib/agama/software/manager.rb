@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2021] SUSE LLC
+# Copyright (c) [2021-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,18 +19,21 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
 require "fileutils"
-require "agama/config"
-require "agama/helpers"
-require "agama/with_progress"
-require "agama/validation_error"
+require "yast"
 require "y2packager/product"
 require "y2packager/resolvable"
-require "yast2/arch_filter"
+require "agama/config"
+require "agama/helpers"
+require "agama/issue"
+require "agama/registration"
 require "agama/software/callbacks"
+require "agama/software/product"
+require "agama/software/product_builder"
 require "agama/software/proposal"
 require "agama/software/repositories_manager"
+require "agama/with_progress"
+require "agama/with_issues"
 
 Yast.import "Package"
 Yast.import "Packages"
@@ -40,14 +43,26 @@ Yast.import "Stage"
 
 module Agama
   module Software
-    # This class is responsible for software handling
-    class Manager
+    # This class is responsible for software handling.
+    #
+    # FIXME: This class has too many responsibilities:
+    #   * Address the software service workflow (probe, propose, install).
+    #   * Manages repositories, packages, patterns, services.
+    #   * Manages product selection.
+    #   * Manages software and product related issues.
+    #
+    #   It shoud be splitted in separate and smaller classes.
+    class Manager # rubocop:disable Metrics/ClassLength
       include Helpers
+      include WithIssues
       include WithProgress
 
       GPG_KEYS_GLOB = "/usr/lib/rpm/gnupg/keys/gpg-*"
       private_constant :GPG_KEYS_GLOB
 
+      # Selected product.
+      #
+      # @return [Agama::Product, nil]
       attr_reader :product
 
       DEFAULT_LANGUAGES = ["en_US"].freeze
@@ -55,41 +70,50 @@ module Agama
 
       attr_accessor :languages
 
-      # FIXME: what about defining a Product class?
-      # @return [Array<Array<String,Hash>>] An array containing the product ID and
-      #   additional information in a hash
+      # Available products for installation.
+      #
+      # @return [Array<Agama::Product>]
       attr_reader :products
 
+      # @return [Agama::RepositoriesManager]
       attr_reader :repositories
 
+      # @param config [Agama::Config]
+      # @param logger [Logger]
       def initialize(config, logger)
         @config = config
         @logger = logger
         @languages = DEFAULT_LANGUAGES
-        @products = @config.products
-        if @config.multi_product?
-          @product = nil
-        else
-          @product = @products.keys.first # use the available product as default
-          @config.pick_product(@product)
-        end
+        @products = build_products
+        @product = @products.first if @products.size == 1
         @repositories = RepositoriesManager.new
-        on_progress_change { logger.info progress.to_s }
         # patterns selected by user
         @user_patterns = []
         @selected_patterns_change_callbacks = []
+        on_progress_change { logger.info(progress.to_s) }
       end
 
-      def select_product(name)
-        return if name == @product
-        raise ArgumentError unless @products[name]
+      # Selects a product with the given id.
+      #
+      # @raise {ArgumentError} If id is unknown.
+      #
+      # @param id [String]
+      def select_product(id)
+        return if id == product&.id
 
-        @config.pick_product(name)
-        @product = name
+        new_product = @products.find { |p| p.id == id }
+
+        raise ArgumentError unless new_product
+
+        @product = new_product
         repositories.delete_all
+        update_issues
       end
 
       def probe
+        # Should an error be raised?
+        return unless product
+
         logger.info "Probing software"
 
         # as we use liveDVD with normal like ENV, lets temporary switch to normal to use its repos
@@ -109,6 +133,7 @@ module Agama
         progress.step("Calculating the software proposal") { propose }
 
         Yast::Stage.Set("initial")
+        update_issues
       end
 
       def initialize_target_repos
@@ -118,28 +143,17 @@ module Agama
 
       # Updates the software proposal
       def propose
-        proposal.base_product = selected_base_product
+        # Should an error be raised?
+        return unless product
+
+        proposal.base_product = product.name
         proposal.languages = languages
         select_resolvables
         result = proposal.calculate
+        update_issues
         logger.info "Proposal result: #{result.inspect}"
         selected_patterns_changed
         result
-      end
-
-      # Returns the errors related to the software proposal
-      #
-      # * Repositories that could not be probed are reported as errors.
-      # * If none of the repositories could be probed, do not report missing
-      #   patterns and/or packages. Those issues does not make any sense if there
-      #   are no repositories to install from.
-      def validate
-        errors = repositories.disabled.map do |repo|
-          ValidationError.new("Could not read the repository #{repo.name}")
-        end
-        return errors if repositories.enabled.empty?
-
-        errors + proposal.errors
       end
 
       # Installs the packages to the target system
@@ -169,6 +183,7 @@ module Agama
           Yast::Pkg.SourceSaveAll
           Yast::Pkg.TargetFinish
           Yast::Pkg.SourceCacheCopyTo(Yast::Installation.destdir)
+          registration.finish
         end
         progress.step("Restoring original repositories") { restore_original_repos }
       end
@@ -262,14 +277,96 @@ module Agama
         Yast::String.FormatSizeWithPrecision(proposal.packages_size, 1, true)
       end
 
+      def registration
+        return @registration if @registration
+
+        @registration = Registration.new(self, @logger)
+        @registration.on_change do
+          # reprobe and repropose when system is register or deregistered
+          probe
+          proposal
+        end
+
+        @registration
+      end
+
+      # code is based on https://github.com/yast/yast-registration/blob/master/src/lib/registration/sw_mgmt.rb#L365
+      # rubocop:disable Metrics/AbcSize
+      def add_service(service)
+        # init repos, so we are sure we operate on "/" and have GPG imported
+        initialize_target_repos
+        # save repositories before refreshing added services (otherwise
+        # pkg-bindings will treat them as removed by the service refresh and
+        # unload them)
+        if !Yast::Pkg.SourceSaveAll
+          # error message
+          @logger.error("Saving repository configuration failed.")
+        end
+
+        @logger.info "Adding service #{service.name.inspect} (#{service.url})"
+        if !Yast::Pkg.ServiceAdd(service.name, service.url.to_s)
+          raise format("Adding service '%s' failed.", service.name)
+        end
+
+        if !Yast::Pkg.ServiceSet(service.name, "autorefresh" => true)
+          # error message
+          raise format("Updating service '%s' failed.", service.name)
+        end
+
+        # refresh works only for saved services
+        if !Yast::Pkg.ServiceSave(service.name)
+          # error message
+          raise format("Saving service '%s' failed.", service.name)
+        end
+
+        # Force refreshing due timing issues (bnc#967828)
+        if !Yast::Pkg.ServiceForceRefresh(service.name)
+          # error message
+          raise format("Refreshing service '%s' failed.", service.name)
+        end
+      ensure
+        Yast::Pkg.SourceSaveAll
+      end
+      # rubocop:enable Metrics/AbcSize
+
+      def remove_service(service)
+        if Yast::Pkg.ServiceDelete(service.name) && !Yast::Pkg.SourceSaveAll
+          raise format("Removing service '%s' failed.", service_name)
+        end
+
+        true
+      end
+
+      # Issues associated to the product.
+      #
+      # These issues are not considered as software issues, see {#update_issues}.
+      #
+      # @return [Array<Agama::Issue>]
+      def product_issues
+        issues = []
+        issues << missing_product_issue unless product
+        issues << missing_registration_issue if missing_registration?
+        issues
+      end
+
     private
+
+      # @return [Agama::Config]
+      attr_reader :config
+
+      # @return [Logger]
+      attr_reader :logger
+
+      # Generates a list of products according to the information of the config file.
+      #
+      # @return [Array<Agama::Software::Product>]
+      def build_products
+        ProductBuilder.new(config).build
+      end
 
       def proposal
         @proposal ||= Proposal.new
       end
-
-      # @return [Logger]
-      attr_reader :logger
 
       def import_gpg_keys
         gpg_keys = Dir.glob(GPG_KEYS_GLOB).map(&:to_s)
@@ -279,27 +376,8 @@ module Agama
         end
       end
 
-      def arch_select(section)
-        collection = @config.data["software"][section] || []
-        collection.select { |c| !c.is_a?(Hash) || arch_match?(c["archs"]) }
-      end
-
-      def arch_collection_for(section, key)
-        arch_select(section).map { |r| r.is_a?(Hash) ? r[key] : r }
-      end
-
-      def selected_base_product
-        @config.data["software"]["base_product"]
-      end
-
-      def arch_match?(archs)
-        return true if archs.nil?
-
-        Yast2::ArchFilter.from_string(archs).match?
-      end
-
       def add_base_repos
-        arch_collection_for("installation_repositories", "url").map { |url| repositories.add(url) }
+        product.repositories.each { |url| repositories.add(url) }
       end
 
       REPOS_BACKUP = "/etc/zypp/repos.d.agama.backup"
@@ -327,25 +405,75 @@ module Agama
         FileUtils.mv(REPOS_BACKUP, REPOS_DIR)
       end
 
-      # adds resolvables from yaml config for given product
+      # Adds resolvables for selected product
       def select_resolvables
-        mandatory_patterns = arch_collection_for("mandatory_patterns", "pattern")
-        proposal.set_resolvables("agama", :pattern, mandatory_patterns)
-
-        optional_patterns = arch_collection_for("optional_patterns", "pattern")
-        proposal.set_resolvables("agama", :pattern, optional_patterns,
-          optional: true)
-
-        mandatory_packages = arch_collection_for("mandatory_packages", "package")
-        proposal.set_resolvables("agama", :package, mandatory_packages)
-
-        optional_packages = arch_collection_for("optional_packages", "package")
-        proposal.set_resolvables("agama", :package, optional_packages,
-          optional: true)
+        proposal.set_resolvables("agama", :pattern, product.mandatory_patterns)
+        proposal.set_resolvables("agama", :pattern, product.optional_patterns, optional: true)
+        proposal.set_resolvables("agama", :package, product.mandatory_packages)
+        proposal.set_resolvables("agama", :package, product.optional_packages, optional: true)
       end
 
       def selected_patterns_changed
         @selected_patterns_change_callbacks.each(&:call)
+      end
+
+      # Updates the list of software issues.
+      def update_issues
+        self.issues = current_issues
+      end
+
+      # List of current software issues.
+      #
+      # @return [Array<Agama::Issue>]
+      def current_issues
+        return [] unless product
+
+        issues = repos_issues
+
+        # If none of the repositories could be probed, then do not report missing patterns and/or
+        # packages. Those issues does not make any sense if there are no repositories to install
+        # from.
+        issues += proposal.issues if repositories.enabled.any?
+        issues
+      end
+
+      # Issues related to the software proposal.
+      #
+      # Repositories that could not be probed are reported as errors.
+      #
+      # @return [Array<Agama::Issue>]
+      def repos_issues
+        repositories.disabled.map do |repo|
+          Issue.new("Could not read the repository #{repo.name}",
+            source:   Issue::Source::SYSTEM,
+            severity: Issue::Severity::ERROR)
+        end
+      end
+
+      # Issue when a product is missing
+      #
+      # @return [Agama::Issue]
+      def missing_product_issue
+        Issue.new("Product not selected yet",
+          source:   Issue::Source::CONFIG,
+          severity: Issue::Severity::ERROR)
+      end
+
+      # Issue when a product requires registration but it is not registered yet.
+      #
+      # @return [Agama::Issue]
+      def missing_registration_issue
+        Issue.new("Product must be registered",
+          source:   Issue::Source::SYSTEM,
+          severity: Issue::Severity::ERROR)
+      end
+
+      # Whether the registration is missing.
+      #
+      # @return [Boolean]
+      def missing_registration?
+        registration.reg_code.nil? &&
+          registration.requirement == Agama::Registration::Requirement::MANDATORY
       end
     end
   end

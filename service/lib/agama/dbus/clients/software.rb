@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,18 +20,18 @@
 # find current contact information at www.suse.com.
 
 require "agama/dbus/clients/base"
-require "agama/dbus/clients/with_service_status"
+require "agama/dbus/clients/with_issues"
 require "agama/dbus/clients/with_progress"
-require "agama/dbus/clients/with_validation"
+require "agama/dbus/clients/with_service_status"
 
 module Agama
   module DBus
     module Clients
       # D-Bus client for software configuration
       class Software < Base
-        include WithServiceStatus
+        include WithIssues
         include WithProgress
-        include WithValidation
+        include WithServiceStatus
 
         TYPES = [:package, :pattern].freeze
         private_constant :TYPES
@@ -41,6 +41,9 @@ module Agama
 
           @dbus_object = service["/org/opensuse/Agama/Software1"]
           @dbus_object.introspect
+
+          @dbus_product = service["/org/opensuse/Agama/Software1/Product"]
+          @dbus_product.introspect
 
           @dbus_proposal = service["/org/opensuse/Agama/Software1/Proposal"]
           @dbus_proposal.introspect
@@ -55,7 +58,7 @@ module Agama
         #
         # @return [Array<Array<String, String>>] name and display name of each product
         def available_products
-          dbus_object["org.opensuse.Agama.Software1"]["AvailableBaseProducts"].map do |l|
+          dbus_product["org.opensuse.Agama.Software1.Product"]["AvailableProducts"].map do |l|
             l[0..1]
           end
         end
@@ -64,7 +67,7 @@ module Agama
         #
         # @return [String, nil] name of the product
         def selected_product
-          product = dbus_object["org.opensuse.Agama.Software1"]["SelectedBaseProduct"]
+          product = dbus_product["org.opensuse.Agama.Software1.Product"]["SelectedProduct"]
           return nil if product.empty?
 
           product
@@ -74,7 +77,7 @@ module Agama
         #
         # @param name [String]
         def select_product(name)
-          dbus_object.SelectProduct(name)
+          dbus_product.SelectProduct(name)
         end
 
         # Starts the probing process
@@ -169,9 +172,9 @@ module Agama
         #
         # @param block [Proc] Callback to run when a product is selected
         def on_product_selected(&block)
-          on_properties_change(dbus_object) do |_, changes, _|
-            base_product = changes["SelectedBaseProduct"]
-            block.call(base_product) unless base_product.nil?
+          on_properties_change(dbus_product) do |_, changes, _|
+            product = changes["SelectedProduct"]
+            block.call(product) unless product.nil?
           end
         end
 
@@ -179,6 +182,9 @@ module Agama
 
         # @return [::DBus::Object]
         attr_reader :dbus_object
+
+        # @return [::DBus::Object]
+        attr_reader :dbus_product
 
         # @return [::DBus::Object]
         attr_reader :dbus_proposal
