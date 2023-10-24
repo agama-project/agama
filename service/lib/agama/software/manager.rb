@@ -53,6 +53,9 @@ module Agama
       DEFAULT_LANGUAGES = ["en_US"].freeze
       private_constant :DEFAULT_LANGUAGES
 
+      PROPOSAL_ID = "agama-user-software-selection"
+      private_constant :PROPOSAL_ID
+
       attr_accessor :languages
 
       # FIXME: what about defining a Product class?
@@ -75,8 +78,6 @@ module Agama
         end
         @repositories = RepositoriesManager.new
         on_progress_change { logger.info progress.to_s }
-        # patterns selected by user
-        @user_patterns = []
         @selected_patterns_change_callbacks = []
       end
 
@@ -201,7 +202,7 @@ module Agama
         # TODO: error handling
         res = Yast::Pkg.ResolvableInstall(id, :pattern)
         logger.info "Adding pattern #{res.inspect}"
-        @user_patterns << id
+        Yast::PackagesProposal.AddResolvables(PROPOSAL_ID, :pattern, [id])
 
         res = Yast::Pkg.PkgSolve(unused = true)
         logger.info "Solver run #{res.inspect}"
@@ -212,7 +213,7 @@ module Agama
         # TODO: error handling
         res = Yast::Pkg.ResolvableNeutral(id, :pattern, force = false)
         logger.info "Removing pattern #{res.inspect}"
-        @user_patterns.delete(id)
+        Yast::PackagesProposal.RemoveResolvables(PROPOSAL_ID, :pattern, [id])
 
         res = Yast::Pkg.PkgSolve(unused = true)
         logger.info "Solver run #{res.inspect}"
@@ -220,9 +221,10 @@ module Agama
       end
 
       def user_patterns=(ids)
-        @user_patterns.each { |p| Yast::Pkg.ResolvableNeutral(p, :pattern, force = false) }
-        @user_patterns = ids
-        @user_patterns.each { |p| Yast::Pkg.ResolvableInstall(p, :pattern) }
+        user_patterns = Yast::PackagesProposal.GetResolvables(PROPOSAL_ID, :pattern)
+        user_patterns.each { |p| Yast::Pkg.ResolvableNeutral(p, :pattern, force = false) }
+        Yast::PackagesProposal.SetResolvables(PROPOSAL_ID, :pattern, ids)
+        ids.each { |p| Yast::Pkg.ResolvableInstall(p, :pattern) }
         logger.info "Setting patterns to #{res.inspect}"
 
         res = Yast::Pkg.PkgSolve(unused = true)
@@ -233,10 +235,12 @@ module Agama
       # @return [Array<Array<String>,Array<String>] returns pair of arrays where the first one
       #   is user selected pattern ids and in other is auto selected ones
       def selected_patterns
+        user_patterns = Yast::PackagesProposal.GetResolvables(PROPOSAL_ID, :pattern)
+
         patterns = Y2Packager::Resolvable.find(kind: :pattern, status: :selected)
         patterns.map!(&:name)
 
-        patterns.partition { |p| @user_patterns.include?(p) }
+        patterns.partition { |p| user_patterns.include?(p) }
       end
 
       def on_selected_patterns_change(&block)
