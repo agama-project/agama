@@ -33,8 +33,9 @@ function SoftwareProvider({ children }) {
 
   useEffect(() => {
     const loadProducts = async () => {
-      const available = await cancellablePromise(client.software.getProducts());
-      const selected = await cancellablePromise(client.software.getSelectedProduct());
+      const productManager = client.software.product;
+      const available = await cancellablePromise(productManager.getAll());
+      const selected = await cancellablePromise(productManager.getSelected());
       setProducts(available);
       setSelectedId(selected?.id || null);
     };
@@ -47,7 +48,7 @@ function SoftwareProvider({ children }) {
   useEffect(() => {
     if (!client) return;
 
-    return client.software.onProductChange(setSelectedId);
+    return client.software.product.onChange(setSelectedId);
   }, [client, setSelectedId]);
 
   const value = [products, selectedId];

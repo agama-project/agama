@@ -38,7 +38,7 @@ import { Icon, Loading } from "~/components/layout";
 import { Title, PageIcon, MainActions } from "~/components/layout/Layout";
 
 function ProductSelectionPage() {
-  const client = useInstallerClient();
+  const { software, manager } = useInstallerClient();
   const navigate = useNavigate();
   const { products, selectedProduct } = useSoftware();
   const previous = selectedProduct?.id;
@@ -47,8 +47,8 @@ function ProductSelectionPage() {
   useEffect(() => {
     // TODO: display a notification in the UI to emphasizes that
     // selected product has changed
-    return client.software.onProductChange(() => navigate("/"));
-  }, [client.software, navigate]);
+    return software.product.onChange(() => navigate("/"));
+  }, [software, navigate]);
 
   const isSelected = p => p.id === selected;
 
@@ -60,8 +60,8 @@ function ProductSelectionPage() {
     }
 
     // TODO: handle errors
-    await client.software.selectProduct(selected);
-    client.manager.startProbing();
+    await software.product.select(selected);
+    manager.startProbing();
     navigate("/");
   };
 

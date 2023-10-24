@@ -38,6 +38,75 @@ const PRODUCT_PATH = "/org/opensuse/Agama/Software1/Product";
  */
 
 /**
+ * Product manager.
+ * @ignore
+ */
+class BaseProductManager {
+  /**
+   * @param {DBusClient} client
+   */
+  constructor(client) {
+    this.client = client;
+  }
+
+  /**
+   * Returns the list of available products.
+   *
+   * @return {Promise<Array<Product>>}
+   */
+  async getAll() {
+    const proxy = await this.client.proxy(PRODUCT_IFACE);
+    return proxy.AvailableProducts.map(product => {
+      const [id, name, meta] = product;
+      return { id, name, description: meta.description?.v };
+    });
+  }
+
+  /**
+   * Returns the selected product.
+   *
+   * @return {Promise<Product|null>}
+   */
+  async getSelected() {
+    const products = await this.getAll();
+    const proxy = await this.client.proxy(PRODUCT_IFACE);
+    if (proxy.SelectedProduct === "") {
+      return null;
+    }
+    return products.find(product => product.id === proxy.SelectedProduct);
+  }
+
+  /**
+   * Selects a product for installation.
+   *
+   * @param {string} id - Product ID.
+   */
+  async select(id) {
+    const proxy = await this.client.proxy(PRODUCT_IFACE);
+    return proxy.SelectProduct(id);
+  }
+
+  /**
+   * Registers a callback to run when properties in the Product object change.
+   *
+   * @param {(id: string) => void} handler - Callback function.
+   */
+  onChange(handler) {
+    return this.client.onObjectChanged(PRODUCT_PATH, PRODUCT_IFACE, changes => {
+      if ("SelectedProduct" in changes) {
+        const selected = changes.SelectedProduct.v.toString();
+        handler(selected);
+      }
+    });
+  }
+}
+
+/**
+ * Manages product selection.
+ */
+class ProductManager extends WithIssues(BaseProductManager, PRODUCT_PATH) { }
+
+/**
  * Software client
  *
  * @ignore
@@ -48,6 +117,7 @@ class SoftwareBaseClient {
    */
   constructor(address = undefined) {
     this.client = new DBusClient(SOFTWARE_SERVICE, address);
+    this.product = new ProductManager(this.client);
   }
 
   /**
@@ -58,19 +128,6 @@ class SoftwareBaseClient {
   async probe() {
     const proxy = await this.client.proxy(SOFTWARE_IFACE);
     return proxy.Probe();
-  }
-
-  /**
-   * Returns the list of available products
-   *
-   * @return {Promise<Array<Product>>}
-   */
-  async getProducts() {
-    const proxy = await this.client.proxy(PRODUCT_IFACE);
-    return proxy.AvailableProducts.map(product => {
-      const [id, name, meta] = product;
-      return { id, name, description: meta.description?.v };
-    });
   }
 
   /**
@@ -130,48 +187,10 @@ class SoftwareBaseClient {
     const proxy = await this.client.proxy(SOFTWARE_IFACE);
     return proxy.RemovePattern(name);
   }
-
-  /**
-   * Returns the selected product
-   *
-   * @return {Promise<Product|null>}
-   */
-  async getSelectedProduct() {
-    const products = await this.getProducts();
-    const proxy = await this.client.proxy(PRODUCT_IFACE);
-    if (proxy.SelectedProduct === "") {
-      return null;
-    }
-    return products.find(product => product.id === proxy.SelectedProduct);
-  }
-
-  /**
-   * Selects a product for installation
-   *
-   * @param {string} id - product ID
-   */
-  async selectProduct(id) {
-    const proxy = await this.client.proxy(PRODUCT_IFACE);
-    return proxy.SelectProduct(id);
-  }
-
-  /**
-   * Registers a callback to run when properties in the Software object change
-   *
-   * @param {(id: string) => void} handler - callback function
-   */
-  onProductChange(handler) {
-    return this.client.onObjectChanged(PRODUCT_PATH, PRODUCT_IFACE, changes => {
-      if ("SelectedProduct" in changes) {
-        const selected = changes.SelectedProduct.v.toString();
-        handler(selected);
-      }
-    });
-  }
 }
 
 /**
- * Allows getting the list the available products and selecting one for installation.
+ * Manages software and product configuration.
  */
 class SoftwareClient extends WithIssues(
   WithProgress(

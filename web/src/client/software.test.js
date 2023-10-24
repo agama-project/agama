@@ -48,23 +48,25 @@ beforeEach(() => {
   });
 });
 
-describe("#getProducts", () => {
-  it("returns the list of available products", async () => {
-    const client = new SoftwareClient();
-    const availableProducts = await client.getProducts();
-    expect(availableProducts).toEqual([
-      { id: "MicroOS", name: "openSUSE MicroOS" },
-      { id: "Tumbleweed", name: "openSUSE Tumbleweed" }
-    ]);
+describe("#product", () => {
+  describe("#getAll", () => {
+    it("returns the list of available products", async () => {
+      const client = new SoftwareClient();
+      const availableProducts = await client.product.getAll();
+      expect(availableProducts).toEqual([
+        { id: "MicroOS", name: "openSUSE MicroOS" },
+        { id: "Tumbleweed", name: "openSUSE Tumbleweed" }
+      ]);
+    });
   });
-});
 
-describe('#getSelectedProduct', () => {
-  it("returns the selected product", async () => {
-    const client = new SoftwareClient();
-    const selectedProduct = await client.getSelectedProduct();
-    expect(selectedProduct).toEqual(
-      { id: "MicroOS", name: "openSUSE MicroOS" }
-    );
+  describe('#getSelected', () => {
+    it("returns the selected product", async () => {
+      const client = new SoftwareClient();
+      const selectedProduct = await client.product.getSelected();
+      expect(selectedProduct).toEqual(
+        { id: "MicroOS", name: "openSUSE MicroOS" }
+      );
+    });
   });
 });
