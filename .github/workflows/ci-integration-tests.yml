@@ -146,7 +146,7 @@ jobs:
       run:  podman exec agama bash -c "cd /checkout/playwright && SKIP_LOGIN=true playwright test --trace on --project chromium"
 
     - name: Again show the D-Bus services log
-      run:  podman exec agama bash -c "journalctl | grep agama"
+      run:  podman exec agama bash -c "journalctl -u agama"
 
     - name: Show the complete journal
       # maybe not necessary if the above filtered journalctl calls are enough
