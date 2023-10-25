@@ -65,7 +65,7 @@ function useSoftware() {
 
   let selectedProduct = selectedId;
   if (selectedId) {
-    selectedProduct = products.find(p => p.id === selectedId) || null;
+    selectedProduct = products.find(p => p.id === selectedId);
   }
 
   return {
