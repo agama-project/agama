@@ -57,6 +57,7 @@ import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import SettingsFill from "@icons/settings-fill.svg?component";
 import SignalCellularAlt from "@icons/signal_cellular_alt.svg?component";
 import Storage from "@icons/storage.svg?component";
+import Summarize from "@icons/summarize.svg?component";
 import TaskAlt from "@icons/task_alt.svg?component";
 import Terminal from "@icons/terminal.svg?component";
 import Translate from "@icons/translate.svg?component";
@@ -110,6 +111,7 @@ const icons = {
   settings_ethernet: SettingsEthernet,
   signal_cellular_alt: SignalCellularAlt,
   storage: Storage,
+  summarize: Summarize,
   task_alt: TaskAlt,
   terminal: Terminal,
   translate: Translate,

@@ -22,7 +22,6 @@
 import React, { useState } from "react";
 import { useProduct } from "~/context/product";
 import { Navigate } from "react-router-dom";
-
 import { Page, InstallButton } from "~/components/core";
 import {
   L10nSection,
@@ -32,6 +31,7 @@ import {
   StorageSection,
   UsersSection
 } from "~/components/overview";
+import { _ } from "~/i18n";
 
 function Overview() {
   const { selectedProduct } = useProduct();
@@ -43,8 +43,9 @@ function Overview() {
 
   return (
     <Page
-      title={selectedProduct?.name}
-      icon="inventory_2"
+      // TRANSLATORS: page title
+      title={_("Installation Summary")}
+      icon="summarize"
       action={<InstallButton onClick={() => setShowErrors(true)} />}
     >
       <ProductSection />

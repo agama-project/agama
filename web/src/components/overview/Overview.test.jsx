@@ -69,7 +69,7 @@ beforeEach(() => {
 describe("when product is selected", () => {
   it("renders the Overview and the Install button", async () => {
     installerRender(<Overview />);
-    const title = screen.getByText(/openSUSE Tumbleweed/i);
+    const title = screen.getByText(/installation summary/i);
     expect(title).toBeInTheDocument();
 
     await screen.findByText("Product Section");
