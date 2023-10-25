@@ -29,6 +29,18 @@ import { IDLE, BUSY } from "~/client/status";
 
 jest.mock("~/client");
 
+// list of available products
+let mockProducts;
+jest.mock("~/context/software", () => ({
+  ...jest.requireActual("~/context/software"),
+  useSoftware: () => {
+    return {
+      products: mockProducts,
+      selectedProduct: null
+    };
+  }
+}));
+
 // Mock some components,
 // See https://www.chakshunyu.com/blog/how-to-mock-a-react-component-in-jest/#default-export
 jest.mock("~/components/core/DBusError", () => <div>D-BusError Mock</div>);
@@ -63,11 +75,27 @@ describe("App", () => {
         }
       };
     });
+
+    mockProducts = [
+      { id: "openSUSE", name: "openSUSE Tumbleweed" },
+      { id: "Leap Micro", name: "openSUSE Micro" }
+    ];
   });
 
   afterEach(() => {
     // setting a cookie with already expired date removes it
     document.cookie = "CockpitLang=; path=/; expires=" + new Date(0).toUTCString();
+  });
+
+  describe("when the software context is not initialized", () => {
+    beforeEach(() => {
+      mockProducts = undefined;
+    });
+
+    it("renders the LoadingEnvironment theme", async () => {
+      installerRender(<App />, { withL10n: true });
+      await screen.findByText(/Loading installation environment/);
+    });
   });
 
   describe("on the startup phase", () => {
