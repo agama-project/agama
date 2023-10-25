@@ -142,16 +142,14 @@ export default function Section({
   children,
   "aria-label": ariaLabel
 }) {
-  const hasHeader = title && title !== "";
-  const hasAriaLabel = ariaLabel && ariaLabel !== "";
-  const headerId = `${name && name !== "" ? name : Math.random()}-section-header`;
+  const headerId = `${name ? name : Math.random()}-section-header`;
 
-  if (!hasHeader && !hasAriaLabel) {
+  if (!title && !ariaLabel) {
     console.error("The Section component must have either, a 'title' or an 'aria-label'");
   }
 
   const SectionHeader = () => {
-    if (!hasHeader) return;
+    if (!title) return;
 
     return (
       <>
@@ -165,8 +163,8 @@ export default function Section({
     <section
       aria-live="polite"
       aria-busy={loading}
-      aria-label={hasAriaLabel ? ariaLabel : undefined}
-      aria-labelledby={ hasHeader && !hasAriaLabel ? headerId : undefined}
+      aria-label={ariaLabel ? ariaLabel : undefined}
+      aria-labelledby={ title && !ariaLabel ? headerId : undefined}
     >
       <SectionHeader />
       <SectionContent>
