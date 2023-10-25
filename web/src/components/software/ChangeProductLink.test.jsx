@@ -28,9 +28,9 @@ import { ChangeProductLink } from "~/components/software";
 let mockProducts;
 
 jest.mock("~/client");
-jest.mock("~/context/software", () => ({
-  ...jest.requireActual("~/context/software"),
-  useSoftware: () => {
+jest.mock("~/context/product", () => ({
+  ...jest.requireActual("~/context/product"),
+  useProduct: () => {
     return {
       products: mockProducts,
     };
@@ -40,8 +40,8 @@ jest.mock("~/context/software", () => ({
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
-      software: {
-        onProductChange: jest.fn()
+      product: {
+        onChange: jest.fn()
       },
     };
   });

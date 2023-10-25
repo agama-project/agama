@@ -21,12 +21,12 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { useSoftware } from "~/context/software";
+import { useProduct } from "~/context/product";
 import { Icon } from "~/components/layout";
 import { _ } from "~/i18n";
 
 export default function ChangeProductLink() {
-  const { products } = useSoftware();
+  const { products } = useProduct();
 
   if (products?.length === 1) return null;
 

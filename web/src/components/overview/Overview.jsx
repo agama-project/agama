@@ -20,7 +20,7 @@
  */
 
 import React, { useState } from "react";
-import { useSoftware } from "~/context/software";
+import { useProduct } from "~/context/product";
 import { Navigate } from "react-router-dom";
 
 import { Page, InstallButton } from "~/components/core";
@@ -33,7 +33,7 @@ import {
 } from "~/components/overview";
 
 function Overview() {
-  const { selectedProduct } = useSoftware();
+  const { selectedProduct } = useProduct();
   const [showErrors, setShowErrors] = useState(false);
 
   if (selectedProduct === null) {

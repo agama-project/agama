@@ -34,9 +34,9 @@ const startInstallationFn = jest.fn();
 
 jest.mock("~/client");
 
-jest.mock("~/context/software", () => ({
-  ...jest.requireActual("~/context/software"),
-  useSoftware: () => {
+jest.mock("~/context/product", () => ({
+  ...jest.requireActual("~/context/product"),
+  useProduct: () => {
     return {
       products: mockProducts,
       selectedProduct: mockProduct

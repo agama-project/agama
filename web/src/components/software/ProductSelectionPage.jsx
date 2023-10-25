@@ -22,7 +22,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInstallerClient } from "~/context/installer";
-import { useSoftware } from "~/context/software";
+import { useProduct } from "~/context/product";
 import { _ } from "~/i18n";
 
 import {
@@ -40,7 +40,7 @@ import { Title, PageIcon, MainActions } from "~/components/layout/Layout";
 function ProductSelectionPage() {
   const { software, manager } = useInstallerClient();
   const navigate = useNavigate();
-  const { products, selectedProduct } = useSoftware();
+  const { products, selectedProduct } = useProduct();
   const previous = selectedProduct?.id;
   const [selected, setSelected] = useState(selectedProduct?.id);
 

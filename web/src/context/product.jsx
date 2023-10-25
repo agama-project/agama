@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,31 +19,34 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "./installer";
 
-const SoftwareContext = React.createContext([]);
+const ProductContext = React.createContext([]);
 
-function SoftwareProvider({ children }) {
+function ProductProvider({ children }) {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const [products, setProducts] = React.useState(undefined);
-  const [selectedId, setSelectedId] = React.useState(undefined);
+  const [products, setProducts] = useState(undefined);
+  const [selectedId, setSelectedId] = useState(undefined);
+  const [registration, setRegistration] = useState(undefined);
 
   useEffect(() => {
-    const loadProducts = async () => {
+    const load = async () => {
       const productManager = client.software.product;
       const available = await cancellablePromise(productManager.getAll());
       const selected = await cancellablePromise(productManager.getSelected());
+      const registration = await cancellablePromise(productManager.getRegistration());
       setProducts(available);
       setSelectedId(selected?.id || null);
+      setRegistration(registration);
     };
 
     if (client) {
-      loadProducts().catch(console.error);
+      load().catch(console.error);
     }
-  }, [client, setProducts, setSelectedId, cancellablePromise]);
+  }, [client, setProducts, setSelectedId, setRegistration, cancellablePromise]);
 
   useEffect(() => {
     if (!client) return;
@@ -51,28 +54,27 @@ function SoftwareProvider({ children }) {
     return client.software.product.onChange(setSelectedId);
   }, [client, setSelectedId]);
 
-  const value = [products, selectedId];
-  return <SoftwareContext.Provider value={value}>{children}</SoftwareContext.Provider>;
+  useEffect(() => {
+    if (!client) return;
+
+    return client.software.product.onRegistrationChange(setRegistration);
+  }, [client, setRegistration]);
+
+  const value = { products, selectedId, registration };
+  return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>;
 }
 
-function useSoftware() {
-  const context = React.useContext(SoftwareContext);
+function useProduct() {
+  const context = useContext(ProductContext);
 
   if (!context) {
-    throw new Error("useSoftware must be used within a SoftwareProvider");
+    throw new Error("useProduct must be used within a ProductProvider");
   }
 
-  const [products, selectedId] = context;
+  const { products = [], selectedId } = context;
+  const selectedProduct = products.find(p => p.id === selectedId);
 
-  let selectedProduct = selectedId;
-  if (selectedId && products) {
-    selectedProduct = products.find(p => p.id === selectedId) || null;
-  }
-
-  return {
-    products,
-    selectedProduct
-  };
+  return { ...context, selectedProduct };
 }
 
-export { SoftwareProvider, useSoftware };
+export { ProductProvider, useProduct };
