@@ -111,5 +111,8 @@
     "regenerator-runtime": "^0.14.0",
     "sprintf-js": "^1.1.2",
     "xbytes": "^1.8.0"
+  },
+  "overrides": {
+    "jsdom": "^22.1.0"
   }
 }
