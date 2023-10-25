@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 25 15:46:37 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the client initialization and make sure that the software
+  context is ready (gh#openSUSE/agama#818).
+
+-------------------------------------------------------------------
 Mon Oct 23 11:33:53 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 5
