@@ -22,6 +22,7 @@
 require "yaml"
 require "yast2/arch_filter"
 require "agama/config_reader"
+require "agama/product_reader"
 
 module Agama
   # Class responsible for getting current configuration.
@@ -51,16 +52,17 @@ module Agama
       # Load the configuration from a given file
       #
       # @param path [String|Pathname] File path
-      def from_file(path)
-        new(YAML.safe_load(File.read(path.to_s)))
+      def from_file(path, logger = Logger.new($stdout))
+        new(YAML.safe_load(File.read(path.to_s)), logger)
       end
     end
 
     # Constructor
     #
     # @param config_data [Hash] configuration data
-    def initialize(config_data = nil)
+    def initialize(config_data = nil, logger = Logger.new($stdout))
       @pure_data = config_data
+      @logger = logger
     end
 
     # parse loaded yaml file, so it properly applies conditions
@@ -81,20 +83,28 @@ module Agama
       @data
     end
 
-    def pick_product(product)
-      data.merge!(data[product])
+    # Currently product merges its config to global config.
+    # Keys defined in constant are the ones specific to product that
+    # should not be merged to global config.
+    PRODUCT_SPECIFIC_KEYS = ["id", "name", "description"]
+    def pick_product(product_id)
+      to_merge = products[product_id]
+      to_merge = to_merge.reject { |k, _v| PRODUCT_SPECIFIC_KEYS.include?(k) }
+      data.merge!(to_merge)
     end
 
-    # list of available base products for current architecture
+    # hash of available base products for current architecture
     def products
       return @products if @products
-      return [] unless @pure_data && @pure_data["products"]
+      products = ProductReader.new(@logger).load_products
 
-      # cannot use `data` here to avoid endless loop as in data we use
-      # pick_product that select product from products
-      @products = @pure_data["products"].select do |_key, value|
-        value["archs"].nil? ||
-          Yast2::ArchFilter.from_string(value["archs"]).match?
+      products.select! do |product|
+        product["archs"].nil? ||
+          Yast2::ArchFilter.from_string(product["archs"]).match?
+      end
+
+      @products = products.each_with_object({}) do |product, result|
+        result[product["id"]] = product
       end
     end
 
