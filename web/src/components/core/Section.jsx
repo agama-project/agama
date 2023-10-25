@@ -119,17 +119,19 @@ const SectionContent = ({ children }) => {
  *     <L10nSettings />
  *   </Section>
  *
- * @param {object} props
- * @param {string} [props.icon] - Name of the section icon. Not rendered if title not provided.
- * @param {string} [props.title] - The section title. If not given, aria-label must be provided.
- * @param {string} [props.name] - The section name. Used to build the header id.
- * @param {string} [props.path] - Path where the section links to. If present, props.openDialog is ignored.
- * @param {React.MouseEventHandler|undefined} [props.openDialog] - callback to be triggered
+ * @typedef { Object } SectionProps
+ * @property {string} [icon] - Name of the section icon. Not rendered if title not provided.
+ * @property {string} [title] - The section title. If not given, aria-label must be provided.
+ * @property {string} [name] - The section name. Used to build the header id.
+ * @property {string} [path] - Path where the section links to. If present, props.openDialog is ignored.
+ * @property {React.MouseEventHandler|undefined} [props.openDialog] - callback to be triggered
  *  when user clicks on the title, used for opening a dialog.
- * @param {boolean} [props.loading] - Whether the section is busy loading its content or not.
- * @param {import("~/client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title.
- * @param {React.ReactElement} props.children - The section content.
- * @param {string} [props.aria-label] - aria-label attribute, required if title if not given
+ * @property {boolean} [loading] - Whether the section is busy loading its content or not.
+ * @property {import("~/client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title.
+ * @property {React.ReactElement} [children] - The section content.
+ * @property {string} [aria-label] - aria-label attribute, required if title if not given
+ *
+ * @param { SectionProps } props
  */
 export default function Section({
   icon,
