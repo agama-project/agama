@@ -22,12 +22,10 @@
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { createClient } from "~/client";
 import { ChangeProductLink } from "~/components/software";
 
 let mockProducts;
 
-jest.mock("~/client");
 jest.mock("~/context/product", () => ({
   ...jest.requireActual("~/context/product"),
   useProduct: () => {
@@ -36,16 +34,6 @@ jest.mock("~/context/product", () => ({
     };
   }
 }));
-
-beforeEach(() => {
-  createClient.mockImplementation(() => {
-    return {
-      product: {
-        onChange: jest.fn()
-      },
-    };
-  });
-});
 
 describe("ChangeProductLink", () => {
   describe("when there is only a single product", () => {

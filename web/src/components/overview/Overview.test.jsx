@@ -44,6 +44,7 @@ jest.mock("~/context/product", () => ({
   }
 }));
 
+jest.mock("~/components/overview/ProductSection", () => () => <div>Product Section</div>);
 jest.mock("~/components/overview/L10nSection", () => () => <div>Localization Section</div>);
 jest.mock("~/components/overview/StorageSection", () => () => <div>Storage Section</div>);
 jest.mock("~/components/overview/NetworkSection", () => () => <div>Network Section</div>);
@@ -71,6 +72,7 @@ describe("when product is selected", () => {
     const title = screen.getByText(/openSUSE Tumbleweed/i);
     expect(title).toBeInTheDocument();
 
+    await screen.findByText("Product Section");
     await screen.findByText("Localization Section");
     await screen.findByText("Network Section");
     await screen.findByText("Storage Section");

@@ -61,7 +61,7 @@ export default function L10nSection({ showErrors }) {
   const SectionContent = () => {
     const { busy, languages, language } = state;
 
-    if (busy) return <SectionSkeleton />;
+    if (busy) return <SectionSkeleton numRows={1} />;
 
     const selected = languages.find(lang => lang.id === language);
 

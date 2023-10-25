@@ -27,6 +27,7 @@ import { Page, InstallButton } from "~/components/core";
 import {
   L10nSection,
   NetworkSection,
+  ProductSection,
   SoftwareSection,
   StorageSection,
   UsersSection
@@ -46,6 +47,7 @@ function Overview() {
       icon="inventory_2"
       action={<InstallButton onClick={() => setShowErrors(true)} />}
     >
+      <ProductSection />
       <L10nSection />
       <NetworkSection />
       <StorageSection showErrors />
