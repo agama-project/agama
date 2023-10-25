@@ -142,7 +142,7 @@ export default function Section({
   children,
   "aria-label": ariaLabel
 }) {
-  const headerId = `${name ? name : Math.random()}-section-header`;
+  const headerId = `${name ? name : crypto.randomUUID()}-section-header`;
 
   if (!title && !ariaLabel) {
     console.error("The Section component must have either, a 'title' or an 'aria-label'");
