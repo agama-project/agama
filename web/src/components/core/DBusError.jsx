@@ -21,6 +21,7 @@
 
 import React from "react";
 import { Button, EmptyState, EmptyStateIcon, EmptyStateBody, EmptyStateHeader } from "@patternfly/react-core";
+import { locationReload } from "~/utils";
 import { _ } from "~/i18n";
 
 import {
@@ -35,7 +36,7 @@ const ErrorIcon = () => <Icon name="error" className="icon-big" />;
 
 // TODO: an example
 const ReloadAction = () => (
-  <Button size="lg" variant="primary" onClick={() => location.reload()}>
+  <Button size="lg" variant="primary" onClick={() => locationReload()}>
     {/* TRANSLATORS: button label */}
     {_("Reload")}
   </Button>
