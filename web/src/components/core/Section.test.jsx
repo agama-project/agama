@@ -80,6 +80,44 @@ describe("Section", () => {
     });
   });
 
+  describe("when aria-label is given", () => {
+    it("sets aria-label attribute", () => {
+      plainRender(<Section title="Settings" aria-label="User settings" />);
+      const section = screen.getByRole("region", { name: "User settings" });
+      expect(section).toHaveAttribute("aria-label", "User settings");
+    });
+
+    it("does not set aria-labelledby", () => {
+      plainRender(<Section title="Settings" aria-label="User settings" />);
+      const section = screen.getByRole("region", { name: "User settings" });
+      expect(section).not.toHaveAttribute("aria-labelledby");
+    });
+  });
+
+  describe("when aria-label is not given", () => {
+    it("sets aria-labelledby if title is provided", () => {
+      plainRender(<Section title="Settings" />);
+      const section = screen.getByRole("region", { name: "Settings" });
+      expect(section).toHaveAttribute("aria-labelledby");
+    });
+
+    it("does not set aria-label", () => {
+      plainRender(<Section title="Settings" />);
+      const section = screen.getByRole("region", { name: "Settings" });
+      expect(section).not.toHaveAttribute("aria-label");
+    });
+  });
+
+  it("sets predictable header id if name is given", () => {
+    plainRender(<Section title="Settings" name="settings" />);
+    screen.getByRole("heading", { name: "Settings", id: "settings-header-section" });
+  });
+
+  it("sets partially random header id if name is not given", () => {
+    plainRender(<Section title="Settings" name="settings" />);
+    screen.getByRole("heading", { name: "Settings", id: /.*(-header-section)$/ });
+  });
+
   it("renders given errors", () => {
     plainRender(
       <Section title="Awesome settings" errors={[{ message: "Something went wrong" }]} />
