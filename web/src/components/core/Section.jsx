@@ -163,6 +163,8 @@ export default function Section({
 
   return (
     <section
+      aria-live="polite"
+      aria-busy={loading}
       aria-label={hasAriaLabel ? ariaLabel : undefined}
       aria-labelledby={ hasHeader && !hasAriaLabel ? headerId : undefined}
     >

@@ -37,20 +37,14 @@ describe("Section", () => {
       container.querySelector("svg");
     });
 
-    it("renders an icon if loading", () => {
-      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
-      const { container } = plainRender(<Section title="Settings" loading />);
-      container.querySelector("svg");
-    });
-
-    it("does not render an icon when not loading and icon name not given", () => {
+    it("does not render an icon if icon name not given", () => {
       // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
       const { container } = plainRender(<Section title="Settings" />);
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
     });
 
-    it("does not render an icon when not valid icon name is given", () => {
+    it("does not render an icon if not valid icon name is given", () => {
       // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
       const { container } = plainRender(<Section title="Settings" icon="not-valid-icon-name" />);
       const icon = container.querySelector("svg");
@@ -118,6 +112,13 @@ describe("Section", () => {
     screen.getByRole("heading", { name: "Settings", id: /.*(-header-section)$/ });
   });
 
+  it("renders as a polite live region", () => {
+    plainRender(<Section title="Settings" />);
+
+    const section = screen.getByRole("region", { name: "Settings" });
+    expect(section).toHaveAttribute("aria-live", "polite");
+  });
+
   it("renders given errors", () => {
     plainRender(
       <Section title="Awesome settings" errors={[{ message: "Something went wrong" }]} />
@@ -136,6 +137,32 @@ describe("Section", () => {
     screen.getByText("A settings summary");
   });
 
+  it("does not set aria-busy", () => {
+    plainRender(<Section title="Settings" />);
+
+    screen.getByRole("region", { name: "Settings", busy: false });
+  });
+
+  describe("when set as loading", () => {
+    it("sets aria-busy", () => {
+      plainRender(<Section title="Settings" loading />);
+
+      screen.getByRole("region", { busy: true });
+    });
+
+    it("renders the loading icon if title was given", () => {
+      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
+      const { container } = plainRender(<Section title="Settings" loading />);
+      container.querySelector("svg");
+    });
+
+    it("does not render the loading icon if title was not given", () => {
+      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
+      const { container } = plainRender(<Section loading />);
+      const icon = container.querySelector("svg");
+      expect(icon).toBeNull();
+    });
+  });
   describe("when path is given", () => {
     it("renders a link for navigating to it", async () => {
       installerRender(<Section title="Settings" path="/settings" />);
