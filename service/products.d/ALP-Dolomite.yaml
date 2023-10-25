@@ -1,0 +1,103 @@
+- id: ALP-Dolomite
+  name: SUSE ALP Dolomite
+  description: 'SUSE ALP Dolomite is a minimum immutable OS core, focused on
+    security to provide the bare minimum to run workloads and services as
+    containers or virtual machines.'
+  software:
+    installation_repositories:
+      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/x86_64/product/
+        archs: x86_64
+      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/aarch64/product/
+        archs: aarch64
+      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/s390x/product/
+        archs: s390
+      - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/ppc64le/product/
+        archs: ppc
+
+    mandatory_patterns:
+      - alp_base_zypper
+      - alp_cockpit
+      - alp_hardware
+    optional_patterns: null # no optional pattern shared
+    mandatory_packages:
+      - package: device-mapper # Apparently needed if devices at /dev/mapper are used at boot (eg. FDE)
+      - package: fde-tools # Needed for FDE with TPM, hardcoded here temporarily
+        archs: aarch64, x86_64
+      - package: libtss2-tcti-device0
+      - package: ppc64-diag # Needed for hardware-based installations
+        archs: ppc64
+    optional_packages: null
+    base_product: ALP-Dolomite
+
+  security:
+    tpm_luks_open: true
+    lsm: selinux
+    available_lsms:
+      # apparmor:
+      #   patterns:
+      #     - apparmor
+      selinux:
+        patterns:
+          - alp_selinux
+        policy: enforcing
+      none:
+        patterns: null
+
+  storage:
+    space_policy: delete
+    encryption:
+      method: luks2
+      pbkd_function: pbkdf2
+    volumes:
+      - "/"
+    volume_templates:
+      - mount_path: "/"
+        filesystem: btrfs
+        btrfs:
+          snapshots: true
+          read_only: true
+          default_subvolume: "@"
+          subvolumes:
+            - path: root
+            - path: home
+            - path: opt
+            - path: srv
+            - path: boot/writable
+            - path: usr/local
+            - path: var
+              copy_on_write: false
+            # Architecture specific subvolume
+            - path: boot/grub2/arm64-efi
+              archs: aarch64
+            - path: boot/grub2/i386-pc
+              archs: x86_64
+            - path: boot/grub2/powerpc-ieee1275
+              archs: ppc,!board_powernv
+            - path: boot/grub2/s390x-emu
+              archs: s390
+            - path: boot/grub2/x86_64-efi
+              archs: x86_64
+        size:
+          auto: true
+        outline:
+          required: true
+          filesystems:
+            - btrfs
+          snapshots_configurable: false
+          auto_size:
+            base_min: 5 GiB
+            base_max: 25 GiB
+            max_fallback_for:
+              - "/var"
+      - mount_path: "/var"
+        filesystem: btrfs
+        mount_options:
+          - "x-initrd.mount"
+          - "nodatacow"
+        size:
+          auto: false
+          min: 5 GiB
+        outline:
+          required: false
+          filesystems:
+            - btrfs
