@@ -1,7 +1,9 @@
 -------------------------------------------------------------------
 Thu Oct 26 16:07:02 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Properly track the status changes (gh#openSUSE/agama#821).
+- Properly track the status changes. It prevents of getting stuck
+  in the first page when there are multiple products
+  (gh#openSUSE/agama#821).
 
 -------------------------------------------------------------------
 Thu Oct 26 05:58:15 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
