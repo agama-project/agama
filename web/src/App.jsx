@@ -34,7 +34,6 @@ import {
   Disclosure,
   Installation,
   IssuesLink,
-  LoadingEnvironment,
   LogsButton,
   ShowLogButton,
   ShowTerminalButton,
@@ -64,15 +63,10 @@ function App() {
   const [phase, setPhase] = useState(undefined);
 
   useEffect(() => {
-    const loadPhase = async () => {
-      const phase = await client.manager.getPhase();
-      const status = await client.manager.getStatus();
-      setPhase(phase);
-      setStatus(status);
-    };
-
-    if (client) loadPhase().catch(console.error);
-  }, [client, setPhase, setStatus]);
+    if (client) {
+      return client.manager.onStatusChange(setStatus);
+    }
+  }, [client, setStatus]);
 
   useEffect(() => {
     if (client) {
@@ -80,13 +74,26 @@ function App() {
     }
   }, [client, setPhase]);
 
+  useEffect(() => {
+    const loadPhase = async () => {
+      const phase = await client.manager.getPhase();
+      const status = await client.manager.getStatus();
+      setPhase(phase);
+      setStatus(status);
+    };
+
+    if (client) {
+      loadPhase().catch(console.error);
+    }
+  }, [client, setPhase, setStatus]);
+
   const Content = () => {
     if (!client || !products) {
       return (attempt > ATTEMPTS) ? <DBusError /> : <Loading />;
     }
 
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
-      return <LoadingEnvironment onStatusChange={setStatus} />;
+      return <Loading />;
     }
 
     if (phase === INSTALL) {
