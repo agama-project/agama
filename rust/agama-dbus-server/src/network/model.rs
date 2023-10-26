@@ -6,6 +6,7 @@ use crate::network::error::NetworkStateError;
 use agama_lib::network::types::{DeviceType, SSID};
 use cidr::IpInet;
 use std::{
+    collections::HashMap,
     default::Default,
     fmt,
     net::IpAddr,
@@ -13,6 +14,7 @@ use std::{
 };
 use thiserror::Error;
 use uuid::Uuid;
+use zbus::zvariant::Value;
 
 #[derive(Default, Clone)]
 pub struct NetworkState {
@@ -337,6 +339,8 @@ pub struct IpConfig {
     pub nameservers: Vec<IpAddr>,
     pub gateway4: Option<IpAddr>,
     pub gateway6: Option<IpAddr>,
+    pub routes4: Option<Vec<IpRoute>>,
+    pub routes6: Option<Vec<IpRoute>>,
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]
@@ -430,6 +434,32 @@ impl FromStr for Ipv6Method {
 impl From<UnknownIpMethod> for zbus::fdo::Error {
     fn from(value: UnknownIpMethod) -> zbus::fdo::Error {
         zbus::fdo::Error::Failed(value.to_string())
+    }
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct IpRoute {
+    pub destination: IpInet,
+    pub next_hop: Option<IpAddr>,
+    pub metric: Option<u32>,
+}
+
+impl From<&IpRoute> for HashMap<&str, Value<'_>> {
+    fn from(route: &IpRoute) -> Self {
+        let mut map: HashMap<&str, Value> = HashMap::from([
+            ("dest", Value::new(route.destination.address().to_string())),
+            (
+                "prefix",
+                Value::new(route.destination.network_length() as u32),
+            ),
+        ]);
+        if let Some(next_hop) = route.next_hop {
+            map.insert("next-hop", Value::new(next_hop.to_string()));
+        }
+        if let Some(metric) = route.metric {
+            map.insert("metric", Value::new(metric));
+        }
+        map
     }
 }
 

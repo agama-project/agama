@@ -9,7 +9,7 @@ use agama_lib::{
     network::types::SSID,
 };
 use cidr::IpInet;
-use std::{collections::HashMap, net::IpAddr};
+use std::{collections::HashMap, net::IpAddr, str::FromStr};
 use uuid::Uuid;
 use zbus::zvariant::{self, OwnedValue, Value};
 
@@ -151,6 +151,17 @@ fn ip_config_to_ipv4_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
         ("method", ip_config.method4.to_string().into()),
     ]);
 
+    if let Some(routes4) = &ip_config.routes4 {
+        ipv4_dbus.insert(
+            "route-data",
+            routes4
+                .iter()
+                .map(|route| route.into())
+                .collect::<Vec<HashMap<&str, Value>>>()
+                .into(),
+        );
+    }
+
     if let Some(gateway) = &ip_config.gateway4 {
         ipv4_dbus.insert("gateway", gateway.to_string().into());
     }
@@ -184,6 +195,17 @@ fn ip_config_to_ipv6_dbus(ip_config: &IpConfig) -> HashMap<&str, zvariant::Value
         ("dns-data", dns_data),
         ("method", ip_config.method6.to_string().into()),
     ]);
+
+    if let Some(routes6) = &ip_config.routes6 {
+        ipv6_dbus.insert(
+            "route-data",
+            routes6
+                .iter()
+                .map(|route| route.into())
+                .collect::<Vec<HashMap<&str, Value>>>()
+                .into(),
+        );
+    }
 
     if let Some(gateway) = &ip_config.gateway6 {
         ipv6_dbus.insert("gateway", gateway.to_string().into());
@@ -331,6 +353,10 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Option<IpConfig> {
             ip_config.nameservers.append(&mut servers);
         }
 
+        if let Some(route_data) = ipv4.get("route-data") {
+            ip_config.routes4 = routes_from_dbus(route_data);
+        }
+
         if let Some(gateway) = ipv4.get("gateway") {
             let gateway: &str = gateway.downcast_ref()?;
             ip_config.gateway4 = Some(gateway.parse().unwrap());
@@ -349,6 +375,10 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Option<IpConfig> {
         if let Some(dns_data) = ipv6.get("dns-data") {
             let mut servers = nameservers_from_dbus(dns_data)?;
             ip_config.nameservers.append(&mut servers);
+        }
+
+        if let Some(route_data) = ipv6.get("route-data") {
+            ip_config.routes6 = routes_from_dbus(route_data);
         }
 
         if let Some(gateway) = ipv6.get("gateway") {
@@ -373,6 +403,34 @@ fn addresses_with_prefix_from_dbus(address_data: &OwnedValue) -> Option<Vec<IpIn
         addresses.push(address)
     }
     Some(addresses)
+}
+
+fn routes_from_dbus(route_data: &OwnedValue) -> Option<Vec<IpRoute>> {
+    let route_data = route_data.downcast_ref::<zbus::zvariant::Array>()?;
+    let mut routes: Vec<IpRoute> = vec![];
+    for route in route_data.get() {
+        let route_dict = route.downcast_ref::<zvariant::Dict>()?;
+        let route_map =
+            <HashMap<String, zvariant::Value<'_>>>::try_from(route_dict.clone()).ok()?;
+        let dest_str: &str = route_map.get("dest")?.downcast_ref()?;
+        let prefix: u8 = *route_map.get("prefix")?.downcast_ref::<u32>()? as u8;
+        let destination = IpInet::new(dest_str.parse().unwrap(), prefix).ok()?;
+        let mut new_route = IpRoute {
+            destination,
+            next_hop: None,
+            metric: None,
+        };
+        if let Some(next_hop) = route_map.get("next-hop") {
+            let next_hop_str: &str = next_hop.downcast_ref()?;
+            new_route.next_hop = Some(IpAddr::from_str(next_hop_str).unwrap());
+        }
+        if let Some(metric) = route_map.get("metric") {
+            let metric: u32 = *metric.downcast_ref()?;
+            new_route.metric = Some(metric);
+        }
+        routes.push(new_route)
+    }
+    Some(routes)
 }
 
 fn nameservers_from_dbus(dns_data: &OwnedValue) -> Option<Vec<IpAddr>> {
