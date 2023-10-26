@@ -33,6 +33,7 @@ module Agama
   class Config
     # @return [Hash] configuration data
     attr_accessor :pure_data
+    attr_accessor :logger
 
     class << self
       attr_accessor :current, :base
@@ -96,7 +97,7 @@ module Agama
     # hash of available base products for current architecture
     def products
       return @products if @products
-      products = ProductReader.new(@logger).load_products
+      products = ProductReader.new(logger: @logger).load_products
 
       products.select! do |product|
         product["archs"].nil? ||
@@ -119,7 +120,13 @@ module Agama
     #
     # @return [Config]
     def copy
-      Marshal.load(Marshal.dump(self))
+      logger = self.logger
+      @logger = nil # cannot dump logger as it can contain IO
+      res = Marshal.load(Marshal.dump(self))
+      @logger = logger
+      res.logger = logger
+
+      res
     end
 
     # Returns a new {Config} with the merge of the given ones

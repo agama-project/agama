@@ -38,15 +38,13 @@ module Agama
     # Constructor
     #
     # @param logger [Logger]
-    # @param workdir [String] Root directory to read the configuration from
-    def initialize(logger: nil, workdir: "/")
+    def initialize(logger: nil)
       @logger = logger || ::Logger.new($stdout)
-      @workdir = workdir
     end
 
     def load_products
       glob = File.join(default_path, "*.{yaml,yml}")
-      Dir.glob(glob).each_with_object do |path, result|
+      Dir.glob(glob).each_with_object([]) do |path, result|
         # support also single product file
         products = Array(load_file(path))
         result.concat(products)

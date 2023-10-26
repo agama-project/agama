@@ -65,7 +65,7 @@ describe Agama::DBus::ServerManager do
   describe "#start_server" do
     it "starts the dbus-daemon and returns the PID" do
       expect(Process).to receive(:spawn)
-        .with(/dbus-daemon/, "--config-file", /dbus.conf/, any_args)
+        .with(/dbus-daemon/, "--config-file", any_args) # config file loc depends on pwd
         .and_return(1000)
       expect(Process).to receive(:detach).with(1000)
       expect(subject.start_server).to eq(1000)

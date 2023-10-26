@@ -1,4 +1,4 @@
-- id: openSUSE-TW
+- id: Tumbleweed
   name: openSUSE Tumbleweed
   description: 'The Tumbleweed distribution is a pure rolling release version
     of openSUSE containing the latest "stable" versions of all software
@@ -139,7 +139,7 @@
             - ext4
             - xfs
 
-- id: openSUSE-Leap16
+- id: Leap16
   name: openSUSE Leap 16.0
   archs: x86_64,aarch64
   description: '[Experimental project] openSUSE Leap 16 is built on top of the next generation Adaptable Linux Platform (ALP) from SUSE.'

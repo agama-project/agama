@@ -26,7 +26,7 @@ describe Agama::Config do
   let(:config) { described_class.new("web" => { "ssl" => "SOMETHING" }) }
 
   before do
-    allow_any_instance_of(Agama::ConfigReader).to receive(:config).and_return(config)
+    allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_return([])
   end
 
   describe ".load" do
@@ -53,12 +53,12 @@ describe Agama::Config do
         File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
       )
       expect(config).to be_a(described_class)
-      expect(config.data["products"].size).to eq(3)
     end
   end
 
   describe ".reset" do
     it "resets base and current configuration" do
+      allow_any_instance_of(Agama::ConfigReader).to receive(:config).and_return(config)
       described_class.load
       expect { described_class.reset }.to change { described_class.base }.from(config).to(nil)
         .and change { described_class.current }.to(nil)
@@ -91,17 +91,25 @@ describe Agama::Config do
 
   describe "#products" do
     it "returns products available for current hardware" do
-      subject = described_class.from_file(File.join(FIXTURES_PATH, "agama-archs.yaml"))
-      expect(subject.products.size).to eq 2
+      allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_return([
+          {
+            "id" => "test",
+            "archs" => "x86_64"
+          },
+          {
+            "id" => "test2",
+            "archs" => "s390x"
+          }
+        ])
+      expect(Yast2::ArchFilter).to receive(:from_string).twice.and_return(double(match?: true), double(match?: false))
+      expect(subject.products.size).to eq 1
     end
   end
 
   describe "#multi_product?" do
     context "when more than one product is defined" do
-      subject do
-        described_class.from_file(
-          File.join(FIXTURES_PATH, "root_dir", "etc", "agama.yaml")
-        )
+      before do
+        allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_call_original
       end
 
       it "returns true" do
@@ -110,11 +118,13 @@ describe Agama::Config do
     end
 
     context "when just one product is defined" do
-      subject do
-        described_class.from_file(File.join(FIXTURES_PATH, "agama-single.yaml"))
+      before do
+        allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_call_original
+        products = Agama::ProductReader.new.load_products
+        allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_return([products.first])
       end
 
-      it "returns true" do
+      it "returns false" do
         expect(subject.multi_product?).to eq(false)
       end
     end

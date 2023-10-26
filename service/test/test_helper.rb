@@ -26,6 +26,8 @@ SRC_PATH = File.expand_path("../lib", __dir__)
 FIXTURES_PATH = File.expand_path("fixtures", __dir__)
 $LOAD_PATH.unshift(SRC_PATH)
 
+require "agama/product_reader" # to globally mock reading real products
+
 # make sure we run the tests in English locale
 # (some tests check the output which is marked for translation)
 ENV["LC_ALL"] = "en_US.UTF-8"
@@ -39,6 +41,12 @@ module Kernel
 
   def require(path)
     old_require(path) unless LIBS_TO_SKIP.include?(path)
+  end
+end
+
+RSpec.configure do |c|
+  c.before do
+    allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_return([])
   end
 end
 

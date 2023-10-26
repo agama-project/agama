@@ -35,7 +35,7 @@ describe Agama::ConfigReader do
     it "returns a Config object with the configuration read from the given file" do
       config = subject.config_from_file(File.join(workdir, "etc", "agama.yaml"))
       expect(config).to be_a(Agama::Config)
-      expect(config.data["products"].keys).to include("Tumbleweed")
+      expect(config.data["web"].keys).to include("ssl")
     end
   end
 

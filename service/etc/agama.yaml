@@ -1,2 +1,4 @@
-include:
-  - "../conf.d/*.yaml"
+web:
+  ssl: null
+  ssl_cert: null
+  ssl_key: null
