@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 26 05:31:28 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix client initialization to avoid a useless reconnection
+  (gh#openSUSE/agama#819).
+
+-------------------------------------------------------------------
 Mon Oct 23 11:33:53 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 5
