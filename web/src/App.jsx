@@ -34,7 +34,6 @@ import {
   Disclosure,
   Installation,
   IssuesLink,
-  LoadingEnvironment,
   LogsButton,
   ShowLogButton,
   ShowTerminalButton,
@@ -64,6 +63,18 @@ function App() {
   const [phase, setPhase] = useState(undefined);
 
   useEffect(() => {
+    if (client) {
+      return client.manager.onPhaseChange(setPhase);
+    }
+  }, [client, setPhase]);
+
+  useEffect(() => {
+    if (client) {
+      return client.manager.onStatusChange(setStatus);
+    }
+  }, [client, setStatus]);
+
+  useEffect(() => {
     const loadPhase = async () => {
       const phase = await client.manager.getPhase();
       const status = await client.manager.getStatus();
@@ -71,14 +82,10 @@ function App() {
       setStatus(status);
     };
 
-    if (client) loadPhase().catch(console.error);
-  }, [client, setPhase, setStatus]);
-
-  useEffect(() => {
     if (client) {
-      return client.manager.onPhaseChange(setPhase);
+      loadPhase().catch(console.error);
     }
-  }, [client, setPhase]);
+  }, [client, setPhase, setStatus]);
 
   const Content = () => {
     if (!client || !products) {
@@ -86,7 +93,7 @@ function App() {
     }
 
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
-      return <LoadingEnvironment onStatusChange={setStatus} />;
+      return <Loading />;
     }
 
     if (phase === INSTALL) {
