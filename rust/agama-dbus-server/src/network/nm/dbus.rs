@@ -491,9 +491,10 @@ mod test {
     };
     use crate::network::{model::*, nm::dbus::ETHERNET_KEY};
     use agama_lib::network::types::SSID;
-    use std::{collections::HashMap, net::IpAddr};
+    use cidr::IpInet;
+    use std::{collections::HashMap, net::IpAddr, str::FromStr};
     use uuid::Uuid;
-    use zbus::zvariant::{self, OwnedValue, Value};
+    use zbus::zvariant::{self, Array, Dict, OwnedValue, Value};
 
     #[test]
     fn test_connection_from_dbus() {
@@ -508,6 +509,13 @@ mod test {
             ("prefix".to_string(), Value::new(24_u32)),
         ])];
 
+        let route_v4_data = vec![HashMap::from([
+            ("dest".to_string(), Value::new("192.168.0.0")),
+            ("prefix".to_string(), Value::new(24_u32)),
+            ("next-hop".to_string(), Value::new("192.168.0.1")),
+            ("metric".to_string(), Value::new(100_u32)),
+        ])];
+
         let ipv4_section = HashMap::from([
             ("method".to_string(), Value::new("auto").to_owned()),
             (
@@ -519,11 +527,22 @@ mod test {
                 "dns-data".to_string(),
                 Value::new(vec!["192.168.0.2"]).to_owned(),
             ),
+            (
+                "route-data".to_string(),
+                Value::new(route_v4_data).to_owned(),
+            ),
         ]);
 
         let address_v6_data = vec![HashMap::from([
             ("address".to_string(), Value::new("::ffff:c0a8:10a")),
             ("prefix".to_string(), Value::new(24_u32)),
+        ])];
+
+        let route_v6_data = vec![HashMap::from([
+            ("dest".to_string(), Value::new("2001:db8::")),
+            ("prefix".to_string(), Value::new(64_u32)),
+            ("next-hop".to_string(), Value::new("2001:db8::1")),
+            ("metric".to_string(), Value::new(100_u32)),
         ])];
 
         let ipv6_section = HashMap::from([
@@ -539,6 +558,10 @@ mod test {
             (
                 "dns-data".to_string(),
                 Value::new(vec!["::ffff:c0a8:102"]).to_owned(),
+            ),
+            (
+                "route-data".to_string(),
+                Value::new(route_v6_data).to_owned(),
             ),
         ]);
 
@@ -578,6 +601,22 @@ mod test {
         );
         assert_eq!(ip_config.method4, Ipv4Method::Auto);
         assert_eq!(ip_config.method6, Ipv6Method::Auto);
+        assert_eq!(
+            ip_config.routes4,
+            Some(vec![IpRoute {
+                destination: IpInet::new("192.168.0.0".parse().unwrap(), 24_u8).unwrap(),
+                next_hop: Some(IpAddr::from_str("192.168.0.1").unwrap()),
+                metric: Some(100)
+            }])
+        );
+        assert_eq!(
+            ip_config.routes6,
+            Some(vec![IpRoute {
+                destination: IpInet::new("2001:db8::".parse().unwrap(), 64_u8).unwrap(),
+                next_hop: Some(IpAddr::from_str("2001:db8::1").unwrap()),
+                metric: Some(100)
+            }])
+        );
     }
 
     #[test]
@@ -789,6 +828,16 @@ mod test {
             addresses,
             gateway4: Some("192.168.0.1".parse().unwrap()),
             gateway6: Some("::ffff:c0a8:1".parse().unwrap()),
+            routes4: Some(vec![IpRoute {
+                destination: IpInet::new("192.168.0.0".parse().unwrap(), 24_u8).unwrap(),
+                next_hop: Some(IpAddr::from_str("192.168.0.1").unwrap()),
+                metric: Some(100),
+            }]),
+            routes6: Some(vec![IpRoute {
+                destination: IpInet::new("2001:db8::".parse().unwrap(), 64_u8).unwrap(),
+                next_hop: Some(IpAddr::from_str("2001:db8::1").unwrap()),
+                metric: Some(100),
+            }]),
             ..Default::default()
         };
         BaseConnection {
@@ -811,7 +860,49 @@ mod test {
         assert_eq!(id, "agama");
 
         let ipv4_dbus = conn_dbus.get("ipv4").unwrap();
-        let gateway: &str = ipv4_dbus.get("gateway").unwrap().downcast_ref().unwrap();
-        assert_eq!(gateway, "192.168.0.1");
+        let gateway4: &str = ipv4_dbus.get("gateway").unwrap().downcast_ref().unwrap();
+        assert_eq!(gateway4, "192.168.0.1");
+        let routes4_array: Array = ipv4_dbus
+            .get("route-data")
+            .unwrap()
+            .downcast_ref::<Value>()
+            .unwrap()
+            .try_into()
+            .unwrap();
+        for route4 in routes4_array.iter() {
+            let route4_dict: Dict = route4.downcast_ref::<Value>().unwrap().try_into().unwrap();
+            let route4_hashmap: HashMap<String, Value> = route4_dict.try_into().unwrap();
+            assert!(route4_hashmap.contains_key("dest"));
+            assert_eq!(route4_hashmap["dest"], Value::from("192.168.0.0"));
+            assert!(route4_hashmap.contains_key("prefix"));
+            assert_eq!(route4_hashmap["prefix"], Value::from(24_u32));
+            assert!(route4_hashmap.contains_key("next-hop"));
+            assert_eq!(route4_hashmap["next-hop"], Value::from("192.168.0.1"));
+            assert!(route4_hashmap.contains_key("metric"));
+            assert_eq!(route4_hashmap["metric"], Value::from(100_u32));
+        }
+
+        let ipv6_dbus = conn_dbus.get("ipv6").unwrap();
+        let gateway6: &str = ipv6_dbus.get("gateway").unwrap().downcast_ref().unwrap();
+        assert_eq!(gateway6, "::ffff:192.168.0.1");
+        let routes6_array: Array = ipv6_dbus
+            .get("route-data")
+            .unwrap()
+            .downcast_ref::<Value>()
+            .unwrap()
+            .try_into()
+            .unwrap();
+        for route6 in routes6_array.iter() {
+            let route6_dict: Dict = route6.downcast_ref::<Value>().unwrap().try_into().unwrap();
+            let route6_hashmap: HashMap<String, Value> = route6_dict.try_into().unwrap();
+            assert!(route6_hashmap.contains_key("dest"));
+            assert_eq!(route6_hashmap["dest"], Value::from("2001:db8::"));
+            assert!(route6_hashmap.contains_key("prefix"));
+            assert_eq!(route6_hashmap["prefix"], Value::from(64_u32));
+            assert!(route6_hashmap.contains_key("next-hop"));
+            assert_eq!(route6_hashmap["next-hop"], Value::from("2001:db8::1"));
+            assert!(route6_hashmap.contains_key("metric"));
+            assert_eq!(route6_hashmap["metric"], Value::from(100_u32));
+        }
     }
 }
