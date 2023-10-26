@@ -84,6 +84,7 @@ function InstallerClientProvider({
       if (await client.isConnected()) {
         setValue(client);
         setAttempt(0);
+        return;
       }
 
       console.warn(`Failed to connect to D-Bus (attempt ${attempt + 1})`);
