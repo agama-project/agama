@@ -48,7 +48,7 @@ const REGISTRATION_IFACE = "org.opensuse.Agama1.Registration";
 
 /**
  * @typedef {object} ActionResult
- * @property {boolean} success - Whether the action was successfuly done.
+ * @property {boolean} success - Whether the action was successfully done.
  * @property {string} message - Result message.
  */
 
