@@ -55,7 +55,7 @@ const getPhaseFn = jest.fn();
 
 // capture the latest subscription to the manager#onPhaseChange for triggering it manually
 const onPhaseChangeFn = cb => { callbacks.onPhaseChange = cb };
-const onStatusChangeFn = cb => { callbacks.onStatusChange = cb }
+const onStatusChangeFn = cb => { callbacks.onStatusChange = cb };
 const changePhaseTo = phase => act(() => callbacks.onPhaseChange(phase));
 
 describe("App", () => {

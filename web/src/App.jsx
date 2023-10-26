@@ -64,15 +64,15 @@ function App() {
 
   useEffect(() => {
     if (client) {
-      return client.manager.onStatusChange(setStatus);
-    }
-  }, [client, setStatus]);
-
-  useEffect(() => {
-    if (client) {
       return client.manager.onPhaseChange(setPhase);
     }
   }, [client, setPhase]);
+
+  useEffect(() => {
+    if (client) {
+      return client.manager.onStatusChange(setStatus);
+    }
+  }, [client, setStatus]);
 
   useEffect(() => {
     const loadPhase = async () => {
