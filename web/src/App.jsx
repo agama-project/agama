@@ -24,6 +24,7 @@ import { Outlet } from "react-router-dom";
 
 import { _ } from "~/i18n";
 import { useInstallerClient, useInstallerClientStatus } from "~/context/installer";
+import { useSoftware } from "./context/software";
 import { STARTUP, INSTALL } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
@@ -57,6 +58,7 @@ const ATTEMPTS = 3;
 function App() {
   const client = useInstallerClient();
   const { attempt } = useInstallerClientStatus();
+  const { products } = useSoftware();
   const { language } = useL10n();
   const [status, setStatus] = useState(undefined);
   const [phase, setPhase] = useState(undefined);
@@ -79,7 +81,7 @@ function App() {
   }, [client, setPhase]);
 
   const Content = () => {
-    if (!client) {
+    if (!client || !products) {
       return (attempt > ATTEMPTS) ? <DBusError /> : <Loading />;
     }
 
