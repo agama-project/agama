@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 27 10:25:46 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Display the "Congratulations" message at the end of the
+  installation again (gh#openSUSE/agama#825).
+
+-------------------------------------------------------------------
 Thu Oct 26 16:07:02 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Properly track the status changes. It prevents of getting stuck
