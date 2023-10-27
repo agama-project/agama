@@ -19,6 +19,9 @@ pub enum LogsCommands {
         #[clap(long, short = 'v')]
         /// Verbose output
         verbose: bool,
+        #[clap(long, short = 'd')]
+        /// Destination path
+        dest: Option<PathBuf>,
     },
     /// List logs which will be collected
     List,
@@ -27,11 +30,13 @@ pub enum LogsCommands {
 // main entry point called from agama CLI main loop
 pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
     match subcommand {
-        LogsCommands::Store { verbose } => {
+        LogsCommands::Store { verbose, dest } => {
             // feed internal options structure by what was received from user
             // for now we always use / add defaults if any
+            let dest = dest.map_or(PathBuf::from(DEFAULT_RESULT), |d| d);
             let options = LogOptions {
                 verbose,
+                dest,
                 ..Default::default()
             };
 
@@ -101,6 +106,7 @@ struct LogOptions {
     paths: Vec<String>,
     commands: Vec<(String, String)>,
     verbose: bool,
+    dest: PathBuf,
 }
 
 impl Default for LogOptions {
@@ -112,6 +118,7 @@ impl Default for LogOptions {
                 .map(|(cmd, name)| (cmd.to_string(), name.to_string()))
                 .collect(),
             verbose: false,
+            dest: PathBuf::from(DEFAULT_RESULT),
         }
     }
 }
@@ -334,7 +341,14 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
     let commands = options.commands;
     let paths = options.paths;
     let verbose = options.verbose;
-    let result = format!("{}.{}", DEFAULT_RESULT, DEFAULT_COMPRESSION.1);
+    let opt_dest = options.dest.into_os_string();
+    let dest = opt_dest
+        .to_str()
+        .ok_or(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "Malformed destination path"
+        ))?;
+    let result = format!("{}.{}", dest, DEFAULT_COMPRESSION.1);
 
     showln(verbose, "Collecting Agama logs:");
 
