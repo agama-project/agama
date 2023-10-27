@@ -64,8 +64,8 @@ function useSoftware() {
   const [products, selectedId] = context;
 
   let selectedProduct = selectedId;
-  if (selectedId) {
-    selectedProduct = products.find(p => p.id === selectedId);
+  if (selectedId && products) {
+    selectedProduct = products.find(p => p.id === selectedId) || null;
   }
 
   return {

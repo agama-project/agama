@@ -63,7 +63,7 @@ describe("installer context", () => {
         <InstallerClientProvider interval={0.1}>
           <ClientStatus />
         </InstallerClientProvider>);
-      await screen.findByText("attempt: 2");
+      await screen.findByText("attempt: 1");
     });
   });
 

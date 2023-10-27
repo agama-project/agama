@@ -56,6 +56,7 @@ const SizeUnitFormSelect = ({ units, ...formSelectProps }) => {
   return (
     <FormSelect { ...formSelectProps }>
       {/* the unit values are marked for translation in the utils.js file */}
+      {/* eslint-disable-next-line agama-i18n/string-literals */}
       { units.map(unit => <FormSelectOption key={unit} value={unit} label={_(unit)} />) }
     </FormSelect>
   );
@@ -295,6 +296,7 @@ const SizeOptions = ({ errors, formData, volume, onChange }) => {
             <Radio
               id={value}
               key={`size-${value}`}
+              // eslint-disable-next-line agama-i18n/string-literals
               label={_(SIZE_OPTION_LABELS[value] || value)}
               value={value}
               name="size-option"

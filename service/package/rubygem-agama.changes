@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Oct 23 11:33:26 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 5
+
+-------------------------------------------------------------------
 Fri Oct 20 08:37:22 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Do not reuse pre-existing swap partitions in the storage proposal

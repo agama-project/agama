@@ -19,25 +19,11 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect } from "react";
-import { Loading } from "~/components/layout";
-import { useInstallerClient } from "~/context/installer";
+const stringLiteralsRule = require("./string-literals");
 
-/**
- * Loading indicator for a phase
- *
- * @component
- *
- * @param {function} onStatusChange callback triggered when the status changes
- */
-function LoadingEnvironment({ onStatusChange }) {
-  const client = useInstallerClient();
-
-  useEffect(() =>
-    client.manager.onStatusChange(onStatusChange), [client.manager, onStatusChange]
-  );
-
-  return <Loading />;
-}
-
-export default LoadingEnvironment;
+module.exports = {
+  rules: {
+    // name of the rule
+    "string-literals": stringLiteralsRule
+  }
+};

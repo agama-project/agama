@@ -24,6 +24,7 @@ import { Outlet } from "react-router-dom";
 
 import { _ } from "~/i18n";
 import { useInstallerClient, useInstallerClientStatus } from "~/context/installer";
+import { useSoftware } from "./context/software";
 import { STARTUP, INSTALL } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
@@ -33,7 +34,6 @@ import {
   Disclosure,
   Installation,
   IssuesLink,
-  LoadingEnvironment,
   LogsButton,
   ShowLogButton,
   ShowTerminalButton,
@@ -57,9 +57,22 @@ const ATTEMPTS = 3;
 function App() {
   const client = useInstallerClient();
   const { attempt } = useInstallerClientStatus();
+  const { products } = useSoftware();
   const { language } = useL10n();
   const [status, setStatus] = useState(undefined);
   const [phase, setPhase] = useState(undefined);
+
+  useEffect(() => {
+    if (client) {
+      return client.manager.onPhaseChange(setPhase);
+    }
+  }, [client, setPhase]);
+
+  useEffect(() => {
+    if (client) {
+      return client.manager.onStatusChange(setStatus);
+    }
+  }, [client, setStatus]);
 
   useEffect(() => {
     const loadPhase = async () => {
@@ -69,22 +82,18 @@ function App() {
       setStatus(status);
     };
 
-    if (client) loadPhase().catch(console.error);
+    if (client) {
+      loadPhase().catch(console.error);
+    }
   }, [client, setPhase, setStatus]);
 
-  useEffect(() => {
-    if (client) {
-      return client.manager.onPhaseChange(setPhase);
-    }
-  }, [client, setPhase]);
-
   const Content = () => {
-    if (!client) {
+    if (!client || !products) {
       return (attempt > ATTEMPTS) ? <DBusError /> : <Loading />;
     }
 
     if ((phase === STARTUP && status === BUSY) || phase === undefined || status === undefined) {
-      return <LoadingEnvironment onStatusChange={setStatus} />;
+      return <Loading />;
     }
 
     if (phase === INSTALL) {
