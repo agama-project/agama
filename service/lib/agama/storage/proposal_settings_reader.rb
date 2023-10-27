@@ -69,11 +69,24 @@ module Agama
       # @param settings [Agama::Storage::ProposalSettings]
       # @param encryption [Hash]
       def encryption_reader(settings, encryption)
-        method = Y2Storage::EncryptionMethod.find(encryption.fetch("method", ""))
+        method =
+          if try_tpm_fde?(encryption)
+            Y2Storage::EncryptionMethod::TPM_FDE
+          else
+            Y2Storage::EncryptionMethod.find(encryption.fetch("method", ""))
+          end
         pbkd_function = Y2Storage::PbkdFunction.find(encryption.fetch("pbkd_function", ""))
 
         settings.encryption.method = method if method
         settings.encryption.pbkd_function = pbkd_function if pbkd_function
+      end
+
+      # @param encryption [Hash]
+      # @return [Boolean]
+      def try_tpm_fde?(encryption)
+        return false unless encryption["tpm_luks_open"] == true
+
+        Y2Storage::EncryptionMethod::TPM_FDE.possible?
       end
 
       # @param settings [Agama::Storage::ProposalSettings]
