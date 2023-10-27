@@ -33,7 +33,7 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
         LogsCommands::Store { verbose, dest } => {
             // feed internal options structure by what was received from user
             // for now we always use / add defaults if any
-            let dest = parse_dest(dest);
+            let dest = parse_dest(dest)?;
             let options = LogOptions {
                 verbose,
                 dest,
@@ -54,19 +54,22 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
 // if dest is none then a default is returned
 // if dest is directory then a default file name for the archive will be appended
 // if dest is absolute path then it is used as is with no further checks
-fn parse_dest(dest: Option<PathBuf>) -> PathBuf {
+fn parse_dest(dest: Option<PathBuf>) -> Result<PathBuf, io::Error> {
     let default = PathBuf::from(DEFAULT_RESULT);
 
     match dest {
-        None => default,
+        None => Ok(default),
         Some(mut buff) => {
             // existing directory -> append an archive name
             if buff.as_path().is_dir() {
                 buff.push("agama-logs");
-                buff
-            // whatever else -> default (for now)
+                Ok(buff)
+            // whatever else -> input error
             } else {
-                default
+                Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "Invalid destination path"
+                ))
             }
         }
     }
