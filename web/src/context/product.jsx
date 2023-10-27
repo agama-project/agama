@@ -72,7 +72,7 @@ function useProduct() {
   }
 
   const { products = [], selectedId } = context;
-  const selectedProduct = products.find(p => p.id === selectedId);
+  const selectedProduct = products.find(p => p.id === selectedId) || null;
 
   return { ...context, selectedProduct };
 }

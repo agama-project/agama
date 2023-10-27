@@ -24,7 +24,7 @@ import { Outlet } from "react-router-dom";
 
 import { _ } from "~/i18n";
 import { useInstallerClient, useInstallerClientStatus } from "~/context/installer";
-import { useSoftware } from "./context/software";
+import { useProduct } from "./context/product";
 import { STARTUP, INSTALL } from "~/client/phase";
 import { BUSY } from "~/client/status";
 
@@ -57,7 +57,7 @@ const ATTEMPTS = 3;
 function App() {
   const client = useInstallerClient();
   const { attempt } = useInstallerClientStatus();
-  const { products } = useSoftware();
+  const { products } = useProduct();
   const { language } = useL10n();
   const [status, setStatus] = useState(undefined);
   const [phase, setPhase] = useState(undefined);
