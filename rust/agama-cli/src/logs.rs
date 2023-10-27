@@ -53,7 +53,7 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
 // Whatewer passed in dest formed into an absolute path with archive name
 // if dest is none then a default is returned
 // if dest is directory then a default file name for the archive will be appended
-// if dest is absolute path then it is used as is with no further checks
+// TODO: if dest is absolute path then it is used as is with (almost) no further checks
 fn parse_dest(dest: Option<PathBuf>) -> Result<PathBuf, io::Error> {
     let default = PathBuf::from(DEFAULT_RESULT);
 
@@ -64,6 +64,7 @@ fn parse_dest(dest: Option<PathBuf>) -> Result<PathBuf, io::Error> {
             if buff.as_path().is_dir() {
                 buff.push("agama-logs");
                 Ok(buff)
+            //TODO: a path with file name to be handled too
             // whatever else -> input error
             } else {
                 Err(io::Error::new(
