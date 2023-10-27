@@ -20,3 +20,4 @@
  */
 
 export { default as ProductSelectionForm } from "./ProductSelectionForm";
+export { default as ProductSelectionPage } from "./ProductSelectionPage";
