@@ -20,7 +20,7 @@ pub enum LogsCommands {
         /// Verbose output
         verbose: bool,
         #[clap(long, short = 'd')]
-        /// Destination path
+        /// Path to destination directory
         dest: Option<PathBuf>,
     },
     /// List logs which will be collected
@@ -53,7 +53,7 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
 // Whatewer passed in dest formed into an absolute path with archive name
 // if dest is none then a default is returned
 // if dest is directory then a default file name for the archive will be appended
-// TODO: if dest is absolute path then it is used as is with (almost) no further checks
+// TODO: if dest is path with a file name then it is used as is a name for resulting archive
 fn parse_dest(dest: Option<PathBuf>) -> Result<PathBuf, io::Error> {
     let default = PathBuf::from(DEFAULT_RESULT);
 
