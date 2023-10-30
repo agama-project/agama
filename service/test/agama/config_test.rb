@@ -97,8 +97,7 @@ describe Agama::Config do
             "id"    => "test2",
             "archs" => "s390x"
           }
-        ]
-      ))
+        ]))
       expect(Yast2::ArchFilter).to receive(:from_string).twice.and_return(double(match?: true),
         double(match?: false))
       expect(subject.products.size).to eq 1
