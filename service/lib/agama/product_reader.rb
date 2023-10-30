@@ -23,7 +23,6 @@ require "yast"
 require "yaml"
 require "logger"
 
-
 module Agama
   # This class is responsible for reading available products definition
   class ProductReader
@@ -35,6 +34,7 @@ module Agama
     GIT_DIR = File.expand_path("#{__dir__}/../../../.git")
 
     attr_reader :logger
+
     # Constructor
     #
     # @param logger [Logger]

@@ -154,11 +154,11 @@ describe Agama::Software::Manager do
       expect(proposal).to receive(:set_resolvables)
         .with("agama", :pattern, ["enhanced_base"])
       expect(proposal).to receive(:set_resolvables)
-        .with("agama", :pattern, [], {optional: true})
+        .with("agama", :pattern, [], { optional: true })
       expect(proposal).to receive(:set_resolvables)
         .with("agama", :package, ["NetworkManager"])
       expect(proposal).to receive(:set_resolvables)
-        .with("agama", :package, [], {optional: true})
+        .with("agama", :package, [], { optional: true })
       subject.propose
     end
   end

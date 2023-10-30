@@ -87,7 +87,7 @@ module Agama
     # Currently product merges its config to global config.
     # Keys defined in constant are the ones specific to product that
     # should not be merged to global config.
-    PRODUCT_SPECIFIC_KEYS = ["id", "name", "description"]
+    PRODUCT_SPECIFIC_KEYS = ["id", "name", "description"].freeze
     def pick_product(product_id)
       to_merge = products[product_id]
       to_merge = to_merge.reject { |k, _v| PRODUCT_SPECIFIC_KEYS.include?(k) }
@@ -97,6 +97,7 @@ module Agama
     # hash of available base products for current architecture
     def products
       return @products if @products
+
       products = ProductReader.new(logger: @logger).load_products
 
       products.select! do |product|

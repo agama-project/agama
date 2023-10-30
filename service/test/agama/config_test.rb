@@ -91,17 +91,20 @@ describe Agama::Config do
 
   describe "#products" do
     it "returns products available for current hardware" do
-      allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_return([
+      allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_return(
+        [
           {
-            "id" => "test",
+            "id"    => "test",
             "archs" => "x86_64"
           },
           {
-            "id" => "test2",
+            "id"    => "test2",
             "archs" => "s390x"
           }
-        ])
-      expect(Yast2::ArchFilter).to receive(:from_string).twice.and_return(double(match?: true), double(match?: false))
+        ]
+      )
+      expect(Yast2::ArchFilter).to receive(:from_string).twice.and_return(double(match?: true),
+        double(match?: false))
       expect(subject.products.size).to eq 1
     end
   end
@@ -121,7 +124,8 @@ describe Agama::Config do
       before do
         allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_call_original
         products = Agama::ProductReader.new.load_products
-        allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_return([products.first])
+        allow_any_instance_of(Agama::ProductReader).to receive(:load_products)
+          .and_return([products.first])
       end
 
       it "returns false" do
