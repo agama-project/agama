@@ -1,0 +1,19 @@
+name: Submit agama-products
+
+on:
+  # runs on pushes targeting the default branch
+  push:
+    branches:
+      - master
+    paths:
+      # run only when a Rust source is changed
+      - products.d/**
+
+jobs:
+  update_staging:
+    uses: ./.github/workflows/obs-staging-shared.yml
+    # pass all secrets
+    secrets: inherit
+    with:
+      project_name: systemsmanagement:Agama:Staging
+      package_name: agama-products-opensuse
