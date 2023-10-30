@@ -31,7 +31,7 @@ module Agama
 
     # Default system path
     SYSTEM_PATH = "/usr/share/agama/products.d"
-    GIT_PATH = File.expand_path("#{__dir__}/../../products.d")
+    GIT_PATH = File.expand_path("#{__dir__}/../../../products.d")
     GIT_DIR = File.expand_path("#{__dir__}/../../../.git")
 
     attr_reader :logger
