@@ -25,10 +25,6 @@ require "agama/config"
 describe Agama::Config do
   let(:config) { described_class.new("web" => { "ssl" => "SOMETHING" }) }
 
-  before do
-    allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_return([])
-  end
-
   describe ".load" do
     before do
       described_class.reset
@@ -91,7 +87,7 @@ describe Agama::Config do
 
   describe "#products" do
     it "returns products available for current hardware" do
-      allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_return(
+      allow(Agama::ProductReader).to receive(:new).and_return(double(load_products:
         [
           {
             "id"    => "test",
@@ -102,7 +98,7 @@ describe Agama::Config do
             "archs" => "s390x"
           }
         ]
-      )
+      ))
       expect(Yast2::ArchFilter).to receive(:from_string).twice.and_return(double(match?: true),
         double(match?: false))
       expect(subject.products.size).to eq 1
@@ -112,7 +108,7 @@ describe Agama::Config do
   describe "#multi_product?" do
     context "when more than one product is defined" do
       before do
-        allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_call_original
+        allow(Agama::ProductReader).to receive(:new).and_call_original
       end
 
       it "returns true" do
@@ -122,10 +118,10 @@ describe Agama::Config do
 
     context "when just one product is defined" do
       before do
-        allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_call_original
+        allow(Agama::ProductReader).to receive(:new).and_call_original
         products = Agama::ProductReader.new.load_products
-        allow_any_instance_of(Agama::ProductReader).to receive(:load_products)
-          .and_return([products.first])
+        allow(Agama::ProductReader).to receive(:new)
+          .and_return(double(load_products: [products.first]))
       end
 
       it "returns false" do

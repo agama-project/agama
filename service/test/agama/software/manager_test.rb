@@ -81,7 +81,7 @@ describe Agama::Software::Manager do
     allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(Agama::Software::RepositoriesManager).to receive(:new).and_return(repositories)
     allow(Agama::Software::Proposal).to receive(:new).and_return(proposal)
-    allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_call_original
+    allow(Agama::ProductReader).to receive(:new).and_call_original
   end
 
   describe "#probe" do

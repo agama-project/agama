@@ -46,7 +46,8 @@ end
 
 RSpec.configure do |c|
   c.before do
-    allow_any_instance_of(Agama::ProductReader).to receive(:load_products).and_return([])
+    allow(Agama::ProductReader).to receive(:new)
+      .and_return(double(load_products: []))
   end
 end
 
