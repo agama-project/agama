@@ -370,7 +370,7 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
     let opt_dest = options.dest.into_os_string();
     let dest = opt_dest.to_str().ok_or(io::Error::new(
         io::ErrorKind::InvalidInput,
-        "Malformed destination path"
+        "Malformed destination path",
     ))?;
     let result = format!("{}.{}", dest, DEFAULT_COMPRESSION.1);
 
