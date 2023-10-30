@@ -45,7 +45,7 @@ function Overview() {
     <Page
       // TRANSLATORS: page title
       title={_("Installation Summary")}
-      icon="summarize"
+      icon="list_alt"
       action={<InstallButton onClick={() => setShowErrors(true)} />}
     >
       <ProductSection />

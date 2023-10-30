@@ -44,6 +44,7 @@ import HomeStorage from "@icons/home_storage.svg?component";
 import Info from "@icons/info.svg?component";
 import Inventory from "@icons/inventory_2.svg?component";
 import Lan from "@icons/lan.svg?component";
+import ListAlt from "@icons/list_alt.svg?component";
 import Lock from "@icons/lock.svg?component";
 import ManageAccounts from "@icons/manage_accounts.svg?component";
 import Menu from "@icons/menu.svg?component";
@@ -57,7 +58,6 @@ import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import SettingsFill from "@icons/settings-fill.svg?component";
 import SignalCellularAlt from "@icons/signal_cellular_alt.svg?component";
 import Storage from "@icons/storage.svg?component";
-import Summarize from "@icons/summarize.svg?component";
 import TaskAlt from "@icons/task_alt.svg?component";
 import Terminal from "@icons/terminal.svg?component";
 import Translate from "@icons/translate.svg?component";
@@ -98,6 +98,7 @@ const icons = {
   inventory_2: Inventory,
   lan: Lan,
   loading: Loading,
+  list_alt: ListAlt,
   lock: Lock,
   manage_accounts: ManageAccounts,
   menu: Menu,
@@ -111,7 +112,6 @@ const icons = {
   settings_ethernet: SettingsEthernet,
   signal_cellular_alt: SignalCellularAlt,
   storage: Storage,
-  summarize: Summarize,
   task_alt: TaskAlt,
   terminal: Terminal,
   translate: Translate,
