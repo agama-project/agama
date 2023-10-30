@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -25,6 +25,7 @@ require "logger"
 
 module Agama
   # This class is responsible for reading available products definition
+  # either from system path (`/usr/share/agama/products.d) or the git repo.
   class ProductReader
     include Yast::I18n
 

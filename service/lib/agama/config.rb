@@ -95,6 +95,7 @@ module Agama
     end
 
     # hash of available base products for current architecture
+    # @return [Hash{String => Hash}]  product_id => product
     def products
       return @products if @products
 

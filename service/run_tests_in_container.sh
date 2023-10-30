@@ -12,7 +12,7 @@ if podman exec --workdir /checkout/service agama_ruby_tests rake test:unit; then
   echo "Tests passed"
 else
   echo "Tests failed"
-  echo "To get into container use: podman attach agama_ruby_tests"
-  echo "git checkout is located at /checkout"
-  echo "To remove container use: podman rm agama_ruby_tests"
+  echo "To get into container use:"; echo "  podman attach agama_ruby_tests"
+  echo "  cd /checkout"
+  echo "To remove container use:"; echo "  podman rm agama_ruby_tests"
 fi
