@@ -7,7 +7,7 @@ podman start agama_ruby_tests
 podman exec agama_ruby_tests zypper --non-interactive install yast2-iscsi-client ruby3.2-rubygem-eventmachine
 if podman exec --workdir /checkout/service agama_ruby_tests rake test:unit; then
   if [ "$KEEP_RUNNING" != "1" ]; then
-    podman stop agama_ruby_test
+    podman stop agama_ruby_tests
   fi
   echo "Tests passed"
 else
