@@ -69,7 +69,7 @@ fn parse_dest(dest: Option<PathBuf>) -> Result<PathBuf, io::Error> {
             } else {
                 Err(io::Error::new(
                     io::ErrorKind::InvalidInput,
-                    "Invalid destination path"
+                    "Invalid destination path",
                 ))
             }
         }
@@ -368,12 +368,10 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
     let paths = options.paths;
     let verbose = options.verbose;
     let opt_dest = options.dest.into_os_string();
-    let dest = opt_dest
-        .to_str()
-        .ok_or(io::Error::new(
-            io::ErrorKind::InvalidInput,
-            "Malformed destination path"
-        ))?;
+    let dest = opt_dest.to_str().ok_or(io::Error::new(
+        io::ErrorKind::InvalidInput,
+        "Malformed destination path"
+    ))?;
     let result = format!("{}.{}", dest, DEFAULT_COMPRESSION.1);
 
     showln(verbose, "Collecting Agama logs:");
