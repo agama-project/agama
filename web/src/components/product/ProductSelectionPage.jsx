@@ -19,13 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@patternfly/react-core";
+import { Button, Form, FormGroup } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
 import { Icon, Loading } from "~/components/layout";
-import { ProductSelectionForm } from "~/components/product";
+import { ProductSelector } from "~/components/product";
 import { Title, PageIcon, MainActions } from "~/components/layout/Layout";
 import { useInstallerClient } from "~/context/installer";
 import { useProduct } from "~/context/product";
@@ -33,7 +33,8 @@ import { useProduct } from "~/context/product";
 function ProductSelectionPage() {
   const { manager, software } = useInstallerClient();
   const navigate = useNavigate();
-  const { selectedProduct, products } = useProduct();
+  const { products, selectedProduct } = useProduct();
+  const [newProductId, setNewProductId] = useState(selectedProduct?.id);
 
   useEffect(() => {
     // TODO: display a notification in the UI to emphasizes that
@@ -41,10 +42,12 @@ function ProductSelectionPage() {
     return software.product.onChange(() => navigate("/"));
   }, [software, navigate]);
 
-  const onSubmit = async (id) => {
-    if (id !== selectedProduct?.id) {
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    if (newProductId !== selectedProduct?.id) {
       // TODO: handle errors
-      await software.product.select(id);
+      await software.product.select(newProductId);
       manager.startProbing();
     }
 
@@ -61,12 +64,16 @@ function ProductSelectionPage() {
       <Title>{_("Product selection")}</Title>
       <PageIcon><Icon name="home_storage" /></PageIcon>
       <MainActions>
-        <Button size="lg" variant="primary" form="product-selector" type="submit">
+        <Button size="lg" variant="primary" form="productSelectionForm" type="submit">
           {/* TRANSLATORS: button label */}
           {_("Select")}
         </Button>
       </MainActions>
-      <ProductSelectionForm id="product-selector" onSubmit={onSubmit} />
+      <Form id="productSelectionForm" onSubmit={onSubmit}>
+        <FormGroup isStack label={_("Choose a product")} role="radiogroup">
+          <ProductSelector value={newProductId} products={products} onChange={setNewProductId} />
+        </FormGroup>
+      </Form>
     </>
   );
 }

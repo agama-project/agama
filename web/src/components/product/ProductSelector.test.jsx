@@ -22,23 +22,10 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { ProductSelectionForm } from "~/components/product";
+import { ProductSelector } from "~/components/product";
 import { createClient } from "~/client";
 
-let mockProducts;
-let mockSelectedProduct;
-
 jest.mock("~/client");
-
-jest.mock("~/context/product", () => ({
-  ...jest.requireActual("~/context/product"),
-  useProduct: () => {
-    return {
-      products: mockProducts,
-      selectedProduct: mockSelectedProduct
-    };
-  }
-}));
 
 const products = [
   {
@@ -59,33 +46,30 @@ const products = [
 ];
 
 beforeEach(() => {
-  mockProducts = products;
-  mockSelectedProduct = products[0];
-
   createClient.mockImplementation(() => ({}));
 });
 
 it("shows an option for each product", async () => {
-  installerRender(<ProductSelectionForm />);
+  installerRender(<ProductSelector products={products} />);
   await screen.findByRole("radio", { name: "ALP Dolomite" });
   await screen.findByRole("radio", { name: "openSUSE Tumbleweed" });
   await screen.findByRole("radio", { name: "openSUSE MicroOS" });
 });
 
-it("selects the current product by default", async () => {
-  installerRender(<ProductSelectionForm />);
-  await screen.findByRole("radio", { name: "ALP Dolomite", checked: true });
-});
-
-it("selects the clicked product", async () => {
-  const { user } = installerRender(<ProductSelectionForm />);
-  const radio = await screen.findByRole("radio", { name: "openSUSE Tumbleweed" });
-  await user.click(radio);
+it("selects the given value", async () => {
+  installerRender(<ProductSelector value="Tumbleweed" products={products} />);
   await screen.findByRole("radio", { name: "openSUSE Tumbleweed", clicked: true });
 });
 
+it("calls onChange if a new option is clicked", async () => {
+  const onChangeFn = jest.fn();
+  const { user } = installerRender(<ProductSelector products={products} onChange={onChangeFn} />);
+  const radio = await screen.findByRole("radio", { name: "openSUSE Tumbleweed" });
+  await user.click(radio);
+  expect(onChangeFn).toHaveBeenCalledWith("Tumbleweed");
+});
+
 it("shows a message if there is no product for selection", async () => {
-  mockProducts = [];
-  installerRender(<ProductSelectionForm />);
-  await screen.findByText(/no products found/i);
+  installerRender(<ProductSelector />);
+  await screen.findByText(/no products available/i);
 });
