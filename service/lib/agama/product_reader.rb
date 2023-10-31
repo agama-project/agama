@@ -47,7 +47,8 @@ module Agama
       glob = File.join(default_path, "*.{yaml,yml}")
       Dir.glob(glob).each_with_object([]) do |path, result|
         # support also single product file
-        products = Array(load_file(path))
+        products = load_file(path)
+        products = [products] unless products.is_a?(Array)
         result.concat(products)
       end
     end
