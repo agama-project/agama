@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 31 09:41:33 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: sections improvements (gh#openSUSE/agama#816):
+  - allow using them without title.
+  - make them more accessible by using aria-label, aria-live-region,
+    and aria-busy attributes.
+
+-------------------------------------------------------------------
 Fri Oct 27 10:25:46 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Display the "Congratulations" message at the end of the
