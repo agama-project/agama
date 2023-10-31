@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { act, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 
 import { createClient } from "~/client";
@@ -47,52 +47,56 @@ beforeEach(() => {
   });
 });
 
-const PatternItemMock = ({ pattern }) => <span>{pattern.summary}</span>;
+const PatternItemMock = ({ pattern }) => <h3>{pattern.summary}</h3>;
 jest.mock("~/components/software/PatternItem", () => ({ pattern }) => { return <PatternItemMock pattern={pattern} /> });
 
 describe("PatternSelector", () => {
-  it("renders a summary", async () => {
+  it("displays a summary", async () => {
     installerRender(<PatternSelector />);
     const summarySection = await screen.findByRole("region", { name: /Software summary/ });
     within(summarySection).findByText(/Installation will take/);
   });
 
-  it("renders a input for filtering", async () => {
+  it("displays an input for filtering", async () => {
     installerRender(<PatternSelector />);
     const summarySection = await screen.findByRole("region", { name: /Software summary/ });
     within(summarySection).getByRole("textbox", { name: "Search" });
   });
 
   it("displays the pattern groups in correct order", async () => {
-    const { container } = await act(async () => installerRender(<PatternSelector />));
-    const groups = Array.from(container.querySelectorAll("h2")).map((node) => node.textContent);
-
-    expect(groups).toEqual(["Documentation", "Base Technologies", "Development"]);
+    installerRender(<PatternSelector />);
+    const headings = await screen.findAllByRole("heading", { level: 2 });
+    const headingsText = headings.map(node => node.textContent);
+    expect(headingsText).toEqual(["Documentation", "Base Technologies", "Development"]);
   });
 
   it("displays the patterns in a group in correct order", async () => {
-    await act(async () => installerRender(<PatternSelector />));
+    installerRender(<PatternSelector />);
 
     // the "Development" pattern group
-    const develGroup = screen.getByText("Development");
+    const develGroup = await screen.findByRole("region", { name: "Development" });
+
     // the "Development" pattern names
-    const develPatterns = Array.from(develGroup.nextElementSibling.childNodes).map((node) => node.textContent);
+    const develPatternsHeadings = within(develGroup).getAllByRole("heading", { level: 3 });
+    const develPatterns = develPatternsHeadings.map((node) => node.textContent);
 
     // sorted by order, the WSL pattern with empty order is the last one
     expect(develPatterns).toEqual(["Base Development", "C/C++ Development", "RPM Build Environment", "Base WSL packages"]);
   });
 
   it("displays only the matching patterns when using the search filter", async () => {
-    const { user } = await act(async () => installerRender(<PatternSelector />));
+    const { user } = installerRender(<PatternSelector />);
 
     // enter "wsl" into the search filter
-    const searchFilter = screen.getByPlaceholderText("Search");
+    const searchFilter = await screen.findByRole("textbox", { name: "Search" });
     await user.type(searchFilter, "wsl");
 
     // the "Development" pattern group
-    const develGroup = screen.getByText("Development");
+    const develGroup = screen.getByRole("region", { name: "Development" });
+
     // the "Development" pattern names
-    const develPatterns = Array.from(develGroup.nextElementSibling.childNodes).map((node) => node.textContent);
+    const develPatternsHeadings = within(develGroup).getAllByRole("heading", { level: 3 });
+    const develPatterns = develPatternsHeadings.map((node) => node.textContent);
 
     // only the WSL pattern is displayed
     expect(develPatterns).toEqual(["Base WSL packages"]);
