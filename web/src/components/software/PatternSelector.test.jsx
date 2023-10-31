@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { act, screen } from "@testing-library/react";
+import { act, screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 
 import { createClient } from "~/client";
@@ -30,7 +30,7 @@ import PatternSelector from "./PatternSelector";
 
 jest.mock("~/client");
 const selectedPatternsFn = jest.fn().mockResolvedValue([]);
-const getUsedSpaceFn = jest.fn().mockResolvedValue();
+const getUsedSpaceFn = jest.fn().mockResolvedValue("1 Gb");
 const getValidationErrorsFn = jest.fn().mockResolvedValue([]);
 const patternsFn = jest.fn().mockResolvedValue(test_patterns);
 
@@ -51,6 +51,18 @@ const PatternItemMock = ({ pattern }) => <span>{pattern.summary}</span>;
 jest.mock("~/components/software/PatternItem", () => ({ pattern }) => { return <PatternItemMock pattern={pattern} /> });
 
 describe("PatternSelector", () => {
+  it("renders a summary", async () => {
+    installerRender(<PatternSelector />);
+    const summarySection = await screen.findByRole("region", { name: /Software summary/ });
+    within(summarySection).findByText(/Installation will take/);
+  });
+
+  it("renders a input for filtering", async () => {
+    installerRender(<PatternSelector />);
+    const summarySection = await screen.findByRole("region", { name: /Software summary/ });
+    within(summarySection).getByRole("textbox", { name: "Search" });
+  });
+
   it("displays the pattern groups in correct order", async () => {
     const { container } = await act(async () => installerRender(<PatternSelector />));
     const groups = Array.from(container.querySelectorAll("h2")).map((node) => node.textContent);
