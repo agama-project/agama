@@ -70,6 +70,8 @@ describe Agama::Software::Manager do
   before do
     allow(Yast::Pkg).to receive(:TargetInitialize)
     allow(Yast::Pkg).to receive(:ImportGPGKey)
+    # allow glob to work for other calls
+    allow(Dir).to receive(:glob).and_call_original
     allow(Dir).to receive(:glob).with(/keys/).and_return(gpg_keys)
     allow(Yast::Packages).to receive(:Proposal).and_return({})
     allow(Yast::InstURL).to receive(:installInf2Url).with("")
@@ -79,6 +81,7 @@ describe Agama::Software::Manager do
     allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(Agama::Software::RepositoriesManager).to receive(:new).and_return(repositories)
     allow(Agama::Software::Proposal).to receive(:new).and_return(proposal)
+    allow(Agama::ProductReader).to receive(:new).and_call_original
   end
 
   describe "#probe" do
@@ -116,7 +119,7 @@ describe Agama::Software::Manager do
     end
 
     it "registers the repository from config" do
-      expect(repositories).to receive(:add).with(/tumbleweed/)
+      expect(repositories).to receive(:add).with(/Dolomite/)
       expect(repositories).to receive(:load)
       subject.probe
     end
@@ -126,9 +129,8 @@ describe Agama::Software::Manager do
     it "returns the list of known products" do
       products = subject.products
       expect(products.size).to eq(3)
-      id, data = products.first
-      expect(id).to eq("Tumbleweed")
-      expect(data).to include(
+      expect(products["Tumbleweed"]).to_not eq nil
+      expect(products["Tumbleweed"]).to include(
         "name"        => "openSUSE Tumbleweed",
         "description" => String
       )
@@ -152,16 +154,11 @@ describe Agama::Software::Manager do
       expect(proposal).to receive(:set_resolvables)
         .with("agama", :pattern, ["enhanced_base"])
       expect(proposal).to receive(:set_resolvables)
-        .with("agama", :pattern, ["optional_base"], optional: true)
+        .with("agama", :pattern, [], { optional: true })
       expect(proposal).to receive(:set_resolvables)
-        .with("agama", :package, ["mandatory_pkg"])
+        .with("agama", :package, ["NetworkManager"])
       expect(proposal).to receive(:set_resolvables)
-        .with("agama", :package, ["optional_pkg"], optional: true)
-      subject.propose
-
-      expect(Yast::Arch).to receive(:s390).and_return(true)
-      expect(proposal).to receive(:set_resolvables)
-        .with("agama", :package, ["mandatory_pkg", "mandatory_pkg_s390"])
+        .with("agama", :package, [], { optional: true })
       subject.propose
     end
   end

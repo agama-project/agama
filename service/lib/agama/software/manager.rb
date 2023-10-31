@@ -70,7 +70,7 @@ module Agama
         @logger = logger
         @languages = DEFAULT_LANGUAGES
         @products = @config.products
-        if @config.multi_product?
+        if @config.multi_product? || @products.empty?
           @product = nil
         else
           @product = @products.keys.first # use the available product as default
