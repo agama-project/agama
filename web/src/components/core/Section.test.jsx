@@ -25,6 +25,14 @@ import { plainRender, installerRender } from "~/test-utils";
 import { Section } from "~/components/core";
 
 describe("Section", () => {
+  beforeAll(() => {
+    jest.spyOn(console, "error").mockImplementation();
+  });
+
+  afterAll(() => {
+    console.error.mockRestore();
+  });
+
   describe("when title is given", () => {
     it("renders the section header", () => {
       plainRender(<Section title="Settings" />);
@@ -32,20 +40,18 @@ describe("Section", () => {
     });
 
     it("renders an icon if valid icon name is given", () => {
-      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
       const { container } = plainRender(<Section title="Settings" icon="settings" />);
-      container.querySelector("svg");
+      const icon = container.querySelector("svg");
+      expect(icon).toHaveAttribute("data-icon-name", "settings");
     });
 
     it("does not render an icon if icon name not given", () => {
-      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
       const { container } = plainRender(<Section title="Settings" />);
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
     });
 
     it("does not render an icon if not valid icon name is given", () => {
-      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
       const { container } = plainRender(<Section title="Settings" icon="not-valid-icon-name" />);
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
@@ -60,14 +66,12 @@ describe("Section", () => {
     });
 
     it("does not render the section icon", () => {
-      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
       const { container } = plainRender(<Section icon="settings" />);
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
     });
 
     it("does not render the loading icon", () => {
-      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
       const { container } = plainRender(<Section loading />);
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
@@ -151,13 +155,12 @@ describe("Section", () => {
     });
 
     it("renders the loading icon if title was given", () => {
-      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
       const { container } = plainRender(<Section title="Settings" loading />);
-      container.querySelector("svg");
+      const icon = container.querySelector("svg");
+      expect(icon).toHaveAttribute("data-icon-name", "loading");
     });
 
     it("does not render the loading icon if title was not given", () => {
-      // TODO: add a mechanism to check that it's the expected icon. data-something attribute?
       const { container } = plainRender(<Section loading />);
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
