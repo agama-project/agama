@@ -19,7 +19,7 @@ Name:           agama-products-opensuse
 #               This will be set by osc services, that will run after this.
 Version:        0
 Release:        0
-Summary:        Definition of opensuse products for Agama installer
+Summary:        Definition of openSUSE products for the Agama installer
 License:        GPL-2.0-only
 Url:            https://github.com/opensuse/agama
 BuildArch:      noarch
@@ -33,7 +33,7 @@ Products definition for Agama installer. This one is for opensuse products.
 #               This will be set by osc services, that will run after this.
 Version:        0
 Release:        0
-Summary:        Definition of dolomite product for Agama installer
+Summary:        Definition of Dolomite product for the Agama installer
 License:        GPL-2.0-only
 Url:            https://github.com/opensuse/agama
 BuildArch:      noarch
