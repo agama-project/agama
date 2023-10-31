@@ -120,7 +120,7 @@ const SectionContent = ({ children }) => {
  *   </Section>
  *
  * @typedef { Object } SectionProps
- * @property {string} [icon] - Name of the section icon. Not rendered if title not provided.
+ * @property {string} [icon] - Name of the section icon. Not rendered if title is not provided.
  * @property {string} [title] - The section title. If not given, aria-label must be provided.
  * @property {string} [name] - The section name. Used to build the header id.
  * @property {string} [path] - Path where the section links to. If present, props.openDialog is ignored.
