@@ -31,14 +31,13 @@ import { ValidationErrors } from "~/components/core";
  *
  * @param {object} props
  * @param {string} [props.name] - the name of the icon
- * @param {number} [props.size=32] - the icon size
  *
  * @return {React.ReactElement}
  */
-const SectionIcon = ({ name, size = 32 }) => {
+const SectionIcon = ({ name }) => {
   if (!name) return null;
 
-  return <Icon name={name} size={size} aria-hidden />;
+  return <Icon name={name} size={32} />;
 };
 
 /**
