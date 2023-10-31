@@ -12,12 +12,12 @@ agama-lib = { path="../agama-lib" }
 log = "0.4"
 simplelog = "0.12.1"
 systemd-journal-logger = "1.0"
-zbus = "3.7.0"
+zbus = { version = "3.7.0", default-features = false, features = ["tokio", "uuid"] }
 zbus_macros = "3.7.0"
-async-std = { version = "1.12.0", features = ["attributes"]}
 uuid = { version = "1.3.4", features = ["v4"] }
 thiserror = "1.0.40"
 serde = { version = "1.0.152", features = ["derive"] }
 serde_yaml = "0.9.24"
 futures = "0.3.28"
 cidr = { version = "0.2.2", features = ["serde"] }
+tokio = { version = "1.33.0", features = ["tokio-macros", "macros", "rt-multi-thread"] }

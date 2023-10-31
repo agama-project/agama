@@ -13,7 +13,7 @@ use crate::error::CliError;
 use agama_lib::error::ServiceError;
 use agama_lib::manager::ManagerClient;
 use agama_lib::progress::ProgressMonitor;
-use async_std::task::{self, block_on};
+use tokio;
 use commands::Commands;
 use config::run as run_config_cmd;
 use logs::run as run_logs_cmd;
@@ -40,7 +40,7 @@ struct Cli {
 
 async fn probe() -> anyhow::Result<()> {
     let another_manager = build_manager().await?;
-    let probe = task::spawn(async move { another_manager.probe().await });
+    let probe = tokio::spawn(async move { let _ = another_manager.probe().await; });
     show_progress().await?;
 
     Ok(probe.await?)
@@ -63,7 +63,7 @@ async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> anyhow::Resul
         return Err(CliError::ValidationError)?;
     }
 
-    let progress = task::spawn(async { show_progress().await });
+    let progress = tokio::spawn(async { show_progress().await });
     // Try to start the installation up to max_attempts times.
     let mut attempts = 1;
     loop {
@@ -89,7 +89,7 @@ async fn install(manager: &ManagerClient<'_>, max_attempts: u8) -> anyhow::Resul
 
 async fn show_progress() -> Result<(), ServiceError> {
     // wait 1 second to give other task chance to start, so progress can display something
-    task::sleep(Duration::from_secs(1)).await;
+    tokio::time::sleep(Duration::from_secs(1)).await;
     let conn = agama_lib::connection().await?;
     let mut monitor = ProgressMonitor::new(conn).await.unwrap();
     let presenter = InstallerProgress::new();
@@ -119,21 +119,21 @@ async fn run_command(cli: Cli) -> anyhow::Result<()> {
     match cli.command {
         Commands::Config(subcommand) => {
             let manager = build_manager().await?;
-            block_on(wait_for_services(&manager))?;
-            block_on(run_config_cmd(subcommand, cli.format))
+            wait_for_services(&manager).await?;
+            run_config_cmd(subcommand, cli.format).await
         }
         Commands::Probe => {
             let manager = build_manager().await?;
-            block_on(wait_for_services(&manager))?;
-            block_on(probe())
+            wait_for_services(&manager).await?;
+            probe().await
         }
         Commands::Profile(subcommand) => Ok(run_profile_cmd(subcommand)?),
         Commands::Install => {
             let manager = build_manager().await?;
-            block_on(install(&manager, 3))
+            install(&manager, 3).await
         }
-        Commands::Questions(subcommand) => block_on(run_questions_cmd(subcommand)),
-        Commands::Logs(subcommand) => block_on(run_logs_cmd(subcommand)),
+        Commands::Questions(subcommand) => run_questions_cmd(subcommand).await,
+        Commands::Logs(subcommand) => run_logs_cmd(subcommand).await,
         _ => unimplemented!(),
     }
 }
@@ -152,7 +152,7 @@ impl Termination for CliResult {
     }
 }
 
-#[async_std::main]
+#[tokio::main]
 async fn main() -> CliResult {
     let cli = Cli::parse();
 

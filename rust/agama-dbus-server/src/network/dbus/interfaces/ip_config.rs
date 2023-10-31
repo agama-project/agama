@@ -8,10 +8,10 @@ use crate::network::{
     action::Action,
     model::{Connection as NetworkConnection, IpConfig, Ipv4Method, Ipv6Method},
 };
-use async_std::{channel::Sender, sync::Arc};
 use cidr::IpInet;
-use futures::lock::{MappedMutexGuard, Mutex, MutexGuard};
-use std::net::IpAddr;
+use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
+use std::{net::IpAddr, sync::Arc};
+use tokio::sync::mpsc::Sender;
 use zbus::dbus_interface;
 
 /// D-Bus interface for IPv4 and IPv6 settings
@@ -55,7 +55,7 @@ impl Ip {
 
 impl Ip {
     /// Returns the IpConfig struct.
-    async fn get_ip_config(&self) -> MappedMutexGuard<NetworkConnection, IpConfig> {
+    async fn get_ip_config(&self) -> MappedMutexGuard<IpConfig> {
         MutexGuard::map(self.get_connection().await, |c| c.ip_config_mut())
     }
 

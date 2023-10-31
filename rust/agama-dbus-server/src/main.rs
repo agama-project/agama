@@ -4,11 +4,12 @@ use agama_lib::connection_to;
 use anyhow::Context;
 use log::LevelFilter;
 use std::future::pending;
+use tokio;
 
 const ADDRESS: &str = "unix:path=/run/agama/bus";
 const SERVICE_NAME: &str = "org.opensuse.Agama1";
 
-#[async_std::main]
+#[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // be smart with logging and log directly to journal if connected to it
     if systemd_journal_logger::connected_to_journal() {

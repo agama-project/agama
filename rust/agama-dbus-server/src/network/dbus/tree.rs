@@ -1,11 +1,11 @@
 use agama_lib::error::ServiceError;
-use futures::lock::Mutex;
+use tokio::sync::Mutex;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
 use crate::network::{action::Action, dbus::interfaces, model::*};
-use async_std::{channel::Sender, sync::Arc};
 use log;
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
+use tokio::sync::mpsc::Sender;
 
 const CONNECTIONS_PATH: &str = "/org/opensuse/Agama1/Network/connections";
 const DEVICES_PATH: &str = "/org/opensuse/Agama1/Network/devices";

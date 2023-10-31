@@ -1,6 +1,6 @@
 use crate::network::{dbus::Tree, model::Connection, Action, Adapter, NetworkState};
-use async_std::channel::{unbounded, Receiver, Sender};
 use std::error::Error;
+use tokio::sync::mpsc::{self, Receiver, Sender};
 
 /// Represents the network system using holding the state and setting up the D-Bus tree.
 pub struct NetworkSystem<T: Adapter> {
@@ -16,7 +16,7 @@ pub struct NetworkSystem<T: Adapter> {
 
 impl<T: Adapter> NetworkSystem<T> {
     pub fn new(conn: zbus::Connection, adapter: T) -> Self {
-        let (actions_tx, actions_rx) = unbounded();
+        let (actions_tx, actions_rx) = mpsc::channel(100);
         let tree = Tree::new(conn, actions_tx.clone());
         Self {
             state: NetworkState::default(),
@@ -54,7 +54,7 @@ impl<T: Adapter> NetworkSystem<T> {
     ///
     /// This function is expected to be executed on a separate thread.
     pub async fn listen(&mut self) {
-        while let Ok(action) = self.actions_rx.recv().await {
+        while let Some(action) = self.actions_rx.recv().await {
             if let Err(error) = self.dispatch_action(action).await {
                 eprintln!("Could not process the action: {}", error);
             }

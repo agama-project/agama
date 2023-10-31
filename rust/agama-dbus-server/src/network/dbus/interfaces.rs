@@ -10,8 +10,9 @@ use crate::network::{
 };
 
 use agama_lib::network::types::SSID;
-use async_std::{channel::Sender, sync::Arc};
-use futures::lock::{MappedMutexGuard, Mutex, MutexGuard};
+use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
+use std::sync::Arc;
+use tokio::sync::mpsc::Sender;
 use zbus::{
     dbus_interface,
     zvariant::{ObjectPath, OwnedObjectPath},
@@ -361,7 +362,7 @@ impl Wireless {
     /// Gets the wireless connection.
     ///
     /// Beware that it crashes when it is not a wireless connection.
-    async fn get_wireless(&self) -> MappedMutexGuard<NetworkConnection, WirelessConnection> {
+    async fn get_wireless(&self) -> MappedMutexGuard<WirelessConnection> {
         MutexGuard::map(self.connection.lock().await, |c| match c {
             NetworkConnection::Wireless(config) => config,
             _ => panic!("Not a wireless network. This is most probably a bug."),
@@ -373,7 +374,7 @@ impl Wireless {
     /// * `connection`: Updated connection.
     async fn update_connection<'a>(
         &self,
-        connection: MappedMutexGuard<'a, NetworkConnection, WirelessConnection>,
+        connection: MappedMutexGuard<'a, WirelessConnection>,
     ) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock().await;
         let connection = NetworkConnection::Wireless(connection.clone());
