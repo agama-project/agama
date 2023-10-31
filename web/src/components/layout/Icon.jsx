@@ -153,7 +153,13 @@ export default function Icon({ name, className = "", size = 32, ...otherProps })
   }
 
   const IconComponent = icons[name];
-  className = `${className} icon-size-${size}`.trim();
 
-  return <IconComponent className={className} aria-hidden="true" {...otherProps} />;
+  return (
+    <IconComponent
+      aria-hidden="true"
+      data-icon-name={name}
+      className={`${className} icon-size-${size}`.trim()}
+      {...otherProps}
+    />
+  );
 }

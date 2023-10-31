@@ -29,6 +29,12 @@ describe("when given a known name", () => {
     const svgElement = container.querySelector('svg');
     expect(svgElement).toHaveAttribute("aria-hidden", "true");
   });
+
+  it("includes the icon name as a data attribute of the SVG", async () => {
+    const { container } = plainRender(<Icon name="wifi" />);
+    const svgElement = container.querySelector('svg');
+    expect(svgElement).toHaveAttribute("data-icon-name", "wifi");
+  });
 });
 
 describe("when given an unknown name", () => {
