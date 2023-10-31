@@ -2,8 +2,8 @@
 set -x
 set -eu
 
-# https://build.opensuse.org/package/show/YaST:Head:Containers/agama-testing
-CIMAGE=registry.opensuse.org/yast/head/containers/containers_tumbleweed/opensuse/agama-testing:latest
+# https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-testing
+CIMAGE=registry.opensuse.org/systemsmanagement/agama/staging/containers/opensuse/agama-testing:latest
 # rename this if you test multiple things
 CNAME=agama
 
