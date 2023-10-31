@@ -20,7 +20,6 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { Icon } from "~/components/layout";
 
@@ -33,8 +32,23 @@ describe("when given a known name", () => {
 });
 
 describe("when given an unknown name", () => {
-  it("renders an informative text", async () => {
+  beforeAll(() => {
+    jest.spyOn(console, "error").mockImplementation();
+  });
+
+  afterAll(() => {
+    console.error.mockRestore();
+  });
+
+  it("outputs to console.error", () => {
     plainRender(<Icon name="apsens" />);
-    await screen.findByText("Icon apsens not found!", { name: /options/i });
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining("apsens not found")
+    );
+  });
+
+  it("renders nothing", async () => {
+    const { container } = plainRender(<Icon name="apsens" />);
+    expect(container).toBeEmptyDOMElement();
   });
 });
