@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-22 02:10+0000\n"
-"PO-Revision-Date: 2023-10-12 05:15+0000\n"
+"POT-Creation-Date: 2023-10-29 02:08+0000\n"
+"PO-Revision-Date: 2023-10-23 01:15+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-web/"
 "ja/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 4.9.1\n"
 
-#: src/App.jsx:103
+#: src/App.jsx:112
 msgid "Diagnostic tools"
 msgstr "診断ツール"
 
@@ -335,18 +335,16 @@ msgstr "基本ポップオーバー"
 msgid "language"
 msgstr "言語"
 
-#. TRANSLATORS: page header
 #. TRANSLATORS: page section
+#. TRANSLATORS: page header
 #: src/components/l10n/L10nPage.jsx:84
 #: src/components/overview/L10nSection.jsx:82
 msgid "Localization"
 msgstr "ローカライゼーション"
 
 #: src/components/l10n/LanguageSwitcher.jsx:46
-#, fuzzy
-#| msgid "language"
 msgid "Display Language"
-msgstr "言語"
+msgstr "表示言語"
 
 #: src/components/layout/Icon.jsx:157
 #, c-format
@@ -1110,7 +1108,7 @@ msgid "Edit file system"
 msgstr "ファイルシステムの編集"
 
 #: src/components/storage/ProposalVolumes.jsx:306
-#: src/components/storage/VolumeForm.jsx:498
+#: src/components/storage/VolumeForm.jsx:500
 msgid "Mount point"
 msgstr "マウントポイント"
 
@@ -1119,7 +1117,7 @@ msgid "Details"
 msgstr "詳細"
 
 #: src/components/storage/ProposalVolumes.jsx:308
-#: src/components/storage/VolumeForm.jsx:515
+#: src/components/storage/VolumeForm.jsx:517
 msgid "Size"
 msgstr "サイズ"
 
@@ -1132,53 +1130,53 @@ msgid "File systems to create in your system"
 msgstr "お使いのシステム内で作成するファイルシステム"
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeForm.jsx:96
+#: src/components/storage/VolumeForm.jsx:97
 msgid "the configuration of snapshots"
 msgstr "スナップショットの設定"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeForm.jsx:101
+#: src/components/storage/VolumeForm.jsx:102
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr "%s に対するファイルシステムの存在"
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeForm.jsx:103
+#: src/components/storage/VolumeForm.jsx:104
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeForm.jsx:106
+#: src/components/storage/VolumeForm.jsx:107
 #, c-format
 msgid "The final size depends on %s."
 msgstr "最終的なサイズは %s に依存します。"
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeForm.jsx:108
+#: src/components/storage/VolumeForm.jsx:109
 msgid " and "
 msgstr " および "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeForm.jsx:113
+#: src/components/storage/VolumeForm.jsx:114
 msgid "Automatically calculated size according to the selected product."
 msgstr "選択した製品から自動計算したサイズです。"
 
-#: src/components/storage/VolumeForm.jsx:133
+#: src/components/storage/VolumeForm.jsx:134
 msgid "Exact size for the file system."
 msgstr "ファイルシステムに対する正確なサイズです。"
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeForm.jsx:145
+#: src/components/storage/VolumeForm.jsx:146
 msgid "Exact size"
 msgstr "正確なサイズ"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeForm.jsx:160
+#: src/components/storage/VolumeForm.jsx:161
 msgid "Size unit"
 msgstr "サイズの単位"
 
-#: src/components/storage/VolumeForm.jsx:188
+#: src/components/storage/VolumeForm.jsx:189
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1189,61 +1187,61 @@ msgstr ""
 "に設定されます。"
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeForm.jsx:195
+#: src/components/storage/VolumeForm.jsx:196
 msgid "Minimum"
 msgstr "最小"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeForm.jsx:205
+#: src/components/storage/VolumeForm.jsx:206
 msgid "Minimum desired size"
 msgstr "最小必須サイズ"
 
-#: src/components/storage/VolumeForm.jsx:214
+#: src/components/storage/VolumeForm.jsx:215
 msgid "Unit for the minimum size"
 msgstr "最小サイズの単位"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:225
+#: src/components/storage/VolumeForm.jsx:226
 msgid "Maximum"
 msgstr "最大"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:236
+#: src/components/storage/VolumeForm.jsx:237
 msgid "Maximum desired size"
 msgstr "最大要求サイズ"
 
-#: src/components/storage/VolumeForm.jsx:244
+#: src/components/storage/VolumeForm.jsx:245
 msgid "Unit for the maximum size"
 msgstr "最大サイズの単位"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeForm.jsx:261
+#: src/components/storage/VolumeForm.jsx:262
 msgid "Auto"
 msgstr "自動"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeForm.jsx:263
+#: src/components/storage/VolumeForm.jsx:264
 msgid "Fixed"
 msgstr "固定値"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeForm.jsx:265
+#: src/components/storage/VolumeForm.jsx:266
 msgid "Range"
 msgstr "範囲"
 
-#: src/components/storage/VolumeForm.jsx:468
+#: src/components/storage/VolumeForm.jsx:470
 msgid "A size value is required"
 msgstr "サイズを指定する必要があります"
 
-#: src/components/storage/VolumeForm.jsx:473
+#: src/components/storage/VolumeForm.jsx:475
 msgid "Minimum size is required"
 msgstr "最小サイズを指定する必要があります"
 
-#: src/components/storage/VolumeForm.jsx:477
+#: src/components/storage/VolumeForm.jsx:479
 msgid "Maximum must be greater than minimum"
 msgstr "最大サイズは最小サイズより大きくなければなりません"
 
-#: src/components/storage/VolumeForm.jsx:507
+#: src/components/storage/VolumeForm.jsx:509
 msgid "File system type"
 msgstr "ファイルシステムの種類"
 
