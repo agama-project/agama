@@ -116,8 +116,9 @@ export default function DevServerWrapper({ children }) {
     // handle updating the iframe with the login form
     const onFrameLoad = () => {
       const passwordInput = iframeRef.current.contentWindow.document.getElementById(loginId);
-      // if there is no password field displayed then the user has authenticated successfully
-      if (!passwordInput) setIsAuthenticated(true);
+      // reload the window so the manifests.js file referenced from the
+      // index.html file is also loaded again
+      if (!passwordInput) window.location.reload();
     };
 
     return <iframe ref={iframeRef} onLoad={onFrameLoad} src={loginPath} className="full-size" />;
