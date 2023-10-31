@@ -36,9 +36,9 @@ export default function LanguageSwitcher() {
     changeLanguage(value);
   }, [setSelected, changeLanguage]);
 
-  const options = Object.entries(languages).map(([id, name]) => {
-    return <FormSelectOption key={id} value={id} label={name} />;
-  });
+  // sort by the language code to maintain consistent order
+  const options = Object.keys(languages).sort()
+    .map(id => <FormSelectOption key={id} value={id} label={languages[id]} />);
 
   return (
     <>
