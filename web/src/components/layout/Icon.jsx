@@ -136,8 +136,6 @@ const icons = {
  *   - https://stackoverflow.com/a/61472427
  *   - https://ryanhutzley.medium.com/dynamic-svg-imports-in-create-react-app-d6d411f6d6c6
  *
- * @todo: find how to render the "icon not found" warning only in _development_ mode
- *
  * @example
  *   <Icon name="warning" size="16" />
  *
@@ -149,10 +147,19 @@ const icons = {
  *
  */
 export default function Icon({ name, className = "", size = 32, ...otherProps }) {
-  const IconComponent = icons[name];
-  className = `${className} icon-size-${size}`.trim();
+  if (!icons[name]) {
+    console.error(sprintf(_("Icon %s not found!"), name));
+    return null;
+  }
 
-  return (IconComponent)
-    ? <IconComponent className={className} aria-hidden="true" {...otherProps} />
-    : <em>{sprintf(_("Icon %s not found!"), name)}</em>;
+  const IconComponent = icons[name];
+
+  return (
+    <IconComponent
+      aria-hidden="true"
+      data-icon-name={name}
+      className={`${className} icon-size-${size}`.trim()}
+      {...otherProps}
+    />
+  );
 }

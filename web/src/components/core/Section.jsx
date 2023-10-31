@@ -23,7 +23,6 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Text, TextVariants } from "@patternfly/react-core";
 import { Icon } from '~/components/layout';
 import { ValidationErrors } from "~/components/core";
 
@@ -46,13 +45,14 @@ const SectionIcon = ({ name, size = 32 }) => {
  * Internal component for rendering the section title
  *
  * @param {object} props
- * @param {string} props.text - the title for the section
- * @param {string} props.path - the path where the section links to. If present, props.openDialog is ignored
+ * @param {string} props.id - the id for the header.
+ * @param {string} props.text - the title for the section.
+ * @param {string} props.path - the path where the section links to. If present, props.openDialog is ignored.
  * @param {React.MouseEventHandler|undefined} [props.openDialog] - callback to be triggered when user clicks on the title, used for opening a dialog.
  *
  * @return {JSX.Element}
  */
-const SectionTitle = ({ text, path, openDialog }) => {
+const SectionTitle = ({ id, text, path, openDialog }) => {
   let title = <>{text}</>;
 
   if (path && path !== "") {
@@ -63,9 +63,9 @@ const SectionTitle = ({ text, path, openDialog }) => {
   }
 
   return (
-    <Text component={TextVariants.h2}>
+    <h2 id={id}>
       {title}
-    </Text>
+    </h2>
   );
 };
 
@@ -94,18 +94,24 @@ const SectionContent = ({ children }) => {
  *  openDialog callback will be completely ignored.
  *
  * @example <caption>Simple usage</caption>
- *   <Section title="Users" icon="manage_accounts">
+ *   <Section title="Users" name="users" icon="manage_accounts">
+ *     <UsersSummary />
+ *   </Section>
+ *
+ * @example <caption>A section without title</caption>
+ *   <Section aria-label="Users summary">
  *     <UsersSummary />
  *   </Section>
  *
  * @example <caption>A section that allows navigating to a page</caption>
- *   <Section title="Users" icon="manage_accounts" path="/users">
+ *   <Section title="Users" name="users" icon="manage_accounts" path="/users">
  *     <UsersSummary />
  *   </Section>
  *
  * @example <caption>A section that allows opening a settings dialog</caption>
  *   <Section
  *     title="L10n"
+ *     name="localization"
  *     icon="translate"
  *     openDialog={() => setLanguageSettingsOpen(true)}
  *   >
@@ -113,29 +119,56 @@ const SectionContent = ({ children }) => {
  *     <L10nSettings />
  *   </Section>
  *
- * @param {object} props
- * @param {string} [props.icon] - the name of the icon section, if any
- * @param {string} props.title - The title for the section
- * @param {string} props.path - The path where the section links to. If present, props.openDialog is ignored
- * @param {React.MouseEventHandler|undefined} [props.openDialog] - callback to be triggered
+ * @typedef { Object } SectionProps
+ * @property {string} [icon] - Name of the section icon. Not rendered if title is not provided.
+ * @property {string} [title] - The section title. If not given, aria-label must be provided.
+ * @property {string} [name] - The section name. Used to build the header id.
+ * @property {string} [path] - Path where the section links to. If present, props.openDialog is ignored.
+ * @property {React.MouseEventHandler|undefined} [props.openDialog] - callback to be triggered
  *  when user clicks on the title, used for opening a dialog.
- * @param {boolean} [props.loading] - whether the section is busy loading its content or not
- * @param {import("~/client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title
- * @param {React.ReactElement} props.children - the section content
+ * @property {boolean} [loading] - Whether the section is busy loading its content or not.
+ * @property {import("~/client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title.
+ * @property {React.ReactElement} [children] - The section content.
+ * @property {string} [aria-label] - aria-label attribute, required if title if not given
+ *
+ * @param { SectionProps } props
  */
 export default function Section({
   icon,
   title,
+  name,
   path,
   openDialog,
   loading,
   errors,
   children,
+  "aria-label": ariaLabel
 }) {
+  const headerId = `${name || crypto.randomUUID()}-section-header`;
+
+  if (!title && !ariaLabel) {
+    console.error("The Section component must have either, a 'title' or an 'aria-label'");
+  }
+
+  const SectionHeader = () => {
+    if (!title) return;
+
+    return (
+      <>
+        <SectionIcon name={loading ? "loading" : icon} />
+        <SectionTitle id={headerId} text={title} path={path} openDialog={openDialog} />
+      </>
+    );
+  };
+
   return (
-    <section>
-      <SectionIcon name={loading ? "loading" : icon} />
-      <SectionTitle text={title} path={path} openDialog={openDialog} />
+    <section
+      aria-live="polite"
+      aria-busy={loading}
+      aria-label={ariaLabel || undefined}
+      aria-labelledby={ title && !ariaLabel ? headerId : undefined}
+    >
+      <SectionHeader />
       <SectionContent>
         {errors?.length > 0 &&
           <ValidationErrors errors={errors} title={`${title} errors`} />}

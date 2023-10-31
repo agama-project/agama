@@ -65,7 +65,7 @@ it("loads the issues", async () => {
 it("renders sections with issues", async () => {
   installerRender(withNotificationProvider(<IssuesPage />));
 
-  const section = await screen.findByText(/Storage/);
+  const section = await screen.findByRole("region", { name: "Storage" });
   within(section).findByText(/Issue 1/);
   within(section).findByText(/Issue 2/);
 });

@@ -22,7 +22,7 @@
 // @ts-check
 
 import React, { useCallback, useEffect, useState } from "react";
-import { useCancellablePromise } from "~/utils";
+import { useCancellablePromise, locationReload, setLocationSearch } from "~/utils";
 import cockpit from "../lib/cockpit";
 import { useInstallerClient } from "./installer";
 
@@ -174,11 +174,11 @@ function reload(newLanguage) {
   const query = new URLSearchParams(window.location.search);
   if (query.has("lang") && query.get("lang") !== newLanguage) {
     query.set("lang", newLanguage);
-    // Calling search() with a different value makes the browser to navigate
+    // Setting location search with a different value makes the browser to navigate
     // to the new URL.
-    window.location.search = query.toString();
+    setLocationSearch(query.toString());
   } else {
-    window.location.reload();
+    locationReload();
   }
 }
 

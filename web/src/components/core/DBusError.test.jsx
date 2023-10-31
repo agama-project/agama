@@ -23,6 +23,7 @@ import React from "react";
 
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
+import * as utils from "~/utils";
 
 import { DBusError } from "~/components/core";
 
@@ -35,20 +36,13 @@ describe("DBusError", () => {
   });
 
   it("calls location.reload when user clicks on 'Reload'", async () => {
+    jest.spyOn(utils, "locationReload").mockImplementation(utils.noop);
+
     const { user } = plainRender(<DBusError />, { layout: true });
 
     const reloadButton = await screen.findByRole("button", { name: /Reload/i });
 
-    // Mock location.reload
-    // https://remarkablemark.org/blog/2021/04/14/jest-mock-window-location-href
-    const { location } = window;
-    delete window.location;
-    window.location = { reload: jest.fn() };
-
     await user.click(reloadButton);
-    expect(window.location.reload).toHaveBeenCalled();
-
-    // restore windows.location
-    window.location = location;
+    expect(utils.locationReload).toHaveBeenCalled();
   });
 });
