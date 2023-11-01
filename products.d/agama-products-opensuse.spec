@@ -23,9 +23,7 @@ Summary:        Definition of openSUSE products for the Agama installer
 License:        GPL-2.0-only
 Url:            https://github.com/opensuse/agama
 BuildArch:      noarch
-Source0:        tumbleweed.yaml
-Source1:        ALP-Dolomite.yaml
-Source2:        leap16.yaml
+Source0:        agama.tar
 
 %description
 Products definition for Agama installer. This one is for opensuse products.
@@ -43,14 +41,13 @@ BuildArch:      noarch
 Products definition for Agama installer. This one is for ALP Dolomite product.
 
 %prep
+%autosetup -a0 -n agama
 
 %build
 
 %install
 install -D -d -m 0755 %{buildroot}%{_datadir}/agama/products.d
-install -m 0644 %{SOURCE0} %{buildroot}%{_datadir}/agama/products.d
-install -m 0644 %{SOURCE1} %{buildroot}%{_datadir}/agama/products.d
-install -m 0644 %{SOURCE2} %{buildroot}%{_datadir}/agama/products.d
+install -m 0644 *.yaml %{buildroot}%{_datadir}/agama/products.d
 
 %files
 %dir %{_datadir}/agama
