@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 15 11:27:10 UTC 2023 - Michal Filka <mfilka@suse.com>
+
+- Improved "agama logs store" (gh#openSUSE/agama#823)
+  - added an option which allows to define the archive destination
+
+-------------------------------------------------------------------
+<<<<<<< HEAD
 Tue Nov 14 15:44:15 UTC 2023 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Add support for routing to the network model (gh#openSUSE/agama#824)
