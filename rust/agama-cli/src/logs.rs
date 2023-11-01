@@ -20,7 +20,8 @@ pub enum LogsCommands {
         /// Verbose output
         verbose: bool,
         #[clap(long, short = 'd')]
-        /// Path to destination directory
+        /// Path to destination directory. Optionally with the archive file name at the end. 
+        /// An extension will be appended automatically depending on used compression.
         dest: Option<PathBuf>,
     },
     /// List logs which will be collected
@@ -53,24 +54,34 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
 // Whatewer passed in dest formed into an absolute path with archive name
 // if dest is none then a default is returned
 // if dest is directory then a default file name for the archive will be appended
-// TODO: if dest is path with a file name then it is used as is a name for resulting archive
+// if dest is path with a file name then it is used as is a name for resulting archive
 fn parse_dest(dest: Option<PathBuf>) -> Result<PathBuf, io::Error> {
     let default = PathBuf::from(DEFAULT_RESULT);
+    let err = io::Error::new(io::ErrorKind::InvalidInput, "Invalid destination path");
 
     match dest {
         None => Ok(default),
         Some(mut buff) => {
+            let path = buff.as_path();
+
             // existing directory -> append an archive name
-            if buff.as_path().is_dir() {
+            if path.is_dir() {
                 buff.push("agama-logs");
                 Ok(buff)
-            //TODO: a path with file name to be handled too
+            // a path with file name
+            // sadly, is_some_and is unstable
+            } else if path.parent().is_some() {
+                // validate if parent directory realy exists
+                if !path.parent().unwrap().is_dir() {
+                    Err(err)
+                } else {
+                    // try to validate the file name somehow?
+                    // if file exists, it will be overwritten
+                    Ok(buff)
+                }
             // whatever else -> input error
             } else {
-                Err(io::Error::new(
-                    io::ErrorKind::InvalidInput,
-                    "Invalid destination path",
-                ))
+                Err(err)
             }
         }
     }
