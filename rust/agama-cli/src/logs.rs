@@ -20,7 +20,7 @@ pub enum LogsCommands {
         /// Verbose output
         verbose: bool,
         #[clap(long, short = 'd')]
-        /// Path to destination directory. Optionally with the archive file name at the end. 
+        /// Path to destination directory. Optionally with the archive file name at the end.
         /// An extension will be appended automatically depending on used compression.
         dest: Option<PathBuf>,
     },
