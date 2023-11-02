@@ -101,6 +101,8 @@ module.exports = {
   externals: { cockpit: "cockpit" },
   devServer: {
     hot: true,
+    // additionally watch these files for changes
+    watchFiles: ["./src/manifest.json", "./po/*.po"],
     proxy: {
       // forward all cockpit connections to a real Cockpit instance
       "/cockpit": {
