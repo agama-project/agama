@@ -115,6 +115,9 @@ export default function DevServerWrapper({ children }) {
   } else {
     // handle updating the iframe with the login form
     const onFrameLoad = () => {
+      // have a full screen login form
+      document.getElementById("root").style.maxInlineSize = "none";
+
       const passwordInput = iframeRef.current.contentWindow.document.getElementById(loginId);
       // reload the window so the manifests.js file referenced from the
       // index.html file is also loaded again
