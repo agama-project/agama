@@ -40,10 +40,10 @@ const REGISTRATION_IFACE = "org.opensuse.Agama1.Registration";
 
 /**
  * @typedef {object} Registration
- * @property {string} code - Registration code.
- * @property {string} email - Registration email.
  * @property {string} requirement - Registration requirement (i.e., "not-required, "optional",
  *  "mandatory").
+ * @property {string|null} code - Registration code, if any.
+ * @property {string|null} email - Registration email, if any.
  */
 
 /**
@@ -118,15 +118,19 @@ class BaseProductManager {
   /**
    * Returns the registration of the selected product.
    *
-   * @return {Promise<Registration|null>}
+   * @return {Promise<Registration>}
    */
   async getRegistration() {
     const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
+    const requirement = this.registrationRequirement(proxy.Requirement);
     const code = proxy.RegCode;
     const email = proxy.Email;
-    const requirement = this.registrationRequirement(proxy.Requirement);
 
-    return (code.length === 0 ? null : { code, email, requirement });
+    const registration = { requirement, code, email };
+    if (code.length === 0) registration.code = null;
+    if (email.length === 0) registration.email = null;
+
+    return registration;
   }
 
   /**
@@ -138,7 +142,7 @@ class BaseProductManager {
    */
   async register(code, email = "") {
     const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
-    const result = await proxy.Register(code, { email });
+    const result = await proxy.Register(code, { Email: { t: "s", v: email } });
 
     return {
       success: result[0] === 0,

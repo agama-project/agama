@@ -75,26 +75,32 @@ describe("#product", () => {
   });
 
   describe("#getRegistration", () => {
-    describe("if there is no registration code", () => {
+    describe("if there the product is not registered yet", () => {
       beforeEach(() => {
         registrationProxy.RegCode = "";
+        registrationProxy.Email = "";
+        registrationProxy.Requirement = 1;
       });
 
-      it("returns null", async () => {
+      it("returns the expected registration", async () => {
         const client = new SoftwareClient();
         const registration = await client.product.getRegistration();
-        expect(registration).toBeNull();
+        expect(registration).toStrictEqual({
+          code: null,
+          email: null,
+          requirement: "optional"
+        });
       });
     });
 
-    describe("if there is registration code", () => {
+    describe("if the product is registered", () => {
       beforeEach(() => {
         registrationProxy.RegCode = "111222";
         registrationProxy.Email = "test@test.com";
         registrationProxy.Requirement = 2;
       });
 
-      it("returns the registration", async () => {
+      it("returns the expected registration", async () => {
         const client = new SoftwareClient();
         const registration = await client.product.getRegistration();
         expect(registration).toStrictEqual({
@@ -107,6 +113,19 @@ describe("#product", () => {
   });
 
   describe("#register", () => {
+    beforeEach(() => {
+      registrationProxy.Register = jest.fn().mockResolvedValue([0, ""]);
+    });
+
+    it("performs the expected D-Bus call", async () => {
+      const client = new SoftwareClient();
+      await client.product.register("111222", "test@test.com");
+      expect(registrationProxy.Register).toHaveBeenCalledWith(
+        "111222",
+        { Email: { t: "s", v: "test@test.com" } }
+      );
+    });
+
     describe("when the action is correctly done", () => {
       beforeEach(() => {
         registrationProxy.Register = jest.fn().mockResolvedValue([0, ""]);
