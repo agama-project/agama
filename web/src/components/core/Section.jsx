@@ -27,54 +27,6 @@ import { Icon } from '~/components/layout';
 import { ValidationErrors } from "~/components/core";
 
 /**
- * Internal component for rendering the section icon
- *
- * @param {object} props
- * @param {string} [props.name] - the name of the icon
- * @param {number} [props.size=32] - the icon size
- *
- * @return {React.ReactElement}
- */
-const SectionIcon = ({ name, size = 32 }) => {
-  if (!name) return null;
-
-  return <Icon name={name} size={size} aria-hidden />;
-};
-
-/**
- * Internal component for rendering the section title
- *
- * @param {object} props
- * @param {string} props.id - the id for the header.
- * @param {string} props.text - the title for the section.
- * @param {string} props.path - the path where the section links to.
- *
- * @return {JSX.Element}
- */
-const SectionTitle = ({ id, text, path }) => {
-  if (!text?.trim()) return null;
-
-  const title = !path?.trim() ? <>{text}</> : <Link to={path}>{text}</Link>;
-
-  return <h2 id={id}>{title}</h2>;
-};
-
-/**
- * Internal component for wrapping and rendering the section content
- *
- * @param {object} props
- * @param {React.ReactElement|React.ReactElement[]} props.children - the content to be wrapped
- * @return {JSX.Element}
- */
-const SectionContent = ({ children }) => {
-  return (
-    <div className="stack content">
-      {children}
-    </div>
-  );
-};
-
-/**
  * Renders children into an HTML section
  * @component
  *
@@ -122,13 +74,15 @@ export default function Section({
     console.error("The Section component must have either, a 'title' or an 'aria-label'");
   }
 
-  const SectionHeader = () => {
-    if (!title) return;
+  const Header = () => {
+    if (!title?.trim()) return;
+
+    const header = !path?.trim() ? <>{title}</> : <Link to={path}>{title}</Link>;
 
     return (
       <>
-        <SectionIcon name={loading ? "loading" : icon} />
-        <SectionTitle id={headerId} text={title} path={path} />
+        <Icon name={loading ? "loading" : icon} />
+        <h2 id={headerId}>{header}</h2>
       </>
     );
   };
@@ -140,12 +94,12 @@ export default function Section({
       aria-label={ariaLabel || undefined}
       aria-labelledby={ title && !ariaLabel ? headerId : undefined}
     >
-      <SectionHeader />
-      <SectionContent>
+      <Header />
+      <div className="stack content">
         {errors?.length > 0 &&
           <ValidationErrors errors={errors} title={`${title} errors`} />}
         {children}
-      </SectionContent>
+      </div>
     </section>
   );
 }
