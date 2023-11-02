@@ -10,6 +10,7 @@
   install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/org.opensuse.Agama*.service
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/agama.service %{buildroot}%{_unitdir}/agama.service
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/agama-proxy-setup.service %{buildroot}%{_unitdir}/agama-proxy-setup.service
+  install --directory %{buildroot}/usr/lib/agama.d/
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/conf.d/*.yaml %{buildroot}/usr/lib/agama.d/
 :main:
   :preamble: |-
