@@ -116,7 +116,7 @@ describe("Section", () => {
     screen.getByRole("heading", { name: "Settings", id: /.*(-header-section)$/ });
   });
 
-  it("renders as a polite live region", () => {
+  it("renders a polite live region", () => {
     plainRender(<Section title="Settings" />);
 
     const section = screen.getByRole("region", { name: "Settings" });
@@ -172,32 +172,6 @@ describe("Section", () => {
       const heading = screen.getByRole("heading", { name: "Settings" });
       const link = within(heading).getByRole("link", { name: "Settings" });
       expect(link).toHaveAttribute("href", "/settings");
-    });
-  });
-
-  describe("when openDialog callback is given", () => {
-    describe("and path is not present", () => {
-      it("triggers it when the user click on the section title", async () => {
-        const openDialog = jest.fn();
-        const { user } = installerRender(
-          <Section title="Settings" openDialog={openDialog} />
-        );
-        const button = screen.getByRole("button", { name: "Settings" });
-        await user.click(button);
-        expect(openDialog).toHaveBeenCalled();
-      });
-    });
-
-    describe("but path is present too", () => {
-      it("does not triggers it when the user click on the section title", async () => {
-        const openDialog = jest.fn();
-        const { user } = installerRender(
-          <Section path="/settings" title="Settings" openDialog={openDialog} />
-        );
-        const link = screen.getByRole("link", { name: "Settings" });
-        await user.click(link);
-        expect(openDialog).not.toHaveBeenCalled();
-      });
     });
   });
 });

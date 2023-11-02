@@ -47,26 +47,16 @@ const SectionIcon = ({ name, size = 32 }) => {
  * @param {object} props
  * @param {string} props.id - the id for the header.
  * @param {string} props.text - the title for the section.
- * @param {string} props.path - the path where the section links to. If present, props.openDialog is ignored.
- * @param {React.MouseEventHandler|undefined} [props.openDialog] - callback to be triggered when user clicks on the title, used for opening a dialog.
+ * @param {string} props.path - the path where the section links to.
  *
  * @return {JSX.Element}
  */
-const SectionTitle = ({ id, text, path, openDialog }) => {
-  let title = <>{text}</>;
+const SectionTitle = ({ id, text, path }) => {
+  if (!text?.trim()) return null;
 
-  if (path && path !== "") {
-    title = <Link to={path}>{text}</Link>;
-  } else if (typeof openDialog === "function") {
-    // NOTE: using a native button here on purpose
-    title = <button onClick={openDialog}>{text}</button>;
-  }
+  const title = !path?.trim() ? <>{text}</> : <Link to={path}>{text}</Link>;
 
-  return (
-    <h2 id={id}>
-      {title}
-    </h2>
-  );
+  return <h2 id={id}>{title}</h2>;
 };
 
 /**
@@ -85,13 +75,8 @@ const SectionContent = ({ children }) => {
 };
 
 /**
- *
- * Displays an installation section
+ * Renders children into an HTML section
  * @component
- *
- *  NOTE: a section can do either, navigate to the given path or open a dialog
- *  triggering the openDialog callback but not both. Thus, if path is given
- *  openDialog callback will be completely ignored.
  *
  * @example <caption>Simple usage</caption>
  *   <Section title="Users" name="users" icon="manage_accounts">
@@ -108,23 +93,11 @@ const SectionContent = ({ children }) => {
  *     <UsersSummary />
  *   </Section>
  *
- * @example <caption>A section that allows opening a settings dialog</caption>
- *   <Section
- *     title="L10n"
- *     name="localization"
- *     icon="translate"
- *     openDialog={() => setLanguageSettingsOpen(true)}
- *   >
- *     <L10nSummary />
- *     <L10nSettings />
- *   </Section>
- *
  * @typedef { Object } SectionProps
  * @property {string} [icon] - Name of the section icon. Not rendered if title is not provided.
  * @property {string} [title] - The section title. If not given, aria-label must be provided.
  * @property {string} [name] - The section name. Used to build the header id.
- * @property {string} [path] - Path where the section links to. If present, props.openDialog is ignored.
- * @property {React.MouseEventHandler|undefined} [props.openDialog] - callback to be triggered
+ * @property {string} [path] - Path where the section links to.
  *  when user clicks on the title, used for opening a dialog.
  * @property {boolean} [loading] - Whether the section is busy loading its content or not.
  * @property {import("~/client/mixins").ValidationError[]} [props.errors] - Validation errors to be shown before the title.
@@ -138,7 +111,6 @@ export default function Section({
   title,
   name,
   path,
-  openDialog,
   loading,
   errors,
   children,
@@ -156,7 +128,7 @@ export default function Section({
     return (
       <>
         <SectionIcon name={loading ? "loading" : icon} />
-        <SectionTitle id={headerId} text={title} path={path} openDialog={openDialog} />
+        <SectionTitle id={headerId} text={title} path={path} />
       </>
     );
   };
