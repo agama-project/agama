@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov  2 07:38:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: Drop support for opening dialogs directly from a section
+  header (gh#openSUSE/agama#838).
+
+-------------------------------------------------------------------
 Tue Oct 31 09:41:33 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: sections improvements (gh#openSUSE/agama#816):
