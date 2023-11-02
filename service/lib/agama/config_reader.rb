@@ -43,7 +43,7 @@ module Agama
     REMOTE_BOOT_CONFIG = "agama_boot.yaml"
 
     PATHS = [
-      "/usr/lib/agama.d",
+      "/usr/share/agama/conf.d",
       "/etc/agama.d",
       "/run/agama.d"
     ].freeze
