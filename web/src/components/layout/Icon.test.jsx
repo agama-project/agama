@@ -73,7 +73,7 @@ describe("Icon", () => {
     it("outputs to console.error", () => {
       plainRender(<Icon name="apsens" />);
       expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining("apsens not found")
+        expect.stringContaining("'apsens' not found")
       );
     });
 

@@ -20,9 +20,6 @@
  */
 
 import React from 'react';
-import { sprintf } from "sprintf-js";
-
-import { _ } from "~/i18n";
 
 // NOTE: "@icons" is an alias to use a shorter path to real @material-symbols
 // icons location. Check the tsconfig.json file to see its value.
@@ -151,12 +148,12 @@ const icons = {
  */
 export default function Icon({ name, className = "", size = 32, ...otherProps }) {
   if (!name) {
-    console.error(sprintf(_("Icon called without name. `%s` given instead. Rendering nothing."), name));
+    console.error(`Icon called without name. '${name}' given instead. Rendering nothing.`);
     return null;
   }
 
   if (!icons[name]) {
-    console.error(sprintf(_("Icon %s not found!"), name));
+    console.error(`Icon '${name}' not found!`);
     return null;
   }
 
