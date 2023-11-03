@@ -1,4 +1,24 @@
 -------------------------------------------------------------------
+Thu Nov  2 07:38:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: Drop support for opening dialogs directly from a section
+  header (gh#openSUSE/agama#838).
+
+-------------------------------------------------------------------
+Tue Oct 31 09:41:33 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: sections improvements (gh#openSUSE/agama#816):
+  - allow using them without title.
+  - make them more accessible by using aria-label, aria-live-region,
+    and aria-busy attributes.
+
+-------------------------------------------------------------------
+Fri Oct 27 10:25:46 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Display the "Congratulations" message at the end of the
+  installation again (gh#openSUSE/agama#825).
+
+-------------------------------------------------------------------
 Thu Oct 26 16:07:02 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Properly track the status changes. It prevents of getting stuck

@@ -24,7 +24,7 @@ import { SearchInput } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
 import { useInstallerClient } from "~/context/installer";
-import { ValidationErrors } from "~/components/core";
+import { Section, ValidationErrors } from "~/components/core";
 import PatternGroup from "./PatternGroup";
 import PatternItem from "./PatternItem";
 import UsedSize from "./UsedSize";
@@ -211,17 +211,20 @@ function PatternSelector() {
 
   return (
     <>
-      <UsedSize size={used} />
-      <ValidationErrors errors={validationErrors} title={errorLabel} />
-      <SearchInput
-        // TRANSLATORS: search field placeholder text
-        placeholder={_("Search")}
-        value={searchValue}
-        onChange={(_event, value) => onSearchChange(value)}
-        onClear={() => onSearchChange("")}
-        // do not display the counter when search filter is empty
-        resultsCount={searchValue === "" ? 0 : patternsData.length}
-      />
+      <Section aria-label={_("Software summary and filter options")}>
+        <UsedSize size={used} />
+        <ValidationErrors errors={validationErrors} title={errorLabel} />
+        <SearchInput
+          // TRANSLATORS: search field placeholder text
+          placeholder={_("Search")}
+          aria-label={_("Search")}
+          value={searchValue}
+          onChange={(_event, value) => onSearchChange(value)}
+          onClear={() => onSearchChange("")}
+          // do not display the counter when search filter is empty
+          resultsCount={searchValue === "" ? 0 : patternsData.length}
+        />
+      </Section>
 
       { selector }
     </>

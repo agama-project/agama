@@ -73,7 +73,7 @@ module Agama
     end
 
     def probe
-      selected_lsm = config.data["security"]["lsm"]
+      selected_lsm = config.data.dig("security", "lsm")
       lsm_config.select(selected_lsm)
 
       patterns = if selected_lsm.nil?

@@ -97,7 +97,7 @@ function App() {
     }
 
     if (phase === INSTALL) {
-      return <Installation />;
+      return <Installation status={status} />;
     }
 
     return <Outlet />;

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-22 02:10+0000\n"
-"PO-Revision-Date: 2023-10-06 18:15+0000\n"
+"POT-Creation-Date: 2023-10-29 02:08+0000\n"
+"PO-Revision-Date: 2023-10-27 13:15+0000\n"
 "Last-Translator: Victor hck <victorhck@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "es/>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.9.1\n"
 
-#: src/App.jsx:103
+#: src/App.jsx:112
 msgid "Diagnostic tools"
 msgstr "Herramientas de diagnóstico"
 
@@ -27,19 +27,17 @@ msgstr "Herramientas de diagnóstico"
 #: src/DevServerWrapper.jsx:82
 #, c-format
 msgid "The server at %s is not reachable."
-msgstr ""
+msgstr "No se puede acceder al servidor en %s."
 
 #. TRANSLATORS: error message
 #: src/DevServerWrapper.jsx:88
-#, fuzzy
-#| msgid "Cannot connect to D-Bus"
 msgid "Cannot connect to the Cockpit server"
-msgstr "No se puede conectar a D-Bus"
+msgstr "No se puede conectar al servidor Cockpit"
 
 #. TRANSLATORS: button label
 #: src/DevServerWrapper.jsx:104
 msgid "Try Again"
-msgstr ""
+msgstr "Intentar de nuevo"
 
 #: src/components/core/About.jsx:43 src/components/core/About.jsx:48
 msgid "About Agama"
@@ -121,6 +119,8 @@ msgid ""
 "If you continue, partitions on your hard disk will be modified according to "
 "the provided installation settings."
 msgstr ""
+"Si continúa, las particiones de su disco duro se modificarán de acuerdo con "
+"la configuración de instalación proporcionada."
 
 #: src/components/core/InstallButton.jsx:70
 msgid "Please, cancel and check the settings if you are unsure."
@@ -140,6 +140,8 @@ msgid ""
 "Some problems were found when trying to start the installation. Please, have "
 "a look to the reported errors and try again."
 msgstr ""
+"Se encontraron algunos problemas al intentar iniciar la instalación. Por "
+"favor, revise los errores reportados y vuelva a intentarlo."
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:97
@@ -336,18 +338,16 @@ msgstr "Popover básico"
 msgid "language"
 msgstr "Idioma"
 
-#. TRANSLATORS: page header
 #. TRANSLATORS: page section
+#. TRANSLATORS: page header
 #: src/components/l10n/L10nPage.jsx:84
 #: src/components/overview/L10nSection.jsx:82
 msgid "Localization"
 msgstr "Localización"
 
 #: src/components/l10n/LanguageSwitcher.jsx:46
-#, fuzzy
-#| msgid "language"
 msgid "Display Language"
-msgstr "Idioma"
+msgstr "Mostrar idioma"
 
 #: src/components/layout/Icon.jsx:157
 #, c-format
@@ -748,36 +748,30 @@ msgstr "Cambiar de producto"
 
 #. TRANSLATORS: pattern status, selected to install (by user)
 #: src/components/software/PatternItem.jsx:63
-#, fuzzy
-#| msgid "Select"
 msgid "selected"
-msgstr "Seleccionar"
+msgstr "seleccionado"
 
 #. TRANSLATORS: pattern status, selected to install (by dependencies)
 #: src/components/software/PatternItem.jsx:66
 msgid "automatically selected"
-msgstr ""
+msgstr "seleccionado automáticamente"
 
 #. TRANSLATORS: pattern status, not selected to install
 #: src/components/software/PatternItem.jsx:69
-#, fuzzy
-#| msgid "Not set"
 msgid "not selected"
-msgstr "No establecida"
+msgstr "no seleccionado"
 
 #. TRANSLATORS: error summary, always plural, %d is replaced by number of errors (2 or more)
 #. if there is just a single error then the error is displayed directly instead of this summary
 #: src/components/software/PatternSelector.jsx:206
-#, fuzzy, c-format
-#| msgid "%d error found"
-#| msgid_plural "%d errors found"
+#, c-format
 msgid "%d errors"
-msgstr "%d error encontrado"
+msgstr "%d errores"
 
 #. TRANSLATORS: search field placeholder text
 #: src/components/software/PatternSelector.jsx:214
 msgid "Search"
-msgstr ""
+msgstr "Buscar"
 
 #: src/components/software/ProductSelectionPage.jsx:69
 msgid "Loading available products, please wait..."
@@ -811,7 +805,7 @@ msgstr "Retroceder"
 #: src/components/software/UsedSize.jsx:32
 #, c-format
 msgid "Installation will take %s"
-msgstr "La instalación durará %s"
+msgstr "La instalación ocupará %s"
 
 #: src/components/storage/DASDFormatProgress.jsx:61
 msgid "Waiting for progress report"
@@ -1107,10 +1101,8 @@ msgstr "con instantáneas"
 
 #. TRANSLATORS: flag for transactional file system
 #: src/components/storage/ProposalVolumes.jsx:219
-#, fuzzy
-#| msgid "Perform an action"
 msgid "transactional"
-msgstr "Realizar una acción"
+msgstr "transaccional"
 
 #: src/components/storage/ProposalVolumes.jsx:228
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
@@ -1122,7 +1114,7 @@ msgid "Edit file system"
 msgstr "Editar sistema de archivos"
 
 #: src/components/storage/ProposalVolumes.jsx:306
-#: src/components/storage/VolumeForm.jsx:498
+#: src/components/storage/VolumeForm.jsx:500
 msgid "Mount point"
 msgstr "Punto de montaje"
 
@@ -1131,7 +1123,7 @@ msgid "Details"
 msgstr "Detalles"
 
 #: src/components/storage/ProposalVolumes.jsx:308
-#: src/components/storage/VolumeForm.jsx:515
+#: src/components/storage/VolumeForm.jsx:517
 msgid "Size"
 msgstr "Tamaño"
 
@@ -1144,53 +1136,53 @@ msgid "File systems to create in your system"
 msgstr "Sistemas de archivos para crear en su sistema"
 
 #. TRANSLATORS: item which affects the final computed partition size
-#: src/components/storage/VolumeForm.jsx:96
+#: src/components/storage/VolumeForm.jsx:97
 msgid "the configuration of snapshots"
 msgstr "la configuración de las instantáneas"
 
 #. TRANSLATORS: item which affects the final computed partition size
 #. %s is replaced by a list of mount points like "/home, /boot"
-#: src/components/storage/VolumeForm.jsx:101
+#: src/components/storage/VolumeForm.jsx:102
 #, c-format
 msgid "the presence of the file system for %s"
 msgstr "la presencia del sistema de archivos para %s"
 
 #. TRANSLATORS: conjunction for merging two list items
-#: src/components/storage/VolumeForm.jsx:103
+#: src/components/storage/VolumeForm.jsx:104
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: the %s is replaced by the items which affect the computed size
-#: src/components/storage/VolumeForm.jsx:106
+#: src/components/storage/VolumeForm.jsx:107
 #, c-format
 msgid "The final size depends on %s."
 msgstr "El tamaño final depende de %s."
 
 #. TRANSLATORS: conjunction for merging two texts
-#: src/components/storage/VolumeForm.jsx:108
+#: src/components/storage/VolumeForm.jsx:109
 msgid " and "
 msgstr " y "
 
 #. TRANSLATORS: the partition size is automatically computed
-#: src/components/storage/VolumeForm.jsx:113
+#: src/components/storage/VolumeForm.jsx:114
 msgid "Automatically calculated size according to the selected product."
 msgstr "Tamaño calculado automáticamente según el producto seleccionado."
 
-#: src/components/storage/VolumeForm.jsx:133
+#: src/components/storage/VolumeForm.jsx:134
 msgid "Exact size for the file system."
 msgstr "Tamaño exacto para el sistema de archivos."
 
 #. TRANSLATORS: requested partition size
-#: src/components/storage/VolumeForm.jsx:145
+#: src/components/storage/VolumeForm.jsx:146
 msgid "Exact size"
 msgstr "Tamaño exacto"
 
 #. TRANSLATORS: units selector (like KiB, MiB, GiB...)
-#: src/components/storage/VolumeForm.jsx:160
+#: src/components/storage/VolumeForm.jsx:161
 msgid "Size unit"
 msgstr "Unidad de tamaño"
 
-#: src/components/storage/VolumeForm.jsx:188
+#: src/components/storage/VolumeForm.jsx:189
 msgid ""
 "Limits for the file system size. The final size will be a value between the "
 "given minimum and maximum. If no maximum is given then the file system will "
@@ -1201,61 +1193,61 @@ msgstr ""
 "de archivos será lo más grande posible."
 
 #. TRANSLATORS: the minimal partition size
-#: src/components/storage/VolumeForm.jsx:195
+#: src/components/storage/VolumeForm.jsx:196
 msgid "Minimum"
 msgstr "Mínimo"
 
 #. TRANSLATORS: the minium partition size
-#: src/components/storage/VolumeForm.jsx:205
+#: src/components/storage/VolumeForm.jsx:206
 msgid "Minimum desired size"
 msgstr "Tamaño mínimo deseado"
 
-#: src/components/storage/VolumeForm.jsx:214
+#: src/components/storage/VolumeForm.jsx:215
 msgid "Unit for the minimum size"
 msgstr "Unidad para el tamaño mínimo"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:225
+#: src/components/storage/VolumeForm.jsx:226
 msgid "Maximum"
 msgstr "Máximo"
 
 #. TRANSLATORS: the maximum partition size
-#: src/components/storage/VolumeForm.jsx:236
+#: src/components/storage/VolumeForm.jsx:237
 msgid "Maximum desired size"
 msgstr "Tamaño máximo deseado"
 
-#: src/components/storage/VolumeForm.jsx:244
+#: src/components/storage/VolumeForm.jsx:245
 msgid "Unit for the maximum size"
 msgstr "Unidad para el tamaño máximo"
 
 #. TRANSLATORS: radio button label, fully automatically computed partition size, no user input
-#: src/components/storage/VolumeForm.jsx:261
+#: src/components/storage/VolumeForm.jsx:262
 msgid "Auto"
 msgstr "Automático"
 
 #. TRANSLATORS: radio button label, exact partition size requested by user
-#: src/components/storage/VolumeForm.jsx:263
+#: src/components/storage/VolumeForm.jsx:264
 msgid "Fixed"
 msgstr "Fijado"
 
 #. TRANSLATORS: radio button label, automatically computed partition size within the user provided min and max limits
-#: src/components/storage/VolumeForm.jsx:265
+#: src/components/storage/VolumeForm.jsx:266
 msgid "Range"
 msgstr "Rango"
 
-#: src/components/storage/VolumeForm.jsx:468
+#: src/components/storage/VolumeForm.jsx:470
 msgid "A size value is required"
 msgstr "Se requiere un valor de tamaño"
 
-#: src/components/storage/VolumeForm.jsx:473
+#: src/components/storage/VolumeForm.jsx:475
 msgid "Minimum size is required"
 msgstr "Se requiere un tamaño mínimo"
 
-#: src/components/storage/VolumeForm.jsx:477
+#: src/components/storage/VolumeForm.jsx:479
 msgid "Maximum must be greater than minimum"
 msgstr "El máximo debe ser mayor que el mínimo"
 
-#: src/components/storage/VolumeForm.jsx:507
+#: src/components/storage/VolumeForm.jsx:509
 msgid "File system type"
 msgstr "Tipo de sistema de archivos"
 
@@ -1396,7 +1388,7 @@ msgstr "Dispositivos: %s"
 
 #. TRANSLATORS: multipath details, %s is replaced by list of connections used by the device
 #: src/components/storage/device-utils.jsx:152
-#, fuzzy, c-format
+#, c-format
 msgid "Wires: %s"
 msgstr "Wires: %s"
 

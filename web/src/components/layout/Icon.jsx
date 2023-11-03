@@ -20,9 +20,6 @@
  */
 
 import React from 'react';
-import { sprintf } from "sprintf-js";
-
-import { _ } from "~/i18n";
 
 // NOTE: "@icons" is an alias to use a shorter path to real @material-symbols
 // icons location. Check the tsconfig.json file to see its value.
@@ -132,27 +129,42 @@ const icons = {
  *
  * If exists, it renders requested icon with given size.
  *
+ * @note: if either, name prop has a falsy value or requested icon is not found,
+ * it will outputs a message to the console.error and renders nothing.
+ *
  * @todo: import icons dynamically if the list grows too much. See
  *   - https://stackoverflow.com/a/61472427
  *   - https://ryanhutzley.medium.com/dynamic-svg-imports-in-create-react-app-d6d411f6d6c6
  *
- * @todo: find how to render the "icon not found" warning only in _development_ mode
- *
  * @example
  *   <Icon name="warning" size="16" />
  *
- * @param {object} props - component props
- * @param {string} props.name - desired icon
- * @param {string} [props.className=""] - CSS classes
- * @param {string|number} [props.size=32] - the icon width and height
- * @param {object} [props.otherProps] other props sent to SVG icon
+ * @param {object} props - Component props
+ * @param {string} props.name - Name of the desired icon.
+ * @param {string} [props.className=""] - CSS classes.
+ * @param {string|number} [props.size=32] - Size used for both, width and height.
+ * @param {object} [props.otherProps] Other props sent to SVG icon.
  *
  */
 export default function Icon({ name, className = "", size = 32, ...otherProps }) {
-  const IconComponent = icons[name];
-  className = `${className} icon-size-${size}`.trim();
+  if (!name) {
+    console.error(`Icon called without name. '${name}' given instead. Rendering nothing.`);
+    return null;
+  }
 
-  return (IconComponent)
-    ? <IconComponent className={className} aria-hidden="true" {...otherProps} />
-    : <em>{sprintf(_("Icon %s not found!"), name)}</em>;
+  if (!icons[name]) {
+    console.error(`Icon '${name}' not found!`);
+    return null;
+  }
+
+  const IconComponent = icons[name];
+
+  return (
+    <IconComponent
+      aria-hidden="true"
+      data-icon-name={name}
+      className={`${className} icon-size-${size}`.trim()}
+      {...otherProps}
+    />
+  );
 }

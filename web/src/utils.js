@@ -178,6 +178,36 @@ const hex = (value) => {
  */
 const toValidationError = (issue) => ({ message: issue.description });
 
+/**
+ * Wrapper around window.location.reload
+ * @function
+ *
+ * It's needed mainly to ease testing because we can't override window in jest with jsdom anymore
+ *
+ * See below links
+ *   - https://github.com/jsdom/jsdom/blob/master/Changelog.md#2100
+ *   - https://github.com/jsdom/jsdom/issues/3492
+ */
+const locationReload = () => {
+  window.location.reload();
+};
+
+/**
+ * Wrapper around window.location.search setter
+ * @function
+ *
+ * It's needed mainly to ease testing as we can't override window in jest with jsdom anymore
+ *
+ * See below links
+ *   - https://github.com/jsdom/jsdom/blob/master/Changelog.md#2100
+ *   - https://github.com/jsdom/jsdom/issues/3492
+ *
+ * @param {string} query
+ */
+const setLocationSearch = (query) => {
+  window.location.search = query;
+};
+
 export {
   noop,
   partition,
@@ -185,5 +215,7 @@ export {
   useCancellablePromise,
   useLocalStorage,
   hex,
-  toValidationError
+  toValidationError,
+  locationReload,
+  setLocationSearch
 };

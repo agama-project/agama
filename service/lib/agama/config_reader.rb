@@ -43,7 +43,7 @@ module Agama
     REMOTE_BOOT_CONFIG = "agama_boot.yaml"
 
     PATHS = [
-      "/usr/lib/agama.d",
+      "/usr/share/agama/conf.d",
       "/etc/agama.d",
       "/run/agama.d"
     ].freeze
@@ -65,7 +65,7 @@ module Agama
       raise "Missing config file at #{path}" unless File.exist?(path)
 
       logger.info "Reading configuration from #{path}"
-      Config.from_file(path)
+      Config.from_file(path, logger)
     end
 
     # Return an arry with the different {Config} objects read from the different locations
@@ -85,7 +85,7 @@ module Agama
     # Return a {Config} oject
     # @return [Config] resultant Config after merging all the configurations
     def config
-      config = configs.first || Config.new
+      config = configs.first || Config.new(nil, logger)
       (configs[1..-1] || []).each { |c| config = config.merge(c) }
       config
     end
@@ -122,7 +122,7 @@ module Agama
 
     # return [Config]
     def cmdline_config
-      Config.new(cmdline_args.data)
+      Config.new(cmdline_args.data, logger)
     end
 
     # return [Config]

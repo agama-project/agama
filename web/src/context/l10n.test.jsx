@@ -27,6 +27,7 @@ import { render, waitFor, screen } from "@testing-library/react";
 
 import { L10nProvider } from "~/context/l10n";
 import { InstallerClientProvider } from "./installer";
+import * as utils from "~/utils";
 
 const getUILanguageFn = jest.fn().mockResolvedValue();
 const setUILanguageFn = jest.fn().mockResolvedValue();
@@ -72,22 +73,12 @@ const TranslatedContent = () => {
 };
 
 describe("L10nProvider", () => {
-  // remember the original object, we need to temporarily replace it with a mock
-  const origLocation = window.location;
-  const origNavigator = window.navigator;
-
-  // mock window.location.reload and search
   beforeAll(() => {
-    delete window.location;
-    window.location = { reload: jest.fn(), search: "" };
+    jest.spyOn(utils, "locationReload").mockImplementation(utils.noop);
+    jest.spyOn(utils, "setLocationSearch");
 
     delete window.navigator;
     window.navigator = { languages: ["es-es", "cs-cz"] };
-  });
-
-  afterAll(() => {
-    window.location = origLocation;
-    window.navigator = origNavigator;
   });
 
   // remove the Cockpit language cookie after each test
@@ -117,8 +108,7 @@ describe("L10nProvider", () => {
         // children are displayed
         await screen.findByText("hello");
 
-        expect(window.location.search).toEqual("");
-        expect(window.location.reload).not.toHaveBeenCalled();
+        expect(utils.locationReload).not.toHaveBeenCalled();
       });
     });
 
@@ -136,16 +126,16 @@ describe("L10nProvider", () => {
           </InstallerClientProvider>
         );
 
-        await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+        await waitFor(() => expect(utils.locationReload).toHaveBeenCalled());
 
-        // reload the component
+        // renders again after reloading
         render(
           <InstallerClientProvider client={client}>
             <L10nProvider><TranslatedContent /></L10nProvider>
           </InstallerClientProvider>
         );
-        await waitFor(() => screen.getByText("hola"));
 
+        await waitFor(() => screen.getByText("hola"));
         expect(setUILanguageFn).toHaveBeenCalledWith("es_ES");
       });
     });
@@ -164,8 +154,10 @@ describe("L10nProvider", () => {
             <L10nProvider><TranslatedContent /></L10nProvider>
           </InstallerClientProvider>
         );
-        await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
 
+        await waitFor(() => expect(utils.locationReload).toHaveBeenCalled());
+
+        // renders again after reloading
         render(
           <InstallerClientProvider client={client}>
             <L10nProvider><TranslatedContent /></L10nProvider>
@@ -185,8 +177,10 @@ describe("L10nProvider", () => {
               <L10nProvider><TranslatedContent /></L10nProvider>
             </InstallerClientProvider>
           );
-          await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
 
+          await waitFor(() => expect(utils.locationReload).toHaveBeenCalled());
+
+          // renders again after reloading
           render(
             <InstallerClientProvider client={client}>
               <L10nProvider><TranslatedContent /></L10nProvider>
@@ -200,7 +194,7 @@ describe("L10nProvider", () => {
 
   describe("when the URL query parameter is set to '?lang=cs-CZ'", () => {
     beforeEach(() => {
-      window.location.search = "?lang=cs-CZ";
+      history.replaceState(history.state, null, `http://localhost/?lang=cs-CZ`);
     });
 
     describe("when the Cockpit language is already set to 'cs-cz'", () => {
@@ -221,8 +215,8 @@ describe("L10nProvider", () => {
         expect(setUILanguageFn).not.toHaveBeenCalled();
 
         expect(document.cookie).toEqual("CockpitLang=cs-cz");
-        expect(window.location.reload).not.toHaveBeenCalled();
-        expect(window.location.search).toEqual("?lang=cs-CZ");
+        expect(utils.locationReload).not.toHaveBeenCalled();
+        expect(utils.setLocationSearch).not.toHaveBeenCalled();
       });
     });
 
@@ -240,16 +234,17 @@ describe("L10nProvider", () => {
             <L10nProvider><TranslatedContent /></L10nProvider>
           </InstallerClientProvider>
         );
-        await waitFor(() => expect(window.location.search).toEqual("lang=cs-cz"));
 
-        // reload the component
+        await waitFor(() => expect(utils.setLocationSearch).toHaveBeenCalledWith("lang=cs-cz"));
+
+        // renders again after reloading
         render(
           <InstallerClientProvider client={client}>
             <L10nProvider><TranslatedContent /></L10nProvider>
           </InstallerClientProvider>
         );
-        await waitFor(() => screen.getByText("ahoj"));
 
+        await waitFor(() => screen.getByText("ahoj"));
         expect(setUILanguageFn).toHaveBeenCalledWith("cs_CZ");
       });
     });
@@ -267,7 +262,8 @@ describe("L10nProvider", () => {
             <L10nProvider><TranslatedContent /></L10nProvider>
           </InstallerClientProvider>
         );
-        await waitFor(() => expect(window.location.search).toEqual("lang=cs-cz"));
+
+        await waitFor(() => expect(utils.setLocationSearch).toHaveBeenCalledWith("lang=cs-cz"));
 
         // reload the component
         render(
@@ -275,8 +271,8 @@ describe("L10nProvider", () => {
             <L10nProvider><TranslatedContent /></L10nProvider>
           </InstallerClientProvider>
         );
-        await waitFor(() => screen.getByText("ahoj"));
 
+        await waitFor(() => screen.getByText("ahoj"));
         expect(setUILanguageFn).toHaveBeenCalledWith("cs_CZ");
       });
     });

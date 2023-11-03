@@ -20,21 +20,66 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { Icon } from "~/components/layout";
 
-describe("when given a known name", () => {
-  it("renders an aria-hidden SVG element", async () => {
-    const { container } = plainRender(<Icon name="wifi" />);
-    const svgElement = container.querySelector('svg');
-    expect(svgElement).toHaveAttribute("aria-hidden", "true");
+describe("Icon", () => {
+  beforeAll(() => {
+    jest.spyOn(console, "error").mockImplementation();
   });
-});
 
-describe("when given an unknown name", () => {
-  it("renders an informative text", async () => {
-    plainRender(<Icon name="apsens" />);
-    await screen.findByText("Icon apsens not found!", { name: /options/i });
+  afterAll(() => {
+    console.error.mockRestore();
+  });
+
+  describe("mounted with a falsy value as name", () => {
+    it("outputs to console.error", () => {
+      plainRender(<Icon name="" />);
+      expect(console.error).toHaveBeenCalledWith(
+        expect.stringContaining("Rendering nothing")
+      );
+    });
+
+    it("renders nothing", () => {
+      const { container: contentWhenNotDefined } = plainRender(<Icon />);
+      expect(contentWhenNotDefined).toBeEmptyDOMElement();
+
+      const { container: contentWhenEmpty } = plainRender(<Icon name="" />);
+      expect(contentWhenEmpty).toBeEmptyDOMElement();
+
+      const { container: contentWhenFalse } = plainRender(<Icon name={false} />);
+      expect(contentWhenFalse).toBeEmptyDOMElement();
+
+      const { container: contentWhenNull } = plainRender(<Icon name={null} />);
+      expect(contentWhenNull).toBeEmptyDOMElement();
+    });
+  });
+
+  describe("mounted with a known name", () => {
+    it("renders an aria-hidden SVG element", async () => {
+      const { container } = plainRender(<Icon name="wifi" />);
+      const svgElement = container.querySelector('svg');
+      expect(svgElement).toHaveAttribute("aria-hidden", "true");
+    });
+
+    it("includes the icon name as a data attribute of the SVG", async () => {
+      const { container } = plainRender(<Icon name="wifi" />);
+      const svgElement = container.querySelector('svg');
+      expect(svgElement).toHaveAttribute("data-icon-name", "wifi");
+    });
+  });
+
+  describe("mounted with unknown name", () => {
+    it("outputs to console.error", () => {
+      plainRender(<Icon name="apsens" />);
+      expect(console.error).toHaveBeenCalledWith(
+        expect.stringContaining("'apsens' not found")
+      );
+    });
+
+    it("renders nothing", async () => {
+      const { container } = plainRender(<Icon name="apsens" />);
+      expect(container).toBeEmptyDOMElement();
+    });
   });
 });

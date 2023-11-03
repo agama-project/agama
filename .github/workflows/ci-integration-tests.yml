@@ -122,8 +122,8 @@ jobs:
       run:  podman exec agama bash -c "cd /checkout; ./setup-service.sh"
 
     - name: Set a testing Agama configuration
-      # copy a simplified ALP config file, it skips the product selection at the beginning
-      run:  podman exec agama bash -c "cp /checkout/playwright/config/agama.yaml /checkout/service/etc/agama.yaml"
+      # use just one product, it skips the product selection at the beginning
+      run:  podman exec agama bash -c "rm /checkout/products.d/{leap16,ALP-Dolomite}.yaml"
 
     - name: Show NetworkManager log
       run:  podman exec agama journalctl -u NetworkManager
