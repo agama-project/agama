@@ -6,7 +6,7 @@
 //!
 //! ```no_run
 //! # use agama_lib::progress::{Progress, ProgressMonitor, ProgressPresenter};
-//! # use async_std::task::block_on;
+//! # use tokio::{runtime::Handle, task};
 //! # use zbus;
 //!
 //! // Custom presenter
@@ -37,9 +37,11 @@
 //!     }
 //! }
 //!
-//! let connection = block_on(zbus::Connection::system()).unwrap();
-//! let mut monitor = block_on(ProgressMonitor::new(connection)).unwrap();
-//! monitor.run(SimplePresenter {});
+//! async fn run_monitor() {
+//!   let connection = zbus::Connection::system().await.unwrap();
+//!   let mut monitor = ProgressMonitor::new(connection).await.unwrap();
+//!   monitor.run(SimplePresenter {});
+//!}
 //! ```
 
 use crate::error::ServiceError;
