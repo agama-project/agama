@@ -27,7 +27,6 @@ import { createClient } from "~/client";
 
 // Mock some components using contexts and not relevant for below tests
 jest.mock("~/components/core/LogsButton", () => () => <div>LogsButton Mock</div>);
-jest.mock("~/components/software/ChangeProductLink", () => () => <div>ChangeProductLink Mock</div>);
 
 let mockIssues;
 

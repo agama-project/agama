@@ -39,7 +39,6 @@ import {
   ShowTerminalButton,
   Sidebar
 } from "~/components/core";
-import { ChangeProductLink } from "~/components/software";
 import { LanguageSwitcher } from "./components/l10n";
 import { Layout, Loading, Title } from "./components/layout";
 import { useL10n } from "./context/l10n";
@@ -107,7 +106,6 @@ function App() {
     <>
       <Sidebar>
         <div className="flex-stack">
-          <ChangeProductLink />
           <IssuesLink />
           <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
             <ShowLogButton />
