@@ -33,15 +33,15 @@ describe Agama::DBus::Software::Product do
 
   let(:backend) { Agama::Software::Manager.new(config, logger) }
 
-  let(:config) { Agama::Config.new(config_data) }
-
-  let(:config_data) do
-    path = File.join(FIXTURES_PATH, "root_dir/etc/agama.yaml")
-    YAML.safe_load(File.read(path))
-  end
+  let(:config) { Agama::Config.new }
 
   before do
+    allow(config).to receive(:products).and_return(products)
     allow(subject).to receive(:dbus_properties_changed)
+  end
+
+  let(:products) do
+    { "Tumbleweed" => {}, "ALP-Dolomite" => {} }
   end
 
   it "defines Product D-Bus interface" do
@@ -75,7 +75,7 @@ describe Agama::DBus::Software::Product do
 
     context "if the current product is registered" do
       before do
-        subject.select_product("Leap")
+        subject.select_product("Leap16")
         allow(backend.registration).to receive(:reg_code).and_return("123XX432")
       end
 

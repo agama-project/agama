@@ -1,4 +1,6 @@
+use agama_lib::error::ServiceError;
 use futures::stream::StreamExt;
+use futures::Future;
 use std::error::Error;
 use std::process::{Child, Command};
 use std::time::Duration;
@@ -44,7 +46,7 @@ impl DBusServer<Stopped> {
         }
     }
 
-    pub async fn start(self) -> DBusServer<Started> {
+    pub async fn start(self) -> Result<DBusServer<Started>, ServiceError> {
         let child = Command::new("/usr/bin/dbus-daemon")
             .args([
                 "--config-file",
@@ -54,22 +56,13 @@ impl DBusServer<Stopped> {
             ])
             .spawn()
             .expect("to start the testing D-Bus daemon");
-        self.wait(500).await;
-        let connection = agama_lib::connection_to(&self.address).await.unwrap();
 
-        DBusServer {
+        let connection = async_retry(|| agama_lib::connection_to(&self.address)).await?;
+
+        Ok(DBusServer {
             address: self.address,
             extra: Started { child, connection },
-        }
-    }
-}
-
-impl<S: ServerState> DBusServer<S> {
-    /// Waits until the D-Bus daemon is ready.
-    // TODO: implement proper waiting instead of just using a sleep
-    async fn wait(&self, millis: u64) {
-        let wait_time = Duration::from_millis(millis);
-        async_std::task::sleep(wait_time).await;
+        })
     }
 }
 
@@ -115,6 +108,35 @@ impl NameOwnerChangedStream {
             let (sname, _, _): (String, String, String) = signal.body().unwrap();
             if &sname == name {
                 return;
+            }
+        }
+    }
+}
+
+/// Run and retry an async function.
+///
+/// Beware that, if the function is failing for a legit reason, you will
+/// introduce a delay in your code.
+///
+/// * `func`: async function to run.
+pub async fn async_retry<O, F, T, E>(func: F) -> Result<T, E>
+where
+    F: Fn() -> O,
+    O: Future<Output = Result<T, E>>,
+{
+    const RETRIES: u8 = 10;
+    const INTERVAL: u64 = 500;
+    let mut retry = 0;
+    loop {
+        match func().await {
+            Ok(result) => return Ok(result),
+            Err(error) => {
+                if retry > RETRIES {
+                    return Err(error);
+                }
+                retry = retry + 1;
+                let wait_time = Duration::from_millis(INTERVAL);
+                async_std::task::sleep(wait_time).await;
             }
         }
     }

@@ -82,6 +82,8 @@ describe Agama::Software::Manager do
   before do
     allow(Yast::Pkg).to receive(:TargetInitialize)
     allow(Yast::Pkg).to receive(:ImportGPGKey)
+    # allow glob to work for other calls
+    allow(Dir).to receive(:glob).and_call_original
     allow(Dir).to receive(:glob).with(/keys/).and_return(gpg_keys)
     allow(Yast::Packages).to receive(:Proposal).and_return({})
     allow(Yast::InstURL).to receive(:installInf2Url).with("")
@@ -91,6 +93,7 @@ describe Agama::Software::Manager do
     allow(Agama::DBus::Clients::Questions).to receive(:new).and_return(questions_client)
     allow(Agama::Software::RepositoriesManager).to receive(:new).and_return(repositories)
     allow(Agama::Software::Proposal).to receive(:new).and_return(proposal)
+    allow(Agama::ProductReader).to receive(:new).and_call_original
   end
 
   describe "#new" do
@@ -126,7 +129,6 @@ describe Agama::Software::Manager do
 
   shared_examples "software issues" do |tested_method|
     before do
-      subject.select_product("Tumbleweed")
       allow(subject.registration).to receive(:reg_code).and_return(reg_code)
     end
 
@@ -189,7 +191,7 @@ describe Agama::Software::Manager do
       stub_const("Agama::Software::Manager::REPOS_DIR", repos_dir)
       stub_const("Agama::Software::Manager::REPOS_BACKUP", backup_repos_dir)
       FileUtils.mkdir_p(repos_dir)
-      subject.select_product("Tumbleweed")
+      subject.select_product("ALP-Dolomite")
     end
 
     after do
@@ -216,7 +218,7 @@ describe Agama::Software::Manager do
     end
 
     it "registers the repository from config" do
-      expect(repositories).to receive(:add).with(/tumbleweed/)
+      expect(repositories).to receive(:add).with(/Dolomite/)
       expect(repositories).to receive(:load)
       subject.probe
     end
@@ -230,9 +232,9 @@ describe Agama::Software::Manager do
       expect(products.size).to eq(3)
       expect(products).to all(be_a(Agama::Software::Product))
       expect(products).to contain_exactly(
+        an_object_having_attributes(id: "ALP-Dolomite"),
         an_object_having_attributes(id: "Tumbleweed"),
-        an_object_having_attributes(id: "Leap Micro"),
-        an_object_having_attributes(id: "Leap")
+        an_object_having_attributes(id: "Leap16")
       )
     end
   end
@@ -250,6 +252,18 @@ describe Agama::Software::Manager do
     end
 
     include_examples "software issues", "propose"
+
+    it "adds the patterns and packages to install depending on the system architecture" do
+      expect(proposal).to receive(:set_resolvables)
+        .with("agama", :pattern, ["enhanced_base"])
+      expect(proposal).to receive(:set_resolvables)
+        .with("agama", :pattern, [], { optional: true })
+      expect(proposal).to receive(:set_resolvables)
+        .with("agama", :package, ["NetworkManager"])
+      expect(proposal).to receive(:set_resolvables)
+        .with("agama", :package, [], { optional: true })
+      subject.propose
+    end
   end
 
   describe "#install" do

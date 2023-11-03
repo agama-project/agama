@@ -19,19 +19,11 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
-import { useInstallerClient } from "~/context/installer";
+import React from "react";
 import { InstallationProgress, InstallationFinished } from "~/components/core";
 import { IDLE } from "~/client/status";
 
-function Installation() {
-  const client = useInstallerClient();
-  const [status, setStatus] = useState(undefined);
-
-  useEffect(() =>
-    client.manager.onStatusChange(setStatus), [client.manager]
-  );
-
+function Installation({ status }) {
   return (status === IDLE) ? <InstallationFinished /> : <InstallationProgress />;
 }
 

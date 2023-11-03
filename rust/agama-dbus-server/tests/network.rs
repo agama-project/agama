@@ -1,6 +1,6 @@
 mod common;
 
-use self::common::DBusServer;
+use self::common::{async_retry, DBusServer};
 use agama_dbus_server::network::{
     self,
     model::{self, Ipv4Method, Ipv6Method},
@@ -9,6 +9,7 @@ use agama_dbus_server::network::{
 use agama_lib::network::{settings, types::DeviceType, NetworkClient};
 use async_std::test;
 use cidr::IpInet;
+use std::error::Error;
 
 #[derive(Default)]
 pub struct NetworkTestAdapter(network::NetworkState);
@@ -24,8 +25,8 @@ impl Adapter for NetworkTestAdapter {
 }
 
 #[test]
-async fn test_read_connections() {
-    let mut server = DBusServer::new().start().await;
+async fn test_read_connections() -> Result<(), Box<dyn Error>> {
+    let mut server = DBusServer::new().start().await?;
 
     let device = model::Device {
         name: String::from("eth0"),
@@ -35,39 +36,30 @@ async fn test_read_connections() {
     let state = NetworkState::new(vec![device], vec![eth0]);
     let adapter = NetworkTestAdapter(state);
 
-    let _service = NetworkService::start(&server.connection(), adapter)
-        .await
-        .unwrap();
+    let _service = NetworkService::start(&server.connection(), adapter).await?;
+    server.request_name().await?;
 
-    server.request_name().await.unwrap();
-
-    let client = NetworkClient::new(server.connection()).await.unwrap();
-    let conns = client.connections().await.unwrap();
+    let client = NetworkClient::new(server.connection()).await?;
+    let conns = async_retry(|| client.connections()).await?;
     assert_eq!(conns.len(), 1);
     let dbus_eth0 = conns.first().unwrap();
     assert_eq!(dbus_eth0.id, "eth0");
     assert_eq!(dbus_eth0.device_type(), DeviceType::Ethernet);
+    Ok(())
 }
 
 #[test]
-async fn test_add_connection() {
-    let mut server = DBusServer::new().start().await;
+async fn test_add_connection() -> Result<(), Box<dyn Error>> {
+    let mut server = DBusServer::new().start().await?;
 
     let adapter = NetworkTestAdapter(NetworkState::default());
 
-    let _service = NetworkService::start(&server.connection(), adapter)
-        .await
-        .unwrap();
-    server.request_name().await.unwrap();
+    let _service = NetworkService::start(&server.connection(), adapter).await?;
+    server.request_name().await?;
 
-    let client = NetworkClient::new(server.connection().clone())
-        .await
-        .unwrap();
+    let client = NetworkClient::new(server.connection().clone()).await?;
 
-    let addresses: Vec<IpInet> = vec![
-        "192.168.0.2/24".parse().unwrap(),
-        "::ffff:c0a8:7ac7/64".parse().unwrap(),
-    ];
+    let addresses: Vec<IpInet> = vec!["192.168.0.2/24".parse()?, "::ffff:c0a8:7ac7/64".parse()?];
     let wlan0 = settings::NetworkConnection {
         id: "wlan0".to_string(),
         method4: Some("auto".to_string()),
@@ -81,9 +73,9 @@ async fn test_add_connection() {
         }),
         ..Default::default()
     };
-    client.add_or_update_connection(&wlan0).await.unwrap();
+    client.add_or_update_connection(&wlan0).await?;
 
-    let conns = client.connections().await.unwrap();
+    let conns = async_retry(|| client.connections()).await?;
     assert_eq!(conns.len(), 1);
 
     let conn = conns.first().unwrap();
@@ -94,11 +86,12 @@ async fn test_add_connection() {
     assert_eq!(method4, &Ipv4Method::Auto.to_string());
     let method6 = conn.method6.as_ref().unwrap();
     assert_eq!(method6, &Ipv6Method::Disabled.to_string());
+    Ok(())
 }
 
 #[test]
-async fn test_update_connection() {
-    let mut server = DBusServer::new().start().await;
+async fn test_update_connection() -> Result<(), Box<dyn Error>> {
+    let mut server = DBusServer::new().start().await?;
 
     let device = model::Device {
         name: String::from("eth0"),
@@ -108,16 +101,17 @@ async fn test_update_connection() {
     let state = NetworkState::new(vec![device], vec![eth0]);
     let adapter = NetworkTestAdapter(state);
 
-    let _service = NetworkService::start(&server.connection(), adapter)
-        .await
-        .unwrap();
+    let _service = NetworkService::start(&server.connection(), adapter).await?;
+    server.request_name().await?;
 
-    server.request_name().await.unwrap();
+    let client = NetworkClient::new(server.connection()).await?;
+    // make sure connections have been published.
+    let _conns = async_retry(|| client.connections()).await?;
 
-    let client = NetworkClient::new(server.connection()).await.unwrap();
-    let mut dbus_eth0 = client.get_connection("eth0").await.unwrap();
+    let mut dbus_eth0 = async_retry(|| client.get_connection("eth0")).await?;
     dbus_eth0.interface = Some("eth0".to_string());
-    client.add_or_update_connection(&dbus_eth0).await.unwrap();
-    let dbus_eth0 = client.get_connection("eth0").await.unwrap();
+    client.add_or_update_connection(&dbus_eth0).await?;
+    let dbus_eth0 = client.get_connection("eth0").await?;
     assert_eq!(dbus_eth0.interface, Some("eth0".to_string()));
+    Ok(())
 }

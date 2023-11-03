@@ -15,6 +15,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const webpack = require('webpack');
 const po_handler = require("./src/lib/webpack-po-handler");
+const manifests_handler = require("./src/lib/webpack-manifests-handler");
 
 /* A standard nodejs and webpack pattern */
 const production = process.env.NODE_ENV === 'production';
@@ -100,14 +101,26 @@ module.exports = {
   externals: { cockpit: "cockpit" },
   devServer: {
     hot: true,
-    // forward all cockpit connections to a real Cockpit instance
+    // additionally watch these files for changes
+    watchFiles: ["./src/manifest.json", "./po/*.po"],
     proxy: {
+      // forward all cockpit connections to a real Cockpit instance
       "/cockpit": {
         target: cockpitTarget,
         // redirect also the websocket connections
         ws: true,
         // ignore SSL problems (self-signed certificate)
         secure: false,
+      },
+      // forward the manifests.js request and patch the response with the
+      // current Agama manifest from the ./src/manifest.json file
+      "/manifests.js": {
+        target: cockpitTarget + "/cockpit/@localhost/",
+        // ignore SSL problems (self-signed certificate)
+        secure: false,
+        // the response is modified by the onProxyRes handler
+        selfHandleResponse : true,
+        onProxyRes: manifests_handler,
       },
     },
     // use https so Cockpit uses wss:// when connecting to the backend
@@ -118,7 +131,7 @@ module.exports = {
 
     // Cockpit handles the "po.js" requests specially
     setupMiddlewares: (middlewares, devServer) => {
-      devServer.app.get("/po.js", (req, res) => po_handler(req, res));
+      devServer.app.get("/po.js", po_handler);
       return middlewares;
     }
   },

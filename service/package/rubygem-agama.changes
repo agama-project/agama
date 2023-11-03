@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Nov  2 14:00:01 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Delegate TPM-based encryption to YaST (gh#openSUSE/agama#826)
+
+-------------------------------------------------------------------
 Mon Oct 23 11:33:26 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 5

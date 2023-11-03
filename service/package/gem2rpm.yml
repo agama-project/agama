@@ -10,7 +10,8 @@
   install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/org.opensuse.Agama*.service
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/agama.service %{buildroot}%{_unitdir}/agama.service
   install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/share/agama-proxy-setup.service %{buildroot}%{_unitdir}/agama-proxy-setup.service
-  install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/etc/agama.yaml %{buildroot}%{_sysconfdir}/agama.yaml
+  install --directory %{buildroot}/usr/share/agama/conf.d
+  install -D -m 0644 %{buildroot}%{gem_base}/gems/%{mod_full_name}/conf.d/*.yaml %{buildroot}/usr/share/agama/conf.d/
 :main:
   :preamble: |-
     # Override build.rpm, see also https://github.com/openSUSE/obs-build/blob/master/configs/
@@ -41,4 +42,6 @@
     %{_datadir}/dbus-1/agama-services/org.opensuse.Agama*.service\n
     %{_unitdir}/agama.service\n
     %{_unitdir}/agama-proxy-setup.service\n
-    %config %{_sysconfdir}/agama.yaml\n"
+    %dir %{_datadir}/agama\n
+    %dir %{_datadir}/agama/conf.d\n
+    %{_datadir}/agama/conf.d\n"

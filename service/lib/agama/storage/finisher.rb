@@ -75,8 +75,8 @@ module Agama
         [
           SecurityStep.new(logger, security),
           CopyFilesStep.new(logger),
+          StorageStep.new(logger),
           BootloaderStep.new(logger),
-          TpmStep.new(logger, config),
           IguanaStep.new(logger),
           SnapshotsStep.new(logger),
           CopyLogsStep.new(logger),
@@ -112,18 +112,6 @@ module Agama
 
         def wfm_write(function)
           Yast::WFM.CallFunction(function, ["Write"])
-        end
-
-        # Representation on the staging devicegraph of the root mount point
-        #
-        # @return [Y2Storage::MountPoint]
-        def root_mount_point
-          staging_graph.mount_points.find(&:root?)
-        end
-
-        # @return [Y2Storage::Devicegraph]
-        def staging_graph
-          Y2Storage::StorageManager.instance.staging
         end
       end
 
@@ -196,6 +184,17 @@ module Agama
         end
       end
 
+      # Step to finish the Y2Storage configuration
+      class StorageStep < Step
+        def label
+          "Adjusting storage configuration"
+        end
+
+        def run
+          wfm_write("storage_finish")
+        end
+      end
+
       # Step to configure the file-system snapshots
       class SnapshotsStep < Step
         def label
@@ -226,75 +225,6 @@ module Agama
 
         def run
           wfm_write("umount_finish")
-        end
-      end
-
-      # Step to configure LUKS unlocking via TPMv2, if possible
-      class TpmStep < Step
-        # Constructor
-        def initialize(logger, config)
-          super(logger)
-          @config = config
-        end
-
-        def label
-          "Preparing the system to unlock the encryption using the TPM"
-        end
-
-        def run?
-          tpm_product? && tpm_proposal? && tpm_system?
-        end
-
-        def run
-          keyfile_path = File.join("root", ".root.keyfile")
-          Yast::Execute.on_target!(
-            "fdectl", "add-secondary-key", "--keyfile", keyfile_path,
-            stdin:    "#{luks.password}\n",
-            recorder: Yast::ReducedRecorder.new(skip: :stdin)
-          )
-
-          service = Yast2::Systemd::Service.find("fde-tpm-enroll.service")
-          logger.info "FDE: TPM enroll service: #{service}"
-          service&.enable
-        rescue Cheetah::ExecutionFailed
-          false
-        end
-
-      private
-
-        def tpm_proposal?
-          !!luks
-        end
-
-        # LUKS device from the devicegraph
-        #
-        # @return [Y2Storage::Luks, nil] nil if the root mount point is not encrypted
-        def luks
-          root_mount_point.ancestors.find do |dev|
-            dev.is?(:luks)
-          end
-        end
-
-        def tpm_system?
-          Y2Storage::Arch.new.efiboot? && tpm_present?
-        end
-
-        def tpm_present?
-          return @tpm_present unless @tpm_present.nil?
-
-          @tpm_present =
-            begin
-              Yast::Execute.on_target!("fdectl", "tpm-present")
-              logger.info "FDE: TPMv2 detected"
-              true
-            rescue Cheetah::ExecutionFailed
-              logger.info "FDE: TPMv2 not detected"
-              false
-            end
-        end
-
-        def tpm_product?
-          @config.data.fetch("security", {}).fetch("tpm_luks_open", false)
         end
       end
 
@@ -335,6 +265,18 @@ module Agama
           return "" unless options
 
           options.empty? ? "defaults" : options.join(",")
+        end
+
+        # Representation on the staging devicegraph of the root mount point
+        #
+        # @return [Y2Storage::MountPoint]
+        def root_mount_point
+          staging_graph.mount_points.find(&:root?)
+        end
+
+        # @return [Y2Storage::Devicegraph]
+        def staging_graph
+          Y2Storage::StorageManager.instance.staging
         end
       end
     end

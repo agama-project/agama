@@ -35,7 +35,7 @@ module Agama
         PATH = "/org/opensuse/Agama/Software1/Product"
         private_constant :PATH
 
-        # @param backend [Agama::Software]
+        # @param backend [Agama::Software::Manager]
         # @param logger [Logger]
         def initialize(backend, logger)
           super(PATH, logger: logger)

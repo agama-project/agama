@@ -78,7 +78,11 @@ install -m 0644 --target-directory=%{buildroot}%{_datadir}/dbus-1/agama-services
 
 
 %check
+%ifarch aarch64
+/usr/bin/cargo auditable test -j1 --offline --no-fail-fast
+%else
 %{cargo_test}
+%endif
 
 %files
 %{_bindir}/agama

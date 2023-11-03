@@ -62,8 +62,8 @@ module Agama
       # @return [Hash]
       def product_data_from_config(id)
         {
-          name:               config.pure_data.dig(id, "software", "base_product"),
-          version:            config.pure_data.dig(id, "software", "version"),
+          name:               config.products.dig(id, "software", "base_product"),
+          version:            config.products.dig(id, "software", "version"),
           repositories:       config.arch_elements_from(
             id, "software", "installation_repositories", property: :url
           ),
