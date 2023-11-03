@@ -46,7 +46,7 @@
 
 use crate::error::ServiceError;
 use crate::proxies::ProgressProxy;
-use tokio_stream::{StreamMap, StreamExt};
+use tokio_stream::{StreamExt, StreamMap};
 use zbus::Connection;
 
 /// Represents the progress for an Agama service.

@@ -3,7 +3,7 @@ use std::{
     error::Error,
     future::Future,
     process::{Child, Command},
-    time::Duration
+    time::Duration,
 };
 use tokio;
 use tokio_stream::StreamExt;

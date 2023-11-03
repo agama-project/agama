@@ -13,7 +13,6 @@ use crate::error::CliError;
 use agama_lib::error::ServiceError;
 use agama_lib::manager::ManagerClient;
 use agama_lib::progress::ProgressMonitor;
-use tokio;
 use commands::Commands;
 use config::run as run_config_cmd;
 use logs::run as run_logs_cmd;
@@ -26,6 +25,7 @@ use std::{
     thread::sleep,
     time::Duration,
 };
+use tokio;
 
 #[derive(Parser)]
 #[command(name = "agama", version, about, long_about = None)]
@@ -40,7 +40,9 @@ struct Cli {
 
 async fn probe() -> anyhow::Result<()> {
     let another_manager = build_manager().await?;
-    let probe = tokio::spawn(async move { let _ = another_manager.probe().await; });
+    let probe = tokio::spawn(async move {
+        let _ = another_manager.probe().await;
+    });
     show_progress().await?;
 
     Ok(probe.await?)
