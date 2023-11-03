@@ -142,6 +142,10 @@ module Agama
 
         # Tries to register with the given registration code.
         #
+        # @note Software is not automatically probed after registering the product. The reason is
+        #   to avoid dealing with possible probing issues in the registration D-Bus API. Clients
+        #   have to explicitly call to #Probe after registering a product.
+        #
         # @param reg_code [String]
         # @param email [String, nil]
         #
@@ -173,6 +177,10 @@ module Agama
         end
 
         # Tries to deregister.
+        #
+        # @note Software is not automatically probed after deregistering the product. The reason is
+        #   to avoid dealing with possible probing issues in the deregistration D-Bus API. Clients
+        #   have to explicitly call to #Probe after deregistering a product.
         #
         # @return [Array(Integer, String)] Result code and a description.
         #   Possible result codes:
