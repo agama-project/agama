@@ -22,8 +22,8 @@ log = "0.4"
 tempdir = "0.3"
 fs_extra = "1.3.0"
 nix = { version = "0.27.1", features = ["user"] }
-zbus = { version = "3.14.1", default-features = false, features = ["tokio", "uuid"] }
-tokio = { version = "1.33.0", features = ["tokio-macros", "macros", "rt-multi-thread"] }
+zbus = { version = "3", default-features = false, features = ["tokio"] }
+tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread"] }
 
 [[bin]]
 name = "agama"

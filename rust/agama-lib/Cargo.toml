@@ -11,13 +11,12 @@ anyhow = "1.0"
 cidr = { version = "0.2.2", features = ["serde"] }
 curl = { version = "0.4.44", features = ["protocol-ftp"] }
 futures = "0.3.27"
-futures-util = "0.3.27"
 jsonschema = { version = "0.16.1", default-features = false }
 log = "0.4"
 serde = { version = "1.0.152", features = ["derive"] }
 serde_json = "1.0.94"
 tempfile = "3.4.0"
 thiserror = "1.0.39"
-tokio = "1.33.0"
+tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread"] }
 tokio-stream = "0.1.14"
-zbus = { version = "3.7.0", features = ["uuid", "tokio"], default-features = false }
+zbus = { version = "3", default-features = false, features = ["tokio"] }

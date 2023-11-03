@@ -48,7 +48,6 @@ dependencies = [
  "agama-locale-data",
  "anyhow",
  "cidr",
- "futures",
  "log",
  "serde",
  "serde_yaml",
@@ -80,7 +79,6 @@ dependencies = [
  "cidr",
  "curl",
  "futures",
- "futures-util",
  "jsonschema",
  "log",
  "serde",
@@ -2424,7 +2422,6 @@ dependencies = [
  "libc",
  "serde",
  "static_assertions",
- "uuid",
  "zvariant_derive",
 ]
 
