@@ -101,8 +101,9 @@ module Agama
       # @raise {ArgumentError} If id is unknown.
       #
       # @param id [String]
+      # @return [Boolean] true on success.
       def select_product(id)
-        return if id == product&.id
+        return false if id == product&.id
 
         new_product = @products.find { |p| p.id == id }
 
@@ -111,6 +112,7 @@ module Agama
         @product = new_product
         repositories.delete_all
         update_issues
+        true
       end
 
       def probe

@@ -129,7 +129,6 @@ describe Agama::Software::Manager do
 
   shared_examples "software issues" do |tested_method|
     before do
-      subject.select_product("Tumbleweed")
       allow(subject.registration).to receive(:reg_code).and_return(reg_code)
     end
 
@@ -192,7 +191,7 @@ describe Agama::Software::Manager do
       stub_const("Agama::Software::Manager::REPOS_DIR", repos_dir)
       stub_const("Agama::Software::Manager::REPOS_BACKUP", backup_repos_dir)
       FileUtils.mkdir_p(repos_dir)
-      subject.select_product("Tumbleweed")
+      subject.select_product("ALP-Dolomite")
     end
 
     after do
@@ -233,9 +232,9 @@ describe Agama::Software::Manager do
       expect(products.size).to eq(3)
       expect(products).to all(be_a(Agama::Software::Product))
       expect(products).to contain_exactly(
+        an_object_having_attributes(id: "ALP-Dolomite"),
         an_object_having_attributes(id: "Tumbleweed"),
-        an_object_having_attributes(id: "Leap Micro"),
-        an_object_having_attributes(id: "Leap")
+        an_object_having_attributes(id: "Leap16")
       )
     end
   end

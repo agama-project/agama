@@ -22,6 +22,7 @@
 require_relative "../test_helper"
 require "yast"
 require "agama/config"
+require "agama/product_reader"
 
 Yast.import "Arch"
 
@@ -133,15 +134,22 @@ describe Agama::Config do
   end
 
   describe "#arch_elements_from" do
-    subject { described_class.new(data) }
+    subject { described_class.new }
+
+    before do
+      allow(Agama::ProductReader).to receive(:new).and_return(reader)
+    end
+
+    let(:reader) { instance_double(Agama::ProductReader, load_products: products) }
 
     context "when the given set of keys does not match any data" do
-      let(:data) do
-        {
-          "Product1" => {
+      let(:products) do
+        [
+          {
+            "id"   => "Product1",
             "name" => "Test product 1"
           }
-        }
+        ]
       end
 
       it "returns an empty array" do
@@ -150,12 +158,13 @@ describe Agama::Config do
     end
 
     context "when the given set of keys does not contain a collection" do
-      let(:data) do
-        {
-          "Product1" => {
+      let(:products) do
+        [
+          {
+            "id"   => "Product1",
             "name" => "Test product 1"
           }
-        }
+        ]
       end
 
       it "returns an empty array" do
@@ -164,9 +173,10 @@ describe Agama::Config do
     end
 
     context "when the given set of keys contains a collection" do
-      let(:data) do
-        {
-          "Product1" => {
+      let(:products) do
+        [
+          {
+            "id"   => "Product1",
             "some" => {
               "collection" => [
                 "element1",
@@ -188,7 +198,7 @@ describe Agama::Config do
               ]
             }
           }
-        }
+        ]
       end
 
       before do
@@ -209,9 +219,10 @@ describe Agama::Config do
       end
 
       context "and there are no elements matching the current arch" do
-        let(:data) do
-          {
-            "Product1" => {
+        let(:products) do
+          [
+            {
+              "id"   => "Product1",
               "some" => {
                 "collection" => [
                   {
@@ -225,7 +236,7 @@ describe Agama::Config do
                 ]
               }
             }
-          }
+          ]
         end
 
         it "returns an empty list" do

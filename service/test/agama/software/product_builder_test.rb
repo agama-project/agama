@@ -22,36 +22,26 @@
 require_relative "../../test_helper"
 require "yast"
 require "agama/config"
+require "agama/product_reader"
 require "agama/software/product"
 require "agama/software/product_builder"
 
 Yast.import "Arch"
 
 describe Agama::Software::ProductBuilder do
-  subject { described_class.new(config) }
+  before do
+    allow(Agama::ProductReader).to receive(:new).and_return(reader)
+  end
 
-  let(:config) { Agama::Config.new(data) }
+  let(:reader) { instance_double(Agama::ProductReader, load_products: products) }
 
-  let(:data) do
-    {
-      "products" => {
-        "Test1" => {
-          "name"        => "Product Test 1",
-          "description" => "This is a test product named Test 1"
-        },
-        "Test2" => {
-          "name"        => "Product Test 2",
-          "description" => "This is a test product named Test 2",
-          "archs"       => "x86_64,aarch64"
-        },
-        "Test3" => {
-          "name"        => "Product Test 3",
-          "description" => "This is a test product named Test 3",
-          "archs"       => "ppc64,aarch64"
-        }
-      },
-      "Test1"    => {
-        "software" => {
+  let(:products) do
+    [
+      {
+        "id"          => "Test1",
+        "name"        => "Product Test 1",
+        "description" => "This is a test product named Test 1",
+        "software"    => {
           "installation_repositories" => [
             {
               "url"   => "https://repos/test1/x86_64/product/",
@@ -92,15 +82,23 @@ describe Agama::Software::ProductBuilder do
           "version"                   => "1.0"
         }
       },
-      "Test2"    => {
-        "software" => {
+      {
+        "id"          => "Test2",
+        "name"        => "Product Test 2",
+        "description" => "This is a test product named Test 2",
+        "archs"       => "x86_64,aarch64",
+        "software"    => {
           "mandatory_patterns" => ["pattern2-1"],
           "base_product"       => "Test2",
           "version"            => "2.0"
         }
       },
-      "Test3"    => {
-        "software" => {
+      {
+        "id"          => "Test3",
+        "name"        => "Product Test 3",
+        "description" => "This is a test product named Test 3",
+        "archs"       => "ppc64,aarch64",
+        "software"    => {
           "installation_repositories" => ["https://repos/test3/product/"],
           "optional_patterns"         => [
             {
@@ -111,8 +109,12 @@ describe Agama::Software::ProductBuilder do
           "base_product"              => "Test3"
         }
       }
-    }
+    ]
   end
+
+  subject { described_class.new(config) }
+
+  let(:config) { Agama::Config.new }
 
   describe "#build" do
     context "for x86_64" do

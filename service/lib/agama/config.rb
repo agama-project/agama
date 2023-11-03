@@ -142,7 +142,8 @@ module Agama
     # Elements that match the current arch.
     #
     # @example
-    #   config.pure_data = {
+    #   config.products #=>
+    #   {
     #     "ALP-Dolomite" => {
     #       "software" => {
     #         "installation_repositories" => [
@@ -171,7 +172,7 @@ module Agama
     # @return [Array]
     def arch_elements_from(*keys, property: nil)
       keys.map!(&:to_s)
-      elements = pure_data.dig(*keys)
+      elements = products.dig(*keys)
       return [] unless elements.is_a?(Array)
 
       elements.map do |element|
