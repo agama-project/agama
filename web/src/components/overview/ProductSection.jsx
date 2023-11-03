@@ -21,15 +21,15 @@
 
 import React, { useEffect, useState } from "react";
 import { Text } from "@patternfly/react-core";
-import { useCancellablePromise } from "~/utils";
+import { toValidationError, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { useProduct } from "~/context/product";
-import { Section, SectionSkeleton } from "~/components/core";
+import { If, Section, SectionSkeleton } from "~/components/core";
 import { _ } from "~/i18n";
 
 const errorsFrom = (issues) => {
   const errors = issues.filter(i => i.severity === "error");
-  return errors.map(e => ({ message: e.description }));
+  return errors.map(toValidationError);
 };
 
 export default function ProductSection() {
@@ -44,12 +44,16 @@ export default function ProductSection() {
   }, [cancellablePromise, setIssues, software]);
 
   const Content = ({ isLoading = false }) => {
-    if (isLoading) return <SectionSkeleton numRows={1} />;
-
     return (
-      <Text>
-        {selectedProduct?.name}
-      </Text>
+      <If
+        condition={isLoading}
+        then={<SectionSkeleton numRows={1} />}
+        else={
+          <Text>
+            {selectedProduct?.name}
+          </Text>
+        }
+      />
     );
   };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,13 +20,13 @@
  */
 
 import React, { useReducer, useEffect } from "react";
-import { Button } from "@patternfly/react-core";
-import { ProgressText, Section } from "~/components/core";
-import { Icon } from "~/components/layout";
-import { UsedSize } from "~/components/software";
-import { useCancellablePromise } from "~/utils";
-import { useInstallerClient } from "~/context/installer";
 import { BUSY } from "~/client/status";
+import { Button } from "@patternfly/react-core";
+import { Icon } from "~/components/layout";
+import { ProgressText, Section } from "~/components/core";
+import { toValidationError, useCancellablePromise } from "~/utils";
+import { UsedSize } from "~/components/software";
+import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 
 const initialState = {
@@ -76,10 +76,6 @@ export default function SoftwareSection({ showErrors }) {
     cancellablePromise(client.getStatus()).then(updateStatus);
 
     return client.onStatusChange(updateStatus);
-  }, [client, cancellablePromise]);
-
-  useEffect(() => {
-    cancellablePromise(client.getStatus()).then(updateStatus);
   }, [client, cancellablePromise]);
 
   useEffect(() => {
@@ -145,7 +141,7 @@ export default function SoftwareSection({ showErrors }) {
       title={_("Software")}
       icon="apps"
       loading={state.busy}
-      errors={errors.map(e => ({ message: e.description }))}
+      errors={errors.map(toValidationError)}
       path="/software"
     >
       <SectionContent />

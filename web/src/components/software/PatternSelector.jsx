@@ -27,6 +27,7 @@ import { useInstallerClient } from "~/context/installer";
 import { Section, ValidationErrors } from "~/components/core";
 import PatternGroup from "./PatternGroup";
 import PatternItem from "./PatternItem";
+import { toValidationError } from "~/utils";
 import UsedSize from "./UsedSize";
 import { _ } from "~/i18n";
 
@@ -207,7 +208,7 @@ function PatternSelector() {
 
   // FIXME: ValidationErrors should be replaced by an equivalent component to show issues.
   // Note that only the Users client uses the old Validation D-Bus interface.
-  const validationErrors = errors.map(e => ({ message: e.description }));
+  const validationErrors = errors.map(toValidationError);
 
   return (
     <>
