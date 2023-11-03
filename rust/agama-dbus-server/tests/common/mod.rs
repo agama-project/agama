@@ -1,9 +1,12 @@
 use agama_lib::error::ServiceError;
-use futures::stream::StreamExt;
-use futures::Future;
-use std::error::Error;
-use std::process::{Child, Command};
-use std::time::Duration;
+use std::{
+    error::Error,
+    future::Future,
+    process::{Child, Command},
+    time::Duration
+};
+use tokio;
+use tokio_stream::StreamExt;
 use uuid::Uuid;
 use zbus::{MatchRule, MessageStream, MessageType};
 
@@ -76,7 +79,7 @@ impl DBusServer<Started> {
 
         let mut stream = NameOwnerChangedStream::for_connection(&connection).await?;
         let cloned = connection.clone();
-        async_std::task::spawn(async move {
+        tokio::spawn(async move {
             cloned
                 .request_name(DBUS_SERVICE)
                 .await
@@ -136,7 +139,7 @@ where
                 }
                 retry = retry + 1;
                 let wait_time = Duration::from_millis(INTERVAL);
-                async_std::task::sleep(wait_time).await;
+                tokio::time::sleep(wait_time).await;
             }
         }
     }

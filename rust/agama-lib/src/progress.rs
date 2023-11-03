@@ -44,8 +44,7 @@
 
 use crate::error::ServiceError;
 use crate::proxies::ProgressProxy;
-use futures::stream::{SelectAll, StreamExt};
-use futures_util::{future::try_join3, Stream};
+use tokio_stream::{StreamMap, StreamExt};
 use zbus::Connection;
 
 /// Represents the progress for an Agama service.
@@ -63,14 +62,15 @@ pub struct Progress {
 
 impl Progress {
     pub async fn from_proxy(proxy: &crate::proxies::ProgressProxy<'_>) -> zbus::Result<Progress> {
-        let ((current_step, current_title), max_steps, finished) =
-            try_join3(proxy.current_step(), proxy.total_steps(), proxy.finished()).await?;
+        let (current_step, max_steps, finished) =
+            tokio::join!(proxy.current_step(), proxy.total_steps(), proxy.finished());
 
+        let (current_step, current_title) = current_step?;
         Ok(Self {
             current_step,
             current_title,
-            max_steps,
-            finished,
+            max_steps: max_steps?,
+            finished: finished?,
         })
     }
 }
@@ -112,7 +112,7 @@ impl<'a> ProgressMonitor<'a> {
 
         while let Some(stream) = changes.next().await {
             match stream {
-                "/org/opensuse/Agama/Manager1" => {
+                ("/org/opensuse/Agama/Manager1", _) => {
                     let progress = self.main_progress().await;
                     if progress.finished {
                         presenter.finish();
@@ -121,7 +121,7 @@ impl<'a> ProgressMonitor<'a> {
                         presenter.update_main(&progress);
                     }
                 }
-                "/org/opensuse/Agama/Software1" => {
+                ("/org/opensuse/Agama/Software1", _) => {
                     presenter.update_detail(&self.detail_progress().await)
                 }
                 _ => eprintln!("Unknown"),
@@ -145,15 +145,14 @@ impl<'a> ProgressMonitor<'a> {
     ///
     /// It listens for changes in the `Current` property and generates a stream identifying the
     /// proxy where the change comes from.
-    async fn build_stream(&self) -> SelectAll<impl Stream<Item = &str> + '_> {
-        let mut streams = SelectAll::new();
+    async fn build_stream(&self) -> StreamMap<&str, zbus::PropertyStream<'_, (u32, String)>> {
+        let mut streams = StreamMap::new();
 
         let proxies = [&self.manager_proxy, &self.software_proxy];
         for proxy in proxies.iter() {
             let stream = proxy.receive_current_step_changed().await;
             let path = proxy.path().as_str();
-            let tagged = stream.map(move |_| path);
-            streams.push(tagged);
+            streams.insert(path, stream);
         }
         streams
     }

@@ -10,9 +10,9 @@ use crate::network::{
 };
 
 use agama_lib::network::types::SSID;
-use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
 use std::sync::Arc;
 use tokio::sync::mpsc::Sender;
+use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
 use zbus::{
     dbus_interface,
     zvariant::{ObjectPath, OwnedObjectPath},

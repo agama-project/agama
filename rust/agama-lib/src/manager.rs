@@ -4,7 +4,7 @@ use crate::{
     progress::Progress,
     proxies::{ManagerProxy, ProgressProxy},
 };
-use futures_util::StreamExt;
+use tokio_stream::StreamExt;
 use zbus::Connection;
 
 /// D-Bus client for the manager service

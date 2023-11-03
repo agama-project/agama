@@ -9,9 +9,9 @@ use crate::network::{
     model::{Connection as NetworkConnection, IpConfig, Ipv4Method, Ipv6Method},
 };
 use cidr::IpInet;
-use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
 use std::{net::IpAddr, sync::Arc};
 use tokio::sync::mpsc::Sender;
+use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
 use zbus::dbus_interface;
 
 /// D-Bus interface for IPv4 and IPv6 settings
