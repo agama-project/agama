@@ -68,7 +68,7 @@ export default function ProductSection() {
       icon="inventory_2"
       errors={errors}
       loading={isLoading}
-      path="/products"
+      path="/product"
     >
       <Content isLoading={isLoading} />
     </Section>
