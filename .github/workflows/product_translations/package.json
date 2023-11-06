@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "gettext-parser": "^7.0.1",
+    "yaml": "^2.3.4"
+  }
+}
