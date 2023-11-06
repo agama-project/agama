@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-29 02:08+0000\n"
+"POT-Creation-Date: 2023-11-05 02:14+0000\n"
 "PO-Revision-Date: 2023-10-27 13:15+0000\n"
 "Last-Translator: Victor hck <victorhck@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -72,20 +72,20 @@ msgid "Close"
 msgstr "Cerrar"
 
 #. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:40
+#: src/components/core/DBusError.jsx:41
 msgid "Reload"
 msgstr "Recargar"
 
 #. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:48
+#: src/components/core/DBusError.jsx:49
 msgid "D-Bus Error"
 msgstr "Error en D-Bus"
 
-#: src/components/core/DBusError.jsx:54
+#: src/components/core/DBusError.jsx:55
 msgid "Cannot connect to D-Bus"
 msgstr "No se puede conectar a D-Bus"
 
-#: src/components/core/DBusError.jsx:59
+#: src/components/core/DBusError.jsx:60
 msgid ""
 "Could not connect to the D-Bus service. Please, check whether it is running."
 msgstr ""
@@ -338,8 +338,8 @@ msgstr "Popover básico"
 msgid "language"
 msgstr "Idioma"
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page header
+#. TRANSLATORS: page section
 #: src/components/l10n/L10nPage.jsx:84
 #: src/components/overview/L10nSection.jsx:82
 msgid "Localization"
@@ -348,11 +348,6 @@ msgstr "Localización"
 #: src/components/l10n/LanguageSwitcher.jsx:46
 msgid "Display Language"
 msgstr "Mostrar idioma"
-
-#: src/components/layout/Icon.jsx:157
-#, c-format
-msgid "Icon %s not found!"
-msgstr "¡Icono %s no encontrado!"
 
 #: src/components/layout/Loading.jsx:30
 msgid "Loading installation environment, please wait."
@@ -394,8 +389,8 @@ msgstr "Direcciones"
 msgid "Addresses data list"
 msgstr "Lista de datos de direcciones"
 
-#. TRANSLATORS: table header
 #. TRANSLATORS: input field for the iSCSI initiator name
+#. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:57
 #: src/components/network/ConnectionsTable.jsx:86
 #: src/components/storage/ZFCPPage.jsx:362
@@ -528,8 +523,8 @@ msgstr "No se encontraron conexiones WiFi"
 msgid "Connect to a Wi-Fi network"
 msgstr "Conectado a una red WIFI"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/network/NetworkPage.jsx:170
 #: src/components/overview/NetworkSection.jsx:102
 msgid "Network"
@@ -612,8 +607,8 @@ msgstr "Conectado"
 msgid "Disconnecting"
 msgstr "Desconectando"
 
-#. TRANSLATORS: Wifi network status
 #. TRANSLATORS: iSCSI connection status
+#. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -659,8 +654,8 @@ msgstr "Leer repositorios de software"
 msgid "Refresh the repositories"
 msgstr "Refrescar los repositorios"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/overview/SoftwareSection.jsx:145
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
@@ -682,8 +677,8 @@ msgstr "Instalar utilizando el dispositivo %s y eliminar todo su contenido"
 msgid "Probing storage devices"
 msgstr "Explorando dispositivos de almacenamiento"
 
-#. TRANSLATORS: page section title
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:182
 #: src/components/storage/ProposalPage.jsx:218
 msgid "Storage"
@@ -768,8 +763,13 @@ msgstr "no seleccionado"
 msgid "%d errors"
 msgstr "%d errores"
 
+#: src/components/software/PatternSelector.jsx:210
+msgid "Software summary and filter options"
+msgstr ""
+
 #. TRANSLATORS: search field placeholder text
-#: src/components/software/PatternSelector.jsx:214
+#: src/components/software/PatternSelector.jsx:215
+#: src/components/software/PatternSelector.jsx:216
 msgid "Search"
 msgstr "Buscar"
 
@@ -1758,3 +1758,7 @@ msgstr "Usuario"
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr "Autenticación de root"
+
+#, c-format
+#~ msgid "Icon %s not found!"
+#~ msgstr "¡Icono %s no encontrado!"

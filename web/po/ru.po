@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-29 02:08+0000\n"
+"POT-Creation-Date: 2023-11-05 02:14+0000\n"
 "PO-Revision-Date: 2023-09-11 13:15+0000\n"
 "Last-Translator: Alex Minton <alex239@gmail.com>\n"
 "Language-Team: Russian <https://l10n.opensuse.org/projects/agama/agama-web/"
@@ -76,20 +76,20 @@ msgid "Close"
 msgstr "Закрыть"
 
 #. TRANSLATORS: button label
-#: src/components/core/DBusError.jsx:40
+#: src/components/core/DBusError.jsx:41
 msgid "Reload"
 msgstr "Обновить"
 
 #. TRANSLATORS: page title
-#: src/components/core/DBusError.jsx:48
+#: src/components/core/DBusError.jsx:49
 msgid "D-Bus Error"
 msgstr "Ошибка D-Bus"
 
-#: src/components/core/DBusError.jsx:54
+#: src/components/core/DBusError.jsx:55
 msgid "Cannot connect to D-Bus"
 msgstr "Не удалось подключиться к службе D-Bus"
 
-#: src/components/core/DBusError.jsx:59
+#: src/components/core/DBusError.jsx:60
 msgid ""
 "Could not connect to the D-Bus service. Please, check whether it is running."
 msgstr ""
@@ -340,8 +340,8 @@ msgstr "Базовое всплывающее окно"
 msgid "language"
 msgstr "Язык"
 
-#. TRANSLATORS: page section
 #. TRANSLATORS: page header
+#. TRANSLATORS: page section
 #: src/components/l10n/L10nPage.jsx:84
 #: src/components/overview/L10nSection.jsx:82
 msgid "Localization"
@@ -352,11 +352,6 @@ msgstr "Локализация"
 #| msgid "language"
 msgid "Display Language"
 msgstr "Язык"
-
-#: src/components/layout/Icon.jsx:157
-#, c-format
-msgid "Icon %s not found!"
-msgstr "Значок %s не найден!"
 
 #: src/components/layout/Loading.jsx:30
 msgid "Loading installation environment, please wait."
@@ -398,8 +393,8 @@ msgstr "Адреса"
 msgid "Addresses data list"
 msgstr "Список данных адресов"
 
-#. TRANSLATORS: table header
 #. TRANSLATORS: input field for the iSCSI initiator name
+#. TRANSLATORS: table header
 #: src/components/network/ConnectionsTable.jsx:57
 #: src/components/network/ConnectionsTable.jsx:86
 #: src/components/storage/ZFCPPage.jsx:362
@@ -532,8 +527,8 @@ msgstr "WiFi-соединения не найдены"
 msgid "Connect to a Wi-Fi network"
 msgstr "Подключиться к сети Wi-Fi"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section title
+#. TRANSLATORS: page title
 #: src/components/network/NetworkPage.jsx:170
 #: src/components/overview/NetworkSection.jsx:102
 msgid "Network"
@@ -615,8 +610,8 @@ msgstr "Подключено"
 msgid "Disconnecting"
 msgstr "Отключение"
 
-#. TRANSLATORS: Wifi network status
 #. TRANSLATORS: iSCSI connection status
+#. TRANSLATORS: Wifi network status
 #: src/components/network/WifiNetworkListItem.jsx:50
 #: src/components/storage/iscsi/NodesPresenter.jsx:63
 msgid "Disconnected"
@@ -663,8 +658,8 @@ msgstr "Чтение репозиториев"
 msgid "Refresh the repositories"
 msgstr "Обновить репозитории"
 
-#. TRANSLATORS: page title
 #. TRANSLATORS: page section
+#. TRANSLATORS: page title
 #: src/components/overview/SoftwareSection.jsx:145
 #: src/components/software/SoftwarePage.jsx:81
 msgid "Software"
@@ -686,8 +681,8 @@ msgstr ""
 msgid "Probing storage devices"
 msgstr ""
 
-#. TRANSLATORS: page section title
 #. TRANSLATORS: page title
+#. TRANSLATORS: page section title
 #: src/components/overview/StorageSection.jsx:182
 #: src/components/storage/ProposalPage.jsx:218
 msgid "Storage"
@@ -775,8 +770,13 @@ msgstr ""
 msgid "%d errors"
 msgstr "Найдена %d ошибка"
 
+#: src/components/software/PatternSelector.jsx:210
+msgid "Software summary and filter options"
+msgstr ""
+
 #. TRANSLATORS: search field placeholder text
-#: src/components/software/PatternSelector.jsx:214
+#: src/components/software/PatternSelector.jsx:215
+#: src/components/software/PatternSelector.jsx:216
 msgid "Search"
 msgstr ""
 
@@ -1750,3 +1750,7 @@ msgstr ""
 #: src/components/users/UsersPage.jsx:34
 msgid "Root authentication"
 msgstr ""
+
+#, c-format
+#~ msgid "Icon %s not found!"
+#~ msgstr "Значок %s не найден!"
