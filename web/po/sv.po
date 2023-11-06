@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Luna Jernberg <bittin@opensuse.org>, 2023.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-05 02:14+0000\n"
-"PO-Revision-Date: 2023-10-18 18:15+0000\n"
+"POT-Creation-Date: 2023-11-06 12:00+0000\n"
+"PO-Revision-Date: 2023-11-06 12:01+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-web/"
 "sv/>\n"
@@ -347,7 +347,7 @@ msgstr "Lokalisering"
 #, fuzzy
 #| msgid "language"
 msgid "Display Language"
-msgstr "språk"
+msgstr "Visningsspråk"
 
 #: src/components/layout/Loading.jsx:30
 msgid "Loading installation environment, please wait."
