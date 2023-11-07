@@ -24,20 +24,20 @@ jobs:
         run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
 
       - name: Install tools
-        run: zypper --non-interactive install --no-recommends diffutils git gettext-tools
+        run: zypper --non-interactive install --no-recommends diffutils git gettext-tools npm-default
 
       - name: Checkout Agama sources
         uses: actions/checkout@v3
         with:
           path: agama
 
-      - name: Generate POT file
+      - name: Generate web POT file
         run: |
           cd agama/web
           ./build_pot
           msgfmt --statistics agama.pot
 
-      - name: Validate the generated POT file
+      - name: Validate the generated web POT file
         run:  msgfmt --check-format agama/web/agama.pot
 
       - name: Checkout Weblate sources
@@ -52,13 +52,13 @@ jobs:
           git config --global user.name "YaST Bot"
           git config --global user.email "yast-devel@opensuse.org"
 
-      - name: Update POT file
+      - name: Update web POT file
         run: |
           mkdir -p agama-weblate/web
           cp agama/web/agama.pot agama-weblate/web/agama.pot
 
       # any change besides the timestamp in the POT file?
-      - name: Check changes
+      - name: Check web POT changes
         id: check_changes
         run: |
           git -C agama-weblate diff --ignore-matching-lines="POT-Creation-Date:" web/agama.pot > pot.diff
@@ -71,11 +71,53 @@ jobs:
             echo "pot_updated=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Push updated POT file
+      - name: Push updated web POT file
         # run only when the POT file has been updated
         if: steps.check_changes.outputs.pot_updated == 'true'
         run: |
           cd agama-weblate
           git add web/agama.pot
-          git commit -m "Update POT file"$'\n\n'"Agama commit: $GITHUB_SHA"
+          git commit -m "Update web POT file"$'\n\n'"Agama commit: $GITHUB_SHA"
+          git push
+
+      - name: Install NPM packages
+        run: |
+          cd agama/.github/workflows/product_translations
+          npm ci
+
+      - name: Generate products POT file
+        run: |
+          cd agama/products.d
+          ../.github/workflows/product_translations/products_pot *.yaml > products.pot
+          msgfmt --statistics products.pot
+
+      - name: Validate the generated products POT file
+        run:  msgfmt --check-format agama/products.d/products.pot
+
+      - name: Update products POT file
+        run: |
+          mkdir -p agama-weblate/products
+          cp agama/products.d/products.pot agama-weblate/products/products.pot
+
+      # any change besides the timestamp in the POT file?
+      - name: Check products POT changes
+        id: check_changes_products
+        run: |
+          git -C agama-weblate diff --ignore-matching-lines="POT-Creation-Date:" products/products.pot > pot.diff
+
+          if [ -s pot.diff ]; then
+            echo "POT file updated"
+            echo "pot_updated=true" >> $GITHUB_OUTPUT
+          else
+            echo "POT file unchanged"
+            echo "pot_updated=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Push updated products POT file
+        # run only when the POT file has been updated
+        if: steps.check_changes_products.outputs.pot_updated == 'true'
+        run: |
+          cd agama-weblate
+          git add products/products.pot
+          git commit -m "Update products POT file"$'\n\n'"Agama commit: $GITHUB_SHA"
           git push
