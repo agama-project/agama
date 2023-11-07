@@ -148,7 +148,7 @@ module Agama
       paths.uniq! { |f| File.basename(f) }
       # Sort files lexicographic
       paths.sort_by! { |f| File.basename(f) }
-      paths.prepend(default_path)
+      paths.prepend(default_path) if File.exist?(default_path)
 
       paths
     end
