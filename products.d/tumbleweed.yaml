@@ -10,6 +10,10 @@ description: 'The Tumbleweed distribution is a pure rolling release version of
   relying on rigid periodic release cycles. The project does this for users that
   want the newest stable software.'
 translations:
+  description:
+    cs: Tumbleweed je rolující verze distribuce openSUSE obsahující poslední
+      "stabilní" verze veškerého software namísto pevných pravidelných vydání.
+      Projekt je určen pro uživatele, kteří chtějí nejnovější stabilní software.
 software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/
