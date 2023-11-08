@@ -51,7 +51,7 @@ class POFile {
    */
   timestamp() {
     const date = new Date();
-    return date.getUTCFullYear() + "-" + date.getUTCMonth() + "-" +
+    return date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" +
       date.getUTCDate() + " " + date.getUTCHours() + ":" + date.getUTCMinutes() +
       "+0000";
   }
