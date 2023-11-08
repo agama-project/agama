@@ -9,6 +9,10 @@ description: 'SUSE ALP Dolomite is a minimum immutable OS core, focused on
   security to provide the bare minimum to run workloads and services as
   containers or virtual machines.'
 translations:
+  description:
+    cs: SUSE ALP Dolomite je minimální neměnitelný základní OS, zaměřený na
+      bezpečnost pro poskytování úplného minima ke spuštění úloh a služeb v
+      kontejnerech nebo virtuálních strojích.
 software:
   installation_repositories:
     - url: https://updates.suse.com/SUSE/Products/ALP-Dolomite/1.0/x86_64/product/
