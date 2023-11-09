@@ -123,7 +123,7 @@ module Agama
 
         def available_base_products
           backend.products.map do |id, data|
-            [id, data["name"], { "description" => data["description"] }].freeze
+            [id, data["name"], { "description" => localized_description(data) }].freeze
           end
         end
 
@@ -179,6 +179,31 @@ module Agama
           backend.on_selected_patterns_change do
             self.selected_patterns = compute_patterns
           end
+        end
+
+        # find translated product description if available
+        # @param data [Hash] product configuration from the YAML file
+        # @return [String,nil] Translated product description (if available)
+        #   or the untranslated description, nil if not found
+        def localized_description(data)
+          translations = data["translations"]&.[]("description")
+          lang = ENV["LANG"] || ""
+
+          # no translations or language not set, return untranslated value
+          return data["description"] if !translations.is_a?(Hash) || lang.empty?
+
+          # remove the character encoding if present
+          lang = lang.split(".").first
+          # full matching (language + country)
+          return translations[lang] if translations[lang]
+
+          # remove the country part
+          lang = lang.split("_").first
+          # partial match (just the language)
+          return translations[lang] if translations[lang]
+
+          # fallback to original untranslated description
+          data["description"]
         end
 
         USER_SELECTED_PATTERN = 0
