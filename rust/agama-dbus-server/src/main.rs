@@ -1,4 +1,4 @@
-use agama_dbus_server::{locale, network, questions};
+use agama_dbus_server::{manager, locale, network, questions};
 
 use agama_lib::connection_to;
 use anyhow::Context;
@@ -38,6 +38,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     log::info!("Started locale interface");
     network::export_dbus_objects(&connection).await?;
     log::info!("Started network interface");
+    manager::export_dbus_objects(&connection).await?;
+    log::info!("Started manager interface");
 
     connection
         .request_name(SERVICE_NAME)
