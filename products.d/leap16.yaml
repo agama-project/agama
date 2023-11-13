@@ -8,6 +8,7 @@ archs: x86_64,aarch64
 # ------------------------------------------------------------------------------
 description: '[Experimental project] openSUSE Leap 16 is built on top of the
   next generation Adaptable Linux Platform (ALP) from SUSE.'
+# Do not manually change any translations! See README.md for more details.
 translations:
   description:
     cs: "[Experimentální projekt] openSUSE Leap 16 je postaven na budoucí generaci
