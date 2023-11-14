@@ -29,6 +29,7 @@ import { createClient } from "~/client";
 
 let mockManager;
 let mockSoftware;
+let mockProducts;
 let mockRegistration;
 
 const products = [
@@ -54,7 +55,7 @@ jest.mock("~/client");
 
 jest.mock("~/context/product", () => ({
   ...jest.requireActual("~/context/product"),
-  useProduct: () => ({ products, selectedProduct, registration: mockRegistration })
+  useProduct: () => ({ products: mockProducts, selectedProduct, registration: mockRegistration })
 }));
 
 beforeEach(() => {
@@ -74,6 +75,8 @@ beforeEach(() => {
       onChange: jest.fn()
     }
   };
+
+  mockProducts = products;
 
   mockRegistration = {
     requirement: "not-required",
@@ -95,15 +98,34 @@ it("renders the product name and description", async () => {
   await screen.findByText("Test Product1 description");
 });
 
+it("shows a button to change the product", async () => {
+  installerRender(<ProductPage />);
+  await screen.findByRole("button", { name: "Change product" });
+});
+
+describe("if there is only a product", () => {
+  beforeEach(() => {
+    mockProducts = [products[0]];
+  });
+
+  it("does not show a button to change the product", async () => {
+    installerRender(<ProductPage />);
+    expect(screen.queryByRole("button", { name: "Change product" })).not.toBeInTheDocument();
+  });
+});
+
 describe("if the product is already registered", () => {
   beforeEach(() => {
-    mockRegistration.code = "111222";
-    mockRegistration.email = "test@test.com";
+    mockRegistration = {
+      requirement: "mandatory",
+      code: "111222",
+      email: "test@test.com"
+    };
   });
 
   it("shows the information about the registration", async () => {
     installerRender(<ProductPage />);
-    await screen.findByText("111222");
+    await screen.findByText("**1222");
     await screen.findByText("test@test.com");
   });
 });
@@ -111,11 +133,6 @@ describe("if the product is already registered", () => {
 describe("if the product does not require registration", () => {
   beforeEach(() => {
     mockRegistration.requirement = "not-required";
-  });
-
-  it("shows a button to change the product", async () => {
-    installerRender(<ProductPage />);
-    await screen.findByRole("button", { name: "Change product" });
   });
 
   it("does not show a button to register the product", async () => {
@@ -127,11 +144,6 @@ describe("if the product does not require registration", () => {
 describe("if the product requires registration", () => {
   beforeEach(() => {
     mockRegistration.requirement = "required";
-  });
-
-  it("shows a button to change the product", async () => {
-    installerRender(<ProductPage />);
-    await screen.findByRole("button", { name: "Change product" });
   });
 
   describe("and the product is not registered yet", () => {
@@ -152,7 +164,7 @@ describe("if the product requires registration", () => {
 
     it("shows a button to deregister the product", async () => {
       installerRender(<ProductPage />);
-      await screen.findByRole("button", { name: "Deregister" });
+      await screen.findByRole("button", { name: "Deregister product" });
     });
   });
 });
@@ -172,12 +184,6 @@ describe("when the services are busy", () => {
 
     expect(selectButton).toHaveAttribute("disabled");
     expect(registerButton).toHaveAttribute("disabled");
-  });
-
-  it("shows a message about configuring product", async () => {
-    await act(async () => installerRender(<ProductPage />));
-
-    screen.getByText(/Actions are disabled until the product is configured/);
   });
 });
 
@@ -329,7 +335,7 @@ describe("when the button to perform product de-registration is clicked", () => 
   it("opens a popup to deregister the product", async () => {
     const { user } = installerRender(<ProductPage />);
 
-    const button = screen.getByRole("button", { name: "Deregister" });
+    const button = screen.getByRole("button", { name: "Deregister product" });
     await user.click(button);
 
     const popup = await screen.findByRole("dialog");
@@ -346,7 +352,7 @@ describe("when the button to perform product de-registration is clicked", () => 
     it("closes the popup without performing product de-registration", async () => {
       const { user } = installerRender(<ProductPage />);
 
-      const button = screen.getByRole("button", { name: "Deregister" });
+      const button = screen.getByRole("button", { name: "Deregister product" });
       await user.click(button);
 
       const popup = await screen.findByRole("dialog");
@@ -369,7 +375,7 @@ describe("when the button to perform product de-registration is clicked", () => 
     it("does not close the popup and shows the error", async () => {
       const { user } = installerRender(<ProductPage />);
 
-      const button = screen.getByRole("button", { name: "Deregister" });
+      const button = screen.getByRole("button", { name: "Deregister product" });
       await user.click(button);
 
       const popup = await screen.findByRole("dialog");

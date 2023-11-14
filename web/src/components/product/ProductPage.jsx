@@ -42,7 +42,7 @@ import { useProduct } from "~/context/product";
  * @param {function} props.onFinish - Callback to be called when the product is correctly selected.
  * @param {function} props.onCancel - Callback to be called when the product selection is canceled.
  */
-const ProductSelectionPopup = ({ isOpen = false, onFinish = noop, onCancel = noop }) => {
+const ChangeProductPopup = ({ isOpen = false, onFinish = noop, onCancel = noop }) => {
   const { manager, software } = useInstallerClient();
   const { products, selectedProduct } = useProduct();
   const [newProductId, setNewProductId] = useState(selectedProduct?.id);
@@ -87,7 +87,7 @@ const ProductSelectionPopup = ({ isOpen = false, onFinish = noop, onCancel = noo
  * @param {function} props.onCancel - Callback to be called when the product registration is
  *  canceled.
  */
-const ProductRegistrationPopup = ({
+const RegisterProductPopup = ({
   isOpen = false,
   onFinish = noop,
   onCancel: onCancelProp = noop
@@ -156,7 +156,7 @@ const ProductRegistrationPopup = ({
  * @param {function} props.onCancel - Callback to be called when the product de-registration is
  *  canceled.
  */
-const ProductDeregistrationPopup = ({
+const DeregisterProductPopup = ({
   isOpen = false,
   onFinish = noop,
   onCancel: onCancelProp = noop
@@ -197,7 +197,10 @@ const ProductDeregistrationPopup = ({
         }
       />
       <p>
-        {sprintf(_("Do you want to deregister %s?"), selectedProduct.name)}
+        {
+          // TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+          sprintf(_("Do you want to deregister %s?"), selectedProduct.name)
+        }
       </p>
       <Popup.Actions>
         <Popup.Confirm onClick={onAccept} isDisabled={isLoading}>
@@ -225,6 +228,7 @@ const RegisteredWarningPopup = ({ isOpen = false, onAccept = noop }) => {
       <p>
         {
           sprintf(
+            // TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
             _("The product %s must be deregistered before selecting a new product."),
             selectedProduct.name
           )
@@ -239,29 +243,40 @@ const RegisteredWarningPopup = ({ isOpen = false, onAccept = noop }) => {
   );
 };
 
-/**
- * Buttons for a product that does not require registration.
- * @component
- *
- * @param {object} props
- * @param {boolean} props.isDisabled
- */
-const WithoutRegistrationButtons = ({ isDisabled = false }) => {
+const ChangeProductButton = ({ isDisabled = false }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const { registration } = useProduct();
+
+  const openPopup = () => setIsPopupOpen(true);
+  const closePopup = () => setIsPopupOpen(false);
+
+  const isRegistered = registration.code !== null;
 
   return (
     <>
       <Button
-        variant="primary"
-        onClick={() => setIsPopupOpen(true)}
+        variant="link"
+        className="p-0"
+        onClick={openPopup}
         isDisabled={isDisabled}
       >
         {_("Change product")}
       </Button>
-      <ProductSelectionPopup
-        isOpen={isPopupOpen}
-        onFinish={() => setIsPopupOpen(false)}
-        onCancel={() => setIsPopupOpen(false)}
+      <If
+        condition={isRegistered}
+        then={
+          <RegisteredWarningPopup
+            isOpen={isPopupOpen}
+            onAccept={closePopup}
+          />
+        }
+        else={
+          <ChangeProductPopup
+            isOpen={isPopupOpen}
+            onFinish={closePopup}
+            onCancel={closePopup}
+          />
+        }
       />
     </>
   );
@@ -274,115 +289,122 @@ const WithoutRegistrationButtons = ({ isDisabled = false }) => {
  * @param {object} props
  * @param {boolean} props.isDisabled
  */
-const DeregisteredButtons = ({ isDisabled = false }) => {
-  const [isRegistrationPopupOpen, setIsRegistrationPopupOpen] = useState(false);
-  const [isSelectionPopupOpen, setIsSelectionPopupOpen] = useState(false);
+const RegisterProductButton = ({ isDisabled = false }) => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const openPopup = () => setIsPopupOpen(true);
+  const closePopup = () => setIsPopupOpen(false);
 
   return (
     <>
       <Button
         variant="primary"
-        onClick={() => setIsRegistrationPopupOpen(true)}
+        onClick={openPopup}
         isDisabled={isDisabled}
       >
         {_("Register")}
       </Button>
-      <Button
-        variant="secondary"
-        onClick={() => setIsSelectionPopupOpen(true)}
-        isDisabled={isDisabled}
-      >
-        {_("Change product")}
-      </Button>
-      <ProductRegistrationPopup
-        isOpen={isRegistrationPopupOpen}
-        onFinish={() => setIsRegistrationPopupOpen(false)}
-        onCancel={() => setIsRegistrationPopupOpen(false)}
-      />
-      <ProductSelectionPopup
-        isOpen={isSelectionPopupOpen}
-        onFinish={() => setIsSelectionPopupOpen(false)}
-        onCancel={() => setIsSelectionPopupOpen(false)}
+      <RegisterProductPopup
+        isOpen={isPopupOpen}
+        onFinish={closePopup}
+        onCancel={closePopup}
       />
     </>
   );
 };
 
 /**
- * Buttons for a product that is already registered.
+ * Buttons for a product that is not registered yet.
  * @component
  *
  * @param {object} props
  * @param {boolean} props.isDisabled
  */
-const RegisteredButtons = ({ isDisabled = false }) => {
-  const [isDeregistrationPopupOpen, setIsDeregistrationPopupOpen] = useState(false);
-  const [isWarningPopupOpen, setIsWarningPopupOpen] = useState(false);
+const DeregisterProductButton = ({ isDisabled = false }) => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const openPopup = () => setIsPopupOpen(true);
+  const closePopup = () => setIsPopupOpen(false);
 
   return (
     <>
       <Button
-        variant="primary"
-        onClick={() => setIsDeregistrationPopupOpen(true)}
+        variant="link"
+        className="p-0"
+        onClick={openPopup}
         isDisabled={isDisabled}
       >
-        {_("Deregister")}
+        {_("Deregister product")}
       </Button>
-      <Button
-        variant="secondary"
-        onClick={() => setIsWarningPopupOpen(true)}
-        isDisabled={isDisabled}
-      >
-        {_("Change product")}
-      </Button>
-      <ProductDeregistrationPopup
-        isOpen={isDeregistrationPopupOpen}
-        onFinish={() => setIsDeregistrationPopupOpen(false)}
-        onCancel={() => setIsDeregistrationPopupOpen(false)}
-      />
-      <RegisteredWarningPopup
-        isOpen={isWarningPopupOpen}
-        onAccept={() => setIsWarningPopupOpen(false)}
+      <DeregisterProductPopup
+        isOpen={isPopupOpen}
+        onFinish={closePopup}
+        onCancel={closePopup}
       />
     </>
   );
 };
 
-/**
- * Renders the actions for the current product.
- * @component
- *
- * @param {object} props
- * @param {boolean} props.isDisabled
- */
-const ProductActions = ({ isDisabled = false }) => {
+const ProductSection = ({ isLoading = false }) => {
+  const { products, selectedProduct } = useProduct();
+
+  return (
+    <Section title={selectedProduct?.name} loading={isLoading}>
+      <p>{selectedProduct?.description}</p>
+      <If
+        condition={products.length > 1}
+        then={<ChangeProductButton isDisabled={isLoading} />}
+      />
+    </Section>
+  );
+};
+
+const RegistrationContent = ({ isLoading = false }) => {
   const { registration } = useProduct();
 
-  const withRegistration = registration.requirement !== "not-required";
-  const registered = registration.code !== null;
+  const mask = (v) => v.replace(v.slice(0, -4), "*".repeat(Math.max(v.length - 4, 0)));
 
   return (
     <>
       <div className="split">
-        <If
-          condition={withRegistration}
-          then={
-            <If
-              condition={registered}
-              then={<RegisteredButtons isDisabled={isDisabled} />}
-              else={<DeregisteredButtons isDisabled={isDisabled} />}
-            />
-          }
-          else={<WithoutRegistrationButtons isDisabled={isDisabled} />}
-        />
+        <span>{_("Code:")}</span>
+        {mask(registration.code)}
       </div>
-      <If
-        condition={isDisabled}
-        then={
-          <p>{_("Configuring product. Actions are disabled until the product is configured.")}</p>
-        }
-      />
+      <div className="split">
+        <span>{_("Email:")}</span>
+        {registration.email}
+      </div>
+      <DeregisterProductButton isDisabled={isLoading} />
     </>
+  );
+};
+
+const RegistrationSection = ({ isLoading = false }) => {
+  const { registration } = useProduct();
+
+  const isRequired = registration?.requirement !== "not-required";
+  const isRegistered = registration?.code !== null;
+
+  return (
+    // TRANSLATORS: section title.
+    <Section title={_("Registration")}>
+      <If
+        condition={isRequired}
+        then={
+          <If
+            condition={isRegistered}
+            then={<RegistrationContent isLoading={isLoading} />}
+            else={
+              <>
+                <p>{_("This product requires registration.")}</p>
+                <RegisterProductButton isDisabled={isLoading} />
+              </>
+            }
+          />
+        }
+        else={<p>{_("This product does not require registration.")}</p>}
+      />
+    </Section>
   );
 };
 
@@ -395,7 +417,6 @@ export default function ProductPage() {
   const [softwareStatus, setSoftwareStatus] = useState();
   const { cancellablePromise } = useCancellablePromise();
   const { manager, software } = useInstallerClient();
-  const { selectedProduct, registration } = useProduct();
 
   useEffect(() => {
     cancellablePromise(manager.getStatus()).then(setManagerStatus);
@@ -411,25 +432,8 @@ export default function ProductPage() {
 
   return (
     <Page title={_("Product")} icon="inventory_2" actionLabel={_("Back")} actionVariant="secondary">
-      <Section title={selectedProduct.name} loading={isLoading}>
-        <p>{selectedProduct.description}</p>
-        <If
-          condition={registration.code}
-          then={
-            <>
-              <div className="split">
-                <span>{_("Registration code:")}</span>
-                {registration.code}
-              </div>
-              <div className="split">
-                <span>{_("Email:")}</span>
-                {registration.email}
-              </div>
-            </>
-          }
-        />
-        <ProductActions isDisabled={isLoading} />
-      </Section>
+      <ProductSection isLoading={isLoading} />
+      <RegistrationSection isLoading={isLoading} />
     </Page>
   );
 }
