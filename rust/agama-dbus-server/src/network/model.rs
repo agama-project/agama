@@ -6,10 +6,11 @@ use crate::network::error::NetworkStateError;
 use agama_lib::network::types::{DeviceType, SSID};
 use cidr::IpInet;
 use std::{
+    collections::HashMap,
     default::Default,
     fmt,
     net::IpAddr,
-    str::{self, FromStr}, collections::HashMap,
+    str::{self, FromStr},
 };
 use thiserror::Error;
 use uuid::Uuid;
@@ -53,6 +54,13 @@ impl NetworkState {
         self.connections.iter_mut().find(|c| c.id() == id)
     }
 
+    /// Get connection by name
+    ///
+    /// * `name`: connection name
+    pub fn get_connection_by_name(&self, id: &str) -> Option<&Connection> {
+        self.connections.iter().find(|c| c.interface() == id)
+    }
+
     /// Adds a new connection.
     ///
     /// It uses the `id` to decide whether the connection already exists.
@@ -76,6 +84,48 @@ impl NetworkState {
         };
 
         *old_conn = conn;
+        Ok(())
+    }
+
+    /// Updates a controller connection with a new one.
+    ///
+    /// It uses the `id` to decide which connection to update.
+    ///
+    /// Additionally, it registers the connection to be removed when the changes are applied.
+    pub fn update_controller_connection(
+        &mut self,
+        conn: Connection,
+        ports: Vec<String>,
+    ) -> Result<(), NetworkStateError> {
+        // let Some(old_conn) = self.get_connection_mut(conn.id()) else {
+        //     return Err(NetworkStateError::UnknownConnection(conn.id().to_string()));
+        // };
+        //
+        let mut new_ports = vec![];
+
+        if let Connection::Bond(mut bond) = conn {
+            // if let Connection::Bond(old_bond) = old_conn {
+            // let moved_ports = old_bond.bond.ports.into_iter().filter(|p| ports.contains(&p.base().interface));
+            //    for port in old_bond.bond.ports.iter() {
+            //        if ports.contains(&port.base().interface) {
+            //            bond.bond.ports.push(port.clone())
+            //        }
+            //    }
+            //}
+
+            for port in ports.into_iter() {
+                new_ports.push(
+                    if let Some(new_port) = bond.bond.ports.iter().find(|c| c.interface() == port) {
+                        new_port.clone()
+                    } else {
+                        Connection::new(port, DeviceType::Ethernet)
+                    },
+                );
+            }
+
+            bond.bond.ports = new_ports;
+        }
+
         Ok(())
     }
 
@@ -278,11 +328,18 @@ impl Connection {
         self.base_mut().interface = interface.to_string()
     }
 
+    pub fn controller(&self) -> &str {
+        self.base().controller.as_str()
+    }
+
+    pub fn set_controller(&mut self, controller: &str) {
+        self.base_mut().controller = controller.to_string()
+    }
+
     pub fn uuid(&self) -> Uuid {
         self.base().uuid
     }
 
-    /// FIXME: rename to ip_config
     pub fn ip_config(&self) -> &IpConfig {
         &self.base().ip_config
     }
@@ -313,37 +370,6 @@ impl Connection {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum ParentKind {
-    Bond,
-}
-
-impl fmt::Display for ParentKind {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let name = match &self {
-            ParentKind::Bond => "bond",
-        };
-        write!(f, "{}", name)
-    }
-}
-
-impl FromStr for ParentKind {
-    type Err = NetworkStateError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "bond" => Ok(ParentKind::Bond),
-            _ => Err(NetworkStateError::UnknownParentKind(s.to_string())),
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct Parent {
-    pub interface: String,
-    pub kind: ParentKind,
-}
-
 #[derive(Debug, Default, Clone)]
 pub struct BaseConnection {
     pub id: String,
@@ -351,8 +377,8 @@ pub struct BaseConnection {
     pub ip_config: IpConfig,
     pub status: Status,
     pub interface: String,
+    pub controller: String,
     pub match_config: MatchConfig,
-    pub parent: Option<Parent>,
 }
 
 impl PartialEq for BaseConnection {
@@ -496,7 +522,8 @@ pub struct BondConnection {
 
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct BondConfig {
-    pub options: HashMap<String, String>
+    pub ports: Vec<Connection>,
+    pub options: HashMap<String, String>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq)]
