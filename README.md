@@ -1,6 +1,8 @@
 **Checks**
 
-[![CI Status](https://github.com/openSUSE/agama/actions/workflows/ci.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci.yml)
+[![CI - Rust](https://github.com/openSUSE/agama/actions/workflows/ci-rust.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-rust.yml)
+[![CI - Service](https://github.com/openSUSE/agama/actions/workflows/ci-service.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-service.yml)
+[![CI - Web](https://github.com/openSUSE/agama/actions/workflows/ci-web.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-web.yml)
 [![CI - Rubocop](https://github.com/openSUSE/agama/actions/workflows/ci-rubocop.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-rubocop.yml)
 [![CI - Documentation Check](https://github.com/openSUSE/agama/actions/workflows/ci-doc-check.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-doc-check.yml)
 [![CI - Integration Tests](https://github.com/openSUSE/agama/actions/workflows/ci-integration-tests.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/ci-integration-tests.yml)
@@ -11,6 +13,7 @@
 
 [![Weblate Update POT](https://github.com/openSUSE/agama/actions/workflows/weblate-update-pot.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/weblate-update-pot.yml)
 [![Weblate Merge PO](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-po.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-po.yml)
+[![Weblate Merge Product PO](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-products-po.yml/badge.svg)](https://github.com/openSUSE/agama/actions/workflows/weblate-merge-products-po.yml)
 [![Translation Status](https://l10n.opensuse.org/widgets/agama/-/agama-web/svg-badge.svg)](https://l10n.opensuse.org/engage/agama/)
 
 **[OBS systemsmanagement:Agama:Staging](https://build.opensuse.org/project/show/systemsmanagement:Agama:Staging)**
@@ -23,8 +26,9 @@
 [![OBS Staging/agama-cli](https://img.shields.io/obs/systemsmanagement:Agama:Staging/agama-cli/openSUSE_Tumbleweed/x86_64?label=Package%20agama-cli)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-cli)
 [![OBS Staging/cockpit-agama](https://img.shields.io/obs/systemsmanagement:Agama:Staging/cockpit-agama/openSUSE_Tumbleweed/x86_64?label=Package%20cockpit-agama)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/cockpit-agama)
 [![OBS Staging/rubygem-agama](https://img.shields.io/obs/systemsmanagement:Agama:Staging/rubygem-agama/openSUSE_Tumbleweed/x86_64?label=Package%20rubygem-agama)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/rubygem-agama)
+[![OBS Staging/agama-products-opensuse](https://img.shields.io/obs/systemsmanagement%3AAgama%3AStaging/agama-products-opensuse/openSUSE_Tumbleweed/x86_64?label=Package%20agama-products-opensuse)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-products-opensuse)
 [![OBS Staging/cockpit-agama-playwright](https://img.shields.io/obs/systemsmanagement:Agama:Staging/cockpit-agama-playwright/openSUSE_Tumbleweed/x86_64?label=Package%20cockpit-agama-playwright)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/cockpit-agama-playwright)
-[![OBS Staging/agama-live](https://img.shields.io/obs/systemsmanagement:Agama:Staging/agama-live:default/images/x86_64?label=Live%20ISO)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-live)
+[![OBS Staging/agama-live](https://img.shields.io/obs/systemsmanagement:Agama:Staging/agama-live:openSUSE/images/x86_64?label=Live%20ISO)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Staging/agama-live)
 
 **[OBS systemsmanagement:Agama:Devel](https://build.opensuse.org/project/show/systemsmanagement:Agama:Devel)**
 
@@ -34,7 +38,7 @@
 [![OBS Devel/agama-cli](https://img.shields.io/obs/systemsmanagement:Agama:Devel/agama-cli/openSUSE_Tumbleweed/x86_64?label=Package%20agama-cli)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/agama-cli)
 [![OBS Devel/cockpit-agama](https://img.shields.io/obs/systemsmanagement:Agama:Devel/cockpit-agama/openSUSE_Tumbleweed/x86_64?label=Package%20cockpit-agama)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/cockpit-agama)
 [![OBS Devel/rubygem-agama](https://img.shields.io/obs/systemsmanagement:Agama:Devel/rubygem-agama/openSUSE_Tumbleweed/x86_64?label=Package%20rubygem-agama)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/rubygem-agama)
-[![OBS Devel/agama-live](https://img.shields.io/obs/systemsmanagement:Agama:Devel/agama-live:default/images/x86_64?label=Live%20ISO)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/agama-live)
+[![OBS Devel/agama-live](https://img.shields.io/obs/systemsmanagement:Agama:Devel/agama-live:openSUSE/images/x86_64?label=Live%20ISO)](https://build.opensuse.org/package/show/systemsmanagement:Agama:Devel/agama-live)
 
 # Agama: A Service-based Linux Installer
 
