@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, waitForElementToBeRemoved } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { PageOptions } from "~/components/core";
 
@@ -50,8 +50,11 @@ it("shows and hides the component content on user request", async () => {
   screen.getByRole("menuitem", { name: "A dummy action" });
 
   await user.click(toggler);
-
-  expect(screen.queryByRole("menuitem", { name: "A dummy action" })).toBeNull();
+  await waitForElementToBeRemoved(screen.queryByRole("menuitem", { name: "A dummy action" }));
+  // NOTE: the above is the same than:
+  // await waitFor(() => {
+  //   expect(screen.queryByRole("menuitem", { name: "A dummy action" })).toBeNull();
+  // });
 });
 
 it("hides the component content when user clicks on one of its actions", async () => {
@@ -97,5 +100,5 @@ it('closes the component  when user clicks outside', async () => {
   await user.click(sibling);
 
   // Ensure the dropdown is closed
-  expect(screen.queryByRole("menuitem", { name: "Option 2" })).toBeNull();
+  await waitForElementToBeRemoved(() => screen.queryByRole("menuitem", { name: "Option 2" }));
 });

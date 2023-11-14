@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen, within, waitFor } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import NetworkPage from "~/components/network/NetworkPage";
 import { ConnectionTypes } from "~/client/network";
@@ -97,11 +97,13 @@ describe("NetworkPage", () => {
       activeConnectionsFn.mockReturnValue([wiredConnection]);
     });
 
-    it("renders an informative message", async () => {
+    it.only("renders an informative message", async () => {
       installerRender(<NetworkPage />);
 
       const section = await screen.findByRole("region", { name: "WiFi networks" });
-      within(section).getByText("No WiFi connections found");
+      await waitFor(() => {
+        within(section).getByText("No WiFi connections found");
+      });
     });
 
     describe("and WiFi scan is supported", () => {

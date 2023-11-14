@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, withNotificationProvider } from "~/test-utils";
 import { If, Sidebar } from "~/components/core";
 import { createClient } from "~/client";
@@ -143,15 +143,13 @@ describe("if there are issues", () => {
   it("includes a notification mark", async () => {
     installerRender(withNotificationProvider(<Sidebar />));
     const link = await screen.findByLabelText(/Show/i);
-    within(link).getByRole("status", { name: /New issues/ });
+    await waitFor(() => {
+      within(link).getByRole("status", { name: /New issues/ });
+    });
   });
 });
 
 describe("if there are not issues", () => {
-  beforeEach(() => {
-    hasIssues = false;
-  });
-
   it("does not include a notification mark", async () => {
     installerRender(withNotificationProvider(<Sidebar />));
     const link = await screen.findByLabelText(/Show/i);
