@@ -101,7 +101,7 @@
     "@patternfly/patternfly": "^5.1.0",
     "@patternfly/react-core": "^5.1.1",
     "@patternfly/react-table": "^5.1.1",
-    "fast-sort": "^3.2.1",
+    "fast-sort": "^3.4.0",
     "ipaddr.js": "^2.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
