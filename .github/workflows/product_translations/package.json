@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "gettext-parser": "^7.0.1",
+    "glob": "^10.3.10",
+    "yaml": "^2.3.4"
+  }
+}

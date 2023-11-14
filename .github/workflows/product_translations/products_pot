@@ -1,0 +1,143 @@
+#! /usr/bin/node
+
+/*
+This script generates the POT file with product translations from product
+YAML files.
+
+Requirements: NodeJS, run "npm ci" to install the needed NPM packages
+
+Usage:
+
+  products_pot *.yaml
+*/
+
+const fs = require("fs");
+const process = require("process");
+
+const { Parser, LineCounter, parseDocument } = require("yaml");
+const gettextParser = require("gettext-parser");
+
+/**
+ * Translatable text with source location
+ */
+class POEntry {
+  text;
+  file;
+  line;
+  product;
+
+  /**
+   * Constructor
+   * @param {string} text - text of the description
+   * @param {string} file - file name
+   * @param {number} line - line location
+   * @param {string} product - name of the product
+   */
+  constructor(text, file, line, product) {
+    this.text = text;
+    this.file = file;
+    this.line = line;
+    this.product = product;
+  }
+}
+
+// collects translatable texts (POEntries) and generates the final POT file
+class POFile {
+  entries = [];
+
+  /**
+   * generate a time stamp string for the POT file header
+   * @returns {string} timestamp
+   */
+  timestamp() {
+    const date = new Date();
+    return date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" +
+      date.getUTCDate() + " " + date.getUTCHours() + ":" + date.getUTCMinutes() +
+      "+0000";
+  }
+
+  /**
+   * generate the POT file content
+   * @returns {string} generated POT file or empty string if there are no entries
+   */
+  dump() {
+    if (this.entries.length === 0) return "";
+
+    // template file with the default POT file header
+    const template = require("./template.json");
+    template.headers["POT-Creation-Date"] = this.timestamp();
+
+    const translations = template.translations[""];
+
+    this.entries.forEach(e => {
+      translations[e.text] = {
+        msgid: e.text,
+        comments: {
+          translator: `TRANSLATORS: description of product "${e.product}"`,
+          reference: e.file + ":" + e.line
+        },
+        msgstr: [""]
+      };
+    });
+
+    // sort the output by the msgid to have consistent results
+    return String(gettextParser.po.compile(template, { sort: true }));
+  }
+}
+
+/**
+ * Reads and parses the YAML product file
+ */
+class YamlReader {
+  file;
+
+  /**
+   * Constructor
+   * @param {string} file - name of the YAML file to read
+   */
+  constructor(file) {
+    this.file = file;
+  }
+
+  /**
+   * Read and parse the YAML file
+   * @returns {undefined,POEntry} the found description entry or `undefined` if not found
+   */
+  description() {
+    const data = fs.readFileSync(this.file, "utf-8");
+
+    // get the parsed text value
+    const parsed = parseDocument(data);
+    const description = parsed.get("description");
+    if (!description) return;
+
+    const product = parsed.get("name");
+
+    const lineCounter = new LineCounter();
+    const tokens = new Parser(lineCounter.addNewLine).parse(data);
+
+    for (const token of tokens) {
+      if (token.type === "document") {
+        // get the line position of the value
+        const description_token = token.value.items.find(i => i.key.source === "description");
+        const line = lineCounter.linePos(description_token.value.offset).line;
+        return new POEntry(description, this.file, line, product);
+      }
+    }
+  }
+}
+
+const output = new POFile();
+// script arguments (the first arg is executor path ("/usr/bin/node"),
+// the second is name of this script)
+const [,, ...params] = process.argv;
+
+params.forEach(f => {
+  const reader = new YamlReader(f);
+  const descriptionEntry = reader.description();
+  if (descriptionEntry) {
+    output.entries.push(descriptionEntry);
+  }
+});
+
+console.log(output.dump());

@@ -1,7 +1,18 @@
 id: Leap16
 name: openSUSE Leap 16.0
 archs: x86_64,aarch64
-description: '[Experimental project] openSUSE Leap 16 is built on top of the next generation Adaptable Linux Platform (ALP) from SUSE.'
+# ------------------------------------------------------------------------------
+# WARNING: When changing the product description delete the translations located
+# at the at translations/description key below to avoid using obsolete
+# translations!!
+# ------------------------------------------------------------------------------
+description: '[Experimental project] openSUSE Leap 16 is built on top of the
+  next generation Adaptable Linux Platform (ALP) from SUSE.'
+# Do not manually change any translations! See README.md for more details.
+translations:
+  description:
+    cs: "[Experimentální projekt] openSUSE Leap 16 je postaven na budoucí generaci
+      Adaptable Linux Platform (ALP) od SUSE."
 software:
   installation_repositories:
     - url: https://download.opensuse.org/repositories/openSUSE:/Leap:/16.0/images/repo/Leap-16.0-x86_64-Media1/

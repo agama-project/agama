@@ -1,0 +1,166 @@
+#! /usr/bin/node
+
+/*
+This script merges the product translations back to the product YAML files.
+
+Requirements: NodeJS, run "npm ci" to install the needed NPM packages
+
+Usage:
+
+  merge_po <translations_dir> <products_dir>
+*/
+
+const fs = require("fs");
+const process = require("process");
+const path = require("path");
+
+const { parseDocument } = require("yaml");
+const { globSync } = require("glob");
+const gettextParser = require("gettext-parser");
+
+/**
+ * Translation object with original text, its translations and the locale name.
+ */
+class Translation {
+  msgid;
+  msgstr;
+  locale;
+
+  /**
+   * Constructor
+   * @param {string} msgid - the original text
+   * @param {string} msgstr - the translation
+   * @param {string} locale - the locale
+   */
+  constructor(msgid, msgstr, locale) {
+    this.msgid = msgid;
+    this.msgstr = msgstr;
+    this.locale = locale;
+  }
+
+  /**
+   * Read all translations (PO files) in the specified directory
+   * @param {string} dir - input directory for reading the the PO files
+   * @returns {Translation[]} list of found translations
+   */
+  static read(dir) {
+    const ret = [];
+    // sort the files so the translations in the YAML files are also sorted
+    const files = globSync(dir + "/*.po").sort();
+
+    files.forEach(f => {
+      console.log(`Reading ${path.basename(f)}`);
+
+      const locale = path.basename(f, ".po");
+      const input = fs.readFileSync(f, "utf-8");
+      const po = gettextParser.po.parse(input);
+
+      // translations for the default (empty) context
+      const translations = po.translations[""];
+
+      Object.values(translations).forEach(t => {
+        if (t.msgid !== "") {
+          ret.push(new Translation(t.msgid, t.msgstr[0], locale));
+        }
+      });
+    });
+
+    return ret;
+  }
+}
+
+/**
+ * YAML product file
+ */
+class YamlProduct {
+  file;
+  document;
+
+  /**
+   * Constructor
+   * @param {string} file - the path to the YAML file
+   */
+  constructor(file) {
+    this.file = file;
+    // parse the file
+    const data = fs.readFileSync(this.file, "utf-8");
+    this.document = parseDocument(data);
+  }
+
+  /**
+   * Read all product definitions (YAML files) in the specified directory
+   * @param {string} dir - input directory for reading the the PO files
+   * @returns {YamlProduct[]} all found products
+   */
+  static read(dir) {
+    const ret = [];
+    const files = globSync(dir + "/*.y{a,}ml");
+    return files.map(f => {
+      console.log(`Reading ${path.basename(f)}`);
+      return new YamlProduct(f);
+    });
+  }
+
+  /**
+   * Find the matching translations in the list and add them to the YAML document
+   * @param {Translation[]} translations
+   */
+  addTranslations(translations) {
+    const description = this.document.get("description");
+    const newTranslations = {};
+
+    translations.forEach(t => {
+      if (t.msgid === description) {
+        newTranslations[t.locale] = t.msgstr;
+      }
+    });
+
+    // add or update the translations depending on whether they already exist
+    if (!this.document.has("translations")) {
+       this.document.add({key: "translations", value: { description: newTranslations}});
+    } else {
+      const trans = this.document.get("translations");
+      if (!trans) {
+        this.document.set("translations", { description: newTranslations});
+      } else {
+        trans.set("description", newTranslations);
+      }
+    }
+  }
+
+  /**
+   * Convert back the parsed YAML to String
+   * @returns {string} new update YAML data
+   */
+  dump() {
+    return this.document.toString();
+  }
+
+  /**
+   * Save the current YAML data back to the file, the original content is
+   * overwritten.
+   */
+  save() {
+    console.log(`Writing ${path.basename(this.file)}`);
+    fs.writeFileSync(this.file, this.dump(), "utf-8");
+  }
+}
+
+// script arguments (the first arg is executor path ("/usr/bin/node"),
+// the second is name of this script)
+const [, , translations_dir, products_dir] = process.argv;
+
+if (!translations_dir || !products_dir) {
+  console.log("ERROR: missing argument");
+  process.exit(1);
+}
+
+// read all YAML products and all translations
+const translations = Translation.read(translations_dir);
+const products = YamlProduct.read(products_dir);
+
+// inject the translations to the products and save the changes
+products.forEach(p => {
+  p.addTranslations(translations);
+  p.save();
+});
