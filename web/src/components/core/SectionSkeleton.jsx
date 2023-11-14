@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,17 +23,17 @@ import React from "react";
 import { Skeleton } from "@patternfly/react-core";
 import { _ } from "~/i18n";
 
-const SectionSkeleton = ({ numRows = 2 }) => {
-  const WaitingSkeleton = ({ width }) => {
-    return (
-      <Skeleton
-        screenreaderText={_("Waiting")}
-        fontSize="sm"
-        width={width}
-      />
-    );
-  };
+const WaitingSkeleton = ({ width }) => {
+  return (
+    <Skeleton
+      screenreaderText={_("Waiting")}
+      fontSize="sm"
+      width={width}
+    />
+  );
+};
 
+const SectionSkeleton = ({ numRows = 2 }) => {
   return (
     <>
       {

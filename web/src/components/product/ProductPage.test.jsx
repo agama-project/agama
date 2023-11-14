@@ -20,7 +20,7 @@
  */
 
 import React from "react";
-import { act, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 
 import { BUSY } from "~/client/status";
 import { installerRender } from "~/test-utils";
@@ -177,7 +177,7 @@ describe("when the services are busy", () => {
   });
 
   it("shows disabled buttons", async () => {
-    await act(async () => installerRender(<ProductPage />));
+    installerRender(<ProductPage />);
 
     const selectButton = await screen.findByRole("button", { name: "Change product" });
     const registerButton = screen.getByRole("button", { name: "Register" });

@@ -75,14 +75,14 @@ describe("#product", () => {
   });
 
   describe("#getRegistration", () => {
-    describe("if there the product is not registered yet", () => {
+    describe("if the product is not registered yet", () => {
       beforeEach(() => {
         registrationProxy.RegCode = "";
         registrationProxy.Email = "";
         registrationProxy.Requirement = 1;
       });
 
-      it("returns the expected registration", async () => {
+      it("returns the expected registration result", async () => {
         const client = new SoftwareClient();
         const registration = await client.product.getRegistration();
         expect(registration).toStrictEqual({

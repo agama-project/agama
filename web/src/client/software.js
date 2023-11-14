@@ -40,7 +40,7 @@ const REGISTRATION_IFACE = "org.opensuse.Agama1.Registration";
 
 /**
  * @typedef {object} Registration
- * @property {string} requirement - Registration requirement (i.e., "not-required, "optional",
+ * @property {string} requirement - Registration requirement (i.e., "not-required", "optional",
  *  "mandatory").
  * @property {string|null} code - Registration code, if any.
  * @property {string|null} email - Registration email, if any.

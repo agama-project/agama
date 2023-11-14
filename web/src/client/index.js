@@ -37,15 +37,15 @@ const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
 
 /**
  * @typedef {object} InstallerClient
- * @property {LanguageClient} language - language client
- * @property {ManagerClient} manager - manager client
- * @property {Monitor} monitor - service monitor
- * @property {NetworkClient} network - network client
- * @property {SoftwareClient} software - software client
- * @property {StorageClient} storage - storage client
- * @property {UsersClient} users - users client
- * @property {QuestionsClient} questions - questions client
- * @property {() => Promise<Issues>} issues - issues from all contexts
+ * @property {LanguageClient} language - language client.
+ * @property {ManagerClient} manager - manager client.
+ * @property {Monitor} monitor - service monitor.
+ * @property {NetworkClient} network - network client.
+ * @property {SoftwareClient} software - software client.
+ * @property {StorageClient} storage - storage client.
+ * @property {UsersClient} users - users client.
+ * @property {QuestionsClient} questions - questions client.
+ * @property {() => Promise<Issues>} issues - issues from all contexts.
  * @property {(handler: IssuesHandler) => (() => void)} onIssuesChange - registers a handler to run
  *  when issues from any context change. It returns a function to deregister the handler.
  * @property {() => Promise<boolean>} isConnected - determines whether the client is connected
