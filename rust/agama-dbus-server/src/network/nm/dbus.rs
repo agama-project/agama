@@ -29,10 +29,7 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
         ("type", ETHERNET_KEY.into()),
         ("interface-name", conn.interface().into()),
     ]);
-    if let Some(parent) = &conn.base().parent {
-        connection_dbus.insert("master", parent.interface.clone().into());
-        connection_dbus.insert("slave-type", parent.kind.to_string().into());
-    }
+
     result.insert("ipv4", ip_config_to_ipv4_dbus(conn.ip_config()));
     result.insert("ipv6", ip_config_to_ipv6_dbus(conn.ip_config()));
     result.insert("match", match_config_to_dbus(conn.match_config()));
@@ -47,10 +44,7 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
 
     if let Connection::Bond(bond) = conn {
         connection_dbus.insert("type", BOND_KEY.into());
-        let bond_dbus = bond_config_to_dbus(bond);
-        for (k, v) in bond_dbus {
-            result.insert(k, v);
-        }
+        result.insert("bond", bond_config_to_dbus(bond));
     }
 
     result.insert("connection", connection_dbus);
@@ -71,6 +65,7 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
     }
 
     if let Some(bond_config) = bond_config_from_dbus(&conn) {
+        println!("Returning bond config");
         return Some(Connection::Bond(BondConnection {
             base,
             bond: bond_config,
@@ -253,15 +248,10 @@ fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
     ])
 }
 
-fn bond_config_to_dbus(conn: &BondConnection) -> NestedHash {
+fn bond_config_to_dbus(conn: &BondConnection) -> HashMap<&str, zvariant::Value> {
     let config = &conn.bond;
-    let bond: HashMap<&str, zvariant::Value> = HashMap::from([
-          ("options", Value::new(config.options.clone()))
-    ]);
 
-    NestedHash::from([
-        ("bond", bond ),
-    ])
+    HashMap::from([("options", Value::new(config.options.clone()))])
 }
 
 /// Converts a MatchConfig struct into a HashMap that can be sent over D-Bus.
@@ -298,6 +288,19 @@ fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::V
         ("interface-name", interfaces),
     ])
 }
+pub fn controller_from_dbus(conn: OwnedNestedHash) -> Option<String> {
+    let Some(connection) = conn.get("connection") else {
+        return None;
+    };
+
+    let Some(controller) = connection.get("master") else {
+        return None;
+    };
+
+    let controller: &str = controller.downcast_ref()?;
+
+    Some(controller.to_string())
+}
 
 fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
     let Some(connection) = conn.get("connection") else {
@@ -307,6 +310,7 @@ fn base_connection_from_dbus(conn: &OwnedNestedHash) -> Option<BaseConnection> {
     let id: &str = connection.get("id")?.downcast_ref()?;
     let uuid: &str = connection.get("uuid")?.downcast_ref()?;
     let uuid: Uuid = uuid.try_into().ok()?;
+
     let mut base_connection = BaseConnection {
         id: id.to_string(),
         uuid,
@@ -502,12 +506,17 @@ fn wireless_config_from_dbus(conn: &OwnedNestedHash) -> Option<WirelessConfig> {
 }
 
 fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Option<BondConfig> {
-    let Some(_bond) = conn.get(BOND_KEY) else {
+    let Some(bond) = conn.get(BOND_KEY) else {
         return None;
     };
 
-    // TODO
-    None
+    let dict: &zvariant::Dict = bond.get("options")?.downcast_ref()?;
+    let options = <HashMap<String, String>>::try_from(dict.clone()).unwrap();
+
+    Some(BondConfig {
+        options: options,
+        ..Default::default()
+    })
 }
 
 /// Determines whether a value is empty.

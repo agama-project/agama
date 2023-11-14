@@ -11,6 +11,8 @@ pub enum Action {
     AddConnection(String, DeviceType),
     /// Update a connection (replacing the old one).
     UpdateConnection(Connection),
+    /// Update a controller connection (replacing the old one).
+    UpdateControllerConnection(Connection, Vec<String>),
     /// Remove the connection with the given Uuid.
     RemoveConnection(String),
     /// Apply the current configuration.

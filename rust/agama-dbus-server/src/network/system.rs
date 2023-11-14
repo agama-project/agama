@@ -73,6 +73,9 @@ impl<T: Adapter> NetworkSystem<T> {
             Action::UpdateConnection(conn) => {
                 self.state.update_connection(conn)?;
             }
+            Action::UpdateControllerConnection(conn, ports) => {
+                self.state.update_controller_connection(conn, ports)?;
+            }
             Action::RemoveConnection(id) => {
                 self.tree.remove_connection(&id).await?;
                 self.state.remove_connection(&id)?;

@@ -6,7 +6,10 @@ use super::ObjectsRegistry;
 use crate::network::{
     action::Action,
     error::NetworkStateError,
-    model::{Connection as NetworkConnection, Device as NetworkDevice, WirelessConnection},
+    model::{
+        BondConnection, Connection as NetworkConnection, Device as NetworkDevice,
+        WirelessConnection,
+    },
 };
 
 use agama_lib::network::types::SSID;
@@ -278,6 +281,77 @@ impl Match {
             .send(Action::UpdateConnection(connection.clone()))
             .unwrap();
         Ok(())
+    }
+}
+
+/// D-Bus interface for Bond settings
+pub struct Bond {
+    actions: Arc<Mutex<Sender<Action>>>,
+    connection: Arc<Mutex<NetworkConnection>>,
+}
+
+impl Bond {
+    /// Creates a Match Settings interface object.
+    ///
+    /// * `actions`: sending-half of a channel to send actions.
+    /// * `connection`: connection to expose over D-Bus.
+    pub fn new(actions: Sender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
+        Self {
+            actions: Arc::new(Mutex::new(actions)),
+            connection,
+        }
+    }
+
+    /// Gets the bond connection.
+    ///
+    /// Beware that it crashes when it is not a bond connection.
+    async fn get_bond(&self) -> MappedMutexGuard<NetworkConnection, BondConnection> {
+        MutexGuard::map(self.connection.lock().await, |c| match c {
+            NetworkConnection::Bond(config) => config,
+            _ => panic!("Not a bond connection. This is most probably a bug."),
+        })
+    }
+
+    /// Updates the controller connection data in the NetworkSystem.
+    ///
+    /// * `connection`: Updated connection.
+    async fn update_controller_connection<'a>(
+        &self,
+        connection: MappedMutexGuard<'a, NetworkConnection, BondConnection>,
+        ports: Vec<String>,
+    ) -> zbus::fdo::Result<()> {
+        let actions = self.actions.lock().await;
+        let connection = NetworkConnection::Bond(connection.clone());
+        actions
+            .send(Action::UpdateControllerConnection(
+                connection.clone(),
+                ports.clone(),
+            ))
+            .await
+            .unwrap();
+        Ok(())
+    }
+}
+
+#[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.Bond")]
+impl Bond {
+    /// List of bond ports.
+    #[dbus_interface(property)]
+    pub async fn ports(&self) -> Vec<String> {
+        let connection = self.get_bond().await;
+        connection
+            .bond
+            .ports
+            .iter()
+            .map(|port| port.base().interface.to_string())
+            .collect()
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_ports(&mut self, ports: Vec<String>) -> zbus::fdo::Result<()> {
+        let connection = self.get_bond().await;
+        self.update_controller_connection(connection, ports.clone())
+            .await
     }
 }
 

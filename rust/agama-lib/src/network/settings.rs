@@ -49,6 +49,18 @@ pub struct WirelessSettings {
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct BondSettings {
+    pub options: String,
+    pub ports: Vec<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct NetworkDevice {
+    pub id: String,
+    pub type_: DeviceType,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct NetworkConnection {
     pub id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -69,6 +81,10 @@ pub struct NetworkConnection {
     pub interface: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub match_settings: Option<MatchSettings>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub parent: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub bond: Option<BondSettings>,
 }
 
 impl NetworkConnection {
@@ -79,6 +95,8 @@ impl NetworkConnection {
     pub fn device_type(&self) -> DeviceType {
         if self.wireless.is_some() {
             DeviceType::Wireless
+        } else if self.bond.is_some() {
+            DeviceType::Bond
         } else {
             DeviceType::Ethernet
         }
@@ -123,7 +141,14 @@ mod tests {
             wireless: Some(WirelessSettings::default()),
             ..Default::default()
         };
+
+        let bond = NetworkConnection {
+            bond: Some(BondSettings::default()),
+            ..Default::default()
+        };
+
         assert_eq!(wlan.device_type(), DeviceType::Wireless);
+        assert_eq!(bond.device_type(), DeviceType::Bond);
     }
 
     #[test]

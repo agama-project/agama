@@ -112,6 +112,15 @@ impl Tree {
             interfaces::Match::new(self.actions.clone(), Arc::clone(&cloned)),
         )
         .await?;
+
+        if let Connection::Bond(_) = conn {
+            self.add_interface(
+                &path,
+                interfaces::Bond::new(self.actions.clone(), Arc::clone(&cloned)),
+            )
+            .await?;
+        }
+
         if let Connection::Wireless(_) = conn {
             self.add_interface(
                 &path,

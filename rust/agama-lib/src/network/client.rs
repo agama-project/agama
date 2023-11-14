@@ -1,6 +1,9 @@
-use super::proxies::{ConnectionProxy, ConnectionsProxy, IPProxy, MatchProxy, WirelessProxy};
+use super::proxies::{
+    ConnectionProxy, ConnectionsProxy, DeviceProxy, DevicesProxy, IPProxy, MatchProxy,
+    WirelessProxy,
+};
 use super::settings::{MatchSettings, NetworkConnection, WirelessSettings};
-use super::types::SSID;
+use super::types::{Device, DeviceType, SSID};
 use crate::error::ServiceError;
 use tokio_stream::StreamExt;
 use zbus::zvariant::OwnedObjectPath;
@@ -10,12 +13,14 @@ use zbus::Connection;
 pub struct NetworkClient<'a> {
     pub connection: Connection,
     connections_proxy: ConnectionsProxy<'a>,
+    devices_proxy: DevicesProxy<'a>,
 }
 
 impl<'a> NetworkClient<'a> {
     pub async fn new(connection: Connection) -> Result<NetworkClient<'a>, ServiceError> {
         Ok(Self {
             connections_proxy: ConnectionsProxy::new(&connection).await?,
+            devices_proxy: DevicesProxy::new(&connection).await?,
             connection,
         })
     }
@@ -23,6 +28,19 @@ impl<'a> NetworkClient<'a> {
     pub async fn get_connection(&self, id: &str) -> Result<NetworkConnection, ServiceError> {
         let path = self.connections_proxy.get_connection(id).await?;
         Ok(self.connection_from(path.as_str()).await?)
+    }
+
+    pub async fn available_devices(&self) -> Result<Vec<Device>, ServiceError> {
+        let devices_paths = self.devices_proxy.get_devices().await?;
+        let mut devices = vec![];
+
+        for path in devices_paths {
+            let device = self.device_from(path.as_str()).await?;
+
+            devices.push(device);
+        }
+
+        Ok(devices)
     }
 
     /// Returns an array of network connections
@@ -52,6 +70,23 @@ impl<'a> NetworkClient<'a> {
     pub async fn apply(&self) -> Result<(), ServiceError> {
         self.connections_proxy.apply().await?;
         Ok(())
+    }
+
+    /// Returns the NetworkDevice for the given device path
+    ///
+    ///  * `path`: the connections path to get the config from
+    async fn device_from(&self, path: &str) -> Result<Device, ServiceError> {
+        let device_proxy = DeviceProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+        let name = device_proxy.name().await?;
+        let device_type = device_proxy.device_type().await?;
+
+        Ok(Device {
+            name,
+            type_: DeviceType::try_from(device_type).unwrap(),
+        })
     }
 
     /// Returns the NetworkConnection for the given connection path
