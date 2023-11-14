@@ -20,10 +20,10 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Form, FormGroup, TextInput } from "@patternfly/react-core";
+import { Form, FormGroup } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { EmailInput } from "~/components/core";
+import { EmailInput, PasswordInput } from "~/components/core";
 import { noop } from "~/utils";
 
 /**
@@ -61,7 +61,7 @@ export default function ProductRegistrationForm({
   return (
     <Form id={ id || "productRegistrationForm" } onSubmit={onSubmit}>
       <FormGroup fieldId="regCode" label={_("Registration code")} isRequired>
-        <TextInput id="regCode" value={code} onChange={(_, v) => setCode(v)} />
+        <PasswordInput id="regCode" value={code} onChange={(_, v) => setCode(v)} />
       </FormGroup>
       <FormGroup fieldId="email" label={_("Email")}>
         <EmailInput
