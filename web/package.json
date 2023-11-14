@@ -107,7 +107,6 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
     "react-teleporter": "^3.1.0",
-    "regenerator-runtime": "^0.14.0",
     "sprintf-js": "^1.1.2",
     "xbytes": "^1.8.0"
   },
