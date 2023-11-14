@@ -1,94 +1,17 @@
 name: "CI - Integration Tests"
 
 on:
-  push:
-    paths:
-      # NOTE: GitHub Actions do not allow using YAML references, the same path
-      # list is used below for the pull request event. Keep both lists in sync!!
+  schedule:
+    # at 10:50 every day from Monday to Friday
+    - cron: "50 10 * * 1-5"
 
-      # this file itself
-      - .github/workflows/ci-integration-tests.yml
-
-      # the web frontend
-      - web/**.json
-      - web/**.html
-      - web/**.scss
-      - web/**.jsx?
-      # ignore unit tests, we do not run them here
-      - "!web/**.test.jsx?"
-      - web/Makefile
-
-      # the service backend
-      - setup-service.sh
-      - service/lib/**.rb
-      - service/bin/agamactl
-      - service/Gemfile*
-      - service/*.gemspec
-      # D-Bus and systemd configs
-      - service/share/*.conf
-      - service/share/*.service
-      # Rust services
-      - rust/Cargo.lock
-      - rust/agama-dbus-server/**
-      - rust/agama-locale-data/**
-      - rust/agama-lib/**
-      # ignore the JSON profile and the examples
-      - "!rust/agama-lib/share/**"
-      - rust/share/*.service
-
-      # the playwright tests and configs
-      - playwright/**.ts
-      - playwright/config/agama.yaml
-
-  pull_request:
-    paths:
-      # NOTE: GitHub Actions do not allow using YAML references, the same path
-      # list is used above for the push event. Keep both lists in sync!!
-
-      # this file itself
-      - .github/workflows/ci-integration-tests.yml
-
-      # the web frontend
-      - web/**.json
-      - web/**.html
-      - web/**.scss
-      - web/**.jsx?
-      # ignore unit tests, we do not run them here
-      - "!web/**.test.jsx?"
-      - web/Makefile
-
-      # the service backend
-      - setup-service.sh
-      - service/lib/**.rb
-      - service/bin/agamactl
-      - service/Gemfile*
-      - service/*.gemspec
-      # D-Bus and systemd configs
-      - service/share/*.conf
-      - service/share/*.service
-      # Rust services
-      - rust/Cargo.lock
-      - rust/agama-dbus-server/**
-      - rust/agama-locale-data/**
-      - rust/agama-lib/**
-      # ignore the JSON profile and the examples
-      - "!rust/agama-lib/share/**"
-      - rust/share/*.service
-
-      # the playwright tests and configs
-      - playwright/**.ts
-      - playwright/config/agama.yaml
+  # allow running manually
+  workflow_dispatch:
 
 jobs:
   integration-tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        # TW is needed because of the Cockpit packages
-        distro: [ "tumbleweed" ]
 
     steps:
 
@@ -154,7 +77,7 @@ jobs:
 
     - name: Upload the test results
       uses: actions/upload-artifact@v3
-      # run even when the previous step fails
+      # run even when any previous step fails
       if: always()
       with:
         name: test-results
@@ -162,3 +85,12 @@ jobs:
         path: |
           playwright/test-results/**/*
           /tmp/log/YaST2/y2log
+
+    - name: IRC notification
+      # see https://github.com/marketplace/actions/irc-message-action
+      uses: Gottox/irc-message-action@v2
+      if: failure()
+      with:
+        channel: "#yast"
+        nickname: github-action
+        message: "Agama integration test failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
