@@ -1,0 +1,94 @@
+name: CI - Web
+
+on:
+  push:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used below for the pull request event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-web.yml
+      # any change in the web subfolder
+      - web/**
+      # except Markdown documentation
+      - "!web/**.md"
+      # except the packaging
+      - "!web/package/**"
+
+  pull_request:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used above for the push event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-web.yml
+      # any change in the web subfolder
+      - web/**
+      # except Markdown documentation
+      - "!web/**.md"
+      # except the packaging
+      - "!web/package/**"
+
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  frontend_build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./web
+
+    strategy:
+      matrix:
+        node-version: ["18.x"]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: 'web/package-lock.json'
+
+    - name: Install dependencies
+      run: npm install
+ 
+    - name: Build the application
+      run: make
+
+    - name: Run check spell
+      run: npm run cspell
+
+    - name: Check types
+      run: npm run check-types
+
+    - name: Run ESLint
+      run: npm run eslint
+
+    - name: Run Stylelint
+      run: npm run stylelint
+
+    - name: Run the tests and generate coverage report
+      run: npm test -- --coverage
+
+    # send the code coverage for the web part to the coveralls.io
+    - name: Coveralls GitHub Action
+      uses: coverallsapp/github-action@v2
+      with:
+        base-path: ./web
+        flag-name: web
+        parallel: true
+
+    # close the code coverage and inherit the previous coverage for the Ruby and
+    # Rust parts (it needs a separate step, the "carryforward" flag can be used
+    # only with the "parallel-finished: true" option)
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@v2
+      with:
+        parallel-finished: true
+        carryforward: "service,rust"

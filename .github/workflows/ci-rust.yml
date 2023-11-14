@@ -1,0 +1,106 @@
+name: CI - Rust
+
+on:
+  push:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used below for the pull request event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-rust.yml
+      # any change in the rust subfolder
+      - rust/**
+      # except Markdown documentation
+      - "!rust/**.md"
+      # except the packaging
+      - "!rust/package/**"
+      # except the DBus configuration
+      - "!rust/share/**"
+
+  pull_request:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used above for the push event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-rust.yml
+      # any change in the rust subfolder
+      - rust/**
+      # except Markdown documentation
+      - "!rust/**.md"
+      # except the packaging
+      - "!rust/package/**"
+      # except the DBus configuration
+      - "!rust/share/**"
+
+  # allow running manually
+  workflow_dispatch:
+
+jobs:
+  rust_ci:
+    runs-on: ubuntu-latest
+    env:
+      COVERAGE: 1
+
+    defaults:
+      run:
+        working-directory: ./rust
+
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [ "tumbleweed" ]
+
+    container:
+      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+      options: --security-opt seccomp=unconfined
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure and refresh repositories
+      # disable unused repositories to have faster refresh
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && ( zypper ref || zypper ref || zypper ref )
+
+    - name: Install Rust development files
+      run: zypper --non-interactive install rustup
+
+    - name: Install required packages
+      run: zypper --non-interactive install  python-langtable-data openssl-3 libopenssl-3-devel jq
+
+    - name: Install Rust toolchains
+      run: rustup toolchain install stable
+
+    - name: Install cargo-binstall
+      uses: taiki-e/install-action@v2
+      with:
+        tool: cargo-binstall
+
+    - name: Install Tarpaulin (for code coverage)
+      run: cargo-binstall --no-confirm cargo-tarpaulin
+
+    - name: Run the tests
+      run: cargo tarpaulin --out xml
+
+    - name: Lint formatting
+      run: cargo fmt --all -- --check
+
+    # send the code coverage for the Rust part to the coveralls.io
+    - name: Coveralls GitHub Action
+      uses: coverallsapp/github-action@v2
+      with:
+        base-path: ./rust
+        format: cobertura
+        flag-name: rust
+        parallel: true
+
+    # close the code coverage and inherit the previous coverage for the Ruby and
+    # Web parts (it needs a separate step, the "carryforward" flag can be used
+    # only with the "parallel-finished: true" option)
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@v2
+      with:
+        parallel-finished: true
+        carryforward: "service,web"
