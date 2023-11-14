@@ -21,15 +21,33 @@
 
 import React, { useEffect, useState } from "react";
 import { Text } from "@patternfly/react-core";
+import { sprintf } from "sprintf-js";
+
 import { toValidationError, useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "~/context/installer";
 import { useProduct } from "~/context/product";
-import { If, Section, SectionSkeleton } from "~/components/core";
+import { Section, SectionSkeleton } from "~/components/core";
 import { _ } from "~/i18n";
 
 const errorsFrom = (issues) => {
   const errors = issues.filter(i => i.severity === "error");
   return errors.map(toValidationError);
+};
+
+const Content = ({ isLoading = false }) => {
+  const { registration, selectedProduct } = useProduct();
+
+  if (isLoading) return <SectionSkeleton numRows={1} />;
+
+  const isRegistered = registration?.code !== null;
+  const productName = selectedProduct?.name;
+
+  return (
+    <Text>
+      {/* TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite) */}
+      {isRegistered ? sprintf(_("%s (registered)"), productName) : productName}
+    </Text>
+  );
 };
 
 export default function ProductSection() {
@@ -42,20 +60,6 @@ export default function ProductSection() {
     cancellablePromise(software.product.getIssues()).then(setIssues);
     return software.product.onIssuesChange(setIssues);
   }, [cancellablePromise, setIssues, software]);
-
-  const Content = ({ isLoading = false }) => {
-    return (
-      <If
-        condition={isLoading}
-        then={<SectionSkeleton numRows={1} />}
-        else={
-          <Text>
-            {selectedProduct?.name}
-          </Text>
-        }
-      />
-    );
-  };
 
   const isLoading = !selectedProduct;
   const errors = isLoading ? [] : errorsFrom(issues);

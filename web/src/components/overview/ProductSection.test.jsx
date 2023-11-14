@@ -25,7 +25,8 @@ import { installerRender } from "~/test-utils";
 import { createClient } from "~/client";
 import { ProductSection } from "~/components/overview";
 
-let mockProduct;
+let mockRegistration;
+let mockSelectedProduct;
 
 const mockIssue = { severity: "error", description: "Fake issue" };
 
@@ -35,12 +36,16 @@ jest.mock("~/components/core/SectionSkeleton", () => () => <div>Loading</div>);
 
 jest.mock("~/context/product", () => ({
   ...jest.requireActual("~/context/product"),
-  useProduct: () => ({ selectedProduct: mockProduct })
+  useProduct: () => ({
+    registration: mockRegistration,
+    selectedProduct: mockSelectedProduct
+  })
 }));
 
 beforeEach(() => {
   const issues = [mockIssue];
-  mockProduct = { name: "Test Product" };
+  mockRegistration = {};
+  mockSelectedProduct = { name: "Test Product" };
 
   createClient.mockImplementation(() => {
     return {
@@ -57,7 +62,15 @@ beforeEach(() => {
 it("shows the product name", async () => {
   installerRender(<ProductSection />);
 
-  await screen.findByText("Test Product");
+  await screen.findByText(/Test Product/);
+  await waitFor(() => expect(screen.queryByText("registered")).not.toBeInTheDocument());
+});
+
+it("indicates whether the product is registered", async () => {
+  mockRegistration = { code: "111222" };
+  installerRender(<ProductSection />);
+
+  await screen.findByText(/Test Product \(registered\)/);
 });
 
 it("shows the error", async () => {
@@ -76,7 +89,7 @@ it("does not show warnings", async () => {
 
 describe("when no product is selected", () => {
   beforeEach(() => {
-    mockProduct = undefined;
+    mockSelectedProduct = undefined;
   });
 
   it("shows the skeleton", async () => {
