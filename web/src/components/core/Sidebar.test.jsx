@@ -27,19 +27,18 @@ import { createClient } from "~/client";
 
 // Mock some components using contexts and not relevant for below tests
 jest.mock("~/components/core/LogsButton", () => () => <div>LogsButton Mock</div>);
-jest.mock("~/components/software/ChangeProductLink", () => () => <div>ChangeProductLink Mock</div>);
 
-let hasIssues = false;
+let mockIssues;
 
 jest.mock("~/client");
 
 beforeEach(() => {
+  mockIssues = [];
+
   createClient.mockImplementation(() => {
     return {
-      issues: {
-        any: () => Promise.resolve(hasIssues),
-        onIssuesChange: jest.fn()
-      }
+      issues: jest.fn().mockResolvedValue(mockIssues),
+      onIssuesChange: jest.fn()
     };
   });
 });
@@ -137,7 +136,13 @@ describe("onClick bubbling", () => {
 
 describe("if there are issues", () => {
   beforeEach(() => {
-    hasIssues = true;
+    mockIssues = {
+      software: [
+        {
+          description: "software issue 1", details: "Details 1", source: "system", severity: "warn"
+        }
+      ]
+    };
   });
 
   it("includes a notification mark", async () => {
@@ -148,6 +153,10 @@ describe("if there are issues", () => {
 });
 
 describe("if there are not issues", () => {
+  beforeEach(() => {
+    mockIssues = [];
+  });
+
   it("does not include a notification mark", async () => {
     installerRender(withNotificationProvider(<Sidebar />));
     const link = await screen.findByLabelText(/Show/i);

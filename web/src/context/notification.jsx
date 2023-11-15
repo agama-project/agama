@@ -37,7 +37,8 @@ function NotificationProvider({ children }) {
   const load = useCallback(async () => {
     if (!client) return;
 
-    const hasIssues = await cancellablePromise(client.issues.any());
+    const issues = await cancellablePromise(client.issues());
+    const hasIssues = Object.values(issues).flat().length > 0;
     update({ issues: hasIssues });
   }, [client, cancellablePromise, update]);
 
@@ -45,7 +46,7 @@ function NotificationProvider({ children }) {
     if (!client) return;
 
     load();
-    return client.issues.onIssuesChange(load);
+    return client.onIssuesChange(load);
   }, [client, load]);
 
   const value = [state, update];

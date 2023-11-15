@@ -22,7 +22,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
-import { ProductSelectionPage } from "~/components/software";
+import { ProductSelectionPage } from "~/components/product";
 import { createClient } from "~/client";
 
 const products = [
@@ -39,9 +39,9 @@ const products = [
 ];
 jest.mock("~/client");
 
-jest.mock("~/context/software", () => ({
-  ...jest.requireActual("~/context/software"),
-  useSoftware: () => {
+jest.mock("~/context/product", () => ({
+  ...jest.requireActual("~/context/product"),
+  useProduct: () => {
     return {
       products,
       selectedProduct: products[0]
@@ -54,10 +54,12 @@ const managerMock = {
 };
 
 const softwareMock = {
-  getProducts: () => Promise.resolve(products),
-  getSelectedProduct: jest.fn(() => Promise.resolve(products[0])),
-  selectProduct: jest.fn().mockResolvedValue(),
-  onProductChange: jest.fn()
+  product: {
+    getAll: () => Promise.resolve(products),
+    getSelected: jest.fn(() => Promise.resolve(products[0])),
+    select: jest.fn().mockResolvedValue(),
+    onChange: jest.fn()
+  }
 };
 
 beforeEach(() => {
@@ -76,7 +78,7 @@ describe("when the user chooses a product", () => {
     await user.click(radio);
     const button = await screen.findByRole("button", { name: "Select" });
     await user.click(button);
-    expect(softwareMock.selectProduct).toHaveBeenCalledWith("MicroOS");
+    expect(softwareMock.product.select).toHaveBeenCalledWith("MicroOS");
     expect(managerMock.startProbing).toHaveBeenCalled();
     expect(mockNavigateFn).toHaveBeenCalledWith("/");
   });
@@ -88,7 +90,7 @@ describe("when the user chooses does not change the product", () => {
     await screen.findByText("openSUSE Tumbleweed");
     const button = await screen.findByRole("button", { name: "Select" });
     await user.click(button);
-    expect(softwareMock.selectProduct).not.toHaveBeenCalled();
+    expect(softwareMock.product.select).not.toHaveBeenCalled();
     expect(managerMock.startProbing).not.toHaveBeenCalled();
     expect(mockNavigateFn).toHaveBeenCalledWith("/");
   });

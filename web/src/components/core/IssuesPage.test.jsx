@@ -20,37 +20,43 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
-import { installerRender, withNotificationProvider } from "~/test-utils";
+import { act, screen, waitFor, within } from "@testing-library/react";
+import { installerRender, createCallbackMock, withNotificationProvider } from "~/test-utils";
 import { createClient } from "~/client";
 import { IssuesPage } from "~/components/core";
 
 jest.mock("~/client");
 
 jest.mock("@patternfly/react-core", () => {
-  const original = jest.requireActual("@patternfly/react-core");
-
   return {
-    ...original,
+    ...jest.requireActual("@patternfly/react-core"),
     Skeleton: () => <div>PFSkeleton</div>
   };
 });
 
-let issues = {
+const issues = {
+  product: [],
   storage: [
-    { description: "Issue 1", details: "Details 1", source: "system", severity: "warn" },
-    { description: "Issue 2", details: "Details 2", source: "config", severity: "error" }
+    { description: "storage issue 1", details: "Details 1", source: "system", severity: "warn" },
+    { description: "storage issue 2", details: "Details 2", source: "config", severity: "error" }
+  ],
+  software: [
+    { description: "software issue 1", details: "Details 1", source: "system", severity: "warn" }
   ]
 };
 
+let mockIssues;
+
+let mockOnIssuesChange;
+
 beforeEach(() => {
+  mockIssues = { ...issues };
+  mockOnIssuesChange = jest.fn();
+
   createClient.mockImplementation(() => {
     return {
-      issues: {
-        any: () => Promise.resolve(true),
-        getAll: () => Promise.resolve(issues),
-        onIssuesChange: jest.fn()
-      }
+      issues: jest.fn().mockResolvedValue(mockIssues),
+      onIssuesChange: mockOnIssuesChange
     };
   });
 });
@@ -59,25 +65,48 @@ it("loads the issues", async () => {
   installerRender(withNotificationProvider(<IssuesPage />));
 
   screen.getAllByText(/PFSkeleton/);
-  await screen.findByText(/Issue 1/);
+  await screen.findByText(/storage issue 1/);
 });
 
 it("renders sections with issues", async () => {
   installerRender(withNotificationProvider(<IssuesPage />));
 
-  const section = await screen.findByRole("region", { name: "Storage" });
-  within(section).findByText(/Issue 1/);
-  within(section).findByText(/Issue 2/);
+  await waitFor(() => expect(screen.queryByText("Product")).not.toBeInTheDocument());
+
+  const storageSection = await screen.findByText(/Storage/);
+  within(storageSection).findByText(/storage issue 1/);
+  within(storageSection).findByText(/storage issue 2/);
+
+  const softwareSection = await screen.findByText(/Software/);
+  within(softwareSection).findByText(/software issue 1/);
 });
 
 describe("if there are not issues", () => {
   beforeEach(() => {
-    issues = { storage: [] };
+    mockIssues = { product: [], storage: [], software: [] };
   });
 
   it("renders a success message", async () => {
     installerRender(withNotificationProvider(<IssuesPage />));
 
     await screen.findByText(/No issues found/);
+  });
+});
+
+describe("if the issues change", () => {
+  it("shows the new issues", async () => {
+    const [mockFunction, callbacks] = createCallbackMock();
+    mockOnIssuesChange = mockFunction;
+
+    installerRender(withNotificationProvider(<IssuesPage />));
+
+    await screen.findByText("Storage");
+
+    mockIssues.storage = [];
+    act(() => callbacks.forEach(c => c({ storage: mockIssues.storage })));
+
+    await waitFor(() => expect(screen.queryByText("Storage")).not.toBeInTheDocument());
+    const softwareSection = await screen.findByText(/Software/);
+    within(softwareSection).findByText(/software issue 1/);
   });
 });

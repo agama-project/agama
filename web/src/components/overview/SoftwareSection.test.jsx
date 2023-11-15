@@ -31,7 +31,7 @@ jest.mock("~/client");
 
 let getStatusFn = jest.fn().mockResolvedValue(IDLE);
 let getProgressFn = jest.fn().mockResolvedValue({});
-let getValidationErrorsFn = jest.fn().mockResolvedValue([]);
+let getIssuesFn = jest.fn().mockResolvedValue([]);
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
@@ -39,7 +39,7 @@ beforeEach(() => {
       software: {
         getStatus: getStatusFn,
         getProgress: getProgressFn,
-        getValidationErrors: getValidationErrorsFn,
+        getIssues: getIssuesFn,
         onStatusChange: noop,
         onProgressChange: noop,
         getUsedSpace: jest.fn().mockResolvedValue("500 MB")
@@ -48,7 +48,7 @@ beforeEach(() => {
   });
 });
 
-describe("when there proposal is calculated", () => {
+describe("when the proposal is calculated", () => {
   beforeEach(() => {
     getStatusFn = jest.fn().mockResolvedValue(IDLE);
   });
@@ -61,7 +61,7 @@ describe("when there proposal is calculated", () => {
 
   describe("and there are errors", () => {
     beforeEach(() => {
-      getValidationErrorsFn = jest.fn().mockResolvedValue([{ message: "Could not install..." }]);
+      getIssuesFn = jest.fn().mockResolvedValue([{ description: "Could not install..." }]);
     });
 
     it("renders a button to refresh the repositories", async () => {

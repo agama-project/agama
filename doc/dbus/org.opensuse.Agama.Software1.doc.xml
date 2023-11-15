@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node name="/org/opensuse/Agama/Software1">
+  <node name="Product"/>
+  <node name="Proposal"/>
+
+  <interface name="org.opensuse.Agama.Software1">
+    <method name="ListPatterns">
+      <arg name="Filtered" direction="in" type="b"/>
+      <arg name="Result" direction="out" type="a{s(sssss)}"/>
+    </method>
+    <method name="AddPattern">
+      <arg name="id" direction="in" type="s"/>
+    </method>
+    <method name="RemovePattern">
+      <arg name="id" direction="in" type="s"/>
+    </method>
+    <method name="SetUserPatterns">
+      <arg name="ids" direction="in" type="as"/>
+    </method>
+    <method name="ProvisionsSelected">
+      <arg name="Provisions" direction="in" type="as"/>
+      <arg name="Result" direction="out" type="ab"/>
+    </method>
+    <method name="IsPackageInstalled">
+      <arg name="Name" direction="in" type="s"/>
+      <arg name="Result" direction="out" type="b"/>
+    </method>
+    <method name="UsedDiskSpace">
+      <arg name="SpaceSize" direction="out" type="s"/>
+    </method>
+    <method name="Probe">
+    </method>
+    <method name="Propose">
+    </method>
+    <method name="Install">
+    </method>
+    <method name="Finish">
+    </method>
+    <property type="a{sy}" name="SelectedPatterns" access="read"/>
+  </interface>
+</node>

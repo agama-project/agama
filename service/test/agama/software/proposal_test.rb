@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -77,9 +77,9 @@ describe Agama::Software::Proposal do
     end
 
     context "when no errors were reported" do
-      it "does not register any error" do
+      it "does not register any issue" do
         subject.calculate
-        expect(subject.errors).to be_empty
+        expect(subject.issues).to be_empty
       end
     end
 
@@ -88,10 +88,10 @@ describe Agama::Software::Proposal do
         { "warning_level" => :blocker, "warning" => "Could not install..." }
       end
 
-      it "registers the corresponding validation error" do
+      it "registers the corresponding issue" do
         subject.calculate
-        expect(subject.errors).to eq(
-          [Agama::ValidationError.new("Could not install...")]
+        expect(subject.issues).to contain_exactly(
+          an_object_having_attributes({ description: "Could not install..." })
         )
       end
     end
@@ -100,13 +100,11 @@ describe Agama::Software::Proposal do
       let(:last_error) { "Solving errors..." }
       let(:solve_errors) { 5 }
 
-      it "registers them as validation errors" do
+      it "registers them as issues" do
         subject.calculate
-        expect(subject.errors).to eq(
-          [
-            Agama::ValidationError.new("Solving errors..."),
-            Agama::ValidationError.new("Found 5 dependency issues.")
-          ]
+        expect(subject.issues).to contain_exactly(
+          an_object_having_attributes(description: "Solving errors..."),
+          an_object_having_attributes(description: "Found 5 dependency issues.")
         )
       end
     end

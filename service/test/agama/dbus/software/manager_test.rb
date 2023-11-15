@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,10 +20,13 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../test_helper"
-require "agama/dbus/software/manager"
+require "agama/config"
+require "agama/dbus/clients/locale"
+require "agama/dbus/clients/network"
+require "agama/dbus/interfaces/issues"
 require "agama/dbus/interfaces/progress"
 require "agama/dbus/interfaces/service_status"
-require "agama/dbus/interfaces/validation"
+require "agama/dbus/software/manager"
 require "agama/software"
 
 describe Agama::DBus::Software::Manager do
@@ -31,7 +34,14 @@ describe Agama::DBus::Software::Manager do
 
   let(:logger) { Logger.new($stdout, level: :warn) }
 
-  let(:backend) { instance_double(Agama::Software::Manager) }
+  let(:backend) { Agama::Software::Manager.new(config, logger) }
+
+  let(:config) { Agama::Config.new(config_data) }
+
+  let(:config_data) do
+    path = File.join(FIXTURES_PATH, "root_dir/etc/agama.yaml")
+    YAML.safe_load(File.read(path))
+  end
 
   let(:progress_interface) { Agama::DBus::Interfaces::Progress::PROGRESS_INTERFACE }
 
@@ -39,12 +49,28 @@ describe Agama::DBus::Software::Manager do
     Agama::DBus::Interfaces::ServiceStatus::SERVICE_STATUS_INTERFACE
   end
 
-  let(:validation_interface) { Agama::DBus::Interfaces::Validation::VALIDATION_INTERFACE }
+  let(:issues_interface) { Agama::DBus::Interfaces::Issues::ISSUES_INTERFACE }
 
   before do
-    allow_any_instance_of(described_class).to receive(:register_callbacks)
-    allow_any_instance_of(described_class).to receive(:register_progress_callbacks)
-    allow_any_instance_of(described_class).to receive(:register_service_status_callbacks)
+    allow(Agama::DBus::Clients::Locale).to receive(:new).and_return(locale_client)
+    allow(Agama::DBus::Clients::Network).to receive(:new).and_return(network_client)
+    allow(backend).to receive(:probe)
+    allow(backend).to receive(:propose)
+    allow(backend).to receive(:install)
+    allow(backend).to receive(:finish)
+    allow(subject).to receive(:dbus_properties_changed)
+  end
+
+  let(:locale_client) do
+    instance_double(Agama::DBus::Clients::Locale, on_language_selected: nil)
+  end
+
+  let(:network_client) do
+    instance_double(Agama::DBus::Clients::Network, on_connection_changed: nil)
+  end
+
+  it "defines Issues D-Bus interface" do
+    expect(subject.intfs.keys).to include(issues_interface)
   end
 
   it "defines Progress D-Bus interface" do
@@ -55,26 +81,12 @@ describe Agama::DBus::Software::Manager do
     expect(subject.intfs.keys).to include(service_status_interface)
   end
 
-  it "defines Validation D-Bus interface" do
-    expect(subject.intfs.keys).to include(validation_interface)
-  end
-
-  it "configures callbacks from Progress interface" do
-    expect_any_instance_of(described_class).to receive(:register_progress_callbacks)
-    subject
-  end
-
-  it "configures callbacks from ServiceStatus interface" do
-    expect_any_instance_of(described_class).to receive(:register_service_status_callbacks)
-    subject
+  it "emits signal when issues changes" do
+    expect(subject).to receive(:issues_properties_changed)
+    backend.issues = []
   end
 
   describe "#probe" do
-    before do
-      allow(subject).to receive(:update_validation)
-      allow(backend).to receive(:probe)
-    end
-
     it "runs the probing, setting the service as busy meanwhile" do
       expect(subject.service_status).to receive(:busy)
       expect(backend).to receive(:probe)
@@ -82,30 +94,13 @@ describe Agama::DBus::Software::Manager do
 
       subject.probe
     end
-
-    it "updates validation" do
-      expect(subject).to receive(:update_validation)
-
-      subject.probe
-    end
   end
 
   describe "#propose" do
-    before do
-      allow(subject).to receive(:update_validation)
-      allow(backend).to receive(:propose)
-    end
-
     it "calculates the proposal, setting the service as busy meanwhile" do
       expect(subject.service_status).to receive(:busy)
       expect(backend).to receive(:propose)
       expect(subject.service_status).to receive(:idle)
-
-      subject.propose
-    end
-
-    it "updates validation" do
-      expect(subject).to receive(:update_validation)
 
       subject.propose
     end
@@ -138,70 +133,6 @@ describe Agama::DBus::Software::Manager do
         "org.opensuse.Agama.Software1%%IsPackageInstalled", "NetworkManager"
       )
       expect(installed).to eq(true)
-    end
-  end
-
-  describe "#available_base_products" do
-    # testing product with translations
-    products = {
-      "Tumbleweed" => {
-        "name"         => "openSUSE Tumbleweed",
-        "description"  => "Original description",
-        "translations" => {
-          "description" => {
-            "cs" => "Czech translation",
-            "es" => "Spanish translation"
-          }
-        }
-      }
-    }
-
-    it "returns product ID and name" do
-      expect(backend).to receive(:products).and_return(products)
-
-      product = subject.available_base_products.first
-      expect(product[0]).to eq("Tumbleweed")
-      expect(product[1]).to eq("openSUSE Tumbleweed")
-    end
-
-    it "returns untranslated description when the language is not set" do
-      allow(ENV).to receive(:[]).with("LANG").and_return(nil)
-      expect(backend).to receive(:products).and_return(products)
-
-      product = subject.available_base_products.first
-      expect(product[2]["description"]).to eq("Original description")
-    end
-
-    it "returns Czech translation if locale is \"cs_CZ.UTF-8\"" do
-      allow(ENV).to receive(:[]).with("LANG").and_return("cs_CZ.UTF-8")
-      expect(backend).to receive(:products).and_return(products)
-
-      product = subject.available_base_products.first
-      expect(product[2]["description"]).to eq("Czech translation")
-    end
-
-    it "returns Czech translation if locale is \"cs\"" do
-      allow(ENV).to receive(:[]).with("LANG").and_return("cs")
-      expect(backend).to receive(:products).and_return(products)
-
-      product = subject.available_base_products.first
-      expect(product[2]["description"]).to eq("Czech translation")
-    end
-
-    it "return untranslated description when translation is not available" do
-      allow(ENV).to receive(:[]).with("LANG").and_return("cs_CZ.UTF-8")
-
-      # testing product without translations
-      untranslated = {
-        "Tumbleweed" => {
-          "name"        => "openSUSE Tumbleweed",
-          "description" => "Original description"
-        }
-      }
-      expect(backend).to receive(:products).and_return(untranslated)
-
-      product = subject.available_base_products.first
-      expect(product[2]["description"]).to eq("Original description")
     end
   end
 end

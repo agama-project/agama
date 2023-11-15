@@ -27,6 +27,7 @@ import { useInstallerClient } from "~/context/installer";
 import { Section, ValidationErrors } from "~/components/core";
 import PatternGroup from "./PatternGroup";
 import PatternItem from "./PatternItem";
+import { toValidationError } from "~/utils";
 import UsedSize from "./UsedSize";
 import { _ } from "~/i18n";
 
@@ -153,7 +154,7 @@ function PatternSelector() {
     const refresh = async () => {
       setSelected(await client.software.selectedPatterns());
       setUsed(await client.software.getUsedSpace());
-      setErrors(await client.software.getValidationErrors());
+      setErrors(await client.software.getIssues());
     };
 
     refresh();
@@ -166,7 +167,7 @@ function PatternSelector() {
     const loadData = async () => {
       setSelected(await client.software.selectedPatterns());
       setUsed(await client.software.getUsedSpace());
-      setErrors(await client.software.getValidationErrors());
+      setErrors(await client.software.getIssues());
       setPatterns(await client.software.patterns(true));
     };
 
@@ -205,11 +206,15 @@ function PatternSelector() {
   // if there is just a single error then the error is displayed directly instead of this summary
   const errorLabel = sprintf(_("%d errors"), errors.length);
 
+  // FIXME: ValidationErrors should be replaced by an equivalent component to show issues.
+  // Note that only the Users client uses the old Validation D-Bus interface.
+  const validationErrors = errors.map(toValidationError);
+
   return (
     <>
       <Section aria-label={_("Software summary and filter options")}>
         <UsedSize size={used} />
-        <ValidationErrors errors={errors} title={errorLabel} />
+        <ValidationErrors errors={validationErrors} title={errorLabel} />
         <SearchInput
           // TRANSLATORS: search field placeholder text
           placeholder={_("Search")}

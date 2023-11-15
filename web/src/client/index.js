@@ -30,7 +30,6 @@ import { UsersClient } from "./users";
 import phase from "./phase";
 import { QuestionsClient } from "./questions";
 import { NetworkClient } from "./network";
-import { IssuesClient } from "./issues";
 import cockpit from "../lib/cockpit";
 
 const BUS_ADDRESS_FILE = "/run/agama/bus.address";
@@ -38,20 +37,33 @@ const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
 
 /**
  * @typedef {object} InstallerClient
- * @property {LanguageClient} language - language client
- * @property {ManagerClient} manager - manager client
- * @property {Monitor} monitor - service monitor
- * @property {NetworkClient} network - network client
- * @property {SoftwareClient} software - software client
- * @property {StorageClient} storage - storage client
- * @property {UsersClient} users - users client
- * @property {QuestionsClient} questions - questions client
- * @property {IssuesClient} issues - issues client
+ * @property {LanguageClient} language - language client.
+ * @property {ManagerClient} manager - manager client.
+ * @property {Monitor} monitor - service monitor.
+ * @property {NetworkClient} network - network client.
+ * @property {SoftwareClient} software - software client.
+ * @property {StorageClient} storage - storage client.
+ * @property {UsersClient} users - users client.
+ * @property {QuestionsClient} questions - questions client.
+ * @property {() => Promise<Issues>} issues - issues from all contexts.
+ * @property {(handler: IssuesHandler) => (() => void)} onIssuesChange - registers a handler to run
+ *  when issues from any context change. It returns a function to deregister the handler.
  * @property {() => Promise<boolean>} isConnected - determines whether the client is connected
  * @property {(handler: () => void) => (() => void)} onDisconnect - registers a handler to run
  *   when the connection is lost. It returns a function to deregister the
  *   handler.
  */
+
+/**
+ * @typedef {import ("~/client/mixins").Issue} Issue
+ *
+ * @typedef {object} Issues
+ * @property {Issue[]} [product] - Issues from product.
+ * @property {Issue[]} [storage] - Issues from storage.
+ * @property {Issue[]} [software] - Issues from software.
+ *
+ * @typedef {(issues: Issues) => void} IssuesHandler
+*/
 
 /**
  * Creates the Agama client
@@ -67,7 +79,38 @@ const createClient = (address = "unix:path=/run/agama/bus") => {
   const storage = new StorageClient(address);
   const users = new UsersClient(address);
   const questions = new QuestionsClient(address);
-  const issues = new IssuesClient({ storage });
+
+  /**
+   * Gets all issues, grouping them by context.
+   *
+   * TODO: issues are requested by several components (e.g., overview sections, notifications
+   *  provider, issues page, storage page, etc). There should be an issues provider.
+   *
+   * @returns {Promise<Issues>}
+   */
+  const issues = async () => {
+    return {
+      product: await software.product.getIssues(),
+      storage: await storage.getIssues(),
+      software: await software.getIssues()
+    };
+  };
+
+  /**
+   * Registers a callback to be executed when issues change.
+   *
+   * @param {IssuesHandler} handler - Callback function.
+   * @return {() => void} - Function to deregister the callback.
+   */
+  const onIssuesChange = (handler) => {
+    const unsubscribeCallbacks = [];
+
+    unsubscribeCallbacks.push(software.product.onIssuesChange(i => handler({ product: i })));
+    unsubscribeCallbacks.push(storage.onIssuesChange(i => handler({ storage: i })));
+    unsubscribeCallbacks.push(software.onIssuesChange(i => handler({ software: i })));
+
+    return () => { unsubscribeCallbacks.forEach(cb => cb()) };
+  };
 
   const isConnected = async () => {
     try {
@@ -88,6 +131,7 @@ const createClient = (address = "unix:path=/run/agama/bus") => {
     users,
     questions,
     issues,
+    onIssuesChange,
     isConnected,
     onDisconnect: (handler) => monitor.onDisconnect(handler)
   };

@@ -30,6 +30,8 @@
     Requires:       open-iscsi
     Requires:       yast2-iscsi-client >= 4.5.7
     Requires:       yast2-users
+    # required for registration
+    Requires:       suseconnect-ruby-bindings
     # yast2 with ArchFilter
     Requires:       yast2 >= 4.5.20
     %ifarch s390 s390x
