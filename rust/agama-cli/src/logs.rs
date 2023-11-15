@@ -22,7 +22,7 @@ pub enum LogsCommands {
         #[clap(long, short = 'd')]
         /// Path to destination directory. Optionally with the archive file name at the end.
         /// An extension will be appended automatically depending on used compression.
-        dest: Option<PathBuf>,
+        destination: Option<PathBuf>,
     },
     /// List logs which will be collected
     List,
@@ -31,13 +31,13 @@ pub enum LogsCommands {
 /// Main entry point called from agama CLI main loop
 pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
     match subcommand {
-        LogsCommands::Store { verbose, dest } => {
+        LogsCommands::Store { verbose, destination } => {
             // feed internal options structure by what was received from user
             // for now we always use / add defaults if any
-            let dest = parse_destination(dest)?;
+            let destination = parse_destination(destination)?;
             let options = LogOptions {
                 verbose,
-                dest,
+                destination,
                 ..Default::default()
             };
 
@@ -51,27 +51,27 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
     }
 }
 
-/// Whatewer passed in dest formed into an absolute path with archive name
+/// Whatewer passed in destination formed into an absolute path with archive name
 ///
 /// # Arguments:
-/// * dest
+/// * destination
 ///     - if None then a default is returned
 ///     - if a path to a directory then a default file name for the archive will be appended to the
 ///     path
 ///     - if path with a file name then it is used as is for resulting archive, just extension will
 ///     be appended later on (depends on used compression)
-fn parse_destination(dest: Option<PathBuf>) -> Result<PathBuf, io::Error> {
+fn parse_destination(destination: Option<PathBuf>) -> Result<PathBuf, io::Error> {
     let default = PathBuf::from(DEFAULT_RESULT);
     let err = io::Error::new(io::ErrorKind::InvalidInput, "Invalid destination path");
 
-    match dest {
+    match destination {
         None => Ok(default),
-        Some(mut buff) => {
-            let path = buff.as_path();
+        Some(mut buffer) => {
+            let path = buffer.as_path();
 
             // existing directory -> append an archive name
             if path.is_dir() {
-                buff.push("agama-logs");
+                buffer.push("agama-logs");
             // a path with file name
             // sadly, is_some_and is unstable
             } else if path.parent().is_some() {
@@ -84,7 +84,7 @@ fn parse_destination(dest: Option<PathBuf>) -> Result<PathBuf, io::Error> {
                 Err(err)
             }
 
-            Ok(buff)
+            Ok(buffer)
         }
     }
 }
@@ -145,7 +145,7 @@ struct LogOptions {
     paths: Vec<String>,
     commands: Vec<(String, String)>,
     verbose: bool,
-    dest: PathBuf,
+    destination: PathBuf,
 }
 
 impl Default for LogOptions {
@@ -157,7 +157,7 @@ impl Default for LogOptions {
                 .map(|(cmd, name)| (cmd.to_string(), name.to_string()))
                 .collect(),
             verbose: false,
-            dest: PathBuf::from(DEFAULT_RESULT),
+            destination: PathBuf::from(DEFAULT_RESULT),
         }
     }
 }
@@ -380,12 +380,12 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
     let commands = options.commands;
     let paths = options.paths;
     let verbose = options.verbose;
-    let opt_dest = options.dest.into_os_string();
-    let dest = opt_dest.to_str().ok_or(io::Error::new(
+    let opt_dest = options.destination.into_os_string();
+    let destination = opt_dest.to_str().ok_or(io::Error::new(
         io::ErrorKind::InvalidInput,
         "Malformed destination path",
     ))?;
-    let result = format!("{}.{}", dest, DEFAULT_COMPRESSION.1);
+    let result = format!("{}.{}", destination, DEFAULT_COMPRESSION.1);
 
     showln(verbose, "Collecting Agama logs:");
 
