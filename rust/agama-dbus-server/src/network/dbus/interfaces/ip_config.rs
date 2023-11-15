@@ -10,13 +10,13 @@ use crate::network::{
 };
 use cidr::IpInet;
 use std::{net::IpAddr, sync::Arc};
-use tokio::sync::mpsc::Sender;
+use tokio::sync::mpsc::UnboundedSender;
 use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
 use zbus::dbus_interface;
 
 /// D-Bus interface for IPv4 and IPv6 settings
 pub struct Ip {
-    actions: Arc<Mutex<Sender<Action>>>,
+    actions: Arc<Mutex<UnboundedSender<Action>>>,
     connection: Arc<Mutex<NetworkConnection>>,
 }
 
@@ -25,7 +25,7 @@ impl Ip {
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `connection`: connection to expose over D-Bus.
-    pub fn new(actions: Sender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
+    pub fn new(actions: UnboundedSender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
             connection,
@@ -47,7 +47,6 @@ impl Ip {
         let actions = self.actions.lock().await;
         actions
             .send(Action::UpdateConnection(connection.clone()))
-            .await
             .unwrap();
         Ok(())
     }

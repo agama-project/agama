@@ -11,7 +11,7 @@ use crate::network::{
 
 use agama_lib::network::types::SSID;
 use std::sync::Arc;
-use tokio::sync::mpsc::Sender;
+use tokio::sync::mpsc::UnboundedSender;
 use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
 use zbus::{
     dbus_interface,
@@ -92,7 +92,7 @@ impl Device {
 ///
 /// It offers an API to query the connections collection.
 pub struct Connections {
-    actions: Arc<Mutex<Sender<Action>>>,
+    actions: Arc<Mutex<UnboundedSender<Action>>>,
     objects: Arc<Mutex<ObjectsRegistry>>,
 }
 
@@ -100,7 +100,7 @@ impl Connections {
     /// Creates a Connections interface object.
     ///
     /// * `objects`: Objects paths registry.
-    pub fn new(objects: Arc<Mutex<ObjectsRegistry>>, actions: Sender<Action>) -> Self {
+    pub fn new(objects: Arc<Mutex<ObjectsRegistry>>, actions: UnboundedSender<Action>) -> Self {
         Self {
             objects,
             actions: Arc::new(Mutex::new(actions)),
@@ -128,7 +128,6 @@ impl Connections {
         let actions = self.actions.lock().await;
         actions
             .send(Action::AddConnection(id.clone(), ty.try_into()?))
-            .await
             .unwrap();
         Ok(())
     }
@@ -151,7 +150,6 @@ impl Connections {
         let actions = self.actions.lock().await;
         actions
             .send(Action::RemoveConnection(id.to_string()))
-            .await
             .unwrap();
         Ok(())
     }
@@ -161,7 +159,7 @@ impl Connections {
     /// It includes adding, updating and removing connections as needed.
     pub async fn apply(&self) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock().await;
-        actions.send(Action::Apply).await.unwrap();
+        actions.send(Action::Apply).unwrap();
         Ok(())
     }
 
@@ -178,7 +176,7 @@ impl Connections {
 ///
 /// It offers an API to query a connection.
 pub struct Connection {
-    actions: Arc<Mutex<Sender<Action>>>,
+    actions: Arc<Mutex<UnboundedSender<Action>>>,
     connection: Arc<Mutex<NetworkConnection>>,
 }
 
@@ -187,7 +185,7 @@ impl Connection {
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `connection`: connection to expose over D-Bus.
-    pub fn new(actions: Sender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
+    pub fn new(actions: UnboundedSender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
             connection,
@@ -209,7 +207,6 @@ impl Connection {
         let actions = self.actions.lock().await;
         actions
             .send(Action::UpdateConnection(connection.clone()))
-            .await
             .unwrap();
         Ok(())
     }
@@ -242,7 +239,7 @@ impl Connection {
 
 /// D-Bus interface for Match settings
 pub struct Match {
-    actions: Arc<Mutex<Sender<Action>>>,
+    actions: Arc<Mutex<UnboundedSender<Action>>>,
     connection: Arc<Mutex<NetworkConnection>>,
 }
 
@@ -251,7 +248,7 @@ impl Match {
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `connection`: connection to expose over D-Bus.
-    pub fn new(actions: Sender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
+    pub fn new(actions: UnboundedSender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
             connection,
@@ -273,7 +270,6 @@ impl Match {
         let actions = self.actions.lock().await;
         actions
             .send(Action::UpdateConnection(connection.clone()))
-            .await
             .unwrap();
         Ok(())
     }
@@ -343,7 +339,7 @@ impl Match {
 
 /// D-Bus interface for wireless settings
 pub struct Wireless {
-    actions: Arc<Mutex<Sender<Action>>>,
+    actions: Arc<Mutex<UnboundedSender<Action>>>,
     connection: Arc<Mutex<NetworkConnection>>,
 }
 
@@ -352,7 +348,7 @@ impl Wireless {
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `connection`: connection to expose over D-Bus.
-    pub fn new(actions: Sender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
+    pub fn new(actions: UnboundedSender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
             connection,
@@ -380,7 +376,6 @@ impl Wireless {
         let connection = NetworkConnection::Wireless(connection.clone());
         actions
             .send(Action::UpdateConnection(connection))
-            .await
             .unwrap();
         Ok(())
     }

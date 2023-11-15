@@ -5,7 +5,7 @@ use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 use crate::network::{action::Action, dbus::interfaces, model::*};
 use log;
 use std::{collections::HashMap, sync::Arc};
-use tokio::sync::mpsc::Sender;
+use tokio::sync::mpsc::UnboundedSender;
 
 const CONNECTIONS_PATH: &str = "/org/opensuse/Agama1/Network/connections";
 const DEVICES_PATH: &str = "/org/opensuse/Agama1/Network/devices";
@@ -13,7 +13,7 @@ const DEVICES_PATH: &str = "/org/opensuse/Agama1/Network/devices";
 /// Handle the objects in the D-Bus tree for the network state
 pub struct Tree {
     connection: zbus::Connection,
-    actions: Sender<Action>,
+    actions: UnboundedSender<Action>,
     objects: Arc<Mutex<ObjectsRegistry>>,
 }
 
@@ -22,7 +22,7 @@ impl Tree {
     ///
     /// * `connection`: D-Bus connection to use.
     /// * `actions`: sending-half of a channel to send actions.
-    pub fn new(connection: zbus::Connection, actions: Sender<Action>) -> Self {
+    pub fn new(connection: zbus::Connection, actions: UnboundedSender<Action>) -> Self {
         Self {
             connection,
             actions,
