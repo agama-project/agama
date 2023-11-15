@@ -77,11 +77,11 @@ fn parse_destination(destination: Option<PathBuf>) -> Result<PathBuf, io::Error>
             } else if path.parent().is_some() {
                 // validate if parent directory realy exists
                 if !path.parent().unwrap().is_dir() {
-                    Err(err)
+                    return Err(err)
                 }
             // whatever else -> input error
             } else {
-                Err(err)
+                return Err(err)
             }
 
             Ok(buffer)
