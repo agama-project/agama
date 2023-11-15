@@ -75,8 +75,8 @@ function load_npm_cache() {
 
 # memory check, with not enough memory the system freezes
 RAM=$(grep "MemTotal:" /proc/meminfo | sed -e "s/MemTotal:[[:space:]]*\([0-9]\+\) kB/\\1/")
-# less than ~4GB RAM
-if [ "$RAM" -lt 4000000 ] && [ "$SKIP_MEM_CHECK" != "1" ]; then
+# less than ~2GB RAM
+if [ "$RAM" -lt 2000000 ] && [ "$SKIP_MEM_CHECK" != "1" ]; then
   echo >&2
   echo "ERROR: The system has too low memory ($RAM kB) for applying the update." >&2
   echo "The system could completely freeze and become unresponsive." >&2
