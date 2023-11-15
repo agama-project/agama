@@ -15,7 +15,7 @@ end users or testers.
 ## Patching from GitHub
 
 ```
-yupdate patch yast/agama master
+yupdate patch openSUSE/agama master
 ```
 
 You can replace the `master` branch with any branch containing a fix or a new feature.
@@ -38,6 +38,10 @@ a different port number.
 
 You can modify the update process with these environment variables:
 
+- `DEBUG=1` - to find more about what is going behind process. If it fails in
+  rake install see VERBOSE below.
+- `VERBOSE` - makes visible all commands and its output when doing rake
+  install. Useful to debug if yupdate failed.
 - `NPM_CACHE=1` - The installed NPM packages will be saved to a local cache
   and will be reused in the next run. This can speed up the patching process
   if you need to patch the installer several times. On the other hand this
