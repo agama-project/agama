@@ -2,8 +2,8 @@ name: "CI - Integration Tests"
 
 on:
   schedule:
-    # at 10:50 every day from Monday to Friday
-    - cron: "50 10 * * 1-5"
+    # at 9:50 UTC every day from Monday to Friday
+    - cron: "50 9 * * 1-5"
 
   # allow running manually
   workflow_dispatch:
