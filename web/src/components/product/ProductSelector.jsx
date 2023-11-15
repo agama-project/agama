@@ -23,32 +23,27 @@ import React from "react";
 import { Card, CardBody, Radio } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
-import { If } from "~/components/core";
 import { noop } from "~/utils";
 
 export default function ProductSelector({ value, products = [], onChange = noop }) {
+  if (products.length === 0) return <p>{_("No products available for selection")}</p>;
+
   const isSelected = (product) => product.id === value;
 
   return (
-    <If
-      condition={products.length === 0}
-      then={<p>{_("No products available for selection")}</p>}
-      else={
-        products.map((p) => (
-          <Card key={p.id} className={isSelected(p) && "selected-product"}>
-            <CardBody>
-              <Radio
-                id={p.id}
-                name="product"
-                label={p.name}
-                description={p.description}
-                isChecked={isSelected(p)}
-                onClick={() => onChange(p.id)}
-              />
-            </CardBody>
-          </Card>
-        ))
-      }
-    />
+    products.map((p) => (
+      <Card key={p.id} className={isSelected(p) && "selected-product"}>
+        <CardBody>
+          <Radio
+            id={p.id}
+            name="product"
+            label={p.name}
+            description={p.description}
+            isChecked={isSelected(p)}
+            onClick={() => onChange(p.id)}
+          />
+        </CardBody>
+      </Card>
+    ))
   );
 }
