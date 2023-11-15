@@ -24,19 +24,54 @@ require "agama/issue"
 
 shared_examples "issues" do
   before do
-    allow(dbus_object).to receive(:path).and_return("/org/opensuse/Agama/Test")
-    allow(dbus_object).to receive(:[]).with("org.opensuse.Agama1.Issues")
-      .and_return(issues_properties)
+    allow(service).to receive(:root).and_return(root_node)
+
+    allow(dbus_object1).to receive(:[]).with("org.opensuse.Agama1.Issues")
+      .and_return(issues_interface1)
+
+    allow(dbus_object3).to receive(:[]).with("org.opensuse.Agama1.Issues")
+      .and_return(issues_interface3)
+
+    allow(issues_interface1).to receive(:[]).with("All").and_return(issues1)
+    allow(issues_interface3).to receive(:[]).with("All").and_return(issues3)
   end
 
-  let(:issues_properties) { { "All" => issues } }
+  let(:root_node) do
+    instance_double(::DBus::Node, descendant_objects: [dbus_object1, dbus_object2, dbus_object3])
+  end
 
-  let(:issues) { [issue1, issue2] }
-  let(:issue1) { ["Issue 1", "Details 1", 1, 0] }
-  let(:issue2) { ["Issue 2", "Details 2", 2, 1] }
+  let(:dbus_object1) do
+    instance_double(::DBus::ProxyObject,
+      interfaces: ["org.opensuse.Agama1.Test", "org.opensuse.Agama1.Issues"])
+  end
+
+  let(:dbus_object2) do
+    instance_double(::DBus::ProxyObject, interfaces: ["org.opensuse.Agama1.Test"])
+  end
+
+  let(:dbus_object3) do
+    instance_double(::DBus::ProxyObject, interfaces: ["org.opensuse.Agama1.Issues"])
+  end
+
+  let(:issues_interface1) { instance_double(::DBus::ProxyObjectInterface) }
+
+  let(:issues_interface3) { instance_double(::DBus::ProxyObjectInterface) }
+
+  let(:issues1) do
+    [
+      ["Issue 1", "Details 1", 1, 0],
+      ["Issue 2", "Details 2", 2, 1]
+    ]
+  end
+
+  let(:issues3) do
+    [
+      ["Issue 3", "Details 3", 1, 0]
+    ]
+  end
 
   describe "#issues" do
-    it "returns the list of issues" do
+    it "returns the list of issues from all objects" do
       expect(subject.issues).to all(be_a(Agama::Issue))
 
       expect(subject.issues).to contain_exactly(
@@ -51,6 +86,12 @@ shared_examples "issues" do
           details:     "Details 2",
           source:      Agama::Issue::Source::CONFIG,
           severity:    Agama::Issue::Severity::ERROR
+        ),
+        an_object_having_attributes(
+          description: "Issue 3",
+          details:     "Details 3",
+          source:      Agama::Issue::Source::SYSTEM,
+          severity:    Agama::Issue::Severity::WARN
         )
       )
     end
@@ -58,15 +99,13 @@ shared_examples "issues" do
 
   describe "#errors?" do
     context "if there is any error" do
-      let(:issues) { [issue2] }
-
       it "returns true" do
         expect(subject.errors?).to eq(true)
       end
     end
 
     context "if there is no error" do
-      let(:issues) { [issue1] }
+      let(:issues1) { [] }
 
       it "returns false" do
         expect(subject.errors?).to eq(false)

@@ -34,9 +34,9 @@ const startInstallationFn = jest.fn();
 
 jest.mock("~/client");
 
-jest.mock("~/context/software", () => ({
-  ...jest.requireActual("~/context/software"),
-  useSoftware: () => {
+jest.mock("~/context/product", () => ({
+  ...jest.requireActual("~/context/product"),
+  useProduct: () => {
     return {
       products: mockProducts,
       selectedProduct: mockProduct
@@ -44,6 +44,7 @@ jest.mock("~/context/software", () => ({
   }
 }));
 
+jest.mock("~/components/overview/ProductSection", () => () => <div>Product Section</div>);
 jest.mock("~/components/overview/L10nSection", () => () => <div>Localization Section</div>);
 jest.mock("~/components/overview/StorageSection", () => () => <div>Storage Section</div>);
 jest.mock("~/components/overview/NetworkSection", () => () => <div>Network Section</div>);
@@ -68,9 +69,10 @@ beforeEach(() => {
 describe("when product is selected", () => {
   it("renders the Overview and the Install button", async () => {
     installerRender(<Overview />);
-    const title = screen.getByText(/openSUSE Tumbleweed/i);
+    const title = screen.getByText(/installation summary/i);
     expect(title).toBeInTheDocument();
 
+    await screen.findByText("Product Section");
     await screen.findByText("Localization Section");
     await screen.findByText("Network Section");
     await screen.findByText("Storage Section");

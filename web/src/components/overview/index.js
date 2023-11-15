@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,6 +22,7 @@
 export { default as Overview } from "./Overview";
 export { default as L10nSection } from "./L10nSection";
 export { default as NetworkSection } from "./NetworkSection";
+export { default as ProductSection } from "./ProductSection";
 export { default as SoftwareSection } from "./SoftwareSection";
 export { default as StorageSection } from "./StorageSection";
 export { default as UsersSection } from "./UsersSection";

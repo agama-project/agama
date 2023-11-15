@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,4 +28,5 @@ module Agama
 end
 
 require "agama/dbus/software/manager"
+require "agama/dbus/software/product"
 require "agama/dbus/software/proposal"

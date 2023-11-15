@@ -30,6 +30,7 @@ export { default as FormLabel } from "./FormLabel";
 export { default as FormValidationError } from "./FormValidationError";
 export { default as Fieldset } from "./Fieldset";
 export { default as Em } from "./Em";
+export { default as EmailInput } from "./EmailInput";
 export { default as If } from "./If";
 export { default as Installation } from "./Installation";
 export { default as InstallationFinished } from "./InstallationFinished";

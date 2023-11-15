@@ -20,20 +20,21 @@
  */
 
 import React, { useState } from "react";
-import { useSoftware } from "~/context/software";
+import { useProduct } from "~/context/product";
 import { Navigate } from "react-router-dom";
-
 import { Page, InstallButton } from "~/components/core";
 import {
   L10nSection,
   NetworkSection,
+  ProductSection,
   SoftwareSection,
   StorageSection,
   UsersSection
 } from "~/components/overview";
+import { _ } from "~/i18n";
 
 function Overview() {
-  const { selectedProduct } = useSoftware();
+  const { selectedProduct } = useProduct();
   const [showErrors, setShowErrors] = useState(false);
 
   if (selectedProduct === null) {
@@ -42,10 +43,12 @@ function Overview() {
 
   return (
     <Page
-      title={selectedProduct?.name}
-      icon="inventory_2"
+      // TRANSLATORS: page title
+      title={_("Installation Summary")}
+      icon="list_alt"
       action={<InstallButton onClick={() => setShowErrors(true)} />}
     >
+      <ProductSection />
       <L10nSection />
       <NetworkSection />
       <StorageSection showErrors />
