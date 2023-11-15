@@ -47,6 +47,7 @@ module Agama
             product.optional_packages = data[:optional_packages]
             product.mandatory_patterns = data[:mandatory_patterns]
             product.optional_patterns = data[:optional_patterns]
+            product.translations = attrs["translations"] || {}
           end
         end
       end

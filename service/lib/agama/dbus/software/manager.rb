@@ -149,31 +149,6 @@ module Agama
           backend.on_issues_change { issues_properties_changed }
         end
 
-        # find translated product description if available
-        # @param data [Hash] product configuration from the YAML file
-        # @return [String,nil] Translated product description (if available)
-        #   or the untranslated description, nil if not found
-        def localized_description(data)
-          translations = data["translations"]&.[]("description")
-          lang = ENV["LANG"] || ""
-
-          # no translations or language not set, return untranslated value
-          return data["description"] if !translations.is_a?(Hash) || lang.empty?
-
-          # remove the character encoding if present
-          lang = lang.split(".").first
-          # full matching (language + country)
-          return translations[lang] if translations[lang]
-
-          # remove the country part
-          lang = lang.split("_").first
-          # partial match (just the language)
-          return translations[lang] if translations[lang]
-
-          # fallback to original untranslated description
-          data["description"]
-        end
-
         USER_SELECTED_PATTERN = 0
         AUTO_SELECTED_PATTERN = 1
         def compute_patterns

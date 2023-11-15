@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2023] SUSE LLC
+# Copyright (c) [2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -38,10 +38,16 @@ describe Agama::Software::ProductBuilder do
   let(:products) do
     [
       {
-        "id"          => "Test1",
-        "name"        => "Product Test 1",
-        "description" => "This is a test product named Test 1",
-        "software"    => {
+        "id"           => "Test1",
+        "name"         => "Product Test 1",
+        "description"  => "This is a test product named Test 1",
+        "translations" => {
+          "description" => {
+            "cs" => "Czech",
+            "es" => "Spanish"
+          }
+        },
+        "software"     => {
           "installation_repositories" => [
             {
               "url"   => "https://repos/test1/x86_64/product/",
@@ -141,7 +147,8 @@ describe Agama::Software::ProductBuilder do
             mandatory_patterns: ["pattern1-1", "pattern1-2"],
             optional_patterns:  ["pattern1-3"],
             mandatory_packages: ["package1-1", "package1-2", "package1-3"],
-            optional_packages:  ["package1-5"]
+            optional_packages:  ["package1-5"],
+            translations:       { "description" => { "cs" => "Czech", "es" => "Spanish" } }
           ),
           an_object_having_attributes(
             id:                 "Test2",
@@ -153,7 +160,8 @@ describe Agama::Software::ProductBuilder do
             mandatory_patterns: ["pattern2-1"],
             optional_patterns:  [],
             mandatory_packages: [],
-            optional_packages:  []
+            optional_packages:  [],
+            translations:       {}
           )
         )
       end
@@ -183,7 +191,8 @@ describe Agama::Software::ProductBuilder do
             mandatory_patterns: ["pattern1-1", "pattern1-2"],
             optional_patterns:  ["pattern1-4"],
             mandatory_packages: ["package1-1", "package1-2", "package1-3"],
-            optional_packages:  ["package1-5"]
+            optional_packages:  ["package1-5"],
+            translations:       { "description" => { "cs" => "Czech", "es" => "Spanish" } }
           ),
           an_object_having_attributes(
             id:                 "Test2",
@@ -195,7 +204,8 @@ describe Agama::Software::ProductBuilder do
             mandatory_patterns: ["pattern2-1"],
             optional_patterns:  [],
             mandatory_packages: [],
-            optional_packages:  []
+            optional_packages:  [],
+            translations:       {}
           ),
           an_object_having_attributes(
             id:                 "Test3",
@@ -207,7 +217,8 @@ describe Agama::Software::ProductBuilder do
             mandatory_patterns: [],
             optional_patterns:  ["pattern3-1"],
             mandatory_packages: [],
-            optional_packages:  []
+            optional_packages:  [],
+            translations:       {}
           )
         )
       end
@@ -237,7 +248,8 @@ describe Agama::Software::ProductBuilder do
             mandatory_patterns: ["pattern1-1", "pattern1-2"],
             optional_patterns:  [],
             mandatory_packages: ["package1-1", "package1-2", "package1-4"],
-            optional_packages:  ["package1-5"]
+            optional_packages:  ["package1-5"],
+            translations:       { "description" => { "cs" => "Czech", "es" => "Spanish" } }
           ),
           an_object_having_attributes(
             id:                 "Test3",
@@ -249,7 +261,8 @@ describe Agama::Software::ProductBuilder do
             mandatory_patterns: [],
             optional_patterns:  [],
             mandatory_packages: [],
-            optional_packages:  []
+            optional_packages:  [],
+            translations:       {}
           )
         )
       end
@@ -279,7 +292,8 @@ describe Agama::Software::ProductBuilder do
             mandatory_patterns: ["pattern1-1", "pattern1-2"],
             optional_patterns:  [],
             mandatory_packages: ["package1-1", "package1-2"],
-            optional_packages:  ["package1-5"]
+            optional_packages:  ["package1-5"],
+            translations:       { "description" => { "cs" => "Czech", "es" => "Spanish" } }
           )
         )
       end
