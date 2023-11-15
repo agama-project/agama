@@ -31,7 +31,10 @@ pub enum LogsCommands {
 /// Main entry point called from agama CLI main loop
 pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
     match subcommand {
-        LogsCommands::Store { verbose, destination } => {
+        LogsCommands::Store {
+            verbose,
+            destination,
+        } => {
             // feed internal options structure by what was received from user
             // for now we always use / add defaults if any
             let destination = parse_destination(destination)?;
@@ -77,11 +80,11 @@ fn parse_destination(destination: Option<PathBuf>) -> Result<PathBuf, io::Error>
             } else if path.parent().is_some() {
                 // validate if parent directory realy exists
                 if !path.parent().unwrap().is_dir() {
-                    return Err(err)
+                    return Err(err);
                 }
             // whatever else -> input error
             } else {
-                return Err(err)
+                return Err(err);
             }
 
             Ok(buffer)
