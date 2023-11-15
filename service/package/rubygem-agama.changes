@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov 15 12:31:10 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add D-Bus API for registering a product (gh#openSUSE/agama#869).
+
+-------------------------------------------------------------------
 Thu Nov  2 14:00:01 UTC 2023 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Delegate TPM-based encryption to YaST (gh#openSUSE/agama#826)
