@@ -95,7 +95,7 @@ impl NetworkState {
     /// Additionally, it registers the connection to be removed when the changes are applied.
     pub fn update_controller_connection(
         &mut self,
-        conn: Connection,
+        mut conn: Connection,
         ports: Vec<String>,
     ) -> Result<(), NetworkStateError> {
         // let Some(old_conn) = self.get_connection_mut(conn.id()) else {
@@ -104,7 +104,7 @@ impl NetworkState {
         //
         let mut new_ports = vec![];
 
-        if let Connection::Bond(mut bond) = conn {
+        if let Connection::Bond(ref mut bond) = conn {
             // if let Connection::Bond(old_bond) = old_conn {
             // let moved_ports = old_bond.bond.ports.into_iter().filter(|p| ports.contains(&p.base().interface));
             //    for port in old_bond.bond.ports.iter() {
