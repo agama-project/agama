@@ -64,32 +64,26 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
 ///     - if path with a file name then it is used as is for resulting archive, just extension will
 ///     be appended later on (depends on used compression)
 fn parse_destination(destination: Option<PathBuf>) -> Result<PathBuf, io::Error> {
-    let default = PathBuf::from(DEFAULT_RESULT);
     let err = io::Error::new(io::ErrorKind::InvalidInput, "Invalid destination path");
+    let mut buffer = destination.unwrap_or(PathBuf::from(DEFAULT_RESULT));
+    let path = buffer.as_path();
 
-    match destination {
-        None => Ok(default),
-        Some(mut buffer) => {
-            let path = buffer.as_path();
-
-            // existing directory -> append an archive name
-            if path.is_dir() {
-                buffer.push("agama-logs");
-            // a path with file name
-            // sadly, is_some_and is unstable
-            } else if path.parent().is_some() {
-                // validate if parent directory realy exists
-                if !path.parent().unwrap().is_dir() {
-                    return Err(err);
-                }
-            // whatever else -> input error
-            } else {
-                return Err(err);
-            }
-
-            Ok(buffer)
+    // existing directory -> append an archive name
+    if path.is_dir() {
+        buffer.push("agama-logs");
+    // a path with file name
+    // sadly, is_some_and is unstable
+    } else if path.parent().is_some() {
+        // validate if parent directory realy exists
+        if !path.parent().unwrap().is_dir() {
+            return Err(err);
         }
     }
+
+    // buffer is <directory> or <directory>/<file_name> here
+    // and we know that directory tree which leads to the <file_name> is valid.
+    // <file_name> creation can still fail later on.
+    Ok(buffer)
 }
 
 const DEFAULT_COMMANDS: [(&str, &str); 3] = [
