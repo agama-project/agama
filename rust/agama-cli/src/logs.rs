@@ -34,7 +34,7 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
         LogsCommands::Store { verbose, dest } => {
             // feed internal options structure by what was received from user
             // for now we always use / add defaults if any
-            let dest = parse_dest(dest)?;
+            let dest = parse_destination(dest)?;
             let options = LogOptions {
                 verbose,
                 dest,
@@ -60,7 +60,7 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
 ///     path
 ///     - if path with a file name then it is used as is for resulting archive, just extension will
 ///     be appended later on (depends on used compression)
-fn parse_dest(dest: Option<PathBuf>) -> Result<PathBuf, io::Error> {
+fn parse_destination(dest: Option<PathBuf>) -> Result<PathBuf, io::Error> {
     let default = PathBuf::from(DEFAULT_RESULT);
     let err = io::Error::new(io::ErrorKind::InvalidInput, "Invalid destination path");
 
