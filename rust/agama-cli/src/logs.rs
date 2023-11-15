@@ -28,7 +28,7 @@ pub enum LogsCommands {
     List,
 }
 
-// main entry point called from agama CLI main loop
+/// Main entry point called from agama CLI main loop
 pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
     match subcommand {
         LogsCommands::Store { verbose, dest } => {
@@ -51,10 +51,15 @@ pub async fn run(subcommand: LogsCommands) -> anyhow::Result<()> {
     }
 }
 
-// Whatewer passed in dest formed into an absolute path with archive name
-// if dest is none then a default is returned
-// if dest is directory then a default file name for the archive will be appended
-// if dest is path with a file name then it is used as is a name for resulting archive
+/// Whatewer passed in dest formed into an absolute path with archive name
+///
+/// # Arguments:
+/// * dest
+///     - if None then a default is returned
+///     - if a path to a directory then a default file name for the archive will be appended to the
+///     path
+///     - if path with a file name then it is used as is for resulting archive, just extension will
+///     be appended later on (depends on used compression)
 fn parse_dest(dest: Option<PathBuf>) -> Result<PathBuf, io::Error> {
     let default = PathBuf::from(DEFAULT_RESULT);
     let err = io::Error::new(io::ErrorKind::InvalidInput, "Invalid destination path");
@@ -119,7 +124,7 @@ const DEFAULT_RESULT: &str = "/tmp/agama_logs";
 const DEFAULT_COMPRESSION: (&str, &str) = ("bzip2", "tar.bz2");
 const DEFAULT_TMP_DIR: &str = "agama-logs";
 
-// A wrapper around println which shows (or not) the text depending on the boolean variable
+/// A wrapper around println which shows (or not) the text depending on the boolean variable
 fn showln(show: bool, text: &str) {
     if !show {
         return;
@@ -128,7 +133,7 @@ fn showln(show: bool, text: &str) {
     println!("{}", text);
 }
 
-// A wrapper around println which shows (or not) the text depending on the boolean variable
+/// A wrapper around println which shows (or not) the text depending on the boolean variable
 fn show(show: bool, text: &str) {
     if !show {
         return;
@@ -137,8 +142,8 @@ fn show(show: bool, text: &str) {
     print!("{}", text);
 }
 
-// Configurable parameters of the "agama logs" which can be
-// set by user when calling a (sub)command
+/// Configurable parameters of the "agama logs" which can be
+/// set by user when calling a (sub)command
 struct LogOptions {
     paths: Vec<String>,
     commands: Vec<(String, String)>,
@@ -160,7 +165,7 @@ impl Default for LogOptions {
     }
 }
 
-// Struct for log represented by a file
+/// Struct for log represented by a file
 struct LogPath {
     // log source
     src_path: String,
@@ -178,7 +183,7 @@ impl LogPath {
     }
 }
 
-// Struct for log created on demand by a command
+/// Struct for log created on demand by a command
 struct LogCmd {
     // command which stdout / stderr is logged
     cmd: String,
@@ -278,8 +283,8 @@ impl LogItem for LogCmd {
     }
 }
 
-// Collect existing / requested paths which should already exist in the system.
-// Turns them into list of log sources
+/// Collect existing / requested paths which should already exist in the system.
+/// Turns them into list of log sources
 fn paths_to_log_sources(paths: &Vec<String>, tmp_dir: &TempDir) -> Vec<Box<dyn LogItem>> {
     let mut log_sources: Vec<Box<dyn LogItem>> = Vec::new();
 
@@ -293,7 +298,7 @@ fn paths_to_log_sources(paths: &Vec<String>, tmp_dir: &TempDir) -> Vec<Box<dyn L
     log_sources
 }
 
-// Some info can be collected via particular commands only, turn it into log sources
+/// Some info can be collected via particular commands only, turn it into log sources
 fn cmds_to_log_sources(
     commands: &Vec<(String, String)>,
     tmp_dir: &TempDir,
@@ -311,7 +316,7 @@ fn cmds_to_log_sources(
     log_sources
 }
 
-// Compress given directory into a tar archive
+/// Compress given directory into a tar archive
 fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
     let compression = DEFAULT_COMPRESSION.0;
     let tmp_path = tmp_dir
@@ -349,8 +354,8 @@ fn compress_logs(tmp_dir: &TempDir, result: &String) -> io::Result<()> {
     }
 }
 
-// Sets the archive owner to root:root. Also sets the file permissions to read/write for the
-// owner only.
+/// Sets the archive owner to root:root. Also sets the file permissions to read/write for the
+/// owner only.
 fn set_archive_permissions(archive: &String) -> io::Result<()> {
     let attr = fs::metadata(archive)?;
     let mut permissions = attr.permissions();
@@ -368,7 +373,7 @@ fn set_archive_permissions(archive: &String) -> io::Result<()> {
     Ok(())
 }
 
-// Handler for the "agama logs store" subcommand
+/// Handler for the "agama logs store" subcommand
 fn store(options: LogOptions) -> Result<(), io::Error> {
     if !Uid::effective().is_root() {
         panic!("No Root, no logs. Sorry.");
@@ -423,7 +428,7 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
     compress_logs(&tmp_dir, &result)
 }
 
-// Handler for the "agama logs list" subcommand
+/// Handler for the "agama logs list" subcommand
 fn list(options: LogOptions) {
     for list in [
         ("Log paths: ", options.paths),
