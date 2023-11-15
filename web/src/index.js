@@ -37,7 +37,8 @@ import App from "~/App";
 import Main from "~/Main";
 import DevServerWrapper from "~/DevServerWrapper";
 import { Overview } from "~/components/overview";
-import { ProductSelectionPage, SoftwarePage } from "~/components/software";
+import { ProductPage, ProductSelectionPage } from "~/components/product";
+import { SoftwarePage } from "~/components/software";
 import { ProposalPage as StoragePage, ISCSIPage, DASDPage, ZFCPPage } from "~/components/storage";
 import { UsersPage } from "~/components/users";
 import { L10nPage } from "~/components/l10n";
@@ -76,6 +77,7 @@ root.render(
             <Route path="/" element={<Main />}>
               <Route index element={<Overview />} />
               <Route path="/overview" element={<Overview />} />
+              <Route path="/product" element={<ProductPage />} />
               <Route path="/l10n" element={<L10nPage />} />
               <Route path="/software" element={<SoftwarePage />} />
               <Route path="/storage" element={<StoragePage />} />

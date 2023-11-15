@@ -19,34 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-// @ts-check
-
-import React from "react";
-import { InstallerClientProvider } from "./installer";
-import { L10nProvider } from "./l10n";
-import { ProductProvider } from "./product";
-import { NotificationProvider } from "./notification";
-
-/**
- * Combines all application providers.
- *
- * @param {object} props
- * @param {React.ReactNode} [props.children] - content to display within the provider.
- */
-function AgamaProviders({ children }) {
-  return (
-    <InstallerClientProvider>
-      <L10nProvider>
-        <ProductProvider>
-          <NotificationProvider>
-            {children}
-          </NotificationProvider>
-        </ProductProvider>
-      </L10nProvider>
-    </InstallerClientProvider>
-  );
-}
-
-export {
-  AgamaProviders
-};
+export { default as ProductPage } from "./ProductPage";
+export { default as ProductRegistrationForm } from "./ProductRegistrationForm";
+export { default as ProductSelectionPage } from "./ProductSelectionPage";
+export { default as ProductSelector } from "./ProductSelector";

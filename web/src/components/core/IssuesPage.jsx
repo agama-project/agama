@@ -21,17 +21,17 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 
-import { HelperText, HelperTextItem, Skeleton } from "@patternfly/react-core";
+import { HelperText, HelperTextItem } from "@patternfly/react-core";
 
 import { partition, useCancellablePromise } from "~/utils";
-import { If, Page, Section } from "~/components/core";
+import { If, Page, Section, SectionSkeleton } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
 import { useNotification } from "~/context/notification";
 import { _ } from "~/i18n";
 
 /**
- * Renders an issue
+ * Item representing an issue.
  * @component
  *
  * @param {object} props
@@ -58,54 +58,68 @@ const IssueItem = ({ issue }) => {
 };
 
 /**
- * Generates a specific section with issues
+ * Generates issue items sorted by severity.
  * @component
  *
  * @param {object} props
  * @param {import ("~/client/mixins").Issue[]} props.issues
- * @param {object} props.props
  */
-const IssuesSection = ({ issues, ...props }) => {
-  if (issues.length === 0) return null;
-
+const IssueItems = ({ issues = [] }) => {
   const sortedIssues = partition(issues, i => i.severity === "error").flat();
 
-  const issueItems = sortedIssues.map((issue, index) => {
+  return sortedIssues.map((issue, index) => {
     return <IssueItem key={`issue-${index}`} issue={issue} />;
   });
-
-  return (
-    <Section { ...props }>
-      {issueItems}
-    </Section>
-  );
 };
 
 /**
- * Generates the sections with issues
+ * Generates the sections with issues.
  * @component
  *
  * @param {object} props
  * @param {import ("~/client/issues").ClientsIssues} props.issues
  */
 const IssuesSections = ({ issues }) => {
+  const productIssues = issues.product || [];
+  const storageIssues = issues.storage || [];
+  const softwareIssues = issues.software || [];
+
   return (
-    <IssuesSection
-      key="storage-issues"
-      title="Storage"
-      icon="hard_drive"
-      issues={issues.storage || []}
-    />
+    <>
+      <If
+        condition={productIssues.length > 0}
+        then={
+          <Section key="product-issues" title={_("Product")} icon="inventory_2">
+            <IssueItems issues={productIssues} />
+          </Section>
+        }
+      />
+      <If
+        condition={storageIssues.length > 0}
+        then={
+          <Section key="storage-issues" title={_("Storage")} icon="hard_drive">
+            <IssueItems issues={storageIssues} />
+          </Section>
+        }
+      />
+      <If
+        condition={softwareIssues.length > 0}
+        then={
+          <Section key="software-issues" title={_("Software")} icon="apps">
+            <IssueItems issues={softwareIssues} />
+          </Section>
+        }
+      />
+    </>
   );
 };
 
 /**
- * Generates the content for each section with issues. If there are no issues, then a success
- * message is shown.
+ * Generates sections with issues. If there are no issues, then a success message is shown.
  * @component
  *
  * @param {object} props
- * @param {import ("~/client/issues").ClientsIssues} props.issues
+ * @param {import ("~/client").Issues} props.issues
  */
 const IssuesContent = ({ issues }) => {
   const NoIssues = () => {
@@ -130,28 +144,32 @@ const IssuesContent = ({ issues }) => {
 };
 
 /**
- * Page to show all issues per section
+ * Page to show all issues.
  * @component
  */
 export default function IssuesPage() {
   const [isLoading, setIsLoading] = useState(true);
-  const [issues, setIssues] = useState({});
-  const { issues: client } = useInstallerClient();
+  const [issues, setIssues] = useState();
+  const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const [, updateNotification] = useNotification();
+  const [notification, updateNotification] = useNotification();
 
-  const loadIssues = useCallback(async () => {
+  const load = useCallback(async () => {
     setIsLoading(true);
-    const allIssues = await cancellablePromise(client.getAll());
-    setIssues(allIssues);
+    const issues = await cancellablePromise(client.issues());
     setIsLoading(false);
-    updateNotification({ issues: false });
-  }, [client, cancellablePromise, setIssues, setIsLoading, updateNotification]);
+    return issues;
+  }, [client, cancellablePromise, setIsLoading]);
+
+  const update = useCallback((issues) => {
+    setIssues(current => ({ ...current, ...issues }));
+    if (notification.issues) updateNotification({ issues: false });
+  }, [notification, setIssues, updateNotification]);
 
   useEffect(() => {
-    loadIssues();
-    return client.onIssuesChange(loadIssues);
-  }, [client, loadIssues]);
+    load().then(update);
+    return client.onIssuesChange(update);
+  }, [client, load, update]);
 
   return (
     <Page
@@ -163,7 +181,7 @@ export default function IssuesPage() {
     >
       <If
         condition={isLoading}
-        then={<Skeleton />}
+        then={<SectionSkeleton numRows={4} />}
         else={<IssuesContent issues={issues} />}
       />
     </Page>

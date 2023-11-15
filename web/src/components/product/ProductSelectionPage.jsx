@@ -21,47 +21,36 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useInstallerClient } from "~/context/installer";
-import { useSoftware } from "~/context/software";
+import { Button, Form, FormGroup } from "@patternfly/react-core";
+
 import { _ } from "~/i18n";
-
-import {
-  Button,
-  Card,
-  CardBody,
-  Form,
-  FormGroup,
-  Radio
-} from "@patternfly/react-core";
-
 import { Icon, Loading } from "~/components/layout";
+import { ProductSelector } from "~/components/product";
 import { Title, PageIcon, MainActions } from "~/components/layout/Layout";
+import { useInstallerClient } from "~/context/installer";
+import { useProduct } from "~/context/product";
 
 function ProductSelectionPage() {
-  const client = useInstallerClient();
+  const { manager, software } = useInstallerClient();
   const navigate = useNavigate();
-  const { products, selectedProduct } = useSoftware();
-  const previous = selectedProduct?.id;
-  const [selected, setSelected] = useState(selectedProduct?.id);
+  const { products, selectedProduct } = useProduct();
+  const [newProductId, setNewProductId] = useState(selectedProduct?.id);
 
   useEffect(() => {
     // TODO: display a notification in the UI to emphasizes that
     // selected product has changed
-    return client.software.onProductChange(() => navigate("/"));
-  }, [client.software, navigate]);
+    return software.product.onChange(() => navigate("/"));
+  }, [software, navigate]);
 
-  const isSelected = p => p.id === selected;
-
-  const accept = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    if (selected === previous) {
-      navigate("/");
-      return;
+
+    if (newProductId !== selectedProduct?.id) {
+      // TODO: handle errors
+      await software.product.select(newProductId);
+      manager.startProbing();
     }
 
-    // TODO: handle errors
-    await client.software.selectProduct(selected);
-    client.manager.startProbing();
     navigate("/");
   };
 
@@ -69,40 +58,20 @@ function ProductSelectionPage() {
     <Loading text={_("Loading available products, please wait...")} />
   );
 
-  const buildOptions = () => {
-    const options = products.map((p) => (
-      <Card key={p.id} className={isSelected(p) && "selected-product"}>
-        <CardBody>
-          <Radio
-            id={p.id}
-            name="product"
-            label={p.name}
-            description={p.description}
-            isChecked={isSelected(p)}
-            onClick={() => setSelected(p.id)}
-          />
-        </CardBody>
-      </Card>
-    ));
-
-    return options;
-  };
-
   return (
     <>
       {/* TRANSLATORS: page header */}
       <Title>{_("Product selection")}</Title>
       <PageIcon><Icon name="home_storage" /></PageIcon>
       <MainActions>
-        <Button size="lg" variant="primary" form="product-selector" type="submit">
+        <Button size="lg" variant="primary" form="productSelectionForm" type="submit">
           {/* TRANSLATORS: button label */}
           {_("Select")}
         </Button>
       </MainActions>
-
-      <Form id="product-selector" onSubmit={accept}>
+      <Form id="productSelectionForm" onSubmit={onSubmit}>
         <FormGroup isStack label={_("Choose a product")} role="radiogroup">
-          {buildOptions()}
+          <ProductSelector value={newProductId} products={products} onChange={setNewProductId} />
         </FormGroup>
       </Form>
     </>

@@ -191,7 +191,7 @@ describe Agama::Software::Manager do
       stub_const("Agama::Software::Manager::REPOS_DIR", repos_dir)
       stub_const("Agama::Software::Manager::REPOS_BACKUP", backup_repos_dir)
       FileUtils.mkdir_p(repos_dir)
-      subject.select_product("ALP-Dolomite")
+      subject.select_product("Tumbleweed")
     end
 
     after do
@@ -218,7 +218,7 @@ describe Agama::Software::Manager do
     end
 
     it "registers the repository from config" do
-      expect(repositories).to receive(:add).with(/Dolomite/)
+      expect(repositories).to receive(:add).with(/tumbleweed/)
       expect(repositories).to receive(:load)
       subject.probe
     end

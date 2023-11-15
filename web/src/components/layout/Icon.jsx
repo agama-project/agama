@@ -44,6 +44,7 @@ import HomeStorage from "@icons/home_storage.svg?component";
 import Info from "@icons/info.svg?component";
 import Inventory from "@icons/inventory_2.svg?component";
 import Lan from "@icons/lan.svg?component";
+import ListAlt from "@icons/list_alt.svg?component";
 import Lock from "@icons/lock.svg?component";
 import ManageAccounts from "@icons/manage_accounts.svg?component";
 import Menu from "@icons/menu.svg?component";
@@ -97,6 +98,7 @@ const icons = {
   inventory_2: Inventory,
   lan: Lan,
   loading: Loading,
+  list_alt: ListAlt,
   lock: Lock,
   manage_accounts: ManageAccounts,
   menu: Menu,
