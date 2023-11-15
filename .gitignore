@@ -1,2 +1,3 @@
 .log/
 .yardoc/
+.vscode/tasks.json

@@ -228,6 +228,7 @@ class ProposalManager {
    * @property {string} bootDevice
    * @property {string} encryptionPassword
    * @property {boolean} lvm
+   * @property {string} spacePolicy
    * @property {string[]} systemVGDevices
    * @property {Volume[]} volumes
    *
@@ -324,6 +325,7 @@ class ProposalManager {
         settings: {
           bootDevice: proxy.BootDevice,
           lvm: proxy.LVM,
+          spacePolicy: proxy.SpacePolicy,
           systemVGDevices: proxy.SystemVGDevices,
           encryptionPassword: proxy.EncryptionPassword,
           volumes: proxy.Volumes.map(this.buildVolume),
@@ -341,7 +343,7 @@ class ProposalManager {
    * @param {ProposalSettings} settings
    * @returns {Promise<number>} 0 on success, 1 on failure
    */
-  async calculate({ bootDevice, encryptionPassword, lvm, systemVGDevices, volumes }) {
+  async calculate({ bootDevice, encryptionPassword, lvm, spacePolicy, systemVGDevices, volumes }) {
     const dbusVolume = (volume) => {
       return removeUndefinedCockpitProperties({
         MountPath: { t: "s", v: volume.mountPath },
@@ -358,6 +360,7 @@ class ProposalManager {
       BootDevice: { t: "s", v: bootDevice },
       EncryptionPassword: { t: "s", v: encryptionPassword },
       LVM: { t: "b", v: lvm },
+      SpacePolicy: { t: "s", v: spacePolicy },
       SystemVGDevices: { t: "as", v: systemVGDevices },
       Volumes: { t: "aa{sv}", v: volumes?.map(dbusVolume) }
     });

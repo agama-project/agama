@@ -28,6 +28,7 @@ import {
 } from "@patternfly/react-core";
 
 import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import { DeviceList, DeviceSelector, ProposalVolumes } from "~/components/storage";
 import { deviceLabel } from '~/components/storage/utils';
@@ -510,6 +511,162 @@ const EncryptionPasswordField = ({
 };
 
 /**
+ * Form for configuring the space policy.
+ * @component
+ *
+ * @param {object} props
+ * @param {string} props.id - Form ID.
+ * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
+ * @param {onSubmitFn} [props.onSubmit=noop] - On submit callback.
+ *
+ * @callback onSubmitFn
+ * @param {string} policy - Name of the selected policy.
+ */
+const SpacePolicySettingsForm = ({
+  id,
+  settings,
+  onSubmit: onSubmitProp = noop
+}) => {
+  const [spacePolicy, setSpacePolicy] = useState(settings);
+
+  const selectDelete = () => {
+    setSpacePolicy("delete");
+  };
+
+  const selectResize = () => {
+    setSpacePolicy("resize");
+  };
+
+  const selectKeep = () => {
+    setSpacePolicy("keep");
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    onSubmitProp(spacePolicy);
+  };
+
+  return (
+    <Form id={id} onSubmit={onSubmit}>
+      <div className="split">
+        <span>{_("Policy to make enough free space")}</span>
+        <ToggleGroup isCompact>
+          <ToggleGroupItem
+            text={_("Delete Anything")}
+            buttonId="deletePolicy"
+            isSelected={spacePolicy === "delete"}
+            onClick={selectDelete}
+          />
+          <ToggleGroupItem
+            text={_("Resize Only")}
+            buttonId="resizePolicy"
+            isSelected={spacePolicy === "resize"}
+            onClick={selectResize}
+          />
+          <ToggleGroupItem
+            text={_("Keep Existing")}
+            buttonId="keepPolicy"
+            isSelected={spacePolicy === "keep"}
+            onClick={selectKeep}
+          />
+        </ToggleGroup>
+      </div>
+    </Form>
+  );
+};
+
+/**
+ * Allows to select SpacePolicy.
+ * @component
+ *
+ * @param {object} props
+ * @param {ProposalSettings} props.settings - Settings used for calculating a proposal.
+ * @param {boolean} [props.isLoading=false] - Whether to show the selector as loading.
+ * @param {onChangeFn} [props.onChange=noop] - On change callback.
+ *
+ * @callback onChangeFn
+ * @param {string} policy
+ */
+const SpacePolicyField = ({
+  settings,
+  isLoading = false,
+  onChange = noop
+}) => {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [spacePolicy, setSpacePolicy] = useState(settings.spacePolicy);
+
+  const openForm = () => setIsFormOpen(true);
+
+  const closeForm = () => setIsFormOpen(false);
+
+  const onSubmitForm = (policy) => {
+    onChange(policy);
+    setSpacePolicy(policy);
+    closeForm();
+  };
+
+  const SpacePolicySettingsButton = () => {
+    return (
+      <Tooltip
+        content={_("Configure the Space Policy")}
+        entryDelay={400}
+        exitDelay={50}
+        position="right"
+      >
+        <button aria-label={_("Space Policy settings")} className="plain-control" onClick={openForm}>
+          <Icon name="tune" size={24} />
+        </button>
+      </Tooltip>
+    );
+  };
+
+  if (isLoading) return <Skeleton width="25%" />;
+
+  let text = "";
+  switch (spacePolicy) {
+    case "delete":
+      text = _("Delete everything");
+      break;
+    case "resize":
+      text = _("Resize as needed");
+      break;
+    case "keep":
+      text = _("Keep existing stuff");
+      break;
+    default:
+      console.log("Unsupported value " + spacePolicy);
+  }
+  const value_text = sprintf(_("Policy to make free space: %s"), text);
+
+  return (
+    <div className="split">
+      {value_text}
+      <SpacePolicySettingsButton />
+      <Popup
+        aria-label={_("Space Policy settings")}
+        title={_("Space Policy")}
+        isOpen={isFormOpen}
+      >
+        <SpacePolicySettingsForm
+          id="spacePolicySettingsForm"
+          settings={spacePolicy}
+          onSubmit={onSubmitForm}
+        />
+        <Popup.Actions>
+          <Popup.Confirm
+            form="spacePolicySettingsForm"
+            type="submit"
+          >
+            {_("Accept")}
+          </Popup.Confirm>
+          <Popup.Cancel onClick={closeForm} />
+        </Popup.Actions>
+      </Popup>
+    </div>
+  );
+};
+
+/**
  * Section for editing the proposal settings
  * @component
  *
@@ -546,6 +703,10 @@ export default function ProposalSettingsSection({
     onChange({ encryptionPassword: password });
   };
 
+  const changeSpacePolicy = (policy) => {
+    onChange({ spacePolicy: policy });
+  };
+
   const changeVolumes = (volumes) => {
     onChange({ volumes });
   };
@@ -573,6 +734,11 @@ export default function ProposalSettingsSection({
         isChecked={encryption}
         isLoading={settings.encryptionPassword === undefined}
         onChange={changeEncryption}
+      />
+      <SpacePolicyField
+        settings={settings}
+        isLoading={settings.spacePolicy === undefined}
+        onChange={changeSpacePolicy}
       />
       <ProposalVolumes
         volumes={settings.volumes || []}
