@@ -68,14 +68,14 @@ describe("NetworkPage", () => {
   it("renders section for wired connections", async () => {
     installerRender(<NetworkPage />);
     const section = await screen.findByRole("region", { name: "Wired networks" });
-    within(section).getByText("Wired 1");
+    await within(section).findByText("Wired 1");
     within(section).getByText("192.168.122.20/24");
   });
 
   it("renders section for WiFi connections", async () => {
     installerRender(<NetworkPage />);
     const section = await screen.findByRole("region", { name: "WiFi networks" });
-    within(section).getByText("WiFi 1");
+    await within(section).findByText("WiFi 1");
     within(section).getByText("192.168.69.200/24");
   });
 
@@ -88,7 +88,7 @@ describe("NetworkPage", () => {
       installerRender(<NetworkPage />);
 
       const section = await screen.findByRole("region", { name: "Wired networks" });
-      within(section).getByText("No wired connections found");
+      await within(section).findByText("No wired connections found");
     });
   });
 
@@ -101,7 +101,7 @@ describe("NetworkPage", () => {
       installerRender(<NetworkPage />);
 
       const section = await screen.findByRole("region", { name: "WiFi networks" });
-      within(section).getByText("No WiFi connections found");
+      await within(section).findByText("No WiFi connections found");
     });
 
     describe("and WiFi scan is supported", () => {
@@ -113,7 +113,7 @@ describe("NetworkPage", () => {
         installerRender(<NetworkPage />);
 
         const section = await screen.findByRole("region", { name: "WiFi networks" });
-        within(section).getByRole("button", { name: "Connect to a Wi-Fi network" });
+        await within(section).findByRole("button", { name: "Connect to a Wi-Fi network" });
       });
 
       it("opens the WiFi selector dialog when user clicks for scanning WiFi networks", async () => {
@@ -121,7 +121,7 @@ describe("NetworkPage", () => {
         const link = await screen.findByRole("button", { name: "Connect to a Wi-Fi network" });
         await user.click(link);
         const wifiDialog = await screen.findByRole("dialog");
-        within(wifiDialog).getByText("Connect to a Wi-Fi network");
+        await within(wifiDialog).findByText("Connect to a Wi-Fi network");
       });
     });
 

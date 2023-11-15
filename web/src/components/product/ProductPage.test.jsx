@@ -180,7 +180,7 @@ describe("when the services are busy", () => {
     installerRender(<ProductPage />);
 
     const selectButton = await screen.findByRole("button", { name: "Change product" });
-    const registerButton = screen.getByRole("button", { name: "Register" });
+    const registerButton = await screen.findByRole("button", { name: "Register" });
 
     expect(selectButton).toHaveAttribute("disabled");
     expect(registerButton).toHaveAttribute("disabled");

@@ -21,8 +21,6 @@
 
 import React from "react";
 import { createRoot } from "react-dom/client";
-import "core-js/stable";
-import "regenerator-runtime/runtime";
 
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { AgamaProviders } from "~/context/agama";

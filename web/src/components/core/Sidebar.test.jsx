@@ -148,7 +148,7 @@ describe("if there are issues", () => {
   it("includes a notification mark", async () => {
     installerRender(withNotificationProvider(<Sidebar />));
     const link = await screen.findByLabelText(/Show/i);
-    within(link).getByRole("status", { name: /New issues/ });
+    await within(link).findByRole("status", { name: /New issues/ });
   });
 });
 
