@@ -72,22 +72,19 @@ fn parse_dest(dest: Option<PathBuf>) -> Result<PathBuf, io::Error> {
             // existing directory -> append an archive name
             if path.is_dir() {
                 buff.push("agama-logs");
-                Ok(buff)
             // a path with file name
             // sadly, is_some_and is unstable
             } else if path.parent().is_some() {
                 // validate if parent directory realy exists
                 if !path.parent().unwrap().is_dir() {
                     Err(err)
-                } else {
-                    // try to validate the file name somehow?
-                    // if file exists, it will be overwritten
-                    Ok(buff)
                 }
             // whatever else -> input error
             } else {
                 Err(err)
             }
+
+            Ok(buff)
         }
     }
 }
