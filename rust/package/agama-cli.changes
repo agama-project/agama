@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov 15 12:35:32 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Adapt to changes in software D-Bus API (gh#openSUSE/agama#869).
+
+-------------------------------------------------------------------
 Mon Oct 23 14:43:59 UTC 2023 - Michal Filka <mfilka@suse.com>
 
 - Improved "agama logs store" (gh#openSUSE/agama#812)
