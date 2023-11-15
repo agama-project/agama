@@ -30,22 +30,22 @@ module Agama
 
       # Name of the product to be display.
       #
-      # @return [String]
+      # @return [String, nil]
       attr_accessor :display_name
 
       # Description of the product.
       #
-      # @return [String]
+      # @return [String, nil]
       attr_accessor :description
 
       # Internal name of the product. This is relevant for registering the product.
       #
-      # @return [String]
+      # @return [String, nil]
       attr_accessor :name
 
       # Version of the product. This is relevant for registering the product.
       #
-      # @return [String] E.g., "1.0".
+      # @return [String, nil] E.g., "1.0".
       attr_accessor :version
 
       # List of repositories.
@@ -73,6 +73,19 @@ module Agama
       # @return [Array<String>]
       attr_accessor :optional_patterns
 
+      # Product translations.
+      #
+      # @example
+      #   product.translations #=>
+      #   {
+      #     "description" => {
+      #       "cs" => "Czech translation",
+      #       "es" => "Spanish translation"
+      #   }
+      #
+      # @return [Hash<String, Hash<String, String>>]
+      attr_accessor :translations
+
       # @param id [string] Product id.
       def initialize(id)
         @id = id
@@ -81,6 +94,34 @@ module Agama
         @optional_packages = []
         @mandatory_patterns = []
         @optional_patterns = []
+        @translations = {}
+      end
+
+      # Localized product description.
+      #
+      # If there is no translation for the current language, then the untranslated description is
+      # used.
+      #
+      # @return [String, nil]
+      def localized_description
+        translations = self.translations["description"]
+        lang = ENV["LANG"]
+
+        # No translations or language not set, return untranslated value.
+        return description unless translations && lang
+
+        # Remove the character encoding if present.
+        lang = lang.split(".").first
+        # Full matching (language + country)
+        return translations[lang] if translations[lang]
+
+        # Remove the country part.
+        lang = lang.split("_").first
+        # Partial match (just the language).
+        return translations[lang] if translations[lang]
+
+        # Fallback to original untranslated description.
+        description
       end
     end
   end

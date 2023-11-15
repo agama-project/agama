@@ -53,7 +53,7 @@ module Agama
 
         def available_products
           backend.products.map do |product|
-            [product.id, product.display_name, { "description" => product.description }]
+            [product.id, product.display_name, { "description" => product.localized_description }]
           end
         end
 
