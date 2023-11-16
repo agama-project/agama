@@ -3,7 +3,7 @@
 use super::proxies::{BlockDeviceProxy, ProposalCalculatorProxy, ProposalProxy, Storage1Proxy};
 use super::StorageSettings;
 use crate::error::ServiceError;
-use futures::future::join_all;
+use futures_util::future::join_all;
 use serde::Serialize;
 use std::collections::HashMap;
 use zbus::zvariant::OwnedObjectPath;

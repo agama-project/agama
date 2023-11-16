@@ -7,9 +7,9 @@ use agama_dbus_server::network::{
     Adapter, NetworkService, NetworkState,
 };
 use agama_lib::network::{settings, types::DeviceType, NetworkClient};
-use async_std::test;
 use cidr::IpInet;
 use std::error::Error;
+use tokio::test;
 
 #[derive(Default)]
 pub struct NetworkTestAdapter(network::NetworkState);

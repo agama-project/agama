@@ -8,15 +8,15 @@ use crate::network::{
     action::Action,
     model::{Connection as NetworkConnection, IpConfig, Ipv4Method, Ipv6Method},
 };
-use async_std::{channel::Sender, sync::Arc};
 use cidr::IpInet;
-use futures::lock::{MappedMutexGuard, Mutex, MutexGuard};
-use std::net::IpAddr;
+use std::{net::IpAddr, sync::Arc};
+use tokio::sync::mpsc::UnboundedSender;
+use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
 use zbus::dbus_interface;
 
 /// D-Bus interface for IPv4 and IPv6 settings
 pub struct Ip {
-    actions: Arc<Mutex<Sender<Action>>>,
+    actions: Arc<Mutex<UnboundedSender<Action>>>,
     connection: Arc<Mutex<NetworkConnection>>,
 }
 
@@ -25,7 +25,10 @@ impl Ip {
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `connection`: connection to expose over D-Bus.
-    pub fn new(actions: Sender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
+    pub fn new(
+        actions: UnboundedSender<Action>,
+        connection: Arc<Mutex<NetworkConnection>>,
+    ) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
             connection,
@@ -47,7 +50,6 @@ impl Ip {
         let actions = self.actions.lock().await;
         actions
             .send(Action::UpdateConnection(connection.clone()))
-            .await
             .unwrap();
         Ok(())
     }
@@ -55,7 +57,7 @@ impl Ip {
 
 impl Ip {
     /// Returns the IpConfig struct.
-    async fn get_ip_config(&self) -> MappedMutexGuard<NetworkConnection, IpConfig> {
+    async fn get_ip_config(&self) -> MappedMutexGuard<IpConfig> {
         MutexGuard::map(self.get_connection().await, |c| c.ip_config_mut())
     }
 
