@@ -26,6 +26,10 @@ require "agama/dbus/software"
 require "agama/software"
 require "agama/ui_locale"
 
+require "yast"
+Yast.import "Pkg"
+Yast.import "Language"
+
 module Agama
   module DBus
     # D-Bus service (org.opensuse.Agama.Software1)
@@ -51,10 +55,19 @@ module Agama
 
       # Starts software service. It does more then just #export method.
       def start
-        locale_client = Clients::Locale.new
-        # TODO: test if we need to pass block with additional actions
-        @ui_locale = UILocale.new(locale_client)
         export
+        locale_client = Clients::Locale.new
+        @ui_locale = UILocale.new(locale_client) do |locale|
+          # set the locale in the Language module, when changing the repository
+          # (product) it calls Pkg.SetTextLocale(Language.language) internally
+          Yast::Language.Set(locale)
+          # set libzypp locale (for communication only, Pkg.SetPackageLocale
+          # call can be used for installing the language packages)
+          Yast::Pkg.SetTextLocale(locale)
+          # TODO: libzypp shows the pattern names and descriptions using the
+          # locale set at the repository refresh time, here we should refresh
+          # the repositories with the new locale
+        end
       end
 
       # Exports the software object through the D-Bus service
