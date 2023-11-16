@@ -25,7 +25,10 @@ impl Ip {
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `connection`: connection to expose over D-Bus.
-    pub fn new(actions: UnboundedSender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
+    pub fn new(
+        actions: UnboundedSender<Action>,
+        connection: Arc<Mutex<NetworkConnection>>,
+    ) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
             connection,

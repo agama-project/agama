@@ -185,7 +185,10 @@ impl Connection {
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `connection`: connection to expose over D-Bus.
-    pub fn new(actions: UnboundedSender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
+    pub fn new(
+        actions: UnboundedSender<Action>,
+        connection: Arc<Mutex<NetworkConnection>>,
+    ) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
             connection,
@@ -248,7 +251,10 @@ impl Match {
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `connection`: connection to expose over D-Bus.
-    pub fn new(actions: UnboundedSender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
+    pub fn new(
+        actions: UnboundedSender<Action>,
+        connection: Arc<Mutex<NetworkConnection>>,
+    ) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
             connection,
@@ -348,7 +354,10 @@ impl Wireless {
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `connection`: connection to expose over D-Bus.
-    pub fn new(actions: UnboundedSender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
+    pub fn new(
+        actions: UnboundedSender<Action>,
+        connection: Arc<Mutex<NetworkConnection>>,
+    ) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
             connection,
@@ -374,9 +383,7 @@ impl Wireless {
     ) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock().await;
         let connection = NetworkConnection::Wireless(connection.clone());
-        actions
-            .send(Action::UpdateConnection(connection))
-            .unwrap();
+        actions.send(Action::UpdateConnection(connection)).unwrap();
         Ok(())
     }
 }
