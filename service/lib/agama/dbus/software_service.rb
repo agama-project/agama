@@ -55,6 +55,8 @@ module Agama
 
       # Starts software service. It does more then just #export method.
       def start
+        # for some reason the the "export" method must be called before
+        # registering the language change callback to work properly
         export
         locale_client = Clients::Locale.new
         @ui_locale = UILocale.new(locale_client) do |locale|
