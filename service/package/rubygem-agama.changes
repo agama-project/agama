@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 16 16:27:37 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
+
+- Software service - correctly change the locale, pass the changed
+  locale to libzypp (gh#openSUSE/agama#875).
+
+-------------------------------------------------------------------
 Wed Nov 15 12:31:10 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Add D-Bus API for registering a product (gh#openSUSE/agama#869).
