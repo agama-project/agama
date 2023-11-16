@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Nov 16 11:06:30 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update dependencies to compatible versions
+  (gh#openSUSE/agama#874).
+- Replace tempdir with tempfile to prevent RUSTSEC-2023-0018.
+
+-------------------------------------------------------------------
 Wed Nov 15 12:35:32 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Adapt to changes in software D-Bus API (gh#openSUSE/agama#869).

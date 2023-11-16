@@ -9,7 +9,7 @@ use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use tempdir::TempDir;
+use tempfile::TempDir;
 
 // definition of "agama logs" subcommands, see clap crate for details
 #[derive(Subcommand, Debug)]
@@ -116,7 +116,7 @@ const DEFAULT_RESULT: &str = "/tmp/agama_logs";
 // what compression is used by default:
 // (<compression as distinguished by tar>, <an extension for resulting archive>)
 const DEFAULT_COMPRESSION: (&str, &str) = ("bzip2", "tar.bz2");
-const DEFAULT_TMP_DIR: &str = "agama-logs";
+const TMP_DIR_PREFIX: &str = "agama-logs.";
 
 /// A wrapper around println which shows (or not) the text depending on the boolean variable
 fn showln(show: bool, text: &str) {
@@ -388,7 +388,7 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
 
     // create temporary directory where to collect all files (similar to what old save_y2logs
     // does)
-    let tmp_dir = TempDir::new(DEFAULT_TMP_DIR)?;
+    let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX)?;
     let mut log_sources = paths_to_log_sources(&paths, &tmp_dir);
 
     showln(verbose, "\t- proceeding well known paths");
