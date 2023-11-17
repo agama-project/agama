@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Fri Nov 17 13:27:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
-- UI: Fix broken storage links (bsc#1217281)
+- UI: Fix broken storage links (bsc#1217281).
 
 -------------------------------------------------------------------
 Wed Nov 15 12:32:25 UTC 2023 - José Iván López González <jlopez@suse.com>
