@@ -12,3 +12,4 @@ quick-xml = { version = "0.28.2", features = ["serialize"] }
 flate2 = "1.0.25"
 chrono-tz = "0.8.2"
 regex = "1"
+thiserror = "1.0.50"

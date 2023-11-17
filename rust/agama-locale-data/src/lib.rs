@@ -1,7 +1,6 @@
 use anyhow::Context;
 use flate2::bufread::GzDecoder;
 use quick_xml::de::Deserializer;
-use regex::Regex;
 use serde::Deserialize;
 use std::fs::File;
 use std::io::BufRead;
@@ -10,11 +9,14 @@ use std::process::Command;
 
 pub mod deprecated_timezones;
 pub mod language;
+mod locale;
 pub mod localization;
 pub mod ranked;
 pub mod territory;
 pub mod timezone_part;
 pub mod xkeyboard;
+
+pub use locale::{InvalidLocaleCode, LocaleCode};
 
 fn file_reader(file_path: &str) -> anyhow::Result<impl BufRead> {
     let file = File::open(file_path)
@@ -53,26 +55,6 @@ pub fn get_key_maps() -> anyhow::Result<Vec<String>> {
     let ret = output.split('\n').map(|l| l.trim().to_string()).collect();
 
     Ok(ret)
-}
-
-/// Parses given locale to language and territory part
-///
-/// /// ## Examples
-///
-/// ```
-/// let result = agama_locale_data::parse_locale("en_US.UTF-8").unwrap();
-/// assert_eq!(result.0, "en");
-/// assert_eq!(result.1, "US")
-/// ```
-pub fn parse_locale(locale: &str) -> anyhow::Result<(&str, &str)> {
-    let locale_regexp: Regex = Regex::new(r"^([[:alpha:]]+)_([[:alpha:]]+)").unwrap();
-    let captures = locale_regexp
-        .captures(locale)
-        .context("Failed to parse locale")?;
-    Ok((
-        captures.get(1).unwrap().as_str(),
-        captures.get(2).unwrap().as_str(),
-    ))
 }
 
 /// Returns struct which contain list of known languages

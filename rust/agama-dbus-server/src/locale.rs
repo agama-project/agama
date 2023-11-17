@@ -1,4 +1,5 @@
 use crate::error::Error;
+use agama_locale_data::LocaleCode;
 use anyhow::Context;
 use std::{fs::read_dir, process::Command};
 use zbus::{dbus_interface, Connection};
@@ -13,24 +14,33 @@ pub struct Locale {
 
 #[dbus_interface(name = "org.opensuse.Agama1.Locale")]
 impl Locale {
-    /// Get labels for locales. The first pair is english language and territory
-    /// and second one is localized one to target language from locale.
+    /// Gets the supported locales information.
     ///
-    // Can be `async` as well.
+    /// Each element of the has these parts:
+    ///
+    /// * The locale code (e.g., "es_ES.UTF-8").
+    /// * A pair composed by the language and the territory names in english
+    ///   (e.g. ("Spanish", "Spain")).
+    /// * A pair composed by the language and the territory names in its own language
+    ///   (e.g. ("Español", "España")).
+    ///
     // NOTE: check how often it is used and if often, it can be easily cached
-    fn labels_for_locales(&self) -> Result<Vec<((String, String), (String, String))>, Error> {
+    fn list_locales(&self) -> Result<Vec<(String, (String, String), (String, String))>, Error> {
         const DEFAULT_LANG: &str = "en";
-        let mut res = Vec::with_capacity(self.supported_locales.len());
+        let mut result = Vec::with_capacity(self.supported_locales.len());
         let languages = agama_locale_data::get_languages()?;
         let territories = agama_locale_data::get_territories()?;
-        for locale in self.supported_locales.as_slice() {
-            let (loc_language, loc_territory) = agama_locale_data::parse_locale(locale.as_str())?;
+        for code in self.supported_locales.as_slice() {
+            let Ok(loc) = TryInto::<LocaleCode>::try_into(code.as_str()) else {
+                log::debug!("Ignoring locale code {}", &code);
+                continue;
+            };
 
             let language = languages
-                .find_by_id(loc_language)
+                .find_by_id(&loc.language)
                 .context("language for passed locale not found")?;
             let territory = territories
-                .find_by_id(loc_territory)
+                .find_by_id(&loc.territory)
                 .context("territory for passed locale not found")?;
 
             let default_ret = (
@@ -53,10 +63,10 @@ impl Locale {
                     .name_for(language.id.as_str())
                     .context("missing native label for territory")?,
             );
-            res.push((default_ret, localized_ret));
+            result.push((code.clone(), default_ret, localized_ret));
         }
 
-        Ok(res)
+        Ok(result)
     }
 
     #[dbus_interface(property)]
@@ -219,20 +229,30 @@ impl Locale {
 }
 
 impl Locale {
-    pub fn new() -> Self {
-        Self {
-            locales: vec!["en_US.UTF-8".to_string()],
-            keymap: "us".to_string(),
-            timezone_id: "America/Los_Angeles".to_string(),
-            supported_locales: vec!["en_US.UTF-8".to_string()],
-            ui_locale: "en".to_string(),
-        }
+    pub fn from_system() -> Result<Self, Error> {
+        let result = Command::new("/usr/bin/localectl")
+            .args(["list-locales"])
+            .output()
+            .context("Failed to get the list of locales")?;
+        let output =
+            String::from_utf8(result.stdout).context("Invalid UTF-8 sequence from list-locales")?;
+        let supported: Vec<String> = output.lines().map(|s| s.to_string()).collect();
+        Ok(Self {
+            supported_locales: supported,
+            ..Default::default()
+        })
     }
 }
 
 impl Default for Locale {
     fn default() -> Self {
-        Self::new()
+        Self {
+            locales: vec!["en_US.UTF-8".to_string(), "es_ES.UTF-8".to_string()],
+            keymap: "us".to_string(),
+            timezone_id: "America/Los_Angeles".to_string(),
+            supported_locales: vec!["en_US.UTF-8".to_string(), "es_ES.UTF-8".to_string()],
+            ui_locale: "en".to_string(),
+        }
     }
 }
 
@@ -242,7 +262,7 @@ pub async fn export_dbus_objects(
     const PATH: &str = "/org/opensuse/Agama1/Locale";
 
     // When serving, request the service name _after_ exposing the main object
-    let locale = Locale::new();
+    let locale = Locale::from_system()?;
     connection.object_server().at(PATH, locale).await?;
 
     Ok(())

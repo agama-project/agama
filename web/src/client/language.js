@@ -50,12 +50,11 @@ class LanguageClient {
    */
   async getLanguages() {
     const proxy = await this.client.proxy(LANGUAGE_IFACE);
-    const locales = proxy.SupportedLocales;
-    const labels = await proxy.LabelsForLocales();
-    return locales.map((locale, index) => {
-      // labels structure is [[en_lang, en_territory], [native_lang, native_territory]]
-      const [[en_lang,], [,]] = labels[index];
-      return { id: locale, name: en_lang };
+    const locales = await proxy.ListLocales();
+    return locales.map(locale => {
+      const [id, [language, territory], [,]] = locale;
+      const name = `${language} (${territory})`;
+      return { id, name };
     });
   }
 

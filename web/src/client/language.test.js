@@ -30,8 +30,11 @@ jest.mock("./dbus");
 const langProxy = {
   wait: jest.fn(),
   SupportedLocales: ["es_ES.UTF-8", "en_US.UTF-8"],
-  LabelsForLocales: jest.fn().mockResolvedValue(
-    [[["Spanish", "Spain"], ["Español", "España"]], [['English', 'United States'], ['English', 'United States']]]
+  ListLocales: jest.fn().mockResolvedValue(
+    [
+      ["es_ES.UTF-8", ["Spanish", "Spain"], ["Español", "España"]],
+      ["en_US.UTF-8", ['English', 'United States'], ['English', 'United States']]
+    ]
   ),
 };
 

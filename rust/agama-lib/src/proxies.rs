@@ -80,8 +80,8 @@ trait Locale {
     /// Commit method
     fn commit(&self) -> zbus::Result<()>;
 
-    /// LabelsForLocales method
-    fn labels_for_locales(&self) -> zbus::Result<Vec<(String, String)>>;
+    /// ListLocales method
+    fn list_locales(&self) -> zbus::Result<Vec<(String, (String, String), (String, String))>>;
 
     /// ListTimezones method
     fn list_timezones(&self, locale: &str) -> zbus::Result<Vec<(String, String)>>;
