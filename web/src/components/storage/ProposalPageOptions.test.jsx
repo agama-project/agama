@@ -54,7 +54,8 @@ it("contains an entry for configuring iSCSI", async () => {
   const { user } = installerRender(<ProposalPageOptions />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
-  screen.getByRole("menuitem", { name: /iSCSI/ });
+  const link = screen.getByRole("menuitem", { name: /iSCSI/ });
+  expect(link).toHaveAttribute("href", "/storage/iscsi");
 });
 
 it("contains an entry for configuring DASD when is supported", async () => {
@@ -62,7 +63,8 @@ it("contains an entry for configuring DASD when is supported", async () => {
   const { user } = installerRender(<ProposalPageOptions />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
-  screen.getByRole("menuitem", { name: /DASD/ });
+  const link = screen.getByRole("menuitem", { name: /DASD/ });
+  expect(link).toHaveAttribute("href", "/storage/dasd");
 });
 
 it("does not contain an entry for configuring DASD when is NOT supported", async () => {
@@ -78,7 +80,8 @@ it("contains an entry for configuring zFCP when is supported", async () => {
   const { user } = installerRender(<ProposalPageOptions />);
   const toggler = screen.getByRole("button");
   await user.click(toggler);
-  screen.getByRole("menuitem", { name: /zFCP/ });
+  const link = screen.getByRole("menuitem", { name: /zFCP/ });
+  expect(link).toHaveAttribute("href", "/storage/zfcp");
 });
 
 it("does not contain an entry for configuring zFCP when is NOT supported", async () => {
