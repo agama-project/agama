@@ -36,7 +36,7 @@ const DASDLink = () => {
   return (
     <PageOptions.Option
       key="dasd-link"
-      href={href}
+      to={href}
       description={_("Manage and format")}
     >
       DASD
@@ -54,7 +54,7 @@ const ZFCPLink = () => {
   return (
     <PageOptions.Option
       key="zfcp-link"
-      href={href}
+      to={href}
       description={_("Activate disks")}
     >
       {_("zFCP")}
