@@ -25,7 +25,7 @@ impl Locale {
     ///   (e.g. ("Español", "España")).
     ///
     // NOTE: check how often it is used and if often, it can be easily cached
-    fn list_locales(&self) -> Result<Vec<(String, (String, String), (String, String))>, Error> {
+    fn list_locales(&self) -> Result<Vec<(String, String, String)>, Error> {
         const DEFAULT_LANG: &str = "en";
         let mut result = Vec::with_capacity(self.supported_locales.len());
         let languages = agama_locale_data::get_languages()?;
@@ -36,34 +36,33 @@ impl Locale {
                 continue;
             };
 
+            let ui_language = self
+                .ui_locale
+                .split_once("_")
+                .map(|(l, _)| l)
+                .unwrap_or(DEFAULT_LANG);
+
             let language = languages
                 .find_by_id(&loc.language)
-                .context("language for passed locale not found")?;
+                .context("language not found")?;
+
+            let names = &language.names;
+            let language_label = names
+                .name_for(&ui_language)
+                .or_else(|| names.name_for(DEFAULT_LANG))
+                .unwrap_or(language.id.to_string());
+
             let territory = territories
                 .find_by_id(&loc.territory)
-                .context("territory for passed locale not found")?;
+                .context("territory not found")?;
 
-            let default_ret = (
-                language
-                    .names
-                    .name_for(DEFAULT_LANG)
-                    .context("missing default translation for language")?,
-                territory
-                    .names
-                    .name_for(DEFAULT_LANG)
-                    .context("missing default translation for territory")?,
-            );
-            let localized_ret = (
-                language
-                    .names
-                    .name_for(language.id.as_str())
-                    .context("missing native label for language")?,
-                territory
-                    .names
-                    .name_for(language.id.as_str())
-                    .context("missing native label for territory")?,
-            );
-            result.push((code.clone(), default_ret, localized_ret));
+            let names = &territory.names;
+            let territory_label = names
+                .name_for(&ui_language)
+                .or_else(|| names.name_for(DEFAULT_LANG))
+                .unwrap_or(territory.id.to_string());
+
+            result.push((code.clone(), language_label, territory_label))
         }
 
         Ok(result)

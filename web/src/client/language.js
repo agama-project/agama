@@ -52,9 +52,10 @@ class LanguageClient {
     const proxy = await this.client.proxy(LANGUAGE_IFACE);
     const locales = await proxy.ListLocales();
     return locales.map(locale => {
-      const [id, [language, territory], [,]] = locale;
+      const [id, language, territory] = locale;
+      // FIXME: do not format the language here
       const name = `${language} (${territory})`;
-      return { id, name };
+      return { id, name, language, territory };
     });
   }
 
