@@ -2,6 +2,8 @@
 //!
 //! This module contains the set of D-Bus interfaces that are exposed by [D-Bus network
 //! service](crate::NetworkService).
+use std::collections::HashMap;
+
 use super::ObjectsRegistry;
 use crate::network::{
     action::Action,
@@ -318,14 +320,14 @@ impl Bond {
     async fn update_controller_connection<'a>(
         &self,
         connection: MappedMutexGuard<'a, NetworkConnection, BondConnection>,
-        ports: Vec<String>,
+        settings: HashMap<String, BondSettings>,
     ) -> zbus::fdo::Result<()> {
         let actions = self.actions.lock().await;
         let connection = NetworkConnection::Bond(connection.clone());
         actions
             .send(Action::UpdateControllerConnection(
                 connection.clone(),
-                ports.clone(),
+                settings,
             ))
             .await
             .unwrap();
@@ -333,8 +335,33 @@ impl Bond {
     }
 }
 
+enum BondSettings {
+    Ports(Vec<String>),
+    Options(String),
+}
+
 #[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.Bond")]
 impl Bond {
+    /// List of bond ports.
+    #[dbus_interface(property)]
+    pub async fn options(&self) -> String {
+        let connection = self.get_bond().await;
+        let mut opts = vec![];
+        for (key, value) in &connection.bond.options {
+            opts.push(format!("{key}={value}"));
+        }
+
+        opts.join(" ")
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_options(&self, opts: String) -> zbus::fdo::Result<()> {
+        let connection = self.get_bond().await;
+
+        self.update_controller_connection(connection, HashMap::from(["options", opts.clone()]))
+            .await
+    }
+
     /// List of bond ports.
     #[dbus_interface(property)]
     pub async fn ports(&self) -> Vec<String> {
@@ -350,7 +377,7 @@ impl Bond {
     #[dbus_interface(property)]
     pub async fn set_ports(&mut self, ports: Vec<String>) -> zbus::fdo::Result<()> {
         let connection = self.get_bond().await;
-        self.update_controller_connection(connection, ports.clone())
+        self.update_controller_connection(connection, HashMap::from(["ports", ports.clone()]))
             .await
     }
 }
@@ -536,7 +563,6 @@ impl Wireless {
         connection.wireless.security = security
             .try_into()
             .map_err(|_| NetworkStateError::InvalidSecurityProtocol(security.to_string()))?;
-        self.update_connection(connection).await?;
-        Ok(())
+        self.update_connection(connection).await
     }
 }

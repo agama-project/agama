@@ -1,8 +1,8 @@
 use super::proxies::{
-    ConnectionProxy, ConnectionsProxy, DeviceProxy, DevicesProxy, IPProxy, MatchProxy,
+    BondProxy, ConnectionProxy, ConnectionsProxy, DeviceProxy, DevicesProxy, IPProxy, MatchProxy,
     WirelessProxy,
 };
-use super::settings::{MatchSettings, NetworkConnection, WirelessSettings};
+use super::settings::{BondSettings, MatchSettings, NetworkConnection, WirelessSettings};
 use super::types::{Device, DeviceType, SSID};
 use crate::error::ServiceError;
 use tokio_stream::StreamExt;
@@ -226,6 +226,10 @@ impl<'a> NetworkClient<'a> {
 
         self.update_ip_settings(path, conn).await?;
 
+        if let Some(ref bond) = conn.bond {
+            self.update_bond_settings(path, bond).await?;
+        }
+
         if let Some(ref wireless) = conn.wireless {
             self.update_wireless_settings(path, wireless).await?;
         }
@@ -276,6 +280,25 @@ impl<'a> NetworkClient<'a> {
         Ok(())
     }
 
+    /// Updates the bond settings for network connection.
+    ///
+    /// * `path`: connection D-Bus path.
+    /// * `bond`: bond settings of the network connection.
+    async fn update_bond_settings(
+        &self,
+        path: &OwnedObjectPath,
+        bond: &BondSettings,
+    ) -> Result<(), ServiceError> {
+        let proxy = BondProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+
+        let ports: Vec<_> = bond.ports.iter().map(String::as_ref).collect();
+        proxy.set_ports(ports.as_slice()).await?;
+        proxy.set_options(bond.options.to_string().as_str()).await?;
+        Ok(())
+    }
     /// Updates the wireless settings for network connection.
     ///
     /// * `path`: connection D-Bus path.

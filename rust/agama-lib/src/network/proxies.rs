@@ -193,9 +193,9 @@ trait Bond {
 
     /// ports property
     #[dbus_proxy(property)]
-    fn options(&self) -> zbus::Result<Vec<String>>;
+    fn options(&self) -> zbus::Result<String>;
     #[dbus_proxy(property)]
-    fn set_options(&self, value: &[&str]) -> zbus::Result<()>;
+    fn set_options(&self, value: &str) -> zbus::Result<()>;
 
     /// ports property
     #[dbus_proxy(property)]

@@ -63,6 +63,14 @@ local findBiggestDisk(disks) =
         match: {
             path: ["pci-0000:00:19.0"]
           }
+      },
+      {
+        id: 'bond0',
+        bond: {
+            ports: ['eth0', 'eth1'],
+            options: "mode=active-backup primary=eth1"
+
+        }
       }
     ]
   }
