@@ -33,7 +33,6 @@ import {
   DBusError,
   Disclosure,
   Installation,
-  IssuesLink,
   LogsButton,
   ShowLogButton,
   ShowTerminalButton,
@@ -106,7 +105,6 @@ function App() {
     <>
       <Sidebar>
         <div className="flex-stack">
-          <IssuesLink />
           <Disclosure label={_("Diagnostic tools")} data-keep-sidebar-open>
             <ShowLogButton />
             <LogsButton data-keep-sidebar-open="true" />
