@@ -22,7 +22,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { createHashRouter, RouterProvider } from "react-router-dom";
 import { AgamaProviders } from "~/context/agama";
 
 /**
@@ -66,30 +66,78 @@ const LoginWrapper = (process.env.WEBPACK_SERVE) ? DevServerWrapper : React.Frag
 const container = document.getElementById("root");
 const root = createRoot(container);
 
+const router = createHashRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      {
+        element: <Main />,
+        children: [
+          {
+            index: true,
+            element: <Overview />
+          },
+          {
+            path: "overview",
+            element: <Overview />
+          },
+          {
+            path: "product",
+            element: <ProductPage />
+          },
+          {
+            path: "l10n",
+            element: <L10nPage />
+          },
+          {
+            path: "software",
+            element: <SoftwarePage />
+          },
+          {
+            path: "storage",
+            element: <StoragePage />,
+            children: [
+              {
+                path: "iscsi",
+                element: <ISCSIPage />
+              },
+              {
+                path: "dasd",
+                element: <DASDPage />
+              },
+              {
+                path: "zfcp",
+                element: <ZFCPPage />
+              }
+            ]
+          },
+          {
+            path: "network",
+            element: <NetworkPage />
+          },
+          {
+            path: "users",
+            element: <UsersPage />
+          },
+          {
+            path: "issues",
+            element: <IssuesPage />
+          }
+        ]
+      },
+      {
+        path: "products",
+        element: <ProductSelectionPage />
+      }
+    ]
+  }
+]);
+
 root.render(
   <LoginWrapper>
     <AgamaProviders>
-      <HashRouter>
-        <Routes>
-          <Route path="/" element={<App />}>
-            <Route path="/" element={<Main />}>
-              <Route index element={<Overview />} />
-              <Route path="/overview" element={<Overview />} />
-              <Route path="/product" element={<ProductPage />} />
-              <Route path="/l10n" element={<L10nPage />} />
-              <Route path="/software" element={<SoftwarePage />} />
-              <Route path="/storage" element={<StoragePage />} />
-              <Route path="/storage/iscsi" element={<ISCSIPage />} />
-              <Route path="/storage/dasd" element={<DASDPage />} />
-              <Route path="/storage/zfcp" element={<ZFCPPage />} />
-              <Route path="/network" element={<NetworkPage />} />
-              <Route path="/users" element={<UsersPage />} />
-              <Route path="/issues" element={<IssuesPage />} />
-            </Route>
-            <Route path="products" element={<ProductSelectionPage />} />
-          </Route>
-        </Routes>
-      </HashRouter>
+      <RouterProvider router={router} />
     </AgamaProviders>
   </LoginWrapper>
 );
