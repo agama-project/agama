@@ -77,7 +77,7 @@ export default function Section({
   const Header = () => {
     if (!title?.trim()) return;
 
-    const header = !path?.trim() ? <>{title}</> : <Link to={path}>{title}</Link>;
+    const header = !path?.trim() ? <>{title}</> : <Link to={path} unstable_viewTransition>{title}</Link>;
 
     return (
       <>
