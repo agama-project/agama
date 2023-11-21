@@ -65,7 +65,6 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
     }
 
     if let Some(bond_config) = bond_config_from_dbus(&conn) {
-        println!("Returning bond config");
         return Some(Connection::Bond(BondConnection {
             base,
             bond: bond_config,
@@ -251,7 +250,7 @@ fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
 fn bond_config_to_dbus(conn: &BondConnection) -> HashMap<&str, zvariant::Value> {
     let config = &conn.bond;
 
-    HashMap::from([("options", Value::new(config.options.clone()))])
+    HashMap::from([("options", Value::new(config.options.0.clone()))])
 }
 
 /// Converts a MatchConfig struct into a HashMap that can be sent over D-Bus.
@@ -514,7 +513,7 @@ fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Option<BondConfig> {
     let options = <HashMap<String, String>>::try_from(dict.clone()).unwrap();
 
     Some(BondConfig {
-        options: options,
+        options: BondOptions(options),
         ..Default::default()
     })
 }

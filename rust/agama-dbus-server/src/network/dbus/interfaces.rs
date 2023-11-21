@@ -16,7 +16,7 @@ use crate::network::{
 
 use agama_lib::network::types::SSID;
 use std::sync::Arc;
-use tokio::sync::mpsc::UnboundedSender;
+use tokio::sync::{mpsc::UnboundedSender, oneshot};
 use tokio::sync::{MappedMutexGuard, Mutex, MutexGuard};
 use zbus::{
     dbus_interface,
@@ -288,7 +288,7 @@ impl Match {
 
 /// D-Bus interface for Bond settings
 pub struct Bond {
-    actions: Arc<Mutex<Sender<Action>>>,
+    actions: Arc<Mutex<UnboundedSender<Action>>>,
     connection: Arc<Mutex<NetworkConnection>>,
 }
 
@@ -297,7 +297,10 @@ impl Bond {
     ///
     /// * `actions`: sending-half of a channel to send actions.
     /// * `connection`: connection to expose over D-Bus.
-    pub fn new(actions: Sender<Action>, connection: Arc<Mutex<NetworkConnection>>) -> Self {
+    pub fn new(
+        actions: UnboundedSender<Action>,
+        connection: Arc<Mutex<NetworkConnection>>,
+    ) -> Self {
         Self {
             actions: Arc::new(Mutex::new(actions)),
             connection,
@@ -307,7 +310,7 @@ impl Bond {
     /// Gets the bond connection.
     ///
     /// Beware that it crashes when it is not a bond connection.
-    async fn get_bond(&self) -> MappedMutexGuard<NetworkConnection, BondConnection> {
+    async fn get_bond(&self) -> MappedMutexGuard<BondConnection> {
         MutexGuard::map(self.connection.lock().await, |c| match c {
             NetworkConnection::Bond(config) => config,
             _ => panic!("Not a bond connection. This is most probably a bug."),
@@ -319,23 +322,22 @@ impl Bond {
     /// * `connection`: Updated connection.
     async fn update_controller_connection<'a>(
         &self,
-        connection: MappedMutexGuard<'a, NetworkConnection, BondConnection>,
-        settings: HashMap<String, BondSettings>,
-    ) -> zbus::fdo::Result<()> {
+        connection: MappedMutexGuard<'a, BondConnection>,
+        settings: HashMap<String, ControllerSettings>,
+    ) -> Result<crate::network::model::Connection, NetworkStateError> {
         let actions = self.actions.lock().await;
         let connection = NetworkConnection::Bond(connection.clone());
+        let (tx, rx) = oneshot::channel();
         actions
-            .send(Action::UpdateControllerConnection(
-                connection.clone(),
-                settings,
-            ))
-            .await
+            .send(Action::UpdateControllerConnection(connection, settings, tx))
             .unwrap();
-        Ok(())
+
+        rx.await.unwrap()
     }
 }
 
-enum BondSettings {
+#[derive(Debug, PartialEq, Clone)]
+pub enum ControllerSettings {
     Ports(Vec<String>),
     Options(String),
 }
@@ -346,20 +348,24 @@ impl Bond {
     #[dbus_interface(property)]
     pub async fn options(&self) -> String {
         let connection = self.get_bond().await;
-        let mut opts = vec![];
-        for (key, value) in &connection.bond.options {
-            opts.push(format!("{key}={value}"));
-        }
 
-        opts.join(" ")
+        connection.bond.options.to_string()
     }
 
     #[dbus_interface(property)]
-    pub async fn set_options(&self, opts: String) -> zbus::fdo::Result<()> {
+    pub async fn set_options(&mut self, opts: String) -> zbus::fdo::Result<()> {
         let connection = self.get_bond().await;
-
-        self.update_controller_connection(connection, HashMap::from(["options", opts.clone()]))
-            .await
+        let result = self
+            .update_controller_connection(
+                connection,
+                HashMap::from([(
+                    "options".to_string(),
+                    ControllerSettings::Options(opts.clone()),
+                )]),
+            )
+            .await;
+        self.connection = Arc::new(Mutex::new(result.unwrap()));
+        Ok(())
     }
 
     /// List of bond ports.
@@ -370,15 +376,24 @@ impl Bond {
             .bond
             .ports
             .iter()
-            .map(|port| port.base().interface.to_string())
+            .map(|port| port.base().id.to_string())
             .collect()
     }
 
     #[dbus_interface(property)]
     pub async fn set_ports(&mut self, ports: Vec<String>) -> zbus::fdo::Result<()> {
         let connection = self.get_bond().await;
-        self.update_controller_connection(connection, HashMap::from(["ports", ports.clone()]))
-            .await
+        let result = self
+            .update_controller_connection(
+                connection,
+                HashMap::from([(
+                    "ports".to_string(),
+                    ControllerSettings::Ports(ports.clone()),
+                )]),
+            )
+            .await;
+        self.connection = Arc::new(Mutex::new(result.unwrap()));
+        Ok(())
     }
 }
 
