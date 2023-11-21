@@ -15,7 +15,7 @@
 }
 
 @keyframes slide-to-bottom {
-  to { transform: translateY(20px); }
+  to { transform: translateY(40px); }
 }
 
 @keyframes slide-from-bottom {
@@ -38,6 +38,15 @@
   to { transform: translateX(100px); }
 }
 
+@keyframes appears {
+  from { transform: scaleY(0) }
+  to { transform: scaleY(1) }
+}
+
+@keyframes dissapears {
+  to { transform: scaleY(0) }
+}
+
 /** Drop default fade-in/fade-out animations added by react-router-dom */
 ::view-transition-new(root),
 ::view-transition-old(root) {
@@ -45,7 +54,11 @@
 }
 
 /** Define transition names for zones we want to animate */
-header h1 {
+header h1 span:first-child {
+  view-transition-name: page-icon;
+}
+
+header h1 span:last-child {
   view-transition-name: page-title;
 }
 
@@ -54,6 +67,14 @@ main {
 }
 
 /** Forward transitions */
+::view-transition-old(page-icon) {
+  animation: 100ms cubic-bezier(0.4, 0, 1, 1) both dissapears;
+}
+
+::view-transition-new(page-icon) {
+  animation: 100ms cubic-bezier(0, 0, 0.2, 1) 100ms both appears;
+}
+
 ::view-transition-old(page-title) {
   animation: 30ms cubic-bezier(0.4, 0, 1, 1) 30ms both fade-out,
     300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-top;
@@ -61,7 +82,7 @@ main {
 
 ::view-transition-new(page-title) {
   animation: 50ms cubic-bezier(0, 0, 0.2, 1) 250ms both fade-in,
-    360ms cubic-bezier(0.4, 0, 0.2, 1) 100ms both slide-from-bottom;
+    360ms cubic-bezier(0.4, 0, 0.2, 1) 150ms both slide-from-top;
 }
 
 ::view-transition-old(page-content) {
@@ -84,12 +105,10 @@ main {
 }
 
 .back-transition::view-transition-old(page-title) {
-  animation-delay: 30ms;
-  animation-duration: 150ms;
-  animation-name: slide-to-bottom, fade-out;
+  animation-name: dissapears, fade-out;
 }
 
 .back-transition::view-transition-new(page-title) {
-  animation-delay: 300ms;
+  animation-delay: 150ms;
   animation-name: fade-in, slide-from-top;
 }
