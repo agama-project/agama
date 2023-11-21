@@ -21,7 +21,7 @@
 
 // @ts-check
 
-import { LanguageClient } from "./language";
+import { L10nClient } from "./l10n";
 import { ManagerClient } from "./manager";
 import { Monitor } from "./monitor";
 import { SoftwareClient } from "./software";
@@ -37,7 +37,7 @@ const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
 
 /**
  * @typedef {object} InstallerClient
- * @property {LanguageClient} language - language client.
+ * @property {L10nClient} l10n - localization client.
  * @property {ManagerClient} manager - manager client.
  * @property {Monitor} monitor - service monitor.
  * @property {NetworkClient} network - network client.
@@ -71,7 +71,7 @@ const MANAGER_SERVICE = "org.opensuse.Agama.Manager1";
  * @return {InstallerClient}
  */
 const createClient = (address = "unix:path=/run/agama/bus") => {
-  const language = new LanguageClient(address);
+  const l10n = new L10nClient(address);
   const manager = new ManagerClient(address);
   const monitor = new Monitor(address, MANAGER_SERVICE);
   const network = new NetworkClient();
@@ -122,7 +122,7 @@ const createClient = (address = "unix:path=/run/agama/bus") => {
   };
 
   return {
-    language,
+    l10n,
     manager,
     monitor,
     network,

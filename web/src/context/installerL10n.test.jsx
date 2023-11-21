@@ -25,17 +25,17 @@
 import React from "react";
 import { render, waitFor, screen } from "@testing-library/react";
 
-import { L10nProvider } from "~/context/l10n";
+import { InstallerL10nProvider } from "~/context/installerL10n";
 import { InstallerClientProvider } from "./installer";
 import * as utils from "~/utils";
 
-const getUILanguageFn = jest.fn().mockResolvedValue();
-const setUILanguageFn = jest.fn().mockResolvedValue();
+const getUILocaleFn = jest.fn().mockResolvedValue();
+const setUILocaleFn = jest.fn().mockResolvedValue();
 
 const client = {
-  language: {
-    getUILanguage: getUILanguageFn,
-    setUILanguage: setUILanguageFn
+  l10n: {
+    getUILocale: getUILocaleFn,
+    setUILocale: setUILocaleFn
   },
   onDisconnect: jest.fn()
 };
@@ -72,7 +72,7 @@ const TranslatedContent = () => {
   return <>{text[lang]}</>;
 };
 
-describe("L10nProvider", () => {
+describe("InstallerL10nProvider", () => {
   beforeAll(() => {
     jest.spyOn(utils, "locationReload").mockImplementation(utils.noop);
     jest.spyOn(utils, "setLocationSearch");
@@ -95,13 +95,13 @@ describe("L10nProvider", () => {
     describe("when the Cockpit language is already set", () => {
       beforeEach(() => {
         document.cookie = "CockpitLang=en-us; path=/;";
-        getUILanguageFn.mockResolvedValueOnce("en_US");
+        getUILocaleFn.mockResolvedValueOnce("en_US");
       });
 
       it("displays the children content and does not reload", async () => {
         render(
           <InstallerClientProvider client={client}>
-            <L10nProvider><TranslatedContent /></L10nProvider>
+            <InstallerL10nProvider><TranslatedContent /></InstallerL10nProvider>
           </InstallerClientProvider>
         );
 
@@ -115,14 +115,14 @@ describe("L10nProvider", () => {
     describe("when the Cockpit language is set to an unsupported language", () => {
       beforeEach(() => {
         document.cookie = "CockpitLang=de-de; path=/;";
-        getUILanguageFn.mockResolvedValueOnce("de_DE");
-        getUILanguageFn.mockResolvedValueOnce("es_ES");
+        getUILocaleFn.mockResolvedValueOnce("de_DE");
+        getUILocaleFn.mockResolvedValueOnce("es_ES");
       });
 
       it("uses the first supported language from the browser", async () => {
         render(
           <InstallerClientProvider client={client}>
-            <L10nProvider><TranslatedContent /></L10nProvider>
+            <InstallerL10nProvider><TranslatedContent /></InstallerL10nProvider>
           </InstallerClientProvider>
         );
 
@@ -131,27 +131,27 @@ describe("L10nProvider", () => {
         // renders again after reloading
         render(
           <InstallerClientProvider client={client}>
-            <L10nProvider><TranslatedContent /></L10nProvider>
+            <InstallerL10nProvider><TranslatedContent /></InstallerL10nProvider>
           </InstallerClientProvider>
         );
 
         await waitFor(() => screen.getByText("hola"));
-        expect(setUILanguageFn).toHaveBeenCalledWith("es_ES");
+        expect(setUILocaleFn).toHaveBeenCalledWith("es_ES");
       });
     });
 
     describe("when the Cockpit language is not set", () => {
       beforeEach(() => {
         // Ensure both, UI and backend mock languages, are in sync since
-        // client.setUILanguage is mocked too.
+        // client.setUILocale is mocked too.
         // See navigator.language in the beforeAll at the top of the file.
-        getUILanguageFn.mockResolvedValue("es_ES");
+        getUILocaleFn.mockResolvedValue("es_ES");
       });
 
       it("sets the preferred language from browser and reloads", async () => {
         render(
           <InstallerClientProvider client={client}>
-            <L10nProvider><TranslatedContent /></L10nProvider>
+            <InstallerL10nProvider><TranslatedContent /></InstallerL10nProvider>
           </InstallerClientProvider>
         );
 
@@ -160,7 +160,7 @@ describe("L10nProvider", () => {
         // renders again after reloading
         render(
           <InstallerClientProvider client={client}>
-            <L10nProvider><TranslatedContent /></L10nProvider>
+            <InstallerL10nProvider><TranslatedContent /></InstallerL10nProvider>
           </InstallerClientProvider>
         );
         await waitFor(() => screen.getByText("hola"));
@@ -174,7 +174,7 @@ describe("L10nProvider", () => {
         it("sets the first which language matches", async () => {
           render(
             <InstallerClientProvider client={client}>
-              <L10nProvider><TranslatedContent /></L10nProvider>
+              <InstallerL10nProvider><TranslatedContent /></InstallerL10nProvider>
             </InstallerClientProvider>
           );
 
@@ -183,7 +183,7 @@ describe("L10nProvider", () => {
           // renders again after reloading
           render(
             <InstallerClientProvider client={client}>
-              <L10nProvider><TranslatedContent /></L10nProvider>
+              <InstallerL10nProvider><TranslatedContent /></InstallerL10nProvider>
             </InstallerClientProvider>
           );
           await waitFor(() => screen.getByText("hola!"));
@@ -200,19 +200,19 @@ describe("L10nProvider", () => {
     describe("when the Cockpit language is already set to 'cs-cz'", () => {
       beforeEach(() => {
         document.cookie = "CockpitLang=cs-cz; path=/;";
-        getUILanguageFn.mockResolvedValueOnce("cs_CZ");
+        getUILocaleFn.mockResolvedValueOnce("cs_CZ");
       });
 
       it("displays the children content and does not reload", async () => {
         render(
           <InstallerClientProvider client={client}>
-            <L10nProvider><TranslatedContent /></L10nProvider>
+            <InstallerL10nProvider><TranslatedContent /></InstallerL10nProvider>
           </InstallerClientProvider>
         );
 
         // children are displayed
         await screen.findByText("ahoj");
-        expect(setUILanguageFn).not.toHaveBeenCalled();
+        expect(setUILocaleFn).not.toHaveBeenCalled();
 
         expect(document.cookie).toEqual("CockpitLang=cs-cz");
         expect(utils.locationReload).not.toHaveBeenCalled();
@@ -223,15 +223,15 @@ describe("L10nProvider", () => {
     describe("when the Cockpit language is set to 'en-us'", () => {
       beforeEach(() => {
         document.cookie = "CockpitLang=en-us; path=/;";
-        getUILanguageFn.mockResolvedValueOnce("en_US");
-        getUILanguageFn.mockResolvedValueOnce("cs_CZ");
-        setUILanguageFn.mockResolvedValue();
+        getUILocaleFn.mockResolvedValueOnce("en_US");
+        getUILocaleFn.mockResolvedValueOnce("cs_CZ");
+        setUILocaleFn.mockResolvedValue();
       });
 
       it("sets the 'cs-cz' language and reloads", async () => {
         render(
           <InstallerClientProvider client={client}>
-            <L10nProvider><TranslatedContent /></L10nProvider>
+            <InstallerL10nProvider><TranslatedContent /></InstallerL10nProvider>
           </InstallerClientProvider>
         );
 
@@ -240,26 +240,26 @@ describe("L10nProvider", () => {
         // renders again after reloading
         render(
           <InstallerClientProvider client={client}>
-            <L10nProvider><TranslatedContent /></L10nProvider>
+            <InstallerL10nProvider><TranslatedContent /></InstallerL10nProvider>
           </InstallerClientProvider>
         );
 
         await waitFor(() => screen.getByText("ahoj"));
-        expect(setUILanguageFn).toHaveBeenCalledWith("cs_CZ");
+        expect(setUILocaleFn).toHaveBeenCalledWith("cs_CZ");
       });
     });
 
     describe("when the Cockpit language is not set", () => {
       beforeEach(() => {
-        getUILanguageFn.mockResolvedValueOnce("en_US");
-        getUILanguageFn.mockResolvedValueOnce("cs_CZ");
-        setUILanguageFn.mockResolvedValue();
+        getUILocaleFn.mockResolvedValueOnce("en_US");
+        getUILocaleFn.mockResolvedValueOnce("cs_CZ");
+        setUILocaleFn.mockResolvedValue();
       });
 
       it("sets the 'cs-cz' language and reloads", async () => {
         render(
           <InstallerClientProvider client={client}>
-            <L10nProvider><TranslatedContent /></L10nProvider>
+            <InstallerL10nProvider><TranslatedContent /></InstallerL10nProvider>
           </InstallerClientProvider>
         );
 
@@ -268,12 +268,12 @@ describe("L10nProvider", () => {
         // reload the component
         render(
           <InstallerClientProvider client={client}>
-            <L10nProvider><TranslatedContent /></L10nProvider>
+            <InstallerL10nProvider><TranslatedContent /></InstallerL10nProvider>
           </InstallerClientProvider>
         );
 
         await waitFor(() => screen.getByText("ahoj"));
-        expect(setUILanguageFn).toHaveBeenCalledWith("cs_CZ");
+        expect(setUILocaleFn).toHaveBeenCalledWith("cs_CZ");
       });
     });
   });

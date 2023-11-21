@@ -70,9 +70,12 @@ describe("App", () => {
           onPhaseChange: onPhaseChangeFn,
           onStatusChange: onStatusChangeFn,
         },
-        language: {
-          getUILanguage: jest.fn().mockResolvedValue("en-us"),
-          setUILanguage: jest.fn().mockResolvedValue("en-us"),
+        l10n: {
+          locales: jest.fn().mockResolvedValue([["en_us", "English", "United States"]]),
+          getLocales: jest.fn().mockResolvedValue(["en_us"]),
+          getUILocale: jest.fn().mockResolvedValue("en_us"),
+          setUILocale: jest.fn().mockResolvedValue("en_us"),
+          onLocalesChange: jest.fn()
         }
       };
     });

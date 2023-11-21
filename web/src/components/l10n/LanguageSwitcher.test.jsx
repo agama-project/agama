@@ -40,9 +40,9 @@ jest.mock("~/lib/cockpit", () => ({
   }
 }));
 
-jest.mock("~/context/l10n", () => ({
-  ...jest.requireActual("~/context/l10n"),
-  useL10n: () => ({
+jest.mock("~/context/installerL10n", () => ({
+  ...jest.requireActual("~/context/installerL10n"),
+  useInstallerL10n: () => ({
     language: mockLanguage,
     changeLanguage: mockChangeLanguageFn
   })

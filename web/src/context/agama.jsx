@@ -23,6 +23,7 @@
 
 import React from "react";
 import { InstallerClientProvider } from "./installer";
+import { InstallerL10nProvider } from "./installerL10n";
 import { L10nProvider } from "./l10n";
 import { ProductProvider } from "./product";
 import { NotificationProvider } from "./notification";
@@ -36,13 +37,15 @@ import { NotificationProvider } from "./notification";
 function AgamaProviders({ children }) {
   return (
     <InstallerClientProvider>
-      <L10nProvider>
-        <ProductProvider>
-          <NotificationProvider>
-            {children}
-          </NotificationProvider>
-        </ProductProvider>
-      </L10nProvider>
+      <InstallerL10nProvider>
+        <L10nProvider>
+          <ProductProvider>
+            <NotificationProvider>
+              {children}
+            </NotificationProvider>
+          </ProductProvider>
+        </L10nProvider>
+      </InstallerL10nProvider>
     </InstallerClientProvider>
   );
 }
