@@ -20,10 +20,8 @@
  */
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@patternfly/react-core";
+import { Link } from "react-router-dom";
 
-import { noop } from "~/utils";
 import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
 
 /**
@@ -70,29 +68,19 @@ import { Icon, Title, PageIcon, MainActions } from "~/components/layout";
 export default function Page({
   icon,
   title,
-  navigateTo = "/",
   action,
-  actionLabel = "Accept",
-  actionVariant = "primary",
-  actionCallback = noop,
+  actionLabel,
   children
 }) {
-  const navigate = useNavigate();
-
-  const pageAction = () => {
-    actionCallback();
-    navigate(navigateTo);
-  };
-
   return (
     <>
       { title && <Title>{title}</Title> }
       { icon && <PageIcon><Icon name={icon} /></PageIcon> }
       <MainActions>
         { action ||
-          <Button size="lg" variant={actionVariant} onClick={pageAction}>
+          <Link to=".." state={{ goingBack: true }} unstable_viewTransition>
             {actionLabel}
-          </Button> }
+          </Link> }
       </MainActions>
       {children}
     </>

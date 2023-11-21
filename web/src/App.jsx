@@ -20,7 +20,7 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
 import { _ } from "~/i18n";
 import { useInstallerClient, useInstallerClientStatus } from "~/context/installer";
@@ -54,12 +54,24 @@ const ATTEMPTS = 3;
  *   error (3 by default). The component will keep trying to connect.
  */
 function App() {
+  const location = useLocation();
   const client = useInstallerClient();
   const { attempt } = useInstallerClientStatus();
   const { products } = useProduct();
   const { language } = useL10n();
   const [status, setStatus] = useState(undefined);
   const [phase, setPhase] = useState(undefined);
+
+  // FIXME: just an EXPERIMENTAL way of adding a flag to know if the user is
+  // "navigating back" based on the use of react-router-dom/Link#state prop for
+  // adding. But, indeed, a better technique must be used, posibble based on the
+  // route paths or so (and intercepting if the user is using the browser back
+  // button as well)
+  useEffect(() => {
+    const method = location.state?.goingBack ? "add" : "remove";
+    document.documentElement.classList[method]('back-transition');
+  }, [location]);
+  // FIXME: read above
 
   useEffect(() => {
     if (client) {
