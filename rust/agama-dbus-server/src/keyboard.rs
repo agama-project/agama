@@ -28,13 +28,11 @@ impl Keymap {
 /// description from the X Keyboard Configuration Database.
 pub fn get_keymaps() -> Vec<Keymap> {
     let mut keymaps: Vec<Keymap> = vec![];
-    let xkb_descriptions= get_keymap_descriptions();
+    let xkb_descriptions = get_keymap_descriptions();
     let xkeyboards = get_xkeyboards().unwrap();
     for keyboard in xkeyboards.keyboard {
         if let Some(description) = xkb_descriptions.get(&keyboard.id) {
-            keymaps.push(Keymap::new(
-                &keyboard.id, description
-            ));
+            keymaps.push(Keymap::new(&keyboard.id, description));
         } else {
             log::debug!("Keyboard '{}' not found in xkb database", keyboard.id);
         }
