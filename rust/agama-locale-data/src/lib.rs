@@ -15,7 +15,8 @@ pub mod localization;
 pub mod ranked;
 pub mod territory;
 pub mod timezone_part;
-pub mod xkeyboard;
+
+use keyboard::xkeyboard;
 
 pub use locale::{InvalidLocaleCode, LocaleCode};
 
