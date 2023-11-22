@@ -48,6 +48,7 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
     }
 
     result.insert("connection", connection_dbus);
+    cleanup_dbus_connection(&mut result);
     result
 }
 

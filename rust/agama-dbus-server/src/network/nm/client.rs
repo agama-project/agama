@@ -130,6 +130,7 @@ impl<'a> NetworkManagerClient<'a> {
                 )
             });
         }
+
         self.activate_connection(path).await?;
         Ok(())
     }
