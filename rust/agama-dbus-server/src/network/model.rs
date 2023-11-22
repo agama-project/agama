@@ -105,6 +105,7 @@ impl NetworkState {
         // };
         //
         let mut new_ports = vec![];
+        let controller = conn.clone();
 
         if let Connection::Bond(ref mut bond) = conn {
             if let Some(ControllerSettings::Options(opts)) = settings.get("options") {
@@ -119,7 +120,11 @@ impl NetworkState {
                         {
                             new_port.clone()
                         } else {
-                            Connection::new(port.to_string(), DeviceType::Ethernet)
+                            let mut port_conn =
+                                Connection::new(port.to_string(), DeviceType::Ethernet);
+                            port_conn.set_interface(port);
+                            port_conn.set_controller(controller.id());
+                            port_conn
                         },
                     );
                 }
