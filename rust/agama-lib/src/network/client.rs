@@ -81,7 +81,7 @@ impl<'a> NetworkClient<'a> {
             .build()
             .await?;
         let name = device_proxy.name().await?;
-        let device_type = device_proxy.device_type().await?;
+        let device_type = device_proxy.type_().await?;
 
         Ok(Device {
             name,

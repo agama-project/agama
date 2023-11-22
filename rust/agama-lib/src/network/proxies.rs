@@ -16,14 +16,15 @@ trait Devices {
 #[dbus_proxy(
     interface = "org.opensuse.Agama1.Network.Device",
     default_service = "org.opensuse.Agama1",
-    default_path = "/org/opensuse/Agama1/Network"
+    default_path = "/org/opensuse/Agama1/Network/devices/1"
 )]
 trait Device {
-    /// Id property
+    /// Name property
     #[dbus_proxy(property)]
     fn name(&self) -> zbus::Result<String>;
+    /// Type property
     #[dbus_proxy(property)]
-    fn device_type(&self) -> zbus::Result<u8>;
+    fn type_(&self) -> zbus::Result<u8>;
 }
 
 #[dbus_proxy(
