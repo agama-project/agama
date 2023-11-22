@@ -195,11 +195,24 @@ impl Locale {
         Ok(())
     }
 
-    fn list_timezones(&self, locale: &str) -> Result<Vec<(String, String)>, Error> {
+    fn list_timezones(&self) -> Result<Vec<(String, Vec<String>)>, Error> {
+        let language = self.ui_locale.split("_").next().unwrap_or(&self.ui_locale);
         let timezones = agama_locale_data::get_timezones();
-        let localized =
-            agama_locale_data::get_timezone_parts()?.localize_timezones(locale, &timezones);
-        let ret = timezones.into_iter().zip(localized.into_iter()).collect();
+        let tz_parts = agama_locale_data::get_timezone_parts()?;
+        let ret = timezones
+            .into_iter()
+            .map(|tz| {
+                let parts: Vec<_> = tz
+                    .split("/")
+                    .map(|part| {
+                        tz_parts
+                            .localize_part(part, &language)
+                            .unwrap_or(part.to_owned())
+                    })
+                    .collect();
+                (tz, parts)
+            })
+            .collect();
         Ok(ret)
     }
 
