@@ -8,6 +8,7 @@ use std::io::BufReader;
 use std::process::Command;
 
 pub mod deprecated_timezones;
+pub mod keyboard;
 pub mod language;
 mod locale;
 pub mod localization;
