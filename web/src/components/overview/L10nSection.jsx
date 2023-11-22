@@ -50,7 +50,7 @@ export default function L10nSection() {
       // TRANSLATORS: page section
       title={_("Localization")}
       loading={isLoading}
-      icon="translate"
+      icon="globe"
       path="/l10n"
     >
       <If

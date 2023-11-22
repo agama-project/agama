@@ -231,9 +231,9 @@ const DeviceItem = ({ device }) => {
  */
 const DeviceList = ({ devices }) => {
   return (
-    <ListBox className="stack device-list">
+    <ListBox className="stack item-list">
       { devices.map(device => (
-        <ListBoxItem key={device.sid} isSelected>
+        <ListBoxItem key={device.sid} isSelected className="device">
           <DeviceItem device={device} />
         </ListBoxItem>
       ))}
@@ -268,13 +268,13 @@ const DeviceSelector = ({ devices, selected, isMultiple = false, onChange = noop
   };
 
   return (
-    <ListBox aria-label={_("Available devices")} className="stack device-list">
+    <ListBox aria-label={_("Available devices")} className="stack item-list">
       { devices.map(device => (
         <ListBoxItem
           key={device.sid}
           onClick={() => onOptionClick(device.name)}
           isSelected={isSelected(device.name)}
-          className="cursor-pointer"
+          className="cursor-pointer device"
         >
           <DeviceItem device={device} />
         </ListBoxItem>

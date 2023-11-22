@@ -264,7 +264,7 @@ span.notification-mark[data-variant="sidebar"] {
   }
 }
 
-.device-list {
+.item-list {
   [role="option"] {
     padding: var(--spacer-normal);
     border: 2px solid var(--color-gray-dark);
@@ -275,6 +275,21 @@ span.notification-mark[data-variant="sidebar"] {
     display: grid;
 
     gap: var(--spacer-small);
+  }
+
+  [aria-selected] {
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 2px 5px 0 var(--color-gray-dark);
+    background: var(--color-primary);
+    color: white;
+    font-weight: 700;
+
+    svg {
+      fill: white;
+    }
+  }
+
+  .device[role="option"] {
     grid-template-columns: 1fr 2fr 2fr;
     grid-template-areas:
       "type-and-size drive-info drive-content"
@@ -287,15 +302,16 @@ span.notification-mark[data-variant="sidebar"] {
     }
   }
 
-  [aria-selected] {
-    border: 2px solid var(--color-primary);
-    box-shadow: 0 2px 5px 0 var(--color-gray-dark);
-    background: var(--color-primary);
-    color: white;
-    font-weight: 700;
+  .locale[role="option"] {
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-areas: "id name territory";
 
-    svg {
-      fill: white;
+    > :first-child {
+      text-align: left;
+    }
+
+    > :last-child {
+      text-align: right;
     }
   }
 }

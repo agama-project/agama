@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,72 +19,147 @@
  * find language contact information at www.suse.com.
  */
 
-import React, { useState, useEffect } from "react";
-import { useCancellablePromise } from "~/utils";
+import React, { useState } from "react";
+import { Button, Form } from "@patternfly/react-core";
+
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
+import { If, Page, Popup, Section } from "~/components/core";
+import { LocaleSelector } from "~/components/l10n";
+import { noop } from "~/utils";
+import { useL10n } from "~/context/l10n";
 
-import {
-  Form,
-  FormGroup,
-  FormSelect,
-  FormSelectOption
-} from "@patternfly/react-core";
-
-import { Page } from "~/components/core";
-
-const initialState = {
-  languages: [],
-  language: ""
+const TimezoneSection = () => {
+  return (
+    <Section title={_("Time zone")} icon="schedule">
+      <p>
+        TODO
+      </p>
+    </Section>
+  );
 };
 
-export default function LanguageSelector() {
-  const { language: client } = useInstallerClient();
-  const { cancellablePromise } = useCancellablePromise();
-  const [state, setState] = useState(initialState);
-  const { languages, language } = state;
+/**
+ * Popup for selecting a locale.
+ * @component
+ *
+ * @param {object} props
+ * @param {function} props.onFinish - Callback to be called when the locale is correctly selected.
+ * @param {function} props.onCancel - Callback to be called when the locale selection is canceled.
+ */
+const LanguagePopup = ({ onFinish = noop, onCancel = noop }) => {
+  const { l10n } = useInstallerClient();
+  const { locales, selectedLocales } = useL10n();
+  const [localeId, setLocaleId] = useState(selectedLocales[0]?.id);
 
-  const updateState = ({ ...payload }) => {
-    setState(previousState => ({ ...previousState, ...payload }));
-  };
+  const onSubmit = async (e) => {
+    e.preventDefault();
 
-  useEffect(() => {
-    const loadLanguages = async () => {
-      const languages = await cancellablePromise(client.getLanguages());
-      const [language] = await cancellablePromise(client.getSelectedLanguages());
-      updateState({ languages, language });
-    };
+    const [locale] = selectedLocales;
 
-    loadLanguages().catch(console.error);
-  }, [client, cancellablePromise]);
+    if (localeId !== locale?.id) {
+      await l10n.setLocales([localeId]);
+    }
 
-  const accept = () => client.setLanguages([language]);
-
-  const LanguageField = ({ selected }) => {
-    const selectorOptions = languages.map(lang => (
-      <FormSelectOption key={lang.id} value={lang.id} label={lang.name} />
-    ));
-
-    return (
-      <FormGroup fieldId="language" label="Language">
-        <FormSelect
-          id="language"
-          aria-label={_("language")}
-          value={selected}
-          onChange={(_, v) => updateState({ language: v })}
-        >
-          {selectorOptions}
-        </FormSelect>
-      </FormGroup>
-    );
+    onFinish();
   };
 
   return (
-    // TRANSLATORS: page header
-    <Page title={_("Localization")} icon="translate" actionCallback={accept}>
-      <Form id="language-selector">
-        <LanguageField selected={language} />
+    <Popup
+      title={_("Select language")}
+      isOpen
+    >
+      <Form id="localeForm" onSubmit={onSubmit}>
+        <LocaleSelector value={localeId} locales={locales} onChange={setLocaleId} />
       </Form>
+      <Popup.Actions>
+        <Popup.Confirm form="localeForm" type="submit">
+          {_("Accept")}
+        </Popup.Confirm>
+        <Popup.Cancel onClick={onCancel} />
+      </Popup.Actions>
+    </Popup>
+  );
+};
+
+const LanguageButton = ({ children }) => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const openPopup = () => setIsPopupOpen(true);
+  const closePopup = () => setIsPopupOpen(false);
+
+  return (
+    <>
+      <Button
+        variant="link"
+        className="p-0"
+        onClick={openPopup}
+      >
+        {children}
+      </Button>
+
+      <If
+        condition={isPopupOpen}
+        then={
+          <LanguagePopup
+            isOpen
+            onFinish={closePopup}
+            onCancel={closePopup}
+          />
+        }
+      />
+    </>
+  );
+};
+
+const LanguageSection = () => {
+  const { selectedLocales } = useL10n();
+
+  const [locale] = selectedLocales;
+
+  return (
+    <Section title={_("Language")} icon="translate">
+      <If
+        condition={locale}
+        then={
+          <>
+            <p>{locale?.name} - {locale?.territory}</p>
+            <LanguageButton>{_("Change language")}</LanguageButton>
+          </>
+        }
+        else={
+          <>
+            <p>{_("Language not selected yet")}</p>
+            <LanguageButton>{_("Select language")}</LanguageButton>
+          </>
+        }
+      />
+    </Section>
+  );
+};
+
+const KeyboardSection = () => {
+  return (
+    <Section title={_("Keyboard")} icon="keyboard">
+      <p>
+        TODO
+      </p>
+    </Section>
+  );
+};
+
+export default function L10nPage() {
+  return (
+    <Page
+      // TRANSLATORS: page title
+      title={_("Localization")}
+      icon="globe"
+      actionLabel={_("Back")}
+      actionVariant="secondary"
+    >
+      <TimezoneSection />
+      <LanguageSection />
+      <KeyboardSection />
     </Page>
   );
 }
