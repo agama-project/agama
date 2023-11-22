@@ -21,3 +21,4 @@ serde_yaml = "0.9.24"
 cidr = { version = "0.2.2", features = ["serde"] }
 tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread"] }
 tokio-stream = "0.1.14"
+gettext-rs = { version = "0.7.0", features = ["gettext-system"] }

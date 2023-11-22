@@ -1,5 +1,6 @@
-use crate::error::Error;
 use agama_locale_data::LocaleCode;
+use crate::{error::Error, keyboard::Keymap};
+use super::{helpers, keyboard::get_xkb_keymaps};
 use anyhow::Context;
 use std::{fs::read_dir, process::Command};
 use zbus::{dbus_interface, Connection};
@@ -10,6 +11,7 @@ pub struct Locale {
     timezone_id: String,
     supported_locales: Vec<String>,
     ui_locale: String,
+    keymaps: Vec<Keymap>,
 }
 
 #[dbus_interface(name = "org.opensuse.Agama1.Locale")]
@@ -106,6 +108,7 @@ impl Locale {
     #[dbus_interface(property, name = "UILocale")]
     fn set_ui_locale(&mut self, locale: &str) {
         self.ui_locale = locale.to_string();
+        helpers::set_service_locale(locale);
     }
 
     /// Gets list of locales available on system.
@@ -160,6 +163,16 @@ impl Locale {
     fn list_keyboards(&self) -> Result<Vec<String>, Error> {
         let res = agama_locale_data::get_key_maps()?;
         Ok(res)
+    }
+
+    #[dbus_interface(name = "ListKeymaps")]
+    fn list_keymaps(&self) -> Result<Vec<(String, String)>, Error> {
+        let keymaps = self
+            .keymaps
+            .iter()
+            .map(|k| (k.id(), k.localized_description()))
+            .collect();
+        Ok(keymaps)
     }
 
     #[dbus_interface(property, name = "VConsoleKeyboard")]
@@ -238,19 +251,25 @@ impl Locale {
         let supported: Vec<String> = output.lines().map(|s| s.to_string()).collect();
         Ok(Self {
             supported_locales: supported,
+            keymaps: get_xkb_keymaps(),
             ..Default::default()
         })
+    }
+
+    pub fn init(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        Ok(())
     }
 }
 
 impl Default for Locale {
     fn default() -> Self {
         Self {
-            locales: vec!["en_US.UTF-8".to_string(), "es_ES.UTF-8".to_string()],
+            locales: vec!["en_US.UTF-8".to_string()],
             keymap: "us".to_string(),
             timezone_id: "America/Los_Angeles".to_string(),
             supported_locales: vec!["en_US.UTF-8".to_string(), "es_ES.UTF-8".to_string()],
             ui_locale: "en".to_string(),
+            keymaps: vec![]
         }
     }
 }
