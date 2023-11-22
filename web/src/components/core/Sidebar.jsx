@@ -22,7 +22,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button, Text } from "@patternfly/react-core";
 import { Icon, AppActions } from "~/components/layout";
-import { If, NotificationMark } from "~/components/core";
+import { If, IssuesPage } from "~/components/core";
 import { useNotification } from "~/context/notification";
 import useNodeSiblings from "~/hooks/useNodeSiblings";
 import { _ } from "~/i18n";
@@ -40,6 +40,7 @@ export default function Sidebar ({ children }) {
   const closeButtonRef = useRef(null);
   const [notification] = useNotification();
   const [addAttribute, removeAttribute] = useNodeSiblings(asideRef.current);
+  const [showWarningPopup, setShowWarningPopup] = useState(false);
 
   /**
    * Set siblings as not interactive and not discoverable
@@ -129,6 +130,17 @@ export default function Sidebar ({ children }) {
   return (
     <>
       <AppActions>
+        <If
+          condition={notification.issues}
+          then={
+            <Button
+              aria-label={_("Show issues popup")}
+              variant="warning"
+              icon={<Icon name="warning" />}
+              onClick={() => setShowWarningPopup(prev => !prev)}
+            />
+          }
+        />
         <button
           onClick={open}
           className="plain-control"
@@ -136,13 +148,11 @@ export default function Sidebar ({ children }) {
           aria-controls="global-options"
           aria-expanded={isOpen}
         >
-          <If
-            condition={notification.issues}
-            then={<NotificationMark data-variant="sidebar" aria-label={_("New issues found")} />}
-          />
           <Icon name="menu" />
         </button>
       </AppActions>
+
+      {showWarningPopup && <IssuesPage close={() => setShowWarningPopup(false)} />}
 
       <aside
         id="global-options"
