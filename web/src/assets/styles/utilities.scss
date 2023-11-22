@@ -164,3 +164,17 @@
 .cursor-pointer {
   cursor: pointer;
 }
+
+@keyframes fadeHighlight {
+  from {
+      background-color: yellow;
+  }
+
+  to {
+      background-color: transparent;
+  }
+}
+
+.highlighted {
+  animation: fadeHighlight 2s ease forwards;
+}
