@@ -72,7 +72,6 @@ const LocaleItem = ({ locale }) => {
  *  changes.
  */
 export default function LocaleSelector({ value, locales, onChange = noop }) {
-  console.log("value: ", value);
   return (
     <ListBox aria-label={_("Available locales")} className="stack item-list">
       { locales.map(locale => (

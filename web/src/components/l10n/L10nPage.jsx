@@ -47,10 +47,15 @@ const TimezoneSection = () => {
  * @param {function} props.onFinish - Callback to be called when the locale is correctly selected.
  * @param {function} props.onCancel - Callback to be called when the locale selection is canceled.
  */
-const LanguagePopup = ({ onFinish = noop, onCancel = noop }) => {
+const LocalePopup = ({ onFinish = noop, onCancel = noop }) => {
   const { l10n } = useInstallerClient();
   const { locales, selectedLocales } = useL10n();
   const [localeId, setLocaleId] = useState(selectedLocales[0]?.id);
+
+  const sortedLocales = locales.sort((locale1, locale2) => {
+    const localeText = l => [l.name, l.territory].join('').toLowerCase();
+    return localeText(locale1) > localeText(locale2) ? 1 : -1;
+  });
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -70,7 +75,7 @@ const LanguagePopup = ({ onFinish = noop, onCancel = noop }) => {
       isOpen
     >
       <Form id="localeForm" onSubmit={onSubmit}>
-        <LocaleSelector value={localeId} locales={locales} onChange={setLocaleId} />
+        <LocaleSelector value={localeId} locales={sortedLocales} onChange={setLocaleId} />
       </Form>
       <Popup.Actions>
         <Popup.Confirm form="localeForm" type="submit">
@@ -82,7 +87,7 @@ const LanguagePopup = ({ onFinish = noop, onCancel = noop }) => {
   );
 };
 
-const LanguageButton = ({ children }) => {
+const LocaleButton = ({ children }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const openPopup = () => setIsPopupOpen(true);
@@ -101,7 +106,7 @@ const LanguageButton = ({ children }) => {
       <If
         condition={isPopupOpen}
         then={
-          <LanguagePopup
+          <LocalePopup
             isOpen
             onFinish={closePopup}
             onCancel={closePopup}
@@ -112,7 +117,7 @@ const LanguageButton = ({ children }) => {
   );
 };
 
-const LanguageSection = () => {
+const LocaleSection = () => {
   const { selectedLocales } = useL10n();
 
   const [locale] = selectedLocales;
@@ -124,13 +129,13 @@ const LanguageSection = () => {
         then={
           <>
             <p>{locale?.name} - {locale?.territory}</p>
-            <LanguageButton>{_("Change language")}</LanguageButton>
+            <LocaleButton>{_("Change language")}</LocaleButton>
           </>
         }
         else={
           <>
             <p>{_("Language not selected yet")}</p>
-            <LanguageButton>{_("Select language")}</LanguageButton>
+            <LocaleButton>{_("Select language")}</LocaleButton>
           </>
         }
       />
@@ -158,7 +163,7 @@ export default function L10nPage() {
       actionVariant="secondary"
     >
       <TimezoneSection />
-      <LanguageSection />
+      <LocaleSection />
       <KeyboardSection />
     </Page>
   );
