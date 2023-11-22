@@ -1,4 +1,4 @@
-use agama_locale_data::keyboard::XkbConfigRegistry;
+use agama_locale_data::{get_xkeyboards, keyboard::XkbConfigRegistry};
 use gettextrs::*;
 
 // Minimal representation of a keymap
@@ -17,6 +17,9 @@ impl Keymap {
         }
     }
 
+    /// Returns the ID in the form "layout(variant)"
+    ///
+    /// TODO: should we store this ID instead of using separate fields?
     pub fn id(&self) -> String {
         if let Some(var) = &self.variant {
             format!("{}({})", &self.layout, &var)
@@ -30,7 +33,22 @@ impl Keymap {
     }
 }
 
-pub fn get_xkb_keymaps() -> Vec<Keymap> {
+/// Returns the list of keymaps to offer.
+///
+/// It only includes the keyboards that are listed in langtable but getting the description
+/// from the xkb database.
+pub fn get_keymaps() -> Vec<Keymap> {
+    let xkb_keymaps = get_xkb_keymaps();
+    let xkeyboards = get_xkeyboards().unwrap();
+    let known_ids: Vec<String> = xkeyboards.keyboard.into_iter().map(|k| k.id).collect();
+    xkb_keymaps
+        .into_iter()
+        .filter(|k| known_ids.contains(&k.id()))
+        .collect()
+}
+
+/// Returns the list of keymaps
+fn get_xkb_keymaps() -> Vec<Keymap> {
     let layouts = XkbConfigRegistry::from_system().unwrap();
     let mut keymaps = vec![];
 

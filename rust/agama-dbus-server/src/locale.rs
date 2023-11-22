@@ -1,16 +1,16 @@
-use agama_locale_data::LocaleCode;
+use super::{helpers, keyboard::get_keymaps};
 use crate::{error::Error, keyboard::Keymap};
-use super::{helpers, keyboard::get_xkb_keymaps};
+use agama_locale_data::LocaleCode;
 use anyhow::Context;
 use std::{fs::read_dir, process::Command};
 use zbus::{dbus_interface, Connection};
 
 pub struct Locale {
     locales: Vec<String>,
-    keymap: String,
     timezone_id: String,
     supported_locales: Vec<String>,
     ui_locale: String,
+    keymap: String,
     keymaps: Vec<Keymap>,
 }
 
@@ -251,7 +251,7 @@ impl Locale {
         let supported: Vec<String> = output.lines().map(|s| s.to_string()).collect();
         Ok(Self {
             supported_locales: supported,
-            keymaps: get_xkb_keymaps(),
+            keymaps: get_keymaps(),
             ..Default::default()
         })
     }
@@ -269,7 +269,7 @@ impl Default for Locale {
             timezone_id: "America/Los_Angeles".to_string(),
             supported_locales: vec!["en_US.UTF-8".to_string(), "es_ES.UTF-8".to_string()],
             ui_locale: "en".to_string(),
-            keymaps: vec![]
+            keymaps: vec![],
         }
     }
 }
