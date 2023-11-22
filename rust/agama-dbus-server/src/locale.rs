@@ -175,23 +175,19 @@ impl Locale {
         Ok(keymaps)
     }
 
-    #[dbus_interface(property, name = "VConsoleKeyboard")]
+    #[dbus_interface(property)]
     fn keymap(&self) -> &str {
         self.keymap.as_str()
     }
 
-    #[dbus_interface(property, name = "VConsoleKeyboard")]
-    fn set_keymap(&mut self, keyboard: &str) -> Result<(), zbus::fdo::Error> {
-        let exist = agama_locale_data::get_key_maps()
-            .unwrap()
-            .iter()
-            .any(|k| k == keyboard);
-        if !exist {
+    #[dbus_interface(property)]
+    fn set_keymap(&mut self, keymap_id: &str) -> Result<(), zbus::fdo::Error> {
+        if !self.keymaps.iter().any(|k| k.id == keymap_id) {
             return Err(zbus::fdo::Error::Failed(
                 "Invalid keyboard value".to_string(),
             ));
         }
-        self.keymap = keyboard.to_string();
+        self.keymap = keymap_id.to_string();
         Ok(())
     }
 
@@ -278,10 +274,10 @@ impl Default for Locale {
     fn default() -> Self {
         Self {
             locales: vec!["en_US.UTF-8".to_string()],
-            keymap: "us".to_string(),
             timezone_id: "America/Los_Angeles".to_string(),
             supported_locales: vec!["en_US.UTF-8".to_string(), "es_ES.UTF-8".to_string()],
             ui_locale: "en".to_string(),
+            keymap: "us".to_string(),
             keymaps: vec![],
         }
     }
