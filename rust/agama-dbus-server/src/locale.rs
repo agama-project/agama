@@ -170,7 +170,7 @@ impl Locale {
         let keymaps = self
             .keymaps
             .iter()
-            .map(|k| (k.id(), k.localized_description()))
+            .map(|k| (k.id.to_owned(), k.localized_description()))
             .collect();
         Ok(keymaps)
     }

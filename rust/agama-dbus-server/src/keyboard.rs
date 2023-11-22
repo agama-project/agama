@@ -1,30 +1,19 @@
+use std::collections::HashMap;
+
 use agama_locale_data::{get_xkeyboards, keyboard::XkbConfigRegistry};
 use gettextrs::*;
 
 // Minimal representation of a keymap
 pub struct Keymap {
-    layout: String,
-    variant: Option<String>,
+    pub id: String,
     description: String,
 }
 
 impl Keymap {
-    pub fn new(layout: &str, variant: Option<&str>, description: &str) -> Self {
+    pub fn new(layout: &str, description: &str) -> Self {
         Self {
-            layout: layout.to_string(),
-            variant: variant.map(|v| v.to_string()),
+            id: layout.to_string(),
             description: description.to_string(),
-        }
-    }
-
-    /// Returns the ID in the form "layout(variant)"
-    ///
-    /// TODO: should we store this ID instead of using separate fields?
-    pub fn id(&self) -> String {
-        if let Some(var) = &self.variant {
-            format!("{}({})", &self.layout, &var)
-        } else {
-            format!("{}", &self.layout)
         }
     }
 
@@ -35,33 +24,38 @@ impl Keymap {
 
 /// Returns the list of keymaps to offer.
 ///
-/// It only includes the keyboards that are listed in langtable but getting the description
-/// from the xkb database.
+/// It only includes the keyboards that are listed in langtable but getting the
+/// description from the X Keyboard Configuration Database.
 pub fn get_keymaps() -> Vec<Keymap> {
-    let xkb_keymaps = get_xkb_keymaps();
+    let mut keymaps: Vec<Keymap> = vec![];
+    let xkb_descriptions= get_keymap_descriptions();
     let xkeyboards = get_xkeyboards().unwrap();
-    let known_ids: Vec<String> = xkeyboards.keyboard.into_iter().map(|k| k.id).collect();
-    xkb_keymaps
-        .into_iter()
-        .filter(|k| known_ids.contains(&k.id()))
-        .collect()
+    for keyboard in xkeyboards.keyboard {
+        if let Some(description) = xkb_descriptions.get(&keyboard.id) {
+            keymaps.push(Keymap::new(
+                &keyboard.id, description
+            ));
+        } else {
+            log::debug!("Keyboard '{}' not found in xkb database", keyboard.id);
+        }
+    }
+
+    keymaps
 }
 
-/// Returns the list of keymaps
-fn get_xkb_keymaps() -> Vec<Keymap> {
+/// Returns a map of keymaps ids and its descriptions from the X Keyboard
+/// Configuration Database.
+fn get_keymap_descriptions() -> HashMap<String, String> {
     let layouts = XkbConfigRegistry::from_system().unwrap();
-    let mut keymaps = vec![];
+    let mut keymaps = HashMap::new();
 
     for layout in layouts.layout_list.layouts {
         let name = layout.config_item.name;
-        keymaps.push(Keymap::new(&name, None, &layout.config_item.description));
+        keymaps.insert(name.to_string(), layout.config_item.description.to_string());
 
         for variant in layout.variants_list.variants {
-            keymaps.push(Keymap::new(
-                &name,
-                Some(&variant.config_item.name),
-                &variant.config_item.description,
-            ));
+            let id = format!("{}({})", &name, &variant.config_item.name);
+            keymaps.insert(id, variant.config_item.description);
         }
     }
 
