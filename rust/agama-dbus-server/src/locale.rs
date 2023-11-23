@@ -258,7 +258,7 @@ impl Locale {
         let supported: Vec<String> = output.lines().map(|s| s.to_string()).collect();
         Ok(Self {
             supported_locales: supported,
-            keymaps: get_keymaps(),
+            keymaps: get_keymaps()?,
             ..Default::default()
         })
     }

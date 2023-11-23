@@ -1,4 +1,4 @@
-use agama_locale_data::{get_xkeyboards, keyboard::XkbConfigRegistry, KeymapId};
+use agama_locale_data::{get_localectl_keymaps, keyboard::XkbConfigRegistry, KeymapId};
 use gettextrs::*;
 use std::collections::HashMap;
 
@@ -23,22 +23,22 @@ impl Keymap {
 
 /// Returns the list of keymaps to offer.
 ///
-/// It only includes the keyboards that are listed in langtable but getting the
-/// description from the X Keyboard Configuration Database.
-pub fn get_keymaps() -> Vec<Keymap> {
+/// It only includes the keyboards supported by `localectl` but getting
+/// the description from the X Keyboard Configuration Database.
+pub fn get_keymaps() -> anyhow::Result<Vec<Keymap>> {
     let mut keymaps: Vec<Keymap> = vec![];
     let xkb_descriptions = get_keymap_descriptions();
-    let xkeyboards = get_xkeyboards().unwrap();
-    for keyboard in xkeyboards.keyboard {
-        let keymap_id = keyboard.id.parse::<KeymapId>().unwrap();
-        if let Some(description) = xkb_descriptions.get(&keyboard.id) {
+    let keymap_ids = get_localectl_keymaps()?;
+    for keymap_id in keymap_ids {
+        let keymap_id_str = keymap_id.to_string();
+        if let Some(description) = xkb_descriptions.get(&keymap_id_str) {
             keymaps.push(Keymap::new(keymap_id, description));
         } else {
-            log::debug!("Keyboard '{}' not found in xkb database", keyboard.id);
+            log::debug!("Keyboard '{}' not found in xkb database", keymap_id_str);
         }
     }
 
-    keymaps
+    Ok(keymaps)
 }
 
 /// Returns a map of keymaps ids and its descriptions from the X Keyboard
