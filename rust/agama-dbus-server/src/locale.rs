@@ -227,20 +227,19 @@ impl Locale {
         const ROOT: &str = "/mnt";
         Command::new("/usr/bin/systemd-firstboot")
             .args([
-                "root",
+                "--root",
                 ROOT,
                 "--locale",
                 self.locales.first().context("missing locale")?.as_str(),
             ])
             .status()
             .context("Failed to execute systemd-firstboot")?;
-        let keymap = self.keymap.to_string();
         Command::new("/usr/bin/systemd-firstboot")
-            .args(["root", ROOT, "--keymap", &keymap])
+            .args(["--root", ROOT, "--keymap", &self.keymap.to_string()])
             .status()
             .context("Failed to execute systemd-firstboot")?;
         Command::new("/usr/bin/systemd-firstboot")
-            .args(["root", ROOT, "--timezone", self.timezone_id.as_str()])
+            .args(["--root", ROOT, "--timezone", self.timezone_id.as_str()])
             .status()
             .context("Failed to execute systemd-firstboot")?;
 
