@@ -56,7 +56,7 @@ const LocaleItem = ({ locale }) => {
     <>
       <div>{locale.name}</div>
       <div>{locale.territory}</div>
-      <div>{locale.id}</div>
+      <div {...{ "data-type": "details" }}>{locale.id}</div>
     </>
   );
 };
@@ -71,7 +71,7 @@ const LocaleItem = ({ locale }) => {
  * @param {(id: string) => void} [props.onChange] - Callback to be called when the selected locale
  *  changes.
  */
-export default function LocaleSelector({ value, locales, onChange = noop }) {
+export default function LocaleSelector({ value, locales = [], onChange = noop }) {
   return (
     <ListBox aria-label={_("Available locales")} className="stack item-list">
       { locales.map(locale => (
@@ -79,7 +79,8 @@ export default function LocaleSelector({ value, locales, onChange = noop }) {
           key={locale.id}
           onClick={() => onChange(locale.id)}
           isSelected={locale.id === value}
-          className="cursor-pointer locale"
+          className="cursor-pointer"
+          {...{ "data-type": "locale" }}
         >
           <LocaleItem locale={locale} />
         </ListBoxItem>

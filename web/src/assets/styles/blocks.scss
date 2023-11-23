@@ -276,9 +276,33 @@ span.notification-mark[data-variant="sidebar"] {
 
     gap: var(--spacer-small);
 
+    grid-template-columns: 1fr;
+    grid-template-areas: "content";
+    text-align: start;
+
+    > [data-type="details"] {
+      font-size: 80%;
+    }
+
     &:hover {
       &:not([aria-selected]) {
         background: var(--color-gray-dark);
+      }
+    }
+
+    &:is([data-type="locale"]) {
+      grid-template-columns: 1fr 2fr;
+      grid-template-areas: "name territory";
+    }
+
+    &:is([data-type="storage-device"]) {
+      grid-template-columns: 1fr 2fr 2fr;
+      grid-template-areas: "type-and-size drive-info drive-content";
+
+      [data-type="type-and-size"] {
+        align-self: center;
+        text-align: center;
+        justify-self: start;
       }
     }
   }
@@ -292,38 +316,6 @@ span.notification-mark[data-variant="sidebar"] {
 
     svg {
       fill: white;
-    }
-  }
-
-  .device[role="option"] {
-    grid-template-columns: 1fr 2fr 2fr;
-    grid-template-areas:
-      "type-and-size drive-info drive-content"
-    ;
-
-    > :first-child {
-      align-self: center;
-      text-align: center;
-      justify-self: start;
-    }
-  }
-
-  .locale[role="option"] {
-    grid-template-columns: 1fr 2fr 1fr;
-    grid-template-areas: "id name territory";
-
-    > :first-child {
-      text-align: left;
-    }
-
-    > :last-child {
-      text-align: right;
-    }
-
-    &:not([aria-selected]) {
-      > :last-child {
-        color: var(--color-gray-darker);
-      }
     }
   }
 }
