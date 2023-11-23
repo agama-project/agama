@@ -22,27 +22,11 @@
 // @ts-check
 
 import React, { useState } from "react";
-import {
-  Button,
-  List,
-  ListItem,
-  Popover
-} from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
 
 import { Icon } from '~/components/layout';
-import { _, n_ } from "~/i18n";
-
-/**
- * @param {import("~/client/mixins").ValidationError[]} errors - Validation errors
- * @return React.JSX
- */
-const popoverContent = (errors) => {
-  const items = errors.map((e, i) => <ListItem key={i}>{e.message}</ListItem>);
-  return (
-    <List>{items}</List>
-  );
-};
+import { IssuesPage } from "~/components/core";
+import { n_ } from "~/i18n";
 
 /**
  * Displays a list of validation errors
@@ -56,11 +40,11 @@ const popoverContent = (errors) => {
  * @todo Improve the contents of the Popover (e.g., using a list)
  *
  * @param {object} props
- * @param {string} props.title - A title for the Popover
+ * @param {string} [props.sectionName] - Name of the section which is displaying errors. (product, software, storage, ...)
  * @param {import("~/client/mixins").ValidationError[]} props.errors - Validation errors
  */
-const ValidationErrors = ({ title = _("Errors"), errors }) => {
-  const [popoverVisible, setPopoverVisible] = useState(false);
+const ValidationErrors = ({ errors, sectionName = "" }) => {
+  const [showIssuesPopUp, setshowIssuesPopUp] = useState(false);
 
   if (!errors || errors.length === 0) return null;
 
@@ -77,7 +61,7 @@ const ValidationErrors = ({ title = _("Errors"), errors }) => {
           <button
             style={{ padding: "0", borderBottom: "1px solid" }}
             className="plain-control color-warn"
-            onClick={() => setPopoverVisible(true)}
+            onClick={() => setshowIssuesPopUp(true)}
           >
             { warningIcon } {
               sprintf(
@@ -87,17 +71,12 @@ const ValidationErrors = ({ title = _("Errors"), errors }) => {
               )
             }
           </button>
-          <Popover
-            isVisible={popoverVisible}
-            position="right"
-            shouldClose={() => setPopoverVisible(false)}
-            shouldOpen={() => setPopoverVisible(true)}
-            aria-label={_("Basic popover")}
-            headerContent={title}
-            bodyContent={popoverContent(errors)}
-          >
-            <Button className="hidden-popover-button" variant="link" />
-          </Popover>
+
+          {showIssuesPopUp &&
+            <IssuesPage
+              close={() => setshowIssuesPopUp(false)}
+              sectionHighLight={sectionName}
+            />}
         </div>
       </>
     );
