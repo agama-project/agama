@@ -38,21 +38,21 @@ static KEYMAP_ID_REGEX: OnceLock<Regex> = OnceLock::new();
 /// Keymap layout identifier
 ///
 /// ```
-/// use KeymapId;
+/// use agama_locale_data::KeymapId;
 /// use std::str::FromStr;
 ///
-/// let id: KeymapId = "es(ast)".parse();
+/// let id: KeymapId = "es(ast)".parse().unwrap();
 /// assert_eq!(&id.layout, "es");
-/// assert_eq!(&id.variant, "ast");
+/// assert_eq!(id.variant.clone(), Some("ast".to_string()));
 /// assert_eq!(id.dashed(), "es-ast".to_string());
 ///
-/// let id_with_dashes: KeymapId = "es-ast".parse();
+/// let id_with_dashes: KeymapId = "es-ast".parse().unwrap();
 /// assert_eq!(id, id_with_dashes);
 /// ```
 #[derive(Clone, Debug, PartialEq)]
 pub struct KeymapId {
     pub layout: String,
-    pub variant: Option<String>
+    pub variant: Option<String>,
 }
 
 #[derive(Error, Debug)]
@@ -94,7 +94,10 @@ impl FromStr for KeymapId {
             if let Some(var2) = parts.name("var2") {
                 variant = Some(var2.as_str().to_string());
             }
-            Ok(KeymapId { layout: parts[1].to_string(), variant })
+            Ok(KeymapId {
+                layout: parts[1].to_string(),
+                variant,
+            })
         } else {
             Err(InvalidKeymap(s.to_string()))
         }
@@ -109,17 +112,29 @@ mod test {
     #[test]
     fn test_parse_keymap_id() {
         let keymap_id0 = KeymapId::from_str("es").unwrap();
-        assert_eq!(KeymapId { layout: "es".to_string(), variant: None }, keymap_id0);
+        assert_eq!(
+            KeymapId {
+                layout: "es".to_string(),
+                variant: None
+            },
+            keymap_id0
+        );
 
         let keymap_id1 = KeymapId::from_str("es(ast)").unwrap();
         assert_eq!(
-            KeymapId { layout: "es".to_string(), variant: Some("ast".to_string()) },
+            KeymapId {
+                layout: "es".to_string(),
+                variant: Some("ast".to_string())
+            },
             keymap_id1
         );
 
         let keymap_id2 = KeymapId::from_str("es-ast").unwrap();
         assert_eq!(
-            KeymapId { layout: "es".to_string(), variant: Some("ast".to_string()) },
+            KeymapId {
+                layout: "es".to_string(),
+                variant: Some("ast".to_string())
+            },
             keymap_id2
         );
     }

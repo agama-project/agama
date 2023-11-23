@@ -43,8 +43,11 @@ pub fn get_xkeyboards() -> anyhow::Result<xkeyboard::XKeyboards> {
 /// Requires working localectl.
 ///
 /// ```no_run
-/// let key_maps = agama_locale_data::get_key_maps().unwrap();
-/// assert!(key_maps.contains(&"us".to_string()))
+/// use agama_locale_data::KeymapId;
+///
+/// let key_maps = agama_locale_data::get_localectl_keymaps().unwrap();
+/// let us: KeymapId = "us".parse().unwrap();
+/// assert!(key_maps.contains(&us));
 /// ```
 pub fn get_localectl_keymaps() -> anyhow::Result<Vec<KeymapId>> {
     const BINARY: &str = "/usr/bin/localectl";

@@ -117,7 +117,7 @@ impl Locale {
     ///
     /// ```
     ///   use agama_dbus_server::locale::Locale;
-    ///   let locale = Locale::new();
+    ///   let locale = Locale::default();
     ///   assert!(locale.list_ui_locales().unwrap().len() > 0);
     /// ```
     #[dbus_interface(name = "ListUILocales")]
