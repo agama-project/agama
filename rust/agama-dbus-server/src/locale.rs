@@ -18,7 +18,7 @@ pub struct Locale {
 impl Locale {
     /// Gets the supported locales information.
     ///
-    /// Each element of the has these parts:
+    /// Each element of the list has these parts:
     ///
     /// * The locale code (e.g., "es_ES.UTF-8").
     /// * A pair composed by the language and the territory names in english
@@ -111,7 +111,7 @@ impl Locale {
         helpers::set_service_locale(locale);
     }
 
-    /// Gets list of locales available on system.
+    /// Returns a list of the locales available in the system.
     ///
     /// # Examples
     ///
@@ -160,6 +160,12 @@ impl Locale {
     */
 
     #[dbus_interface(name = "ListKeymaps")]
+    /// Returns a list of the supported keymaps.
+    ///
+    /// Each element of the list contains:
+    ///
+    /// * The keymap identifier (e.g., "es" or "es(ast)").
+    /// * The name of the keyboard in language set by the UILocale property.
     fn list_keymaps(&self) -> Result<Vec<(String, String)>, Error> {
         let keymaps = self
             .keymaps
@@ -189,6 +195,13 @@ impl Locale {
         Ok(())
     }
 
+    /// Returns a list of the supported timezones.
+    ///
+    /// Each element of the list contains:
+    ///
+    /// * The timezone identifier (e.g., "Europe/Berlin").
+    /// * A list containing each part of the name in the language set by the
+    ///   UILocale property.
     fn list_timezones(&self) -> Result<Vec<(String, Vec<String>)>, Error> {
         let language = self.ui_locale.split("_").next().unwrap_or(&self.ui_locale);
         let timezones = agama_locale_data::get_timezones();
