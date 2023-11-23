@@ -207,12 +207,8 @@ module Agama
     #
     # @param user [String] local username who will own archive
     # @return [String] path to created archive
-    def collect_logs(user)
-      output = Yast::Execute.locally!("save_y2logs", stderr: :capture)
-      path = output[/^.* (\/tmp\/y2log-\S*)/, 1]
-      Yast::Execute.locally!("chown", "#{user}:", path)
-
-      path
+    def collect_logs(_user)
+      %x(agama logs store).strip
     end
 
     # Whatever has to be done at the end of installation
