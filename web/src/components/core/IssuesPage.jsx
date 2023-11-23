@@ -77,9 +77,9 @@ const IssueItems = ({ issues = [] }) => {
  *
  * @param {object} props
  * @param {import ("~/client/issues").ClientsIssues} props.issues
- * @param {string} [props.sectionHighLight] - A string which indicites which issues section should be highlighted.
+ * @param {string} [props.sectionHighlight] - A string which indicites which issues section should be highlighted.
  */
-const IssuesSections = ({ issues, sectionHighLight = "" }) => {
+const IssuesSections = ({ issues, sectionHighlight = "" }) => {
   const productIssues = issues.product || [];
   const storageIssues = issues.storage || [];
   const softwareIssues = issues.software || [];
@@ -89,7 +89,7 @@ const IssuesSections = ({ issues, sectionHighLight = "" }) => {
 
   useEffect(() => {
     let selectedRef;
-    switch (sectionHighLight) {
+    switch (sectionHighlight) {
       case 'Product':
         selectedRef = productSectionRef;
         break;
@@ -106,7 +106,7 @@ const IssuesSections = ({ issues, sectionHighLight = "" }) => {
     if (selectedRef && selectedRef.current) {
       selectedRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [sectionHighLight]);
+  }, [sectionHighlight]);
 
   return (
     <>
@@ -118,7 +118,7 @@ const IssuesSections = ({ issues, sectionHighLight = "" }) => {
               key="product-issues"
               title={_("Product")}
               icon="inventory_2"
-              className={sectionHighLight === "Product" ? "highlighted" : ""}
+              className={sectionHighlight === "Product" ? "highlighted" : ""}
             >
               <IssueItems issues={productIssues} />
             </Section>
@@ -133,7 +133,7 @@ const IssuesSections = ({ issues, sectionHighLight = "" }) => {
               key="storage-issues"
               title={_("Storage")}
               icon="hard_drive"
-              className={sectionHighLight === "Storage" ? "highlighted" : ""}
+              className={sectionHighlight === "Storage" ? "highlighted" : ""}
             >
               <IssueItems issues={storageIssues} />
             </Section>
@@ -148,7 +148,7 @@ const IssuesSections = ({ issues, sectionHighLight = "" }) => {
               key="software-issues"
               title={_("Software")}
               icon="apps"
-              className={sectionHighLight === "Software" ? "highlighted" : ""}
+              className={sectionHighlight === "Software" ? "highlighted" : ""}
             >
               <IssueItems issues={softwareIssues} />
             </Section>
@@ -165,9 +165,9 @@ const IssuesSections = ({ issues, sectionHighLight = "" }) => {
  *
  * @param {object} props
  * @param {import ("~/client").Issues} props.issues
- * @param {string} [props.sectionHighLight] - A string which indicites which issues section should be highlighted.
+ * @param {string} [props.sectionHighlight] - A string which indicites which issues section should be highlighted.
  */
-const IssuesContent = ({ issues, sectionHighLight = "" }) => {
+const IssuesContent = ({ issues, sectionHighlight = "" }) => {
   const NoIssues = () => {
     return (
       <HelperText className="issue">
@@ -184,7 +184,7 @@ const IssuesContent = ({ issues, sectionHighLight = "" }) => {
     <If
       condition={allIssues.length === 0}
       then={<NoIssues />}
-      else={<IssuesSections issues={issues} sectionHighLight={sectionHighLight} />}
+      else={<IssuesSections issues={issues} sectionHighlight={sectionHighlight} />}
     />
   );
 };
@@ -202,9 +202,9 @@ const IssuesContent = ({ issues, sectionHighLight = "" }) => {
  *
  * @param {object} props
  * @param {function} props.close - A function to call when the close action is triggered.
- * @param {string} [props.sectionHighLight] - A string which indicites which issues section should be highlighted.
+ * @param {string} [props.sectionHighlight] - A string which indicites which issues section should be highlighted.
  */
-export default function IssuesPage({ close, sectionHighLight = "" }) {
+export default function IssuesPage({ close, sectionHighlight = "" }) {
   const [isLoading, setIsLoading] = useState(true);
   const [issues, setIssues] = useState();
   const client = useInstallerClient();
@@ -231,7 +231,7 @@ export default function IssuesPage({ close, sectionHighLight = "" }) {
       <If
         condition={isLoading}
         then={<SectionSkeleton numRows={4} />}
-        else={<IssuesContent issues={issues} sectionHighLight={sectionHighLight} />}
+        else={<IssuesContent issues={issues} sectionHighlight={sectionHighlight} />}
       />
       <Popup.Actions>
         <Popup.Confirm onClick={close} autoFocus>{_("Close")}</Popup.Confirm>

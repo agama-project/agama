@@ -75,7 +75,7 @@ const ValidationErrors = ({ errors, sectionName = "" }) => {
           {showIssuesPopUp &&
             <IssuesPage
               close={() => setshowIssuesPopUp(false)}
-              sectionHighLight={sectionName}
+              sectionHighlight={sectionName}
             />}
         </div>
       </>
