@@ -208,6 +208,40 @@ const setLocationSearch = (query) => {
   window.location.search = query;
 };
 
+const timezoneTime = (timezone, { date = new Date() }) => {
+  try {
+    const formater = new Intl.DateTimeFormat(
+      "en-US",
+      { timeZone: timezone, timeStyle: "short", hour12: false }
+    );
+
+    return formater.format(date);
+  } catch (e) {
+    if (e instanceof RangeError) return undefined;
+
+    throw e;
+  }
+};
+
+const timezoneUTCOffset = (timezone) => {
+  try {
+    const date = new Date();
+    const dateLocaleString = date.toLocaleString(
+      "en-US",
+      { timeZone: timezone, timeZoneName: "short" }
+    );
+    const [timezoneName] = dateLocaleString.split(' ').slice(-1);
+    const dateString = date.toString();
+    const offset = Date.parse(`${dateString} UTC`) - Date.parse(`${dateString} ${timezoneName}`);
+
+    return offset / 3600000;
+  } catch (e) {
+    if (e instanceof RangeError) return undefined;
+
+    throw e;
+  }
+};
+
 export {
   noop,
   partition,
@@ -217,5 +251,7 @@ export {
   hex,
   toValidationError,
   locationReload,
-  setLocationSearch
+  setLocationSearch,
+  timezoneTime,
+  timezoneUTCOffset
 };

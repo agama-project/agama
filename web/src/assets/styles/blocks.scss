@@ -292,14 +292,36 @@ span.notification-mark[data-variant="sidebar"] {
 
     &:is([data-type="locale"]) {
       grid-template-columns: 1fr 2fr;
-      grid-template-areas: "name territory";
+      grid-template-areas:
+        "language territory"
+        "details details";
+
+      > [data-type="details"] {
+        grid-area: details;
+      }
+    }
+
+    &:is([data-type="timezone"]) {
+      grid-template-columns: 1fr 2fr 1fr;
+      grid-template-areas:
+        "part1 part2 time"
+        "details details .";
+
+      > [data-type="details"] {
+        grid-area: details;
+      }
+
+      > [data-type="time"] {
+        grid-area: time;
+        text-align: end;
+      }
     }
 
     &:is([data-type="storage-device"]) {
       grid-template-columns: 1fr 2fr 2fr;
       grid-template-areas: "type-and-size drive-info drive-content";
 
-      [data-type="type-and-size"] {
+      > [data-type="type-and-size"] {
         align-self: center;
         text-align: center;
         justify-self: start;

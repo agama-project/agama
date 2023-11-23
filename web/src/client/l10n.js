@@ -86,8 +86,7 @@ class L10nClient {
     const proxy = await this.client.proxy(LOCALE_IFACE);
     const timezones = await proxy.ListTimezones();
 
-    // TODO: D-Bus currently returns the timezone parts only
-    return timezones.map(parts => this.buildTimezone(["", parts]));
+    return timezones.map(this.buildTimezone);
   }
 
   /**
@@ -179,6 +178,21 @@ class L10nClient {
     const proxy = await this.client.proxy(LOCALE_IFACE);
 
     proxy.Keymap = id;
+  }
+
+  /**
+   * Register a callback to run when Timezone D-Bus property changes.
+   *
+   * @param {(timezone: string) => void} handler - Function to call when Timezone changes.
+   * @return {import ("./dbus").RemoveFn} Function to disable the callback.
+   */
+  onTimezoneChange(handler) {
+    return this.client.onObjectChanged(LOCALE_PATH, LOCALE_IFACE, changes => {
+      if ("Timezone" in changes) {
+        const id = changes.Timezone.v;
+        handler(id);
+      }
+    });
   }
 
   /**

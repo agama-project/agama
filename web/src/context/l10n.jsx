@@ -28,6 +28,8 @@ const L10nContext = React.createContext({});
 function L10nProvider({ children }) {
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
+  const [timezones, setTimezones] = useState();
+  const [selectedTimezone, setSelectedTimezone] = useState();
   const [locales, setLocales] = useState();
   const [selectedLocales, setSelectedLocales] = useState();
   const [keymaps, setKeymaps] = useState();
@@ -35,10 +37,14 @@ function L10nProvider({ children }) {
 
   useEffect(() => {
     const load = async () => {
+      const timezones = await cancellablePromise(client.l10n.timezones());
+      const selectedTimezone = await cancellablePromise(client.l10n.getTimezone());
       const locales = await cancellablePromise(client.l10n.locales());
       const selectedLocales = await cancellablePromise(client.l10n.getLocales());
       const keymaps = await cancellablePromise(client.l10n.keymaps());
       const selectedKeymap = await cancellablePromise(client.l10n.getKeymap());
+      setTimezones(timezones);
+      setSelectedTimezone(selectedTimezone);
       setLocales(locales);
       setSelectedLocales(selectedLocales);
       setKeymaps(keymaps);
@@ -48,7 +54,13 @@ function L10nProvider({ children }) {
     if (client) {
       load().catch(console.error);
     }
-  }, [client, setLocales, setSelectedLocales, setKeymaps, setSelectedKeymap, cancellablePromise]);
+  }, [cancellablePromise, client, setKeymaps, setLocales, setSelectedKeymap, setSelectedLocales, setSelectedTimezone, setTimezones]);
+
+  useEffect(() => {
+    if (!client) return;
+
+    return client.l10n.onTimezoneChange(setSelectedTimezone);
+  }, [client, setSelectedTimezone]);
 
   useEffect(() => {
     if (!client) return;
@@ -62,7 +74,7 @@ function L10nProvider({ children }) {
     return client.l10n.onKeymapChange(setSelectedKeymap);
   }, [client, setSelectedKeymap]);
 
-  const value = { locales, selectedLocales, keymaps, selectedKeymap };
+  const value = { timezones, selectedTimezone, locales, selectedLocales, keymaps, selectedKeymap };
   return <L10nContext.Provider value={value}>{children}</L10nContext.Provider>;
 }
 
@@ -74,16 +86,19 @@ function useL10n() {
   }
 
   const {
+    timezones = [],
+    selectedTimezone: selectedTimezoneId,
     locales = [],
     selectedLocales: selectedLocalesId = [],
     keymaps = [],
-    selectedKeymap: selectedKeymapId,
+    selectedKeymap: selectedKeymapId
   } = context;
 
+  const selectedTimezone = timezones.find(t => t.id === selectedTimezoneId);
   const selectedLocales = selectedLocalesId.map(id => locales.find(l => l.id === id));
   const selectedKeymap = keymaps.find(k => k.id === selectedKeymapId);
 
-  return { locales, selectedLocales, keymaps, selectedKeymap };
+  return { timezones, selectedTimezone, locales, selectedLocales, keymaps, selectedKeymap };
 }
 
 export { L10nProvider, useL10n };

@@ -25,16 +25,107 @@ import { Button, Form } from "@patternfly/react-core";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 import { If, Page, Popup, Section } from "~/components/core";
-import { KeymapSelector, LocaleSelector } from "~/components/l10n";
+import { KeymapSelector, LocaleSelector, TimezoneSelector } from "~/components/l10n";
 import { noop } from "~/utils";
 import { useL10n } from "~/context/l10n";
 
+/**
+ * Popup for selecting a timezone.
+ * @component
+ *
+ * @param {object} props
+ * @param {function} props.onFinish - Callback to be called when the timezone is correctly selected.
+ * @param {function} props.onCancel - Callback to be called when the timezone selection is canceled.
+ */
+const TimezonePopup = ({ onFinish = noop, onCancel = noop }) => {
+  const { l10n } = useInstallerClient();
+  const { timezones, selectedTimezone } = useL10n();
+  const [timezoneId, setTimezoneId] = useState(selectedTimezone?.id);
+
+  const sortedTimezones = timezones.sort((timezone1, timezone2) => {
+    const timezoneText = t => t.parts.join('').toLowerCase();
+    return timezoneText(timezone1) > timezoneText(timezone2) ? 1 : -1;
+  });
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    if (timezoneId !== selectedTimezone?.id) {
+      await l10n.setTimezone(timezoneId);
+    }
+
+    onFinish();
+  };
+
+  return (
+    <Popup
+      isOpen
+      title={_("Select time zone")}
+      description={_("The product will be installed using the selected time zone.")}
+    >
+      <Form id="timezoneForm" onSubmit={onSubmit}>
+        <TimezoneSelector value={timezoneId} timezones={sortedTimezones} onChange={setTimezoneId} />
+      </Form>
+      <Popup.Actions>
+        <Popup.Confirm form="timezoneForm" type="submit">
+          {_("Accept")}
+        </Popup.Confirm>
+        <Popup.Cancel onClick={onCancel} />
+      </Popup.Actions>
+    </Popup>
+  );
+};
+
+const TimezoneButton = ({ children }) => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const openPopup = () => setIsPopupOpen(true);
+  const closePopup = () => setIsPopupOpen(false);
+
+  return (
+    <>
+      <Button
+        variant="link"
+        className="p-0"
+        onClick={openPopup}
+      >
+        {children}
+      </Button>
+
+      <If
+        condition={isPopupOpen}
+        then={
+          <TimezonePopup
+            isOpen
+            onFinish={closePopup}
+            onCancel={closePopup}
+          />
+        }
+      />
+    </>
+  );
+};
+
 const TimezoneSection = () => {
+  const { selectedTimezone } = useL10n();
+
   return (
     <Section title={_("Time zone")} icon="schedule">
-      <p>
-        TODO
-      </p>
+      <If
+        condition={selectedTimezone}
+        then={
+          <>
+            <p>{(selectedTimezone?.parts || []).join(' - ')}</p>
+            <TimezoneButton>{_("Change time zone")}</TimezoneButton>
+          </>
+        }
+        else={
+          <>
+            <p>{_("Time zone not selected yet")}</p>
+            <TimezoneButton>{_("Select time zone")}</TimezoneButton>
+          </>
+        }
+      />
     </Section>
   );
 };
