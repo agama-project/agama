@@ -398,7 +398,11 @@ fn store(options: LogOptions) -> Result<(), io::Error> {
     showln(verbose, "\t- proceeding output of commands");
 
     // store it
-    showln(true, format!("Storing result in: \"{}\"", result).as_str());
+    if verbose {
+        showln(true, format!("Storing result in: \"{}\"", result).as_str());
+    } else {
+        showln(true, result.as_str());
+    }
 
     for log in log_sources.iter() {
         show(
