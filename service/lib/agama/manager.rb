@@ -205,9 +205,8 @@ module Agama
 
     # Collects the logs and stores them into an archive
     #
-    # @param user [String] local username who will own archive
     # @return [String] path to created archive
-    def collect_logs(_user)
+    def collect_logs
       %x(agama logs store).strip
     end
 
