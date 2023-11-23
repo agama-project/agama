@@ -1,18 +1,17 @@
-use std::collections::HashMap;
-
-use agama_locale_data::{get_xkeyboards, keyboard::XkbConfigRegistry};
+use agama_locale_data::{get_xkeyboards, keyboard::XkbConfigRegistry, KeymapId};
 use gettextrs::*;
+use std::collections::HashMap;
 
 // Minimal representation of a keymap
 pub struct Keymap {
-    pub id: String,
+    pub id: KeymapId,
     description: String,
 }
 
 impl Keymap {
-    pub fn new(layout: &str, description: &str) -> Self {
+    pub fn new(id: KeymapId, description: &str) -> Self {
         Self {
-            id: layout.to_string(),
+            id,
             description: description.to_string(),
         }
     }
@@ -31,8 +30,9 @@ pub fn get_keymaps() -> Vec<Keymap> {
     let xkb_descriptions = get_keymap_descriptions();
     let xkeyboards = get_xkeyboards().unwrap();
     for keyboard in xkeyboards.keyboard {
+        let keymap_id = keyboard.id.parse::<KeymapId>().unwrap();
         if let Some(description) = xkb_descriptions.get(&keyboard.id) {
-            keymaps.push(Keymap::new(&keyboard.id, description));
+            keymaps.push(Keymap::new(keymap_id, description));
         } else {
             log::debug!("Keyboard '{}' not found in xkb database", keyboard.id);
         }

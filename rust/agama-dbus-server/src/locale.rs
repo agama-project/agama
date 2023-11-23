@@ -1,6 +1,6 @@
 use super::{helpers, keyboard::get_keymaps};
 use crate::{error::Error, keyboard::Keymap};
-use agama_locale_data::LocaleCode;
+use agama_locale_data::{KeymapId, LocaleCode};
 use anyhow::Context;
 use std::{fs::read_dir, process::Command};
 use zbus::{dbus_interface, Connection};
@@ -10,7 +10,7 @@ pub struct Locale {
     timezone_id: String,
     supported_locales: Vec<String>,
     ui_locale: String,
-    keymap: String,
+    keymap: KeymapId,
     keymaps: Vec<Keymap>,
 }
 
@@ -159,35 +159,33 @@ impl Locale {
         }
     */
 
-    #[dbus_interface(name = "ListVConsoleKeyboards")]
-    fn list_keyboards(&self) -> Result<Vec<String>, Error> {
-        let res = agama_locale_data::get_key_maps()?;
-        Ok(res)
-    }
-
     #[dbus_interface(name = "ListKeymaps")]
     fn list_keymaps(&self) -> Result<Vec<(String, String)>, Error> {
         let keymaps = self
             .keymaps
             .iter()
-            .map(|k| (k.id.to_owned(), k.localized_description()))
+            .map(|k| (k.id.to_string(), k.localized_description()))
             .collect();
         Ok(keymaps)
     }
 
     #[dbus_interface(property)]
-    fn keymap(&self) -> &str {
-        self.keymap.as_str()
+    fn keymap(&self) -> String {
+        self.keymap.to_string()
     }
 
     #[dbus_interface(property)]
     fn set_keymap(&mut self, keymap_id: &str) -> Result<(), zbus::fdo::Error> {
+        let keymap_id: KeymapId = keymap_id
+            .parse()
+            .map_err(|_e| zbus::fdo::Error::InvalidArgs("Invalid keymap".to_string()))?;
+
         if !self.keymaps.iter().any(|k| k.id == keymap_id) {
             return Err(zbus::fdo::Error::Failed(
                 "Invalid keyboard value".to_string(),
             ));
         }
-        self.keymap = keymap_id.to_string();
+        self.keymap = keymap_id;
         Ok(())
     }
 
@@ -236,8 +234,9 @@ impl Locale {
             ])
             .status()
             .context("Failed to execute systemd-firstboot")?;
+        let keymap = self.keymap.to_string();
         Command::new("/usr/bin/systemd-firstboot")
-            .args(["root", ROOT, "--keymap", self.keymap.as_str()])
+            .args(["root", ROOT, "--keymap", &keymap])
             .status()
             .context("Failed to execute systemd-firstboot")?;
         Command::new("/usr/bin/systemd-firstboot")
@@ -277,7 +276,7 @@ impl Default for Locale {
             timezone_id: "America/Los_Angeles".to_string(),
             supported_locales: vec!["en_US.UTF-8".to_string(), "es_ES.UTF-8".to_string()],
             ui_locale: "en".to_string(),
-            keymap: "us".to_string(),
+            keymap: "us".parse().unwrap(),
             keymaps: vec![],
         }
     }

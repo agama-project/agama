@@ -50,6 +50,8 @@ dependencies = [
  "cidr",
  "gettext-rs",
  "log",
+ "once_cell",
+ "regex",
  "serde",
  "serde_yaml",
  "simplelog",

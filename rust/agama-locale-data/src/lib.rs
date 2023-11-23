@@ -18,7 +18,7 @@ pub mod timezone_part;
 
 use keyboard::xkeyboard;
 
-pub use locale::{InvalidLocaleCode, LocaleCode};
+pub use locale::{InvalidLocaleCode, KeymapId, LocaleCode};
 
 fn file_reader(file_path: &str) -> anyhow::Result<impl BufRead> {
     let file = File::open(file_path)
@@ -46,7 +46,7 @@ pub fn get_xkeyboards() -> anyhow::Result<xkeyboard::XKeyboards> {
 /// let key_maps = agama_locale_data::get_key_maps().unwrap();
 /// assert!(key_maps.contains(&"us".to_string()))
 /// ```
-pub fn get_key_maps() -> anyhow::Result<Vec<String>> {
+pub fn get_localectl_keymaps() -> anyhow::Result<Vec<KeymapId>> {
     const BINARY: &str = "/usr/bin/localectl";
     let output = Command::new(BINARY)
         .arg("list-keymaps")
@@ -54,7 +54,7 @@ pub fn get_key_maps() -> anyhow::Result<Vec<String>> {
         .context("failed to execute localectl list-maps")?
         .stdout;
     let output = String::from_utf8(output).context("Strange localectl output formatting")?;
-    let ret = output.split('\n').map(|l| l.trim().to_string()).collect();
+    let ret: Vec<_> = output.lines().flat_map(|l| l.parse().ok()).collect();
 
     Ok(ret)
 }
