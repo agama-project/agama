@@ -215,7 +215,7 @@ describe Agama::Manager do
   describe "#collect_logs" do
     it "collects the logs and returns the path to the archive" do
       # %x returns the command output including trailing \n
-      expect(x).to receive(:`)
+      expect(subject).to receive(:`)
         .with("agama logs store ")
         .and_return("/tmp/y2log-hWBn95.tar.xz\n")
 

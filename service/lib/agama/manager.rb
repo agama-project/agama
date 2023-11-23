@@ -211,7 +211,7 @@ module Agama
     def collect_logs(path: nil)
       opt = "-d #{path}" if !path.nil? && !path.empty?
 
-      %x(agama logs store #{opt}).strip
+      `agama logs store #{opt}`.strip
     end
 
     # Whatever has to be done at the end of installation
