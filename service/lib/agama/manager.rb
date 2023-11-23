@@ -205,9 +205,13 @@ module Agama
 
     # Collects the logs and stores them into an archive
     #
+    # @path [String] directory where to store logs
+    #
     # @return [String] path to created archive
-    def collect_logs
-      %x(agama logs store).strip
+    def collect_logs(path)
+      opt = "-d #{path}" if !path.nil? && !path.empty?
+
+      %x(agama logs store #{opt}).strip
     end
 
     # Whatever has to be done at the end of installation
