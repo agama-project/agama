@@ -95,12 +95,6 @@ impl<'a> NetworkManagerClient<'a> {
                 }
             }
         }
-        for (controller, conns) in controllers {
-            dbg!(controller.to_string());
-            for conn in conns {
-                dbg!(conn.id().to_string());
-            }
-        }
 
         Ok(connections)
     }
@@ -122,13 +116,14 @@ impl<'a> NetworkManagerClient<'a> {
         };
 
         if let Connection::Bond(bond) = conn {
-            let _ = bond.bond.ports.iter().map(|port| {
+            for port in bond.bond.ports.clone() {
                 self.add_or_update_port_connection(
-                    port,
+                    &port,
                     bond.base.interface.to_string(),
                     "bond".to_string(),
                 )
-            });
+                .await?;
+            }
         }
 
         self.activate_connection(path).await?;
@@ -142,6 +137,7 @@ impl<'a> NetworkManagerClient<'a> {
         port_type: String,
     ) -> Result<(), ServiceError> {
         let mut dbus_conn = connection_to_dbus(conn);
+
         if let Some(new_conn) = dbus_conn.get_mut("connection") {
             new_conn.insert("slave-type", port_type.to_string().into());
             new_conn.insert("master", controller.to_string().into());
