@@ -25,7 +25,7 @@ import { Button, Form } from "@patternfly/react-core";
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
 import { If, Page, Popup, Section } from "~/components/core";
-import { LocaleSelector } from "~/components/l10n";
+import { KeymapSelector, LocaleSelector } from "~/components/l10n";
 import { noop } from "~/utils";
 import { useL10n } from "~/context/l10n";
 
@@ -71,8 +71,9 @@ const LocalePopup = ({ onFinish = noop, onCancel = noop }) => {
 
   return (
     <Popup
-      title={_("Select language")}
       isOpen
+      title={_("Select language")}
+      description={_("The product will be installed using the selected language.")}
     >
       <Form id="localeForm" onSubmit={onSubmit}>
         <LocaleSelector value={localeId} locales={sortedLocales} onChange={setLocaleId} />
@@ -143,12 +144,100 @@ const LocaleSection = () => {
   );
 };
 
-const KeyboardSection = () => {
+/**
+ * Popup for selecting a keymap.
+ * @component
+ *
+ * @param {object} props
+ * @param {function} props.onFinish - Callback to be called when the keymap is correctly selected.
+ * @param {function} props.onCancel - Callback to be called when the keymap selection is canceled.
+ */
+const KeymapPopup = ({ onFinish = noop, onCancel = noop }) => {
+  const { l10n } = useInstallerClient();
+  const { keymaps, selectedKeymap } = useL10n();
+  const [keymapId, setKeymapId] = useState(selectedKeymap?.id);
+
+  const sortedKeymaps = keymaps.sort((k1, k2) => k1.name > k2.name ? 1 : -1);
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    if (keymapId !== selectedKeymap?.id) {
+      await l10n.setKeymap(keymapId);
+    }
+
+    onFinish();
+  };
+
+  return (
+    <Popup
+      isOpen
+      title={_("Select keyboard")}
+      description={_("The product will be installed using the selected keyboard.")}
+    >
+      <Form id="keymapForm" onSubmit={onSubmit}>
+        <KeymapSelector value={keymapId} keymaps={sortedKeymaps} onChange={setKeymapId} />
+      </Form>
+      <Popup.Actions>
+        <Popup.Confirm form="keymapForm" type="submit">
+          {_("Accept")}
+        </Popup.Confirm>
+        <Popup.Cancel onClick={onCancel} />
+      </Popup.Actions>
+    </Popup>
+  );
+};
+
+const KeymapButton = ({ children }) => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const openPopup = () => setIsPopupOpen(true);
+  const closePopup = () => setIsPopupOpen(false);
+
+  return (
+    <>
+      <Button
+        variant="link"
+        className="p-0"
+        onClick={openPopup}
+      >
+        {children}
+      </Button>
+
+      <If
+        condition={isPopupOpen}
+        then={
+          <KeymapPopup
+            isOpen
+            onFinish={closePopup}
+            onCancel={closePopup}
+          />
+        }
+      />
+    </>
+  );
+};
+
+const KeymapSection = () => {
+  const { selectedKeymap } = useL10n();
+
   return (
     <Section title={_("Keyboard")} icon="keyboard">
-      <p>
-        TODO
-      </p>
+      <If
+        condition={selectedKeymap}
+        then={
+          <>
+            <p>{selectedKeymap?.name}</p>
+            <KeymapButton>{_("Change keyboard")}</KeymapButton>
+          </>
+        }
+        else={
+          <>
+            <p>{_("Keyboard not selected yet")}</p>
+            <KeymapButton>{_("Select keyboard")}</KeymapButton>
+          </>
+        }
+      />
     </Section>
   );
 };
@@ -164,7 +253,7 @@ export default function L10nPage() {
     >
       <TimezoneSection />
       <LocaleSection />
-      <KeyboardSection />
+      <KeymapSection />
     </Page>
   );
 }

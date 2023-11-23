@@ -40,10 +40,9 @@ const LOCALE_PATH = "/org/opensuse/Agama1/Locale";
  */
 
 /**
- * @typedef {object} Keyboard
+ * @typedef {object} Keymap
  * @property {string} id - Keyboard id (e.g., "us").
- * @property {string} name - Keyboard name (e.g., "English").
- * @property {string} territory - Territory name (e.g., "United States").
+ * @property {string} name - Keyboard name (e.g., "English (US)").
  */
 
 /**
@@ -162,53 +161,68 @@ class L10nClient {
   }
 
   /**
-   * Available keyboards to install in the target system.
+   * Available keymaps to install in the target system.
    *
-   * Note that name and territory are localized to the current selected UI language:
-   * { id: "es", name: "Spanish", territory: "Spain" }
+   * Note that name is localized to the current selected UI language:
+   * { id: "es", name: "Spanish (ES)" }
    *
-   * @return {Promise<Array<Keyboard>>}
+   * @return {Promise<Array<Keymap>>}
    */
-  async keyboards() {
+  async keymaps() {
     const proxy = await this.client.proxy(LOCALE_IFACE);
-    const keyboards = await proxy.ListVConsoleKeyboards();
+    const keymaps = await proxy.ListKeymaps();
 
-    // TODO: D-Bus currently returns the id only
-    return keyboards.map(id => this.buildKeyboard([id, "", ""]));
+    return keymaps.map(this.buildKeymap);
   }
 
   /**
-   * Keyboard selected to install in the target system.
+   * Keymap selected to install in the target system.
    *
-   * @return {Promise<String>} Id of the keyboard.
+   * @return {Promise<String>} Id of the keymap.
    */
-  async getKeyboard() {
+  async getKeymap() {
     const proxy = await this.client.proxy(LOCALE_IFACE);
-    return proxy.VConsoleKeyboard;
+    return proxy.Keymap;
   }
 
   /**
-   * Sets the keyboard to install in the target system.
+   * Sets the keymap to install in the target system.
    *
-   * @param {string} id - Id of the keyboard.
+   * @param {string} id - Id of the keymap.
    * @return {Promise<void>}
    */
-  async setKeyboard(id) {
+  async setKeymap(id) {
     const proxy = await this.client.proxy(LOCALE_IFACE);
-    proxy.VConsoleKeyboard = id;
+
+    proxy.Keymap = id;
   }
 
   /**
-   * Register a callback to run when properties in the Language object change
+   * Register a callback to run when Locales D-Bus property changes.
    *
-   * @param {(language: string) => void} handler - function to call when the language change
-   * @return {import ("./dbus").RemoveFn} function to disable the callback
+   * @param {(language: string) => void} handler - Function to call when Locales changes.
+   * @return {import ("./dbus").RemoveFn} Function to disable the callback.
    */
   onLocalesChange(handler) {
     return this.client.onObjectChanged(LOCALE_PATH, LOCALE_IFACE, changes => {
       if ("Locales" in changes) {
         const selectedIds = changes.Locales.v;
         handler(selectedIds);
+      }
+    });
+  }
+
+  /**
+   * Register a callback to run when Keymap D-Bus property changes.
+   *
+   * @param {(language: string) => void} handler - Function to call when Keymap changes.
+   * @return {import ("./dbus").RemoveFn} Function to disable the callback.
+   */
+  onKeymapChange(handler) {
+    return this.client.onObjectChanged(LOCALE_PATH, LOCALE_IFACE, changes => {
+      if ("Keymap" in changes) {
+        const id = changes.Keymap.v;
+        handler(id);
       }
     });
   }
@@ -236,11 +250,11 @@ class L10nClient {
   /**
    * @private
    *
-   * @param {[string, string, string]} dbusKeyboard
-   * @returns {Keyboard}
+   * @param {[string, string]} dbusKeymap
+   * @returns {Keymap}
    */
-  buildKeyboard([id, name, territory]) {
-    return ({ id, name, territory });
+  buildKeymap([id, name]) {
+    return ({ id, name });
   }
 }
 

@@ -275,6 +275,12 @@ span.notification-mark[data-variant="sidebar"] {
     display: grid;
 
     gap: var(--spacer-small);
+
+    &:hover {
+      &:not([aria-selected]) {
+        background: var(--color-gray-dark);
+      }
+    }
   }
 
   [aria-selected] {
@@ -312,6 +318,12 @@ span.notification-mark[data-variant="sidebar"] {
 
     > :last-child {
       text-align: right;
+    }
+
+    &:not([aria-selected]) {
+      > :last-child {
+        color: var(--color-gray-darker);
+      }
     }
   }
 }

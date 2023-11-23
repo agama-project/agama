@@ -30,19 +30,25 @@ function L10nProvider({ children }) {
   const { cancellablePromise } = useCancellablePromise();
   const [locales, setLocales] = useState();
   const [selectedLocales, setSelectedLocales] = useState();
+  const [keymaps, setKeymaps] = useState();
+  const [selectedKeymap, setSelectedKeymap] = useState();
 
   useEffect(() => {
     const load = async () => {
       const locales = await cancellablePromise(client.l10n.locales());
       const selectedLocales = await cancellablePromise(client.l10n.getLocales());
+      const keymaps = await cancellablePromise(client.l10n.keymaps());
+      const selectedKeymap = await cancellablePromise(client.l10n.getKeymap());
       setLocales(locales);
       setSelectedLocales(selectedLocales);
+      setKeymaps(keymaps);
+      setSelectedKeymap(selectedKeymap);
     };
 
     if (client) {
       load().catch(console.error);
     }
-  }, [client, setLocales, setSelectedLocales, cancellablePromise]);
+  }, [client, setLocales, setSelectedLocales, setKeymaps, setSelectedKeymap, cancellablePromise]);
 
   useEffect(() => {
     if (!client) return;
@@ -50,7 +56,13 @@ function L10nProvider({ children }) {
     return client.l10n.onLocalesChange(setSelectedLocales);
   }, [client, setSelectedLocales]);
 
-  const value = { locales, selectedLocales };
+  useEffect(() => {
+    if (!client) return;
+
+    return client.l10n.onKeymapChange(setSelectedKeymap);
+  }, [client, setSelectedKeymap]);
+
+  const value = { locales, selectedLocales, keymaps, selectedKeymap };
   return <L10nContext.Provider value={value}>{children}</L10nContext.Provider>;
 }
 
@@ -61,10 +73,17 @@ function useL10n() {
     throw new Error("useL10n must be used within a L10nProvider");
   }
 
-  const { locales = [], selectedLocales: selectedIds = [] } = context;
-  const selectedLocales = selectedIds.map(id => locales.find(l => l.id === id));
+  const {
+    locales = [],
+    selectedLocales: selectedLocalesId = [],
+    keymaps = [],
+    selectedKeymap: selectedKeymapId,
+  } = context;
 
-  return { locales, selectedLocales };
+  const selectedLocales = selectedLocalesId.map(id => locales.find(l => l.id === id));
+  const selectedKeymap = keymaps.find(k => k.id === selectedKeymapId);
+
+  return { locales, selectedLocales, keymaps, selectedKeymap };
 }
 
 export { L10nProvider, useL10n };
