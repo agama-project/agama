@@ -205,7 +205,7 @@ module Agama
 
     # Collects the logs and stores them into an archive
     #
-    # @path [String] directory where to store logs
+    # @param path [String] directory where to store logs
     #
     # @return [String] path to created archive
     def collect_logs(path: nil)
