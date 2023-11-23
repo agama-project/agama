@@ -54,10 +54,6 @@ module Agama
           dbus_object[INTERFACE_NAME]["UILocale"] = locale
         end
 
-        def available_ui_locales
-          dbus_object.ListUILocales
-        end
-
         # Finishes the language installation
         def finish
           dbus_object.Commit

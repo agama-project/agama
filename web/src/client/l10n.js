@@ -57,22 +57,6 @@ class L10nClient {
   }
 
   /**
-   * Available locales to translate the installer UI.
-   *
-   * Note that name and territory are localized to its own language:
-   * { id: "es", name: "Español", territory: "España" }
-   *
-   * @return {Promise<Array<Locale>>}
-   */
-  async UILocales() {
-    const proxy = await this.client.proxy(LOCALE_IFACE);
-    const locales = await proxy.ListUILocales();
-
-    // TODO: D-Bus currently returns the id only
-    return locales.map(id => this.buildLocale([id, "", ""]));
-  }
-
-  /**
    * Selected locale to translate the installer UI.
    *
    * @return {Promise<String>} Locale id.

@@ -2,7 +2,7 @@ use super::{helpers, keyboard::get_keymaps};
 use crate::{error::Error, keyboard::Keymap};
 use agama_locale_data::{KeymapId, LocaleCode};
 use anyhow::Context;
-use std::{fs::read_dir, process::Command};
+use std::process::Command;
 use zbus::{dbus_interface, Connection};
 
 pub struct Locale {
@@ -88,18 +88,6 @@ impl Locale {
         Ok(())
     }
 
-    #[dbus_interface(property)]
-    fn supported_locales(&self) -> Vec<String> {
-        self.supported_locales.to_owned()
-    }
-
-    #[dbus_interface(property)]
-    fn set_supported_locales(&mut self, locales: Vec<String>) -> Result<(), zbus::fdo::Error> {
-        self.supported_locales = locales;
-        // TODO: handle if current selected locale contain something that is no longer supported
-        Ok(())
-    }
-
     #[dbus_interface(property, name = "UILocale")]
     fn ui_locale(&self) -> &str {
         &self.ui_locale
@@ -111,55 +99,6 @@ impl Locale {
         helpers::set_service_locale(locale);
     }
 
-    /// Returns a list of the locales available in the system.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    ///   use agama_dbus_server::locale::Locale;
-    ///   let locale = Locale::default();
-    ///   assert!(locale.list_ui_locales().unwrap().len() > 0);
-    /// ```
-    #[dbus_interface(name = "ListUILocales")]
-    pub fn list_ui_locales(&self) -> Result<Vec<String>, Error> {
-        // english is always available ui localization
-        let mut result = vec!["en".to_string()];
-        const DIR: &str = "/usr/share/YaST2/locale/";
-        let entries = read_dir(DIR);
-        if entries.is_err() {
-            // if dir is not there act like if it is empty
-            return Ok(result);
-        }
-
-        for entry in entries.unwrap() {
-            let entry = entry.context("Failed to read entry in YaST2 locale dir")?;
-            let name = entry
-                .file_name()
-                .to_str()
-                .context("Non valid UTF entry found in YaST2 locale dir")?
-                .to_string();
-            result.push(name)
-        }
-
-        Ok(result)
-    }
-
-    /* support only keymaps for console for now
-        fn list_x11_keyboards(&self) -> Result<Vec<(String, String)>, Error> {
-            let keyboards = agama_locale_data::get_xkeyboards()?;
-            let ret = keyboards
-                .keyboard.iter()
-                .map(|k| (k.id.clone(), k.description.clone()))
-                .collect();
-            Ok(ret)
-        }
-
-        fn set_x11_keyboard(&mut self, keyboard: &str) {
-            self.keyboard_id = keyboard.to_string();
-        }
-    */
-
-    #[dbus_interface(name = "ListKeymaps")]
     /// Returns a list of the supported keymaps.
     ///
     /// Each element of the list contains:
@@ -286,7 +225,7 @@ impl Default for Locale {
         Self {
             locales: vec!["en_US.UTF-8".to_string()],
             timezone_id: "America/Los_Angeles".to_string(),
-            supported_locales: vec!["en_US.UTF-8".to_string(), "es_ES.UTF-8".to_string()],
+            supported_locales: vec!["en_US.UTF-8".to_string()],
             ui_locale: "en".to_string(),
             keymap: "us".parse().unwrap(),
             keymaps: vec![],
