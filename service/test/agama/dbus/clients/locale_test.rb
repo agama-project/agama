@@ -41,16 +41,6 @@ describe Agama::DBus::Clients::Locale do
 
   subject { described_class.new }
 
-  describe "#supported_locales=" do
-    # Using partial double because methods are dynamically added to the proxy object
-    let(:dbus_object) { double(DBus::ProxyObject) }
-
-    it "calls the D-Bus object" do
-      expect(dbus_object).to receive(:supported_locales=).with(["no", "se"])
-      subject.supported_locales = ["no", "se"]
-    end
-  end
-
   describe "#finish" do
     let(:dbus_object) { double(DBus::ProxyObject) }
 

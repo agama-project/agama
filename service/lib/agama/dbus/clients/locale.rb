@@ -39,13 +39,6 @@ module Agama
           @service_name ||= "org.opensuse.Agama1"
         end
 
-        # Sets the supported locales. It can differs per product.
-        #
-        # @param locales [Array<String>]
-        def supported_locales=(locales)
-          dbus_object.supported_locales = locales
-        end
-
         def ui_locale
           dbus_object[INTERFACE_NAME]["UILocale"]
         end
