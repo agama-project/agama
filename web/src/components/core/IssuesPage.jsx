@@ -19,15 +19,14 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { HelperText, HelperTextItem } from "@patternfly/react-core";
 
 import { partition, useCancellablePromise } from "~/utils";
-import { If, Page, Section, SectionSkeleton } from "~/components/core";
+import { If, Section, SectionSkeleton, Popup } from "~/components/core";
 import { Icon } from "~/components/layout";
 import { useInstallerClient } from "~/context/installer";
-import { useNotification } from "~/context/notification";
 import { _ } from "~/i18n";
 
 /**
@@ -78,36 +77,82 @@ const IssueItems = ({ issues = [] }) => {
  *
  * @param {object} props
  * @param {import ("~/client/issues").ClientsIssues} props.issues
+ * @param {string} [props.sectionHighLight] - A string which indicites which issues section should be highlighted.
  */
-const IssuesSections = ({ issues }) => {
+const IssuesSections = ({ issues, sectionHighLight = "" }) => {
   const productIssues = issues.product || [];
   const storageIssues = issues.storage || [];
   const softwareIssues = issues.software || [];
+  const productSectionRef = useRef(null);
+  const storageSectionRef = useRef(null);
+  const softwareSectionRef = useRef(null);
+
+  useEffect(() => {
+    let selectedRef;
+    switch (sectionHighLight) {
+      case 'Product':
+        selectedRef = productSectionRef;
+        break;
+      case 'Storage':
+        selectedRef = storageSectionRef;
+        break;
+      case 'Software':
+        selectedRef = softwareSectionRef;
+        break;
+      default:
+        selectedRef = null;
+    }
+
+    if (selectedRef && selectedRef.current) {
+      selectedRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [sectionHighLight]);
 
   return (
     <>
       <If
         condition={productIssues.length > 0}
         then={
-          <Section key="product-issues" title={_("Product")} icon="inventory_2">
-            <IssueItems issues={productIssues} />
-          </Section>
+          <div ref={productSectionRef}>
+            <Section
+              key="product-issues"
+              title={_("Product")}
+              icon="inventory_2"
+              className={sectionHighLight === "Product" ? "highlighted" : ""}
+            >
+              <IssueItems issues={productIssues} />
+            </Section>
+          </div>
         }
       />
       <If
         condition={storageIssues.length > 0}
         then={
-          <Section key="storage-issues" title={_("Storage")} icon="hard_drive">
-            <IssueItems issues={storageIssues} />
-          </Section>
+          <div ref={storageSectionRef}>
+            <Section
+              key="storage-issues"
+              title={_("Storage")}
+              icon="hard_drive"
+              className={sectionHighLight === "Storage" ? "highlighted" : ""}
+            >
+              <IssueItems issues={storageIssues} />
+            </Section>
+          </div>
         }
       />
       <If
         condition={softwareIssues.length > 0}
         then={
-          <Section key="software-issues" title={_("Software")} icon="apps">
-            <IssueItems issues={softwareIssues} />
-          </Section>
+          <div ref={softwareSectionRef}>
+            <Section
+              key="software-issues"
+              title={_("Software")}
+              icon="apps"
+              className={sectionHighLight === "Software" ? "highlighted" : ""}
+            >
+              <IssueItems issues={softwareIssues} />
+            </Section>
+          </div>
         }
       />
     </>
@@ -120,8 +165,9 @@ const IssuesSections = ({ issues }) => {
  *
  * @param {object} props
  * @param {import ("~/client").Issues} props.issues
+ * @param {string} [props.sectionHighLight] - A string which indicites which issues section should be highlighted.
  */
-const IssuesContent = ({ issues }) => {
+const IssuesContent = ({ issues, sectionHighLight = "" }) => {
   const NoIssues = () => {
     return (
       <HelperText className="issue">
@@ -138,21 +184,31 @@ const IssuesContent = ({ issues }) => {
     <If
       condition={allIssues.length === 0}
       then={<NoIssues />}
-      else={<IssuesSections issues={issues} />}
+      else={<IssuesSections issues={issues} sectionHighLight={sectionHighLight} />}
     />
   );
 };
 
 /**
  * Page to show all issues.
+ *
+ * It initially shows a loading state,
+ * then fetches and displays a list of issues grouped by categories such as 'product', 'storage', and 'software'.
+ *
+ * It uses a Popup component to display the issues, and an If component to toggle between
+ * a loading state and the content state.
+ *
  * @component
+ *
+ * @param {object} props
+ * @param {function} props.close - A function to call when the close action is triggered.
+ * @param {string} [props.sectionHighLight] - A string which indicites which issues section should be highlighted.
  */
-export default function IssuesPage() {
+export default function IssuesPage({ close, sectionHighLight = "" }) {
   const [isLoading, setIsLoading] = useState(true);
   const [issues, setIssues] = useState();
   const client = useInstallerClient();
   const { cancellablePromise } = useCancellablePromise();
-  const [notification, updateNotification] = useNotification();
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -163,8 +219,7 @@ export default function IssuesPage() {
 
   const update = useCallback((issues) => {
     setIssues(current => ({ ...current, ...issues }));
-    if (notification.issues) updateNotification({ issues: false });
-  }, [notification, setIssues, updateNotification]);
+  }, [setIssues]);
 
   useEffect(() => {
     load().then(update);
@@ -172,18 +227,15 @@ export default function IssuesPage() {
   }, [client, load, update]);
 
   return (
-    <Page
-      title="Issues"
-      icon="problem"
-      actionLabel="Back"
-      actionVariant="secondary"
-      navigateTo={-1}
-    >
+    <Popup isOpen title={_("Issues")}>
       <If
         condition={isLoading}
         then={<SectionSkeleton numRows={4} />}
-        else={<IssuesContent issues={issues} />}
+        else={<IssuesContent issues={issues} sectionHighLight={sectionHighLight} />}
       />
-    </Page>
+      <Popup.Actions>
+        <Popup.Confirm onClick={close} autoFocus>{_("Close")}</Popup.Confirm>
+      </Popup.Actions>
+    </Popup>
   );
 }
