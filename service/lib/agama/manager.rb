@@ -208,7 +208,7 @@ module Agama
     # @path [String] directory where to store logs
     #
     # @return [String] path to created archive
-    def collect_logs(path)
+    def collect_logs(path: nil)
       opt = "-d #{path}" if !path.nil? && !path.empty?
 
       %x(agama logs store #{opt}).strip
@@ -216,6 +216,11 @@ module Agama
 
     # Whatever has to be done at the end of installation
     def finish_installation
+      # TODO: make it optional
+      logs = collect_logs
+
+      logger.info("Installation logs stored in #{logs}")
+
       cmd = if iguana?
         "/usr/bin/agamactl -k"
       else
