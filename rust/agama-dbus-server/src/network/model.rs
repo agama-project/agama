@@ -606,7 +606,7 @@ impl BondConnection {
     {
         self.bond.options = options
             .try_into()
-            .map_err(|e| NetworkStateError::InvalidBondOptions)?;
+            .map_err(|_e| NetworkStateError::InvalidBondOptions)?;
         Ok(())
     }
 }
