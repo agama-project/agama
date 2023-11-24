@@ -104,32 +104,28 @@ impl NetworkState {
         //     return Err(NetworkStateError::UnknownConnection(conn.id().to_string()));
         // };
         //
-        let mut new_ports = vec![];
         let controller = conn.clone();
 
         if let Connection::Bond(ref mut bond) = conn {
             if let Some(ControllerSettings::Options(opts)) = settings.get("options") {
-                bond.bond.options = BondOptions::try_from(opts.clone()).unwrap()
+                bond.set_options(opts.to_owned());
             }
 
             if let Some(ControllerSettings::Ports(ports)) = settings.get("ports") {
-                for port in ports.iter() {
-                    new_ports.push(
-                        if let Some(new_port) =
-                            bond.bond.ports.iter().find(|c| c.interface() == port)
-                        {
-                            new_port.clone()
-                        } else {
-                            let mut port_conn =
-                                Connection::new(port.to_string(), DeviceType::Ethernet);
-                            port_conn.set_interface(port);
-                            port_conn.set_controller(controller.id());
-                            port_conn
-                        },
-                    );
-                }
+                let new_ports: Vec<_> = ports
+                    .iter()
+                    .map(|port| {
+                        bond.find_port(port).cloned().unwrap_or_else(|| {
+                            ConnectionBuilder::new(port)
+                                .with_type(DeviceType::Ethernet)
+                                .with_interface(port)
+                                .with_controller(controller.id())
+                                .build()
+                        })
+                    })
+                    .collect();
 
-                bond.bond.ports = new_ports;
+                bond.set_ports(new_ports);
             }
         }
 
@@ -268,6 +264,52 @@ mod tests {
 pub struct Device {
     pub name: String,
     pub type_: DeviceType,
+}
+
+#[derive(Debug, Default)]
+pub struct ConnectionBuilder {
+    id: String,
+    interface: Option<String>,
+    controller: Option<String>,
+    type_: Option<DeviceType>,
+}
+
+impl ConnectionBuilder {
+    pub fn new(id: &str) -> Self {
+        Self {
+            id: id.to_string(),
+            ..Default::default()
+        }
+    }
+
+    pub fn with_interface(mut self, interface: &str) -> Self {
+        self.interface = Some(interface.to_string());
+        self
+    }
+
+    pub fn with_controller(mut self, controller: &str) -> Self {
+        self.controller = Some(controller.to_string());
+        self
+    }
+
+    pub fn with_type(mut self, type_: DeviceType) -> Self {
+        self.type_ = Some(type_);
+        self
+    }
+
+    pub fn build(self) -> Connection {
+        let mut conn = Connection::new(self.id, self.type_.unwrap_or(DeviceType::Ethernet));
+
+        if let Some(interface) = self.interface {
+            conn.set_interface(&interface);
+        }
+
+        if let Some(controller) = self.controller {
+            conn.set_controller(&controller);
+        }
+
+        conn
+    }
 }
 
 /// Represents an available network connection
@@ -553,6 +595,24 @@ pub struct LoopbackConnection {
 pub struct BondConnection {
     pub base: BaseConnection,
     pub bond: BondConfig,
+}
+
+impl BondConnection {
+    pub fn find_port(&self, name: &str) -> Option<&Connection> {
+        self.bond.ports.iter().find(|c| c.interface() == name)
+    }
+
+    pub fn set_ports(&mut self, ports: Vec<Connection>) {
+        self.bond.ports = ports;
+    }
+
+    pub fn set_options<T>(&mut self, options: T)
+    where
+        T: TryInto<BondOptions>,
+        <T as TryInto<BondOptions>>::Error: std::fmt::Debug,
+    {
+        self.bond.options = options.try_into().unwrap()
+    }
 }
 
 #[derive(Debug, Default, Clone, PartialEq)]
