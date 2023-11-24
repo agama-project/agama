@@ -73,9 +73,9 @@ const KeymapItem = ({ keymap }) => {
 export default function KeymapSelector({ value, keymaps = [], onChange = noop }) {
   return (
     <ListBox aria-label={_("Available keymaps")} className="stack item-list">
-      { keymaps.map(keymap => (
+      { keymaps.map((keymap, index) => (
         <ListBoxItem
-          key={keymap.id}
+          key={`keymap-${index}`}
           onClick={() => onChange(keymap.id)}
           isSelected={keymap.id === value}
           className="cursor-pointer"

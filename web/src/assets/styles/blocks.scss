@@ -304,7 +304,7 @@ span.notification-mark[data-variant="sidebar"] {
     &:is([data-type="timezone"]) {
       grid-template-columns: 1fr 2fr 1fr;
       grid-template-areas:
-        "part1 part2 time"
+        "part1 rest-parts time"
         "details details .";
 
       > [data-type="details"] {

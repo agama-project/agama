@@ -22,7 +22,7 @@
 import React from "react";
 
 import { _ } from "~/i18n";
-import { noop, timezoneTime, timezoneUTCOffset } from "~/utils";
+import { noop, timezoneTime } from "~/utils";
 
 /**
  * @typedef {import ("~/clients/l10n").Timezone} Timezone
@@ -45,7 +45,7 @@ const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
 };
 
 const timezoneDetails = (timezone) => {
-  const offset = timezoneUTCOffset(timezone.id);
+  const offset = timezone.utcOffset;
 
   if (offset === undefined) return timezone.id;
 
@@ -94,9 +94,9 @@ export default function TimezoneSelector({ value, timezones = [], onChange = noo
 
   return (
     <ListBox aria-label={_("Available time zones")} className="stack item-list">
-      { timezones.map(timezone => (
+      { timezones.map((timezone, index) => (
         <ListBoxItem
-          key={timezone.id}
+          key={`timezone-${index}`}
           onClick={() => onChange(timezone.id)}
           isSelected={timezone.id === value}
           className="cursor-pointer"

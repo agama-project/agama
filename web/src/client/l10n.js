@@ -21,6 +21,7 @@
 
 // @ts-check
 import DBusClient from "./dbus";
+import { timezoneUTCOffset } from "~/utils";
 
 const LOCALE_SERVICE = "org.opensuse.Agama1";
 const LOCALE_IFACE = "org.opensuse.Agama1.Locale";
@@ -30,6 +31,7 @@ const LOCALE_PATH = "/org/opensuse/Agama1/Locale";
  * @typedef {object} Timezone
  * @property {string} id - Timezone id (e.g., "Atlantic/Canary").
  * @property {Array<string>} parts - Name of the timezone parts (e.g., ["Atlantic", "Canary"]).
+ * @property {number} utcOffset - UTC offset.
  */
 
 /**
@@ -232,7 +234,9 @@ class L10nClient {
    * @returns {Timezone}
    */
   buildTimezone([id, parts]) {
-    return ({ id, parts });
+    const utcOffset = timezoneUTCOffset(id);
+
+    return ({ id, parts, utcOffset });
   }
 
   /**

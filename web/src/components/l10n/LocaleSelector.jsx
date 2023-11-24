@@ -74,9 +74,9 @@ const LocaleItem = ({ locale }) => {
 export default function LocaleSelector({ value, locales = [], onChange = noop }) {
   return (
     <ListBox aria-label={_("Available locales")} className="stack item-list">
-      { locales.map(locale => (
+      { locales.map((locale, index) => (
         <ListBoxItem
-          key={locale.id}
+          key={`locale-${index}`}
           onClick={() => onChange(locale.id)}
           isSelected={locale.id === value}
           className="cursor-pointer"

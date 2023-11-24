@@ -210,12 +210,12 @@ const setLocationSearch = (query) => {
 
 const timezoneTime = (timezone, { date = new Date() }) => {
   try {
-    const formater = new Intl.DateTimeFormat(
+    const formatter = new Intl.DateTimeFormat(
       "en-US",
       { timeZone: timezone, timeStyle: "short", hour12: false }
     );
 
-    return formater.format(date);
+    return formatter.format(date);
   } catch (e) {
     if (e instanceof RangeError) return undefined;
 
