@@ -100,15 +100,11 @@ impl NetworkState {
         mut conn: Connection,
         settings: HashMap<String, ControllerSettings>,
     ) -> Result<(), NetworkStateError> {
-        // let Some(old_conn) = self.get_connection_mut(conn.id()) else {
-        //     return Err(NetworkStateError::UnknownConnection(conn.id().to_string()));
-        // };
-        //
         let controller = conn.clone();
 
         if let Connection::Bond(ref mut bond) = conn {
             if let Some(ControllerSettings::Options(opts)) = settings.get("options") {
-                bond.set_options(opts.to_owned());
+                bond.set_options(opts.to_owned())?;
             }
 
             if let Some(ControllerSettings::Ports(ports)) = settings.get("ports") {
@@ -606,12 +602,15 @@ impl BondConnection {
         self.bond.ports = ports;
     }
 
-    pub fn set_options<T>(&mut self, options: T)
+    pub fn set_options<T>(&mut self, options: T) -> Result<(), NetworkStateError>
     where
         T: TryInto<BondOptions>,
         <T as TryInto<BondOptions>>::Error: std::fmt::Debug,
     {
-        self.bond.options = options.try_into().unwrap()
+        self.bond.options = options
+            .try_into()
+            .map_err(|e| NetworkStateError::InvalidBondOptions)?;
+        Ok(())
     }
 }
 
