@@ -136,8 +136,11 @@ module Agama
         Yast::Pkg.TargetFinish # ensure that previous target is closed
         Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
         Yast::Pkg.TargetLoad
-        logger.info "Registering locales #{languages}"
-        Yast::Pkg.SetAdditionalLocales(languages)
+
+        preferred, *additional = languages
+        Yast::Pkg.SetPackageLocale(preferred) if preferred
+        Yast::Pkg.SetAdditionalLocales(additional)
+
         Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false, "onlyRequires" => false)
       end
 

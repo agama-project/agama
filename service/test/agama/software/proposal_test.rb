@@ -59,8 +59,9 @@ describe Agama::Software::Proposal do
     end
 
     it "selects the language packages" do
+      expect(Yast::Pkg).to receive(:SetPackageLocale).with("cs_CZ")
       expect(Yast::Pkg).to receive(:SetAdditionalLocales).with(["de_DE"])
-      subject.languages = ["de_DE"]
+      subject.languages = ["cs_CZ", "de_DE"]
       subject.calculate
     end
 
