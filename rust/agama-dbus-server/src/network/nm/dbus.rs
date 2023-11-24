@@ -48,7 +48,6 @@ pub fn connection_to_dbus(conn: &Connection) -> NestedHash {
     }
 
     result.insert("connection", connection_dbus);
-    cleanup_dbus_connection(&mut result);
     result
 }
 
@@ -117,7 +116,7 @@ pub fn merge_dbus_connections<'a>(
 /// replaced with "address-data". However, if "addresses" is present, it takes precedence.
 ///
 /// * `conn`: connection represented as a NestedHash.
-fn cleanup_dbus_connection(conn: &mut NestedHash) {
+pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
     if let Some(connection) = conn.get_mut("connection") {
         if connection
             .get("interface-name")

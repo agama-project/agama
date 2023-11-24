@@ -51,6 +51,9 @@ impl<'a> NetworkClient<'a> {
         for path in connection_paths {
             let mut connection = self.connection_from(path.as_str()).await?;
 
+            if let Ok(bond) = self.bond_from(path.as_str()).await {
+                connection.bond = Some(bond);
+            }
             if let Ok(wireless) = self.wireless_from(path.as_str()).await {
                 connection.wireless = Some(wireless);
             }
@@ -130,6 +133,21 @@ impl<'a> NetworkClient<'a> {
         })
     }
 
+    /// Returns the [bond settings][BondSettings] for the given connection
+    ///
+    ///  * `path`: the connections path to get the wireless config from
+    async fn bond_from(&self, path: &str) -> Result<BondSettings, ServiceError> {
+        let bond_proxy = BondProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+        let bond = BondSettings {
+            options: bond_proxy.options().await?,
+            ports: bond_proxy.ports().await?,
+        };
+
+        Ok(bond)
+    }
     /// Returns the [wireless settings][WirelessSettings] for the given connection
     ///
     ///  * `path`: the connections path to get the wireless config from
@@ -179,6 +197,7 @@ impl<'a> NetworkClient<'a> {
             Ok(path) => path,
             Err(_) => self.add_connection(conn).await?,
         };
+
         self.update_connection(&path, conn).await?;
         Ok(())
     }
@@ -297,6 +316,7 @@ impl<'a> NetworkClient<'a> {
         let ports: Vec<_> = bond.ports.iter().map(String::as_ref).collect();
         proxy.set_ports(ports.as_slice()).await?;
         proxy.set_options(bond.options.to_string().as_str()).await?;
+
         Ok(())
     }
     /// Updates the wireless settings for network connection.

@@ -3,10 +3,14 @@ mod common;
 use self::common::{async_retry, DBusServer};
 use agama_dbus_server::network::{
     self,
-    model::{self, Ipv4Method, Ipv6Method},
+    model::{self, BondConfig, Ipv4Method, Ipv6Method},
     Adapter, NetworkService, NetworkState,
 };
-use agama_lib::network::{settings, types::DeviceType, NetworkClient};
+use agama_lib::network::{
+    settings::{self, BondSettings},
+    types::DeviceType,
+    NetworkClient,
+};
 use cidr::IpInet;
 use std::error::Error;
 use tokio::test;
@@ -86,6 +90,41 @@ async fn test_add_connection() -> Result<(), Box<dyn Error>> {
     assert_eq!(method4, &Ipv4Method::Auto.to_string());
     let method6 = conn.method6.as_ref().unwrap();
     assert_eq!(method6, &Ipv6Method::Disabled.to_string());
+
+    Ok(())
+}
+
+#[test]
+async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
+    let mut server = DBusServer::new().start().await?;
+
+    let adapter = NetworkTestAdapter(NetworkState::default());
+
+    let _service = NetworkService::start(&server.connection(), adapter).await?;
+    server.request_name().await?;
+
+    let client = NetworkClient::new(server.connection().clone()).await?;
+    let bond0 = settings::NetworkConnection {
+        id: "bond0".to_string(),
+        method4: Some("auto".to_string()),
+        method6: Some("disabled".to_string()),
+        interface: Some("bond0".to_string()),
+        bond: Some(settings::BondSettings {
+            ports: vec!["eth0".to_string(), "eth1".to_string()],
+            options: "mode=active-backup primary=eth1".to_string(),
+        }),
+        ..Default::default()
+    };
+
+    client.add_or_update_connection(&bond0).await?;
+    println!("FETCHING CONNECTIONS");
+    let conns = async_retry(|| client.connections()).await?;
+    assert_eq!(conns.len(), 1);
+
+    let conn = conns.iter().find(|c| c.id == "bond0".to_string()).unwrap();
+    assert_eq!(conn.id, "bond0");
+    assert_eq!(conn.device_type(), DeviceType::Bond);
+
     Ok(())
 }
 

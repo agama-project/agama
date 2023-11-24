@@ -80,8 +80,6 @@ impl<T: Adapter> NetworkSystem<T> {
                 if let Some(conn) = self.state.get_connection(id) {
                     tx.send(Ok(conn.clone())).unwrap();
                 }
-
-                dbg!(&self.state.connections);
             }
             Action::RemoveConnection(id) => {
                 self.tree.remove_connection(&id).await?;

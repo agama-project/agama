@@ -2,7 +2,8 @@
 use std::collections::HashMap;
 
 use super::dbus::{
-    connection_from_dbus, connection_to_dbus, controller_from_dbus, merge_dbus_connections,
+    cleanup_dbus_connection, connection_from_dbus, connection_to_dbus, controller_from_dbus,
+    merge_dbus_connections,
 };
 use super::model::NmDeviceType;
 use super::proxies::{ConnectionProxy, DeviceProxy, NetworkManagerProxy, SettingsProxy};
@@ -103,7 +104,7 @@ impl<'a> NetworkManagerClient<'a> {
     ///
     /// * `conn`: connection to add or update.
     pub async fn add_or_update_connection(&self, conn: &Connection) -> Result<(), ServiceError> {
-        let new_conn = connection_to_dbus(conn);
+        let mut new_conn = connection_to_dbus(conn);
 
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid()).await {
             let original = proxy.get_settings().await?;
@@ -112,6 +113,7 @@ impl<'a> NetworkManagerClient<'a> {
             OwnedObjectPath::from(proxy.path().to_owned())
         } else {
             let proxy = SettingsProxy::new(&self.connection).await?;
+            cleanup_dbus_connection(&mut new_conn);
             proxy.add_connection(new_conn).await?
         };
 
