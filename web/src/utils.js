@@ -163,8 +163,7 @@ const useLocalStorage = (storageKey, fallbackState) => {
 };
 
 /**
- * Kudos to Sumit kumar Singh.
- * See https://designtechworld.medium.com/create-a-custom-debounce-hook-in-react-114f3f245260
+ * Source https://designtechworld.medium.com/create-a-custom-debounce-hook-in-react-114f3f245260
  */
 
 const useDebounce = (callback, delay) => {

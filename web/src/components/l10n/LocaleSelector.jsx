@@ -57,7 +57,7 @@ const LocaleItem = ({ locale }) => {
     <>
       <div>{locale.name}</div>
       <div>{locale.territory}</div>
-      <div {...{ "data-type": "details" }}>{locale.id}</div>
+      <div data-type="details">{locale.id}</div>
     </>
   );
 };
@@ -85,7 +85,7 @@ export default function LocaleSelector({ value, locales = [], onChange = noop })
             onClick={() => onChange(locale.id)}
             isSelected={locale.id === value}
             className="cursor-pointer"
-            {...{ "data-type": "locale" }}
+            data-type="locale"
           >
             <LocaleItem locale={locale} />
           </ListBoxItem>

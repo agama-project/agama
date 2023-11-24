@@ -56,7 +56,7 @@ const KeymapItem = ({ keymap }) => {
   return (
     <>
       <div>{keymap.name}</div>
-      <div {...{ "data-type": "details" }}>{keymap.id}</div>
+      <div data-type="details">{keymap.id}</div>
     </>
   );
 };
