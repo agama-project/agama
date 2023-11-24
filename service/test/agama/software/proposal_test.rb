@@ -162,4 +162,11 @@ describe Agama::Software::Proposal do
       end
     end
   end
+
+  describe "#languages" do
+    it "sets the languages to install removing the encoding" do
+      subject.languages = ["es_ES.UTF-8", "en_US"]
+      expect(subject.languages).to eq(["es_ES", "en_US"])
+    end
+  end
 end
