@@ -54,6 +54,7 @@ impl<'a> NetworkClient<'a> {
             if let Ok(bond) = self.bond_from(path.as_str()).await {
                 connection.bond = Some(bond);
             }
+
             if let Ok(wireless) = self.wireless_from(path.as_str()).await {
                 connection.wireless = Some(wireless);
             }

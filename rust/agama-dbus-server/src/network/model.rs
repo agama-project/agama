@@ -57,13 +57,6 @@ impl NetworkState {
         self.connections.iter_mut().find(|c| c.id() == id)
     }
 
-    /// Get connection by name
-    ///
-    /// * `name`: connection name
-    pub fn get_connection_by_name(&self, id: &str) -> Option<&Connection> {
-        self.connections.iter().find(|c| c.interface() == id)
-    }
-
     /// Adds a new connection.
     ///
     /// It uses the `id` to decide whether the connection already exists.
@@ -373,10 +366,14 @@ impl Connection {
         self.base_mut().interface = interface.to_string()
     }
 
+    /// Ports controller name, e.g.: bond0, br0
     pub fn controller(&self) -> &str {
         self.base().controller.as_str()
     }
 
+    /// Sets the ports controller.
+    ///
+    /// `controller`: Name of the controller (Bridge, Bond, Team), e.g.: bond0.
     pub fn set_controller(&mut self, controller: &str) {
         self.base_mut().controller = controller.to_string()
     }
@@ -624,8 +621,8 @@ impl TryFrom<String> for BondOptions {
         let mut options = HashMap::new();
 
         for opt in value.split_whitespace() {
-            let opt_word: Vec<&str> = opt.trim().split('=').collect();
-            options.insert(opt_word[0].to_string(), opt_word[1].to_string());
+            let (opt_key, opt_value) = opt.trim().split_once('=').unwrap();
+            options.insert(opt_key.to_string(), opt_value.to_string());
         }
 
         Ok(BondOptions(options))
@@ -634,10 +631,11 @@ impl TryFrom<String> for BondOptions {
 
 impl fmt::Display for BondOptions {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut opts = vec![];
-        for (key, value) in &self.0 {
-            opts.push(format!("{key}={value}"));
-        }
+        let opts = &self
+            .0
+            .iter()
+            .map(|(key, value)| format!("{key}={value}"))
+            .collect::<Vec<_>>();
 
         write!(f, "{}", opts.join(" "))
     }

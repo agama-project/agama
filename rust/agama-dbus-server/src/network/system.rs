@@ -74,10 +74,9 @@ impl<T: Adapter> NetworkSystem<T> {
                 self.state.update_connection(conn)?;
             }
             Action::UpdateControllerConnection(conn, settings, tx) => {
-                let id = &conn.clone();
-                let id = id.id();
+                let id = conn.id().to_owned();
                 self.state.update_controller_connection(conn, settings)?;
-                if let Some(conn) = self.state.get_connection(id) {
+                if let Some(conn) = self.state.get_connection(&id) {
                     tx.send(Ok(conn.clone())).unwrap();
                 }
             }
