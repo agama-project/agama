@@ -20,12 +20,14 @@
 # find current contact information at www.suse.com.
 
 require "agama/dbus/clients/base"
+require "singleton"
 
 module Agama
   module DBus
     module Clients
       # D-Bus client for locale configuration
       class Locale < Base
+        include Singleton
         INTERFACE_NAME = "org.opensuse.Agama1.Locale"
 
         def initialize

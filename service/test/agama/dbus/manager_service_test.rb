@@ -48,7 +48,7 @@ describe Agama::DBus::ManagerService do
       .and_return(object_server)
     allow(Agama::Manager).to receive(:new).with(config, logger).and_return(manager)
     allow(Agama::CockpitManager).to receive(:new).and_return(cockpit)
-    allow(Agama::DBus::Clients::Locale).to receive(:new).and_return(locale_client)
+    allow(Agama::DBus::Clients::Locale).to receive(:instance).and_return(locale_client)
     allow(Agama::DBus::Manager).to receive(:new).with(manager, logger).and_return(manager_obj)
     allow(Agama::DBus::Users).to receive(:new).and_return(users_obj)
   end

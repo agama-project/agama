@@ -65,7 +65,7 @@ describe Agama::Manager do
   before do
     allow(Agama::Network).to receive(:new).and_return(network)
     allow(Agama::ProxySetup).to receive(:instance).and_return(proxy)
-    allow(Agama::DBus::Clients::Locale).to receive(:new).and_return(locale)
+    allow(Agama::DBus::Clients::Locale).to receive(:instance).and_return(locale)
     allow(Agama::DBus::Clients::Software).to receive(:new).and_return(software)
     allow(Agama::DBus::Clients::Storage).to receive(:new).and_return(storage)
     allow(Agama::Users).to receive(:new).and_return(users)

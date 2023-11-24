@@ -27,6 +27,22 @@ module Agama
   module DBus
     module Clients
       # Base class for D-Bus clients
+      #
+      # The clients should be singleton because the #on_properties_change method
+      # will not work properly with several instances. Given a
+      # ::DBus::BusConnection object, ruby-dbus does not allow to register more
+      # than one callback for the same object.
+      #
+      # It causes the last instance to overwrite the callbacks from previous ones.
+      #
+      # @example Creating a new client
+      #   require "singleton"
+      #
+      #   class Locale < Base
+      #     include Singleton
+      #
+      #     # client methods
+      #   end
       class Base
         # @!method service_name
         #   Name of the D-Bus service

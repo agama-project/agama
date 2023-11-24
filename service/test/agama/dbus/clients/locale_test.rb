@@ -39,7 +39,7 @@ describe Agama::DBus::Clients::Locale do
   let(:dbus_object) { instance_double(DBus::ProxyObject) }
   let(:lang_iface) { instance_double(DBus::ProxyObjectInterface) }
 
-  subject { described_class.new }
+  subject { described_class.instance }
 
   describe "#finish" do
     let(:dbus_object) { double(DBus::ProxyObject) }

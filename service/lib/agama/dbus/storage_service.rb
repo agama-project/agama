@@ -53,9 +53,8 @@ module Agama
       # Starts storage service. It does more then just #export method.
       def start
         export
-        locale_client = Clients::Locale.new
         # TODO: test if we need to pass block with additional actions
-        @ui_locale = UILocale.new(locale_client)
+        @ui_locale = UILocale.new(Clients::Locale.instance)
       end
 
       # Exports the storage proposal object through the D-Bus service
