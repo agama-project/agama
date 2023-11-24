@@ -19,9 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 
 import { _ } from "~/i18n";
+import { ListSearch } from "~/components/core";
 import { noop } from "~/utils";
 
 /**
@@ -72,19 +73,24 @@ const LocaleItem = ({ locale }) => {
  *  changes.
  */
 export default function LocaleSelector({ value, locales = [], onChange = noop }) {
+  const [filteredLocales, setFilteredLocales] = useState(locales);
+
   return (
-    <ListBox aria-label={_("Available locales")} className="stack item-list">
-      { locales.map((locale, index) => (
-        <ListBoxItem
-          key={`locale-${index}`}
-          onClick={() => onChange(locale.id)}
-          isSelected={locale.id === value}
-          className="cursor-pointer"
-          {...{ "data-type": "locale" }}
-        >
-          <LocaleItem locale={locale} />
-        </ListBoxItem>
-      ))}
-    </ListBox>
+    <>
+      <ListSearch elements={locales} onChange={setFilteredLocales} />
+      <ListBox aria-label={_("Available locales")} className="stack item-list">
+        { filteredLocales.map((locale, index) => (
+          <ListBoxItem
+            key={`locale-${index}`}
+            onClick={() => onChange(locale.id)}
+            isSelected={locale.id === value}
+            className="cursor-pointer"
+            {...{ "data-type": "locale" }}
+          >
+            <LocaleItem locale={locale} />
+          </ListBoxItem>
+        ))}
+      </ListBox>
+    </>
   );
 }

@@ -39,6 +39,7 @@ export { default as InstallButton } from "./InstallButton";
 export { default as IssuesLink } from "./IssuesLink";
 export { default as IssuesPage } from "./IssuesPage";
 export { default as SectionSkeleton } from "./SectionSkeleton";
+export { default as ListSearch } from "./ListSearch";
 export { default as LogsButton } from "./LogsButton";
 export { default as FileViewer } from "./FileViewer";
 export { default as RowActions } from "./RowActions";

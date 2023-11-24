@@ -166,6 +166,7 @@ const LocalePopup = ({ onFinish = noop, onCancel = noop }) => {
       isOpen
       title={_("Select language")}
       description={_("The product will be installed using the selected language.")}
+      className="height-75"
     >
       <Form id="localeForm" onSubmit={onSubmit}>
         <LocaleSelector value={localeId} locales={sortedLocales} onChange={setLocaleId} />
@@ -266,6 +267,7 @@ const KeymapPopup = ({ onFinish = noop, onCancel = noop }) => {
       isOpen
       title={_("Select keyboard")}
       description={_("The product will be installed using the selected keyboard.")}
+      className="height-75"
     >
       <Form id="keymapForm" onSubmit={onSubmit}>
         <KeymapSelector value={keymapId} keymaps={sortedKeymaps} onChange={setKeymapId} />

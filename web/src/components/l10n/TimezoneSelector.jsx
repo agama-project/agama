@@ -19,9 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 
 import { _ } from "~/i18n";
+import { ListSearch } from "~/components/core";
 import { noop, timezoneTime } from "~/utils";
 
 /**
@@ -78,31 +79,6 @@ const TimezoneItem = ({ timezone, date }) => {
   );
 };
 
-const useDebounce = (callback, delay) => {
-  const timeoutRef = useRef(null);
-
-  useEffect(() => {
-    // Cleanup the previous timeout on re-render
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  const debouncedCallback = (...args) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      callback(...args);
-    }, delay);
-  };
-
-  return debouncedCallback;
-};
-
 /**
  * Component for selecting a timezone.
  * @component
@@ -116,31 +92,11 @@ const useDebounce = (callback, delay) => {
 export default function TimezoneSelector({ value, timezones = [], onChange = noop }) {
   const displayTimezones = timezones.map(t => ({ ...t, details: timezoneDetails(t) }));
   const [filteredTimezones, setFilteredTimezones] = useState(displayTimezones);
-
-  const search = useDebounce((term) => {
-    const filtered = displayTimezones.filter(timezone => {
-      const values = Object.values(timezone)
-        .join('')
-        .toLowerCase();
-      return values.includes(term);
-    });
-
-    console.log("search: ", term);
-    setFilteredTimezones(filtered);
-  }, 500);
-
-  const onSearchChange = (e) => {
-    const value = e.target.value;
-    search(value);
-  };
-
   const date = new Date();
 
   return (
     <>
-      <div role="search">
-        <input type="text" placeholder="Search" onChange={onSearchChange} />
-      </div>
+      <ListSearch elements={displayTimezones} onChange={setFilteredTimezones} />
       <ListBox aria-label={_("Available time zones")} className="stack item-list">
         { filteredTimezones.map((timezone, index) => (
           <ListBoxItem

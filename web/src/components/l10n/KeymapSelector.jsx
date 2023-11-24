@@ -19,9 +19,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 
 import { _ } from "~/i18n";
+import { ListSearch } from "~/components/core";
 import { noop } from "~/utils";
 
 /**
@@ -71,18 +72,23 @@ const KeymapItem = ({ keymap }) => {
  *  changes.
  */
 export default function KeymapSelector({ value, keymaps = [], onChange = noop }) {
+  const [filteredKeymaps, setFilteredKeymaps] = useState(keymaps);
+
   return (
-    <ListBox aria-label={_("Available keymaps")} className="stack item-list">
-      { keymaps.map((keymap, index) => (
-        <ListBoxItem
-          key={`keymap-${index}`}
-          onClick={() => onChange(keymap.id)}
-          isSelected={keymap.id === value}
-          className="cursor-pointer"
-        >
-          <KeymapItem keymap={keymap} />
-        </ListBoxItem>
-      ))}
-    </ListBox>
+    <>
+      <ListSearch elements={keymaps} onChange={setFilteredKeymaps} />
+      <ListBox aria-label={_("Available keymaps")} className="stack item-list">
+        { filteredKeymaps.map((keymap, index) => (
+          <ListBoxItem
+            key={`keymap-${index}`}
+            onClick={() => onChange(keymap.id)}
+            isSelected={keymap.id === value}
+            className="cursor-pointer"
+          >
+            <KeymapItem keymap={keymap} />
+          </ListBoxItem>
+        ))}
+      </ListBox>
+    </>
   );
 }
