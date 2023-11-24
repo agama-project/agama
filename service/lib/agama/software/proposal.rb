@@ -138,7 +138,7 @@ module Agama
         Yast::Pkg.TargetLoad
         logger.info "Registering locales #{languages}"
         Yast::Pkg.SetAdditionalLocales(languages)
-        Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false, "onlyRequires" => true)
+        Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false, "onlyRequires" => false)
       end
 
       # Selects the base product
