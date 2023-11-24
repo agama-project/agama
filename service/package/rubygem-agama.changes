@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Nov 24 14:50:22 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Install recommended packages (gh#openSUSE/agama#889).
+
+-------------------------------------------------------------------
 Thu Nov 16 16:27:37 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
 
 - Software service - correctly change the locale, pass the changed

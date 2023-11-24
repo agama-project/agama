@@ -130,7 +130,7 @@ module Agama
         Yast::Pkg.TargetInitialize(Yast::Installation.destdir)
         Yast::Pkg.TargetLoad
         Yast::Pkg.SetAdditionalLocales(languages)
-        Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false, "onlyRequires" => true)
+        Yast::Pkg.SetSolverFlags("ignoreAlreadyRecommended" => false, "onlyRequires" => false)
       end
 
       # Selects the base product
