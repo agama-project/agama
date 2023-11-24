@@ -345,9 +345,9 @@ export default function L10nPage() {
       actionLabel={_("Back")}
       actionVariant="secondary"
     >
-      <TimezoneSection />
       <LocaleSection />
       <KeymapSection />
+      <TimezoneSection />
     </Page>
   );
 }
