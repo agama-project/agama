@@ -62,6 +62,7 @@ const TimezonePopup = ({ onFinish = noop, onCancel = noop }) => {
       isOpen
       title={_("Select time zone")}
       description={_("The product will be installed using the selected time zone.")}
+      className="height-75"
     >
       <Form id="timezoneForm" onSubmit={onSubmit}>
         <TimezoneSelector value={timezoneId} timezones={sortedTimezones} onChange={setTimezoneId} />

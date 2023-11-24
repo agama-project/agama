@@ -19,7 +19,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { _ } from "~/i18n";
 import { noop, timezoneTime } from "~/utils";
@@ -67,16 +67,40 @@ const timezoneDetails = (timezone) => {
 const TimezoneItem = ({ timezone, date }) => {
   const [part1, ...restParts] = timezone.parts;
   const time = timezoneTime(timezone.id, { date }) || "";
-  const details = timezoneDetails(timezone);
 
   return (
     <>
       <div>{part1}</div>
       <div>{restParts.join('-')}</div>
-      <div {...{ "data-type": "time" }}>{time || ""}</div>
-      <div {...{ "data-type": "details" }}>{details}</div>
+      <div data-type="time">{time || ""}</div>
+      <div data-type="details">{timezone.details}</div>
     </>
   );
+};
+
+const useDebounce = (callback, delay) => {
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    // Cleanup the previous timeout on re-render
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const debouncedCallback = (...args) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      callback(...args);
+    }, delay);
+  };
+
+  return debouncedCallback;
 };
 
 /**
@@ -90,21 +114,46 @@ const TimezoneItem = ({ timezone, date }) => {
  *  changes.
  */
 export default function TimezoneSelector({ value, timezones = [], onChange = noop }) {
+  const displayTimezones = timezones.map(t => ({ ...t, details: timezoneDetails(t) }));
+  const [filteredTimezones, setFilteredTimezones] = useState(displayTimezones);
+
+  const search = useDebounce((term) => {
+    const filtered = displayTimezones.filter(timezone => {
+      const values = Object.values(timezone)
+        .join('')
+        .toLowerCase();
+      return values.includes(term);
+    });
+
+    console.log("search: ", term);
+    setFilteredTimezones(filtered);
+  }, 500);
+
+  const onSearchChange = (e) => {
+    const value = e.target.value;
+    search(value);
+  };
+
   const date = new Date();
 
   return (
-    <ListBox aria-label={_("Available time zones")} className="stack item-list">
-      { timezones.map((timezone, index) => (
-        <ListBoxItem
-          key={`timezone-${index}`}
-          onClick={() => onChange(timezone.id)}
-          isSelected={timezone.id === value}
-          className="cursor-pointer"
-          {...{ "data-type": "timezone" }}
-        >
-          <TimezoneItem timezone={timezone} date={date} />
-        </ListBoxItem>
-      ))}
-    </ListBox>
+    <>
+      <div role="search">
+        <input type="text" placeholder="Search" onChange={onSearchChange} />
+      </div>
+      <ListBox aria-label={_("Available time zones")} className="stack item-list">
+        { filteredTimezones.map((timezone, index) => (
+          <ListBoxItem
+            key={`timezone-${index}`}
+            onClick={() => onChange(timezone.id)}
+            isSelected={timezone.id === value}
+            className="cursor-pointer"
+            data-type="timezone"
+          >
+            <TimezoneItem timezone={timezone} date={date} />
+          </ListBoxItem>
+        ))}
+      </ListBox>
+    </>
   );
 }

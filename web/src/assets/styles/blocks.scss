@@ -312,6 +312,7 @@ span.notification-mark[data-variant="sidebar"] {
       }
 
       > [data-type="time"] {
+        color: var(--color-gray-dimmed);
         grid-area: time;
         text-align: end;
       }
@@ -338,6 +339,23 @@ span.notification-mark[data-variant="sidebar"] {
 
     svg {
       fill: white;
+    }
+  }
+}
+
+[role="dialog"] {
+  [role="search"] {
+    position: sticky;
+    top: calc(-1 * var(--pf-v5-c-modal-box__body--PaddingTop));
+    margin-top: calc(-1 * var(--pf-v5-c-modal-box__body--PaddingTop));
+    padding-top: var(--pf-v5-c-modal-box__body--PaddingTop);
+    background-color: var(--pf-v5-c-modal-box--BackgroundColor);
+
+    > input {
+      width: 100%;
+      padding: var(--spacer-small);
+      border: 1px solid var(--color-primary);
+      border-radius: 5px;
     }
   }
 }
