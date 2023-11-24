@@ -287,7 +287,7 @@ fn match_config_to_dbus(match_config: &MatchConfig) -> HashMap<&str, zvariant::V
         ("interface-name", interfaces),
     ])
 }
-pub fn controller_from_dbus(conn: OwnedNestedHash) -> Option<String> {
+pub fn controller_from_dbus(conn: &OwnedNestedHash) -> Option<String> {
     let Some(connection) = conn.get("connection") else {
         return None;
     };

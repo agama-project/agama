@@ -86,7 +86,7 @@ impl<'a> NetworkManagerClient<'a> {
             // TODO: log an error if a connection is not found
 
             if let Some(connection) = connection_from_dbus(settings.clone()) {
-                if let Some(controller) = controller_from_dbus(settings) {
+                if let Some(controller) = controller_from_dbus(&settings) {
                     controllers
                         .entry(controller)
                         .or_insert_with(Vec::new)
