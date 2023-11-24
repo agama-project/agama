@@ -134,6 +134,7 @@ module Agama
         def register_callbacks
           Agama::DBus::Clients::Locale.instance.on_language_selected do |language_ids|
             backend.languages = language_ids
+            probe
           end
 
           nm_client = Agama::DBus::Clients::Network.new
