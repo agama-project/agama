@@ -215,7 +215,7 @@ const DeviceItem = ({ device }) => {
 
   return (
     <>
-      <BasicInfo {...{ "data-type": "type-and-size" }} />
+      <BasicInfo />
       <ExtendedInfo />
       <ContentInfo />
     </>
@@ -233,7 +233,7 @@ const DeviceList = ({ devices }) => {
   return (
     <ListBox className="stack item-list">
       { devices.map(device => (
-        <ListBoxItem key={device.sid} isSelected {...{ "data-type": "storage-device" }}>
+        <ListBoxItem key={device.sid} isSelected data-type="storage-device">
           <DeviceItem device={device} />
         </ListBoxItem>
       ))}
@@ -275,7 +275,7 @@ const DeviceSelector = ({ devices, selected, isMultiple = false, onChange = noop
           onClick={() => onOptionClick(device.name)}
           isSelected={isSelected(device.name)}
           className="cursor-pointer"
-          {...{ "data-type": "storage-device" }}
+          data-type="storage-device"
         >
           <DeviceItem device={device} />
         </ListBoxItem>
@@ -305,7 +305,7 @@ const DeviceLineItem = ({ device }) => {
   const DeviceName = () => {
     if (device.name === undefined) return null;
 
-    return <span>{device.name}</span>;
+    return <span className="bold">{device.name}</span>;
   };
 
   return (
@@ -321,7 +321,7 @@ const DeviceCompactList = ({ devices }) => {
   return (
     <ul>
       { devices.map(device => (
-        <li key={device.sid} {...{ "data-type": "storage-device" }}>
+        <li key={device.sid}>
           <DeviceLineItem device={device} />
         </li>
       ))}

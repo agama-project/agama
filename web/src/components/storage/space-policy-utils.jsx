@@ -73,8 +73,8 @@ const PolicyItem = ({ policy }) => {
 
   return (
     <>
-      <div>{title(policy)}</div>
-      <div {...{ "data-type": "details" }}>{description(policy)}</div>
+      <div className="bold">{title(policy)}</div>
+      <div data-type="details">{description(policy)}</div>
     </>
   );
 };

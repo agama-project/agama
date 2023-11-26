@@ -220,11 +220,6 @@ section > .content {
   }
 }
 
-li:is([data-type="storage-device"]) {
-  svg { vertical-align: middle }
-  span { margin-left: 0.5em }
-}
-
 span.notification-mark {
   --nm-border-width: 0;
   --nm-border-color: transparent;
@@ -326,7 +321,11 @@ span.notification-mark[data-variant="sidebar"] {
       grid-template-columns: 1fr 2fr 2fr;
       grid-template-areas: "type-and-size drive-info drive-content";
 
-      > [data-type="type-and-size"] {
+      svg {
+        vertical-align: inherit;
+      }
+
+      > :first-child {
         align-self: center;
         text-align: center;
         justify-self: start;
