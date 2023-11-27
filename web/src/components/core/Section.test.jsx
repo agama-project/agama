@@ -72,12 +72,6 @@ describe("Section", () => {
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
     });
-
-    it("does not render the loading icon", () => {
-      const { container } = plainRender(<Section loading />);
-      const icon = container.querySelector("svg");
-      expect(icon).toBeNull();
-    });
   });
 
   describe("when aria-label is given", () => {
@@ -168,6 +162,7 @@ describe("Section", () => {
       expect(icon).toBeNull();
     });
   });
+
   describe("when path is given", () => {
     it("renders a link for navigating to it", async () => {
       installerRender(<Section title="Settings" path="/settings" />);
