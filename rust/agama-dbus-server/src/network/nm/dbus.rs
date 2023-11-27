@@ -241,10 +241,7 @@ fn wireless_config_to_dbus(conn: &WirelessConnection) -> NestedHash {
         security.insert("psk", password.to_string().into());
     }
 
-    NestedHash::from([
-        ("802-11-wireless", wireless),
-        ("802-11-wireless-security", security),
-    ])
+    NestedHash::from([(WIRELESS_KEY, wireless), (WIRELESS_SECURITY_KEY, security)])
 }
 
 fn bond_config_to_dbus(conn: &BondConnection) -> HashMap<&str, zvariant::Value> {
@@ -537,7 +534,10 @@ mod test {
         connection_from_dbus, connection_to_dbus, merge_dbus_connections, NestedHash,
         OwnedNestedHash,
     };
-    use crate::network::{model::*, nm::dbus::ETHERNET_KEY};
+    use crate::network::{
+        model::*,
+        nm::dbus::{ETHERNET_KEY, WIRELESS_KEY, WIRELESS_SECURITY_KEY},
+    };
     use agama_lib::network::types::SSID;
     use cidr::IpInet;
     use std::{collections::HashMap, net::IpAddr, str::FromStr};
@@ -695,8 +695,8 @@ mod test {
 
         let dbus_conn = HashMap::from([
             ("connection".to_string(), connection_section),
-            ("802-11-wireless".to_string(), wireless_section),
-            ("802-11-wireless-security".to_string(), security_section),
+            (WIRELESS_KEY.to_string(), wireless_section),
+            (WIRELESS_SECURITY_KEY.to_string(), security_section),
         ]);
 
         let connection = connection_from_dbus(dbus_conn).unwrap();
@@ -724,7 +724,7 @@ mod test {
         let wireless = Connection::Wireless(wireless);
         let wireless_dbus = connection_to_dbus(&wireless);
 
-        let wireless = wireless_dbus.get("802-11-wireless").unwrap();
+        let wireless = wireless_dbus.get(WIRELESS_KEY).unwrap();
         let mode: &str = wireless.get("mode").unwrap().downcast_ref().unwrap();
         assert_eq!(mode, "infrastructure");
 
@@ -736,7 +736,7 @@ mod test {
             .collect();
         assert_eq!(ssid, "agama".as_bytes());
 
-        let security = wireless_dbus.get("802-11-wireless-security").unwrap();
+        let security = wireless_dbus.get(WIRELESS_SECURITY_KEY).unwrap();
         let key_mgmt: &str = security.get("key-mgmt").unwrap().downcast_ref().unwrap();
         assert_eq!(key_mgmt, "wpa-psk");
     }
