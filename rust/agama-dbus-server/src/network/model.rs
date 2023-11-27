@@ -16,8 +16,6 @@ use thiserror::Error;
 use uuid::Uuid;
 use zbus::zvariant::Value;
 
-use super::dbus::ControllerSettings;
-
 #[derive(Default, Clone)]
 pub struct NetworkState {
     pub devices: Vec<Device>,
@@ -645,6 +643,13 @@ impl fmt::Display for BondOptions {
 pub struct BondConfig {
     pub ports: Vec<Connection>,
     pub options: BondOptions,
+}
+
+/// Controller settings payload for updating a controller's connection (Bond, Bridge)
+#[derive(Debug, PartialEq, Clone)]
+pub enum ControllerSettings {
+    Ports(Vec<String>),
+    Options(String),
 }
 
 #[derive(Debug, Default, Clone, PartialEq)]

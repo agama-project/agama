@@ -1,5 +1,4 @@
-use crate::network::dbus::ControllerSettings;
-use crate::network::model::Connection;
+use crate::network::model::{Connection, ControllerSettings};
 use agama_lib::network::types::DeviceType;
 use std::collections::HashMap;
 use tokio::sync::oneshot;

@@ -9,8 +9,8 @@ use crate::network::{
     action::Action,
     error::NetworkStateError,
     model::{
-        BondConnection, Connection as NetworkConnection, Device as NetworkDevice,
-        WirelessConnection,
+        BondConnection, Connection as NetworkConnection, ControllerSettings,
+        Device as NetworkDevice, WirelessConnection,
     },
 };
 
@@ -334,12 +334,6 @@ impl Bond {
 
         rx.await.unwrap()
     }
-}
-
-#[derive(Debug, PartialEq, Clone)]
-pub enum ControllerSettings {
-    Ports(Vec<String>),
-    Options(String),
 }
 
 #[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.Bond")]

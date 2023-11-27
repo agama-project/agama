@@ -7,6 +7,5 @@ mod interfaces;
 pub mod service;
 mod tree;
 
-pub use interfaces::ControllerSettings;
 pub use service::NetworkService;
 pub(crate) use tree::{ObjectsRegistry, Tree};
