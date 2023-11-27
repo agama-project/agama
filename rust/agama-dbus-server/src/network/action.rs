@@ -1,4 +1,4 @@
-use crate::network::model::{Connection, ControllerSettings};
+use crate::network::model::{Connection, ControllerConfig};
 use agama_lib::network::types::DeviceType;
 use std::collections::HashMap;
 use tokio::sync::oneshot;
@@ -18,7 +18,7 @@ pub enum Action {
     /// Update a controller connection (replacing the old one).
     UpdateControllerConnection(
         Connection,
-        HashMap<String, ControllerSettings>,
+        HashMap<String, ControllerConfig>,
         oneshot::Sender<Result<Connection, NetworkStateError>>,
     ),
     /// Remove the connection with the given Uuid.

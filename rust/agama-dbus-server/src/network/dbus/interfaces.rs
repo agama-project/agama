@@ -9,7 +9,7 @@ use crate::network::{
     action::Action,
     error::NetworkStateError,
     model::{
-        BondConnection, Connection as NetworkConnection, ControllerSettings,
+        BondConnection, Connection as NetworkConnection, ControllerConfig,
         Device as NetworkDevice, WirelessConnection,
     },
 };
@@ -323,7 +323,7 @@ impl Bond {
     async fn update_controller_connection<'a>(
         &self,
         connection: MappedMutexGuard<'a, BondConnection>,
-        settings: HashMap<String, ControllerSettings>,
+        settings: HashMap<String, ControllerConfig>,
     ) -> Result<crate::network::model::Connection, NetworkStateError> {
         let actions = self.actions.lock().await;
         let connection = NetworkConnection::Bond(connection.clone());
@@ -354,7 +354,7 @@ impl Bond {
                 connection,
                 HashMap::from([(
                     "options".to_string(),
-                    ControllerSettings::Options(opts.clone()),
+                    ControllerConfig::Options(opts.clone()),
                 )]),
             )
             .await;
@@ -382,7 +382,7 @@ impl Bond {
                 connection,
                 HashMap::from([(
                     "ports".to_string(),
-                    ControllerSettings::Ports(ports.clone()),
+                    ControllerConfig::Ports(ports.clone()),
                 )]),
             )
             .await;

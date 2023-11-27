@@ -89,16 +89,16 @@ impl NetworkState {
     pub fn update_controller_connection(
         &mut self,
         mut conn: Connection,
-        settings: HashMap<String, ControllerSettings>,
+        settings: HashMap<String, ControllerConfig>,
     ) -> Result<(), NetworkStateError> {
         let controller = conn.clone();
 
         if let Connection::Bond(ref mut bond) = conn {
-            if let Some(ControllerSettings::Options(opts)) = settings.get("options") {
+            if let Some(ControllerConfig::Options(opts)) = settings.get("options") {
                 bond.set_options(opts.to_owned())?;
             }
 
-            if let Some(ControllerSettings::Ports(ports)) = settings.get("ports") {
+            if let Some(ControllerConfig::Ports(ports)) = settings.get("ports") {
                 let new_ports: Vec<_> = ports
                     .iter()
                     .map(|port| {
@@ -645,9 +645,9 @@ pub struct BondConfig {
     pub options: BondOptions,
 }
 
-/// Controller settings payload for updating a controller's connection (Bond, Bridge)
+/// Controller config payload for updating a controller's connection (Bond, Bridge)
 #[derive(Debug, PartialEq, Clone)]
-pub enum ControllerSettings {
+pub enum ControllerConfig {
     Ports(Vec<String>),
     Options(String),
 }
