@@ -221,6 +221,7 @@ pub enum Connection {
     Ethernet(EthernetConnection),
     Wireless(WirelessConnection),
     Loopback(LoopbackConnection),
+    Dummy(DummyConnection),
 }
 
 impl Connection {
@@ -236,6 +237,7 @@ impl Connection {
             }),
             DeviceType::Loopback => Connection::Loopback(LoopbackConnection { base }),
             DeviceType::Ethernet => Connection::Ethernet(EthernetConnection { base }),
+            DeviceType::Dummy => Connection::Dummy(DummyConnection { base }),
         }
     }
 
@@ -246,6 +248,7 @@ impl Connection {
             Connection::Ethernet(conn) => &conn.base,
             Connection::Wireless(conn) => &conn.base,
             Connection::Loopback(conn) => &conn.base,
+            Connection::Dummy(conn) => &conn.base,
         }
     }
 
@@ -254,6 +257,7 @@ impl Connection {
             Connection::Ethernet(conn) => &mut conn.base,
             Connection::Wireless(conn) => &mut conn.base,
             Connection::Loopback(conn) => &mut conn.base,
+            Connection::Dummy(conn) => &mut conn.base,
         }
     }
 
@@ -476,6 +480,11 @@ pub struct WirelessConnection {
 
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct LoopbackConnection {
+    pub base: BaseConnection,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct DummyConnection {
     pub base: BaseConnection,
 }
 
