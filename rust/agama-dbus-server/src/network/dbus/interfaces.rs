@@ -238,6 +238,19 @@ impl Connection {
         connection.set_interface(name);
         self.update_connection(connection).await
     }
+
+    /// Custom mac-address
+    #[dbus_interface(property)]
+    pub async fn mac_address(&self) -> String {
+        self.get_connection().await.mac_address()
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_mac_address(&mut self, mac_address: &str) -> zbus::fdo::Result<()> {
+        let mut connection = self.get_connection().await;
+        connection.set_mac_address(mac_address)?;
+        self.update_connection(connection).await
+    }
 }
 
 /// D-Bus interface for Match settings

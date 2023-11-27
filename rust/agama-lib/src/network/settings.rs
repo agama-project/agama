@@ -69,6 +69,8 @@ pub struct NetworkConnection {
     pub interface: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub match_settings: Option<MatchSettings>,
+    #[serde(rename = "mac-address", skip_serializing_if = "Option::is_none")]
+    pub mac_address: Option<String>,
 }
 
 impl NetworkConnection {

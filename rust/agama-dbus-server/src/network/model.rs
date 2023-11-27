@@ -310,12 +310,26 @@ impl Connection {
     pub fn is_loopback(&self) -> bool {
         matches!(self, Connection::Loopback(_))
     }
+
+    pub fn is_ethernet(&self) -> bool {
+        matches!(self, Connection::Loopback(_)) || matches!(self, Connection::Ethernet(_))
+    }
+
+    pub fn mac_address(&self) -> String {
+        self.base().mac_address.to_string()
+    }
+
+    pub fn set_mac_address(&mut self, mac_address: &str) -> Result<(), InvalidMacAddress> {
+        self.base_mut().mac_address = MacAddress::from_str(mac_address)?;
+        Ok(())
+    }
 }
 
 #[derive(Debug, Default, Clone)]
 pub struct BaseConnection {
     pub id: String,
     pub uuid: Uuid,
+    pub mac_address: MacAddress,
     pub ip_config: IpConfig,
     pub status: Status,
     pub interface: String,
@@ -325,6 +339,59 @@ pub struct BaseConnection {
 impl PartialEq for BaseConnection {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id && self.uuid == other.uuid && self.ip_config == other.ip_config
+    }
+}
+
+#[derive(Debug, Error)]
+#[error("Invalid MAC address: {0}")]
+pub struct InvalidMacAddress(String);
+
+#[derive(Debug, Default, Clone)]
+pub enum MacAddress {
+    MacAddress(macaddr::MacAddr6),
+    Preserve,
+    Permanent,
+    Random,
+    Stable,
+    #[default]
+    None,
+}
+
+impl FromStr for MacAddress {
+    type Err = InvalidMacAddress;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "preserve" => Ok(Self::Preserve),
+            "permanent" => Ok(Self::Permanent),
+            "random" => Ok(Self::Random),
+            "stable" => Ok(Self::Stable),
+            "" => Ok(Self::None),
+            _ => Ok(Self::MacAddress(match macaddr::MacAddr6::from_str(s) {
+                Ok(mac) => mac,
+                Err(e) => return Err(InvalidMacAddress(e.to_string())),
+            })),
+        }
+    }
+}
+
+impl fmt::Display for MacAddress {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let output = match &self {
+            Self::MacAddress(mac) => mac.to_string(),
+            Self::Preserve => "preserve".to_string(),
+            Self::Permanent => "permanent".to_string(),
+            Self::Random => "random".to_string(),
+            Self::Stable => "stable".to_string(),
+            Self::None => "".to_string(),
+        };
+        write!(f, "{}", output)
+    }
+}
+
+impl From<InvalidMacAddress> for zbus::fdo::Error {
+    fn from(value: InvalidMacAddress) -> Self {
+        zbus::fdo::Error::Failed(value.to_string())
     }
 }
 
