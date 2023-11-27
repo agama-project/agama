@@ -49,6 +49,8 @@ describe("Section", () => {
       const { container } = plainRender(<Section title="Settings" />);
       const icon = container.querySelector("svg");
       expect(icon).toBeNull();
+      // Check that <Icon /> component was not mounted with 'undefined'
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("does not render an icon if not valid icon name is given", () => {
