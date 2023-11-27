@@ -23,7 +23,12 @@ fi
 
 # Backend setup
 
-$MYDIR/setup-service.sh
+if ! $MYDIR/setup-service.sh; then
+  echo "Backend setup failed."
+  echo "Agama service is NOT running."
+
+  exit 2
+fi;
 
 # Install Frontend dependencies
 
