@@ -396,6 +396,7 @@ impl Connection {
             DeviceType::Loopback => ConnectionConfig::Loopback,
             DeviceType::Dummy => ConnectionConfig::Dummy,
             DeviceType::Bond => ConnectionConfig::Bond(Default::default()),
+            DeviceType::Vlan => ConnectionConfig::Vlan(Default::default()),
         };
         Self {
             id,
@@ -434,6 +435,7 @@ impl Connection {
             || matches!(self.config, ConnectionConfig::Ethernet)
             || matches!(self.config, ConnectionConfig::Dummy)
             || matches!(self.config, ConnectionConfig::Bond(_))
+            || matches!(self.config, ConnectionConfig::Vlan(_))
     }
 }
 
@@ -461,6 +463,7 @@ pub enum ConnectionConfig {
     Loopback,
     Dummy,
     Bond(BondConfig),
+    Vlan(VlanConfig),
 }
 
 impl From<BondConfig> for ConnectionConfig {
@@ -677,6 +680,20 @@ impl From<&IpRoute> for HashMap<&str, Value<'_>> {
         }
         map
     }
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub enum VlanProtocol {
+    #[default]
+    IEEE802_1Q,
+    IEEE802_1ad,
+}
+
+#[derive(Debug, Default, PartialEq, Clone)]
+pub struct VlanConfig {
+    pub parent: String,
+    pub id: u32,
+    pub protocol: VlanProtocol,
 }
 
 #[derive(Debug, Default, PartialEq, Clone)]

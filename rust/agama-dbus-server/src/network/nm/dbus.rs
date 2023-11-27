@@ -19,6 +19,7 @@ const WIRELESS_KEY: &str = "802-11-wireless";
 const WIRELESS_SECURITY_KEY: &str = "802-11-wireless-security";
 const LOOPBACK_KEY: &str = "loopback";
 const DUMMY_KEY: &str = "dummy";
+const VLAN_KEY: &str = "vlan";
 
 /// Converts a connection struct into a HashMap that can be sent over D-Bus.
 ///
@@ -77,6 +78,10 @@ pub fn connection_to_dbus<'a>(
         ConnectionConfig::Dummy => {
             connection_dbus.insert("type", DUMMY_KEY.into());
         }
+        ConnectionConfig::Vlan(vlan) => {
+            connection_dbus.insert("type", VLAN_KEY.into());
+            result.extend(vlan_config_to_dbus(vlan));
+        }
         _ => {}
     }
 
@@ -97,6 +102,11 @@ pub fn connection_from_dbus(conn: OwnedNestedHash) -> Option<Connection> {
 
     if let Some(bond_config) = bond_config_from_dbus(&conn) {
         connection.config = ConnectionConfig::Bond(bond_config);
+        return Some(connection);
+    }
+
+    if let Some(vlan_config) = vlan_config_from_dbus(&conn) {
+        connection.config = ConnectionConfig::Vlan(vlan_config);
         return Some(connection);
     }
 
@@ -565,6 +575,57 @@ fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Option<BondConfig> {
     }
 
     Some(bond)
+}
+
+fn vlan_config_to_dbus(cfg: &VlanConfig) -> NestedHash {
+    let vlan: HashMap<&str, zvariant::Value> = HashMap::from([
+        ("id", cfg.id.into()),
+        ("parent", cfg.parent.clone().into()),
+        (
+            "protocol",
+            match cfg.protocol {
+                VlanProtocol::IEEE802_1Q => "802.1Q".into(),
+                VlanProtocol::IEEE802_1ad => "802.1ad".into(),
+            },
+        ),
+    ]);
+
+    NestedHash::from([("vlan", vlan)])
+}
+
+fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Option<VlanConfig> {
+    let Some(vlan) = conn.get(VLAN_KEY) else {
+        return None;
+    };
+
+    let Some(id) = vlan.get("id") else {
+        return None;
+    };
+    let id = id.downcast_ref::<u32>()?;
+
+    let Some(parent) = vlan.get("parent") else {
+        return None;
+    };
+    let parent: &str = parent.downcast_ref()?;
+
+    let protocol = match vlan.get("protocol") {
+        Some(x) => {
+            let x: &str = x.downcast_ref()?;
+            if x == "802.1ad" {
+                VlanProtocol::IEEE802_1ad
+            } else {
+                VlanProtocol::IEEE802_1Q
+            }
+        }
+        _ => VlanProtocol::IEEE802_1Q,
+    };
+
+    Some(VlanConfig {
+        id: *id,
+        parent: String::from(parent),
+        protocol,
+        ..Default::default()
+    })
 }
 
 /// Determines whether a value is empty.
