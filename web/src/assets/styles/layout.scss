@@ -33,6 +33,8 @@
 
   svg {
     color: white;
+    block-size: var(--header-icon-size);
+    inline-size: var(--header-icon-size);
   }
 }
 
