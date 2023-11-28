@@ -76,7 +76,9 @@ export default function KeymapSelector({ value, keymaps = [], onChange = noop })
 
   return (
     <>
-      <ListSearch elements={keymaps} onChange={setFilteredKeymaps} />
+      <div className="sticky-top-0">
+        <ListSearch elements={keymaps} onChange={setFilteredKeymaps} />
+      </div>
       <ListBox aria-label={_("Available keymaps")} className="stack item-list">
         { filteredKeymaps.map((keymap, index) => (
           <ListBoxItem

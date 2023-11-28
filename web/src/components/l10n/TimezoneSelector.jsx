@@ -96,7 +96,9 @@ export default function TimezoneSelector({ value, timezones = [], onChange = noo
 
   return (
     <>
-      <ListSearch elements={displayTimezones} onChange={setFilteredTimezones} />
+      <div className="sticky-top-0">
+        <ListSearch elements={displayTimezones} onChange={setFilteredTimezones} />
+      </div>
       <ListBox aria-label={_("Available time zones")} className="stack item-list">
         { filteredTimezones.map((timezone, index) => (
           <ListBoxItem

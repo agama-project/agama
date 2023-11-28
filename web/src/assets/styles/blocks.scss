@@ -344,14 +344,14 @@ span.notification-mark[data-variant="sidebar"] {
 }
 
 [role="dialog"] {
-  [role="search"] {
+  .sticky-top-0 {
     position: sticky;
     top: calc(-1 * var(--pf-v5-c-modal-box__body--PaddingTop));
     margin-top: calc(-1 * var(--pf-v5-c-modal-box__body--PaddingTop));
     padding-top: var(--pf-v5-c-modal-box__body--PaddingTop);
     background-color: var(--pf-v5-c-modal-box--BackgroundColor);
 
-    > input {
+    [role="search"] {
       width: 100%;
       padding: var(--spacer-small);
       border: 1px solid var(--color-primary);

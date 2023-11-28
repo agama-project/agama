@@ -77,7 +77,9 @@ export default function LocaleSelector({ value, locales = [], onChange = noop })
 
   return (
     <>
-      <ListSearch elements={locales} onChange={setFilteredLocales} />
+      <div className="sticky-top-0">
+        <ListSearch elements={locales} onChange={setFilteredLocales} />
+      </div>
       <ListBox aria-label={_("Available locales")} className="stack item-list">
         { filteredLocales.map((locale, index) => (
           <ListBoxItem

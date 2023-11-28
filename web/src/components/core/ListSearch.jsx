@@ -41,8 +41,6 @@ export default function ListSearch({ elements = [], onChange: onChangeProp = noo
   const onChange = (e) => searchHandler(e.target.value);
 
   return (
-    <div role="search">
-      <input type="text" placeholder={_("Search")} onChange={onChange} />
-    </div>
+    <input role="search" type="text" placeholder={_("Search")} onChange={onChange} />
   );
 }
