@@ -1,4 +1,4 @@
-use agama_dbus_server::{helpers, locale, network, questions};
+use agama_dbus_server::{locale, locale::helpers, network, questions};
 
 use agama_lib::connection_to;
 use anyhow::Context;

@@ -1,5 +1,8 @@
-use super::{helpers, keyboard::get_keymaps};
-use crate::{error::Error, keyboard::Keymap};
+mod keyboard;
+pub mod helpers;
+
+use keyboard::{get_keymaps, Keymap};
+use crate::error::Error;
 use agama_locale_data::{KeymapId, LocaleCode};
 use anyhow::Context;
 use std::process::Command;
