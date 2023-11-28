@@ -1,20 +1,25 @@
-mod keyboard;
 pub mod helpers;
+mod keyboard;
+mod locale;
+mod timezone;
 
-use keyboard::{get_keymaps, Keymap};
 use crate::error::Error;
-use agama_locale_data::{KeymapId, LocaleCode};
+use agama_locale_data::KeymapId;
 use anyhow::Context;
+use keyboard::{get_keymaps, Keymap};
+use locale::LocalesDatabase;
 use std::process::Command;
+use timezone::TimezonesDatabase;
 use zbus::{dbus_interface, Connection};
 
 pub struct Locale {
+    timezone: String,
+    timezones_db: TimezonesDatabase,
     locales: Vec<String>,
-    timezone_id: String,
-    supported_locales: Vec<String>,
-    ui_locale: String,
+    locales_db: LocalesDatabase,
     keymap: KeymapId,
     keymaps: Vec<Keymap>,
+    ui_locale: String,
 }
 
 #[dbus_interface(name = "org.opensuse.Agama1.Locale")]
@@ -31,46 +36,19 @@ impl Locale {
     ///
     // NOTE: check how often it is used and if often, it can be easily cached
     fn list_locales(&self) -> Result<Vec<(String, String, String)>, Error> {
-        const DEFAULT_LANG: &str = "en";
-        let mut result = Vec::with_capacity(self.supported_locales.len());
-        let languages = agama_locale_data::get_languages()?;
-        let territories = agama_locale_data::get_territories()?;
-        for code in self.supported_locales.as_slice() {
-            let Ok(loc) = TryInto::<LocaleCode>::try_into(code.as_str()) else {
-                log::debug!("Ignoring locale code {}", &code);
-                continue;
-            };
-
-            let ui_language = self
-                .ui_locale
-                .split_once("_")
-                .map(|(l, _)| l)
-                .unwrap_or(DEFAULT_LANG);
-
-            let language = languages
-                .find_by_id(&loc.language)
-                .context("language not found")?;
-
-            let names = &language.names;
-            let language_label = names
-                .name_for(&ui_language)
-                .or_else(|| names.name_for(DEFAULT_LANG))
-                .unwrap_or(language.id.to_string());
-
-            let territory = territories
-                .find_by_id(&loc.territory)
-                .context("territory not found")?;
-
-            let names = &territory.names;
-            let territory_label = names
-                .name_for(&ui_language)
-                .or_else(|| names.name_for(DEFAULT_LANG))
-                .unwrap_or(territory.id.to_string());
-
-            result.push((code.clone(), language_label, territory_label))
-        }
-
-        Ok(result)
+        let locales = self
+            .locales_db
+            .entries()
+            .iter()
+            .map(|l| {
+                (
+                    l.code.to_string(),
+                    l.language.to_string(),
+                    l.territory.to_string(),
+                )
+            })
+            .collect::<Vec<_>>();
+        Ok(locales)
     }
 
     #[dbus_interface(property)]
@@ -81,7 +59,7 @@ impl Locale {
     #[dbus_interface(property)]
     fn set_locales(&mut self, locales: Vec<String>) -> zbus::fdo::Result<()> {
         for loc in &locales {
-            if !self.supported_locales.contains(loc) {
+            if !self.locales_db.exists(loc.as_str()) {
                 return Err(zbus::fdo::Error::Failed(format!(
                     "Unsupported locale value '{loc}'"
                 )));
@@ -97,9 +75,9 @@ impl Locale {
     }
 
     #[dbus_interface(property, name = "UILocale")]
-    fn set_ui_locale(&mut self, locale: &str) {
-        self.ui_locale = locale.to_string();
+    fn set_ui_locale(&mut self, locale: &str) -> zbus::fdo::Result<()> {
         helpers::set_service_locale(locale);
+        Ok(self.translate(locale)?)
     }
 
     /// Returns a list of the supported keymaps.
@@ -145,35 +123,29 @@ impl Locale {
     /// * A list containing each part of the name in the language set by the
     ///   UILocale property.
     fn list_timezones(&self) -> Result<Vec<(String, Vec<String>)>, Error> {
-        let language = self.ui_locale.split("_").next().unwrap_or(&self.ui_locale);
-        let timezones = agama_locale_data::get_timezones();
-        let tz_parts = agama_locale_data::get_timezone_parts()?;
-        let ret = timezones
-            .into_iter()
-            .map(|tz| {
-                let parts: Vec<_> = tz
-                    .split("/")
-                    .map(|part| {
-                        tz_parts
-                            .localize_part(part, &language)
-                            .unwrap_or(part.to_owned())
-                    })
-                    .collect();
-                (tz, parts)
-            })
+        let timezones: Vec<_> = self
+            .timezones_db
+            .entries()
+            .iter()
+            .map(|tz| (tz.code.to_string(), tz.parts.clone()))
             .collect();
-        Ok(ret)
+        Ok(timezones)
     }
 
     #[dbus_interface(property)]
     fn timezone(&self) -> &str {
-        self.timezone_id.as_str()
+        self.timezone.as_str()
     }
 
     #[dbus_interface(property)]
     fn set_timezone(&mut self, timezone: &str) -> Result<(), zbus::fdo::Error> {
-        // NOTE: cannot use crate::Error as property expect this one
-        self.timezone_id = timezone.to_string();
+        let timezone = timezone.to_string();
+        if !self.timezones_db.exists(&timezone) {
+            return Err(zbus::fdo::Error::Failed(format!(
+                "Unsupported timezone value '{timezone}'"
+            )));
+        }
+        self.timezone = timezone;
         Ok(())
     }
 
@@ -194,7 +166,7 @@ impl Locale {
             .status()
             .context("Failed to execute systemd-firstboot")?;
         Command::new("/usr/bin/systemd-firstboot")
-            .args(["--root", ROOT, "--timezone", self.timezone_id.as_str()])
+            .args(["--root", ROOT, "--timezone", self.timezone.as_str()])
             .status()
             .context("Failed to execute systemd-firstboot")?;
 
@@ -203,36 +175,35 @@ impl Locale {
 }
 
 impl Locale {
-    pub fn from_system() -> Result<Self, Error> {
-        let result = Command::new("/usr/bin/localectl")
-            .args(["list-locales"])
-            .output()
-            .context("Failed to get the list of locales")?;
-        let output =
-            String::from_utf8(result.stdout).context("Invalid UTF-8 sequence from list-locales")?;
-        let supported: Vec<String> = output.lines().map(|s| s.to_string()).collect();
-        Ok(Self {
-            supported_locales: supported,
-            keymaps: get_keymaps()?,
-            ..Default::default()
-        })
-    }
+    pub fn new_with_locale(locale: &str) -> Result<Self, Error> {
+        let mut locales_db = LocalesDatabase::new();
+        locales_db.read(&locale)?;
+        let default_locale = locales_db.entries().get(0).unwrap();
 
-    pub fn init(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        Ok(())
-    }
-}
+        let mut timezones_db = TimezonesDatabase::new();
+        timezones_db.read(&locale)?;
+        let default_timezone = timezones_db.entries().get(0).unwrap();
 
-impl Default for Locale {
-    fn default() -> Self {
-        Self {
-            locales: vec!["en_US.UTF-8".to_string()],
-            timezone_id: "America/Los_Angeles".to_string(),
-            supported_locales: vec!["en_US.UTF-8".to_string()],
-            ui_locale: "en".to_string(),
+        let locale = Self {
             keymap: "us".parse().unwrap(),
-            keymaps: vec![],
-        }
+            timezone: default_timezone.code.to_string(),
+            locales: vec![default_locale.code.to_string()],
+            locales_db,
+            timezones_db,
+            keymaps: get_keymaps()?,
+            ui_locale: locale.to_string(),
+        };
+
+        Ok(locale)
+    }
+
+    pub fn translate(&mut self, locale: &str) -> Result<(), Error> {
+        self.ui_locale = locale.to_string();
+        let language = locale.split_once("_").map(|(l, _)| l).unwrap_or("en");
+        self.timezones_db.read(&language)?;
+        self.locales_db.read(&language)?;
+        self.ui_locale = locale.to_string();
+        Ok(())
     }
 }
 
@@ -242,7 +213,7 @@ pub async fn export_dbus_objects(
     const PATH: &str = "/org/opensuse/Agama1/Locale";
 
     // When serving, request the service name _after_ exposing the main object
-    let locale = Locale::from_system()?;
+    let locale = Locale::new_with_locale("en")?;
     connection.object_server().at(PATH, locale).await?;
 
     Ok(())

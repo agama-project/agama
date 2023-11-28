@@ -19,3 +19,9 @@ impl From<anyhow::Error> for Error {
         Self::Anyhow(format!("{:#}", e))
     }
 }
+
+impl From<Error> for zbus::fdo::Error {
+    fn from(value: Error) -> zbus::fdo::Error {
+        zbus::fdo::Error::Failed(format!("Localization error: {value}"))
+    }
+}

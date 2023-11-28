@@ -5,12 +5,19 @@ use std::sync::OnceLock;
 use std::{fmt::Display, str::FromStr};
 use thiserror::Error;
 
+#[derive(Clone, Debug, PartialEq)]
 pub struct LocaleCode {
     // ISO-639
     pub language: String,
     // ISO-3166
     pub territory: String,
     // encoding: String,
+}
+
+impl Display for LocaleCode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}_{}", &self.language, &self.territory)
+    }
 }
 
 #[derive(Error, Debug)]
