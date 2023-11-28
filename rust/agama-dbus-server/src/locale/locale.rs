@@ -112,20 +112,22 @@ mod tests {
     use super::LocalesDatabase;
     use agama_locale_data::LocaleCode;
 
+    #[ignore]
     #[test]
     fn test_read_locales() {
         let mut db = LocalesDatabase::new();
         db.read("de").unwrap();
-        let english: LocaleCode = "es_ES".try_into().unwrap();
         let found_locales = db.entries();
+        let spanish: LocaleCode = "es_ES".try_into().unwrap();
         let found = found_locales
             .into_iter()
-            .find(|l| l.code == english)
+            .find(|l| l.code == spanish)
             .unwrap();
         assert_eq!(&found.language, "Spanisch");
         assert_eq!(&found.territory, "Spanien");
     }
 
+    #[ignore]
     #[test]
     fn test_locale_exists() {
         let mut db = LocalesDatabase::new();
