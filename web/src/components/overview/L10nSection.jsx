@@ -29,7 +29,8 @@ const Content = ({ locales }) => {
   // Only considering the first locale.
   const locale = locales[0];
 
-  // TRANSLATORS: %s will be replaced by a language name and code, example: "English (en_US.UTF-8)".
+  // TRANSLATORS: %s will be replaced by a language name and territory, example:
+  // "English (United States)".
   const [msg1, msg2] = _("The system will use %s as its default language.").split("%s");
 
   return (

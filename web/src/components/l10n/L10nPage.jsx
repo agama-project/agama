@@ -21,6 +21,7 @@
 
 import React, { useState } from "react";
 import { Button, Form } from "@patternfly/react-core";
+import { sprintf } from "sprintf-js";
 
 import { useInstallerClient } from "~/context/installer";
 import { _ } from "~/i18n";
@@ -28,6 +29,7 @@ import { If, Page, Popup, Section } from "~/components/core";
 import { KeymapSelector, LocaleSelector, TimezoneSelector } from "~/components/l10n";
 import { noop } from "~/utils";
 import { useL10n } from "~/context/l10n";
+import { useProduct } from "~/context/product";
 
 /**
  * Popup for selecting a timezone.
@@ -40,8 +42,9 @@ import { useL10n } from "~/context/l10n";
 const TimezonePopup = ({ onFinish = noop, onCancel = noop }) => {
   const { l10n } = useInstallerClient();
   const { timezones, selectedTimezone } = useL10n();
-  const [timezoneId, setTimezoneId] = useState(selectedTimezone?.id);
 
+  const [timezoneId, setTimezoneId] = useState(selectedTimezone?.id);
+  const { selectedProduct } = useProduct();
   const sortedTimezones = timezones.sort((timezone1, timezone2) => {
     const timezoneText = t => t.parts.join('').toLowerCase();
     return timezoneText(timezone1) > timezoneText(timezone2) ? 1 : -1;
@@ -61,7 +64,7 @@ const TimezonePopup = ({ onFinish = noop, onCancel = noop }) => {
     <Popup
       isOpen
       title={_("Select time zone")}
-      description={_("The product will be installed using the selected time zone.")}
+      description={sprintf(_("%s will use the selected time zone."), selectedProduct.name)}
       className="height-75"
     >
       <Form id="timezoneForm" onSubmit={onSubmit}>
@@ -142,6 +145,7 @@ const TimezoneSection = () => {
 const LocalePopup = ({ onFinish = noop, onCancel = noop }) => {
   const { l10n } = useInstallerClient();
   const { locales, selectedLocales } = useL10n();
+  const { selectedProduct } = useProduct();
   const [localeId, setLocaleId] = useState(selectedLocales[0]?.id);
 
   const sortedLocales = locales.sort((locale1, locale2) => {
@@ -165,7 +169,7 @@ const LocalePopup = ({ onFinish = noop, onCancel = noop }) => {
     <Popup
       isOpen
       title={_("Select language")}
-      description={_("The product will be installed using the selected language.")}
+      description={sprintf(_("%s will use the selected language."), selectedProduct.name)}
       className="height-75"
     >
       <Form id="localeForm" onSubmit={onSubmit}>
@@ -248,6 +252,7 @@ const LocaleSection = () => {
 const KeymapPopup = ({ onFinish = noop, onCancel = noop }) => {
   const { l10n } = useInstallerClient();
   const { keymaps, selectedKeymap } = useL10n();
+  const { selectedProduct } = useProduct();
   const [keymapId, setKeymapId] = useState(selectedKeymap?.id);
 
   const sortedKeymaps = keymaps.sort((k1, k2) => k1.name > k2.name ? 1 : -1);
@@ -266,7 +271,7 @@ const KeymapPopup = ({ onFinish = noop, onCancel = noop }) => {
     <Popup
       isOpen
       title={_("Select keyboard")}
-      description={_("The product will be installed using the selected keyboard.")}
+      description={sprintf(_("%s will use the selected keyboard."), selectedProduct.name)}
       className="height-75"
     >
       <Form id="keymapForm" onSubmit={onSubmit}>

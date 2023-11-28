@@ -72,7 +72,7 @@ it("searches for elements matching the given text", async () => {
 
   // Search for unknown fruit
   await user.clear(searchInput);
-  await user.type(searchInput, "tomate");
+  await user.type(searchInput, "tomato");
   await waitFor(() => (
     expect(screen.queryByRole("option", { name: /apple/ })).not.toBeInTheDocument())
   );

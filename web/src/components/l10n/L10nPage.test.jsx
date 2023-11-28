@@ -63,6 +63,13 @@ jest.mock("~/context/l10n", () => ({
   })
 }));
 
+jest.mock("~/context/product", () => ({
+  ...jest.requireActual("~/context/product"),
+  useProduct: () => ({
+    selectedProduct : { name: "Test" }
+  })
+}));
+
 createClient.mockImplementation(() => (
   {
     l10n: mockL10nClient
