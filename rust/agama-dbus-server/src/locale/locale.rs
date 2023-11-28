@@ -33,7 +33,7 @@ impl LocalesDatabase {
 
     /// Loads the list of locales.
     ///
-    /// * `locale`: locale to translate the descriptions.
+    /// * `ui_language`: language to translate the descriptions (e.g., "en").
     pub fn read(&mut self, ui_language: &str) -> Result<(), Error> {
         let result = Command::new("/usr/bin/localectl")
             .args(["list-locales"])

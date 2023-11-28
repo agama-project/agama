@@ -23,6 +23,8 @@ impl TimezonesDatabase {
     }
 
     /// Initializes the list of known timezones.
+    ///
+    /// * `ui_language`: language to translate the descriptions (e.g., "en").
     pub fn read(&mut self, ui_language: &str) -> Result<(), Error> {
         self.timezones = self.get_timezones(ui_language)?;
         Ok(())
@@ -42,14 +44,14 @@ impl TimezonesDatabase {
     /// Each element of the list contains a timezone identifier and a vector
     /// containing the translation of each part of the language.
     ///
-    /// * `locale`: locale to use in the translations.
-    fn get_timezones(&self, locale: &str) -> Result<Vec<TimezoneEntry>, Error> {
+    /// * `ui_language`: language to translate the descriptions (e.g., "en").
+    fn get_timezones(&self, ui_language: &str) -> Result<Vec<TimezoneEntry>, Error> {
         let timezones = agama_locale_data::get_timezones();
         let tz_parts = agama_locale_data::get_timezone_parts()?;
         let ret = timezones
             .into_iter()
             .map(|tz| {
-                let parts = translate_parts(&tz, &locale, &tz_parts);
+                let parts = translate_parts(&tz, &ui_language, &tz_parts);
                 TimezoneEntry { code: tz, parts }
             })
             .collect();
@@ -57,12 +59,12 @@ impl TimezonesDatabase {
     }
 }
 
-fn translate_parts(timezone: &str, locale: &str, tz_parts: &TimezoneIdParts) -> Vec<String> {
+fn translate_parts(timezone: &str, ui_language: &str, tz_parts: &TimezoneIdParts) -> Vec<String> {
     timezone
         .split("/")
         .map(|part| {
             tz_parts
-                .localize_part(part, &locale)
+                .localize_part(part, &ui_language)
                 .unwrap_or(part.to_owned())
         })
         .collect()
