@@ -75,7 +75,9 @@ describe("App", () => {
           getLocales: jest.fn().mockResolvedValue(["en_us"]),
           getUILocale: jest.fn().mockResolvedValue("en_us"),
           setUILocale: jest.fn().mockResolvedValue("en_us"),
-          onLocalesChange: jest.fn()
+          onTimezoneChange: jest.fn(),
+          onLocalesChange: jest.fn(),
+          onKeymapChange: jest.fn()
         }
       };
     });
