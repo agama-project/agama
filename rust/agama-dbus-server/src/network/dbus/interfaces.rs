@@ -9,8 +9,8 @@ use crate::network::{
     action::Action,
     error::NetworkStateError,
     model::{
-        BondConnection, Connection as NetworkConnection, ControllerConfig,
-        Device as NetworkDevice, WirelessConnection,
+        BondConnection, Connection as NetworkConnection, ControllerConfig, Device as NetworkDevice,
+        WirelessConnection,
     },
 };
 
@@ -380,10 +380,7 @@ impl Bond {
         let result = self
             .update_controller_connection(
                 connection,
-                HashMap::from([(
-                    "ports".to_string(),
-                    ControllerConfig::Ports(ports.clone()),
-                )]),
+                HashMap::from([("ports".to_string(), ControllerConfig::Ports(ports.clone()))]),
             )
             .await;
         self.connection = Arc::new(Mutex::new(result.unwrap()));
