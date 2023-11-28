@@ -19,11 +19,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 
-import { _ } from "~/i18n";
+import { _, n_ } from "~/i18n";
+import { sprintf } from "sprintf-js";
 import { noop } from "~/utils";
-import { Button } from "@patternfly/react-core";
+import { Button, ExpandableSection, Hint, HintBody } from "@patternfly/react-core";
+import { DeviceList } from "~/components/storage";
 
 const ListBox = ({ children, ...props }) => <ul role="listbox" {...props}>{children}</ul>;
 
@@ -105,13 +107,22 @@ const SpacePolicySelector = ({ value, onChange = noop }) => {
   );
 };
 
-const SpacePolicyButton = ({ policy, onClick = noop }) => {
-  const text = (policy) => {
+const SpacePolicyButton = ({ policy, devices, onClick = noop }) => {
+  const text = (policy, num) => {
     switch (policy) {
       case "delete":
-        return _("deleting its current content");
+        return sprintf(
+          n_("deleting all content at the target disk", "deleting all content at the %d chosen disks", num),
+          num
+        );
       case "resize":
-        return _("shrinking existing partitions");
+        return sprintf(
+          n_(
+            "shrinking partitions at the target disk",
+            "shrinking partitions at the %d chosen disks",
+            num),
+          num
+        );
       case "keep":
         return _("without modifying any partition");
     }
@@ -119,7 +130,47 @@ const SpacePolicyButton = ({ policy, onClick = noop }) => {
     return "error";
   };
 
-  return <Button variant="link" isInline onClick={onClick}>{text(policy)}</Button>;
+  const num = devices.length;
+
+  return <Button variant="link" isInline onClick={onClick}>{text(policy, num)}</Button>;
 };
 
-export { SpacePolicyButton, SpacePolicySelector };
+const SpacePolicyDisksHint = ({ devices }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const label = (num) => {
+    return sprintf(
+      n_(
+        "This will only affect the target installation disk",
+        "This will affect the %d devices chosen for installation",
+        num
+      ),
+      num
+    );
+  };
+
+  const num = devices.length;
+  if (num > 1) {
+    return (
+      <Hint>
+        <HintBody>
+          <ExpandableSection
+            isExpanded={isExpanded}
+            onToggle={() => setIsExpanded(!isExpanded)}
+            toggleText={label(num)}
+          >
+            <DeviceList devices={devices} />
+          </ExpandableSection>
+        </HintBody>
+      </Hint>
+    );
+  } else {
+    return (
+      <Hint>
+        <HintBody>{label(num)}</HintBody>
+      </Hint>
+    );
+  }
+};
+
+export { SpacePolicyButton, SpacePolicySelector, SpacePolicyDisksHint };

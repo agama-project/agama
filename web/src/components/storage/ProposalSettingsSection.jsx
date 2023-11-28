@@ -27,13 +27,12 @@ import {
   Tooltip
 } from "@patternfly/react-core";
 
-import { _, n_ } from "~/i18n";
-import { sprintf } from "sprintf-js";
+import { _ } from "~/i18n";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
 import {
-  DeviceList, DeviceSelector, DeviceCompactList,
+  DeviceList, DeviceSelector,
   ProposalVolumes,
-  SpacePolicyButton, SpacePolicySelector
+  SpacePolicyButton, SpacePolicySelector, SpacePolicyDisksHint
 } from "~/components/storage";
 import { deviceLabel } from '~/components/storage/utils';
 import { Icon } from "~/components/layout";
@@ -233,7 +232,7 @@ const LVMSettingsForm = ({
   const BootDevice = () => {
     const bootDevice = devices.find(d => d.name === settings.bootDevice);
 
-    return <DeviceList devices={[bootDevice]} />;
+    return <DeviceList devices={[bootDevice]} isSelected />;
   };
 
   return (
@@ -576,32 +575,23 @@ const SpacePolicyField = ({
 
   if (isLoading) return <Skeleton width="25%" />;
 
-  const numDevices = settings.installationDevices.length;
-  const text = sprintf(
-    n_("Find space at the chosen disk", "Find space at the %d chosen disks", numDevices),
-    numDevices
-  );
-  const popUpDesc = n_(
-    "Select the way to find space in the following disk:",
-    "Select the way to find space in the following disks:",
-    numDevices
-  );
-
   return (
     <div className="split">
-      <span>{text}</span>
-      <SpacePolicyButton policy={spacePolicy} onClick={openForm} />
+      <span>{_("Find space")}</span>
+      <SpacePolicyButton policy={spacePolicy} devices={settings.installationDevices} onClick={openForm} />
       <Popup
-        description={popUpDesc}
+        description={_("Select the way to find space")}
         title={_("Space Policy")}
         isOpen={isFormOpen}
       >
-        <DeviceCompactList devices={settings.installationDevices} />
-        <SpacePolicyForm
-          id="spacePolicyForm"
-          policy={spacePolicy}
-          onSubmit={onSubmitForm}
-        />
+        <div className="stack">
+          <SpacePolicyDisksHint devices={settings.installationDevices} />
+          <SpacePolicyForm
+            id="spacePolicyForm"
+            policy={spacePolicy}
+            onSubmit={onSubmitForm}
+          />
+        </div>
         <Popup.Actions>
           <Popup.Confirm
             form="spacePolicyForm"
@@ -685,17 +675,17 @@ export default function ProposalSettingsSection({
         isLoading={settings.encryptionPassword === undefined}
         onChange={changeEncryption}
       />
-      <SpacePolicyField
-        settings={settings}
-        isLoading={settings.spacePolicy === undefined}
-        onChange={changeSpacePolicy}
-      />
       <ProposalVolumes
         volumes={settings.volumes || []}
         templates={volumeTemplates}
         options={{ lvm: settings.lvm, encryption }}
         isLoading={isLoading}
         onChange={changeVolumes}
+      />
+      <SpacePolicyField
+        settings={settings}
+        isLoading={settings.spacePolicy === undefined}
+        onChange={changeSpacePolicy}
       />
     </Section>
   );

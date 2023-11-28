@@ -229,11 +229,11 @@ const DeviceItem = ({ device }) => {
  * @param {Object} props
  * @param {StorageDevice[]} props.devices - Devices to show.
  */
-const DeviceList = ({ devices }) => {
+const DeviceList = ({ devices, ...props }) => {
   return (
     <ListBox className="stack item-list">
       { devices.map(device => (
-        <ListBoxItem key={device.sid} isSelected data-type="storage-device">
+        <ListBoxItem key={device.sid} {...props} data-type="storage-device">
           <DeviceItem device={device} />
         </ListBoxItem>
       ))}
@@ -284,49 +284,4 @@ const DeviceSelector = ({ devices, selected, isMultiple = false, onChange = noop
   );
 };
 
-const DeviceLineItem = ({ device }) => {
-  const DeviceIcon = () => {
-    const names = {
-      raid: "storage",
-      md: "storage"
-    };
-
-    const name = names[device.type] || "hard_drive";
-
-    return <Icon name={name} />;
-  };
-
-  const DeviceSize = () => {
-    if (device.size === undefined) return null;
-
-    return <span>{deviceSize(device.size)}</span>;
-  };
-
-  const DeviceName = () => {
-    if (device.name === undefined) return null;
-
-    return <span className="bold">{device.name}</span>;
-  };
-
-  return (
-    <>
-      <DeviceIcon />
-      <DeviceName />
-      <DeviceSize />
-    </>
-  );
-};
-
-const DeviceCompactList = ({ devices }) => {
-  return (
-    <ul>
-      { devices.map(device => (
-        <li key={device.sid}>
-          <DeviceLineItem device={device} />
-        </li>
-      ))}
-    </ul>
-  );
-};
-
-export { DeviceList, DeviceSelector, DeviceCompactList };
+export { DeviceList, DeviceSelector };
