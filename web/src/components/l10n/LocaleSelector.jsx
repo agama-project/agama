@@ -46,7 +46,7 @@ const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
 };
 
 /**
- * Content for a locale item
+ * Content for a locale item.
  * @component
  *
  * @param {Object} props

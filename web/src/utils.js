@@ -163,9 +163,21 @@ const useLocalStorage = (storageKey, fallbackState) => {
 };
 
 /**
- * Source https://designtechworld.medium.com/create-a-custom-debounce-hook-in-react-114f3f245260
+ * Debounce hook.
+ * @function
+ *
+ * Source {@link https://designtechworld.medium.com/create-a-custom-debounce-hook-in-react-114f3f245260}
+ *
+ * @param {function} callback - Function to be called after some delay.
+ * @param {number} delay - Delay in milliseconds.
+ * @returns {function}
+ *
+ * @example
+ *
+ * const log = useDebounce(console.log, 1000);
+ * log("test ", 1) // The message will be logged after 1 second.
+ * log("test ", 2) // Subsequent calls cancels pending calls.
  */
-
 const useDebounce = (callback, delay) => {
   const timeoutRef = useRef(null);
 
@@ -237,6 +249,16 @@ const setLocationSearch = (query) => {
   window.location.search = query;
 };
 
+/**
+ * Time for the given timezone.
+ *
+ * @param {string} timezone - E.g., "Atlantic/Canary".
+ * @param {object} [options]
+ * @param {Date} options.date - Date to take the time from.
+ *
+ * @returns {string|undefined} - Time in 24 hours format (e.g., "23:56"). Undefined for an unknown
+ *  timezone.
+ */
 const timezoneTime = (timezone, { date = new Date() }) => {
   try {
     const formatter = new Intl.DateTimeFormat(
@@ -252,6 +274,12 @@ const timezoneTime = (timezone, { date = new Date() }) => {
   }
 };
 
+/**
+ * UTC offset for the given timezone.
+ *
+ * @param {string} timezone - E.g., "Atlantic/Canary".
+ * @returns {number|undefined} - undefined for an unknown timezone.
+ */
 const timezoneUTCOffset = (timezone) => {
   try {
     const date = new Date();

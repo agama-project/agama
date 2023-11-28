@@ -23,6 +23,12 @@ import React, { useContext, useEffect, useState } from "react";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "./installer";
 
+/**
+ * @typedef {import ("~/clients/l10n").Locale} Locale
+ * @typedef {import ("~/clients/l10n").Keymap} Keymap
+ * @typedef {import ("~/clients/l10n").Timezone} Timezone
+ */
+
 const L10nContext = React.createContext({});
 
 function L10nProvider({ children }) {
@@ -78,6 +84,20 @@ function L10nProvider({ children }) {
   return <L10nContext.Provider value={value}>{children}</L10nContext.Provider>;
 }
 
+/**
+ * Localization context.
+ * @function
+ *
+ * @typedef {object} L10nContext
+ * @property {Locale[]} locales
+ * @property {Keymap[]} keymaps
+ * @property {Timezone[]} timezones
+ * @property {Locale[]} selectedLocales
+ * @property {Keymap|undefined} selectedKeymap
+ * @property {Timezone|undefined} selectedTimezone
+ *
+ * @returns {L10nContext}
+ */
 function useL10n() {
   const context = useContext(L10nContext);
 

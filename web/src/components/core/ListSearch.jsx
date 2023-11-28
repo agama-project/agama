@@ -35,6 +35,14 @@ const search = (elements, term) => {
   return elements.filter(match);
 };
 
+/**
+ * Input field for searching in a given list of elements.
+ * @component
+ *
+ * @param {object} props
+ * @param {object[]} [props.elements] - List of element in which to search.
+ * @param {(elements: object[]) => void} - Callback to be called with the filtered list of elements.
+ */
 export default function ListSearch({ elements = [], onChange: onChangeProp = noop }) {
   const searchHandler = useDebounce(term => onChangeProp(search(elements, term)), 500);
 

@@ -23,6 +23,11 @@ import React, { useContext, useEffect, useState } from "react";
 import { useCancellablePromise } from "~/utils";
 import { useInstallerClient } from "./installer";
 
+/**
+ * @typedef {import ("~/clients/software").Product} Product
+ * @typedef {import ("~/clients/software").Registration} Registration
+ */
+
 const ProductContext = React.createContext([]);
 
 function ProductProvider({ children }) {
@@ -64,6 +69,18 @@ function ProductProvider({ children }) {
   return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>;
 }
 
+/**
+ * Product context.
+ * @function
+ *
+ * @typedef {object} ProductContext
+ * @property {Product[]} products
+ * @property {Product|null} selectedProduct
+ * @property {string} selectedId
+ * @property {Registration} registration
+ *
+ * @returns {ProductContext}
+ */
 function useProduct() {
   const context = useContext(ProductContext);
 

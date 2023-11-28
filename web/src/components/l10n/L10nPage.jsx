@@ -80,6 +80,13 @@ const TimezonePopup = ({ onFinish = noop, onCancel = noop }) => {
   );
 };
 
+/**
+ * Button for opening the selection of timezone.
+ * @component
+ *
+ * @param {object} props
+ * @param {React.ReactNode} props.children - Button children.
+ */
 const TimezoneButton = ({ children }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -110,6 +117,10 @@ const TimezoneButton = ({ children }) => {
   );
 };
 
+/**
+ * Section for configuring timezone.
+ * @component
+ */
 const TimezoneSection = () => {
   const { selectedTimezone } = useL10n();
 
@@ -185,6 +196,13 @@ const LocalePopup = ({ onFinish = noop, onCancel = noop }) => {
   );
 };
 
+/**
+ * Button for opening the selection of locales.
+ * @component
+ *
+ * @param {object} props
+ * @param {React.ReactNode} props.children - Button children.
+ */
 const LocaleButton = ({ children }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -215,6 +233,10 @@ const LocaleButton = ({ children }) => {
   );
 };
 
+/**
+ * Section for configuring locales.
+ * @component
+ */
 const LocaleSection = () => {
   const { selectedLocales } = useL10n();
 
@@ -287,6 +309,13 @@ const KeymapPopup = ({ onFinish = noop, onCancel = noop }) => {
   );
 };
 
+/**
+ * Button for opening the selection of keymaps.
+ * @component
+ *
+ * @param {object} props
+ * @param {React.ReactNode} props.children - Button children.
+ */
 const KeymapButton = ({ children }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -317,6 +346,10 @@ const KeymapButton = ({ children }) => {
   );
 };
 
+/**
+ * Section for configuring keymaps.
+ * @component
+ */
 const KeymapSection = () => {
   const { selectedKeymap } = useL10n();
 
@@ -341,6 +374,10 @@ const KeymapSection = () => {
   );
 };
 
+/**
+ * Page for configuring localization.
+ * @component
+ */
 export default function L10nPage() {
   return (
     <Page

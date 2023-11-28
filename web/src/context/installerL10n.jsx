@@ -29,6 +29,8 @@ import { useInstallerClient } from "./installer";
 const L10nContext = React.createContext(null);
 
 /**
+ * Installer localization context.
+ *
  * @typedef {object} L10nContext
  * @property {string|undefined} language - Current language.
  * @property {(language: string) => void} changeLanguage - Function to change the current language.
@@ -188,7 +190,6 @@ function reload(newLanguage) {
  *
  * @param {object} props
  * @param {React.ReactNode} [props.children] - Content to display within the wrapper.
- * @param {import("~/client").InstallerClient} [props.client] - Client.
  *
  * @see useInstallerL10n
  */
