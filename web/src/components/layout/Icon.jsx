@@ -150,7 +150,7 @@ const icons = {
  * @param {object} [props.otherProps] Other props sent to SVG icon.
  *
  */
-export default function Icon({ name, className = "", size = 32, ...otherProps }) {
+export default function Icon({ name, className = "", size = 28, ...otherProps }) {
   if (!name) {
     console.error(`Icon called without name. '${name}' given instead. Rendering nothing.`);
     return null;

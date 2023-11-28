@@ -87,7 +87,7 @@ export default function Page({
   return (
     <>
       { title && <Title>{title}</Title> }
-      { icon && <PageIcon><Icon name={icon} /></PageIcon> }
+      { icon && <PageIcon><Icon name={icon} size="32" /></PageIcon> }
       <MainActions>
         { action ||
           <Button size="lg" variant={actionVariant} onClick={pageAction}>
