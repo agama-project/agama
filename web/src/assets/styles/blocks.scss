@@ -8,6 +8,7 @@ section:not([class^="pf-c"]) {
     "icon title"
     ".... content";
   gap: var(--spacer-small);
+  padding-inline-end: var(--icon-size-m);
 }
 
 section:not(:last-child, [class^="pf-c"]) {
