@@ -36,7 +36,13 @@ const l10nClientMock = {
   locales: jest.fn().mockResolvedValue(locales),
   getLocales: jest.fn().mockResolvedValue(["en_US"]),
   getUILocale: jest.fn().mockResolvedValue("en_US"),
-  onLocalesChange: jest.fn()
+  keymaps: jest.fn().mockResolvedValue([]),
+  getKeymap: jest.fn().mockResolvedValue(undefined),
+  timezones: jest.fn().mockResolvedValue([]),
+  getTimezone: jest.fn().mockResolvedValue(undefined),
+  onLocalesChange: jest.fn(),
+  onKeymapChange: jest.fn(),
+  onTimezoneChange: jest.fn()
 };
 
 beforeEach(() => {
@@ -51,7 +57,7 @@ beforeEach(() => {
 it("displays the selected locale", async () => {
   installerRender(<L10nSection />, { withL10n: true });
 
-  await screen.findByText("English (en_US)");
+  await screen.findByText("English (United States)");
 });
 
 describe("when the selected locales change", () => {
@@ -60,11 +66,11 @@ describe("when the selected locales change", () => {
     l10nClientMock.onLocalesChange = mockFunction;
 
     installerRender(<L10nSection />, { withL10n: true });
-    await screen.findByText("English (en_US)");
+    await screen.findByText("English (United States)");
 
     const [cb] = callbacks;
     act(() => cb(["de_DE"]));
 
-    await screen.findByText("German (de_DE)");
+    await screen.findByText("German (Germany)");
   });
 });
