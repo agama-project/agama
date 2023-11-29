@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 29 13:01:04 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: improve the look and feel by fine tunning the sections spacing,
+  alignment, and icon sizes (gh#openSUSE/agama#892).
+
+-------------------------------------------------------------------
 Tue Nov 21 15:21:06 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Do not crash when clicking the install button. It started
