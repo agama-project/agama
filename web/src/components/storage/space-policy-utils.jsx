@@ -51,7 +51,7 @@ const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
  * @param {Locale} props.locale
  */
 const PolicyItem = ({ policy }) => {
-  const title = (policy) => {
+  const Title = () => {
     switch (policy) {
       case "delete":
         return _("Delete current content");
@@ -62,7 +62,7 @@ const PolicyItem = ({ policy }) => {
     }
   };
 
-  const description = (policy) => {
+  const Description = () => {
     switch (policy) {
       case "delete":
         return _("All partitions will be removed and any data in the disks will be lost.");
@@ -75,8 +75,8 @@ const PolicyItem = ({ policy }) => {
 
   return (
     <>
-      <div className="bold">{title(policy)}</div>
-      <div data-type="details">{description(policy)}</div>
+      <div className="bold"><Title /></div>
+      <div data-type="details"><Description /></div>
     </>
   );
 };
@@ -108,7 +108,9 @@ const SpacePolicySelector = ({ value, onChange = noop }) => {
 };
 
 const SpacePolicyButton = ({ policy, devices, onClick = noop }) => {
-  const text = (policy, num) => {
+  const Text = () => {
+    const num = devices.length;
+
     switch (policy) {
       case "delete":
         return sprintf(
@@ -130,9 +132,7 @@ const SpacePolicyButton = ({ policy, devices, onClick = noop }) => {
     return "error";
   };
 
-  const num = devices.length;
-
-  return <Button variant="link" isInline onClick={onClick}>{text(policy, num)}</Button>;
+  return <Button variant="link" isInline onClick={onClick}><Text /></Button>;
 };
 
 const SpacePolicyDisksHint = ({ devices }) => {
