@@ -87,7 +87,7 @@ impl ProfileValidator {
         let contents = serde_json::from_str(profile)?;
         let result = self.schema.validate(&contents);
         if let Err(errors) = result {
-            let messages: Vec<String> = errors.map(|e| format!("{e}")).collect();
+            let messages: Vec<String> = errors.map(|e| format!("{e}. {e:?}")).collect();
             return Ok(ValidationResult::NotValid(messages));
         }
         Ok(ValidationResult::Valid)
