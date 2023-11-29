@@ -577,6 +577,7 @@ const SpacePolicyField = ({
 
   return (
     <div className="split">
+      {/* TRANSLATORS: To be completed with the rest of a sentence like "deleting all content" */}
       <span>{_("Find space")}</span>
       <SpacePolicyButton policy={spacePolicy} devices={settings.installationDevices} onClick={openForm} />
       <Popup

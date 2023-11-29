@@ -54,10 +54,13 @@ const PolicyItem = ({ policy }) => {
   const Title = () => {
     switch (policy) {
       case "delete":
+        // TRANSLATORS: automatic actions to find space for installation in the target disk(s)
         return _("Delete current content");
       case "resize":
+        // TRANSLATORS: automatic actions to find space for installation in the target disk(s)
         return _("Shrink existing partitions");
       case "keep":
+        // TRANSLATORS: automatic actions to find space for installation in the target disk(s)
         return _("Use available space");
     }
   };
@@ -114,11 +117,15 @@ const SpacePolicyButton = ({ policy, devices, onClick = noop }) => {
     switch (policy) {
       case "delete":
         return sprintf(
+          // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+          // would read as "Find space deleting all content[...]"
           n_("deleting all content at the target disk", "deleting all content at the %d chosen disks", num),
           num
         );
       case "resize":
         return sprintf(
+          // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+          // would read as "Find space shrinking partitions[...]"
           n_(
             "shrinking partitions at the target disk",
             "shrinking partitions at the %d chosen disks",
@@ -126,6 +133,8 @@ const SpacePolicyButton = ({ policy, devices, onClick = noop }) => {
           num
         );
       case "keep":
+        // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
+        // would read as "Find space without modifying any partition".
         return _("without modifying any partition");
     }
     console.log("Unsupported value " + policy);
