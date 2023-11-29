@@ -89,9 +89,8 @@ section > .content {
   padding: 0;
   right: 0;
   z-index: 1000;
-  // FIXME: improve how avoid sidebar content be hidden in the left because of
-  // the wrapper padding
-  inline-size: calc(70% + var(--wrapper-padding));
+  inline-size: 70%;
+  min-inline-size: min-content;
   box-shadow: -10px 10px 20px 0 var(--color-primary);
 }
 
@@ -148,6 +147,7 @@ section > .content {
 .sidebar[data-state="hidden"] {
   transition: all 0.04s ease-in-out;
   inline-size: 0;
+  min-inline-size: 0;
   box-shadow: none;
 }
 
