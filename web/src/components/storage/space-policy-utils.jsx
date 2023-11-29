@@ -27,14 +27,13 @@ import { noop } from "~/utils";
 import { Button, ExpandableSection, Hint, HintBody } from "@patternfly/react-core";
 import { DeviceList } from "~/components/storage";
 
-const ListBox = ({ children, ...props }) => <ul role="listbox" {...props}>{children}</ul>;
+const ListBox = ({ children, ...props }) => <ul data-type="agama/list" data-of="agama/space-policies" {...props}>{children}</ul>;
 
 const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
   if (isSelected) props['aria-selected'] = true;
 
   return (
     <li
-      role="option"
       onClick={onClick}
       { ...props }
     >
@@ -95,10 +94,11 @@ const PolicyItem = ({ policy }) => {
  */
 const SpacePolicySelector = ({ value, onChange = noop }) => {
   return (
-    <ListBox aria-label={_("Select a mechanism to make space")} className="stack item-list">
+    <ListBox aria-label={_("Select a mechanism to make space")} role="listbox" className="stack">
       { ["delete", "resize", "keep"].map(policy => (
         <ListBoxItem
           key={policy}
+          role="option"
           onClick={() => onChange(policy)}
           isSelected={policy === value}
           className="cursor-pointer"

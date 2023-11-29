@@ -264,6 +264,67 @@ span.notification-mark[data-variant="sidebar"] {
   }
 }
 
+ul[data-type="agama/list"] {
+  li {
+    border: 2px solid var(--color-gray-dark);
+    border-radius: 5px;
+    padding: var(--spacer-normal);
+    text-align: start;
+    background: var(--color-gray-light);
+
+    // Same gap for all display: grid or flex, when needed
+    gap: var(--spacer-small);
+  }
+
+  // FIXME: see if it's semantically correct to mark an li as aria-selected when
+  // not belongs to a listbox or grid list ul.
+  li[aria-selected] {
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 2px 5px 0 var(--color-gray-dark);
+    background: var(--color-primary);
+    color: white;
+    font-weight: 700;
+
+    svg {
+      fill: white;
+    }
+  }
+}
+
+// These attributes together means that UI is rendering a selector
+ul[data-type="agama/list"][role="listbox"] {
+  li[role="option"] {
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      &:not([aria-selected]) {
+        background: var(--color-gray-dark);
+      }
+    }
+  }
+}
+
+// Each kind of list/selector has its way of laying out their items
+ul[data-of="agama/storage-devices"] {
+  li {
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr;
+    grid-template-areas: "type-and-size drive-info drive-content";
+
+    svg {
+      vertical-align: inherit;
+    }
+
+    > :first-child {
+      align-self: center;
+      text-align: center;
+      justify-self: start;
+    }
+  }
+}
+
+// FIXME: drop .item-list either, once a better selector is built or in a CSS
+// cleanup round
 .item-list {
   [role="option"] {
     padding: var(--spacer-normal);
@@ -314,21 +375,6 @@ span.notification-mark[data-variant="sidebar"] {
       > [data-type="time"] {
         grid-area: time;
         text-align: end;
-      }
-    }
-
-    &:is([data-type="storage-device"]) {
-      grid-template-columns: 1fr 2fr 2fr;
-      grid-template-areas: "type-and-size drive-info drive-content";
-
-      svg {
-        vertical-align: inherit;
-      }
-
-      > :first-child {
-        align-self: center;
-        text-align: center;
-        justify-self: start;
       }
     }
   }
