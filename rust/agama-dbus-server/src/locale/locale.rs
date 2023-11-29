@@ -62,6 +62,7 @@ impl LocalesDatabase {
         false
     }
 
+    /// Returns the list of locales.
     pub fn entries(&self) -> &Vec<LocaleEntry> {
         &self.locales
     }

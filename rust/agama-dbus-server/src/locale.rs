@@ -6,7 +6,7 @@ mod timezone;
 use crate::error::Error;
 use agama_locale_data::KeymapId;
 use anyhow::Context;
-use keyboard::{get_keymaps, Keymap};
+use keyboard::KeymapsDatabase;
 use locale::LocalesDatabase;
 use std::process::Command;
 use timezone::TimezonesDatabase;
@@ -18,7 +18,7 @@ pub struct Locale {
     locales: Vec<String>,
     locales_db: LocalesDatabase,
     keymap: KeymapId,
-    keymaps: Vec<Keymap>,
+    keymaps_db: KeymapsDatabase,
     ui_locale: String,
 }
 
@@ -88,7 +88,8 @@ impl Locale {
     /// * The name of the keyboard in language set by the UILocale property.
     fn list_keymaps(&self) -> Result<Vec<(String, String)>, Error> {
         let keymaps = self
-            .keymaps
+            .keymaps_db
+            .entries()
             .iter()
             .map(|k| (k.id.to_string(), k.localized_description()))
             .collect();
@@ -106,7 +107,7 @@ impl Locale {
             .parse()
             .map_err(|_e| zbus::fdo::Error::InvalidArgs("Invalid keymap".to_string()))?;
 
-        if !self.keymaps.iter().any(|k| k.id == keymap_id) {
+        if !self.keymaps_db.exists(&keymap_id) {
             return Err(zbus::fdo::Error::Failed(
                 "Invalid keyboard value".to_string(),
             ));
@@ -184,13 +185,16 @@ impl Locale {
         timezones_db.read(&locale)?;
         let default_timezone = timezones_db.entries().get(0).unwrap();
 
+        let mut keymaps_db = KeymapsDatabase::new();
+        keymaps_db.read()?;
+
         let locale = Self {
             keymap: "us".parse().unwrap(),
             timezone: default_timezone.code.to_string(),
             locales: vec![default_locale.code.to_string()],
             locales_db,
             timezones_db,
-            keymaps: get_keymaps()?,
+            keymaps_db,
             ui_locale: locale.to_string(),
         };
 

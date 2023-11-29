@@ -35,6 +35,7 @@ impl TimezonesDatabase {
         self.timezones.iter().any(|t| &t.code == timezone)
     }
 
+    /// Returns the list of timezones.
     pub fn entries(&self) -> &Vec<TimezoneEntry> {
         &self.timezones
     }

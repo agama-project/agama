@@ -21,11 +21,42 @@ impl Keymap {
     }
 }
 
+/// Represents the keymaps database.
+///
+/// The list of supported keymaps is read from `systemd-localed` and the
+/// descriptions from the X Keyboard Configuraiton Database (see
+/// `agama_locale_data::XkbConfigRegistry`).
+#[derive(Default)]
+pub struct KeymapsDatabase {
+    keymaps: Vec<Keymap>,
+}
+
+impl KeymapsDatabase {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Reads the list of keymaps.
+    pub fn read(&mut self) -> anyhow::Result<()> {
+        self.keymaps = get_keymaps()?;
+        Ok(())
+    }
+
+    pub fn exists(&self, id: &KeymapId) -> bool {
+        self.keymaps.iter().any(|k| &k.id == id)
+    }
+
+    /// Returns the list of keymaps.
+    pub fn entries(&self) -> &Vec<Keymap> {
+        &self.keymaps
+    }
+}
+
 /// Returns the list of keymaps to offer.
 ///
 /// It only includes the keyboards supported by `localectl` but getting
 /// the description from the X Keyboard Configuration Database.
-pub fn get_keymaps() -> anyhow::Result<Vec<Keymap>> {
+fn get_keymaps() -> anyhow::Result<Vec<Keymap>> {
     let mut keymaps: Vec<Keymap> = vec![];
     let xkb_descriptions = get_keymap_descriptions();
     let keymap_ids = get_localectl_keymaps()?;
