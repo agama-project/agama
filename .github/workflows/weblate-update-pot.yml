@@ -69,6 +69,8 @@ jobs:
           else
             echo "POT file unchanged"
             echo "pot_updated=false" >> $GITHUB_OUTPUT
+            # reset any possible changes so they are not accidentally committed later
+            git -C agama-weblate reset --hard
           fi
 
       - name: Push updated web POT file
@@ -78,6 +80,15 @@ jobs:
           cd agama-weblate
           git add web/agama.pot
           git commit -m "Update web POT file"$'\n\n'"Agama commit: $GITHUB_SHA"
+          git push
+
+      - name: Merge new POT to web translations
+        # run only when the POT file has been updated
+        if: steps.check_changes.outputs.pot_updated == 'true'
+        run: |
+          cd agama-weblate/web
+          find . -name "*.po" -exec msgmerge -U "{}" agama.pot \;
+          git commit -a -m "Merge new POT file to web translations"$'\n\n'"Agama commit: $GITHUB_SHA"
           git push
 
       - name: Install NPM packages
@@ -120,4 +131,13 @@ jobs:
           cd agama-weblate
           git add products/products.pot
           git commit -m "Update products POT file"$'\n\n'"Agama commit: $GITHUB_SHA"
+          git push
+
+      - name: Merge new POT to product translations
+        # run only when the POT file has been updated
+        if: steps.check_changes_products.outputs.pot_updated == 'true'
+        run: |
+          cd agama-weblate/products
+          find . -name "*.po" -exec msgmerge -U '{}' products.pot \;
+          git commit -a -m "Merge new POT file to product translations"$'\n\n'"Agama commit: $GITHUB_SHA"
           git push

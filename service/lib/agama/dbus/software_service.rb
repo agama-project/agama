@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -25,6 +25,10 @@ require "agama/dbus/clients/locale"
 require "agama/dbus/software"
 require "agama/software"
 require "agama/ui_locale"
+
+require "yast"
+Yast.import "Pkg"
+Yast.import "Language"
 
 module Agama
   module DBus
@@ -51,10 +55,21 @@ module Agama
 
       # Starts software service. It does more then just #export method.
       def start
-        locale_client = Clients::Locale.new
-        # TODO: test if we need to pass block with additional actions
-        @ui_locale = UILocale.new(locale_client)
+        # for some reason the the "export" method must be called before
+        # registering the language change callback to work properly
         export
+        locale_client = Clients::Locale.new
+        @ui_locale = UILocale.new(locale_client) do |locale|
+          # set the locale in the Language module, when changing the repository
+          # (product) it calls Pkg.SetTextLocale(Language.language) internally
+          Yast::Language.Set(locale)
+          # set libzypp locale (for communication only, Pkg.SetPackageLocale
+          # call can be used for installing the language packages)
+          Yast::Pkg.SetTextLocale(locale)
+          # TODO: libzypp shows the pattern names and descriptions using the
+          # locale set at the repository refresh time, here we should refresh
+          # the repositories with the new locale
+        end
       end
 
       # Exports the software object through the D-Bus service
@@ -82,16 +97,10 @@ module Agama
       # @return [Array<::DBus::Object>]
       def dbus_objects
         @dbus_objects ||= [
-          dbus_software_manager,
-          Agama::DBus::Software::Proposal.new(logger).tap do |proposal|
-            proposal.on_change { dbus_software_manager.update_validation }
-          end
+          Agama::DBus::Software::Manager.new(@backend, logger),
+          Agama::DBus::Software::Product.new(@backend, logger),
+          Agama::DBus::Software::Proposal.new(logger)
         ]
-      end
-
-      # @return [Agama::DBus::Software::Manager]
-      def dbus_software_manager
-        @dbus_software_manager ||= Agama::DBus::Software::Manager.new(@backend, logger)
       end
     end
   end

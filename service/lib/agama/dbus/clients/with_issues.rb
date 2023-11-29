@@ -28,10 +28,25 @@ module Agama
       ISSUES_IFACE = "org.opensuse.Agama1.Issues"
       private_constant :ISSUES_IFACE
 
-      # Returns the issues
+      # Returns issues from all objects that implement the issues interface.
       #
       # @return [Array<Issue>]
       def issues
+        objects_with_issues_interface.map { |o| issues_from(o) }.flatten
+      end
+
+      # Determines whether there are errors
+      #
+      # @return [Boolean]
+      def errors?
+        issues.any?(&:error?)
+      end
+
+      def objects_with_issues_interface
+        service.root.descendant_objects.select { |o| o.interfaces.include?(ISSUES_IFACE) }
+      end
+
+      def issues_from(dbus_object)
         sources = [nil, Issue::Source::SYSTEM, Issue::Source::CONFIG]
         severities = [Issue::Severity::WARN, Issue::Severity::ERROR]
 
@@ -41,13 +56,6 @@ module Agama
             source:   sources[dbus_issue[2]],
             severity: severities[dbus_issue[3]])
         end
-      end
-
-      # Determines whether there are errors
-      #
-      # @return [Boolean]
-      def errors?
-        issues.any?(&:error?)
       end
     end
   end

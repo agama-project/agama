@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,20 +20,30 @@
  */
 
 import React from "react";
-import { Link } from "react-router-dom";
-import { useSoftware } from "~/context/software";
-import { Icon } from "~/components/layout";
+import { Card, CardBody, Radio } from "@patternfly/react-core";
+
 import { _ } from "~/i18n";
+import { noop } from "~/utils";
 
-export default function ChangeProductLink() {
-  const { products } = useSoftware();
+export default function ProductSelector({ value, products = [], onChange = noop }) {
+  if (products.length === 0) return <p>{_("No products available for selection")}</p>;
 
-  if (products?.length === 1) return null;
+  const isSelected = (product) => product.id === value;
 
   return (
-    <Link to="/products">
-      <Icon name="edit_square" size="24" />
-      {_("Change product")}
-    </Link>
+    products.map((p) => (
+      <Card key={p.id} className={isSelected(p) && "selected-product"}>
+        <CardBody>
+          <Radio
+            id={p.id}
+            name="product"
+            label={p.name}
+            description={p.description}
+            isChecked={isSelected(p)}
+            onClick={() => onChange(p.id)}
+          />
+        </CardBody>
+      </Card>
+    ))
   );
 }

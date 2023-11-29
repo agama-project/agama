@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Tue Nov 21 15:21:06 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: Do not crash when clicking the install button. It started
+  failing after removing core-js dependency (gh#openSUSE/agama#880
+  and related to gh#openSUSE/agama#866).
+
+-------------------------------------------------------------------
+Fri Nov 17 13:27:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
+
+- UI: Fix broken storage links (bsc#1217281).
+
+-------------------------------------------------------------------
+Wed Nov 15 12:32:25 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Add UI for registering a product (gh#openSUSE/agama#869).
+
+-------------------------------------------------------------------
 Thu Nov  2 07:38:22 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Drop support for opening dialogs directly from a section

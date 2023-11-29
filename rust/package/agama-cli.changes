@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Thu Nov 16 11:06:30 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update dependencies to compatible versions
+  (gh#openSUSE/agama#874).
+- Replace tempdir with tempfile to prevent RUSTSEC-2023-0018.
+
+-------------------------------------------------------------------
+Wed Nov 15 12:35:32 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Adapt to changes in software D-Bus API (gh#openSUSE/agama#869).
+
+-------------------------------------------------------------------
+
+Wed Nov 15 11:27:10 UTC 2023 - Michal Filka <mfilka@suse.com>
+
+- Improved "agama logs store" (gh#openSUSE/agama#823)
+  - added an option which allows to define the archive destination
+
+-------------------------------------------------------------------
 Tue Nov 14 15:44:15 UTC 2023 - Jorik Cronenberg <jorik.cronenberg@suse.com>
 
 - Add support for routing to the network model (gh#openSUSE/agama#824)
@@ -8,7 +27,7 @@ Mon Oct 23 14:43:59 UTC 2023 - Michal Filka <mfilka@suse.com>
 
 - Improved "agama logs store" (gh#openSUSE/agama#812)
   - the archive file owner is root:root
-  - the permissions is set to r/w for the owner 
+  - the permissions is set to r/w for the owner
 
 -------------------------------------------------------------------
 Mon Oct 23 11:33:40 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
@@ -52,7 +71,7 @@ Tue Sep 19 11:16:16 UTC 2023 - José Iván López González <jlopez@suse.com>
 -------------------------------------------------------------------
 Thu Sep 14 19:44:57 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
-- Improve questions CLI help text (gh#openSUSE/agama#754) 
+- Improve questions CLI help text (gh#openSUSE/agama#754)
 
 -------------------------------------------------------------------
 Thu Sep 14 10:10:37 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

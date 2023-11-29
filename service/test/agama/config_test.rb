@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2023] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,7 +20,11 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
+require "yast"
 require "agama/config"
+require "agama/product_reader"
+
+Yast.import "Arch"
 
 describe Agama::Config do
   let(:config) { described_class.new("web" => { "ssl" => "SOMETHING" }) }
@@ -125,6 +129,139 @@ describe Agama::Config do
 
       it "returns false" do
         expect(subject.multi_product?).to eq(false)
+      end
+    end
+  end
+
+  describe "#arch_elements_from" do
+    subject { described_class.new }
+
+    before do
+      allow(Agama::ProductReader).to receive(:new).and_return(reader)
+    end
+
+    let(:reader) { instance_double(Agama::ProductReader, load_products: products) }
+
+    context "when the given set of keys does not match any data" do
+      let(:products) do
+        [
+          {
+            "id"   => "Product1",
+            "name" => "Test product 1"
+          }
+        ]
+      end
+
+      it "returns an empty array" do
+        expect(subject.arch_elements_from("Product1", "some", "collection")).to be_empty
+      end
+    end
+
+    context "when the given set of keys does not contain a collection" do
+      let(:products) do
+        [
+          {
+            "id"   => "Product1",
+            "name" => "Test product 1"
+          }
+        ]
+      end
+
+      it "returns an empty array" do
+        expect(subject.arch_elements_from("Product1", "name")).to be_empty
+      end
+    end
+
+    context "when the given set of keys contains a collection" do
+      let(:products) do
+        [
+          {
+            "id"   => "Product1",
+            "some" => {
+              "collection" => [
+                "element1",
+                {
+                  "element" => "element2"
+                },
+                {
+                  "element" => "element3",
+                  "archs"   => "x86_64"
+                },
+                {
+                  "element" => "element4",
+                  "archs"   => "x86_64,aarch64"
+                },
+                {
+                  "element" => "element5",
+                  "archs"   => "ppc64"
+                }
+              ]
+            }
+          }
+        ]
+      end
+
+      before do
+        allow(Yast::Arch).to receive("x86_64").and_return(true)
+        allow(Yast::Arch).to receive("aarch64").and_return(false)
+        allow(Yast::Arch).to receive("ppc64").and_return(false)
+      end
+
+      it "returns all the elements that match the current arch" do
+        elements = subject.arch_elements_from("Product1", "some", "collection")
+
+        expect(elements).to contain_exactly(
+          "element1",
+          { "element" => "element2" },
+          { "element" => "element3", "archs" => "x86_64" },
+          { "element" => "element4", "archs" => "x86_64,aarch64" }
+        )
+      end
+
+      context "and there are no elements matching the current arch" do
+        let(:products) do
+          [
+            {
+              "id"   => "Product1",
+              "some" => {
+                "collection" => [
+                  {
+                    "element" => "element1",
+                    "archs"   => "aarch64"
+                  },
+                  {
+                    "element" => "element2",
+                    "archs"   => "ppc64"
+                  }
+                ]
+              }
+            }
+          ]
+        end
+
+        it "returns an empty list" do
+          elements = subject.arch_elements_from("Product1", "some", "collection")
+
+          expect(elements).to be_empty
+        end
+      end
+
+      context "and some property is requested" do
+        it "returns the property from all elements that match the current arch" do
+          elements = subject.arch_elements_from(
+            "Product1", "some", "collection", property: :element
+          )
+
+          expect(elements).to contain_exactly("element1", "element2", "element3", "element4")
+        end
+      end
+
+      context "and the requested property does not exit" do
+        it "only return elements that are direct values" do
+          elements = subject.arch_elements_from("Product1", "some", "collection", property: :foo)
+
+          expect(elements).to contain_exactly("element1")
+        end
       end
     end
   end

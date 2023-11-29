@@ -25,17 +25,15 @@ import { installerRender, withNotificationProvider } from "~/test-utils";
 import { createClient } from "~/client";
 import { IssuesLink } from "~/components/core";
 
-let hasIssues = false;
+let mockIssues = {};
 
 jest.mock("~/client");
 
 beforeEach(() => {
   createClient.mockImplementation(() => {
     return {
-      issues: {
-        any: () => Promise.resolve(hasIssues),
-        onIssuesChange: jest.fn()
-      }
+      issues: jest.fn().mockResolvedValue(mockIssues),
+      onIssuesChange: jest.fn()
     };
   });
 });
@@ -48,7 +46,9 @@ it("renders a link for navigating to the issues page", async () => {
 
 describe("if there are issues", () => {
   beforeEach(() => {
-    hasIssues = true;
+    mockIssues = {
+      storage: [{ description: "issue 1" }]
+    };
   });
 
   it("includes a notification mark", async () => {
@@ -60,7 +60,7 @@ describe("if there are issues", () => {
 
 describe("if there are not issues", () => {
   beforeEach(() => {
-    hasIssues = false;
+    mockIssues = {};
   });
 
   it("does not include a notification mark", async () => {

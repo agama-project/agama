@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,11 +22,14 @@
 // @ts-check
 
 import DBusClient from "./dbus";
-import { WithStatus, WithProgress, WithValidation } from "./mixins";
+import { WithIssues, WithStatus, WithProgress } from "./mixins";
 
 const SOFTWARE_SERVICE = "org.opensuse.Agama.Software1";
 const SOFTWARE_IFACE = "org.opensuse.Agama.Software1";
 const SOFTWARE_PATH = "/org/opensuse/Agama/Software1";
+const PRODUCT_IFACE = "org.opensuse.Agama.Software1.Product";
+const PRODUCT_PATH = "/org/opensuse/Agama/Software1/Product";
+const REGISTRATION_IFACE = "org.opensuse.Agama1.Registration";
 
 /**
  * @typedef {object} Product
@@ -34,6 +37,175 @@ const SOFTWARE_PATH = "/org/opensuse/Agama/Software1";
  * @property {string} name - Product name (e.g., "openSUSE Leap 15.4")
  * @property {string} description - Product description
  */
+
+/**
+ * @typedef {object} Registration
+ * @property {string} requirement - Registration requirement (i.e., "not-required", "optional",
+ *  "mandatory").
+ * @property {string|null} code - Registration code, if any.
+ * @property {string|null} email - Registration email, if any.
+ */
+
+/**
+ * @typedef {object} ActionResult
+ * @property {boolean} success - Whether the action was successfully done.
+ * @property {string} message - Result message.
+ */
+
+/**
+ * Product manager.
+ * @ignore
+ */
+class BaseProductManager {
+  /**
+   * @param {DBusClient} client
+   */
+  constructor(client) {
+    this.client = client;
+  }
+
+  /**
+   * Returns the list of available products.
+   *
+   * @return {Promise<Array<Product>>}
+   */
+  async getAll() {
+    const proxy = await this.client.proxy(PRODUCT_IFACE);
+    return proxy.AvailableProducts.map(product => {
+      const [id, name, meta] = product;
+      return { id, name, description: meta.description?.v };
+    });
+  }
+
+  /**
+   * Returns the selected product.
+   *
+   * @return {Promise<Product|null>}
+   */
+  async getSelected() {
+    const products = await this.getAll();
+    const proxy = await this.client.proxy(PRODUCT_IFACE);
+    if (proxy.SelectedProduct === "") {
+      return null;
+    }
+    return products.find(product => product.id === proxy.SelectedProduct);
+  }
+
+  /**
+   * Selects a product for installation.
+   *
+   * @param {string} id - Product ID.
+   */
+  async select(id) {
+    const proxy = await this.client.proxy(PRODUCT_IFACE);
+    return proxy.SelectProduct(id);
+  }
+
+  /**
+   * Registers a callback to run when properties in the Product object change.
+   *
+   * @param {(id: string) => void} handler - Callback function.
+   */
+  onChange(handler) {
+    return this.client.onObjectChanged(PRODUCT_PATH, PRODUCT_IFACE, changes => {
+      if ("SelectedProduct" in changes) {
+        const selected = changes.SelectedProduct.v.toString();
+        handler(selected);
+      }
+    });
+  }
+
+  /**
+   * Returns the registration of the selected product.
+   *
+   * @return {Promise<Registration>}
+   */
+  async getRegistration() {
+    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
+    const requirement = this.registrationRequirement(proxy.Requirement);
+    const code = proxy.RegCode;
+    const email = proxy.Email;
+
+    const registration = { requirement, code, email };
+    if (code.length === 0) registration.code = null;
+    if (email.length === 0) registration.email = null;
+
+    return registration;
+  }
+
+  /**
+   * Tries to register the selected product.
+   *
+   * @param {string} code
+   * @param {string} [email]
+   * @returns {Promise<ActionResult>}
+   */
+  async register(code, email = "") {
+    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
+    const result = await proxy.Register(code, { Email: { t: "s", v: email } });
+
+    return {
+      success: result[0] === 0,
+      message: result[1]
+    };
+  }
+
+  /**
+   * Tries to deregister the selected product.
+   *
+   * @returns {Promise<ActionResult>}
+   */
+  async deregister() {
+    const proxy = await this.client.proxy(REGISTRATION_IFACE, PRODUCT_PATH);
+    const result = await proxy.Deregister();
+
+    return {
+      success: result[0] === 0,
+      message: result[1]
+    };
+  }
+
+  /**
+   * Registers a callback to run when the registration changes.
+   *
+   * @param {(registration: Registration) => void} handler - Callback function.
+   */
+  onRegistrationChange(handler) {
+    return this.client.onObjectChanged(PRODUCT_PATH, REGISTRATION_IFACE, () => {
+      this.getRegistration().then(handler);
+    });
+  }
+
+  /**
+   * Helper method to generate the requirement representation.
+   * @private
+   *
+   * @param {number} value - D-Bus registration value.
+   * @returns {string}
+   */
+  registrationRequirement(value) {
+    let requirement;
+
+    switch (value) {
+      case 0:
+        requirement = "not-required";
+        break;
+      case 1:
+        requirement = "optional";
+        break;
+      case 2:
+        requirement = "mandatory";
+        break;
+    }
+
+    return requirement;
+  }
+}
+
+/**
+ * Manages product selection.
+ */
+class ProductManager extends WithIssues(BaseProductManager, PRODUCT_PATH) { }
 
 /**
  * Software client
@@ -46,6 +218,7 @@ class SoftwareBaseClient {
    */
   constructor(address = undefined) {
     this.client = new DBusClient(SOFTWARE_SERVICE, address);
+    this.product = new ProductManager(this.client);
   }
 
   /**
@@ -56,19 +229,6 @@ class SoftwareBaseClient {
   async probe() {
     const proxy = await this.client.proxy(SOFTWARE_IFACE);
     return proxy.Probe();
-  }
-
-  /**
-   * Returns the list of available products
-   *
-   * @return {Promise<Array<Product>>}
-   */
-  async getProducts() {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.AvailableBaseProducts.map(product => {
-      const [id, name, meta] = product;
-      return { id, name, description: meta.description?.v };
-    });
   }
 
   /**
@@ -128,50 +288,12 @@ class SoftwareBaseClient {
     const proxy = await this.client.proxy(SOFTWARE_IFACE);
     return proxy.RemovePattern(name);
   }
-
-  /**
-   * Returns the selected product
-   *
-   * @return {Promise<Product|null>}
-   */
-  async getSelectedProduct() {
-    const products = await this.getProducts();
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    if (proxy.SelectedBaseProduct === "") {
-      return null;
-    }
-    return products.find(product => product.id === proxy.SelectedBaseProduct);
-  }
-
-  /**
-   * Selects a product for installation
-   *
-   * @param {string} id - product ID
-   */
-  async selectProduct(id) {
-    const proxy = await this.client.proxy(SOFTWARE_IFACE);
-    return proxy.SelectProduct(id);
-  }
-
-  /**
-   * Registers a callback to run when properties in the Software object change
-   *
-   * @param {(id: string) => void} handler - callback function
-   */
-  onProductChange(handler) {
-    return this.client.onObjectChanged(SOFTWARE_PATH, SOFTWARE_IFACE, changes => {
-      if ("SelectedBaseProduct" in changes) {
-        const selected = changes.SelectedBaseProduct.v.toString();
-        handler(selected);
-      }
-    });
-  }
 }
 
 /**
- * Allows getting the list the available products and selecting one for installation.
+ * Manages software and product configuration.
  */
-class SoftwareClient extends WithValidation(
+class SoftwareClient extends WithIssues(
   WithProgress(
     WithStatus(SoftwareBaseClient, SOFTWARE_PATH), SOFTWARE_PATH
   ), SOFTWARE_PATH

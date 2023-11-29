@@ -1,4 +1,4 @@
-use super::proxies::Software1Proxy;
+use super::proxies::SoftwareProductProxy;
 use crate::error::ServiceError;
 use serde::Serialize;
 use zbus::Connection;
@@ -16,21 +16,21 @@ pub struct Product {
 
 /// D-Bus client for the software service
 pub struct SoftwareClient<'a> {
-    software_proxy: Software1Proxy<'a>,
+    product_proxy: SoftwareProductProxy<'a>,
 }
 
 impl<'a> SoftwareClient<'a> {
     pub async fn new(connection: Connection) -> Result<SoftwareClient<'a>, ServiceError> {
         Ok(Self {
-            software_proxy: Software1Proxy::new(&connection).await?,
+            product_proxy: SoftwareProductProxy::new(&connection).await?,
         })
     }
 
     /// Returns the available products
     pub async fn products(&self) -> Result<Vec<Product>, ServiceError> {
         let products: Vec<Product> = self
-            .software_proxy
-            .available_base_products()
+            .product_proxy
+            .available_products()
             .await?
             .into_iter()
             .map(|(id, name, data)| {
@@ -50,11 +50,22 @@ impl<'a> SoftwareClient<'a> {
 
     /// Returns the selected product to install
     pub async fn product(&self) -> Result<String, ServiceError> {
-        Ok(self.software_proxy.selected_base_product().await?)
+        Ok(self.product_proxy.selected_product().await?)
     }
 
     /// Selects the product to install
     pub async fn select_product(&self, product_id: &str) -> Result<(), ServiceError> {
-        Ok(self.software_proxy.select_product(product_id).await?)
+        let result = self.product_proxy.select_product(product_id).await?;
+
+        match result {
+            (0, _) => Ok(()),
+            (3, description) => {
+                let products = self.products().await?;
+                let ids: Vec<String> = products.into_iter().map(|p| p.id).collect();
+                let error = format!("{0}. Available products: '{1:?}'", description, ids);
+                Err(ServiceError::UnsuccessfulAction(error))
+            }
+            (_, description) => Err(ServiceError::UnsuccessfulAction(description)),
+        }
     }
 }

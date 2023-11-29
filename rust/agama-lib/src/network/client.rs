@@ -2,7 +2,7 @@ use super::proxies::{ConnectionProxy, ConnectionsProxy, IPProxy, MatchProxy, Wir
 use super::settings::{MatchSettings, NetworkConnection, WirelessSettings};
 use super::types::SSID;
 use crate::error::ServiceError;
-use async_std::stream::StreamExt;
+use tokio_stream::StreamExt;
 use zbus::zvariant::OwnedObjectPath;
 use zbus::Connection;
 

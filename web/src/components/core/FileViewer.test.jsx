@@ -101,7 +101,7 @@ describe("FileViewer", () => {
       plainRender(<FileViewer file={file_name} title={title} />);
       const dialog = await screen.findByRole("dialog");
 
-      within(dialog).getByText(/cannot read the file/i);
+      await within(dialog).findByText(/cannot read the file/i);
     });
   });
 
@@ -114,7 +114,7 @@ describe("FileViewer", () => {
       plainRender(<FileViewer file={file_name} title={title} />);
       const dialog = await screen.findByRole("dialog");
 
-      within(dialog).getByText(/read error/i);
+      await within(dialog).findByText(/read error/i);
     });
   });
 });

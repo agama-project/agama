@@ -24,7 +24,7 @@
 import React from "react";
 import { InstallerClientProvider } from "./installer";
 import { L10nProvider } from "./l10n";
-import { SoftwareProvider } from "./software";
+import { ProductProvider } from "./product";
 import { NotificationProvider } from "./notification";
 
 /**
@@ -37,11 +37,11 @@ function AgamaProviders({ children }) {
   return (
     <InstallerClientProvider>
       <L10nProvider>
-        <SoftwareProvider>
+        <ProductProvider>
           <NotificationProvider>
             {children}
           </NotificationProvider>
-        </SoftwareProvider>
+        </ProductProvider>
       </L10nProvider>
     </InstallerClientProvider>
   );

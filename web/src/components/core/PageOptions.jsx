@@ -117,14 +117,14 @@ const Options = ({ children, ...props }) => {
  *       <PageOptions.Options>
  *         <PageOptions.Option
  *           key="dasd-link"
- *           href={href}
+ *           to={href}
  *           description="Manage and format"
  *         >
  *           DASD
  *         </PageOptions.Option>
  *         <PageOptions.Option
  *           key="iscsi-link"
- *           href={href}
+ *           to={href}
  *           description="Connect to iSCSI targets"
  *          >
  *           iSCSI

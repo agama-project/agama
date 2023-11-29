@@ -71,11 +71,11 @@ module Agama
       # @note The service runs its startup phase
       def start
         setup_cockpit
+        export
         # We need locale for data from users
         locale_client = Clients::Locale.new
         # TODO: test if we need to pass block with additional actions
         @ui_locale = UILocale.new(locale_client)
-        export
         manager.on_progress_change { dispatch } # make single thread more responsive
         manager.startup_phase
       end

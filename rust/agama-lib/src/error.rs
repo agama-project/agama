@@ -10,14 +10,14 @@ pub enum ServiceError {
     DBus(#[from] zbus::Error),
     #[error("Could not connect to Agama bus at '{0}'")]
     DBusConnectionError(String, #[source] zbus::Error),
-    #[error("Unknown product '{0}'. Available products: '{1:?}'")]
-    UnknownProduct(String, Vec<String>),
     // it's fine to say only "Error" because the original
     // specific error will be printed too
     #[error("Error: {0}")]
     Anyhow(#[from] anyhow::Error),
     #[error("Wrong user parameters: '{0:?}'")]
     WrongUser(Vec<String>),
+    #[error("Error: {0}")]
+    UnsuccessfulAction(String),
 }
 
 #[derive(Error, Debug)]

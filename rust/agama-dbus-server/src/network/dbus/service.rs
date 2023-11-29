@@ -3,6 +3,7 @@
 //! This module defines a D-Bus service which exposes Agama's network configuration.
 use crate::network::{Adapter, NetworkSystem};
 use std::error::Error;
+use tokio;
 use zbus::Connection;
 
 /// Represents the Agama networking D-Bus service.
@@ -19,7 +20,7 @@ impl NetworkService {
         let connection = connection.clone();
         let mut network = NetworkSystem::new(connection.clone(), adapter);
 
-        async_std::task::spawn(async move {
+        tokio::spawn(async move {
             network
                 .setup()
                 .await
