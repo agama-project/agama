@@ -27,10 +27,14 @@ import {
   Tooltip
 } from "@patternfly/react-core";
 
-import { _ } from "~/i18n";
+import { _, n_ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { If, PasswordAndConfirmationInput, Section, Popup } from "~/components/core";
-import { DeviceList, DeviceSelector, ProposalVolumes } from "~/components/storage";
+import {
+  DeviceList, DeviceSelector, DeviceCompactList,
+  ProposalVolumes,
+  SpacePolicyButton, SpacePolicySelector
+} from "~/components/storage";
 import { deviceLabel } from '~/components/storage/utils';
 import { Icon } from "~/components/layout";
 import { noop } from "~/utils";
@@ -522,24 +526,12 @@ const EncryptionPasswordField = ({
  * @callback onSubmitFn
  * @param {string} policy - Name of the selected policy.
  */
-const SpacePolicySettingsForm = ({
+const SpacePolicyForm = ({
   id,
-  settings,
+  policy,
   onSubmit: onSubmitProp = noop
 }) => {
-  const [spacePolicy, setSpacePolicy] = useState(settings);
-
-  const selectDelete = () => {
-    setSpacePolicy("delete");
-  };
-
-  const selectResize = () => {
-    setSpacePolicy("resize");
-  };
-
-  const selectKeep = () => {
-    setSpacePolicy("keep");
-  };
+  const [spacePolicy, setSpacePolicy] = useState(policy);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -548,29 +540,7 @@ const SpacePolicySettingsForm = ({
 
   return (
     <Form id={id} onSubmit={onSubmit}>
-      <div className="split">
-        <span>{_("Policy to make enough free space")}</span>
-        <ToggleGroup isCompact>
-          <ToggleGroupItem
-            text={_("Delete Anything")}
-            buttonId="deletePolicy"
-            isSelected={spacePolicy === "delete"}
-            onClick={selectDelete}
-          />
-          <ToggleGroupItem
-            text={_("Resize Only")}
-            buttonId="resizePolicy"
-            isSelected={spacePolicy === "resize"}
-            onClick={selectResize}
-          />
-          <ToggleGroupItem
-            text={_("Keep Existing")}
-            buttonId="keepPolicy"
-            isSelected={spacePolicy === "keep"}
-            onClick={selectKeep}
-          />
-        </ToggleGroup>
-      </div>
+      <SpacePolicySelector value={spacePolicy} onChange={setSpacePolicy} />
     </Form>
   );
 };
@@ -596,7 +566,6 @@ const SpacePolicyField = ({
   const [spacePolicy, setSpacePolicy] = useState(settings.spacePolicy);
 
   const openForm = () => setIsFormOpen(true);
-
   const closeForm = () => setIsFormOpen(false);
 
   const onSubmitForm = (policy) => {
@@ -605,56 +574,37 @@ const SpacePolicyField = ({
     closeForm();
   };
 
-  const SpacePolicySettingsButton = () => {
-    return (
-      <Tooltip
-        content={_("Configure the Space Policy")}
-        entryDelay={400}
-        exitDelay={50}
-        position="right"
-      >
-        <button aria-label={_("Space Policy settings")} className="plain-control" onClick={openForm}>
-          <Icon name="tune" size={24} />
-        </button>
-      </Tooltip>
-    );
-  };
-
   if (isLoading) return <Skeleton width="25%" />;
 
-  let text = "";
-  switch (spacePolicy) {
-    case "delete":
-      text = _("Delete everything");
-      break;
-    case "resize":
-      text = _("Resize as needed");
-      break;
-    case "keep":
-      text = _("Keep existing stuff");
-      break;
-    default:
-      console.log("Unsupported value " + spacePolicy);
-  }
-  const value_text = sprintf(_("Policy to make free space: %s"), text);
+  const numDevices = settings.installationDevices.length;
+  const text = sprintf(
+    n_("Find space at the chosen disk", "Find space at the %d chosen disks", numDevices),
+    numDevices
+  );
+  const popUpDesc = n_(
+    "Select the way to find space in the following disk:",
+    "Select the way to find space in the following disks:",
+    numDevices
+  );
 
   return (
     <div className="split">
-      {value_text}
-      <SpacePolicySettingsButton />
+      <span>{text}</span>
+      <SpacePolicyButton policy={spacePolicy} onClick={openForm} />
       <Popup
-        aria-label={_("Space Policy settings")}
+        description={popUpDesc}
         title={_("Space Policy")}
         isOpen={isFormOpen}
       >
-        <SpacePolicySettingsForm
-          id="spacePolicySettingsForm"
-          settings={spacePolicy}
+        <DeviceCompactList devices={settings.installationDevices} />
+        <SpacePolicyForm
+          id="spacePolicyForm"
+          policy={spacePolicy}
           onSubmit={onSubmitForm}
         />
         <Popup.Actions>
           <Popup.Confirm
-            form="spacePolicySettingsForm"
+            form="spacePolicyForm"
             type="submit"
           >
             {_("Accept")}

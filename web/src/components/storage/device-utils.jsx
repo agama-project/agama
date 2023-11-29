@@ -215,7 +215,7 @@ const DeviceItem = ({ device }) => {
 
   return (
     <>
-      <BasicInfo />
+      <BasicInfo {...{ "data-type": "type-and-size" }} />
       <ExtendedInfo />
       <ContentInfo />
     </>
@@ -231,9 +231,9 @@ const DeviceItem = ({ device }) => {
  */
 const DeviceList = ({ devices }) => {
   return (
-    <ListBox className="stack device-list">
+    <ListBox className="stack item-list">
       { devices.map(device => (
-        <ListBoxItem key={device.sid} isSelected>
+        <ListBoxItem key={device.sid} isSelected {...{ "data-type": "storage-device" }}>
           <DeviceItem device={device} />
         </ListBoxItem>
       ))}
@@ -268,13 +268,14 @@ const DeviceSelector = ({ devices, selected, isMultiple = false, onChange = noop
   };
 
   return (
-    <ListBox aria-label={_("Available devices")} className="stack device-list">
+    <ListBox aria-label={_("Available devices")} className="stack item-list">
       { devices.map(device => (
         <ListBoxItem
           key={device.sid}
           onClick={() => onOptionClick(device.name)}
           isSelected={isSelected(device.name)}
           className="cursor-pointer"
+          {...{ "data-type": "storage-device" }}
         >
           <DeviceItem device={device} />
         </ListBoxItem>
@@ -283,4 +284,49 @@ const DeviceSelector = ({ devices, selected, isMultiple = false, onChange = noop
   );
 };
 
-export { DeviceList, DeviceSelector };
+const DeviceLineItem = ({ device }) => {
+  const DeviceIcon = () => {
+    const names = {
+      raid: "storage",
+      md: "storage"
+    };
+
+    const name = names[device.type] || "hard_drive";
+
+    return <Icon name={name} />;
+  };
+
+  const DeviceSize = () => {
+    if (device.size === undefined) return null;
+
+    return <span>{deviceSize(device.size)}</span>;
+  };
+
+  const DeviceName = () => {
+    if (device.name === undefined) return null;
+
+    return <span>{device.name}</span>;
+  };
+
+  return (
+    <>
+      <DeviceIcon />
+      <DeviceName />
+      <DeviceSize />
+    </>
+  );
+};
+
+const DeviceCompactList = ({ devices }) => {
+  return (
+    <ul>
+      { devices.map(device => (
+        <li key={device.sid} {...{ "data-type": "storage-device" }}>
+          <DeviceLineItem device={device} />
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+export { DeviceList, DeviceSelector, DeviceCompactList };

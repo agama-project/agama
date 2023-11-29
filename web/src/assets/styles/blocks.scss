@@ -220,6 +220,11 @@ section > .content {
   }
 }
 
+li:is([data-type="storage-device"]) {
+  svg { vertical-align: middle }
+  span { margin-left: 0.5em }
+}
+
 span.notification-mark {
   --nm-border-width: 0;
   --nm-border-color: transparent;

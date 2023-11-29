@@ -312,6 +312,8 @@ class ProposalManager {
 
     if (!proxy) return undefined;
 
+    const systemDevices = await this.system.getDevices();
+
     const buildResult = (proxy) => {
       const buildAction = dbusAction => {
         return {
@@ -319,6 +321,19 @@ class ProposalManager {
           subvol: dbusAction.Subvol.v,
           delete: dbusAction.Delete.v
         };
+      };
+
+      const buildInstallationDevices = (proxy, devices) => {
+        const findDevice = (devices, name) => {
+          const device = devices.find(d => d.name === name);
+
+          if (device === undefined) console.log("D-Bus object not found: ", name);
+
+          return device;
+        };
+
+        const names = proxy.SystemVGDevices.filter(n => n !== proxy.BootDevice).concat([proxy.BootDevice]);
+        return names.map(dev => findDevice(devices, dev));
       };
 
       return {
@@ -329,6 +344,7 @@ class ProposalManager {
           systemVGDevices: proxy.SystemVGDevices,
           encryptionPassword: proxy.EncryptionPassword,
           volumes: proxy.Volumes.map(this.buildVolume),
+          installationDevices: buildInstallationDevices(proxy, systemDevices)
         },
         actions: proxy.Actions.map(buildAction)
       };
