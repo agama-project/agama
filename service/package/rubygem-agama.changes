@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 29 11:26:39 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update the software proposal when the locale changes
+  (gh#openSUSE/agama#881).
+
+-------------------------------------------------------------------
 Fri Nov 24 14:50:22 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Install recommended packages (gh#openSUSE/agama#889).
