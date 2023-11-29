@@ -90,10 +90,10 @@ const PolicyItem = ({ policy }) => {
   };
 
   return (
-    <div className="stack">
+    <>
       <Title />
       <Description />
-    </div>
+    </>
   );
 };
 
@@ -108,7 +108,7 @@ const PolicyItem = ({ policy }) => {
  */
 const SpacePolicySelector = ({ value, onChange = noop }) => {
   return (
-    <ListBox aria-label={_("Select a mechanism to make space")} role="listbox" className="stack">
+    <ListBox aria-label={_("Select a mechanism to make space")} role="listbox">
       { ["delete", "resize", "keep"].map(policy => (
         <ListBoxItem
           key={policy}

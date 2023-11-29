@@ -230,7 +230,7 @@ const DeviceItem = ({ device }) => {
  */
 const DeviceList = ({ devices, ...props }) => {
   return (
-    <ListBox className="stack item-list">
+    <ListBox>
       { devices.map(device => (
         <ListBoxItem key={device.sid} {...props} data-type="storage-device">
           <DeviceItem device={device} />
@@ -267,7 +267,7 @@ const DeviceSelector = ({ devices, selected, isMultiple = false, onChange = noop
   };
 
   return (
-    <ListBox aria-label={_("Available devices")} role="listbox" className="stack">
+    <ListBox aria-label={_("Available devices")} role="listbox">
       { devices.map(device => (
         <ListBoxItem
           key={device.sid}
