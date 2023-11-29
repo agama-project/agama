@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 29 12:06:07 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Allow selecting language, keymap and timezone for the target
+  system (gh#openSUSE/agama#881).
+
+-------------------------------------------------------------------
 Tue Nov 21 15:21:06 UTC 2023 - David Diaz <dgonzalez@suse.com>
 
 - UI: Do not crash when clicking the install button. It started
