@@ -51,35 +51,49 @@ const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
  */
 const PolicyItem = ({ policy }) => {
   const Title = () => {
+    let text;
+
     switch (policy) {
       case "delete":
         // TRANSLATORS: automatic actions to find space for installation in the target disk(s)
-        return _("Delete current content");
+        text = _("Delete current content");
+        break;
       case "resize":
         // TRANSLATORS: automatic actions to find space for installation in the target disk(s)
-        return _("Shrink existing partitions");
+        text = _("Shrink existing partitions");
+        break;
       case "keep":
         // TRANSLATORS: automatic actions to find space for installation in the target disk(s)
-        return _("Use available space");
+        text = _("Use available space");
+        break;
     }
+
+    return <div className="title">{text}</div>;
   };
 
   const Description = () => {
+    let text;
+
     switch (policy) {
       case "delete":
-        return _("All partitions will be removed and any data in the disks will be lost.");
+        text = _("All partitions will be removed and any data in the disks will be lost.");
+        break;
       case "resize":
-        return _("The data is kept, but the current partitions will be resized as needed to make enough space.");
+        text = _("The data is kept, but the current partitions will be resized as needed to make enough space.");
+        break;
       case "keep":
-        return _("The data is kept and existing partitions will not be modified. Only the currently unpartitioned space will be used.");
+        text = _("The data is kept and existing partitions will not be modified. Only the currently unpartitioned space will be used.");
+        break;
     }
+
+    return <p>{text}</p>;
   };
 
   return (
-    <>
-      <div className="bold"><Title /></div>
-      <div data-type="details"><Description /></div>
-    </>
+    <div className="stack">
+      <Title />
+      <Description />
+    </div>
   );
 };
 
