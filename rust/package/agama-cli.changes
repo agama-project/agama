@@ -8,7 +8,7 @@ Wed Nov 29 11:19:51 UTC 2023 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   * Extend the ListTimezone function to include the translation of
     each part.
   * Drop ListUILocales and ListVConsoleKeyboards functions.
-  * Remove the and SupportedLocales property.
+  * Remove the SupportedLocales and VConsoleKeyboard properties.
   * Do not read the lists of locales, keymaps and timezones on
     each request.
   * Peform some validation when trying to change the Locales,
