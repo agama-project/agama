@@ -70,6 +70,18 @@ it("searches for elements matching the given text", async () => {
   screen.getByRole("option", { name: /grape/ });
   screen.getByRole("option", { name: /pear/ });
 
+  // Search for known fruit
+  await user.clear(searchInput);
+  await user.type(searchInput, "ap");
+  await waitFor(() => (
+    expect(screen.queryByRole("option", { name: /banana/ })).not.toBeInTheDocument())
+  );
+  await waitFor(() => (
+    expect(screen.queryByRole("option", { name: /pear/ })).not.toBeInTheDocument())
+  );
+  screen.getByRole("option", { name: /apple/ });
+  screen.getByRole("option", { name: /grape/ });
+
   // Search for unknown fruit
   await user.clear(searchInput);
   await user.type(searchInput, "tomato");
