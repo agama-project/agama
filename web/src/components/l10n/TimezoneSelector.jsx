@@ -112,7 +112,6 @@ export default function TimezoneSelector({ value, timezones = [], onChange = noo
             key={`timezone-${index}`}
             onClick={() => onChange(timezone.id)}
             isSelected={timezone.id === value}
-            className="cursor-pointer"
           >
             <TimezoneItem timezone={timezone} date={date} />
           </ListBoxItem>

@@ -274,7 +274,6 @@ const DeviceSelector = ({ devices, selected, isMultiple = false, onChange = noop
           role="option"
           onClick={() => onOptionClick(device.name)}
           isSelected={isSelected(device.name)}
-          className="cursor-pointer"
           data-type="storage-device"
         >
           <DeviceItem device={device} />

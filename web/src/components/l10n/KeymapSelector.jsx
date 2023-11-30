@@ -92,7 +92,6 @@ export default function KeymapSelector({ value, keymaps = [], onChange = noop })
             key={`keymap-${index}`}
             onClick={() => onChange(keymap.id)}
             isSelected={keymap.id === value}
-            className="cursor-pointer"
           >
             <KeymapItem keymap={keymap} />
           </ListBoxItem>

@@ -92,7 +92,6 @@ export default function LocaleSelector({ value, locales = [], onChange = noop })
             key={`locale-${index}`}
             onClick={() => onChange(locale.id)}
             isSelected={locale.id === value}
-            className="cursor-pointer"
           >
             <LocaleItem locale={locale} />
           </ListBoxItem>

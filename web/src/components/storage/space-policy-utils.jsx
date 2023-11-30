@@ -116,7 +116,6 @@ const SpacePolicySelector = ({ value, onChange = noop }) => {
           role="option"
           onClick={() => onChange(policy)}
           isSelected={policy === value}
-          className="cursor-pointer"
         >
           <PolicyItem policy={policy} />
         </ListBoxItem>

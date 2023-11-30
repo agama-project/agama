@@ -310,6 +310,7 @@ ul[data-type="agama/list"] {
 // These attributes together means that UI is rendering a selector
 ul[data-type="agama/list"][role="listbox"] {
   li[role="option"] {
+    cursor: pointer;
     transition: all 0.2s ease-in-out;
 
     &:hover {
