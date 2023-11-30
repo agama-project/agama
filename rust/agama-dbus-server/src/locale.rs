@@ -179,7 +179,13 @@ impl Locale {
         let locale = ui_locale.to_string();
         let mut locales_db = LocalesDatabase::new();
         locales_db.read(&locale)?;
-        let default_locale = locales_db.entries().get(0).unwrap();
+
+        let default_locale = if locales_db.exists(locale.as_str()) {
+            ui_locale.to_string()
+        } else {
+            // TODO: handle the case where the database is empty (not expected!)
+            locales_db.entries().get(0).unwrap().code.to_string()
+        };
 
         let mut timezones_db = TimezonesDatabase::new();
         timezones_db.read(&locale)?;
@@ -191,7 +197,7 @@ impl Locale {
         let locale = Self {
             keymap: "us".parse().unwrap(),
             timezone: default_timezone.code.to_string(),
-            locales: vec![default_locale.code.to_string()],
+            locales: vec![default_locale],
             locales_db,
             timezones_db,
             keymaps_db,
