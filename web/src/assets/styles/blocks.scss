@@ -344,7 +344,7 @@ ul[data-of="agama/locales"] {
       "language territory"
       "details details";
 
-    > [data-type="details"] {
+    > :last-child {
       grid-area: details;
       font-size: 80%;
     }
@@ -353,7 +353,7 @@ ul[data-of="agama/locales"] {
 
 ul[data-of="agama/keymaps"] {
   li {
-    > [data-type="details"] {
+    > :last-child {
       font-size: 80%;
     }
   }
@@ -367,13 +367,12 @@ ul[data-of="agama/timezones"] {
       "part1 rest-parts time"
       "details details .";
 
-    > [data-type="details"] {
+    > :last-child {
       grid-area: details;
       font-size: 80%;
     }
 
-    > [data-type="time"] {
-      grid-area: time;
+    > :nth-child(3) {
       color: var(--color-gray-dimmed);
       text-align: end;
     }

@@ -61,7 +61,7 @@ const LocaleItem = ({ locale }) => {
     <>
       <div>{locale.name}</div>
       <div>{locale.territory}</div>
-      <div data-type="details">{locale.id}</div>
+      <div>{locale.id}</div>
     </>
   );
 };
