@@ -336,72 +336,46 @@ ul[data-of="agama/space-policies"] {
   }
 }
 
-// FIXME: drop .item-list either, once a better selector is built or in a CSS
-// cleanup round
-.item-list {
-  [role="option"] {
-    padding: var(--spacer-normal);
-    border: 2px solid var(--color-gray-dark);
-    background: var(--color-gray-light);
-
-    border-radius: 5px;
-    transition: all 0.2s ease-in-out;
+ul[data-of="agama/locales"] {
+  li {
     display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-template-areas:
+      "language territory"
+      "details details";
 
-    gap: var(--spacer-small);
+    > [data-type="details"] {
+      grid-area: details;
+      font-size: 80%;
+    }
+  }
+}
 
-    grid-template-columns: 1fr;
-    grid-template-areas: "content";
-    text-align: start;
-
+ul[data-of="agama/keymaps"] {
+  li {
     > [data-type="details"] {
       font-size: 80%;
     }
-
-    &:hover {
-      &:not([aria-selected]) {
-        background: var(--color-gray-dark);
-      }
-    }
-
-    &:is([data-type="locale"]) {
-      grid-template-columns: 1fr 2fr;
-      grid-template-areas:
-        "language territory"
-        "details details";
-
-      > [data-type="details"] {
-        grid-area: details;
-      }
-    }
-
-    &:is([data-type="timezone"]) {
-      grid-template-columns: 1fr 2fr 1fr;
-      grid-template-areas:
-        "part1 rest-parts time"
-        "details details .";
-
-      > [data-type="details"] {
-        grid-area: details;
-      }
-
-      > [data-type="time"] {
-        grid-area: time;
-        color: var(--color-gray-dimmed);
-        text-align: end;
-      }
-    }
   }
+}
 
-  [aria-selected] {
-    border: 2px solid var(--color-primary);
-    box-shadow: 0 2px 5px 0 var(--color-gray-dark);
-    background: var(--color-primary);
-    color: white;
-    font-weight: 700;
+ul[data-of="agama/timezones"] {
+  li {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-areas:
+      "part1 rest-parts time"
+      "details details .";
 
-    svg {
-      fill: white;
+    > [data-type="details"] {
+      grid-area: details;
+      font-size: 80%;
+    }
+
+    > [data-type="time"] {
+      grid-area: time;
+      color: var(--color-gray-dimmed);
+      text-align: end;
     }
   }
 }

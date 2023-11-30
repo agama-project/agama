@@ -29,7 +29,11 @@ import { noop, timezoneTime } from "~/utils";
  * @typedef {import ("~/clients/l10n").Timezone} Timezone
  */
 
-const ListBox = ({ children, ...props }) => <ul role="listbox" {...props}>{children}</ul>;
+const ListBox = ({ children, ...props }) => {
+  return (
+    <ul data-type="agama/list" data-of="agama/timezones" {...props}>{children}</ul>
+  );
+};
 
 const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
   if (isSelected) props['aria-selected'] = true;
@@ -102,14 +106,13 @@ export default function TimezoneSelector({ value, timezones = [], onChange = noo
       <div className="sticky-top-0">
         <ListSearch placeholder={helpSearch} elements={displayTimezones} onChange={setFilteredTimezones} />
       </div>
-      <ListBox aria-label={_("Available time zones")} className="stack item-list">
+      <ListBox aria-label={_("Available time zones")} role="listbox">
         { filteredTimezones.map((timezone, index) => (
           <ListBoxItem
             key={`timezone-${index}`}
             onClick={() => onChange(timezone.id)}
             isSelected={timezone.id === value}
             className="cursor-pointer"
-            data-type="timezone"
           >
             <TimezoneItem timezone={timezone} date={date} />
           </ListBoxItem>
