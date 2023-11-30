@@ -77,12 +77,14 @@ export default function Section({
   const Header = () => {
     if (!title?.trim()) return;
 
-    const header = !path?.trim() ? <>{title}</> : <Link to={path}>{title}</Link>;
+    const iconName = loading ? "loading" : icon;
+    const headerIcon = iconName ? <Icon name={iconName} /> : null;
+    const headerText = !path?.trim() ? title : <Link to={path}>{title}</Link>;
 
     return (
       <>
-        <Icon name={loading ? "loading" : icon} />
-        <h2 id={headerId}>{header}</h2>
+        {headerIcon}
+        <h2 id={headerId}>{headerText}</h2>
       </>
     );
   };

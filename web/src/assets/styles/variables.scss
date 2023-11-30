@@ -26,7 +26,7 @@
   --stack-gutter: var(--spacer-normal);
   --split-gutter: var(--spacer-small);
 
-  --wrapper-padding: var(--spacer-normal);
+  --wrapper-padding: var(--spacer-small);
   --wrapper-background: white;
 
   --color-primary: #0c322c;
@@ -60,7 +60,8 @@
   --gradient-border-start-color: var(--color-gray);
   --gradient-border-end-color: transparent;
 
-  --icon-size-m: 32px;
+  --header-icon-size: 32px;
+  --section-icon-size: 28px;
 
   --header-block-size: auto;
   --footer-block-size: auto;
