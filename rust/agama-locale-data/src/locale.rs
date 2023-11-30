@@ -20,6 +20,15 @@ impl Display for LocaleCode {
     }
 }
 
+impl Default for LocaleCode {
+    fn default() -> Self {
+        Self {
+            language: "en".to_string(),
+            territory: "US".to_string(),
+        }
+    }
+}
+
 #[derive(Error, Debug)]
 #[error("Not a valid locale string: {0}")]
 pub struct InvalidLocaleCode(String);

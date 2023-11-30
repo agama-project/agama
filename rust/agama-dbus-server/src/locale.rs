@@ -4,7 +4,7 @@ mod locale;
 mod timezone;
 
 use crate::error::Error;
-use agama_locale_data::KeymapId;
+use agama_locale_data::{KeymapId, LocaleCode};
 use anyhow::Context;
 use keyboard::KeymapsDatabase;
 use locale::LocalesDatabase;
@@ -19,7 +19,7 @@ pub struct Locale {
     locales_db: LocalesDatabase,
     keymap: KeymapId,
     keymaps_db: KeymapsDatabase,
-    ui_locale: String,
+    ui_locale: LocaleCode,
 }
 
 #[dbus_interface(name = "org.opensuse.Agama1.Locale")]
@@ -68,14 +68,17 @@ impl Locale {
     }
 
     #[dbus_interface(property, name = "UILocale")]
-    fn ui_locale(&self) -> &str {
-        &self.ui_locale
+    fn ui_locale(&self) -> String {
+        self.ui_locale.to_string()
     }
 
     #[dbus_interface(property, name = "UILocale")]
     fn set_ui_locale(&mut self, locale: &str) -> zbus::fdo::Result<()> {
-        helpers::set_service_locale(locale);
-        Ok(self.translate(locale)?)
+        let locale: LocaleCode = locale
+            .try_into()
+            .map_err(|_e| zbus::fdo::Error::Failed(format!("Invalid locale value '{locale}'")))?;
+        helpers::set_service_locale(&locale);
+        Ok(self.translate(&locale)?)
     }
 
     /// Returns a list of the supported keymaps.
@@ -174,7 +177,8 @@ impl Locale {
 }
 
 impl Locale {
-    pub fn new_with_locale(locale: &str) -> Result<Self, Error> {
+    pub fn new_with_locale(ui_locale: &LocaleCode) -> Result<Self, Error> {
+        let locale = ui_locale.to_string();
         let mut locales_db = LocalesDatabase::new();
         locales_db.read(&locale)?;
         let default_locale = locales_db.entries().get(0).unwrap();
@@ -193,24 +197,23 @@ impl Locale {
             locales_db,
             timezones_db,
             keymaps_db,
-            ui_locale: locale.to_string(),
+            ui_locale: ui_locale.clone(),
         };
 
         Ok(locale)
     }
 
-    pub fn translate(&mut self, locale: &str) -> Result<(), Error> {
-        self.ui_locale = locale.to_string();
-        let language = locale.split_once("_").map(|(l, _)| l).unwrap_or("en");
-        self.timezones_db.read(&language)?;
-        self.locales_db.read(&language)?;
-        self.ui_locale = locale.to_string();
+    pub fn translate(&mut self, locale: &LocaleCode) -> Result<(), Error> {
+        self.timezones_db.read(&locale.language)?;
+        self.locales_db.read(&locale.language)?;
+        self.ui_locale = locale.clone();
         Ok(())
     }
 }
 
 pub async fn export_dbus_objects(
-    connection: &Connection, locale: &str
+    connection: &Connection,
+    locale: &LocaleCode,
 ) -> Result<(), Box<dyn std::error::Error>> {
     const PATH: &str = "/org/opensuse/Agama1/Locale";
 
