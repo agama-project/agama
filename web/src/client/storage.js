@@ -231,6 +231,7 @@ class ProposalManager {
    * @property {string} spacePolicy
    * @property {string[]} systemVGDevices
    * @property {Volume[]} volumes
+   * @property {StorageDevice[]} installationDevices
    *
    * @typedef {object} Volume
    * @property {string} mountPath
@@ -333,7 +334,7 @@ class ProposalManager {
         };
 
         const names = proxy.SystemVGDevices.filter(n => n !== proxy.BootDevice).concat([proxy.BootDevice]);
-        return names.map(dev => findDevice(devices, dev));
+        return names.map(dev => findDevice(devices, dev)).filter(Boolean);
       };
 
       return {
@@ -344,6 +345,10 @@ class ProposalManager {
           systemVGDevices: proxy.SystemVGDevices,
           encryptionPassword: proxy.EncryptionPassword,
           volumes: proxy.Volumes.map(this.buildVolume),
+          // NOTE: strictly speaking, installation devices does not belong to the settings. It
+          // should be a separate method instead of an attribute in the settings object.
+          // Nevertheless, it was added here for simplicity and to avoid passing more props in some
+          // react components. Please, do not use settings as a jumble.
           installationDevices: buildInstallationDevices(proxy, systemDevices)
         },
         actions: proxy.Actions.map(buildAction)
