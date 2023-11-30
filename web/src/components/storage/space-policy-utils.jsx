@@ -133,7 +133,10 @@ const SpacePolicyButton = ({ policy, devices, onClick = noop }) => {
         return sprintf(
           // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
           // would read as "Find space deleting all content[...]"
-          n_("deleting all content at the target disk", "deleting all content at the %d chosen disks", num),
+          n_(
+            "deleting all content at the installation device",
+            "deleting all content at the %d selected disks",
+            num),
           num
         );
       case "resize":
@@ -141,8 +144,8 @@ const SpacePolicyButton = ({ policy, devices, onClick = noop }) => {
           // TRANSLATORS: This is presented next to the label "Find space", so the whole sentence
           // would read as "Find space shrinking partitions[...]"
           n_(
-            "shrinking partitions at the target disk",
-            "shrinking partitions at the %d chosen disks",
+            "shrinking partitions at the installation device",
+            "shrinking partitions at the %d selected disks",
             num),
           num
         );
@@ -164,8 +167,8 @@ const SpacePolicyDisksHint = ({ devices }) => {
   const label = (num) => {
     return sprintf(
       n_(
-        "This will only affect the target installation disk",
-        "This will affect the %d devices chosen for installation",
+        "This will only affect the installation device",
+        "This will affect the %d disks selected for installation",
         num
       ),
       num

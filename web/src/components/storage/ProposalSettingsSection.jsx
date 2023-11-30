@@ -575,13 +575,16 @@ const SpacePolicyField = ({
 
   if (isLoading) return <Skeleton width="25%" />;
 
+  const description = _("Select how to make free space in the disks selected for allocating the \
+    file systems.");
+
   return (
     <div className="split">
       {/* TRANSLATORS: To be completed with the rest of a sentence like "deleting all content" */}
       <span>{_("Find space")}</span>
       <SpacePolicyButton policy={spacePolicy} devices={settings.installationDevices} onClick={openForm} />
       <Popup
-        description={_("Select the way to find space")}
+        description={description}
         title={_("Space Policy")}
         isOpen={isFormOpen}
       >
