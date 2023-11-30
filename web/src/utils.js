@@ -175,7 +175,7 @@ const useLocalStorage = (storageKey, fallbackState) => {
  * @example
  *
  * const log = useDebounce(console.log, 1000);
- * log("test ", 1) // The message will be logged after 1 second.
+ * log("test ", 1) // The message will be logged after at least 1 second.
  * log("test ", 2) // Subsequent calls cancels pending calls.
  */
 const useDebounce = (callback, delay) => {

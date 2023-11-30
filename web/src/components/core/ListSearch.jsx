@@ -41,7 +41,7 @@ const search = (elements, term) => {
  *
  * @param {object} props
  * @param {string} [props.placeholder]
- * @param {object[]} [props.elements] - List of element in which to search.
+ * @param {object[]} [props.elements] - List of elements in which to search.
  * @param {(elements: object[]) => void} - Callback to be called with the filtered list of elements.
  */
 export default function ListSearch({
