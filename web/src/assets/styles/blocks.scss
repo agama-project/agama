@@ -275,11 +275,13 @@ span.notification-mark[data-variant="sidebar"] {
 ul[data-type="agama/list"] {
   li {
     border: 2px solid var(--color-gray-dark);
-    border-radius: 5px;
     padding: var(--spacer-normal);
     text-align: start;
     background: var(--color-gray-light);
-    margin-block-end: var(--spacer-small);
+
+    &:nth-child(n+2) {
+      border-top: 0;
+    }
 
     > div {
       margin-block-end: var(--spacer-smaller);
@@ -312,6 +314,14 @@ ul[data-type="agama/list"][role="listbox"] {
   li[role="option"] {
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+
+    &:first-child {
+      border-radius: 5px 5px 0 0;
+    }
+
+    &:last-child {
+      border-radius: 0 0 5px 5px;
+    }
 
     &:hover {
       &:not([aria-selected]) {
