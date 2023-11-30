@@ -52,7 +52,7 @@ describe Agama::DBus::Software::Manager do
   let(:issues_interface) { Agama::DBus::Interfaces::Issues::ISSUES_INTERFACE }
 
   before do
-    allow(Agama::DBus::Clients::Locale).to receive(:new).and_return(locale_client)
+    allow(Agama::DBus::Clients::Locale).to receive(:instance).and_return(locale_client)
     allow(Agama::DBus::Clients::Network).to receive(:new).and_return(network_client)
     allow(backend).to receive(:probe)
     allow(backend).to receive(:propose)

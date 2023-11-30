@@ -59,8 +59,9 @@ describe Agama::Software::Proposal do
     end
 
     it "selects the language packages" do
+      expect(Yast::Pkg).to receive(:SetPackageLocale).with("cs_CZ")
       expect(Yast::Pkg).to receive(:SetAdditionalLocales).with(["de_DE"])
-      subject.languages = ["de_DE"]
+      subject.languages = ["cs_CZ", "de_DE"]
       subject.calculate
     end
 
@@ -160,6 +161,13 @@ describe Agama::Software::Proposal do
         subject.calculate
         expect(subject.valid?).to eq(false)
       end
+    end
+  end
+
+  describe "#languages" do
+    it "sets the languages to install removing the encoding" do
+      subject.languages = ["es_ES.UTF-8", "en_US"]
+      expect(subject.languages).to eq(["es_ES", "en_US"])
     end
   end
 end

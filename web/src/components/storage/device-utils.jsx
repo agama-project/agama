@@ -214,7 +214,7 @@ const DeviceItem = ({ device }) => {
 
   return (
     <>
-      <BasicInfo />
+      <BasicInfo data-type="type-and-size" />
       <ExtendedInfo />
       <ContentInfo />
     </>
@@ -275,6 +275,7 @@ const DeviceSelector = ({ devices, selected, isMultiple = false, onChange = noop
           onClick={() => onOptionClick(device.name)}
           isSelected={isSelected(device.name)}
           className="cursor-pointer"
+          data-type="storage-device"
         >
           <DeviceItem device={device} />
         </ListBoxItem>

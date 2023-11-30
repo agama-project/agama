@@ -23,11 +23,11 @@ import React, { useCallback, useState } from "react";
 import { Icon } from "../layout";
 import { FormSelect, FormSelectOption } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import { useL10n } from "~/context/l10n";
+import { useInstallerL10n } from "~/context/installerL10n";
 import cockpit from "~/lib/cockpit";
 
 export default function LanguageSwitcher() {
-  const { language, changeLanguage } = useL10n();
+  const { language, changeLanguage } = useInstallerL10n();
   const [selected, setSelected] = useState(null);
   const languages = cockpit.manifests.agama?.locales || [];
 

@@ -247,7 +247,7 @@ describe("when the button for changing the product is clicked", () => {
       const popup = await screen.findByRole("dialog");
       within(popup).getByText(/must be deregistered/);
 
-      const accept = within(popup).getByRole("button", { name: "Accept" });
+      const accept = within(popup).getByRole("button", { name: "Close" });
       await user.click(accept);
 
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

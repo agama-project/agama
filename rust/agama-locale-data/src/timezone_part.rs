@@ -20,6 +20,14 @@ pub struct TimezoneIdParts {
 }
 
 impl TimezoneIdParts {
+    // TODO: Implement a caching mechanism
+    pub fn localize_part(&self, part_id: &str, language: &str) -> Option<String> {
+        self.timezone_part
+            .iter()
+            .find(|p| p.id == part_id)
+            .and_then(|p| p.names.name_for(language))
+    }
+
     /// Localized given list of timezones to given language
     /// # Examples
     ///

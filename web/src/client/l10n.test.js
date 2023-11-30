@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022] SUSE LLC
+ * Copyright (c) [2022-2023] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,34 +23,40 @@
 // cspell:ignore Cestina
 
 import DBusClient from "./dbus";
-import { LanguageClient } from "./language";
+import { L10nClient } from "./l10n";
 
 jest.mock("./dbus");
 
-const langProxy = {
-  wait: jest.fn(),
-  SupportedLocales: ["es_ES.UTF-8", "en_US.UTF-8"],
-  LabelsForLocales: jest.fn().mockResolvedValue(
-    [[["Spanish", "Spain"], ["Español", "España"]], [['English', 'United States'], ['English', 'United States']]]
+const L10N_IFACE = "org.opensuse.Agama1.Locale";
+
+const l10nProxy = {
+  ListLocales: jest.fn().mockResolvedValue(
+    [
+      ["es_ES.UTF-8", "Spanish", "Spain"],
+      ["en_US.UTF-8", "English", "United States"]
+    ]
   ),
 };
-
-jest.mock("./dbus");
 
 beforeEach(() => {
   // @ts-ignore
   DBusClient.mockImplementation(() => {
-    return { proxy: () => langProxy };
+    return {
+      proxy: (iface) => {
+        if (iface === L10N_IFACE) return l10nProxy;
+      }
+    };
   });
 });
 
-describe("#getLanguages", () => {
-  it("returns the list of available languages", async () => {
-    const client = new LanguageClient();
-    const availableLanguages = await client.getLanguages();
-    expect(availableLanguages).toEqual([
-      { id: "es_ES.UTF-8", name: "Spanish" },
-      { id: "en_US.UTF-8", name: "English" }
+describe("#locales", () => {
+  it("returns the list of available locales", async () => {
+    const client = new L10nClient();
+    const locales = await client.locales();
+
+    expect(locales).toEqual([
+      { id: "es_ES.UTF-8", name: "Spanish", territory: "Spain" },
+      { id: "en_US.UTF-8", name: "English", territory: "United States" }
     ]);
   });
 });

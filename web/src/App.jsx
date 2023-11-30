@@ -41,7 +41,7 @@ import {
 } from "~/components/core";
 import { LanguageSwitcher } from "./components/l10n";
 import { Layout, Loading, Title } from "./components/layout";
-import { useL10n } from "./context/l10n";
+import { useInstallerL10n } from "./context/installerL10n";
 
 // D-Bus connection attempts before displaying an error.
 const ATTEMPTS = 3;
@@ -57,7 +57,7 @@ function App() {
   const client = useInstallerClient();
   const { attempt } = useInstallerClientStatus();
   const { products } = useProduct();
-  const { language } = useL10n();
+  const { language } = useInstallerL10n();
   const [status, setStatus] = useState(undefined);
   const [phase, setPhase] = useState(undefined);
 

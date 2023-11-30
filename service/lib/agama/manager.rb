@@ -152,7 +152,7 @@ module Agama
     #
     # @return [DBus::Clients::Locale]
     def language
-      @language ||= DBus::Clients::Locale.new
+      DBus::Clients::Locale.instance
     end
 
     # Users client

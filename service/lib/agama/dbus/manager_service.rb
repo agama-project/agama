@@ -73,7 +73,7 @@ module Agama
         setup_cockpit
         export
         # We need locale for data from users
-        locale_client = Clients::Locale.new
+        locale_client = Clients::Locale.instance
         # TODO: test if we need to pass block with additional actions
         @ui_locale = UILocale.new(locale_client)
         manager.on_progress_change { dispatch } # make single thread more responsive
