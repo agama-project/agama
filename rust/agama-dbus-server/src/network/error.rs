@@ -23,6 +23,8 @@ pub enum NetworkStateError {
     InvalidSecurityProtocol(String),
     #[error("Adapter error: '{0}'")]
     AdapterError(String),
+    #[error("Invalid bond mode '{0}'")]
+    InvalidBondMode(String),
     #[error("Invalid bond options")]
     InvalidBondOptions,
 }

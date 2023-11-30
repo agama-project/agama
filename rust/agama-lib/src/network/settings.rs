@@ -48,10 +48,23 @@ pub struct WirelessSettings {
     pub mode: String,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BondSettings {
-    pub options: String,
+    pub mode: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub options: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub ports: Vec<String>,
+}
+
+impl Default for BondSettings {
+    fn default() -> Self {
+        Self {
+            mode: "round-robin".to_string(),
+            options: None,
+            ports: vec![],
+        }
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -149,6 +162,15 @@ mod tests {
 
         assert_eq!(wlan.device_type(), DeviceType::Wireless);
         assert_eq!(bond.device_type(), DeviceType::Bond);
+    }
+
+    #[test]
+    fn test_bonding_defaults() {
+        let bond = BondSettings::default();
+
+        assert_eq!(bond.mode, "round-robin".to_string());
+        assert_eq!(bond.ports.len(), 0);
+        assert_eq!(bond.options, None);
     }
 
     #[test]

@@ -338,6 +338,27 @@ impl Bond {
 
 #[dbus_interface(name = "org.opensuse.Agama1.Network.Connection.Bond")]
 impl Bond {
+    /// Bonding mode
+    #[dbus_interface(property)]
+    pub async fn mode(&self) -> String {
+        let connection = self.get_bond().await;
+
+        connection.bond.mode.to_string()
+    }
+
+    #[dbus_interface(property)]
+    pub async fn set_mode(&mut self, mode: String) -> zbus::fdo::Result<()> {
+        let connection = self.get_bond().await;
+        let result = self
+            .update_controller_connection(
+                connection,
+                HashMap::from([("mode".to_string(), ControllerConfig::Mode(mode.clone()))]),
+            )
+            .await;
+        self.connection = Arc::new(Mutex::new(result.unwrap()));
+        Ok(())
+    }
+
     /// List of bond ports.
     #[dbus_interface(property)]
     pub async fn options(&self) -> String {

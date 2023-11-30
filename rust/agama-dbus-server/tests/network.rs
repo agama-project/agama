@@ -110,20 +110,22 @@ async fn test_add_bond_connection() -> Result<(), Box<dyn Error>> {
         method6: Some("disabled".to_string()),
         interface: Some("bond0".to_string()),
         bond: Some(settings::BondSettings {
+            mode: "active-backup".to_string(),
             ports: vec!["eth0".to_string(), "eth1".to_string()],
-            options: "mode=active-backup primary=eth1".to_string(),
+            options: Some("primary=eth1".to_string()),
         }),
         ..Default::default()
     };
 
     client.add_or_update_connection(&bond0).await?;
-    println!("FETCHING CONNECTIONS");
     let conns = async_retry(|| client.connections()).await?;
     assert_eq!(conns.len(), 1);
 
     let conn = conns.iter().find(|c| c.id == "bond0".to_string()).unwrap();
     assert_eq!(conn.id, "bond0");
     assert_eq!(conn.device_type(), DeviceType::Bond);
+    let bond = conn.bond.clone().unwrap();
+    assert_eq!(bond.mode, "active-backup");
 
     Ok(())
 }

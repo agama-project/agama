@@ -38,6 +38,90 @@ pub enum DeviceType {
     Wireless = 2,
     Bond = 3,
 }
+/// Bond mode
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy)]
+pub enum BondMode {
+    #[serde(rename = "balance-rr")]
+    RoundRobin = 0,
+    #[serde(rename = "active-backup")]
+    ActiveBackup = 1,
+    #[serde(rename = "balance-xor")]
+    BalanceXOR = 2,
+    #[serde(rename = "broadcast")]
+    Broadcast = 3,
+    #[serde(rename = "802.3ad")]
+    LACP = 4,
+    #[serde(rename = "balance-tlb")]
+    BalanceTLB = 5,
+    #[serde(rename = "balance-alb")]
+    BalanceALB = 6,
+}
+impl Default for BondMode {
+    fn default() -> Self {
+        Self::RoundRobin
+    }
+}
+
+impl std::fmt::Display for BondMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                BondMode::RoundRobin => "balance-rr",
+                BondMode::ActiveBackup => "active-backup",
+                BondMode::BalanceXOR => "balance-xor",
+                BondMode::Broadcast => "broadcast",
+                BondMode::LACP => "802.3ad",
+                BondMode::BalanceTLB => "balance-tlb",
+                BondMode::BalanceALB => "balance-alb",
+            }
+        )
+    }
+}
+
+#[derive(Debug, Error, PartialEq)]
+#[error("Invalid bond mode: {0}")]
+pub struct InvalidBondMode(String);
+
+impl TryFrom<&str> for BondMode {
+    type Error = InvalidBondMode;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "round-robin" => Ok(BondMode::RoundRobin),
+            "active-backup" => Ok(BondMode::ActiveBackup),
+            "balance-xor" => Ok(BondMode::BalanceXOR),
+            "broadcast" => Ok(BondMode::Broadcast),
+            "802.3ad" => Ok(BondMode::LACP),
+            "balance-tlb" => Ok(BondMode::BalanceTLB),
+            "balance-alb" => Ok(BondMode::BalanceALB),
+            _ => Err(InvalidBondMode(value.to_string())),
+        }
+    }
+}
+impl TryFrom<u8> for BondMode {
+    type Error = InvalidBondMode;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(BondMode::RoundRobin),
+            1 => Ok(BondMode::ActiveBackup),
+            2 => Ok(BondMode::BalanceXOR),
+            3 => Ok(BondMode::Broadcast),
+            4 => Ok(BondMode::LACP),
+            5 => Ok(BondMode::BalanceTLB),
+            6 => Ok(BondMode::BalanceALB),
+            _ => Err(InvalidBondMode(value.to_string())),
+        }
+    }
+}
+
+impl From<InvalidBondMode> for zbus::fdo::Error {
+    fn from(value: InvalidBondMode) -> zbus::fdo::Error {
+        zbus::fdo::Error::Failed(format!("Network error: {value}"))
+    }
+}
 
 #[derive(Debug, Error, PartialEq)]
 #[error("Invalid device type: {0}")]
@@ -87,5 +171,11 @@ mod tests {
 
         let dtype = DeviceType::try_from(128);
         assert_eq!(dtype, Err(InvalidDeviceType(128)));
+    }
+
+    #[test]
+    fn test_display_bond_mode() {
+        let mode = BondMode::try_from(1).unwrap();
+        assert_eq!(format!("{}", mode), "active-backup");
     }
 }

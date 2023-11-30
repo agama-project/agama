@@ -6,7 +6,7 @@ use super::model::*;
 use crate::network::model::*;
 use agama_lib::{
     dbus::{NestedHash, OwnedNestedHash},
-    network::types::SSID,
+    network::types::{BondMode, SSID},
 };
 use cidr::IpInet;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};
@@ -507,12 +507,20 @@ fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Option<BondConfig> {
     };
 
     let dict: &zvariant::Dict = bond.get("options")?.downcast_ref()?;
-    let options = <HashMap<String, String>>::try_from(dict.clone()).unwrap();
 
-    Some(BondConfig {
+    let mut options = <HashMap<String, String>>::try_from(dict.clone()).unwrap();
+    let mode = options.remove("mode");
+
+    let mut bond = BondConfig {
         options: BondOptions(options),
         ..Default::default()
-    })
+    };
+
+    if let Some(mode) = mode {
+        bond.mode = BondMode::try_from(mode.as_str()).unwrap_or_default();
+    }
+
+    Some(bond)
 }
 
 /// Determines whether a value is empty.
@@ -536,9 +544,9 @@ mod test {
     };
     use crate::network::{
         model::*,
-        nm::dbus::{ETHERNET_KEY, WIRELESS_KEY, WIRELESS_SECURITY_KEY},
+        nm::dbus::{BOND_KEY, ETHERNET_KEY, WIRELESS_KEY, WIRELESS_SECURITY_KEY},
     };
-    use agama_lib::network::types::SSID;
+    use agama_lib::network::types::{BondMode, SSID};
     use cidr::IpInet;
     use std::{collections::HashMap, net::IpAddr, str::FromStr};
     use uuid::Uuid;
@@ -705,6 +713,34 @@ mod test {
             assert_eq!(connection.wireless.ssid, SSID(vec![97, 103, 97, 109, 97]));
             assert_eq!(connection.wireless.mode, WirelessMode::Infra);
             assert_eq!(connection.wireless.security, SecurityProtocol::WPA2)
+        }
+    }
+
+    #[test]
+    fn test_connection_from_dbus_bonding() {
+        let uuid = Uuid::new_v4().to_string();
+        let connection_section = HashMap::from([
+            ("id".to_string(), Value::new("bond0").to_owned()),
+            ("uuid".to_string(), Value::new(uuid).to_owned()),
+        ]);
+
+        let bond_options = Value::new(HashMap::from([(
+            "options".to_string(),
+            HashMap::from([("mode".to_string(), Value::new("active-backup").to_owned())]),
+        )]));
+
+        let dbus_conn = HashMap::from([
+            (
+                "connection".to_string(),
+                connection_section.try_into().unwrap(),
+            ),
+            (BOND_KEY.to_string(), bond_options.try_into().unwrap()),
+        ]);
+
+        let connection = connection_from_dbus(dbus_conn).unwrap();
+        assert!(matches!(connection, Connection::Bond(_)));
+        if let Connection::Bond(connection) = connection {
+            assert_eq!(connection.bond.mode, BondMode::ActiveBackup);
         }
     }
 

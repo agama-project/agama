@@ -143,7 +143,8 @@ impl<'a> NetworkClient<'a> {
             .build()
             .await?;
         let bond = BondSettings {
-            options: bond_proxy.options().await?,
+            mode: bond_proxy.mode().await?,
+            options: Some(bond_proxy.options().await?),
             ports: bond_proxy.ports().await?,
         };
 
@@ -316,7 +317,10 @@ impl<'a> NetworkClient<'a> {
 
         let ports: Vec<_> = bond.ports.iter().map(String::as_ref).collect();
         proxy.set_ports(ports.as_slice()).await?;
-        proxy.set_options(bond.options.to_string().as_str()).await?;
+        if let Some(ref options) = bond.options {
+            proxy.set_options(options.to_string().as_str()).await?;
+        }
+        proxy.set_mode(bond.mode.as_str()).await?;
 
         Ok(())
     }

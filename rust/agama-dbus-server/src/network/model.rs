@@ -3,7 +3,7 @@
 //! * This module contains the types that represent the network concepts. They are supposed to be
 //! agnostic from the real network service (e.g., NetworkManager).
 use crate::network::error::NetworkStateError;
-use agama_lib::network::types::{DeviceType, SSID};
+use agama_lib::network::types::{BondMode, DeviceType, SSID};
 use cidr::IpInet;
 use std::{
     collections::HashMap,
@@ -94,8 +94,11 @@ impl NetworkState {
         let controller = conn.clone();
 
         if let Connection::Bond(ref mut bond) = conn {
+            if let Some(ControllerConfig::Mode(mode)) = settings.get("mode") {
+                bond.set_mode(mode)?;
+            }
             if let Some(ControllerConfig::Options(opts)) = settings.get("options") {
-                bond.set_options(opts.to_owned())?;
+                bond.set_options(opts.as_str())?;
             }
 
             if let Some(ControllerConfig::Ports(ports)) = settings.get("ports") {
@@ -597,6 +600,12 @@ impl BondConnection {
         self.bond.ports = ports;
     }
 
+    pub fn set_mode(&mut self, mode: &str) -> Result<(), NetworkStateError> {
+        self.bond.mode = BondMode::try_from(mode)
+            .map_err(|_e| NetworkStateError::InvalidBondMode(mode.to_string()))?;
+        Ok(())
+    }
+
     pub fn set_options<T>(&mut self, options: T) -> Result<(), NetworkStateError>
     where
         T: TryInto<BondOptions>,
@@ -612,15 +621,18 @@ impl BondConnection {
 #[derive(Debug, Default, Clone, PartialEq)]
 pub struct BondOptions(pub HashMap<String, String>);
 
-impl TryFrom<String> for BondOptions {
+impl TryFrom<&str> for BondOptions {
     type Error = NetworkStateError;
 
-    fn try_from(value: String) -> Result<Self, Self::Error> {
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
         let mut options = HashMap::new();
 
         for opt in value.split_whitespace() {
-            let (opt_key, opt_value) = opt.trim().split_once('=').unwrap();
-            options.insert(opt_key.to_string(), opt_value.to_string());
+            let (key, value) = opt
+                .trim()
+                .split_once('=')
+                .ok_or(NetworkStateError::InvalidBondOptions)?;
+            options.insert(key.to_string(), value.to_string());
         }
 
         Ok(BondOptions(options))
@@ -641,6 +653,7 @@ impl fmt::Display for BondOptions {
 
 #[derive(Debug, Default, PartialEq, Clone)]
 pub struct BondConfig {
+    pub mode: BondMode,
     pub ports: Vec<Connection>,
     pub options: BondOptions,
 }
@@ -648,8 +661,9 @@ pub struct BondConfig {
 /// Controller config payload for updating a controller's connection (Bond, Bridge)
 #[derive(Debug, PartialEq, Clone)]
 pub enum ControllerConfig {
-    Ports(Vec<String>),
+    Mode(String),
     Options(String),
+    Ports(Vec<String>),
 }
 
 #[derive(Debug, Default, Clone, PartialEq)]
