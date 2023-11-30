@@ -54,10 +54,16 @@ const ProposalSummary = ({ proposal }) => {
         // TRANSLATORS: %s will be replaced by the device name and its size,
         // example: "/dev/sda, 20 GiB"
         return _("Install using device %s without modifying existing partitions");
+      case "delete":
+        // TRANSLATORS: %s will be replaced by the device name and its size,
+        // example: "/dev/sda, 20 GiB"
+        return _("Install using device %s and deleting all its content");
     }
+
+    console.log(`Unknown space policy: ${policy}`);
     // TRANSLATORS: %s will be replaced by the device name and its size,
     // example: "/dev/sda, 20 GiB"
-    return _("Install using device %s and deleting all its content");
+    return _("Install using device %s");
   };
 
   const [msg1, msg2] = fullMsg(result.settings?.spacePolicy).split("%s");
