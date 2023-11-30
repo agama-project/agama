@@ -334,7 +334,8 @@ class ProposalManager {
         };
 
         const names = proxy.SystemVGDevices.filter(n => n !== proxy.BootDevice).concat([proxy.BootDevice]);
-        return names.map(dev => findDevice(devices, dev)).filter(Boolean);
+        // #findDevice returns undefined if no device is found with the given name.
+        return names.map(dev => findDevice(devices, dev)).filter(dev => dev !== undefined);
       };
 
       return {
