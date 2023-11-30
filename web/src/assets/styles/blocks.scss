@@ -355,8 +355,8 @@ span.notification-mark[data-variant="sidebar"] {
   .sticky-top-0 {
     position: sticky;
     top: calc(-1 * var(--pf-v5-c-modal-box__body--PaddingTop));
-    margin-top: calc(-1 * var(--pf-v5-c-modal-box__body--PaddingTop));
-    padding-top: var(--pf-v5-c-modal-box__body--PaddingTop);
+    margin-block-start: calc(-1 * var(--pf-v5-c-modal-box__body--PaddingTop));
+    padding-block-start: var(--pf-v5-c-modal-box__body--PaddingTop);
     background-color: var(--pf-v5-c-modal-box--BackgroundColor);
 
     [role="search"] {
