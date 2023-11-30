@@ -14,6 +14,9 @@ translations:
     cs: SUSE ALP Dolomite je minimální neměnitelný základní OS, zaměřený na
       bezpečnost pro poskytování úplného minima ke spuštění úloh a služeb v
       kontejnerech nebo virtuálních strojích.
+    sv: SUSE ALP Dolomite är en minimal oföränderlig OS-kärna, fokuserad på säkerhet
+      för att tillhandahålla det absoluta minimum för att köra
+      arbetsbelastningar och tjänster som behållare eller virtuella maskiner.
 software:
   mandatory_patterns:
     - alp_base_zypper
