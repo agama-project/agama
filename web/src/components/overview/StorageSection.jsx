@@ -29,6 +29,12 @@ import { deviceLabel } from "~/components/storage/utils";
 import { Em, ProgressText, Section } from "~/components/core";
 import { _ } from "~/i18n";
 
+/**
+ * Text explaining the storage proposal
+ *
+ * FIXME: this needs to be basically rewritten. See
+ * https://github.com/openSUSE/agama/discussions/778#discussioncomment-7715244
+ */
 const ProposalSummary = ({ proposal }) => {
   const { availableDevices = [], result = {} } = proposal;
 
@@ -36,12 +42,32 @@ const ProposalSummary = ({ proposal }) => {
   if (!bootDevice) return <Text>{_("No device selected yet")}</Text>;
 
   const device = availableDevices.find(d => d.name === bootDevice);
-
   const label = device ? deviceLabel(device) : bootDevice;
 
-  // TRANSLATORS: %s will be replaced by the device name and its size,
-  // example: "/dev/sda, 20 GiB"
-  const [msg1, msg2] = _("Install using device %s and deleting all its content").split("%s");
+  const fullMsg = (policy) => {
+    switch (policy) {
+      case "resize":
+        // TRANSLATORS: %s will be replaced by the device name and its size,
+        // example: "/dev/sda, 20 GiB"
+        return _("Install using device %s shrinking existing partitions as needed");
+      case "keep":
+        // TRANSLATORS: %s will be replaced by the device name and its size,
+        // example: "/dev/sda, 20 GiB"
+        return _("Install using device %s without modifying existing partitions");
+      case "delete":
+        // TRANSLATORS: %s will be replaced by the device name and its size,
+        // example: "/dev/sda, 20 GiB"
+        return _("Install using device %s and deleting all its content");
+    }
+
+    console.log(`Unknown space policy: ${policy}`);
+    // TRANSLATORS: %s will be replaced by the device name and its size,
+    // example: "/dev/sda, 20 GiB"
+    return _("Install using device %s");
+  };
+
+  const [msg1, msg2] = fullMsg(result.settings?.spacePolicy).split("%s");
+
   return (
     <Text>
       {msg1}<Em>{label}</Em>{msg2}

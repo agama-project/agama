@@ -29,7 +29,11 @@ import { noop } from "~/utils";
  * @typedef {import ("~/clients/l10n").Keymap} Keymap
  */
 
-const ListBox = ({ children, ...props }) => <ul role="listbox" {...props}>{children}</ul>;
+const ListBox = ({ children, ...props }) => {
+  return (
+    <ul data-type="agama/list" data-of="agama/keymaps" {...props}>{children}</ul>
+  );
+};
 
 const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
   if (isSelected) props['aria-selected'] = true;
@@ -56,7 +60,7 @@ const KeymapItem = ({ keymap }) => {
   return (
     <>
       <div>{keymap.name}</div>
-      <div data-type="details">{keymap.id}</div>
+      <div>{keymap.id}</div>
     </>
   );
 };
@@ -82,13 +86,12 @@ export default function KeymapSelector({ value, keymaps = [], onChange = noop })
       <div className="sticky-top-0">
         <ListSearch placeholder={helpSearch} elements={keymaps} onChange={setFilteredKeymaps} />
       </div>
-      <ListBox aria-label={_("Available keymaps")} className="stack item-list">
+      <ListBox aria-label={_("Available keymaps")} role="listbox">
         { filteredKeymaps.map((keymap, index) => (
           <ListBoxItem
             key={`keymap-${index}`}
             onClick={() => onChange(keymap.id)}
             isSelected={keymap.id === value}
-            className="cursor-pointer"
           >
             <KeymapItem keymap={keymap} />
           </ListBoxItem>

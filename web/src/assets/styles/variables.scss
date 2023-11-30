@@ -8,7 +8,9 @@
   --fw-medium: 500;
   --fw-bold: 700;
 
+  --fs-small: 0.7rem;
   --fs-base: 14px;
+  --fs-large: 1rem;
   --fs-h1: 1.5rem;
   --fs-h2: 1.2rem;
 
@@ -18,6 +20,8 @@
 
   --ui-max-inline-size: 1024px;
 
+  // FIXME: this should be changed to --spacer-xs, --spacer-s, and so
+  --spacer-smaller: 0.3rem;
   --spacer-small: 0.5rem;
   --spacer-normal: 1rem;
   --spacer-medium: 1.5rem;

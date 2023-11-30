@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 30 15:19:38 UTC 2023 - José Iván López González <jlopez@suse.com>
+
+- Allow selecting the storage policy to make free space for the
+  installation (gh#openSUSE/agama#883).
+
+-------------------------------------------------------------------
 Wed Nov 29 14:15:16 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Allow selecting language, keymap and timezone for the target

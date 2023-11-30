@@ -31,4 +31,5 @@ export { default as ZFCPPage } from "./ZFCPPage";
 export { default as ZFCPDiskForm } from "./ZFCPDiskForm";
 export { default as ISCSIPage } from "./ISCSIPage";
 export { DeviceList, DeviceSelector } from "./device-utils";
+export { SpacePolicyButton, SpacePolicySelector, SpacePolicyDisksHint } from "./space-policy-utils";
 export { default as VolumeForm } from "./VolumeForm";

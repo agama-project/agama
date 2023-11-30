@@ -56,6 +56,16 @@ th {
   text-align: start;
 }
 
+li {
+  svg {
+    vertical-align: middle;
+  }
+
+  span {
+    margin-inline-start: var(--spacer-small);
+  }
+}
+
 // Style focus making use of :focus-visible
 *:focus {
   outline: none;

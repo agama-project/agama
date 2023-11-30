@@ -29,7 +29,11 @@ import { noop } from "~/utils";
  * @typedef {import ("~/clients/l10n").Locale} Locale
  */
 
-const ListBox = ({ children, ...props }) => <ul role="listbox" {...props}>{children}</ul>;
+const ListBox = ({ children, ...props }) => {
+  return (
+    <ul data-type="agama/list" data-of="agama/locales" {...props}>{children}</ul>
+  );
+};
 
 const ListBoxItem = ({ isSelected, children, onClick, ...props }) => {
   if (isSelected) props['aria-selected'] = true;
@@ -57,7 +61,7 @@ const LocaleItem = ({ locale }) => {
     <>
       <div>{locale.name}</div>
       <div>{locale.territory}</div>
-      <div data-type="details">{locale.id}</div>
+      <div>{locale.id}</div>
     </>
   );
 };
@@ -82,14 +86,12 @@ export default function LocaleSelector({ value, locales = [], onChange = noop })
       <div className="sticky-top-0">
         <ListSearch placeholder={searchHelp} elements={locales} onChange={setFilteredLocales} />
       </div>
-      <ListBox aria-label={_("Available locales")} className="stack item-list">
+      <ListBox aria-label={_("Available locales")} role="listbox">
         { filteredLocales.map((locale, index) => (
           <ListBoxItem
             key={`locale-${index}`}
             onClick={() => onChange(locale.id)}
             isSelected={locale.id === value}
-            className="cursor-pointer"
-            data-type="locale"
           >
             <LocaleItem locale={locale} />
           </ListBoxItem>

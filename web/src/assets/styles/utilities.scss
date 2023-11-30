@@ -25,6 +25,11 @@
   text-align: center;
 }
 
+.title {
+  font-size: var(--fs-large);
+  font-weight: var(--fw-bold);
+}
+
 .bold {
   font-weight: bold;
 }
@@ -164,10 +169,6 @@
   block-size: 95dvh;
   inline-size: 95dvw;
   max-inline-size: calc(var(--ui-max-inline-size) + var(--spacer-large))
-}
-
-.cursor-pointer {
-  cursor: pointer;
 }
 
 .height-75 {

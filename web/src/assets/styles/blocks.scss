@@ -272,73 +272,29 @@ span.notification-mark[data-variant="sidebar"] {
   }
 }
 
-.item-list {
-  [role="option"] {
-    padding: var(--spacer-normal);
+ul[data-type="agama/list"] {
+  li {
     border: 2px solid var(--color-gray-dark);
-    background: var(--color-gray-light);
-
     border-radius: 5px;
-    transition: all 0.2s ease-in-out;
-    display: grid;
-
-    gap: var(--spacer-small);
-
-    grid-template-columns: 1fr;
-    grid-template-areas: "content";
+    padding: var(--spacer-normal);
     text-align: start;
+    background: var(--color-gray-light);
+    margin-block-end: var(--spacer-small);
 
-    > [data-type="details"] {
-      font-size: 80%;
+    > div {
+      margin-block-end: var(--spacer-smaller);
     }
 
-    &:hover {
-      &:not([aria-selected]) {
-        background: var(--color-gray-dark);
-      }
-    }
-
-    &:is([data-type="locale"]) {
-      grid-template-columns: 1fr 2fr;
-      grid-template-areas:
-        "language territory"
-        "details details";
-
-      > [data-type="details"] {
-        grid-area: details;
-      }
-    }
-
-    &:is([data-type="timezone"]) {
-      grid-template-columns: 1fr 2fr 1fr;
-      grid-template-areas:
-        "part1 rest-parts time"
-        "details details .";
-
-      > [data-type="details"] {
-        grid-area: details;
-      }
-
-      > [data-type="time"] {
-        color: var(--color-gray-dimmed);
-        grid-area: time;
-        text-align: end;
-      }
-    }
-
-    &:is([data-type="storage-device"]) {
-      grid-template-columns: 1fr 2fr 2fr;
-      grid-template-areas: "type-and-size drive-info drive-content";
-
-      > [data-type="type-and-size"] {
-        align-self: center;
-        text-align: center;
-        justify-self: start;
-      }
+    // Done in two rules instead of div:not(:last-child) to avoid specificity
+    // problems later; see the storage-devices selector
+    > div:last-child {
+      margin-block-end: 0;
     }
   }
 
-  [aria-selected] {
+  // FIXME: see if it's semantically correct to mark an li as aria-selected when
+  // not belongs to a listbox or grid list ul.
+  li[aria-selected] {
     border: 2px solid var(--color-primary);
     box-shadow: 0 2px 5px 0 var(--color-gray-dark);
     background: var(--color-primary);
@@ -347,6 +303,85 @@ span.notification-mark[data-variant="sidebar"] {
 
     svg {
       fill: white;
+    }
+  }
+}
+
+// These attributes together means that UI is rendering a selector
+ul[data-type="agama/list"][role="listbox"] {
+  li[role="option"] {
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      &:not([aria-selected]) {
+        background: var(--color-gray-dark);
+      }
+    }
+  }
+}
+
+// Each kind of list/selector has its way of laying out their items
+ul[data-of="agama/storage-devices"] {
+  li {
+    display: grid;
+    gap: var(--spacer-smaller);
+    grid-template-columns: 1fr 2fr 2fr;
+    grid-template-areas: "type-and-size drive-info drive-content";
+
+    svg {
+      vertical-align: inherit;
+    }
+
+    > div {
+      margin-block-end: 0;
+    }
+
+    > :first-child {
+      align-self: center;
+      text-align: center;
+      justify-self: start;
+    }
+  }
+}
+
+ul[data-of="agama/space-policies"] {
+  // It works with the default styling
+}
+
+ul[data-of="agama/locales"] {
+  li {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+
+    > :last-child {
+      grid-column: 1 / -1;
+      font-size: var(--fs-small);
+    }
+  }
+}
+
+ul[data-of="agama/keymaps"] {
+  li {
+    > :last-child {
+      font-size: var(--fs-small);
+    }
+  }
+}
+
+ul[data-of="agama/timezones"] {
+  li {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+
+    > :last-child {
+      grid-column: 1 / -1;
+      font-size: 80%;
+    }
+
+    > :nth-child(3) {
+      color: var(--color-gray-dimmed);
+      text-align: end;
     }
   }
 }
