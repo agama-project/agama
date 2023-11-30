@@ -110,7 +110,7 @@ class YamlProduct {
     const newTranslations = {};
 
     translations.forEach(t => {
-      if (t.msgid === description) {
+      if (t.msgid === description && t.msgstr?.length > 0) {
         newTranslations[t.locale] = t.msgstr;
       }
     });
