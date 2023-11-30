@@ -323,6 +323,10 @@ ul[data-type="agama/list"][role="listbox"] {
       border-radius: 0 0 5px 5px;
     }
 
+    &:only-child {
+      border-radius: 5px;
+    }
+
     &:hover {
       &:not([aria-selected]) {
         background: var(--color-gray-dark);
