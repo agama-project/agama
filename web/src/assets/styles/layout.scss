@@ -33,6 +33,8 @@
 
   svg {
     color: white;
+    block-size: var(--header-icon-size);
+    inline-size: var(--header-icon-size);
   }
 }
 
@@ -40,7 +42,7 @@
   grid-area: content;
   overflow-y: auto; // Sadly, only Firefox supports overflow-block at this moment (Jan 2023)
   overflow-block: auto;
-  padding: var(--spacer-medium);
+  padding: var(--spacer-medium) var(--spacer-small);
 }
 
 .wrapper > footer {

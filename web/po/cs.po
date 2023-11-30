@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-05 02:14+0000\n"
+"POT-Creation-Date: 2023-11-26 02:17+0000\n"
 "PO-Revision-Date: 2023-07-26 15:03+0000\n"
 "Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-web/cs/"
@@ -20,7 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Weblate 4.9.1\n"
 
-#: src/App.jsx:112
+#: src/App.jsx:110
 msgid "Diagnostic tools"
 msgstr ""
 
@@ -133,17 +133,21 @@ msgstr ""
 
 #. TRANSLATORS: button label
 #: src/components/core/InstallButton.jsx:97
+#: src/components/product/ProductPage.jsx:71
+#: src/components/product/ProductPage.jsx:140
+#: src/components/product/ProductPage.jsx:207
+#: src/components/product/ProductPage.jsx:239
 #: src/components/storage/ProposalSettingsSection.jsx:166
 #: src/components/storage/ProposalSettingsSection.jsx:359
 #: src/components/storage/ProposalSettingsSection.jsx:504
 #: src/components/storage/ProposalVolumes.jsx:148
-#: src/components/storage/ProposalVolumes.jsx:282
+#: src/components/storage/ProposalVolumes.jsx:283
 #: src/components/storage/ZFCPPage.jsx:513
 msgid "Accept"
 msgstr ""
 
 #. TRANSLATORS: button label
-#: src/components/core/InstallButton.jsx:145
+#: src/components/core/InstallButton.jsx:148
 msgid "Install"
 msgstr ""
 
@@ -193,7 +197,30 @@ msgstr ""
 msgid "There are new issues"
 msgstr ""
 
-#: src/components/core/IssuesPage.jsx:115
+#. TRANSLATORS: page section
+#: src/components/core/IssuesPage.jsx:92
+#: src/components/overview/ProductSection.jsx:71
+#: src/components/product/ProductPage.jsx:434
+msgid "Product"
+msgstr ""
+
+#. TRANSLATORS: page title
+#. TRANSLATORS: page section title
+#: src/components/core/IssuesPage.jsx:100
+#: src/components/overview/StorageSection.jsx:182
+#: src/components/storage/ProposalPage.jsx:218
+msgid "Storage"
+msgstr ""
+
+#. TRANSLATORS: page title
+#. TRANSLATORS: page section
+#: src/components/core/IssuesPage.jsx:108
+#: src/components/overview/SoftwareSection.jsx:141
+#: src/components/software/SoftwarePage.jsx:81
+msgid "Software"
+msgstr ""
+
+#: src/components/core/IssuesPage.jsx:129
 msgid "No issues found. Everything looks ok."
 msgstr ""
 
@@ -256,12 +283,11 @@ msgstr ""
 #. TRANSLATORS: dropdown label
 #: src/components/core/RowActions.jsx:66
 #: src/components/storage/ProposalVolumes.jsx:119
-#: src/components/storage/ProposalVolumes.jsx:309
+#: src/components/storage/ProposalVolumes.jsx:310
 msgid "Actions"
 msgstr ""
 
 #: src/components/core/SectionSkeleton.jsx:29
-#: src/components/core/SectionSkeleton.jsx:34
 msgid "Waiting"
 msgstr ""
 
@@ -323,8 +349,8 @@ msgstr ""
 msgid "language"
 msgstr ""
 
-#. TRANSLATORS: page header
 #. TRANSLATORS: page section
+#. TRANSLATORS: page header
 #: src/components/l10n/L10nPage.jsx:84
 #: src/components/overview/L10nSection.jsx:82
 msgid "Localization"
@@ -394,7 +420,7 @@ msgid "IP addresses"
 msgstr ""
 
 #: src/components/network/ConnectionsTable.jsx:67
-#: src/components/storage/ProposalVolumes.jsx:233
+#: src/components/storage/ProposalVolumes.jsx:234
 #: src/components/storage/iscsi/InitiatorPresenter.jsx:49
 #: src/components/storage/iscsi/NodesPresenter.jsx:73
 #: src/components/users/FirstUser.jsx:170
@@ -535,6 +561,8 @@ msgid "WPA & WPA2 Personal"
 msgstr ""
 
 #: src/components/network/WifiConnectionForm.jsx:91
+#: src/components/product/ProductPage.jsx:128
+#: src/components/product/ProductPage.jsx:194
 #: src/components/storage/ZFCPDiskForm.jsx:112
 #: src/components/storage/iscsi/DiscoverForm.jsx:108
 #: src/components/storage/iscsi/LoginForm.jsx:72
@@ -628,20 +656,24 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
+#. TRANSLATORS: page title
+#: src/components/overview/Overview.jsx:47
+msgid "Installation Summary"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#: src/components/overview/ProductSection.jsx:48
+#, c-format
+msgid "%s (registered)"
+msgstr ""
+
 #: src/components/overview/SoftwareSection.jsx:37
 msgid "Reading software repositories"
 msgstr ""
 
 #. TRANSLATORS: clickable link label
-#: src/components/overview/SoftwareSection.jsx:135
+#: src/components/overview/SoftwareSection.jsx:131
 msgid "Refresh the repositories"
-msgstr ""
-
-#. TRANSLATORS: page section
-#. TRANSLATORS: page title
-#: src/components/overview/SoftwareSection.jsx:145
-#: src/components/software/SoftwarePage.jsx:81
-msgid "Software"
 msgstr ""
 
 #: src/components/overview/StorageSection.jsx:36
@@ -658,13 +690,6 @@ msgstr ""
 
 #: src/components/overview/StorageSection.jsx:57
 msgid "Probing storage devices"
-msgstr ""
-
-#. TRANSLATORS: page title
-#. TRANSLATORS: page section title
-#: src/components/overview/StorageSection.jsx:182
-#: src/components/storage/ProposalPage.jsx:218
-msgid "Storage"
 msgstr ""
 
 #. TRANSLATORS: %s will be replaced by the user name
@@ -700,6 +725,106 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
+#: src/components/product/ProductPage.jsx:63
+#: src/components/product/ProductSelectionPage.jsx:73
+msgid "Choose a product"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:122
+#, c-format
+msgid "Register %s"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:188
+#, c-format
+msgid "Deregister %s"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#: src/components/product/ProductPage.jsx:202
+#, c-format
+msgid "Do you want to deregister %s?"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:227
+msgid "Registered warning"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by a product name (e.g., SUSE ALP-Dolomite)
+#: src/components/product/ProductPage.jsx:232
+#, c-format
+msgid "The product %s must be deregistered before selecting a new product."
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:263
+msgid "Change product"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:305
+msgid "Register"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:337
+msgid "Deregister product"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:370
+msgid "Code:"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:374
+msgid "Email:"
+msgstr ""
+
+#. TRANSLATORS: section title.
+#: src/components/product/ProductPage.jsx:390
+msgid "Registration"
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:399
+msgid "This product requires registration."
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:405
+msgid "This product does not require registration."
+msgstr ""
+
+#: src/components/product/ProductPage.jsx:434
+#: src/components/software/SoftwarePage.jsx:81
+#: src/components/storage/DASDPage.jsx:187
+#: src/components/storage/ISCSIPage.jsx:39
+#: src/components/storage/ProposalPage.jsx:218
+#: src/components/storage/ZFCPPage.jsx:736
+#: src/components/users/UsersPage.jsx:30
+msgid "Back"
+msgstr ""
+
+#: src/components/product/ProductRegistrationForm.jsx:63
+msgid "Registration code"
+msgstr ""
+
+#: src/components/product/ProductRegistrationForm.jsx:66
+msgid "Email"
+msgstr ""
+
+#: src/components/product/ProductSelectionPage.jsx:58
+msgid "Loading available products, please wait..."
+msgstr ""
+
+#. TRANSLATORS: page header
+#: src/components/product/ProductSelectionPage.jsx:64
+msgid "Product selection"
+msgstr ""
+
+#. TRANSLATORS: button label
+#: src/components/product/ProductSelectionPage.jsx:69
+msgid "Select"
+msgstr ""
+
+#: src/components/product/ProductSelector.jsx:29
+msgid "No products available for selection"
+msgstr ""
+
 #: src/components/questions/GenericQuestion.jsx:35
 #: src/components/questions/LuksActivationQuestion.jsx:60
 msgid "Question"
@@ -719,10 +844,6 @@ msgstr ""
 msgid "Encryption Password"
 msgstr ""
 
-#: src/components/software/ChangeProductLink.jsx:36
-msgid "Change product"
-msgstr ""
-
 #. TRANSLATORS: pattern status, selected to install (by user)
 #: src/components/software/PatternItem.jsx:63
 msgid "selected"
@@ -740,46 +861,19 @@ msgstr ""
 
 #. TRANSLATORS: error summary, always plural, %d is replaced by number of errors (2 or more)
 #. if there is just a single error then the error is displayed directly instead of this summary
-#: src/components/software/PatternSelector.jsx:206
+#: src/components/software/PatternSelector.jsx:207
 #, c-format
 msgid "%d errors"
 msgstr ""
 
-#: src/components/software/PatternSelector.jsx:210
+#: src/components/software/PatternSelector.jsx:215
 msgid "Software summary and filter options"
 msgstr ""
 
 #. TRANSLATORS: search field placeholder text
-#: src/components/software/PatternSelector.jsx:215
-#: src/components/software/PatternSelector.jsx:216
+#: src/components/software/PatternSelector.jsx:220
+#: src/components/software/PatternSelector.jsx:221
 msgid "Search"
-msgstr ""
-
-#: src/components/software/ProductSelectionPage.jsx:69
-msgid "Loading available products, please wait..."
-msgstr ""
-
-#. TRANSLATORS: page header
-#: src/components/software/ProductSelectionPage.jsx:94
-msgid "Product selection"
-msgstr ""
-
-#. TRANSLATORS: button label
-#: src/components/software/ProductSelectionPage.jsx:99
-msgid "Select"
-msgstr ""
-
-#: src/components/software/ProductSelectionPage.jsx:104
-msgid "Choose a product"
-msgstr ""
-
-#: src/components/software/SoftwarePage.jsx:81
-#: src/components/storage/DASDPage.jsx:187
-#: src/components/storage/ISCSIPage.jsx:39
-#: src/components/storage/ProposalPage.jsx:218
-#: src/components/storage/ZFCPPage.jsx:736
-#: src/components/users/UsersPage.jsx:30
-msgid "Back"
 msgstr ""
 
 #. TRANSLATORS: %s will be replaced by the estimated installation size,
@@ -1070,48 +1164,48 @@ msgid "partition"
 msgstr ""
 
 #. TRANSLATORS: filesystem flag, it uses an encryption
-#: src/components/storage/ProposalVolumes.jsx:215
+#: src/components/storage/ProposalVolumes.jsx:216
 msgid "encrypted"
 msgstr ""
 
 #. TRANSLATORS: filesystem flag, it allows creating snapshots
-#: src/components/storage/ProposalVolumes.jsx:217
+#: src/components/storage/ProposalVolumes.jsx:218
 msgid "with snapshots"
 msgstr ""
 
 #. TRANSLATORS: flag for transactional file system
-#: src/components/storage/ProposalVolumes.jsx:219
+#: src/components/storage/ProposalVolumes.jsx:220
 msgid "transactional"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:228
+#: src/components/storage/ProposalVolumes.jsx:229
 #: src/components/storage/iscsi/NodesPresenter.jsx:77
 msgid "Delete"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:274
+#: src/components/storage/ProposalVolumes.jsx:275
 msgid "Edit file system"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:306
+#: src/components/storage/ProposalVolumes.jsx:307
 #: src/components/storage/VolumeForm.jsx:500
 msgid "Mount point"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:307
+#: src/components/storage/ProposalVolumes.jsx:308
 msgid "Details"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:308
+#: src/components/storage/ProposalVolumes.jsx:309
 #: src/components/storage/VolumeForm.jsx:517
 msgid "Size"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:344
+#: src/components/storage/ProposalVolumes.jsx:345
 msgid "Table with mount points"
 msgstr ""
 
-#: src/components/storage/ProposalVolumes.jsx:407
+#: src/components/storage/ProposalVolumes.jsx:408
 msgid "File systems to create in your system"
 msgstr ""
 
