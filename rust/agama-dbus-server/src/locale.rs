@@ -176,6 +176,8 @@ impl Locale {
 
 impl Locale {
     pub fn new_with_locale(ui_locale: &LocaleCode) -> Result<Self, Error> {
+        const DEFAULT_TIMEZONE: &str = "Europe/Berlin";
+
         let locale = ui_locale.to_string();
         let mut locales_db = LocalesDatabase::new();
         locales_db.read(&locale)?;
@@ -189,14 +191,17 @@ impl Locale {
 
         let mut timezones_db = TimezonesDatabase::new();
         timezones_db.read(&locale)?;
-        let default_timezone = timezones_db.entries().get(0).unwrap();
+        let mut default_timezone = DEFAULT_TIMEZONE.to_string();
+        if !timezones_db.exists(&default_timezone) {
+            default_timezone = timezones_db.entries().get(0).unwrap().code.to_string();
+        };
 
         let mut keymaps_db = KeymapsDatabase::new();
         keymaps_db.read()?;
 
         let locale = Self {
             keymap: "us".parse().unwrap(),
-            timezone: default_timezone.code.to_string(),
+            timezone: default_timezone,
             locales: vec![default_locale],
             locales_db,
             timezones_db,
