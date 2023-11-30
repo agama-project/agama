@@ -29,12 +29,10 @@ impl Locale {
     /// Each element of the list has these parts:
     ///
     /// * The locale code (e.g., "es_ES.UTF-8").
-    /// * A pair composed by the language and the territory names in english
-    ///   (e.g. ("Spanish", "Spain")).
-    /// * A pair composed by the language and the territory names in its own language
-    ///   (e.g. ("Español", "España")).
-    ///
-    // NOTE: check how often it is used and if often, it can be easily cached
+    /// * The name of the language according to the language defined by the
+    ///   UILocale property.
+    /// * The name of the territory according to the language defined by the
+    ///   UILocale property.
     fn list_locales(&self) -> Result<Vec<(String, String, String)>, Error> {
         let locales = self
             .locales_db

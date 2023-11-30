@@ -43,10 +43,10 @@
      Each element of the list has these parts:
 
      * The locale code (e.g., "es_ES.UTF-8").
-     * A pair composed by the language and the territory names in english
-       (e.g. ("Spanish", "Spain")).
-     * A pair composed by the language and the territory names in its own language
-       (e.g. ("Español", "España")).
+     * The name of the language according to the language defined by the
+       UILocale property.
+     * The name of the territory according to the language defined by the
+       UILocale property.
      -->
     <method name="ListLocales">
       <arg type="a(sss)" direction="out"/>

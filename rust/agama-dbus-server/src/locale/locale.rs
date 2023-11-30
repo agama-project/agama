@@ -69,7 +69,7 @@ impl LocalesDatabase {
 
     /// Gets the supported locales information.
     ///
-    /// * `language`: language to use in the translations.
+    /// * `ui_language`: language to use in the translations.
     fn get_locales(&self, ui_language: &str) -> Result<Vec<LocaleEntry>, Error> {
         const DEFAULT_LANG: &str = "en";
         let mut result = Vec::with_capacity(self.known_locales.len());
